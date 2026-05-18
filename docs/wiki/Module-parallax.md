@@ -4,149 +4,101 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
-- [Purpose](#purpose)
-- [Summary](#summary)
-- [Minimal Module Example](#minimal-module-example)
-- [Key Types](#key-types)
-- [API Overview](#api-overview)
-- [Module Functions](#module-functions)
-  - [lurek.parallax.newLayer(opts: table) -> LParallaxLayer](#lurekparallaxnewlayeropts-table-lparallaxlayer)
-  - [lurek.parallax.newPresetLayer(preset_name: string, img_ud: LImage) -> LParallaxLayer](#lurekparallaxnewpresetlayerpresetname-string-imgud-limage-lparallaxlayer)
-  - [lurek.parallax.newSet(name: string) -> LParallaxSet](#lurekparallaxnewsetname-string-lparallaxset)
-- [Types and Methods](#types-and-methods)
+- [🎯 Purpose](#purpose)
+- [📋 Summary](#summary)
+- [🧩 Key Types](#key-types)
+- [📖 API Overview](#api-overview)
+- [⚙️ Module Functions](#module-functions)
+  - [lurek.parallax.newLayer](#lurekparallaxnewlayer)
+  - [lurek.parallax.newPresetLayer](#lurekparallaxnewpresetlayer)
+  - [lurek.parallax.newSet](#lurekparallaxnewset)
+- [🔷 Module Types](#module-types)
   - [LParallaxLayer](#lparallaxlayer)
-  - [LParallaxLayer:addEffectPass(effect_name: string, [params]: table)](#lparallaxlayeraddeffectpasseffectname-string-params-table)
-  - [LParallaxLayer:clearClamp()](#lparallaxlayerclearclamp)
-  - [LParallaxLayer:clearEffects()](#lparallaxlayercleareffects)
-  - [LParallaxLayer:effectCount() -> integer](#lparallaxlayereffectcount-integer)
-  - [LParallaxLayer:getAutoscroll() -> number](#lparallaxlayergetautoscroll-number)
-  - [LParallaxLayer:getBlendMode() -> string](#lparallaxlayergetblendmode-string)
-  - [LParallaxLayer:getDepth() -> number](#lparallaxlayergetdepth-number)
-  - [LParallaxLayer:getMotionStretch() -> boolean](#lparallaxlayergetmotionstretch-boolean)
-  - [LParallaxLayer:getOffset() -> number](#lparallaxlayergetoffset-number)
-  - [LParallaxLayer:getOpacity() -> number](#lparallaxlayergetopacity-number)
-  - [LParallaxLayer:getScrollFactor() -> number](#lparallaxlayergetscrollfactor-number)
-  - [LParallaxLayer:getTiling() -> boolean](#lparallaxlayergettiling-boolean)
-  - [LParallaxLayer:getTint() -> number](#lparallaxlayergettint-number)
-  - [LParallaxLayer:getZ() -> integer](#lparallaxlayergetz-integer)
-  - [LParallaxLayer:isVisible() -> boolean](#lparallaxlayerisvisible-boolean)
-  - [LParallaxLayer:render(cam_x: number, cam_y: number)](#lparallaxlayerrendercamx-number-camy-number)
-  - [LParallaxLayer:renderAuto()](#lparallaxlayerrenderauto)
-  - [LParallaxLayer:resetAutoscroll()](#lparallaxlayerresetautoscroll)
-  - [LParallaxLayer:setAutoscroll(vx: number, vy: number)](#lparallaxlayersetautoscrollvx-number-vy-number)
-  - [LParallaxLayer:setBlendMode(mode: string)](#lparallaxlayersetblendmodemode-string)
-  - [LParallaxLayer:setClamp(min_x: number, min_y: number, max_x: number, max_y: number)](#lparallaxlayersetclampminx-number-miny-number-maxx-number-maxy-number)
-  - [LParallaxLayer:setDepth(z: number)](#lparallaxlayersetdepthz-number)
-  - [LParallaxLayer:setMotionStretch(enabled: boolean, strength: number, max_scale: number)](#lparallaxlayersetmotionstretchenabled-boolean-strength-number-maxscale-number)
-  - [LParallaxLayer:setOffset(x: number, y: number)](#lparallaxlayersetoffsetx-number-y-number)
-  - [LParallaxLayer:setOpacity(a: number)](#lparallaxlayersetopacitya-number)
-  - [LParallaxLayer:setRepeat(rx: boolean, ry: boolean)](#lparallaxlayersetrepeatrx-boolean-ry-boolean)
-  - [LParallaxLayer:setScale(sx: number, sy: number)](#lparallaxlayersetscalesx-number-sy-number)
-  - [LParallaxLayer:setScrollFactor(x: number, y: number)](#lparallaxlayersetscrollfactorx-number-y-number)
-  - [LParallaxLayer:setTileSize(w: number, h: number)](#lparallaxlayersettilesizew-number-h-number)
-  - [LParallaxLayer:setTiling(enabled: boolean)](#lparallaxlayersettilingenabled-boolean)
-  - [LParallaxLayer:setTint(r: number, g: number, b: number, a: number)](#lparallaxlayersettintr-number-g-number-b-number-a-number)
-  - [LParallaxLayer:setVisible(v: boolean)](#lparallaxlayersetvisiblev-boolean)
-  - [LParallaxLayer:setZ(z: integer)](#lparallaxlayersetzz-integer)
-  - [LParallaxLayer:type() -> string](#lparallaxlayertype-string)
-  - [LParallaxLayer:update(dt: number)](#lparallaxlayerupdatedt-number)
   - [LParallaxSet](#lparallaxset)
-  - [LParallaxSet:addLayer(layer: LParallaxLayer)](#lparallaxsetaddlayerlayer-lparallaxlayer)
-  - [LParallaxSet:getLayerZAt(index: integer) -> integer](#lparallaxsetgetlayerzatindex-integer-integer)
-  - [LParallaxSet:getName() -> string](#lparallaxsetgetname-string)
-  - [LParallaxSet:isVisible() -> boolean](#lparallaxsetisvisible-boolean)
-  - [LParallaxSet:layerCount() -> integer](#lparallaxsetlayercount-integer)
-  - [LParallaxSet:removeLayerAt(index: integer) -> boolean](#lparallaxsetremovelayeratindex-integer-boolean)
-  - [LParallaxSet:render(cam_x: number, cam_y: number)](#lparallaxsetrendercamx-number-camy-number)
-  - [LParallaxSet:renderAuto()](#lparallaxsetrenderauto)
-  - [LParallaxSet:setName(name: string)](#lparallaxsetsetnamename-string)
-  - [LParallaxSet:setVisible(v: boolean)](#lparallaxsetsetvisiblev-boolean)
-  - [LParallaxSet:sortByZ()](#lparallaxsetsortbyz)
-  - [LParallaxSet:type() -> string](#lparallaxsettype-string)
-  - [LParallaxSet:update(dt: number)](#lparallaxsetupdatedt-number)
-- [Examples](#examples)
-- [Reference Games](#reference-games)
-- [Related Modules](#related-modules)
+- [🔹 Module Methods](#module-methods)
+  - [LParallaxLayer:addEffectPass](#lparallaxlayeraddeffectpass)
+  - [LParallaxLayer:clearClamp](#lparallaxlayerclearclamp)
+  - [LParallaxLayer:clearEffects](#lparallaxlayercleareffects)
+  - [LParallaxLayer:effectCount](#lparallaxlayereffectcount)
+  - [LParallaxLayer:getAutoscroll](#lparallaxlayergetautoscroll)
+  - [LParallaxLayer:getBlendMode](#lparallaxlayergetblendmode)
+  - [LParallaxLayer:getDepth](#lparallaxlayergetdepth)
+  - [LParallaxLayer:getMotionStretch](#lparallaxlayergetmotionstretch)
+  - [LParallaxLayer:getOffset](#lparallaxlayergetoffset)
+  - [LParallaxLayer:getOpacity](#lparallaxlayergetopacity)
+  - [LParallaxLayer:getScrollFactor](#lparallaxlayergetscrollfactor)
+  - [LParallaxLayer:getTiling](#lparallaxlayergettiling)
+  - [LParallaxLayer:getTint](#lparallaxlayergettint)
+  - [LParallaxLayer:getZ](#lparallaxlayergetz)
+  - [LParallaxLayer:isVisible](#lparallaxlayerisvisible)
+  - [LParallaxLayer:render](#lparallaxlayerrender)
+  - [LParallaxLayer:renderAuto](#lparallaxlayerrenderauto)
+  - [LParallaxLayer:resetAutoscroll](#lparallaxlayerresetautoscroll)
+  - [LParallaxLayer:setAutoscroll](#lparallaxlayersetautoscroll)
+  - [LParallaxLayer:setBlendMode](#lparallaxlayersetblendmode)
+  - [LParallaxLayer:setClamp](#lparallaxlayersetclamp)
+  - [LParallaxLayer:setDepth](#lparallaxlayersetdepth)
+  - [LParallaxLayer:setMotionStretch](#lparallaxlayersetmotionstretch)
+  - [LParallaxLayer:setOffset](#lparallaxlayersetoffset)
+  - [LParallaxLayer:setOpacity](#lparallaxlayersetopacity)
+  - [LParallaxLayer:setRepeat](#lparallaxlayersetrepeat)
+  - [LParallaxLayer:setScale](#lparallaxlayersetscale)
+  - [LParallaxLayer:setScrollFactor](#lparallaxlayersetscrollfactor)
+  - [LParallaxLayer:setTileSize](#lparallaxlayersettilesize)
+  - [LParallaxLayer:setTiling](#lparallaxlayersettiling)
+  - [LParallaxLayer:setTint](#lparallaxlayersettint)
+  - [LParallaxLayer:setVisible](#lparallaxlayersetvisible)
+  - [LParallaxLayer:setZ](#lparallaxlayersetz)
+  - [LParallaxLayer:type](#lparallaxlayertype)
+  - [LParallaxLayer:update](#lparallaxlayerupdate)
+  - [LParallaxSet:addLayer](#lparallaxsetaddlayer)
+  - [LParallaxSet:getLayerZAt](#lparallaxsetgetlayerzat)
+  - [LParallaxSet:getName](#lparallaxsetgetname)
+  - [LParallaxSet:isVisible](#lparallaxsetisvisible)
+  - [LParallaxSet:layerCount](#lparallaxsetlayercount)
+  - [LParallaxSet:removeLayerAt](#lparallaxsetremovelayerat)
+  - [LParallaxSet:render](#lparallaxsetrender)
+  - [LParallaxSet:renderAuto](#lparallaxsetrenderauto)
+  - [LParallaxSet:setName](#lparallaxsetsetname)
+  - [LParallaxSet:setVisible](#lparallaxsetsetvisible)
+  - [LParallaxSet:sortByZ](#lparallaxsetsortbyz)
+  - [LParallaxSet:type](#lparallaxsettype)
+  - [LParallaxSet:update](#lparallaxsetupdate)
+- [💡 Examples](#examples)
+- [🎮 Reference Games](#reference-games)
+- [🔗 Related Modules](#related-modules)
 
 This page is generated from the current module specs, examples, and Lua API data.
 
 **Module group:** Feature Systems
 **Namespace:** `lurek.parallax`
 
-## Purpose
+## 🎯 Purpose
 
 Multi-layer scrolling backgrounds with camera-relative scroll factors and blend modes.
 
-## Summary
+[⬆ back to top](#table-of-contents)
+
+## 📋 Summary
 
 Multi-layer scrolling background system with camera-relative scroll factors, auto-scroll, tiling, and blend modes. Each `ParallaxLayer` defines a texture, scroll speed multiplier (0.0 = static, 1.0 = locked to camera), vertical/horizontal tiling, opacity, tint color, and blend mode. Layers stack back-to-front with the lowest scroll factor appearing furthest away.
 
 Auto-scroll adds constant velocity independent of camera movement for ambient effects (clouds, stars). `ParallaxDrawBatch` describes the computed draw state for a layer after camera transform application — the renderer consumes these batches for actual GPU draws. Presets provide common configurations (sky gradients, forest layers, city skylines). Exposed as `lurek.parallax.*`. Feature Systems tier.
 
-## Minimal Module Example
+[⬆ back to top](#table-of-contents)
 
-Module example from [parallax.lua](../blob/main/content/examples/parallax.lua):
-
-```lua
---@api-stub: lurek.parallax.newLayer
--- Creates a parallax layer from an options table
-do
-  function lurek.init()
-    -- newLayer accepts a table with a required "texture" field and many optional fields.
-    -- Use it to build each visual depth layer in a side-scroller or top-down scene.
-    local ok_sky, sky_tex = pcall(lurek.render.newImage, "assets/parallax/sky.png")
-    if not ok_sky then return end
-
-    -- Minimal layer: just a texture, everything else defaults (no scroll, z=0, full opacity)
-    local sky = lurek.parallax.newLayer({ texture = sky_tex })
-
-    -- Full options table showing all configurable fields at creation time:
-    local hills = lurek.parallax.newLayer({
-      texture    = lurek.render.newImage("assets/parallax/hills.png"),
-      scroll_factor_x = 0.4,   -- moves at 40% of camera speed (distant hills)
-      scroll_factor_y = 0.0,   -- no vertical parallax (locked to horizon)
-      offset_x   = 0,          -- horizontal pixel offset from origin
-      offset_y   = 120,        -- push layer down 120px (below sky)
-      autoscroll_x = 0,        -- no automatic horizontal drift
-      autoscroll_y = 0,        -- no automatic vertical drift
-      repeat_x   = true,       -- tile horizontally so scrolling never shows gaps
-      repeat_y   = false,      -- do not tile vertically
-      z          = 5,          -- draw order: lower z = further back
-      opacity    = 1.0,        -- fully opaque
-      blend_mode = "normal",   -- standard alpha blending
-      visible    = true,       -- starts visible
-      scale_x    = 1.0,        -- no horizontal scaling
-      scale_y    = 1.0,        -- no vertical scaling
-      tiling     = false,      -- explicit tiling mode off (repeat_x handles simple tiling)
-      depth      = 5.0,        -- alternative depth-based parallax factor
-    })
-
-    -- The returned handle is an LParallaxLayer with full getter/setter access.
-    sky:setRepeat(true, false)
-  end
-end
-
---@api-stub: lurek.parallax.newSet
--- Creates an empty parallax layer set for managing multiple layers as a group
-do
-  function lurek.init()
-    -- A ParallaxSet groups layers so you can update/render them all with one call.
-    -- Name it for debugging and scene management (e.g., swap backdrops by set name).
-    local forest_backdrop = lurek.parallax.newSet("forest_backdrop")
-
-    -- Sets start visible and empty. Add layers after creation.
-```
-
-## Key Types
+## 🧩 Key Types
 
 - `LParallaxLayer` (35 methods) - Lua-side wrapper for a parallax layer and shared render state.
 - `LParallaxSet` (13 methods) - Lua-side wrapper for an ordered parallax layer set.
 
-## API Overview
+[⬆ back to top](#table-of-contents)
+
+## 📖 API Overview
 
 - Source spec: [docs/specs/parallax.md](../blob/main/docs/specs/parallax.md)
 
@@ -156,15 +108,19 @@ lurek.parallax.newPresetLayer(preset_name: string, img_ud: LImage) -> LParallaxL
 lurek.parallax.newSet(name: string) -> LParallaxSet -- Creates an empty parallax layer set.
 ```
 
-## Module Functions
+[⬆ back to top](#table-of-contents)
 
-### `lurek.parallax.newLayer(opts: table) -> LParallaxLayer`
+## ⚙️ Module Functions
+
+### lurek.parallax.newLayer
+
+`lurek.parallax.newLayer(opts: table) -> LParallaxLayer`
 
 Creates a parallax layer from an options table.
 
 **Parameters**
 
-- `opts` (`table`, required) - Options table with required `texture` and optional scrolling, repeat, z, opacity, tint, blend, visibility, scale, tiling, depth, tile size, motion stretch, and effects fields.
+- `opts` (`table`, required): Options table with required `texture` and optional scrolling, repeat, z, opacity, tint, blend, visibility, scale, tiling, depth, tile size, motion stretch, and effects fields.
 
 **Returns**: `LParallaxLayer` - New parallax layer handle.
 
@@ -210,14 +166,16 @@ do
 end
 ```
 
-### `lurek.parallax.newPresetLayer(preset_name: string, img_ud: LImage) -> LParallaxLayer`
+### lurek.parallax.newPresetLayer
+
+`lurek.parallax.newPresetLayer(preset_name: string, img_ud: LImage) -> LParallaxLayer`
 
 Creates a parallax layer from a named preset and texture image.
 
 **Parameters**
 
-- `preset_name` (`string`, required) - Preset name: `far`, `mid`, or `fog`.
-- `img_ud` (`LImage`, required) - Image handle from `lurek.render.newImage`.
+- `preset_name` (`string`, required): Preset name: `far`, `mid`, or `fog`.
+- `img_ud` (`LImage`, required): Image handle from `lurek.render.newImage`.
 
 **Returns**: `LParallaxLayer` - New parallax layer handle.
 
@@ -249,13 +207,15 @@ do
 end
 ```
 
-### `lurek.parallax.newSet(name: string) -> LParallaxSet`
+### lurek.parallax.newSet
+
+`lurek.parallax.newSet(name: string) -> LParallaxSet`
 
 Creates an empty parallax layer set.
 
 **Parameters**
 
-- `name` (`string`, required) - Set name.
+- `name` (`string`, required): Set name.
 
 **Returns**: `LParallaxSet` - New parallax set handle.
 
@@ -280,11 +240,21 @@ end
 ```
 
 
-## Types and Methods
+[⬆ back to top](#table-of-contents)
 
-### `LParallaxLayer`
+## 🔷 Module Types
+
+### LParallaxLayer
 
 Lua-side wrapper for a parallax layer and shared render state.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side wrapper for a parallax layer and shared render state.
+---@class LParallaxLayer
+LParallaxLayer = {}
+```
 
 #### Example
 
@@ -328,14 +298,62 @@ do
 end
 ```
 
-### `LParallaxLayer:addEffectPass(effect_name: string, [params]: table)`
+### LParallaxSet
+
+Lua-side wrapper for an ordered parallax layer set.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side wrapper for an ordered parallax layer set.
+---@class LParallaxSet
+LParallaxSet = {}
+```
+
+#### Example
+
+Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
+
+```lua
+do
+  function lurek.init()
+    -- A ParallaxSet groups layers so you can update/render them all with one call.
+    -- Name it for debugging and scene management (e.g., swap backdrops by set name).
+    local forest_backdrop = lurek.parallax.newSet("forest_backdrop")
+
+    -- Sets start visible and empty. Add layers after creation.
+    forest_backdrop:setVisible(true)
+
+    -- The name is useful for logging which backdrop is active during scene transitions.
+    lurek.log.info("backdrop ready: " .. forest_backdrop:getName(), "scene")
+  end
+end
+```
+
+
+[⬆ back to top](#table-of-contents)
+
+## 🔹 Module Methods
+
+### LParallaxLayer:addEffectPass
+
+`LParallaxLayer:addEffectPass(effect_name: string, [params]: table)`
 
 Adds a shader effect pass to this layer.
 
 **Parameters**
 
-- `effect_name` (`string`, required) - Effect name.
-- `params` (`table`, optional) - Numeric parameter table.
+- `effect_name` (`string`, required): Effect name.
+- `params` (`table`, optional): Numeric parameter table.
+
+**Lua API Stub**
+
+```lua
+--- Adds a shader effect pass to this layer.
+---@param effect_name string Effect name.
+---@param params? table Numeric parameter table.
+function LParallaxLayer:addEffectPass(effect_name, params) end
+```
 
 #### Example
 
@@ -357,9 +375,18 @@ do
 end
 ```
 
-### `LParallaxLayer:clearClamp()`
+### LParallaxLayer:clearClamp
+
+`LParallaxLayer:clearClamp()`
 
 Clears layer clamp bounds on this object.
+
+**Lua API Stub**
+
+```lua
+--- Clears layer clamp bounds on this object.
+function LParallaxLayer:clearClamp() end
+```
 
 #### Example
 
@@ -379,9 +406,18 @@ do
 end
 ```
 
-### `LParallaxLayer:clearEffects()`
+### LParallaxLayer:clearEffects
+
+`LParallaxLayer:clearEffects()`
 
 Clears shader effect passes from this layer.
+
+**Lua API Stub**
+
+```lua
+--- Clears shader effect passes from this layer.
+function LParallaxLayer:clearEffects() end
+```
 
 #### Example
 
@@ -402,11 +438,21 @@ do
 end
 ```
 
-### `LParallaxLayer:effectCount() -> integer`
+### LParallaxLayer:effectCount
+
+`LParallaxLayer:effectCount() -> integer`
 
 Returns the shader effect pass count for this layer.
 
 **Returns**: `integer` - Effect pass count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the shader effect pass count for this layer.
+---@return number Effect pass count.
+function LParallaxLayer:effectCount() end
+```
 
 #### Example
 
@@ -426,11 +472,22 @@ do
 end
 ```
 
-### `LParallaxLayer:getAutoscroll() -> number`
+### LParallaxLayer:getAutoscroll
+
+`LParallaxLayer:getAutoscroll() -> number`
 
 Returns layer autoscroll velocity.
 
 **Returns**: `number` - X velocity.
+
+**Lua API Stub**
+
+```lua
+--- Returns layer autoscroll velocity.
+---@return number a X velocity.
+---@return number b Y velocity.
+function LParallaxLayer:getAutoscroll() end
+```
 
 #### Example
 
@@ -451,11 +508,21 @@ do
 end
 ```
 
-### `LParallaxLayer:getBlendMode() -> string`
+### LParallaxLayer:getBlendMode
+
+`LParallaxLayer:getBlendMode() -> string`
 
 Returns the current layer blend mode name.
 
 **Returns**: `string` - Blend mode name.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current layer blend mode name.
+---@return string Blend mode name.
+function LParallaxLayer:getBlendMode() end
+```
 
 #### Example
 
@@ -477,11 +544,21 @@ do
 end
 ```
 
-### `LParallaxLayer:getDepth() -> number`
+### LParallaxLayer:getDepth
+
+`LParallaxLayer:getDepth() -> number`
 
 Returns parallax depth from this object.
 
 **Returns**: `number` - Depth value.
+
+**Lua API Stub**
+
+```lua
+--- Returns parallax depth from this object.
+---@return number Depth value.
+function LParallaxLayer:getDepth() end
+```
 
 #### Example
 
@@ -499,11 +576,23 @@ do
 end
 ```
 
-### `LParallaxLayer:getMotionStretch() -> boolean`
+### LParallaxLayer:getMotionStretch
+
+`LParallaxLayer:getMotionStretch() -> boolean`
 
 Returns the current motion stretch settings.
 
 **Returns**: `boolean` - Motion stretch flag.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current motion stretch settings.
+---@return boolean a Motion stretch flag.
+---@return number b Stretch strength.
+---@return number c Maximum stretch scale.
+function LParallaxLayer:getMotionStretch() end
+```
 
 #### Example
 
@@ -527,11 +616,22 @@ do
 end
 ```
 
-### `LParallaxLayer:getOffset() -> number`
+### LParallaxLayer:getOffset
+
+`LParallaxLayer:getOffset() -> number`
 
 Returns layer offset for this object.
 
 **Returns**: `number` - X offset.
+
+**Lua API Stub**
+
+```lua
+--- Returns layer offset for this object.
+---@return number a X offset.
+---@return number b Y offset.
+function LParallaxLayer:getOffset() end
+```
 
 #### Example
 
@@ -552,11 +652,21 @@ do
 end
 ```
 
-### `LParallaxLayer:getOpacity() -> number`
+### LParallaxLayer:getOpacity
+
+`LParallaxLayer:getOpacity() -> number`
 
 Returns layer opacity from this object.
 
 **Returns**: `number` - Opacity value.
+
+**Lua API Stub**
+
+```lua
+--- Returns layer opacity from this object.
+---@return number Opacity value.
+function LParallaxLayer:getOpacity() end
+```
 
 #### Example
 
@@ -577,11 +687,22 @@ do
 end
 ```
 
-### `LParallaxLayer:getScrollFactor() -> number`
+### LParallaxLayer:getScrollFactor
+
+`LParallaxLayer:getScrollFactor() -> number`
 
 Returns layer scroll factor from this object.
 
 **Returns**: `number` - X scroll factor.
+
+**Lua API Stub**
+
+```lua
+--- Returns layer scroll factor from this object.
+---@return number a X scroll factor.
+---@return number b Y scroll factor.
+function LParallaxLayer:getScrollFactor() end
+```
 
 #### Example
 
@@ -603,11 +724,21 @@ do
 end
 ```
 
-### `LParallaxLayer:getTiling() -> boolean`
+### LParallaxLayer:getTiling
+
+`LParallaxLayer:getTiling() -> boolean`
 
 Returns whether layer tiling is enabled.
 
 **Returns**: `boolean` - True when tiling is enabled.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether layer tiling is enabled.
+---@return boolean True when tiling is enabled.
+function LParallaxLayer:getTiling() end
+```
 
 #### Example
 
@@ -627,11 +758,24 @@ do
 end
 ```
 
-### `LParallaxLayer:getTint() -> number`
+### LParallaxLayer:getTint
+
+`LParallaxLayer:getTint() -> number`
 
 Returns layer tint color from this object.
 
 **Returns**: `number` - Red channel.
+
+**Lua API Stub**
+
+```lua
+--- Returns layer tint color from this object.
+---@return number a Red channel.
+---@return number b Green channel.
+---@return number c Blue channel.
+---@return number d Alpha channel.
+function LParallaxLayer:getTint() end
+```
 
 #### Example
 
@@ -650,11 +794,21 @@ do
 end
 ```
 
-### `LParallaxLayer:getZ() -> integer`
+### LParallaxLayer:getZ
+
+`LParallaxLayer:getZ() -> integer`
 
 Returns layer z order from this object.
 
 **Returns**: `integer` - Z order.
+
+**Lua API Stub**
+
+```lua
+--- Returns layer z order from this object.
+---@return number Z order.
+function LParallaxLayer:getZ() end
+```
 
 #### Example
 
@@ -676,11 +830,21 @@ do
 end
 ```
 
-### `LParallaxLayer:isVisible() -> boolean`
+### LParallaxLayer:isVisible
+
+`LParallaxLayer:isVisible() -> boolean`
 
 Returns layer visibility and returns a boolean.
 
 **Returns**: `boolean` - True when visible.
+
+**Lua API Stub**
+
+```lua
+--- Returns layer visibility and returns a boolean.
+---@return boolean True when visible.
+function LParallaxLayer:isVisible() end
+```
 
 #### Example
 
@@ -697,14 +861,25 @@ do
 end
 ```
 
-### `LParallaxLayer:render(cam_x: number, cam_y: number)`
+### LParallaxLayer:render
+
+`LParallaxLayer:render(cam_x: number, cam_y: number)`
 
 Enqueues render commands using explicit camera coordinates.
 
 **Parameters**
 
-- `cam_x` (`number`, required) - Camera x coordinate.
-- `cam_y` (`number`, required) - Camera y coordinate.
+- `cam_x` (`number`, required): Camera x coordinate.
+- `cam_y` (`number`, required): Camera y coordinate.
+
+**Lua API Stub**
+
+```lua
+--- Enqueues render commands using explicit camera coordinates.
+---@param cam_x number Camera x coordinate.
+---@param cam_y number Camera y coordinate.
+function LParallaxLayer:render(cam_x, cam_y) end
+```
 
 #### Example
 
@@ -722,9 +897,18 @@ do
 end
 ```
 
-### `LParallaxLayer:renderAuto()`
+### LParallaxLayer:renderAuto
+
+`LParallaxLayer:renderAuto()`
 
 Enqueues render commands using the runtime camera.
+
+**Lua API Stub**
+
+```lua
+--- Enqueues render commands using the runtime camera.
+function LParallaxLayer:renderAuto() end
+```
 
 #### Example
 
@@ -741,9 +925,18 @@ do
 end
 ```
 
-### `LParallaxLayer:resetAutoscroll()`
+### LParallaxLayer:resetAutoscroll
+
+`LParallaxLayer:resetAutoscroll()`
 
 Resets the layer autoscroll offset to zero.
+
+**Lua API Stub**
+
+```lua
+--- Resets the layer autoscroll offset to zero.
+function LParallaxLayer:resetAutoscroll() end
+```
 
 #### Example
 
@@ -765,14 +958,25 @@ do
 end
 ```
 
-### `LParallaxLayer:setAutoscroll(vx: number, vy: number)`
+### LParallaxLayer:setAutoscroll
+
+`LParallaxLayer:setAutoscroll(vx: number, vy: number)`
 
 Sets the layer autoscroll velocity values.
 
 **Parameters**
 
-- `vx` (`number`, required) - X autoscroll velocity.
-- `vy` (`number`, required) - Y autoscroll velocity.
+- `vx` (`number`, required): X autoscroll velocity.
+- `vy` (`number`, required): Y autoscroll velocity.
+
+**Lua API Stub**
+
+```lua
+--- Sets the layer autoscroll velocity values.
+---@param vx number X autoscroll velocity.
+---@param vy number Y autoscroll velocity.
+function LParallaxLayer:setAutoscroll(vx, vy) end
+```
 
 #### Example
 
@@ -794,13 +998,23 @@ do
 end
 ```
 
-### `LParallaxLayer:setBlendMode(mode: string)`
+### LParallaxLayer:setBlendMode
+
+`LParallaxLayer:setBlendMode(mode: string)`
 
 Sets the layer blend mode by string name.
 
 **Parameters**
 
-- `mode` (`string`, required) - Blend mode name.
+- `mode` (`string`, required): Blend mode name.
+
+**Lua API Stub**
+
+```lua
+--- Sets the layer blend mode by string name.
+---@param mode string Blend mode name.
+function LParallaxLayer:setBlendMode(mode) end
+```
 
 #### Example
 
@@ -820,16 +1034,29 @@ do
 end
 ```
 
-### `LParallaxLayer:setClamp(min_x: number, min_y: number, max_x: number, max_y: number)`
+### LParallaxLayer:setClamp
+
+`LParallaxLayer:setClamp(min_x: number, min_y: number, max_x: number, max_y: number)`
 
 Sets clamp bounds for layer movement.
 
 **Parameters**
 
-- `min_x` (`number`, required) - Minimum X bound.
-- `min_y` (`number`, required) - Minimum Y bound.
-- `max_x` (`number`, required) - Maximum X bound.
-- `max_y` (`number`, required) - Maximum Y bound.
+- `min_x` (`number`, required): Minimum X bound.
+- `min_y` (`number`, required): Minimum Y bound.
+- `max_x` (`number`, required): Maximum X bound.
+- `max_y` (`number`, required): Maximum Y bound.
+
+**Lua API Stub**
+
+```lua
+--- Sets clamp bounds for layer movement.
+---@param min_x number Minimum X bound.
+---@param min_y number Minimum Y bound.
+---@param max_x number Maximum X bound.
+---@param max_y number Maximum Y bound.
+function LParallaxLayer:setClamp(min_x, min_y, max_x, max_y) end
+```
 
 #### Example
 
@@ -851,13 +1078,23 @@ do
 end
 ```
 
-### `LParallaxLayer:setDepth(z: number)`
+### LParallaxLayer:setDepth
+
+`LParallaxLayer:setDepth(z: number)`
 
 Sets parallax depth for this object.
 
 **Parameters**
 
-- `z` (`number`, required) - Depth value.
+- `z` (`number`, required): Depth value.
+
+**Lua API Stub**
+
+```lua
+--- Sets parallax depth for this object.
+---@param z number Depth value.
+function LParallaxLayer:setDepth(z) end
+```
 
 #### Example
 
@@ -877,15 +1114,27 @@ do
 end
 ```
 
-### `LParallaxLayer:setMotionStretch(enabled: boolean, strength: number, max_scale: number)`
+### LParallaxLayer:setMotionStretch
+
+`LParallaxLayer:setMotionStretch(enabled: boolean, strength: number, max_scale: number)`
 
 Sets the motion stretch settings for this layer.
 
 **Parameters**
 
-- `enabled` (`boolean`, required) - Motion stretch flag.
-- `strength` (`number`, required) - Stretch strength.
-- `max_scale` (`number`, required) - Maximum stretch scale.
+- `enabled` (`boolean`, required): Motion stretch flag.
+- `strength` (`number`, required): Stretch strength.
+- `max_scale` (`number`, required): Maximum stretch scale.
+
+**Lua API Stub**
+
+```lua
+--- Sets the motion stretch settings for this layer.
+---@param enabled boolean Motion stretch flag.
+---@param strength number Stretch strength.
+---@param max_scale number Maximum stretch scale.
+function LParallaxLayer:setMotionStretch(enabled, strength, max_scale) end
+```
 
 #### Example
 
@@ -909,14 +1158,25 @@ do
 end
 ```
 
-### `LParallaxLayer:setOffset(x: number, y: number)`
+### LParallaxLayer:setOffset
+
+`LParallaxLayer:setOffset(x: number, y: number)`
 
 Sets the layer pixel offset for this object.
 
 **Parameters**
 
-- `x` (`number`, required) - X offset.
-- `y` (`number`, required) - Y offset.
+- `x` (`number`, required): X offset.
+- `y` (`number`, required): Y offset.
+
+**Lua API Stub**
+
+```lua
+--- Sets the layer pixel offset for this object.
+---@param x number X offset.
+---@param y number Y offset.
+function LParallaxLayer:setOffset(x, y) end
+```
 
 #### Example
 
@@ -935,13 +1195,23 @@ do
 end
 ```
 
-### `LParallaxLayer:setOpacity(a: number)`
+### LParallaxLayer:setOpacity
+
+`LParallaxLayer:setOpacity(a: number)`
 
 Sets layer opacity, clamped to 0..1.
 
 **Parameters**
 
-- `a` (`number`, required) - Opacity value.
+- `a` (`number`, required): Opacity value.
+
+**Lua API Stub**
+
+```lua
+--- Sets layer opacity, clamped to 0..1.
+---@param a number Opacity value.
+function LParallaxLayer:setOpacity(a) end
+```
 
 #### Example
 
@@ -960,14 +1230,25 @@ do
 end
 ```
 
-### `LParallaxLayer:setRepeat(rx: boolean, ry: boolean)`
+### LParallaxLayer:setRepeat
+
+`LParallaxLayer:setRepeat(rx: boolean, ry: boolean)`
 
 Sets horizontal and vertical repeat flags.
 
 **Parameters**
 
-- `rx` (`boolean`, required) - Repeat horizontally.
-- `ry` (`boolean`, required) - Repeat vertically.
+- `rx` (`boolean`, required): Repeat horizontally.
+- `ry` (`boolean`, required): Repeat vertically.
+
+**Lua API Stub**
+
+```lua
+--- Sets horizontal and vertical repeat flags.
+---@param rx boolean Repeat horizontally.
+---@param ry boolean Repeat vertically.
+function LParallaxLayer:setRepeat(rx, ry) end
+```
 
 #### Example
 
@@ -986,14 +1267,25 @@ do
 end
 ```
 
-### `LParallaxLayer:setScale(sx: number, sy: number)`
+### LParallaxLayer:setScale
+
+`LParallaxLayer:setScale(sx: number, sy: number)`
 
 Sets the layer scale factor for this object.
 
 **Parameters**
 
-- `sx` (`number`, required) - X scale factor.
-- `sy` (`number`, required) - Y scale factor.
+- `sx` (`number`, required): X scale factor.
+- `sy` (`number`, required): Y scale factor.
+
+**Lua API Stub**
+
+```lua
+--- Sets the layer scale factor for this object.
+---@param sx number X scale factor.
+---@param sy number Y scale factor.
+function LParallaxLayer:setScale(sx, sy) end
+```
 
 #### Example
 
@@ -1012,14 +1304,25 @@ do
 end
 ```
 
-### `LParallaxLayer:setScrollFactor(x: number, y: number)`
+### LParallaxLayer:setScrollFactor
+
+`LParallaxLayer:setScrollFactor(x: number, y: number)`
 
 Sets layer scroll factor for this object.
 
 **Parameters**
 
-- `x` (`number`, required) - X scroll factor.
-- `y` (`number`, required) - Y scroll factor.
+- `x` (`number`, required): X scroll factor.
+- `y` (`number`, required): Y scroll factor.
+
+**Lua API Stub**
+
+```lua
+--- Sets layer scroll factor for this object.
+---@param x number X scroll factor.
+---@param y number Y scroll factor.
+function LParallaxLayer:setScrollFactor(x, y) end
+```
 
 #### Example
 
@@ -1038,14 +1341,25 @@ do
 end
 ```
 
-### `LParallaxLayer:setTileSize(w: number, h: number)`
+### LParallaxLayer:setTileSize
+
+`LParallaxLayer:setTileSize(w: number, h: number)`
 
 Sets tile size for tiling for this object.
 
 **Parameters**
 
-- `w` (`number`, required) - Tile width.
-- `h` (`number`, required) - Tile height.
+- `w` (`number`, required): Tile width.
+- `h` (`number`, required): Tile height.
+
+**Lua API Stub**
+
+```lua
+--- Sets tile size for tiling for this object.
+---@param w number Tile width.
+---@param h number Tile height.
+function LParallaxLayer:setTileSize(w, h) end
+```
 
 #### Example
 
@@ -1065,13 +1379,23 @@ do
 end
 ```
 
-### `LParallaxLayer:setTiling(enabled: boolean)`
+### LParallaxLayer:setTiling
+
+`LParallaxLayer:setTiling(enabled: boolean)`
 
 Enables or disables the layer tiling mode.
 
 **Parameters**
 
-- `enabled` (`boolean`, required) - Tiling flag.
+- `enabled` (`boolean`, required): Tiling flag.
+
+**Lua API Stub**
+
+```lua
+--- Enables or disables the layer tiling mode.
+---@param enabled boolean Tiling flag.
+function LParallaxLayer:setTiling(enabled) end
+```
 
 #### Example
 
@@ -1090,16 +1414,29 @@ do
 end
 ```
 
-### `LParallaxLayer:setTint(r: number, g: number, b: number, a: number)`
+### LParallaxLayer:setTint
+
+`LParallaxLayer:setTint(r: number, g: number, b: number, a: number)`
 
 Sets layer tint color for this object.
 
 **Parameters**
 
-- `r` (`number`, required) - Red channel (0–1).
-- `g` (`number`, required) - Green channel (0–1).
-- `b` (`number`, required) - Blue channel (0–1).
-- `a` (`number`, required) - Alpha channel (0–1).
+- `r` (`number`, required): Red channel (0–1).
+- `g` (`number`, required): Green channel (0–1).
+- `b` (`number`, required): Blue channel (0–1).
+- `a` (`number`, required): Alpha channel (0–1).
+
+**Lua API Stub**
+
+```lua
+--- Sets layer tint color for this object.
+---@param r number Red channel (0–1).
+---@param g number Green channel (0–1).
+---@param b number Blue channel (0–1).
+---@param a number Alpha channel (0–1).
+function LParallaxLayer:setTint(r, g, b, a) end
+```
 
 #### Example
 
@@ -1118,13 +1455,23 @@ do
 end
 ```
 
-### `LParallaxLayer:setVisible(v: boolean)`
+### LParallaxLayer:setVisible
+
+`LParallaxLayer:setVisible(v: boolean)`
 
 Sets layer visibility for this object.
 
 **Parameters**
 
-- `v` (`boolean`, required) - Visibility flag.
+- `v` (`boolean`, required): Visibility flag.
+
+**Lua API Stub**
+
+```lua
+--- Sets layer visibility for this object.
+---@param v boolean Visibility flag.
+function LParallaxLayer:setVisible(v) end
+```
 
 #### Example
 
@@ -1139,13 +1486,23 @@ do
 end
 ```
 
-### `LParallaxLayer:setZ(z: integer)`
+### LParallaxLayer:setZ
+
+`LParallaxLayer:setZ(z: integer)`
 
 Sets the layer z order for this object.
 
 **Parameters**
 
-- `z` (`integer`, required) - Z order.
+- `z` (`integer`, required): Z order.
+
+**Lua API Stub**
+
+```lua
+--- Sets the layer z order for this object.
+---@param z number Z order.
+function LParallaxLayer:setZ(z) end
+```
 
 #### Example
 
@@ -1164,11 +1521,21 @@ do
 end
 ```
 
-### `LParallaxLayer:type() -> string`
+### LParallaxLayer:type
+
+`LParallaxLayer:type() -> string`
 
 Returns the Lua-visible type name for this parallax layer handle.
 
 **Returns**: `string` - The string `LParallaxLayer`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this parallax layer handle.
+---@return string The string `LParallaxLayer`.
+function LParallaxLayer:type() end
+```
 
 #### Example
 
@@ -1182,13 +1549,23 @@ do
 end
 ```
 
-### `LParallaxLayer:update(dt: number)`
+### LParallaxLayer:update
+
+`LParallaxLayer:update(dt: number)`
 
 Advances parallax layer autoscroll by delta time.
 
 **Parameters**
 
-- `dt` (`number`, required) - Delta time in seconds.
+- `dt` (`number`, required): Delta time in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Advances parallax layer autoscroll by delta time.
+---@param dt number Delta time in seconds.
+function LParallaxLayer:update(dt) end
+```
 
 #### Example
 
@@ -1205,37 +1582,23 @@ do
 end
 ```
 
-### `LParallaxSet`
+### LParallaxSet:addLayer
 
-Lua-side wrapper for an ordered parallax layer set.
-
-#### Example
-
-Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
-
-```lua
-do
-  function lurek.init()
-    -- A ParallaxSet groups layers so you can update/render them all with one call.
-    -- Name it for debugging and scene management (e.g., swap backdrops by set name).
-    local forest_backdrop = lurek.parallax.newSet("forest_backdrop")
-
-    -- Sets start visible and empty. Add layers after creation.
-    forest_backdrop:setVisible(true)
-
-    -- The name is useful for logging which backdrop is active during scene transitions.
-    lurek.log.info("backdrop ready: " .. forest_backdrop:getName(), "scene")
-  end
-end
-```
-
-### `LParallaxSet:addLayer(layer: LParallaxLayer)`
+`LParallaxSet:addLayer(layer: LParallaxLayer)`
 
 Adds a parallax layer to this set handle.
 
 **Parameters**
 
-- `layer` (`LParallaxLayer`, required) - Layer handle.
+- `layer` (`LParallaxLayer`, required): Layer handle.
+
+**Lua API Stub**
+
+```lua
+--- Adds a parallax layer to this set handle.
+---@param layer LParallaxLayer Layer handle.
+function LParallaxSet:addLayer(layer) end
+```
 
 #### Example
 
@@ -1267,15 +1630,26 @@ do
 end
 ```
 
-### `LParallaxSet:getLayerZAt(index: integer) -> integer`
+### LParallaxSet:getLayerZAt
+
+`LParallaxSet:getLayerZAt(index: integer) -> integer`
 
 Returns z order for a layer by one-based index, or nil when out of range.
 
 **Parameters**
 
-- `index` (`integer`, required) - One-based layer index.
+- `index` (`integer`, required): One-based layer index.
 
 **Returns**: `integer` - Z order.
+
+**Lua API Stub**
+
+```lua
+--- Returns z order for a layer by one-based index, or nil when out of range.
+---@param index number One-based layer index.
+---@return number Z order.
+function LParallaxSet:getLayerZAt(index) end
+```
 
 #### Example
 
@@ -1297,11 +1671,21 @@ do
 end
 ```
 
-### `LParallaxSet:getName() -> string`
+### LParallaxSet:getName
+
+`LParallaxSet:getName() -> string`
 
 Returns this set name from this object.
 
 **Returns**: `string` - Set name.
+
+**Lua API Stub**
+
+```lua
+--- Returns this set name from this object.
+---@return string Set name.
+function LParallaxSet:getName() end
+```
 
 #### Example
 
@@ -1318,11 +1702,21 @@ do
 end
 ```
 
-### `LParallaxSet:isVisible() -> boolean`
+### LParallaxSet:isVisible
+
+`LParallaxSet:isVisible() -> boolean`
 
 Returns set visibility and returns a boolean.
 
 **Returns**: `boolean` - True when visible.
+
+**Lua API Stub**
+
+```lua
+--- Returns set visibility and returns a boolean.
+---@return boolean True when visible.
+function LParallaxSet:isVisible() end
+```
 
 #### Example
 
@@ -1347,11 +1741,21 @@ do
 end
 ```
 
-### `LParallaxSet:layerCount() -> integer`
+### LParallaxSet:layerCount
+
+`LParallaxSet:layerCount() -> integer`
 
 Returns the number of layers in this set.
 
 **Returns**: `integer` - Layer count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of layers in this set.
+---@return number Layer count.
+function LParallaxSet:layerCount() end
+```
 
 #### Example
 
@@ -1372,15 +1776,26 @@ do
 end
 ```
 
-### `LParallaxSet:removeLayerAt(index: integer) -> boolean`
+### LParallaxSet:removeLayerAt
+
+`LParallaxSet:removeLayerAt(index: integer) -> boolean`
 
 Removes a layer by one-based index.
 
 **Parameters**
 
-- `index` (`integer`, required) - One-based layer index.
+- `index` (`integer`, required): One-based layer index.
 
 **Returns**: `boolean` - True when a layer was removed.
+
+**Lua API Stub**
+
+```lua
+--- Removes a layer by one-based index.
+---@param index number One-based layer index.
+---@return boolean True when a layer was removed.
+function LParallaxSet:removeLayerAt(index) end
+```
 
 #### Example
 
@@ -1400,14 +1815,25 @@ do
 end
 ```
 
-### `LParallaxSet:render(cam_x: number, cam_y: number)`
+### LParallaxSet:render
+
+`LParallaxSet:render(cam_x: number, cam_y: number)`
 
 Enqueues render commands for all visible set layers using explicit camera coordinates.
 
 **Parameters**
 
-- `cam_x` (`number`, required) - Camera x coordinate.
-- `cam_y` (`number`, required) - Camera y coordinate.
+- `cam_x` (`number`, required): Camera x coordinate.
+- `cam_y` (`number`, required): Camera y coordinate.
+
+**Lua API Stub**
+
+```lua
+--- Enqueues render commands for all visible set layers using explicit camera coordinates.
+---@param cam_x number Camera x coordinate.
+---@param cam_y number Camera y coordinate.
+function LParallaxSet:render(cam_x, cam_y) end
+```
 
 #### Example
 
@@ -1434,9 +1860,18 @@ do
 end
 ```
 
-### `LParallaxSet:renderAuto()`
+### LParallaxSet:renderAuto
+
+`LParallaxSet:renderAuto()`
 
 Enqueues render commands for all visible set layers using the runtime camera.
+
+**Lua API Stub**
+
+```lua
+--- Enqueues render commands for all visible set layers using the runtime camera.
+function LParallaxSet:renderAuto() end
+```
 
 #### Example
 
@@ -1468,13 +1903,23 @@ do
 end
 ```
 
-### `LParallaxSet:setName(name: string)`
+### LParallaxSet:setName
+
+`LParallaxSet:setName(name: string)`
 
 Sets this parallax set name for this object.
 
 **Parameters**
 
-- `name` (`string`, required) - Set name.
+- `name` (`string`, required): Set name.
+
+**Lua API Stub**
+
+```lua
+--- Sets this parallax set name for this object.
+---@param name string Set name.
+function LParallaxSet:setName(name) end
+```
 
 #### Example
 
@@ -1491,13 +1936,23 @@ do
 end
 ```
 
-### `LParallaxSet:setVisible(v: boolean)`
+### LParallaxSet:setVisible
+
+`LParallaxSet:setVisible(v: boolean)`
 
 Sets set visibility for this object.
 
 **Parameters**
 
-- `v` (`boolean`, required) - Visibility flag.
+- `v` (`boolean`, required): Visibility flag.
+
+**Lua API Stub**
+
+```lua
+--- Sets set visibility for this object.
+---@param v boolean Visibility flag.
+function LParallaxSet:setVisible(v) end
+```
 
 #### Example
 
@@ -1516,9 +1971,18 @@ do
 end
 ```
 
-### `LParallaxSet:sortByZ()`
+### LParallaxSet:sortByZ
+
+`LParallaxSet:sortByZ()`
 
 Sorts layers by z order on this object.
+
+**Lua API Stub**
+
+```lua
+--- Sorts layers by z order on this object.
+function LParallaxSet:sortByZ() end
+```
 
 #### Example
 
@@ -1538,11 +2002,21 @@ do
 end
 ```
 
-### `LParallaxSet:type() -> string`
+### LParallaxSet:type
+
+`LParallaxSet:type() -> string`
 
 Returns the Lua-visible type name for this parallax set handle.
 
 **Returns**: `string` - The string `LParallaxSet`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this parallax set handle.
+---@return string The string `LParallaxSet`.
+function LParallaxSet:type() end
+```
 
 #### Example
 
@@ -1561,13 +2035,23 @@ do
 end
 ```
 
-### `LParallaxSet:update(dt: number)`
+### LParallaxSet:update
+
+`LParallaxSet:update(dt: number)`
 
 Updates all layers in this parallax set.
 
 **Parameters**
 
-- `dt` (`number`, required) - Delta time in seconds.
+- `dt` (`number`, required): Delta time in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Updates all layers in this parallax set.
+---@param dt number Delta time in seconds.
+function LParallaxSet:update(dt) end
+```
 
 #### Example
 
@@ -1597,21 +2081,27 @@ end
 ```
 
 
-## Examples
+[⬆ back to top](#table-of-contents)
+
+## 💡 Examples
 
 - [parallax.lua](../blob/main/content/examples/parallax.lua) - Multi-layer parallax scrolling
 
-## Reference Games
+[⬆ back to top](#table-of-contents)
+
+## 🎮 Reference Games
 
 No direct references were found in `content/games/**/main.lua`.
 
-## Related Modules
+[⬆ back to top](#table-of-contents)
 
-- Previous: [[network|Module-network]]
-- Next: [[particle|Module-particle]]
-- [[ai|Module-ai]] - Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU.
-- [[animation|Module-animation]] - Sprite animation: source-rect changes over time. Imports only math; headless-testable.
-- [[automation|Module-automation]] - Automated input simulation for headless tests, QA replay, recorded sessions.
-- [[ecs|Module-ecs]] - Entity-Component-System: identity / data / behaviour separation for runtime composition.
-- [[i18n|Module-i18n]] - Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*).
-- [[minimap|Module-minimap]] - Grid-based minimap data model: fog of war, tracked objects, pings, viewport overlay.
+## 🔗 Related Modules
+
+- Previous: [network](Module-network)
+- Next: [particle](Module-particle)
+- [ai](Module-ai) - Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU.
+- [animation](Module-animation) - Sprite animation: source-rect changes over time. Imports only math; headless-testable.
+- [automation](Module-automation) - Automated input simulation for headless tests, QA replay, recorded sessions.
+- [ecs](Module-ecs) - Entity-Component-System: identity / data / behaviour separation for runtime composition.
+- [i18n](Module-i18n) - Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*).
+- [minimap](Module-minimap) - Grid-based minimap data model: fog of war, tracked objects, pings, viewport overlay.

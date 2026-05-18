@@ -199,9 +199,11 @@ do
   }
   world:addSystem(move_system, { priority = 10 })
 
-  -- Hook world:update(dt) into lurek.process — the engine calls this each frame.
-  -- dt is the frame delta in seconds (e.g. ~0.016 at 60 FPS).
-  function lurek.process(dt) world:update(dt) end
+  -- Call world:update(dt) from the game's update callback.
+  local function update_frame(dt)
+    world:update(dt)
+  end
+  update_frame(1 / 60)
 end
 --@api-stub: LUniverse:render
 -- Runs all registered render-phase systems (render or draw callbacks)
@@ -220,8 +222,11 @@ do
   }
   world:addSystem(draw_system, { priority = 100 })
 
-  -- Hook into lurek.draw — the engine calls this for the render pass.
-  function lurek.draw() world:render() end
+  -- Call world:render() from the game's render callback.
+  local function render_frame()
+    world:render()
+  end
+  render_frame()
 end
 --@api-stub: LUniverse:emit
 -- Dispatches a named event to all systems that define a matching method
@@ -232,11 +237,11 @@ do
   -- Systems opt-in by defining a method with that name.
   -- The system receives (self, world, ...extra_args).
   local hp_system = {
-    damage = function(self, w, id, amount)
-      local h = w:get(id, "health")
+    damage = function(self, w, hit)
+      local h = w:get(hit.target, "health")
       if h then
-        h.hp = h.hp - amount
-        if h.hp <= 0 then w:kill(id) end
+        h.hp = h.hp - hit.amount
+        if h.hp <= 0 then w:kill(hit.target) end
       end
     end
   }
@@ -245,8 +250,8 @@ do
   local target = world:spawn()
   world:set(target, "health", { hp = 10, max = 10 })
 
-  -- emit("damage", target, 3) calls hp_system:damage(world, target, 3)
-  world:emit("damage", target, 3)
+  -- emit("damage", payload) calls the matching system method.
+  world:emit("damage", { target = target, amount = 3 })
   lurek.log.info("hp after hit=" .. world:get(target, "health").hp, "ecs")
 end
 --@api-stub: LUniverse:getSystemCount
@@ -867,14 +872,13 @@ do
   local world = lurek.ecs.newUniverse()
   local e = world:spawn()
 
-  -- set(id, name, value) stores any Lua value as a component.
-  -- Tables are the most common: they hold structured data.
-  -- Primitives (numbers, strings, booleans) also work.
+  -- set(id, name, value) stores a Lua table as a component payload.
+  -- Use small tables even for simple state so fields stay self-documenting.
   world:set(e, "position", { x = 100, y = 200 })
   world:set(e, "velocity", { vx = 5, vy = 0 })
-  world:set(e, "name", "goblin_01")       -- string component
-  world:set(e, "layer", 3)                -- number component
-  world:set(e, "active", true)            -- boolean component
+  world:set(e, "name", { value = "goblin_01" })
+  world:set(e, "layer", { value = 3 })
+  world:set(e, "active", { value = true })
 
   -- Calling set() again on the same component REPLACES the value.
   world:set(e, "position", { x = 999, y = 999 })
@@ -931,15 +935,6 @@ do
   local ids = world:spawnBulk("particle", 50, {})
   lurek.log.info("bulk spawned " .. #ids .. " particles", "ecs")
 end
---@api-stub: LUniverse:type
--- Returns the Lua-visible type name string for this universe handle
-do
-  local world = lurek.ecs.newUniverse()
-
-  -- type() returns "LUniverse" — the internal Lua userdata type name.
-  -- Useful for debug printing or polymorphic type checks.
-  lurek.log.info("type=" .. world:type(), "ecs")
-end
 --@api-stub: LUniverse:queryMulti
 -- Iterates entities matching multiple components via callback (avoids table allocation)
 do
@@ -965,7 +960,7 @@ end
 do
   local world = lurek.ecs.newUniverse()
   local e = world:spawn()
-  world:set(e, "hp", 50)
+  world:set(e, "hp", { value = 50 })
 
   -- getDirtyEntities() returns ids that had components added, removed, or replaced
   -- since the last flush. Use for incremental updates: only re-render changed entities,
@@ -999,19 +994,20 @@ do
   world:addSystem(InputSys, { phase = "pre_update", priority = 0 })
   world:addSystem(LogicSys, { phase = "update",     priority = 10 })
 
-  -- Call phases in order — gives you explicit control over execution stages.
-  function lurek.process(dt)
+  -- Call phases in order to keep execution stages explicit.
+  local function update_frame(dt)
     world:updatePhase("pre_update", dt)
     world:updatePhase("update", dt)
   end
+  update_frame(1 / 60)
 end
 --@api-stub: LUniverse:snapshot
 -- Serializes the universe into a snapshot table (alias for serialize)
 do
   local world = lurek.ecs.newUniverse()
   local hero = world:spawn()
-  world:set(hero, "hp", 42)
-  world:set(hero, "gold", 100)
+  world:set(hero, "hp", { value = 42 })
+  world:set(hero, "gold", { value = 100 })
 
   -- snapshot() and serialize() are equivalent. Both produce a table
   -- that can be stored and later applied with applySnapshot() or deserialize().
@@ -1025,7 +1021,7 @@ end
 do
   local world = lurek.ecs.newUniverse()
   local e = world:spawn()
-  world:set(e, "score", 99)
+  world:set(e, "score", { value = 99 })
 
   -- applySnapshot() replaces universe state from a snapshot.
   -- Pair with snapshot() for undo/redo, quicksave, or state rollback.
@@ -1034,13 +1030,13 @@ do
   world:applySnapshot(snap)
 
   local ids = world:getEntities()
-  lurek.log.info("restored score=" .. world:get(ids[1], "score"), "ecs")
+  lurek.log.info("restored score=" .. world:get(ids[1], "score").value, "ecs")
 end
 --@api-stub: LUniverse:type
 -- Returns the Lua-visible type name for this universe handle
 do
   local u = lurek.ecs.newUniverse()
-  -- Returns "LUniverse" — the registered Lua userdata type name.
+  -- Returns "LUniverse", the registered Lua userdata type name.
   local t = u:type()
   assert(t == "LUniverse")
 end
@@ -1059,7 +1055,7 @@ end
 do
   local world = lurek.ecs.newUniverse()
   local e = world:spawn()
-  world:set(e, "hp", 10)     -- triggers added_components entry
+  world:set(e, "hp", { value = 10 })     -- triggers added_components entry
   world:remove(e, "hp")      -- triggers removed_components entry
   world:kill(e)              -- triggers deleted_entities entry
 

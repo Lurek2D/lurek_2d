@@ -4,184 +4,135 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
-- [Purpose](#purpose)
-- [Summary](#summary)
-- [Minimal Module Example](#minimal-module-example)
-- [Key Types](#key-types)
-- [API Overview](#api-overview)
-- [Module Functions](#module-functions)
-  - [lurek.minimap.newMinimap(grid_w: integer, grid_h: integer, [display_w]: integer, [display_h]: integer) -> LMinimap](#lurekminimapnewminimapgridw-integer-gridh-integer-displayw-integer-displayh-integer-lminimap)
-- [Types and Methods](#types-and-methods)
+- [🎯 Purpose](#purpose)
+- [📋 Summary](#summary)
+- [🧩 Key Types](#key-types)
+- [📖 API Overview](#api-overview)
+- [⚙️ Module Functions](#module-functions)
+  - [lurek.minimap.newMinimap](#lurekminimapnewminimap)
+- [🔷 Module Types](#module-types)
   - [LMinimap](#lminimap)
-  - [LMinimap:addMarker(x: number, y: number, [desc]: string, [r]: number, [g]: number, [b]: number, [a]: number) -> integer](#lminimapaddmarkerx-number-y-number-desc-string-r-number-g-number-b-number-a-number-integer)
-  - [LMinimap:addObjectType(name: string, r: number, g: number, b: number, [a]: number) -> integer](#lminimapaddobjecttypename-string-r-number-g-number-b-number-a-number-integer)
-  - [LMinimap:addPing(x: number, y: number, duration: number, [r]: number, [g]: number, [b]: number, [a]: number)](#lminimapaddpingx-number-y-number-duration-number-r-number-g-number-b-number-a-number)
-  - [LMinimap:clearMarkerAnimation(id: integer)](#lminimapclearmarkeranimationid-integer)
-  - [LMinimap:clearMarkerTexture(id: integer)](#lminimapclearmarkertextureid-integer)
-  - [LMinimap:clearObjects()](#lminimapclearobjects)
-  - [LMinimap:clearObjectTypeTexture(type_idx: integer)](#lminimapclearobjecttypetexturetypeidx-integer)
-  - [LMinimap:clearOverlay()](#lminimapclearoverlay)
-  - [LMinimap:clearPath([id]: integer)](#lminimapclearpathid-integer)
-  - [LMinimap:clearViewportRect()](#lminimapclearviewportrect)
-  - [LMinimap:drawLine(x1: number, y1: number, x2: number, y2: number, color_tbl: table)](#lminimapdrawlinex1-number-y1-number-x2-number-y2-number-colortbl-table)
-  - [LMinimap:drawRect(x: number, y: number, w: number, h: number, color_tbl: table)](#lminimapdrawrectx-number-y-number-w-number-h-number-colortbl-table)
-  - [LMinimap:drawToImage(pixel_size: integer) -> LImageData](#lminimapdrawtoimagepixelsize-integer-limagedata)
-  - [LMinimap:getCellCount() -> integer](#lminimapgetcellcount-integer)
-  - [LMinimap:getCenter() -> number](#lminimapgetcenter-number)
-  - [LMinimap:getCenterX() -> number](#lminimapgetcenterx-number)
-  - [LMinimap:getCenterY() -> number](#lminimapgetcentery-number)
-  - [LMinimap:getColorMode() -> string](#lminimapgetcolormode-string)
-  - [LMinimap:getDisplayHeight() -> integer](#lminimapgetdisplayheight-integer)
-  - [LMinimap:getDisplaySize() -> integer](#lminimapgetdisplaysize-integer)
-  - [LMinimap:getDisplayWidth() -> integer](#lminimapgetdisplaywidth-integer)
-  - [LMinimap:getFogColor() -> number](#lminimapgetfogcolor-number)
-  - [LMinimap:getFogLevel(x: integer, y: integer) -> integer](#lminimapgetfoglevelx-integer-y-integer-integer)
-  - [LMinimap:getGridHeight() -> integer](#lminimapgetgridheight-integer)
-  - [LMinimap:getGridSize() -> integer](#lminimapgetgridsize-integer)
-  - [LMinimap:getGridWidth() -> integer](#lminimapgetgridwidth-integer)
-  - [LMinimap:getHoverInfo(sx: number, sy: number, mx: number, my: number) -> string](#lminimapgethoverinfosx-number-sy-number-mx-number-my-number-string)
-  - [LMinimap:getLayer() -> integer](#lminimapgetlayer-integer)
-  - [LMinimap:getLayerCount() -> integer](#lminimapgetlayercount-integer)
-  - [LMinimap:getLayerData(layer: integer) -> integer[]](#lminimapgetlayerdatalayer-integer-integer)
-  - [LMinimap:getMarkerCount() -> integer](#lminimapgetmarkercount-integer)
-  - [LMinimap:getMarkerDescription(id: integer) -> string](#lminimapgetmarkerdescriptionid-integer-string)
-  - [LMinimap:getObjectCount() -> integer](#lminimapgetobjectcount-integer)
-  - [LMinimap:getObjectTypeCount() -> integer](#lminimapgetobjecttypecount-integer)
-  - [LMinimap:getOverlayShapeCount() -> integer](#lminimapgetoverlayshapecount-integer)
-  - [LMinimap:getOwnerColor(owner: integer) -> number](#lminimapgetownercolorowner-integer-number)
-  - [LMinimap:getPathCount() -> integer](#lminimapgetpathcount-integer)
-  - [LMinimap:getPingCount() -> integer](#lminimapgetpingcount-integer)
-  - [LMinimap:getTerrain(x: integer, y: integer) -> integer](#lminimapgetterrainx-integer-y-integer-integer)
-  - [LMinimap:getTerrainColor(terrain_type: integer) -> number](#lminimapgetterraincolorterraintype-integer-number)
-  - [LMinimap:getTileDescription(type_id: integer) -> string](#lminimapgettiledescriptiontypeid-integer-string)
-  - [LMinimap:getViewportColor() -> number](#lminimapgetviewportcolor-number)
-  - [LMinimap:getViewportRect() -> number](#lminimapgetviewportrect-number)
-  - [LMinimap:getZoom() -> number](#lminimapgetzoom-number)
-  - [LMinimap:gridToScreen(gx: number, gy: number, mx: number, my: number) -> number](#lminimapgridtoscreengx-number-gy-number-mx-number-my-number-number)
-  - [LMinimap:hasMarker(id: integer) -> boolean](#lminimaphasmarkerid-integer-boolean)
-  - [LMinimap:isAntiAlias() -> boolean](#lminimapisantialias-boolean)
-  - [LMinimap:isClickable() -> boolean](#lminimapisclickable-boolean)
-  - [LMinimap:isFogEnabled() -> boolean](#lminimapisfogenabled-boolean)
-  - [LMinimap:isObjectTypeVisible(type_idx: integer) -> boolean](#lminimapisobjecttypevisibletypeidx-integer-boolean)
-  - [LMinimap:isViewportVisible() -> boolean](#lminimapisviewportvisible-boolean)
-  - [LMinimap:removeMarker(id: integer) -> boolean](#lminimapremovemarkerid-integer-boolean)
-  - [LMinimap:removeObject(id: integer) -> boolean](#lminimapremoveobjectid-integer-boolean)
-  - [LMinimap:render([x]: number, [y]: number)](#lminimaprenderx-number-y-number)
-  - [LMinimap:revealRadius(cx: number, cy: number, radius: number)](#lminimaprevealradiuscx-number-cy-number-radius-number)
-  - [LMinimap:screenToGrid(sx: number, sy: number, mx: number, my: number) -> number](#lminimapscreentogridsx-number-sy-number-mx-number-my-number-number)
-  - [LMinimap:setAntiAlias(enabled: boolean)](#lminimapsetantialiasenabled-boolean)
-  - [LMinimap:setCenter(x: number, y: number)](#lminimapsetcenterx-number-y-number)
-  - [LMinimap:setClickable(enabled: boolean)](#lminimapsetclickableenabled-boolean)
-  - [LMinimap:setColorMode(mode: string)](#lminimapsetcolormodemode-string)
-  - [LMinimap:setDisplaySize(w: integer, h: integer)](#lminimapsetdisplaysizew-integer-h-integer)
-  - [LMinimap:setFogColor(r: number, g: number, b: number, [a]: number)](#lminimapsetfogcolorr-number-g-number-b-number-a-number)
-  - [LMinimap:setFogData(data: table)](#lminimapsetfogdatadata-table)
-  - [LMinimap:setFogEnabled(enabled: boolean)](#lminimapsetfogenabledenabled-boolean)
-  - [LMinimap:setFogLevel(x: integer, y: integer, level: integer)](#lminimapsetfoglevelx-integer-y-integer-level-integer)
-  - [LMinimap:setLayer(layer: integer)](#lminimapsetlayerlayer-integer)
-  - [LMinimap:setLayerData(layer: integer, data_tbl: table)](#lminimapsetlayerdatalayer-integer-datatbl-table)
-  - [LMinimap:setMarkerAnimation(id: integer, anim_type: string, speed: number)](#lminimapsetmarkeranimationid-integer-animtype-string-speed-number)
-  - [LMinimap:setMarkerTexture(id: integer, image_ud: LImage, [width]: number, [height]: number)](#lminimapsetmarkertextureid-integer-imageud-limage-width-number-height-number)
-  - [LMinimap:setObject(id: integer, x: number, y: number, type_idx: integer, [owner]: integer)](#lminimapsetobjectid-integer-x-number-y-number-typeidx-integer-owner-integer)
-  - [LMinimap:setObjectTypeTexture(type_idx: integer, image_ud: LImage, [width]: number, [height]: number)](#lminimapsetobjecttypetexturetypeidx-integer-imageud-limage-width-number-height-number)
-  - [LMinimap:setObjectTypeVisible(type_idx: integer, visible: boolean)](#lminimapsetobjecttypevisibletypeidx-integer-visible-boolean)
-  - [LMinimap:setOwnerColor(owner: integer, r: number, g: number, b: number, [a]: number)](#lminimapsetownercolorowner-integer-r-number-g-number-b-number-a-number)
-  - [LMinimap:setTerrain(x: integer, y: integer, terrain_type: integer)](#lminimapsetterrainx-integer-y-integer-terraintype-integer)
-  - [LMinimap:setTerrainColor(terrain_type: integer, r: number, g: number, b: number, [a]: number)](#lminimapsetterraincolorterraintype-integer-r-number-g-number-b-number-a-number)
-  - [LMinimap:setTerrainData(data: table)](#lminimapsetterraindatadata-table)
-  - [LMinimap:setTileDescription(type_id: integer, desc: string)](#lminimapsettiledescriptiontypeid-integer-desc-string)
-  - [LMinimap:setViewportColor(r: number, g: number, b: number, [a]: number)](#lminimapsetviewportcolorr-number-g-number-b-number-a-number)
-  - [LMinimap:setViewportRect(x: number, y: number, w: number, h: number)](#lminimapsetviewportrectx-number-y-number-w-number-h-number)
-  - [LMinimap:setViewportVisible(visible: boolean)](#lminimapsetviewportvisiblevisible-boolean)
-  - [LMinimap:setZoom(zoom: number)](#lminimapsetzoomzoom-number)
-  - [LMinimap:showPath(points_tbl: table, color_tbl: table) -> integer](#lminimapshowpathpointstbl-table-colortbl-table-integer)
-  - [LMinimap:trackCamera(camera_ud: LCamera)](#lminimaptrackcameracameraud-lcamera)
-  - [LMinimap:type() -> string](#lminimaptype-string)
-  - [LMinimap:typeOf(name: string) -> boolean](#lminimaptypeofname-string-boolean)
-  - [LMinimap:update(dt: number)](#lminimapupdatedt-number)
-- [Examples](#examples)
-- [Reference Games](#reference-games)
-- [Related Modules](#related-modules)
+- [🔹 Module Methods](#module-methods)
+  - [LMinimap:addMarker](#lminimapaddmarker)
+  - [LMinimap:addObjectType](#lminimapaddobjecttype)
+  - [LMinimap:addPing](#lminimapaddping)
+  - [LMinimap:clearMarkerAnimation](#lminimapclearmarkeranimation)
+  - [LMinimap:clearMarkerTexture](#lminimapclearmarkertexture)
+  - [LMinimap:clearObjects](#lminimapclearobjects)
+  - [LMinimap:clearObjectTypeTexture](#lminimapclearobjecttypetexture)
+  - [LMinimap:clearOverlay](#lminimapclearoverlay)
+  - [LMinimap:clearPath](#lminimapclearpath)
+  - [LMinimap:clearViewportRect](#lminimapclearviewportrect)
+  - [LMinimap:drawLine](#lminimapdrawline)
+  - [LMinimap:drawRect](#lminimapdrawrect)
+  - [LMinimap:drawToImage](#lminimapdrawtoimage)
+  - [LMinimap:getCellCount](#lminimapgetcellcount)
+  - [LMinimap:getCenter](#lminimapgetcenter)
+  - [LMinimap:getCenterX](#lminimapgetcenterx)
+  - [LMinimap:getCenterY](#lminimapgetcentery)
+  - [LMinimap:getColorMode](#lminimapgetcolormode)
+  - [LMinimap:getDisplayHeight](#lminimapgetdisplayheight)
+  - [LMinimap:getDisplaySize](#lminimapgetdisplaysize)
+  - [LMinimap:getDisplayWidth](#lminimapgetdisplaywidth)
+  - [LMinimap:getFogColor](#lminimapgetfogcolor)
+  - [LMinimap:getFogLevel](#lminimapgetfoglevel)
+  - [LMinimap:getGridHeight](#lminimapgetgridheight)
+  - [LMinimap:getGridSize](#lminimapgetgridsize)
+  - [LMinimap:getGridWidth](#lminimapgetgridwidth)
+  - [LMinimap:getHoverInfo](#lminimapgethoverinfo)
+  - [LMinimap:getLayer](#lminimapgetlayer)
+  - [LMinimap:getLayerCount](#lminimapgetlayercount)
+  - [LMinimap:getLayerData](#lminimapgetlayerdata)
+  - [LMinimap:getMarkerCount](#lminimapgetmarkercount)
+  - [LMinimap:getMarkerDescription](#lminimapgetmarkerdescription)
+  - [LMinimap:getObjectCount](#lminimapgetobjectcount)
+  - [LMinimap:getObjectTypeCount](#lminimapgetobjecttypecount)
+  - [LMinimap:getOverlayShapeCount](#lminimapgetoverlayshapecount)
+  - [LMinimap:getOwnerColor](#lminimapgetownercolor)
+  - [LMinimap:getPathCount](#lminimapgetpathcount)
+  - [LMinimap:getPingCount](#lminimapgetpingcount)
+  - [LMinimap:getTerrain](#lminimapgetterrain)
+  - [LMinimap:getTerrainColor](#lminimapgetterraincolor)
+  - [LMinimap:getTileDescription](#lminimapgettiledescription)
+  - [LMinimap:getViewportColor](#lminimapgetviewportcolor)
+  - [LMinimap:getViewportRect](#lminimapgetviewportrect)
+  - [LMinimap:getZoom](#lminimapgetzoom)
+  - [LMinimap:gridToScreen](#lminimapgridtoscreen)
+  - [LMinimap:hasMarker](#lminimaphasmarker)
+  - [LMinimap:isAntiAlias](#lminimapisantialias)
+  - [LMinimap:isClickable](#lminimapisclickable)
+  - [LMinimap:isFogEnabled](#lminimapisfogenabled)
+  - [LMinimap:isObjectTypeVisible](#lminimapisobjecttypevisible)
+  - [LMinimap:isViewportVisible](#lminimapisviewportvisible)
+  - [LMinimap:removeMarker](#lminimapremovemarker)
+  - [LMinimap:removeObject](#lminimapremoveobject)
+  - [LMinimap:render](#lminimaprender)
+  - [LMinimap:revealRadius](#lminimaprevealradius)
+  - [LMinimap:screenToGrid](#lminimapscreentogrid)
+  - [LMinimap:setAntiAlias](#lminimapsetantialias)
+  - [LMinimap:setCenter](#lminimapsetcenter)
+  - [LMinimap:setClickable](#lminimapsetclickable)
+  - [LMinimap:setColorMode](#lminimapsetcolormode)
+  - [LMinimap:setDisplaySize](#lminimapsetdisplaysize)
+  - [LMinimap:setFogColor](#lminimapsetfogcolor)
+  - [LMinimap:setFogData](#lminimapsetfogdata)
+  - [LMinimap:setFogEnabled](#lminimapsetfogenabled)
+  - [LMinimap:setFogLevel](#lminimapsetfoglevel)
+  - [LMinimap:setLayer](#lminimapsetlayer)
+  - [LMinimap:setLayerData](#lminimapsetlayerdata)
+  - [LMinimap:setMarkerAnimation](#lminimapsetmarkeranimation)
+  - [LMinimap:setMarkerTexture](#lminimapsetmarkertexture)
+  - [LMinimap:setObject](#lminimapsetobject)
+  - [LMinimap:setObjectTypeTexture](#lminimapsetobjecttypetexture)
+  - [LMinimap:setObjectTypeVisible](#lminimapsetobjecttypevisible)
+  - [LMinimap:setOwnerColor](#lminimapsetownercolor)
+  - [LMinimap:setTerrain](#lminimapsetterrain)
+  - [LMinimap:setTerrainColor](#lminimapsetterraincolor)
+  - [LMinimap:setTerrainData](#lminimapsetterraindata)
+  - [LMinimap:setTileDescription](#lminimapsettiledescription)
+  - [LMinimap:setViewportColor](#lminimapsetviewportcolor)
+  - [LMinimap:setViewportRect](#lminimapsetviewportrect)
+  - [LMinimap:setViewportVisible](#lminimapsetviewportvisible)
+  - [LMinimap:setZoom](#lminimapsetzoom)
+  - [LMinimap:showPath](#lminimapshowpath)
+  - [LMinimap:trackCamera](#lminimaptrackcamera)
+  - [LMinimap:type](#lminimaptype)
+  - [LMinimap:typeOf](#lminimaptypeof)
+  - [LMinimap:update](#lminimapupdate)
+- [💡 Examples](#examples)
+- [🎮 Reference Games](#reference-games)
+- [🔗 Related Modules](#related-modules)
 
 This page is generated from the current module specs, examples, and Lua API data.
 
 **Module group:** Feature Systems
 **Namespace:** `lurek.minimap`
 
-## Purpose
+## 🎯 Purpose
 
 Grid-based minimap data model: fog of war, tracked objects, pings, viewport overlay.
 
-## Summary
+[⬆ back to top](#table-of-contents)
+
+## 📋 Summary
 
 Grid-based minimap data model with fog-of-war, tracked objects, markers, overlays, and render pipeline. `Minimap` owns a grid of terrain cells with per-cell color, type, and fog level (hidden, explored, visible). Objects are tracked entities that appear as colored dots on the minimap with optional labels and update callbacks.
 
 Markers are persistent or timed icons at fixed world positions (quest markers, points of interest). Overlays render geometric shapes (circles, rectangles, lines, polygons) over the grid for zone highlighting. The render pipeline converts grid + objects + markers + overlays into `ImageData` at configurable resolution and viewport bounds. Viewport overlay shows the camera's visible area as a rectangle. Exposed as `lurek.minimap.*`. Feature Systems tier.
 
-## Minimal Module Example
+[⬆ back to top](#table-of-contents)
 
-Module example from [minimap.lua](../blob/main/content/examples/minimap.lua):
-
-```lua
-do
-  -- update(dt) must be called each frame to animate pings, marker animations, etc.
-  -- Without calling update, pings won't fade out and animations won't play.
-  -- Scenario: integrate minimap into the game loop.
-  local mm = lurek.minimap.newMinimap(32, 32)
-  mm:addPing(8, 8, 0.5) -- ping that fades over 0.5 seconds
-  function lurek.process(dt)
-    -- Advance minimap time — this drives ping fadeout and marker animations
-    mm:update(dt)
-  end
-end
-
---@api-stub: LMinimap:type
--- Returns the Lua-visible type name string for this minimap handle.
-do
-  -- type() returns "LMinimap" — the internal type name of the handle.
-  -- Scenario: generic widget system that checks type before casting.
-  local mm = lurek.minimap.newMinimap(16, 16)
-  lurek.log.info("handle type: " .. mm:type(), "ui")
-end
-
---@api-stub: LMinimap:typeOf
--- Returns true if this handle matches the given type name string.
-do
-  -- typeOf(name) checks against "LMinimap", "Minimap", and "Object".
-  -- Scenario: polymorphic UI — check if a widget supports the Object interface.
-  local mm = lurek.minimap.newMinimap(16, 16)
-  if mm:typeOf("Object") then
-    lurek.log.info("minimap supports the Object interface", "ui")
-  end
-  if mm:typeOf("Minimap") then
-    lurek.log.info("confirmed: this is a Minimap", "ui")
-  end
-end
-
---@api-stub: LMinimap:render
--- Enqueues render commands to draw the minimap at a screen position.
-do
-  -- render(x, y) draws the minimap on screen at pixel coordinates.
-  -- Call this in lurek.draw() each frame. x, y default to 0, 0 if omitted.
-  -- Scenario: draw minimap in the top-right corner of the screen.
-  local mm
-  function lurek.init()
-    mm = lurek.minimap.newMinimap(48, 32, 200, 140)
-    mm:setTerrainColor(1, 0.2, 0.5, 0.1, 1)
-    mm:setTerrain(1, 1, 1)
-  end
-  function lurek.draw()
-```
-
-## Key Types
+## 🧩 Key Types
 
 - `LMinimap` (86 methods) - Lua-side wrapper for a minimap instance and access to render command state.
 
-## API Overview
+[⬆ back to top](#table-of-contents)
+
+## 📖 API Overview
 
 - Source spec: [docs/specs/minimap.md](../blob/main/docs/specs/minimap.md)
 
@@ -189,18 +140,22 @@ do
 lurek.minimap.newMinimap(grid_w: integer, grid_h: integer, [display_w]: integer, [display_h]: integer) -> LMinimap -- Creates a minimap with grid dimensions and optional display size.
 ```
 
-## Module Functions
+[⬆ back to top](#table-of-contents)
 
-### `lurek.minimap.newMinimap(grid_w: integer, grid_h: integer, [display_w]: integer, [display_h]: integer) -> LMinimap`
+## ⚙️ Module Functions
+
+### lurek.minimap.newMinimap
+
+`lurek.minimap.newMinimap(grid_w: integer, grid_h: integer, [display_w]: integer, [display_h]: integer) -> LMinimap`
 
 Creates a minimap with grid dimensions and optional display size.
 
 **Parameters**
 
-- `grid_w` (`integer`, required) - Grid width in cells.
-- `grid_h` (`integer`, required) - Grid height in cells.
-- `display_w` (`integer`, optional) - Display width in pixels, defaults to 200.
-- `display_h` (`integer`, optional) - Display height in pixels, defaults to 200.
+- `grid_w` (`integer`, required): Grid width in cells.
+- `grid_h` (`integer`, required): Grid height in cells.
+- `display_w` (`integer`, optional): Display width in pixels, defaults to 200.
+- `display_h` (`integer`, optional): Display height in pixels, defaults to 200.
 
 **Returns**: `LMinimap` - New minimap handle.
 
@@ -227,11 +182,21 @@ end
 ```
 
 
-## Types and Methods
+[⬆ back to top](#table-of-contents)
 
-### `LMinimap`
+## 🔷 Module Types
+
+### LMinimap
 
 Lua-side wrapper for a minimap instance and access to render command state.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side wrapper for a minimap instance and access to render command state.
+---@class LMinimap
+LMinimap = {}
+```
 
 #### Example
 
@@ -255,21 +220,43 @@ do
 end
 ```
 
-### `LMinimap:addMarker(x: number, y: number, [desc]: string, [r]: number, [g]: number, [b]: number, [a]: number) -> integer`
+
+[⬆ back to top](#table-of-contents)
+
+## 🔹 Module Methods
+
+### LMinimap:addMarker
+
+`LMinimap:addMarker(x: number, y: number, [desc]: string, [r]: number, [g]: number, [b]: number, [a]: number) -> integer`
 
 Adds a world-space marker and returns its unique id.
 
 **Parameters**
 
-- `x` (`number`, required) - Marker x coordinate.
-- `y` (`number`, required) - Marker y coordinate.
-- `desc` (`string`, optional) - Marker description.
-- `r` (`number`, optional) - Red channel override, defaults to 1.0.
-- `g` (`number`, optional) - Green channel override, defaults to 0.0.
-- `b` (`number`, optional) - Blue channel override, defaults to 0.0.
-- `a` (`number`, optional) - Alpha channel override, defaults to 1.0.
+- `x` (`number`, required): Marker x coordinate.
+- `y` (`number`, required): Marker y coordinate.
+- `desc` (`string`, optional): Marker description.
+- `r` (`number`, optional): Red channel override, defaults to 1.0.
+- `g` (`number`, optional): Green channel override, defaults to 0.0.
+- `b` (`number`, optional): Blue channel override, defaults to 0.0.
+- `a` (`number`, optional): Alpha channel override, defaults to 1.0.
 
 **Returns**: `integer` - Marker id.
+
+**Lua API Stub**
+
+```lua
+--- Adds a world-space marker and returns its unique id.
+---@param x number Marker x coordinate.
+---@param y number Marker y coordinate.
+---@param desc? string Marker description.
+---@param r? number Red channel override, defaults to 1.0.
+---@param g? number Green channel override, defaults to 0.0.
+---@param b? number Blue channel override, defaults to 0.0.
+---@param a? number Alpha channel override, defaults to 1.0.
+---@return number Marker id.
+function LMinimap:addMarker(x, y, desc, r, g, b, a) end
+```
 
 #### Example
 
@@ -292,19 +279,34 @@ do
 end
 ```
 
-### `LMinimap:addObjectType(name: string, r: number, g: number, b: number, [a]: number) -> integer`
+### LMinimap:addObjectType
+
+`LMinimap:addObjectType(name: string, r: number, g: number, b: number, [a]: number) -> integer`
 
 Adds an object type and returns its one-based index.
 
 **Parameters**
 
-- `name` (`string`, required) - Object type name.
-- `r` (`number`, required) - Red channel.
-- `g` (`number`, required) - Green channel.
-- `b` (`number`, required) - Blue channel.
-- `a` (`number`, optional) - Alpha channel, defaults to 1.0.
+- `name` (`string`, required): Object type name.
+- `r` (`number`, required): Red channel.
+- `g` (`number`, required): Green channel.
+- `b` (`number`, required): Blue channel.
+- `a` (`number`, optional): Alpha channel, defaults to 1.0.
 
 **Returns**: `integer` - One-based object type index.
+
+**Lua API Stub**
+
+```lua
+--- Adds an object type and returns its one-based index.
+---@param name string Object type name.
+---@param r number Red channel.
+---@param g number Green channel.
+---@param b number Blue channel.
+---@param a? number Alpha channel, defaults to 1.0.
+---@return number One-based object type index.
+function LMinimap:addObjectType(name, r, g, b, a) end
+```
 
 #### Example
 
@@ -324,19 +326,35 @@ do
 end
 ```
 
-### `LMinimap:addPing(x: number, y: number, duration: number, [r]: number, [g]: number, [b]: number, [a]: number)`
+### LMinimap:addPing
+
+`LMinimap:addPing(x: number, y: number, duration: number, [r]: number, [g]: number, [b]: number, [a]: number)`
 
 Adds a timed ping effect at a minimap world position.
 
 **Parameters**
 
-- `x` (`number`, required) - World x coordinate of the ping.
-- `y` (`number`, required) - World y coordinate of the ping.
-- `duration` (`number`, required) - Duration in seconds before the ping fades out.
-- `r` (`number`, optional) - Red channel, defaults to 1.0.
-- `g` (`number`, optional) - Green channel, defaults to 1.0.
-- `b` (`number`, optional) - Blue channel, defaults to 0.0.
-- `a` (`number`, optional) - Alpha channel, defaults to 1.0.
+- `x` (`number`, required): World x coordinate of the ping.
+- `y` (`number`, required): World y coordinate of the ping.
+- `duration` (`number`, required): Duration in seconds before the ping fades out.
+- `r` (`number`, optional): Red channel, defaults to 1.0.
+- `g` (`number`, optional): Green channel, defaults to 1.0.
+- `b` (`number`, optional): Blue channel, defaults to 0.0.
+- `a` (`number`, optional): Alpha channel, defaults to 1.0.
+
+**Lua API Stub**
+
+```lua
+--- Adds a timed ping effect at a minimap world position.
+---@param x number World x coordinate of the ping.
+---@param y number World y coordinate of the ping.
+---@param duration number Duration in seconds before the ping fades out.
+---@param r? number Red channel, defaults to 1.0.
+---@param g? number Green channel, defaults to 1.0.
+---@param b? number Blue channel, defaults to 0.0.
+---@param a? number Alpha channel, defaults to 1.0.
+function LMinimap:addPing(x, y, duration, r, g, b, a) end
+```
 
 #### Example
 
@@ -357,13 +375,23 @@ do
 end
 ```
 
-### `LMinimap:clearMarkerAnimation(id: integer)`
+### LMinimap:clearMarkerAnimation
+
+`LMinimap:clearMarkerAnimation(id: integer)`
 
 Clears the animation assigned to a marker by id.
 
 **Parameters**
 
-- `id` (`integer`, required) - Marker id.
+- `id` (`integer`, required): Marker id.
+
+**Lua API Stub**
+
+```lua
+--- Clears the animation assigned to a marker by id.
+---@param id number Marker id.
+function LMinimap:clearMarkerAnimation(id) end
+```
 
 #### Example
 
@@ -381,13 +409,23 @@ do
 end
 ```
 
-### `LMinimap:clearMarkerTexture(id: integer)`
+### LMinimap:clearMarkerTexture
+
+`LMinimap:clearMarkerTexture(id: integer)`
 
 Clears image texture from a marker.
 
 **Parameters**
 
-- `id` (`integer`, required) - Marker id.
+- `id` (`integer`, required): Marker id.
+
+**Lua API Stub**
+
+```lua
+--- Clears image texture from a marker.
+---@param id number Marker id.
+function LMinimap:clearMarkerTexture(id) end
+```
 
 #### Example
 
@@ -406,9 +444,18 @@ do
 end
 ```
 
-### `LMinimap:clearObjects()`
+### LMinimap:clearObjects
+
+`LMinimap:clearObjects()`
 
 Clears all objects from the minimap.
+
+**Lua API Stub**
+
+```lua
+--- Clears all objects from the minimap.
+function LMinimap:clearObjects() end
+```
 
 #### Example
 
@@ -428,13 +475,23 @@ do
 end
 ```
 
-### `LMinimap:clearObjectTypeTexture(type_idx: integer)`
+### LMinimap:clearObjectTypeTexture
+
+`LMinimap:clearObjectTypeTexture(type_idx: integer)`
 
 Clears image texture for an object type.
 
 **Parameters**
 
-- `type_idx` (`integer`, required) - One-based object type index.
+- `type_idx` (`integer`, required): One-based object type index.
+
+**Lua API Stub**
+
+```lua
+--- Clears image texture for an object type.
+---@param type_idx number One-based object type index.
+function LMinimap:clearObjectTypeTexture(type_idx) end
+```
 
 #### Example
 
@@ -453,9 +510,18 @@ do
 end
 ```
 
-### `LMinimap:clearOverlay()`
+### LMinimap:clearOverlay
+
+`LMinimap:clearOverlay()`
 
 Clears all minimap overlay shapes.
+
+**Lua API Stub**
+
+```lua
+--- Clears all minimap overlay shapes.
+function LMinimap:clearOverlay() end
+```
 
 #### Example
 
@@ -473,13 +539,23 @@ do
 end
 ```
 
-### `LMinimap:clearPath([id]: integer)`
+### LMinimap:clearPath
+
+`LMinimap:clearPath([id]: integer)`
 
 Clears one path by id or all paths when no id is provided.
 
 **Parameters**
 
-- `id` (`integer`, optional) - Path id to clear.
+- `id` (`integer`, optional): Path id to clear.
+
+**Lua API Stub**
+
+```lua
+--- Clears one path by id or all paths when no id is provided.
+---@param id? number Path id to clear.
+function LMinimap:clearPath(id) end
+```
 
 #### Example
 
@@ -496,9 +572,18 @@ do
 end
 ```
 
-### `LMinimap:clearViewportRect()`
+### LMinimap:clearViewportRect
+
+`LMinimap:clearViewportRect()`
 
 Clears the minimap viewport rectangle overlay.
+
+**Lua API Stub**
+
+```lua
+--- Clears the minimap viewport rectangle overlay.
+function LMinimap:clearViewportRect() end
+```
 
 #### Example
 
@@ -519,17 +604,31 @@ do
 end
 ```
 
-### `LMinimap:drawLine(x1: number, y1: number, x2: number, y2: number, color_tbl: table)`
+### LMinimap:drawLine
+
+`LMinimap:drawLine(x1: number, y1: number, x2: number, y2: number, color_tbl: table)`
 
 Adds an overlay line between two world-space points.
 
 **Parameters**
 
-- `x1` (`number`, required) - Start x coordinate.
-- `y1` (`number`, required) - Start y coordinate.
-- `x2` (`number`, required) - End x coordinate.
-- `y2` (`number`, required) - End y coordinate.
-- `color_tbl` (`table`, required) - RGBA byte color table.
+- `x1` (`number`, required): Start x coordinate.
+- `y1` (`number`, required): Start y coordinate.
+- `x2` (`number`, required): End x coordinate.
+- `y2` (`number`, required): End y coordinate.
+- `color_tbl` (`table`, required): RGBA byte color table.
+
+**Lua API Stub**
+
+```lua
+--- Adds an overlay line between two world-space points.
+---@param x1 number Start x coordinate.
+---@param y1 number Start y coordinate.
+---@param x2 number End x coordinate.
+---@param y2 number End y coordinate.
+---@param color_tbl table RGBA byte color table.
+function LMinimap:drawLine(x1, y1, x2, y2, color_tbl) end
+```
 
 #### Example
 
@@ -552,17 +651,31 @@ do
 end
 ```
 
-### `LMinimap:drawRect(x: number, y: number, w: number, h: number, color_tbl: table)`
+### LMinimap:drawRect
+
+`LMinimap:drawRect(x: number, y: number, w: number, h: number, color_tbl: table)`
 
 Adds an overlay rectangle at a world-space position.
 
 **Parameters**
 
-- `x` (`number`, required) - Rectangle x coordinate.
-- `y` (`number`, required) - Rectangle y coordinate.
-- `w` (`number`, required) - Rectangle width.
-- `h` (`number`, required) - Rectangle height.
-- `color_tbl` (`table`, required) - RGBA byte color table.
+- `x` (`number`, required): Rectangle x coordinate.
+- `y` (`number`, required): Rectangle y coordinate.
+- `w` (`number`, required): Rectangle width.
+- `h` (`number`, required): Rectangle height.
+- `color_tbl` (`table`, required): RGBA byte color table.
+
+**Lua API Stub**
+
+```lua
+--- Adds an overlay rectangle at a world-space position.
+---@param x number Rectangle x coordinate.
+---@param y number Rectangle y coordinate.
+---@param w number Rectangle width.
+---@param h number Rectangle height.
+---@param color_tbl table RGBA byte color table.
+function LMinimap:drawRect(x, y, w, h, color_tbl) end
+```
 
 #### Example
 
@@ -581,15 +694,26 @@ do
 end
 ```
 
-### `LMinimap:drawToImage(pixel_size: integer) -> LImageData`
+### LMinimap:drawToImage
+
+`LMinimap:drawToImage(pixel_size: integer) -> LImageData`
 
 Draws the minimap into image data at a pixel size.
 
 **Parameters**
 
-- `pixel_size` (`integer`, required) - Pixel size scale.
+- `pixel_size` (`integer`, required): Pixel size scale.
 
 **Returns**: `LImageData` - Image data containing the rendered minimap.
+
+**Lua API Stub**
+
+```lua
+--- Draws the minimap into image data at a pixel size.
+---@param pixel_size number Pixel size scale.
+---@return LImageData Image data containing the rendered minimap.
+function LMinimap:drawToImage(pixel_size) end
+```
 
 #### Example
 
@@ -608,11 +732,21 @@ do
 end
 ```
 
-### `LMinimap:getCellCount() -> integer`
+### LMinimap:getCellCount
+
+`LMinimap:getCellCount() -> integer`
 
 Returns the total number of grid cells.
 
 **Returns**: `integer` - Cell count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the total number of grid cells.
+---@return number Cell count.
+function LMinimap:getCellCount() end
+```
 
 #### Example
 
@@ -628,11 +762,22 @@ do
 end
 ```
 
-### `LMinimap:getCenter() -> number`
+### LMinimap:getCenter
+
+`LMinimap:getCenter() -> number`
 
 Returns the current minimap world-space center position.
 
 **Returns**: `number` - Center x coordinate.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current minimap world-space center position.
+---@return number a Center x coordinate.
+---@return number b Center y coordinate.
+function LMinimap:getCenter() end
+```
 
 #### Example
 
@@ -649,11 +794,21 @@ do
 end
 ```
 
-### `LMinimap:getCenterX() -> number`
+### LMinimap:getCenterX
+
+`LMinimap:getCenterX() -> number`
 
 Returns minimap world center x coordinate.
 
 **Returns**: `number` - Center x coordinate.
+
+**Lua API Stub**
+
+```lua
+--- Returns minimap world center x coordinate.
+---@return number Center x coordinate.
+function LMinimap:getCenterX() end
+```
 
 #### Example
 
@@ -672,11 +827,21 @@ do
 end
 ```
 
-### `LMinimap:getCenterY() -> number`
+### LMinimap:getCenterY
+
+`LMinimap:getCenterY() -> number`
 
 Returns minimap world center y coordinate.
 
 **Returns**: `number` - Center y coordinate.
+
+**Lua API Stub**
+
+```lua
+--- Returns minimap world center y coordinate.
+---@return number Center y coordinate.
+function LMinimap:getCenterY() end
+```
 
 #### Example
 
@@ -694,11 +859,21 @@ do
 end
 ```
 
-### `LMinimap:getColorMode() -> string`
+### LMinimap:getColorMode
+
+`LMinimap:getColorMode() -> string`
 
 Returns the current minimap color mode.
 
 **Returns**: `string` - Color mode name.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current minimap color mode.
+---@return string Color mode name.
+function LMinimap:getColorMode() end
+```
 
 #### Example
 
@@ -717,11 +892,21 @@ do
 end
 ```
 
-### `LMinimap:getDisplayHeight() -> integer`
+### LMinimap:getDisplayHeight
+
+`LMinimap:getDisplayHeight() -> integer`
 
 Returns the minimap display height.
 
 **Returns**: `integer` - Display height in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns the minimap display height.
+---@return number Display height in pixels.
+function LMinimap:getDisplayHeight() end
+```
 
 #### Example
 
@@ -740,11 +925,22 @@ do
 end
 ```
 
-### `LMinimap:getDisplaySize() -> integer`
+### LMinimap:getDisplaySize
+
+`LMinimap:getDisplaySize() -> integer`
 
 Returns the minimap display width and height in pixels.
 
 **Returns**: `integer` - Display width in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns the minimap display width and height in pixels.
+---@return number a Display width in pixels.
+---@return number b Display height in pixels.
+function LMinimap:getDisplaySize() end
+```
 
 #### Example
 
@@ -761,11 +957,21 @@ do
 end
 ```
 
-### `LMinimap:getDisplayWidth() -> integer`
+### LMinimap:getDisplayWidth
+
+`LMinimap:getDisplayWidth() -> integer`
 
 Returns the minimap display width.
 
 **Returns**: `integer` - Display width in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns the minimap display width.
+---@return number Display width in pixels.
+function LMinimap:getDisplayWidth() end
+```
 
 #### Example
 
@@ -783,11 +989,24 @@ do
 end
 ```
 
-### `LMinimap:getFogColor() -> number`
+### LMinimap:getFogColor
+
+`LMinimap:getFogColor() -> number`
 
 Returns the current RGBA fog overlay color.
 
 **Returns**: `number` - Red channel.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current RGBA fog overlay color.
+---@return number a Red channel.
+---@return number b Green channel.
+---@return number c Blue channel.
+---@return number d Alpha channel.
+function LMinimap:getFogColor() end
+```
 
 #### Example
 
@@ -804,16 +1023,28 @@ do
 end
 ```
 
-### `LMinimap:getFogLevel(x: integer, y: integer) -> integer`
+### LMinimap:getFogLevel
+
+`LMinimap:getFogLevel(x: integer, y: integer) -> integer`
 
 Returns fog level for a one-based grid cell.
 
 **Parameters**
 
-- `x` (`integer`, required) - One-based grid x coordinate.
-- `y` (`integer`, required) - One-based grid y coordinate.
+- `x` (`integer`, required): One-based grid x coordinate.
+- `y` (`integer`, required): One-based grid y coordinate.
 
 **Returns**: `integer` - Fog level byte.
+
+**Lua API Stub**
+
+```lua
+--- Returns fog level for a one-based grid cell.
+---@param x number One-based grid x coordinate.
+---@param y number One-based grid y coordinate.
+---@return number Fog level byte.
+function LMinimap:getFogLevel(x, y) end
+```
 
 #### Example
 
@@ -833,7 +1064,6 @@ do
     lurek.log.info("cell 8,8 is hidden — safe to spawn enemy", "fog")
   end
 end
-
 --@api-stub: LMinimap:getFogColor
 -- Returns the fog color used when rendering fogged cells.
 do
@@ -844,7 +1074,6 @@ do
   local r, g, b, a = mm:getFogColor()
   lurek.log.info("fog rgba: " .. r .. "," .. g .. "," .. b .. "," .. a, "fog")
 end
-
 --@api-stub: LMinimap:setFogData
 -- Sets all fog levels from a flat array (row-major, like setTerrainData).
 do
@@ -858,7 +1087,6 @@ do
   mm:setFogData(saved_fog)
   lurek.log.info("fog state restored from save", "minimap")
 end
-
 --@api-stub: LMinimap:isObjectTypeVisible
 -- Returns true if the given object type is currently visible on the minimap.
 do
@@ -868,13 +1096,26 @@ do
   local enemy = mm:addObjectType("enemy", 1, 0.1, 0.1, 1)
   if mm:isObjectTypeVisible(enemy) then
     lurek.log.info("enemy markers visible on radar", "minimap")
+  end
+end
+--@api-stub: LMinimap:getObjectTypeCount
 ```
 
-### `LMinimap:getGridHeight() -> integer`
+### LMinimap:getGridHeight
+
+`LMinimap:getGridHeight() -> integer`
 
 Returns the height of the minimap grid in cells.
 
 **Returns**: `integer` - Grid height in cells.
+
+**Lua API Stub**
+
+```lua
+--- Returns the height of the minimap grid in cells.
+---@return number Grid height in cells.
+function LMinimap:getGridHeight() end
+```
 
 #### Example
 
@@ -892,11 +1133,22 @@ do
 end
 ```
 
-### `LMinimap:getGridSize() -> integer`
+### LMinimap:getGridSize
+
+`LMinimap:getGridSize() -> integer`
 
 Returns the minimap grid width and height in cells.
 
 **Returns**: `integer` - Grid width in cells.
+
+**Lua API Stub**
+
+```lua
+--- Returns the minimap grid width and height in cells.
+---@return number a Grid width in cells.
+---@return number b Grid height in cells.
+function LMinimap:getGridSize() end
+```
 
 #### Example
 
@@ -912,11 +1164,21 @@ do
 end
 ```
 
-### `LMinimap:getGridWidth() -> integer`
+### LMinimap:getGridWidth
+
+`LMinimap:getGridWidth() -> integer`
 
 Returns the width of the minimap grid in cells.
 
 **Returns**: `integer` - Grid width in cells.
+
+**Lua API Stub**
+
+```lua
+--- Returns the width of the minimap grid in cells.
+---@return number Grid width in cells.
+function LMinimap:getGridWidth() end
+```
 
 #### Example
 
@@ -935,18 +1197,32 @@ do
 end
 ```
 
-### `LMinimap:getHoverInfo(sx: number, sy: number, mx: number, my: number) -> string`
+### LMinimap:getHoverInfo
+
+`LMinimap:getHoverInfo(sx: number, sy: number, mx: number, my: number) -> string`
 
 Returns hover text for a screen position when available.
 
 **Parameters**
 
-- `sx` (`number`, required) - Screen x coordinate.
-- `sy` (`number`, required) - Screen y coordinate.
-- `mx` (`number`, required) - Minimap x position.
-- `my` (`number`, required) - Minimap y position.
+- `sx` (`number`, required): Screen x coordinate.
+- `sy` (`number`, required): Screen y coordinate.
+- `mx` (`number`, required): Minimap x position.
+- `my` (`number`, required): Minimap y position.
 
 **Returns**: `string` - Hover info text, or nil when unavailable.
+
+**Lua API Stub**
+
+```lua
+--- Returns hover text for a screen position when available.
+---@param sx number Screen x coordinate.
+---@param sy number Screen y coordinate.
+---@param mx number Minimap x position.
+---@param my number Minimap y position.
+---@return string Hover info text, or nil when unavailable.
+function LMinimap:getHoverInfo(sx, sy, mx, my) end
+```
 
 #### Example
 
@@ -967,11 +1243,21 @@ do
 end
 ```
 
-### `LMinimap:getLayer() -> integer`
+### LMinimap:getLayer
+
+`LMinimap:getLayer() -> integer`
 
 Returns the active minimap display layer index.
 
 **Returns**: `integer` - Layer index.
+
+**Lua API Stub**
+
+```lua
+--- Returns the active minimap display layer index.
+---@return number Layer index.
+function LMinimap:getLayer() end
+```
 
 #### Example
 
@@ -988,11 +1274,21 @@ do
 end
 ```
 
-### `LMinimap:getLayerCount() -> integer`
+### LMinimap:getLayerCount
+
+`LMinimap:getLayerCount() -> integer`
 
 Returns the number of minimap layers.
 
 **Returns**: `integer` - Layer count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of minimap layers.
+---@return number Layer count.
+function LMinimap:getLayerCount() end
+```
 
 #### Example
 
@@ -1010,15 +1306,26 @@ do
 end
 ```
 
-### `LMinimap:getLayerData(layer: integer) -> integer[]`
+### LMinimap:getLayerData
+
+`LMinimap:getLayerData(layer: integer) -> integer[]`
 
 Returns raw cell data for a minimap layer.
 
 **Parameters**
 
-- `layer` (`integer`, required) - Layer index.
+- `layer` (`integer`, required): Layer index.
 
 **Returns**: `integer[]` - Array table of cell bytes, or nil when missing.
+
+**Lua API Stub**
+
+```lua
+--- Returns raw cell data for a minimap layer.
+---@param layer number Layer index.
+---@return number[] Array table of cell bytes, or nil when missing.
+function LMinimap:getLayerData(layer) end
+```
 
 #### Example
 
@@ -1037,11 +1344,21 @@ do
 end
 ```
 
-### `LMinimap:getMarkerCount() -> integer`
+### LMinimap:getMarkerCount
+
+`LMinimap:getMarkerCount() -> integer`
 
 Returns the total number of minimap markers.
 
 **Returns**: `integer` - Marker count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the total number of minimap markers.
+---@return number Marker count.
+function LMinimap:getMarkerCount() end
+```
 
 #### Example
 
@@ -1059,15 +1376,26 @@ do
 end
 ```
 
-### `LMinimap:getMarkerDescription(id: integer) -> string`
+### LMinimap:getMarkerDescription
+
+`LMinimap:getMarkerDescription(id: integer) -> string`
 
 Returns a marker description by id.
 
 **Parameters**
 
-- `id` (`integer`, required) - Marker id.
+- `id` (`integer`, required): Marker id.
 
 **Returns**: `string` - Marker description, or nil when missing.
+
+**Lua API Stub**
+
+```lua
+--- Returns a marker description by id.
+---@param id number Marker id.
+---@return string Marker description, or nil when missing.
+function LMinimap:getMarkerDescription(id) end
+```
 
 #### Example
 
@@ -1086,11 +1414,21 @@ do
 end
 ```
 
-### `LMinimap:getObjectCount() -> integer`
+### LMinimap:getObjectCount
+
+`LMinimap:getObjectCount() -> integer`
 
 Returns the number of objects on the minimap.
 
 **Returns**: `integer` - Object count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of objects on the minimap.
+---@return number Object count.
+function LMinimap:getObjectCount() end
+```
 
 #### Example
 
@@ -1109,11 +1447,21 @@ do
 end
 ```
 
-### `LMinimap:getObjectTypeCount() -> integer`
+### LMinimap:getObjectTypeCount
+
+`LMinimap:getObjectTypeCount() -> integer`
 
 Returns the number of object types.
 
 **Returns**: `integer` - Object type count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of object types.
+---@return number Object type count.
+function LMinimap:getObjectTypeCount() end
+```
 
 #### Example
 
@@ -1131,11 +1479,21 @@ do
 end
 ```
 
-### `LMinimap:getOverlayShapeCount() -> integer`
+### LMinimap:getOverlayShapeCount
+
+`LMinimap:getOverlayShapeCount() -> integer`
 
 Returns the number of overlay shapes.
 
 **Returns**: `integer` - Overlay shape count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of overlay shapes.
+---@return number Overlay shape count.
+function LMinimap:getOverlayShapeCount() end
+```
 
 #### Example
 
@@ -1153,15 +1511,29 @@ do
 end
 ```
 
-### `LMinimap:getOwnerColor(owner: integer) -> number`
+### LMinimap:getOwnerColor
+
+`LMinimap:getOwnerColor(owner: integer) -> number`
 
 Returns the current RGBA color for an owner id.
 
 **Parameters**
 
-- `owner` (`integer`, required) - Owner id.
+- `owner` (`integer`, required): Owner id.
 
 **Returns**: `number` - Red channel.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current RGBA color for an owner id.
+---@param owner number Owner id.
+---@return number a Red channel.
+---@return number b Green channel.
+---@return number c Blue channel.
+---@return number d Alpha channel.
+function LMinimap:getOwnerColor(owner) end
+```
 
 #### Example
 
@@ -1178,11 +1550,21 @@ do
 end
 ```
 
-### `LMinimap:getPathCount() -> integer`
+### LMinimap:getPathCount
+
+`LMinimap:getPathCount() -> integer`
 
 Returns the number of active path overlays.
 
 **Returns**: `integer` - Path count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of active path overlays.
+---@return number Path count.
+function LMinimap:getPathCount() end
+```
 
 #### Example
 
@@ -1199,11 +1581,21 @@ do
 end
 ```
 
-### `LMinimap:getPingCount() -> integer`
+### LMinimap:getPingCount
+
+`LMinimap:getPingCount() -> integer`
 
 Returns the number of active pings.
 
 **Returns**: `integer` - Ping count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of active pings.
+---@return number Ping count.
+function LMinimap:getPingCount() end
+```
 
 #### Example
 
@@ -1224,16 +1616,28 @@ do
 end
 ```
 
-### `LMinimap:getTerrain(x: integer, y: integer) -> integer`
+### LMinimap:getTerrain
+
+`LMinimap:getTerrain(x: integer, y: integer) -> integer`
 
 Returns terrain type for a one-based grid cell.
 
 **Parameters**
 
-- `x` (`integer`, required) - One-based grid x coordinate.
-- `y` (`integer`, required) - One-based grid y coordinate.
+- `x` (`integer`, required): One-based grid x coordinate.
+- `y` (`integer`, required): One-based grid y coordinate.
 
 **Returns**: `integer` - Terrain type id.
+
+**Lua API Stub**
+
+```lua
+--- Returns terrain type for a one-based grid cell.
+---@param x number One-based grid x coordinate.
+---@param y number One-based grid y coordinate.
+---@return number Terrain type id.
+function LMinimap:getTerrain(x, y) end
+```
 
 #### Example
 
@@ -1252,15 +1656,29 @@ do
 end
 ```
 
-### `LMinimap:getTerrainColor(terrain_type: integer) -> number`
+### LMinimap:getTerrainColor
+
+`LMinimap:getTerrainColor(terrain_type: integer) -> number`
 
 Returns RGBA color for a terrain type.
 
 **Parameters**
 
-- `terrain_type` (`integer`, required) - Terrain type id.
+- `terrain_type` (`integer`, required): Terrain type id.
 
 **Returns**: `number` - Red channel.
+
+**Lua API Stub**
+
+```lua
+--- Returns RGBA color for a terrain type.
+---@param terrain_type number Terrain type id.
+---@return number a Red channel.
+---@return number b Green channel.
+---@return number c Blue channel.
+---@return number d Alpha channel.
+function LMinimap:getTerrainColor(terrain_type) end
+```
 
 #### Example
 
@@ -1277,15 +1695,26 @@ do
 end
 ```
 
-### `LMinimap:getTileDescription(type_id: integer) -> string`
+### LMinimap:getTileDescription
+
+`LMinimap:getTileDescription(type_id: integer) -> string`
 
 Returns text description for a tile type.
 
 **Parameters**
 
-- `type_id` (`integer`, required) - Tile type id.
+- `type_id` (`integer`, required): Tile type id.
 
 **Returns**: `string` - Description text, or nil when missing.
+
+**Lua API Stub**
+
+```lua
+--- Returns text description for a tile type.
+---@param type_id number Tile type id.
+---@return string Description text, or nil when missing.
+function LMinimap:getTileDescription(type_id) end
+```
 
 #### Example
 
@@ -1304,11 +1733,24 @@ do
 end
 ```
 
-### `LMinimap:getViewportColor() -> number`
+### LMinimap:getViewportColor
+
+`LMinimap:getViewportColor() -> number`
 
 Returns the viewport rectangle color.
 
 **Returns**: `number` - Red channel.
+
+**Lua API Stub**
+
+```lua
+--- Returns the viewport rectangle color.
+---@return number a Red channel.
+---@return number b Green channel.
+---@return number c Blue channel.
+---@return number d Alpha channel.
+function LMinimap:getViewportColor() end
+```
 
 #### Example
 
@@ -1325,11 +1767,24 @@ do
 end
 ```
 
-### `LMinimap:getViewportRect() -> number`
+### LMinimap:getViewportRect
+
+`LMinimap:getViewportRect() -> number`
 
 Returns the viewport rectangle when one is set.
 
 **Returns**: `number` - X coordinate, or nil when unset.
+
+**Lua API Stub**
+
+```lua
+--- Returns the viewport rectangle when one is set.
+---@return number a X coordinate, or nil when unset.
+---@return number b Y coordinate, or nil when unset.
+---@return number c Width, or nil when unset.
+---@return number d Height, or nil when unset.
+function LMinimap:getViewportRect() end
+```
 
 #### Example
 
@@ -1349,11 +1804,21 @@ do
 end
 ```
 
-### `LMinimap:getZoom() -> number`
+### LMinimap:getZoom
+
+`LMinimap:getZoom() -> number`
 
 Returns the current minimap zoom magnification level.
 
 **Returns**: `number` - Zoom value.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current minimap zoom magnification level.
+---@return number Zoom value.
+function LMinimap:getZoom() end
+```
 
 #### Example
 
@@ -1371,18 +1836,33 @@ do
 end
 ```
 
-### `LMinimap:gridToScreen(gx: number, gy: number, mx: number, my: number) -> number`
+### LMinimap:gridToScreen
+
+`LMinimap:gridToScreen(gx: number, gy: number, mx: number, my: number) -> number`
 
 Converts grid coordinates to screen coordinates.
 
 **Parameters**
 
-- `gx` (`number`, required) - Grid x coordinate.
-- `gy` (`number`, required) - Grid y coordinate.
-- `mx` (`number`, required) - Minimap x position.
-- `my` (`number`, required) - Minimap y position.
+- `gx` (`number`, required): Grid x coordinate.
+- `gy` (`number`, required): Grid y coordinate.
+- `mx` (`number`, required): Minimap x position.
+- `my` (`number`, required): Minimap y position.
 
 **Returns**: `number` - Screen x coordinate.
+
+**Lua API Stub**
+
+```lua
+--- Converts grid coordinates to screen coordinates.
+---@param gx number Grid x coordinate.
+---@param gy number Grid y coordinate.
+---@param mx number Minimap x position.
+---@param my number Minimap y position.
+---@return number a Screen x coordinate.
+---@return number b Screen y coordinate.
+function LMinimap:gridToScreen(gx, gy, mx, my) end
+```
 
 #### Example
 
@@ -1401,15 +1881,26 @@ do
 end
 ```
 
-### `LMinimap:hasMarker(id: integer) -> boolean`
+### LMinimap:hasMarker
+
+`LMinimap:hasMarker(id: integer) -> boolean`
 
 Returns whether a marker id exists.
 
 **Parameters**
 
-- `id` (`integer`, required) - Marker id.
+- `id` (`integer`, required): Marker id.
 
 **Returns**: `boolean` - True when the marker exists.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether a marker id exists.
+---@param id number Marker id.
+---@return boolean True when the marker exists.
+function LMinimap:hasMarker(id) end
+```
 
 #### Example
 
@@ -1428,11 +1919,21 @@ do
 end
 ```
 
-### `LMinimap:isAntiAlias() -> boolean`
+### LMinimap:isAntiAlias
+
+`LMinimap:isAntiAlias() -> boolean`
 
 Returns whether anti-aliasing is enabled.
 
 **Returns**: `boolean` - True when enabled.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether anti-aliasing is enabled.
+---@return boolean True when enabled.
+function LMinimap:isAntiAlias() end
+```
 
 #### Example
 
@@ -1449,11 +1950,21 @@ do
 end
 ```
 
-### `LMinimap:isClickable() -> boolean`
+### LMinimap:isClickable
+
+`LMinimap:isClickable() -> boolean`
 
 Returns whether minimap click handling is enabled.
 
 **Returns**: `boolean` - True when clickable.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether minimap click handling is enabled.
+---@return boolean True when clickable.
+function LMinimap:isClickable() end
+```
 
 #### Example
 
@@ -1471,11 +1982,21 @@ do
 end
 ```
 
-### `LMinimap:isFogEnabled() -> boolean`
+### LMinimap:isFogEnabled
+
+`LMinimap:isFogEnabled() -> boolean`
 
 Returns whether fog display is enabled.
 
 **Returns**: `boolean` - True when fog is enabled.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether fog display is enabled.
+---@return boolean True when fog is enabled.
+function LMinimap:isFogEnabled() end
+```
 
 #### Example
 
@@ -1495,15 +2016,26 @@ do
 end
 ```
 
-### `LMinimap:isObjectTypeVisible(type_idx: integer) -> boolean`
+### LMinimap:isObjectTypeVisible
+
+`LMinimap:isObjectTypeVisible(type_idx: integer) -> boolean`
 
 Returns visibility for an object type by one-based index.
 
 **Parameters**
 
-- `type_idx` (`integer`, required) - One-based object type index.
+- `type_idx` (`integer`, required): One-based object type index.
 
 **Returns**: `boolean` - True when the object type is visible.
+
+**Lua API Stub**
+
+```lua
+--- Returns visibility for an object type by one-based index.
+---@param type_idx number One-based object type index.
+---@return boolean True when the object type is visible.
+function LMinimap:isObjectTypeVisible(type_idx) end
+```
 
 #### Example
 
@@ -1521,11 +2053,21 @@ do
 end
 ```
 
-### `LMinimap:isViewportVisible() -> boolean`
+### LMinimap:isViewportVisible
+
+`LMinimap:isViewportVisible() -> boolean`
 
 Returns whether the viewport rectangle is visible.
 
 **Returns**: `boolean` - True when visible.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether the viewport rectangle is visible.
+---@return boolean True when visible.
+function LMinimap:isViewportVisible() end
+```
 
 #### Example
 
@@ -1543,15 +2085,26 @@ do
 end
 ```
 
-### `LMinimap:removeMarker(id: integer) -> boolean`
+### LMinimap:removeMarker
+
+`LMinimap:removeMarker(id: integer) -> boolean`
 
 Removes a minimap marker by its unique id.
 
 **Parameters**
 
-- `id` (`integer`, required) - Marker id.
+- `id` (`integer`, required): Marker id.
 
 **Returns**: `boolean` - True when a marker was removed.
+
+**Lua API Stub**
+
+```lua
+--- Removes a minimap marker by its unique id.
+---@param id number Marker id.
+---@return boolean True when a marker was removed.
+function LMinimap:removeMarker(id) end
+```
 
 #### Example
 
@@ -1570,15 +2123,26 @@ do
 end
 ```
 
-### `LMinimap:removeObject(id: integer) -> boolean`
+### LMinimap:removeObject
+
+`LMinimap:removeObject(id: integer) -> boolean`
 
 Removes a minimap object by its unique id.
 
 **Parameters**
 
-- `id` (`integer`, required) - Object id.
+- `id` (`integer`, required): Object id.
 
 **Returns**: `boolean` - True when an object was removed.
+
+**Lua API Stub**
+
+```lua
+--- Removes a minimap object by its unique id.
+---@param id number Object id.
+---@return boolean True when an object was removed.
+function LMinimap:removeObject(id) end
+```
 
 #### Example
 
@@ -1599,14 +2163,25 @@ do
 end
 ```
 
-### `LMinimap:render([x]: number, [y]: number)`
+### LMinimap:render
+
+`LMinimap:render([x]: number, [y]: number)`
 
 Enqueues minimap render commands at an optional screen position.
 
 **Parameters**
 
-- `x` (`number`, optional) - Screen x coordinate, defaults to 0.
-- `y` (`number`, optional) - Screen y coordinate, defaults to 0.
+- `x` (`number`, optional): Screen x coordinate, defaults to 0.
+- `y` (`number`, optional): Screen y coordinate, defaults to 0.
+
+**Lua API Stub**
+
+```lua
+--- Enqueues minimap render commands at an optional screen position.
+---@param x? number Screen x coordinate, defaults to 0.
+---@param y? number Screen y coordinate, defaults to 0.
+function LMinimap:render(x, y) end
+```
 
 #### Example
 
@@ -1632,15 +2207,27 @@ do
 end
 ```
 
-### `LMinimap:revealRadius(cx: number, cy: number, radius: number)`
+### LMinimap:revealRadius
+
+`LMinimap:revealRadius(cx: number, cy: number, radius: number)`
 
 Reveals fog inside a world-space radius.
 
 **Parameters**
 
-- `cx` (`number`, required) - Center x coordinate.
-- `cy` (`number`, required) - Center y coordinate.
-- `radius` (`number`, required) - Reveal radius.
+- `cx` (`number`, required): Center x coordinate.
+- `cy` (`number`, required): Center y coordinate.
+- `radius` (`number`, required): Reveal radius.
+
+**Lua API Stub**
+
+```lua
+--- Reveals fog inside a world-space radius.
+---@param cx number Center x coordinate.
+---@param cy number Center y coordinate.
+---@param radius number Reveal radius.
+function LMinimap:revealRadius(cx, cy, radius) end
+```
 
 #### Example
 
@@ -1659,18 +2246,33 @@ do
 end
 ```
 
-### `LMinimap:screenToGrid(sx: number, sy: number, mx: number, my: number) -> number`
+### LMinimap:screenToGrid
+
+`LMinimap:screenToGrid(sx: number, sy: number, mx: number, my: number) -> number`
 
 Converts a screen position to grid coordinates.
 
 **Parameters**
 
-- `sx` (`number`, required) - Screen x coordinate.
-- `sy` (`number`, required) - Screen y coordinate.
-- `mx` (`number`, required) - Minimap x position.
-- `my` (`number`, required) - Minimap y position.
+- `sx` (`number`, required): Screen x coordinate.
+- `sy` (`number`, required): Screen y coordinate.
+- `mx` (`number`, required): Minimap x position.
+- `my` (`number`, required): Minimap y position.
 
 **Returns**: `number` - Grid x coordinate.
+
+**Lua API Stub**
+
+```lua
+--- Converts a screen position to grid coordinates.
+---@param sx number Screen x coordinate.
+---@param sy number Screen y coordinate.
+---@param mx number Minimap x position.
+---@param my number Minimap y position.
+---@return number a Grid x coordinate.
+---@return number b Grid y coordinate.
+function LMinimap:screenToGrid(sx, sy, mx, my) end
+```
 
 #### Example
 
@@ -1688,13 +2290,23 @@ do
 end
 ```
 
-### `LMinimap:setAntiAlias(enabled: boolean)`
+### LMinimap:setAntiAlias
+
+`LMinimap:setAntiAlias(enabled: boolean)`
 
 Enables or disables minimap anti-aliasing.
 
 **Parameters**
 
-- `enabled` (`boolean`, required) - Anti-alias flag.
+- `enabled` (`boolean`, required): Anti-alias flag.
+
+**Lua API Stub**
+
+```lua
+--- Enables or disables minimap anti-aliasing.
+---@param enabled boolean Anti-alias flag.
+function LMinimap:setAntiAlias(enabled) end
+```
 
 #### Example
 
@@ -1714,14 +2326,25 @@ do
 end
 ```
 
-### `LMinimap:setCenter(x: number, y: number)`
+### LMinimap:setCenter
+
+`LMinimap:setCenter(x: number, y: number)`
 
 Sets the minimap world-space center position.
 
 **Parameters**
 
-- `x` (`number`, required) - Center x coordinate.
-- `y` (`number`, required) - Center y coordinate.
+- `x` (`number`, required): Center x coordinate.
+- `y` (`number`, required): Center y coordinate.
+
+**Lua API Stub**
+
+```lua
+--- Sets the minimap world-space center position.
+---@param x number Center x coordinate.
+---@param y number Center y coordinate.
+function LMinimap:setCenter(x, y) end
+```
 
 #### Example
 
@@ -1740,13 +2363,23 @@ do
 end
 ```
 
-### `LMinimap:setClickable(enabled: boolean)`
+### LMinimap:setClickable
+
+`LMinimap:setClickable(enabled: boolean)`
 
 Enables or disables minimap click handling.
 
 **Parameters**
 
-- `enabled` (`boolean`, required) - Clickable flag.
+- `enabled` (`boolean`, required): Clickable flag.
+
+**Lua API Stub**
+
+```lua
+--- Enables or disables minimap click handling.
+---@param enabled boolean Clickable flag.
+function LMinimap:setClickable(enabled) end
+```
 
 #### Example
 
@@ -1765,13 +2398,23 @@ do
 end
 ```
 
-### `LMinimap:setColorMode(mode: string)`
+### LMinimap:setColorMode
+
+`LMinimap:setColorMode(mode: string)`
 
 Sets the minimap color mode to terrain or political.
 
 **Parameters**
 
-- `mode` (`string`, required) - Color mode name, expected `terrain` or `political`.
+- `mode` (`string`, required): Color mode name, expected `terrain` or `political`.
+
+**Lua API Stub**
+
+```lua
+--- Sets the minimap color mode to terrain or political.
+---@param mode string Color mode name, expected `terrain` or `political`.
+function LMinimap:setColorMode(mode) end
+```
 
 #### Example
 
@@ -1789,14 +2432,25 @@ do
 end
 ```
 
-### `LMinimap:setDisplaySize(w: integer, h: integer)`
+### LMinimap:setDisplaySize
+
+`LMinimap:setDisplaySize(w: integer, h: integer)`
 
 Sets the minimap display width and height in pixels.
 
 **Parameters**
 
-- `w` (`integer`, required) - Display width in pixels.
-- `h` (`integer`, required) - Display height in pixels.
+- `w` (`integer`, required): Display width in pixels.
+- `h` (`integer`, required): Display height in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Sets the minimap display width and height in pixels.
+---@param w number Display width in pixels.
+---@param h number Display height in pixels.
+function LMinimap:setDisplaySize(w, h) end
+```
 
 #### Example
 
@@ -1816,16 +2470,29 @@ do
 end
 ```
 
-### `LMinimap:setFogColor(r: number, g: number, b: number, [a]: number)`
+### LMinimap:setFogColor
+
+`LMinimap:setFogColor(r: number, g: number, b: number, [a]: number)`
 
 Sets the RGBA fog overlay color for covered cells.
 
 **Parameters**
 
-- `r` (`number`, required) - Red channel.
-- `g` (`number`, required) - Green channel.
-- `b` (`number`, required) - Blue channel.
-- `a` (`number`, optional) - Alpha channel, defaults to 0.8.
+- `r` (`number`, required): Red channel.
+- `g` (`number`, required): Green channel.
+- `b` (`number`, required): Blue channel.
+- `a` (`number`, optional): Alpha channel, defaults to 0.8.
+
+**Lua API Stub**
+
+```lua
+--- Sets the RGBA fog overlay color for covered cells.
+---@param r number Red channel.
+---@param g number Green channel.
+---@param b number Blue channel.
+---@param a? number Alpha channel, defaults to 0.8.
+function LMinimap:setFogColor(r, g, b, a) end
+```
 
 #### Example
 
@@ -1843,13 +2510,23 @@ do
 end
 ```
 
-### `LMinimap:setFogData(data: table)`
+### LMinimap:setFogData
+
+`LMinimap:setFogData(data: table)`
 
 Replaces fog data from a flat array table.
 
 **Parameters**
 
-- `data` (`table`, required) - Array table of fog level bytes.
+- `data` (`table`, required): Array table of fog level bytes.
+
+**Lua API Stub**
+
+```lua
+--- Replaces fog data from a flat array table.
+---@param data table Array table of fog level bytes.
+function LMinimap:setFogData(data) end
+```
 
 #### Example
 
@@ -1869,13 +2546,23 @@ do
 end
 ```
 
-### `LMinimap:setFogEnabled(enabled: boolean)`
+### LMinimap:setFogEnabled
+
+`LMinimap:setFogEnabled(enabled: boolean)`
 
 Enables or disables the minimap fog display.
 
 **Parameters**
 
-- `enabled` (`boolean`, required) - Fog enabled flag.
+- `enabled` (`boolean`, required): Fog enabled flag.
+
+**Lua API Stub**
+
+```lua
+--- Enables or disables the minimap fog display.
+---@param enabled boolean Fog enabled flag.
+function LMinimap:setFogEnabled(enabled) end
+```
 
 #### Example
 
@@ -1895,15 +2582,27 @@ do
 end
 ```
 
-### `LMinimap:setFogLevel(x: integer, y: integer, level: integer)`
+### LMinimap:setFogLevel
+
+`LMinimap:setFogLevel(x: integer, y: integer, level: integer)`
 
 Sets fog level for a one-based grid cell.
 
 **Parameters**
 
-- `x` (`integer`, required) - One-based grid x coordinate.
-- `y` (`integer`, required) - One-based grid y coordinate.
-- `level` (`integer`, required) - Fog level byte.
+- `x` (`integer`, required): One-based grid x coordinate.
+- `y` (`integer`, required): One-based grid y coordinate.
+- `level` (`integer`, required): Fog level byte.
+
+**Lua API Stub**
+
+```lua
+--- Sets fog level for a one-based grid cell.
+---@param x number One-based grid x coordinate.
+---@param y number One-based grid y coordinate.
+---@param level number Fog level byte.
+function LMinimap:setFogLevel(x, y, level) end
+```
 
 #### Example
 
@@ -1926,13 +2625,23 @@ do
 end
 ```
 
-### `LMinimap:setLayer(layer: integer)`
+### LMinimap:setLayer
+
+`LMinimap:setLayer(layer: integer)`
 
 Sets the active minimap display layer index.
 
 **Parameters**
 
-- `layer` (`integer`, required) - Layer index.
+- `layer` (`integer`, required): Layer index.
+
+**Lua API Stub**
+
+```lua
+--- Sets the active minimap display layer index.
+---@param layer number Layer index.
+function LMinimap:setLayer(layer) end
+```
 
 #### Example
 
@@ -1951,14 +2660,25 @@ do
 end
 ```
 
-### `LMinimap:setLayerData(layer: integer, data_tbl: table)`
+### LMinimap:setLayerData
+
+`LMinimap:setLayerData(layer: integer, data_tbl: table)`
 
 Sets raw cell data for a minimap layer.
 
 **Parameters**
 
-- `layer` (`integer`, required) - Layer index.
-- `data_tbl` (`table`, required) - Array table of cell bytes.
+- `layer` (`integer`, required): Layer index.
+- `data_tbl` (`table`, required): Array table of cell bytes.
+
+**Lua API Stub**
+
+```lua
+--- Sets raw cell data for a minimap layer.
+---@param layer number Layer index.
+---@param data_tbl table Array table of cell bytes.
+function LMinimap:setLayerData(layer, data_tbl) end
+```
 
 #### Example
 
@@ -1983,15 +2703,27 @@ do
 end
 ```
 
-### `LMinimap:setMarkerAnimation(id: integer, anim_type: string, speed: number)`
+### LMinimap:setMarkerAnimation
+
+`LMinimap:setMarkerAnimation(id: integer, anim_type: string, speed: number)`
 
 Sets marker animation by type name.
 
 **Parameters**
 
-- `id` (`integer`, required) - Marker id.
-- `anim_type` (`string`, required) - Animation type: `blink`, `pulse`, or `rotate`.
-- `speed` (`number`, required) - Animation speed.
+- `id` (`integer`, required): Marker id.
+- `anim_type` (`string`, required): Animation type: `blink`, `pulse`, or `rotate`.
+- `speed` (`number`, required): Animation speed.
+
+**Lua API Stub**
+
+```lua
+--- Sets marker animation by type name.
+---@param id number Marker id.
+---@param anim_type string Animation type: `blink`, `pulse`, or `rotate`.
+---@param speed number Animation speed.
+function LMinimap:setMarkerAnimation(id, anim_type, speed) end
+```
 
 #### Example
 
@@ -2011,16 +2743,29 @@ do
 end
 ```
 
-### `LMinimap:setMarkerTexture(id: integer, image_ud: LImage, [width]: number, [height]: number)`
+### LMinimap:setMarkerTexture
+
+`LMinimap:setMarkerTexture(id: integer, image_ud: LImage, [width]: number, [height]: number)`
 
 Assigns an image texture to a marker.
 
 **Parameters**
 
-- `id` (`integer`, required) - Marker id.
-- `image_ud` (`LImage`, required) - Image handle from `lurek.render.newImage`.
-- `width` (`number`, optional) - Display width override.
-- `height` (`number`, optional) - Display height override.
+- `id` (`integer`, required): Marker id.
+- `image_ud` (`LImage`, required): Image handle from `lurek.render.newImage`.
+- `width` (`number`, optional): Display width override.
+- `height` (`number`, optional): Display height override.
+
+**Lua API Stub**
+
+```lua
+--- Assigns an image texture to a marker.
+---@param id number Marker id.
+---@param image_ud LImage Image handle from `lurek.render.newImage`.
+---@param width? number Display width override.
+---@param height? number Display height override.
+function LMinimap:setMarkerTexture(id, image_ud, width, height) end
+```
 
 #### Example
 
@@ -2038,17 +2783,31 @@ do
 end
 ```
 
-### `LMinimap:setObject(id: integer, x: number, y: number, type_idx: integer, [owner]: integer)`
+### LMinimap:setObject
+
+`LMinimap:setObject(id: integer, x: number, y: number, type_idx: integer, [owner]: integer)`
 
 Adds or updates an object on the minimap.
 
 **Parameters**
 
-- `id` (`integer`, required) - Object id.
-- `x` (`number`, required) - Object x coordinate.
-- `y` (`number`, required) - Object y coordinate.
-- `type_idx` (`integer`, required) - One-based object type index.
-- `owner` (`integer`, optional) - Owner id, defaults to 0.
+- `id` (`integer`, required): Object id.
+- `x` (`number`, required): Object x coordinate.
+- `y` (`number`, required): Object y coordinate.
+- `type_idx` (`integer`, required): One-based object type index.
+- `owner` (`integer`, optional): Owner id, defaults to 0.
+
+**Lua API Stub**
+
+```lua
+--- Adds or updates an object on the minimap.
+---@param id number Object id.
+---@param x number Object x coordinate.
+---@param y number Object y coordinate.
+---@param type_idx number One-based object type index.
+---@param owner? number Owner id, defaults to 0.
+function LMinimap:setObject(id, x, y, type_idx, owner) end
+```
 
 #### Example
 
@@ -2071,16 +2830,29 @@ do
 end
 ```
 
-### `LMinimap:setObjectTypeTexture(type_idx: integer, image_ud: LImage, [width]: number, [height]: number)`
+### LMinimap:setObjectTypeTexture
+
+`LMinimap:setObjectTypeTexture(type_idx: integer, image_ud: LImage, [width]: number, [height]: number)`
 
 Assigns an image texture to an object type.
 
 **Parameters**
 
-- `type_idx` (`integer`, required) - One-based object type index.
-- `image_ud` (`LImage`, required) - Image handle from `lurek.render.newImage`.
-- `width` (`number`, optional) - Display width override.
-- `height` (`number`, optional) - Display height override.
+- `type_idx` (`integer`, required): One-based object type index.
+- `image_ud` (`LImage`, required): Image handle from `lurek.render.newImage`.
+- `width` (`number`, optional): Display width override.
+- `height` (`number`, optional): Display height override.
+
+**Lua API Stub**
+
+```lua
+--- Assigns an image texture to an object type.
+---@param type_idx number One-based object type index.
+---@param image_ud LImage Image handle from `lurek.render.newImage`.
+---@param width? number Display width override.
+---@param height? number Display height override.
+function LMinimap:setObjectTypeTexture(type_idx, image_ud, width, height) end
+```
 
 #### Example
 
@@ -2099,14 +2871,25 @@ do
 end
 ```
 
-### `LMinimap:setObjectTypeVisible(type_idx: integer, visible: boolean)`
+### LMinimap:setObjectTypeVisible
+
+`LMinimap:setObjectTypeVisible(type_idx: integer, visible: boolean)`
 
 Sets visibility for an object type by one-based index.
 
 **Parameters**
 
-- `type_idx` (`integer`, required) - One-based object type index.
-- `visible` (`boolean`, required) - Visibility flag.
+- `type_idx` (`integer`, required): One-based object type index.
+- `visible` (`boolean`, required): Visibility flag.
+
+**Lua API Stub**
+
+```lua
+--- Sets visibility for an object type by one-based index.
+---@param type_idx number One-based object type index.
+---@param visible boolean Visibility flag.
+function LMinimap:setObjectTypeVisible(type_idx, visible) end
+```
 
 #### Example
 
@@ -2124,17 +2907,31 @@ do
 end
 ```
 
-### `LMinimap:setOwnerColor(owner: integer, r: number, g: number, b: number, [a]: number)`
+### LMinimap:setOwnerColor
+
+`LMinimap:setOwnerColor(owner: integer, r: number, g: number, b: number, [a]: number)`
 
 Sets the RGBA display color for an owner id.
 
 **Parameters**
 
-- `owner` (`integer`, required) - Owner id.
-- `r` (`number`, required) - Red channel.
-- `g` (`number`, required) - Green channel.
-- `b` (`number`, required) - Blue channel.
-- `a` (`number`, optional) - Alpha channel, defaults to 1.0.
+- `owner` (`integer`, required): Owner id.
+- `r` (`number`, required): Red channel.
+- `g` (`number`, required): Green channel.
+- `b` (`number`, required): Blue channel.
+- `a` (`number`, optional): Alpha channel, defaults to 1.0.
+
+**Lua API Stub**
+
+```lua
+--- Sets the RGBA display color for an owner id.
+---@param owner number Owner id.
+---@param r number Red channel.
+---@param g number Green channel.
+---@param b number Blue channel.
+---@param a? number Alpha channel, defaults to 1.0.
+function LMinimap:setOwnerColor(owner, r, g, b, a) end
+```
 
 #### Example
 
@@ -2154,15 +2951,27 @@ do
 end
 ```
 
-### `LMinimap:setTerrain(x: integer, y: integer, terrain_type: integer)`
+### LMinimap:setTerrain
+
+`LMinimap:setTerrain(x: integer, y: integer, terrain_type: integer)`
 
 Sets terrain type for a one-based grid cell.
 
 **Parameters**
 
-- `x` (`integer`, required) - One-based grid x coordinate.
-- `y` (`integer`, required) - One-based grid y coordinate.
-- `terrain_type` (`integer`, required) - Terrain type id.
+- `x` (`integer`, required): One-based grid x coordinate.
+- `y` (`integer`, required): One-based grid y coordinate.
+- `terrain_type` (`integer`, required): Terrain type id.
+
+**Lua API Stub**
+
+```lua
+--- Sets terrain type for a one-based grid cell.
+---@param x number One-based grid x coordinate.
+---@param y number One-based grid y coordinate.
+---@param terrain_type number Terrain type id.
+function LMinimap:setTerrain(x, y, terrain_type) end
+```
 
 #### Example
 
@@ -2185,17 +2994,31 @@ do
 end
 ```
 
-### `LMinimap:setTerrainColor(terrain_type: integer, r: number, g: number, b: number, [a]: number)`
+### LMinimap:setTerrainColor
+
+`LMinimap:setTerrainColor(terrain_type: integer, r: number, g: number, b: number, [a]: number)`
 
 Sets the RGBA display color for a terrain type.
 
 **Parameters**
 
-- `terrain_type` (`integer`, required) - Terrain type id.
-- `r` (`number`, required) - Red channel.
-- `g` (`number`, required) - Green channel.
-- `b` (`number`, required) - Blue channel.
-- `a` (`number`, optional) - Alpha channel, defaults to 1.0.
+- `terrain_type` (`integer`, required): Terrain type id.
+- `r` (`number`, required): Red channel.
+- `g` (`number`, required): Green channel.
+- `b` (`number`, required): Blue channel.
+- `a` (`number`, optional): Alpha channel, defaults to 1.0.
+
+**Lua API Stub**
+
+```lua
+--- Sets the RGBA display color for a terrain type.
+---@param terrain_type number Terrain type id.
+---@param r number Red channel.
+---@param g number Green channel.
+---@param b number Blue channel.
+---@param a? number Alpha channel, defaults to 1.0.
+function LMinimap:setTerrainColor(terrain_type, r, g, b, a) end
+```
 
 #### Example
 
@@ -2216,13 +3039,23 @@ do
 end
 ```
 
-### `LMinimap:setTerrainData(data: table)`
+### LMinimap:setTerrainData
+
+`LMinimap:setTerrainData(data: table)`
 
 Replaces terrain data from a flat array table.
 
 **Parameters**
 
-- `data` (`table`, required) - Array table of terrain type ids.
+- `data` (`table`, required): Array table of terrain type ids.
+
+**Lua API Stub**
+
+```lua
+--- Replaces terrain data from a flat array table.
+---@param data table Array table of terrain type ids.
+function LMinimap:setTerrainData(data) end
+```
 
 #### Example
 
@@ -2244,14 +3077,25 @@ do
 end
 ```
 
-### `LMinimap:setTileDescription(type_id: integer, desc: string)`
+### LMinimap:setTileDescription
+
+`LMinimap:setTileDescription(type_id: integer, desc: string)`
 
 Sets text description for a tile type.
 
 **Parameters**
 
-- `type_id` (`integer`, required) - Tile type id.
-- `desc` (`string`, required) - Description text.
+- `type_id` (`integer`, required): Tile type id.
+- `desc` (`string`, required): Description text.
+
+**Lua API Stub**
+
+```lua
+--- Sets text description for a tile type.
+---@param type_id number Tile type id.
+---@param desc string Description text.
+function LMinimap:setTileDescription(type_id, desc) end
+```
 
 #### Example
 
@@ -2271,16 +3115,29 @@ do
 end
 ```
 
-### `LMinimap:setViewportColor(r: number, g: number, b: number, [a]: number)`
+### LMinimap:setViewportColor
+
+`LMinimap:setViewportColor(r: number, g: number, b: number, [a]: number)`
 
 Sets the viewport rectangle color.
 
 **Parameters**
 
-- `r` (`number`, required) - Red channel.
-- `g` (`number`, required) - Green channel.
-- `b` (`number`, required) - Blue channel.
-- `a` (`number`, optional) - Alpha channel, defaults to 0.8.
+- `r` (`number`, required): Red channel.
+- `g` (`number`, required): Green channel.
+- `b` (`number`, required): Blue channel.
+- `a` (`number`, optional): Alpha channel, defaults to 0.8.
+
+**Lua API Stub**
+
+```lua
+--- Sets the viewport rectangle color.
+---@param r number Red channel.
+---@param g number Green channel.
+---@param b number Blue channel.
+---@param a? number Alpha channel, defaults to 0.8.
+function LMinimap:setViewportColor(r, g, b, a) end
+```
 
 #### Example
 
@@ -2296,16 +3153,29 @@ do
 end
 ```
 
-### `LMinimap:setViewportRect(x: number, y: number, w: number, h: number)`
+### LMinimap:setViewportRect
+
+`LMinimap:setViewportRect(x: number, y: number, w: number, h: number)`
 
 Sets the visible viewport rectangle shown on the minimap.
 
 **Parameters**
 
-- `x` (`number`, required) - Viewport x coordinate.
-- `y` (`number`, required) - Viewport y coordinate.
-- `w` (`number`, required) - Viewport width.
-- `h` (`number`, required) - Viewport height.
+- `x` (`number`, required): Viewport x coordinate.
+- `y` (`number`, required): Viewport y coordinate.
+- `w` (`number`, required): Viewport width.
+- `h` (`number`, required): Viewport height.
+
+**Lua API Stub**
+
+```lua
+--- Sets the visible viewport rectangle shown on the minimap.
+---@param x number Viewport x coordinate.
+---@param y number Viewport y coordinate.
+---@param w number Viewport width.
+---@param h number Viewport height.
+function LMinimap:setViewportRect(x, y, w, h) end
+```
 
 #### Example
 
@@ -2323,13 +3193,23 @@ do
 end
 ```
 
-### `LMinimap:setViewportVisible(visible: boolean)`
+### LMinimap:setViewportVisible
+
+`LMinimap:setViewportVisible(visible: boolean)`
 
 Sets whether the viewport rectangle is visible.
 
 **Parameters**
 
-- `visible` (`boolean`, required) - Visibility flag.
+- `visible` (`boolean`, required): Visibility flag.
+
+**Lua API Stub**
+
+```lua
+--- Sets whether the viewport rectangle is visible.
+---@param visible boolean Visibility flag.
+function LMinimap:setViewportVisible(visible) end
+```
 
 #### Example
 
@@ -2348,13 +3228,23 @@ do
 end
 ```
 
-### `LMinimap:setZoom(zoom: number)`
+### LMinimap:setZoom
+
+`LMinimap:setZoom(zoom: number)`
 
 Sets the minimap zoom magnification level.
 
 **Parameters**
 
-- `zoom` (`number`, required) - Zoom value.
+- `zoom` (`number`, required): Zoom value.
+
+**Lua API Stub**
+
+```lua
+--- Sets the minimap zoom magnification level.
+---@param zoom number Zoom value.
+function LMinimap:setZoom(zoom) end
+```
 
 #### Example
 
@@ -2371,16 +3261,28 @@ do
 end
 ```
 
-### `LMinimap:showPath(points_tbl: table, color_tbl: table) -> integer`
+### LMinimap:showPath
+
+`LMinimap:showPath(points_tbl: table, color_tbl: table) -> integer`
 
 Adds a colored path overlay and returns its id.
 
 **Parameters**
 
-- `points_tbl` (`table`, required) - Array table of point arrays `{x, y}`.
-- `color_tbl` (`table`, required) - RGBA byte color table.
+- `points_tbl` (`table`, required): Array table of point arrays `{x, y}`.
+- `color_tbl` (`table`, required): RGBA byte color table.
 
 **Returns**: `integer` - Path id.
+
+**Lua API Stub**
+
+```lua
+--- Adds a colored path overlay and returns its id.
+---@param points_tbl table Array table of point arrays `{x, y}`.
+---@param color_tbl table RGBA byte color table.
+---@return number Path id.
+function LMinimap:showPath(points_tbl, color_tbl) end
+```
 
 #### Example
 
@@ -2400,13 +3302,23 @@ do
 end
 ```
 
-### `LMinimap:trackCamera(camera_ud: LCamera)`
+### LMinimap:trackCamera
+
+`LMinimap:trackCamera(camera_ud: LCamera)`
 
 Centers the minimap and viewport rectangle from a camera handle.
 
 **Parameters**
 
-- `camera_ud` (`LCamera`, required) - Camera handle from `lurek.camera.newCamera`.
+- `camera_ud` (`LCamera`, required): Camera handle from `lurek.camera.newCamera`.
+
+**Lua API Stub**
+
+```lua
+--- Centers the minimap and viewport rectangle from a camera handle.
+---@param camera_ud LCamera Camera handle from `lurek.camera.newCamera`.
+function LMinimap:trackCamera(camera_ud) end
+```
 
 #### Example
 
@@ -2428,11 +3340,21 @@ do
 end
 ```
 
-### `LMinimap:type() -> string`
+### LMinimap:type
+
+`LMinimap:type() -> string`
 
 Returns the Lua-visible type name for this minimap handle.
 
 **Returns**: `string` - The string `LMinimap`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this minimap handle.
+---@return string The string `LMinimap`.
+function LMinimap:type() end
+```
 
 #### Example
 
@@ -2447,15 +3369,26 @@ do
 end
 ```
 
-### `LMinimap:typeOf(name: string) -> boolean`
+### LMinimap:typeOf
+
+`LMinimap:typeOf(name: string) -> boolean`
 
 Returns whether this minimap handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `LMinimap`, `Minimap`, and `Object`.
+- `name` (`string`, required): Type name to compare against `LMinimap`, `Minimap`, and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this minimap handle matches a supported type name.
+---@param name string Type name to compare against `LMinimap`, `Minimap`, and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LMinimap:typeOf(name) end
+```
 
 #### Example
 
@@ -2475,13 +3408,23 @@ do
 end
 ```
 
-### `LMinimap:update(dt: number)`
+### LMinimap:update
+
+`LMinimap:update(dt: number)`
 
 Advances minimap animations and timers.
 
 **Parameters**
 
-- `dt` (`number`, required) - Delta time in seconds.
+- `dt` (`number`, required): Delta time in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Advances minimap animations and timers.
+---@param dt number Delta time in seconds.
+function LMinimap:update(dt) end
+```
 
 #### Example
 
@@ -2502,21 +3445,27 @@ end
 ```
 
 
-## Examples
+[⬆ back to top](#table-of-contents)
+
+## 💡 Examples
 
 - [minimap.lua](../blob/main/content/examples/minimap.lua) - Minimap renderer
 
-## Reference Games
+[⬆ back to top](#table-of-contents)
+
+## 🎮 Reference Games
 
 No direct references were found in `content/games/**/main.lua`.
 
-## Related Modules
+[⬆ back to top](#table-of-contents)
 
-- Previous: [[math|Module-math]]
-- Next: [[mods|Module-mods]]
-- [[ai|Module-ai]] - Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU.
-- [[animation|Module-animation]] - Sprite animation: source-rect changes over time. Imports only math; headless-testable.
-- [[automation|Module-automation]] - Automated input simulation for headless tests, QA replay, recorded sessions.
-- [[ecs|Module-ecs]] - Entity-Component-System: identity / data / behaviour separation for runtime composition.
-- [[i18n|Module-i18n]] - Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*).
-- [[mods|Module-mods]] - Mod-loading framework: virtual filesystem mounts + sandboxed runtime config.
+## 🔗 Related Modules
+
+- Previous: [math](Module-math)
+- Next: [mods](Module-mods)
+- [ai](Module-ai) - Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU.
+- [animation](Module-animation) - Sprite animation: source-rect changes over time. Imports only math; headless-testable.
+- [automation](Module-automation) - Automated input simulation for headless tests, QA replay, recorded sessions.
+- [ecs](Module-ecs) - Entity-Component-System: identity / data / behaviour separation for runtime composition.
+- [i18n](Module-i18n) - Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*).
+- [mods](Module-mods) - Mod-loading framework: virtual filesystem mounts + sandboxed runtime config.

@@ -2,6 +2,24 @@
 
 ## Unreleased
 
+- feat(assets): added `assets/textures/world_map_lowpoly.svg`, a new 2:1 equirectangular low-poly world map asset with sea and continent facets built from triangles and quadrilaterals for globe projection workflows.
+
+- docs(tools): refined `tools/audit/example_coverage.py` status grading to classify each API example as `MISS`, `TODO`, `PART`, or `FULL` based on marker presence, TODO markers, and non-empty block length inside `do ... end`; the Markdown export now writes per-API status lines plus a summary table with `MISS | TODO | PART | FULL | TOTAL` counts per module and in total.
+
+- docs(tools): extended `tools/audit/example_coverage.py` to audit alternate example directories such as `content/examples2/`, aggregate chunked files like `module_00.lua`..`module_NN.lua`, and export a detailed Markdown report listing every Lua API item as `OK` or `NOK` plus per-module numeric coverage summaries.
+
+- docs(examples2): added `tools/audit/generate_examples2_stubs.py` to scaffold minimal `content/examples2/` files from `logs/data/lua_api_data.json`; it groups output per Lua API module, splits files into 50-item chunks named `_00`, `_01`, and emits only the stub marker, API description, `do ... end` TODO block, per-API print, and final file-name print requested by the new examples2 workflow.
+
+- docs(examples): completed the next alphabetical example batch across `compute.lua`, `data.lua`, `dataframe.lua`, `debugbridge.lua`, `devtools.lua`, `docs.lua`, `ecs.lua`, `effect.lua`, `engine.lua`, and `event.lua`; removed duplicate or misplaced stub tails, fixed stale class markers, restored clean final-print structure, avoided non-existent callback fields outside lifecycle examples, and validated with `cargo test --test examples_load_test -- --nocapture`.
+
+- docs(examples): repaired `content/examples/camera.lua` after a partial example rewrite left duplicate and malformed stub blocks; restored file-level headers across the edited example files, rewrote camera coverage as one complete deduplicated 88-stub file grounded in the current Lua camera API, and validated with `cargo test --test examples_load_test -- --nocapture`.
+
+- docs(examples): expanded `content/examples/automation.lua` into a full alphabetical batch for the 32 real `lurek.automation.*` stubs; grounded the snippets in the generated Lua API and Rust automation bindings, added deeper script, macro, condition, timing, speed, pause/resume, failure, and wait examples, and validated with `cargo test --test examples_load_test -- --nocapture`.
+
+- docs(ideas): expanded `ideas/province-economy-loop.md` into a full economy design note with daily shipment movement, monthly Galcon-style population growth, default population cap and happiness rules, 1-to-6 building slots, farm and housing effects, local food and gold spending, migration and revolt thresholds, and a strict physical capital -> hub -> province / province -> hub -> capital logistics model with no virtual transfers.
+
+- docs(examples): expanded the next alphabetical example files, `content/examples/animation.lua` and `content/examples/audio.lua`, into deeper 30-stub batches; aligned stale API stub markers with the current Lua bindings, removed Lua-side casts and constructor monkey-patching from the examples, guarded missing audio assets with `pcall`, and validated with `cargo test --test examples_load_test`.
+
 - docs(lua_api,compute): banned Lua-side type-workaround casts in the global Copilot instructions, corrected `src/lua_api/compute_api.rs` docstrings so scalar-or-array params are documented as `any`, added source `@overload` markers plus `tools/docs/gen_luadoc.py` support for axis-dependent reduction returns, synced the compute spec, and removed matching `--[[@as LArray]]` and `--[[@as number]]` workarounds from `tests/lua/unit/test_compute_core_unit.lua`.
 
 - fix(lua_api): eliminated 33 `@return | type? |` optional-return annotation errors across `mods_api.rs`, `patterns_api.rs`, `pipeline_api.rs`, and `thread_api.rs`; replaced each with a two-line `@return | type | …` + `@return | nil | …` form per the validator contract; regenerated all doc artifacts (`lua_api_data.json`, `docs/api/lurek.lua`, `extensions/vscode/data/lurek-api.json`); `validate_lua_api.py` now exits 0 for all 27 files.

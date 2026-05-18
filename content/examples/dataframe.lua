@@ -2,449 +2,420 @@
 -- lurek.dataframe API examples: tabular data for analytics, leaderboards, item databases, and stat tracking.
 -- Run: cargo run -- content/examples/dataframe.lua
 --@api-stub: lurek.dataframe.newDataFrame
--- Creates an empty dataframe with no columns or rows
+-- Builds an empty dataframe for runtime session data
 do
-  -- Use newDataFrame when you need to build a table incrementally at runtime,
-  -- such as tracking player session stats as events come in.
-  local stats = lurek.dataframe.newDataFrame()
+  -- Start with no schema when rows will arrive during play.
+  local scoreboard = lurek.dataframe.newDataFrame()
+  scoreboard:addColumn("pilot", "")
+  scoreboard:addColumn("score", 0)
+  scoreboard:addColumn("lives", 3)
 
-  -- Define the schema: each addColumn call creates a named column with a default value.
-  -- The default is used when a row is added without specifying that column.
-  stats:addColumn("name", "")
-  stats:addColumn("score", 0)
-  stats:addColumn("deaths", 0)
+  -- Missing fields use the column default, so this row keeps three lives.
+  local row = scoreboard:addRow({pilot = "Mira", score = 4200})
+  scoreboard:setValue(row, "score", 4500)
 
-  -- Add rows as the session progresses
-  stats:addRow({name = "Alice", score = 1200, deaths = 3})
-  stats:addRow({name = "Bob", score = 980, deaths = 5})
-
-  -- The dataframe now has 2 rows and 3 columns
-  lurek.log.info("session stats: " .. stats:nrows() .. " players tracked")
+  lurek.log.info("scoreboard rows=" .. tostring(scoreboard:nrows()))
 end
 --@api-stub: lurek.dataframe.newDatabase
--- Creates an empty dataframe database for managing multiple named tables
+-- Groups named dataframes for game data
 do
-  -- A Database groups related dataframes under string keys.
-  -- Use it to organize game data: one table for players, one for items, one for quests, etc.
+  -- Use a database when a save or mod pack has several related tables.
   local db = lurek.dataframe.newDatabase()
+  local players = lurek.dataframe.fromTable({
+    {id = 1, name = "Mira", class = "scout"},
+  })
+  local items = lurek.dataframe.fromTable({
+    {id = 7, name = "coil blade", rarity = "rare"},
+  })
 
-  local players = lurek.dataframe.fromTable({{id = 1, name = "Alice", level = 12}})
-  local items = lurek.dataframe.fromTable({{id = 1, name = "Iron Sword", dmg = 15}})
-
-  -- Register tables by name for later retrieval or SQL-style cross-table queries
+  -- Table names become stable handles for queries and debug tools.
   db:addTable("players", players)
   db:addTable("items", items)
 
-  lurek.log.info("database has " .. db:tableCount() .. " tables")
+  lurek.log.info("campaign tables=" .. tostring(db:tableCount()))
 end
 --@api-stub: lurek.dataframe.fromTable
--- Creates a dataframe from an array of row tables (most common constructor)
+-- Creates a dataframe from keyed Lua rows
 do
-  -- fromTable is the fastest way to create a dataframe from existing Lua data.
-  -- Each element is a table mapping column names to values.
-  -- All rows should share the same keys; missing keys become nil.
+  -- Keyed rows are easy to read in hand-authored balance data.
   local enemies = lurek.dataframe.fromTable({
-    {name = "goblin",  hp = 30,  atk = 5,  xp = 10},
-    {name = "orc",     hp = 60,  atk = 12, xp = 25},
-    {name = "dragon",  hp = 500, atk = 80, xp = 1000},
+    {id = 1, kind = "drone", hp = 30, damage = 5, xp = 10},
+    {id = 2, kind = "brute", hp = 90, damage = 18, xp = 35},
+    {id = 3, kind = "warden", hp = 160, damage = 26, xp = 80},
   })
 
-  -- Useful for loading static game data defined in Lua tables
-  lurek.log.info("enemy database: " .. enemies:nrows() .. " entries")
+  -- The first row defines the starting schema; later rows can fill it.
+  lurek.log.info("enemy rows=" .. tostring(enemies:nrows()))
 end
 --@api-stub: lurek.dataframe.fromRows
--- Creates a dataframe from column names and positional row arrays
+-- Creates a dataframe from positional rows
 do
-  -- fromRows is useful when data comes in array form (e.g., from a binary protocol)
-  -- where you know column order but rows lack named keys.
-  local columns = {"rank", "player", "score", "time_ms"}
+  -- Positional rows match network packets or binary logs with known order.
+  local columns = {"tick", "ship", "x", "y"}
   local rows = {
-    {1, "Alice",  9500, 42300},
-    {2, "Bob",    8200, 51200},
-    {3, "Cara",   7800, 48100},
+    {10, "alpha", 12.5,  4.0},
+    {11, "alpha", 13.0,  4.5},
+    {12, "beta",  -2.0, 18.0},
   }
 
-  -- Column names map 1:1 with array positions in each row
-  local leaderboard = lurek.dataframe.fromRows(columns, rows)
-  lurek.log.info("rank #2: " .. leaderboard:getValue(2, "player"))
+  local telemetry = lurek.dataframe.fromRows(columns, rows)
+  lurek.log.info("tracked ship=" .. tostring(telemetry:getValue(2, "ship")))
 end
 --@api-stub: lurek.dataframe.fromCSV
--- Parses a dataframe from CSV-formatted text
+-- Parses CSV text into a dataframe
 do
-  -- fromCSV is ideal for loading exported spreadsheet data or config tables.
-  -- The first line is treated as column headers.
-  local csv = "weapon,damage,cost,rarity\nsword,12,50,common\nbow,8,40,common\nstaff,15,120,rare\n"
-  local shop = lurek.dataframe.fromCSV(csv)
+  -- CSV works well for designer-owned tables exported from spreadsheets.
+  local csv = "recipe,ore,seconds\nmedkit,2,4\nturret,5,12\nbeacon,3,8\n"
+  local recipes = lurek.dataframe.fromCSV(csv)
 
-  -- Numeric columns are auto-detected, so you can immediately compute stats
-  lurek.log.info("avg weapon damage = " .. shop:mean("damage"))
+  -- Numeric columns can be used immediately by statistics helpers.
+  lurek.log.info("average craft time=" .. string.format("%.1f", recipes:mean("seconds")))
 end
 --@api-stub: lurek.dataframe.fromJSON
--- Parses a dataframe from a JSON array of objects
+-- Parses a JSON array of objects
 do
-  -- fromJSON handles data from web APIs or save files stored as JSON.
-  -- Expects a JSON array where each element is an object with consistent keys.
-  local json = '[{"id":1,"name":"Alice","guild":"Phoenix"},{"id":2,"name":"Bob","guild":"Shadow"}]'
-  local roster = lurek.dataframe.fromJSON(json)
+  -- JSON is useful for web tools, save payloads, or launcher data.
+  local json = '[{"id":1,"quest":"signal","state":"open"},{"id":2,"quest":"forge","state":"done"}]'
+  local quests = lurek.dataframe.fromJSON(json)
 
-  lurek.log.info("guild roster: " .. roster:nrows() .. " members")
+  lurek.log.info("quest rows=" .. tostring(quests:nrows()))
 end
 --@api-stub: lurek.dataframe.fromBinary
--- Deserializes a dataframe from its compact binary format
+-- Restores a dataframe from binary data
 do
-  -- toBinary/fromBinary is the fastest serialization for save/load cycles.
-  -- Binary format preserves exact types and is smaller than CSV or JSON.
-  local original = lurek.dataframe.fromTable({
-    {x = 1.5, y = 2.3, entity = "player"},
-    {x = 4.0, y = 7.1, entity = "npc"},
+  -- Binary round trips keep the dataframe compact for save snapshots.
+  local snapshot = lurek.dataframe.fromTable({
+    {entity = "player", x = 18.5, y = 7.0, hp = 88},
+    {entity = "companion", x = 17.0, y = 7.5, hp = 64},
   })
 
-  -- Serialize to binary blob (suitable for file I/O or network transfer)
-  local blob = original:toBinary()
-
-  -- Restore the exact same dataframe structure
+  local blob = snapshot:toBinary()
   local restored = lurek.dataframe.fromBinary(blob)
-  lurek.log.info("restored " .. restored:nrows() .. " entities from binary")
+
+  lurek.log.info("binary restore hp=" .. tostring(restored:getValue(1, "hp")))
 end
 --@api-stub: lurek.dataframe.random
--- Generates a random dataframe from column type definitions
+-- Generates reproducible sample data
 do
-  -- random() is great for testing, procedural generation, or populating mock data.
-  -- Column defs: each entry is {column_name, type_hint}.
-  -- Supported hints: "id" (sequential int), "int" (random integer), "float" (random float), "name" (random name), "bool".
+  -- random() is handy for stress-testing UI tables without hand-writing rows.
   local defs = {
-    {"mob_id", "id"},      -- sequential 1, 2, 3...
-    {"hp", "int"},         -- random integers
-    {"speed", "float"},    -- random floats
-    {"name", "name"},      -- random name strings
+    {"npc_id", "id"},
+    {"name", "name"},
+    {"threat", "int"},
+    {"rare_spawn", "bool"},
   }
 
-  -- Generate 100 random mobs with seed 42 for reproducibility
-  local mob_pool = lurek.dataframe.random(defs, 100, 42)
-  lurek.log.info("generated " .. mob_pool:nrows() .. " random mobs")
+  -- The seed keeps generated rows stable between test runs.
+  local npc_pool = lurek.dataframe.random(defs, 12, 42)
+  lurek.log.info("generated npc rows=" .. tostring(npc_pool:nrows()))
 end
---@api-stub: LVecFrame:nrows
--- Returns the number of rows in this dataframe
+--@api-stub: LDataFrame:nrows
+-- Returns the number of dataframe rows
 do
-  -- Use nrows to check if a dataframe has data before processing
-  local df = lurek.dataframe.fromTable({{name = "Alice"}, {name = "Bob"}, {name = "Cara"}})
+  -- Guard game UI before reading the first row.
+  local party = lurek.dataframe.fromTable({
+    {slot = 1, hero = "Mira", hp = 80},
+    {slot = 2, hero = "Sol", hp = 55},
+    {slot = 3, hero = "Ren", hp = 72},
+  })
 
-  -- Common pattern: guard against empty frames before accessing values
-  if df:nrows() > 0 then
-    lurek.log.info("first player: " .. df:getValue(1, "name"))
+  if party:nrows() > 0 then
+    lurek.log.info("party size=" .. tostring(party:nrows()))
   end
 end
---@api-stub: LVecFrame:ncols
--- Returns the number of columns in this dataframe
+--@api-stub: LDataFrame:ncols
+-- Returns the number of dataframe columns
 do
-  -- ncols tells you how wide the schema is.
-  -- Useful for dynamic rendering (e.g., how many columns to draw in a HUD table).
-  local df = lurek.dataframe.fromTable({{x = 1, y = 2, z = 3, w = 4}})
+  -- Use ncols to size debug table headers or stat grids.
+  local loot = lurek.dataframe.fromTable({
+    {item = "medkit", rarity = "common", price = 30, stock = 4},
+  })
 
-  -- Iterate columns by index to build dynamic headers
-  for i = 1, df:ncols() do
-    lurek.log.info("column " .. i .. " = " .. df:columns()[i])
-  end
+  lurek.log.info("loot schema width=" .. tostring(loot:ncols()))
 end
---@api-stub: LVecFrame:columns
--- Returns an array table of column names in order
+--@api-stub: LDataFrame:columns
+-- Returns ordered column names
 do
-  -- columns() gives you the schema as a string array.
-  -- Useful for rendering table headers or validating imported data.
-  local df = lurek.dataframe.fromTable({{hp = 100, mp = 50, stamina = 80}})
-  local headers = df:columns()
+  -- Build a compact header row for a debug overlay.
+  local stats = lurek.dataframe.fromRows(
+    {"stat", "base", "bonus"},
+    {{"attack", 10, 3}, {"defense", 8, 1}}
+  )
 
-  -- headers = {"hp", "mp", "stamina"} (order matches creation)
-  for _, name in ipairs(headers) do
-    lurek.log.info("stat: " .. name)
-  end
+  local headers = stats:columns()
+  lurek.log.info("stat columns=" .. table.concat(headers, ","))
 end
 --@api-stub: LDataFrame:count
--- Returns the total count of non-nil items in this dataframe
+-- Returns the row count alias
 do
-  -- count() returns total cells (rows * cols) that are not nil.
-  -- Useful for sparsity checks on analytics data.
-  local df = lurek.dataframe.fromTable({
-    {event = "kill", ts = 1.0},
-    {event = "death", ts = 2.5},
-    {event = "kill", ts = 3.2},
+  -- count() mirrors nrows(), which is useful in generic table widgets.
+  local events = lurek.dataframe.fromTable({
+    {kind = "spawn", tick = 1},
+    {kind = "loot", tick = 8},
+    {kind = "checkpoint", tick = 21},
   })
-  local total_cells = df:count()
-  lurek.log.info("tracked " .. total_cells .. " data points this session")
+
+  lurek.log.info("event count=" .. tostring(events:count()))
 end
 --@api-stub: LDataFrame:removeColumn
--- Removes a column from this dataframe by name or index
+-- Removes a column from a dataframe
 do
-  -- Use removeColumn to strip sensitive or unnecessary data before export.
-  -- Example: remove internal IDs before showing a leaderboard to players.
-  local df = lurek.dataframe.fromTable({
-    {name = "Alice", internal_id = "a7f3", score = 9500},
-    {name = "Bob", internal_id = "b2c1", score = 8200},
+  -- Strip debug-only fields before showing data to players.
+  local leaderboard = lurek.dataframe.fromTable({
+    {name = "Mira", score = 9500, debug_seed = 181},
+    {name = "Sol", score = 8700, debug_seed = 182},
   })
 
-  -- Remove the internal field before serializing for display
-  df:removeColumn("internal_id")
-  lurek.log.info(df:toCSV())
+  leaderboard:removeColumn("debug_seed")
+  lurek.log.info("public columns=" .. tostring(leaderboard:ncols()))
 end
 --@api-stub: LDataFrame:rename
--- Renames a column (by name or index) to a new name
+-- Renames a column by name or index
 do
-  -- rename() is useful when loading external data with unfriendly headers.
-  -- CSV exports often have spaces or abbreviations that need normalizing.
-  local df = lurek.dataframe.fromCSV("Player Name,Pts,W/L\nAlice,1200,15/3\n")
+  -- Normalize imported labels before game code depends on them.
+  local imported = lurek.dataframe.fromCSV("Player Name,Pts\nMira,1200\nSol,980\n")
 
-  -- Normalize column names for easier programmatic access
-  df:rename("Player Name", "name")
-  df:rename("Pts", "points")
-  lurek.log.info("first column is now: " .. df:columns()[1])
+  imported:rename("Player Name", "player")
+  imported:rename("Pts", "score")
+
+  lurek.log.info("renamed columns=" .. table.concat(imported:columns(), ","))
 end
 --@api-stub: LDataFrame:getColumn
--- Returns all values in a column as an array table
+-- Reads a column as a Lua array
 do
-  -- getColumn extracts a full column as a plain Lua array.
-  -- Useful for feeding data into chart rendering or custom calculations.
-  local df = lurek.dataframe.fromTable({
-    {frame = 1, ms = 16.2},
-    {frame = 2, ms = 15.8},
-    {frame = 3, ms = 33.1},  -- spike!
+  -- Pull one stat into an array for custom UI bars or local math.
+  local damage_log = lurek.dataframe.fromTable({
+    {hit = 1, damage = 12},
+    {hit = 2, damage = 18},
+    {hit = 3, damage = 9},
   })
 
-  -- Get all frame times for plotting or anomaly detection
-  local times = df:getColumn("ms")
-  lurek.log.info("frame times: " .. times[1] .. ", " .. times[2] .. ", " .. times[3])
+  local damage = damage_log:getColumn("damage")
+  lurek.log.info("first hit damage=" .. tostring(damage[1]) .. ", hits=" .. tostring(#damage))
 end
 --@api-stub: LDataFrame:addRow
--- Appends a row and returns its one-based index
+-- Appends a row and returns its index
 do
-  -- addRow is the primary way to insert data at runtime.
-  -- Returns the new row's 1-based index, useful for immediate reference.
+  -- Add rows as game events happen, then keep the row id for follow-up edits.
   local event_log = lurek.dataframe.newDataFrame()
-  event_log:addColumn("event", "")
-  event_log:addColumn("timestamp", 0)
+  event_log:addColumn("kind", "")
+  event_log:addColumn("time_s", 0)
   event_log:addColumn("player", "")
 
-  -- Log a game event; the returned index lets you reference this row later
-  local idx = event_log:addRow({event = "boss_kill", timestamp = 125.4, player = "Alice"})
-  lurek.log.info("logged event at row " .. idx)
+  local index = event_log:addRow({kind = "boss_clear", time_s = 125.4, player = "Mira"})
+  event_log:setValue(index, "time_s", 124.9)
+
+  lurek.log.info("event row=" .. tostring(index))
 end
 --@api-stub: LDataFrame:removeRow
 -- Removes a row by one-based index
 do
-  -- removeRow deletes a specific entry. Rows after it shift down.
-  -- Example: removing a disconnected player from the active roster.
+  -- Remove a disconnected player before matchmaking starts.
   local roster = lurek.dataframe.fromTable({
-    {name = "Alice", status = "active"},
-    {name = "Bob", status = "disconnected"},
-    {name = "Cara", status = "active"},
+    {name = "Mira", status = "ready"},
+    {name = "Sol", status = "left"},
+    {name = "Ren", status = "ready"},
   })
 
-  -- Remove the disconnected player (row 2)
   roster:removeRow(2)
-  lurek.log.info("active players: " .. roster:nrows())
+  lurek.log.info("ready roster=" .. tostring(roster:nrows()))
 end
 --@api-stub: LDataFrame:getRow
--- Returns a row as a table keyed by column name
+-- Reads one row as a keyed table
 do
-  -- getRow returns a single row as {col_name = value, ...}.
-  -- Useful for reading one entity's full record.
+  -- Fetch a complete inventory slot for gameplay code.
   local inventory = lurek.dataframe.fromTable({
-    {slot = 1, item = "Health Potion", qty = 5},
-    {slot = 2, item = "Iron Sword", qty = 1},
+    {slot = 1, item = "medkit", qty = 5},
+    {slot = 2, item = "coil blade", qty = 1},
   })
 
-  -- Read slot 1 as a full record
-  local slot1 = inventory:getRow(1)
-  lurek.log.info(slot1.item .. " x" .. slot1.qty)
+  local slot = inventory:getRow(2)
+  lurek.log.info("equipped " .. tostring(slot.item) .. " x" .. tostring(slot.qty))
 end
 --@api-stub: LDataFrame:getValue
--- Returns one cell value by row index and column reference
+-- Reads one cell by row and column
 do
-  -- getValue is the fastest way to read a single cell.
-  -- Use it in tight loops or conditional checks.
-  local df = lurek.dataframe.fromTable({
-    {name = "Alice", hp = 80, max_hp = 100},
-    {name = "Bob", hp = 15, max_hp = 100},
+  -- Cell lookup is useful for quick HUD checks.
+  local party = lurek.dataframe.fromTable({
+    {name = "Mira", hp = 80, max_hp = 100},
+    {name = "Sol", hp = 15, max_hp = 100},
   })
 
-  -- Check if any player is critically low
-  for i = 1, df:nrows() do
-    local hp = df:getValue(i, "hp")
+  for row = 1, party:nrows() do
+    local hp = tonumber(party:getValue(row, "hp")) or 0
     if hp < 30 then
-      lurek.log.warn(df:getValue(i, "name") .. " is critically low: " .. hp .. " HP")
+      lurek.log.info(tostring(party:getValue(row, "name")) .. " needs healing")
     end
   end
 end
---@api-stub: LLazyQuery:head
--- Returns a new dataframe with the first N rows (default 5)
+--@api-stub: LDataFrame:head
+-- Returns the first rows as a new dataframe
 do
-  -- head() is useful for previewing large datasets or showing "top N" results.
-  local scores = lurek.dataframe.random({{"rank", "id"}, {"score", "int"}}, 100, 1)
+  -- Preview a long table without dumping every row to the log.
+  local queue = lurek.dataframe.fromRows(
+    {"rank", "player", "score"},
+    {{1, "Mira", 9500}, {2, "Sol", 8700}, {3, "Ren", 8300}, {4, "Ivo", 7600}}
+  )
 
-  -- Preview the first 3 entries
-  local top3 = scores:head(3)
-  lurek.log.info("top 3 preview:\n" .. top3:toString())
+  local podium = queue:head(3)
+  lurek.log.info("podium rows=" .. tostring(podium:nrows()))
 end
---@api-stub: LLazyQuery:tail
--- Returns a new dataframe with the last N rows (default 5)
+--@api-stub: LDataFrame:tail
+-- Returns the last rows as a new dataframe
 do
-  -- tail() shows the most recent entries. Ideal for event logs or chat history.
-  local events = lurek.dataframe.random({{"timestamp", "int"}, {"event", "name"}}, 50, 7)
+  -- Event logs often need the latest entries, not the whole history.
+  local events = lurek.dataframe.fromRows(
+    {"tick", "kind"},
+    {{1, "spawn"}, {8, "loot"}, {13, "hit"}, {21, "checkpoint"}}
+  )
 
-  -- Show the 5 most recent events
-  local recent = events:tail(5)
-  lurek.log.info("recent events:\n" .. recent:toString())
+  local recent = events:tail(2)
+  lurek.log.info("recent rows=" .. tostring(recent:nrows()))
 end
---@api-stub: LLazyQuery:slice
--- Returns a one-based inclusive row slice as a new dataframe
+--@api-stub: LDataFrame:slice
+-- Returns an inclusive row range
 do
-  -- slice(start, end) extracts a range of rows. Both indices are inclusive.
-  -- Great for pagination in a UI list.
-  local all_items = lurek.dataframe.random({{"id", "id"}, {"name", "name"}, {"price", "int"}}, 100, 2)
+  -- Slice pages a shop list without copying unrelated rows.
+  local shop = lurek.dataframe.random({{"id", "id"}, {"name", "name"}, {"price", "int"}}, 30, 2)
 
-  -- Page 2 of a 10-items-per-page list: rows 11 through 20
-  local page2 = all_items:slice(11, 20)
-  lurek.log.info("page 2 has " .. page2:nrows() .. " items")
+  local page_two = shop:slice(11, 20)
+  lurek.log.info("shop page rows=" .. tostring(page_two:nrows()))
 end
---@api-stub: LLazyQuery:select
--- Returns a new dataframe with only the specified columns
+--@api-stub: LDataFrame:select
+-- Keeps selected columns in a new dataframe
 do
-  -- select() projects specific columns, discarding the rest.
-  -- Useful for creating a "view" that only shows relevant fields.
-  local full_data = lurek.dataframe.fromTable({
-    {name = "Alice", hp = 80, mp = 30, x = 12.5, y = -3.2, internal_state = 7},
+  -- Create a player-facing view from a larger internal record.
+  local roster = lurek.dataframe.fromTable({
+    {callsign = "Mira", rank = 1, ready = true, secret_seed = 77},
+    {callsign = "Sol", rank = 2, ready = false, secret_seed = 88},
   })
 
-  -- HUD only needs name, hp, mp -- hide position and internal data
-  local hud_view = full_data:select("name", "hp", "mp")
-  lurek.log.info(hud_view:toString())
+  local public = roster:select("callsign", "rank", "ready")
+  lurek.log.info("public columns=" .. table.concat(public:columns(), ","))
 end
 --@api-stub: LDataFrame:unique
--- Returns unique values from a column as an array table
+-- Returns unique values from one column
 do
-  -- unique() extracts distinct values. Useful for building filter dropdowns
-  -- or counting how many different enemy types exist.
+  -- Distinct values are useful for filters and summary chips.
   local spawns = lurek.dataframe.fromTable({
-    {type = "goblin", zone = "forest"},
-    {type = "orc", zone = "mountain"},
-    {type = "goblin", zone = "cave"},
-    {type = "dragon", zone = "mountain"},
+    {enemy = "drone", zone = "hangar"},
+    {enemy = "brute", zone = "reactor"},
+    {enemy = "drone", zone = "bridge"},
+    {enemy = "warden", zone = "reactor"},
   })
 
-  local enemy_types = spawns:unique("type")
-  lurek.log.info("distinct enemy types: " .. #enemy_types)
+  local enemy_types = spawns:unique("enemy")
+  lurek.log.info("enemy type count=" .. tostring(#enemy_types))
 end
 --@api-stub: LDataFrame:groupBy
--- Groups rows by column value; returns a table of {key = sub-dataframe}
+-- Groups rows into keyed dataframes
 do
-  -- groupBy splits a dataframe into sub-frames keyed by column value.
-  -- Perfect for per-team stats, per-zone analysis, etc.
-  local match_data = lurek.dataframe.fromTable({
-    {team = "red",  player = "Alice", kills = 10},
-    {team = "blue", player = "Bob",   kills = 7},
-    {team = "red",  player = "Cara",  kills = 5},
-    {team = "blue", player = "Dave",  kills = 12},
+  -- Split encounter data by biome for local balancing.
+  local encounters = lurek.dataframe.fromTable({
+    {biome = "ice", enemy = "drone", threat = 3},
+    {biome = "lava", enemy = "brute", threat = 8},
+    {biome = "ice", enemy = "warden", threat = 6},
+    {biome = "lava", enemy = "drone", threat = 4},
   })
 
-  -- Split into per-team dataframes
-  local by_team = match_data:groupBy("team")
-  lurek.log.info("red team players: " .. by_team["red"]:nrows())
-  lurek.log.info("blue team players: " .. by_team["blue"]:nrows())
+  local by_biome = encounters:groupBy("biome")
+  lurek.log.info("ice encounters=" .. tostring(by_biome["ice"]:nrows()))
 end
---@api-stub: LDatabase:merge
--- Appends all rows from another dataframe into this one (in-place)
+--@api-stub: LDataFrame:merge
+-- Appends rows from another dataframe
 do
-  -- merge() concatenates two frames vertically.
-  -- Use it to combine data from multiple sources (e.g., round results).
-  local round1 = lurek.dataframe.fromTable({{player = "Alice", score = 500}})
-  local round2 = lurek.dataframe.fromTable({{player = "Alice", score = 700}})
+  -- Merge per-round rewards into one match history.
+  local round_one = lurek.dataframe.fromTable({
+    {player = "Mira", credits = 120},
+    {player = "Sol", credits = 90},
+  })
+  local round_two = lurek.dataframe.fromTable({
+    {player = "Mira", credits = 160},
+    {player = "Ren", credits = 110},
+  })
 
-  -- Combine both rounds into a single history
-  round1:merge(round2)
-  lurek.log.info("total records after merge: " .. round1:nrows())
+  round_one:merge(round_two)
+  lurek.log.info("merged reward rows=" .. tostring(round_one:nrows()))
 end
 --@api-stub: LDataFrame:countBy
--- Counts occurrences of each value in a column; returns a new dataframe
+-- Counts occurrences of values in a column
 do
-  -- countBy creates a frequency table. Useful for finding the most common item,
-  -- most-picked weapon, or most-visited zone.
+  -- Frequency tables highlight common drops or popular choices.
   local loot_drops = lurek.dataframe.fromTable({
-    {item = "potion"}, {item = "gold"}, {item = "potion"},
-    {item = "gem"}, {item = "gold"}, {item = "potion"},
+    {item = "medkit"}, {item = "credits"}, {item = "medkit"},
+    {item = "core"}, {item = "credits"}, {item = "medkit"},
   })
 
-  -- Result has columns: the grouped column and "count"
-  local freq = loot_drops:countBy("item")
-  lurek.log.info("loot frequency:\n" .. freq:toString())
+  local frequency = loot_drops:countBy("item")
+  lurek.log.info("loot groups=" .. tostring(frequency:nrows()))
 end
---@api-stub: LLazyQuery:dropNil
--- Returns a new dataframe with rows where a column is nil removed
+--@api-stub: LDataFrame:dropNil
+-- Drops rows with nil in a chosen column
 do
-  -- dropNil filters out incomplete records.
-  -- Common when optional fields are missing for some entries.
-  local survey = lurek.dataframe.fromTable({
-    {player = "Alice", rating = 5},
-    {player = "Bob", rating = nil},   -- Bob didn't answer
-    {player = "Cara", rating = 4},
+  -- Remove incomplete feedback before computing satisfaction scores.
+  local feedback = lurek.dataframe.fromTable({
+    {player = "Mira", rating = 5, note = "fast"},
+    {player = "Sol", rating = nil, note = "left early"},
+    {player = "Ren", rating = 4, note = "clear"},
   })
 
-  -- Only process rows where rating is present
-  local valid = survey:dropNil("rating")
-  lurek.log.info("valid responses: " .. valid:nrows())
+  local valid = feedback:dropNil("rating")
+  lurek.log.info("rated sessions=" .. tostring(valid:nrows()))
 end
 --@api-stub: LDataFrame:sample
--- Returns a random subset of N rows (optional seed for reproducibility)
+-- Returns a random subset of rows
 do
-  -- sample() picks random rows without replacement.
-  -- Useful for random encounters, test subsets, or A/B testing.
-  local all_mobs = lurek.dataframe.random({{"id", "id"}, {"hp", "int"}, {"name", "name"}}, 1000, 9)
+  -- Seeded sampling gives reproducible encounter previews.
+  local all_mobs = lurek.dataframe.random({{"id", "id"}, {"name", "name"}, {"hp", "int"}}, 50, 9)
 
-  -- Pick 50 random mobs for this dungeon floor (seed 123 for consistent generation)
-  local floor_mobs = all_mobs:sample(50, 123)
-  lurek.log.info("spawning " .. floor_mobs:nrows() .. " mobs on this floor")
+  local floor_pack = all_mobs:sample(5, 123)
+  lurek.log.info("sampled floor mobs=" .. tostring(floor_pack:nrows()))
 end
 --@api-stub: LDataFrame:describe
--- Returns summary statistics (count, mean, std, min, max) for numeric columns
+-- Returns descriptive statistics for numeric columns
 do
-  -- describe() gives you a quick statistical overview of your data.
-  -- Returns a dataframe where rows are statistics and columns are your numeric fields.
-  local combat_log = lurek.dataframe.random({{"damage", "int"}, {"heal", "int"}}, 200, 11)
-
-  -- Get min, max, mean, std for damage and heal at a glance
-  local summary = combat_log:describe()
-  lurek.log.info("combat stats:\n" .. summary:toString())
-end
---@api-stub: LDataFrame:sum
--- Returns the numeric sum of a column
-do
-  -- sum() totals all values in a numeric column.
-  -- Use for total damage dealt, total gold earned, total distance traveled, etc.
-  local hits = lurek.dataframe.fromTable({
-    {source = "sword", dmg = 12},
-    {source = "fireball", dmg = 45},
-    {source = "arrow", dmg = 8},
+  -- Use describe() for a quick balance pass over numeric combat logs.
+  local combat_log = lurek.dataframe.fromTable({
+    {damage = 12, healing = 0},
+    {damage = 24, healing = 6},
+    {damage = 8, healing = 12},
+    {damage = 30, healing = 0},
   })
 
-  local total_damage = hits:sum("dmg")
-  lurek.log.info("total damage this combo: " .. total_damage)
+  local summary = combat_log:describe()
+  lurek.log.info("stat rows=" .. tostring(summary:nrows()))
+end
+--@api-stub: LDataFrame:sum
+-- Sums a numeric column
+do
+  -- Sum total combo damage for scoring and achievements.
+  local hits = lurek.dataframe.fromTable({
+    {source = "slash", damage = 12},
+    {source = "dash", damage = 18},
+    {source = "finisher", damage = 45},
+  })
+
+  local total = hits:sum("damage")
+  lurek.log.info("combo damage=" .. tostring(total))
 end
 --@api-stub: LDataFrame:mean
--- Returns the arithmetic mean of a numeric column
+-- Computes the average of a numeric column
 do
-  -- mean() computes the average. Useful for performance monitoring or balance analysis.
+  -- Average frame time is easier to scan than a full trace.
   local frame_stats = lurek.dataframe.fromTable({
     {frame = 1, dt_ms = 16.1},
     {frame = 2, dt_ms = 16.4},
-    {frame = 3, dt_ms = 32.0},  -- dropped frame
+    {frame = 3, dt_ms = 32.0},
     {frame = 4, dt_ms = 15.9},
   })
 
   local avg_dt = frame_stats:mean("dt_ms")
-  lurek.log.info("average frame time: " .. string.format("%.1f", avg_dt) .. " ms")
+  lurek.log.info("average frame ms=" .. string.format("%.1f", avg_dt))
 end
 --@api-stub: LDataFrame:min
--- Returns the minimum value of a column
+-- Finds the minimum value in a column
 do
-  -- min() finds the smallest value. Useful for best scores, fastest times, lowest prices.
+  -- Minimum time is the best speedrun attempt.
   local speedrun = lurek.dataframe.fromTable({
     {attempt = 1, time_s = 142.5},
     {attempt = 2, time_s = 138.2},
@@ -452,12 +423,12 @@ do
   })
 
   local best = speedrun:min("time_s")
-  lurek.log.info("personal best: " .. best .. "s")
+  lurek.log.info("best time=" .. tostring(best) .. "s")
 end
 --@api-stub: LDataFrame:max
--- Returns the maximum value of a column
+-- Finds the maximum value in a column
 do
-  -- max() finds the largest value. Use for high scores, max damage, peak values.
+  -- Maximum score marks the season best.
   local season_scores = lurek.dataframe.fromTable({
     {week = 1, score = 1200},
     {week = 2, score = 4500},
@@ -465,82 +436,77 @@ do
   })
 
   local high_score = season_scores:max("score")
-  lurek.log.info("season high score: " .. high_score)
+  lurek.log.info("season high score=" .. tostring(high_score))
 end
 --@api-stub: LDataFrame:median
--- Returns the median (middle value) of a numeric column
+-- Computes the median of a numeric column
 do
-  -- median() is robust against outliers unlike mean().
-  -- Use it for "typical" frame time or "typical" damage output.
+  -- Median gives a stable typical value when one sample spikes.
   local frame_times = lurek.dataframe.fromTable({
-    {ms = 16}, {ms = 16}, {ms = 17}, {ms = 200},  -- one huge spike
+    {ms = 16}, {ms = 16}, {ms = 17}, {ms = 200},
   })
 
-  -- median (16.5) is much more representative than mean (~62)
   local typical = frame_times:median("ms")
-  lurek.log.info("typical frame time: " .. typical .. " ms")
+  lurek.log.info("typical frame ms=" .. tostring(typical))
 end
 --@api-stub: LDataFrame:stddev
--- Returns the standard deviation of a numeric column
+-- Computes standard deviation for a column
 do
-  -- stddev() measures spread. Low stddev = consistent performance; high = erratic.
-  local perf = lurek.dataframe.random({{"frame_ms", "int"}}, 60, 3)
-
-  local spread = perf:stddev("frame_ms")
-  lurek.log.info("frame time stddev: " .. string.format("%.2f", spread) .. " ms")
-end
---@api-stub: LDataFrame:variance
--- Returns the variance of a numeric column
-do
-  -- variance() is stddev squared. Useful in statistical formulas.
-  -- High variance in damage output = inconsistent weapon balance.
-  local hits = lurek.dataframe.random({{"dmg", "int"}}, 100, 4)
-
-  local v = hits:variance("dmg")
-  lurek.log.info("damage variance: " .. string.format("%.1f", v))
-end
---@api-stub: LDataFrame:fillNil
--- Replaces nil cells in a column with a specified value
-do
-  -- fillNil patches missing data with a default.
-  -- Use before computations that would fail on nil values.
-  local scores = lurek.dataframe.fromTable({
-    {player = "Alice", score = 10},
-    {player = "Bob", score = nil},   -- Bob crashed mid-game
-    {player = "Cara", score = 5},
+  -- Low spread means the weapon is predictable; high spread feels swingy.
+  local damage_rolls = lurek.dataframe.fromTable({
+    {roll = 10}, {roll = 12}, {roll = 11}, {roll = 28}, {roll = 9},
   })
 
-  -- Replace nil with 0 so sum/mean work correctly
+  local spread = damage_rolls:stddev("roll")
+  lurek.log.info("damage spread=" .. string.format("%.2f", spread))
+end
+--@api-stub: LDataFrame:variance
+-- Computes variance for a numeric column
+do
+  -- Variance is useful when comparing balance sets offline.
+  local weapon_tests = lurek.dataframe.fromTable({
+    {damage = 18}, {damage = 20}, {damage = 17}, {damage = 24},
+  })
+
+  local variance = weapon_tests:variance("damage")
+  lurek.log.info("weapon variance=" .. string.format("%.1f", variance))
+end
+--@api-stub: LDataFrame:fillNil
+-- Replaces nil cells in one column
+do
+  -- Fill missing scores before showing totals.
+  local scores = lurek.dataframe.fromTable({
+    {player = "Mira", score = 10},
+    {player = "Sol", score = nil},
+    {player = "Ren", score = 5},
+  })
+
   scores:fillNil("score", 0)
-  lurek.log.info("total score after fill: " .. scores:sum("score"))
+  lurek.log.info("filled score total=" .. tostring(scores:sum("score")))
 end
 --@api-stub: LDataFrame:toCSV
--- Serializes this dataframe to CSV text
+-- Serializes a dataframe to CSV text
 do
-  -- toCSV creates a string suitable for file export or clipboard copy.
-  -- First row is column headers, subsequent rows are values.
+  -- Keep the CSV in memory for a copy button or debug console.
   local leaderboard = lurek.dataframe.fromTable({
-    {rank = 1, name = "Alice", score = 9500},
-    {rank = 2, name = "Bob", score = 8200},
+    {rank = 1, name = "Mira", score = 9500},
+    {rank = 2, name = "Sol", score = 8200},
   })
 
   local csv = leaderboard:toCSV()
-  -- Write to disk if filesystem is available
-  if lurek.fs then lurek.fs.write("save/leaderboard.csv", csv) end
-  lurek.log.info("exported CSV: " .. #csv .. " bytes")
+  lurek.log.info("csv bytes=" .. tostring(#csv))
 end
---@api-stub: LDatabase:toJSON
--- Serializes this dataframe to a JSON array of objects
+--@api-stub: LDataFrame:toJSON
+-- Serializes a dataframe to JSON text
 do
-  -- toJSON produces a JSON string for web API output or inter-process communication.
-  local save_data = lurek.dataframe.fromTable({
-    {slot = 1, name = "World 1", playtime = 3600},
-    {slot = 2, name = "World 2", playtime = 1200},
+  -- JSON is convenient for UI panels or external tooling payloads.
+  local save_slots = lurek.dataframe.fromTable({
+    {slot = 1, name = "Station", playtime_s = 3600},
+    {slot = 2, name = "Outpost", playtime_s = 1200},
   })
 
-  local json = save_data:toJSON()
-  if lurek.fs then lurek.fs.write("save/slots.json", json) end
-  lurek.log.info("exported JSON: " .. #json .. " bytes")
+  local json = save_slots:toJSON()
+  lurek.log.info("json bytes=" .. tostring(#json))
 end
 --@api-stub: LDataFrame:toBinary
 -- Serializes this dataframe to a compact binary format
@@ -553,7 +519,6 @@ do
   })
 
   local blob = world_state:toBinary()
-  if lurek.fs then lurek.fs.write("save/world.lvdf", blob) end
   lurek.log.info("binary size: " .. #blob .. " bytes")
 end
 --@api-stub: LDataFrame:toTable
@@ -600,7 +565,7 @@ do
   -- Great for lurek.log.info during development
   lurek.log.info("party:\n" .. party:toString())
 end
---@api-stub: LDatabase:query
+--@api-stub: LDataFrame:query
 -- Runs a SQL SELECT query against this dataframe (table alias is "t")
 do
   -- query() lets you use SQL syntax for complex filtering and projection.
@@ -712,7 +677,7 @@ do
   df:setColumnFromF64("x", {1.5, 2.5, 3.5})
   lurek.log.info("sum of x after set: " .. df:sum("x"))  -- 7.5
 end
---@api-stub: LVecFrame:type
+--@api-stub: LDataFrame:type
 -- Returns the type name string "DataFrame" for this handle
 do
   -- type() and typeOf() let you do runtime type checking on dataframe handles.
@@ -721,7 +686,7 @@ do
     lurek.log.info("confirmed: this is a DataFrame handle")
   end
 end
---@api-stub: LVecFrame:typeOf
+--@api-stub: LDataFrame:typeOf
 -- Returns true if this handle matches the given type name
 do
   -- typeOf checks against "LDataFrame", "DataFrame", or "Object".
@@ -845,7 +810,6 @@ do
   db:addTable("inventory", lurek.dataframe.fromTable({{item = "potion", qty = 3}}))
 
   local json = db:toJSON()
-  if lurek.fs then lurek.fs.write("save/full_save.json", json) end
   lurek.log.info("database JSON: " .. #json .. " bytes")
 end
 --@api-stub: LDatabase:query
@@ -871,7 +835,7 @@ do
     lurek.log.info("joined result: " .. result:nrows() .. " rows")
   end)
 end
---@api-stub: LVecFrame:type
+--@api-stub: LDatabase:type
 -- Returns the type name string "Database" for this handle
 do
   local db = lurek.dataframe.newDatabase()
@@ -879,7 +843,7 @@ do
     lurek.log.info("confirmed: this is a Database handle")
   end
 end
---@api-stub: LVecFrame:typeOf
+--@api-stub: LDatabase:typeOf
 -- Returns true if this handle matches the given type name
 do
   -- typeOf checks against "LDatabase", "Database", or "Object".
@@ -1277,7 +1241,7 @@ do
   local r = df:corr("playtime", "skill")
   lurek.log.info("playtime-skill correlation: " .. string.format("%.3f", r))
 end
---@api-stub: LLazyQuery:filter
+--@api-stub: LDataFrame:filter
 -- Returns a new dataframe with rows matching a condition (col op val)
 do
   -- filter() creates a subset based on a comparison.
@@ -1441,7 +1405,7 @@ do
   df:setValue(1, "score", 150)
   lurek.log.info("updated score: " .. df:getValue(1, "score"))
 end
---@api-stub: LLazyQuery:sort
+--@api-stub: LDataFrame:sort
 -- Returns a new sorted dataframe by column (ascending or descending)
 do
   -- sort() orders rows by a column. Use for leaderboards, priority queues, etc.
@@ -1571,289 +1535,123 @@ do
   local q = df:lazy()
   lurek.log.info("lazy query type: " .. tostring(q:type()))
 end
---@api-stub: LLazyQuery
--- Lazy query pipeline: chain filter, sort, head, tail, limit, slice, select, dropNil, then collect
+--@api-stub: LLazyQuery:collect
+-- Executes the lazy query and returns a concrete dataframe.
 do
-  -- LazyQuery chains multiple operations before executing them all at once.
-  -- This can be more efficient than applying each operation individually.
+  -- collect() is the point where a lazy pipeline runs.
   local df = lurek.dataframe.fromTable({
-    {name = "alice", hp = 12, mana = 5, team = "red"},
-    {name = "bob", hp = 7, mana = nil, team = "blue"},
-    {name = "cara", hp = 20, mana = 9, team = "red"},
-    {name = "dave", hp = 15, mana = 3, team = "blue"},
+    {name = "alice", hp = 12},
+    {name = "bob", hp = 7},
+    {name = "cara", hp = 20},
   })
 
-  -- Verify type
-  local q = df:lazy()
-  local is_lazy = q:typeOf("LLazyQuery")
-  lurek.log.info("is lazy query: " .. tostring(is_lazy))
+  local result = df:lazy():filter("hp", ">", 10):collect()
+  lurek.log.info("lazy collected rows: " .. result:nrows())
+end
+--@api-stub: LLazyQuery:dropNil
+-- Adds a step that removes rows where a column is nil.
+do
+  -- Use dropNil before numeric work when imported rows have missing values.
+  local df = lurek.dataframe.fromTable({
+    {name = "alice", mana = 5},
+    {name = "bob", mana = nil},
+    {name = "cara", mana = 9},
+  })
 
-  -- Chain: filter hp > 10, then collect results
-  local filtered = df:lazy():filter("hp", ">", 10):collect()
+  local complete = df:lazy():dropNil("mana"):collect()
+  lurek.log.info("lazy non-nil rows: " .. complete:nrows())
+end
+--@api-stub: LLazyQuery:filter
+-- Adds a comparison filter to a lazy query pipeline.
+do
+  -- Lazy filters can be chained with sort, select, and limit before collect().
+  local df = lurek.dataframe.fromTable({
+    {name = "alice", hp = 12},
+    {name = "bob", hp = 7},
+    {name = "cara", hp = 20},
+  })
 
-  -- Chain: sort by hp descending, take top 2
-  local sorted = df:lazy():sort("hp", false):head(2):collect()
+  local wounded = df:lazy():filter("hp", "<", 15):collect()
+  lurek.log.info("lazy wounded rows: " .. wounded:nrows())
+end
+--@api-stub: LLazyQuery:head
+-- Keeps the first rows in a lazy query pipeline.
+do
+  -- head() is useful after sorting when only the first page is needed.
+  local df = lurek.dataframe.fromTable({
+    {name = "alice", score = 50},
+    {name = "bob", score = 80},
+    {name = "cara", score = 70},
+  })
 
-  -- Chain: get last 2 rows
-  local tailed = df:lazy():tail(2):collect()
-
-  -- Chain: limit to 3 rows maximum
-  local limited = df:lazy():limit(3):collect()
-
-  -- Chain: slice rows 2 through 4 (inclusive)
-  local sliced = df:lazy():slice(2, 4):collect()
-
-  -- Chain: drop rows where mana is nil
-  local non_nil = df:lazy():dropNil("mana"):collect()
-
-  -- Chain: keep only name and hp columns
-  local selected = df:lazy():select({"name", "hp"}):collect()
-
-  lurek.log.info("filtered: " .. filtered:nrows() .. " rows")
-  lurek.log.info("top 2 by hp: " .. sorted:nrows() .. " rows")
-  lurek.log.info("tailed: " .. tailed:nrows() .. " rows")
-  lurek.log.info("limited: " .. limited:nrows() .. " rows")
-  lurek.log.info("sliced: " .. sliced:nrows() .. " rows")
-  lurek.log.info("non-nil mana: " .. non_nil:nrows() .. " rows")
-  lurek.log.info("selected cols: " .. selected:ncols() .. " cols")
-end
-print("content/examples/dataframe.lua")
---@api-stub: LDataFrame:nrows
--- Returns the number of rows in this dataframe.
-do
-  -- Check row count after loading player stats for a leaderboard.
-  local df = lurek.dataframe.fromTable({
-    { name = "Alice", score = 950 },
-    { name = "Bob", score = 870 },
-    { name = "Carol", score = 1020 },
-  })
-  lurek.log.info("leaderboard rows: " .. df:nrows())
-end
---@api-stub: LDataFrame:ncols
--- Returns the number of columns in this dataframe.
-do
-  -- Verify column count matches the expected schema.
-  local df = lurek.dataframe.fromTable({
-    { name = "Sword", damage = 12, weight = 3 },
-  })
-  lurek.log.debug("item schema cols: " .. df:ncols())
-end
---@api-stub: LDataFrame:columns
--- Returns all column names in order. This method is available to Lua scripts.
-do
-  -- List columns for a debug table header in the inventory UI.
-  local df = lurek.dataframe.fromTable({
-    { id = 1, name = "Potion", qty = 5 },
-  })
-  local cols = df:columns()
-  lurek.log.debug("columns: " .. table.concat(cols, ", "))
-end
---@api-stub: LDataFrame:filter
--- Returns rows whose column value matches a comparison.
-do
-  -- Filter enemies whose HP is above a threshold for boss-wave selection.
-  local df = lurek.dataframe.fromTable({
-    { enemy = "Goblin", hp = 30 },
-    { enemy = "Orc", hp = 80 },
-    { enemy = "Dragon", hp = 500 },
-  })
-  local strong = df:filter("hp", ">", 50)
-  lurek.log.info("strong enemies: " .. strong:nrows())
-end
---@api-stub: LDataFrame:sort
--- Returns rows sorted by a column. This method is available to Lua scripts.
-do
-  -- Sort highscores descending for display.
-  local df = lurek.dataframe.fromTable({
-    { name = "Alice", score = 950 },
-    { name = "Bob", score = 1200 },
-    { name = "Carol", score = 870 },
-  })
-  local sorted = df:sort("score", false)
-  lurek.log.info("top scorer row count: " .. sorted:nrows())
-end
---@api-stub: LDataFrame:head
--- Returns the first rows of this dataframe.
-do
-  -- Preview the first 3 inventory items for a quick tooltip.
-  local df = lurek.dataframe.fromTable({
-    { item = "Sword", qty = 1 },
-    { item = "Shield", qty = 1 },
-    { item = "Potion", qty = 5 },
-    { item = "Arrow", qty = 20 },
-  })
-  local preview = df:head(3)
-  lurek.log.debug("preview rows: " .. preview:nrows())
-end
---@api-stub: LDataFrame:tail
--- Returns the last rows of this dataframe.
-do
-  -- Show the most recent combat log entries.
-  local df = lurek.dataframe.fromTable({
-    { turn = 1, action = "attack" },
-    { turn = 2, action = "defend" },
-    { turn = 3, action = "heal" },
-    { turn = 4, action = "flee" },
-  })
-  local recent = df:tail(2)
-  lurek.log.debug("recent log rows: " .. recent:nrows())
-end
---@api-stub: LDataFrame:slice
--- Returns a one-based inclusive row slice.
-do
-  -- Paginate crafting recipes: show page 2 (rows 4-6).
-  local df = lurek.dataframe.fromTable({
-    { recipe = "Sword" }, { recipe = "Shield" }, { recipe = "Bow" },
-    { recipe = "Staff" }, { recipe = "Helm" }, { recipe = "Boots" },
-  })
-  local page2 = df:slice(4, 6)
-  lurek.log.debug("page 2 recipes: " .. page2:nrows())
-end
---@api-stub: LDataFrame:select
--- Returns a dataframe with selected columns.
-do
-  -- Extract only name and score for the leaderboard display.
-  local df = lurek.dataframe.fromTable({
-    { name = "Alice", score = 950, guild = "Knights" },
-    { name = "Bob", score = 870, guild = "Mages" },
-  })
-  local view = df:select("name", "score")
-  lurek.log.debug("selected cols: " .. view:ncols())
-end
---@api-stub: LDataFrame:merge
--- Appends another dataframe into this dataframe in place.
-do
-  -- Merge wave-1 and wave-2 enemy lists into a combined spawn table.
-  local wave1 = lurek.dataframe.fromTable({
-    { enemy = "Goblin", hp = 30 },
-  })
-  local wave2 = lurek.dataframe.fromTable({
-    { enemy = "Orc", hp = 80 },
-  })
-  wave1:merge(wave2)
-  lurek.log.info("combined spawn count: " .. wave1:nrows())
-end
---@api-stub: LDataFrame:dropNil
--- Returns rows where the chosen column is not nil.
-do
-  -- Remove loot entries with no rarity assigned before display.
-  local df = lurek.dataframe.fromTable({
-    { item = "Gem", rarity = "rare" },
-    { item = "Rock", rarity = nil },
-    { item = "Ring", rarity = "epic" },
-  })
-  local clean = df:dropNil("rarity")
-  lurek.log.debug("valid loot rows: " .. clean:nrows())
-end
---@api-stub: LDataFrame:toJSON
--- Serializes this dataframe to JSON text.
-do
-  -- Export save-game stats to a JSON string for cloud sync.
-  local df = lurek.dataframe.fromTable({
-    { stat = "playtime", value = 3600 },
-    { stat = "deaths", value = 7 },
-  })
-  local json = df:toJSON()
-  lurek.log.debug("json length: " .. #json)
-end
---@api-stub: LDataFrame:query
--- Runs a SQL-style query against this dataframe.
-do
-  -- Query items worth more than 100 gold using SQL syntax.
-  local df = lurek.dataframe.fromTable({
-    { item = "Sword", gold = 150 },
-    { item = "Stick", gold = 5 },
-    { item = "Shield", gold = 120 },
-  })
-  local expensive = df:query("SELECT * WHERE gold > 100")
-  lurek.log.info("expensive items: " .. expensive:nrows())
-end
---@api-stub: LDataFrame:type
--- Returns the Lua-visible type name for this dataframe handle.
-do
-  -- Identify handle type in a debug inspector.
-  local df = lurek.dataframe.fromTable({ { x = 1 } })
-  lurek.log.debug("df type: " .. df:type())
-end
---@api-stub: LDataFrame:typeOf
--- Returns whether this dataframe handle matches a supported type name.
-do
-  -- Type-guard before calling dataframe-specific methods.
-  local df = lurek.dataframe.fromTable({ { x = 1 } })
-  if df:typeOf("LDataFrame") then lurek.log.debug("confirmed LDataFrame") end
-end
---@api-stub: LDatabase:type
--- Returns the Lua-visible type name for this database handle.
-do
-  -- Identify handle type in a debug inspector.
-  local db = lurek.dataframe.newDatabase()
-  lurek.log.debug("db type: " .. db:type())
-end
---@api-stub: LDatabase:typeOf
--- Returns whether this database handle matches a supported type name.
-do
-  -- Type-guard before running database-specific operations.
-  local db = lurek.dataframe.newDatabase()
-  if db:typeOf("LDatabase") then lurek.log.debug("confirmed LDatabase") end
-end
---@api-stub: LGroupedFrame:type
--- Returns the Lua-visible type name for this grouped frame handle.
-do
-  -- Identify handle type in a debug inspector.
-  local df = lurek.dataframe.fromTable({
-    { team = "red", score = 10 },
-    { team = "blue", score = 20 },
-  })
-  local grouped = df:groupByObj("team")
-  lurek.log.debug("grouped type: " .. grouped:type())
-end
---@api-stub: LGroupedFrame:typeOf
--- Returns whether this grouped frame handle matches a supported type name.
-do
-  -- Type-guard before calling grouped-frame aggregation methods.
-  local df = lurek.dataframe.fromTable({
-    { team = "red", score = 10 },
-    { team = "blue", score = 20 },
-  })
-  local grouped = df:groupByObj("team")
-  if grouped:typeOf("LGroupedFrame") then lurek.log.debug("confirmed LGroupedFrame") end
+  local first_two = df:lazy():sort("score", false):head(2):collect()
+  lurek.log.info("lazy head rows: " .. first_two:nrows())
 end
 --@api-stub: LLazyQuery:limit
--- Adds a row limit step to the lazy query.
+-- Caps the number of rows returned by a lazy query pipeline.
 do
-  -- Limit results to top-5 scorers before materializing the query.
-  local df = lurek.dataframe.fromTable({
-    { name = "A", score = 10 }, { name = "B", score = 20 },
-    { name = "C", score = 30 }, { name = "D", score = 40 },
-    { name = "E", score = 50 }, { name = "F", score = 60 },
-  })
-  local lazy = df:lazy():limit(5)
-  lurek.log.debug("lazy query built with limit 5")
+  -- limit() protects UI views from accidentally rendering very large tables.
+  local df = lurek.dataframe.random({{"id", "id"}, {"score", "int"}}, 20, 7)
+  local page = df:lazy():limit(5):collect()
+  lurek.log.info("lazy limited rows: " .. page:nrows())
 end
---@api-stub: LLazyQuery:collect
--- Executes the lazy query and returns a dataframe.
+--@api-stub: LLazyQuery:select
+-- Keeps selected columns in a lazy query pipeline.
 do
-  -- Materialize a lazy query into a concrete dataframe for rendering.
+  -- Lazy select uses an array table of column names.
   local df = lurek.dataframe.fromTable({
-    { item = "Sword", gold = 150 },
-    { item = "Stick", gold = 5 },
+    {name = "alice", hp = 12, team = "red"},
+    {name = "bob", hp = 7, team = "blue"},
   })
-  local result = df:lazy():limit(10):collect()
-  lurek.log.info("collected rows: " .. result:nrows())
+
+  local public = df:lazy():select({"name", "hp"}):collect()
+  lurek.log.info("lazy selected columns: " .. public:ncols())
+end
+--@api-stub: LLazyQuery:slice
+-- Keeps a one-based inclusive row range in a lazy query pipeline.
+do
+  -- slice() is useful for fixed pages after an earlier sort step.
+  local df = lurek.dataframe.random({{"id", "id"}, {"score", "int"}}, 12, 11)
+  local middle = df:lazy():slice(4, 8):collect()
+  lurek.log.info("lazy sliced rows: " .. middle:nrows())
+end
+--@api-stub: LLazyQuery:sort
+-- Adds a sort step to a lazy query pipeline.
+do
+  -- The optional boolean controls ascending order; false means descending.
+  local df = lurek.dataframe.fromTable({
+    {name = "alice", score = 50},
+    {name = "bob", score = 80},
+    {name = "cara", score = 70},
+  })
+
+  local sorted = df:lazy():sort("score", false):collect()
+  lurek.log.info("lazy sorted rows: " .. sorted:nrows())
+end
+--@api-stub: LLazyQuery:tail
+-- Keeps the last rows in a lazy query pipeline.
+do
+  -- tail() is a compact way to read the newest rows from an ordered log.
+  local df = lurek.dataframe.fromRows(
+    {"tick", "event"},
+    {{1, "spawn"}, {2, "hit"}, {3, "loot"}, {4, "exit"}}
+  )
+
+  local recent = df:lazy():tail(2):collect()
+  lurek.log.info("lazy tail rows: " .. recent:nrows())
 end
 --@api-stub: LLazyQuery:type
 -- Returns the Lua-visible type name for this lazy query handle.
 do
-  -- Identify handle type in a debug inspector.
-  local df = lurek.dataframe.fromTable({ { x = 1 } })
-  local lq = df:lazy()
-  lurek.log.debug("lazy query type: " .. lq:type())
+  -- type() is useful in debug inspectors that handle several userdata kinds.
+  local query = lurek.dataframe.fromTable({{x = 1}}):lazy()
+  lurek.log.info("lazy type: " .. query:type())
 end
 --@api-stub: LLazyQuery:typeOf
--- Returns whether this lazy query handle matches a supported type name.
+-- Checks whether this userdata is a lazy query handle.
 do
-  -- Type-guard before chaining lazy operations.
-  local df = lurek.dataframe.fromTable({ { x = 1 } })
-  local lq = df:lazy()
-  if lq:typeOf("LLazyQuery") then lurek.log.debug("confirmed LLazyQuery") end
+  -- typeOf accepts LLazyQuery, LazyQuery, and Object.
+  local query = lurek.dataframe.fromTable({{x = 1}}):lazy()
+  lurek.log.info("lazy typeOf: " .. tostring(query:typeOf("LLazyQuery")))
 end
+print("content/examples/dataframe.lua")

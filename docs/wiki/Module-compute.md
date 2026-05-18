@@ -4,125 +4,127 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
-- [Purpose](#purpose)
-- [Summary](#summary)
-- [Minimal Module Example](#minimal-module-example)
-- [Key Types](#key-types)
-- [API Overview](#api-overview)
-- [Module Functions](#module-functions)
-  - [lurek.compute.affine2d(tx: number, ty: number, angle_rad: number, sx: number, sy: number) -> LArray](#lurekcomputeaffine2dtx-number-ty-number-anglerad-number-sx-number-sy-number-larray)
-  - [lurek.compute.fft(samples: table) -> table](#lurekcomputefftsamples-table-table)
-  - [lurek.compute.fftMagnitude(samples: table) -> number[]](#lurekcomputefftmagnitudesamples-table-number)
-  - [lurek.compute.fromTable(data: table, [shape]: table, [dtype]: string) -> LArray](#lurekcomputefromtabledata-table-shape-table-dtype-string-larray)
-  - [lurek.compute.gaussianKernel(size: integer, sigma: number) -> LArray](#lurekcomputegaussiankernelsize-integer-sigma-number-larray)
-  - [lurek.compute.getParThreshold() -> integer](#lurekcomputegetparthreshold-integer)
-  - [lurek.compute.ifft(freqs: table) -> number[]](#lurekcomputeifftfreqs-table-number)
-  - [lurek.compute.newArray(shape: table, [dtype]: string) -> LArray](#lurekcomputenewarrayshape-table-dtype-string-larray)
-  - [lurek.compute.ones(shape: table, [dtype]: string) -> LArray](#lurekcomputeonesshape-table-dtype-string-larray)
-  - [lurek.compute.range(start: number, stop: number, [step]: number, [dtype]: string) -> LArray](#lurekcomputerangestart-number-stop-number-step-number-dtype-string-larray)
-  - [lurek.compute.rotate2dMatrix(angle_rad: number) -> LArray](#lurekcomputerotate2dmatrixanglerad-number-larray)
-  - [lurek.compute.setParThreshold(threshold: integer) -> integer](#lurekcomputesetparthresholdthreshold-integer-integer)
-  - [lurek.compute.zeros(shape: table, [dtype]: string) -> LArray](#lurekcomputezerosshape-table-dtype-string-larray)
-- [Types and Methods](#types-and-methods)
+- [🎯 Purpose](#purpose)
+- [📋 Summary](#summary)
+- [🧩 Key Types](#key-types)
+- [📖 API Overview](#api-overview)
+- [⚙️ Module Functions](#module-functions)
+  - [lurek.compute.affine2d](#lurekcomputeaffine2d)
+  - [lurek.compute.fft](#lurekcomputefft)
+  - [lurek.compute.fftMagnitude](#lurekcomputefftmagnitude)
+  - [lurek.compute.fromTable](#lurekcomputefromtable)
+  - [lurek.compute.gaussianKernel](#lurekcomputegaussiankernel)
+  - [lurek.compute.getParThreshold](#lurekcomputegetparthreshold)
+  - [lurek.compute.ifft](#lurekcomputeifft)
+  - [lurek.compute.newArray](#lurekcomputenewarray)
+  - [lurek.compute.ones](#lurekcomputeones)
+  - [lurek.compute.range](#lurekcomputerange)
+  - [lurek.compute.rotate2dMatrix](#lurekcomputerotate2dmatrix)
+  - [lurek.compute.setParThreshold](#lurekcomputesetparthreshold)
+  - [lurek.compute.zeros](#lurekcomputezeros)
+- [🔷 Module Types](#module-types)
   - [LArray](#larray)
-  - [LArray:abs() -> LArray](#larrayabs-larray)
-  - [LArray:add(value: any) -> LArray](#larrayaddvalue-any-larray)
-  - [LArray:addInplace(other: LArray)](#larrayaddinplaceother-larray)
-  - [LArray:all() -> boolean](#larrayall-boolean)
-  - [LArray:any() -> boolean](#larrayany-boolean)
-  - [LArray:argmax() -> integer](#larrayargmax-integer)
-  - [LArray:argmin() -> integer](#larrayargmin-integer)
-  - [LArray:bitwiseAnd(other: LArray) -> LArray](#larraybitwiseandother-larray-larray)
-  - [LArray:bitwiseLShift(amount: integer) -> LArray](#larraybitwiselshiftamount-integer-larray)
-  - [LArray:bitwiseNot() -> LArray](#larraybitwisenot-larray)
-  - [LArray:bitwiseOr(other: LArray) -> LArray](#larraybitwiseorother-larray-larray)
-  - [LArray:bitwiseRShift(amount: integer) -> LArray](#larraybitwisershiftamount-integer-larray)
-  - [LArray:bitwiseXor(other: LArray) -> LArray](#larraybitwisexorother-larray-larray)
-  - [LArray:clamp(min: number, max: number) -> LArray](#larrayclampmin-number-max-number-larray)
-  - [LArray:clone() -> LArray](#larrayclone-larray)
-  - [LArray:convolve1d(kernel: LArray) -> LArray](#larrayconvolve1dkernel-larray-larray)
-  - [LArray:convolve2D(kernel: LArray) -> LArray](#larrayconvolve2dkernel-larray-larray)
-  - [LArray:correlate1d(template: LArray) -> LArray](#larraycorrelate1dtemplate-larray-larray)
-  - [LArray:countNonZero() -> integer](#larraycountnonzero-integer)
-  - [LArray:covariance(other: LArray) -> number](#larraycovarianceother-larray-number)
-  - [LArray:cross2d(other: LArray) -> number](#larraycross2dother-larray-number)
-  - [LArray:cumsum() -> LArray](#larraycumsum-larray)
-  - [LArray:diff([order]: integer) -> LArray](#larraydifforder-integer-larray)
-  - [LArray:dilate(radius: integer) -> LArray](#larraydilateradius-integer-larray)
-  - [LArray:div(value: any) -> LArray](#larraydivvalue-any-larray)
-  - [LArray:divInplace(other: LArray)](#larraydivinplaceother-larray)
-  - [LArray:dot(other: LArray) -> number](#larraydotother-larray-number)
-  - [LArray:eigenPower([max_iter]: integer, [tol]: number) -> table](#larrayeigenpowermaxiter-integer-tol-number-table)
-  - [LArray:eq(value: any) -> LArray](#larrayeqvalue-any-larray)
-  - [LArray:erode(radius: integer) -> LArray](#larrayeroderadius-integer-larray)
-  - [LArray:eval(expr: string) -> LArray](#larrayevalexpr-string-larray)
-  - [LArray:fill(val: number)](#larrayfillval-number)
-  - [LArray:floodFill(row: integer, col: integer, val: number) -> LArray](#larrayfloodfillrow-integer-col-integer-val-number-larray)
-  - [LArray:get(...: integer) -> number](#larrayget-integer-number)
-  - [LArray:getDataType() -> string](#larraygetdatatype-string)
-  - [LArray:getDimensions() -> integer](#larraygetdimensions-integer)
-  - [LArray:getRegion(row: integer, col: integer, rows: integer, cols: integer) -> LArray](#larraygetregionrow-integer-col-integer-rows-integer-cols-integer-larray)
-  - [LArray:getShape() -> integer[]](#larraygetshape-integer)
-  - [LArray:getSize() -> integer](#larraygetsize-integer)
-  - [LArray:gt(value: any) -> LArray](#larraygtvalue-any-larray)
-  - [LArray:gte(value: any) -> LArray](#larraygtevalue-any-larray)
-  - [LArray:histogram(bins: integer, [lo]: number, [hi]: number) -> table](#larrayhistogrambins-integer-lo-number-hi-number-table)
-  - [LArray:isOnGPU() -> boolean](#larrayisongpu-boolean)
-  - [LArray:linsolve(b: LArray) -> LArray](#larraylinsolveb-larray-larray)
-  - [LArray:lt(value: any) -> LArray](#larrayltvalue-any-larray)
-  - [LArray:lte(value: any) -> LArray](#larrayltevalue-any-larray)
-  - [LArray:luDecompose() -> table](#larrayludecompose-table)
-  - [LArray:map(func: function) -> LArray](#larraymapfunc-function-larray)
-  - [LArray:matmul(other: LArray) -> LArray](#larraymatmulother-larray-larray)
-  - [LArray:max([axis]: integer) -> number](#larraymaxaxis-integer-number)
-  - [LArray:mean([axis]: integer) -> number](#larraymeanaxis-integer-number)
-  - [LArray:min([axis]: integer) -> number](#larrayminaxis-integer-number)
-  - [LArray:mul(value: any) -> LArray](#larraymulvalue-any-larray)
-  - [LArray:mulInplace(other: LArray)](#larraymulinplaceother-larray)
-  - [LArray:neg() -> LArray](#larrayneg-larray)
-  - [LArray:neq(value: any) -> LArray](#larrayneqvalue-any-larray)
-  - [LArray:normalizeRange(lo: number, hi: number) -> LArray](#larraynormalizerangelo-number-hi-number-larray)
-  - [LArray:normalizeVec() -> LArray](#larraynormalizevec-larray)
-  - [LArray:outer(other: LArray) -> LArray](#larrayouterother-larray-larray)
-  - [LArray:pearsonCorr(other: LArray) -> number](#larraypearsoncorrother-larray-number)
-  - [LArray:percentile(p: number) -> number](#larraypercentilep-number-number)
-  - [LArray:pow(exp: number) -> LArray](#larraypowexp-number-larray)
-  - [LArray:reduce(func: function, init: number) -> number](#larrayreducefunc-function-init-number-number)
-  - [LArray:reshape(shape: table) -> LArray](#larrayreshapeshape-table-larray)
-  - [LArray:scan(func: function, init: number) -> LArray](#larrayscanfunc-function-init-number-larray)
-  - [LArray:set(...: number)](#larrayset-number)
-  - [LArray:setRegion(row: integer, col: integer, source: LArray)](#larraysetregionrow-integer-col-integer-source-larray)
-  - [LArray:sobel() -> table](#larraysobel-table)
-  - [LArray:sqrt() -> LArray](#larraysqrt-larray)
-  - [LArray:sub(value: any) -> LArray](#larraysubvalue-any-larray)
-  - [LArray:subInplace(other: LArray)](#larraysubinplaceother-larray)
-  - [LArray:sum([axis]: integer) -> number](#larraysumaxis-integer-number)
-  - [LArray:threshold(val: number) -> LArray](#larraythresholdval-number-larray)
-  - [LArray:toTable() -> number[]](#larraytotable-number)
-  - [LArray:transformPoints(pts: LArray) -> LArray](#larraytransformpointspts-larray-larray)
-  - [LArray:transpose() -> LArray](#larraytranspose-larray)
-  - [LArray:type() -> string](#larraytype-string)
-  - [LArray:typeOf(name: string) -> boolean](#larraytypeofname-string-boolean)
-  - [LArray:where(mask: LArray, other: LArray) -> LArray](#larraywheremask-larray-other-larray-larray)
-  - [LArray:zscore() -> LArray](#larrayzscore-larray)
-- [Examples](#examples)
-- [Reference Games](#reference-games)
-- [Related Modules](#related-modules)
+- [🔹 Module Methods](#module-methods)
+  - [LArray:abs](#larrayabs)
+  - [LArray:add](#larrayadd)
+  - [LArray:addInplace](#larrayaddinplace)
+  - [LArray:all](#larrayall)
+  - [LArray:any](#larrayany)
+  - [LArray:argmax](#larrayargmax)
+  - [LArray:argmin](#larrayargmin)
+  - [LArray:bitwiseAnd](#larraybitwiseand)
+  - [LArray:bitwiseLShift](#larraybitwiselshift)
+  - [LArray:bitwiseNot](#larraybitwisenot)
+  - [LArray:bitwiseOr](#larraybitwiseor)
+  - [LArray:bitwiseRShift](#larraybitwisershift)
+  - [LArray:bitwiseXor](#larraybitwisexor)
+  - [LArray:clamp](#larrayclamp)
+  - [LArray:clone](#larrayclone)
+  - [LArray:convolve1d](#larrayconvolve1d)
+  - [LArray:convolve2D](#larrayconvolve2d)
+  - [LArray:correlate1d](#larraycorrelate1d)
+  - [LArray:countNonZero](#larraycountnonzero)
+  - [LArray:covariance](#larraycovariance)
+  - [LArray:cross2d](#larraycross2d)
+  - [LArray:cumsum](#larraycumsum)
+  - [LArray:diff](#larraydiff)
+  - [LArray:dilate](#larraydilate)
+  - [LArray:div](#larraydiv)
+  - [LArray:divInplace](#larraydivinplace)
+  - [LArray:dot](#larraydot)
+  - [LArray:eigenPower](#larrayeigenpower)
+  - [LArray:eq](#larrayeq)
+  - [LArray:erode](#larrayerode)
+  - [LArray:eval](#larrayeval)
+  - [LArray:fill](#larrayfill)
+  - [LArray:floodFill](#larrayfloodfill)
+  - [LArray:get](#larrayget)
+  - [LArray:getDataType](#larraygetdatatype)
+  - [LArray:getDimensions](#larraygetdimensions)
+  - [LArray:getRegion](#larraygetregion)
+  - [LArray:getShape](#larraygetshape)
+  - [LArray:getSize](#larraygetsize)
+  - [LArray:gt](#larraygt)
+  - [LArray:gte](#larraygte)
+  - [LArray:histogram](#larrayhistogram)
+  - [LArray:isOnGPU](#larrayisongpu)
+  - [LArray:linsolve](#larraylinsolve)
+  - [LArray:lt](#larraylt)
+  - [LArray:lte](#larraylte)
+  - [LArray:luDecompose](#larrayludecompose)
+  - [LArray:map](#larraymap)
+  - [LArray:matmul](#larraymatmul)
+  - [LArray:max](#larraymax)
+  - [LArray:mean](#larraymean)
+  - [LArray:min](#larraymin)
+  - [LArray:mul](#larraymul)
+  - [LArray:mulInplace](#larraymulinplace)
+  - [LArray:neg](#larrayneg)
+  - [LArray:neq](#larrayneq)
+  - [LArray:normalizeRange](#larraynormalizerange)
+  - [LArray:normalizeVec](#larraynormalizevec)
+  - [LArray:outer](#larrayouter)
+  - [LArray:pearsonCorr](#larraypearsoncorr)
+  - [LArray:percentile](#larraypercentile)
+  - [LArray:pow](#larraypow)
+  - [LArray:reduce](#larrayreduce)
+  - [LArray:reshape](#larrayreshape)
+  - [LArray:scan](#larrayscan)
+  - [LArray:set](#larrayset)
+  - [LArray:setRegion](#larraysetregion)
+  - [LArray:sobel](#larraysobel)
+  - [LArray:sqrt](#larraysqrt)
+  - [LArray:sub](#larraysub)
+  - [LArray:subInplace](#larraysubinplace)
+  - [LArray:sum](#larraysum)
+  - [LArray:threshold](#larraythreshold)
+  - [LArray:toTable](#larraytotable)
+  - [LArray:transformPoints](#larraytransformpoints)
+  - [LArray:transpose](#larraytranspose)
+  - [LArray:type](#larraytype)
+  - [LArray:typeOf](#larraytypeof)
+  - [LArray:where](#larraywhere)
+  - [LArray:zscore](#larrayzscore)
+- [💡 Examples](#examples)
+- [🎮 Reference Games](#reference-games)
+- [🔗 Related Modules](#related-modules)
 
 This page is generated from the current module specs, examples, and Lua API data.
 
 **Module group:** Foundations
 **Namespace:** `lurek.compute`
 
-## Purpose
+## 🎯 Purpose
 
 Dense N-D numerical array library exposed as lurek.compute.*; CPU-only matrix / signal workloads.
 
-## Summary
+[⬆ back to top](#table-of-contents)
+
+## 📋 Summary
 
 Dense N-dimensional numerical array library for CPU-only matrix, signal, and spatial workloads. `NdArray` is a flat-storage typed array supporting `f32`, `f64`, `i32`, and `u8` element types with shape metadata for arbitrary dimensionality. Operations include element-wise arithmetic, broadcasting, reshape, transpose, slice, convolve2d, matrix multiply, and dot product.
 
@@ -130,66 +132,15 @@ The module provides FFT/IFFT via Cooley-Tukey, LU decomposition for linear syste
 
 Lua API doc contract: all Lua-visible params, returns, and fields for `lurek.compute` must be declared in and then generated into `docs/api/lurek.lua`. Do not add Lua-side cast workarounds in tests or examples to compensate for missing or wrong binding docs. For polymorphic compute methods that accept either an `LArray` or a scalar, document the source parameter type as `any`. For methods whose return type changes with arguments, keep the base `@return` precise and add a source `@overload` marker so the generated stub stays authoritative without Lua-side narrowing hacks.
 
-## Minimal Module Example
+[⬆ back to top](#table-of-contents)
 
-Module example from [compute.lua](../blob/main/content/examples/compute.lua):
-
-```lua
--- content/examples/compute.lua
--- lurek.compute API examples.
--- Run: cargo run -- content/examples/compute.lua
-
---@api-stub: lurek.compute.newArray
--- Creates a zero-filled array with the requested shape and data type
-do
-  -- newArray(shape, dtype?) creates a multidimensional array initialized to zero.
-  -- Use it when you need a pre-allocated buffer with known dimensions.
-  -- Common for heat maps, tile grids, or any 2D spatial data in your game.
-  local heat = lurek.compute.newArray({64, 64}, "float32")
-
-  -- Set corner cells to act as heat sources for a diffusion simulation
-  heat:set(1, 1, 1.0)   -- top-left heat source
-  heat:set(64, 64, 1.0) -- bottom-right heat source
-
-  -- getSize() returns total element count (64*64 = 4096)
-  lurek.log.info("heat grid: " .. heat:getSize() .. " cells", "compute")
-end
-
---@api-stub: lurek.compute.zeros
--- Creates a zero-filled array with the requested shape and data type
-do
-  -- zeros() is an alias for newArray(). Both produce zero-filled arrays.
-  -- Here we model a 3x3 damage grid for an area-of-effect spell.
-  local damage = lurek.compute.zeros({3, 3})
-
-  -- The center cell deals full damage
-  damage:set(2, 2, 25.0)
-
-  -- sum() reduces the entire array to a single total
-  local total = damage:sum()
-  lurek.log.info("total damage: " .. total, "compute")
-end
-
---@api-stub: lurek.compute.ones
--- Creates a one-filled array with the requested shape and data type
-do
-  -- ones() fills every element with 1.0. Useful as an initial mask
-  -- or multiplicative identity before applying per-cell modifiers.
-  local mask = lurek.compute.ones({8, 8})
-
-  -- clamp() bounds all values between min and max.
-  -- Here we simulate fading a visibility mask to 50% opacity.
-  local faded = mask:clamp(0.0, 0.5)
-
-  -- mean() returns the average value across all elements
-  lurek.log.info("faded mean: " .. faded:mean(), "compute")
-```
-
-## Key Types
+## 🧩 Key Types
 
 - `LArray` (80 methods) - Lua-side multidimensional numeric array handle.
 
-## API Overview
+[⬆ back to top](#table-of-contents)
+
+## 📖 API Overview
 
 - Source spec: [docs/specs/compute.md](../blob/main/docs/specs/compute.md)
 
@@ -209,19 +160,23 @@ lurek.compute.setParThreshold(threshold: integer) -> integer -- Sets the global 
 lurek.compute.zeros(shape: table, [dtype]: string) -> LArray -- Creates a zero-filled array with the requested shape and data type.
 ```
 
-## Module Functions
+[⬆ back to top](#table-of-contents)
 
-### `lurek.compute.affine2d(tx: number, ty: number, angle_rad: number, sx: number, sy: number) -> LArray`
+## ⚙️ Module Functions
+
+### lurek.compute.affine2d
+
+`lurek.compute.affine2d(tx: number, ty: number, angle_rad: number, sx: number, sy: number) -> LArray`
 
 Creates a 2D affine transform matrix.
 
 **Parameters**
 
-- `tx` (`number`, required) - Translation X component.
-- `ty` (`number`, required) - Translation Y component.
-- `angle_rad` (`number`, required) - Rotation angle in radians.
-- `sx` (`number`, required) - Scale X component.
-- `sy` (`number`, required) - Scale Y component.
+- `tx` (`number`, required): Translation X component.
+- `ty` (`number`, required): Translation Y component.
+- `angle_rad` (`number`, required): Rotation angle in radians.
+- `sx` (`number`, required): Scale X component.
+- `sy` (`number`, required): Scale Y component.
 
 **Returns**: `LArray` - New affine transform matrix array.
 
@@ -247,13 +202,15 @@ do
 end
 ```
 
-### `lurek.compute.fft(samples: table) -> table`
+### lurek.compute.fft
+
+`lurek.compute.fft(samples: table) -> table`
 
 Computes the FFT of real-valued samples.
 
 **Parameters**
 
-- `samples` (`table`, required) - Array table of real-valued samples.
+- `samples` (`table`, required): Array table of real-valued samples.
 
 **Returns**: `table` - Array table of complex pairs with `re` and `im` fields.
 
@@ -276,13 +233,15 @@ do
 end
 ```
 
-### `lurek.compute.fftMagnitude(samples: table) -> number[]`
+### lurek.compute.fftMagnitude
+
+`lurek.compute.fftMagnitude(samples: table) -> number[]`
 
 Computes FFT magnitudes for real-valued samples.
 
 **Parameters**
 
-- `samples` (`table`, required) - Array table of real-valued samples.
+- `samples` (`table`, required): Array table of real-valued samples.
 
 **Returns**: `number[]` - Array table of magnitude values.
 
@@ -302,15 +261,17 @@ do
 end
 ```
 
-### `lurek.compute.fromTable(data: table, [shape]: table, [dtype]: string) -> LArray`
+### lurek.compute.fromTable
+
+`lurek.compute.fromTable(data: table, [shape]: table, [dtype]: string) -> LArray`
 
 Creates an array from a flat Lua table and optional shape.
 
 **Parameters**
 
-- `data` (`table`, required) - Array table of numeric values.
-- `shape` (`table`, optional) - Optional array table of positive dimension sizes.
-- `dtype` (`string`, optional) - Data type name; defaults to `float32`.
+- `data` (`table`, required): Array table of numeric values.
+- `shape` (`table`, optional): Optional array table of positive dimension sizes.
+- `dtype` (`string`, optional): Data type name; defaults to `float32`.
 
 **Returns**: `LArray` - New array handle containing table values.
 
@@ -332,14 +293,16 @@ do
 end
 ```
 
-### `lurek.compute.gaussianKernel(size: integer, sigma: number) -> LArray`
+### lurek.compute.gaussianKernel
+
+`lurek.compute.gaussianKernel(size: integer, sigma: number) -> LArray`
 
 Creates a square Gaussian kernel array.
 
 **Parameters**
 
-- `size` (`integer`, required) - Kernel width and height.
-- `sigma` (`number`, required) - Gaussian sigma value.
+- `size` (`integer`, required): Kernel width and height.
+- `sigma` (`number`, required): Gaussian sigma value.
 
 **Returns**: `LArray` - New Gaussian kernel array.
 
@@ -360,7 +323,9 @@ do
 end
 ```
 
-### `lurek.compute.getParThreshold() -> integer`
+### lurek.compute.getParThreshold
+
+`lurek.compute.getParThreshold() -> integer`
 
 Returns the global compute parallelism threshold.
 
@@ -380,13 +345,15 @@ do
 end
 ```
 
-### `lurek.compute.ifft(freqs: table) -> number[]`
+### lurek.compute.ifft
+
+`lurek.compute.ifft(freqs: table) -> number[]`
 
 Computes the inverse FFT of complex frequency pairs.
 
 **Parameters**
 
-- `freqs` (`table`, required) - Array table of complex pairs with `re` and `im` fields.
+- `freqs` (`table`, required): Array table of complex pairs with `re` and `im` fields.
 
 **Returns**: `number[]` - Array table of reconstructed real-valued samples.
 
@@ -407,14 +374,16 @@ do
 end
 ```
 
-### `lurek.compute.newArray(shape: table, [dtype]: string) -> LArray`
+### lurek.compute.newArray
+
+`lurek.compute.newArray(shape: table, [dtype]: string) -> LArray`
 
 Creates a zero-filled array with the requested shape and data type.
 
 **Parameters**
 
-- `shape` (`table`, required) - Array table of positive dimension sizes.
-- `dtype` (`string`, optional) - Data type name; defaults to `float32`.
+- `shape` (`table`, required): Array table of positive dimension sizes.
+- `dtype` (`string`, optional): Data type name; defaults to `float32`.
 
 **Returns**: `LArray` - New zero-filled array handle.
 
@@ -438,14 +407,16 @@ do
 end
 ```
 
-### `lurek.compute.ones(shape: table, [dtype]: string) -> LArray`
+### lurek.compute.ones
+
+`lurek.compute.ones(shape: table, [dtype]: string) -> LArray`
 
 Creates a one-filled array with the requested shape and data type.
 
 **Parameters**
 
-- `shape` (`table`, required) - Array table of positive dimension sizes.
-- `dtype` (`string`, optional) - Data type name; defaults to `float32`.
+- `shape` (`table`, required): Array table of positive dimension sizes.
+- `dtype` (`string`, optional): Data type name; defaults to `float32`.
 
 **Returns**: `LArray` - New one-filled array handle.
 
@@ -468,16 +439,18 @@ do
 end
 ```
 
-### `lurek.compute.range(start: number, stop: number, [step]: number, [dtype]: string) -> LArray`
+### lurek.compute.range
+
+`lurek.compute.range(start: number, stop: number, [step]: number, [dtype]: string) -> LArray`
 
 Creates a one-dimensional range array.
 
 **Parameters**
 
-- `start` (`number`, required) - First value in the range.
-- `stop` (`number`, required) - Stop value for the range.
-- `step` (`number`, optional) - Step size; defaults to 1.0.
-- `dtype` (`string`, optional) - Data type name; defaults to `float32`.
+- `start` (`number`, required): First value in the range.
+- `stop` (`number`, required): Stop value for the range.
+- `step` (`number`, optional): Step size; defaults to 1.0.
+- `dtype` (`string`, optional): Data type name; defaults to `float32`.
 
 **Returns**: `LArray` - New range array handle.
 
@@ -499,13 +472,15 @@ do
 end
 ```
 
-### `lurek.compute.rotate2dMatrix(angle_rad: number) -> LArray`
+### lurek.compute.rotate2dMatrix
+
+`lurek.compute.rotate2dMatrix(angle_rad: number) -> LArray`
 
 Creates a 2D rotation matrix from an angle in radians.
 
 **Parameters**
 
-- `angle_rad` (`number`, required) - Rotation angle in radians.
+- `angle_rad` (`number`, required): Rotation angle in radians.
 
 **Returns**: `LArray` - New rotation matrix array.
 
@@ -530,13 +505,15 @@ do
 end
 ```
 
-### `lurek.compute.setParThreshold(threshold: integer) -> integer`
+### lurek.compute.setParThreshold
+
+`lurek.compute.setParThreshold(threshold: integer) -> integer`
 
 Sets the global compute parallelism threshold and returns the previous value.
 
 **Parameters**
 
-- `threshold` (`integer`, required) - New threshold; values below one are clamped to one.
+- `threshold` (`integer`, required): New threshold; values below one are clamped to one.
 
 **Returns**: `integer` - Previous parallel threshold.
 
@@ -559,14 +536,16 @@ do
 end
 ```
 
-### `lurek.compute.zeros(shape: table, [dtype]: string) -> LArray`
+### lurek.compute.zeros
+
+`lurek.compute.zeros(shape: table, [dtype]: string) -> LArray`
 
 Creates a zero-filled array with the requested shape and data type.
 
 **Parameters**
 
-- `shape` (`table`, required) - Array table of positive dimension sizes.
-- `dtype` (`string`, optional) - Data type name; defaults to `float32`.
+- `shape` (`table`, required): Array table of positive dimension sizes.
+- `dtype` (`string`, optional): Data type name; defaults to `float32`.
 
 **Returns**: `LArray` - New zero-filled array handle.
 
@@ -590,11 +569,21 @@ end
 ```
 
 
-## Types and Methods
+[⬆ back to top](#table-of-contents)
 
-### `LArray`
+## 🔷 Module Types
+
+### LArray
 
 Lua-side multidimensional numeric array handle.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side multidimensional numeric array handle.
+---@class LArray
+LArray = {}
+```
 
 #### Example
 
@@ -618,11 +607,26 @@ do
 end
 ```
 
-### `LArray:abs() -> LArray`
+
+[⬆ back to top](#table-of-contents)
+
+## 🔹 Module Methods
+
+### LArray:abs
+
+`LArray:abs() -> LArray`
 
 Returns element-wise absolute values.
 
 **Returns**: `LArray` - New array containing absolute values.
+
+**Lua API Stub**
+
+```lua
+--- Returns element-wise absolute values.
+---@return LArray New array containing absolute values.
+function LArray:abs() end
+```
 
 #### Example
 
@@ -638,15 +642,26 @@ do
 end
 ```
 
-### `LArray:add(value: any) -> LArray`
+### LArray:add
+
+`LArray:add(value: any) -> LArray`
 
 Returns element-wise addition with an array or scalar.
 
 **Parameters**
 
-- `value` (`any`, required) - Array or scalar number for element-wise operation.
+- `value` (`any`, required): Array or scalar number for element-wise operation.
 
 **Returns**: `LArray` - New array containing the addition result.
+
+**Lua API Stub**
+
+```lua
+--- Returns element-wise addition with an array or scalar.
+---@param value any Array or scalar number for element-wise operation.
+---@return LArray New array containing the addition result.
+function LArray:add(value) end
+```
 
 #### Example
 
@@ -662,13 +677,23 @@ do
 end
 ```
 
-### `LArray:addInplace(other: LArray)`
+### LArray:addInplace
+
+`LArray:addInplace(other: LArray)`
 
 Adds another array into this array in place.
 
 **Parameters**
 
-- `other` (`LArray`, required) - Array with a compatible shape.
+- `other` (`LArray`, required): Array with a compatible shape.
+
+**Lua API Stub**
+
+```lua
+--- Adds another array into this array in place.
+---@param other LArray Array with a compatible shape.
+function LArray:addInplace(other) end
+```
 
 #### Example
 
@@ -688,11 +713,21 @@ do
 end
 ```
 
-### `LArray:all() -> boolean`
+### LArray:all
+
+`LArray:all() -> boolean`
 
 Returns whether all elements are non-zero.
 
 **Returns**: `boolean` - True when every element is non-zero.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether all elements are non-zero.
+---@return boolean True when every element is non-zero.
+function LArray:all() end
+```
 
 #### Example
 
@@ -709,11 +744,21 @@ do
 end
 ```
 
-### `LArray:any() -> boolean`
+### LArray:any
+
+`LArray:any() -> boolean`
 
 Returns whether any element is non-zero.
 
 **Returns**: `boolean` - True when at least one element is non-zero.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether any element is non-zero.
+---@return boolean True when at least one element is non-zero.
+function LArray:any() end
+```
 
 #### Example
 
@@ -730,11 +775,21 @@ do
 end
 ```
 
-### `LArray:argmax() -> integer`
+### LArray:argmax
+
+`LArray:argmax() -> integer`
 
 Returns the one-based flat index of the maximum value.
 
 **Returns**: `integer` - One-based index of the maximum element.
+
+**Lua API Stub**
+
+```lua
+--- Returns the one-based flat index of the maximum value.
+---@return number One-based index of the maximum element.
+function LArray:argmax() end
+```
 
 #### Example
 
@@ -750,11 +805,21 @@ do
 end
 ```
 
-### `LArray:argmin() -> integer`
+### LArray:argmin
+
+`LArray:argmin() -> integer`
 
 Returns the one-based flat index of the minimum value.
 
 **Returns**: `integer` - One-based index of the minimum element.
+
+**Lua API Stub**
+
+```lua
+--- Returns the one-based flat index of the minimum value.
+---@return number One-based index of the minimum element.
+function LArray:argmin() end
+```
 
 #### Example
 
@@ -770,15 +835,26 @@ do
 end
 ```
 
-### `LArray:bitwiseAnd(other: LArray) -> LArray`
+### LArray:bitwiseAnd
+
+`LArray:bitwiseAnd(other: LArray) -> LArray`
 
 Returns element-wise bitwise AND with another array.
 
 **Parameters**
 
-- `other` (`LArray`, required) - Array used as the right-hand operand.
+- `other` (`LArray`, required): Array used as the right-hand operand.
 
 **Returns**: `LArray` - New array containing bitwise AND results.
+
+**Lua API Stub**
+
+```lua
+--- Returns element-wise bitwise AND with another array.
+---@param other LArray Array used as the right-hand operand.
+---@return LArray New array containing bitwise AND results.
+function LArray:bitwiseAnd(other) end
+```
 
 #### Example
 
@@ -797,15 +873,26 @@ do
 end
 ```
 
-### `LArray:bitwiseLShift(amount: integer) -> LArray`
+### LArray:bitwiseLShift
+
+`LArray:bitwiseLShift(amount: integer) -> LArray`
 
 Returns element-wise left shift by a bit count.
 
 **Parameters**
 
-- `amount` (`integer`, required) - Bit count to shift left.
+- `amount` (`integer`, required): Bit count to shift left.
 
 **Returns**: `LArray` - New array containing shifted values.
+
+**Lua API Stub**
+
+```lua
+--- Returns element-wise left shift by a bit count.
+---@param amount number Bit count to shift left.
+---@return LArray New array containing shifted values.
+function LArray:bitwiseLShift(amount) end
+```
 
 #### Example
 
@@ -823,11 +910,21 @@ do
 end
 ```
 
-### `LArray:bitwiseNot() -> LArray`
+### LArray:bitwiseNot
+
+`LArray:bitwiseNot() -> LArray`
 
 Returns element-wise bitwise NOT.
 
 **Returns**: `LArray` - New array containing bitwise NOT results.
+
+**Lua API Stub**
+
+```lua
+--- Returns element-wise bitwise NOT.
+---@return LArray New array containing bitwise NOT results.
+function LArray:bitwiseNot() end
+```
 
 #### Example
 
@@ -843,15 +940,26 @@ do
 end
 ```
 
-### `LArray:bitwiseOr(other: LArray) -> LArray`
+### LArray:bitwiseOr
+
+`LArray:bitwiseOr(other: LArray) -> LArray`
 
 Returns element-wise bitwise OR with another array.
 
 **Parameters**
 
-- `other` (`LArray`, required) - Array used as the right-hand operand.
+- `other` (`LArray`, required): Array used as the right-hand operand.
 
 **Returns**: `LArray` - New array containing bitwise OR results.
+
+**Lua API Stub**
+
+```lua
+--- Returns element-wise bitwise OR with another array.
+---@param other LArray Array used as the right-hand operand.
+---@return LArray New array containing bitwise OR results.
+function LArray:bitwiseOr(other) end
+```
 
 #### Example
 
@@ -869,15 +977,26 @@ do
 end
 ```
 
-### `LArray:bitwiseRShift(amount: integer) -> LArray`
+### LArray:bitwiseRShift
+
+`LArray:bitwiseRShift(amount: integer) -> LArray`
 
 Returns element-wise right shift by a bit count.
 
 **Parameters**
 
-- `amount` (`integer`, required) - Bit count to shift right.
+- `amount` (`integer`, required): Bit count to shift right.
 
 **Returns**: `LArray` - New array containing shifted values.
+
+**Lua API Stub**
+
+```lua
+--- Returns element-wise right shift by a bit count.
+---@param amount number Bit count to shift right.
+---@return LArray New array containing shifted values.
+function LArray:bitwiseRShift(amount) end
+```
 
 #### Example
 
@@ -895,15 +1014,26 @@ do
 end
 ```
 
-### `LArray:bitwiseXor(other: LArray) -> LArray`
+### LArray:bitwiseXor
+
+`LArray:bitwiseXor(other: LArray) -> LArray`
 
 Returns element-wise bitwise XOR with another array.
 
 **Parameters**
 
-- `other` (`LArray`, required) - Array used as the right-hand operand.
+- `other` (`LArray`, required): Array used as the right-hand operand.
 
 **Returns**: `LArray` - New array containing bitwise XOR results.
+
+**Lua API Stub**
+
+```lua
+--- Returns element-wise bitwise XOR with another array.
+---@param other LArray Array used as the right-hand operand.
+---@return LArray New array containing bitwise XOR results.
+function LArray:bitwiseXor(other) end
+```
 
 #### Example
 
@@ -922,16 +1052,28 @@ do
 end
 ```
 
-### `LArray:clamp(min: number, max: number) -> LArray`
+### LArray:clamp
+
+`LArray:clamp(min: number, max: number) -> LArray`
 
 Returns values clamped between minimum and maximum bounds.
 
 **Parameters**
 
-- `min` (`number`, required) - Minimum allowed value.
-- `max` (`number`, required) - Maximum allowed value.
+- `min` (`number`, required): Minimum allowed value.
+- `max` (`number`, required): Maximum allowed value.
 
 **Returns**: `LArray` - New array containing clamped values.
+
+**Lua API Stub**
+
+```lua
+--- Returns values clamped between minimum and maximum bounds.
+---@param min number Minimum allowed value.
+---@param max number Maximum allowed value.
+---@return LArray New array containing clamped values.
+function LArray:clamp(min, max) end
+```
 
 #### Example
 
@@ -949,11 +1091,21 @@ do
 end
 ```
 
-### `LArray:clone() -> LArray`
+### LArray:clone
+
+`LArray:clone() -> LArray`
 
 Returns an independent deep copy of this array.
 
 **Returns**: `LArray` - New array with copied data and shape.
+
+**Lua API Stub**
+
+```lua
+--- Returns an independent deep copy of this array.
+---@return LArray New array with copied data and shape.
+function LArray:clone() end
+```
 
 #### Example
 
@@ -973,15 +1125,26 @@ do
 end
 ```
 
-### `LArray:convolve1d(kernel: LArray) -> LArray`
+### LArray:convolve1d
+
+`LArray:convolve1d(kernel: LArray) -> LArray`
 
 Returns one-dimensional convolution with a kernel array.
 
 **Parameters**
 
-- `kernel` (`LArray`, required) - Kernel array used for convolution.
+- `kernel` (`LArray`, required): Kernel array used for convolution.
 
 **Returns**: `LArray` - New array containing convolution result.
+
+**Lua API Stub**
+
+```lua
+--- Returns one-dimensional convolution with a kernel array.
+---@param kernel LArray Kernel array used for convolution.
+---@return LArray New array containing convolution result.
+function LArray:convolve1d(kernel) end
+```
 
 #### Example
 
@@ -1000,15 +1163,26 @@ do
 end
 ```
 
-### `LArray:convolve2D(kernel: LArray) -> LArray`
+### LArray:convolve2D
+
+`LArray:convolve2D(kernel: LArray) -> LArray`
 
 Returns two-dimensional convolution with a kernel array.
 
 **Parameters**
 
-- `kernel` (`LArray`, required) - Kernel array used for convolution.
+- `kernel` (`LArray`, required): Kernel array used for convolution.
 
 **Returns**: `LArray` - New array containing convolution result.
+
+**Lua API Stub**
+
+```lua
+--- Returns two-dimensional convolution with a kernel array.
+---@param kernel LArray Kernel array used for convolution.
+---@return LArray New array containing convolution result.
+function LArray:convolve2D(kernel) end
+```
 
 #### Example
 
@@ -1028,15 +1202,26 @@ do
 end
 ```
 
-### `LArray:correlate1d(template: LArray) -> LArray`
+### LArray:correlate1d
+
+`LArray:correlate1d(template: LArray) -> LArray`
 
 Returns one-dimensional correlation with a template array.
 
 **Parameters**
 
-- `template` (`LArray`, required) - Template array used for correlation.
+- `template` (`LArray`, required): Template array used for correlation.
 
 **Returns**: `LArray` - New array containing correlation result.
+
+**Lua API Stub**
+
+```lua
+--- Returns one-dimensional correlation with a template array.
+---@param template LArray Template array used for correlation.
+---@return LArray New array containing correlation result.
+function LArray:correlate1d(template) end
+```
 
 #### Example
 
@@ -1055,11 +1240,21 @@ do
 end
 ```
 
-### `LArray:countNonZero() -> integer`
+### LArray:countNonZero
+
+`LArray:countNonZero() -> integer`
 
 Counts the number of non-zero elements in this array.
 
 **Returns**: `integer` - Number of non-zero elements.
+
+**Lua API Stub**
+
+```lua
+--- Counts the number of non-zero elements in this array.
+---@return number Number of non-zero elements.
+function LArray:countNonZero() end
+```
 
 #### Example
 
@@ -1075,15 +1270,26 @@ do
 end
 ```
 
-### `LArray:covariance(other: LArray) -> number`
+### LArray:covariance
+
+`LArray:covariance(other: LArray) -> number`
 
 Returns covariance with another array.
 
 **Parameters**
 
-- `other` (`LArray`, required) - Array used as the second variable.
+- `other` (`LArray`, required): Array used as the second variable.
 
 **Returns**: `number` - Covariance value.
+
+**Lua API Stub**
+
+```lua
+--- Returns covariance with another array.
+---@param other LArray Array used as the second variable.
+---@return number Covariance value.
+function LArray:covariance(other) end
+```
 
 #### Example
 
@@ -1102,15 +1308,26 @@ do
 end
 ```
 
-### `LArray:cross2d(other: LArray) -> number`
+### LArray:cross2d
+
+`LArray:cross2d(other: LArray) -> number`
 
 Returns two-dimensional cross product with another vector.
 
 **Parameters**
 
-- `other` (`LArray`, required) - Vector array used as the second operand.
+- `other` (`LArray`, required): Vector array used as the second operand.
 
 **Returns**: `number` - Scalar 2D cross product result.
+
+**Lua API Stub**
+
+```lua
+--- Returns two-dimensional cross product with another vector.
+---@param other LArray Vector array used as the second operand.
+---@return number Scalar 2D cross product result.
+function LArray:cross2d(other) end
+```
 
 #### Example
 
@@ -1130,11 +1347,21 @@ do
 end
 ```
 
-### `LArray:cumsum() -> LArray`
+### LArray:cumsum
+
+`LArray:cumsum() -> LArray`
 
 Returns cumulative sum over the flattened array.
 
 **Returns**: `LArray` - New array containing cumulative sums.
+
+**Lua API Stub**
+
+```lua
+--- Returns cumulative sum over the flattened array.
+---@return LArray New array containing cumulative sums.
+function LArray:cumsum() end
+```
 
 #### Example
 
@@ -1152,15 +1379,26 @@ do
 end
 ```
 
-### `LArray:diff([order]: integer) -> LArray`
+### LArray:diff
+
+`LArray:diff([order]: integer) -> LArray`
 
 Returns finite differences over the flattened array.
 
 **Parameters**
 
-- `order` (`integer`, optional) - Difference order; defaults to 1.
+- `order` (`integer`, optional): Difference order; defaults to 1.
 
 **Returns**: `LArray` - New array containing differences.
+
+**Lua API Stub**
+
+```lua
+--- Returns finite differences over the flattened array.
+---@param order? number Difference order; defaults to 1.
+---@return LArray New array containing differences.
+function LArray:diff(order) end
+```
 
 #### Example
 
@@ -1179,15 +1417,26 @@ do
 end
 ```
 
-### `LArray:dilate(radius: integer) -> LArray`
+### LArray:dilate
+
+`LArray:dilate(radius: integer) -> LArray`
 
 Returns morphological dilation with a radius.
 
 **Parameters**
 
-- `radius` (`integer`, required) - Dilation radius in cells.
+- `radius` (`integer`, required): Dilation radius in cells.
 
 **Returns**: `LArray` - New array containing dilation result.
+
+**Lua API Stub**
+
+```lua
+--- Returns morphological dilation with a radius.
+---@param radius number Dilation radius in cells.
+---@return LArray New array containing dilation result.
+function LArray:dilate(radius) end
+```
 
 #### Example
 
@@ -1207,15 +1456,26 @@ do
 end
 ```
 
-### `LArray:div(value: any) -> LArray`
+### LArray:div
+
+`LArray:div(value: any) -> LArray`
 
 Returns element-wise division with an array or scalar.
 
 **Parameters**
 
-- `value` (`any`, required) - Array or scalar number for element-wise operation.
+- `value` (`any`, required): Array or scalar number for element-wise operation.
 
 **Returns**: `LArray` - New array containing the division result.
+
+**Lua API Stub**
+
+```lua
+--- Returns element-wise division with an array or scalar.
+---@param value any Array or scalar number for element-wise operation.
+---@return LArray New array containing the division result.
+function LArray:div(value) end
+```
 
 #### Example
 
@@ -1231,13 +1491,23 @@ do
 end
 ```
 
-### `LArray:divInplace(other: LArray)`
+### LArray:divInplace
+
+`LArray:divInplace(other: LArray)`
 
 Divides this array by another array in place.
 
 **Parameters**
 
-- `other` (`LArray`, required) - Array with a compatible shape.
+- `other` (`LArray`, required): Array with a compatible shape.
+
+**Lua API Stub**
+
+```lua
+--- Divides this array by another array in place.
+---@param other LArray Array with a compatible shape.
+function LArray:divInplace(other) end
+```
 
 #### Example
 
@@ -1256,15 +1526,26 @@ do
 end
 ```
 
-### `LArray:dot(other: LArray) -> number`
+### LArray:dot
+
+`LArray:dot(other: LArray) -> number`
 
 Returns dot product with another array.
 
 **Parameters**
 
-- `other` (`LArray`, required) - Array used as the right-hand operand.
+- `other` (`LArray`, required): Array used as the right-hand operand.
 
 **Returns**: `number` - Dot product result.
+
+**Lua API Stub**
+
+```lua
+--- Returns dot product with another array.
+---@param other LArray Array used as the right-hand operand.
+---@return number Dot product result.
+function LArray:dot(other) end
+```
 
 #### Example
 
@@ -1283,16 +1564,28 @@ do
 end
 ```
 
-### `LArray:eigenPower([max_iter]: integer, [tol]: number) -> table`
+### LArray:eigenPower
+
+`LArray:eigenPower([max_iter]: integer, [tol]: number) -> table`
 
 Estimates dominant eigenvalue and eigenvector using power iteration.
 
 **Parameters**
 
-- `max_iter` (`integer`, optional) - Maximum iteration count; zero uses the engine default.
-- `tol` (`number`, optional) - Convergence tolerance; zero uses the engine default.
+- `max_iter` (`integer`, optional): Maximum iteration count; zero uses the engine default.
+- `tol` (`number`, optional): Convergence tolerance; zero uses the engine default.
 
 **Returns**: `table` - Table containing `value` and `vector` fields.
+
+**Lua API Stub**
+
+```lua
+--- Estimates dominant eigenvalue and eigenvector using power iteration.
+---@param max_iter? number Maximum iteration count; zero uses the engine default.
+---@param tol? number Convergence tolerance; zero uses the engine default.
+---@return LArrayEigenPowerResult Table containing `value` and `vector` fields.
+function LArray:eigenPower(max_iter, tol) end
+```
 
 #### Example
 
@@ -1311,15 +1604,26 @@ do
 end
 ```
 
-### `LArray:eq(value: any) -> LArray`
+### LArray:eq
+
+`LArray:eq(value: any) -> LArray`
 
 Returns element-wise equality comparison with an array or scalar.
 
 **Parameters**
 
-- `value` (`any`, required) - Array or scalar number for element-wise operation.
+- `value` (`any`, required): Array or scalar number for element-wise operation.
 
 **Returns**: `LArray` - New mask array containing comparison results.
+
+**Lua API Stub**
+
+```lua
+--- Returns element-wise equality comparison with an array or scalar.
+---@param value any Array or scalar number for element-wise operation.
+---@return LArray New mask array containing comparison results.
+function LArray:eq(value) end
+```
 
 #### Example
 
@@ -1337,15 +1641,26 @@ do
 end
 ```
 
-### `LArray:erode(radius: integer) -> LArray`
+### LArray:erode
+
+`LArray:erode(radius: integer) -> LArray`
 
 Returns morphological erosion with a radius.
 
 **Parameters**
 
-- `radius` (`integer`, required) - Erosion radius in cells.
+- `radius` (`integer`, required): Erosion radius in cells.
 
 **Returns**: `LArray` - New array containing erosion result.
+
+**Lua API Stub**
+
+```lua
+--- Returns morphological erosion with a radius.
+---@param radius number Erosion radius in cells.
+---@return LArray New array containing erosion result.
+function LArray:erode(radius) end
+```
 
 #### Example
 
@@ -1364,15 +1679,26 @@ do
 end
 ```
 
-### `LArray:eval(expr: string) -> LArray`
+### LArray:eval
+
+`LArray:eval(expr: string) -> LArray`
 
 Maps each element through a Lua expression compiled as `function(x) return expression end`.
 
 **Parameters**
 
-- `expr` (`string`, required) - Lua expression that can read the current element as `x`.
+- `expr` (`string`, required): Lua expression that can read the current element as `x`.
 
 **Returns**: `LArray` - New array containing expression results.
+
+**Lua API Stub**
+
+```lua
+--- Maps each element through a Lua expression compiled as `function(x) return expression end`.
+---@param expr string Lua expression that can read the current element as `x`.
+---@return LArray New array containing expression results.
+function LArray:eval(expr) end
+```
 
 #### Example
 
@@ -1391,13 +1717,23 @@ do
 end
 ```
 
-### `LArray:fill(val: number)`
+### LArray:fill
+
+`LArray:fill(val: number)`
 
 Fills this array in place with one value.
 
 **Parameters**
 
-- `val` (`number`, required) - Value written to every element.
+- `val` (`number`, required): Value written to every element.
+
+**Lua API Stub**
+
+```lua
+--- Fills this array in place with one value.
+---@param val number Value written to every element.
+function LArray:fill(val) end
+```
 
 #### Example
 
@@ -1415,17 +1751,30 @@ do
 end
 ```
 
-### `LArray:floodFill(row: integer, col: integer, val: number) -> LArray`
+### LArray:floodFill
+
+`LArray:floodFill(row: integer, col: integer, val: number) -> LArray`
 
 Returns a flood-filled copy starting at a one-based row and column.
 
 **Parameters**
 
-- `row` (`integer`, required) - One-based start row.
-- `col` (`integer`, required) - One-based start column.
-- `val` (`number`, required) - Replacement value.
+- `row` (`integer`, required): One-based start row.
+- `col` (`integer`, required): One-based start column.
+- `val` (`number`, required): Replacement value.
 
 **Returns**: `LArray` - New array containing flood-fill result.
+
+**Lua API Stub**
+
+```lua
+--- Returns a flood-filled copy starting at a one-based row and column.
+---@param row number One-based start row.
+---@param col number One-based start column.
+---@param val number Replacement value.
+---@return LArray New array containing flood-fill result.
+function LArray:floodFill(row, col, val) end
+```
 
 #### Example
 
@@ -1448,15 +1797,26 @@ do
 end
 ```
 
-### `LArray:get(...: integer) -> number`
+### LArray:get
+
+`LArray:get(...: integer) -> number`
 
 Reads an array element using one-based indices.
 
 **Parameters**
 
-- `...` (`integer`, required) - One-based indices, one per dimension.
+- `...` (`integer`, required): One-based indices, one per dimension.
 
 **Returns**: `number` - Element value at the requested index.
+
+**Lua API Stub**
+
+```lua
+--- Reads an array element using one-based indices.
+---@param ... number One-based indices, one per dimension.
+---@return number Element value at the requested index.
+function LArray:get(...) end
+```
 
 #### Example
 
@@ -1476,11 +1836,21 @@ do
 end
 ```
 
-### `LArray:getDataType() -> string`
+### LArray:getDataType
+
+`LArray:getDataType() -> string`
 
 Returns the element data type name as a string.
 
 **Returns**: `string` - Data type name such as `float32`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the element data type name as a string.
+---@return string Data type name such as `float32`.
+function LArray:getDataType() end
+```
 
 #### Example
 
@@ -1497,11 +1867,21 @@ do
 end
 ```
 
-### `LArray:getDimensions() -> integer`
+### LArray:getDimensions
+
+`LArray:getDimensions() -> integer`
 
 Returns the number of array dimensions.
 
 **Returns**: `integer` - Dimension count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of array dimensions.
+---@return number Dimension count.
+function LArray:getDimensions() end
+```
 
 #### Example
 
@@ -1518,18 +1898,32 @@ do
 end
 ```
 
-### `LArray:getRegion(row: integer, col: integer, rows: integer, cols: integer) -> LArray`
+### LArray:getRegion
+
+`LArray:getRegion(row: integer, col: integer, rows: integer, cols: integer) -> LArray`
 
 Returns a rectangular region from this array.
 
 **Parameters**
 
-- `row` (`integer`, required) - One-based start row.
-- `col` (`integer`, required) - One-based start column.
-- `rows` (`integer`, required) - Region row count.
-- `cols` (`integer`, required) - Region column count.
+- `row` (`integer`, required): One-based start row.
+- `col` (`integer`, required): One-based start column.
+- `rows` (`integer`, required): Region row count.
+- `cols` (`integer`, required): Region column count.
 
 **Returns**: `LArray` - New array containing the requested region.
+
+**Lua API Stub**
+
+```lua
+--- Returns a rectangular region from this array.
+---@param row number One-based start row.
+---@param col number One-based start column.
+---@param rows number Region row count.
+---@param cols number Region column count.
+---@return LArray New array containing the requested region.
+function LArray:getRegion(row, col, rows, cols) end
+```
 
 #### Example
 
@@ -1548,11 +1942,21 @@ do
 end
 ```
 
-### `LArray:getShape() -> integer[]`
+### LArray:getShape
+
+`LArray:getShape() -> integer[]`
 
 Returns the array shape as one-based dimension table.
 
 **Returns**: `integer[]` - Array table of dimension sizes.
+
+**Lua API Stub**
+
+```lua
+--- Returns the array shape as one-based dimension table.
+---@return number[] Array table of dimension sizes.
+function LArray:getShape() end
+```
 
 #### Example
 
@@ -1569,11 +1973,21 @@ do
 end
 ```
 
-### `LArray:getSize() -> integer`
+### LArray:getSize
+
+`LArray:getSize() -> integer`
 
 Returns the total number of array elements.
 
 **Returns**: `integer` - Element count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the total number of array elements.
+---@return number Element count.
+function LArray:getSize() end
+```
 
 #### Example
 
@@ -1589,15 +2003,26 @@ do
 end
 ```
 
-### `LArray:gt(value: any) -> LArray`
+### LArray:gt
+
+`LArray:gt(value: any) -> LArray`
 
 Returns element-wise greater-than comparison with an array or scalar.
 
 **Parameters**
 
-- `value` (`any`, required) - Array or scalar number for element-wise operation.
+- `value` (`any`, required): Array or scalar number for element-wise operation.
 
 **Returns**: `LArray` - New mask array containing comparison results.
+
+**Lua API Stub**
+
+```lua
+--- Returns element-wise greater-than comparison with an array or scalar.
+---@param value any Array or scalar number for element-wise operation.
+---@return LArray New mask array containing comparison results.
+function LArray:gt(value) end
+```
 
 #### Example
 
@@ -1613,15 +2038,26 @@ do
 end
 ```
 
-### `LArray:gte(value: any) -> LArray`
+### LArray:gte
+
+`LArray:gte(value: any) -> LArray`
 
 Returns element-wise greater-or-equal comparison with an array or scalar.
 
 **Parameters**
 
-- `value` (`any`, required) - Array or scalar number for element-wise operation.
+- `value` (`any`, required): Array or scalar number for element-wise operation.
 
 **Returns**: `LArray` - New mask array containing comparison results.
+
+**Lua API Stub**
+
+```lua
+--- Returns element-wise greater-or-equal comparison with an array or scalar.
+---@param value any Array or scalar number for element-wise operation.
+---@return LArray New mask array containing comparison results.
+function LArray:gte(value) end
+```
 
 #### Example
 
@@ -1636,17 +2072,30 @@ do
 end
 ```
 
-### `LArray:histogram(bins: integer, [lo]: number, [hi]: number) -> table`
+### LArray:histogram
+
+`LArray:histogram(bins: integer, [lo]: number, [hi]: number) -> table`
 
 Returns histogram bins for the array values.
 
 **Parameters**
 
-- `bins` (`integer`, required) - Number of histogram bins.
-- `lo` (`number`, optional) - Optional lower bound.
-- `hi` (`number`, optional) - Optional upper bound.
+- `bins` (`integer`, required): Number of histogram bins.
+- `lo` (`number`, optional): Optional lower bound.
+- `hi` (`number`, optional): Optional upper bound.
 
 **Returns**: `table` - Array of bin tables with `lo`, `hi`, and `count` fields.
+
+**Lua API Stub**
+
+```lua
+--- Returns histogram bins for the array values.
+---@param bins number Number of histogram bins.
+---@param lo? number Optional lower bound.
+---@param hi? number Optional upper bound.
+---@return LArrayHistogramResult Array of bin tables with `lo`, `hi`, and `count` fields.
+function LArray:histogram(bins, lo, hi) end
+```
 
 #### Example
 
@@ -1665,11 +2114,21 @@ do
 end
 ```
 
-### `LArray:isOnGPU() -> boolean`
+### LArray:isOnGPU
+
+`LArray:isOnGPU() -> boolean`
 
 Returns whether this array is currently stored on the GPU.
 
 **Returns**: `boolean` - Always false for the current CPU-backed implementation.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this array is currently stored on the GPU.
+---@return boolean Always false for the current CPU-backed implementation.
+function LArray:isOnGPU() end
+```
 
 #### Example
 
@@ -1687,15 +2146,26 @@ do
 end
 ```
 
-### `LArray:linsolve(b: LArray) -> LArray`
+### LArray:linsolve
+
+`LArray:linsolve(b: LArray) -> LArray`
 
 Solves a linear system using this matrix and a right-hand side array.
 
 **Parameters**
 
-- `b` (`LArray`, required) - Right-hand side array.
+- `b` (`LArray`, required): Right-hand side array.
 
 **Returns**: `LArray` - Solution array.
+
+**Lua API Stub**
+
+```lua
+--- Solves a linear system using this matrix and a right-hand side array.
+---@param b LArray Right-hand side array.
+---@return LArray Solution array.
+function LArray:linsolve(b) end
+```
 
 #### Example
 
@@ -1715,15 +2185,26 @@ do
 end
 ```
 
-### `LArray:lt(value: any) -> LArray`
+### LArray:lt
+
+`LArray:lt(value: any) -> LArray`
 
 Returns element-wise less-than comparison with an array or scalar.
 
 **Parameters**
 
-- `value` (`any`, required) - Array or scalar number for element-wise operation.
+- `value` (`any`, required): Array or scalar number for element-wise operation.
 
 **Returns**: `LArray` - New mask array containing comparison results.
+
+**Lua API Stub**
+
+```lua
+--- Returns element-wise less-than comparison with an array or scalar.
+---@param value any Array or scalar number for element-wise operation.
+---@return LArray New mask array containing comparison results.
+function LArray:lt(value) end
+```
 
 #### Example
 
@@ -1739,15 +2220,26 @@ do
 end
 ```
 
-### `LArray:lte(value: any) -> LArray`
+### LArray:lte
+
+`LArray:lte(value: any) -> LArray`
 
 Returns element-wise less-or-equal comparison with an array or scalar.
 
 **Parameters**
 
-- `value` (`any`, required) - Array or scalar number for element-wise operation.
+- `value` (`any`, required): Array or scalar number for element-wise operation.
 
 **Returns**: `LArray` - New mask array containing comparison results.
+
+**Lua API Stub**
+
+```lua
+--- Returns element-wise less-or-equal comparison with an array or scalar.
+---@param value any Array or scalar number for element-wise operation.
+---@return LArray New mask array containing comparison results.
+function LArray:lte(value) end
+```
 
 #### Example
 
@@ -1762,11 +2254,21 @@ do
 end
 ```
 
-### `LArray:luDecompose() -> table`
+### LArray:luDecompose
+
+`LArray:luDecompose() -> table`
 
 Decomposes this matrix into LU data and permutation metadata.
 
 **Returns**: `table` - Table containing `n`, `det_sign`, `perm`, and `lu_data` fields.
+
+**Lua API Stub**
+
+```lua
+--- Decomposes this matrix into LU data and permutation metadata.
+---@return LArrayLuDecomposeResult Table containing `n`, `det_sign`, `perm`, and `lu_data` fields.
+function LArray:luDecompose() end
+```
 
 #### Example
 
@@ -1783,15 +2285,26 @@ do
 end
 ```
 
-### `LArray:map(func: function) -> LArray`
+### LArray:map
+
+`LArray:map(func: function) -> LArray`
 
 Maps each element through a Lua function and returns a new array.
 
 **Parameters**
 
-- `func` (`function`, required) - Function called with each element value and returning a number.
+- `func` (`function`, required): Function called with each element value and returning a number.
 
 **Returns**: `LArray` - New array containing mapped values.
+
+**Lua API Stub**
+
+```lua
+--- Maps each element through a Lua function and returns a new array.
+---@param func function Function called with each element value and returning a number.
+---@return LArray New array containing mapped values.
+function LArray:map(func) end
+```
 
 #### Example
 
@@ -1808,15 +2321,26 @@ do
 end
 ```
 
-### `LArray:matmul(other: LArray) -> LArray`
+### LArray:matmul
+
+`LArray:matmul(other: LArray) -> LArray`
 
 Returns matrix multiplication of this array and another array.
 
 **Parameters**
 
-- `other` (`LArray`, required) - Right-hand matrix array.
+- `other` (`LArray`, required): Right-hand matrix array.
 
 **Returns**: `LArray` - New array containing matrix multiplication result.
+
+**Lua API Stub**
+
+```lua
+--- Returns matrix multiplication of this array and another array.
+---@param other LArray Right-hand matrix array.
+---@return LArray New array containing matrix multiplication result.
+function LArray:matmul(other) end
+```
 
 #### Example
 
@@ -1836,15 +2360,27 @@ do
 end
 ```
 
-### `LArray:max([axis]: integer) -> number`
+### LArray:max
+
+`LArray:max([axis]: integer) -> number`
 
 Returns total maximum or a maximum array along a one-based axis.
 
 **Parameters**
 
-- `axis` (`integer`, optional) - Optional one-based axis to reduce.
+- `axis` (`integer`, optional): Optional one-based axis to reduce.
 
 **Returns**: `number` - Scalar maximum when no axis is given.
+
+**Lua API Stub**
+
+```lua
+--- Returns total maximum or a maximum array along a one-based axis.
+---@return number Scalar maximum when no axis is given.
+---@overload fun(axis: number): LArray # Reduced array of maximum values along the axis.
+---@overload fun(self: LArray, axis: number): LArray # Reduced array of maximum values along the axis.
+function LArray:max() end
+```
 
 #### Example
 
@@ -1860,15 +2396,27 @@ do
 end
 ```
 
-### `LArray:mean([axis]: integer) -> number`
+### LArray:mean
+
+`LArray:mean([axis]: integer) -> number`
 
 Returns total mean or a mean array along a one-based axis.
 
 **Parameters**
 
-- `axis` (`integer`, optional) - Optional one-based axis to reduce.
+- `axis` (`integer`, optional): Optional one-based axis to reduce.
 
 **Returns**: `number` - Scalar mean when no axis is given.
+
+**Lua API Stub**
+
+```lua
+--- Returns total mean or a mean array along a one-based axis.
+---@return number Scalar mean when no axis is given.
+---@overload fun(axis: number): LArray # Reduced array of axis means.
+---@overload fun(self: LArray, axis: number): LArray # Reduced array of axis means.
+function LArray:mean() end
+```
 
 #### Example
 
@@ -1884,15 +2432,27 @@ do
 end
 ```
 
-### `LArray:min([axis]: integer) -> number`
+### LArray:min
+
+`LArray:min([axis]: integer) -> number`
 
 Returns total minimum or a minimum array along a one-based axis.
 
 **Parameters**
 
-- `axis` (`integer`, optional) - Optional one-based axis to reduce.
+- `axis` (`integer`, optional): Optional one-based axis to reduce.
 
 **Returns**: `number` - Scalar minimum when no axis is given.
+
+**Lua API Stub**
+
+```lua
+--- Returns total minimum or a minimum array along a one-based axis.
+---@return number Scalar minimum when no axis is given.
+---@overload fun(axis: number): LArray # Reduced array of minimum values along the axis.
+---@overload fun(self: LArray, axis: number): LArray # Reduced array of minimum values along the axis.
+function LArray:min() end
+```
 
 #### Example
 
@@ -1908,15 +2468,26 @@ do
 end
 ```
 
-### `LArray:mul(value: any) -> LArray`
+### LArray:mul
+
+`LArray:mul(value: any) -> LArray`
 
 Returns element-wise multiplication with an array or scalar.
 
 **Parameters**
 
-- `value` (`any`, required) - Array or scalar number for element-wise operation.
+- `value` (`any`, required): Array or scalar number for element-wise operation.
 
 **Returns**: `LArray` - New array containing the multiplication result.
+
+**Lua API Stub**
+
+```lua
+--- Returns element-wise multiplication with an array or scalar.
+---@param value any Array or scalar number for element-wise operation.
+---@return LArray New array containing the multiplication result.
+function LArray:mul(value) end
+```
 
 #### Example
 
@@ -1932,13 +2503,23 @@ do
 end
 ```
 
-### `LArray:mulInplace(other: LArray)`
+### LArray:mulInplace
+
+`LArray:mulInplace(other: LArray)`
 
 Multiplies this array by another array in place.
 
 **Parameters**
 
-- `other` (`LArray`, required) - Array with a compatible shape.
+- `other` (`LArray`, required): Array with a compatible shape.
+
+**Lua API Stub**
+
+```lua
+--- Multiplies this array by another array in place.
+---@param other LArray Array with a compatible shape.
+function LArray:mulInplace(other) end
+```
 
 #### Example
 
@@ -1957,11 +2538,21 @@ do
 end
 ```
 
-### `LArray:neg() -> LArray`
+### LArray:neg
+
+`LArray:neg() -> LArray`
 
 Returns element-wise negated values.
 
 **Returns**: `LArray` - New array containing negated values.
+
+**Lua API Stub**
+
+```lua
+--- Returns element-wise negated values.
+---@return LArray New array containing negated values.
+function LArray:neg() end
+```
 
 #### Example
 
@@ -1977,15 +2568,26 @@ do
 end
 ```
 
-### `LArray:neq(value: any) -> LArray`
+### LArray:neq
+
+`LArray:neq(value: any) -> LArray`
 
 Returns element-wise inequality comparison with an array or scalar.
 
 **Parameters**
 
-- `value` (`any`, required) - Array or scalar number for element-wise operation.
+- `value` (`any`, required): Array or scalar number for element-wise operation.
 
 **Returns**: `LArray` - New mask array containing comparison results.
+
+**Lua API Stub**
+
+```lua
+--- Returns element-wise inequality comparison with an array or scalar.
+---@param value any Array or scalar number for element-wise operation.
+---@return LArray New mask array containing comparison results.
+function LArray:neq(value) end
+```
 
 #### Example
 
@@ -2001,16 +2603,28 @@ do
 end
 ```
 
-### `LArray:normalizeRange(lo: number, hi: number) -> LArray`
+### LArray:normalizeRange
+
+`LArray:normalizeRange(lo: number, hi: number) -> LArray`
 
 Returns array values normalized into a target range.
 
 **Parameters**
 
-- `lo` (`number`, required) - Target lower bound.
-- `hi` (`number`, required) - Target upper bound.
+- `lo` (`number`, required): Target lower bound.
+- `hi` (`number`, required): Target upper bound.
 
 **Returns**: `LArray` - New normalized array.
+
+**Lua API Stub**
+
+```lua
+--- Returns array values normalized into a target range.
+---@param lo number Target lower bound.
+---@param hi number Target upper bound.
+---@return LArray New normalized array.
+function LArray:normalizeRange(lo, hi) end
+```
 
 #### Example
 
@@ -2029,11 +2643,21 @@ do
 end
 ```
 
-### `LArray:normalizeVec() -> LArray`
+### LArray:normalizeVec
+
+`LArray:normalizeVec() -> LArray`
 
 Returns this vector normalized to unit length.
 
 **Returns**: `LArray` - New normalized vector array.
+
+**Lua API Stub**
+
+```lua
+--- Returns this vector normalized to unit length.
+---@return LArray New normalized vector array.
+function LArray:normalizeVec() end
+```
 
 #### Example
 
@@ -2051,15 +2675,26 @@ do
 end
 ```
 
-### `LArray:outer(other: LArray) -> LArray`
+### LArray:outer
+
+`LArray:outer(other: LArray) -> LArray`
 
 Returns outer product with another vector array.
 
 **Parameters**
 
-- `other` (`LArray`, required) - Vector array used as the second operand.
+- `other` (`LArray`, required): Vector array used as the second operand.
 
 **Returns**: `LArray` - New array containing outer product result.
+
+**Lua API Stub**
+
+```lua
+--- Returns outer product with another vector array.
+---@param other LArray Vector array used as the second operand.
+---@return LArray New array containing outer product result.
+function LArray:outer(other) end
+```
 
 #### Example
 
@@ -2078,15 +2713,26 @@ do
 end
 ```
 
-### `LArray:pearsonCorr(other: LArray) -> number`
+### LArray:pearsonCorr
+
+`LArray:pearsonCorr(other: LArray) -> number`
 
 Returns Pearson correlation with another array.
 
 **Parameters**
 
-- `other` (`LArray`, required) - Array used as the second variable.
+- `other` (`LArray`, required): Array used as the second variable.
 
 **Returns**: `number` - Pearson correlation coefficient.
+
+**Lua API Stub**
+
+```lua
+--- Returns Pearson correlation with another array.
+---@param other LArray Array used as the second variable.
+---@return number Pearson correlation coefficient.
+function LArray:pearsonCorr(other) end
+```
 
 #### Example
 
@@ -2106,15 +2752,26 @@ do
 end
 ```
 
-### `LArray:percentile(p: number) -> number`
+### LArray:percentile
+
+`LArray:percentile(p: number) -> number`
 
 Returns a percentile value from the array.
 
 **Parameters**
 
-- `p` (`number`, required) - Percentile between 0 and 100.
+- `p` (`number`, required): Percentile between 0 and 100.
 
 **Returns**: `number` - Percentile result.
+
+**Lua API Stub**
+
+```lua
+--- Returns a percentile value from the array.
+---@param p number Percentile between 0 and 100.
+---@return number Percentile result.
+function LArray:percentile(p) end
+```
 
 #### Example
 
@@ -2132,15 +2789,26 @@ do
 end
 ```
 
-### `LArray:pow(exp: number) -> LArray`
+### LArray:pow
+
+`LArray:pow(exp: number) -> LArray`
 
 Returns this array raised element-wise to a scalar exponent.
 
 **Parameters**
 
-- `exp` (`number`, required) - Exponent applied to every element.
+- `exp` (`number`, required): Exponent applied to every element.
 
 **Returns**: `LArray` - New array containing powered values.
+
+**Lua API Stub**
+
+```lua
+--- Returns this array raised element-wise to a scalar exponent.
+---@param exp number Exponent applied to every element.
+---@return LArray New array containing powered values.
+function LArray:pow(exp) end
+```
 
 #### Example
 
@@ -2157,16 +2825,28 @@ do
 end
 ```
 
-### `LArray:reduce(func: function, init: number) -> number`
+### LArray:reduce
+
+`LArray:reduce(func: function, init: number) -> number`
 
 Reduces array values with a Lua accumulator function.
 
 **Parameters**
 
-- `func` (`function`, required) - Function called as `(accumulator, value)` and returning the next accumulator.
-- `init` (`number`, required) - Initial accumulator value.
+- `func` (`function`, required): Function called as `(accumulator, value)` and returning the next accumulator.
+- `init` (`number`, required): Initial accumulator value.
 
 **Returns**: `number` - Final accumulator value.
+
+**Lua API Stub**
+
+```lua
+--- Reduces array values with a Lua accumulator function.
+---@param func function Function called as `(accumulator, value)` and returning the next accumulator.
+---@param init number Initial accumulator value.
+---@return number Final accumulator value.
+function LArray:reduce(func, init) end
+```
 
 #### Example
 
@@ -2184,15 +2864,26 @@ do
 end
 ```
 
-### `LArray:reshape(shape: table) -> LArray`
+### LArray:reshape
+
+`LArray:reshape(shape: table) -> LArray`
 
 Returns a reshaped copy of this array.
 
 **Parameters**
 
-- `shape` (`table`, required) - Array table of positive dimension sizes.
+- `shape` (`table`, required): Array table of positive dimension sizes.
 
 **Returns**: `LArray` - New array with the requested shape.
+
+**Lua API Stub**
+
+```lua
+--- Returns a reshaped copy of this array.
+---@param shape table Array table of positive dimension sizes.
+---@return LArray New array with the requested shape.
+function LArray:reshape(shape) end
+```
 
 #### Example
 
@@ -2211,16 +2902,28 @@ do
 end
 ```
 
-### `LArray:scan(func: function, init: number) -> LArray`
+### LArray:scan
+
+`LArray:scan(func: function, init: number) -> LArray`
 
 Produces prefix accumulator values with a Lua function.
 
 **Parameters**
 
-- `func` (`function`, required) - Function called as `(accumulator, value)` and returning the next accumulator.
-- `init` (`number`, required) - Initial accumulator value.
+- `func` (`function`, required): Function called as `(accumulator, value)` and returning the next accumulator.
+- `init` (`number`, required): Initial accumulator value.
 
 **Returns**: `LArray` - New array containing accumulator values.
+
+**Lua API Stub**
+
+```lua
+--- Produces prefix accumulator values with a Lua function.
+---@param func function Function called as `(accumulator, value)` and returning the next accumulator.
+---@param init number Initial accumulator value.
+---@return LArray New array containing accumulator values.
+function LArray:scan(func, init) end
+```
 
 #### Example
 
@@ -2239,13 +2942,23 @@ do
 end
 ```
 
-### `LArray:set(...: number)`
+### LArray:set
+
+`LArray:set(...: number)`
 
 Writes an array element using one-based indices followed by the value.
 
 **Parameters**
 
-- `...` (`number`, required) - One-based indices followed by the numeric value to store.
+- `...` (`number`, required): One-based indices followed by the numeric value to store.
+
+**Lua API Stub**
+
+```lua
+--- Writes an array element using one-based indices followed by the value.
+---@param ... number One-based indices followed by the numeric value to store.
+function LArray:set(...) end
+```
 
 #### Example
 
@@ -2263,15 +2976,27 @@ do
 end
 ```
 
-### `LArray:setRegion(row: integer, col: integer, source: LArray)`
+### LArray:setRegion
+
+`LArray:setRegion(row: integer, col: integer, source: LArray)`
 
 Writes a source array into this array at a one-based row and column.
 
 **Parameters**
 
-- `row` (`integer`, required) - One-based destination row.
-- `col` (`integer`, required) - One-based destination column.
-- `source` (`LArray`, required) - Source array copied into this array.
+- `row` (`integer`, required): One-based destination row.
+- `col` (`integer`, required): One-based destination column.
+- `source` (`LArray`, required): Source array copied into this array.
+
+**Lua API Stub**
+
+```lua
+--- Writes a source array into this array at a one-based row and column.
+---@param row number One-based destination row.
+---@param col number One-based destination column.
+---@param source LArray Source array copied into this array.
+function LArray:setRegion(row, col, source) end
+```
 
 #### Example
 
@@ -2291,11 +3016,21 @@ do
 end
 ```
 
-### `LArray:sobel() -> table`
+### LArray:sobel
+
+`LArray:sobel() -> table`
 
 Computes Sobel gradients for this array.
 
 **Returns**: `table` - Table with `gx` and `gy` gradient arrays.
+
+**Lua API Stub**
+
+```lua
+--- Computes Sobel gradients for this array.
+---@return LArraySobelResult Table with `gx` and `gy` gradient arrays.
+function LArray:sobel() end
+```
 
 #### Example
 
@@ -2312,11 +3047,21 @@ do
 end
 ```
 
-### `LArray:sqrt() -> LArray`
+### LArray:sqrt
+
+`LArray:sqrt() -> LArray`
 
 Returns element-wise square roots.
 
 **Returns**: `LArray` - New array containing square root values.
+
+**Lua API Stub**
+
+```lua
+--- Returns element-wise square roots.
+---@return LArray New array containing square root values.
+function LArray:sqrt() end
+```
 
 #### Example
 
@@ -2332,15 +3077,26 @@ do
 end
 ```
 
-### `LArray:sub(value: any) -> LArray`
+### LArray:sub
+
+`LArray:sub(value: any) -> LArray`
 
 Returns element-wise subtraction with an array or scalar.
 
 **Parameters**
 
-- `value` (`any`, required) - Array or scalar number for element-wise operation.
+- `value` (`any`, required): Array or scalar number for element-wise operation.
 
 **Returns**: `LArray` - New array containing the subtraction result.
+
+**Lua API Stub**
+
+```lua
+--- Returns element-wise subtraction with an array or scalar.
+---@param value any Array or scalar number for element-wise operation.
+---@return LArray New array containing the subtraction result.
+function LArray:sub(value) end
+```
 
 #### Example
 
@@ -2356,13 +3112,23 @@ do
 end
 ```
 
-### `LArray:subInplace(other: LArray)`
+### LArray:subInplace
+
+`LArray:subInplace(other: LArray)`
 
 Subtracts another array from this array in place.
 
 **Parameters**
 
-- `other` (`LArray`, required) - Array with a compatible shape.
+- `other` (`LArray`, required): Array with a compatible shape.
+
+**Lua API Stub**
+
+```lua
+--- Subtracts another array from this array in place.
+---@param other LArray Array with a compatible shape.
+function LArray:subInplace(other) end
+```
 
 #### Example
 
@@ -2381,15 +3147,27 @@ do
 end
 ```
 
-### `LArray:sum([axis]: integer) -> number`
+### LArray:sum
+
+`LArray:sum([axis]: integer) -> number`
 
 Returns total sum or a summed array along a one-based axis.
 
 **Parameters**
 
-- `axis` (`integer`, optional) - Optional one-based axis to reduce.
+- `axis` (`integer`, optional): Optional one-based axis to reduce.
 
 **Returns**: `number` - Scalar sum when no axis is given.
+
+**Lua API Stub**
+
+```lua
+--- Returns total sum or a summed array along a one-based axis.
+---@return number Scalar sum when no axis is given.
+---@overload fun(axis: number): LArray # Reduced array along the requested one-based axis.
+---@overload fun(self: LArray, axis: number): LArray # Reduced array along the requested one-based axis.
+function LArray:sum() end
+```
 
 #### Example
 
@@ -2405,15 +3183,26 @@ do
 end
 ```
 
-### `LArray:threshold(val: number) -> LArray`
+### LArray:threshold
+
+`LArray:threshold(val: number) -> LArray`
 
 Returns a mask array where values above a threshold are selected.
 
 **Parameters**
 
-- `val` (`number`, required) - Threshold value.
+- `val` (`number`, required): Threshold value.
 
 **Returns**: `LArray` - New mask array containing threshold results.
+
+**Lua API Stub**
+
+```lua
+--- Returns a mask array where values above a threshold are selected.
+---@param val number Threshold value.
+---@return LArray New mask array containing threshold results.
+function LArray:threshold(val) end
+```
 
 #### Example
 
@@ -2431,11 +3220,21 @@ do
 end
 ```
 
-### `LArray:toTable() -> number[]`
+### LArray:toTable
+
+`LArray:toTable() -> number[]`
 
 Returns array values flattened into a Lua table.
 
 **Returns**: `number[]` - Numeric values in storage order.
+
+**Lua API Stub**
+
+```lua
+--- Returns array values flattened into a Lua table.
+---@return number[] Numeric values in storage order.
+function LArray:toTable() end
+```
 
 #### Example
 
@@ -2452,15 +3251,26 @@ do
 end
 ```
 
-### `LArray:transformPoints(pts: LArray) -> LArray`
+### LArray:transformPoints
+
+`LArray:transformPoints(pts: LArray) -> LArray`
 
 Transforms a point array by this transform matrix.
 
 **Parameters**
 
-- `pts` (`LArray`, required) - Point array to transform.
+- `pts` (`LArray`, required): Point array to transform.
 
 **Returns**: `LArray` - New array containing transformed points.
+
+**Lua API Stub**
+
+```lua
+--- Transforms a point array by this transform matrix.
+---@param pts LArray Point array to transform.
+---@return LArray New array containing transformed points.
+function LArray:transformPoints(pts) end
+```
 
 #### Example
 
@@ -2482,11 +3292,21 @@ do
 end
 ```
 
-### `LArray:transpose() -> LArray`
+### LArray:transpose
+
+`LArray:transpose() -> LArray`
 
 Returns a transposed copy of a two-dimensional array.
 
 **Returns**: `LArray` - New transposed array.
+
+**Lua API Stub**
+
+```lua
+--- Returns a transposed copy of a two-dimensional array.
+---@return LArray New transposed array.
+function LArray:transpose() end
+```
 
 #### Example
 
@@ -2503,11 +3323,21 @@ do
 end
 ```
 
-### `LArray:type() -> string`
+### LArray:type
+
+`LArray:type() -> string`
 
 Returns the Lua-visible type name for this array handle.
 
 **Returns**: `string` - The string `LArray`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this array handle.
+---@return string The string `LArray`.
+function LArray:type() end
+```
 
 #### Example
 
@@ -2523,15 +3353,26 @@ do
 end
 ```
 
-### `LArray:typeOf(name: string) -> boolean`
+### LArray:typeOf
+
+`LArray:typeOf(name: string) -> boolean`
 
 Returns whether this array handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `LArray`, `Array`, and `Object`.
+- `name` (`string`, required): Type name to compare against `LArray`, `Array`, and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this array handle matches a supported type name.
+---@param name string Type name to compare against `LArray`, `Array`, and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LArray:typeOf(name) end
+```
 
 #### Example
 
@@ -2548,16 +3389,28 @@ do
 end
 ```
 
-### `LArray:where(mask: LArray, other: LArray) -> LArray`
+### LArray:where
+
+`LArray:where(mask: LArray, other: LArray) -> LArray`
 
 Selects values from this array or another array using a mask array.
 
 **Parameters**
 
-- `mask` (`LArray`, required) - Mask array used to choose between arrays.
-- `other` (`LArray`, required) - Array used where the mask is false.
+- `mask` (`LArray`, required): Mask array used to choose between arrays.
+- `other` (`LArray`, required): Array used where the mask is false.
 
 **Returns**: `LArray` - New array containing selected values.
+
+**Lua API Stub**
+
+```lua
+--- Selects values from this array or another array using a mask array.
+---@param mask LArray Mask array used to choose between arrays.
+---@param other LArray Array used where the mask is false.
+---@return LArray New array containing selected values.
+function LArray:where(mask, other) end
+```
 
 #### Example
 
@@ -2580,11 +3433,21 @@ do
 end
 ```
 
-### `LArray:zscore() -> LArray`
+### LArray:zscore
+
+`LArray:zscore() -> LArray`
 
 Returns z-score normalized array values.
 
 **Returns**: `LArray` - New z-score normalized array.
+
+**Lua API Stub**
+
+```lua
+--- Returns z-score normalized array values.
+---@return LArray New z-score normalized array.
+function LArray:zscore() end
+```
 
 #### Example
 
@@ -2604,21 +3467,27 @@ end
 ```
 
 
-## Examples
+[⬆ back to top](#table-of-contents)
+
+## 💡 Examples
 
 - [compute.lua](../blob/main/content/examples/compute.lua) - GPU-side compute passes
 
-## Reference Games
+[⬆ back to top](#table-of-contents)
+
+## 🎮 Reference Games
 
 No direct references were found in `content/games/**/main.lua`.
 
-## Related Modules
+[⬆ back to top](#table-of-contents)
 
-- Previous: [[camera|Module-camera]]
-- Next: [[data|Module-data]]
-- [[data|Module-data]] - Binary data toolkit: byte buffers, compression, hashing, encoding, structured pack / unpack.
-- [[dataframe|Module-dataframe]] - In-memory column-major tabular data with lightweight SQL-style queries (lurek.dataframe.*).
-- [[globe|Module-globe]] - XCOM-style Geoscape province sphere: topology, orbit camera, fog-of-war, markers, day/night.
-- [[graph|Module-graph]] - Directed flow-simulation graph: typed items flow through nodes, accumulate, decay, react.
-- [[log|Module-log]] - Lua-accessible logging facade over the Rust log crate, controlled via RUST_LOG.
-- [[math|Module-math]] - Foundational 2D math, geometry, and color types. Leaf of the engine dependency graph.
+## 🔗 Related Modules
+
+- Previous: [camera](Module-camera)
+- Next: [data](Module-data)
+- [data](Module-data) - Binary data toolkit: byte buffers, compression, hashing, encoding, structured pack / unpack.
+- [dataframe](Module-dataframe) - In-memory column-major tabular data with lightweight SQL-style queries (lurek.dataframe.*).
+- [globe](Module-globe) - XCOM-style Geoscape province sphere: topology, orbit camera, fog-of-war, markers, day/night.
+- [graph](Module-graph) - Directed flow-simulation graph: typed items flow through nodes, accumulate, decay, react.
+- [log](Module-log) - Lua-accessible logging facade over the Rust log crate, controlled via RUST_LOG.
+- [math](Module-math) - Foundational 2D math, geometry, and color types. Leaf of the engine dependency graph.

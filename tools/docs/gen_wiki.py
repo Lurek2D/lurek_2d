@@ -48,6 +48,20 @@ CALLBACK_ORDER = [
     "lurek.focus", "lurek.quit",
 ]
 
+SECTION_EMOJI: dict[str, str] = {
+    "Purpose": "\U0001f3af",
+    "Summary": "\U0001f4cb",
+    "Key Types": "\U0001f9e9",
+    "API Overview": "\U0001f4d6",
+    "Module Functions": "\u2699\ufe0f",
+    "Module Types": "\U0001f537",
+    "Module Methods": "\U0001f539",
+    "Examples": "\U0001f4a1",
+    "Reference Games": "\U0001f3ae",
+    "Related Modules": "\U0001f517",
+}
+BACK_TOP = "[\u2b06 back to top](#table-of-contents)"
+
 
 def u(text: str) -> str:
     return text.encode("ascii").decode("unicode_escape")
@@ -88,6 +102,7 @@ class GameInfo:
     description: str
     folder: Path
     modules: list[str]
+    screenshot: "Path | None" = None
 
 
 @dataclass(frozen=True)
@@ -115,6 +130,8 @@ class Context:
     modules: list[str]
     api_markdown_lines: int
     api_stub_lines: int
+    callable_stubs: dict[str, str]
+    class_stubs: dict[str, str]
 
 
 def read(path: Path) -> str:
@@ -176,13 +193,18 @@ def heading_anchor(text: str) -> str:
 
 
 def wiki(slug: str, label: str | None = None) -> str:
-    return f"[[{label}|{slug}]]" if label and label != slug else f"[[{slug}]]"
+    display = label if label and label != slug else slug
+    return f"[{display}]({slug})"
 
 
 def page_link(slug: str, label: str | None = None) -> str:
-    if label and label != slug:
-        return f"{label} ({wiki(slug)})"
-    return wiki(slug)
+    return wiki(slug, label)
+
+
+def sec(name: str) -> str:
+    """Return a ## section heading with an emoji prefix when configured."""
+    emoji = SECTION_EMOJI.get(name, "")
+    return f"## {emoji} {name}" if emoji else f"## {name}"
 
 
 def navigation_block(extra_links: list[tuple[str, str]] | None = None) -> list[str]:
@@ -334,6 +356,15 @@ def parse_games(api_names: set[str]) -> list[GameInfo]:
     for main_path in sorted(GAMES_DIR.glob("**/main.lua")):
         folder = main_path.parent
         game = metadata.get(folder, GameInfo(folder.name, game_category_from_folder(folder), "", folder, []))
+        # Fill description from README.md first paragraph when game index has none
+        if not game.description:
+            readme_text = read(folder / "README.md")
+            if readme_text:
+                paras = [p.strip() for p in readme_text.split("\n\n") if p.strip() and not p.strip().startswith("#")]
+                game.description = first_sentence(paras[0]) if paras else ""
+        # Detect screenshot
+        screen_path = folder / "screen.png"
+        game.screenshot = screen_path if screen_path.exists() else None
         found = sorted(set(re.findall(r"\blurek\.([A-Za-z_][A-Za-z0-9_]*)", read(main_path))))
         game.modules = [module for module in found if module in api_names]
         games.append(game)
@@ -506,6 +537,45 @@ def build_example_indexes(examples: list[ExampleInfo]) -> tuple[dict[str, Exampl
     return callable_examples, module_examples, global_example
 
 
+def parse_stub_index(stub_text: str) -> tuple[dict[str, str], dict[str, str]]:
+    """Parse docs/api/lurek.lua into two lookup tables keyed by example_key().
+
+    Returns:
+        callable_stubs: function/method key -> full LuaCATS block (comments + function line)
+        class_stubs: class key -> class declaration block (comments + @class line + X = {} line)
+    """
+    lines = stub_text.splitlines()
+    callable_stubs: dict[str, str] = {}
+    class_stubs: dict[str, str] = {}
+    for i, line in enumerate(lines):
+        fn_match = re.match(r'^function\s+([\w.]+(?::[\w]+)?)\s*\(', line)
+        if fn_match:
+            key_raw = fn_match.group(1)
+            start = i
+            while start > 0 and lines[start - 1].startswith("---"):
+                start -= 1
+            block = "\n".join(lines[start:i + 1])
+            key = example_key(key_raw)
+            callable_stubs[key] = block
+            if ":" in key_raw:
+                owner, method_name = key_raw.split(":", 1)
+                if owner.startswith("L") and len(owner) > 1:
+                    callable_stubs[example_key(f"{owner[1:]}:{method_name}")] = block
+            continue
+        class_match = re.match(r'^---@class\s+(\S+)', line)
+        if class_match:
+            key_raw = re.split(r'[:(]', class_match.group(1))[0]
+            start = i
+            while start > 0 and lines[start - 1].startswith("---"):
+                start -= 1
+            end = i + 1
+            if end < len(lines) and re.match(r'^\w[\w.]* = \{\}', lines[end]):
+                end += 1
+            block = "\n".join(lines[start:end])
+            class_stubs[example_key(key_raw)] = block
+    return callable_stubs, class_stubs
+
+
 def build_context(output: Path) -> Context:
     api_data = json.loads(read(API_DATA))
     api_modules = api_data.get("lua_api", {}).get("modules", {})
@@ -517,6 +587,7 @@ def build_context(output: Path) -> Context:
     modules = sorted(set(api_modules) | set(specs))
     api_markdown_text = read(API_MARKDOWN)
     api_stub_text = read(API_STUB)
+    callable_stubs, class_stubs = parse_stub_index(api_stub_text)
     return Context(
         output,
         api_data,
@@ -533,6 +604,8 @@ def build_context(output: Path) -> Context:
         modules,
         len(api_markdown_text.splitlines()) if api_markdown_text else 0,
         len(api_stub_text.splitlines()) if api_stub_text else 0,
+        callable_stubs,
+        class_stubs,
     )
 
 
@@ -803,7 +876,15 @@ def type_example_section(
 
 
 def detail(context: Context, function_data: dict[str, Any], module: str, class_name: str | None = None) -> list[str]:
-    lines = [f"### `{signature(function_data, module, class_name)}`", ""]
+    fn_name = str(function_data.get("name", ""))
+    if class_name:
+        short_heading = f"{class_name}:{fn_name}"
+    else:
+        short_heading = str(function_data.get("lua_name", "") or f"lurek.{module}.{fn_name}")
+    full_sig = signature(function_data, module, class_name)
+    lines = [f"### {short_heading}", ""]
+    if full_sig != short_heading:
+        lines += [f"`{full_sig}`", ""]
     desc = clean_text(str(function_data.get("description", "") or ""))
     if desc:
         lines += [desc, ""]
@@ -812,13 +893,18 @@ def detail(context: Context, function_data: dict[str, Any], module: str, class_n
         lines += ["**Parameters**", ""]
         for name, type_name, description, is_optional in function_params:
             marker = "optional" if is_optional else "required"
-            suffix = f" - {clean_text(description)}" if clean_text(description) else ""
+            desc_text = clean_text(description)
+            suffix = f": {desc_text}" if desc_text else ""
             lines.append(f"- `{name}` (`{type_name}`, {marker}){suffix}")
         lines.append("")
     returns = return_type(function_data)
     if returns:
         suffix = f" - {clean_text(return_desc(function_data))}" if clean_text(return_desc(function_data)) else ""
         lines += [f"**Returns**: `{returns}`{suffix}", ""]
+    stub_keys = callable_example_keys(module, function_data, class_name)
+    callable_stub = next((context.callable_stubs[k] for k in stub_keys if k in context.callable_stubs), "")
+    if callable_stub:
+        lines += ["**Lua API Stub**", "", "```lua", callable_stub, "```", ""]
     lines += example_section(context, module, function_data, class_name)
     return lines
 
@@ -855,27 +941,20 @@ def module_page(context: Context, module: str) -> Page:
     ]
     if namespace(context, module):
         body.append(f"**Namespace:** `{namespace(context, module)}`")
-    body += ["", "## Purpose", "", purpose, "", "## Summary", "", summary]
-
-    module_example = context.module_examples.get(module) or context.global_example
-    body += ["", "## Minimal Module Example", ""]
-    if module_example and module_example.snippet:
-        lead = "Module example" if module_example.match_kind == "module-level" else "General example"
-        body += [f"{lead} from {file_link(context, module_example.source_path, module_example.source_name)}:", "", "```lua", module_example.snippet, "```"]
-    else:
-        body += ["No example snippet was found in `content/examples/`.", "", "```lua", "-- No example snippet available.", "```"]
+    body += ["", sec("Purpose"), "", purpose, "", BACK_TOP, "", sec("Summary"), "", summary, "", BACK_TOP]
 
     class_list = classes(api_module)
-    body += ["", "## Key Types", ""]
+    body += ["", sec("Key Types"), ""]
     if class_list:
         for class_name, class_data in class_list[:16]:
             desc = clean_text(str(class_data.get("description", "") or ""))
             body.append(f"- `{class_name}` ({len(methods(class_data))} methods){' - ' + desc if desc else ''}")
     else:
         body.append("This module has no separate Lua-visible classes in the generated API data.")
+    body += ["", BACK_TOP]
 
     function_list = functions(api_module)
-    body += ["", "## API Overview", ""]
+    body += ["", sec("API Overview"), ""]
     if module in context.specs:
         body.append(f"- Source spec: {file_link(context, SPEC_DIR / (module + '.md'), 'docs/specs/' + module + '.md')}")
     body.append("")
@@ -887,27 +966,37 @@ def module_page(context: Context, module: str) -> Page:
         body.append("```")
     else:
         body.append("No module functions appear in the generated Lua API data.")
+    body += ["", BACK_TOP]
 
     if function_list:
-        body += ["", "## Module Functions", ""]
+        body += ["", sec("Module Functions"), ""]
         for function_data in function_list:
             body += detail(context, function_data, module)
+        body += ["", BACK_TOP]
     if class_list:
-        body += ["", "## Types and Methods", ""]
+        body += ["", sec("Module Types"), ""]
         for class_name, class_data in class_list:
-            body += [f"### `{class_name}`", ""]
-            if class_data.get("description"):
-                body += [clean_text(str(class_data.get("description", ""))), ""]
+            body += [f"### {class_name}", ""]
+            desc = clean_text(str(class_data.get("description", "") or ""))
+            if desc:
+                body += [desc, ""]
+            class_stub = context.class_stubs.get(example_key(class_name), "")
+            if class_stub:
+                body += ["**Lua API Definition**", "", "```lua", class_stub, "```", ""]
             body += type_example_section(context, module, class_name, function_list, class_list)
+        body += ["", BACK_TOP]
+        body += ["", sec("Module Methods"), ""]
+        for class_name, class_data in class_list:
             for method_data in methods(class_data):
                 body += detail(context, method_data, module, class_name)
+        body += ["", BACK_TOP]
 
-    body += ["", "## Examples", ""]
+    body += ["", sec("Examples"), ""]
     body += [f"- {file_link(context, example.path, example.file_name)} - {example.description}" for example in examples] or ["No module-specific example file was found."]
-    body += ["", "## Reference Games", ""]
+    body += ["", BACK_TOP, "", sec("Reference Games"), ""]
     body += [f"- {file_link(context, game.folder, game.name)} ({game.category})" for game in games[:20]] or ["No direct references were found in `content/games/**/main.lua`."]
 
-    body += ["", "## Related Modules", ""]
+    body += ["", BACK_TOP, "", sec("Related Modules"), ""]
     previous_module, next_module = module_neighbors(context, module)
     if previous_module:
         body.append(f"- Previous: {wiki('Module-' + previous_module, previous_module)}")
@@ -1135,15 +1224,39 @@ def examples_page(context: Context) -> Page:
     return Page("Examples.md", page("Examples", body))
 
 
+def game_screenshot_md(context: Context, game: "GameInfo") -> str:
+    """Return a markdown image tag for the game screenshot, or empty string."""
+    if not game.screenshot:
+        return ""
+    try:
+        repo_path = game.screenshot.resolve(strict=False).relative_to(ROOT).as_posix()
+        href = f"../raw/main/{repo_path}"
+    except ValueError:
+        return ""
+    return f"![{game.name} screenshot]({href})"
+
+
 def games_page(context: Context) -> Page:
     body = ["Reference games come from `content/games/`. Module usage is detected by scanning each `main.lua`.", ""]
     for category in sorted(set(game.category for game in context.games), key=str.lower):
-        body += [f"## {category}", "", "| Game | Description | Modules |", "|---|---|---|"]
+        body += [f"## {category}", ""]
         for game in [item for item in context.games if item.category == category]:
             module_links = ", ".join(page_link("Module-" + module, module) for module in game.modules[:8])
             if len(game.modules) > 8:
                 module_links += f", +{len(game.modules) - 8}"
-            body.append(f"| {file_link(context, game.folder, game.name)} | {table_cell(game.description or 'No description in the game index.')} | {table_cell(module_links or '-')} |")
+            desc = table_cell(game.description or "No description available.")
+            screen = game_screenshot_md(context, game)
+            screenshot_cell = f"{screen}<br>{desc}" if screen else desc
+            body.append(f"### {file_link(context, game.folder, game.name)}")
+            body.append("")
+            if screen:
+                body.append(screen)
+                body.append("")
+            body.append(game.description or "No description available.")
+            body.append("")
+            if module_links:
+                body.append(f"**Modules:** {module_links}")
+                body.append("")
         body.append("")
     return Page("Reference-Games.md", page("Reference Games", body))
 

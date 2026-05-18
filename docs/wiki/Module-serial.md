@@ -4,110 +4,60 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
-- [Purpose](#purpose)
-- [Summary](#summary)
-- [Minimal Module Example](#minimal-module-example)
-- [Key Types](#key-types)
-- [API Overview](#api-overview)
-- [Module Functions](#module-functions)
-  - [lurek.serial.applyDefaults(value: table, schema: table) -> table](#lurekserialapplydefaultsvalue-table-schema-table-table)
-  - [lurek.serial.decode(payload: string, [format]: string, [opts]: table) -> table](#lurekserialdecodepayload-string-format-string-opts-table-table)
-  - [lurek.serial.decodeMsgPack(bytes: string) -> table](#lurekserialdecodemsgpackbytes-string-table)
-  - [lurek.serial.decodeXml(text: string) -> table](#lurekserialdecodexmltext-string-table)
-  - [lurek.serial.detectFormat(text: string) -> string](#lurekserialdetectformattext-string-string)
-  - [lurek.serial.encode(value: table, format: string, [opts]: table) -> string](#lurekserialencodevalue-table-format-string-opts-table-string)
-  - [lurek.serial.encodeMsgPack(value: table) -> string](#lurekserialencodemsgpackvalue-table-string)
-  - [lurek.serial.fromCsv(text: string, [delimiter]: string, [hasHeaders]: boolean) -> table](#lurekserialfromcsvtext-string-delimiter-string-hasheaders-boolean-table)
-  - [lurek.serial.fromIni(text: string) -> table](#lurekserialfrominitext-string-table)
-  - [lurek.serial.fromJson(text: string) -> table](#lurekserialfromjsontext-string-table)
-  - [lurek.serial.fromToml(text: string) -> table](#lurekserialfromtomltext-string-table)
-  - [lurek.serial.toCsv(value: table, [delimiter]: string, [hasHeaders]: boolean) -> string](#lurekserialtocsvvalue-table-delimiter-string-hasheaders-boolean-string)
-  - [lurek.serial.toJson(value: table, [pretty]: boolean) -> string](#lurekserialtojsonvalue-table-pretty-boolean-string)
-  - [lurek.serial.toToml(value: table) -> string](#lurekserialtotomlvalue-table-string)
-  - [lurek.serial.validate(value: table, schema: table) -> boolean](#lurekserialvalidatevalue-table-schema-table-boolean)
-- [Examples](#examples)
-- [Reference Games](#reference-games)
-- [Related Modules](#related-modules)
+- [🎯 Purpose](#purpose)
+- [📋 Summary](#summary)
+- [🧩 Key Types](#key-types)
+- [📖 API Overview](#api-overview)
+- [⚙️ Module Functions](#module-functions)
+  - [lurek.serial.applyDefaults](#lurekserialapplydefaults)
+  - [lurek.serial.decode](#lurekserialdecode)
+  - [lurek.serial.decodeMsgPack](#lurekserialdecodemsgpack)
+  - [lurek.serial.decodeXml](#lurekserialdecodexml)
+  - [lurek.serial.detectFormat](#lurekserialdetectformat)
+  - [lurek.serial.encode](#lurekserialencode)
+  - [lurek.serial.encodeMsgPack](#lurekserialencodemsgpack)
+  - [lurek.serial.fromCsv](#lurekserialfromcsv)
+  - [lurek.serial.fromIni](#lurekserialfromini)
+  - [lurek.serial.fromJson](#lurekserialfromjson)
+  - [lurek.serial.fromToml](#lurekserialfromtoml)
+  - [lurek.serial.toCsv](#lurekserialtocsv)
+  - [lurek.serial.toJson](#lurekserialtojson)
+  - [lurek.serial.toToml](#lurekserialtotoml)
+  - [lurek.serial.validate](#lurekserialvalidate)
+- [💡 Examples](#examples)
+- [🎮 Reference Games](#reference-games)
+- [🔗 Related Modules](#related-modules)
 
 This page is generated from the current module specs, examples, and Lua API data.
 
 **Module group:** Foundations
 **Namespace:** `lurek.serial`
 
-## Purpose
+## 🎯 Purpose
 
 Format-agnostic text serialisation centred on the recursive SerialValue enum.
 
-## Summary
+[⬆ back to top](#table-of-contents)
+
+## 📋 Summary
 
 Format-agnostic text serialization centered on the recursive `SerialValue` enum that maps between Lua tables and six external formats: JSON, TOML, CSV, MsgPack, XML, and INI. `SerialFormat` selects the codec; auto-detection inspects content bytes to guess the format. Decode produces `SerialValue` trees; encode writes formatted output with configurable options (pretty-print, indentation, key sorting).
 
 CSV parsing handles headers, delimiters, quoting, and multi-line fields. TOML supports nested tables and arrays of tables. XML parsing preserves attributes and text nodes. Schema validation checks `SerialValue` trees against expected shapes with typed constraints. Lua bridge converts between `SerialValue` and Lua tables transparently. Exposed as `lurek.serial.*`. Foundations tier — classified CORE-KEEP.
 
-## Minimal Module Example
+[⬆ back to top](#table-of-contents)
 
-Module example from [serial.lua](../blob/main/content/examples/serial.lua):
-
-```lua
--- content/examples/serial.lua
--- Demonstrates every lurek.serial.* function with realistic game-developer usage.
--- Run: cargo run -- content/examples/serial.lua
-
---@api-stub: lurek.serial.fromJson
--- Parses a JSON string into a Lua table
-do
-  -- Loading a player profile received from a server or read from a file
-  local json_str = '{"username":"knight42","level":12,"inventory":["sword","shield","potion"]}'
-  local profile = lurek.serial.fromJson(json_str)
-
-  -- Access nested fields directly as Lua tables
-  lurek.log.info("Player: " .. profile.username .. " (level " .. profile.level .. ")", "serial")
-  lurek.log.info("First item: " .. profile.inventory[1], "serial")
-end
-
---@api-stub: lurek.serial.toJson
--- Serializes a Lua value into a JSON string
-do
-  -- Prepare a save-game snapshot for writing to disk or sending over network
-  local save_data = {
-    player = { x = 128.5, y = 64.0, hp = 85 },
-    quest_progress = { main = 3, side = { "gather_herbs", "rescue_cat" } },
-    timestamp = os.time(),
-  }
-
-  -- pretty=true makes the output human-readable (useful for debug saves)
-  local compact = lurek.serial.toJson(save_data)
-  local pretty = lurek.serial.toJson(save_data, true)
-  lurek.log.info("Compact length: " .. #compact .. " Pretty length: " .. #pretty, "serial")
-end
-
---@api-stub: lurek.serial.fromToml
--- Parses a TOML string into a Lua table
-do
-  -- TOML is the preferred format for game configuration in Lurek2D
-  local toml_str = [[
-title = "Dragon Quest"
-version = "1.2.0"
-
-[window]
-width = 1280
-height = 720
-vsync = true
-
-[gameplay]
-difficulty = "normal"
-max_enemies = 50
-```
-
-## Key Types
+## 🧩 Key Types
 
 This module has no separate Lua-visible classes in the generated API data.
 
-## API Overview
+[⬆ back to top](#table-of-contents)
+
+## 📖 API Overview
 
 - Source spec: [docs/specs/serial.md](../blob/main/docs/specs/serial.md)
 
@@ -129,16 +79,20 @@ lurek.serial.toToml(value: table) -> string -- Serializes a Lua table into a TOM
 lurek.serial.validate(value: table, schema: table) -> boolean -- Validates a Lua value against a schema table. The schema defines expected types, required fields, and const...
 ```
 
-## Module Functions
+[⬆ back to top](#table-of-contents)
 
-### `lurek.serial.applyDefaults(value: table, schema: table) -> table`
+## ⚙️ Module Functions
+
+### lurek.serial.applyDefaults
+
+`lurek.serial.applyDefaults(value: table, schema: table) -> table`
 
 Merges a schema's default values into a data table, filling in any missing fields without overwriting existing ones. Use this to ensure game config or save data always has complete fields even when the user provides only partial overrides.
 
 **Parameters**
 
-- `value` (`table`, required) - The data table that may have missing fields.
-- `schema` (`table`, required) - A schema table containing `default` entries for fields.
+- `value` (`table`, required): The data table that may have missing fields.
+- `schema` (`table`, required): A schema table containing `default` entries for fields.
 
 **Returns**: `table` - A new table with defaults applied for any absent fields.
 
@@ -171,15 +125,17 @@ do
 end
 ```
 
-### `lurek.serial.decode(payload: string, [format]: string, [opts]: table) -> table`
+### lurek.serial.decode
+
+`lurek.serial.decode(payload: string, [format]: string, [opts]: table) -> table`
 
 Universal decoder that parses a string payload into a Lua table using the specified format. If no format is given, auto-detects from the content. Supports JSON, TOML, CSV, XML, INI, and MessagePack. Use this as a single entry point when handling files of varying or unknown formats.
 
 **Parameters**
 
-- `payload` (`string`, required) - The raw string (or binary for msgpack) to decode.
-- `format` (`string`, optional) - Format hint: "json", "toml", "csv", "xml", "ini", or "msgpack". Nil triggers auto-detection.
-- `opts` (`table`, optional) - Optional settings table. For CSV: `delimiter` (string) and `has_headers` (boolean).
+- `payload` (`string`, required): The raw string (or binary for msgpack) to decode.
+- `format` (`string`, optional): Format hint: "json", "toml", "csv", "xml", "ini", or "msgpack". Nil triggers auto-detection.
+- `opts` (`table`, optional): Optional settings table. For CSV: `delimiter` (string) and `has_headers` (boolean).
 
 **Returns**: `table` - The decoded Lua table.
 
@@ -204,13 +160,15 @@ do
 end
 ```
 
-### `lurek.serial.decodeMsgPack(bytes: string) -> table`
+### lurek.serial.decodeMsgPack
+
+`lurek.serial.decodeMsgPack(bytes: string) -> table`
 
 Decodes a binary MessagePack string back into a Lua table. Use this to read save files, network packets, or any data previously encoded with encodeMsgPack.
 
 **Parameters**
 
-- `bytes` (`string`, required) - A binary string containing valid MessagePack data.
+- `bytes` (`string`, required): A binary string containing valid MessagePack data.
 
 **Returns**: `table` - The decoded Lua table from the MessagePack payload.
 
@@ -231,13 +189,15 @@ do
 end
 ```
 
-### `lurek.serial.decodeXml(text: string) -> table`
+### lurek.serial.decodeXml
+
+`lurek.serial.decodeXml(text: string) -> table`
 
 Parses an XML string into a Lua table structure. Elements become nested tables with tag names as keys. Useful for loading Tiled map exports, SVG data, UI layout definitions, or other XML-based game assets.
 
 **Parameters**
 
-- `text` (`string`, required) - A valid XML string to parse.
+- `text` (`string`, required): A valid XML string to parse.
 
 **Returns**: `table` - A nested Lua table representing the XML document structure.
 
@@ -268,13 +228,15 @@ do
 end
 ```
 
-### `lurek.serial.detectFormat(text: string) -> string`
+### lurek.serial.detectFormat
+
+`lurek.serial.detectFormat(text: string) -> string`
 
 Attempts to auto-detect the serialization format of a string by inspecting its content (e.g., leading `{` for JSON, `[section]` for INI, XML declaration for XML). Returns the format name or nil if detection fails. Useful for loading user-provided files where the format is unknown.
 
 **Parameters**
 
-- `text` (`string`, required) - The raw text content to analyze.
+- `text` (`string`, required): The raw text content to analyze.
 
 **Returns**: `string` - The detected format name ("json", "toml", "csv", "xml", "ini"), or nil if unrecognized.
 
@@ -301,15 +263,17 @@ do
 end
 ```
 
-### `lurek.serial.encode(value: table, format: string, [opts]: table) -> string`
+### lurek.serial.encode
+
+`lurek.serial.encode(value: table, format: string, [opts]: table) -> string`
 
 Universal encoder that serializes a Lua value into the specified format. Supports JSON, TOML, CSV, and MessagePack. Returns a string (text for JSON/TOML/CSV, binary for MessagePack). Use this as a single entry point for all serialization needs.
 
 **Parameters**
 
-- `value` (`table`, required) - The Lua value to encode.
-- `format` (`string`, required) - Target format: "json", "toml", "csv", or "msgpack".
-- `opts` (`table`, optional) - Optional settings table. For JSON: `pretty` (boolean). For CSV: `delimiter` (string) and `has_headers` (boolean).
+- `value` (`table`, required): The Lua value to encode.
+- `format` (`string`, required): Target format: "json", "toml", "csv", or "msgpack".
+- `opts` (`table`, optional): Optional settings table. For JSON: `pretty` (boolean). For CSV: `delimiter` (string) and `has_headers` (boolean).
 
 **Returns**: `string` - The encoded string (text or binary depending on format).
 
@@ -340,13 +304,15 @@ do
 end
 ```
 
-### `lurek.serial.encodeMsgPack(value: table) -> string`
+### lurek.serial.encodeMsgPack
+
+`lurek.serial.encodeMsgPack(value: table) -> string`
 
 Encodes a Lua table into a compact binary MessagePack string. MessagePack is faster and smaller than JSON, making it ideal for save files, network packets, or any scenario where performance matters more than human readability. The argument must be a table.
 
 **Parameters**
 
-- `value` (`table`, required) - The Lua table to encode. Must be a table (not a primitive).
+- `value` (`table`, required): The Lua table to encode. Must be a table (not a primitive).
 
 **Returns**: `string` - A binary string containing the MessagePack-encoded data.
 
@@ -374,15 +340,17 @@ do
 end
 ```
 
-### `lurek.serial.fromCsv(text: string, [delimiter]: string, [hasHeaders]: boolean) -> table`
+### lurek.serial.fromCsv
+
+`lurek.serial.fromCsv(text: string, [delimiter]: string, [hasHeaders]: boolean) -> table`
 
 Parses a CSV string into a Lua table (array of rows). Each row is either a keyed table (when headers are present) or an indexed array of field values. Useful for loading spreadsheet exports, leaderboard data, or tabular game data.
 
 **Parameters**
 
-- `text` (`string`, required) - The CSV content to parse.
-- `delimiter` (`string`, optional) - Single-character field delimiter. Defaults to comma (",").
-- `hasHeaders` (`boolean`, optional) - When true, the first row is treated as column names and each data row becomes a keyed table. Defaults to true.
+- `text` (`string`, required): The CSV content to parse.
+- `delimiter` (`string`, optional): Single-character field delimiter. Defaults to comma (",").
+- `hasHeaders` (`boolean`, optional): When true, the first row is treated as column names and each data row becomes a keyed table. Defaults to true.
 
 **Returns**: `table` - An array of row tables containing the parsed CSV data.
 
@@ -408,13 +376,15 @@ do
 end
 ```
 
-### `lurek.serial.fromIni(text: string) -> table`
+### lurek.serial.fromIni
+
+`lurek.serial.fromIni(text: string) -> table`
 
 Parses an INI-format string into a Lua table. Sections become nested tables, and key-value pairs become string fields. Useful for legacy config files or simple settings.
 
 **Parameters**
 
-- `text` (`string`, required) - A valid INI string to parse.
+- `text` (`string`, required): A valid INI string to parse.
 
 **Returns**: `table` - The decoded Lua table with section names as keys and their key-value pairs as nested tables.
 
@@ -443,13 +413,15 @@ fullscreen=true
 end
 ```
 
-### `lurek.serial.fromJson(text: string) -> table`
+### lurek.serial.fromJson
+
+`lurek.serial.fromJson(text: string) -> table`
 
 Parses a JSON string into a Lua table. Use this to load configuration files, network responses, or any structured data stored as JSON.
 
 **Parameters**
 
-- `text` (`string`, required) - A valid JSON string to parse.
+- `text` (`string`, required): A valid JSON string to parse.
 
 **Returns**: `table` - The decoded Lua table representing the JSON structure.
 
@@ -469,13 +441,15 @@ do
 end
 ```
 
-### `lurek.serial.fromToml(text: string) -> table`
+### lurek.serial.fromToml
+
+`lurek.serial.fromToml(text: string) -> table`
 
 Parses a TOML string into a Lua table. Ideal for loading game configuration files, level definitions, and engine settings stored in TOML format.
 
 **Parameters**
 
-- `text` (`string`, required) - A valid TOML string to parse.
+- `text` (`string`, required): A valid TOML string to parse.
 
 **Returns**: `table` - The decoded Lua table representing the TOML structure.
 
@@ -508,15 +482,17 @@ max_enemies = 50
 end
 ```
 
-### `lurek.serial.toCsv(value: table, [delimiter]: string, [hasHeaders]: boolean) -> string`
+### lurek.serial.toCsv
+
+`lurek.serial.toCsv(value: table, [delimiter]: string, [hasHeaders]: boolean) -> string`
 
 Serializes a Lua table (array of row tables) into a CSV-formatted string. Each row table should have consistent keys or be an indexed array. Use this to export leaderboards, save tabular data, or generate spreadsheet-compatible output.
 
 **Parameters**
 
-- `value` (`table`, required) - An array of row tables to serialize.
-- `delimiter` (`string`, optional) - Single-character field delimiter. Defaults to comma (",").
-- `hasHeaders` (`boolean`, optional) - When true, writes column names as the first row. Defaults to true.
+- `value` (`table`, required): An array of row tables to serialize.
+- `delimiter` (`string`, optional): Single-character field delimiter. Defaults to comma (",").
+- `hasHeaders` (`boolean`, optional): When true, writes column names as the first row. Defaults to true.
 
 **Returns**: `string` - The CSV-encoded string of the table data.
 
@@ -543,14 +519,16 @@ do
 end
 ```
 
-### `lurek.serial.toJson(value: table, [pretty]: boolean) -> string`
+### lurek.serial.toJson
+
+`lurek.serial.toJson(value: table, [pretty]: boolean) -> string`
 
 Serializes a Lua value (table, string, number, boolean, or nil) into a JSON string. Useful for saving game state, writing config files, or preparing network payloads.
 
 **Parameters**
 
-- `value` (`table`, required) - The Lua value to serialize into JSON.
-- `pretty` (`boolean`, optional) - When true, outputs indented human-readable JSON. Defaults to false (compact).
+- `value` (`table`, required): The Lua value to serialize into JSON.
+- `pretty` (`boolean`, optional): When true, outputs indented human-readable JSON. Defaults to false (compact).
 
 **Returns**: `string` - The JSON-encoded string representation of the value.
 
@@ -574,13 +552,15 @@ do
 end
 ```
 
-### `lurek.serial.toToml(value: table) -> string`
+### lurek.serial.toToml
+
+`lurek.serial.toToml(value: table) -> string`
 
 Serializes a Lua table into a TOML-formatted string. Use this to write configuration files, save structured settings, or export data in a human-readable format.
 
 **Parameters**
 
-- `value` (`table`, required) - The Lua table to serialize into TOML.
+- `value` (`table`, required): The Lua table to serialize into TOML.
 
 **Returns**: `string` - The TOML-encoded string representation of the table.
 
@@ -603,14 +583,16 @@ do
 end
 ```
 
-### `lurek.serial.validate(value: table, schema: table) -> boolean`
+### lurek.serial.validate
+
+`lurek.serial.validate(value: table, schema: table) -> boolean`
 
 Validates a Lua value against a schema table. The schema defines expected types, required fields, and constraints. Returns a success boolean and an optional error message string describing the first validation failure. Use this to verify save data integrity or user-provided configuration before processing.
 
 **Parameters**
 
-- `value` (`table`, required) - The data to validate.
-- `schema` (`table`, required) - A schema table defining the expected structure and constraints.
+- `value` (`table`, required): The data to validate.
+- `schema` (`table`, required): A schema table defining the expected structure and constraints.
 
 **Returns**: `boolean` - True if validation passes, false otherwise.
 
@@ -643,21 +625,27 @@ end
 ```
 
 
-## Examples
+[⬆ back to top](#table-of-contents)
+
+## 💡 Examples
 
 - [serial.lua](../blob/main/content/examples/serial.lua) - Serialisation (TOML/JSON/binary)
 
-## Reference Games
+[⬆ back to top](#table-of-contents)
+
+## 🎮 Reference Games
 
 No direct references were found in `content/games/**/main.lua`.
 
-## Related Modules
+[⬆ back to top](#table-of-contents)
 
-- Previous: [[scene|Module-scene]]
-- Next: [[spine|Module-spine]]
-- [[compute|Module-compute]] - Dense N-D numerical array library exposed as lurek.compute.*; CPU-only matrix / signal workloads.
-- [[data|Module-data]] - Binary data toolkit: byte buffers, compression, hashing, encoding, structured pack / unpack.
-- [[dataframe|Module-dataframe]] - In-memory column-major tabular data with lightweight SQL-style queries (lurek.dataframe.*).
-- [[globe|Module-globe]] - XCOM-style Geoscape province sphere: topology, orbit camera, fog-of-war, markers, day/night.
-- [[graph|Module-graph]] - Directed flow-simulation graph: typed items flow through nodes, accumulate, decay, react.
-- [[log|Module-log]] - Lua-accessible logging facade over the Rust log crate, controlled via RUST_LOG.
+## 🔗 Related Modules
+
+- Previous: [scene](Module-scene)
+- Next: [spine](Module-spine)
+- [compute](Module-compute) - Dense N-D numerical array library exposed as lurek.compute.*; CPU-only matrix / signal workloads.
+- [data](Module-data) - Binary data toolkit: byte buffers, compression, hashing, encoding, structured pack / unpack.
+- [dataframe](Module-dataframe) - In-memory column-major tabular data with lightweight SQL-style queries (lurek.dataframe.*).
+- [globe](Module-globe) - XCOM-style Geoscape province sphere: topology, orbit camera, fog-of-war, markers, day/night.
+- [graph](Module-graph) - Directed flow-simulation graph: typed items flow through nodes, accumulate, decay, react.
+- [log](Module-log) - Lua-accessible logging facade over the Rust log crate, controlled via RUST_LOG.

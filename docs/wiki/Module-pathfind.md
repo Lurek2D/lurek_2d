@@ -4,201 +4,150 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
-- [Purpose](#purpose)
-- [Summary](#summary)
-- [Minimal Module Example](#minimal-module-example)
-- [Key Types](#key-types)
-- [API Overview](#api-overview)
-- [Module Functions](#module-functions)
-  - [lurek.pathfind.getThreadCount() -> integer](#lurekpathfindgetthreadcount-integer)
-  - [lurek.pathfind.newFlowField(grid_ud: LNavGrid) -> LFlowField](#lurekpathfindnewflowfieldgridud-lnavgrid-lflowfield)
-  - [lurek.pathfind.newHexGrid(width: integer, height: integer, [layout_str]: string) -> LHexGrid](#lurekpathfindnewhexgridwidth-integer-height-integer-layoutstr-string-lhexgrid)
-  - [lurek.pathfind.newJpsGrid(width: integer, height: integer) -> LJpsGrid](#lurekpathfindnewjpsgridwidth-integer-height-integer-ljpsgrid)
-  - [lurek.pathfind.newNavGrid(width: integer, height: integer) -> LNavGrid](#lurekpathfindnewnavgridwidth-integer-height-integer-lnavgrid)
-  - [lurek.pathfind.newNavGridFromTileMap(tm_ud: LTileMap, layer_index: integer, blocked_table: table) -> LNavGrid](#lurekpathfindnewnavgridfromtilemaptmud-ltilemap-layerindex-integer-blockedtable-table-lnavgrid)
-  - [lurek.pathfind.newNavMesh() -> LNavMesh](#lurekpathfindnewnavmesh-lnavmesh)
-  - [lurek.pathfind.newPathfinder(grid_ud: LNavGrid) -> LUnitPathfinder](#lurekpathfindnewpathfindergridud-lnavgrid-lunitpathfinder)
-  - [lurek.pathfind.newPathFlowField(grid_ud: LPathGrid) -> LAIFlowField](#lurekpathfindnewpathflowfieldgridud-lpathgrid-laiflowfield)
-  - [lurek.pathfind.newPathGrid(w: integer, h: integer, cell_size: number) -> LPathGrid](#lurekpathfindnewpathgridw-integer-h-integer-cellsize-number-lpathgrid)
-  - [lurek.pathfind.rangeMap(opts: table) -> table](#lurekpathfindrangemapopts-table-table)
-  - [lurek.pathfind.setThreadCount(count: integer)](#lurekpathfindsetthreadcountcount-integer)
-- [Types and Methods](#types-and-methods)
+- [🎯 Purpose](#purpose)
+- [📋 Summary](#summary)
+- [🧩 Key Types](#key-types)
+- [📖 API Overview](#api-overview)
+- [⚙️ Module Functions](#module-functions)
+  - [lurek.pathfind.getThreadCount](#lurekpathfindgetthreadcount)
+  - [lurek.pathfind.newFlowField](#lurekpathfindnewflowfield)
+  - [lurek.pathfind.newHexGrid](#lurekpathfindnewhexgrid)
+  - [lurek.pathfind.newJpsGrid](#lurekpathfindnewjpsgrid)
+  - [lurek.pathfind.newNavGrid](#lurekpathfindnewnavgrid)
+  - [lurek.pathfind.newNavGridFromTileMap](#lurekpathfindnewnavgridfromtilemap)
+  - [lurek.pathfind.newNavMesh](#lurekpathfindnewnavmesh)
+  - [lurek.pathfind.newPathfinder](#lurekpathfindnewpathfinder)
+  - [lurek.pathfind.newPathFlowField](#lurekpathfindnewpathflowfield)
+  - [lurek.pathfind.newPathGrid](#lurekpathfindnewpathgrid)
+  - [lurek.pathfind.rangeMap](#lurekpathfindrangemap)
+  - [lurek.pathfind.setThreadCount](#lurekpathfindsetthreadcount)
+- [🔷 Module Types](#module-types)
   - [LAIFlowField](#laiflowfield)
-  - [LAIFlowField:getDirection(x: integer, y: integer) -> number](#laiflowfieldgetdirectionx-integer-y-integer-number)
-  - [LAIFlowField:getDistance(x: integer, y: integer) -> number](#laiflowfieldgetdistancex-integer-y-integer-number)
-  - [LAIFlowField:getGoal() -> integer](#laiflowfieldgetgoal-integer)
-  - [LAIFlowField:getHeight() -> integer](#laiflowfieldgetheight-integer)
-  - [LAIFlowField:getWidth() -> integer](#laiflowfieldgetwidth-integer)
-  - [LAIFlowField:hasGoal() -> boolean](#laiflowfieldhasgoal-boolean)
-  - [LAIFlowField:setGoal(x: integer, y: integer)](#laiflowfieldsetgoalx-integer-y-integer)
-  - [LAIFlowField:type() -> string](#laiflowfieldtype-string)
-  - [LAIFlowField:typeOf(name: string) -> boolean](#laiflowfieldtypeofname-string-boolean)
   - [LFlowField](#lflowfield)
-  - [LFlowField:calculate(tx: integer, ty: integer, [unit_size]: integer)](#lflowfieldcalculatetx-integer-ty-integer-unitsize-integer)
-  - [LFlowField:calculateMulti(targets: table, [unit_size]: integer)](#lflowfieldcalculatemultitargets-table-unitsize-integer)
-  - [LFlowField:getCostToTarget(x: integer, y: integer) -> number](#lflowfieldgetcosttotargetx-integer-y-integer-number)
-  - [LFlowField:getDirection(x: integer, y: integer) -> number](#lflowfieldgetdirectionx-integer-y-integer-number)
-  - [LFlowField:getDirectionAngle(x: integer, y: integer) -> number](#lflowfieldgetdirectionanglex-integer-y-integer-number)
-  - [LFlowField:getTargets() -> table](#lflowfieldgettargets-table)
-  - [LFlowField:isCalculated() -> boolean](#lflowfieldiscalculated-boolean)
-  - [LFlowField:steer(wx: number, wy: number, speed: number, tw: number, th: number) -> number](#lflowfieldsteerwx-number-wy-number-speed-number-tw-number-th-number-number)
-  - [LFlowField:type() -> string](#lflowfieldtype-string)
-  - [LFlowField:typeOf(name: string) -> boolean](#lflowfieldtypeofname-string-boolean)
   - [LHexGrid](#lhexgrid)
-  - [LHexGrid:distance(c1: integer, r1: integer, c2: integer, r2: integer) -> number](#lhexgriddistancec1-integer-r1-integer-c2-integer-r2-integer-number)
-  - [LHexGrid:fieldOfView(col: integer, row: integer, max_range: integer) -> table](#lhexgridfieldofviewcol-integer-row-integer-maxrange-integer-table)
-  - [LHexGrid:findPath(fc: integer, fr: integer, tc: integer, tr: integer) -> table](#lhexgridfindpathfc-integer-fr-integer-tc-integer-tr-integer-table)
-  - [LHexGrid:isBlocked(col: integer, row: integer) -> boolean](#lhexgridisblockedcol-integer-row-integer-boolean)
-  - [LHexGrid:lineOfSight(fc: integer, fr: integer, tc: integer, tr: integer) -> boolean](#lhexgridlineofsightfc-integer-fr-integer-tc-integer-tr-integer-boolean)
-  - [LHexGrid:rangeOfMovement(col: integer, row: integer, budget: number) -> table](#lhexgridrangeofmovementcol-integer-row-integer-budget-number-table)
-  - [LHexGrid:setBlocked(col: integer, row: integer, blocked: boolean)](#lhexgridsetblockedcol-integer-row-integer-blocked-boolean)
-  - [LHexGrid:setCost(col: integer, row: integer, cost: number)](#lhexgridsetcostcol-integer-row-integer-cost-number)
-  - [LHexGrid:type() -> string](#lhexgridtype-string)
-  - [LHexGrid:typeOf(name: string) -> boolean](#lhexgridtypeofname-string-boolean)
   - [LJpsGrid](#ljpsgrid)
-  - [LJpsGrid:findPath(fx: integer, fy: integer, tx: integer, ty: integer) -> table](#ljpsgridfindpathfx-integer-fy-integer-tx-integer-ty-integer-table)
-  - [LJpsGrid:isBlocked(x: integer, y: integer) -> boolean](#ljpsgridisblockedx-integer-y-integer-boolean)
-  - [LJpsGrid:setBlocked(x: integer, y: integer, blocked: boolean)](#ljpsgridsetblockedx-integer-y-integer-blocked-boolean)
-  - [LJpsGrid:type() -> string](#ljpsgridtype-string)
-  - [LJpsGrid:typeOf(name: string) -> boolean](#ljpsgridtypeofname-string-boolean)
   - [LNavGrid](#lnavgrid)
-  - [LNavGrid:clearDirty()](#lnavgridcleardirty)
-  - [LNavGrid:fill(cost: integer)](#lnavgridfillcost-integer)
-  - [LNavGrid:fillRect(x: integer, y: integer, w: integer, h: integer, cost: integer)](#lnavgridfillrectx-integer-y-integer-w-integer-h-integer-cost-integer)
-  - [LNavGrid:getChunkSize() -> integer](#lnavgridgetchunksize-integer)
-  - [LNavGrid:getCost(x: integer, y: integer) -> integer](#lnavgridgetcostx-integer-y-integer-integer)
-  - [LNavGrid:getDiagonalMode() -> string](#lnavgridgetdiagonalmode-string)
-  - [LNavGrid:getDimensions() -> integer](#lnavgridgetdimensions-integer)
-  - [LNavGrid:getHeight() -> integer](#lnavgridgetheight-integer)
-  - [LNavGrid:getWidth() -> integer](#lnavgridgetwidth-integer)
-  - [LNavGrid:isBlocked(x: integer, y: integer) -> boolean](#lnavgridisblockedx-integer-y-integer-boolean)
-  - [LNavGrid:isWalkable(x: integer, y: integer, [unit_size]: integer) -> boolean](#lnavgridiswalkablex-integer-y-integer-unitsize-integer-boolean)
-  - [LNavGrid:loadFromString(data: string)](#lnavgridloadfromstringdata-string)
-  - [LNavGrid:rebuildAbstract()](#lnavgridrebuildabstract)
-  - [LNavGrid:saveToString() -> string](#lnavgridsavetostring-string)
-  - [LNavGrid:setBlocked(x: integer, y: integer, blocked: boolean)](#lnavgridsetblockedx-integer-y-integer-blocked-boolean)
-  - [LNavGrid:setChunkSize(size: integer)](#lnavgridsetchunksizesize-integer)
-  - [LNavGrid:setCost(x: integer, y: integer, cost: integer)](#lnavgridsetcostx-integer-y-integer-cost-integer)
-  - [LNavGrid:setDiagonalMode(mode: string)](#lnavgridsetdiagonalmodemode-string)
-  - [LNavGrid:setDirty(x: integer, y: integer, w: integer, h: integer)](#lnavgridsetdirtyx-integer-y-integer-w-integer-h-integer)
-  - [LNavGrid:type() -> string](#lnavgridtype-string)
-  - [LNavGrid:typeOf(name: string) -> boolean](#lnavgridtypeofname-string-boolean)
   - [LNavMesh](#lnavmesh)
-  - [LNavMesh:addPolygon(vertices: table) -> integer](#lnavmeshaddpolygonvertices-table-integer)
-  - [LNavMesh:connectPolygons(a: integer, b: integer, [bidirectional]: boolean) -> boolean](#lnavmeshconnectpolygonsa-integer-b-integer-bidirectional-boolean-boolean)
-  - [LNavMesh:findPath(sx: number, sy: number, gx: number, gy: number) -> table](#lnavmeshfindpathsx-number-sy-number-gx-number-gy-number-table)
-  - [LNavMesh:getPolygonCount() -> integer](#lnavmeshgetpolygoncount-integer)
-  - [LNavMesh:type() -> string](#lnavmeshtype-string)
-  - [LNavMesh:typeOf(name: string) -> boolean](#lnavmeshtypeofname-string-boolean)
   - [LPathGrid](#lpathgrid)
-  - [LPathGrid:findPath(sx: integer, sy: integer, gx: integer, gy: integer) -> table](#lpathgridfindpathsx-integer-sy-integer-gx-integer-gy-integer-table)
-  - [LPathGrid:findPathSmoothed(sx: integer, sy: integer, gx: integer, gy: integer) -> table](#lpathgridfindpathsmoothedsx-integer-sy-integer-gx-integer-gy-integer-table)
-  - [LPathGrid:getCellSize() -> number](#lpathgridgetcellsize-number)
-  - [LPathGrid:getCost(x: integer, y: integer) -> number](#lpathgridgetcostx-integer-y-integer-number)
-  - [LPathGrid:getHeight() -> integer](#lpathgridgetheight-integer)
-  - [LPathGrid:getWidth() -> integer](#lpathgridgetwidth-integer)
-  - [LPathGrid:isWalkable(x: integer, y: integer) -> boolean](#lpathgridiswalkablex-integer-y-integer-boolean)
-  - [LPathGrid:setCost(x: integer, y: integer, cost: number)](#lpathgridsetcostx-integer-y-integer-cost-number)
-  - [LPathGrid:setWalkable(x: integer, y: integer, w: boolean)](#lpathgridsetwalkablex-integer-y-integer-w-boolean)
-  - [LPathGrid:type() -> string](#lpathgridtype-string)
-  - [LPathGrid:typeOf(name: string) -> boolean](#lpathgridtypeofname-string-boolean)
   - [LUnitPathfinder](#lunitpathfinder)
-  - [LUnitPathfinder:clearCache()](#lunitpathfinderclearcache)
-  - [LUnitPathfinder:findNearestWalkable(x: integer, y: integer, max_radius: integer, [unit_size]: integer) -> integer](#lunitpathfinderfindnearestwalkablex-integer-y-integer-maxradius-integer-unitsize-integer-integer)
-  - [LUnitPathfinder:findPartialPath(x1: integer, y1: integer, x2: integer, y2: integer, max_nodes: integer, [unit_size]: integer) -> table](#lunitpathfinderfindpartialpathx1-integer-y1-integer-x2-integer-y2-integer-maxnodes-integer-unitsize-integer-table)
-  - [LUnitPathfinder:findPath(x1: integer, y1: integer, x2: integer, y2: integer, [unit_size]: integer) -> table](#lunitpathfinderfindpathx1-integer-y1-integer-x2-integer-y2-integer-unitsize-integer-table)
-  - [LUnitPathfinder:findPathBidirectional(x1: integer, y1: integer, x2: integer, y2: integer, [unit_size]: integer, [max_nodes]: integer) -> table](#lunitpathfinderfindpathbidirectionalx1-integer-y1-integer-x2-integer-y2-integer-unitsize-integer-maxnodes-integer-table)
-  - [LUnitPathfinder:findPathSmooth(x1: integer, y1: integer, x2: integer, y2: integer, [unit_size]: integer) -> table](#lunitpathfinderfindpathsmoothx1-integer-y1-integer-x2-integer-y2-integer-unitsize-integer-table)
-  - [LUnitPathfinder:getCacheSize() -> integer](#lunitpathfindergetcachesize-integer)
-  - [LUnitPathfinder:getPathCost(path: table) -> number](#lunitpathfindergetpathcostpath-table-number)
-  - [LUnitPathfinder:getPathLength(path: table) -> number](#lunitpathfindergetpathlengthpath-table-number)
-  - [LUnitPathfinder:heuristicDistance(x1: integer, y1: integer, x2: integer, y2: integer) -> number](#lunitpathfinderheuristicdistancex1-integer-y1-integer-x2-integer-y2-integer-number)
-  - [LUnitPathfinder:isCacheEnabled() -> boolean](#lunitpathfinderiscacheenabled-boolean)
-  - [LUnitPathfinder:isReachable(x1: integer, y1: integer, x2: integer, y2: integer, [unit_size]: integer) -> boolean](#lunitpathfinderisreachablex1-integer-y1-integer-x2-integer-y2-integer-unitsize-integer-boolean)
-  - [LUnitPathfinder:lineOfSight(x1: integer, y1: integer, x2: integer, y2: integer, [unit_size]: integer) -> boolean](#lunitpathfinderlineofsightx1-integer-y1-integer-x2-integer-y2-integer-unitsize-integer-boolean)
-  - [LUnitPathfinder:setCacheEnabled(enabled: boolean)](#lunitpathfindersetcacheenabledenabled-boolean)
-  - [LUnitPathfinder:setCacheMaxSize(n: integer)](#lunitpathfindersetcachemaxsizen-integer)
-  - [LUnitPathfinder:type() -> string](#lunitpathfindertype-string)
-  - [LUnitPathfinder:typeOf(name: string) -> boolean](#lunitpathfindertypeofname-string-boolean)
-- [Examples](#examples)
-- [Reference Games](#reference-games)
-- [Related Modules](#related-modules)
+- [🔹 Module Methods](#module-methods)
+  - [LAIFlowField:getDirection](#laiflowfieldgetdirection)
+  - [LAIFlowField:getDistance](#laiflowfieldgetdistance)
+  - [LAIFlowField:getGoal](#laiflowfieldgetgoal)
+  - [LAIFlowField:getHeight](#laiflowfieldgetheight)
+  - [LAIFlowField:getWidth](#laiflowfieldgetwidth)
+  - [LAIFlowField:hasGoal](#laiflowfieldhasgoal)
+  - [LAIFlowField:setGoal](#laiflowfieldsetgoal)
+  - [LAIFlowField:type](#laiflowfieldtype)
+  - [LAIFlowField:typeOf](#laiflowfieldtypeof)
+  - [LFlowField:calculate](#lflowfieldcalculate)
+  - [LFlowField:calculateMulti](#lflowfieldcalculatemulti)
+  - [LFlowField:getCostToTarget](#lflowfieldgetcosttotarget)
+  - [LFlowField:getDirection](#lflowfieldgetdirection)
+  - [LFlowField:getDirectionAngle](#lflowfieldgetdirectionangle)
+  - [LFlowField:getTargets](#lflowfieldgettargets)
+  - [LFlowField:isCalculated](#lflowfieldiscalculated)
+  - [LFlowField:steer](#lflowfieldsteer)
+  - [LFlowField:type](#lflowfieldtype)
+  - [LFlowField:typeOf](#lflowfieldtypeof)
+  - [LHexGrid:distance](#lhexgriddistance)
+  - [LHexGrid:fieldOfView](#lhexgridfieldofview)
+  - [LHexGrid:findPath](#lhexgridfindpath)
+  - [LHexGrid:isBlocked](#lhexgridisblocked)
+  - [LHexGrid:lineOfSight](#lhexgridlineofsight)
+  - [LHexGrid:rangeOfMovement](#lhexgridrangeofmovement)
+  - [LHexGrid:setBlocked](#lhexgridsetblocked)
+  - [LHexGrid:setCost](#lhexgridsetcost)
+  - [LHexGrid:type](#lhexgridtype)
+  - [LHexGrid:typeOf](#lhexgridtypeof)
+  - [LJpsGrid:findPath](#ljpsgridfindpath)
+  - [LJpsGrid:isBlocked](#ljpsgridisblocked)
+  - [LJpsGrid:setBlocked](#ljpsgridsetblocked)
+  - [LJpsGrid:type](#ljpsgridtype)
+  - [LJpsGrid:typeOf](#ljpsgridtypeof)
+  - [LNavGrid:clearDirty](#lnavgridcleardirty)
+  - [LNavGrid:fill](#lnavgridfill)
+  - [LNavGrid:fillRect](#lnavgridfillrect)
+  - [LNavGrid:getChunkSize](#lnavgridgetchunksize)
+  - [LNavGrid:getCost](#lnavgridgetcost)
+  - [LNavGrid:getDiagonalMode](#lnavgridgetdiagonalmode)
+  - [LNavGrid:getDimensions](#lnavgridgetdimensions)
+  - [LNavGrid:getHeight](#lnavgridgetheight)
+  - [LNavGrid:getWidth](#lnavgridgetwidth)
+  - [LNavGrid:isBlocked](#lnavgridisblocked)
+  - [LNavGrid:isWalkable](#lnavgridiswalkable)
+  - [LNavGrid:loadFromString](#lnavgridloadfromstring)
+  - [LNavGrid:rebuildAbstract](#lnavgridrebuildabstract)
+  - [LNavGrid:saveToString](#lnavgridsavetostring)
+  - [LNavGrid:setBlocked](#lnavgridsetblocked)
+  - [LNavGrid:setChunkSize](#lnavgridsetchunksize)
+  - [LNavGrid:setCost](#lnavgridsetcost)
+  - [LNavGrid:setDiagonalMode](#lnavgridsetdiagonalmode)
+  - [LNavGrid:setDirty](#lnavgridsetdirty)
+  - [LNavGrid:type](#lnavgridtype)
+  - [LNavGrid:typeOf](#lnavgridtypeof)
+  - [LNavMesh:addPolygon](#lnavmeshaddpolygon)
+  - [LNavMesh:connectPolygons](#lnavmeshconnectpolygons)
+  - [LNavMesh:findPath](#lnavmeshfindpath)
+  - [LNavMesh:getPolygonCount](#lnavmeshgetpolygoncount)
+  - [LNavMesh:type](#lnavmeshtype)
+  - [LNavMesh:typeOf](#lnavmeshtypeof)
+  - [LPathGrid:findPath](#lpathgridfindpath)
+  - [LPathGrid:findPathSmoothed](#lpathgridfindpathsmoothed)
+  - [LPathGrid:getCellSize](#lpathgridgetcellsize)
+  - [LPathGrid:getCost](#lpathgridgetcost)
+  - [LPathGrid:getHeight](#lpathgridgetheight)
+  - [LPathGrid:getWidth](#lpathgridgetwidth)
+  - [LPathGrid:isWalkable](#lpathgridiswalkable)
+  - [LPathGrid:setCost](#lpathgridsetcost)
+  - [LPathGrid:setWalkable](#lpathgridsetwalkable)
+  - [LPathGrid:type](#lpathgridtype)
+  - [LPathGrid:typeOf](#lpathgridtypeof)
+  - [LUnitPathfinder:clearCache](#lunitpathfinderclearcache)
+  - [LUnitPathfinder:findNearestWalkable](#lunitpathfinderfindnearestwalkable)
+  - [LUnitPathfinder:findPartialPath](#lunitpathfinderfindpartialpath)
+  - [LUnitPathfinder:findPath](#lunitpathfinderfindpath)
+  - [LUnitPathfinder:findPathBidirectional](#lunitpathfinderfindpathbidirectional)
+  - [LUnitPathfinder:findPathSmooth](#lunitpathfinderfindpathsmooth)
+  - [LUnitPathfinder:getCacheSize](#lunitpathfindergetcachesize)
+  - [LUnitPathfinder:getPathCost](#lunitpathfindergetpathcost)
+  - [LUnitPathfinder:getPathLength](#lunitpathfindergetpathlength)
+  - [LUnitPathfinder:heuristicDistance](#lunitpathfinderheuristicdistance)
+  - [LUnitPathfinder:isCacheEnabled](#lunitpathfinderiscacheenabled)
+  - [LUnitPathfinder:isReachable](#lunitpathfinderisreachable)
+  - [LUnitPathfinder:lineOfSight](#lunitpathfinderlineofsight)
+  - [LUnitPathfinder:setCacheEnabled](#lunitpathfindersetcacheenabled)
+  - [LUnitPathfinder:setCacheMaxSize](#lunitpathfindersetcachemaxsize)
+  - [LUnitPathfinder:type](#lunitpathfindertype)
+  - [LUnitPathfinder:typeOf](#lunitpathfindertypeof)
+- [💡 Examples](#examples)
+- [🎮 Reference Games](#reference-games)
+- [🔗 Related Modules](#related-modules)
 
 This page is generated from the current module specs, examples, and Lua API data.
 
 **Module group:** Feature Systems
 **Namespace:** `lurek.pathfind`
 
-## Purpose
+## 🎯 Purpose
 
 Grid / hex / iso / hierarchical / flow-field pathfinding. CPU-only, headless. Couples to ai.
 
-## Summary
+[⬆ back to top](#table-of-contents)
+
+## 📋 Summary
 
 Grid, hex, and mesh pathfinding library providing A*, Dijkstra, Jump Point Search (JPS), Hierarchical Pathfinding A* (HPA*), bidirectional search, flow fields, influence maps, and navigation meshes. `NavGrid` is the primary grid type with walkability masks, movement costs, and multi-size unit support. `FlowField` precomputes direction vectors for many-agent scenarios.
 
 `HexGrid` supports hexagonal grids with cube/axial/offset coordinates and hex-specific distance/neighbor functions. `JpsGrid` accelerates uniform-cost grid search via jump-point symmetry breaking. `InfluenceMap` propagates scalar values across grids for AI threat/attraction modeling. `NavMesh` handles polygon-based navigation for non-grid environments. Async path requests run on background threads via `PathPool`. Exposed as `lurek.pathfind.*`. Feature Systems tier.
 
-## Minimal Module Example
+[⬆ back to top](#table-of-contents)
 
-Module example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
--- content/examples/pathfind.lua
--- lurek.pathfind API examples: navigation grids, A* pathfinding, flow fields, hex grids, JPS, nav meshes, and range maps.
--- Run: cargo run -- content/examples/pathfind.lua
-
---@api-stub: lurek.pathfind.newNavGrid
--- Creates a navigation grid for tile-based pathfinding
-do
-  -- A NavGrid is the fundamental data structure for grid-based pathfinding.
-  -- It stores per-cell movement costs: 1 = normal, 0 = blocked, 2-255 = weighted terrain.
-  -- Use it for top-down RPGs, RTS games, tower defense, or any tile-based movement.
-  local grid = lurek.pathfind.newNavGrid(64, 48)
-
-  -- Mark walls (cost 0 = impassable) to create dungeon corridors
-  grid:setCost(10, 10, 0)
-
-  -- Weighted terrain: swamp costs 5x more than open ground, so pathfinder avoids it
-  grid:setCost(11, 10, 5)
-
-  lurek.log.info("nav grid ready: " .. grid:getWidth() .. "x" .. grid:getHeight(), "pathfind")
-end
-
---@api-stub: lurek.pathfind.newPathfinder
--- Creates a unit pathfinder bound to a navigation grid
-do
-  -- UnitPathfinder runs A* search on a NavGrid and returns waypoint arrays.
-  -- It supports path caching so repeated queries for the same route are instant.
-  -- Typical use: one pathfinder per faction or AI group sharing the same grid.
-  local grid = lurek.pathfind.newNavGrid(64, 48)
-  local pf = lurek.pathfind.newPathfinder(grid)
-
-  -- Enable caching for RTS units that recalculate paths each frame
-  pf:setCacheEnabled(true)
-  pf:setCacheMaxSize(128)
-end
-
---@api-stub: lurek.pathfind.newFlowField
--- Creates a flow field for guiding many units toward a single goal
-do
-  -- Flow fields are ideal when many units move toward the same target (RTS, tower defense).
-  -- Instead of running A* per unit, calculate one field and query direction per cell.
-  -- Cost: O(cells) to build, O(1) per unit per frame to query.
-  local grid = lurek.pathfind.newNavGrid(48, 32)
-  local field = lurek.pathfind.newFlowField(grid)
-
-  -- Calculate flow toward goal cell (1-based coordinates)
-  field:calculate(40, 28)
-
-  -- Each unit queries its current cell for movement direction
-```
-
-## Key Types
+## 🧩 Key Types
 
 - `LAIFlowField` (9 methods) - Lua-side wrapper for an AI flow field over a path grid.
 - `LFlowField` (10 methods) - Lua-side wrapper for a flow field over a navigation grid.
@@ -209,7 +158,9 @@ do
 - `LPathGrid` (11 methods) - Lua-side wrapper for a cell-size path grid.
 - `LUnitPathfinder` (17 methods) - Lua-side wrapper for a unit pathfinder over a navigation grid.
 
-## API Overview
+[⬆ back to top](#table-of-contents)
+
+## 📖 API Overview
 
 - Source spec: [docs/specs/pathfind.md](../blob/main/docs/specs/pathfind.md)
 
@@ -228,9 +179,13 @@ lurek.pathfind.rangeMap(opts: table) -> table -- Computes reachable cells from r
 lurek.pathfind.setThreadCount(count: integer) -- Sets pathfinding thread count (not yet implemented; logs a warning).
 ```
 
-## Module Functions
+[⬆ back to top](#table-of-contents)
 
-### `lurek.pathfind.getThreadCount() -> integer`
+## ⚙️ Module Functions
+
+### lurek.pathfind.getThreadCount
+
+`lurek.pathfind.getThreadCount() -> integer`
 
 Returns the pathfinding thread count.
 
@@ -251,13 +206,15 @@ do
 end
 ```
 
-### `lurek.pathfind.newFlowField(grid_ud: LNavGrid) -> LFlowField`
+### lurek.pathfind.newFlowField
+
+`lurek.pathfind.newFlowField(grid_ud: LNavGrid) -> LFlowField`
 
 Creates a flow field for a navigation grid.
 
 **Parameters**
 
-- `grid_ud` (`LNavGrid`, required) - Navigation grid to compute flow field from.
+- `grid_ud` (`LNavGrid`, required): Navigation grid to compute flow field from.
 
 **Returns**: `LFlowField` - New flow field handle.
 
@@ -282,15 +239,17 @@ do
 end
 ```
 
-### `lurek.pathfind.newHexGrid(width: integer, height: integer, [layout_str]: string) -> LHexGrid`
+### lurek.pathfind.newHexGrid
+
+`lurek.pathfind.newHexGrid(width: integer, height: integer, [layout_str]: string) -> LHexGrid`
 
 Creates a hex grid with the given dimensions.
 
 **Parameters**
 
-- `width` (`integer`, required) - Grid width in hex columns.
-- `height` (`integer`, required) - Grid height in hex rows.
-- `layout_str` (`string`, optional) - Hex layout: `flat` (default) or `pointy`.
+- `width` (`integer`, required): Grid width in hex columns.
+- `height` (`integer`, required): Grid height in hex rows.
+- `layout_str` (`string`, optional): Hex layout: `flat` (default) or `pointy`.
 
 **Returns**: `LHexGrid` - New hex grid handle.
 
@@ -314,14 +273,16 @@ do
 end
 ```
 
-### `lurek.pathfind.newJpsGrid(width: integer, height: integer) -> LJpsGrid`
+### lurek.pathfind.newJpsGrid
+
+`lurek.pathfind.newJpsGrid(width: integer, height: integer) -> LJpsGrid`
 
 Creates a Jump Point Search grid with given dimensions.
 
 **Parameters**
 
-- `width` (`integer`, required) - Grid width in cells.
-- `height` (`integer`, required) - Grid height in cells.
+- `width` (`integer`, required): Grid width in cells.
+- `height` (`integer`, required): Grid height in cells.
 
 **Returns**: `LJpsGrid` - New JPS grid handle.
 
@@ -345,14 +306,16 @@ do
 end
 ```
 
-### `lurek.pathfind.newNavGrid(width: integer, height: integer) -> LNavGrid`
+### lurek.pathfind.newNavGrid
+
+`lurek.pathfind.newNavGrid(width: integer, height: integer) -> LNavGrid`
 
 Creates a navigation grid with the given dimensions.
 
 **Parameters**
 
-- `width` (`integer`, required) - Grid width in cells.
-- `height` (`integer`, required) - Grid height in cells.
+- `width` (`integer`, required): Grid width in cells.
+- `height` (`integer`, required): Grid height in cells.
 
 **Returns**: `LNavGrid` - New navigation grid handle.
 
@@ -377,15 +340,17 @@ do
 end
 ```
 
-### `lurek.pathfind.newNavGridFromTileMap(tm_ud: LTileMap, layer_index: integer, blocked_table: table) -> LNavGrid`
+### lurek.pathfind.newNavGridFromTileMap
+
+`lurek.pathfind.newNavGridFromTileMap(tm_ud: LTileMap, layer_index: integer, blocked_table: table) -> LNavGrid`
 
 Creates a navigation grid from a tilemap layer and blocked gid table.
 
 **Parameters**
 
-- `tm_ud` (`LTileMap`, required) - Tilemap to derive navigation grid from.
-- `layer_index` (`integer`, required) - One-based tilemap layer index.
-- `blocked_table` (`table`, required) - Array of tile GIDs that should be blocked.
+- `tm_ud` (`LTileMap`, required): Tilemap to derive navigation grid from.
+- `layer_index` (`integer`, required): One-based tilemap layer index.
+- `blocked_table` (`table`, required): Array of tile GIDs that should be blocked.
 
 **Returns**: `LNavGrid` - New navigation grid handle.
 
@@ -408,7 +373,9 @@ do
 end
 ```
 
-### `lurek.pathfind.newNavMesh() -> LNavMesh`
+### lurek.pathfind.newNavMesh
+
+`lurek.pathfind.newNavMesh() -> LNavMesh`
 
 Creates an empty navigation mesh for polygon-based pathfinding.
 
@@ -448,13 +415,15 @@ do
 end
 ```
 
-### `lurek.pathfind.newPathfinder(grid_ud: LNavGrid) -> LUnitPathfinder`
+### lurek.pathfind.newPathfinder
+
+`lurek.pathfind.newPathfinder(grid_ud: LNavGrid) -> LUnitPathfinder`
 
 Creates a unit pathfinder for a navigation grid.
 
 **Parameters**
 
-- `grid_ud` (`LNavGrid`, required) - Navigation grid to pathfind on.
+- `grid_ud` (`LNavGrid`, required): Navigation grid to pathfind on.
 
 **Returns**: `LUnitPathfinder` - New pathfinder handle.
 
@@ -476,13 +445,15 @@ do
 end
 ```
 
-### `lurek.pathfind.newPathFlowField(grid_ud: LPathGrid) -> LAIFlowField`
+### lurek.pathfind.newPathFlowField
+
+`lurek.pathfind.newPathFlowField(grid_ud: LPathGrid) -> LAIFlowField`
 
 Creates an AI flow field from a path grid.
 
 **Parameters**
 
-- `grid_ud` (`LPathGrid`, required) - Path grid to compute AI flow field from.
+- `grid_ud` (`LPathGrid`, required): Path grid to compute AI flow field from.
 
 **Returns**: `LAIFlowField` - New AI flow field handle.
 
@@ -505,15 +476,17 @@ do
 end
 ```
 
-### `lurek.pathfind.newPathGrid(w: integer, h: integer, cell_size: number) -> LPathGrid`
+### lurek.pathfind.newPathGrid
+
+`lurek.pathfind.newPathGrid(w: integer, h: integer, cell_size: number) -> LPathGrid`
 
 Creates a cell-size path grid with given dimensions.
 
 **Parameters**
 
-- `w` (`integer`, required) - Grid width in cells.
-- `h` (`integer`, required) - Grid height in cells.
-- `cell_size` (`number`, required) - World-space size of each cell.
+- `w` (`integer`, required): Grid width in cells.
+- `h` (`integer`, required): Grid height in cells.
+- `cell_size` (`number`, required): World-space size of each cell.
 
 **Returns**: `LPathGrid` - New path grid handle.
 
@@ -536,13 +509,15 @@ do
 end
 ```
 
-### `lurek.pathfind.rangeMap(opts: table) -> table`
+### lurek.pathfind.rangeMap
+
+`lurek.pathfind.rangeMap(opts: table) -> table`
 
 Computes reachable cells from range map options.
 
 **Parameters**
 
-- `opts` (`table`, required) - Options with dimensions, origin, budget, optional diagonal flag, costs, and blocked cells.
+- `opts` (`table`, required): Options with dimensions, origin, budget, optional diagonal flag, costs, and blocked cells.
 
 **Returns**: `table` - Range map result with `cells`, `width`, and `height` fields.
 
@@ -569,13 +544,15 @@ do
 end
 ```
 
-### `lurek.pathfind.setThreadCount(count: integer)`
+### lurek.pathfind.setThreadCount
+
+`lurek.pathfind.setThreadCount(count: integer)`
 
 Sets pathfinding thread count (not yet implemented; logs a warning).
 
 **Parameters**
 
-- `count` (`integer`, required) - Desired thread count.
+- `count` (`integer`, required): Desired thread count.
 
 #### Example
 
@@ -592,11 +569,21 @@ end
 ```
 
 
-## Types and Methods
+[⬆ back to top](#table-of-contents)
 
-### `LAIFlowField`
+## 🔷 Module Types
+
+### LAIFlowField
 
 Lua-side wrapper for an AI flow field over a path grid.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side wrapper for an AI flow field over a path grid.
+---@class LAIFlowField
+LAIFlowField = {}
+```
 
 #### Example
 
@@ -617,217 +604,17 @@ do
 end
 ```
 
-### `LAIFlowField:getDirection(x: integer, y: integer) -> number`
-
-Returns flow direction vector for a one-based cell.
-
-**Parameters**
-
-- `x` (`integer`, required) - One-based column.
-- `y` (`integer`, required) - One-based row.
-
-**Returns**: `number` - Direction X component.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  local grid = lurek.pathfind.newPathGrid(8, 8, 1.0)
-  local ff = lurek.pathfind.newPathFlowField(grid)
-  if ff then
-    ff:setGoal(8, 8)
-    local dx, dy = ff:getDirection(1, 1)
-    lurek.log.info("dir dx=" .. tostring(dx) .. " dy=" .. tostring(dy), "pathfind")
-  else
-    lurek.log.info("dir dx=skipped", "pathfind")
-  end
-end
-```
-
-### `LAIFlowField:getDistance(x: integer, y: integer) -> number`
-
-Returns distance to goal for a one-based cell.
-
-**Parameters**
-
-- `x` (`integer`, required) - One-based column.
-- `y` (`integer`, required) - One-based row.
-
-**Returns**: `number` - Distance to the goal.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  local grid = lurek.pathfind.newPathGrid(8, 8, 1.0)
-  local ff = lurek.pathfind.newPathFlowField(grid)
-  if ff then
-    ff:setGoal(8, 8)
-    local dist = ff:getDistance(1, 1)
-    lurek.log.info("distance from (1,1) to goal=" .. tostring(dist), "pathfind")
-  else
-    lurek.log.info("distance from (1,1) to goal=skipped", "pathfind")
-  end
-end
-```
-
-### `LAIFlowField:getGoal() -> integer`
-
-Returns the one-based flow field goal, or nil when no goal is set.
-
-**Returns**: `integer` - One-based goal column, or nil.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  local grid = lurek.pathfind.newPathGrid(8, 8, 1.0)
-  local ff = lurek.pathfind.newPathFlowField(grid)
-  if ff then
-    ff:setGoal(6, 2)
-    local gx, gy = ff:getGoal()
-    lurek.log.info("goal=" .. tostring(gx) .. "," .. tostring(gy), "pathfind")
-  else
-    lurek.log.info("goal=skipped", "pathfind")
-  end
-end
-```
-
-### `LAIFlowField:getHeight() -> integer`
-
-Returns flow field height from this object.
-
-**Returns**: `integer` - Height.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  local grid = lurek.pathfind.newPathGrid(12, 8, 1.0)
-  local ff = lurek.pathfind.newPathFlowField(grid)
-  local ok_h2, hh = pcall(function() return ff:getHeight() end)
-  lurek.log.info("height=" .. tostring(ok_h2 and hh or "??"), "pathfind")
-end
-```
-
-### `LAIFlowField:getWidth() -> integer`
-
-Returns flow field width from this object.
-
-**Returns**: `integer` - Width.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  local grid = lurek.pathfind.newPathGrid(12, 8, 1.0)
-  local ff = lurek.pathfind.newPathFlowField(grid)
-  local ok_w, ww = pcall(function() return ff:getWidth() end)
-  lurek.log.info("width=" .. tostring(ok_w and ww or "??"), "pathfind")
-end
-```
-
-### `LAIFlowField:hasGoal() -> boolean`
-
-Returns whether a flow field goal is currently set.
-
-**Returns**: `boolean` - True when a goal exists.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  local grid = lurek.pathfind.newPathGrid(8, 8, 1.0)
-  local ff = lurek.pathfind.newPathFlowField(grid)
-  local ok1, v1 = pcall(function() return ff and ff:hasGoal() end)
-  lurek.log.info("has goal before set: " .. tostring(ok1 and v1 or false), "pathfind")
-  pcall(function() if ff then ff:setGoal(4, 4) end end)
-  local ok2, v2 = pcall(function() return ff and ff:hasGoal() end)
-  lurek.log.info("has goal after set: " .. tostring(ok2 and v2 or false), "pathfind")
-end
-```
-
-### `LAIFlowField:setGoal(x: integer, y: integer)`
-
-Sets the one-based flow field goal and recalculates the field.
-
-**Parameters**
-
-- `x` (`integer`, required) - One-based goal column.
-- `y` (`integer`, required) - One-based goal row.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  local grid = lurek.pathfind.newPathGrid(8, 8, 1.0)
-  local ff = lurek.pathfind.newPathFlowField(grid)
-  if ff then
-    ff:setGoal(5, 3)   -- 1-based (col=5, row=3)
-    lurek.log.info("goal set, dx=" .. tostring(ff:getDirection(1, 1)), "pathfind")
-  else
-    lurek.log.info("goal set: skipped (no ff)", "pathfind")
-  end
-end
-```
-
-### `LAIFlowField:type() -> string`
-
-Returns the Lua-visible type name for this AI flow field handle.
-
-**Returns**: `string` - The string `LAIFlowField`.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  local grid = lurek.pathfind.newNavGrid(20, 20)
-  local obj = lurek.pathfind.newFlowField(grid)
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LAIFlowField"
-end
-```
-
-### `LAIFlowField:typeOf(name: string) -> boolean`
-
-Returns whether this AI flow field handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required) - String value for `name`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  local grid = lurek.pathfind.newNavGrid(20, 20)
-  local obj = lurek.pathfind.newFlowField(grid)
-  lurek.log.debug("typeOf LAIFlowField: " .. tostring(obj:typeOf("LAIFlowField")), "example") -- true
-end
-```
-
-### `LFlowField`
+### LFlowField
 
 Lua-side wrapper for a flow field over a navigation grid.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side wrapper for a flow field over a navigation grid.
+---@class LFlowField
+LFlowField = {}
+```
 
 #### Example
 
@@ -850,256 +637,17 @@ do
 end
 ```
 
-### `LFlowField:calculate(tx: integer, ty: integer, [unit_size]: integer)`
-
-Calculates a flow field toward one target cell.
-
-**Parameters**
-
-- `tx` (`integer`, required) - One-based target column.
-- `ty` (`integer`, required) - One-based target row.
-- `unit_size` (`integer`, optional) - Unit footprint in cells (default 1).
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  -- After calculate(), every reachable cell stores a direction toward the goal.
-  -- The optional unit_size parameter enables clearance-based pathfinding (default 1).
-  local grid = lurek.pathfind.newNavGrid(32, 32)
-  local ff = lurek.pathfind.newFlowField(grid)
-  ff:calculate(16, 16)  -- all units head toward cell (16, 16)
-  lurek.log.info("flow field calculated", "pathfind")
-end
-```
-
-### `LFlowField:calculateMulti(targets: table, [unit_size]: integer)`
-
-Calculates a flow field toward multiple target cells.
-
-**Parameters**
-
-- `targets` (`table`, required) - Array of `{x, y}` target tables.
-- `unit_size` (`integer`, optional) - Unit footprint in cells (default 1).
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  -- Multi-target flow fields guide units toward the nearest of several goals.
-  -- Use case: multiple resource deposits, multiple exits, or group rally points.
-  local grid = lurek.pathfind.newNavGrid(32, 32)
-  local ff = lurek.pathfind.newFlowField(grid)
-  ff:calculateMulti({{x=8,y=8},{x=24,y=24}})  -- two rally points
-  lurek.log.info("multi-target flow field done", "pathfind")
-end
-```
-
-### `LFlowField:getCostToTarget(x: integer, y: integer) -> number`
-
-Returns integration cost to the target from a one-based grid cell.
-
-**Parameters**
-
-- `x` (`integer`, required) - One-based column.
-- `y` (`integer`, required) - One-based row.
-
-**Returns**: `number` - Integration cost to the nearest target.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  -- Use this for AI priority: enemies closer to the goal (lower cost) are more dangerous.
-  -- Also useful for rendering heat maps or determining if a unit is "stuck".
-  local g = lurek.pathfind.newNavGrid(32, 32)
-  local f = lurek.pathfind.newFlowField(g)
-  f:calculate(16, 16)
-  local d = f:getCostToTarget(1, 1)
-  lurek.log.info("distance to target = " .. d, "flow")
-end
-```
-
-### `LFlowField:getDirection(x: integer, y: integer) -> number`
-
-Returns flow direction vector at a one-based grid cell.
-
-**Parameters**
-
-- `x` (`integer`, required) - One-based column.
-- `y` (`integer`, required) - One-based row.
-
-**Returns**: `number` - Direction X component.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  -- Query flow direction for a tower defense enemy at its current cell.
-  local grid = lurek.pathfind.newNavGrid(20, 20)
-  local ff = lurek.pathfind.newFlowField(grid)
-  ff:calculate(10, 10)
-  local dx, dy = ff:getDirection(3, 3)
-  lurek.log.debug("enemy flow dir=" .. dx .. "," .. dy, "pathfind")
-end
-```
-
-### `LFlowField:getDirectionAngle(x: integer, y: integer) -> number`
-
-Returns flow direction angle at a one-based grid cell.
-
-**Parameters**
-
-- `x` (`integer`, required) - One-based column.
-- `y` (`integer`, required) - One-based row.
-
-**Returns**: `number` - Direction angle in radians.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  -- Angle is measured from positive X axis, counter-clockwise.
-  -- Directly usable for rotating a unit sprite to face movement direction.
-  local g = lurek.pathfind.newNavGrid(32, 32)
-  local f = lurek.pathfind.newFlowField(g)
-  f:calculate(20, 20)
-  local angle = f:getDirectionAngle(5, 5)
-  lurek.log.debug("flow angle = " .. angle .. " rad", "flow")
-end
-```
-
-### `LFlowField:getTargets() -> table`
-
-Returns target cells for this flow field.
-
-**Returns**: `table` - Array table of target point tables.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  -- Useful for debugging or verifying multi-target fields.
-  -- Returns array of {x, y} tables (1-based coordinates).
-  local g = lurek.pathfind.newNavGrid(20, 20)
-  local f = lurek.pathfind.newFlowField(g)
-  f:calculateMulti({{x=5, y=5}, {x=15, y=15}}, 1)
-  local targets = f:getTargets()
-  lurek.log.info("flow has " .. #targets .. " goals", "flow")
-end
-```
-
-### `LFlowField:isCalculated() -> boolean`
-
-Returns whether the flow field has been calculated.
-
-**Returns**: `boolean` - True when calculated.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  -- Always check before querying directions to avoid reading uninitialized data.
-  local g = lurek.pathfind.newNavGrid(16, 16)
-  local f = lurek.pathfind.newFlowField(g)
-  if not f:isCalculated() then
-    f:calculate(10, 10)
-  end
-end
-```
-
-### `LFlowField:steer(wx: number, wy: number, speed: number, tw: number, th: number) -> number`
-
-Returns a steering velocity for a world position using the flow field.
-
-**Parameters**
-
-- `wx` (`number`, required) - World X position.
-- `wy` (`number`, required) - World Y position.
-- `speed` (`number`, required) - Movement speed scalar.
-- `tw` (`number`, required) - Tile width in world units.
-- `th` (`number`, required) - Tile height in world units.
-
-**Returns**: `number` - Steered X velocity.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  -- steer() converts world pixel coordinates to grid cells, reads direction,
-  -- and returns a velocity vector scaled by speed. Parameters:
-  --   wx, wy = world position in pixels
-  --   speed  = desired movement speed
-  --   tw, th = tile width and height (for world-to-grid conversion)
-  local grid = lurek.pathfind.newNavGrid(32, 32)
-  local ff = lurek.pathfind.newFlowField(grid)
-  ff:calculate(16, 16)
-  local vx, vy = ff:steer(8, 8, 1.0, 1.0, 1.0)
-  lurek.log.info("steer: " .. vx .. "," .. vy, "pathfind")
-end
-```
-
-### `LFlowField:type() -> string`
-
-Returns the Lua-visible type name for this flow field handle.
-
-**Returns**: `string` - The string `LFlowField`.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  -- Use type() for debug logging or serialization tags.
-  local grid = lurek.pathfind.newNavGrid(16, 16)
-  local ff = lurek.pathfind.newFlowField(grid)
-  lurek.log.debug("flow field type=" .. ff:type(), "pathfind")
-end
-```
-
-### `LFlowField:typeOf(name: string) -> boolean`
-
-Returns whether this flow field handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required) - String value for `name`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  -- Runtime type guard before calling flow-field-specific methods.
-  local grid = lurek.pathfind.newNavGrid(16, 16)
-  local ff = lurek.pathfind.newFlowField(grid)
-  lurek.log.debug("is LFlowField=" .. tostring(ff:typeOf("LFlowField")), "pathfind")
-end
-```
-
-### `LHexGrid`
+### LHexGrid
 
 Lua-side wrapper for a hexagonal grid.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side wrapper for a hexagonal grid.
+---@class LHexGrid
+LHexGrid = {}
+```
 
 #### Example
 
@@ -1121,254 +669,17 @@ do
 end
 ```
 
-### `LHexGrid:distance(c1: integer, r1: integer, c2: integer, r2: integer) -> number`
-
-Returns hex distance between two one-based hex cells.
-
-**Parameters**
-
-- `c1` (`integer`, required) - One-based column of the first cell.
-- `r1` (`integer`, required) - One-based row of the first cell.
-- `c2` (`integer`, required) - One-based column of the second cell.
-- `r2` (`integer`, required) - One-based row of the second cell.
-
-**Returns**: `number` - Hex distance.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  -- Hex distance is the minimum number of steps between two hex cells.
-  -- Useful for range checks in turn-based games (attack range, spell range).
-  local hg = lurek.pathfind.newHexGrid(16, 16)
-  local d = hg:distance(1, 1, 6, 4)
-  lurek.log.info("hex distance: " .. d, "pathfind")
-end
-```
-
-### `LHexGrid:fieldOfView(col: integer, row: integer, max_range: integer) -> table`
-
-Returns visible hex cells within range from an origin.
-
-**Parameters**
-
-- `col` (`integer`, required) - One-based origin column.
-- `row` (`integer`, required) - One-based origin row.
-- `max_range` (`integer`, required) - Maximum visibility range in cells.
-
-**Returns**: `table` - Array of `{col, row}` hex cell tables.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  -- Computes line-of-sight from (col, row) up to max_range hexes away.
-  -- Blocked hexes stop visibility. Returns array of {col, row} tables.
-  -- Use for fog-of-war or unit vision in turn-based strategy.
-  local hg = lurek.pathfind.newHexGrid(16, 16)
-  local visible = hg:fieldOfView(8, 8, 4)
-  lurek.log.info("visible cells: " .. #visible, "pathfind")
-end
-```
-
-### `LHexGrid:findPath(fc: integer, fr: integer, tc: integer, tr: integer) -> table`
-
-Finds a path between one-based hex cells.
-
-**Parameters**
-
-- `fc` (`integer`, required) - One-based start column.
-- `fr` (`integer`, required) - One-based start row.
-- `tc` (`integer`, required) - One-based goal column.
-- `tr` (`integer`, required) - One-based goal row.
-
-**Returns**: `table` - Array of `{col, row}` hex cell tables, or nil when no path exists.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  -- Route a cavalry unit from base to enemy fortress on a hex map.
-  local hex = lurek.pathfind.newHexGrid(16, 12, "pointy")
-  hex:setBlocked(8, 6, true)  -- river blocks direct route
-  local path = hex:findPath(2, 2, 14, 10)
-  lurek.log.info("hex path steps=" .. (path and #path or 0), "tactics")
-end
-```
-
-### `LHexGrid:isBlocked(col: integer, row: integer) -> boolean`
-
-Returns whether a one-based hex cell is blocked.
-
-**Parameters**
-
-- `col` (`integer`, required) - One-based hex column.
-- `row` (`integer`, required) - One-based hex row.
-
-**Returns**: `boolean` - True when blocked.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  -- Validate a movement order before committing the unit.
-  local hex = lurek.pathfind.newHexGrid(12, 10, "flat")
-  hex:setBlocked(3, 3, true)
-  if hex:isBlocked(3, 3) then
-    lurek.log.warn("cannot move into mountain hex 3,3", "tactics")
-  end
-end
-```
-
-### `LHexGrid:lineOfSight(fc: integer, fr: integer, tc: integer, tr: integer) -> boolean`
-
-Returns whether two one-based hex cells have line of sight.
-
-**Parameters**
-
-- `fc` (`integer`, required) - One-based column of the first cell.
-- `fr` (`integer`, required) - One-based row of the first cell.
-- `tc` (`integer`, required) - One-based column of the second cell.
-- `tr` (`integer`, required) - One-based row of the second cell.
-
-**Returns**: `boolean` - True when line of sight is clear.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  -- Hex-aware LOS: traces the hex line and checks for blocked cells along it.
-  local hg = lurek.pathfind.newHexGrid(16, 16)
-  local los = hg:lineOfSight(1, 1, 8, 4)
-  lurek.log.info("hex los: " .. tostring(los), "pathfind")
-end
-```
-
-### `LHexGrid:rangeOfMovement(col: integer, row: integer, budget: number) -> table`
-
-Returns reachable hex cells within a movement budget.
-
-**Parameters**
-
-- `col` (`integer`, required) - One-based origin column.
-- `row` (`integer`, required) - One-based origin row.
-- `budget` (`number`, required) - Maximum movement cost budget.
-
-**Returns**: `table` - Array of `{col, row}` hex cell tables.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  -- Flood-fills outward from (col, row), accumulating hex terrain costs.
-  -- Returns all cells reachable within the budget.
-  -- Use for highlighting valid movement tiles in a tactics game.
-  local hg = lurek.pathfind.newHexGrid(16, 16)
-  local cells = hg:rangeOfMovement(8, 8, 3)
-  lurek.log.info("cells in range: " .. #cells, "pathfind")
-end
-```
-
-### `LHexGrid:setBlocked(col: integer, row: integer, blocked: boolean)`
-
-Sets blocked state for a one-based hex cell.
-
-**Parameters**
-
-- `col` (`integer`, required) - One-based hex column.
-- `row` (`integer`, required) - One-based hex row.
-- `blocked` (`boolean`, required) - True to block the cell.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  -- Mark a mountain hex as impassable in a strategy game.
-  local hex = lurek.pathfind.newHexGrid(12, 10, "pointy")
-  hex:setBlocked(6, 5, true)
-  lurek.log.debug("hex (6,5) blocked=" .. tostring(hex:isBlocked(6, 5)), "hex")
-end
-```
-
-### `LHexGrid:setCost(col: integer, row: integer, cost: number)`
-
-Sets movement cost for a one-based hex cell.
-
-**Parameters**
-
-- `col` (`integer`, required) - One-based hex column.
-- `row` (`integer`, required) - One-based hex row.
-- `cost` (`number`, required) - Movement cost value.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  -- Hex costs are floats: 1.0 = plains, 2.0 = forest, 3.0 = swamp.
-  -- Units with enough movement budget can still traverse expensive hexes.
-  local hex = lurek.pathfind.newHexGrid(15, 12, "flat")
-  hex:setCost(5, 4, 2.0)  -- forest hex: costs 2 movement points
-  hex:setCost(6, 4, 3.0)  -- swamp hex: costs 3 movement points
-end
-```
-
-### `LHexGrid:type() -> string`
-
-Returns the Lua-visible type name for this hex grid handle.
-
-**Returns**: `string` - The string `LHexGrid`.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  local obj = lurek.pathfind.newHexGrid(10, 10)
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LHexGrid"
-end
-```
-
-### `LHexGrid:typeOf(name: string) -> boolean`
-
-Returns whether this hex grid handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required) - String value for `name`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  local obj = lurek.pathfind.newHexGrid(10, 10)
-  lurek.log.debug("typeOf LHexGrid: " .. tostring(obj:typeOf("LHexGrid")), "example") -- true
-end
-```
-
-### `LJpsGrid`
+### LJpsGrid
 
 Lua-side wrapper for a Jump Point Search grid.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side wrapper for a Jump Point Search grid.
+---@class LJpsGrid
+LJpsGrid = {}
+```
 
 #### Example
 
@@ -1390,123 +701,17 @@ do
 end
 ```
 
-### `LJpsGrid:findPath(fx: integer, fy: integer, tx: integer, ty: integer) -> table`
-
-Finds a JPS path between one-based grid cells.
-
-**Parameters**
-
-- `fx` (`integer`, required) - One-based start column.
-- `fy` (`integer`, required) - One-based start row.
-- `tx` (`integer`, required) - One-based goal column.
-- `ty` (`integer`, required) - One-based goal row.
-
-**Returns**: `table` - Array of `{x, y}` point tables, or nil when no path exists.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  -- Fast pathfinding on a large open battlefield.
-  local jps = lurek.pathfind.newJpsGrid(128, 128)
-  jps:setBlocked(64, 64, true)
-  local path = jps:findPath(1, 1, 127, 127)
-  lurek.log.info("jps result waypoints=" .. (path and #path or 0), "pathfind")
-end
-```
-
-### `LJpsGrid:isBlocked(x: integer, y: integer) -> boolean`
-
-Returns whether a one-based JPS grid cell is blocked.
-
-**Parameters**
-
-- `x` (`integer`, required) - One-based column.
-- `y` (`integer`, required) - One-based row.
-
-**Returns**: `boolean` - True when blocked.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  local jps = lurek.pathfind.newJpsGrid(64, 64)
-  jps:setBlocked(32, 32, true)
-  if jps:isBlocked(32, 32) then
-    lurek.log.debug("jps cell 32,32 is blocked", "jps")
-  end
-end
-```
-
-### `LJpsGrid:setBlocked(x: integer, y: integer, blocked: boolean)`
-
-Sets blocked state for a one-based JPS grid cell.
-
-**Parameters**
-
-- `x` (`integer`, required) - One-based column.
-- `y` (`integer`, required) - One-based row.
-- `blocked` (`boolean`, required) - True to block the cell.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  -- JPS grids only support binary walkability (no weighted costs).
-  -- This is the only way to modify the grid; there is no setCost for JPS.
-  local jg = lurek.pathfind.newJpsGrid(32, 32)
-  jg:setBlocked(15, 15, true)
-  lurek.log.info("jps cell blocked", "pathfind")
-end
-```
-
-### `LJpsGrid:type() -> string`
-
-Returns the Lua-visible type name for this JPS grid handle.
-
-**Returns**: `string` - The string `LJpsGrid`.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  local obj = lurek.pathfind.newNavGrid(20, 20)
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LJpsGrid"
-end
-```
-
-### `LJpsGrid:typeOf(name: string) -> boolean`
-
-Returns whether this JPS grid handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required) - String value for `name`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  local obj = lurek.pathfind.newNavGrid(20, 20)
-  lurek.log.debug("typeOf LJpsGrid: " .. tostring(obj:typeOf("LJpsGrid")), "example") -- true
-end
-```
-
-### `LNavGrid`
+### LNavGrid
 
 Lua-side wrapper for a navigation grid and optional abstract graph cache.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side wrapper for a navigation grid and optional abstract graph cache.
+---@class LNavGrid
+LNavGrid = {}
+```
 
 #### Example
 
@@ -1529,474 +734,17 @@ do
 end
 ```
 
-### `LNavGrid:clearDirty()`
-
-Clears all dirty region markers from the grid.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  -- Typical frame loop: mark dirty → rebuildAbstract → clearDirty
-  local grid = lurek.pathfind.newNavGrid(64, 64)
-  grid:setDirty(10, 10, 4, 4)
-  grid:rebuildAbstract()
-  grid:clearDirty()  -- reset for next frame's changes
-end
-```
-
-### `LNavGrid:fill(cost: integer)`
-
-Fills the entire grid with a uniform movement cost.
-
-**Parameters**
-
-- `cost` (`integer`, required) - Movement cost (0–255).
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  -- Common pattern: fill with 0 (all blocked), then "carve" walkable corridors.
-  -- This is useful for procedural dungeon generation.
-  local grid = lurek.pathfind.newNavGrid(50, 50)
-  grid:fill(0)  -- start fully blocked
-
-  -- Carve a horizontal corridor at row 25
-  for x = 10, 40 do grid:setCost(x, 25, 1) end
-end
-```
-
-### `LNavGrid:fillRect(x: integer, y: integer, w: integer, h: integer, cost: integer)`
-
-Fills a one-based rectangular area with a movement cost.
-
-**Parameters**
-
-- `x` (`integer`, required) - One-based column of the top-left corner.
-- `y` (`integer`, required) - One-based row of the top-left corner.
-- `w` (`integer`, required) - Rectangle width in cells.
-- `h` (`integer`, required) - Rectangle height in cells.
-- `cost` (`integer`, required) - Movement cost (0–255).
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  -- Efficient bulk operation for placing rooms, clearing areas, or building walls.
-  -- (x, y) is the top-left corner (1-based), (w, h) is the size.
-  local grid = lurek.pathfind.newNavGrid(64, 64)
-  grid:fillRect(10, 10, 20, 20, 1)  -- clear a 20x20 room at position (10,10)
-  lurek.log.info("rect filled", "pathfind")
-end
-```
-
-### `LNavGrid:getChunkSize() -> integer`
-
-Returns the hierarchical chunk size in cells.
-
-**Returns**: `integer` - Chunk size.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  local grid = lurek.pathfind.newNavGrid(64, 64)
-  grid:setChunkSize(8)
-  local cs = grid:getChunkSize()
-  lurek.log.debug("hpa chunk size = " .. cs, "pathfind")
-end
-```
-
-### `LNavGrid:getCost(x: integer, y: integer) -> integer`
-
-Returns movement cost at a one-based grid cell.
-
-**Parameters**
-
-- `x` (`integer`, required) - One-based column.
-- `y` (`integer`, required) - One-based row.
-
-**Returns**: `integer` - Movement cost.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  -- Show terrain tooltip when hovering a cell.
-  local grid = lurek.pathfind.newNavGrid(32, 32)
-  grid:setCost(10, 8, 3)
-  local c = grid:getCost(10, 8)
-  lurek.log.info("cell (10,8) cost=" .. c, "pathfind")
-end
-```
-
-### `LNavGrid:getDiagonalMode() -> string`
-
-Returns the current diagonal movement mode name.
-
-**Returns**: `string` - Mode name.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  local grid = lurek.pathfind.newNavGrid(20, 20)
-  local mode = grid:getDiagonalMode()
-  if mode == "never" then
-    lurek.log.debug("4-directional movement only", "pathfind")
-  end
-end
-```
-
-### `LNavGrid:getDimensions() -> integer`
-
-Returns grid width and height as two integers.
-
-**Returns**: `integer` - Grid width.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  local grid = lurek.pathfind.newNavGrid(64, 48)
-  -- Multi-return: w, h in one call for efficiency
-  local w, h = grid:getDimensions()
-  local total = w * h
-  lurek.log.info("grid has " .. total .. " cells", "pathfind")
-end
-```
-
-### `LNavGrid:getHeight() -> integer`
-
-Returns grid height from this object.
-
-**Returns**: `integer` - Grid height.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  -- Validate spawn position is within grid bounds.
-  local grid = lurek.pathfind.newNavGrid(50, 40)
-  lurek.log.info("nav grid height=" .. grid:getHeight(), "pathfind")
-end
-```
-
-### `LNavGrid:getWidth() -> integer`
-
-Returns grid width from this object.
-
-**Returns**: `integer` - Grid width.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  -- Check map dimensions for bounds validation.
-  local grid = lurek.pathfind.newNavGrid(50, 40)
-  lurek.log.info("nav grid width=" .. grid:getWidth(), "pathfind")
-end
-```
-
-### `LNavGrid:isBlocked(x: integer, y: integer) -> boolean`
-
-Returns whether a one-based grid cell is blocked.
-
-**Parameters**
-
-- `x` (`integer`, required) - One-based column.
-- `y` (`integer`, required) - One-based row.
-
-**Returns**: `boolean` - True when blocked.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  -- Guard check before spawning a unit at a position.
-  local grid = lurek.pathfind.newNavGrid(32, 32)
-  grid:setBlocked(5, 5, true)
-  if grid:isBlocked(5, 5) then
-    lurek.log.warn("spawn cell 5,5 is blocked", "pathfind")
-  end
-end
-```
-
-### `LNavGrid:isWalkable(x: integer, y: integer, [unit_size]: integer) -> boolean`
-
-Returns whether a one-based grid cell is walkable for a unit size.
-
-**Parameters**
-
-- `x` (`integer`, required) - One-based column.
-- `y` (`integer`, required) - One-based row.
-- `unit_size` (`integer`, optional) - Unit footprint in cells (default 1).
-
-**Returns**: `boolean` - True when walkable.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  -- A 2x2 unit needs clearance; check before moving.
-  local grid = lurek.pathfind.newNavGrid(32, 32)
-  local ok = grid:isWalkable(10, 10, 2)
-  lurek.log.debug("walkable for 2x2 unit=" .. tostring(ok), "pathfind")
-end
-```
-
-### `LNavGrid:loadFromString(data: string)`
-
-Loads grid data from a serialized binary string.
-
-**Parameters**
-
-- `data` (`string`, required) - Serialized grid bytes.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  -- Use for save/load or network sync of map state.
-  -- Each byte in the string = cost of one cell, in row-major order (row 1 first).
-  local grid = lurek.pathfind.newNavGrid(4, 2)
-  grid:loadFromString(string.char(1,1,0,1, 1,5,5,1))
-  lurek.log.info("loaded grid, cell (2,2) cost=" .. grid:getCost(2, 2), "save")
-end
-```
-
-### `LNavGrid:rebuildAbstract()`
-
-Rebuilds the cached abstract graph for this grid.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  -- Call this after modifying blocked cells to update hierarchical pathfinding.
-  -- Expensive operation; batch your grid changes, then rebuild once.
-  local grid = lurek.pathfind.newNavGrid(64, 64)
-  grid:setChunkSize(16)
-
-  -- Build a horizontal wall across the map
-  for x = 1, 64 do grid:setCost(x, 32, 0) end
-
-  -- Rebuild so the abstract graph knows about the wall
-  grid:rebuildAbstract()
-end
-```
-
-### `LNavGrid:saveToString() -> string`
-
-Saves grid data to a serialized binary string.
-
-**Returns**: `string` - Serialized grid bytes.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  -- The returned string can be written to a file or sent over the network.
-  -- Pair with loadFromString for full round-trip serialization.
-  local grid = lurek.pathfind.newNavGrid(8, 8)
-  grid:setCost(4, 4, 0)
-  local blob = grid:saveToString()
-  lurek.log.info("serialised grid: " .. #blob .. " bytes", "save")
-end
-```
-
-### `LNavGrid:setBlocked(x: integer, y: integer, blocked: boolean)`
-
-Sets blocked state at a one-based grid cell.
-
-**Parameters**
-
-- `x` (`integer`, required) - One-based column.
-- `y` (`integer`, required) - One-based row.
-- `blocked` (`boolean`, required) - True to block the cell.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  -- Dynamically block a cell when a building is placed.
-  local grid = lurek.pathfind.newNavGrid(32, 32)
-  grid:setBlocked(15, 15, true)
-  lurek.log.debug("building placed, cell 15,15 blocked", "pathfind")
-end
-```
-
-### `LNavGrid:setChunkSize(size: integer)`
-
-Sets hierarchical chunk size for abstract graph partitioning.
-
-**Parameters**
-
-- `size` (`integer`, required) - Chunk side length in cells.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  -- HPA* divides the grid into chunks and builds an abstract graph of chunk boundaries.
-  -- Large maps (128x128+) benefit significantly from hierarchical search.
-  -- Smaller chunks = more accuracy but more abstract nodes; 8-16 is typical.
-  local grid = lurek.pathfind.newNavGrid(128, 128)
-  grid:setChunkSize(16)  -- 16x16 cell chunks
-  grid:rebuildAbstract()  -- must rebuild after setting chunk size
-end
-```
-
-### `LNavGrid:setCost(x: integer, y: integer, cost: integer)`
-
-Sets movement cost at a one-based grid cell.
-
-**Parameters**
-
-- `x` (`integer`, required) - One-based column.
-- `y` (`integer`, required) - One-based row.
-- `cost` (`integer`, required) - Movement cost (0–255).
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  -- Paint terrain costs for an RTS map: road=1, grass=2, swamp=5.
-  local grid = lurek.pathfind.newNavGrid(32, 32)
-  grid:setCost(16, 16, 2)   -- grass
-  grid:setCost(17, 16, 5)   -- swamp
-  lurek.log.debug("terrain painted at row 16", "pathfind")
-end
-```
-
-### `LNavGrid:setDiagonalMode(mode: string)`
-
-Sets diagonal movement mode for this object.
-
-**Parameters**
-
-- `mode` (`string`, required) - Mode name: `none`, `always`, or `nocornercut`.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  -- "none"       = 4-directional only (roguelike cardinal movement)
-  -- "always"     = 8-directional, can cut through wall corners
-  -- "nocornercut"= 8-directional but cannot squeeze past diagonal wall corners
-  local grid = lurek.pathfind.newNavGrid(40, 40)
-  grid:setDiagonalMode("nocornercut")
-  lurek.log.info("diagonal mode set to " .. grid:getDiagonalMode(), "pathfind")
-end
-```
-
-### `LNavGrid:setDirty(x: integer, y: integer, w: integer, h: integer)`
-
-Marks a one-based rectangular region dirty for incremental rebuild.
-
-**Parameters**
-
-- `x` (`integer`, required) - One-based column of the top-left corner.
-- `y` (`integer`, required) - One-based row of the top-left corner.
-- `w` (`integer`, required) - Region width in cells.
-- `h` (`integer`, required) - Region height in cells.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  -- Instead of rebuilding the entire abstract graph, mark only changed regions.
-  -- After marking dirty regions, call rebuildAbstract to patch just those chunks.
-  local grid = lurek.pathfind.newNavGrid(64, 64)
-  grid:setCost(20, 20, 0)
-  grid:setCost(21, 20, 0)
-  -- Mark the 2x1 region starting at (20,20) as needing re-analysis
-  grid:setDirty(20, 20, 2, 1)
-end
-```
-
-### `LNavGrid:type() -> string`
-
-Returns the Lua-visible type name for this navigation grid handle.
-
-**Returns**: `string` - The string `LNavGrid`.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  -- Use type() for runtime type checking or serialization hints.
-  local grid = lurek.pathfind.newNavGrid(16, 16)
-  lurek.log.debug("navgrid type=" .. grid:type(), "pathfind")
-end
-```
-
-### `LNavGrid:typeOf(name: string) -> boolean`
-
-Returns whether this navigation grid handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required) - String value for `name`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  -- Polymorphic check: confirm object is a NavGrid before grid-specific ops.
-  local grid = lurek.pathfind.newNavGrid(16, 16)
-  lurek.log.debug("is LNavGrid=" .. tostring(grid:typeOf("LNavGrid")), "pathfind")
-end
-```
-
-### `LNavMesh`
+### LNavMesh
 
 Lua-side wrapper for a navigation mesh.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side wrapper for a navigation mesh.
+---@class LNavMesh
+LNavMesh = {}
+```
 
 #### Example
 
@@ -2032,15 +780,1998 @@ do
 end
 ```
 
-### `LNavMesh:addPolygon(vertices: table) -> integer`
+### LPathGrid
+
+Lua-side wrapper for a cell-size path grid.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side wrapper for a cell-size path grid.
+---@class LPathGrid
+LPathGrid = {}
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  -- PathGrid is a higher-level grid that maps pixel coordinates to cells.
+  -- Use it when your world uses pixel positions and you want automatic conversion.
+  -- cell_size determines tile dimensions (e.g., 32px tiles for a platformer map).
+  local grid = lurek.pathfind.newPathGrid(40, 30, 32)  -- 40x30 tiles, 32px each
+
+  -- Block a doorway and add difficult terrain (float cost multiplier)
+  grid:setWalkable(15, 10, false)
+  grid:setCost(15, 11, 3.0)  -- mud: 3x slower than normal ground
+
+  lurek.log.info("path grid cell size = " .. grid:getCellSize(), "pathfind")
+end
+```
+
+### LUnitPathfinder
+
+Lua-side wrapper for a unit pathfinder over a navigation grid.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side wrapper for a unit pathfinder over a navigation grid.
+---@class LUnitPathfinder
+LUnitPathfinder = {}
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  -- UnitPathfinder runs A* search on a NavGrid and returns waypoint arrays.
+  -- It supports path caching so repeated queries for the same route are instant.
+  -- Typical use: one pathfinder per faction or AI group sharing the same grid.
+  local grid = lurek.pathfind.newNavGrid(64, 48)
+  local pf = lurek.pathfind.newPathfinder(grid)
+
+  -- Enable caching for RTS units that recalculate paths each frame
+  pf:setCacheEnabled(true)
+  pf:setCacheMaxSize(128)
+end
+```
+
+
+[⬆ back to top](#table-of-contents)
+
+## 🔹 Module Methods
+
+### LAIFlowField:getDirection
+
+`LAIFlowField:getDirection(x: integer, y: integer) -> number`
+
+Returns flow direction vector for a one-based cell.
+
+**Parameters**
+
+- `x` (`integer`, required): One-based column.
+- `y` (`integer`, required): One-based row.
+
+**Returns**: `number` - Direction X component.
+
+**Lua API Stub**
+
+```lua
+--- Returns flow direction vector for a one-based cell.
+---@param x number One-based column.
+---@param y number One-based row.
+---@return number a Direction X component.
+---@return number b Direction Y component.
+function LAIFlowField:getDirection(x, y) end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  local grid = lurek.pathfind.newPathGrid(8, 8, 1.0)
+  local ff = lurek.pathfind.newPathFlowField(grid)
+  if ff then
+    ff:setGoal(8, 8)
+    local dx, dy = ff:getDirection(1, 1)
+    lurek.log.info("dir dx=" .. tostring(dx) .. " dy=" .. tostring(dy), "pathfind")
+  else
+    lurek.log.info("dir dx=skipped", "pathfind")
+  end
+end
+```
+
+### LAIFlowField:getDistance
+
+`LAIFlowField:getDistance(x: integer, y: integer) -> number`
+
+Returns distance to goal for a one-based cell.
+
+**Parameters**
+
+- `x` (`integer`, required): One-based column.
+- `y` (`integer`, required): One-based row.
+
+**Returns**: `number` - Distance to the goal.
+
+**Lua API Stub**
+
+```lua
+--- Returns distance to goal for a one-based cell.
+---@param x number One-based column.
+---@param y number One-based row.
+---@return number Distance to the goal.
+function LAIFlowField:getDistance(x, y) end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  local grid = lurek.pathfind.newPathGrid(8, 8, 1.0)
+  local ff = lurek.pathfind.newPathFlowField(grid)
+  if ff then
+    ff:setGoal(8, 8)
+    local dist = ff:getDistance(1, 1)
+    lurek.log.info("distance from (1,1) to goal=" .. tostring(dist), "pathfind")
+  else
+    lurek.log.info("distance from (1,1) to goal=skipped", "pathfind")
+  end
+end
+```
+
+### LAIFlowField:getGoal
+
+`LAIFlowField:getGoal() -> integer`
+
+Returns the one-based flow field goal, or nil when no goal is set.
+
+**Returns**: `integer` - One-based goal column, or nil.
+
+**Lua API Stub**
+
+```lua
+--- Returns the one-based flow field goal, or nil when no goal is set.
+---@return number a One-based goal column, or nil.
+---@return number b One-based goal row, or nil.
+function LAIFlowField:getGoal() end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  local grid = lurek.pathfind.newPathGrid(8, 8, 1.0)
+  local ff = lurek.pathfind.newPathFlowField(grid)
+  if ff then
+    ff:setGoal(6, 2)
+    local gx, gy = ff:getGoal()
+    lurek.log.info("goal=" .. tostring(gx) .. "," .. tostring(gy), "pathfind")
+  else
+    lurek.log.info("goal=skipped", "pathfind")
+  end
+end
+```
+
+### LAIFlowField:getHeight
+
+`LAIFlowField:getHeight() -> integer`
+
+Returns flow field height from this object.
+
+**Returns**: `integer` - Height.
+
+**Lua API Stub**
+
+```lua
+--- Returns flow field height from this object.
+---@return number Height.
+function LAIFlowField:getHeight() end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  local grid = lurek.pathfind.newPathGrid(12, 8, 1.0)
+  local ff = lurek.pathfind.newPathFlowField(grid)
+  local ok_h2, hh = pcall(function() return ff:getHeight() end)
+  lurek.log.info("height=" .. tostring(ok_h2 and hh or "??"), "pathfind")
+end
+```
+
+### LAIFlowField:getWidth
+
+`LAIFlowField:getWidth() -> integer`
+
+Returns flow field width from this object.
+
+**Returns**: `integer` - Width.
+
+**Lua API Stub**
+
+```lua
+--- Returns flow field width from this object.
+---@return number Width.
+function LAIFlowField:getWidth() end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  local grid = lurek.pathfind.newPathGrid(12, 8, 1.0)
+  local ff = lurek.pathfind.newPathFlowField(grid)
+  local ok_w, ww = pcall(function() return ff:getWidth() end)
+  lurek.log.info("width=" .. tostring(ok_w and ww or "??"), "pathfind")
+end
+```
+
+### LAIFlowField:hasGoal
+
+`LAIFlowField:hasGoal() -> boolean`
+
+Returns whether a flow field goal is currently set.
+
+**Returns**: `boolean` - True when a goal exists.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether a flow field goal is currently set.
+---@return boolean True when a goal exists.
+function LAIFlowField:hasGoal() end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  local grid = lurek.pathfind.newPathGrid(8, 8, 1.0)
+  local ff = lurek.pathfind.newPathFlowField(grid)
+  local ok1, v1 = pcall(function() return ff and ff:hasGoal() end)
+  lurek.log.info("has goal before set: " .. tostring(ok1 and v1 or false), "pathfind")
+  pcall(function() if ff then ff:setGoal(4, 4) end end)
+  local ok2, v2 = pcall(function() return ff and ff:hasGoal() end)
+  lurek.log.info("has goal after set: " .. tostring(ok2 and v2 or false), "pathfind")
+end
+```
+
+### LAIFlowField:setGoal
+
+`LAIFlowField:setGoal(x: integer, y: integer)`
+
+Sets the one-based flow field goal and recalculates the field.
+
+**Parameters**
+
+- `x` (`integer`, required): One-based goal column.
+- `y` (`integer`, required): One-based goal row.
+
+**Lua API Stub**
+
+```lua
+--- Sets the one-based flow field goal and recalculates the field.
+---@param x number One-based goal column.
+---@param y number One-based goal row.
+function LAIFlowField:setGoal(x, y) end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  local grid = lurek.pathfind.newPathGrid(8, 8, 1.0)
+  local ff = lurek.pathfind.newPathFlowField(grid)
+  if ff then
+    ff:setGoal(5, 3)   -- 1-based (col=5, row=3)
+    lurek.log.info("goal set, dx=" .. tostring(ff:getDirection(1, 1)), "pathfind")
+  else
+    lurek.log.info("goal set: skipped (no ff)", "pathfind")
+  end
+end
+```
+
+### LAIFlowField:type
+
+`LAIFlowField:type() -> string`
+
+Returns the Lua-visible type name for this AI flow field handle.
+
+**Returns**: `string` - The string `LAIFlowField`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this AI flow field handle.
+---@return string The string `LAIFlowField`.
+function LAIFlowField:type() end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  local grid = lurek.pathfind.newNavGrid(20, 20)
+  local obj = lurek.pathfind.newFlowField(grid)
+  lurek.log.debug("type: " .. obj:type(), "example") -- "LAIFlowField"
+end
+```
+
+### LAIFlowField:typeOf
+
+`LAIFlowField:typeOf(name: string) -> boolean`
+
+Returns whether this AI flow field handle matches a supported type name.
+
+**Parameters**
+
+- `name` (`string`, required): String value for `name`.
+
+**Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this AI flow field handle matches a supported type name.
+---@param name string String value for `name`.
+---@return boolean True when the supplied type name matches this handle.
+function LAIFlowField:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  local grid = lurek.pathfind.newNavGrid(20, 20)
+  local obj = lurek.pathfind.newFlowField(grid)
+  lurek.log.debug("typeOf LAIFlowField: " .. tostring(obj:typeOf("LAIFlowField")), "example") -- true
+end
+```
+
+### LFlowField:calculate
+
+`LFlowField:calculate(tx: integer, ty: integer, [unit_size]: integer)`
+
+Calculates a flow field toward one target cell.
+
+**Parameters**
+
+- `tx` (`integer`, required): One-based target column.
+- `ty` (`integer`, required): One-based target row.
+- `unit_size` (`integer`, optional): Unit footprint in cells (default 1).
+
+**Lua API Stub**
+
+```lua
+--- Calculates a flow field toward one target cell.
+---@param tx number One-based target column.
+---@param ty number One-based target row.
+---@param unit_size? number Unit footprint in cells (default 1).
+function LFlowField:calculate(tx, ty, unit_size) end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  -- After calculate(), every reachable cell stores a direction toward the goal.
+  -- The optional unit_size parameter enables clearance-based pathfinding (default 1).
+  local grid = lurek.pathfind.newNavGrid(32, 32)
+  local ff = lurek.pathfind.newFlowField(grid)
+  ff:calculate(16, 16)  -- all units head toward cell (16, 16)
+  lurek.log.info("flow field calculated", "pathfind")
+end
+```
+
+### LFlowField:calculateMulti
+
+`LFlowField:calculateMulti(targets: table, [unit_size]: integer)`
+
+Calculates a flow field toward multiple target cells.
+
+**Parameters**
+
+- `targets` (`table`, required): Array of `{x, y}` target tables.
+- `unit_size` (`integer`, optional): Unit footprint in cells (default 1).
+
+**Lua API Stub**
+
+```lua
+--- Calculates a flow field toward multiple target cells.
+---@param targets table Array of `{x, y}` target tables.
+---@param unit_size? number Unit footprint in cells (default 1).
+function LFlowField:calculateMulti(targets, unit_size) end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  -- Multi-target flow fields guide units toward the nearest of several goals.
+  -- Use case: multiple resource deposits, multiple exits, or group rally points.
+  local grid = lurek.pathfind.newNavGrid(32, 32)
+  local ff = lurek.pathfind.newFlowField(grid)
+  ff:calculateMulti({{x=8,y=8},{x=24,y=24}})  -- two rally points
+  lurek.log.info("multi-target flow field done", "pathfind")
+end
+```
+
+### LFlowField:getCostToTarget
+
+`LFlowField:getCostToTarget(x: integer, y: integer) -> number`
+
+Returns integration cost to the target from a one-based grid cell.
+
+**Parameters**
+
+- `x` (`integer`, required): One-based column.
+- `y` (`integer`, required): One-based row.
+
+**Returns**: `number` - Integration cost to the nearest target.
+
+**Lua API Stub**
+
+```lua
+--- Returns integration cost to the target from a one-based grid cell.
+---@param x number One-based column.
+---@param y number One-based row.
+---@return number Integration cost to the nearest target.
+function LFlowField:getCostToTarget(x, y) end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  -- Use this for AI priority: enemies closer to the goal (lower cost) are more dangerous.
+  -- Also useful for rendering heat maps or determining if a unit is "stuck".
+  local g = lurek.pathfind.newNavGrid(32, 32)
+  local f = lurek.pathfind.newFlowField(g)
+  f:calculate(16, 16)
+  local d = f:getCostToTarget(1, 1)
+  lurek.log.info("distance to target = " .. d, "flow")
+end
+```
+
+### LFlowField:getDirection
+
+`LFlowField:getDirection(x: integer, y: integer) -> number`
+
+Returns flow direction vector at a one-based grid cell.
+
+**Parameters**
+
+- `x` (`integer`, required): One-based column.
+- `y` (`integer`, required): One-based row.
+
+**Returns**: `number` - Direction X component.
+
+**Lua API Stub**
+
+```lua
+--- Returns flow direction vector at a one-based grid cell.
+---@param x number One-based column.
+---@param y number One-based row.
+---@return number a Direction X component.
+---@return number b Direction Y component.
+function LFlowField:getDirection(x, y) end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  -- Query flow direction for a tower defense enemy at its current cell.
+  local grid = lurek.pathfind.newNavGrid(20, 20)
+  local ff = lurek.pathfind.newFlowField(grid)
+  ff:calculate(10, 10)
+  local dx, dy = ff:getDirection(3, 3)
+  lurek.log.debug("enemy flow dir=" .. dx .. "," .. dy, "pathfind")
+end
+```
+
+### LFlowField:getDirectionAngle
+
+`LFlowField:getDirectionAngle(x: integer, y: integer) -> number`
+
+Returns flow direction angle at a one-based grid cell.
+
+**Parameters**
+
+- `x` (`integer`, required): One-based column.
+- `y` (`integer`, required): One-based row.
+
+**Returns**: `number` - Direction angle in radians.
+
+**Lua API Stub**
+
+```lua
+--- Returns flow direction angle at a one-based grid cell.
+---@param x number One-based column.
+---@param y number One-based row.
+---@return number Direction angle in radians.
+function LFlowField:getDirectionAngle(x, y) end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  -- Angle is measured from positive X axis, counter-clockwise.
+  -- Directly usable for rotating a unit sprite to face movement direction.
+  local g = lurek.pathfind.newNavGrid(32, 32)
+  local f = lurek.pathfind.newFlowField(g)
+  f:calculate(20, 20)
+  local angle = f:getDirectionAngle(5, 5)
+  lurek.log.debug("flow angle = " .. angle .. " rad", "flow")
+end
+```
+
+### LFlowField:getTargets
+
+`LFlowField:getTargets() -> table`
+
+Returns target cells for this flow field.
+
+**Returns**: `table` - Array table of target point tables.
+
+**Lua API Stub**
+
+```lua
+--- Returns target cells for this flow field.
+---@return LFlowFieldGetTargetsResult Array table of target point tables.
+function LFlowField:getTargets() end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  -- Useful for debugging or verifying multi-target fields.
+  -- Returns array of {x, y} tables (1-based coordinates).
+  local g = lurek.pathfind.newNavGrid(20, 20)
+  local f = lurek.pathfind.newFlowField(g)
+  f:calculateMulti({{x=5, y=5}, {x=15, y=15}}, 1)
+  local targets = f:getTargets()
+  lurek.log.info("flow has " .. #targets .. " goals", "flow")
+end
+```
+
+### LFlowField:isCalculated
+
+`LFlowField:isCalculated() -> boolean`
+
+Returns whether the flow field has been calculated.
+
+**Returns**: `boolean` - True when calculated.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether the flow field has been calculated.
+---@return boolean True when calculated.
+function LFlowField:isCalculated() end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  -- Always check before querying directions to avoid reading uninitialized data.
+  local g = lurek.pathfind.newNavGrid(16, 16)
+  local f = lurek.pathfind.newFlowField(g)
+  if not f:isCalculated() then
+    f:calculate(10, 10)
+  end
+end
+```
+
+### LFlowField:steer
+
+`LFlowField:steer(wx: number, wy: number, speed: number, tw: number, th: number) -> number`
+
+Returns a steering velocity for a world position using the flow field.
+
+**Parameters**
+
+- `wx` (`number`, required): World X position.
+- `wy` (`number`, required): World Y position.
+- `speed` (`number`, required): Movement speed scalar.
+- `tw` (`number`, required): Tile width in world units.
+- `th` (`number`, required): Tile height in world units.
+
+**Returns**: `number` - Steered X velocity.
+
+**Lua API Stub**
+
+```lua
+--- Returns a steering velocity for a world position using the flow field.
+---@param wx number World X position.
+---@param wy number World Y position.
+---@param speed number Movement speed scalar.
+---@param tw number Tile width in world units.
+---@param th number Tile height in world units.
+---@return number a Steered X velocity.
+---@return number b Steered Y velocity.
+function LFlowField:steer(wx, wy, speed, tw, th) end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  -- steer() converts world pixel coordinates to grid cells, reads direction,
+  -- and returns a velocity vector scaled by speed. Parameters:
+  --   wx, wy = world position in pixels
+  --   speed  = desired movement speed
+  --   tw, th = tile width and height (for world-to-grid conversion)
+  local grid = lurek.pathfind.newNavGrid(32, 32)
+  local ff = lurek.pathfind.newFlowField(grid)
+  ff:calculate(16, 16)
+  local vx, vy = ff:steer(8, 8, 1.0, 1.0, 1.0)
+  lurek.log.info("steer: " .. vx .. "," .. vy, "pathfind")
+end
+```
+
+### LFlowField:type
+
+`LFlowField:type() -> string`
+
+Returns the Lua-visible type name for this flow field handle.
+
+**Returns**: `string` - The string `LFlowField`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this flow field handle.
+---@return string The string `LFlowField`.
+function LFlowField:type() end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  -- Use type() for debug logging or serialization tags.
+  local grid = lurek.pathfind.newNavGrid(16, 16)
+  local ff = lurek.pathfind.newFlowField(grid)
+  lurek.log.debug("flow field type=" .. ff:type(), "pathfind")
+end
+```
+
+### LFlowField:typeOf
+
+`LFlowField:typeOf(name: string) -> boolean`
+
+Returns whether this flow field handle matches a supported type name.
+
+**Parameters**
+
+- `name` (`string`, required): String value for `name`.
+
+**Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this flow field handle matches a supported type name.
+---@param name string String value for `name`.
+---@return boolean True when the supplied type name matches this handle.
+function LFlowField:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  -- Runtime type guard before calling flow-field-specific methods.
+  local grid = lurek.pathfind.newNavGrid(16, 16)
+  local ff = lurek.pathfind.newFlowField(grid)
+  lurek.log.debug("is LFlowField=" .. tostring(ff:typeOf("LFlowField")), "pathfind")
+end
+```
+
+### LHexGrid:distance
+
+`LHexGrid:distance(c1: integer, r1: integer, c2: integer, r2: integer) -> number`
+
+Returns hex distance between two one-based hex cells.
+
+**Parameters**
+
+- `c1` (`integer`, required): One-based column of the first cell.
+- `r1` (`integer`, required): One-based row of the first cell.
+- `c2` (`integer`, required): One-based column of the second cell.
+- `r2` (`integer`, required): One-based row of the second cell.
+
+**Returns**: `number` - Hex distance.
+
+**Lua API Stub**
+
+```lua
+--- Returns hex distance between two one-based hex cells.
+---@param c1 number One-based column of the first cell.
+---@param r1 number One-based row of the first cell.
+---@param c2 number One-based column of the second cell.
+---@param r2 number One-based row of the second cell.
+---@return number Hex distance.
+function LHexGrid:distance(c1, r1, c2, r2) end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  -- Hex distance is the minimum number of steps between two hex cells.
+  -- Useful for range checks in turn-based games (attack range, spell range).
+  local hg = lurek.pathfind.newHexGrid(16, 16)
+  local d = hg:distance(1, 1, 6, 4)
+  lurek.log.info("hex distance: " .. d, "pathfind")
+end
+```
+
+### LHexGrid:fieldOfView
+
+`LHexGrid:fieldOfView(col: integer, row: integer, max_range: integer) -> table`
+
+Returns visible hex cells within range from an origin.
+
+**Parameters**
+
+- `col` (`integer`, required): One-based origin column.
+- `row` (`integer`, required): One-based origin row.
+- `max_range` (`integer`, required): Maximum visibility range in cells.
+
+**Returns**: `table` - Array of `{col, row}` hex cell tables.
+
+**Lua API Stub**
+
+```lua
+--- Returns visible hex cells within range from an origin.
+---@param col number One-based origin column.
+---@param row number One-based origin row.
+---@param max_range number Maximum visibility range in cells.
+---@return LHexGridFieldOfViewResult Array of `{col, row}` hex cell tables.
+function LHexGrid:fieldOfView(col, row, max_range) end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  -- Computes line-of-sight from (col, row) up to max_range hexes away.
+  -- Blocked hexes stop visibility. Returns array of {col, row} tables.
+  -- Use for fog-of-war or unit vision in turn-based strategy.
+  local hg = lurek.pathfind.newHexGrid(16, 16)
+  local visible = hg:fieldOfView(8, 8, 4)
+  lurek.log.info("visible cells: " .. #visible, "pathfind")
+end
+```
+
+### LHexGrid:findPath
+
+`LHexGrid:findPath(fc: integer, fr: integer, tc: integer, tr: integer) -> table`
+
+Finds a path between one-based hex cells.
+
+**Parameters**
+
+- `fc` (`integer`, required): One-based start column.
+- `fr` (`integer`, required): One-based start row.
+- `tc` (`integer`, required): One-based goal column.
+- `tr` (`integer`, required): One-based goal row.
+
+**Returns**: `table` - Array of `{col, row}` hex cell tables, or nil when no path exists.
+
+**Lua API Stub**
+
+```lua
+--- Finds a path between one-based hex cells.
+---@param fc number One-based start column.
+---@param fr number One-based start row.
+---@param tc number One-based goal column.
+---@param tr number One-based goal row.
+---@return LHexGridFindPathResult Array of `{col, row}` hex cell tables, or nil when no path exists.
+function LHexGrid:findPath(fc, fr, tc, tr) end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  -- Route a cavalry unit from base to enemy fortress on a hex map.
+  local hex = lurek.pathfind.newHexGrid(16, 12, "pointy")
+  hex:setBlocked(8, 6, true)  -- river blocks direct route
+  local path = hex:findPath(2, 2, 14, 10)
+  lurek.log.info("hex path steps=" .. (path and #path or 0), "tactics")
+end
+```
+
+### LHexGrid:isBlocked
+
+`LHexGrid:isBlocked(col: integer, row: integer) -> boolean`
+
+Returns whether a one-based hex cell is blocked.
+
+**Parameters**
+
+- `col` (`integer`, required): One-based hex column.
+- `row` (`integer`, required): One-based hex row.
+
+**Returns**: `boolean` - True when blocked.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether a one-based hex cell is blocked.
+---@param col number One-based hex column.
+---@param row number One-based hex row.
+---@return boolean True when blocked.
+function LHexGrid:isBlocked(col, row) end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  -- Validate a movement order before committing the unit.
+  local hex = lurek.pathfind.newHexGrid(12, 10, "flat")
+  hex:setBlocked(3, 3, true)
+  if hex:isBlocked(3, 3) then
+    lurek.log.warn("cannot move into mountain hex 3,3", "tactics")
+  end
+end
+```
+
+### LHexGrid:lineOfSight
+
+`LHexGrid:lineOfSight(fc: integer, fr: integer, tc: integer, tr: integer) -> boolean`
+
+Returns whether two one-based hex cells have line of sight.
+
+**Parameters**
+
+- `fc` (`integer`, required): One-based column of the first cell.
+- `fr` (`integer`, required): One-based row of the first cell.
+- `tc` (`integer`, required): One-based column of the second cell.
+- `tr` (`integer`, required): One-based row of the second cell.
+
+**Returns**: `boolean` - True when line of sight is clear.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether two one-based hex cells have line of sight.
+---@param fc number One-based column of the first cell.
+---@param fr number One-based row of the first cell.
+---@param tc number One-based column of the second cell.
+---@param tr number One-based row of the second cell.
+---@return boolean True when line of sight is clear.
+function LHexGrid:lineOfSight(fc, fr, tc, tr) end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  -- Hex-aware LOS: traces the hex line and checks for blocked cells along it.
+  local hg = lurek.pathfind.newHexGrid(16, 16)
+  local los = hg:lineOfSight(1, 1, 8, 4)
+  lurek.log.info("hex los: " .. tostring(los), "pathfind")
+end
+```
+
+### LHexGrid:rangeOfMovement
+
+`LHexGrid:rangeOfMovement(col: integer, row: integer, budget: number) -> table`
+
+Returns reachable hex cells within a movement budget.
+
+**Parameters**
+
+- `col` (`integer`, required): One-based origin column.
+- `row` (`integer`, required): One-based origin row.
+- `budget` (`number`, required): Maximum movement cost budget.
+
+**Returns**: `table` - Array of `{col, row}` hex cell tables.
+
+**Lua API Stub**
+
+```lua
+--- Returns reachable hex cells within a movement budget.
+---@param col number One-based origin column.
+---@param row number One-based origin row.
+---@param budget number Maximum movement cost budget.
+---@return LHexGridRangeOfMovementResult Array of `{col, row}` hex cell tables.
+function LHexGrid:rangeOfMovement(col, row, budget) end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  -- Flood-fills outward from (col, row), accumulating hex terrain costs.
+  -- Returns all cells reachable within the budget.
+  -- Use for highlighting valid movement tiles in a tactics game.
+  local hg = lurek.pathfind.newHexGrid(16, 16)
+  local cells = hg:rangeOfMovement(8, 8, 3)
+  lurek.log.info("cells in range: " .. #cells, "pathfind")
+end
+```
+
+### LHexGrid:setBlocked
+
+`LHexGrid:setBlocked(col: integer, row: integer, blocked: boolean)`
+
+Sets blocked state for a one-based hex cell.
+
+**Parameters**
+
+- `col` (`integer`, required): One-based hex column.
+- `row` (`integer`, required): One-based hex row.
+- `blocked` (`boolean`, required): True to block the cell.
+
+**Lua API Stub**
+
+```lua
+--- Sets blocked state for a one-based hex cell.
+---@param col number One-based hex column.
+---@param row number One-based hex row.
+---@param blocked boolean True to block the cell.
+function LHexGrid:setBlocked(col, row, blocked) end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  -- Mark a mountain hex as impassable in a strategy game.
+  local hex = lurek.pathfind.newHexGrid(12, 10, "pointy")
+  hex:setBlocked(6, 5, true)
+  lurek.log.debug("hex (6,5) blocked=" .. tostring(hex:isBlocked(6, 5)), "hex")
+end
+```
+
+### LHexGrid:setCost
+
+`LHexGrid:setCost(col: integer, row: integer, cost: number)`
+
+Sets movement cost for a one-based hex cell.
+
+**Parameters**
+
+- `col` (`integer`, required): One-based hex column.
+- `row` (`integer`, required): One-based hex row.
+- `cost` (`number`, required): Movement cost value.
+
+**Lua API Stub**
+
+```lua
+--- Sets movement cost for a one-based hex cell.
+---@param col number One-based hex column.
+---@param row number One-based hex row.
+---@param cost number Movement cost value.
+function LHexGrid:setCost(col, row, cost) end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  -- Hex costs are floats: 1.0 = plains, 2.0 = forest, 3.0 = swamp.
+  -- Units with enough movement budget can still traverse expensive hexes.
+  local hex = lurek.pathfind.newHexGrid(15, 12, "flat")
+  hex:setCost(5, 4, 2.0)  -- forest hex: costs 2 movement points
+  hex:setCost(6, 4, 3.0)  -- swamp hex: costs 3 movement points
+end
+```
+
+### LHexGrid:type
+
+`LHexGrid:type() -> string`
+
+Returns the Lua-visible type name for this hex grid handle.
+
+**Returns**: `string` - The string `LHexGrid`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this hex grid handle.
+---@return string The string `LHexGrid`.
+function LHexGrid:type() end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  local obj = lurek.pathfind.newHexGrid(10, 10)
+  lurek.log.debug("type: " .. obj:type(), "example") -- "LHexGrid"
+end
+```
+
+### LHexGrid:typeOf
+
+`LHexGrid:typeOf(name: string) -> boolean`
+
+Returns whether this hex grid handle matches a supported type name.
+
+**Parameters**
+
+- `name` (`string`, required): String value for `name`.
+
+**Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this hex grid handle matches a supported type name.
+---@param name string String value for `name`.
+---@return boolean True when the supplied type name matches this handle.
+function LHexGrid:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  local obj = lurek.pathfind.newHexGrid(10, 10)
+  lurek.log.debug("typeOf LHexGrid: " .. tostring(obj:typeOf("LHexGrid")), "example") -- true
+end
+```
+
+### LJpsGrid:findPath
+
+`LJpsGrid:findPath(fx: integer, fy: integer, tx: integer, ty: integer) -> table`
+
+Finds a JPS path between one-based grid cells.
+
+**Parameters**
+
+- `fx` (`integer`, required): One-based start column.
+- `fy` (`integer`, required): One-based start row.
+- `tx` (`integer`, required): One-based goal column.
+- `ty` (`integer`, required): One-based goal row.
+
+**Returns**: `table` - Array of `{x, y}` point tables, or nil when no path exists.
+
+**Lua API Stub**
+
+```lua
+--- Finds a JPS path between one-based grid cells.
+---@param fx number One-based start column.
+---@param fy number One-based start row.
+---@param tx number One-based goal column.
+---@param ty number One-based goal row.
+---@return LJpsGridFindPathResult Array of `{x, y}` point tables, or nil when no path exists.
+function LJpsGrid:findPath(fx, fy, tx, ty) end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  -- Fast pathfinding on a large open battlefield.
+  local jps = lurek.pathfind.newJpsGrid(128, 128)
+  jps:setBlocked(64, 64, true)
+  local path = jps:findPath(1, 1, 127, 127)
+  lurek.log.info("jps result waypoints=" .. (path and #path or 0), "pathfind")
+end
+```
+
+### LJpsGrid:isBlocked
+
+`LJpsGrid:isBlocked(x: integer, y: integer) -> boolean`
+
+Returns whether a one-based JPS grid cell is blocked.
+
+**Parameters**
+
+- `x` (`integer`, required): One-based column.
+- `y` (`integer`, required): One-based row.
+
+**Returns**: `boolean` - True when blocked.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether a one-based JPS grid cell is blocked.
+---@param x number One-based column.
+---@param y number One-based row.
+---@return boolean True when blocked.
+function LJpsGrid:isBlocked(x, y) end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  local jps = lurek.pathfind.newJpsGrid(64, 64)
+  jps:setBlocked(32, 32, true)
+  if jps:isBlocked(32, 32) then
+    lurek.log.debug("jps cell 32,32 is blocked", "jps")
+  end
+end
+```
+
+### LJpsGrid:setBlocked
+
+`LJpsGrid:setBlocked(x: integer, y: integer, blocked: boolean)`
+
+Sets blocked state for a one-based JPS grid cell.
+
+**Parameters**
+
+- `x` (`integer`, required): One-based column.
+- `y` (`integer`, required): One-based row.
+- `blocked` (`boolean`, required): True to block the cell.
+
+**Lua API Stub**
+
+```lua
+--- Sets blocked state for a one-based JPS grid cell.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param blocked boolean True to block the cell.
+function LJpsGrid:setBlocked(x, y, blocked) end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  -- JPS grids only support binary walkability (no weighted costs).
+  -- This is the only way to modify the grid; there is no setCost for JPS.
+  local jg = lurek.pathfind.newJpsGrid(32, 32)
+  jg:setBlocked(15, 15, true)
+  lurek.log.info("jps cell blocked", "pathfind")
+end
+```
+
+### LJpsGrid:type
+
+`LJpsGrid:type() -> string`
+
+Returns the Lua-visible type name for this JPS grid handle.
+
+**Returns**: `string` - The string `LJpsGrid`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this JPS grid handle.
+---@return string The string `LJpsGrid`.
+function LJpsGrid:type() end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  local obj = lurek.pathfind.newNavGrid(20, 20)
+  lurek.log.debug("type: " .. obj:type(), "example") -- "LJpsGrid"
+end
+```
+
+### LJpsGrid:typeOf
+
+`LJpsGrid:typeOf(name: string) -> boolean`
+
+Returns whether this JPS grid handle matches a supported type name.
+
+**Parameters**
+
+- `name` (`string`, required): String value for `name`.
+
+**Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this JPS grid handle matches a supported type name.
+---@param name string String value for `name`.
+---@return boolean True when the supplied type name matches this handle.
+function LJpsGrid:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  local obj = lurek.pathfind.newNavGrid(20, 20)
+  lurek.log.debug("typeOf LJpsGrid: " .. tostring(obj:typeOf("LJpsGrid")), "example") -- true
+end
+```
+
+### LNavGrid:clearDirty
+
+`LNavGrid:clearDirty()`
+
+Clears all dirty region markers from the grid.
+
+**Lua API Stub**
+
+```lua
+--- Clears all dirty region markers from the grid.
+function LNavGrid:clearDirty() end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  -- Typical frame loop: mark dirty → rebuildAbstract → clearDirty
+  local grid = lurek.pathfind.newNavGrid(64, 64)
+  grid:setDirty(10, 10, 4, 4)
+  grid:rebuildAbstract()
+  grid:clearDirty()  -- reset for next frame's changes
+end
+```
+
+### LNavGrid:fill
+
+`LNavGrid:fill(cost: integer)`
+
+Fills the entire grid with a uniform movement cost.
+
+**Parameters**
+
+- `cost` (`integer`, required): Movement cost (0–255).
+
+**Lua API Stub**
+
+```lua
+--- Fills the entire grid with a uniform movement cost.
+---@param cost number Movement cost (0–255).
+function LNavGrid:fill(cost) end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  -- Common pattern: fill with 0 (all blocked), then "carve" walkable corridors.
+  -- This is useful for procedural dungeon generation.
+  local grid = lurek.pathfind.newNavGrid(50, 50)
+  grid:fill(0)  -- start fully blocked
+
+  -- Carve a horizontal corridor at row 25
+  for x = 10, 40 do grid:setCost(x, 25, 1) end
+end
+```
+
+### LNavGrid:fillRect
+
+`LNavGrid:fillRect(x: integer, y: integer, w: integer, h: integer, cost: integer)`
+
+Fills a one-based rectangular area with a movement cost.
+
+**Parameters**
+
+- `x` (`integer`, required): One-based column of the top-left corner.
+- `y` (`integer`, required): One-based row of the top-left corner.
+- `w` (`integer`, required): Rectangle width in cells.
+- `h` (`integer`, required): Rectangle height in cells.
+- `cost` (`integer`, required): Movement cost (0–255).
+
+**Lua API Stub**
+
+```lua
+--- Fills a one-based rectangular area with a movement cost.
+---@param x number One-based column of the top-left corner.
+---@param y number One-based row of the top-left corner.
+---@param w number Rectangle width in cells.
+---@param h number Rectangle height in cells.
+---@param cost number Movement cost (0–255).
+function LNavGrid:fillRect(x, y, w, h, cost) end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  -- Efficient bulk operation for placing rooms, clearing areas, or building walls.
+  -- (x, y) is the top-left corner (1-based), (w, h) is the size.
+  local grid = lurek.pathfind.newNavGrid(64, 64)
+  grid:fillRect(10, 10, 20, 20, 1)  -- clear a 20x20 room at position (10,10)
+  lurek.log.info("rect filled", "pathfind")
+end
+```
+
+### LNavGrid:getChunkSize
+
+`LNavGrid:getChunkSize() -> integer`
+
+Returns the hierarchical chunk size in cells.
+
+**Returns**: `integer` - Chunk size.
+
+**Lua API Stub**
+
+```lua
+--- Returns the hierarchical chunk size in cells.
+---@return number Chunk size.
+function LNavGrid:getChunkSize() end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  local grid = lurek.pathfind.newNavGrid(64, 64)
+  grid:setChunkSize(8)
+  local cs = grid:getChunkSize()
+  lurek.log.debug("hpa chunk size = " .. cs, "pathfind")
+end
+```
+
+### LNavGrid:getCost
+
+`LNavGrid:getCost(x: integer, y: integer) -> integer`
+
+Returns movement cost at a one-based grid cell.
+
+**Parameters**
+
+- `x` (`integer`, required): One-based column.
+- `y` (`integer`, required): One-based row.
+
+**Returns**: `integer` - Movement cost.
+
+**Lua API Stub**
+
+```lua
+--- Returns movement cost at a one-based grid cell.
+---@param x number One-based column.
+---@param y number One-based row.
+---@return number Movement cost.
+function LNavGrid:getCost(x, y) end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  -- Show terrain tooltip when hovering a cell.
+  local grid = lurek.pathfind.newNavGrid(32, 32)
+  grid:setCost(10, 8, 3)
+  local c = grid:getCost(10, 8)
+  lurek.log.info("cell (10,8) cost=" .. c, "pathfind")
+end
+```
+
+### LNavGrid:getDiagonalMode
+
+`LNavGrid:getDiagonalMode() -> string`
+
+Returns the current diagonal movement mode name.
+
+**Returns**: `string` - Mode name.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current diagonal movement mode name.
+---@return string Mode name.
+function LNavGrid:getDiagonalMode() end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  local grid = lurek.pathfind.newNavGrid(20, 20)
+  local mode = grid:getDiagonalMode()
+  if mode == "never" then
+    lurek.log.debug("4-directional movement only", "pathfind")
+  end
+end
+```
+
+### LNavGrid:getDimensions
+
+`LNavGrid:getDimensions() -> integer`
+
+Returns grid width and height as two integers.
+
+**Returns**: `integer` - Grid width.
+
+**Lua API Stub**
+
+```lua
+--- Returns grid width and height as two integers.
+---@return number a Grid width.
+---@return number b Grid height.
+function LNavGrid:getDimensions() end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  local grid = lurek.pathfind.newNavGrid(64, 48)
+  -- Multi-return: w, h in one call for efficiency
+  local w, h = grid:getDimensions()
+  local total = w * h
+  lurek.log.info("grid has " .. total .. " cells", "pathfind")
+end
+```
+
+### LNavGrid:getHeight
+
+`LNavGrid:getHeight() -> integer`
+
+Returns grid height from this object.
+
+**Returns**: `integer` - Grid height.
+
+**Lua API Stub**
+
+```lua
+--- Returns grid height from this object.
+---@return number Grid height.
+function LNavGrid:getHeight() end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  -- Validate spawn position is within grid bounds.
+  local grid = lurek.pathfind.newNavGrid(50, 40)
+  lurek.log.info("nav grid height=" .. grid:getHeight(), "pathfind")
+end
+```
+
+### LNavGrid:getWidth
+
+`LNavGrid:getWidth() -> integer`
+
+Returns grid width from this object.
+
+**Returns**: `integer` - Grid width.
+
+**Lua API Stub**
+
+```lua
+--- Returns grid width from this object.
+---@return number Grid width.
+function LNavGrid:getWidth() end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  -- Check map dimensions for bounds validation.
+  local grid = lurek.pathfind.newNavGrid(50, 40)
+  lurek.log.info("nav grid width=" .. grid:getWidth(), "pathfind")
+end
+```
+
+### LNavGrid:isBlocked
+
+`LNavGrid:isBlocked(x: integer, y: integer) -> boolean`
+
+Returns whether a one-based grid cell is blocked.
+
+**Parameters**
+
+- `x` (`integer`, required): One-based column.
+- `y` (`integer`, required): One-based row.
+
+**Returns**: `boolean` - True when blocked.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether a one-based grid cell is blocked.
+---@param x number One-based column.
+---@param y number One-based row.
+---@return boolean True when blocked.
+function LNavGrid:isBlocked(x, y) end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  -- Guard check before spawning a unit at a position.
+  local grid = lurek.pathfind.newNavGrid(32, 32)
+  grid:setBlocked(5, 5, true)
+  if grid:isBlocked(5, 5) then
+    lurek.log.warn("spawn cell 5,5 is blocked", "pathfind")
+  end
+end
+```
+
+### LNavGrid:isWalkable
+
+`LNavGrid:isWalkable(x: integer, y: integer, [unit_size]: integer) -> boolean`
+
+Returns whether a one-based grid cell is walkable for a unit size.
+
+**Parameters**
+
+- `x` (`integer`, required): One-based column.
+- `y` (`integer`, required): One-based row.
+- `unit_size` (`integer`, optional): Unit footprint in cells (default 1).
+
+**Returns**: `boolean` - True when walkable.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether a one-based grid cell is walkable for a unit size.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param unit_size? number Unit footprint in cells (default 1).
+---@return boolean True when walkable.
+function LNavGrid:isWalkable(x, y, unit_size) end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  -- A 2x2 unit needs clearance; check before moving.
+  local grid = lurek.pathfind.newNavGrid(32, 32)
+  local ok = grid:isWalkable(10, 10, 2)
+  lurek.log.debug("walkable for 2x2 unit=" .. tostring(ok), "pathfind")
+end
+```
+
+### LNavGrid:loadFromString
+
+`LNavGrid:loadFromString(data: string)`
+
+Loads grid data from a serialized binary string.
+
+**Parameters**
+
+- `data` (`string`, required): Serialized grid bytes.
+
+**Lua API Stub**
+
+```lua
+--- Loads grid data from a serialized binary string.
+---@param data string Serialized grid bytes.
+function LNavGrid:loadFromString(data) end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  -- Use for save/load or network sync of map state.
+  -- Each byte in the string = cost of one cell, in row-major order (row 1 first).
+  local grid = lurek.pathfind.newNavGrid(4, 2)
+  grid:loadFromString(string.char(1,1,0,1, 1,5,5,1))
+  lurek.log.info("loaded grid, cell (2,2) cost=" .. grid:getCost(2, 2), "save")
+end
+```
+
+### LNavGrid:rebuildAbstract
+
+`LNavGrid:rebuildAbstract()`
+
+Rebuilds the cached abstract graph for this grid.
+
+**Lua API Stub**
+
+```lua
+--- Rebuilds the cached abstract graph for this grid.
+function LNavGrid:rebuildAbstract() end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  -- Call this after modifying blocked cells to update hierarchical pathfinding.
+  -- Expensive operation; batch your grid changes, then rebuild once.
+  local grid = lurek.pathfind.newNavGrid(64, 64)
+  grid:setChunkSize(16)
+
+  -- Build a horizontal wall across the map
+  for x = 1, 64 do grid:setCost(x, 32, 0) end
+
+  -- Rebuild so the abstract graph knows about the wall
+  grid:rebuildAbstract()
+end
+```
+
+### LNavGrid:saveToString
+
+`LNavGrid:saveToString() -> string`
+
+Saves grid data to a serialized binary string.
+
+**Returns**: `string` - Serialized grid bytes.
+
+**Lua API Stub**
+
+```lua
+--- Saves grid data to a serialized binary string.
+---@return string Serialized grid bytes.
+function LNavGrid:saveToString() end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  -- The returned string can be written to a file or sent over the network.
+  -- Pair with loadFromString for full round-trip serialization.
+  local grid = lurek.pathfind.newNavGrid(8, 8)
+  grid:setCost(4, 4, 0)
+  local blob = grid:saveToString()
+  lurek.log.info("serialised grid: " .. #blob .. " bytes", "save")
+end
+```
+
+### LNavGrid:setBlocked
+
+`LNavGrid:setBlocked(x: integer, y: integer, blocked: boolean)`
+
+Sets blocked state at a one-based grid cell.
+
+**Parameters**
+
+- `x` (`integer`, required): One-based column.
+- `y` (`integer`, required): One-based row.
+- `blocked` (`boolean`, required): True to block the cell.
+
+**Lua API Stub**
+
+```lua
+--- Sets blocked state at a one-based grid cell.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param blocked boolean True to block the cell.
+function LNavGrid:setBlocked(x, y, blocked) end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  -- Dynamically block a cell when a building is placed.
+  local grid = lurek.pathfind.newNavGrid(32, 32)
+  grid:setBlocked(15, 15, true)
+  lurek.log.debug("building placed, cell 15,15 blocked", "pathfind")
+end
+```
+
+### LNavGrid:setChunkSize
+
+`LNavGrid:setChunkSize(size: integer)`
+
+Sets hierarchical chunk size for abstract graph partitioning.
+
+**Parameters**
+
+- `size` (`integer`, required): Chunk side length in cells.
+
+**Lua API Stub**
+
+```lua
+--- Sets hierarchical chunk size for abstract graph partitioning.
+---@param size number Chunk side length in cells.
+function LNavGrid:setChunkSize(size) end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  -- HPA* divides the grid into chunks and builds an abstract graph of chunk boundaries.
+  -- Large maps (128x128+) benefit significantly from hierarchical search.
+  -- Smaller chunks = more accuracy but more abstract nodes; 8-16 is typical.
+  local grid = lurek.pathfind.newNavGrid(128, 128)
+  grid:setChunkSize(16)  -- 16x16 cell chunks
+  grid:rebuildAbstract()  -- must rebuild after setting chunk size
+end
+```
+
+### LNavGrid:setCost
+
+`LNavGrid:setCost(x: integer, y: integer, cost: integer)`
+
+Sets movement cost at a one-based grid cell.
+
+**Parameters**
+
+- `x` (`integer`, required): One-based column.
+- `y` (`integer`, required): One-based row.
+- `cost` (`integer`, required): Movement cost (0–255).
+
+**Lua API Stub**
+
+```lua
+--- Sets movement cost at a one-based grid cell.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param cost number Movement cost (0–255).
+function LNavGrid:setCost(x, y, cost) end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  -- Paint terrain costs for an RTS map: road=1, grass=2, swamp=5.
+  local grid = lurek.pathfind.newNavGrid(32, 32)
+  grid:setCost(16, 16, 2)   -- grass
+  grid:setCost(17, 16, 5)   -- swamp
+  lurek.log.debug("terrain painted at row 16", "pathfind")
+end
+```
+
+### LNavGrid:setDiagonalMode
+
+`LNavGrid:setDiagonalMode(mode: string)`
+
+Sets diagonal movement mode for this object.
+
+**Parameters**
+
+- `mode` (`string`, required): Mode name: `none`, `always`, or `nocornercut`.
+
+**Lua API Stub**
+
+```lua
+--- Sets diagonal movement mode for this object.
+---@param mode string Mode name: `none`, `always`, or `nocornercut`.
+function LNavGrid:setDiagonalMode(mode) end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  -- "none"       = 4-directional only (roguelike cardinal movement)
+  -- "always"     = 8-directional, can cut through wall corners
+  -- "nocornercut"= 8-directional but cannot squeeze past diagonal wall corners
+  local grid = lurek.pathfind.newNavGrid(40, 40)
+  grid:setDiagonalMode("nocornercut")
+  lurek.log.info("diagonal mode set to " .. grid:getDiagonalMode(), "pathfind")
+end
+```
+
+### LNavGrid:setDirty
+
+`LNavGrid:setDirty(x: integer, y: integer, w: integer, h: integer)`
+
+Marks a one-based rectangular region dirty for incremental rebuild.
+
+**Parameters**
+
+- `x` (`integer`, required): One-based column of the top-left corner.
+- `y` (`integer`, required): One-based row of the top-left corner.
+- `w` (`integer`, required): Region width in cells.
+- `h` (`integer`, required): Region height in cells.
+
+**Lua API Stub**
+
+```lua
+--- Marks a one-based rectangular region dirty for incremental rebuild.
+---@param x number One-based column of the top-left corner.
+---@param y number One-based row of the top-left corner.
+---@param w number Region width in cells.
+---@param h number Region height in cells.
+function LNavGrid:setDirty(x, y, w, h) end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  -- Instead of rebuilding the entire abstract graph, mark only changed regions.
+  -- After marking dirty regions, call rebuildAbstract to patch just those chunks.
+  local grid = lurek.pathfind.newNavGrid(64, 64)
+  grid:setCost(20, 20, 0)
+  grid:setCost(21, 20, 0)
+  -- Mark the 2x1 region starting at (20,20) as needing re-analysis
+  grid:setDirty(20, 20, 2, 1)
+end
+```
+
+### LNavGrid:type
+
+`LNavGrid:type() -> string`
+
+Returns the Lua-visible type name for this navigation grid handle.
+
+**Returns**: `string` - The string `LNavGrid`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this navigation grid handle.
+---@return string The string `LNavGrid`.
+function LNavGrid:type() end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  -- Use type() for runtime type checking or serialization hints.
+  local grid = lurek.pathfind.newNavGrid(16, 16)
+  lurek.log.debug("navgrid type=" .. grid:type(), "pathfind")
+end
+```
+
+### LNavGrid:typeOf
+
+`LNavGrid:typeOf(name: string) -> boolean`
+
+Returns whether this navigation grid handle matches a supported type name.
+
+**Parameters**
+
+- `name` (`string`, required): String value for `name`.
+
+**Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this navigation grid handle matches a supported type name.
+---@param name string String value for `name`.
+---@return boolean True when the supplied type name matches this handle.
+function LNavGrid:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
+
+```lua
+do
+  -- Polymorphic check: confirm object is a NavGrid before grid-specific ops.
+  local grid = lurek.pathfind.newNavGrid(16, 16)
+  lurek.log.debug("is LNavGrid=" .. tostring(grid:typeOf("LNavGrid")), "pathfind")
+end
+```
+
+### LNavMesh:addPolygon
+
+`LNavMesh:addPolygon(vertices: table) -> integer`
 
 Adds a polygon from vertex tables and returns a one-based id.
 
 **Parameters**
 
-- `vertices` (`table`, required) - Array of `{x, y}` vertex tables (minimum 3).
+- `vertices` (`table`, required): Array of `{x, y}` vertex tables (minimum 3).
 
 **Returns**: `integer` - One-based polygon id.
+
+**Lua API Stub**
+
+```lua
+--- Adds a polygon from vertex tables and returns a one-based id.
+---@param vertices table Array of `{x, y}` vertex tables (minimum 3).
+---@return number One-based polygon id.
+function LNavMesh:addPolygon(vertices) end
+```
 
 #### Example
 
@@ -2062,17 +2793,30 @@ do
 end
 ```
 
-### `LNavMesh:connectPolygons(a: integer, b: integer, [bidirectional]: boolean) -> boolean`
+### LNavMesh:connectPolygons
+
+`LNavMesh:connectPolygons(a: integer, b: integer, [bidirectional]: boolean) -> boolean`
 
 Connects two polygons by one-based id.
 
 **Parameters**
 
-- `a` (`integer`, required) - One-based id of the first polygon.
-- `b` (`integer`, required) - One-based id of the second polygon.
-- `bidirectional` (`boolean`, optional) - True for two-way link (default true).
+- `a` (`integer`, required): One-based id of the first polygon.
+- `b` (`integer`, required): One-based id of the second polygon.
+- `bidirectional` (`boolean`, optional): True for two-way link (default true).
 
 **Returns**: `boolean` - True when the connection was added.
+
+**Lua API Stub**
+
+```lua
+--- Connects two polygons by one-based id.
+---@param a number One-based id of the first polygon.
+---@param b number One-based id of the second polygon.
+---@param bidirectional? boolean True for two-way link (default true).
+---@return boolean True when the connection was added.
+function LNavMesh:connectPolygons(a, b, bidirectional) end
+```
 
 #### Example
 
@@ -2091,18 +2835,32 @@ do
 end
 ```
 
-### `LNavMesh:findPath(sx: number, sy: number, gx: number, gy: number) -> table`
+### LNavMesh:findPath
+
+`LNavMesh:findPath(sx: number, sy: number, gx: number, gy: number) -> table`
 
 Finds a path through the navmesh between world points.
 
 **Parameters**
 
-- `sx` (`number`, required) - Start X in world coordinates.
-- `sy` (`number`, required) - Start Y in world coordinates.
-- `gx` (`number`, required) - Goal X in world coordinates.
-- `gy` (`number`, required) - Goal Y in world coordinates.
+- `sx` (`number`, required): Start X in world coordinates.
+- `sy` (`number`, required): Start Y in world coordinates.
+- `gx` (`number`, required): Goal X in world coordinates.
+- `gy` (`number`, required): Goal Y in world coordinates.
 
 **Returns**: `table` - Array of `{x, y}` point tables, or nil when no path exists.
+
+**Lua API Stub**
+
+```lua
+--- Finds a path through the navmesh between world points.
+---@param sx number Start X in world coordinates.
+---@param sy number Start Y in world coordinates.
+---@param gx number Goal X in world coordinates.
+---@param gy number Goal Y in world coordinates.
+---@return LNavMeshFindPathResult Array of `{x, y}` point tables, or nil when no path exists.
+function LNavMesh:findPath(sx, sy, gx, gy) end
+```
 
 #### Example
 
@@ -2119,11 +2877,21 @@ do
 end
 ```
 
-### `LNavMesh:getPolygonCount() -> integer`
+### LNavMesh:getPolygonCount
+
+`LNavMesh:getPolygonCount() -> integer`
 
 Returns the total navmesh polygon count.
 
 **Returns**: `integer` - Polygon count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the total navmesh polygon count.
+---@return number Polygon count.
+function LNavMesh:getPolygonCount() end
+```
 
 #### Example
 
@@ -2138,11 +2906,21 @@ do
 end
 ```
 
-### `LNavMesh:type() -> string`
+### LNavMesh:type
+
+`LNavMesh:type() -> string`
 
 Returns the Lua-visible type name for this navmesh handle.
 
 **Returns**: `string` - The string `LNavMesh`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this navmesh handle.
+---@return string The string `LNavMesh`.
+function LNavMesh:type() end
+```
 
 #### Example
 
@@ -2156,15 +2934,26 @@ do
 end
 ```
 
-### `LNavMesh:typeOf(name: string) -> boolean`
+### LNavMesh:typeOf
+
+`LNavMesh:typeOf(name: string) -> boolean`
 
 Returns whether this navmesh handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - String value for `name`.
+- `name` (`string`, required): String value for `name`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this navmesh handle matches a supported type name.
+---@param name string String value for `name`.
+---@return boolean True when the supplied type name matches this handle.
+function LNavMesh:typeOf(name) end
+```
 
 #### Example
 
@@ -2178,41 +2967,32 @@ do
 end
 ```
 
-### `LPathGrid`
+### LPathGrid:findPath
 
-Lua-side wrapper for a cell-size path grid.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  -- PathGrid is a higher-level grid that maps pixel coordinates to cells.
-  -- Use it when your world uses pixel positions and you want automatic conversion.
-  -- cell_size determines tile dimensions (e.g., 32px tiles for a platformer map).
-  local grid = lurek.pathfind.newPathGrid(40, 30, 32)  -- 40x30 tiles, 32px each
-
-  -- Block a doorway and add difficult terrain (float cost multiplier)
-  grid:setWalkable(15, 10, false)
-  grid:setCost(15, 11, 3.0)  -- mud: 3x slower than normal ground
-
-  lurek.log.info("path grid cell size = " .. grid:getCellSize(), "pathfind")
-end
-```
-
-### `LPathGrid:findPath(sx: integer, sy: integer, gx: integer, gy: integer) -> table`
+`LPathGrid:findPath(sx: integer, sy: integer, gx: integer, gy: integer) -> table`
 
 Finds a path between one-based path grid cells.
 
 **Parameters**
 
-- `sx` (`integer`, required) - One-based start column.
-- `sy` (`integer`, required) - One-based start row.
-- `gx` (`integer`, required) - One-based goal column.
-- `gy` (`integer`, required) - One-based goal row.
+- `sx` (`integer`, required): One-based start column.
+- `sy` (`integer`, required): One-based start row.
+- `gx` (`integer`, required): One-based goal column.
+- `gy` (`integer`, required): One-based goal row.
 
 **Returns**: `table` - Array of `{x, y}` point tables, or nil when no path exists.
+
+**Lua API Stub**
+
+```lua
+--- Finds a path between one-based path grid cells.
+---@param sx number One-based start column.
+---@param sy number One-based start row.
+---@param gx number One-based goal column.
+---@param gy number One-based goal row.
+---@return LPathGridFindPathResult Array of `{x, y}` point tables, or nil when no path exists.
+function LPathGrid:findPath(sx, sy, gx, gy) end
+```
 
 #### Example
 
@@ -2228,18 +3008,32 @@ do
 end
 ```
 
-### `LPathGrid:findPathSmoothed(sx: integer, sy: integer, gx: integer, gy: integer) -> table`
+### LPathGrid:findPathSmoothed
+
+`LPathGrid:findPathSmoothed(sx: integer, sy: integer, gx: integer, gy: integer) -> table`
 
 Finds a smoothed path between one-based path grid cells.
 
 **Parameters**
 
-- `sx` (`integer`, required) - One-based start column.
-- `sy` (`integer`, required) - One-based start row.
-- `gx` (`integer`, required) - One-based goal column.
-- `gy` (`integer`, required) - One-based goal row.
+- `sx` (`integer`, required): One-based start column.
+- `sy` (`integer`, required): One-based start row.
+- `gx` (`integer`, required): One-based goal column.
+- `gy` (`integer`, required): One-based goal row.
 
 **Returns**: `table` - Array of `{x, y}` point tables, or nil when no path exists.
+
+**Lua API Stub**
+
+```lua
+--- Finds a smoothed path between one-based path grid cells.
+---@param sx number One-based start column.
+---@param sy number One-based start row.
+---@param gx number One-based goal column.
+---@param gy number One-based goal row.
+---@return LPathGridFindPathSmoothedResult Array of `{x, y}` point tables, or nil when no path exists.
+function LPathGrid:findPathSmoothed(sx, sy, gx, gy) end
+```
 
 #### Example
 
@@ -2253,11 +3047,21 @@ do
 end
 ```
 
-### `LPathGrid:getCellSize() -> number`
+### LPathGrid:getCellSize
+
+`LPathGrid:getCellSize() -> number`
 
 Returns path grid cell size from this object.
 
 **Returns**: `number` - Cell size.
+
+**Lua API Stub**
+
+```lua
+--- Returns path grid cell size from this object.
+---@return number Cell size.
+function LPathGrid:getCellSize() end
+```
 
 #### Example
 
@@ -2273,16 +3077,28 @@ do
 end
 ```
 
-### `LPathGrid:getCost(x: integer, y: integer) -> number`
+### LPathGrid:getCost
+
+`LPathGrid:getCost(x: integer, y: integer) -> number`
 
 Returns movement cost at a one-based cell.
 
 **Parameters**
 
-- `x` (`integer`, required) - One-based column.
-- `y` (`integer`, required) - One-based row.
+- `x` (`integer`, required): One-based column.
+- `y` (`integer`, required): One-based row.
 
 **Returns**: `number` - Movement cost.
+
+**Lua API Stub**
+
+```lua
+--- Returns movement cost at a one-based cell.
+---@param x number One-based column.
+---@param y number One-based row.
+---@return number Movement cost.
+function LPathGrid:getCost(x, y) end
+```
 
 #### Example
 
@@ -2299,11 +3115,21 @@ do
 end
 ```
 
-### `LPathGrid:getHeight() -> integer`
+### LPathGrid:getHeight
+
+`LPathGrid:getHeight() -> integer`
 
 Returns grid height from this object.
 
 **Returns**: `integer` - Grid height.
+
+**Lua API Stub**
+
+```lua
+--- Returns grid height from this object.
+---@return number Grid height.
+function LPathGrid:getHeight() end
+```
 
 #### Example
 
@@ -2317,11 +3143,21 @@ do
 end
 ```
 
-### `LPathGrid:getWidth() -> integer`
+### LPathGrid:getWidth
+
+`LPathGrid:getWidth() -> integer`
 
 Returns grid width from this object.
 
 **Returns**: `integer` - Grid width.
+
+**Lua API Stub**
+
+```lua
+--- Returns grid width from this object.
+---@return number Grid width.
+function LPathGrid:getWidth() end
+```
 
 #### Example
 
@@ -2335,16 +3171,28 @@ do
 end
 ```
 
-### `LPathGrid:isWalkable(x: integer, y: integer) -> boolean`
+### LPathGrid:isWalkable
+
+`LPathGrid:isWalkable(x: integer, y: integer) -> boolean`
 
 Returns walkability at a one-based cell.
 
 **Parameters**
 
-- `x` (`integer`, required) - One-based column.
-- `y` (`integer`, required) - One-based row.
+- `x` (`integer`, required): One-based column.
+- `y` (`integer`, required): One-based row.
 
 **Returns**: `boolean` - True when walkable.
+
+**Lua API Stub**
+
+```lua
+--- Returns walkability at a one-based cell.
+---@param x number One-based column.
+---@param y number One-based row.
+---@return boolean True when walkable.
+function LPathGrid:isWalkable(x, y) end
+```
 
 #### Example
 
@@ -2360,15 +3208,27 @@ do
 end
 ```
 
-### `LPathGrid:setCost(x: integer, y: integer, cost: number)`
+### LPathGrid:setCost
+
+`LPathGrid:setCost(x: integer, y: integer, cost: number)`
 
 Sets movement cost at a one-based cell.
 
 **Parameters**
 
-- `x` (`integer`, required) - One-based column.
-- `y` (`integer`, required) - One-based row.
-- `cost` (`number`, required) - Movement cost value.
+- `x` (`integer`, required): One-based column.
+- `y` (`integer`, required): One-based row.
+- `cost` (`number`, required): Movement cost value.
+
+**Lua API Stub**
+
+```lua
+--- Sets movement cost at a one-based cell.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param cost number Movement cost value.
+function LPathGrid:setCost(x, y, cost) end
+```
 
 #### Example
 
@@ -2383,15 +3243,27 @@ do
 end
 ```
 
-### `LPathGrid:setWalkable(x: integer, y: integer, w: boolean)`
+### LPathGrid:setWalkable
+
+`LPathGrid:setWalkable(x: integer, y: integer, w: boolean)`
 
 Sets walkability at a one-based cell.
 
 **Parameters**
 
-- `x` (`integer`, required) - One-based column.
-- `y` (`integer`, required) - One-based row.
-- `w` (`boolean`, required) - True to mark the cell walkable.
+- `x` (`integer`, required): One-based column.
+- `y` (`integer`, required): One-based row.
+- `w` (`boolean`, required): True to mark the cell walkable.
+
+**Lua API Stub**
+
+```lua
+--- Sets walkability at a one-based cell.
+---@param x number One-based column.
+---@param y number One-based row.
+---@param w boolean True to mark the cell walkable.
+function LPathGrid:setWalkable(x, y, w) end
+```
 
 #### Example
 
@@ -2407,11 +3279,21 @@ do
 end
 ```
 
-### `LPathGrid:type() -> string`
+### LPathGrid:type
+
+`LPathGrid:type() -> string`
 
 Returns the Lua-visible type name for this path grid handle.
 
 **Returns**: `string` - The string `LPathGrid`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this path grid handle.
+---@return string The string `LPathGrid`.
+function LPathGrid:type() end
+```
 
 #### Example
 
@@ -2424,15 +3306,26 @@ do
 end
 ```
 
-### `LPathGrid:typeOf(name: string) -> boolean`
+### LPathGrid:typeOf
+
+`LPathGrid:typeOf(name: string) -> boolean`
 
 Returns whether this path grid handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - String value for `name`.
+- `name` (`string`, required): String value for `name`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this path grid handle matches a supported type name.
+---@param name string String value for `name`.
+---@return boolean True when the supplied type name matches this handle.
+function LPathGrid:typeOf(name) end
+```
 
 #### Example
 
@@ -2445,31 +3338,18 @@ do
 end
 ```
 
-### `LUnitPathfinder`
+### LUnitPathfinder:clearCache
 
-Lua-side wrapper for a unit pathfinder over a navigation grid.
-
-#### Example
-
-Exact example from [pathfind.lua](../blob/main/content/examples/pathfind.lua):
-
-```lua
-do
-  -- UnitPathfinder runs A* search on a NavGrid and returns waypoint arrays.
-  -- It supports path caching so repeated queries for the same route are instant.
-  -- Typical use: one pathfinder per faction or AI group sharing the same grid.
-  local grid = lurek.pathfind.newNavGrid(64, 48)
-  local pf = lurek.pathfind.newPathfinder(grid)
-
-  -- Enable caching for RTS units that recalculate paths each frame
-  pf:setCacheEnabled(true)
-  pf:setCacheMaxSize(128)
-end
-```
-
-### `LUnitPathfinder:clearCache()`
+`LUnitPathfinder:clearCache()`
 
 Clears all cached paths on this object.
+
+**Lua API Stub**
+
+```lua
+--- Clears all cached paths on this object.
+function LUnitPathfinder:clearCache() end
+```
 
 #### Example
 
@@ -2486,18 +3366,33 @@ do
 end
 ```
 
-### `LUnitPathfinder:findNearestWalkable(x: integer, y: integer, max_radius: integer, [unit_size]: integer) -> integer`
+### LUnitPathfinder:findNearestWalkable
+
+`LUnitPathfinder:findNearestWalkable(x: integer, y: integer, max_radius: integer, [unit_size]: integer) -> integer`
 
 Finds nearest walkable one-based grid cell within a radius.
 
 **Parameters**
 
-- `x` (`integer`, required) - One-based column of the search origin.
-- `y` (`integer`, required) - One-based row of the search origin.
-- `max_radius` (`integer`, required) - Maximum search radius in cells.
-- `unit_size` (`integer`, optional) - Unit footprint in cells (default 1).
+- `x` (`integer`, required): One-based column of the search origin.
+- `y` (`integer`, required): One-based row of the search origin.
+- `max_radius` (`integer`, required): Maximum search radius in cells.
+- `unit_size` (`integer`, optional): Unit footprint in cells (default 1).
 
 **Returns**: `integer` - One-based column of the nearest walkable cell, or nil.
+
+**Lua API Stub**
+
+```lua
+--- Finds nearest walkable one-based grid cell within a radius.
+---@param x number One-based column of the search origin.
+---@param y number One-based row of the search origin.
+---@param max_radius number Maximum search radius in cells.
+---@param unit_size? number Unit footprint in cells (default 1).
+---@return number a One-based column of the nearest walkable cell, or nil.
+---@return number b One-based row of the nearest walkable cell, or nil.
+function LUnitPathfinder:findNearestWalkable(x, y, max_radius, unit_size) end
+```
 
 #### Example
 
@@ -2515,20 +3410,37 @@ do
 end
 ```
 
-### `LUnitPathfinder:findPartialPath(x1: integer, y1: integer, x2: integer, y2: integer, max_nodes: integer, [unit_size]: integer) -> table`
+### LUnitPathfinder:findPartialPath
+
+`LUnitPathfinder:findPartialPath(x1: integer, y1: integer, x2: integer, y2: integer, max_nodes: integer, [unit_size]: integer) -> table`
 
 Finds the best reachable path from a start to a goal within a maximum node budget. Useful for incremental pathfinding across frames.
 
 **Parameters**
 
-- `x1` (`integer`, required) - One-based column of the start cell.
-- `y1` (`integer`, required) - One-based row of the start cell.
-- `x2` (`integer`, required) - One-based column of the goal cell.
-- `y2` (`integer`, required) - One-based row of the goal cell.
-- `max_nodes` (`integer`, required) - Maximum number of nodes to expand before stopping.
-- `unit_size` (`integer`, optional) - Width/height of the unit in grid cells for clearance checks (default 1).
+- `x1` (`integer`, required): One-based column of the start cell.
+- `y1` (`integer`, required): One-based row of the start cell.
+- `x2` (`integer`, required): One-based column of the goal cell.
+- `y2` (`integer`, required): One-based row of the goal cell.
+- `max_nodes` (`integer`, required): Maximum number of nodes to expand before stopping.
+- `unit_size` (`integer`, optional): Width/height of the unit in grid cells for clearance checks (default 1).
 
 **Returns**: `table` - Array of `{x, y}` waypoint tables forming the found partial path.
+
+**Lua API Stub**
+
+```lua
+--- Finds the best reachable path from a start to a goal within a maximum node budget. Useful for incremental pathfinding across frames.
+---@param x1 number One-based column of the start cell.
+---@param y1 number One-based row of the start cell.
+---@param x2 number One-based column of the goal cell.
+---@param y2 number One-based row of the goal cell.
+---@param max_nodes number Maximum number of nodes to expand before stopping.
+---@param unit_size? number Width/height of the unit in grid cells for clearance checks (default 1).
+---@return LUnitPathfinderFindPartialPathResult a Array of `{x, y}` waypoint tables forming the found partial path.
+---@return boolean b `true` if the returned path reaches the exact goal cell.
+function LUnitPathfinder:findPartialPath(x1, y1, x2, y2, max_nodes, unit_size) end
+```
 
 #### Example
 
@@ -2549,19 +3461,34 @@ do
 end
 ```
 
-### `LUnitPathfinder:findPath(x1: integer, y1: integer, x2: integer, y2: integer, [unit_size]: integer) -> table`
+### LUnitPathfinder:findPath
+
+`LUnitPathfinder:findPath(x1: integer, y1: integer, x2: integer, y2: integer, [unit_size]: integer) -> table`
 
 Finds a path between one-based grid cells.
 
 **Parameters**
 
-- `x1` (`integer`, required) - One-based start column.
-- `y1` (`integer`, required) - One-based start row.
-- `x2` (`integer`, required) - One-based goal column.
-- `y2` (`integer`, required) - One-based goal row.
-- `unit_size` (`integer`, optional) - Unit footprint in cells (default 1).
+- `x1` (`integer`, required): One-based start column.
+- `y1` (`integer`, required): One-based start row.
+- `x2` (`integer`, required): One-based goal column.
+- `y2` (`integer`, required): One-based goal row.
+- `unit_size` (`integer`, optional): Unit footprint in cells (default 1).
 
 **Returns**: `table` - Array of `{x, y}` waypoint tables, or nil when no path exists.
+
+**Lua API Stub**
+
+```lua
+--- Finds a path between one-based grid cells.
+---@param x1 number One-based start column.
+---@param y1 number One-based start row.
+---@param x2 number One-based goal column.
+---@param y2 number One-based goal row.
+---@param unit_size? number Unit footprint in cells (default 1).
+---@return LUnitPathfinderFindPathResult Array of `{x, y}` waypoint tables, or nil when no path exists.
+function LUnitPathfinder:findPath(x1, y1, x2, y2, unit_size) end
+```
 
 #### Example
 
@@ -2577,20 +3504,37 @@ do
 end
 ```
 
-### `LUnitPathfinder:findPathBidirectional(x1: integer, y1: integer, x2: integer, y2: integer, [unit_size]: integer, [max_nodes]: integer) -> table`
+### LUnitPathfinder:findPathBidirectional
+
+`LUnitPathfinder:findPathBidirectional(x1: integer, y1: integer, x2: integer, y2: integer, [unit_size]: integer, [max_nodes]: integer) -> table`
 
 Finds a path using bidirectional A* and returns completion status.
 
 **Parameters**
 
-- `x1` (`integer`, required) - One-based column of the start cell.
-- `y1` (`integer`, required) - One-based row of the start cell.
-- `x2` (`integer`, required) - One-based column of the goal cell.
-- `y2` (`integer`, required) - One-based row of the goal cell.
-- `unit_size` (`integer`, optional) - Width or height of the unit in grid cells for clearance checks (default 1).
-- `max_nodes` (`integer`, optional) - Optional node-expansion budget; 0 uses the full search.
+- `x1` (`integer`, required): One-based column of the start cell.
+- `y1` (`integer`, required): One-based row of the start cell.
+- `x2` (`integer`, required): One-based column of the goal cell.
+- `y2` (`integer`, required): One-based row of the goal cell.
+- `unit_size` (`integer`, optional): Width or height of the unit in grid cells for clearance checks (default 1).
+- `max_nodes` (`integer`, optional): Optional node-expansion budget; 0 uses the full search.
 
 **Returns**: `table` - Array of waypoint tables, or nil when no path exists.
+
+**Lua API Stub**
+
+```lua
+--- Finds a path using bidirectional A* and returns completion status.
+---@param x1 number One-based column of the start cell.
+---@param y1 number One-based row of the start cell.
+---@param x2 number One-based column of the goal cell.
+---@param y2 number One-based row of the goal cell.
+---@param unit_size? number Width or height of the unit in grid cells for clearance checks (default 1).
+---@param max_nodes? number Optional node-expansion budget; 0 uses the full search.
+---@return LUnitPathfinderFindPathBidirectionalResult a Array of waypoint tables, or nil when no path exists.
+---@return boolean b True when the path is complete.
+function LUnitPathfinder:findPathBidirectional(x1, y1, x2, y2, unit_size, max_nodes) end
+```
 
 #### Example
 
@@ -2609,19 +3553,34 @@ do
 end
 ```
 
-### `LUnitPathfinder:findPathSmooth(x1: integer, y1: integer, x2: integer, y2: integer, [unit_size]: integer) -> table`
+### LUnitPathfinder:findPathSmooth
+
+`LUnitPathfinder:findPathSmooth(x1: integer, y1: integer, x2: integer, y2: integer, [unit_size]: integer) -> table`
 
 Finds a smoothed path between one-based grid cells.
 
 **Parameters**
 
-- `x1` (`integer`, required) - One-based start column.
-- `y1` (`integer`, required) - One-based start row.
-- `x2` (`integer`, required) - One-based goal column.
-- `y2` (`integer`, required) - One-based goal row.
-- `unit_size` (`integer`, optional) - Unit footprint in cells (default 1).
+- `x1` (`integer`, required): One-based start column.
+- `y1` (`integer`, required): One-based start row.
+- `x2` (`integer`, required): One-based goal column.
+- `y2` (`integer`, required): One-based goal row.
+- `unit_size` (`integer`, optional): Unit footprint in cells (default 1).
 
 **Returns**: `table` - Array of `{x, y}` waypoint tables, or nil when no path exists.
+
+**Lua API Stub**
+
+```lua
+--- Finds a smoothed path between one-based grid cells.
+---@param x1 number One-based start column.
+---@param y1 number One-based start row.
+---@param x2 number One-based goal column.
+---@param y2 number One-based goal row.
+---@param unit_size? number Unit footprint in cells (default 1).
+---@return LUnitPathfinderFindPathSmoothResult Array of `{x, y}` waypoint tables, or nil when no path exists.
+function LUnitPathfinder:findPathSmooth(x1, y1, x2, y2, unit_size) end
+```
 
 #### Example
 
@@ -2639,11 +3598,21 @@ do
 end
 ```
 
-### `LUnitPathfinder:getCacheSize() -> integer`
+### LUnitPathfinder:getCacheSize
+
+`LUnitPathfinder:getCacheSize() -> integer`
 
 Returns the current path cache entry count.
 
 **Returns**: `integer` - Cache size.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current path cache entry count.
+---@return number Cache size.
+function LUnitPathfinder:getCacheSize() end
+```
 
 #### Example
 
@@ -2659,15 +3628,26 @@ do
 end
 ```
 
-### `LUnitPathfinder:getPathCost(path: table) -> number`
+### LUnitPathfinder:getPathCost
+
+`LUnitPathfinder:getPathCost(path: table) -> number`
 
 Returns the total movement cost along a waypoint path.
 
 **Parameters**
 
-- `path` (`table`, required) - Array of `{x, y}` waypoint tables.
+- `path` (`table`, required): Array of `{x, y}` waypoint tables.
 
 **Returns**: `number` - Path cost.
+
+**Lua API Stub**
+
+```lua
+--- Returns the total movement cost along a waypoint path.
+---@param path table Array of `{x, y}` waypoint tables.
+---@return number Path cost.
+function LUnitPathfinder:getPathCost(path) end
+```
 
 #### Example
 
@@ -2687,15 +3667,26 @@ do
 end
 ```
 
-### `LUnitPathfinder:getPathLength(path: table) -> number`
+### LUnitPathfinder:getPathLength
+
+`LUnitPathfinder:getPathLength(path: table) -> number`
 
 Returns the total Euclidean length of a waypoint path.
 
 **Parameters**
 
-- `path` (`table`, required) - Array of `{x, y}` waypoint tables.
+- `path` (`table`, required): Array of `{x, y}` waypoint tables.
 
 **Returns**: `number` - Path length.
+
+**Lua API Stub**
+
+```lua
+--- Returns the total Euclidean length of a waypoint path.
+---@param path table Array of `{x, y}` waypoint tables.
+---@return number Path length.
+function LUnitPathfinder:getPathLength(path) end
+```
 
 #### Example
 
@@ -2714,18 +3705,32 @@ do
 end
 ```
 
-### `LUnitPathfinder:heuristicDistance(x1: integer, y1: integer, x2: integer, y2: integer) -> number`
+### LUnitPathfinder:heuristicDistance
+
+`LUnitPathfinder:heuristicDistance(x1: integer, y1: integer, x2: integer, y2: integer) -> number`
 
 Returns heuristic distance between two one-based cells.
 
 **Parameters**
 
-- `x1` (`integer`, required) - One-based column of the first cell.
-- `y1` (`integer`, required) - One-based row of the first cell.
-- `x2` (`integer`, required) - One-based column of the second cell.
-- `y2` (`integer`, required) - One-based row of the second cell.
+- `x1` (`integer`, required): One-based column of the first cell.
+- `y1` (`integer`, required): One-based row of the first cell.
+- `x2` (`integer`, required): One-based column of the second cell.
+- `y2` (`integer`, required): One-based row of the second cell.
 
 **Returns**: `number` - Heuristic distance.
+
+**Lua API Stub**
+
+```lua
+--- Returns heuristic distance between two one-based cells.
+---@param x1 number One-based column of the first cell.
+---@param y1 number One-based row of the first cell.
+---@param x2 number One-based column of the second cell.
+---@param y2 number One-based row of the second cell.
+---@return number Heuristic distance.
+function LUnitPathfinder:heuristicDistance(x1, y1, x2, y2) end
+```
 
 #### Example
 
@@ -2742,11 +3747,21 @@ do
 end
 ```
 
-### `LUnitPathfinder:isCacheEnabled() -> boolean`
+### LUnitPathfinder:isCacheEnabled
+
+`LUnitPathfinder:isCacheEnabled() -> boolean`
 
 Returns whether path cache is enabled.
 
 **Returns**: `boolean` - True when enabled.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether path cache is enabled.
+---@return boolean True when enabled.
+function LUnitPathfinder:isCacheEnabled() end
+```
 
 #### Example
 
@@ -2762,19 +3777,34 @@ do
 end
 ```
 
-### `LUnitPathfinder:isReachable(x1: integer, y1: integer, x2: integer, y2: integer, [unit_size]: integer) -> boolean`
+### LUnitPathfinder:isReachable
+
+`LUnitPathfinder:isReachable(x1: integer, y1: integer, x2: integer, y2: integer, [unit_size]: integer) -> boolean`
 
 Returns whether a target cell is reachable from a start cell.
 
 **Parameters**
 
-- `x1` (`integer`, required) - One-based start column.
-- `y1` (`integer`, required) - One-based start row.
-- `x2` (`integer`, required) - One-based target column.
-- `y2` (`integer`, required) - One-based target row.
-- `unit_size` (`integer`, optional) - Unit footprint in cells (default 1).
+- `x1` (`integer`, required): One-based start column.
+- `y1` (`integer`, required): One-based start row.
+- `x2` (`integer`, required): One-based target column.
+- `y2` (`integer`, required): One-based target row.
+- `unit_size` (`integer`, optional): Unit footprint in cells (default 1).
 
 **Returns**: `boolean` - True when reachable.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether a target cell is reachable from a start cell.
+---@param x1 number One-based start column.
+---@param y1 number One-based start row.
+---@param x2 number One-based target column.
+---@param y2 number One-based target row.
+---@param unit_size? number Unit footprint in cells (default 1).
+---@return boolean True when reachable.
+function LUnitPathfinder:isReachable(x1, y1, x2, y2, unit_size) end
+```
 
 #### Example
 
@@ -2791,19 +3821,34 @@ do
 end
 ```
 
-### `LUnitPathfinder:lineOfSight(x1: integer, y1: integer, x2: integer, y2: integer, [unit_size]: integer) -> boolean`
+### LUnitPathfinder:lineOfSight
+
+`LUnitPathfinder:lineOfSight(x1: integer, y1: integer, x2: integer, y2: integer, [unit_size]: integer) -> boolean`
 
 Returns whether two one-based cells have line of sight.
 
 **Parameters**
 
-- `x1` (`integer`, required) - One-based column of the first cell.
-- `y1` (`integer`, required) - One-based row of the first cell.
-- `x2` (`integer`, required) - One-based column of the second cell.
-- `y2` (`integer`, required) - One-based row of the second cell.
-- `unit_size` (`integer`, optional) - Unit footprint in cells (default 1).
+- `x1` (`integer`, required): One-based column of the first cell.
+- `y1` (`integer`, required): One-based row of the first cell.
+- `x2` (`integer`, required): One-based column of the second cell.
+- `y2` (`integer`, required): One-based row of the second cell.
+- `unit_size` (`integer`, optional): Unit footprint in cells (default 1).
 
 **Returns**: `boolean` - True when line of sight is clear.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether two one-based cells have line of sight.
+---@param x1 number One-based column of the first cell.
+---@param y1 number One-based row of the first cell.
+---@param x2 number One-based column of the second cell.
+---@param y2 number One-based row of the second cell.
+---@param unit_size? number Unit footprint in cells (default 1).
+---@return boolean True when line of sight is clear.
+function LUnitPathfinder:lineOfSight(x1, y1, x2, y2, unit_size) end
+```
 
 #### Example
 
@@ -2820,13 +3865,23 @@ do
 end
 ```
 
-### `LUnitPathfinder:setCacheEnabled(enabled: boolean)`
+### LUnitPathfinder:setCacheEnabled
+
+`LUnitPathfinder:setCacheEnabled(enabled: boolean)`
 
 Enables or disables the path cache on this object.
 
 **Parameters**
 
-- `enabled` (`boolean`, required) - True to enable caching.
+- `enabled` (`boolean`, required): True to enable caching.
+
+**Lua API Stub**
+
+```lua
+--- Enables or disables the path cache on this object.
+---@param enabled boolean True to enable caching.
+function LUnitPathfinder:setCacheEnabled(enabled) end
+```
 
 #### Example
 
@@ -2843,13 +3898,23 @@ do
 end
 ```
 
-### `LUnitPathfinder:setCacheMaxSize(n: integer)`
+### LUnitPathfinder:setCacheMaxSize
+
+`LUnitPathfinder:setCacheMaxSize(n: integer)`
 
 Sets maximum path cache size for this object.
 
 **Parameters**
 
-- `n` (`integer`, required) - Maximum number of cached paths.
+- `n` (`integer`, required): Maximum number of cached paths.
+
+**Lua API Stub**
+
+```lua
+--- Sets maximum path cache size for this object.
+---@param n number Maximum number of cached paths.
+function LUnitPathfinder:setCacheMaxSize(n) end
+```
 
 #### Example
 
@@ -2866,11 +3931,21 @@ do
 end
 ```
 
-### `LUnitPathfinder:type() -> string`
+### LUnitPathfinder:type
+
+`LUnitPathfinder:type() -> string`
 
 Returns the Lua-visible type name for this pathfinder handle.
 
 **Returns**: `string` - The string `LUnitPathfinder`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this pathfinder handle.
+---@return string The string `LUnitPathfinder`.
+function LUnitPathfinder:type() end
+```
 
 #### Example
 
@@ -2884,15 +3959,26 @@ do
 end
 ```
 
-### `LUnitPathfinder:typeOf(name: string) -> boolean`
+### LUnitPathfinder:typeOf
+
+`LUnitPathfinder:typeOf(name: string) -> boolean`
 
 Returns whether this pathfinder handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - String value for `name`.
+- `name` (`string`, required): String value for `name`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this pathfinder handle matches a supported type name.
+---@param name string String value for `name`.
+---@return boolean True when the supplied type name matches this handle.
+function LUnitPathfinder:typeOf(name) end
+```
 
 #### Example
 
@@ -2907,21 +3993,27 @@ end
 ```
 
 
-## Examples
+[⬆ back to top](#table-of-contents)
+
+## 💡 Examples
 
 - [pathfind.lua](../blob/main/content/examples/pathfind.lua) - A\*, Dijkstra, navmesh
 
-## Reference Games
+[⬆ back to top](#table-of-contents)
+
+## 🎮 Reference Games
 
 - [settlers_rise](../tree/main/content/games/simulation/settlers_rise) (simulation)
 
-## Related Modules
+[⬆ back to top](#table-of-contents)
 
-- Previous: [[particle|Module-particle]]
-- Next: [[patterns|Module-patterns]]
-- [[ai|Module-ai]] - Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU.
-- [[animation|Module-animation]] - Sprite animation: source-rect changes over time. Imports only math; headless-testable.
-- [[automation|Module-automation]] - Automated input simulation for headless tests, QA replay, recorded sessions.
-- [[ecs|Module-ecs]] - Entity-Component-System: identity / data / behaviour separation for runtime composition.
-- [[i18n|Module-i18n]] - Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*).
-- [[minimap|Module-minimap]] - Grid-based minimap data model: fog of war, tracked objects, pings, viewport overlay.
+## 🔗 Related Modules
+
+- Previous: [particle](Module-particle)
+- Next: [patterns](Module-patterns)
+- [ai](Module-ai) - Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU.
+- [animation](Module-animation) - Sprite animation: source-rect changes over time. Imports only math; headless-testable.
+- [automation](Module-automation) - Automated input simulation for headless tests, QA replay, recorded sessions.
+- [ecs](Module-ecs) - Entity-Component-System: identity / data / behaviour separation for runtime composition.
+- [i18n](Module-i18n) - Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*).
+- [minimap](Module-minimap) - Grid-based minimap data model: fog of war, tracked objects, pings, viewport overlay.

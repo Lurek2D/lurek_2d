@@ -4,105 +4,56 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
-- [Purpose](#purpose)
-- [Summary](#summary)
-- [Minimal Module Example](#minimal-module-example)
-- [Key Types](#key-types)
-- [API Overview](#api-overview)
-- [Module Functions](#module-functions)
-  - [lurek.engine.fps() -> number](#lurekenginefps-number)
-  - [lurek.engine.frameCount() -> integer](#lurekengineframecount-integer)
-  - [lurek.engine.getConfigRevision() -> integer](#lurekenginegetconfigrevision-integer)
-  - [lurek.engine.getFrameBudget() -> number](#lurekenginegetframebudget-number)
-  - [lurek.engine.getFrameProfile() -> table](#lurekenginegetframeprofile-table)
-  - [lurek.engine.getFrameProfileText() -> string](#lurekenginegetframeprofiletext-string)
-  - [lurek.engine.getResourceStats() -> table](#lurekenginegetresourcestats-table)
-  - [lurek.engine.getVersion() -> string](#lurekenginegetversion-string)
-  - [lurek.engine.isDebug() -> boolean](#lurekengineisdebug-boolean)
-  - [lurek.engine.memoryUsage() -> table](#lurekenginememoryusage-table)
-  - [lurek.engine.platform() -> string](#lurekengineplatform-string)
-  - [lurek.engine.setResourceBudget(budget_bytes: integer)](#lurekenginesetresourcebudgetbudgetbytes-integer)
-  - [lurek.engine.uptime() -> number](#lurekengineuptime-number)
-- [Examples](#examples)
-- [Reference Games](#reference-games)
-- [Related Modules](#related-modules)
+- [🎯 Purpose](#purpose)
+- [📋 Summary](#summary)
+- [🧩 Key Types](#key-types)
+- [📖 API Overview](#api-overview)
+- [⚙️ Module Functions](#module-functions)
+  - [lurek.engine.fps](#lurekenginefps)
+  - [lurek.engine.frameCount](#lurekengineframecount)
+  - [lurek.engine.getConfigRevision](#lurekenginegetconfigrevision)
+  - [lurek.engine.getFrameBudget](#lurekenginegetframebudget)
+  - [lurek.engine.getFrameProfile](#lurekenginegetframeprofile)
+  - [lurek.engine.getFrameProfileText](#lurekenginegetframeprofiletext)
+  - [lurek.engine.getResourceStats](#lurekenginegetresourcestats)
+  - [lurek.engine.getVersion](#lurekenginegetversion)
+  - [lurek.engine.isDebug](#lurekengineisdebug)
+  - [lurek.engine.memoryUsage](#lurekenginememoryusage)
+  - [lurek.engine.platform](#lurekengineplatform)
+  - [lurek.engine.setResourceBudget](#lurekenginesetresourcebudget)
+  - [lurek.engine.uptime](#lurekengineuptime)
+- [💡 Examples](#examples)
+- [🎮 Reference Games](#reference-games)
+- [🔗 Related Modules](#related-modules)
 
 This page is generated from the current module specs, examples, and Lua API data.
 
 **Module group:** Other
 **Namespace:** `lurek.engine`
 
-## Purpose
+## 🎯 Purpose
 
 lurek.engine -- Runtime metadata and diagnostics bindings for version, platform, uptime, FPS, frame counters, resource memory budgets, frame timing profile tables, and configuration reload revision exposed to Lua scripts.
 
-## Summary
+[⬆ back to top](#table-of-contents)
+
+## 📋 Summary
 
 lurek.engine -- Runtime metadata and diagnostics bindings for version, platform, uptime, FPS, frame counters, resource memory budgets, frame timing profile tables, and configuration reload revision exposed to Lua scripts.
 
-## Minimal Module Example
+[⬆ back to top](#table-of-contents)
 
-Module example from [engine.lua](../blob/main/content/examples/engine.lua):
-
-```lua
--- Returns the target frame budget in milliseconds (16.67 ms for 60 FPS).
-do
-  -- Compare actual frame time against budget to detect heavy frames early.
-  local budget_ms = lurek.engine.getFrameBudget()
-  local warn_threshold = budget_ms * 0.8 -- warn at 80% budget usage
-  function lurek.process(dt)
-    local frame_ms = dt * 1000
-    if frame_ms > warn_threshold then
-      lurek.log.warn(string.format("frame budget %.1f/%.1f ms (%.0f%%)",
-        frame_ms, budget_ms, (frame_ms / budget_ms) * 100), "perf")
-    end
-  end
-end
-
---@api-stub: lurek.engine.memoryUsage
--- Returns a table with lua_bytes and lua_kb fields for Lua VM heap usage.
-do
-  -- Periodically log memory to detect leaks during development.
-  local last_kb = 0
-  function lurek.process(dt)
-    if lurek.engine.frameCount() % 300 ~= 0 then return end
-    local mem = lurek.engine.memoryUsage()
-    local delta = mem.lua_kb - last_kb
-    if delta > 0 then
-      lurek.log.debug(string.format("lua heap: %d KB (+%d KB since last check)",
-        mem.lua_kb, delta), "mem")
-    end
-    last_kb = mem.lua_kb
-  end
-end
-
---@api-stub: lurek.engine.platform
--- Returns "windows", "linux", "macos", or "unknown" for the current OS.
-do
-  -- Use platform name to select platform-specific defaults (paths, key hints).
-  local os_name = lurek.engine.platform()
-  local config_dir = "." -- os.getenv not available in lurek sandbox
-  -- In a real deployment outside the sandbox, config_dir would be:
-  -- Windows: os.getenv("APPDATA")  macOS: ~/Library/Application Support  Linux: ~/.config
-  lurek.log.info("platform=" .. os_name .. " config_dir=" .. config_dir, "boot")
-end
-
---@api-stub: lurek.engine.uptime
--- Returns total engine runtime in seconds since the process started.
-do
-  -- Track session play time for analytics or idle-kick detection.
-  local session_start = lurek.engine.uptime()
-```
-
-## Key Types
+## 🧩 Key Types
 
 This module has no separate Lua-visible classes in the generated API data.
 
-## API Overview
+[⬆ back to top](#table-of-contents)
+
+## 📖 API Overview
 
 
 ```lua
@@ -121,9 +72,13 @@ lurek.engine.setResourceBudget(budget_bytes: integer) -- Sets the resource memor
 lurek.engine.uptime() -> number -- Returns total engine runtime accumulated by the main loop.
 ```
 
-## Module Functions
+[⬆ back to top](#table-of-contents)
 
-### `lurek.engine.fps() -> number`
+## ⚙️ Module Functions
+
+### lurek.engine.fps
+
+`lurek.engine.fps() -> number`
 
 Returns the latest frames-per-second value stored by the runtime.
 
@@ -143,7 +98,9 @@ do
 end
 ```
 
-### `lurek.engine.frameCount() -> integer`
+### lurek.engine.frameCount
+
+`lurek.engine.frameCount() -> integer`
 
 Returns the number of frames counted by the shared runtime clock.
 
@@ -163,7 +120,9 @@ do
 end
 ```
 
-### `lurek.engine.getConfigRevision() -> integer`
+### lurek.engine.getConfigRevision
+
+`lurek.engine.getConfigRevision() -> integer`
 
 Returns the configuration reload revision counter.
 
@@ -181,7 +140,9 @@ do
 end
 ```
 
-### `lurek.engine.getFrameBudget() -> number`
+### lurek.engine.getFrameBudget
+
+`lurek.engine.getFrameBudget() -> number`
 
 Returns the target frame budget for a 60 FPS update loop.
 
@@ -199,7 +160,9 @@ do
 end
 ```
 
-### `lurek.engine.getFrameProfile() -> table`
+### lurek.engine.getFrameProfile
+
+`lurek.engine.getFrameProfile() -> table`
 
 Returns the latest frame timing profile split by engine phase.
 
@@ -221,7 +184,9 @@ do
 end
 ```
 
-### `lurek.engine.getFrameProfileText() -> string`
+### lurek.engine.getFrameProfileText
+
+`lurek.engine.getFrameProfileText() -> string`
 
 Returns the latest frame timing profile formatted as one text line.
 
@@ -239,7 +204,9 @@ do
 end
 ```
 
-### `lurek.engine.getResourceStats() -> table`
+### lurek.engine.getResourceStats
+
+`lurek.engine.getResourceStats() -> table`
 
 Returns current resource memory usage and object counts by resource kind.
 
@@ -265,7 +232,9 @@ do
 end
 ```
 
-### `lurek.engine.getVersion() -> string`
+### lurek.engine.getVersion
+
+`lurek.engine.getVersion() -> string`
 
 Returns the engine crate version string embedded at build time.
 
@@ -284,7 +253,9 @@ do
 end
 ```
 
-### `lurek.engine.isDebug() -> boolean`
+### lurek.engine.isDebug
+
+`lurek.engine.isDebug() -> boolean`
 
 Returns whether the engine binary was built with debug assertions.
 
@@ -304,7 +275,9 @@ do
 end
 ```
 
-### `lurek.engine.memoryUsage() -> table`
+### lurek.engine.memoryUsage
+
+`lurek.engine.memoryUsage() -> table`
 
 Returns Lua VM memory usage as bytes and rounded kilobytes.
 
@@ -322,7 +295,9 @@ do
 end
 ```
 
-### `lurek.engine.platform() -> string`
+### lurek.engine.platform
+
+`lurek.engine.platform() -> string`
 
 Returns the current desktop operating system name.
 
@@ -341,13 +316,15 @@ do
 end
 ```
 
-### `lurek.engine.setResourceBudget(budget_bytes: integer)`
+### lurek.engine.setResourceBudget
+
+`lurek.engine.setResourceBudget(budget_bytes: integer)`
 
 Sets the resource memory budget used by resource statistics reporting.
 
 **Parameters**
 
-- `budget_bytes` (`integer`, required) - Resource budget in bytes.
+- `budget_bytes` (`integer`, required): Resource budget in bytes.
 
 #### Example
 
@@ -362,7 +339,9 @@ do
 end
 ```
 
-### `lurek.engine.uptime() -> number`
+### lurek.engine.uptime
+
+`lurek.engine.uptime() -> number`
 
 Returns total engine runtime accumulated by the main loop.
 
@@ -382,16 +361,22 @@ end
 ```
 
 
-## Examples
+[⬆ back to top](#table-of-contents)
+
+## 💡 Examples
 
 - [engine.lua](../blob/main/content/examples/engine.lua) - API example
 
-## Reference Games
+[⬆ back to top](#table-of-contents)
+
+## 🎮 Reference Games
 
 No direct references were found in `content/games/**/main.lua`.
 
-## Related Modules
+[⬆ back to top](#table-of-contents)
 
-- Previous: [[effect|Module-effect]]
-- Next: [[event|Module-event]]
-- [[system|Module-system]] - lurek.system - Provides OS-level utilities including clipboard, system info, environment variables, and platform detection.
+## 🔗 Related Modules
+
+- Previous: [effect](Module-effect)
+- Next: [event](Module-event)
+- [system](Module-system) - lurek.system - Provides OS-level utilities including clipboard, system info, environment variables, and platform detection.

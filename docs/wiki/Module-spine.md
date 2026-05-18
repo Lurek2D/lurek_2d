@@ -4,136 +4,87 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
-- [Purpose](#purpose)
-- [Summary](#summary)
-- [Minimal Module Example](#minimal-module-example)
-- [Key Types](#key-types)
-- [API Overview](#api-overview)
-- [Module Functions](#module-functions)
-  - [lurek.spine.animationFromJson(json: string) -> LSkeletonAnimation](#lurekspineanimationfromjsonjson-string-lskeletonanimation)
-  - [lurek.spine.newSkeleton(name: string) -> LSkeleton](#lurekspinenewskeletonname-string-lskeleton)
-  - [lurek.spine.newSkeletonAnimation(name: string, duration: number) -> LSkeletonAnimation](#lurekspinenewskeletonanimationname-string-duration-number-lskeletonanimation)
-- [Types and Methods](#types-and-methods)
+- [🎯 Purpose](#purpose)
+- [📋 Summary](#summary)
+- [🧩 Key Types](#key-types)
+- [📖 API Overview](#api-overview)
+- [⚙️ Module Functions](#module-functions)
+  - [lurek.spine.animationFromJson](#lurekspineanimationfromjson)
+  - [lurek.spine.newSkeleton](#lurekspinenewskeleton)
+  - [lurek.spine.newSkeletonAnimation](#lurekspinenewskeletonanimation)
+- [🔷 Module Types](#module-types)
   - [LSkeleton](#lskeleton)
-  - [LSkeleton:addAnimation(anim: LSkeletonAnimation)](#lskeletonaddanimationanim-lskeletonanimation)
-  - [LSkeleton:addBone(name: string, [opts]: table) -> integer](#lskeletonaddbonename-string-opts-table-integer)
-  - [LSkeleton:addChildBone(name: string, parent_idx: integer, [opts]: table) -> integer](#lskeletonaddchildbonename-string-parentidx-integer-opts-table-integer)
-  - [LSkeleton:addIKConstraint(name: string, chain: table, [bend_positive]: boolean) -> integer](#lskeletonaddikconstraintname-string-chain-table-bendpositive-boolean-integer)
-  - [LSkeleton:addSkin(name: string)](#lskeletonaddskinname-string)
-  - [LSkeleton:addSlot(name: string, bone_idx: integer, [attachment]: string) -> integer](#lskeletonaddslotname-string-boneidx-integer-attachment-string-integer)
-  - [LSkeleton:blendAnimation(anim: LSkeletonAnimation, time: number, [blend_weight]: number)](#lskeletonblendanimationanim-lskeletonanimation-time-number-blendweight-number)
-  - [LSkeleton:boneCount() -> integer](#lskeletonbonecount-integer)
-  - [LSkeleton:drawToImage(w: integer, h: integer) -> LImageData](#lskeletondrawtoimagew-integer-h-integer-limagedata)
-  - [LSkeleton:findBone(name: string) -> integer](#lskeletonfindbonename-string-integer)
-  - [LSkeleton:findSlot(name: string) -> integer](#lskeletonfindslotname-string-integer)
-  - [LSkeleton:getAnimationTime() -> number](#lskeletongetanimationtime-number)
-  - [LSkeleton:getBoneWorld(idx: integer) -> table](#lskeletongetboneworldidx-integer-table)
-  - [LSkeleton:getSkin() -> string](#lskeletongetskin-string)
-  - [LSkeleton:playAnimation(name: string, [looping]: boolean) -> boolean](#lskeletonplayanimationname-string-looping-boolean-boolean)
-  - [LSkeleton:setIKTarget(name: string, x: number, y: number) -> boolean](#lskeletonsetiktargetname-string-x-number-y-number-boolean)
-  - [LSkeleton:setPosition(x: number, y: number)](#lskeletonsetpositionx-number-y-number)
-  - [LSkeleton:setSkin(name: string) -> boolean](#lskeletonsetskinname-string-boolean)
-  - [LSkeleton:setSkinMapping(skin: string, slot: string, attachment: string)](#lskeletonsetskinmappingskin-string-slot-string-attachment-string)
-  - [LSkeleton:slotCount() -> integer](#lskeletonslotcount-integer)
-  - [LSkeleton:stopAnimation()](#lskeletonstopanimation)
-  - [LSkeleton:type() -> string](#lskeletontype-string)
-  - [LSkeleton:typeOf(name: string) -> boolean](#lskeletontypeofname-string-boolean)
-  - [LSkeleton:updateAnimation(dt: number)](#lskeletonupdateanimationdt-number)
-  - [LSkeleton:updateWorldTransforms()](#lskeletonupdateworldtransforms)
   - [LSkeletonAnimation](#lskeletonanimation)
-  - [LSkeletonAnimation:addEventKey(time: number, name: string, [value]: number)](#lskeletonanimationaddeventkeytime-number-name-string-value-number)
-  - [LSkeletonAnimation:addKeyframe(bone_idx: integer, property: string, time: number, value: number, [easing]: string)](#lskeletonanimationaddkeyframeboneidx-integer-property-string-time-number-value-number-easing-string)
-  - [LSkeletonAnimation:getDuration() -> number](#lskeletonanimationgetduration-number)
-  - [LSkeletonAnimation:getEvents(from: number, to: number) -> table](#lskeletonanimationgeteventsfrom-number-to-number-table)
-  - [LSkeletonAnimation:getTimelineCount() -> integer](#lskeletonanimationgettimelinecount-integer)
-  - [LSkeletonAnimation:poseAt(time: number) -> table](#lskeletonanimationposeattime-number-table)
-  - [LSkeletonAnimation:reverse() -> LSkeletonAnimation](#lskeletonanimationreverse-lskeletonanimation)
-  - [LSkeletonAnimation:type() -> string](#lskeletonanimationtype-string)
-  - [LSkeletonAnimation:typeOf(name: string) -> boolean](#lskeletonanimationtypeofname-string-boolean)
-- [Examples](#examples)
-- [Reference Games](#reference-games)
-- [Related Modules](#related-modules)
+- [🔹 Module Methods](#module-methods)
+  - [LSkeleton:addAnimation](#lskeletonaddanimation)
+  - [LSkeleton:addBone](#lskeletonaddbone)
+  - [LSkeleton:addChildBone](#lskeletonaddchildbone)
+  - [LSkeleton:addIKConstraint](#lskeletonaddikconstraint)
+  - [LSkeleton:addSkin](#lskeletonaddskin)
+  - [LSkeleton:addSlot](#lskeletonaddslot)
+  - [LSkeleton:blendAnimation](#lskeletonblendanimation)
+  - [LSkeleton:boneCount](#lskeletonbonecount)
+  - [LSkeleton:drawToImage](#lskeletondrawtoimage)
+  - [LSkeleton:findBone](#lskeletonfindbone)
+  - [LSkeleton:findSlot](#lskeletonfindslot)
+  - [LSkeleton:getAnimationTime](#lskeletongetanimationtime)
+  - [LSkeleton:getBoneWorld](#lskeletongetboneworld)
+  - [LSkeleton:getSkin](#lskeletongetskin)
+  - [LSkeleton:playAnimation](#lskeletonplayanimation)
+  - [LSkeleton:setIKTarget](#lskeletonsetiktarget)
+  - [LSkeleton:setPosition](#lskeletonsetposition)
+  - [LSkeleton:setSkin](#lskeletonsetskin)
+  - [LSkeleton:setSkinMapping](#lskeletonsetskinmapping)
+  - [LSkeleton:slotCount](#lskeletonslotcount)
+  - [LSkeleton:stopAnimation](#lskeletonstopanimation)
+  - [LSkeleton:type](#lskeletontype)
+  - [LSkeleton:typeOf](#lskeletontypeof)
+  - [LSkeleton:updateAnimation](#lskeletonupdateanimation)
+  - [LSkeleton:updateWorldTransforms](#lskeletonupdateworldtransforms)
+  - [LSkeletonAnimation:addEventKey](#lskeletonanimationaddeventkey)
+  - [LSkeletonAnimation:addKeyframe](#lskeletonanimationaddkeyframe)
+  - [LSkeletonAnimation:getDuration](#lskeletonanimationgetduration)
+  - [LSkeletonAnimation:getEvents](#lskeletonanimationgetevents)
+  - [LSkeletonAnimation:getTimelineCount](#lskeletonanimationgettimelinecount)
+  - [LSkeletonAnimation:poseAt](#lskeletonanimationposeat)
+  - [LSkeletonAnimation:reverse](#lskeletonanimationreverse)
+  - [LSkeletonAnimation:type](#lskeletonanimationtype)
+  - [LSkeletonAnimation:typeOf](#lskeletonanimationtypeof)
+- [💡 Examples](#examples)
+- [🎮 Reference Games](#reference-games)
+- [🔗 Related Modules](#related-modules)
 
 This page is generated from the current module specs, examples, and Lua API data.
 
 **Module group:** Feature Systems
 **Namespace:** `lurek.spine`
 
-## Purpose
+## 🎯 Purpose
 
 Hierarchical skeletal animation (own implementation; not the official Spine SDK — A-02 + licensing).
 
-## Summary
+[⬆ back to top](#table-of-contents)
+
+## 📋 Summary
 
 Skeletal animation runtime providing hierarchical bone trees, slot-based attachment management, IK constraints, skin variants, and keyframe timeline playback. `Skeleton` owns an ordered `Vec<Bone>` where each bone stores local transform (position, rotation, scale) and accumulated world-space transform propagated from parent to child.
 
 `Slot` binds visual content (sprite region, mesh, or bounding box) to a bone with draw-order and blend-mode configuration. `IKConstraint` solves two-bone inverse kinematics positioning chain endpoints at target locations. `SkeletonAnimation` drives `BoneTimeline` and `SlotTimeline` keyframes with interpolation (linear, stepped, bezier). Skins group slot attachments into switchable visual sets. Animation parsing loads skeleton definitions from Lua table format. Exposed as `lurek.spine.*`. Feature Systems tier.
 
-## Minimal Module Example
+[⬆ back to top](#table-of-contents)
 
-Module example from [spine.lua](../blob/main/content/examples/spine.lua):
-
-```lua
-  local rig = lurek.spine.newSkeleton("player")
-  rig:addBone("root")
-  rig:addChildBone("head", 0, { y = -40 })
-
-  -- Simulate a player walking right at 120 px/s
-  local px = 100
-  function lurek.process(dt)
-    px = px + 120 * dt
-    rig:setPosition(px, 300)
-    -- After moving, recompute transforms before drawing
-    rig:updateWorldTransforms()
-  end
-end
-
---@api-stub: LSkeleton:updateWorldTransforms
--- Recomputes world transforms for all bones in hierarchy order
-do
-  -- You must call updateWorldTransforms after any change to bone
-  -- positions, rotations, IK targets, or skeleton position.
-  -- It propagates parent transforms down the tree.
-  local rig = lurek.spine.newSkeleton("crane")
-  local base = rig:addBone("base", { x = 200, y = 400 })
-  local arm  = rig:addChildBone("arm", base, { y = -80, rotation = 0.3 })
-  rig:addChildBone("hook", arm, { y = -60 })
-
-  -- Move the whole crane and resolve the hierarchy
-  rig:setPosition(300, 400)
-  rig:updateWorldTransforms()
-
-  -- Now getBoneWorld will return correct world positions
-  local hook = rig:getBoneWorld(2)
-  if hook then
-    lurek.log.info("hook world pos: " .. hook.x .. ", " .. hook.y, "spine")
-  end
-end
-
---@api-stub: LSkeleton:getBoneWorld
--- Returns the world-space transform of a bone after hierarchy resolution
-do
-  -- After updateWorldTransforms, getBoneWorld gives you the final
-  -- position, rotation, and scale of any bone in world space.
-  -- Common use: spawn projectiles at a weapon bone's world position.
-  local rig = lurek.spine.newSkeleton("shooter")
-  local body   = rig:addBone("body", { x = 320, y = 240 })
-  local arm    = rig:addChildBone("arm", body, { x = 20, y = -10, rotation = -0.2 })
-  local muzzle = rig:addChildBone("muzzle", arm, { x = 40 })
-
-  rig:updateWorldTransforms()
-```
-
-## Key Types
+## 🧩 Key Types
 
 - `LSkeleton` (25 methods) - Lua-facing skeleton object providing bone hierarchy, slots, IK, skins, and animation playback.
 - `LSkeletonAnimation` (9 methods) - Lua-facing animation object containing bone timelines, keyframes, events, and easing curves.
 
-## API Overview
+[⬆ back to top](#table-of-contents)
+
+## 📖 API Overview
 
 - Source spec: [docs/specs/spine.md](../blob/main/docs/specs/spine.md)
 
@@ -143,15 +94,19 @@ lurek.spine.newSkeleton(name: string) -> LSkeleton -- Creates a new empty skelet
 lurek.spine.newSkeletonAnimation(name: string, duration: number) -> LSkeletonAnimation -- Creates a new empty animation with the given name and duration. Add keyframes to define motion.
 ```
 
-## Module Functions
+[⬆ back to top](#table-of-contents)
 
-### `lurek.spine.animationFromJson(json: string) -> LSkeletonAnimation`
+## ⚙️ Module Functions
+
+### lurek.spine.animationFromJson
+
+`lurek.spine.animationFromJson(json: string) -> LSkeletonAnimation`
 
 Parses a JSON string into a SkeletonAnimation. Returns nil if parsing fails or the format is invalid.
 
 **Parameters**
 
-- `json` (`string`, required) - JSON string describing the animation (Spine-compatible format).
+- `json` (`string`, required): JSON string describing the animation (Spine-compatible format).
 
 **Returns**: `LSkeletonAnimation` - Parsed animation userdata, or nil on failure.
 
@@ -194,13 +149,15 @@ do
 end
 ```
 
-### `lurek.spine.newSkeleton(name: string) -> LSkeleton`
+### lurek.spine.newSkeleton
+
+`lurek.spine.newSkeleton(name: string) -> LSkeleton`
 
 Creates a new empty skeleton with the given name. Add bones and slots to build the hierarchy.
 
 **Parameters**
 
-- `name` (`string`, required) - Name identifier for this skeleton.
+- `name` (`string`, required): Name identifier for this skeleton.
 
 **Returns**: `LSkeleton` - A new skeleton userdata.
 
@@ -227,14 +184,16 @@ do
 end
 ```
 
-### `lurek.spine.newSkeletonAnimation(name: string, duration: number) -> LSkeletonAnimation`
+### lurek.spine.newSkeletonAnimation
+
+`lurek.spine.newSkeletonAnimation(name: string, duration: number) -> LSkeletonAnimation`
 
 Creates a new empty animation with the given name and duration. Add keyframes to define motion.
 
 **Parameters**
 
-- `name` (`string`, required) - Name identifier for this animation (used with playAnimation).
-- `duration` (`number`, required) - Total duration of the animation in seconds.
+- `name` (`string`, required): Name identifier for this animation (used with playAnimation).
+- `duration` (`number`, required): Total duration of the animation in seconds.
 
 **Returns**: `LSkeletonAnimation` - A new animation userdata.
 
@@ -260,11 +219,21 @@ end
 ```
 
 
-## Types and Methods
+[⬆ back to top](#table-of-contents)
 
-### `LSkeleton`
+## 🔷 Module Types
+
+### LSkeleton
 
 Lua-facing skeleton object providing bone hierarchy, slots, IK, skins, and animation playback.
+
+**Lua API Definition**
+
+```lua
+--- Lua-facing skeleton object providing bone hierarchy, slots, IK, skins, and animation playback.
+---@class LSkeleton
+LSkeleton = {}
+```
 
 #### Example
 
@@ -289,827 +258,17 @@ do
 end
 ```
 
-### `LSkeleton:addAnimation(anim: LSkeletonAnimation)`
-
-Registers a SkeletonAnimation object with this skeleton so it can be played by name.
-
-**Parameters**
-
-- `anim` (`LSkeletonAnimation`, required) - The animation userdata to register. Consumed by this call.
-
-#### Example
-
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
-
-```lua
-do
-  -- You must register animations with addAnimation before calling
-  -- playAnimation. This transfers ownership of the animation to the skeleton.
-  -- After addAnimation, the original variable should not be reused.
-  local rig = lurek.spine.newSkeleton("guard")
-  rig:addBone("root")
-
-  local idle = lurek.spine.newSkeletonAnimation("idle", 2.0)
-  idle:addKeyframe(0, "y", 0.0, 0, "ease_in_out")
-  idle:addKeyframe(0, "y", 1.0, 3, "ease_in_out")
-  idle:addKeyframe(0, "y", 2.0, 0, "ease_in_out")
-
-  local alert = lurek.spine.newSkeletonAnimation("alert", 0.3)
-  alert:addKeyframe(0, "y", 0.0, 0, "linear")
-  alert:addKeyframe(0, "y", 0.15, -5, "ease_out")
-  alert:addKeyframe(0, "y", 0.3, 0, "linear")
-
-  -- Register both; now "idle" and "alert" are playable by name
-  rig:addAnimation(idle)
-  rig:addAnimation(alert)
-  lurek.log.info("guard has idle + alert animations registered", "spine")
-end
-```
-
-### `LSkeleton:addBone(name: string, [opts]: table) -> integer`
-
-Adds a root-level bone to the skeleton with optional transform properties.
-
-**Parameters**
-
-- `name` (`string`, required) - Unique name for this bone.
-- `opts` (`table`, optional) - Optional table with keys: x, y, rotation, scale_x, scale_y.
-
-**Returns**: `integer` - Zero-based index of the newly added bone.
-
-#### Example
-
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
-
-```lua
-do
-  -- addBone creates a root-level bone (no parent). Use it for the rig
-  -- origin or for independent attachment points like particle emitters.
-  -- The opts table sets the local transform: x, y, rotation, scale_x, scale_y.
-  local sk = lurek.spine.newSkeleton("turret")
-
-  -- Turret base sits at world center with no rotation
-  local base = sk:addBone("base", { x = 400, y = 300 })
-
-  -- A second root bone for an independent muzzle-flash emitter
-  local flash = sk:addBone("muzzle_flash", { x = 450, y = 280, rotation = 0.0 })
-
-  lurek.log.info("base=" .. base .. " flash=" .. flash, "spine")
-end
-```
-
-### `LSkeleton:addChildBone(name: string, parent_idx: integer, [opts]: table) -> integer`
-
-Adds a bone as a child of an existing bone, inheriting its parent's world transform.
-
-**Parameters**
-
-- `name` (`string`, required) - Unique name for this bone.
-- `parent_idx` (`integer`, required) - Zero-based index of the parent bone.
-- `opts` (`table`, optional) - Optional table with keys: x, y, rotation, scale_x, scale_y (local offsets from parent).
-
-**Returns**: `integer` - Zero-based index of the newly added child bone.
-
-#### Example
-
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
-
-```lua
-do
-  -- Child bones form the skeleton hierarchy. Their local x/y/rotation
-  -- are offsets relative to the parent. When the parent moves, children follow.
-  local sk = lurek.spine.newSkeleton("arm_rig")
-  local shoulder = sk:addBone("shoulder", { x = 200, y = 200 })
-
-  -- Upper arm extends 40px down from shoulder
-  local upper = sk:addChildBone("upper_arm", shoulder, { y = 40 })
-
-  -- Forearm extends 35px further; rotation will rotate around the elbow
-  local forearm = sk:addChildBone("forearm", upper, { y = 35 })
-
-  -- Hand at the end of the chain
-  sk:addChildBone("hand", forearm, { y = 25 })
-
-  lurek.log.info("arm chain: " .. sk:boneCount() .. " bones", "spine")
-end
-```
-
-### `LSkeleton:addIKConstraint(name: string, chain: table, [bend_positive]: boolean) -> integer`
-
-Adds an inverse-kinematics constraint that controls a chain of bones to reach a target position.
-
-**Parameters**
-
-- `name` (`string`, required) - Unique name for this IK constraint (used with setIKTarget).
-- `chain` (`table`, required) - Array of bone indices forming the IK chain from root to tip.
-- `bend_positive` (`boolean`, optional) - Whether the joint bends in the positive direction. Defaults to true.
-
-**Returns**: `integer` - Index of the newly added constraint.
-
-#### Example
-
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
-
-```lua
-do
-  -- IK constraints make a chain of bones reach toward a target point.
-  -- Useful for arms reaching for objects, legs planting on terrain, etc.
-  -- The chain array lists bone indices from root to tip of the IK chain.
-  local rig = lurek.spine.newSkeleton("robot")
-  local shoulder = rig:addBone("shoulder", { x = 300, y = 200 })
-  local upper    = rig:addChildBone("upper_arm", shoulder, { y = 40 })
-  local forearm  = rig:addChildBone("forearm", upper, { y = 35 })
-
-  -- Create a 2-bone IK chain (upper_arm → forearm) with positive bend
-  local ik_idx = rig:addIKConstraint("reach_ik", {upper, forearm}, true)
-  lurek.log.info("IK constraint index: " .. ik_idx, "spine")
-end
-```
-
-### `LSkeleton:addSkin(name: string)`
-
-Registers a new named skin on this skeleton. Skins remap slot attachments for visual variants.
-
-**Parameters**
-
-- `name` (`string`, required) - Unique name for the skin.
-
-#### Example
-
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
-
-```lua
-do
-  -- Skins let you swap the visual appearance of slots without changing
-  -- the rig structure. Define one skin per equipment set or costume.
-  local rig = lurek.spine.newSkeleton("hero")
-  local body = rig:addBone("body")
-  rig:addSlot("chest", body, "shirt.png")
-  rig:addSlot("legs", body, "pants.png")
-  rig:addSlot("helmet", body)
-
-  -- Register skins: "default" for starting gear, "iron" for upgrades
-  rig:addSkin("default")
-  rig:addSkin("iron")
-  rig:addSkin("gold")
-  lurek.log.info("3 skins registered on hero", "spine")
-end
-```
-
-### `LSkeleton:addSlot(name: string, bone_idx: integer, [attachment]: string) -> integer`
-
-Adds a slot attached to a specific bone, optionally assigning a default attachment name.
-
-**Parameters**
-
-- `name` (`string`, required) - Unique name for this slot.
-- `bone_idx` (`integer`, required) - Zero-based index of the bone this slot is attached to.
-- `attachment` (`string`, optional) - Optional default attachment name for this slot.
-
-**Returns**: `integer` - Zero-based index of the newly added slot.
-
-#### Example
-
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
-
-```lua
-do
-  -- Slots are named attachment points on bones. Each slot can hold one
-  -- active attachment (sprite name). Skins remap which attachment shows.
-  local sk = lurek.spine.newSkeleton("knight")
-  local torso = sk:addBone("torso", { x = 320, y = 300 })
-  local hand  = sk:addChildBone("hand", torso, { x = 30, y = 10 })
-
-  -- Chest slot with a default armor sprite
-  local chest_slot = sk:addSlot("chest", torso, "chainmail.png")
-
-  -- Weapon slot on the hand bone — no default attachment (empty hand)
-  local weapon_slot = sk:addSlot("weapon", hand)
-
-  lurek.log.info("slots: chest=" .. chest_slot .. " weapon=" .. weapon_slot, "spine")
-end
-```
-
-### `LSkeleton:blendAnimation(anim: LSkeletonAnimation, time: number, [blend_weight]: number)`
-
-Blends an animation pose onto the skeleton at a given time with a weight factor for smooth transitions.
-
-**Parameters**
-
-- `anim` (`LSkeletonAnimation`, required) - The animation to sample and blend from.
-- `time` (`number`, required) - The time position to sample within the animation.
-- `blend_weight` (`number`, optional) - Blend factor from 0.0 (no effect) to 1.0 (full). Defaults to 1.0.
-
-#### Example
-
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
-
-```lua
-do
-  -- blendAnimation samples an animation at a given time and mixes it
-  -- onto the current bone state. Weight 0.0 = no effect, 1.0 = full override.
-  -- Use this for layered animations: e.g. aim-layer on top of walk.
-  local rig = lurek.spine.newSkeleton("soldier")
-  local body = rig:addBone("body", { x = 320, y = 300 })
-  rig:addChildBone("arm", body, { x = 20, rotation = 0.0 })
-
-  -- Base walk animation (registered and playing)
-  local walk = lurek.spine.newSkeletonAnimation("walk", 0.8)
-  walk:addKeyframe(0, "y", 0.0, 0); walk:addKeyframe(0, "y", 0.4, -4)
-  walk:addKeyframe(0, "y", 0.8, 0)
-  rig:addAnimation(walk)
-  rig:playAnimation("walk", true)
-
-  -- Aim-up layer: rotates the arm bone upward (NOT registered — used for blending)
-  local aim_up = lurek.spine.newSkeletonAnimation("aim_up", 1.0)
-  aim_up:addKeyframe(1, "rotation", 0.0, -0.8, "linear")
-  aim_up:addKeyframe(1, "rotation", 1.0, -0.8, "linear")
-
-  -- Blend 60% aim on top of whatever walk is doing
-  rig:updateAnimation(0.0)
-  rig:blendAnimation(aim_up, 0.0, 0.6)
-  lurek.log.info("walk + 60% aim blend applied", "spine")
-end
-```
-
-### `LSkeleton:boneCount() -> integer`
-
-Returns the total number of bones in the skeleton.
-
-**Returns**: `integer` - Bone count.
-
-#### Example
-
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
-
-```lua
-do
-  -- Useful for validation: assert your rig has the expected bone count
-  -- after building it, or log it for debugging during development.
-  local rig = lurek.spine.newSkeleton("vehicle")
-  rig:addBone("chassis")
-  rig:addChildBone("wheel_fl", 0, { x = -20, y = 10 })
-  rig:addChildBone("wheel_fr", 0, { x =  20, y = 10 })
-  rig:addChildBone("wheel_rl", 0, { x = -20, y = -10 })
-  rig:addChildBone("wheel_rr", 0, { x =  20, y = -10 })
-
-  assert(rig:boneCount() == 5, "vehicle rig should have 5 bones")
-  lurek.log.info("vehicle bones: " .. rig:boneCount(), "spine")
-end
-```
-
-### `LSkeleton:drawToImage(w: integer, h: integer) -> LImageData`
-
-Renders the skeleton into an in-memory image of the given dimensions and returns it as LImageData userdata.
-
-**Parameters**
-
-- `w` (`integer`, required) - Width of the output image in pixels.
-- `h` (`integer`, required) - Height of the output image in pixels.
-
-**Returns**: `LImageData` - A new image data object containing the rendered skeleton.
-
-#### Example
-
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
-
-```lua
-do
-  -- drawToImage rasterizes the skeleton rig into a pixel buffer.
-  -- Use it for debug overlays, inventory previews, or portrait icons.
-  -- The result is an LImage that can be drawn with lurek.render.draw.
-  local rig = lurek.spine.newSkeleton("preview_char")
-  local root = rig:addBone("root", { x = 64, y = 100 })
-  rig:addChildBone("torso", root, { y = -30 })
-  rig:addChildBone("head", 1, { y = -20 })
-  rig:addChildBone("arm_l", 1, { x = -15, y = -5 })
-  rig:addChildBone("arm_r", 1, { x = 15, y = -5 })
-  rig:updateWorldTransforms()
-
-  -- Render at 128x128 for an inventory portrait
-  local portrait = rig:drawToImage(128, 128)
-  local tex = lurek.render.newImage(portrait)
-  function lurek.draw()
-    lurek.render.draw(tex, 16, 16)
-  end
-end
-```
-
-### `LSkeleton:findBone(name: string) -> integer`
-
-Searches for a bone by name and returns its zero-based index, or nil if not found.
-
-**Parameters**
-
-- `name` (`string`, required) - Name of the bone to find.
-
-**Returns**: `integer` - Zero-based bone index, or nil if no bone with that name exists.
-
-#### Example
-
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
-
-```lua
-do
-  -- Use findBone to look up bone indices by name at runtime.
-  -- This avoids hardcoding indices that may change as you edit the rig.
-  local rig = lurek.spine.newSkeleton("enemy")
-  rig:addBone("root")
-  rig:addChildBone("head", 0, { y = -50 })
-  rig:addChildBone("weapon_mount", 0, { x = 25 })
-
-  local head_idx = rig:findBone("head")
-  local mount_idx = rig:findBone("weapon_mount")
-  local missing = rig:findBone("nonexistent")
-
-  if head_idx then lurek.log.info("head bone index: " .. head_idx, "spine") end
-  if not missing then lurek.log.info("missing bone returns nil as expected", "spine") end
-end
-```
-
-### `LSkeleton:findSlot(name: string) -> integer`
-
-Searches for a slot by name and returns its zero-based index, or nil if not found.
-
-**Parameters**
-
-- `name` (`string`, required) - Name of the slot to find.
-
-**Returns**: `integer` - Zero-based slot index, or nil if no slot with that name exists.
-
-#### Example
-
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
-
-```lua
-do
-  -- Like findBone, but for slots. Useful for runtime attachment swaps
-  -- when you know the slot name but not the index.
-  local rig = lurek.spine.newSkeleton("player")
-  local torso = rig:addBone("torso")
-  rig:addSlot("armor_slot", torso, "leather.png")
-  rig:addSlot("cape_slot", torso)
-
-  local armor_idx = rig:findSlot("armor_slot")
-  if armor_idx then
-    lurek.log.info("armor slot found at index " .. armor_idx, "spine")
-  end
-end
-```
-
-### `LSkeleton:getAnimationTime() -> number`
-
-Returns the current playback time of the active animation in seconds.
-
-**Returns**: `number` - Current animation time position.
-
-#### Example
-
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
-
-```lua
-do
-  -- Use getAnimationTime to trigger gameplay events at specific frames.
-  -- Example: spawn a hitbox when the attack animation reaches frame 0.2s.
-  local rig = lurek.spine.newSkeleton("warrior")
-  rig:addBone("root")
-
-  local slash = lurek.spine.newSkeletonAnimation("slash", 0.5)
-  slash:addKeyframe(0, "rotation", 0.0, 0.0, "linear")
-  slash:addKeyframe(0, "rotation", 0.25, -1.2, "ease_out")
-  slash:addKeyframe(0, "rotation", 0.5, 0.0, "ease_in")
-  rig:addAnimation(slash)
-  rig:playAnimation("slash", false)
-
-  local hit_spawned = false
-  function lurek.process(dt)
-    rig:updateAnimation(dt)
-    -- Spawn hitbox at the swing's peak (0.2s mark)
-    if not hit_spawned and rig:getAnimationTime() >= 0.2 then
-      hit_spawned = true
-      lurek.log.info("SLASH HIT FRAME — spawn damage hitbox", "spine")
-    end
-  end
-end
-```
-
-### `LSkeleton:getBoneWorld(idx: integer) -> table`
-
-Returns the final world-space transform of a bone after hierarchy resolution.
-
-**Parameters**
-
-- `idx` (`integer`, required) - Zero-based bone index.
-
-**Returns**: `table` - Table with keys x, y, rotation, scale_x, scale_y — or nil if the index is invalid.
-
-#### Example
-
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
-
-```lua
-do
-  -- After updateWorldTransforms, getBoneWorld gives you the final
-  -- position, rotation, and scale of any bone in world space.
-  -- Common use: spawn projectiles at a weapon bone's world position.
-  local rig = lurek.spine.newSkeleton("shooter")
-  local body   = rig:addBone("body", { x = 320, y = 240 })
-  local arm    = rig:addChildBone("arm", body, { x = 20, y = -10, rotation = -0.2 })
-  local muzzle = rig:addChildBone("muzzle", arm, { x = 40 })
-
-  rig:updateWorldTransforms()
-
-  local muzzle_world = rig:getBoneWorld(2)
-  if muzzle_world then
-    -- Use muzzle_world.x, muzzle_world.y to spawn a bullet
-    lurek.log.info(string.format(
-      "muzzle at (%.1f, %.1f) rot=%.2f",
-      muzzle_world.x, muzzle_world.y, muzzle_world.rotation
-    ), "spine")
-  end
-end
-```
-
-### `LSkeleton:getSkin() -> string`
-
-Returns the name of the currently active skin, or nil if no skin is set.
-
-**Returns**: `string` - Active skin name or nil.
-
-#### Example
-
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
-
-```lua
-do
-  -- getSkin lets you check which costume is active, for example to
-  -- show the correct portrait in the UI or save to a profile.
-  local rig = lurek.spine.newSkeleton("hero")
-  rig:addSkin("default")
-  rig:addSkin("legendary")
-  rig:setSkin("legendary")
-
-  local current = rig:getSkin()
-  if current then
-    lurek.log.info("active skin: " .. current, "spine")
-  else
-    lurek.log.info("no skin active (using default attachments)", "spine")
-  end
-end
-```
-
-### `LSkeleton:playAnimation(name: string, [looping]: boolean) -> boolean`
-
-Starts playing a named animation on this skeleton. Optionally loops.
-
-**Parameters**
-
-- `name` (`string`, required) - Name of the animation to play (must have been added via addAnimation).
-- `looping` (`boolean`, optional) - Whether to loop the animation. Defaults to true.
-
-**Returns**: `boolean` - True if the animation was found and started, false otherwise.
-
-#### Example
-
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
-
-```lua
-do
-  -- playAnimation starts a registered clip. Pass true for looping
-  -- (idle, walk) or false for one-shot (attack, death).
-  -- Returns false if the animation name is not registered.
-  local rig = lurek.spine.newSkeleton("hero")
-  rig:addBone("root")
-
-  local walk = lurek.spine.newSkeletonAnimation("walk", 0.6)
-  walk:addKeyframe(0, "y", 0.0, 0); walk:addKeyframe(0, "y", 0.3, -3)
-  walk:addKeyframe(0, "y", 0.6, 0)
-  rig:addAnimation(walk)
-
-  -- Start the walk cycle looping
-  local ok = rig:playAnimation("walk", true)
-  if not ok then
-    lurek.log.warn("walk animation not found!", "spine")
-  end
-
-  -- Trying a non-existent animation returns false safely
-  local bad = rig:playAnimation("fly", true)
-  lurek.log.info("play 'fly' result: " .. tostring(bad), "spine")
-end
-```
-
-### `LSkeleton:setIKTarget(name: string, x: number, y: number) -> boolean`
-
-Sets the world-space target position for a named IK constraint. Call updateWorldTransforms after.
-
-**Parameters**
-
-- `name` (`string`, required) - Name of the IK constraint to update.
-- `x` (`number`, required) - Target world X coordinate.
-- `y` (`number`, required) - Target world Y coordinate.
-
-**Returns**: `boolean` - True if the constraint was found and updated, false otherwise.
-
-#### Example
-
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
-
-```lua
-do
-  -- After adding an IK constraint, call setIKTarget to tell it where
-  -- to reach. Then call updateWorldTransforms to solve the chain.
-  -- Example: hand follows mouse cursor or reaches for a pickup item.
-  local rig = lurek.spine.newSkeleton("grabber")
-  local shoulder = rig:addBone("shoulder", { x = 300, y = 200 })
-  local upper    = rig:addChildBone("upper_arm", shoulder, { y = 40 })
-  local hand     = rig:addChildBone("hand", upper, { y = 35 })
-
-  rig:addIKConstraint("grab_ik", {upper, hand}, true)
-
-  -- Move the hand toward a pickup item at (380, 260)
-  local found = rig:setIKTarget("grab_ik", 380, 260)
-  if found then
-    rig:updateWorldTransforms()
-    local hand_pos = rig:getBoneWorld(2)
-    if hand_pos then
-      lurek.log.info(string.format("hand reaching toward (380,260), now at (%.0f,%.0f)",
-        hand_pos.x, hand_pos.y), "spine")
-    end
-  end
-end
-```
-
-### `LSkeleton:setPosition(x: number, y: number)`
-
-Sets the root bone world position, shifting the entire skeleton.
-
-**Parameters**
-
-- `x` (`number`, required) - World X coordinate.
-- `y` (`number`, required) - World Y coordinate.
-
-#### Example
-
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
-
-```lua
-do
-  -- setPosition moves the skeleton's root to the given world coordinates.
-  -- Call this every frame to follow your game entity's position.
-  local rig = lurek.spine.newSkeleton("player")
-  rig:addBone("root")
-  rig:addChildBone("head", 0, { y = -40 })
-
-  -- Simulate a player walking right at 120 px/s
-  local px = 100
-  function lurek.process(dt)
-    px = px + 120 * dt
-    rig:setPosition(px, 300)
-    -- After moving, recompute transforms before drawing
-    rig:updateWorldTransforms()
-  end
-end
-```
-
-### `LSkeleton:setSkin(name: string) -> boolean`
-
-Activates a named skin, applying its slot-attachment mappings to the skeleton.
-
-**Parameters**
-
-- `name` (`string`, required) - Name of the skin to activate (must have been added via addSkin).
-
-**Returns**: `boolean` - True if the skin was found and activated, false otherwise.
-
-#### Example
-
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
-
-```lua
-do
-  -- setSkin switches the active costume. All slots immediately update
-  -- to show the attachments defined for that skin.
-  -- Returns false if the skin name was never registered.
-  local rig = lurek.spine.newSkeleton("hero")
-  local body = rig:addBone("body")
-  rig:addSlot("chest", body, "shirt.png")
-
-  rig:addSkin("default")
-  rig:addSkin("winter")
-  rig:setSkinMapping("winter", "chest", "fur_coat.png")
-
-  -- Player enters snow biome → switch to winter gear
-  local success = rig:setSkin("winter")
-  if success then
-    lurek.log.info("switched to winter skin", "spine")
-  end
-
-  -- Trying a non-existent skin is safe (returns false)
-  local bad = rig:setSkin("summer")
-  lurek.log.info("set unknown skin: " .. tostring(bad), "spine")
-end
-```
-
-### `LSkeleton:setSkinMapping(skin: string, slot: string, attachment: string)`
-
-Maps a slot to a specific attachment name within a skin. When that skin is active, the slot shows this attachment.
-
-**Parameters**
-
-- `skin` (`string`, required) - Name of the skin to add the mapping to.
-- `slot` (`string`, required) - Name of the slot to remap.
-- `attachment` (`string`, required) - Attachment name to display in that slot when the skin is active.
-
-#### Example
-
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
-
-```lua
-do
-  -- setSkinMapping tells the engine: "when skin X is active, slot Y
-  -- should display attachment Z". Build your equipment system this way.
-  local rig = lurek.spine.newSkeleton("hero")
-  local body = rig:addBone("body")
-  rig:addSlot("chest", body, "shirt.png")
-  rig:addSlot("weapon", body, "fists.png")
-
-  rig:addSkin("default")
-  rig:addSkin("warrior")
-  rig:addSkin("mage")
-
-  -- Warrior skin: plate armor + sword
-  rig:setSkinMapping("warrior", "chest", "plate_armor.png")
-  rig:setSkinMapping("warrior", "weapon", "broadsword.png")
-
-  -- Mage skin: robe + staff
-  rig:setSkinMapping("mage", "chest", "mystic_robe.png")
-  rig:setSkinMapping("mage", "weapon", "oak_staff.png")
-
-  lurek.log.info("skin mappings configured for warrior and mage", "spine")
-end
-```
-
-### `LSkeleton:slotCount() -> integer`
-
-Returns the total number of slots in the skeleton.
-
-**Returns**: `integer` - Slot count.
-
-#### Example
-
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
-
-```lua
-do
-  -- Track how many visual attachment points the rig exposes.
-  -- Each slot can display a different sprite depending on the active skin.
-  local rig = lurek.spine.newSkeleton("mech")
-  local body = rig:addBone("body")
-  rig:addSlot("hull", body, "hull_base.png")
-  rig:addSlot("left_arm", body, "arm_default.png")
-  rig:addSlot("right_arm", body, "arm_default.png")
-  rig:addSlot("cockpit", body, "cockpit_glass.png")
-
-  lurek.log.info("mech has " .. rig:slotCount() .. " attachment slots", "spine")
-end
-```
-
-### `LSkeleton:stopAnimation()`
-
-Stops the currently playing animation and resets playback state.
-
-#### Example
-
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
-
-```lua
-do
-  -- stopAnimation halts playback immediately. The skeleton keeps its
-  -- current pose (bones stay where they were when stopped).
-  -- Use this when interrupting animations (e.g. stun, death).
-  local rig = lurek.spine.newSkeleton("enemy")
-  rig:addBone("root")
-
-  local patrol = lurek.spine.newSkeletonAnimation("patrol", 2.0)
-  patrol:addKeyframe(0, "x", 0.0, 0); patrol:addKeyframe(0, "x", 2.0, 100)
-  rig:addAnimation(patrol)
-  rig:playAnimation("patrol", true)
-
-  -- Simulate: enemy gets stunned, stop the patrol animation
-  local stunned = true
-  if stunned then
-    rig:stopAnimation()
-    lurek.log.info("patrol stopped — enemy is stunned", "spine")
-  end
-end
-```
-
-### `LSkeleton:type() -> string`
-
-Returns the type name of this userdata object.
-
-**Returns**: `string` - Always "LSkeleton".
-
-#### Example
-
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
-
-```lua
-do
-  local obj = lurek.spine.newSkeleton('assets/spine/hero.json')
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LSkeleton"
-end
-```
-
-### `LSkeleton:typeOf(name: string) -> boolean`
-
-Checks whether this object is of the given type name. Supports "LSkeleton" and "Object".
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to check.
-
-**Returns**: `boolean` - True if this object matches the given type.
-
-#### Example
-
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
-
-```lua
-do
-  local obj = lurek.spine.newSkeleton('assets/spine/hero.json')
-  lurek.log.debug("typeOf LSkeleton: " .. tostring(obj:typeOf("LSkeleton")), "example") -- true
-end
-```
-
-### `LSkeleton:updateAnimation(dt: number)`
-
-Advances the current animation by a delta time, applying bone transforms to the skeleton.
-
-**Parameters**
-
-- `dt` (`number`, required) - Time step in seconds (e.g. from lurek.timer.getDelta()).
-
-#### Example
-
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
-
-```lua
-do
-  -- Call updateAnimation every frame in lurek.process to advance playback.
-  -- It samples keyframes at the current time and applies values to bones.
-  local rig = lurek.spine.newSkeleton("bobber")
-  rig:addBone("root", { x = 320, y = 240 })
-
-  local bob = lurek.spine.newSkeletonAnimation("bob", 1.0)
-  bob:addKeyframe(0, "y", 0.0, 0, "ease_in_out")
-  bob:addKeyframe(0, "y", 0.5, 8, "ease_in_out")
-  bob:addKeyframe(0, "y", 1.0, 0, "ease_in_out")
-
-  rig:addAnimation(bob)
-  rig:playAnimation("bob", true)
-
-  function lurek.process(dt)
-    -- Advance time and apply bone changes each frame
-    rig:updateAnimation(dt)
-    rig:updateWorldTransforms()
-  end
-end
-```
-
-### `LSkeleton:updateWorldTransforms()`
-
-Recomputes world transforms for all bones in hierarchy order. Call after modifying bone locals or IK targets.
-
-#### Example
-
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
-
-```lua
-do
-  -- You must call updateWorldTransforms after any change to bone
-  -- positions, rotations, IK targets, or skeleton position.
-  -- It propagates parent transforms down the tree.
-  local rig = lurek.spine.newSkeleton("crane")
-  local base = rig:addBone("base", { x = 200, y = 400 })
-  local arm  = rig:addChildBone("arm", base, { y = -80, rotation = 0.3 })
-  rig:addChildBone("hook", arm, { y = -60 })
-
-  -- Move the whole crane and resolve the hierarchy
-  rig:setPosition(300, 400)
-  rig:updateWorldTransforms()
-
-  -- Now getBoneWorld will return correct world positions
-  local hook = rig:getBoneWorld(2)
-  if hook then
-    lurek.log.info("hook world pos: " .. hook.x .. ", " .. hook.y, "spine")
-  end
-end
-```
-
-### `LSkeletonAnimation`
+### LSkeletonAnimation
 
 Lua-facing animation object containing bone timelines, keyframes, events, and easing curves.
+
+**Lua API Definition**
+
+```lua
+--- Lua-facing animation object containing bone timelines, keyframes, events, and easing curves.
+---@class LSkeletonAnimation
+LSkeletonAnimation = {}
+```
 
 #### Example
 
@@ -1150,15 +309,1126 @@ do
 end
 ```
 
-### `LSkeletonAnimation:addEventKey(time: number, name: string, [value]: number)`
+
+[⬆ back to top](#table-of-contents)
+
+## 🔹 Module Methods
+
+### LSkeleton:addAnimation
+
+`LSkeleton:addAnimation(anim: LSkeletonAnimation)`
+
+Registers a SkeletonAnimation object with this skeleton so it can be played by name.
+
+**Parameters**
+
+- `anim` (`LSkeletonAnimation`, required): The animation userdata to register. Consumed by this call.
+
+**Lua API Stub**
+
+```lua
+--- Registers a SkeletonAnimation object with this skeleton so it can be played by name.
+---@param anim LSkeletonAnimation The animation userdata to register. Consumed by this call.
+function LSkeleton:addAnimation(anim) end
+```
+
+#### Example
+
+Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+
+```lua
+do
+  -- You must register animations with addAnimation before calling
+  -- playAnimation. This transfers ownership of the animation to the skeleton.
+  -- After addAnimation, the original variable should not be reused.
+  local rig = lurek.spine.newSkeleton("guard")
+  rig:addBone("root")
+
+  local idle = lurek.spine.newSkeletonAnimation("idle", 2.0)
+  idle:addKeyframe(0, "y", 0.0, 0, "ease_in_out")
+  idle:addKeyframe(0, "y", 1.0, 3, "ease_in_out")
+  idle:addKeyframe(0, "y", 2.0, 0, "ease_in_out")
+
+  local alert = lurek.spine.newSkeletonAnimation("alert", 0.3)
+  alert:addKeyframe(0, "y", 0.0, 0, "linear")
+  alert:addKeyframe(0, "y", 0.15, -5, "ease_out")
+  alert:addKeyframe(0, "y", 0.3, 0, "linear")
+
+  -- Register both; now "idle" and "alert" are playable by name
+  rig:addAnimation(idle)
+  rig:addAnimation(alert)
+  lurek.log.info("guard has idle + alert animations registered", "spine")
+end
+```
+
+### LSkeleton:addBone
+
+`LSkeleton:addBone(name: string, [opts]: table) -> integer`
+
+Adds a root-level bone to the skeleton with optional transform properties.
+
+**Parameters**
+
+- `name` (`string`, required): Unique name for this bone.
+- `opts` (`table`, optional): Optional table with keys: x, y, rotation, scale_x, scale_y.
+
+**Returns**: `integer` - Zero-based index of the newly added bone.
+
+**Lua API Stub**
+
+```lua
+--- Adds a root-level bone to the skeleton with optional transform properties.
+---@param name string Unique name for this bone.
+---@param opts? table Optional table with keys: x, y, rotation, scale_x, scale_y.
+---@return number Zero-based index of the newly added bone.
+function LSkeleton:addBone(name, opts) end
+```
+
+#### Example
+
+Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+
+```lua
+do
+  -- addBone creates a root-level bone (no parent). Use it for the rig
+  -- origin or for independent attachment points like particle emitters.
+  -- The opts table sets the local transform: x, y, rotation, scale_x, scale_y.
+  local sk = lurek.spine.newSkeleton("turret")
+
+  -- Turret base sits at world center with no rotation
+  local base = sk:addBone("base", { x = 400, y = 300 })
+
+  -- A second root bone for an independent muzzle-flash emitter
+  local flash = sk:addBone("muzzle_flash", { x = 450, y = 280, rotation = 0.0 })
+
+  lurek.log.info("base=" .. base .. " flash=" .. flash, "spine")
+end
+```
+
+### LSkeleton:addChildBone
+
+`LSkeleton:addChildBone(name: string, parent_idx: integer, [opts]: table) -> integer`
+
+Adds a bone as a child of an existing bone, inheriting its parent's world transform.
+
+**Parameters**
+
+- `name` (`string`, required): Unique name for this bone.
+- `parent_idx` (`integer`, required): Zero-based index of the parent bone.
+- `opts` (`table`, optional): Optional table with keys: x, y, rotation, scale_x, scale_y (local offsets from parent).
+
+**Returns**: `integer` - Zero-based index of the newly added child bone.
+
+**Lua API Stub**
+
+```lua
+--- Adds a bone as a child of an existing bone, inheriting its parent's world transform.
+---@param name string Unique name for this bone.
+---@param parent_idx number Zero-based index of the parent bone.
+---@param opts? table Optional table with keys: x, y, rotation, scale_x, scale_y (local offsets from parent).
+---@return number Zero-based index of the newly added child bone.
+function LSkeleton:addChildBone(name, parent_idx, opts) end
+```
+
+#### Example
+
+Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+
+```lua
+do
+  -- Child bones form the skeleton hierarchy. Their local x/y/rotation
+  -- are offsets relative to the parent. When the parent moves, children follow.
+  local sk = lurek.spine.newSkeleton("arm_rig")
+  local shoulder = sk:addBone("shoulder", { x = 200, y = 200 })
+
+  -- Upper arm extends 40px down from shoulder
+  local upper = sk:addChildBone("upper_arm", shoulder, { y = 40 })
+
+  -- Forearm extends 35px further; rotation will rotate around the elbow
+  local forearm = sk:addChildBone("forearm", upper, { y = 35 })
+
+  -- Hand at the end of the chain
+  sk:addChildBone("hand", forearm, { y = 25 })
+
+  lurek.log.info("arm chain: " .. sk:boneCount() .. " bones", "spine")
+end
+```
+
+### LSkeleton:addIKConstraint
+
+`LSkeleton:addIKConstraint(name: string, chain: table, [bend_positive]: boolean) -> integer`
+
+Adds an inverse-kinematics constraint that controls a chain of bones to reach a target position.
+
+**Parameters**
+
+- `name` (`string`, required): Unique name for this IK constraint (used with setIKTarget).
+- `chain` (`table`, required): Array of bone indices forming the IK chain from root to tip.
+- `bend_positive` (`boolean`, optional): Whether the joint bends in the positive direction. Defaults to true.
+
+**Returns**: `integer` - Index of the newly added constraint.
+
+**Lua API Stub**
+
+```lua
+--- Adds an inverse-kinematics constraint that controls a chain of bones to reach a target position.
+---@param name string Unique name for this IK constraint (used with setIKTarget).
+---@param chain table Array of bone indices forming the IK chain from root to tip.
+---@param bend_positive? boolean Whether the joint bends in the positive direction. Defaults to true.
+---@return number Index of the newly added constraint.
+function LSkeleton:addIKConstraint(name, chain, bend_positive) end
+```
+
+#### Example
+
+Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+
+```lua
+do
+  -- IK constraints make a chain of bones reach toward a target point.
+  -- Useful for arms reaching for objects, legs planting on terrain, etc.
+  -- The chain array lists bone indices from root to tip of the IK chain.
+  local rig = lurek.spine.newSkeleton("robot")
+  local shoulder = rig:addBone("shoulder", { x = 300, y = 200 })
+  local upper    = rig:addChildBone("upper_arm", shoulder, { y = 40 })
+  local forearm  = rig:addChildBone("forearm", upper, { y = 35 })
+
+  -- Create a 2-bone IK chain (upper_arm → forearm) with positive bend
+  local ik_idx = rig:addIKConstraint("reach_ik", {upper, forearm}, true)
+  lurek.log.info("IK constraint index: " .. ik_idx, "spine")
+end
+```
+
+### LSkeleton:addSkin
+
+`LSkeleton:addSkin(name: string)`
+
+Registers a new named skin on this skeleton. Skins remap slot attachments for visual variants.
+
+**Parameters**
+
+- `name` (`string`, required): Unique name for the skin.
+
+**Lua API Stub**
+
+```lua
+--- Registers a new named skin on this skeleton. Skins remap slot attachments for visual variants.
+---@param name string Unique name for the skin.
+function LSkeleton:addSkin(name) end
+```
+
+#### Example
+
+Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+
+```lua
+do
+  -- Skins let you swap the visual appearance of slots without changing
+  -- the rig structure. Define one skin per equipment set or costume.
+  local rig = lurek.spine.newSkeleton("hero")
+  local body = rig:addBone("body")
+  rig:addSlot("chest", body, "shirt.png")
+  rig:addSlot("legs", body, "pants.png")
+  rig:addSlot("helmet", body)
+
+  -- Register skins: "default" for starting gear, "iron" for upgrades
+  rig:addSkin("default")
+  rig:addSkin("iron")
+  rig:addSkin("gold")
+  lurek.log.info("3 skins registered on hero", "spine")
+end
+```
+
+### LSkeleton:addSlot
+
+`LSkeleton:addSlot(name: string, bone_idx: integer, [attachment]: string) -> integer`
+
+Adds a slot attached to a specific bone, optionally assigning a default attachment name.
+
+**Parameters**
+
+- `name` (`string`, required): Unique name for this slot.
+- `bone_idx` (`integer`, required): Zero-based index of the bone this slot is attached to.
+- `attachment` (`string`, optional): Optional default attachment name for this slot.
+
+**Returns**: `integer` - Zero-based index of the newly added slot.
+
+**Lua API Stub**
+
+```lua
+--- Adds a slot attached to a specific bone, optionally assigning a default attachment name.
+---@param name string Unique name for this slot.
+---@param bone_idx number Zero-based index of the bone this slot is attached to.
+---@param attachment? string Optional default attachment name for this slot.
+---@return number Zero-based index of the newly added slot.
+function LSkeleton:addSlot(name, bone_idx, attachment) end
+```
+
+#### Example
+
+Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+
+```lua
+do
+  -- Slots are named attachment points on bones. Each slot can hold one
+  -- active attachment (sprite name). Skins remap which attachment shows.
+  local sk = lurek.spine.newSkeleton("knight")
+  local torso = sk:addBone("torso", { x = 320, y = 300 })
+  local hand  = sk:addChildBone("hand", torso, { x = 30, y = 10 })
+
+  -- Chest slot with a default armor sprite
+  local chest_slot = sk:addSlot("chest", torso, "chainmail.png")
+
+  -- Weapon slot on the hand bone — no default attachment (empty hand)
+  local weapon_slot = sk:addSlot("weapon", hand)
+
+  lurek.log.info("slots: chest=" .. chest_slot .. " weapon=" .. weapon_slot, "spine")
+end
+```
+
+### LSkeleton:blendAnimation
+
+`LSkeleton:blendAnimation(anim: LSkeletonAnimation, time: number, [blend_weight]: number)`
+
+Blends an animation pose onto the skeleton at a given time with a weight factor for smooth transitions.
+
+**Parameters**
+
+- `anim` (`LSkeletonAnimation`, required): The animation to sample and blend from.
+- `time` (`number`, required): The time position to sample within the animation.
+- `blend_weight` (`number`, optional): Blend factor from 0.0 (no effect) to 1.0 (full). Defaults to 1.0.
+
+**Lua API Stub**
+
+```lua
+--- Blends an animation pose onto the skeleton at a given time with a weight factor for smooth transitions.
+---@param anim LSkeletonAnimation The animation to sample and blend from.
+---@param time number The time position to sample within the animation.
+---@param blend_weight? number Blend factor from 0.0 (no effect) to 1.0 (full). Defaults to 1.0.
+function LSkeleton:blendAnimation(anim, time, blend_weight) end
+```
+
+#### Example
+
+Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+
+```lua
+do
+  -- blendAnimation samples an animation at a given time and mixes it
+  -- onto the current bone state. Weight 0.0 = no effect, 1.0 = full override.
+  -- Use this for layered animations: e.g. aim-layer on top of walk.
+  local rig = lurek.spine.newSkeleton("soldier")
+  local body = rig:addBone("body", { x = 320, y = 300 })
+  rig:addChildBone("arm", body, { x = 20, rotation = 0.0 })
+
+  -- Base walk animation (registered and playing)
+  local walk = lurek.spine.newSkeletonAnimation("walk", 0.8)
+  walk:addKeyframe(0, "y", 0.0, 0); walk:addKeyframe(0, "y", 0.4, -4)
+  walk:addKeyframe(0, "y", 0.8, 0)
+  rig:addAnimation(walk)
+  rig:playAnimation("walk", true)
+
+  -- Aim-up layer: rotates the arm bone upward (NOT registered — used for blending)
+  local aim_up = lurek.spine.newSkeletonAnimation("aim_up", 1.0)
+  aim_up:addKeyframe(1, "rotation", 0.0, -0.8, "linear")
+  aim_up:addKeyframe(1, "rotation", 1.0, -0.8, "linear")
+
+  -- Blend 60% aim on top of whatever walk is doing
+  rig:updateAnimation(0.0)
+  rig:blendAnimation(aim_up, 0.0, 0.6)
+  lurek.log.info("walk + 60% aim blend applied", "spine")
+end
+```
+
+### LSkeleton:boneCount
+
+`LSkeleton:boneCount() -> integer`
+
+Returns the total number of bones in the skeleton.
+
+**Returns**: `integer` - Bone count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the total number of bones in the skeleton.
+---@return number Bone count.
+function LSkeleton:boneCount() end
+```
+
+#### Example
+
+Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+
+```lua
+do
+  -- Useful for validation: assert your rig has the expected bone count
+  -- after building it, or log it for debugging during development.
+  local rig = lurek.spine.newSkeleton("vehicle")
+  rig:addBone("chassis")
+  rig:addChildBone("wheel_fl", 0, { x = -20, y = 10 })
+  rig:addChildBone("wheel_fr", 0, { x =  20, y = 10 })
+  rig:addChildBone("wheel_rl", 0, { x = -20, y = -10 })
+  rig:addChildBone("wheel_rr", 0, { x =  20, y = -10 })
+
+  assert(rig:boneCount() == 5, "vehicle rig should have 5 bones")
+  lurek.log.info("vehicle bones: " .. rig:boneCount(), "spine")
+end
+```
+
+### LSkeleton:drawToImage
+
+`LSkeleton:drawToImage(w: integer, h: integer) -> LImageData`
+
+Renders the skeleton into an in-memory image of the given dimensions and returns it as LImageData userdata.
+
+**Parameters**
+
+- `w` (`integer`, required): Width of the output image in pixels.
+- `h` (`integer`, required): Height of the output image in pixels.
+
+**Returns**: `LImageData` - A new image data object containing the rendered skeleton.
+
+**Lua API Stub**
+
+```lua
+--- Renders the skeleton into an in-memory image of the given dimensions and returns it as LImageData userdata.
+---@param w number Width of the output image in pixels.
+---@param h number Height of the output image in pixels.
+---@return LImageData A new image data object containing the rendered skeleton.
+function LSkeleton:drawToImage(w, h) end
+```
+
+#### Example
+
+Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+
+```lua
+do
+  -- drawToImage rasterizes the skeleton rig into a pixel buffer.
+  -- Use it for debug overlays, inventory previews, or portrait icons.
+  -- The result is an LImage that can be drawn with lurek.render.draw.
+  local rig = lurek.spine.newSkeleton("preview_char")
+  local root = rig:addBone("root", { x = 64, y = 100 })
+  rig:addChildBone("torso", root, { y = -30 })
+  rig:addChildBone("head", 1, { y = -20 })
+  rig:addChildBone("arm_l", 1, { x = -15, y = -5 })
+  rig:addChildBone("arm_r", 1, { x = 15, y = -5 })
+  rig:updateWorldTransforms()
+
+  -- Render at 128x128 for an inventory portrait
+  local portrait = rig:drawToImage(128, 128)
+  local tex = lurek.render.newImage(portrait)
+  function lurek.draw()
+    lurek.render.draw(tex, 16, 16)
+  end
+end
+```
+
+### LSkeleton:findBone
+
+`LSkeleton:findBone(name: string) -> integer`
+
+Searches for a bone by name and returns its zero-based index, or nil if not found.
+
+**Parameters**
+
+- `name` (`string`, required): Name of the bone to find.
+
+**Returns**: `integer` - Zero-based bone index, or nil if no bone with that name exists.
+
+**Lua API Stub**
+
+```lua
+--- Searches for a bone by name and returns its zero-based index, or nil if not found.
+---@param name string Name of the bone to find.
+---@return number Zero-based bone index, or nil if no bone with that name exists.
+function LSkeleton:findBone(name) end
+```
+
+#### Example
+
+Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+
+```lua
+do
+  -- Use findBone to look up bone indices by name at runtime.
+  -- This avoids hardcoding indices that may change as you edit the rig.
+  local rig = lurek.spine.newSkeleton("enemy")
+  rig:addBone("root")
+  rig:addChildBone("head", 0, { y = -50 })
+  rig:addChildBone("weapon_mount", 0, { x = 25 })
+
+  local head_idx = rig:findBone("head")
+  local mount_idx = rig:findBone("weapon_mount")
+  local missing = rig:findBone("nonexistent")
+
+  if head_idx then lurek.log.info("head bone index: " .. head_idx, "spine") end
+  if not missing then lurek.log.info("missing bone returns nil as expected", "spine") end
+end
+```
+
+### LSkeleton:findSlot
+
+`LSkeleton:findSlot(name: string) -> integer`
+
+Searches for a slot by name and returns its zero-based index, or nil if not found.
+
+**Parameters**
+
+- `name` (`string`, required): Name of the slot to find.
+
+**Returns**: `integer` - Zero-based slot index, or nil if no slot with that name exists.
+
+**Lua API Stub**
+
+```lua
+--- Searches for a slot by name and returns its zero-based index, or nil if not found.
+---@param name string Name of the slot to find.
+---@return number Zero-based slot index, or nil if no slot with that name exists.
+function LSkeleton:findSlot(name) end
+```
+
+#### Example
+
+Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+
+```lua
+do
+  -- Like findBone, but for slots. Useful for runtime attachment swaps
+  -- when you know the slot name but not the index.
+  local rig = lurek.spine.newSkeleton("player")
+  local torso = rig:addBone("torso")
+  rig:addSlot("armor_slot", torso, "leather.png")
+  rig:addSlot("cape_slot", torso)
+
+  local armor_idx = rig:findSlot("armor_slot")
+  if armor_idx then
+    lurek.log.info("armor slot found at index " .. armor_idx, "spine")
+  end
+end
+```
+
+### LSkeleton:getAnimationTime
+
+`LSkeleton:getAnimationTime() -> number`
+
+Returns the current playback time of the active animation in seconds.
+
+**Returns**: `number` - Current animation time position.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current playback time of the active animation in seconds.
+---@return number Current animation time position.
+function LSkeleton:getAnimationTime() end
+```
+
+#### Example
+
+Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+
+```lua
+do
+  -- Use getAnimationTime to trigger gameplay events at specific frames.
+  -- Example: spawn a hitbox when the attack animation reaches frame 0.2s.
+  local rig = lurek.spine.newSkeleton("warrior")
+  rig:addBone("root")
+
+  local slash = lurek.spine.newSkeletonAnimation("slash", 0.5)
+  slash:addKeyframe(0, "rotation", 0.0, 0.0, "linear")
+  slash:addKeyframe(0, "rotation", 0.25, -1.2, "ease_out")
+  slash:addKeyframe(0, "rotation", 0.5, 0.0, "ease_in")
+  rig:addAnimation(slash)
+  rig:playAnimation("slash", false)
+
+  local hit_spawned = false
+  function lurek.process(dt)
+    rig:updateAnimation(dt)
+    -- Spawn hitbox at the swing's peak (0.2s mark)
+    if not hit_spawned and rig:getAnimationTime() >= 0.2 then
+      hit_spawned = true
+      lurek.log.info("SLASH HIT FRAME — spawn damage hitbox", "spine")
+    end
+  end
+end
+```
+
+### LSkeleton:getBoneWorld
+
+`LSkeleton:getBoneWorld(idx: integer) -> table`
+
+Returns the final world-space transform of a bone after hierarchy resolution.
+
+**Parameters**
+
+- `idx` (`integer`, required): Zero-based bone index.
+
+**Returns**: `table` - Table with keys x, y, rotation, scale_x, scale_y — or nil if the index is invalid.
+
+**Lua API Stub**
+
+```lua
+--- Returns the final world-space transform of a bone after hierarchy resolution.
+---@param idx number Zero-based bone index.
+---@return LSkeletonGetBoneWorldResult Table with keys x, y, rotation, scale_x, scale_y — or nil if the index is invalid.
+function LSkeleton:getBoneWorld(idx) end
+```
+
+#### Example
+
+Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+
+```lua
+do
+  -- After updateWorldTransforms, getBoneWorld gives you the final
+  -- position, rotation, and scale of any bone in world space.
+  -- Common use: spawn projectiles at a weapon bone's world position.
+  local rig = lurek.spine.newSkeleton("shooter")
+  local body   = rig:addBone("body", { x = 320, y = 240 })
+  local arm    = rig:addChildBone("arm", body, { x = 20, y = -10, rotation = -0.2 })
+  local muzzle = rig:addChildBone("muzzle", arm, { x = 40 })
+
+  rig:updateWorldTransforms()
+
+  local muzzle_world = rig:getBoneWorld(2)
+  if muzzle_world then
+    -- Use muzzle_world.x, muzzle_world.y to spawn a bullet
+    lurek.log.info(string.format(
+      "muzzle at (%.1f, %.1f) rot=%.2f",
+      muzzle_world.x, muzzle_world.y, muzzle_world.rotation
+    ), "spine")
+  end
+end
+```
+
+### LSkeleton:getSkin
+
+`LSkeleton:getSkin() -> string`
+
+Returns the name of the currently active skin, or nil if no skin is set.
+
+**Returns**: `string` - Active skin name or nil.
+
+**Lua API Stub**
+
+```lua
+--- Returns the name of the currently active skin, or nil if no skin is set.
+---@return string Active skin name or nil.
+function LSkeleton:getSkin() end
+```
+
+#### Example
+
+Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+
+```lua
+do
+  -- getSkin lets you check which costume is active, for example to
+  -- show the correct portrait in the UI or save to a profile.
+  local rig = lurek.spine.newSkeleton("hero")
+  rig:addSkin("default")
+  rig:addSkin("legendary")
+  rig:setSkin("legendary")
+
+  local current = rig:getSkin()
+  if current then
+    lurek.log.info("active skin: " .. current, "spine")
+  else
+    lurek.log.info("no skin active (using default attachments)", "spine")
+  end
+end
+```
+
+### LSkeleton:playAnimation
+
+`LSkeleton:playAnimation(name: string, [looping]: boolean) -> boolean`
+
+Starts playing a named animation on this skeleton. Optionally loops.
+
+**Parameters**
+
+- `name` (`string`, required): Name of the animation to play (must have been added via addAnimation).
+- `looping` (`boolean`, optional): Whether to loop the animation. Defaults to true.
+
+**Returns**: `boolean` - True if the animation was found and started, false otherwise.
+
+**Lua API Stub**
+
+```lua
+--- Starts playing a named animation on this skeleton. Optionally loops.
+---@param name string Name of the animation to play (must have been added via addAnimation).
+---@param looping? boolean Whether to loop the animation. Defaults to true.
+---@return boolean True if the animation was found and started, false otherwise.
+function LSkeleton:playAnimation(name, looping) end
+```
+
+#### Example
+
+Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+
+```lua
+do
+  -- playAnimation starts a registered clip. Pass true for looping
+  -- (idle, walk) or false for one-shot (attack, death).
+  -- Returns false if the animation name is not registered.
+  local rig = lurek.spine.newSkeleton("hero")
+  rig:addBone("root")
+
+  local walk = lurek.spine.newSkeletonAnimation("walk", 0.6)
+  walk:addKeyframe(0, "y", 0.0, 0); walk:addKeyframe(0, "y", 0.3, -3)
+  walk:addKeyframe(0, "y", 0.6, 0)
+  rig:addAnimation(walk)
+
+  -- Start the walk cycle looping
+  local ok = rig:playAnimation("walk", true)
+  if not ok then
+    lurek.log.warn("walk animation not found!", "spine")
+  end
+
+  -- Trying a non-existent animation returns false safely
+  local bad = rig:playAnimation("fly", true)
+  lurek.log.info("play 'fly' result: " .. tostring(bad), "spine")
+end
+```
+
+### LSkeleton:setIKTarget
+
+`LSkeleton:setIKTarget(name: string, x: number, y: number) -> boolean`
+
+Sets the world-space target position for a named IK constraint. Call updateWorldTransforms after.
+
+**Parameters**
+
+- `name` (`string`, required): Name of the IK constraint to update.
+- `x` (`number`, required): Target world X coordinate.
+- `y` (`number`, required): Target world Y coordinate.
+
+**Returns**: `boolean` - True if the constraint was found and updated, false otherwise.
+
+**Lua API Stub**
+
+```lua
+--- Sets the world-space target position for a named IK constraint. Call updateWorldTransforms after.
+---@param name string Name of the IK constraint to update.
+---@param x number Target world X coordinate.
+---@param y number Target world Y coordinate.
+---@return boolean True if the constraint was found and updated, false otherwise.
+function LSkeleton:setIKTarget(name, x, y) end
+```
+
+#### Example
+
+Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+
+```lua
+do
+  -- After adding an IK constraint, call setIKTarget to tell it where
+  -- to reach. Then call updateWorldTransforms to solve the chain.
+  -- Example: hand follows mouse cursor or reaches for a pickup item.
+  local rig = lurek.spine.newSkeleton("grabber")
+  local shoulder = rig:addBone("shoulder", { x = 300, y = 200 })
+  local upper    = rig:addChildBone("upper_arm", shoulder, { y = 40 })
+  local hand     = rig:addChildBone("hand", upper, { y = 35 })
+
+  rig:addIKConstraint("grab_ik", {upper, hand}, true)
+
+  -- Move the hand toward a pickup item at (380, 260)
+  local found = rig:setIKTarget("grab_ik", 380, 260)
+  if found then
+    rig:updateWorldTransforms()
+    local hand_pos = rig:getBoneWorld(2)
+    if hand_pos then
+      lurek.log.info(string.format("hand reaching toward (380,260), now at (%.0f,%.0f)",
+        hand_pos.x, hand_pos.y), "spine")
+    end
+  end
+end
+```
+
+### LSkeleton:setPosition
+
+`LSkeleton:setPosition(x: number, y: number)`
+
+Sets the root bone world position, shifting the entire skeleton.
+
+**Parameters**
+
+- `x` (`number`, required): World X coordinate.
+- `y` (`number`, required): World Y coordinate.
+
+**Lua API Stub**
+
+```lua
+--- Sets the root bone world position, shifting the entire skeleton.
+---@param x number World X coordinate.
+---@param y number World Y coordinate.
+function LSkeleton:setPosition(x, y) end
+```
+
+#### Example
+
+Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+
+```lua
+do
+  -- setPosition moves the skeleton's root to the given world coordinates.
+  -- Call this every frame to follow your game entity's position.
+  local rig = lurek.spine.newSkeleton("player")
+  rig:addBone("root")
+  rig:addChildBone("head", 0, { y = -40 })
+
+  -- Simulate a player walking right at 120 px/s
+  local px = 100
+  function lurek.process(dt)
+    px = px + 120 * dt
+    rig:setPosition(px, 300)
+    -- After moving, recompute transforms before drawing
+    rig:updateWorldTransforms()
+  end
+end
+```
+
+### LSkeleton:setSkin
+
+`LSkeleton:setSkin(name: string) -> boolean`
+
+Activates a named skin, applying its slot-attachment mappings to the skeleton.
+
+**Parameters**
+
+- `name` (`string`, required): Name of the skin to activate (must have been added via addSkin).
+
+**Returns**: `boolean` - True if the skin was found and activated, false otherwise.
+
+**Lua API Stub**
+
+```lua
+--- Activates a named skin, applying its slot-attachment mappings to the skeleton.
+---@param name string Name of the skin to activate (must have been added via addSkin).
+---@return boolean True if the skin was found and activated, false otherwise.
+function LSkeleton:setSkin(name) end
+```
+
+#### Example
+
+Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+
+```lua
+do
+  -- setSkin switches the active costume. All slots immediately update
+  -- to show the attachments defined for that skin.
+  -- Returns false if the skin name was never registered.
+  local rig = lurek.spine.newSkeleton("hero")
+  local body = rig:addBone("body")
+  rig:addSlot("chest", body, "shirt.png")
+
+  rig:addSkin("default")
+  rig:addSkin("winter")
+  rig:setSkinMapping("winter", "chest", "fur_coat.png")
+
+  -- Player enters snow biome → switch to winter gear
+  local success = rig:setSkin("winter")
+  if success then
+    lurek.log.info("switched to winter skin", "spine")
+  end
+
+  -- Trying a non-existent skin is safe (returns false)
+  local bad = rig:setSkin("summer")
+  lurek.log.info("set unknown skin: " .. tostring(bad), "spine")
+end
+```
+
+### LSkeleton:setSkinMapping
+
+`LSkeleton:setSkinMapping(skin: string, slot: string, attachment: string)`
+
+Maps a slot to a specific attachment name within a skin. When that skin is active, the slot shows this attachment.
+
+**Parameters**
+
+- `skin` (`string`, required): Name of the skin to add the mapping to.
+- `slot` (`string`, required): Name of the slot to remap.
+- `attachment` (`string`, required): Attachment name to display in that slot when the skin is active.
+
+**Lua API Stub**
+
+```lua
+--- Maps a slot to a specific attachment name within a skin. When that skin is active, the slot shows this attachment.
+---@param skin string Name of the skin to add the mapping to.
+---@param slot string Name of the slot to remap.
+---@param attachment string Attachment name to display in that slot when the skin is active.
+function LSkeleton:setSkinMapping(skin, slot, attachment) end
+```
+
+#### Example
+
+Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+
+```lua
+do
+  -- setSkinMapping tells the engine: "when skin X is active, slot Y
+  -- should display attachment Z". Build your equipment system this way.
+  local rig = lurek.spine.newSkeleton("hero")
+  local body = rig:addBone("body")
+  rig:addSlot("chest", body, "shirt.png")
+  rig:addSlot("weapon", body, "fists.png")
+
+  rig:addSkin("default")
+  rig:addSkin("warrior")
+  rig:addSkin("mage")
+
+  -- Warrior skin: plate armor + sword
+  rig:setSkinMapping("warrior", "chest", "plate_armor.png")
+  rig:setSkinMapping("warrior", "weapon", "broadsword.png")
+
+  -- Mage skin: robe + staff
+  rig:setSkinMapping("mage", "chest", "mystic_robe.png")
+  rig:setSkinMapping("mage", "weapon", "oak_staff.png")
+
+  lurek.log.info("skin mappings configured for warrior and mage", "spine")
+end
+```
+
+### LSkeleton:slotCount
+
+`LSkeleton:slotCount() -> integer`
+
+Returns the total number of slots in the skeleton.
+
+**Returns**: `integer` - Slot count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the total number of slots in the skeleton.
+---@return number Slot count.
+function LSkeleton:slotCount() end
+```
+
+#### Example
+
+Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+
+```lua
+do
+  -- Track how many visual attachment points the rig exposes.
+  -- Each slot can display a different sprite depending on the active skin.
+  local rig = lurek.spine.newSkeleton("mech")
+  local body = rig:addBone("body")
+  rig:addSlot("hull", body, "hull_base.png")
+  rig:addSlot("left_arm", body, "arm_default.png")
+  rig:addSlot("right_arm", body, "arm_default.png")
+  rig:addSlot("cockpit", body, "cockpit_glass.png")
+
+  lurek.log.info("mech has " .. rig:slotCount() .. " attachment slots", "spine")
+end
+```
+
+### LSkeleton:stopAnimation
+
+`LSkeleton:stopAnimation()`
+
+Stops the currently playing animation and resets playback state.
+
+**Lua API Stub**
+
+```lua
+--- Stops the currently playing animation and resets playback state.
+function LSkeleton:stopAnimation() end
+```
+
+#### Example
+
+Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+
+```lua
+do
+  -- stopAnimation halts playback immediately. The skeleton keeps its
+  -- current pose (bones stay where they were when stopped).
+  -- Use this when interrupting animations (e.g. stun, death).
+  local rig = lurek.spine.newSkeleton("enemy")
+  rig:addBone("root")
+
+  local patrol = lurek.spine.newSkeletonAnimation("patrol", 2.0)
+  patrol:addKeyframe(0, "x", 0.0, 0); patrol:addKeyframe(0, "x", 2.0, 100)
+  rig:addAnimation(patrol)
+  rig:playAnimation("patrol", true)
+
+  -- Simulate: enemy gets stunned, stop the patrol animation
+  local stunned = true
+  if stunned then
+    rig:stopAnimation()
+    lurek.log.info("patrol stopped — enemy is stunned", "spine")
+  end
+end
+```
+
+### LSkeleton:type
+
+`LSkeleton:type() -> string`
+
+Returns the type name of this userdata object.
+
+**Returns**: `string` - Always "LSkeleton".
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name of this userdata object.
+---@return string Always "LSkeleton".
+function LSkeleton:type() end
+```
+
+#### Example
+
+Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+
+```lua
+do
+  local obj = lurek.spine.newSkeleton('assets/spine/hero.json')
+  lurek.log.debug("type: " .. obj:type(), "example") -- "LSkeleton"
+end
+```
+
+### LSkeleton:typeOf
+
+`LSkeleton:typeOf(name: string) -> boolean`
+
+Checks whether this object is of the given type name. Supports "LSkeleton" and "Object".
+
+**Parameters**
+
+- `name` (`string`, required): Type name to check.
+
+**Returns**: `boolean` - True if this object matches the given type.
+
+**Lua API Stub**
+
+```lua
+--- Checks whether this object is of the given type name. Supports "LSkeleton" and "Object".
+---@param name string Type name to check.
+---@return boolean True if this object matches the given type.
+function LSkeleton:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+
+```lua
+do
+  local obj = lurek.spine.newSkeleton('assets/spine/hero.json')
+  lurek.log.debug("typeOf LSkeleton: " .. tostring(obj:typeOf("LSkeleton")), "example") -- true
+end
+```
+
+### LSkeleton:updateAnimation
+
+`LSkeleton:updateAnimation(dt: number)`
+
+Advances the current animation by a delta time, applying bone transforms to the skeleton.
+
+**Parameters**
+
+- `dt` (`number`, required): Time step in seconds (e.g. from lurek.timer.getDelta()).
+
+**Lua API Stub**
+
+```lua
+--- Advances the current animation by a delta time, applying bone transforms to the skeleton.
+---@param dt number Time step in seconds (e.g. from lurek.timer.getDelta()).
+function LSkeleton:updateAnimation(dt) end
+```
+
+#### Example
+
+Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+
+```lua
+do
+  -- Call updateAnimation every frame in lurek.process to advance playback.
+  -- It samples keyframes at the current time and applies values to bones.
+  local rig = lurek.spine.newSkeleton("bobber")
+  rig:addBone("root", { x = 320, y = 240 })
+
+  local bob = lurek.spine.newSkeletonAnimation("bob", 1.0)
+  bob:addKeyframe(0, "y", 0.0, 0, "ease_in_out")
+  bob:addKeyframe(0, "y", 0.5, 8, "ease_in_out")
+  bob:addKeyframe(0, "y", 1.0, 0, "ease_in_out")
+
+  rig:addAnimation(bob)
+  rig:playAnimation("bob", true)
+
+  function lurek.process(dt)
+    -- Advance time and apply bone changes each frame
+    rig:updateAnimation(dt)
+    rig:updateWorldTransforms()
+  end
+end
+```
+
+### LSkeleton:updateWorldTransforms
+
+`LSkeleton:updateWorldTransforms()`
+
+Recomputes world transforms for all bones in hierarchy order. Call after modifying bone locals or IK targets.
+
+**Lua API Stub**
+
+```lua
+--- Recomputes world transforms for all bones in hierarchy order. Call after modifying bone locals or IK targets.
+function LSkeleton:updateWorldTransforms() end
+```
+
+#### Example
+
+Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+
+```lua
+do
+  -- You must call updateWorldTransforms after any change to bone
+  -- positions, rotations, IK targets, or skeleton position.
+  -- It propagates parent transforms down the tree.
+  local rig = lurek.spine.newSkeleton("crane")
+  local base = rig:addBone("base", { x = 200, y = 400 })
+  local arm  = rig:addChildBone("arm", base, { y = -80, rotation = 0.3 })
+  rig:addChildBone("hook", arm, { y = -60 })
+
+  -- Move the whole crane and resolve the hierarchy
+  rig:setPosition(300, 400)
+  rig:updateWorldTransforms()
+
+  -- Now getBoneWorld will return correct world positions
+  local hook = rig:getBoneWorld(2)
+  if hook then
+    lurek.log.info("hook world pos: " .. hook.x .. ", " .. hook.y, "spine")
+  end
+end
+```
+
+### LSkeletonAnimation:addEventKey
+
+`LSkeletonAnimation:addEventKey(time: number, name: string, [value]: number)`
 
 Inserts an event trigger at a specific time within the animation timeline.
 
 **Parameters**
 
-- `time` (`number`, required) - Time position in seconds when the event fires.
-- `name` (`string`, required) - Name of the event (used to identify it when querying).
-- `value` (`number`, optional) - Optional numeric payload for the event. Defaults to 0.
+- `time` (`number`, required): Time position in seconds when the event fires.
+- `name` (`string`, required): Name of the event (used to identify it when querying).
+- `value` (`number`, optional): Optional numeric payload for the event. Defaults to 0.
+
+**Lua API Stub**
+
+```lua
+--- Inserts an event trigger at a specific time within the animation timeline.
+---@param time number Time position in seconds when the event fires.
+---@param name string Name of the event (used to identify it when querying).
+---@param value? number Optional numeric payload for the event. Defaults to 0.
+function LSkeletonAnimation:addEventKey(time, name, value) end
+```
 
 #### Example
 
@@ -1188,17 +1458,31 @@ do
 end
 ```
 
-### `LSkeletonAnimation:addKeyframe(bone_idx: integer, property: string, time: number, value: number, [easing]: string)`
+### LSkeletonAnimation:addKeyframe
+
+`LSkeletonAnimation:addKeyframe(bone_idx: integer, property: string, time: number, value: number, [easing]: string)`
 
 Adds a keyframe to a bone's property timeline at a specific time with a value and easing curve.
 
 **Parameters**
 
-- `bone_idx` (`integer`, required) - Zero-based index of the target bone.
-- `property` (`string`, required) - Bone property: "x", "y", "rotation", "scale_x", or "scale_y".
-- `time` (`number`, required) - Time position in seconds for this keyframe.
-- `value` (`number`, required) - Value of the property at this keyframe.
-- `easing` (`string`, optional) - Easing type: "linear" (default), "ease_in", "ease_out", "ease_in_out", or "step".
+- `bone_idx` (`integer`, required): Zero-based index of the target bone.
+- `property` (`string`, required): Bone property: "x", "y", "rotation", "scale_x", or "scale_y".
+- `time` (`number`, required): Time position in seconds for this keyframe.
+- `value` (`number`, required): Value of the property at this keyframe.
+- `easing` (`string`, optional): Easing type: "linear" (default), "ease_in", "ease_out", "ease_in_out", or "step".
+
+**Lua API Stub**
+
+```lua
+--- Adds a keyframe to a bone's property timeline at a specific time with a value and easing curve.
+---@param bone_idx number Zero-based index of the target bone.
+---@param property string Bone property: "x", "y", "rotation", "scale_x", or "scale_y".
+---@param time number Time position in seconds for this keyframe.
+---@param value number Value of the property at this keyframe.
+---@param easing? string Easing type: "linear" (default), "ease_in", "ease_out", "ease_in_out", or "step".
+function LSkeletonAnimation:addKeyframe(bone_idx, property, time, value, easing) end
+```
 
 #### Example
 
@@ -1226,11 +1510,21 @@ do
 end
 ```
 
-### `LSkeletonAnimation:getDuration() -> number`
+### LSkeletonAnimation:getDuration
+
+`LSkeletonAnimation:getDuration() -> number`
 
 Returns the total duration of this animation in seconds.
 
 **Returns**: `number` - Duration in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Returns the total duration of this animation in seconds.
+---@return number Duration in seconds.
+function LSkeletonAnimation:getDuration() end
+```
 
 #### Example
 
@@ -1251,16 +1545,28 @@ do
 end
 ```
 
-### `LSkeletonAnimation:getEvents(from: number, to: number) -> table`
+### LSkeletonAnimation:getEvents
+
+`LSkeletonAnimation:getEvents(from: number, to: number) -> table`
 
 Collects all events that fire within a time range. Useful for triggering sound effects or gameplay actions.
 
 **Parameters**
 
-- `from` (`number`, required) - Start time in seconds (inclusive).
-- `to` (`number`, required) - End time in seconds (exclusive).
+- `from` (`number`, required): Start time in seconds (inclusive).
+- `to` (`number`, required): End time in seconds (exclusive).
 
 **Returns**: `table` - Array of tables, each with "name" (string) and "value" (number) fields.
+
+**Lua API Stub**
+
+```lua
+--- Collects all events that fire within a time range. Useful for triggering sound effects or gameplay actions.
+---@param from number Start time in seconds (inclusive).
+---@param to number End time in seconds (exclusive).
+---@return LSkeletonAnimationGetEventsResult Array of tables, each with "name" (string) and "value" (number) fields.
+function LSkeletonAnimation:getEvents(from, to) end
+```
 
 #### Example
 
@@ -1294,11 +1600,6 @@ do
     if now >= clip:getDuration() then prev_time = 0 end
   end
 end
-
--- =============================================================================
--- SkeletonAnimation: sampling and manipulation
--- =============================================================================
-
 --@api-stub: LSkeletonAnimation:poseAt
 -- Samples all timelines at a given time and returns the pose as a table
 do
@@ -1315,13 +1616,28 @@ do
   -- Sample at the midpoint
   local pose = clip:poseAt(0.5)
   for _, entry in ipairs(pose) do
+    -- Each entry: { bone_idx = number, property = string, value = number }
+    lurek.log.debug(string.format(
+      "bone %d %s = %.2f", entry.bone_idx, entry.property, entry.value
+    ), "spine")
+  end
 ```
 
-### `LSkeletonAnimation:getTimelineCount() -> integer`
+### LSkeletonAnimation:getTimelineCount
+
+`LSkeletonAnimation:getTimelineCount() -> integer`
 
 Returns the number of bone-property timelines in this animation.
 
 **Returns**: `integer` - Timeline count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of bone-property timelines in this animation.
+---@return number Timeline count.
+function LSkeletonAnimation:getTimelineCount() end
+```
 
 #### Example
 
@@ -1350,15 +1666,26 @@ do
 end
 ```
 
-### `LSkeletonAnimation:poseAt(time: number) -> table`
+### LSkeletonAnimation:poseAt
+
+`LSkeletonAnimation:poseAt(time: number) -> table`
 
 Samples all timelines at a given time and returns the computed pose as an array of bone-property-value entries.
 
 **Parameters**
 
-- `time` (`number`, required) - Time position in seconds to sample.
+- `time` (`number`, required): Time position in seconds to sample.
 
 **Returns**: `table` - Array of tables, each with "bone_idx" (integer), "property" (string), and "value" (number).
+
+**Lua API Stub**
+
+```lua
+--- Samples all timelines at a given time and returns the computed pose as an array of bone-property-value entries.
+---@param time number Time position in seconds to sample.
+---@return LSkeletonAnimationPoseAtResult Array of tables, each with "bone_idx" (integer), "property" (string), and "value" (number).
+function LSkeletonAnimation:poseAt(time) end
+```
 
 #### Example
 
@@ -1387,11 +1714,21 @@ do
 end
 ```
 
-### `LSkeletonAnimation:reverse() -> LSkeletonAnimation`
+### LSkeletonAnimation:reverse
+
+`LSkeletonAnimation:reverse() -> LSkeletonAnimation`
 
 Creates a new animation that plays this animation's keyframes in reverse order.
 
 **Returns**: `LSkeletonAnimation` - A new reversed copy of this animation.
+
+**Lua API Stub**
+
+```lua
+--- Creates a new animation that plays this animation's keyframes in reverse order.
+---@return LSkeletonAnimation A new reversed copy of this animation.
+function LSkeletonAnimation:reverse() end
+```
 
 #### Example
 
@@ -1419,11 +1756,21 @@ do
 end
 ```
 
-### `LSkeletonAnimation:type() -> string`
+### LSkeletonAnimation:type
+
+`LSkeletonAnimation:type() -> string`
 
 Returns the type name of this userdata object.
 
 **Returns**: `string` - Always "LSkeletonAnimation".
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name of this userdata object.
+---@return string Always "LSkeletonAnimation".
+function LSkeletonAnimation:type() end
+```
 
 #### Example
 
@@ -1437,15 +1784,26 @@ do
 end
 ```
 
-### `LSkeletonAnimation:typeOf(name: string) -> boolean`
+### LSkeletonAnimation:typeOf
+
+`LSkeletonAnimation:typeOf(name: string) -> boolean`
 
 Checks whether this object is of the given type name. Supports "LSkeletonAnimation" and "Object".
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to check.
+- `name` (`string`, required): Type name to check.
 
 **Returns**: `boolean` - True if this object matches the given type.
+
+**Lua API Stub**
+
+```lua
+--- Checks whether this object is of the given type name. Supports "LSkeletonAnimation" and "Object".
+---@param name string Type name to check.
+---@return boolean True if this object matches the given type.
+function LSkeletonAnimation:typeOf(name) end
+```
 
 #### Example
 
@@ -1463,21 +1821,27 @@ end
 ```
 
 
-## Examples
+[⬆ back to top](#table-of-contents)
+
+## 💡 Examples
 
 - [spine.lua](../blob/main/content/examples/spine.lua) - Spine skeletal animation
 
-## Reference Games
+[⬆ back to top](#table-of-contents)
+
+## 🎮 Reference Games
 
 No direct references were found in `content/games/**/main.lua`.
 
-## Related Modules
+[⬆ back to top](#table-of-contents)
 
-- Previous: [[serial|Module-serial]]
-- Next: [[sprite|Module-sprite]]
-- [[ai|Module-ai]] - Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU.
-- [[animation|Module-animation]] - Sprite animation: source-rect changes over time. Imports only math; headless-testable.
-- [[automation|Module-automation]] - Automated input simulation for headless tests, QA replay, recorded sessions.
-- [[ecs|Module-ecs]] - Entity-Component-System: identity / data / behaviour separation for runtime composition.
-- [[i18n|Module-i18n]] - Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*).
-- [[minimap|Module-minimap]] - Grid-based minimap data model: fog of war, tracked objects, pings, viewport overlay.
+## 🔗 Related Modules
+
+- Previous: [serial](Module-serial)
+- Next: [sprite](Module-sprite)
+- [ai](Module-ai) - Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU.
+- [animation](Module-animation) - Sprite animation: source-rect changes over time. Imports only math; headless-testable.
+- [automation](Module-automation) - Automated input simulation for headless tests, QA replay, recorded sessions.
+- [ecs](Module-ecs) - Entity-Component-System: identity / data / behaviour separation for runtime composition.
+- [i18n](Module-i18n) - Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*).
+- [minimap](Module-minimap) - Grid-based minimap data model: fog of war, tracked objects, pings, viewport overlay.

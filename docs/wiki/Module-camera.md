@@ -4,186 +4,138 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
-- [Purpose](#purpose)
-- [Summary](#summary)
-- [Minimal Module Example](#minimal-module-example)
-- [Key Types](#key-types)
-- [API Overview](#api-overview)
-- [Module Functions](#module-functions)
-  - [lurek.camera.new([vw]: number, [vh]: number) -> LCamera](#lurekcameranewvw-number-vh-number-lcamera)
-  - [lurek.camera.newCamera([vw]: number, [vh]: number) -> LCamera](#lurekcameranewcameravw-number-vh-number-lcamera)
-  - [lurek.camera.newRig() -> LCameraRig](#lurekcameranewrig-lcamerarig)
-- [Types and Methods](#types-and-methods)
+- [🎯 Purpose](#purpose)
+- [📋 Summary](#summary)
+- [🧩 Key Types](#key-types)
+- [📖 API Overview](#api-overview)
+- [⚙️ Module Functions](#module-functions)
+  - [lurek.camera.new](#lurekcameranew)
+  - [lurek.camera.newCamera](#lurekcameranewcamera)
+  - [lurek.camera.newRig](#lurekcameranewrig)
+- [🔷 Module Types](#module-types)
   - [LCamera](#lcamera)
-  - [LCamera:apply()](#lcameraapply)
-  - [LCamera:attach()](#lcameraattach)
-  - [LCamera:clearParallaxFactors()](#lcameraclearparallaxfactors)
-  - [LCamera:clearTarget()](#lcameracleartarget)
-  - [LCamera:detach()](#lcameradetach)
-  - [LCamera:followPath(points: table, duration: number)](#lcamerafollowpathpoints-table-duration-number)
-  - [LCamera:getBounds() -> boolean, number, number, number, number](#lcameragetbounds-boolean-number-number-number-number)
-  - [LCamera:getDeadZone() -> boolean, number, number](#lcameragetdeadzone-boolean-number-number)
-  - [LCamera:getEffectiveZoom() -> number](#lcamerageteffectivezoom-number)
-  - [LCamera:getEffectOffset() -> number, number](#lcamerageteffectoffset-number-number)
-  - [LCamera:getFollowEasing() -> string](#lcameragetfolloweasing-string)
-  - [LCamera:getFollowSmooth() -> number](#lcameragetfollowsmooth-number)
-  - [LCamera:getLookAhead() -> number](#lcameragetlookahead-number)
-  - [LCamera:getParallaxFactor(layer: string) -> number](#lcameragetparallaxfactorlayer-string-number)
-  - [LCamera:getPosition() -> number, number](#lcameragetposition-number-number)
-  - [LCamera:getRenderOffset() -> number, number](#lcameragetrenderoffset-number-number)
-  - [LCamera:getRotation() -> number](#lcameragetrotation-number)
-  - [LCamera:getRotationConstraints() -> boolean, number, boolean, number](#lcameragetrotationconstraints-boolean-number-boolean-number)
-  - [LCamera:getRotationDamping() -> number](#lcameragetrotationdamping-number)
-  - [LCamera:getShakeOffset() -> number, number](#lcameragetshakeoffset-number-number)
-  - [LCamera:getTarget() -> boolean, number, number](#lcameragettarget-boolean-number-number)
-  - [LCamera:getViewport() -> number, number, number, number](#lcameragetviewport-number-number-number-number)
-  - [LCamera:getVisibleArea() -> number, number, number, number](#lcameragetvisiblearea-number-number-number-number)
-  - [LCamera:getZoom() -> number](#lcameragetzoom-number)
-  - [LCamera:getZoomConstraints() -> boolean, number, boolean, number](#lcameragetzoomconstraints-boolean-number-boolean-number)
-  - [LCamera:getZoomDamping() -> number](#lcameragetzoomdamping-number)
-  - [LCamera:hasBounds() -> boolean](#lcamerahasbounds-boolean)
-  - [LCamera:isBreathing() -> boolean](#lcameraisbreathing-boolean)
-  - [LCamera:isSway() -> boolean](#lcameraissway-boolean)
-  - [LCamera:lookAt(x: number, y: number)](#lcameralookatx-number-y-number)
-  - [LCamera:move(dx: number, dy: number)](#lcameramovedx-number-dy-number)
-  - [LCamera:onWindowResize(window_w: number, window_h: number)](#lcameraonwindowresizewindoww-number-windowh-number)
-  - [LCamera:onWindowResizeScaled(game_w: number, game_h: number, window_w: number, window_h: number, mode: string)](#lcameraonwindowresizescaledgamew-number-gameh-number-windoww-number-windowh-number-mode-string)
-  - [LCamera:pathProgress() -> number](#lcamerapathprogress-number)
-  - [LCamera:presetAggressiveFollow()](#lcamerapresetaggressivefollow)
-  - [LCamera:presetBalancedFollow()](#lcamerapresetbalancedfollow)
-  - [LCamera:presetCinematicFollow()](#lcamerapresetcinematicfollow)
-  - [LCamera:presetTightFollow()](#lcamerapresettightfollow)
-  - [LCamera:removeBounds()](#lcameraremovebounds)
-  - [LCamera:reset()](#lcamerareset)
-  - [LCamera:setBounds(x: number, y: number, w: number, h: number)](#lcamerasetboundsx-number-y-number-w-number-h-number)
-  - [LCamera:setDeadZone(w: number, h: number)](#lcamerasetdeadzonew-number-h-number)
-  - [LCamera:setFollowEasing(easing: string)](#lcamerasetfolloweasingeasing-string)
-  - [LCamera:setFollowSmooth(speed: number)](#lcamerasetfollowsmoothspeed-number)
-  - [LCamera:setLookAhead(mul: number)](#lcamerasetlookaheadmul-number)
-  - [LCamera:setParallaxFactor(layer: string, factor: number)](#lcamerasetparallaxfactorlayer-string-factor-number)
-  - [LCamera:setPosition(x: number, y: number)](#lcamerasetpositionx-number-y-number)
-  - [LCamera:setRotation(r: number)](#lcamerasetrotationr-number)
-  - [LCamera:setRotationConstraints([min_rot]: number, [max_rot]: number)](#lcamerasetrotationconstraintsminrot-number-maxrot-number)
-  - [LCamera:setRotationDamping(damping: number)](#lcamerasetrotationdampingdamping-number)
-  - [LCamera:setTarget(x: number, y: number)](#lcamerasettargetx-number-y-number)
-  - [LCamera:setViewport(x: number, y: number, w: number, h: number)](#lcamerasetviewportx-number-y-number-w-number-h-number)
-  - [LCamera:setZoom(zoom: number)](#lcamerasetzoomzoom-number)
-  - [LCamera:setZoomConstraints([min_zoom]: number, [max_zoom]: number)](#lcamerasetzoomconstraintsminzoom-number-maxzoom-number)
-  - [LCamera:setZoomDamping(damping: number)](#lcamerasetzoomdampingdamping-number)
-  - [LCamera:shake(intensity: number, duration: number)](#lcamerashakeintensity-number-duration-number)
-  - [LCamera:startBreathing([amplitude]: number, [rate]: number)](#lcamerastartbreathingamplitude-number-rate-number)
-  - [LCamera:startSway(amplitude_x: number, amplitude_y: number, frequency: number, [decay]: number)](#lcamerastartswayamplitudex-number-amplitudey-number-frequency-number-decay-number)
-  - [LCamera:stopBreathing()](#lcamerastopbreathing)
-  - [LCamera:stopPath()](#lcamerastoppath)
-  - [LCamera:stopSway()](#lcamerastopsway)
-  - [LCamera:stopZoom()](#lcamerastopzoom)
-  - [LCamera:toScreen(wx: number, wy: number) -> number, number](#lcameratoscreenwx-number-wy-number-number-number)
-  - [LCamera:toWorld(sx: number, sy: number) -> number, number](#lcameratoworldsx-number-sy-number-number-number)
-  - [LCamera:type() -> string](#lcameratype-string)
-  - [LCamera:typeOf(name: string) -> boolean](#lcameratypeofname-string-boolean)
-  - [LCamera:update(dt: number)](#lcameraupdatedt-number)
-  - [LCamera:updatePath(dt: number) -> boolean](#lcameraupdatepathdt-number-boolean)
-  - [LCamera:updateZoom(dt: number) -> boolean](#lcameraupdatezoomdt-number-boolean)
-  - [LCamera:zoomPulse(amplitude: number, duration: number)](#lcamerazoompulseamplitude-number-duration-number)
-  - [LCamera:zoomTo(target_zoom: number, duration: number, [easing]: string)](#lcamerazoomtotargetzoom-number-duration-number-easing-string)
   - [LCameraRig](#lcamerarig)
-  - [LCameraRig:apply(name: string) -> boolean](#lcamerarigapplyname-string-boolean)
-  - [LCameraRig:getViewport(name: string) -> boolean, number, number, number, number](#lcamerariggetviewportname-string-boolean-number-number-number-number)
-  - [LCameraRig:has(name: string) -> boolean](#lcamerarighasname-string-boolean)
-  - [LCameraRig:minimap(window_w: number, window_h: number, [ratio]: number)](#lcamerarigminimapwindoww-number-windowh-number-ratio-number)
-  - [LCameraRig:names() -> string[]](#lcamerarignames-string)
-  - [LCameraRig:pictureInPicture(window_w: number, window_h: number, [pip_w]: number, [pip_h]: number)](#lcamerarigpictureinpicturewindoww-number-windowh-number-pipw-number-piph-number)
-  - [LCameraRig:remove(name: string) -> boolean](#lcamerarigremovename-string-boolean)
-  - [LCameraRig:setPosition(name: string, x: number, y: number)](#lcamerarigsetpositionname-string-x-number-y-number)
-  - [LCameraRig:setTarget(name: string, x: number, y: number)](#lcamerarigsettargetname-string-x-number-y-number)
-  - [LCameraRig:setZoom(name: string, zoom: number)](#lcamerarigsetzoomname-string-zoom-number)
-  - [LCameraRig:splitScreen(window_w: number, window_h: number)](#lcamerarigsplitscreenwindoww-number-windowh-number)
-  - [LCameraRig:type() -> string](#lcamerarigtype-string)
-  - [LCameraRig:typeOf(name: string) -> boolean](#lcamerarigtypeofname-string-boolean)
-  - [LCameraRig:updateAll(dt: number)](#lcamerarigupdatealldt-number)
-- [Examples](#examples)
-- [Reference Games](#reference-games)
-- [Related Modules](#related-modules)
+- [🔹 Module Methods](#module-methods)
+  - [LCamera:apply](#lcameraapply)
+  - [LCamera:attach](#lcameraattach)
+  - [LCamera:clearParallaxFactors](#lcameraclearparallaxfactors)
+  - [LCamera:clearTarget](#lcameracleartarget)
+  - [LCamera:detach](#lcameradetach)
+  - [LCamera:followPath](#lcamerafollowpath)
+  - [LCamera:getBounds](#lcameragetbounds)
+  - [LCamera:getDeadZone](#lcameragetdeadzone)
+  - [LCamera:getEffectiveZoom](#lcamerageteffectivezoom)
+  - [LCamera:getEffectOffset](#lcamerageteffectoffset)
+  - [LCamera:getFollowEasing](#lcameragetfolloweasing)
+  - [LCamera:getFollowSmooth](#lcameragetfollowsmooth)
+  - [LCamera:getLookAhead](#lcameragetlookahead)
+  - [LCamera:getParallaxFactor](#lcameragetparallaxfactor)
+  - [LCamera:getPosition](#lcameragetposition)
+  - [LCamera:getRenderOffset](#lcameragetrenderoffset)
+  - [LCamera:getRotation](#lcameragetrotation)
+  - [LCamera:getRotationConstraints](#lcameragetrotationconstraints)
+  - [LCamera:getRotationDamping](#lcameragetrotationdamping)
+  - [LCamera:getShakeOffset](#lcameragetshakeoffset)
+  - [LCamera:getTarget](#lcameragettarget)
+  - [LCamera:getViewport](#lcameragetviewport)
+  - [LCamera:getVisibleArea](#lcameragetvisiblearea)
+  - [LCamera:getZoom](#lcameragetzoom)
+  - [LCamera:getZoomConstraints](#lcameragetzoomconstraints)
+  - [LCamera:getZoomDamping](#lcameragetzoomdamping)
+  - [LCamera:hasBounds](#lcamerahasbounds)
+  - [LCamera:isBreathing](#lcameraisbreathing)
+  - [LCamera:isSway](#lcameraissway)
+  - [LCamera:lookAt](#lcameralookat)
+  - [LCamera:move](#lcameramove)
+  - [LCamera:onWindowResize](#lcameraonwindowresize)
+  - [LCamera:onWindowResizeScaled](#lcameraonwindowresizescaled)
+  - [LCamera:pathProgress](#lcamerapathprogress)
+  - [LCamera:presetAggressiveFollow](#lcamerapresetaggressivefollow)
+  - [LCamera:presetBalancedFollow](#lcamerapresetbalancedfollow)
+  - [LCamera:presetCinematicFollow](#lcamerapresetcinematicfollow)
+  - [LCamera:presetTightFollow](#lcamerapresettightfollow)
+  - [LCamera:removeBounds](#lcameraremovebounds)
+  - [LCamera:reset](#lcamerareset)
+  - [LCamera:setBounds](#lcamerasetbounds)
+  - [LCamera:setDeadZone](#lcamerasetdeadzone)
+  - [LCamera:setFollowEasing](#lcamerasetfolloweasing)
+  - [LCamera:setFollowSmooth](#lcamerasetfollowsmooth)
+  - [LCamera:setLookAhead](#lcamerasetlookahead)
+  - [LCamera:setParallaxFactor](#lcamerasetparallaxfactor)
+  - [LCamera:setPosition](#lcamerasetposition)
+  - [LCamera:setRotation](#lcamerasetrotation)
+  - [LCamera:setRotationConstraints](#lcamerasetrotationconstraints)
+  - [LCamera:setRotationDamping](#lcamerasetrotationdamping)
+  - [LCamera:setTarget](#lcamerasettarget)
+  - [LCamera:setViewport](#lcamerasetviewport)
+  - [LCamera:setZoom](#lcamerasetzoom)
+  - [LCamera:setZoomConstraints](#lcamerasetzoomconstraints)
+  - [LCamera:setZoomDamping](#lcamerasetzoomdamping)
+  - [LCamera:shake](#lcamerashake)
+  - [LCamera:startBreathing](#lcamerastartbreathing)
+  - [LCamera:startSway](#lcamerastartsway)
+  - [LCamera:stopBreathing](#lcamerastopbreathing)
+  - [LCamera:stopPath](#lcamerastoppath)
+  - [LCamera:stopSway](#lcamerastopsway)
+  - [LCamera:stopZoom](#lcamerastopzoom)
+  - [LCamera:toScreen](#lcameratoscreen)
+  - [LCamera:toWorld](#lcameratoworld)
+  - [LCamera:type](#lcameratype)
+  - [LCamera:typeOf](#lcameratypeof)
+  - [LCamera:update](#lcameraupdate)
+  - [LCamera:updatePath](#lcameraupdatepath)
+  - [LCamera:updateZoom](#lcameraupdatezoom)
+  - [LCamera:zoomPulse](#lcamerazoompulse)
+  - [LCamera:zoomTo](#lcamerazoomto)
+  - [LCameraRig:apply](#lcamerarigapply)
+  - [LCameraRig:getViewport](#lcamerariggetviewport)
+  - [LCameraRig:has](#lcamerarighas)
+  - [LCameraRig:minimap](#lcamerarigminimap)
+  - [LCameraRig:names](#lcamerarignames)
+  - [LCameraRig:pictureInPicture](#lcamerarigpictureinpicture)
+  - [LCameraRig:remove](#lcamerarigremove)
+  - [LCameraRig:setPosition](#lcamerarigsetposition)
+  - [LCameraRig:setTarget](#lcamerarigsettarget)
+  - [LCameraRig:setZoom](#lcamerarigsetzoom)
+  - [LCameraRig:splitScreen](#lcamerarigsplitscreen)
+  - [LCameraRig:type](#lcamerarigtype)
+  - [LCameraRig:typeOf](#lcamerarigtypeof)
+  - [LCameraRig:updateAll](#lcamerarigupdateall)
+- [💡 Examples](#examples)
+- [🎮 Reference Games](#reference-games)
+- [🔗 Related Modules](#related-modules)
 
 This page is generated from the current module specs, examples, and Lua API data.
 
 **Module group:** Platform Services
 **Namespace:** `lurek.camera`
 
-## Purpose
+## 🎯 Purpose
 
 2D camera and viewport types. Pure data; no GPU resources.
 
-## Summary
+[⬆ back to top](#table-of-contents)
+
+## 📋 Summary
 
 2D camera and viewport system providing position, zoom, rotation, bounds clamping, and smooth follow behaviors. `Camera2D` is the core data type holding world-space transform and projection parameters. `Viewport` maps camera space to screen pixels with configurable scaling modes (integer, letterbox, stretch). `CameraRig2D` adds multi-target tracking with look-ahead, dead zones, and weighted blend between targets.
 
 Camera effects include shake (decaying sinusoidal displacement), sway (continuous pendulum motion), breathing (subtle rhythmic zoom oscillation), and zoom pulse (snap-zoom with elastic return). `CameraPath` enables spline-driven camera movement along waypoints with easing. All camera types are pure data — no GPU resources. Screen-to-world and world-to-screen coordinate conversion functions are provided. Exposed as `lurek.camera.*`.
 
-## Minimal Module Example
+[⬆ back to top](#table-of-contents)
 
-Module example from [camera.lua](../blob/main/content/examples/camera.lua):
-
-```lua
--- Advances this camera2d by the given delta time.
-do
-  -- Call update() every frame to advance follow interpolation, shake decay,
-  -- breathing, and sway effects. Without it, effects stay frozen.
-  local cam = lurek.camera.new(800, 600)
-  function lurek.process(dt) cam:update(dt) end
-end
-
---@api-stub: LCamera:toWorld
--- Performs the to world operation on this camera2d.
-do
-  -- Convert mouse click screen coordinates to world position.
-  -- Essential for selecting objects, placing buildings, aiming weapons.
-  local cam = lurek.camera.new(800, 600)
-  cam:setPosition(200, 100)
-  local wx, wy = cam:toWorld(400, 300) -- screen center -> world coords
-  lurek.log.debug("click world=" .. wx .. "," .. wy, "input")
-end
-
---@api-stub: LCamera:toScreen
--- Performs the to screen operation on this camera2d.
-do
-  -- Convert a world-space object position to screen coordinates.
-  -- Use for HUD indicators, health bars above entities, or visibility checks.
-  local cam = lurek.camera.new(800, 600)
-  local enemy_wx, enemy_wy = 1024, 512
-  local sx, sy = cam:toScreen(enemy_wx, enemy_wy)
-  if sx >= 0 and sx < 800 then lurek.log.debug("enemy on-screen at " .. sx .. "," .. sy, "hud") end
-end
-
---@api-stub: LCamera:getVisibleArea
--- Returns the visible area of this camera2d.
-do
-  -- Returns x, y, width, height in world units of what the camera currently sees.
-  -- Use for culling: skip drawing objects outside this rectangle.
-  local cam = lurek.camera.new(800, 600)
-  local vx, vy, vw, vh = cam:getVisibleArea()
-  lurek.log.info("visible " .. vx .. "," .. vy .. " " .. vw .. "x" .. vh, "render")
-end
-
---@api-stub: LCamera:lookAt
--- Performs the look at operation on this camera2d.
-do
-  -- lookAt centers the camera so that (x, y) is in the middle of the viewport.
-  -- Unlike setPosition, you give the center point, not the top-left corner.
-  local cam = lurek.camera.new(800, 600)
-  cam:lookAt(2048, 1024) -- center camera on (2048, 1024)
-```
-
-## Key Types
+## 🧩 Key Types
 
 - `LCamera` (71 methods) - Lua-side 2D camera handle with transforms, effects, bounds, and render command access.
 - `LCameraRig` (14 methods) - Lua-side camera rig that manages named cameras and viewport layouts.
 
-## API Overview
+[⬆ back to top](#table-of-contents)
+
+## 📖 API Overview
 
 - Source spec: [docs/specs/camera.md](../blob/main/docs/specs/camera.md)
 
@@ -193,16 +145,20 @@ lurek.camera.newCamera([vw]: number, [vh]: number) -> LCamera -- Creates a 2D ca
 lurek.camera.newRig() -> LCameraRig -- Creates an empty named camera rig. This function is exposed to Lua scripts.
 ```
 
-## Module Functions
+[⬆ back to top](#table-of-contents)
 
-### `lurek.camera.new([vw]: number, [vh]: number) -> LCamera`
+## ⚙️ Module Functions
+
+### lurek.camera.new
+
+`lurek.camera.new([vw]: number, [vh]: number) -> LCamera`
 
 Creates a 2D camera with optional virtual viewport size.
 
 **Parameters**
 
-- `vw` (`number`, optional) - Virtual viewport width; defaults to 800.
-- `vh` (`number`, optional) - Virtual viewport height; defaults to 600.
+- `vw` (`number`, optional): Virtual viewport width; defaults to 800.
+- `vh` (`number`, optional): Virtual viewport height; defaults to 600.
 
 **Returns**: `LCamera` - New camera handle.
 
@@ -224,14 +180,16 @@ do
 end
 ```
 
-### `lurek.camera.newCamera([vw]: number, [vh]: number) -> LCamera`
+### lurek.camera.newCamera
+
+`lurek.camera.newCamera([vw]: number, [vh]: number) -> LCamera`
 
 Creates a 2D camera with optional virtual viewport size.
 
 **Parameters**
 
-- `vw` (`number`, optional) - Virtual viewport width; defaults to 800.
-- `vh` (`number`, optional) - Virtual viewport height; defaults to 600.
+- `vw` (`number`, optional): Virtual viewport width; defaults to 800.
+- `vh` (`number`, optional): Virtual viewport height; defaults to 600.
 
 **Returns**: `LCamera` - New camera handle.
 
@@ -250,7 +208,9 @@ do
 end
 ```
 
-### `lurek.camera.newRig() -> LCameraRig`
+### lurek.camera.newRig
+
+`lurek.camera.newRig() -> LCameraRig`
 
 Creates an empty named camera rig. This function is exposed to Lua scripts.
 
@@ -274,11 +234,21 @@ end
 ```
 
 
-## Types and Methods
+[⬆ back to top](#table-of-contents)
 
-### `LCamera`
+## 🔷 Module Types
+
+### LCamera
 
 Lua-side 2D camera handle with transforms, effects, bounds, and render command access.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side 2D camera handle with transforms, effects, bounds, and render command access.
+---@class LCamera
+LCamera = {}
+```
 
 #### Example
 
@@ -298,9 +268,52 @@ do
 end
 ```
 
-### `LCamera:apply()`
+### LCameraRig
+
+Lua-side camera rig that manages named cameras and viewport layouts.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side camera rig that manages named cameras and viewport layouts.
+---@class LCameraRig
+LCameraRig = {}
+```
+
+#### Example
+
+Exact example from [camera.lua](../blob/main/content/examples/camera.lua):
+
+```lua
+do
+  -- A camera rig manages multiple named cameras with automatic viewport layout.
+  -- Use it for split-screen, minimap, or picture-in-picture setups.
+  local rig = lurek.camera.newRig()
+
+  -- splitScreen creates "left" and "right" cameras covering half the window each.
+  rig:splitScreen(1280, 720)
+  local names = rig:names()
+  lurek.log.info("rig camera count=" .. tostring(#names), "camera")
+end
+```
+
+
+[⬆ back to top](#table-of-contents)
+
+## 🔹 Module Methods
+
+### LCamera:apply
+
+`LCamera:apply()`
 
 Appends render commands that apply this camera transform.
+
+**Lua API Stub**
+
+```lua
+--- Appends render commands that apply this camera transform.
+function LCamera:apply() end
+```
 
 #### Example
 
@@ -316,9 +329,18 @@ do
 end
 ```
 
-### `LCamera:attach()`
+### LCamera:attach
+
+`LCamera:attach()`
 
 Appends render commands that attach this camera transform.
+
+**Lua API Stub**
+
+```lua
+--- Appends render commands that attach this camera transform.
+function LCamera:attach() end
+```
 
 #### Example
 
@@ -337,9 +359,18 @@ do
 end
 ```
 
-### `LCamera:clearParallaxFactors()`
+### LCamera:clearParallaxFactors
+
+`LCamera:clearParallaxFactors()`
 
 Clears all layer parallax factor overrides.
+
+**Lua API Stub**
+
+```lua
+--- Clears all layer parallax factor overrides.
+function LCamera:clearParallaxFactors() end
+```
 
 #### Example
 
@@ -355,9 +386,18 @@ do
 end
 ```
 
-### `LCamera:clearTarget()`
+### LCamera:clearTarget
+
+`LCamera:clearTarget()`
 
 Clears the follow target. This method is available to Lua scripts.
+
+**Lua API Stub**
+
+```lua
+--- Clears the follow target. This method is available to Lua scripts.
+function LCamera:clearTarget() end
+```
 
 #### Example
 
@@ -373,9 +413,18 @@ do
 end
 ```
 
-### `LCamera:detach()`
+### LCamera:detach
+
+`LCamera:detach()`
 
 Appends a render command that detaches the active camera transform.
+
+**Lua API Stub**
+
+```lua
+--- Appends a render command that detaches the active camera transform.
+function LCamera:detach() end
+```
 
 #### Example
 
@@ -391,14 +440,25 @@ do
 end
 ```
 
-### `LCamera:followPath(points: table, duration: number)`
+### LCamera:followPath
+
+`LCamera:followPath(points: table, duration: number)`
 
 Starts camera movement along an array of waypoint tables.
 
 **Parameters**
 
-- `points` (`table`, required) - Array of point tables using numeric indices `1` and `2` for X and Y.
-- `duration` (`number`, required) - Total path duration in seconds.
+- `points` (`table`, required): Array of point tables using numeric indices `1` and `2` for X and Y.
+- `duration` (`number`, required): Total path duration in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Starts camera movement along an array of waypoint tables.
+---@param points table Array of point tables using numeric indices `1` and `2` for X and Y.
+---@param duration number Total path duration in seconds.
+function LCamera:followPath(points, duration) end
+```
 
 #### Example
 
@@ -416,11 +476,25 @@ do
 end
 ```
 
-### `LCamera:getBounds() -> boolean, number, number, number, number`
+### LCamera:getBounds
+
+`LCamera:getBounds() -> boolean, number, number, number, number`
 
 Returns camera bounds with a leading availability flag.
 
 **Returns**: `boolean, number, number, number, number` - Has-bounds flag followed by X, Y, width, and height.
+
+**Lua API Stub**
+
+```lua
+--- Returns camera bounds with a leading availability flag.
+---@return boolean a Has-bounds flag followed by X, Y, width, and height.
+---@return number b Has-bounds flag followed by X, Y, width, and height.
+---@return number c Has-bounds flag followed by X, Y, width, and height.
+---@return number d Has-bounds flag followed by X, Y, width, and height.
+---@return number e Has-bounds flag followed by X, Y, width, and height.
+function LCamera:getBounds() end
+```
 
 #### Example
 
@@ -437,11 +511,23 @@ do
 end
 ```
 
-### `LCamera:getDeadZone() -> boolean, number, number`
+### LCamera:getDeadZone
+
+`LCamera:getDeadZone() -> boolean, number, number`
 
 Returns follow dead-zone dimensions with a leading availability flag.
 
 **Returns**: `boolean, number, number` - Has-dead-zone flag followed by width and height.
+
+**Lua API Stub**
+
+```lua
+--- Returns follow dead-zone dimensions with a leading availability flag.
+---@return boolean a Has-dead-zone flag followed by width and height.
+---@return number b Has-dead-zone flag followed by width and height.
+---@return number c Has-dead-zone flag followed by width and height.
+function LCamera:getDeadZone() end
+```
 
 #### Example
 
@@ -457,11 +543,21 @@ do
 end
 ```
 
-### `LCamera:getEffectiveZoom() -> number`
+### LCamera:getEffectiveZoom
+
+`LCamera:getEffectiveZoom() -> number`
 
 Returns zoom after camera effects are applied.
 
 **Returns**: `number` - Effective zoom factor.
+
+**Lua API Stub**
+
+```lua
+--- Returns zoom after camera effects are applied.
+---@return number Effective zoom factor.
+function LCamera:getEffectiveZoom() end
+```
 
 #### Example
 
@@ -479,11 +575,22 @@ do
 end
 ```
 
-### `LCamera:getEffectOffset() -> number, number`
+### LCamera:getEffectOffset
+
+`LCamera:getEffectOffset() -> number, number`
 
 Returns combined camera effect offset.
 
 **Returns**: `number, number` - Effect X and Y offset.
+
+**Lua API Stub**
+
+```lua
+--- Returns combined camera effect offset.
+---@return number a Effect X and Y offset.
+---@return number b Effect X and Y offset.
+function LCamera:getEffectOffset() end
+```
 
 #### Example
 
@@ -501,11 +608,21 @@ do
 end
 ```
 
-### `LCamera:getFollowEasing() -> string`
+### LCamera:getFollowEasing
+
+`LCamera:getFollowEasing() -> string`
 
 Returns target follow easing mode.
 
 **Returns**: `string` - Easing name `linear`, `smoothstep`, or `easeout`.
+
+**Lua API Stub**
+
+```lua
+--- Returns target follow easing mode.
+---@return string Easing name `linear`, `smoothstep`, or `easeout`.
+function LCamera:getFollowEasing() end
+```
 
 #### Example
 
@@ -519,11 +636,21 @@ do
 end
 ```
 
-### `LCamera:getFollowSmooth() -> number`
+### LCamera:getFollowSmooth
+
+`LCamera:getFollowSmooth() -> number`
 
 Returns follow smoothing speed. This method is available to Lua scripts.
 
 **Returns**: `number` - Current follow smoothing speed.
+
+**Lua API Stub**
+
+```lua
+--- Returns follow smoothing speed. This method is available to Lua scripts.
+---@return number Current follow smoothing speed.
+function LCamera:getFollowSmooth() end
+```
 
 #### Example
 
@@ -537,11 +664,21 @@ do
 end
 ```
 
-### `LCamera:getLookAhead() -> number`
+### LCamera:getLookAhead
+
+`LCamera:getLookAhead() -> number`
 
 Returns follow look-ahead multiplier.
 
 **Returns**: `number` - Current look-ahead multiplier.
+
+**Lua API Stub**
+
+```lua
+--- Returns follow look-ahead multiplier.
+---@return number Current look-ahead multiplier.
+function LCamera:getLookAhead() end
+```
 
 #### Example
 
@@ -555,15 +692,26 @@ do
 end
 ```
 
-### `LCamera:getParallaxFactor(layer: string) -> number`
+### LCamera:getParallaxFactor
+
+`LCamera:getParallaxFactor(layer: string) -> number`
 
 Returns a parallax factor for a named layer.
 
 **Parameters**
 
-- `layer` (`string`, required) - Layer name.
+- `layer` (`string`, required): Layer name.
 
 **Returns**: `number` - Stored parallax factor, or 1.0 when the layer has no override.
+
+**Lua API Stub**
+
+```lua
+--- Returns a parallax factor for a named layer.
+---@param layer string Layer name.
+---@return number Stored parallax factor, or 1.0 when the layer has no override.
+function LCamera:getParallaxFactor(layer) end
+```
 
 #### Example
 
@@ -579,11 +727,22 @@ do
 end
 ```
 
-### `LCamera:getPosition() -> number, number`
+### LCamera:getPosition
+
+`LCamera:getPosition() -> number, number`
 
 Returns the camera world position.
 
 **Returns**: `number, number` - Camera X and Y position in world units.
+
+**Lua API Stub**
+
+```lua
+--- Returns the camera world position.
+---@return number a Camera X and Y position in world units.
+---@return number b Camera X and Y position in world units.
+function LCamera:getPosition() end
+```
 
 #### Example
 
@@ -598,11 +757,22 @@ do
 end
 ```
 
-### `LCamera:getRenderOffset() -> number, number`
+### LCamera:getRenderOffset
+
+`LCamera:getRenderOffset() -> number, number`
 
 Returns current render offset after camera effects.
 
 **Returns**: `number, number` - Render X and Y offset.
+
+**Lua API Stub**
+
+```lua
+--- Returns current render offset after camera effects.
+---@return number a Render X and Y offset.
+---@return number b Render X and Y offset.
+function LCamera:getRenderOffset() end
+```
 
 #### Example
 
@@ -617,11 +787,21 @@ do
 end
 ```
 
-### `LCamera:getRotation() -> number`
+### LCamera:getRotation
+
+`LCamera:getRotation() -> number`
 
 Returns the camera rotation. This method is available to Lua scripts.
 
 **Returns**: `number` - Current rotation in radians.
+
+**Lua API Stub**
+
+```lua
+--- Returns the camera rotation. This method is available to Lua scripts.
+---@return number Current rotation in radians.
+function LCamera:getRotation() end
+```
 
 #### Example
 
@@ -635,11 +815,24 @@ do
 end
 ```
 
-### `LCamera:getRotationConstraints() -> boolean, number, boolean, number`
+### LCamera:getRotationConstraints
+
+`LCamera:getRotationConstraints() -> boolean, number, boolean, number`
 
 Returns rotation constraints with availability flags.
 
 **Returns**: `boolean, number, boolean, number` - Has-min flag and value followed by has-max flag and value.
+
+**Lua API Stub**
+
+```lua
+--- Returns rotation constraints with availability flags.
+---@return boolean a Has-min flag and value followed by has-max flag and value.
+---@return number b Has-min flag and value followed by has-max flag and value.
+---@return boolean c Has-min flag and value followed by has-max flag and value.
+---@return number d Has-min flag and value followed by has-max flag and value.
+function LCamera:getRotationConstraints() end
+```
 
 #### Example
 
@@ -655,11 +848,21 @@ do
 end
 ```
 
-### `LCamera:getRotationDamping() -> number`
+### LCamera:getRotationDamping
+
+`LCamera:getRotationDamping() -> number`
 
 Returns rotation damping. This method is available to Lua scripts.
 
 **Returns**: `number` - Current rotation damping value.
+
+**Lua API Stub**
+
+```lua
+--- Returns rotation damping. This method is available to Lua scripts.
+---@return number Current rotation damping value.
+function LCamera:getRotationDamping() end
+```
 
 #### Example
 
@@ -673,11 +876,22 @@ do
 end
 ```
 
-### `LCamera:getShakeOffset() -> number, number`
+### LCamera:getShakeOffset
+
+`LCamera:getShakeOffset() -> number, number`
 
 Returns current camera shake offset.
 
 **Returns**: `number, number` - Shake X and Y offset.
+
+**Lua API Stub**
+
+```lua
+--- Returns current camera shake offset.
+---@return number a Shake X and Y offset.
+---@return number b Shake X and Y offset.
+function LCamera:getShakeOffset() end
+```
 
 #### Example
 
@@ -695,11 +909,23 @@ do
 end
 ```
 
-### `LCamera:getTarget() -> boolean, number, number`
+### LCamera:getTarget
+
+`LCamera:getTarget() -> boolean, number, number`
 
 Returns the follow target with a leading availability flag.
 
 **Returns**: `boolean, number, number` - Has-target flag followed by target X and Y.
+
+**Lua API Stub**
+
+```lua
+--- Returns the follow target with a leading availability flag.
+---@return boolean a Has-target flag followed by target X and Y.
+---@return number b Has-target flag followed by target X and Y.
+---@return number c Has-target flag followed by target X and Y.
+function LCamera:getTarget() end
+```
 
 #### Example
 
@@ -715,11 +941,24 @@ do
 end
 ```
 
-### `LCamera:getViewport() -> number, number, number, number`
+### LCamera:getViewport
+
+`LCamera:getViewport() -> number, number, number, number`
 
 Returns the camera viewport rectangle.
 
 **Returns**: `number, number, number, number` - Viewport X, Y, width, and height.
+
+**Lua API Stub**
+
+```lua
+--- Returns the camera viewport rectangle.
+---@return number a Viewport X, Y, width, and height.
+---@return number b Viewport X, Y, width, and height.
+---@return number c Viewport X, Y, width, and height.
+---@return number d Viewport X, Y, width, and height.
+function LCamera:getViewport() end
+```
 
 #### Example
 
@@ -733,11 +972,24 @@ do
 end
 ```
 
-### `LCamera:getVisibleArea() -> number, number, number, number`
+### LCamera:getVisibleArea
+
+`LCamera:getVisibleArea() -> number, number, number, number`
 
 Returns the world-space area visible through this camera.
 
 **Returns**: `number, number, number, number` - Visible X, Y, width, and height.
+
+**Lua API Stub**
+
+```lua
+--- Returns the world-space area visible through this camera.
+---@return number a Visible X, Y, width, and height.
+---@return number b Visible X, Y, width, and height.
+---@return number c Visible X, Y, width, and height.
+---@return number d Visible X, Y, width, and height.
+function LCamera:getVisibleArea() end
+```
 
 #### Example
 
@@ -755,11 +1007,21 @@ do
 end
 ```
 
-### `LCamera:getZoom() -> number`
+### LCamera:getZoom
+
+`LCamera:getZoom() -> number`
 
 Returns the camera zoom factor. This method is available to Lua scripts.
 
 **Returns**: `number` - Current zoom factor.
+
+**Lua API Stub**
+
+```lua
+--- Returns the camera zoom factor. This method is available to Lua scripts.
+---@return number Current zoom factor.
+function LCamera:getZoom() end
+```
 
 #### Example
 
@@ -773,11 +1035,24 @@ do
 end
 ```
 
-### `LCamera:getZoomConstraints() -> boolean, number, boolean, number`
+### LCamera:getZoomConstraints
+
+`LCamera:getZoomConstraints() -> boolean, number, boolean, number`
 
 Returns zoom constraints with availability flags.
 
 **Returns**: `boolean, number, boolean, number` - Has-min flag and value followed by has-max flag and value.
+
+**Lua API Stub**
+
+```lua
+--- Returns zoom constraints with availability flags.
+---@return boolean a Has-min flag and value followed by has-max flag and value.
+---@return number b Has-min flag and value followed by has-max flag and value.
+---@return boolean c Has-min flag and value followed by has-max flag and value.
+---@return number d Has-min flag and value followed by has-max flag and value.
+function LCamera:getZoomConstraints() end
+```
 
 #### Example
 
@@ -794,11 +1069,21 @@ do
 end
 ```
 
-### `LCamera:getZoomDamping() -> number`
+### LCamera:getZoomDamping
+
+`LCamera:getZoomDamping() -> number`
 
 Returns zoom damping. This method is available to Lua scripts.
 
 **Returns**: `number` - Current zoom damping value.
+
+**Lua API Stub**
+
+```lua
+--- Returns zoom damping. This method is available to Lua scripts.
+---@return number Current zoom damping value.
+function LCamera:getZoomDamping() end
+```
 
 #### Example
 
@@ -812,11 +1097,21 @@ do
 end
 ```
 
-### `LCamera:hasBounds() -> boolean`
+### LCamera:hasBounds
+
+`LCamera:hasBounds() -> boolean`
 
 Returns whether camera bounds are active.
 
 **Returns**: `boolean` - True when bounds are active.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether camera bounds are active.
+---@return boolean True when bounds are active.
+function LCamera:hasBounds() end
+```
 
 #### Example
 
@@ -831,11 +1126,21 @@ do
 end
 ```
 
-### `LCamera:isBreathing() -> boolean`
+### LCamera:isBreathing
+
+`LCamera:isBreathing() -> boolean`
 
 Returns whether breathing zoom animation is active.
 
 **Returns**: `boolean` - True when breathing is active.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether breathing zoom animation is active.
+---@return boolean True when breathing is active.
+function LCamera:isBreathing() end
+```
 
 #### Example
 
@@ -851,11 +1156,21 @@ do
 end
 ```
 
-### `LCamera:isSway() -> boolean`
+### LCamera:isSway
+
+`LCamera:isSway() -> boolean`
 
 Returns whether camera sway is active.
 
 **Returns**: `boolean` - True when sway is active.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether camera sway is active.
+---@return boolean True when sway is active.
+function LCamera:isSway() end
+```
 
 #### Example
 
@@ -870,14 +1185,25 @@ do
 end
 ```
 
-### `LCamera:lookAt(x: number, y: number)`
+### LCamera:lookAt
+
+`LCamera:lookAt(x: number, y: number)`
 
 Centers the camera on a world position.
 
 **Parameters**
 
-- `x` (`number`, required) - World X position.
-- `y` (`number`, required) - World Y position.
+- `x` (`number`, required): World X position.
+- `y` (`number`, required): World Y position.
+
+**Lua API Stub**
+
+```lua
+--- Centers the camera on a world position.
+---@param x number World X position.
+---@param y number World Y position.
+function LCamera:lookAt(x, y) end
+```
 
 #### Example
 
@@ -894,14 +1220,25 @@ do
 end
 ```
 
-### `LCamera:move(dx: number, dy: number)`
+### LCamera:move
+
+`LCamera:move(dx: number, dy: number)`
 
 Moves the camera by a delta. This method is available to Lua scripts.
 
 **Parameters**
 
-- `dx` (`number`, required) - X delta in world units.
-- `dy` (`number`, required) - Y delta in world units.
+- `dx` (`number`, required): X delta in world units.
+- `dy` (`number`, required): Y delta in world units.
+
+**Lua API Stub**
+
+```lua
+--- Moves the camera by a delta. This method is available to Lua scripts.
+---@param dx number X delta in world units.
+---@param dy number Y delta in world units.
+function LCamera:move(dx, dy) end
+```
 
 #### Example
 
@@ -918,14 +1255,25 @@ do
 end
 ```
 
-### `LCamera:onWindowResize(window_w: number, window_h: number)`
+### LCamera:onWindowResize
+
+`LCamera:onWindowResize(window_w: number, window_h: number)`
 
 Updates camera viewport state after a window resize.
 
 **Parameters**
 
-- `window_w` (`number`, required) - New window width in pixels.
-- `window_h` (`number`, required) - New window height in pixels.
+- `window_w` (`number`, required): New window width in pixels.
+- `window_h` (`number`, required): New window height in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Updates camera viewport state after a window resize.
+---@param window_w number New window width in pixels.
+---@param window_h number New window height in pixels.
+function LCamera:onWindowResize(window_w, window_h) end
+```
 
 #### Example
 
@@ -942,17 +1290,31 @@ do
 end
 ```
 
-### `LCamera:onWindowResizeScaled(game_w: number, game_h: number, window_w: number, window_h: number, mode: string)`
+### LCamera:onWindowResizeScaled
+
+`LCamera:onWindowResizeScaled(game_w: number, game_h: number, window_w: number, window_h: number, mode: string)`
 
 Updates camera viewport state using a virtual game size and scale mode.
 
 **Parameters**
 
-- `game_w` (`number`, required) - Virtual game width in pixels.
-- `game_h` (`number`, required) - Virtual game height in pixels.
-- `window_w` (`number`, required) - New window width in pixels.
-- `window_h` (`number`, required) - New window height in pixels.
-- `mode` (`string`, required) - Scale mode `letterbox`, `stretch`, or `pixelperfect`.
+- `game_w` (`number`, required): Virtual game width in pixels.
+- `game_h` (`number`, required): Virtual game height in pixels.
+- `window_w` (`number`, required): New window width in pixels.
+- `window_h` (`number`, required): New window height in pixels.
+- `mode` (`string`, required): Scale mode `letterbox`, `stretch`, or `pixelperfect`.
+
+**Lua API Stub**
+
+```lua
+--- Updates camera viewport state using a virtual game size and scale mode.
+---@param game_w number Virtual game width in pixels.
+---@param game_h number Virtual game height in pixels.
+---@param window_w number New window width in pixels.
+---@param window_h number New window height in pixels.
+---@param mode string Scale mode `letterbox`, `stretch`, or `pixelperfect`.
+function LCamera:onWindowResizeScaled(game_w, game_h, window_w, window_h, mode) end
+```
 
 #### Example
 
@@ -970,11 +1332,21 @@ do
 end
 ```
 
-### `LCamera:pathProgress() -> number`
+### LCamera:pathProgress
+
+`LCamera:pathProgress() -> number`
 
 Returns active path progress. This method is available to Lua scripts.
 
 **Returns**: `number` - Normalized path progress from 0 to 1, or 1 when no path is active.
+
+**Lua API Stub**
+
+```lua
+--- Returns active path progress. This method is available to Lua scripts.
+---@return number Normalized path progress from 0 to 1, or 1 when no path is active.
+function LCamera:pathProgress() end
+```
 
 #### Example
 
@@ -990,9 +1362,18 @@ do
 end
 ```
 
-### `LCamera:presetAggressiveFollow()`
+### LCamera:presetAggressiveFollow
+
+`LCamera:presetAggressiveFollow()`
 
 Applies the aggressive follow camera preset.
+
+**Lua API Stub**
+
+```lua
+--- Applies the aggressive follow camera preset.
+function LCamera:presetAggressiveFollow() end
+```
 
 #### Example
 
@@ -1009,9 +1390,18 @@ do
 end
 ```
 
-### `LCamera:presetBalancedFollow()`
+### LCamera:presetBalancedFollow
+
+`LCamera:presetBalancedFollow()`
 
 Applies the balanced follow camera preset.
+
+**Lua API Stub**
+
+```lua
+--- Applies the balanced follow camera preset.
+function LCamera:presetBalancedFollow() end
+```
 
 #### Example
 
@@ -1026,9 +1416,18 @@ do
 end
 ```
 
-### `LCamera:presetCinematicFollow()`
+### LCamera:presetCinematicFollow
+
+`LCamera:presetCinematicFollow()`
 
 Applies the cinematic follow camera preset.
+
+**Lua API Stub**
+
+```lua
+--- Applies the cinematic follow camera preset.
+function LCamera:presetCinematicFollow() end
+```
 
 #### Example
 
@@ -1044,9 +1443,18 @@ do
 end
 ```
 
-### `LCamera:presetTightFollow()`
+### LCamera:presetTightFollow
+
+`LCamera:presetTightFollow()`
 
 Applies the tight follow camera preset.
+
+**Lua API Stub**
+
+```lua
+--- Applies the tight follow camera preset.
+function LCamera:presetTightFollow() end
+```
 
 #### Example
 
@@ -1062,9 +1470,18 @@ do
 end
 ```
 
-### `LCamera:removeBounds()`
+### LCamera:removeBounds
+
+`LCamera:removeBounds()`
 
 Removes active camera bounds. This method is available to Lua scripts.
+
+**Lua API Stub**
+
+```lua
+--- Removes active camera bounds. This method is available to Lua scripts.
+function LCamera:removeBounds() end
+```
 
 #### Example
 
@@ -1080,9 +1497,18 @@ do
 end
 ```
 
-### `LCamera:reset()`
+### LCamera:reset
+
+`LCamera:reset()`
 
 Appends a render command that removes the active camera transform.
+
+**Lua API Stub**
+
+```lua
+--- Appends a render command that removes the active camera transform.
+function LCamera:reset() end
+```
 
 #### Example
 
@@ -1099,16 +1525,29 @@ do
 end
 ```
 
-### `LCamera:setBounds(x: number, y: number, w: number, h: number)`
+### LCamera:setBounds
+
+`LCamera:setBounds(x: number, y: number, w: number, h: number)`
 
 Sets camera world bounds. This method is available to Lua scripts.
 
 **Parameters**
 
-- `x` (`number`, required) - Bounds X coordinate.
-- `y` (`number`, required) - Bounds Y coordinate.
-- `w` (`number`, required) - Bounds width.
-- `h` (`number`, required) - Bounds height.
+- `x` (`number`, required): Bounds X coordinate.
+- `y` (`number`, required): Bounds Y coordinate.
+- `w` (`number`, required): Bounds width.
+- `h` (`number`, required): Bounds height.
+
+**Lua API Stub**
+
+```lua
+--- Sets camera world bounds. This method is available to Lua scripts.
+---@param x number Bounds X coordinate.
+---@param y number Bounds Y coordinate.
+---@param w number Bounds width.
+---@param h number Bounds height.
+function LCamera:setBounds(x, y, w, h) end
+```
 
 #### Example
 
@@ -1124,14 +1563,25 @@ do
 end
 ```
 
-### `LCamera:setDeadZone(w: number, h: number)`
+### LCamera:setDeadZone
+
+`LCamera:setDeadZone(w: number, h: number)`
 
 Sets follow dead-zone dimensions.
 
 **Parameters**
 
-- `w` (`number`, required) - Dead-zone width in world units.
-- `h` (`number`, required) - Dead-zone height in world units.
+- `w` (`number`, required): Dead-zone width in world units.
+- `h` (`number`, required): Dead-zone height in world units.
+
+**Lua API Stub**
+
+```lua
+--- Sets follow dead-zone dimensions.
+---@param w number Dead-zone width in world units.
+---@param h number Dead-zone height in world units.
+function LCamera:setDeadZone(w, h) end
+```
 
 #### Example
 
@@ -1151,13 +1601,23 @@ do
 end
 ```
 
-### `LCamera:setFollowEasing(easing: string)`
+### LCamera:setFollowEasing
+
+`LCamera:setFollowEasing(easing: string)`
 
 Sets target follow easing mode. This method is available to Lua scripts.
 
 **Parameters**
 
-- `easing` (`string`, required) - Easing name such as `linear`, `smoothstep`, or `easeout`.
+- `easing` (`string`, required): Easing name such as `linear`, `smoothstep`, or `easeout`.
+
+**Lua API Stub**
+
+```lua
+--- Sets target follow easing mode. This method is available to Lua scripts.
+---@param easing string Easing name such as `linear`, `smoothstep`, or `easeout`.
+function LCamera:setFollowEasing(easing) end
+```
 
 #### Example
 
@@ -1173,13 +1633,23 @@ do
 end
 ```
 
-### `LCamera:setFollowSmooth(speed: number)`
+### LCamera:setFollowSmooth
+
+`LCamera:setFollowSmooth(speed: number)`
 
 Sets follow smoothing speed. This method is available to Lua scripts.
 
 **Parameters**
 
-- `speed` (`number`, required) - Follow smoothing speed.
+- `speed` (`number`, required): Follow smoothing speed.
+
+**Lua API Stub**
+
+```lua
+--- Sets follow smoothing speed. This method is available to Lua scripts.
+---@param speed number Follow smoothing speed.
+function LCamera:setFollowSmooth(speed) end
+```
 
 #### Example
 
@@ -1198,13 +1668,23 @@ do
 end
 ```
 
-### `LCamera:setLookAhead(mul: number)`
+### LCamera:setLookAhead
+
+`LCamera:setLookAhead(mul: number)`
 
 Sets follow look-ahead multiplier.
 
 **Parameters**
 
-- `mul` (`number`, required) - Look-ahead multiplier applied to target motion.
+- `mul` (`number`, required): Look-ahead multiplier applied to target motion.
+
+**Lua API Stub**
+
+```lua
+--- Sets follow look-ahead multiplier.
+---@param mul number Look-ahead multiplier applied to target motion.
+function LCamera:setLookAhead(mul) end
+```
 
 #### Example
 
@@ -1223,14 +1703,25 @@ do
 end
 ```
 
-### `LCamera:setParallaxFactor(layer: string, factor: number)`
+### LCamera:setParallaxFactor
+
+`LCamera:setParallaxFactor(layer: string, factor: number)`
 
 Sets a parallax factor for a named layer.
 
 **Parameters**
 
-- `layer` (`string`, required) - Layer name.
-- `factor` (`number`, required) - Parallax factor, where 1.0 follows the camera fully.
+- `layer` (`string`, required): Layer name.
+- `factor` (`number`, required): Parallax factor, where 1.0 follows the camera fully.
+
+**Lua API Stub**
+
+```lua
+--- Sets a parallax factor for a named layer.
+---@param layer string Layer name.
+---@param factor number Parallax factor, where 1.0 follows the camera fully.
+function LCamera:setParallaxFactor(layer, factor) end
+```
 
 #### Example
 
@@ -1249,14 +1740,25 @@ do
 end
 ```
 
-### `LCamera:setPosition(x: number, y: number)`
+### LCamera:setPosition
+
+`LCamera:setPosition(x: number, y: number)`
 
 Sets the camera world position. This method is available to Lua scripts.
 
 **Parameters**
 
-- `x` (`number`, required) - Camera X position in world units.
-- `y` (`number`, required) - Camera Y position in world units.
+- `x` (`number`, required): Camera X position in world units.
+- `y` (`number`, required): Camera Y position in world units.
+
+**Lua API Stub**
+
+```lua
+--- Sets the camera world position. This method is available to Lua scripts.
+---@param x number Camera X position in world units.
+---@param y number Camera Y position in world units.
+function LCamera:setPosition(x, y) end
+```
 
 #### Example
 
@@ -1270,13 +1772,23 @@ do
 end
 ```
 
-### `LCamera:setRotation(r: number)`
+### LCamera:setRotation
+
+`LCamera:setRotation(r: number)`
 
 Sets the camera rotation. This method is available to Lua scripts.
 
 **Parameters**
 
-- `r` (`number`, required) - Rotation in radians.
+- `r` (`number`, required): Rotation in radians.
+
+**Lua API Stub**
+
+```lua
+--- Sets the camera rotation. This method is available to Lua scripts.
+---@param r number Rotation in radians.
+function LCamera:setRotation(r) end
+```
 
 #### Example
 
@@ -1290,14 +1802,25 @@ do
 end
 ```
 
-### `LCamera:setRotationConstraints([min_rot]: number, [max_rot]: number)`
+### LCamera:setRotationConstraints
+
+`LCamera:setRotationConstraints([min_rot]: number, [max_rot]: number)`
 
 Sets optional minimum and maximum rotation constraints.
 
 **Parameters**
 
-- `min_rot` (`number`, optional) - Optional minimum rotation in radians.
-- `max_rot` (`number`, optional) - Optional maximum rotation in radians.
+- `min_rot` (`number`, optional): Optional minimum rotation in radians.
+- `max_rot` (`number`, optional): Optional maximum rotation in radians.
+
+**Lua API Stub**
+
+```lua
+--- Sets optional minimum and maximum rotation constraints.
+---@param min_rot? number Optional minimum rotation in radians.
+---@param max_rot? number Optional maximum rotation in radians.
+function LCamera:setRotationConstraints(min_rot, max_rot) end
+```
 
 #### Example
 
@@ -1312,13 +1835,23 @@ do
 end
 ```
 
-### `LCamera:setRotationDamping(damping: number)`
+### LCamera:setRotationDamping
+
+`LCamera:setRotationDamping(damping: number)`
 
 Sets rotation damping. This method is available to Lua scripts.
 
 **Parameters**
 
-- `damping` (`number`, required) - Rotation damping value.
+- `damping` (`number`, required): Rotation damping value.
+
+**Lua API Stub**
+
+```lua
+--- Sets rotation damping. This method is available to Lua scripts.
+---@param damping number Rotation damping value.
+function LCamera:setRotationDamping(damping) end
+```
 
 #### Example
 
@@ -1333,14 +1866,25 @@ do
 end
 ```
 
-### `LCamera:setTarget(x: number, y: number)`
+### LCamera:setTarget
+
+`LCamera:setTarget(x: number, y: number)`
 
 Sets a world-space follow target. This method is available to Lua scripts.
 
 **Parameters**
 
-- `x` (`number`, required) - Target X position.
-- `y` (`number`, required) - Target Y position.
+- `x` (`number`, required): Target X position.
+- `y` (`number`, required): Target Y position.
+
+**Lua API Stub**
+
+```lua
+--- Sets a world-space follow target. This method is available to Lua scripts.
+---@param x number Target X position.
+---@param y number Target Y position.
+function LCamera:setTarget(x, y) end
+```
 
 #### Example
 
@@ -1355,16 +1899,29 @@ do
 end
 ```
 
-### `LCamera:setViewport(x: number, y: number, w: number, h: number)`
+### LCamera:setViewport
+
+`LCamera:setViewport(x: number, y: number, w: number, h: number)`
 
 Sets the camera viewport rectangle.
 
 **Parameters**
 
-- `x` (`number`, required) - Viewport X coordinate in screen pixels.
-- `y` (`number`, required) - Viewport Y coordinate in screen pixels.
-- `w` (`number`, required) - Viewport width in screen pixels.
-- `h` (`number`, required) - Viewport height in screen pixels.
+- `x` (`number`, required): Viewport X coordinate in screen pixels.
+- `y` (`number`, required): Viewport Y coordinate in screen pixels.
+- `w` (`number`, required): Viewport width in screen pixels.
+- `h` (`number`, required): Viewport height in screen pixels.
+
+**Lua API Stub**
+
+```lua
+--- Sets the camera viewport rectangle.
+---@param x number Viewport X coordinate in screen pixels.
+---@param y number Viewport Y coordinate in screen pixels.
+---@param w number Viewport width in screen pixels.
+---@param h number Viewport height in screen pixels.
+function LCamera:setViewport(x, y, w, h) end
+```
 
 #### Example
 
@@ -1381,13 +1938,23 @@ do
 end
 ```
 
-### `LCamera:setZoom(zoom: number)`
+### LCamera:setZoom
+
+`LCamera:setZoom(zoom: number)`
 
 Sets the camera zoom factor. This method is available to Lua scripts.
 
 **Parameters**
 
-- `zoom` (`number`, required) - Zoom factor applied to world rendering.
+- `zoom` (`number`, required): Zoom factor applied to world rendering.
+
+**Lua API Stub**
+
+```lua
+--- Sets the camera zoom factor. This method is available to Lua scripts.
+---@param zoom number Zoom factor applied to world rendering.
+function LCamera:setZoom(zoom) end
+```
 
 #### Example
 
@@ -1401,14 +1968,25 @@ do
 end
 ```
 
-### `LCamera:setZoomConstraints([min_zoom]: number, [max_zoom]: number)`
+### LCamera:setZoomConstraints
+
+`LCamera:setZoomConstraints([min_zoom]: number, [max_zoom]: number)`
 
 Sets optional minimum and maximum zoom constraints.
 
 **Parameters**
 
-- `min_zoom` (`number`, optional) - Optional minimum zoom.
-- `max_zoom` (`number`, optional) - Optional maximum zoom.
+- `min_zoom` (`number`, optional): Optional minimum zoom.
+- `max_zoom` (`number`, optional): Optional maximum zoom.
+
+**Lua API Stub**
+
+```lua
+--- Sets optional minimum and maximum zoom constraints.
+---@param min_zoom? number Optional minimum zoom.
+---@param max_zoom? number Optional maximum zoom.
+function LCamera:setZoomConstraints(min_zoom, max_zoom) end
+```
 
 #### Example
 
@@ -1423,13 +2001,23 @@ do
 end
 ```
 
-### `LCamera:setZoomDamping(damping: number)`
+### LCamera:setZoomDamping
+
+`LCamera:setZoomDamping(damping: number)`
 
 Sets zoom damping. This method is available to Lua scripts.
 
 **Parameters**
 
-- `damping` (`number`, required) - Zoom damping value.
+- `damping` (`number`, required): Zoom damping value.
+
+**Lua API Stub**
+
+```lua
+--- Sets zoom damping. This method is available to Lua scripts.
+---@param damping number Zoom damping value.
+function LCamera:setZoomDamping(damping) end
+```
 
 #### Example
 
@@ -1443,14 +2031,25 @@ do
 end
 ```
 
-### `LCamera:shake(intensity: number, duration: number)`
+### LCamera:shake
+
+`LCamera:shake(intensity: number, duration: number)`
 
 Starts a camera shake effect. This method is available to Lua scripts.
 
 **Parameters**
 
-- `intensity` (`number`, required) - Shake intensity in world units.
-- `duration` (`number`, required) - Shake duration in seconds.
+- `intensity` (`number`, required): Shake intensity in world units.
+- `duration` (`number`, required): Shake duration in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Starts a camera shake effect. This method is available to Lua scripts.
+---@param intensity number Shake intensity in world units.
+---@param duration number Shake duration in seconds.
+function LCamera:shake(intensity, duration) end
+```
 
 #### Example
 
@@ -1466,14 +2065,25 @@ do
 end
 ```
 
-### `LCamera:startBreathing([amplitude]: number, [rate]: number)`
+### LCamera:startBreathing
+
+`LCamera:startBreathing([amplitude]: number, [rate]: number)`
 
 Starts subtle breathing zoom animation.
 
 **Parameters**
 
-- `amplitude` (`number`, optional) - Breathing zoom amplitude; defaults to 0.005.
-- `rate` (`number`, optional) - Breathing rate; defaults to 0.2.
+- `amplitude` (`number`, optional): Breathing zoom amplitude; defaults to 0.005.
+- `rate` (`number`, optional): Breathing rate; defaults to 0.2.
+
+**Lua API Stub**
+
+```lua
+--- Starts subtle breathing zoom animation.
+---@param amplitude? number Breathing zoom amplitude; defaults to 0.005.
+---@param rate? number Breathing rate; defaults to 0.2.
+function LCamera:startBreathing(amplitude, rate) end
+```
 
 #### Example
 
@@ -1491,16 +2101,29 @@ do
 end
 ```
 
-### `LCamera:startSway(amplitude_x: number, amplitude_y: number, frequency: number, [decay]: number)`
+### LCamera:startSway
+
+`LCamera:startSway(amplitude_x: number, amplitude_y: number, frequency: number, [decay]: number)`
 
 Starts camera sway offset animation.
 
 **Parameters**
 
-- `amplitude_x` (`number`, required) - Horizontal sway amplitude.
-- `amplitude_y` (`number`, required) - Vertical sway amplitude.
-- `frequency` (`number`, required) - Sway frequency.
-- `decay` (`number`, optional) - Sway decay value; defaults to 1.0.
+- `amplitude_x` (`number`, required): Horizontal sway amplitude.
+- `amplitude_y` (`number`, required): Vertical sway amplitude.
+- `frequency` (`number`, required): Sway frequency.
+- `decay` (`number`, optional): Sway decay value; defaults to 1.0.
+
+**Lua API Stub**
+
+```lua
+--- Starts camera sway offset animation.
+---@param amplitude_x number Horizontal sway amplitude.
+---@param amplitude_y number Vertical sway amplitude.
+---@param frequency number Sway frequency.
+---@param decay? number Sway decay value; defaults to 1.0.
+function LCamera:startSway(amplitude_x, amplitude_y, frequency, decay) end
+```
 
 #### Example
 
@@ -1518,9 +2141,18 @@ do
 end
 ```
 
-### `LCamera:stopBreathing()`
+### LCamera:stopBreathing
+
+`LCamera:stopBreathing()`
 
 Stops breathing zoom animation. This method is available to Lua scripts.
+
+**Lua API Stub**
+
+```lua
+--- Stops breathing zoom animation. This method is available to Lua scripts.
+function LCamera:stopBreathing() end
+```
 
 #### Example
 
@@ -1535,9 +2167,18 @@ do
 end
 ```
 
-### `LCamera:stopPath()`
+### LCamera:stopPath
+
+`LCamera:stopPath()`
 
 Stops the active camera path. This method is available to Lua scripts.
+
+**Lua API Stub**
+
+```lua
+--- Stops the active camera path. This method is available to Lua scripts.
+function LCamera:stopPath() end
+```
 
 #### Example
 
@@ -1553,9 +2194,18 @@ do
 end
 ```
 
-### `LCamera:stopSway()`
+### LCamera:stopSway
+
+`LCamera:stopSway()`
 
 Stops camera sway offset animation.
+
+**Lua API Stub**
+
+```lua
+--- Stops camera sway offset animation.
+function LCamera:stopSway() end
+```
 
 #### Example
 
@@ -1570,9 +2220,18 @@ do
 end
 ```
 
-### `LCamera:stopZoom()`
+### LCamera:stopZoom
+
+`LCamera:stopZoom()`
 
 Stops the active zoom tween. This method is available to Lua scripts.
+
+**Lua API Stub**
+
+```lua
+--- Stops the active zoom tween. This method is available to Lua scripts.
+function LCamera:stopZoom() end
+```
 
 #### Example
 
@@ -1588,16 +2247,29 @@ do
 end
 ```
 
-### `LCamera:toScreen(wx: number, wy: number) -> number, number`
+### LCamera:toScreen
+
+`LCamera:toScreen(wx: number, wy: number) -> number, number`
 
 Converts world coordinates to screen coordinates.
 
 **Parameters**
 
-- `wx` (`number`, required) - World X coordinate.
-- `wy` (`number`, required) - World Y coordinate.
+- `wx` (`number`, required): World X coordinate.
+- `wy` (`number`, required): World Y coordinate.
 
 **Returns**: `number, number` - Screen X and Y coordinates.
+
+**Lua API Stub**
+
+```lua
+--- Converts world coordinates to screen coordinates.
+---@param wx number World X coordinate.
+---@param wy number World Y coordinate.
+---@return number a Screen X and Y coordinates.
+---@return number b Screen X and Y coordinates.
+function LCamera:toScreen(wx, wy) end
+```
 
 #### Example
 
@@ -1614,16 +2286,29 @@ do
 end
 ```
 
-### `LCamera:toWorld(sx: number, sy: number) -> number, number`
+### LCamera:toWorld
+
+`LCamera:toWorld(sx: number, sy: number) -> number, number`
 
 Converts screen coordinates to world coordinates.
 
 **Parameters**
 
-- `sx` (`number`, required) - Screen X coordinate.
-- `sy` (`number`, required) - Screen Y coordinate.
+- `sx` (`number`, required): Screen X coordinate.
+- `sy` (`number`, required): Screen Y coordinate.
 
 **Returns**: `number, number` - World X and Y coordinates.
+
+**Lua API Stub**
+
+```lua
+--- Converts screen coordinates to world coordinates.
+---@param sx number Screen X coordinate.
+---@param sy number Screen Y coordinate.
+---@return number a World X and Y coordinates.
+---@return number b World X and Y coordinates.
+function LCamera:toWorld(sx, sy) end
+```
 
 #### Example
 
@@ -1641,11 +2326,21 @@ do
 end
 ```
 
-### `LCamera:type() -> string`
+### LCamera:type
+
+`LCamera:type() -> string`
 
 Returns the Lua-visible type name for this camera handle.
 
 **Returns**: `string` - The string `LCamera`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this camera handle.
+---@return string The string `LCamera`.
+function LCamera:type() end
+```
 
 #### Example
 
@@ -1660,15 +2355,26 @@ do
 end
 ```
 
-### `LCamera:typeOf(name: string) -> boolean`
+### LCamera:typeOf
+
+`LCamera:typeOf(name: string) -> boolean`
 
 Returns whether this camera handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `LCamera` and `Object`.
+- `name` (`string`, required): Type name to compare against `LCamera` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this camera handle matches a supported type name.
+---@param name string Type name to compare against `LCamera` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LCamera:typeOf(name) end
+```
 
 #### Example
 
@@ -1684,13 +2390,23 @@ do
 end
 ```
 
-### `LCamera:update(dt: number)`
+### LCamera:update
+
+`LCamera:update(dt: number)`
 
 Advances camera follow, shake, and effect state.
 
 **Parameters**
 
-- `dt` (`number`, required) - Elapsed time in seconds.
+- `dt` (`number`, required): Elapsed time in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Advances camera follow, shake, and effect state.
+---@param dt number Elapsed time in seconds.
+function LCamera:update(dt) end
+```
 
 #### Example
 
@@ -1707,15 +2423,26 @@ do
 end
 ```
 
-### `LCamera:updatePath(dt: number) -> boolean`
+### LCamera:updatePath
+
+`LCamera:updatePath(dt: number) -> boolean`
 
 Advances the active camera path and applies its position.
 
 **Parameters**
 
-- `dt` (`number`, required) - Elapsed time in seconds.
+- `dt` (`number`, required): Elapsed time in seconds.
 
 **Returns**: `boolean` - True when a path position was applied.
+
+**Lua API Stub**
+
+```lua
+--- Advances the active camera path and applies its position.
+---@param dt number Elapsed time in seconds.
+---@return boolean True when a path position was applied.
+function LCamera:updatePath(dt) end
+```
 
 #### Example
 
@@ -1731,15 +2458,26 @@ do
 end
 ```
 
-### `LCamera:updateZoom(dt: number) -> boolean`
+### LCamera:updateZoom
+
+`LCamera:updateZoom(dt: number) -> boolean`
 
 Advances the active zoom tween and applies its zoom value.
 
 **Parameters**
 
-- `dt` (`number`, required) - Elapsed time in seconds.
+- `dt` (`number`, required): Elapsed time in seconds.
 
 **Returns**: `boolean` - True when a zoom value was applied.
+
+**Lua API Stub**
+
+```lua
+--- Advances the active zoom tween and applies its zoom value.
+---@param dt number Elapsed time in seconds.
+---@return boolean True when a zoom value was applied.
+function LCamera:updateZoom(dt) end
+```
 
 #### Example
 
@@ -1755,14 +2493,25 @@ do
 end
 ```
 
-### `LCamera:zoomPulse(amplitude: number, duration: number)`
+### LCamera:zoomPulse
+
+`LCamera:zoomPulse(amplitude: number, duration: number)`
 
 Triggers a temporary zoom pulse effect.
 
 **Parameters**
 
-- `amplitude` (`number`, required) - Zoom pulse amplitude.
-- `duration` (`number`, required) - Pulse duration in seconds.
+- `amplitude` (`number`, required): Zoom pulse amplitude.
+- `duration` (`number`, required): Pulse duration in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Triggers a temporary zoom pulse effect.
+---@param amplitude number Zoom pulse amplitude.
+---@param duration number Pulse duration in seconds.
+function LCamera:zoomPulse(amplitude, duration) end
+```
 
 #### Example
 
@@ -1779,15 +2528,27 @@ do
 end
 ```
 
-### `LCamera:zoomTo(target_zoom: number, duration: number, [easing]: string)`
+### LCamera:zoomTo
+
+`LCamera:zoomTo(target_zoom: number, duration: number, [easing]: string)`
 
 Starts a zoom tween toward a target zoom factor.
 
 **Parameters**
 
-- `target_zoom` (`number`, required) - Destination zoom factor.
-- `duration` (`number`, required) - Tween duration in seconds.
-- `easing` (`string`, optional) - Easing name such as `linear`, `smoothstep`, or `easeout`.
+- `target_zoom` (`number`, required): Destination zoom factor.
+- `duration` (`number`, required): Tween duration in seconds.
+- `easing` (`string`, optional): Easing name such as `linear`, `smoothstep`, or `easeout`.
+
+**Lua API Stub**
+
+```lua
+--- Starts a zoom tween toward a target zoom factor.
+---@param target_zoom number Destination zoom factor.
+---@param duration number Tween duration in seconds.
+---@param easing? string Easing name such as `linear`, `smoothstep`, or `easeout`.
+function LCamera:zoomTo(target_zoom, duration, easing) end
+```
 
 #### Example
 
@@ -1805,36 +2566,26 @@ do
 end
 ```
 
-### `LCameraRig`
+### LCameraRig:apply
 
-Lua-side camera rig that manages named cameras and viewport layouts.
-
-#### Example
-
-Exact example from [camera.lua](../blob/main/content/examples/camera.lua):
-
-```lua
-do
-  -- A camera rig manages multiple named cameras with automatic viewport layout.
-  -- Use it for split-screen, minimap, or picture-in-picture setups.
-  local rig = lurek.camera.newRig()
-
-  -- splitScreen creates "left" and "right" cameras covering half the window each.
-  rig:splitScreen(1280, 720)
-  local names = rig:names()
-  lurek.log.info("rig camera count=" .. tostring(#names), "camera")
-end
-```
-
-### `LCameraRig:apply(name: string) -> boolean`
+`LCameraRig:apply(name: string) -> boolean`
 
 Appends render commands for a named camera in this rig.
 
 **Parameters**
 
-- `name` (`string`, required) - Camera name to apply.
+- `name` (`string`, required): Camera name to apply.
 
 **Returns**: `boolean` - True when the named camera exists.
+
+**Lua API Stub**
+
+```lua
+--- Appends render commands for a named camera in this rig.
+---@param name string Camera name to apply.
+---@return boolean True when the named camera exists.
+function LCameraRig:apply(name) end
+```
 
 #### Example
 
@@ -1850,15 +2601,30 @@ do
 end
 ```
 
-### `LCameraRig:getViewport(name: string) -> boolean, number, number, number, number`
+### LCameraRig:getViewport
+
+`LCameraRig:getViewport(name: string) -> boolean, number, number, number, number`
 
 Returns a named rig camera viewport with a leading availability flag.
 
 **Parameters**
 
-- `name` (`string`, required) - Camera name to query.
+- `name` (`string`, required): Camera name to query.
 
 **Returns**: `boolean, number, number, number, number` - Has-camera flag followed by viewport X, Y, width, and height.
+
+**Lua API Stub**
+
+```lua
+--- Returns a named rig camera viewport with a leading availability flag.
+---@param name string Camera name to query.
+---@return boolean a Has-camera flag followed by viewport X, Y, width, and height.
+---@return number b Has-camera flag followed by viewport X, Y, width, and height.
+---@return number c Has-camera flag followed by viewport X, Y, width, and height.
+---@return number d Has-camera flag followed by viewport X, Y, width, and height.
+---@return number e Has-camera flag followed by viewport X, Y, width, and height.
+function LCameraRig:getViewport(name) end
+```
 
 #### Example
 
@@ -1874,15 +2640,26 @@ do
 end
 ```
 
-### `LCameraRig:has(name: string) -> boolean`
+### LCameraRig:has
+
+`LCameraRig:has(name: string) -> boolean`
 
 Returns whether this rig contains a named camera.
 
 **Parameters**
 
-- `name` (`string`, required) - Camera name to check.
+- `name` (`string`, required): Camera name to check.
 
 **Returns**: `boolean` - True when the camera exists.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this rig contains a named camera.
+---@param name string Camera name to check.
+---@return boolean True when the camera exists.
+function LCameraRig:has(name) end
+```
 
 #### Example
 
@@ -1896,15 +2673,27 @@ do
 end
 ```
 
-### `LCameraRig:minimap(window_w: number, window_h: number, [ratio]: number)`
+### LCameraRig:minimap
+
+`LCameraRig:minimap(window_w: number, window_h: number, [ratio]: number)`
 
 Applies a minimap layout using the current window size and optional ratio.
 
 **Parameters**
 
-- `window_w` (`number`, required) - Window width in pixels.
-- `window_h` (`number`, required) - Window height in pixels.
-- `ratio` (`number`, optional) - Minimap size ratio; defaults to 0.25.
+- `window_w` (`number`, required): Window width in pixels.
+- `window_h` (`number`, required): Window height in pixels.
+- `ratio` (`number`, optional): Minimap size ratio; defaults to 0.25.
+
+**Lua API Stub**
+
+```lua
+--- Applies a minimap layout using the current window size and optional ratio.
+---@param window_w number Window width in pixels.
+---@param window_h number Window height in pixels.
+---@param ratio? number Minimap size ratio; defaults to 0.25.
+function LCameraRig:minimap(window_w, window_h, ratio) end
+```
 
 #### Example
 
@@ -1923,11 +2712,21 @@ do
 end
 ```
 
-### `LCameraRig:names() -> string[]`
+### LCameraRig:names
+
+`LCameraRig:names() -> string[]`
 
 Returns all camera names in this rig.
 
 **Returns**: `string[]` - Camera names.
+
+**Lua API Stub**
+
+```lua
+--- Returns all camera names in this rig.
+---@return string[] Camera names.
+function LCameraRig:names() end
+```
 
 #### Example
 
@@ -1943,16 +2742,29 @@ do
 end
 ```
 
-### `LCameraRig:pictureInPicture(window_w: number, window_h: number, [pip_w]: number, [pip_h]: number)`
+### LCameraRig:pictureInPicture
+
+`LCameraRig:pictureInPicture(window_w: number, window_h: number, [pip_w]: number, [pip_h]: number)`
 
 Applies a picture-in-picture layout using optional inset size.
 
 **Parameters**
 
-- `window_w` (`number`, required) - Window width in pixels.
-- `window_h` (`number`, required) - Window height in pixels.
-- `pip_w` (`number`, optional) - Picture-in-picture width; defaults to 320.
-- `pip_h` (`number`, optional) - Picture-in-picture height; defaults to 180.
+- `window_w` (`number`, required): Window width in pixels.
+- `window_h` (`number`, required): Window height in pixels.
+- `pip_w` (`number`, optional): Picture-in-picture width; defaults to 320.
+- `pip_h` (`number`, optional): Picture-in-picture height; defaults to 180.
+
+**Lua API Stub**
+
+```lua
+--- Applies a picture-in-picture layout using optional inset size.
+---@param window_w number Window width in pixels.
+---@param window_h number Window height in pixels.
+---@param pip_w? number Picture-in-picture width; defaults to 320.
+---@param pip_h? number Picture-in-picture height; defaults to 180.
+function LCameraRig:pictureInPicture(window_w, window_h, pip_w, pip_h) end
+```
 
 #### Example
 
@@ -1971,15 +2783,26 @@ do
 end
 ```
 
-### `LCameraRig:remove(name: string) -> boolean`
+### LCameraRig:remove
+
+`LCameraRig:remove(name: string) -> boolean`
 
 Removes a named camera from this rig.
 
 **Parameters**
 
-- `name` (`string`, required) - Camera name to remove.
+- `name` (`string`, required): Camera name to remove.
 
 **Returns**: `boolean` - True when the camera existed and was removed.
+
+**Lua API Stub**
+
+```lua
+--- Removes a named camera from this rig.
+---@param name string Camera name to remove.
+---@return boolean True when the camera existed and was removed.
+function LCameraRig:remove(name) end
+```
 
 #### Example
 
@@ -1994,15 +2817,27 @@ do
 end
 ```
 
-### `LCameraRig:setPosition(name: string, x: number, y: number)`
+### LCameraRig:setPosition
+
+`LCameraRig:setPosition(name: string, x: number, y: number)`
 
 Sets the position of a named rig camera, creating it if needed.
 
 **Parameters**
 
-- `name` (`string`, required) - Camera name.
-- `x` (`number`, required) - Camera X position.
-- `y` (`number`, required) - Camera Y position.
+- `name` (`string`, required): Camera name.
+- `x` (`number`, required): Camera X position.
+- `y` (`number`, required): Camera Y position.
+
+**Lua API Stub**
+
+```lua
+--- Sets the position of a named rig camera, creating it if needed.
+---@param name string Camera name.
+---@param x number Camera X position.
+---@param y number Camera Y position.
+function LCameraRig:setPosition(name, x, y) end
+```
 
 #### Example
 
@@ -2017,15 +2852,27 @@ do
 end
 ```
 
-### `LCameraRig:setTarget(name: string, x: number, y: number)`
+### LCameraRig:setTarget
+
+`LCameraRig:setTarget(name: string, x: number, y: number)`
 
 Sets the follow target of a named rig camera, creating it if needed.
 
 **Parameters**
 
-- `name` (`string`, required) - Camera name.
-- `x` (`number`, required) - Target X position.
-- `y` (`number`, required) - Target Y position.
+- `name` (`string`, required): Camera name.
+- `x` (`number`, required): Target X position.
+- `y` (`number`, required): Target Y position.
+
+**Lua API Stub**
+
+```lua
+--- Sets the follow target of a named rig camera, creating it if needed.
+---@param name string Camera name.
+---@param x number Target X position.
+---@param y number Target Y position.
+function LCameraRig:setTarget(name, x, y) end
+```
 
 #### Example
 
@@ -2041,14 +2888,25 @@ do
 end
 ```
 
-### `LCameraRig:setZoom(name: string, zoom: number)`
+### LCameraRig:setZoom
+
+`LCameraRig:setZoom(name: string, zoom: number)`
 
 Sets the zoom of a named rig camera, creating it if needed.
 
 **Parameters**
 
-- `name` (`string`, required) - Camera name.
-- `zoom` (`number`, required) - Camera zoom factor.
+- `name` (`string`, required): Camera name.
+- `zoom` (`number`, required): Camera zoom factor.
+
+**Lua API Stub**
+
+```lua
+--- Sets the zoom of a named rig camera, creating it if needed.
+---@param name string Camera name.
+---@param zoom number Camera zoom factor.
+function LCameraRig:setZoom(name, zoom) end
+```
 
 #### Example
 
@@ -2062,14 +2920,25 @@ do
 end
 ```
 
-### `LCameraRig:splitScreen(window_w: number, window_h: number)`
+### LCameraRig:splitScreen
+
+`LCameraRig:splitScreen(window_w: number, window_h: number)`
 
 Applies a split-screen layout using the current window size.
 
 **Parameters**
 
-- `window_w` (`number`, required) - Window width in pixels.
-- `window_h` (`number`, required) - Window height in pixels.
+- `window_w` (`number`, required): Window width in pixels.
+- `window_h` (`number`, required): Window height in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Applies a split-screen layout using the current window size.
+---@param window_w number Window width in pixels.
+---@param window_h number Window height in pixels.
+function LCameraRig:splitScreen(window_w, window_h) end
+```
 
 #### Example
 
@@ -2088,11 +2957,21 @@ do
 end
 ```
 
-### `LCameraRig:type() -> string`
+### LCameraRig:type
+
+`LCameraRig:type() -> string`
 
 Returns the Lua-visible type name for this camera rig handle.
 
 **Returns**: `string` - The string `LCameraRig`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this camera rig handle.
+---@return string The string `LCameraRig`.
+function LCameraRig:type() end
+```
 
 #### Example
 
@@ -2105,15 +2984,26 @@ do
 end
 ```
 
-### `LCameraRig:typeOf(name: string) -> boolean`
+### LCameraRig:typeOf
+
+`LCameraRig:typeOf(name: string) -> boolean`
 
 Returns whether this camera rig handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `LCameraRig` and `Object`.
+- `name` (`string`, required): Type name to compare against `LCameraRig` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this camera rig handle matches a supported type name.
+---@param name string Type name to compare against `LCameraRig` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LCameraRig:typeOf(name) end
+```
 
 #### Example
 
@@ -2127,13 +3017,23 @@ do
 end
 ```
 
-### `LCameraRig:updateAll(dt: number)`
+### LCameraRig:updateAll
+
+`LCameraRig:updateAll(dt: number)`
 
 Advances every camera in this rig. This method is available to Lua scripts.
 
 **Parameters**
 
-- `dt` (`number`, required) - Elapsed time in seconds.
+- `dt` (`number`, required): Elapsed time in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Advances every camera in this rig. This method is available to Lua scripts.
+---@param dt number Elapsed time in seconds.
+function LCameraRig:updateAll(dt) end
+```
 
 #### Example
 
@@ -2151,11 +3051,15 @@ end
 ```
 
 
-## Examples
+[⬆ back to top](#table-of-contents)
+
+## 💡 Examples
 
 - [camera.lua](../blob/main/content/examples/camera.lua) - Viewport pan, zoom, shake
 
-## Reference Games
+[⬆ back to top](#table-of-contents)
+
+## 🎮 Reference Games
 
 - [brick_breaker](../tree/main/content/games/action/brick_breaker) (action)
 - [bullet_hell](../tree/main/content/games/action/bullet_hell) (action)
@@ -2178,13 +3082,15 @@ end
 - [shadow_beast](../tree/main/content/games/retro/shadow_beast) (retro)
 - [turrican](../tree/main/content/games/retro/turrican) (retro)
 
-## Related Modules
+[⬆ back to top](#table-of-contents)
 
-- Previous: [[bin|Module-bin]]
-- Next: [[compute|Module-compute]]
-- [[audio|Module-audio]] - Sound loading and playback wrapping rodio; Mixer / Bus instances live in SharedState.
-- [[effect|Module-effect]] - Post-processing pipeline: blur, bloom, distortion, color grading, custom WGSL passes.
-- [[image|Module-image]] - CPU-side ImageData (RGBA8 buffer) with blit, resize, fill, region, diff, PNG encode.
-- [[input|Module-input]] - Per-frame keyboard / mouse / gamepad / touch state translated from winit events.
-- [[light|Module-light]] - 2D point-light data model. Pure container; renderer owns all GPU work.
-- [[physics|Module-physics]] - Rigid-body 2D physics on top of rapier2d. Heavy dependency tree.
+## 🔗 Related Modules
+
+- Previous: [bin](Module-bin)
+- Next: [compute](Module-compute)
+- [audio](Module-audio) - Sound loading and playback wrapping rodio; Mixer / Bus instances live in SharedState.
+- [effect](Module-effect) - Post-processing pipeline: blur, bloom, distortion, color grading, custom WGSL passes.
+- [image](Module-image) - CPU-side ImageData (RGBA8 buffer) with blit, resize, fill, region, diff, PNG encode.
+- [input](Module-input) - Per-frame keyboard / mouse / gamepad / touch state translated from winit events.
+- [light](Module-light) - 2D point-light data model. Pure container; renderer owns all GPU work.
+- [physics](Module-physics) - Rigid-body 2D physics on top of rapier2d. Heavy dependency tree.

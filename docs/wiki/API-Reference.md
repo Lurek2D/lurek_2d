@@ -4,7 +4,7 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
@@ -304,7 +304,7 @@ Compact index of all functions and methods. Parameter details and examples live 
 
 ## lurek.ai
 
-[[Module page|Module-ai]]
+[Module page](Module-ai)
 
 ```lua
 lurek.ai.newAction(callback: function) -> LBTNode -- Creates a behavior tree action leaf backed by a Lua callback.
@@ -794,7 +794,7 @@ LUtilityAI:typeOf(name: string) -> boolean -- Returns whether this utility AI ha
 
 ## lurek.animation
 
-[[Module page|Module-animation]]
+[Module page](Module-animation)
 
 ```lua
 lurek.animation.buildCharacter(cfg: table) -> table -- Builds a character animation bundle from grid frame and clip configuration.
@@ -894,7 +894,7 @@ LBlendLayerSet:typeOf(name: string) -> boolean -- Returns whether this blend lay
 
 ## lurek.audio
 
-[[Module page|Module-audio]]
+[Module page](Module-audio)
 
 ```lua
 lurek.audio.add_effect(bus_name: string, effect_type_str: string, [params]: table) -> integer -- Adds an effect to a named audio bus and returns its effect ID.
@@ -1152,7 +1152,7 @@ LSource:typeOf(name: string) -> boolean -- Checks whether this object is of the 
 
 ## lurek.automation
 
-[[Module page|Module-automation]]
+[Module page](Module-automation)
 
 ```lua
 lurek.automation.getCondition(name: string) -> boolean -- Returns a named automation condition value.
@@ -1191,7 +1191,7 @@ lurek.automation.waitUntil(predicate: function, timeout: number) -- Suspends aut
 
 ## lurek.camera
 
-[[Module page|Module-camera]]
+[Module page](Module-camera)
 
 ```lua
 lurek.camera.new([vw]: number, [vh]: number) -> LCamera -- Creates a 2D camera with optional virtual viewport size.
@@ -1296,7 +1296,7 @@ LCameraRig:updateAll(dt: number) -- Advances every camera in this rig. This meth
 
 ## lurek.compute
 
-[[Module page|Module-compute]]
+[Module page](Module-compute)
 
 ```lua
 lurek.compute.affine2d(tx: number, ty: number, angle_rad: number, sx: number, sy: number) -> LArray -- Creates a 2D affine transform matrix.
@@ -1401,7 +1401,7 @@ LArray:zscore() -> LArray -- Returns z-score normalized array values.
 
 ## lurek.data
 
-[[Module page|Module-data]]
+[Module page](Module-data)
 
 ```lua
 lurek.data.compress(format_str: string, raw_data: string, [level]: integer) -> string -- Compresses a binary string using a named compression format.
@@ -1500,7 +1500,7 @@ LRingBuffer:typeOf(name: string) -> boolean -- Returns whether this ring buffer 
 
 ## lurek.dataframe
 
-[[Module page|Module-dataframe]]
+[Module page](Module-dataframe)
 
 ```lua
 lurek.dataframe.fromBinary(s: string) -> LDataFrame -- Parses a dataframe from binary data.
@@ -1664,7 +1664,7 @@ LVecFrame:typeOf(name: string) -> boolean -- Returns whether this vectorized fra
 
 ## lurek.debugbridge
 
-[[Module page|Module-debugbridge]]
+[Module page](Module-debugbridge)
 
 ```lua
 lurek.debugbridge.broadcast(event: string, json_data: string) -- Queues a JSON string payload broadcast for debug bridge clients.
@@ -1687,7 +1687,7 @@ lurek.debugbridge.stop() -- Stops the debug bridge server and joins its server t
 
 ## lurek.devtools
 
-[[Module page|Module-devtools]]
+[Module page](Module-devtools)
 
 ```lua
 lurek.devtools.clearLog() -- Clears all in-memory devtools log entries.
@@ -1766,7 +1766,7 @@ LReplConsole:typeOf(name: string) -> boolean -- Returns whether this REPL consol
 
 ## lurek.docs
 
-[[Module page|Module-docs]]
+[Module page](Module-docs)
 
 ```lua
 lurek.docs.checkStaleness(catalog_ud: LApiCatalog, source_dir: string) -> table -- Lists source files in a directory for simple documentation staleness checks.
@@ -1884,7 +1884,7 @@ LValidationReport:typeOf(name: string) -> boolean -- Returns whether this valida
 
 ## lurek.ecs
 
-[[Module page|Module-ecs]]
+[Module page](Module-ecs)
 
 ```lua
 lurek.ecs.newUniverse() -> LUniverse -- Creates an empty ECS universe for entity, component, system, and relationship management.
@@ -1965,7 +1965,7 @@ LUniverse:updatePhase(phase: string, dt: number) -- Runs registered systems assi
 
 ## lurek.effect
 
-[[Module page|Module-effect]]
+[Module page](Module-effect)
 
 ```lua
 lurek.effect.getEffectTypes() -> string[] -- Returns all built-in post-processing effect type names.
@@ -2158,7 +2158,7 @@ LScreenTransition:update(dt: number) -> boolean -- Advances this transition time
 
 ## lurek.engine
 
-[[Module page|Module-engine]]
+[Module page](Module-engine)
 
 ```lua
 lurek.engine.fps() -> number -- Returns the latest frames-per-second value stored by the runtime.
@@ -2178,7 +2178,7 @@ lurek.engine.uptime() -> number -- Returns total engine runtime accumulated by t
 
 ## lurek.event
 
-[[Module page|Module-event]]
+[Module page](Module-event)
 
 ```lua
 lurek.event.clear() -- Clears all pending events from the shared event queue.
@@ -2218,7 +2218,7 @@ LSignal:typeOf(name: string) -> boolean -- Returns whether this signal handle ma
 
 ## lurek.filesystem
 
-[[Module page|Module-filesystem]]
+[Module page](Module-filesystem)
 
 ```lua
 lurek.filesystem.append(path: string, data: string) -- Appends UTF-8 text to a GameFS file.
@@ -2307,7 +2307,7 @@ LZipMount:typeOf(name: string) -> boolean -- Returns whether this ZIP mount hand
 
 ## lurek.globe
 
-[[Module page|Module-globe]]
+[Module page](Module-globe)
 
 ```lua
 lurek.globe.generateVoronoi(name: string, seeds_tbl: table, [spec_tbl]: table) -> LGlobe -- Creates a globe and populates provinces from latitude-longitude seed points.
@@ -2401,7 +2401,7 @@ LGlobeRegistry:typeOf(name: string) -> boolean -- Returns whether this registry 
 
 ## lurek.graph
 
-[[Module page|Module-graph]]
+[Module page](Module-graph)
 
 ```lua
 lurek.graph.newGraph() -> LGraph -- Creates an empty logistics graph with no nodes, edges, items, or callbacks.
@@ -2555,7 +2555,7 @@ LGraphNode:typeOf(name: string) -> boolean -- Returns whether this graph node ha
 
 ## lurek.html
 
-[[Module page|Module-html]]
+[Module page](Module-html)
 
 ```lua
 lurek.html.isDefaultPrevented() -> boolean -- Returns whether the default action was prevented.
@@ -2632,7 +2632,7 @@ LHtmlElement:typeOf(name: string) -> boolean -- Returns whether this element han
 
 ## lurek.i18n
 
-[[Module page|Module-i18n]]
+[Module page](Module-i18n)
 
 ```lua
 lurek.i18n.buildIndex() -> string[] -- Builds a word-to-keys search index from the catalog.
@@ -2675,7 +2675,7 @@ lurek.i18n.validateLocale(locale: string) -> boolean -- Returns whether a locale
 
 ## lurek.image
 
-[[Module page|Module-image]]
+[Module page](Module-image)
 
 ```lua
 lurek.image.fromScreen() -> LImageData|nil -- Returns a completed screen capture image or requests one for a future call.
@@ -2809,7 +2809,7 @@ LProvinceGrid:typeOf(name: string) -> boolean -- Returns whether this province g
 
 ## lurek.input
 
-[[Module page|Module-input]]
+[Module page](Module-input)
 
 ```lua
 lurek.input.advancePlayback() -> table -- Advances playback by one frame and returns events for that frame.
@@ -2929,7 +2929,7 @@ LInputRecording:typeOf(name: string) -> boolean -- Returns whether this input re
 
 ## lurek.light
 
-[[Module page|Module-light]]
+[Module page](Module-light)
 
 ```lua
 lurek.light.advanceFlickers(dt: number) -- Advances flicker animation for all indexed flickering lights.
@@ -3044,7 +3044,7 @@ LOccluder:typeOf(name: string) -> boolean -- Returns whether this occluder handl
 
 ## lurek.log
 
-[[Module page|Module-log]]
+[Module page](Module-log)
 
 ```lua
 lurek.log.addSink(config: table) -> integer -- Adds a memory, file, rotating, or callback sink from a config table.
@@ -3069,7 +3069,7 @@ lurek.log.warn_fields(message: string, fields_tbl: table) -- Logs a warning mess
 
 ## lurek.math
 
-[[Module page|Module-math]]
+[Module page](Module-math)
 
 ```lua
 lurek.math.aabbTree() -> LAabbTree -- Creates an empty AABB tree. This function is exposed to Lua scripts.
@@ -3392,7 +3392,7 @@ LVec3:typeOf(name: string) -> boolean -- Returns whether this vector handle matc
 
 ## lurek.minimap
 
-[[Module page|Module-minimap]]
+[Module page](Module-minimap)
 
 ```lua
 lurek.minimap.newMinimap(grid_w: integer, grid_h: integer, [display_w]: integer, [display_h]: integer) -> LMinimap -- Creates a minimap with grid dimensions and optional display size.
@@ -3491,7 +3491,7 @@ LMinimap:update(dt: number) -- Advances minimap animations and timers.
 
 ## lurek.mods
 
-[[Module page|Module-mods]]
+[Module page](Module-mods)
 
 ```lua
 lurek.mods.checkApiVersion(mod_ud: LMod, host_version: string) -> boolean -- Checks whether a mod API version is compatible with a host version.
@@ -3568,7 +3568,7 @@ LModManager:validateDependencies() -> string[] -- Returns dependency validation 
 
 ## lurek.network
 
-[[Module page|Module-network]]
+[Module page](Module-network)
 
 ```lua
 lurek.network.createLobby(name: string, port: integer, [player_count]: integer, [max_players]: integer) -> table -- Broadcasts lobby information and returns it as a table.
@@ -3646,7 +3646,7 @@ LNetworkRuntime:wsSend(id: integer, data: string) -- Sends text over a WebSocket
 
 ## lurek.parallax
 
-[[Module page|Module-parallax]]
+[Module page](Module-parallax)
 
 ```lua
 lurek.parallax.newLayer(opts: table) -> LParallaxLayer -- Creates a parallax layer from an options table.
@@ -3714,7 +3714,7 @@ LParallaxSet:update(dt: number) -- Updates all layers in this parallax set.
 
 ## lurek.particle
 
-[[Module page|Module-particle]]
+[Module page](Module-particle)
 
 ```lua
 lurek.particle.fromTOML(path: string) -> LParticleSystem -- Creates a particle system from a TOML config file.
@@ -3835,7 +3835,7 @@ LTrail:update(dt: number) -- Updates trail point lifetimes. This method is avail
 
 ## lurek.pathfind
 
-[[Module page|Module-pathfind]]
+[Module page](Module-pathfind)
 
 ```lua
 lurek.pathfind.getThreadCount() -> integer -- Returns the pathfinding thread count.
@@ -3983,7 +3983,7 @@ LUnitPathfinder:typeOf(name: string) -> boolean -- Returns whether this pathfind
 
 ## lurek.patterns
 
-[[Module page|Module-patterns]]
+[Module page](Module-patterns)
 
 ```lua
 lurek.patterns.newBehaviorTree() -> LBehaviorTree -- Create a new behavior tree for AI decision-making with sequences, selectors, parallels, and leaf actions.
@@ -4352,7 +4352,7 @@ LWeightedRandom:totalWeight() -> number -- Return the sum of all entry weights.
 
 ## lurek.physics
 
-[[Module page|Module-physics]]
+[Module page](Module-physics)
 
 ```lua
 lurek.physics.attachShape(body: LBody, shape: LPhysicsShape) -- Attaches a previously created shape to a body, using the shape's stored material properties.
@@ -4594,7 +4594,7 @@ LZone:typeOf(name: string) -> boolean -- Checks if this object is of a given typ
 
 ## lurek.pipeline
 
-[[Module page|Module-pipeline]]
+[Module page](Module-pipeline)
 
 ```lua
 lurek.pipeline.fromTable(definition: table) -> LPipeline -- Creates a pipeline pre-populated with steps from a declarative table definition. Each step entry can specif...
@@ -4677,7 +4677,7 @@ LPipelineStep:typeOf(name: string) -> boolean -- Checks whether this object is o
 
 ## lurek.procgen
 
-[[Module page|Module-procgen]]
+[Module page](Module-procgen)
 
 ```lua
 lurek.procgen.biomeColor(name: string) -> number -- Get the default RGBA display color for a biome type name. Useful for minimap or debug visualization.
@@ -4717,7 +4717,7 @@ BiomeClassifier:typeOf(name: string) -> boolean -- Check whether this object mat
 
 ## lurek.province
 
-[[Module page|Module-province]]
+[Module page](Module-province)
 
 ```lua
 lurek.province.exists(name: string) -> boolean -- Checks whether a province registry with the given name exists.
@@ -4768,7 +4768,7 @@ LProvinceRegistry:typeOf(name: string) -> boolean -- Checks whether this object 
 
 ## lurek.raycaster
 
-[[Module page|Module-raycaster]]
+[Module page](Module-raycaster)
 
 ```lua
 lurek.raycaster.distanceShade(distance: number, maxDistance: number) -> number -- Returns a brightness multiplier (0.0..1.0) based on distance for fog/darkness falloff.
@@ -4874,7 +4874,7 @@ LSpriteManager:typeOf(name: string) -> boolean -- Checks whether this object mat
 
 ## lurek.render
 
-[[Module page|Module-render]]
+[Module page](Module-render)
 
 ```lua
 lurek.render.applyTransform(mat: table) -- Multiplies the current transformation matrix by a 3x3 matrix (9 values in row-major order).
@@ -5137,7 +5137,7 @@ LSpriteBatch:typeOf(name: string) -> string -- Returns the type name of this obj
 
 ## lurek.repl
 
-[[Module page|Module-repl]]
+[Module page](Module-repl)
 
 ```lua
 lurek.repl.new([max_history]: integer) -> LReplSession -- Creates a release-safe REPL session with bounded command history.
@@ -5157,7 +5157,7 @@ LReplSession:typeOf(name: string) -> boolean -- Returns whether this REPL sessio
 
 ## lurek.save
 
-[[Module page|Module-save]]
+[Module page](Module-save)
 
 ```lua
 lurek.save.newSaveManager() -> LSaveManager -- Create a new SaveManager instance for managing persistent game saves.
@@ -5197,7 +5197,7 @@ LSaveManager:update(dt: number) -> boolean -- Advance the auto-save timer by dt 
 
 ## lurek.scene
 
-[[Module page|Module-scene]]
+[Module page](Module-scene)
 
 ```lua
 lurek.scene.clear() -- Remove all scenes from the stack. Each removed scene receives its `leave()` callback in stack order. After...
@@ -5269,7 +5269,7 @@ LDepthSorter:typeOf(name: string) -> boolean -- Check whether this object matche
 
 ## lurek.serial
 
-[[Module page|Module-serial]]
+[Module page](Module-serial)
 
 ```lua
 lurek.serial.applyDefaults(value: table, schema: table) -> table -- Merges a schema's default values into a data table, filling in any missing fields without overwriting exist...
@@ -5291,7 +5291,7 @@ lurek.serial.validate(value: table, schema: table) -> boolean -- Validates a Lua
 
 ## lurek.spine
 
-[[Module page|Module-spine]]
+[Module page](Module-spine)
 
 ```lua
 lurek.spine.animationFromJson(json: string) -> LSkeletonAnimation -- Parses a JSON string into a SkeletonAnimation. Returns nil if parsing fails or the format is invalid.
@@ -5345,7 +5345,7 @@ LSkeletonAnimation:typeOf(name: string) -> boolean -- Checks whether this object
 
 ## lurek.sprite
 
-[[Module page|Module-sprite]]
+[Module page](Module-sprite)
 
 ```lua
 lurek.sprite.newAtlasSheet(atlas: LSpriteAtlas, sw: integer, sh: integer) -> LSpriteSheet -- Creates a sprite sheet from an existing atlas, treating each atlas entry as a frame within the given sheet...
@@ -5386,7 +5386,7 @@ LSpriteSheet:typeOf(name: string) -> boolean -- Checks whether this object match
 
 ## lurek.system
 
-[[Module page|Module-system]]
+[Module page](Module-system)
 
 ```lua
 lurek.runtime.errorSnapshot(msg: string) -> string -- Creates a JSON-encoded error snapshot from a message string, useful for diagnostics and error reporting.
@@ -5421,7 +5421,7 @@ lurek.runtime.setLogLevel(level: string) -- Sets the engine-wide log verbosity l
 
 ## lurek.terminal
 
-[[Module page|Module-terminal]]
+[Module page](Module-terminal)
 
 ```lua
 lurek.terminal.addCompletion(candidate: string) -- Registers a candidate string for tab-completion in the shared completion engine.
@@ -5526,7 +5526,7 @@ LWidget:typeOf(name: string) -> boolean -- Checks whether this object matches a 
 
 ## lurek.thread
 
-[[Module page|Module-thread]]
+[Module page](Module-thread)
 
 ```lua
 lurek.thread.async(codeOrFunc: string|function, ...: any) -> LPromise -- Runs a Lua code string or dumped function asynchronously on a new worker thread, returning a promise for th...
@@ -5596,7 +5596,7 @@ LThreadPool:typeOf(name: string) -> boolean -- Checks whether this object matche
 
 ## lurek.tilemap
 
-[[Module page|Module-tilemap]]
+[Module page](Module-tilemap)
 
 ```lua
 lurek.tilemap.fromLDtk(jsonStr: string, [levelName]: string) -> LTileMap -- Loads a tilemap from an LDtk JSON string, optionally targeting a specific level.
@@ -5843,7 +5843,7 @@ LTileSet:typeOf(name: string) -> boolean -- Checks whether this object matches t
 
 ## lurek.timer
 
-[[Module page|Module-timer]]
+[Module page](Module-timer)
 
 ```lua
 lurek.timer.afterReal(delay: number, func: function) -- Schedules a one-shot callback based on real (wall-clock) time, unaffected by game pausing or time scaling....
@@ -5904,7 +5904,7 @@ LScheduler:updateFrames() -> integer -- Advances all frame-based events by one f
 
 ## lurek.tween
 
-[[Module page|Module-tween]]
+[Module page](Module-tween)
 
 ```lua
 lurek.tween.cancelAll() -- Immediately cancels all active tweens, sequences, parallels, and springs managed by the tween engine.
@@ -6005,7 +6005,7 @@ LTweenState:typeOf(name: string) -> boolean -- Checks whether this object matche
 
 ## lurek.ui
 
-[[Module page|Module-ui]]
+[Module page](Module-ui)
 
 ```lua
 lurek.ui.addToast(toast_table: table) -- Adds a toast notification to the queue.
@@ -6605,7 +6605,7 @@ LUiWidget:unbind(self: LUiWidget) -- Removes the data binding from this widget.
 
 ## lurek.window
 
-[[Module page|Module-window]]
+[Module page](Module-window)
 
 ```lua
 lurek.window.close() -- Closes the window and signals the engine to shut down.

@@ -4,165 +4,114 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
-- [Purpose](#purpose)
-- [Summary](#summary)
-- [Minimal Module Example](#minimal-module-example)
-- [Key Types](#key-types)
-- [API Overview](#api-overview)
-- [Module Functions](#module-functions)
-  - [lurek.animation.buildCharacter(cfg: table) -> table](#lurekanimationbuildcharactercfg-table-table)
-  - [lurek.animation.fromAseprite(json_str: string) -> LuaValue](#lurekanimationfromasepritejsonstr-string-luavalue)
-  - [lurek.animation.new() -> LAnimation](#lurekanimationnew-lanimation)
-  - [lurek.animation.newBlendLayerSet() -> LBlendLayerSet](#lurekanimationnewblendlayerset-lblendlayerset)
-  - [lurek.animation.newCurve() -> LAnimCurve](#lurekanimationnewcurve-lanimcurve)
-  - [lurek.animation.newStateMachine(anim_ud: LAnimation, initial: string) -> LAnimStateMachine](#lurekanimationnewstatemachineanimud-lanimation-initial-string-lanimstatemachine)
-  - [lurek.animation.newSyncGroup() -> LAnimSyncGroup](#lurekanimationnewsyncgroup-lanimsyncgroup)
-- [Types and Methods](#types-and-methods)
+- [🎯 Purpose](#purpose)
+- [📋 Summary](#summary)
+- [🧩 Key Types](#key-types)
+- [📖 API Overview](#api-overview)
+- [⚙️ Module Functions](#module-functions)
+  - [lurek.animation.buildCharacter](#lurekanimationbuildcharacter)
+  - [lurek.animation.fromAseprite](#lurekanimationfromaseprite)
+  - [lurek.animation.new](#lurekanimationnew)
+  - [lurek.animation.newBlendLayerSet](#lurekanimationnewblendlayerset)
+  - [lurek.animation.newCurve](#lurekanimationnewcurve)
+  - [lurek.animation.newStateMachine](#lurekanimationnewstatemachine)
+  - [lurek.animation.newSyncGroup](#lurekanimationnewsyncgroup)
+- [🔷 Module Types](#module-types)
   - [LAnimation](#lanimation)
-  - [LAnimation:addClip(name: string, indices_tbl: table, fps: number, looping: boolean, [mode]: string)](#lanimationaddclipname-string-indicestbl-table-fps-number-looping-boolean-mode-string)
-  - [LAnimation:addClipFromGrid(name: string, tw: integer, th: integer, fw: integer, fh: integer, start: integer, count: integer, fps: number, looping: boolean)](#lanimationaddclipfromgridname-string-tw-integer-th-integer-fw-integer-fh-integer-start-integer-count-integer-fps-number-looping-boolean)
-  - [LAnimation:addFrame(x: number, y: number, w: number, h: number) -> integer](#lanimationaddframex-number-y-number-w-number-h-number-integer)
-  - [LAnimation:addFramesFromGrid(tw: integer, th: integer, fw: integer, fh: integer, start: integer, count: integer) -> integer](#lanimationaddframesfromgridtw-integer-th-integer-fw-integer-fh-integer-start-integer-count-integer-integer)
-  - [LAnimation:addFramesFromRects(rects: table) -> integer](#lanimationaddframesfromrectsrects-table-integer)
-  - [LAnimation:crossfade(clip_name: string, duration: number) -> boolean](#lanimationcrossfadeclipname-string-duration-number-boolean)
-  - [LAnimation:drawPreviewGrid(columns: integer, cell_size: integer) -> LImageData](#lanimationdrawpreviewgridcolumns-integer-cellsize-integer-limagedata)
-  - [LAnimation:drawToImage(w: integer, h: integer) -> LImageData](#lanimationdrawtoimagew-integer-h-integer-limagedata)
-  - [LAnimation:getBlendState() -> LuaValue](#lanimationgetblendstate-luavalue)
-  - [LAnimation:getClip() -> LuaValue](#lanimationgetclip-luavalue)
-  - [LAnimation:getClipCount() -> integer](#lanimationgetclipcount-integer)
-  - [LAnimation:getClipMode(name: string) -> LuaValue](#lanimationgetclipmodename-string-luavalue)
-  - [LAnimation:getCurrentFrame() -> integer](#lanimationgetcurrentframe-integer)
-  - [LAnimation:getFrameCount() -> integer](#lanimationgetframecount-integer)
-  - [LAnimation:getQuad() -> LuaValue](#lanimationgetquad-luavalue)
-  - [LAnimation:getSpeed() -> number](#lanimationgetspeed-number)
-  - [LAnimation:isLooping() -> boolean](#lanimationislooping-boolean)
-  - [LAnimation:isPlaying() -> boolean](#lanimationisplaying-boolean)
-  - [LAnimation:pause()](#lanimationpause)
-  - [LAnimation:play(name: string) -> boolean](#lanimationplayname-string-boolean)
-  - [LAnimation:pollEvents() -> table](#lanimationpollevents-table)
-  - [LAnimation:resume()](#lanimationresume)
-  - [LAnimation:setClipMode(name: string, mode: string) -> boolean](#lanimationsetclipmodename-string-mode-string-boolean)
-  - [LAnimation:setFrame(index: integer)](#lanimationsetframeindex-integer)
-  - [LAnimation:setSpeed(speed: number)](#lanimationsetspeedspeed-number)
-  - [LAnimation:stop()](#lanimationstop)
-  - [LAnimation:type() -> string](#lanimationtype-string)
-  - [LAnimation:typeOf(name: string) -> boolean](#lanimationtypeofname-string-boolean)
-  - [LAnimation:update(dt: number)](#lanimationupdatedt-number)
   - [LAnimCurve](#lanimcurve)
-  - [LAnimCurve:addKeyframe(t: number, v: number)](#lanimcurveaddkeyframet-number-v-number)
-  - [LAnimCurve:clear()](#lanimcurveclear)
-  - [LAnimCurve:eval(t: number) -> number](#lanimcurveevalt-number-number)
-  - [LAnimCurve:keyframeCount() -> integer](#lanimcurvekeyframecount-integer)
-  - [LAnimCurve:setCustomEasing(func: function)](#lanimcurvesetcustomeasingfunc-function)
-  - [LAnimCurve:setEasing(mode: string)](#lanimcurveseteasingmode-string)
-  - [LAnimCurve:type() -> string](#lanimcurvetype-string)
-  - [LAnimCurve:typeOf(name: string) -> boolean](#lanimcurvetypeofname-string-boolean)
   - [LAnimStateMachine](#lanimstatemachine)
-  - [LAnimStateMachine:addState(name: string, clip: string, looping: boolean)](#lanimstatemachineaddstatename-string-clip-string-looping-boolean)
-  - [LAnimStateMachine:addTransition(from_state: string, to_state: string, condition: string)](#lanimstatemachineaddtransitionfromstate-string-tostate-string-condition-string)
-  - [LAnimStateMachine:forceState(name: string) -> boolean](#lanimstatemachineforcestatename-string-boolean)
-  - [LAnimStateMachine:getQuad() -> LuaValue](#lanimstatemachinegetquad-luavalue)
-  - [LAnimStateMachine:getState() -> string](#lanimstatemachinegetstate-string)
-  - [LAnimStateMachine:setParam(name: string, value: LuaValue)](#lanimstatemachinesetparamname-string-value-luavalue)
-  - [LAnimStateMachine:type() -> string](#lanimstatemachinetype-string)
-  - [LAnimStateMachine:typeOf(name: string) -> boolean](#lanimstatemachinetypeofname-string-boolean)
-  - [LAnimStateMachine:update(dt: number)](#lanimstatemachineupdatedt-number)
   - [LAnimSyncGroup](#lanimsyncgroup)
-  - [LAnimSyncGroup:add(handle: integer)](#lanimsyncgroupaddhandle-integer)
-  - [LAnimSyncGroup:clear()](#lanimsyncgroupclear)
-  - [LAnimSyncGroup:memberCount() -> integer](#lanimsyncgroupmembercount-integer)
-  - [LAnimSyncGroup:remove(handle: integer)](#lanimsyncgroupremovehandle-integer)
-  - [LAnimSyncGroup:type() -> string](#lanimsyncgrouptype-string)
-  - [LAnimSyncGroup:typeOf(name: string) -> boolean](#lanimsyncgrouptypeofname-string-boolean)
   - [LBlendLayerSet](#lblendlayerset)
-  - [LBlendLayerSet:addLayer(name: string, clip_name: string, weight: number, [bones]: table) -> boolean](#lblendlayersetaddlayername-string-clipname-string-weight-number-bones-table-boolean)
-  - [LBlendLayerSet:getWeight(name: string) -> LuaValue](#lblendlayersetgetweightname-string-luavalue)
-  - [LBlendLayerSet:len() -> integer](#lblendlayersetlen-integer)
-  - [LBlendLayerSet:listLayers() -> table](#lblendlayersetlistlayers-table)
-  - [LBlendLayerSet:removeLayer(name: string) -> boolean](#lblendlayersetremovelayername-string-boolean)
-  - [LBlendLayerSet:setMask(name: string, bones: table) -> boolean](#lblendlayersetsetmaskname-string-bones-table-boolean)
-  - [LBlendLayerSet:setWeight(name: string, weight: number) -> boolean](#lblendlayersetsetweightname-string-weight-number-boolean)
-  - [LBlendLayerSet:type() -> string](#lblendlayersettype-string)
-  - [LBlendLayerSet:typeOf(name: string) -> boolean](#lblendlayersettypeofname-string-boolean)
-- [Examples](#examples)
-- [Reference Games](#reference-games)
-- [Related Modules](#related-modules)
+- [🔹 Module Methods](#module-methods)
+  - [LAnimation:addClip](#lanimationaddclip)
+  - [LAnimation:addClipFromGrid](#lanimationaddclipfromgrid)
+  - [LAnimation:addFrame](#lanimationaddframe)
+  - [LAnimation:addFramesFromGrid](#lanimationaddframesfromgrid)
+  - [LAnimation:addFramesFromRects](#lanimationaddframesfromrects)
+  - [LAnimation:crossfade](#lanimationcrossfade)
+  - [LAnimation:drawPreviewGrid](#lanimationdrawpreviewgrid)
+  - [LAnimation:drawToImage](#lanimationdrawtoimage)
+  - [LAnimation:getBlendState](#lanimationgetblendstate)
+  - [LAnimation:getClip](#lanimationgetclip)
+  - [LAnimation:getClipCount](#lanimationgetclipcount)
+  - [LAnimation:getClipMode](#lanimationgetclipmode)
+  - [LAnimation:getCurrentFrame](#lanimationgetcurrentframe)
+  - [LAnimation:getFrameCount](#lanimationgetframecount)
+  - [LAnimation:getQuad](#lanimationgetquad)
+  - [LAnimation:getSpeed](#lanimationgetspeed)
+  - [LAnimation:isLooping](#lanimationislooping)
+  - [LAnimation:isPlaying](#lanimationisplaying)
+  - [LAnimation:pause](#lanimationpause)
+  - [LAnimation:play](#lanimationplay)
+  - [LAnimation:pollEvents](#lanimationpollevents)
+  - [LAnimation:resume](#lanimationresume)
+  - [LAnimation:setClipMode](#lanimationsetclipmode)
+  - [LAnimation:setFrame](#lanimationsetframe)
+  - [LAnimation:setSpeed](#lanimationsetspeed)
+  - [LAnimation:stop](#lanimationstop)
+  - [LAnimation:type](#lanimationtype)
+  - [LAnimation:typeOf](#lanimationtypeof)
+  - [LAnimation:update](#lanimationupdate)
+  - [LAnimCurve:addKeyframe](#lanimcurveaddkeyframe)
+  - [LAnimCurve:clear](#lanimcurveclear)
+  - [LAnimCurve:eval](#lanimcurveeval)
+  - [LAnimCurve:keyframeCount](#lanimcurvekeyframecount)
+  - [LAnimCurve:setCustomEasing](#lanimcurvesetcustomeasing)
+  - [LAnimCurve:setEasing](#lanimcurveseteasing)
+  - [LAnimCurve:type](#lanimcurvetype)
+  - [LAnimCurve:typeOf](#lanimcurvetypeof)
+  - [LAnimStateMachine:addState](#lanimstatemachineaddstate)
+  - [LAnimStateMachine:addTransition](#lanimstatemachineaddtransition)
+  - [LAnimStateMachine:forceState](#lanimstatemachineforcestate)
+  - [LAnimStateMachine:getQuad](#lanimstatemachinegetquad)
+  - [LAnimStateMachine:getState](#lanimstatemachinegetstate)
+  - [LAnimStateMachine:setParam](#lanimstatemachinesetparam)
+  - [LAnimStateMachine:type](#lanimstatemachinetype)
+  - [LAnimStateMachine:typeOf](#lanimstatemachinetypeof)
+  - [LAnimStateMachine:update](#lanimstatemachineupdate)
+  - [LAnimSyncGroup:add](#lanimsyncgroupadd)
+  - [LAnimSyncGroup:clear](#lanimsyncgroupclear)
+  - [LAnimSyncGroup:memberCount](#lanimsyncgroupmembercount)
+  - [LAnimSyncGroup:remove](#lanimsyncgroupremove)
+  - [LAnimSyncGroup:type](#lanimsyncgrouptype)
+  - [LAnimSyncGroup:typeOf](#lanimsyncgrouptypeof)
+  - [LBlendLayerSet:addLayer](#lblendlayersetaddlayer)
+  - [LBlendLayerSet:getWeight](#lblendlayersetgetweight)
+  - [LBlendLayerSet:len](#lblendlayersetlen)
+  - [LBlendLayerSet:listLayers](#lblendlayersetlistlayers)
+  - [LBlendLayerSet:removeLayer](#lblendlayersetremovelayer)
+  - [LBlendLayerSet:setMask](#lblendlayersetsetmask)
+  - [LBlendLayerSet:setWeight](#lblendlayersetsetweight)
+  - [LBlendLayerSet:type](#lblendlayersettype)
+  - [LBlendLayerSet:typeOf](#lblendlayersettypeof)
+- [💡 Examples](#examples)
+- [🎮 Reference Games](#reference-games)
+- [🔗 Related Modules](#related-modules)
 
 This page is generated from the current module specs, examples, and Lua API data.
 
 **Module group:** Feature Systems
 **Namespace:** `lurek.animation`
 
-## Purpose
+## 🎯 Purpose
 
 Sprite animation: source-rect changes over time. Imports only math; headless-testable.
 
-## Summary
+[⬆ back to top](#table-of-contents)
+
+## 📋 Summary
 
 Sprite and skeletal animation runtime managing frame sequences, blend layers, state machines, and synchronization groups. `AnimClip` holds ordered `AnimFrame` entries with per-frame duration, source rectangle, and optional event triggers. `AnimStateMachine` drives clip transitions with configurable blend durations and exit-time rules. `AnimSyncGroup` locks multiple animations to a shared normalized timeline for coordinated character movement.
 
 The module provides `AnimCurve` for easing-driven value interpolation along keyframes, `BlendLayerSet` for multi-layer additive/override mixing, and an Aseprite JSON importer that converts tagged frame ranges into engine clips. A `buildCharacter` helper assembles direction-based clip sets from atlas regions. Exposed as `lurek.animation.*` with state machine, curve, blend, and sync constructors. Imports only `math`; fully headless-testable.
 
-## Minimal Module Example
+[⬆ back to top](#table-of-contents)
 
-Module example from [animation.lua](../blob/main/content/examples/animation.lua):
-
-```lua
-  anim:addFrame(0, 0, 32, 32)
-  anim:addFrame(32, 0, 32, 32)
-  anim:addClip("walk", {0, 1}, 8, true)
-  anim:play("walk")
-
-  -- In your game loop, pass the frame delta time from lurek.process().
-  function lurek.process(dt)
-    anim:update(dt)
-  end
-end
-
---@api-stub: LAnimation:crossfade
--- Performs the crossfade operation on this animation.
-do
-  -- crossfade() smoothly blends from the current clip to a new clip over a duration.
-  -- During the blend, getBlendState() returns interpolation data for rendering.
-  local anim = lurek.animation.new()
-  anim:addFrame(0, 0, 32, 32)
-  anim:addFrame(32, 0, 32, 32)
-  anim:addClip("idle", {0}, 4, true)
-  anim:addClip("run", {0, 1}, 8, true)
-  anim:play("idle")
-
-  -- Crossfade over 0.25 seconds for a smooth walk-to-run transition.
-  -- Returns false if the target clip does not exist.
-  local ok = anim:crossfade("run", 0.25)
-  if ok then
-    lurek.log.info("crossfade to 'run' started (0.25s blend)", "anim")
-  end
-end
-
--- =============================================================================
--- LAnimation methods — query state
--- =============================================================================
-
---@api-stub: LAnimStateMachine:getQuad
--- Returns the quad of this animation.
-do
-  -- getQuad() returns the current frame's texture rectangle as {x, y, w, h}.
-  -- Use this to set the source rect when drawing a sprite with lurek.render.
-  local anim = lurek.animation.new()
-  anim:addFrame(0, 0, 32, 32)
-  anim:addFrame(32, 0, 32, 32)
-  anim:addClip("idle", {0, 1}, 4, true)
-  anim:play("idle")
-
-  -- In your draw callback, read the current quad for the sprite source rect.
-  local q = anim:getQuad()
-```
-
-## Key Types
+## 🧩 Key Types
 
 - `LAnimation` (29 methods) - Lua-side animation object containing frame rectangles, named clips, playback state, and blend state.
 - `LAnimCurve` (8 methods) - Lua-side animation curve with keyframes and optional custom easing callback.
@@ -170,7 +119,9 @@ do
 - `LAnimSyncGroup` (6 methods) - Lua-side animation synchronization group for coordinating multiple animation handles.
 - `LBlendLayerSet` (9 methods) - Lua-side blend layer set used to combine animation clips with weights and bone masks.
 
-## API Overview
+[⬆ back to top](#table-of-contents)
+
+## 📖 API Overview
 
 - Source spec: [docs/specs/animation.md](../blob/main/docs/specs/animation.md)
 
@@ -184,15 +135,19 @@ lurek.animation.newStateMachine(anim_ud: LAnimation, initial: string) -> LAnimSt
 lurek.animation.newSyncGroup() -> LAnimSyncGroup -- Creates an empty animation synchronization group.
 ```
 
-## Module Functions
+[⬆ back to top](#table-of-contents)
 
-### `lurek.animation.buildCharacter(cfg: table) -> table`
+## ⚙️ Module Functions
+
+### lurek.animation.buildCharacter
+
+`lurek.animation.buildCharacter(cfg: table) -> table`
 
 Builds a character animation bundle from grid frame and clip configuration.
 
 **Parameters**
 
-- `cfg` (`table`, required) - Configuration table with texture size, frame size, clips, optional states, and optional transitions.
+- `cfg` (`table`, required): Configuration table with texture size, frame size, clips, optional states, and optional transitions.
 
 **Returns**: `table` - Table containing `animation` and, when states are supplied, `stateMachine` handles.
 
@@ -240,13 +195,15 @@ do
 end
 ```
 
-### `lurek.animation.fromAseprite(json_str: string) -> LuaValue`
+### lurek.animation.fromAseprite
+
+`lurek.animation.fromAseprite(json_str: string) -> LuaValue`
 
 Loads an animation from an Aseprite JSON export string.
 
 **Parameters**
 
-- `json_str` (`string`, required) - Raw Aseprite JSON document contents.
+- `json_str` (`string`, required): Raw Aseprite JSON document contents.
 
 **Returns**: `LuaValue` - Animation handle when parsing succeeds; raises an error when the JSON cannot be parsed.
 
@@ -269,7 +226,9 @@ do
 end
 ```
 
-### `lurek.animation.new() -> LAnimation`
+### lurek.animation.new
+
+`lurek.animation.new() -> LAnimation`
 
 Creates an empty animation with no frames or clips.
 
@@ -300,7 +259,9 @@ do
 end
 ```
 
-### `lurek.animation.newBlendLayerSet() -> LBlendLayerSet`
+### lurek.animation.newBlendLayerSet
+
+`lurek.animation.newBlendLayerSet() -> LBlendLayerSet`
 
 Creates an empty blend layer set for layered animation playback.
 
@@ -326,7 +287,9 @@ do
 end
 ```
 
-### `lurek.animation.newCurve() -> LAnimCurve`
+### lurek.animation.newCurve
+
+`lurek.animation.newCurve() -> LAnimCurve`
 
 Creates an empty animation curve. This function is exposed to Lua scripts.
 
@@ -352,14 +315,16 @@ do
 end
 ```
 
-### `lurek.animation.newStateMachine(anim_ud: LAnimation, initial: string) -> LAnimStateMachine`
+### lurek.animation.newStateMachine
+
+`lurek.animation.newStateMachine(anim_ud: LAnimation, initial: string) -> LAnimStateMachine`
 
 Creates an animation state machine by consuming an animation handle.
 
 **Parameters**
 
-- `anim_ud` (`LAnimation`, required) - Animation handle moved into the state machine.
-- `initial` (`string`, required) - Initial state name stored in the state machine.
+- `anim_ud` (`LAnimation`, required): Animation handle moved into the state machine.
+- `initial` (`string`, required): Initial state name stored in the state machine.
 
 **Returns**: `LAnimStateMachine` - New animation state machine handle.
 
@@ -386,7 +351,9 @@ do
 end
 ```
 
-### `lurek.animation.newSyncGroup() -> LAnimSyncGroup`
+### lurek.animation.newSyncGroup
+
+`lurek.animation.newSyncGroup() -> LAnimSyncGroup`
 
 Creates an empty animation synchronization group.
 
@@ -410,11 +377,21 @@ end
 ```
 
 
-## Types and Methods
+[⬆ back to top](#table-of-contents)
 
-### `LAnimation`
+## 🔷 Module Types
+
+### LAnimation
 
 Lua-side animation object containing frame rectangles, named clips, playback state, and blend state.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side animation object containing frame rectangles, named clips, playback state, and blend state.
+---@class LAnimation
+LAnimation = {}
+```
 
 #### Example
 
@@ -441,17 +418,164 @@ do
 end
 ```
 
-### `LAnimation:addClip(name: string, indices_tbl: table, fps: number, looping: boolean, [mode]: string)`
+### LAnimCurve
+
+Lua-side animation curve with keyframes and optional custom easing callback.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side animation curve with keyframes and optional custom easing callback.
+---@class LAnimCurve
+LAnimCurve = {}
+```
+
+#### Example
+
+Exact example from [animation.lua](../blob/main/content/examples/animation.lua):
+
+```lua
+do
+  -- Animation curves interpolate a numeric value over time using keyframes.
+  -- Use them for camera zoom, fade-in/out alpha, health bar smoothing, etc.
+  local zoom = lurek.animation.newCurve()
+
+  -- Each keyframe is (time, value). The curve interpolates between them.
+  zoom:addKeyframe(0.0, 1.0)  -- at t=0, zoom is 1x
+  zoom:addKeyframe(1.5, 2.0)  -- at t=1.5s, zoom is 2x
+
+  -- eval() returns the interpolated value at any time position.
+  local current = zoom:eval(0.75)
+  lurek.log.info("camera zoom at t=0.75 -> " .. current, "anim")
+end
+```
+
+### LAnimStateMachine
+
+Lua-side animation state machine that switches clips from named states and parameters.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side animation state machine that switches clips from named states and parameters.
+---@class LAnimStateMachine
+LAnimStateMachine = {}
+```
+
+#### Example
+
+Exact example from [animation.lua](../blob/main/content/examples/animation.lua):
+
+```lua
+do
+  -- A state machine owns the animation and switches clips based on parameter-driven transitions.
+  -- Useful for characters with idle/walk/run/jump states driven by gameplay variables.
+  local anim = lurek.animation.new()
+  anim:addFrame(0, 0, 32, 32)
+  anim:addFrame(32, 0, 32, 32)
+  anim:addClip("idle", {0}, 4, true)
+  anim:addClip("run", {0, 1}, 12, true)
+
+  -- The second argument is the initial state name. After creation, the animation
+  -- handle is consumed — use the state machine for all further playback control.
+  local fsm = lurek.animation.newStateMachine(anim, "idle")
+  fsm:addState("idle", "idle", true)
+  fsm:addState("run", "run", true)
+  fsm:addTransition("idle", "run", "speed > 0.5")
+end
+```
+
+### LAnimSyncGroup
+
+Lua-side animation synchronization group for coordinating multiple animation handles.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side animation synchronization group for coordinating multiple animation handles.
+---@class LAnimSyncGroup
+LAnimSyncGroup = {}
+```
+
+#### Example
+
+Exact example from [animation.lua](../blob/main/content/examples/animation.lua):
+
+```lua
+do
+  -- Sync groups coordinate playback across multiple animation handles.
+  -- Use them for marching soldiers, synchronized dance moves, or formation units.
+  local squad = lurek.animation.newSyncGroup()
+
+  -- Add handles (or IDs) of animations that should stay in lockstep.
+  squad:add(1 --[[@as table]])
+  squad:add(2 --[[@as table]])
+  lurek.log.info("synced animations: " .. squad:memberCount(), "anim")
+end
+```
+
+### LBlendLayerSet
+
+Lua-side blend layer set used to combine animation clips with weights and bone masks.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side blend layer set used to combine animation clips with weights and bone masks.
+---@class LBlendLayerSet
+LBlendLayerSet = {}
+```
+
+#### Example
+
+Exact example from [animation.lua](../blob/main/content/examples/animation.lua):
+
+```lua
+do
+  -- Blend layers let you combine multiple clips on different body parts.
+  -- A common pattern: "base" layer runs full-body locomotion, "upper" layer
+  -- overrides the spine and arms for aiming or attacking.
+  local bls = lurek.animation.newBlendLayerSet()
+
+  -- Each layer has a name, clip, weight (0-1), and optional bone mask.
+  -- Without a bone mask, the layer affects the whole skeleton.
+  bls:addLayer("base", "run", 1.0)
+
+  -- With a bone mask, only listed bones are affected by this layer.
+  bls:addLayer("upper", "aim", 0.8, {"spine", "arm_r", "arm_l"})
+end
+```
+
+
+[⬆ back to top](#table-of-contents)
+
+## 🔹 Module Methods
+
+### LAnimation:addClip
+
+`LAnimation:addClip(name: string, indices_tbl: table, fps: number, looping: boolean, [mode]: string)`
 
 Adds a named clip using existing frame indices.
 
 **Parameters**
 
-- `name` (`string`, required) - Clip name used by playback and state machines.
-- `indices_tbl` (`table`, required) - Array of frame indices that make up the clip.
-- `fps` (`number`, required) - Playback speed in frames per second.
-- `looping` (`boolean`, required) - True when playback should wrap at the end.
-- `mode` (`string`, optional) - Playback mode `forward`, `reverse`, or `pingpong`; defaults to `forward`.
+- `name` (`string`, required): Clip name used by playback and state machines.
+- `indices_tbl` (`table`, required): Array of frame indices that make up the clip.
+- `fps` (`number`, required): Playback speed in frames per second.
+- `looping` (`boolean`, required): True when playback should wrap at the end.
+- `mode` (`string`, optional): Playback mode `forward`, `reverse`, or `pingpong`; defaults to `forward`.
+
+**Lua API Stub**
+
+```lua
+--- Adds a named clip using existing frame indices.
+---@param name string Clip name used by playback and state machines.
+---@param indices_tbl table Array of frame indices that make up the clip.
+---@param fps number Playback speed in frames per second.
+---@param looping boolean True when playback should wrap at the end.
+---@param mode? string Playback mode `forward`, `reverse`, or `pingpong`; defaults to `forward`.
+function LAnimation:addClip(name, indices_tbl, fps, looping, mode) end
+```
 
 #### Example
 
@@ -478,21 +602,39 @@ do
 end
 ```
 
-### `LAnimation:addClipFromGrid(name: string, tw: integer, th: integer, fw: integer, fh: integer, start: integer, count: integer, fps: number, looping: boolean)`
+### LAnimation:addClipFromGrid
+
+`LAnimation:addClipFromGrid(name: string, tw: integer, th: integer, fw: integer, fh: integer, start: integer, count: integer, fps: number, looping: boolean)`
 
 Adds frames from a texture grid and creates a clip that references the new frames.
 
 **Parameters**
 
-- `name` (`string`, required) - Clip name to create.
-- `tw` (`integer`, required) - Texture width in pixels.
-- `th` (`integer`, required) - Texture height in pixels.
-- `fw` (`integer`, required) - Frame width in pixels.
-- `fh` (`integer`, required) - Frame height in pixels.
-- `start` (`integer`, required) - Zero-based grid cell index where import begins.
-- `count` (`integer`, required) - Number of frames to add.
-- `fps` (`number`, required) - Playback speed in frames per second.
-- `looping` (`boolean`, required) - True when playback should wrap at the end.
+- `name` (`string`, required): Clip name to create.
+- `tw` (`integer`, required): Texture width in pixels.
+- `th` (`integer`, required): Texture height in pixels.
+- `fw` (`integer`, required): Frame width in pixels.
+- `fh` (`integer`, required): Frame height in pixels.
+- `start` (`integer`, required): Zero-based grid cell index where import begins.
+- `count` (`integer`, required): Number of frames to add.
+- `fps` (`number`, required): Playback speed in frames per second.
+- `looping` (`boolean`, required): True when playback should wrap at the end.
+
+**Lua API Stub**
+
+```lua
+--- Adds frames from a texture grid and creates a clip that references the new frames.
+---@param name string Clip name to create.
+---@param tw number Texture width in pixels.
+---@param th number Texture height in pixels.
+---@param fw number Frame width in pixels.
+---@param fh number Frame height in pixels.
+---@param start number Zero-based grid cell index where import begins.
+---@param count number Number of frames to add.
+---@param fps number Playback speed in frames per second.
+---@param looping boolean True when playback should wrap at the end.
+function LAnimation:addClipFromGrid(name, tw, th, fw, fh, start, count, fps, looping) end
+```
 
 #### Example
 
@@ -514,18 +656,32 @@ do
 end
 ```
 
-### `LAnimation:addFrame(x: number, y: number, w: number, h: number) -> integer`
+### LAnimation:addFrame
+
+`LAnimation:addFrame(x: number, y: number, w: number, h: number) -> integer`
 
 Adds one frame rectangle to this animation.
 
 **Parameters**
 
-- `x` (`number`, required) - Frame X coordinate in texture pixels.
-- `y` (`number`, required) - Frame Y coordinate in texture pixels.
-- `w` (`number`, required) - Frame width in texture pixels.
-- `h` (`number`, required) - Frame height in texture pixels.
+- `x` (`number`, required): Frame X coordinate in texture pixels.
+- `y` (`number`, required): Frame Y coordinate in texture pixels.
+- `w` (`number`, required): Frame width in texture pixels.
+- `h` (`number`, required): Frame height in texture pixels.
 
 **Returns**: `integer` - Index of the inserted frame.
+
+**Lua API Stub**
+
+```lua
+--- Adds one frame rectangle to this animation.
+---@param x number Frame X coordinate in texture pixels.
+---@param y number Frame Y coordinate in texture pixels.
+---@param w number Frame width in texture pixels.
+---@param h number Frame height in texture pixels.
+---@return number Index of the inserted frame.
+function LAnimation:addFrame(x, y, w, h) end
+```
 
 #### Example
 
@@ -542,20 +698,36 @@ do
 end
 ```
 
-### `LAnimation:addFramesFromGrid(tw: integer, th: integer, fw: integer, fh: integer, start: integer, count: integer) -> integer`
+### LAnimation:addFramesFromGrid
+
+`LAnimation:addFramesFromGrid(tw: integer, th: integer, fw: integer, fh: integer, start: integer, count: integer) -> integer`
 
 Adds frames by slicing a texture grid.
 
 **Parameters**
 
-- `tw` (`integer`, required) - Texture width in pixels.
-- `th` (`integer`, required) - Texture height in pixels.
-- `fw` (`integer`, required) - Frame width in pixels.
-- `fh` (`integer`, required) - Frame height in pixels.
-- `start` (`integer`, required) - Zero-based grid cell index where import begins.
-- `count` (`integer`, required) - Number of frames to add.
+- `tw` (`integer`, required): Texture width in pixels.
+- `th` (`integer`, required): Texture height in pixels.
+- `fw` (`integer`, required): Frame width in pixels.
+- `fh` (`integer`, required): Frame height in pixels.
+- `start` (`integer`, required): Zero-based grid cell index where import begins.
+- `count` (`integer`, required): Number of frames to add.
 
 **Returns**: `integer` - Number of frames inserted.
+
+**Lua API Stub**
+
+```lua
+--- Adds frames by slicing a texture grid.
+---@param tw number Texture width in pixels.
+---@param th number Texture height in pixels.
+---@param fw number Frame width in pixels.
+---@param fh number Frame height in pixels.
+---@param start number Zero-based grid cell index where import begins.
+---@param count number Number of frames to add.
+---@return number Number of frames inserted.
+function LAnimation:addFramesFromGrid(tw, th, fw, fh, start, count) end
+```
 
 #### Example
 
@@ -575,15 +747,26 @@ do
 end
 ```
 
-### `LAnimation:addFramesFromRects(rects: table) -> integer`
+### LAnimation:addFramesFromRects
+
+`LAnimation:addFramesFromRects(rects: table) -> integer`
 
 Adds frames from an array of rectangle tables.
 
 **Parameters**
 
-- `rects` (`table`, required) - Array of tables with numeric `x`, `y`, `w`, and `h` fields.
+- `rects` (`table`, required): Array of tables with numeric `x`, `y`, `w`, and `h` fields.
 
 **Returns**: `integer` - Number of frames inserted.
+
+**Lua API Stub**
+
+```lua
+--- Adds frames from an array of rectangle tables.
+---@param rects table Array of tables with numeric `x`, `y`, `w`, and `h` fields.
+---@return number Number of frames inserted.
+function LAnimation:addFramesFromRects(rects) end
+```
 
 #### Example
 
@@ -603,16 +786,28 @@ do
 end
 ```
 
-### `LAnimation:crossfade(clip_name: string, duration: number) -> boolean`
+### LAnimation:crossfade
+
+`LAnimation:crossfade(clip_name: string, duration: number) -> boolean`
 
 Starts a crossfade from the current clip to another clip.
 
 **Parameters**
 
-- `clip_name` (`string`, required) - Destination clip name.
-- `duration` (`number`, required) - Crossfade duration in seconds.
+- `clip_name` (`string`, required): Destination clip name.
+- `duration` (`number`, required): Crossfade duration in seconds.
 
 **Returns**: `boolean` - True when the destination clip exists and crossfade started.
+
+**Lua API Stub**
+
+```lua
+--- Starts a crossfade from the current clip to another clip.
+---@param clip_name string Destination clip name.
+---@param duration number Crossfade duration in seconds.
+---@return boolean True when the destination clip exists and crossfade started.
+function LAnimation:crossfade(clip_name, duration) end
+```
 
 #### Example
 
@@ -638,16 +833,28 @@ do
 end
 ```
 
-### `LAnimation:drawPreviewGrid(columns: integer, cell_size: integer) -> LImageData`
+### LAnimation:drawPreviewGrid
+
+`LAnimation:drawPreviewGrid(columns: integer, cell_size: integer) -> LImageData`
 
 Rasterizes all animation frames into a preview grid image.
 
 **Parameters**
 
-- `columns` (`integer`, required) - Number of columns in the preview grid.
-- `cell_size` (`integer`, required) - Size of each preview cell in pixels.
+- `columns` (`integer`, required): Number of columns in the preview grid.
+- `cell_size` (`integer`, required): Size of each preview cell in pixels.
 
 **Returns**: `LImageData` - Image data containing the preview grid.
+
+**Lua API Stub**
+
+```lua
+--- Rasterizes all animation frames into a preview grid image.
+---@param columns number Number of columns in the preview grid.
+---@param cell_size number Size of each preview cell in pixels.
+---@return LImageData Image data containing the preview grid.
+function LAnimation:drawPreviewGrid(columns, cell_size) end
+```
 
 #### Example
 
@@ -667,16 +874,28 @@ do
 end
 ```
 
-### `LAnimation:drawToImage(w: integer, h: integer) -> LImageData`
+### LAnimation:drawToImage
+
+`LAnimation:drawToImage(w: integer, h: integer) -> LImageData`
 
 Rasterizes the current animation frame into an image userdata.
 
 **Parameters**
 
-- `w` (`integer`, required) - Output image width in pixels.
-- `h` (`integer`, required) - Output image height in pixels.
+- `w` (`integer`, required): Output image width in pixels.
+- `h` (`integer`, required): Output image height in pixels.
 
 **Returns**: `LImageData` - Image data containing the rendered frame.
+
+**Lua API Stub**
+
+```lua
+--- Rasterizes the current animation frame into an image userdata.
+---@param w number Output image width in pixels.
+---@param h number Output image height in pixels.
+---@return LImageData Image data containing the rendered frame.
+function LAnimation:drawToImage(w, h) end
+```
 
 #### Example
 
@@ -699,11 +918,21 @@ do
 end
 ```
 
-### `LAnimation:getBlendState() -> LuaValue`
+### LAnimation:getBlendState
+
+`LAnimation:getBlendState() -> LuaValue`
 
 Returns current crossfade rectangles and blend factor when a crossfade is active.
 
 **Returns**: `LuaValue` - Table with `from`, `to`, and `blend`, or nil when no blend is active.
+
+**Lua API Stub**
+
+```lua
+--- Returns current crossfade rectangles and blend factor when a crossfade is active.
+---@return LuaValue Table with `from`, `to`, and `blend`, or nil when no blend is active.
+function LAnimation:getBlendState() end
+```
 
 #### Example
 
@@ -731,11 +960,21 @@ do
 end
 ```
 
-### `LAnimation:getClip() -> LuaValue`
+### LAnimation:getClip
+
+`LAnimation:getClip() -> LuaValue`
 
 Returns the current clip name when a clip is active.
 
 **Returns**: `LuaValue` - Current clip name, or nil when no clip is active.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current clip name when a clip is active.
+---@return LuaValue Current clip name, or nil when no clip is active.
+function LAnimation:getClip() end
+```
 
 #### Example
 
@@ -758,11 +997,21 @@ do
 end
 ```
 
-### `LAnimation:getClipCount() -> integer`
+### LAnimation:getClipCount
+
+`LAnimation:getClipCount() -> integer`
 
 Returns the number of named clips stored in this animation.
 
 **Returns**: `integer` - Clip count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of named clips stored in this animation.
+---@return number Clip count.
+function LAnimation:getClipCount() end
+```
 
 #### Example
 
@@ -781,15 +1030,26 @@ do
 end
 ```
 
-### `LAnimation:getClipMode(name: string) -> LuaValue`
+### LAnimation:getClipMode
+
+`LAnimation:getClipMode(name: string) -> LuaValue`
 
 Returns the playback mode name for a clip when it exists.
 
 **Parameters**
 
-- `name` (`string`, required) - Clip name to query.
+- `name` (`string`, required): Clip name to query.
 
 **Returns**: `LuaValue` - Playback mode string, or nil when the clip does not exist.
+
+**Lua API Stub**
+
+```lua
+--- Returns the playback mode name for a clip when it exists.
+---@param name string Clip name to query.
+---@return LuaValue Playback mode string, or nil when the clip does not exist.
+function LAnimation:getClipMode(name) end
+```
 
 #### Example
 
@@ -809,11 +1069,21 @@ do
 end
 ```
 
-### `LAnimation:getCurrentFrame() -> integer`
+### LAnimation:getCurrentFrame
+
+`LAnimation:getCurrentFrame() -> integer`
 
 Returns the current frame index. This method is available to Lua scripts.
 
 **Returns**: `integer` - Current frame index.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current frame index. This method is available to Lua scripts.
+---@return number Current frame index.
+function LAnimation:getCurrentFrame() end
+```
 
 #### Example
 
@@ -837,11 +1107,21 @@ do
 end
 ```
 
-### `LAnimation:getFrameCount() -> integer`
+### LAnimation:getFrameCount
+
+`LAnimation:getFrameCount() -> integer`
 
 Returns the number of frame rectangles stored in this animation.
 
 **Returns**: `integer` - Frame count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of frame rectangles stored in this animation.
+---@return number Frame count.
+function LAnimation:getFrameCount() end
+```
 
 #### Example
 
@@ -862,11 +1142,21 @@ do
 end
 ```
 
-### `LAnimation:getQuad() -> LuaValue`
+### LAnimation:getQuad
+
+`LAnimation:getQuad() -> LuaValue`
 
 Returns the current frame rectangle as a table.
 
 **Returns**: `LuaValue` - Table with `x`, `y`, `w`, and `h`, or nil when no frame is active.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current frame rectangle as a table.
+---@return LuaValue Table with `x`, `y`, `w`, and `h`, or nil when no frame is active.
+function LAnimation:getQuad() end
+```
 
 #### Example
 
@@ -888,11 +1178,21 @@ do
 end
 ```
 
-### `LAnimation:getSpeed() -> number`
+### LAnimation:getSpeed
+
+`LAnimation:getSpeed() -> number`
 
 Returns the animation playback speed multiplier.
 
 **Returns**: `number` - Current playback speed multiplier.
+
+**Lua API Stub**
+
+```lua
+--- Returns the animation playback speed multiplier.
+---@return number Current playback speed multiplier.
+function LAnimation:getSpeed() end
+```
 
 #### Example
 
@@ -912,11 +1212,21 @@ do
 end
 ```
 
-### `LAnimation:isLooping() -> boolean`
+### LAnimation:isLooping
+
+`LAnimation:isLooping() -> boolean`
 
 Returns whether the current clip loops.
 
 **Returns**: `boolean` - True when the active clip is looping.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether the current clip loops.
+---@return boolean True when the active clip is looping.
+function LAnimation:isLooping() end
+```
 
 #### Example
 
@@ -938,11 +1248,21 @@ do
   end
 ```
 
-### `LAnimation:isPlaying() -> boolean`
+### LAnimation:isPlaying
+
+`LAnimation:isPlaying() -> boolean`
 
 Returns whether this animation is currently playing.
 
 **Returns**: `boolean` - True when playback is active.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this animation is currently playing.
+---@return boolean True when playback is active.
+function LAnimation:isPlaying() end
+```
 
 #### Example
 
@@ -965,9 +1285,18 @@ do
 end
 ```
 
-### `LAnimation:pause()`
+### LAnimation:pause
+
+`LAnimation:pause()`
 
 Pauses animation playback without changing the current clip.
+
+**Lua API Stub**
+
+```lua
+--- Pauses animation playback without changing the current clip.
+function LAnimation:pause() end
+```
 
 #### Example
 
@@ -988,15 +1317,26 @@ do
 end
 ```
 
-### `LAnimation:play(name: string) -> boolean`
+### LAnimation:play
+
+`LAnimation:play(name: string) -> boolean`
 
 Starts playback of a named clip. This method is available to Lua scripts.
 
 **Parameters**
 
-- `name` (`string`, required) - Clip name to play.
+- `name` (`string`, required): Clip name to play.
 
 **Returns**: `boolean` - True when the clip exists and playback started.
+
+**Lua API Stub**
+
+```lua
+--- Starts playback of a named clip. This method is available to Lua scripts.
+---@param name string Clip name to play.
+---@return boolean True when the clip exists and playback started.
+function LAnimation:play(name) end
+```
 
 #### Example
 
@@ -1019,11 +1359,21 @@ do
 end
 ```
 
-### `LAnimation:pollEvents() -> table`
+### LAnimation:pollEvents
+
+`LAnimation:pollEvents() -> table`
 
 Drains animation events produced since the previous poll.
 
 **Returns**: `table` - Array of event tables with `type` and optional `frame` fields.
+
+**Lua API Stub**
+
+```lua
+--- Drains animation events produced since the previous poll.
+---@return LAnimationPollEventsResult Array of event tables with `type` and optional `frame` fields.
+function LAnimation:pollEvents() end
+```
 
 #### Example
 
@@ -1054,9 +1404,18 @@ do
 end
 ```
 
-### `LAnimation:resume()`
+### LAnimation:resume
+
+`LAnimation:resume()`
 
 Resumes playback of a paused animation.
+
+**Lua API Stub**
+
+```lua
+--- Resumes playback of a paused animation.
+function LAnimation:resume() end
+```
 
 #### Example
 
@@ -1077,16 +1436,28 @@ do
 end
 ```
 
-### `LAnimation:setClipMode(name: string, mode: string) -> boolean`
+### LAnimation:setClipMode
+
+`LAnimation:setClipMode(name: string, mode: string) -> boolean`
 
 Changes the playback mode for an existing clip.
 
 **Parameters**
 
-- `name` (`string`, required) - Clip name to update.
-- `mode` (`string`, required) - Playback mode `forward`, `reverse`, or `pingpong`.
+- `name` (`string`, required): Clip name to update.
+- `mode` (`string`, required): Playback mode `forward`, `reverse`, or `pingpong`.
 
 **Returns**: `boolean` - True when the clip exists and the mode was changed.
+
+**Lua API Stub**
+
+```lua
+--- Changes the playback mode for an existing clip.
+---@param name string Clip name to update.
+---@param mode string Playback mode `forward`, `reverse`, or `pingpong`.
+---@return boolean True when the clip exists and the mode was changed.
+function LAnimation:setClipMode(name, mode) end
+```
 
 #### Example
 
@@ -1107,13 +1478,23 @@ do
 end
 ```
 
-### `LAnimation:setFrame(index: integer)`
+### LAnimation:setFrame
+
+`LAnimation:setFrame(index: integer)`
 
 Sets the current frame index directly.
 
 **Parameters**
 
-- `index` (`integer`, required) - Frame index to make current.
+- `index` (`integer`, required): Frame index to make current.
+
+**Lua API Stub**
+
+```lua
+--- Sets the current frame index directly.
+---@param index number Frame index to make current.
+function LAnimation:setFrame(index) end
+```
 
 #### Example
 
@@ -1135,13 +1516,23 @@ do
 end
 ```
 
-### `LAnimation:setSpeed(speed: number)`
+### LAnimation:setSpeed
+
+`LAnimation:setSpeed(speed: number)`
 
 Sets the animation playback speed multiplier.
 
 **Parameters**
 
-- `speed` (`number`, required) - Playback speed multiplier used by future updates.
+- `speed` (`number`, required): Playback speed multiplier used by future updates.
+
+**Lua API Stub**
+
+```lua
+--- Sets the animation playback speed multiplier.
+---@param speed number Playback speed multiplier used by future updates.
+function LAnimation:setSpeed(speed) end
+```
 
 #### Example
 
@@ -1167,9 +1558,18 @@ do
 end
 ```
 
-### `LAnimation:stop()`
+### LAnimation:stop
+
+`LAnimation:stop()`
 
 Stops playback and resets animation playback state.
+
+**Lua API Stub**
+
+```lua
+--- Stops playback and resets animation playback state.
+function LAnimation:stop() end
+```
 
 #### Example
 
@@ -1189,11 +1589,21 @@ do
 end
 ```
 
-### `LAnimation:type() -> string`
+### LAnimation:type
+
+`LAnimation:type() -> string`
 
 Returns the Lua-visible type name for this animation handle.
 
 **Returns**: `string` - The string `LAnimation`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this animation handle.
+---@return string The string `LAnimation`.
+function LAnimation:type() end
+```
 
 #### Example
 
@@ -1206,15 +1616,26 @@ do
 end
 ```
 
-### `LAnimation:typeOf(name: string) -> boolean`
+### LAnimation:typeOf
+
+`LAnimation:typeOf(name: string) -> boolean`
 
 Returns whether this animation handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `LAnimation` and `Object`.
+- `name` (`string`, required): Type name to compare against `LAnimation` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this animation handle matches a supported type name.
+---@param name string Type name to compare against `LAnimation` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LAnimation:typeOf(name) end
+```
 
 #### Example
 
@@ -1227,13 +1648,23 @@ do
 end
 ```
 
-### `LAnimation:update(dt: number)`
+### LAnimation:update
+
+`LAnimation:update(dt: number)`
 
 Advances animation playback and records any frame or clip events.
 
 **Parameters**
 
-- `dt` (`number`, required) - Elapsed time in seconds.
+- `dt` (`number`, required): Elapsed time in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Advances animation playback and records any frame or clip events.
+---@param dt number Elapsed time in seconds.
+function LAnimation:update(dt) end
+```
 
 #### Example
 
@@ -1253,38 +1684,25 @@ do
 end
 ```
 
-### `LAnimCurve`
+### LAnimCurve:addKeyframe
 
-Lua-side animation curve with keyframes and optional custom easing callback.
-
-#### Example
-
-Exact example from [animation.lua](../blob/main/content/examples/animation.lua):
-
-```lua
-do
-  -- Animation curves interpolate a numeric value over time using keyframes.
-  -- Use them for camera zoom, fade-in/out alpha, health bar smoothing, etc.
-  local zoom = lurek.animation.newCurve()
-
-  -- Each keyframe is (time, value). The curve interpolates between them.
-  zoom:addKeyframe(0.0, 1.0)  -- at t=0, zoom is 1x
-  zoom:addKeyframe(1.5, 2.0)  -- at t=1.5s, zoom is 2x
-
-  -- eval() returns the interpolated value at any time position.
-  local current = zoom:eval(0.75)
-  lurek.log.info("camera zoom at t=0.75 -> " .. current, "anim")
-end
-```
-
-### `LAnimCurve:addKeyframe(t: number, v: number)`
+`LAnimCurve:addKeyframe(t: number, v: number)`
 
 Adds a keyframe to the curve. This method is available to Lua scripts.
 
 **Parameters**
 
-- `t` (`number`, required) - Keyframe time or normalized position.
-- `v` (`number`, required) - Keyframe value.
+- `t` (`number`, required): Keyframe time or normalized position.
+- `v` (`number`, required): Keyframe value.
+
+**Lua API Stub**
+
+```lua
+--- Adds a keyframe to the curve. This method is available to Lua scripts.
+---@param t number Keyframe time or normalized position.
+---@param v number Keyframe value.
+function LAnimCurve:addKeyframe(t, v) end
+```
 
 #### Example
 
@@ -1304,9 +1722,18 @@ do
 end
 ```
 
-### `LAnimCurve:clear()`
+### LAnimCurve:clear
+
+`LAnimCurve:clear()`
 
 Removes all keyframes from this curve.
+
+**Lua API Stub**
+
+```lua
+--- Removes all keyframes from this curve.
+function LAnimCurve:clear() end
+```
 
 #### Example
 
@@ -1324,15 +1751,26 @@ do
 end
 ```
 
-### `LAnimCurve:eval(t: number) -> number`
+### LAnimCurve:eval
+
+`LAnimCurve:eval(t: number) -> number`
 
 Evaluates the curve at a time or normalized position.
 
 **Parameters**
 
-- `t` (`number`, required) - Time or normalized position to evaluate.
+- `t` (`number`, required): Time or normalized position to evaluate.
 
 **Returns**: `number` - Interpolated curve value.
+
+**Lua API Stub**
+
+```lua
+--- Evaluates the curve at a time or normalized position.
+---@param t number Time or normalized position to evaluate.
+---@return number Interpolated curve value.
+function LAnimCurve:eval(t) end
+```
 
 #### Example
 
@@ -1353,11 +1791,21 @@ do
 end
 ```
 
-### `LAnimCurve:keyframeCount() -> integer`
+### LAnimCurve:keyframeCount
+
+`LAnimCurve:keyframeCount() -> integer`
 
 Returns the number of keyframes stored in this curve.
 
 **Returns**: `integer` - Keyframe count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of keyframes stored in this curve.
+---@return number Keyframe count.
+function LAnimCurve:keyframeCount() end
+```
 
 #### Example
 
@@ -1379,13 +1827,23 @@ do
 end
 ```
 
-### `LAnimCurve:setCustomEasing(func: function)`
+### LAnimCurve:setCustomEasing
+
+`LAnimCurve:setCustomEasing(func: function)`
 
 Sets or clears a Lua callback used to evaluate custom easing.
 
 **Parameters**
 
-- `func` (`function`, required) - Function used as custom easing callback, or nil to clear custom easing.
+- `func` (`function`, required): Function used as custom easing callback, or nil to clear custom easing.
+
+**Lua API Stub**
+
+```lua
+--- Sets or clears a Lua callback used to evaluate custom easing.
+---@param func function Function used as custom easing callback, or nil to clear custom easing.
+function LAnimCurve:setCustomEasing(func) end
+```
 
 #### Example
 
@@ -1409,13 +1867,23 @@ do
 end
 ```
 
-### `LAnimCurve:setEasing(mode: string)`
+### LAnimCurve:setEasing
+
+`LAnimCurve:setEasing(mode: string)`
 
 Sets the built-in easing mode used between keyframes.
 
 **Parameters**
 
-- `mode` (`string`, required) - Easing mode `step`, `linear`, `ease_in`, `ease_out`, or `ease_in_out`.
+- `mode` (`string`, required): Easing mode `step`, `linear`, `ease_in`, `ease_out`, or `ease_in_out`.
+
+**Lua API Stub**
+
+```lua
+--- Sets the built-in easing mode used between keyframes.
+---@param mode string Easing mode `step`, `linear`, `ease_in`, `ease_out`, or `ease_in_out`.
+function LAnimCurve:setEasing(mode) end
+```
 
 #### Example
 
@@ -1437,11 +1905,21 @@ do
 end
 ```
 
-### `LAnimCurve:type() -> string`
+### LAnimCurve:type
+
+`LAnimCurve:type() -> string`
 
 Returns the Lua-visible type name for this animation curve handle.
 
 **Returns**: `string` - The string `LAnimCurve`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this animation curve handle.
+---@return string The string `LAnimCurve`.
+function LAnimCurve:type() end
+```
 
 #### Example
 
@@ -1454,15 +1932,26 @@ do
 end
 ```
 
-### `LAnimCurve:typeOf(name: string) -> boolean`
+### LAnimCurve:typeOf
+
+`LAnimCurve:typeOf(name: string) -> boolean`
 
 Returns whether this animation curve handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `LAnimCurve` and `Object`.
+- `name` (`string`, required): Type name to compare against `LAnimCurve` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this animation curve handle matches a supported type name.
+---@param name string Type name to compare against `LAnimCurve` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LAnimCurve:typeOf(name) end
+```
 
 #### Example
 
@@ -1475,42 +1964,27 @@ do
 end
 ```
 
-### `LAnimStateMachine`
+### LAnimStateMachine:addState
 
-Lua-side animation state machine that switches clips from named states and parameters.
-
-#### Example
-
-Exact example from [animation.lua](../blob/main/content/examples/animation.lua):
-
-```lua
-do
-  -- A state machine owns the animation and switches clips based on parameter-driven transitions.
-  -- Useful for characters with idle/walk/run/jump states driven by gameplay variables.
-  local anim = lurek.animation.new()
-  anim:addFrame(0, 0, 32, 32)
-  anim:addFrame(32, 0, 32, 32)
-  anim:addClip("idle", {0}, 4, true)
-  anim:addClip("run", {0, 1}, 12, true)
-
-  -- The second argument is the initial state name. After creation, the animation
-  -- handle is consumed — use the state machine for all further playback control.
-  local fsm = lurek.animation.newStateMachine(anim, "idle")
-  fsm:addState("idle", "idle", true)
-  fsm:addState("run", "run", true)
-  fsm:addTransition("idle", "run", "speed > 0.5")
-end
-```
-
-### `LAnimStateMachine:addState(name: string, clip: string, looping: boolean)`
+`LAnimStateMachine:addState(name: string, clip: string, looping: boolean)`
 
 Adds a state that plays a named animation clip.
 
 **Parameters**
 
-- `name` (`string`, required) - State name.
-- `clip` (`string`, required) - Clip name to play while this state is active.
-- `looping` (`boolean`, required) - True when the clip should loop in this state.
+- `name` (`string`, required): State name.
+- `clip` (`string`, required): Clip name to play while this state is active.
+- `looping` (`boolean`, required): True when the clip should loop in this state.
+
+**Lua API Stub**
+
+```lua
+--- Adds a state that plays a named animation clip.
+---@param name string State name.
+---@param clip string Clip name to play while this state is active.
+---@param looping boolean True when the clip should loop in this state.
+function LAnimStateMachine:addState(name, clip, looping) end
+```
 
 #### Example
 
@@ -1534,15 +2008,27 @@ do
 end
 ```
 
-### `LAnimStateMachine:addTransition(from_state: string, to_state: string, condition: string)`
+### LAnimStateMachine:addTransition
+
+`LAnimStateMachine:addTransition(from_state: string, to_state: string, condition: string)`
 
 Adds a named-condition transition between two animation states.
 
 **Parameters**
 
-- `from_state` (`string`, required) - Source state name.
-- `to_state` (`string`, required) - Destination state name.
-- `condition` (`string`, required) - Parameter condition expression understood by the state machine.
+- `from_state` (`string`, required): Source state name.
+- `to_state` (`string`, required): Destination state name.
+- `condition` (`string`, required): Parameter condition expression understood by the state machine.
+
+**Lua API Stub**
+
+```lua
+--- Adds a named-condition transition between two animation states.
+---@param from_state string Source state name.
+---@param to_state string Destination state name.
+---@param condition string Parameter condition expression understood by the state machine.
+function LAnimStateMachine:addTransition(from_state, to_state, condition) end
+```
 
 #### Example
 
@@ -1569,15 +2055,26 @@ do
 end
 ```
 
-### `LAnimStateMachine:forceState(name: string) -> boolean`
+### LAnimStateMachine:forceState
+
+`LAnimStateMachine:forceState(name: string) -> boolean`
 
 Forces the state machine into a named state.
 
 **Parameters**
 
-- `name` (`string`, required) - State name to activate immediately.
+- `name` (`string`, required): State name to activate immediately.
 
 **Returns**: `boolean` - True when the state exists and was activated.
+
+**Lua API Stub**
+
+```lua
+--- Forces the state machine into a named state.
+---@param name string State name to activate immediately.
+---@return boolean True when the state exists and was activated.
+function LAnimStateMachine:forceState(name) end
+```
 
 #### Example
 
@@ -1602,11 +2099,21 @@ do
 end
 ```
 
-### `LAnimStateMachine:getQuad() -> LuaValue`
+### LAnimStateMachine:getQuad
+
+`LAnimStateMachine:getQuad() -> LuaValue`
 
 Returns the current frame rectangle from the state machine's owned animation.
 
 **Returns**: `LuaValue` - Table with `x`, `y`, `w`, and `h`, or nil when no frame is active.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current frame rectangle from the state machine's owned animation.
+---@return LuaValue Table with `x`, `y`, `w`, and `h`, or nil when no frame is active.
+function LAnimStateMachine:getQuad() end
+```
 
 #### Example
 
@@ -1633,11 +2140,21 @@ do
 end
 ```
 
-### `LAnimStateMachine:getState() -> string`
+### LAnimStateMachine:getState
+
+`LAnimStateMachine:getState() -> string`
 
 Returns the current animation state name.
 
 **Returns**: `string` - Current state name.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current animation state name.
+---@return string Current state name.
+function LAnimStateMachine:getState() end
+```
 
 #### Example
 
@@ -1660,14 +2177,25 @@ do
 end
 ```
 
-### `LAnimStateMachine:setParam(name: string, value: LuaValue)`
+### LAnimStateMachine:setParam
+
+`LAnimStateMachine:setParam(name: string, value: LuaValue)`
 
 Sets a boolean, integer, or numeric state machine parameter.
 
 **Parameters**
 
-- `name` (`string`, required) - Parameter name used by transition conditions.
-- `value` (`LuaValue`, required) - Boolean, integer, or number value to store.
+- `name` (`string`, required): Parameter name used by transition conditions.
+- `value` (`LuaValue`, required): Boolean, integer, or number value to store.
+
+**Lua API Stub**
+
+```lua
+--- Sets a boolean, integer, or numeric state machine parameter.
+---@param name string Parameter name used by transition conditions.
+---@param value LuaValue Boolean, integer, or number value to store.
+function LAnimStateMachine:setParam(name, value) end
+```
 
 #### Example
 
@@ -1697,11 +2225,21 @@ do
 end
 ```
 
-### `LAnimStateMachine:type() -> string`
+### LAnimStateMachine:type
+
+`LAnimStateMachine:type() -> string`
 
 Returns the Lua-visible type name for this animation state machine handle.
 
 **Returns**: `string` - The string `LAnimStateMachine`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this animation state machine handle.
+---@return string The string `LAnimStateMachine`.
+function LAnimStateMachine:type() end
+```
 
 #### Example
 
@@ -1715,15 +2253,26 @@ do
 end
 ```
 
-### `LAnimStateMachine:typeOf(name: string) -> boolean`
+### LAnimStateMachine:typeOf
+
+`LAnimStateMachine:typeOf(name: string) -> boolean`
 
 Returns whether this animation state machine handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `LAnimStateMachine` and `Object`.
+- `name` (`string`, required): Type name to compare against `LAnimStateMachine` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this animation state machine handle matches a supported type name.
+---@param name string Type name to compare against `LAnimStateMachine` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LAnimStateMachine:typeOf(name) end
+```
 
 #### Example
 
@@ -1737,13 +2286,23 @@ do
 end
 ```
 
-### `LAnimStateMachine:update(dt: number)`
+### LAnimStateMachine:update
+
+`LAnimStateMachine:update(dt: number)`
 
 Advances the animation state machine and its owned animation playback.
 
 **Parameters**
 
-- `dt` (`number`, required) - Elapsed time in seconds.
+- `dt` (`number`, required): Elapsed time in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Advances the animation state machine and its owned animation playback.
+---@param dt number Elapsed time in seconds.
+function LAnimStateMachine:update(dt) end
+```
 
 #### Example
 
@@ -1766,34 +2325,23 @@ do
 end
 ```
 
-### `LAnimSyncGroup`
+### LAnimSyncGroup:add
 
-Lua-side animation synchronization group for coordinating multiple animation handles.
-
-#### Example
-
-Exact example from [animation.lua](../blob/main/content/examples/animation.lua):
-
-```lua
-do
-  -- Sync groups coordinate playback across multiple animation handles.
-  -- Use them for marching soldiers, synchronized dance moves, or formation units.
-  local squad = lurek.animation.newSyncGroup()
-
-  -- Add handles (or IDs) of animations that should stay in lockstep.
-  squad:add(1 --[[@as table]])
-  squad:add(2 --[[@as table]])
-  lurek.log.info("synced animations: " .. squad:memberCount(), "anim")
-end
-```
-
-### `LAnimSyncGroup:add(handle: integer)`
+`LAnimSyncGroup:add(handle: integer)`
 
 Adds an animation-like handle to the sync group.
 
 **Parameters**
 
-- `handle` (`integer`, required) - Animation handle accepted by future sync group implementations.
+- `handle` (`integer`, required): Animation handle accepted by future sync group implementations.
+
+**Lua API Stub**
+
+```lua
+--- Adds an animation-like handle to the sync group.
+---@param handle number Animation handle accepted by future sync group implementations.
+function LAnimSyncGroup:add(handle) end
+```
 
 #### Example
 
@@ -1810,9 +2358,18 @@ do
 end
 ```
 
-### `LAnimSyncGroup:clear()`
+### LAnimSyncGroup:clear
+
+`LAnimSyncGroup:clear()`
 
 Removes all members from the sync group.
+
+**Lua API Stub**
+
+```lua
+--- Removes all members from the sync group.
+function LAnimSyncGroup:clear() end
+```
 
 #### Example
 
@@ -1831,11 +2388,21 @@ do
 end
 ```
 
-### `LAnimSyncGroup:memberCount() -> integer`
+### LAnimSyncGroup:memberCount
+
+`LAnimSyncGroup:memberCount() -> integer`
 
 Returns the number of handles tracked by the sync group.
 
 **Returns**: `integer` - Sync group member count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of handles tracked by the sync group.
+---@return number Sync group member count.
+function LAnimSyncGroup:memberCount() end
+```
 
 #### Example
 
@@ -1854,13 +2421,23 @@ do
 end
 ```
 
-### `LAnimSyncGroup:remove(handle: integer)`
+### LAnimSyncGroup:remove
+
+`LAnimSyncGroup:remove(handle: integer)`
 
 Removes an animation-like handle from the sync group.
 
 **Parameters**
 
-- `handle` (`integer`, required) - Animation handle accepted by future sync group implementations.
+- `handle` (`integer`, required): Animation handle accepted by future sync group implementations.
+
+**Lua API Stub**
+
+```lua
+--- Removes an animation-like handle from the sync group.
+---@param handle number Animation handle accepted by future sync group implementations.
+function LAnimSyncGroup:remove(handle) end
+```
 
 #### Example
 
@@ -1878,11 +2455,21 @@ do
 end
 ```
 
-### `LAnimSyncGroup:type() -> string`
+### LAnimSyncGroup:type
+
+`LAnimSyncGroup:type() -> string`
 
 Returns the Lua-visible type name for this animation sync group handle.
 
 **Returns**: `string` - The string `LAnimSyncGroup`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this animation sync group handle.
+---@return string The string `LAnimSyncGroup`.
+function LAnimSyncGroup:type() end
+```
 
 #### Example
 
@@ -1896,15 +2483,26 @@ do
 end
 ```
 
-### `LAnimSyncGroup:typeOf(name: string) -> boolean`
+### LAnimSyncGroup:typeOf
+
+`LAnimSyncGroup:typeOf(name: string) -> boolean`
 
 Returns whether this animation sync group handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `LAnimSyncGroup` and `Object`.
+- `name` (`string`, required): Type name to compare against `LAnimSyncGroup` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this animation sync group handle matches a supported type name.
+---@param name string Type name to compare against `LAnimSyncGroup` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LAnimSyncGroup:typeOf(name) end
+```
 
 #### Example
 
@@ -1919,42 +2517,32 @@ do
 end
 ```
 
-### `LBlendLayerSet`
+### LBlendLayerSet:addLayer
 
-Lua-side blend layer set used to combine animation clips with weights and bone masks.
-
-#### Example
-
-Exact example from [animation.lua](../blob/main/content/examples/animation.lua):
-
-```lua
-do
-  -- Blend layers let you combine multiple clips on different body parts.
-  -- A common pattern: "base" layer runs full-body locomotion, "upper" layer
-  -- overrides the spine and arms for aiming or attacking.
-  local bls = lurek.animation.newBlendLayerSet()
-
-  -- Each layer has a name, clip, weight (0-1), and optional bone mask.
-  -- Without a bone mask, the layer affects the whole skeleton.
-  bls:addLayer("base", "run", 1.0)
-
-  -- With a bone mask, only listed bones are affected by this layer.
-  bls:addLayer("upper", "aim", 0.8, {"spine", "arm_r", "arm_l"})
-end
-```
-
-### `LBlendLayerSet:addLayer(name: string, clip_name: string, weight: number, [bones]: table) -> boolean`
+`LBlendLayerSet:addLayer(name: string, clip_name: string, weight: number, [bones]: table) -> boolean`
 
 Adds a weighted animation blend layer with an optional bone mask.
 
 **Parameters**
 
-- `name` (`string`, required) - Unique layer name.
-- `clip_name` (`string`, required) - Animation clip name used by the layer.
-- `weight` (`number`, required) - Blend weight for this layer.
-- `bones` (`table`, optional) - Optional array or map table of bone names included in the mask.
+- `name` (`string`, required): Unique layer name.
+- `clip_name` (`string`, required): Animation clip name used by the layer.
+- `weight` (`number`, required): Blend weight for this layer.
+- `bones` (`table`, optional): Optional array or map table of bone names included in the mask.
 
 **Returns**: `boolean` - True when the layer was added.
+
+**Lua API Stub**
+
+```lua
+--- Adds a weighted animation blend layer with an optional bone mask.
+---@param name string Unique layer name.
+---@param clip_name string Animation clip name used by the layer.
+---@param weight number Blend weight for this layer.
+---@param bones? table Optional array or map table of bone names included in the mask.
+---@return boolean True when the layer was added.
+function LBlendLayerSet:addLayer(name, clip_name, weight, bones) end
+```
 
 #### Example
 
@@ -1977,15 +2565,26 @@ do
 end
 ```
 
-### `LBlendLayerSet:getWeight(name: string) -> LuaValue`
+### LBlendLayerSet:getWeight
+
+`LBlendLayerSet:getWeight(name: string) -> LuaValue`
 
 Returns the weight for a blend layer when it exists.
 
 **Parameters**
 
-- `name` (`string`, required) - Layer name to query.
+- `name` (`string`, required): Layer name to query.
 
 **Returns**: `LuaValue` - Layer weight, or nil when the layer does not exist.
+
+**Lua API Stub**
+
+```lua
+--- Returns the weight for a blend layer when it exists.
+---@param name string Layer name to query.
+---@return LuaValue Layer weight, or nil when the layer does not exist.
+function LBlendLayerSet:getWeight(name) end
+```
 
 #### Example
 
@@ -2004,11 +2603,21 @@ do
 end
 ```
 
-### `LBlendLayerSet:len() -> integer`
+### LBlendLayerSet:len
+
+`LBlendLayerSet:len() -> integer`
 
 Returns the number of blend layers.
 
 **Returns**: `integer` - Blend layer count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of blend layers.
+---@return number Blend layer count.
+function LBlendLayerSet:len() end
+```
 
 #### Example
 
@@ -2029,11 +2638,21 @@ do
 end
 ```
 
-### `LBlendLayerSet:listLayers() -> table`
+### LBlendLayerSet:listLayers
+
+`LBlendLayerSet:listLayers() -> table`
 
 Returns all blend layers with names, clip names, weights, and bone masks.
 
 **Returns**: `table` - Array of layer tables with `name`, `clip_name`, `weight`, and `bones` fields.
+
+**Lua API Stub**
+
+```lua
+--- Returns all blend layers with names, clip names, weights, and bone masks.
+---@return LBlendLayerSetListLayersResult Array of layer tables with `name`, `clip_name`, `weight`, and `bones` fields.
+function LBlendLayerSet:listLayers() end
+```
 
 #### Example
 
@@ -2053,15 +2672,26 @@ do
 end
 ```
 
-### `LBlendLayerSet:removeLayer(name: string) -> boolean`
+### LBlendLayerSet:removeLayer
+
+`LBlendLayerSet:removeLayer(name: string) -> boolean`
 
 Removes a blend layer by name. This method is available to Lua scripts.
 
 **Parameters**
 
-- `name` (`string`, required) - Layer name to remove.
+- `name` (`string`, required): Layer name to remove.
 
 **Returns**: `boolean` - True when the layer was removed.
+
+**Lua API Stub**
+
+```lua
+--- Removes a blend layer by name. This method is available to Lua scripts.
+---@param name string Layer name to remove.
+---@return boolean True when the layer was removed.
+function LBlendLayerSet:removeLayer(name) end
+```
 
 #### Example
 
@@ -2080,16 +2710,28 @@ do
 end
 ```
 
-### `LBlendLayerSet:setMask(name: string, bones: table) -> boolean`
+### LBlendLayerSet:setMask
+
+`LBlendLayerSet:setMask(name: string, bones: table) -> boolean`
 
 Replaces a layer bone mask from a table of bone names.
 
 **Parameters**
 
-- `name` (`string`, required) - Layer name to update.
-- `bones` (`table`, required) - Array or map table of bone names included in the mask.
+- `name` (`string`, required): Layer name to update.
+- `bones` (`table`, required): Array or map table of bone names included in the mask.
 
 **Returns**: `boolean` - True when the layer exists and the mask was changed.
+
+**Lua API Stub**
+
+```lua
+--- Replaces a layer bone mask from a table of bone names.
+---@param name string Layer name to update.
+---@param bones table Array or map table of bone names included in the mask.
+---@return boolean True when the layer exists and the mask was changed.
+function LBlendLayerSet:setMask(name, bones) end
+```
 
 #### Example
 
@@ -2107,16 +2749,28 @@ do
 end
 ```
 
-### `LBlendLayerSet:setWeight(name: string, weight: number) -> boolean`
+### LBlendLayerSet:setWeight
+
+`LBlendLayerSet:setWeight(name: string, weight: number) -> boolean`
 
 Sets the blend weight for an existing layer.
 
 **Parameters**
 
-- `name` (`string`, required) - Layer name to update.
-- `weight` (`number`, required) - New layer weight.
+- `name` (`string`, required): Layer name to update.
+- `weight` (`number`, required): New layer weight.
 
 **Returns**: `boolean` - True when the layer exists and the weight was changed.
+
+**Lua API Stub**
+
+```lua
+--- Sets the blend weight for an existing layer.
+---@param name string Layer name to update.
+---@param weight number New layer weight.
+---@return boolean True when the layer exists and the weight was changed.
+function LBlendLayerSet:setWeight(name, weight) end
+```
 
 #### Example
 
@@ -2136,11 +2790,21 @@ do
 end
 ```
 
-### `LBlendLayerSet:type() -> string`
+### LBlendLayerSet:type
+
+`LBlendLayerSet:type() -> string`
 
 Returns the Lua-visible type name for this blend layer set handle.
 
 **Returns**: `string` - The string `LBlendLayerSet`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this blend layer set handle.
+---@return string The string `LBlendLayerSet`.
+function LBlendLayerSet:type() end
+```
 
 #### Example
 
@@ -2153,15 +2817,26 @@ do
 end
 ```
 
-### `LBlendLayerSet:typeOf(name: string) -> boolean`
+### LBlendLayerSet:typeOf
+
+`LBlendLayerSet:typeOf(name: string) -> boolean`
 
 Returns whether this blend layer set handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `LBlendLayerSet` and `Object`.
+- `name` (`string`, required): Type name to compare against `LBlendLayerSet` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this blend layer set handle matches a supported type name.
+---@param name string Type name to compare against `LBlendLayerSet` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LBlendLayerSet:typeOf(name) end
+```
 
 #### Example
 
@@ -2175,21 +2850,27 @@ end
 ```
 
 
-## Examples
+[⬆ back to top](#table-of-contents)
+
+## 💡 Examples
 
 - [animation.lua](../blob/main/content/examples/animation.lua) - Frame sequences, grids, playback control
 
-## Reference Games
+[⬆ back to top](#table-of-contents)
+
+## 🎮 Reference Games
 
 No direct references were found in `content/games/**/main.lua`.
 
-## Related Modules
+[⬆ back to top](#table-of-contents)
 
-- Previous: [[ai|Module-ai]]
-- Next: [[app|Module-app]]
-- [[ai|Module-ai]] - Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU.
-- [[automation|Module-automation]] - Automated input simulation for headless tests, QA replay, recorded sessions.
-- [[ecs|Module-ecs]] - Entity-Component-System: identity / data / behaviour separation for runtime composition.
-- [[i18n|Module-i18n]] - Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*).
-- [[minimap|Module-minimap]] - Grid-based minimap data model: fog of war, tracked objects, pings, viewport overlay.
-- [[mods|Module-mods]] - Mod-loading framework: virtual filesystem mounts + sandboxed runtime config.
+## 🔗 Related Modules
+
+- Previous: [ai](Module-ai)
+- Next: [app](Module-app)
+- [ai](Module-ai) - Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU.
+- [automation](Module-automation) - Automated input simulation for headless tests, QA replay, recorded sessions.
+- [ecs](Module-ecs) - Entity-Component-System: identity / data / behaviour separation for runtime composition.
+- [i18n](Module-i18n) - Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*).
+- [minimap](Module-minimap) - Grid-based minimap data model: fog of war, tracked objects, pings, viewport overlay.
+- [mods](Module-mods) - Mod-loading framework: virtual filesystem mounts + sandboxed runtime config.

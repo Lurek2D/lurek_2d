@@ -4,113 +4,69 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
-- [Purpose](#purpose)
-- [Summary](#summary)
-- [Minimal Module Example](#minimal-module-example)
-- [Key Types](#key-types)
-- [API Overview](#api-overview)
-- [Examples](#examples)
-- [Reference Games](#reference-games)
-- [Related Modules](#related-modules)
+- [🎯 Purpose](#purpose)
+- [📋 Summary](#summary)
+- [🧩 Key Types](#key-types)
+- [📖 API Overview](#api-overview)
+- [💡 Examples](#examples)
+- [🎮 Reference Games](#reference-games)
+- [🔗 Related Modules](#related-modules)
 
 This page is generated from the current module specs, examples, and Lua API data.
 
 **Module group:** Edge / Integration
 **Namespace:** `None direct`
 
-## Purpose
+## 🎯 Purpose
 
 Alternative main()-bearing binaries built alongside the primary lurek2d executable.
 
-## Summary
+[⬆ back to top](#table-of-contents)
+
+## 📋 Summary
 
 Executable entry points for the Lurek2D binary distribution. `lurek_headless.rs` provides a windowless runner for CI tests and automation — it initializes the engine without creating a GPU surface or OS window. `lurekc.rs` is the compiler/bundler entry that packages game scripts and assets into a distributable archive.
 
 Neither file contains domain logic; they parse command-line arguments and delegate to `app` and `runtime` for actual execution. The module exists in the Edge/Integration tier solely to host `fn main()` targets.
 
-## Minimal Module Example
+[⬆ back to top](#table-of-contents)
 
-General example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-  -- Use an AI world to manage all NPCs in a level. Each world is independent,
-  -- so you can pause dungeon AI while overworld agents keep running.
-  -- Scenario: open-world RPG with separate AI worlds per region.
-  local world = lurek.ai.newWorld()
-  world:addAgent("guard_01")
-  -- Call world:update(dt) every frame to tick all registered agents.
-  function lurek.process(dt) world:update(dt) end
-end
-
---@api-stub: lurek.ai.newBlackboard
--- Creates an empty AI blackboard for typed local facts
-do
-  -- Blackboards are key-value stores for AI knowledge. Agents read/write facts
-  -- here so decision logic stays decoupled from game state.
-  -- Scenario: stealth game guard shares "alert_level" across patrol group.
-  local bb = lurek.ai.newBlackboard()
-  bb:setNumber("alert_level", 0.3)
-  bb:setBool("player_seen", false)
-end
-
---@api-stub: lurek.ai.newStateMachine
--- Creates an empty finite state machine with Lua-backed states and transitions
-do
-  -- FSMs are ideal for NPCs with clear, discrete behavior phases.
-  -- Each state has onEnter/onUpdate/onExit callbacks for clean transitions.
-  -- Scenario: guard patrol AI — idle → patrol → alert → chase → attack.
-  local fsm = lurek.ai.newStateMachine()
-  fsm:addState("patrol", { onEnter = function() lurek.log.info("patrolling", "ai") end })
-  fsm:addState("chase", {})
-  fsm:setInitialState("patrol")
-end
-
---@api-stub: lurek.ai.newBehaviorTree
--- Creates an empty behavior tree that can receive a root node
-do
-  -- Behavior trees compose complex AI from simple reusable nodes.
-  -- Set a root node, then call bt:tick(dt) each frame to evaluate.
-  -- Scenario: boss phase transitions — check HP, pick attack pattern, execute.
-  local bt = lurek.ai.newBehaviorTree()
-  local root = lurek.ai.newSequence()
-  root:addChild(lurek.ai.newAction(function() return "success" end))
-  bt:setRoot(root)
-end
-
---@api-stub: lurek.ai.newSelector
--- Creates a behavior tree selector node with no children
-do
-  -- A selector tries each child until one succeeds (OR logic).
-```
-
-## Key Types
+## 🧩 Key Types
 
 This module has no separate Lua-visible classes in the generated API data.
 
-## API Overview
+[⬆ back to top](#table-of-contents)
+
+## 📖 API Overview
 
 - Source spec: [docs/specs/bin.md](../blob/main/docs/specs/bin.md)
 
 No module functions appear in the generated Lua API data.
 
-## Examples
+[⬆ back to top](#table-of-contents)
+
+## 💡 Examples
 
 No module-specific example file was found.
 
-## Reference Games
+[⬆ back to top](#table-of-contents)
+
+## 🎮 Reference Games
 
 No direct references were found in `content/games/**/main.lua`.
 
-## Related Modules
+[⬆ back to top](#table-of-contents)
 
-- Previous: [[automation|Module-automation]]
-- Next: [[camera|Module-camera]]
-- [[app|Module-app]] - Application entry-point: winit event loop, wgpu surface / device, Lua VM, frame pacing.
-- [[debugbridge|Module-debugbridge]] - TCP debug bridge (127.0.0.1, JSON-over-TCP) for the VS Code extension and MCP server.
-- [[devtools|Module-devtools]] - In-process logger, frame profiler, rolling stats, hot-reload file watcher (lurek.devtools.*).
-- [[docs|Module-docs]] - In-engine API documentation catalog and lightweight schema validation for structured game data.
-- [[lua_api|Module-lua_api]] - Lua scripting bridge: collects every lurek.* sub-API and seals the sandboxed lurek global.
+## 🔗 Related Modules
+
+- Previous: [automation](Module-automation)
+- Next: [camera](Module-camera)
+- [app](Module-app) - Application entry-point: winit event loop, wgpu surface / device, Lua VM, frame pacing.
+- [debugbridge](Module-debugbridge) - TCP debug bridge (127.0.0.1, JSON-over-TCP) for the VS Code extension and MCP server.
+- [devtools](Module-devtools) - In-process logger, frame profiler, rolling stats, hot-reload file watcher (lurek.devtools.*).
+- [docs](Module-docs) - In-engine API documentation catalog and lightweight schema validation for structured game data.
+- [lua_api](Module-lua_api) - Lua scripting bridge: collects every lurek.* sub-API and seals the sandboxed lurek global.

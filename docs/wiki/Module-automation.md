@@ -4,127 +4,77 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
-- [Purpose](#purpose)
-- [Summary](#summary)
-- [Minimal Module Example](#minimal-module-example)
-- [Key Types](#key-types)
-- [API Overview](#api-overview)
-- [Module Functions](#module-functions)
-  - [lurek.automation.getCondition(name: string) -> boolean](#lurekautomationgetconditionname-string-boolean)
-  - [lurek.automation.getCurrentScript() -> string](#lurekautomationgetcurrentscript-string)
-  - [lurek.automation.getCurrentStep() -> integer](#lurekautomationgetcurrentstep-integer)
-  - [lurek.automation.getElapsedTime() -> number](#lurekautomationgetelapsedtime-number)
-  - [lurek.automation.getLastError() -> string](#lurekautomationgetlasterror-string)
-  - [lurek.automation.getPlaybackSpeed() -> number](#lurekautomationgetplaybackspeed-number)
-  - [lurek.automation.getScripts() -> string[]](#lurekautomationgetscripts-string)
-  - [lurek.automation.getStepCount() -> integer](#lurekautomationgetstepcount-integer)
-  - [lurek.automation.getStepLimit(name: string) -> integer](#lurekautomationgetsteplimitname-string-integer)
-  - [lurek.automation.hasMacro(name: string) -> boolean](#lurekautomationhasmacroname-string-boolean)
-  - [lurek.automation.hasScript(name: string) -> boolean](#lurekautomationhasscriptname-string-boolean)
-  - [lurek.automation.isComplete() -> boolean](#lurekautomationiscomplete-boolean)
-  - [lurek.automation.isFailed() -> boolean](#lurekautomationisfailed-boolean)
-  - [lurek.automation.isHighlightMode() -> boolean](#lurekautomationishighlightmode-boolean)
-  - [lurek.automation.isPaused() -> boolean](#lurekautomationispaused-boolean)
-  - [lurek.automation.isRunning() -> boolean](#lurekautomationisrunning-boolean)
-  - [lurek.automation.listMacros() -> string[]](#lurekautomationlistmacros-string)
-  - [lurek.automation.load(name: string, data: table)](#lurekautomationloadname-string-data-table)
-  - [lurek.automation.loadFromToml(name: string, toml_str: string)](#lurekautomationloadfromtomlname-string-tomlstr-string)
-  - [lurek.automation.pause()](#lurekautomationpause)
-  - [lurek.automation.playMacro(name: string)](#lurekautomationplaymacroname-string)
-  - [lurek.automation.resume()](#lurekautomationresume)
-  - [lurek.automation.saveMacro(macro_name: string, script_name: string)](#lurekautomationsavemacromacroname-string-scriptname-string)
-  - [lurek.automation.setCondition(name: string, value: boolean)](#lurekautomationsetconditionname-string-value-boolean)
-  - [lurek.automation.setHighlightMode(enable: boolean)](#lurekautomationsethighlightmodeenable-boolean)
-  - [lurek.automation.setPlaybackSpeed(factor: number)](#lurekautomationsetplaybackspeedfactor-number)
-  - [lurek.automation.setStepLimit(name: string, n: integer) -> boolean](#lurekautomationsetsteplimitname-string-n-integer-boolean)
-  - [lurek.automation.start(name: string)](#lurekautomationstartname-string)
-  - [lurek.automation.stop()](#lurekautomationstop)
-  - [lurek.automation.unload(name: string) -> boolean](#lurekautomationunloadname-string-boolean)
-  - [lurek.automation.update(dt: number)](#lurekautomationupdatedt-number)
-  - [lurek.automation.waitUntil(predicate: function, timeout: number)](#lurekautomationwaituntilpredicate-function-timeout-number)
-- [Examples](#examples)
-- [Reference Games](#reference-games)
-- [Related Modules](#related-modules)
+- [🎯 Purpose](#purpose)
+- [📋 Summary](#summary)
+- [🧩 Key Types](#key-types)
+- [📖 API Overview](#api-overview)
+- [⚙️ Module Functions](#module-functions)
+  - [lurek.automation.getCondition](#lurekautomationgetcondition)
+  - [lurek.automation.getCurrentScript](#lurekautomationgetcurrentscript)
+  - [lurek.automation.getCurrentStep](#lurekautomationgetcurrentstep)
+  - [lurek.automation.getElapsedTime](#lurekautomationgetelapsedtime)
+  - [lurek.automation.getLastError](#lurekautomationgetlasterror)
+  - [lurek.automation.getPlaybackSpeed](#lurekautomationgetplaybackspeed)
+  - [lurek.automation.getScripts](#lurekautomationgetscripts)
+  - [lurek.automation.getStepCount](#lurekautomationgetstepcount)
+  - [lurek.automation.getStepLimit](#lurekautomationgetsteplimit)
+  - [lurek.automation.hasMacro](#lurekautomationhasmacro)
+  - [lurek.automation.hasScript](#lurekautomationhasscript)
+  - [lurek.automation.isComplete](#lurekautomationiscomplete)
+  - [lurek.automation.isFailed](#lurekautomationisfailed)
+  - [lurek.automation.isHighlightMode](#lurekautomationishighlightmode)
+  - [lurek.automation.isPaused](#lurekautomationispaused)
+  - [lurek.automation.isRunning](#lurekautomationisrunning)
+  - [lurek.automation.listMacros](#lurekautomationlistmacros)
+  - [lurek.automation.load](#lurekautomationload)
+  - [lurek.automation.loadFromToml](#lurekautomationloadfromtoml)
+  - [lurek.automation.pause](#lurekautomationpause)
+  - [lurek.automation.playMacro](#lurekautomationplaymacro)
+  - [lurek.automation.resume](#lurekautomationresume)
+  - [lurek.automation.saveMacro](#lurekautomationsavemacro)
+  - [lurek.automation.setCondition](#lurekautomationsetcondition)
+  - [lurek.automation.setHighlightMode](#lurekautomationsethighlightmode)
+  - [lurek.automation.setPlaybackSpeed](#lurekautomationsetplaybackspeed)
+  - [lurek.automation.setStepLimit](#lurekautomationsetsteplimit)
+  - [lurek.automation.start](#lurekautomationstart)
+  - [lurek.automation.stop](#lurekautomationstop)
+  - [lurek.automation.unload](#lurekautomationunload)
+  - [lurek.automation.update](#lurekautomationupdate)
+  - [lurek.automation.waitUntil](#lurekautomationwaituntil)
+- [💡 Examples](#examples)
+- [🎮 Reference Games](#reference-games)
+- [🔗 Related Modules](#related-modules)
 
 This page is generated from the current module specs, examples, and Lua API data.
 
 **Module group:** Feature Systems
 **Namespace:** `lurek.automation`
 
-## Purpose
+## 🎯 Purpose
 
 Automated input simulation for headless tests, QA replay, recorded sessions.
 
-## Summary
+[⬆ back to top](#table-of-contents)
+
+## 📋 Summary
 
 Headless input simulation framework for automated testing, QA replay, and recorded gameplay sessions. `Script` holds an ordered sequence of `Step` entries — each step is a timed action (key press, mouse move, click, wait, assert) that the `Simulator` executes against the engine's input and event systems without a visible window.
 
 Scripts can be loaded from TOML files or constructed from Lua tables. The simulator supports pause/resume, conditional branching via named flags, and a highlight mode that overlays action indicators when running with a visible window. Used by harness for deterministic integration testing and by `lurek.automation.*` for in-game replay features.
 
-## Minimal Module Example
+[⬆ back to top](#table-of-contents)
 
-Module example from [automation.lua](../blob/main/content/examples/automation.lua):
-
-```lua
-      { time = 2.5, action = "keyrelease", key = "d" },
-      { time = 2.6, action = "keypress",   key = "space" },
-      { time = 2.7, action = "keyrelease", key = "space" },
-    },
-  })
-  -- Start playback — the script will inject input events when update() is called
-  function lurek.init()
-    lurek.automation.start("speed_run")
-  end
-end
-
---@api-stub: lurek.automation.stop
--- Stops the currently running automation script immediately
-do
-  -- Let the player break out of automation by pressing Escape
-  function lurek.keypressed(key)
-    if key == "escape" and lurek.automation.isRunning() then
-      lurek.automation.stop()
-      lurek.log.info("player cancelled automation", "automation")
-    end
-  end
-end
-
---@api-stub: lurek.automation.pause
--- Pauses automation playback without losing progress
-do
-  -- Pause automation when the game menu opens so input does not bleed through
-  local menu_visible = false
-  function lurek.keypressed(key)
-    if key == "escape" then
-      menu_visible = not menu_visible
-      if menu_visible and lurek.automation.isRunning() then
-        lurek.automation.pause()
-      end
-    end
-  end
-end
-
---@api-stub: lurek.automation.resume
--- Resumes paused automation playback from where it left off
-do
-  -- Resume automation when the menu closes
-  local menu_visible = true
-  function lurek.keypressed(key)
-    if key == "escape" and menu_visible then
-      menu_visible = false
-      if lurek.automation.isPaused() then
-        lurek.automation.resume()
-```
-
-## Key Types
+## 🧩 Key Types
 
 This module has no separate Lua-visible classes in the generated API data.
 
-## API Overview
+[⬆ back to top](#table-of-contents)
+
+## 📖 API Overview
 
 - Source spec: [docs/specs/automation.md](../blob/main/docs/specs/automation.md)
 
@@ -150,15 +100,19 @@ lurek.automation.load(name: string, data: table) -- Loads an automation script f
 -- ... 14 more module functions
 ```
 
-## Module Functions
+[⬆ back to top](#table-of-contents)
 
-### `lurek.automation.getCondition(name: string) -> boolean`
+## ⚙️ Module Functions
+
+### lurek.automation.getCondition
+
+`lurek.automation.getCondition(name: string) -> boolean`
 
 Returns a named automation condition value.
 
 **Parameters**
 
-- `name` (`string`, required) - Condition name.
+- `name` (`string`, required): Condition name.
 
 **Returns**: `boolean` - Current condition value.
 
@@ -178,7 +132,9 @@ do
 end
 ```
 
-### `lurek.automation.getCurrentScript() -> string`
+### lurek.automation.getCurrentScript
+
+`lurek.automation.getCurrentScript() -> string`
 
 Returns the current script name when a script is active.
 
@@ -202,7 +158,9 @@ do
 end
 ```
 
-### `lurek.automation.getCurrentStep() -> integer`
+### lurek.automation.getCurrentStep
+
+`lurek.automation.getCurrentStep() -> integer`
 
 Returns the current step index of the active script.
 
@@ -226,7 +184,9 @@ do
 end
 ```
 
-### `lurek.automation.getElapsedTime() -> number`
+### lurek.automation.getElapsedTime
+
+`lurek.automation.getElapsedTime() -> number`
 
 Returns elapsed playback time for the current script.
 
@@ -248,7 +208,9 @@ do
 end
 ```
 
-### `lurek.automation.getLastError() -> string`
+### lurek.automation.getLastError
+
+`lurek.automation.getLastError() -> string`
 
 Returns the last automation error message when one exists.
 
@@ -272,7 +234,9 @@ do
 end
 ```
 
-### `lurek.automation.getPlaybackSpeed() -> number`
+### lurek.automation.getPlaybackSpeed
+
+`lurek.automation.getPlaybackSpeed() -> number`
 
 Returns automation playback speed multiplier.
 
@@ -294,7 +258,9 @@ do
 end
 ```
 
-### `lurek.automation.getScripts() -> string[]`
+### lurek.automation.getScripts
+
+`lurek.automation.getScripts() -> string[]`
 
 Returns the names of loaded automation scripts.
 
@@ -316,7 +282,9 @@ do
 end
 ```
 
-### `lurek.automation.getStepCount() -> integer`
+### lurek.automation.getStepCount
+
+`lurek.automation.getStepCount() -> integer`
 
 Returns the number of steps in the active script.
 
@@ -337,13 +305,15 @@ do
 end
 ```
 
-### `lurek.automation.getStepLimit(name: string) -> integer`
+### lurek.automation.getStepLimit
+
+`lurek.automation.getStepLimit(name: string) -> integer`
 
 Returns the configured step limit for a loaded script.
 
 **Parameters**
 
-- `name` (`string`, required) - Script name to query.
+- `name` (`string`, required): Script name to query.
 
 **Returns**: `integer` - Step limit, or nil when no limit is set.
 
@@ -363,13 +333,15 @@ do
 end
 ```
 
-### `lurek.automation.hasMacro(name: string) -> boolean`
+### lurek.automation.hasMacro
+
+`lurek.automation.hasMacro(name: string) -> boolean`
 
 Returns whether a macro is saved. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `name` (`string`, required) - Macro name to check.
+- `name` (`string`, required): Macro name to check.
 
 **Returns**: `boolean` - True when the macro exists.
 
@@ -389,13 +361,15 @@ do
 end
 ```
 
-### `lurek.automation.hasScript(name: string) -> boolean`
+### lurek.automation.hasScript
+
+`lurek.automation.hasScript(name: string) -> boolean`
 
 Returns whether a script is loaded.
 
 **Parameters**
 
-- `name` (`string`, required) - Script name to check.
+- `name` (`string`, required): Script name to check.
 
 **Returns**: `boolean` - True when the script is loaded.
 
@@ -419,7 +393,9 @@ do
 end
 ```
 
-### `lurek.automation.isComplete() -> boolean`
+### lurek.automation.isComplete
+
+`lurek.automation.isComplete() -> boolean`
 
 Returns whether the current automation script completed.
 
@@ -447,7 +423,9 @@ do
 end
 ```
 
-### `lurek.automation.isFailed() -> boolean`
+### lurek.automation.isFailed
+
+`lurek.automation.isFailed() -> boolean`
 
 Returns whether the current automation script failed.
 
@@ -471,7 +449,9 @@ do
 end
 ```
 
-### `lurek.automation.isHighlightMode() -> boolean`
+### lurek.automation.isHighlightMode
+
+`lurek.automation.isHighlightMode() -> boolean`
 
 Returns whether automation highlight mode is enabled.
 
@@ -495,7 +475,9 @@ do
 end
 ```
 
-### `lurek.automation.isPaused() -> boolean`
+### lurek.automation.isPaused
+
+`lurek.automation.isPaused() -> boolean`
 
 Returns whether automation playback is paused.
 
@@ -518,7 +500,9 @@ do
 end
 ```
 
-### `lurek.automation.isRunning() -> boolean`
+### lurek.automation.isRunning
+
+`lurek.automation.isRunning() -> boolean`
 
 Returns whether automation playback is running.
 
@@ -541,7 +525,9 @@ do
 end
 ```
 
-### `lurek.automation.listMacros() -> string[]`
+### lurek.automation.listMacros
+
+`lurek.automation.listMacros() -> string[]`
 
 Returns the names of saved macros. This function is exposed to Lua scripts.
 
@@ -563,14 +549,16 @@ do
 end
 ```
 
-### `lurek.automation.load(name: string, data: table)`
+### lurek.automation.load
+
+`lurek.automation.load(name: string, data: table)`
 
 Loads an automation script from a Lua table of steps and optional metadata.
 
 **Parameters**
 
-- `name` (`string`, required) - Script name used by `start`, macros, and lookup calls.
-- `data` (`table`, required) - Script data table with a `steps` array and optional `meta.description` string.
+- `name` (`string`, required): Script name used by `start`, macros, and lookup calls.
+- `data` (`table`, required): Script data table with a `steps` array and optional `meta.description` string.
 
 #### Example
 
@@ -596,14 +584,16 @@ do
 end
 ```
 
-### `lurek.automation.loadFromToml(name: string, toml_str: string)`
+### lurek.automation.loadFromToml
+
+`lurek.automation.loadFromToml(name: string, toml_str: string)`
 
 Loads an automation script from TOML text.
 
 **Parameters**
 
-- `name` (`string`, required) - Script name used by `start`, macros, and lookup calls.
-- `toml_str` (`string`, required) - TOML automation script contents.
+- `name` (`string`, required): Script name used by `start`, macros, and lookup calls.
+- `toml_str` (`string`, required): TOML automation script contents.
 
 #### Example
 
@@ -639,7 +629,6 @@ key = "lshift"
 ]=]
   lurek.automation.loadFromToml("jump_dash", toml_text)
 end
-
 --@api-stub: lurek.automation.getStepLimit
 -- Returns the maximum step count for a loaded script, or nil if unlimited
 do
@@ -651,16 +640,19 @@ do
     lurek.log.info("speed_run has no step limit", "automation")
   end
 end
-
 --@api-stub: lurek.automation.setStepLimit
 -- Sets the maximum number of steps a script will execute before auto-stopping
 do
   -- Cap long scripts during CI to avoid infinite loops in broken automation
   local CI_STEP_CAP = 128
   local ok = lurek.automation.setStepLimit("speed_run", CI_STEP_CAP)
+  if ok then
+    lurek.log.info("speed_run limited to " .. CI_STEP_CAP .. " steps for CI", "automation")
 ```
 
-### `lurek.automation.pause()`
+### lurek.automation.pause
+
+`lurek.automation.pause()`
 
 Pauses automation playback. This function is exposed to Lua scripts.
 
@@ -683,13 +675,15 @@ do
 end
 ```
 
-### `lurek.automation.playMacro(name: string)`
+### lurek.automation.playMacro
+
+`lurek.automation.playMacro(name: string)`
 
 Starts playback of a saved macro. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `name` (`string`, required) - Macro name to play.
+- `name` (`string`, required): Macro name to play.
 
 #### Example
 
@@ -706,7 +700,9 @@ do
 end
 ```
 
-### `lurek.automation.resume()`
+### lurek.automation.resume
+
+`lurek.automation.resume()`
 
 Resumes automation playback. This function is exposed to Lua scripts.
 
@@ -729,14 +725,16 @@ do
 end
 ```
 
-### `lurek.automation.saveMacro(macro_name: string, script_name: string)`
+### lurek.automation.saveMacro
+
+`lurek.automation.saveMacro(macro_name: string, script_name: string)`
 
 Saves a loaded script as a named macro.
 
 **Parameters**
 
-- `macro_name` (`string`, required) - Macro name to save.
-- `script_name` (`string`, required) - Loaded script name to copy into the macro store.
+- `macro_name` (`string`, required): Macro name to save.
+- `script_name` (`string`, required): Loaded script name to copy into the macro store.
 
 #### Example
 
@@ -756,14 +754,16 @@ do
 end
 ```
 
-### `lurek.automation.setCondition(name: string, value: boolean)`
+### lurek.automation.setCondition
+
+`lurek.automation.setCondition(name: string, value: boolean)`
 
 Sets a named boolean condition used by automation steps.
 
 **Parameters**
 
-- `name` (`string`, required) - Condition name.
-- `value` (`boolean`, required) - Condition value.
+- `name` (`string`, required): Condition name.
+- `value` (`boolean`, required): Condition value.
 
 #### Example
 
@@ -782,13 +782,15 @@ do
 end
 ```
 
-### `lurek.automation.setHighlightMode(enable: boolean)`
+### lurek.automation.setHighlightMode
+
+`lurek.automation.setHighlightMode(enable: boolean)`
 
 Enables or disables automation highlight mode.
 
 **Parameters**
 
-- `enable` (`boolean`, required) - True to enable highlight mode.
+- `enable` (`boolean`, required): True to enable highlight mode.
 
 #### Example
 
@@ -803,13 +805,15 @@ do
 end
 ```
 
-### `lurek.automation.setPlaybackSpeed(factor: number)`
+### lurek.automation.setPlaybackSpeed
+
+`lurek.automation.setPlaybackSpeed(factor: number)`
 
 Sets automation playback speed multiplier.
 
 **Parameters**
 
-- `factor` (`number`, required) - Playback speed multiplier.
+- `factor` (`number`, required): Playback speed multiplier.
 
 #### Example
 
@@ -828,14 +832,16 @@ do
 end
 ```
 
-### `lurek.automation.setStepLimit(name: string, n: integer) -> boolean`
+### lurek.automation.setStepLimit
+
+`lurek.automation.setStepLimit(name: string, n: integer) -> boolean`
 
 Sets the maximum step count for a loaded script.
 
 **Parameters**
 
-- `name` (`string`, required) - Script name to update.
-- `n` (`integer`, required) - Maximum step count.
+- `name` (`string`, required): Script name to update.
+- `n` (`integer`, required): Maximum step count.
 
 **Returns**: `boolean` - True when the script exists and the limit was set.
 
@@ -854,13 +860,15 @@ do
 end
 ```
 
-### `lurek.automation.start(name: string)`
+### lurek.automation.start
+
+`lurek.automation.start(name: string)`
 
 Starts playback of a loaded automation script.
 
 **Parameters**
 
-- `name` (`string`, required) - Loaded script name to start.
+- `name` (`string`, required): Loaded script name to start.
 
 #### Example
 
@@ -885,7 +893,9 @@ do
 end
 ```
 
-### `lurek.automation.stop()`
+### lurek.automation.stop
+
+`lurek.automation.stop()`
 
 Stops the current automation script.
 
@@ -905,13 +915,15 @@ do
 end
 ```
 
-### `lurek.automation.unload(name: string) -> boolean`
+### lurek.automation.unload
+
+`lurek.automation.unload(name: string) -> boolean`
 
 Unloads a named automation script.
 
 **Parameters**
 
-- `name` (`string`, required) - Script name to remove.
+- `name` (`string`, required): Script name to remove.
 
 **Returns**: `boolean` - True when the script existed and was removed.
 
@@ -936,13 +948,15 @@ do
 end
 ```
 
-### `lurek.automation.update(dt: number)`
+### lurek.automation.update
+
+`lurek.automation.update(dt: number)`
 
 Advances automation playback and dispatches generated input events.
 
 **Parameters**
 
-- `dt` (`number`, required) - Elapsed time in seconds.
+- `dt` (`number`, required): Elapsed time in seconds.
 
 #### Example
 
@@ -959,14 +973,16 @@ do
 end
 ```
 
-### `lurek.automation.waitUntil(predicate: function, timeout: number)`
+### lurek.automation.waitUntil
+
+`lurek.automation.waitUntil(predicate: function, timeout: number)`
 
 Suspends automation updates until a predicate returns true or a timeout elapses.
 
 **Parameters**
 
-- `predicate` (`function`, required) - Function called each update; true resolves the wait.
-- `timeout` (`number`, required) - Maximum wait duration in seconds.
+- `predicate` (`function`, required): Function called each update; true resolves the wait.
+- `timeout` (`number`, required): Maximum wait duration in seconds.
 
 #### Example
 
@@ -989,21 +1005,27 @@ end
 ```
 
 
-## Examples
+[⬆ back to top](#table-of-contents)
+
+## 💡 Examples
 
 - [automation.lua](../blob/main/content/examples/automation.lua) - Macro recording and playback
 
-## Reference Games
+[⬆ back to top](#table-of-contents)
+
+## 🎮 Reference Games
 
 No direct references were found in `content/games/**/main.lua`.
 
-## Related Modules
+[⬆ back to top](#table-of-contents)
 
-- Previous: [[audio|Module-audio]]
-- Next: [[bin|Module-bin]]
-- [[ai|Module-ai]] - Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU.
-- [[animation|Module-animation]] - Sprite animation: source-rect changes over time. Imports only math; headless-testable.
-- [[ecs|Module-ecs]] - Entity-Component-System: identity / data / behaviour separation for runtime composition.
-- [[i18n|Module-i18n]] - Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*).
-- [[minimap|Module-minimap]] - Grid-based minimap data model: fog of war, tracked objects, pings, viewport overlay.
-- [[mods|Module-mods]] - Mod-loading framework: virtual filesystem mounts + sandboxed runtime config.
+## 🔗 Related Modules
+
+- Previous: [audio](Module-audio)
+- Next: [bin](Module-bin)
+- [ai](Module-ai) - Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU.
+- [animation](Module-animation) - Sprite animation: source-rect changes over time. Imports only math; headless-testable.
+- [ecs](Module-ecs) - Entity-Component-System: identity / data / behaviour separation for runtime composition.
+- [i18n](Module-i18n) - Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*).
+- [minimap](Module-minimap) - Grid-based minimap data model: fog of war, tracked objects, pings, viewport overlay.
+- [mods](Module-mods) - Mod-loading framework: virtual filesystem mounts + sandboxed runtime config.

@@ -4,149 +4,100 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
-- [Purpose](#purpose)
-- [Summary](#summary)
-- [Minimal Module Example](#minimal-module-example)
-- [Key Types](#key-types)
-- [API Overview](#api-overview)
-- [Module Functions](#module-functions)
-  - [lurek.window.close()](#lurekwindowclose)
-  - [lurek.window.flash()](#lurekwindowflash)
-  - [lurek.window.focus()](#lurekwindowfocus)
-  - [lurek.window.fromPixels(value: number) -> number](#lurekwindowfrompixelsvalue-number-number)
-  - [lurek.window.getCurrentDisplay() -> number](#lurekwindowgetcurrentdisplay-number)
-  - [lurek.window.getDesktopDimensions([display]: integer) -> number](#lurekwindowgetdesktopdimensionsdisplay-integer-number)
-  - [lurek.window.getDimensions() -> number](#lurekwindowgetdimensions-number)
-  - [lurek.window.getDisplayCount() -> number](#lurekwindowgetdisplaycount-number)
-  - [lurek.window.getDisplayName([display]: integer) -> string](#lurekwindowgetdisplaynamedisplay-integer-string)
-  - [lurek.window.getDisplayOrientation() -> string](#lurekwindowgetdisplayorientation-string)
-  - [lurek.window.getDisplays() -> table](#lurekwindowgetdisplays-table)
-  - [lurek.window.getDPIScale() -> number](#lurekwindowgetdpiscale-number)
-  - [lurek.window.getFullscreen() -> boolean](#lurekwindowgetfullscreen-boolean)
-  - [lurek.window.getFullscreenModes() -> table](#lurekwindowgetfullscreenmodes-table)
-  - [lurek.window.getGameHeight() -> number](#lurekwindowgetgameheight-number)
-  - [lurek.window.getGameWidth() -> number](#lurekwindowgetgamewidth-number)
-  - [lurek.window.getHeight() -> number](#lurekwindowgetheight-number)
-  - [lurek.window.getMode() -> number](#lurekwindowgetmode-number)
-  - [lurek.window.getNativeDPIScale() -> number](#lurekwindowgetnativedpiscale-number)
-  - [lurek.window.getPixelDimensions() -> number](#lurekwindowgetpixeldimensions-number)
-  - [lurek.window.getPosition() -> number](#lurekwindowgetposition-number)
-  - [lurek.window.getSafeArea() -> number](#lurekwindowgetsafearea-number)
-  - [lurek.window.getScaleInfo() -> table](#lurekwindowgetscaleinfo-table)
-  - [lurek.window.getScaleMode() -> string](#lurekwindowgetscalemode-string)
-  - [lurek.window.getSystemTheme() -> string](#lurekwindowgetsystemtheme-string)
-  - [lurek.window.getTitle() -> string](#lurekwindowgettitle-string)
-  - [lurek.window.getVSync() -> number](#lurekwindowgetvsync-number)
-  - [lurek.window.getWidth() -> number](#lurekwindowgetwidth-number)
-  - [lurek.window.hasFocus() -> boolean](#lurekwindowhasfocus-boolean)
-  - [lurek.window.hasMouseFocus() -> boolean](#lurekwindowhasmousefocus-boolean)
-  - [lurek.window.isFullscreen() -> boolean](#lurekwindowisfullscreen-boolean)
-  - [lurek.window.isHighDPIAllowed() -> boolean](#lurekwindowishighdpiallowed-boolean)
-  - [lurek.window.isMaximized() -> boolean](#lurekwindowismaximized-boolean)
-  - [lurek.window.isMinimized() -> boolean](#lurekwindowisminimized-boolean)
-  - [lurek.window.isOpen() -> boolean](#lurekwindowisopen-boolean)
-  - [lurek.window.isResizable() -> boolean](#lurekwindowisresizable-boolean)
-  - [lurek.window.isVisible() -> boolean](#lurekwindowisvisible-boolean)
-  - [lurek.window.maximize()](#lurekwindowmaximize)
-  - [lurek.window.minimize()](#lurekwindowminimize)
-  - [lurek.window.onDpiChange(func: function)](#lurekwindowondpichangefunc-function)
-  - [lurek.window.openFileDialog([opts]: table) -> string[]](#lurekwindowopenfiledialogopts-table-string)
-  - [lurek.window.pollDpiChange() -> number](#lurekwindowpolldpichange-number)
-  - [lurek.window.requestAttention()](#lurekwindowrequestattention)
-  - [lurek.window.restore()](#lurekwindowrestore)
-  - [lurek.window.setDisplay(display: integer)](#lurekwindowsetdisplaydisplay-integer)
-  - [lurek.window.setFullscreen(enabled: boolean, [fstype]: string)](#lurekwindowsetfullscreenenabled-boolean-fstype-string)
-  - [lurek.window.setIcon(path: string)](#lurekwindowseticonpath-string)
-  - [lurek.window.setMode(w: integer, h: integer, [flags]: table)](#lurekwindowsetmodew-integer-h-integer-flags-table)
-  - [lurek.window.setPosition(x: integer, y: integer)](#lurekwindowsetpositionx-integer-y-integer)
-  - [lurek.window.setScaleMode(mode: string)](#lurekwindowsetscalemodemode-string)
-  - [lurek.window.setTitle(title: string)](#lurekwindowsettitletitle-string)
-  - [lurek.window.setVSync(mode: integer)](#lurekwindowsetvsyncmode-integer)
-  - [lurek.window.showMessageBox(title: string, message: string, [box_type]: string, [btn_type]: string) -> string](#lurekwindowshowmessageboxtitle-string-message-string-boxtype-string-btntype-string-string)
-  - [lurek.window.toPixels(value: number) -> number](#lurekwindowtopixelsvalue-number-number)
-  - [lurek.window.windowConfig(opts: table)](#lurekwindowwindowconfigopts-table)
-- [Examples](#examples)
-- [Reference Games](#reference-games)
-- [Related Modules](#related-modules)
+- [🎯 Purpose](#purpose)
+- [📋 Summary](#summary)
+- [🧩 Key Types](#key-types)
+- [📖 API Overview](#api-overview)
+- [⚙️ Module Functions](#module-functions)
+  - [lurek.window.close](#lurekwindowclose)
+  - [lurek.window.flash](#lurekwindowflash)
+  - [lurek.window.focus](#lurekwindowfocus)
+  - [lurek.window.fromPixels](#lurekwindowfrompixels)
+  - [lurek.window.getCurrentDisplay](#lurekwindowgetcurrentdisplay)
+  - [lurek.window.getDesktopDimensions](#lurekwindowgetdesktopdimensions)
+  - [lurek.window.getDimensions](#lurekwindowgetdimensions)
+  - [lurek.window.getDisplayCount](#lurekwindowgetdisplaycount)
+  - [lurek.window.getDisplayName](#lurekwindowgetdisplayname)
+  - [lurek.window.getDisplayOrientation](#lurekwindowgetdisplayorientation)
+  - [lurek.window.getDisplays](#lurekwindowgetdisplays)
+  - [lurek.window.getDPIScale](#lurekwindowgetdpiscale)
+  - [lurek.window.getFullscreen](#lurekwindowgetfullscreen)
+  - [lurek.window.getFullscreenModes](#lurekwindowgetfullscreenmodes)
+  - [lurek.window.getGameHeight](#lurekwindowgetgameheight)
+  - [lurek.window.getGameWidth](#lurekwindowgetgamewidth)
+  - [lurek.window.getHeight](#lurekwindowgetheight)
+  - [lurek.window.getMode](#lurekwindowgetmode)
+  - [lurek.window.getNativeDPIScale](#lurekwindowgetnativedpiscale)
+  - [lurek.window.getPixelDimensions](#lurekwindowgetpixeldimensions)
+  - [lurek.window.getPosition](#lurekwindowgetposition)
+  - [lurek.window.getSafeArea](#lurekwindowgetsafearea)
+  - [lurek.window.getScaleInfo](#lurekwindowgetscaleinfo)
+  - [lurek.window.getScaleMode](#lurekwindowgetscalemode)
+  - [lurek.window.getSystemTheme](#lurekwindowgetsystemtheme)
+  - [lurek.window.getTitle](#lurekwindowgettitle)
+  - [lurek.window.getVSync](#lurekwindowgetvsync)
+  - [lurek.window.getWidth](#lurekwindowgetwidth)
+  - [lurek.window.hasFocus](#lurekwindowhasfocus)
+  - [lurek.window.hasMouseFocus](#lurekwindowhasmousefocus)
+  - [lurek.window.isFullscreen](#lurekwindowisfullscreen)
+  - [lurek.window.isHighDPIAllowed](#lurekwindowishighdpiallowed)
+  - [lurek.window.isMaximized](#lurekwindowismaximized)
+  - [lurek.window.isMinimized](#lurekwindowisminimized)
+  - [lurek.window.isOpen](#lurekwindowisopen)
+  - [lurek.window.isResizable](#lurekwindowisresizable)
+  - [lurek.window.isVisible](#lurekwindowisvisible)
+  - [lurek.window.maximize](#lurekwindowmaximize)
+  - [lurek.window.minimize](#lurekwindowminimize)
+  - [lurek.window.onDpiChange](#lurekwindowondpichange)
+  - [lurek.window.openFileDialog](#lurekwindowopenfiledialog)
+  - [lurek.window.pollDpiChange](#lurekwindowpolldpichange)
+  - [lurek.window.requestAttention](#lurekwindowrequestattention)
+  - [lurek.window.restore](#lurekwindowrestore)
+  - [lurek.window.setDisplay](#lurekwindowsetdisplay)
+  - [lurek.window.setFullscreen](#lurekwindowsetfullscreen)
+  - [lurek.window.setIcon](#lurekwindowseticon)
+  - [lurek.window.setMode](#lurekwindowsetmode)
+  - [lurek.window.setPosition](#lurekwindowsetposition)
+  - [lurek.window.setScaleMode](#lurekwindowsetscalemode)
+  - [lurek.window.setTitle](#lurekwindowsettitle)
+  - [lurek.window.setVSync](#lurekwindowsetvsync)
+  - [lurek.window.showMessageBox](#lurekwindowshowmessagebox)
+  - [lurek.window.toPixels](#lurekwindowtopixels)
+  - [lurek.window.windowConfig](#lurekwindowwindowconfig)
+- [💡 Examples](#examples)
+- [🎮 Reference Games](#reference-games)
+- [🔗 Related Modules](#related-modules)
 
 This page is generated from the current module specs, examples, and Lua API data.
 
 **Module group:** Platform Services
 **Namespace:** `lurek.window`
 
-## Purpose
+## 🎯 Purpose
 
 Window control via deferred WindowState writes; winit ops applied at frame start on the main thread.
 
-## Summary
+[⬆ back to top](#table-of-contents)
+
+## 📋 Summary
 
 OS window lifecycle management via winit 0.30 with deferred state writes applied at frame start on the main thread. `WindowState` accumulates requested changes (title, size, position, fullscreen mode, VSync, cursor visibility, icon) during the frame and applies them atomically before the next event poll to avoid mid-frame state inconsistency.
 
 Multi-monitor enumeration provides `DisplayInfo` snapshots with resolution, DPI scale, refresh rate, and position. Fullscreen supports exclusive and borderless modes with resolution selection. VSync configuration toggles between immediate, FIFO, and mailbox present modes. DPI-aware scaling adjusts the viewport and reports `ScaleInfo` for layout calculations. Window centering, cross-display movement, and startup monitor selection helpers handle multi-monitor workflows. Native file dialogs (open, save, folder) run asynchronously to avoid blocking the game loop. Exposed as `lurek.window.*`. Platform Services tier.
 
-## Minimal Module Example
+[⬆ back to top](#table-of-contents)
 
-Module example from [window.lua](../blob/main/content/examples/window.lua):
-
-```lua
---@api-stub: lurek.window.setTitle
--- Sets the window title bar text
-do
-  function lurek.init()
-    -- setTitle updates the OS window title bar in real-time.
-    -- Use it during init to brand your game, or dynamically to show state.
-    lurek.window.setTitle("My Game - Forest Level")
-
-    -- Common pattern: append build info for dev builds
-    local version = "0.3.1"
-    lurek.window.setTitle("My Game v" .. version .. " [DEBUG]")
-  end
-end
-
---@api-stub: lurek.window.getTitle
--- Returns the current window title bar text
-do
-  -- getTitle returns whatever string was last set via setTitle or conf.lua.
-  -- Useful for appending status without losing the base title.
-  local base = lurek.window.getTitle()
-  local paused = true
-  if paused then
-    -- Append a pause indicator without hardcoding the base title
-    lurek.window.setTitle(base .. " [PAUSED]")
-  end
-end
-
---@api-stub: lurek.window.getWidth
--- Returns the current window width in logical (DPI-independent) pixels
-do
-  -- Returns the logical width, NOT physical pixels. On a 2x DPI display
-  -- a 1280px logical window would be 2560 physical pixels.
-  -- Use this for UI layout and game coordinate calculations.
-  local w = lurek.window.getWidth()
-  local centre_x = w * 0.5
-  lurek.log.info("hud centre x=" .. centre_x .. " (window width " .. w .. "px)", "ui")
-end
-
---@api-stub: lurek.window.getHeight
--- Returns the current window height in logical (DPI-independent) pixels
-do
-  -- Same as getWidth but vertical. Use for anchoring UI to bottom/top edges.
-  local h = lurek.window.getHeight()
-  -- Anchor a HUD bar 48px above the bottom edge
-  local hud_y = h - 48
-  lurek.log.info("hud anchored at y=" .. hud_y, "ui")
-end
-```
-
-## Key Types
+## 🧩 Key Types
 
 This module has no separate Lua-visible classes in the generated API data.
 
-## API Overview
+[⬆ back to top](#table-of-contents)
+
+## 📖 API Overview
 
 - Source spec: [docs/specs/window.md](../blob/main/docs/specs/window.md)
 
@@ -172,9 +123,13 @@ lurek.window.getMode() -> number -- Returns the current window display mode: wid
 -- ... 37 more module functions
 ```
 
-## Module Functions
+[⬆ back to top](#table-of-contents)
 
-### `lurek.window.close()`
+## ⚙️ Module Functions
+
+### lurek.window.close
+
+`lurek.window.close()`
 
 Closes the window and signals the engine to shut down.
 
@@ -194,7 +149,9 @@ do
 end
 ```
 
-### `lurek.window.flash()`
+### lurek.window.flash
+
+`lurek.window.flash()`
 
 Flashes the window briefly to attract the user's attention.
 
@@ -212,7 +169,9 @@ do
 end
 ```
 
-### `lurek.window.focus()`
+### lurek.window.focus
+
+`lurek.window.focus()`
 
 Requests keyboard focus for the window. No-op if already focused.
 
@@ -230,13 +189,15 @@ do
 end
 ```
 
-### `lurek.window.fromPixels(value: number) -> number`
+### lurek.window.fromPixels
+
+`lurek.window.fromPixels(value: number) -> number`
 
 Converts a value from physical pixel units to logical (DPI-independent) units using the current DPI scale.
 
 **Parameters**
 
-- `value` (`number`, required) - The value in physical pixels.
+- `value` (`number`, required): The value in physical pixels.
 
 **Returns**: `number` - The value in logical units.
 
@@ -254,7 +215,9 @@ do
 end
 ```
 
-### `lurek.window.getCurrentDisplay() -> number`
+### lurek.window.getCurrentDisplay
+
+`lurek.window.getCurrentDisplay() -> number`
 
 Returns the index of the display that currently contains the window.
 
@@ -273,13 +236,15 @@ do
 end
 ```
 
-### `lurek.window.getDesktopDimensions([display]: integer) -> number`
+### lurek.window.getDesktopDimensions
+
+`lurek.window.getDesktopDimensions([display]: integer) -> number`
 
 Returns the desktop resolution of a specific display, or the current display if none is specified.
 
 **Parameters**
 
-- `display` (`integer`, optional) - Zero-based display index. Uses the current display if omitted.
+- `display` (`integer`, optional): Zero-based display index. Uses the current display if omitted.
 
 **Returns**: `number` - Desktop width in pixels.
 
@@ -299,7 +264,9 @@ do
 end
 ```
 
-### `lurek.window.getDimensions() -> number`
+### lurek.window.getDimensions
+
+`lurek.window.getDimensions() -> number`
 
 Returns the current window width and height in logical pixels.
 
@@ -320,7 +287,9 @@ do
 end
 ```
 
-### `lurek.window.getDisplayCount() -> number`
+### lurek.window.getDisplayCount
+
+`lurek.window.getDisplayCount() -> number`
 
 Returns the number of connected displays (monitors).
 
@@ -340,13 +309,15 @@ do
 end
 ```
 
-### `lurek.window.getDisplayName([display]: integer) -> string`
+### lurek.window.getDisplayName
+
+`lurek.window.getDisplayName([display]: integer) -> string`
 
 Returns the human-readable name of a display. Returns "Unknown" if the display cannot be identified.
 
 **Parameters**
 
-- `display` (`integer`, optional) - Zero-based display index. Uses the current display if omitted.
+- `display` (`integer`, optional): Zero-based display index. Uses the current display if omitted.
 
 **Returns**: `string` - The display name.
 
@@ -363,7 +334,9 @@ do
 end
 ```
 
-### `lurek.window.getDisplayOrientation() -> string`
+### lurek.window.getDisplayOrientation
+
+`lurek.window.getDisplayOrientation() -> string`
 
 Returns the display orientation based on the window's aspect ratio.
 
@@ -382,7 +355,9 @@ do
 end
 ```
 
-### `lurek.window.getDisplays() -> table`
+### lurek.window.getDisplays
+
+`lurek.window.getDisplays() -> table`
 
 Returns a list of all connected displays with their properties. Each entry contains index, name, position (x, y), resolution (width, height), scale factor, refresh rate, and whether it is the primary monitor.
 
@@ -411,7 +386,9 @@ do
 end
 ```
 
-### `lurek.window.getDPIScale() -> number`
+### lurek.window.getDPIScale
+
+`lurek.window.getDPIScale() -> number`
 
 Returns the current DPI scale factor of the window. A value of 2.0 means the display uses 2x scaling (e.g., Retina).
 
@@ -431,7 +408,9 @@ do
 end
 ```
 
-### `lurek.window.getFullscreen() -> boolean`
+### lurek.window.getFullscreen
+
+`lurek.window.getFullscreen() -> boolean`
 
 Returns the current fullscreen state and type.
 
@@ -454,7 +433,9 @@ do
 end
 ```
 
-### `lurek.window.getFullscreenModes() -> table`
+### lurek.window.getFullscreenModes
+
+`lurek.window.getFullscreenModes() -> table`
 
 Returns a list of all supported fullscreen video modes across all monitors. Each entry contains width, height, and refresh rate.
 
@@ -479,7 +460,9 @@ do
 end
 ```
 
-### `lurek.window.getGameHeight() -> number`
+### lurek.window.getGameHeight
+
+`lurek.window.getGameHeight() -> number`
 
 Returns the logical game height as defined by the current scale mode and game configuration.
 
@@ -499,7 +482,9 @@ do
 end
 ```
 
-### `lurek.window.getGameWidth() -> number`
+### lurek.window.getGameWidth
+
+`lurek.window.getGameWidth() -> number`
 
 Returns the logical game width as defined by the current scale mode and game configuration.
 
@@ -519,7 +504,9 @@ do
 end
 ```
 
-### `lurek.window.getHeight() -> number`
+### lurek.window.getHeight
+
+`lurek.window.getHeight() -> number`
 
 Returns the current window height in logical (DPI-independent) pixels.
 
@@ -539,7 +526,9 @@ do
 end
 ```
 
-### `lurek.window.getMode() -> number`
+### lurek.window.getMode
+
+`lurek.window.getMode() -> number`
 
 Returns the current window display mode: width, height, and a flags table containing fullscreen state, fullscreen type, and VSync mode.
 
@@ -564,7 +553,9 @@ do
 end
 ```
 
-### `lurek.window.getNativeDPIScale() -> number`
+### lurek.window.getNativeDPIScale
+
+`lurek.window.getNativeDPIScale() -> number`
 
 Returns the native DPI scale factor reported by the operating system.
 
@@ -585,7 +576,9 @@ do
 end
 ```
 
-### `lurek.window.getPixelDimensions() -> number`
+### lurek.window.getPixelDimensions
+
+`lurek.window.getPixelDimensions() -> number`
 
 Returns the window dimensions in actual physical pixels, accounting for DPI scaling.
 
@@ -604,7 +597,9 @@ do
 end
 ```
 
-### `lurek.window.getPosition() -> number`
+### lurek.window.getPosition
+
+`lurek.window.getPosition() -> number`
 
 Returns the window position on screen in pixels.
 
@@ -626,7 +621,9 @@ do
 end
 ```
 
-### `lurek.window.getSafeArea() -> number`
+### lurek.window.getSafeArea
+
+`lurek.window.getSafeArea() -> number`
 
 Returns the safe drawing area of the window. On desktop this is the full window area. Useful for compatibility with mobile-style layout code.
 
@@ -645,7 +642,9 @@ do
 end
 ```
 
-### `lurek.window.getScaleInfo() -> table`
+### lurek.window.getScaleInfo
+
+`lurek.window.getScaleInfo() -> table`
 
 Returns detailed scaling information including scale factors, offsets, and logical game dimensions. Useful for coordinate conversion between screen space and game space.
 
@@ -672,7 +671,9 @@ do
 end
 ```
 
-### `lurek.window.getScaleMode() -> string`
+### lurek.window.getScaleMode
+
+`lurek.window.getScaleMode() -> string`
 
 Returns the current content scale mode name (e.g., "stretch", "letterbox", "pixel-perfect").
 
@@ -691,7 +692,9 @@ do
 end
 ```
 
-### `lurek.window.getSystemTheme() -> string`
+### lurek.window.getSystemTheme
+
+`lurek.window.getSystemTheme() -> string`
 
 Returns the operating system's current color theme. Desktop currently returns "unknown".
 
@@ -713,7 +716,9 @@ do
 end
 ```
 
-### `lurek.window.getTitle() -> string`
+### lurek.window.getTitle
+
+`lurek.window.getTitle() -> string`
 
 Returns the current window title bar text.
 
@@ -736,7 +741,9 @@ do
 end
 ```
 
-### `lurek.window.getVSync() -> number`
+### lurek.window.getVSync
+
+`lurek.window.getVSync() -> number`
 
 Returns the current VSync mode. This function is exposed to Lua scripts.
 
@@ -756,7 +763,9 @@ do
 end
 ```
 
-### `lurek.window.getWidth() -> number`
+### lurek.window.getWidth
+
+`lurek.window.getWidth() -> number`
 
 Returns the current window width in logical (DPI-independent) pixels.
 
@@ -777,7 +786,9 @@ do
 end
 ```
 
-### `lurek.window.hasFocus() -> boolean`
+### lurek.window.hasFocus
+
+`lurek.window.hasFocus() -> boolean`
 
 Returns whether the window currently has keyboard focus.
 
@@ -800,7 +811,9 @@ do
 end
 ```
 
-### `lurek.window.hasMouseFocus() -> boolean`
+### lurek.window.hasMouseFocus
+
+`lurek.window.hasMouseFocus() -> boolean`
 
 Returns whether the mouse cursor is inside the window.
 
@@ -823,7 +836,9 @@ do
 end
 ```
 
-### `lurek.window.isFullscreen() -> boolean`
+### lurek.window.isFullscreen
+
+`lurek.window.isFullscreen() -> boolean`
 
 Returns whether the window is currently in fullscreen mode.
 
@@ -843,7 +858,9 @@ do
 end
 ```
 
-### `lurek.window.isHighDPIAllowed() -> boolean`
+### lurek.window.isHighDPIAllowed
+
+`lurek.window.isHighDPIAllowed() -> boolean`
 
 Returns whether high-DPI rendering is allowed. Currently always returns false on desktop.
 
@@ -863,7 +880,9 @@ do
 end
 ```
 
-### `lurek.window.isMaximized() -> boolean`
+### lurek.window.isMaximized
+
+`lurek.window.isMaximized() -> boolean`
 
 Returns whether the window is currently maximized.
 
@@ -883,7 +902,9 @@ do
 end
 ```
 
-### `lurek.window.isMinimized() -> boolean`
+### lurek.window.isMinimized
+
+`lurek.window.isMinimized() -> boolean`
 
 Returns whether the window is currently minimized to the taskbar.
 
@@ -906,7 +927,9 @@ do
 end
 ```
 
-### `lurek.window.isOpen() -> boolean`
+### lurek.window.isOpen
+
+`lurek.window.isOpen() -> boolean`
 
 Returns whether the window is currently open. Always returns true while the game is running.
 
@@ -926,7 +949,9 @@ do
 end
 ```
 
-### `lurek.window.isResizable() -> boolean`
+### lurek.window.isResizable
+
+`lurek.window.isResizable() -> boolean`
 
 Returns whether the window can be resized by the user.
 
@@ -946,7 +971,9 @@ do
 end
 ```
 
-### `lurek.window.isVisible() -> boolean`
+### lurek.window.isVisible
+
+`lurek.window.isVisible() -> boolean`
 
 Returns whether the window is currently visible on screen.
 
@@ -969,7 +996,9 @@ do
 end
 ```
 
-### `lurek.window.maximize()`
+### lurek.window.maximize
+
+`lurek.window.maximize()`
 
 Maximizes the window to fill the screen.
 
@@ -987,7 +1016,9 @@ do
 end
 ```
 
-### `lurek.window.minimize()`
+### lurek.window.minimize
+
+`lurek.window.minimize()`
 
 Minimizes the window to the taskbar.
 
@@ -1006,13 +1037,15 @@ do
 end
 ```
 
-### `lurek.window.onDpiChange(func: function)`
+### lurek.window.onDpiChange
+
+`lurek.window.onDpiChange(func: function)`
 
 Registers a callback function that is called whenever the DPI scale factor changes (e.g., when the window is moved to a different monitor). Only one callback can be active at a time; setting a new one replaces the previous.
 
 **Parameters**
 
-- `func` (`function`, required) - Callback receiving the new DPI scale as a number.
+- `func` (`function`, required): Callback receiving the new DPI scale as a number.
 
 #### Example
 
@@ -1032,13 +1065,15 @@ do
 end
 ```
 
-### `lurek.window.openFileDialog([opts]: table) -> string[]`
+### lurek.window.openFileDialog
+
+`lurek.window.openFileDialog([opts]: table) -> string[]`
 
 Opens a native file picker dialog and returns the selected file paths. Blocks until the user picks file(s) or cancels.
 
 **Parameters**
 
-- `opts` (`table`, optional) - Optional config table with fields: title (string), defaultPath (string), multiple (boolean), filters (table of {name, extensions}).
+- `opts` (`table`, optional): Optional config table with fields: title (string), defaultPath (string), multiple (boolean), filters (table of {name, extensions}).
 
 **Returns**: `string[]` - Selected file path strings. Empty table if cancelled.
 
@@ -1097,7 +1132,9 @@ do
     end
 ```
 
-### `lurek.window.pollDpiChange() -> number`
+### lurek.window.pollDpiChange
+
+`lurek.window.pollDpiChange() -> number`
 
 Checks if the DPI scale has changed since the last poll and fires the onDpiChange callback if so. Call this once per frame in your update loop to detect monitor changes.
 
@@ -1121,7 +1158,9 @@ do
 end
 ```
 
-### `lurek.window.requestAttention()`
+### lurek.window.requestAttention
+
+`lurek.window.requestAttention()`
 
 Requests user attention by flashing the taskbar icon. Useful for notifying the player when the window is in the background.
 
@@ -1140,7 +1179,9 @@ do
 end
 ```
 
-### `lurek.window.restore()`
+### lurek.window.restore
+
+`lurek.window.restore()`
 
 Restores the window from minimized or maximized state to its previous size and position.
 
@@ -1160,13 +1201,15 @@ do
 end
 ```
 
-### `lurek.window.setDisplay(display: integer)`
+### lurek.window.setDisplay
+
+`lurek.window.setDisplay(display: integer)`
 
 Moves the window to the specified display. Throws an error if the index is negative.
 
 **Parameters**
 
-- `display` (`integer`, required) - Zero-based index of the target display.
+- `display` (`integer`, required): Zero-based index of the target display.
 
 #### Example
 
@@ -1186,14 +1229,16 @@ do
 end
 ```
 
-### `lurek.window.setFullscreen(enabled: boolean, [fstype]: string)`
+### lurek.window.setFullscreen
+
+`lurek.window.setFullscreen(enabled: boolean, [fstype]: string)`
 
 Enables or disables fullscreen mode. Supports "desktop" (borderless) and "exclusive" types.
 
 **Parameters**
 
-- `enabled` (`boolean`, required) - Whether to enter fullscreen.
-- `fstype` (`string`, optional) - Fullscreen type: "desktop" (default) or "exclusive".
+- `enabled` (`boolean`, required): Whether to enter fullscreen.
+- `fstype` (`string`, optional): Fullscreen type: "desktop" (default) or "exclusive".
 
 #### Example
 
@@ -1218,13 +1263,15 @@ do
 end
 ```
 
-### `lurek.window.setIcon(path: string)`
+### lurek.window.setIcon
+
+`lurek.window.setIcon(path: string)`
 
 Sets the window icon from an image file. The file must exist in the game's filesystem. Supports PNG and other common image formats.
 
 **Parameters**
 
-- `path` (`string`, required) - Path to the icon image file.
+- `path` (`string`, required): Path to the icon image file.
 
 #### Example
 
@@ -1241,15 +1288,17 @@ do
 end
 ```
 
-### `lurek.window.setMode(w: integer, h: integer, [flags]: table)`
+### lurek.window.setMode
+
+`lurek.window.setMode(w: integer, h: integer, [flags]: table)`
 
 Sets the window display mode with a specific resolution and optional flags. Use this to resize the window and configure fullscreen or VSync at the same time.
 
 **Parameters**
 
-- `w` (`integer`, required) - The desired window width in pixels.
-- `h` (`integer`, required) - The desired window height in pixels.
-- `flags` (`table`, optional) - Optional table with fields: fullscreen (boolean), fullscreentype (string), vsync (number).
+- `w` (`integer`, required): The desired window width in pixels.
+- `h` (`integer`, required): The desired window height in pixels.
+- `flags` (`table`, optional): Optional table with fields: fullscreen (boolean), fullscreentype (string), vsync (number).
 
 #### Example
 
@@ -1269,14 +1318,16 @@ do
 end
 ```
 
-### `lurek.window.setPosition(x: integer, y: integer)`
+### lurek.window.setPosition
+
+`lurek.window.setPosition(x: integer, y: integer)`
 
 Moves the window to the specified screen position.
 
 **Parameters**
 
-- `x` (`integer`, required) - The x-coordinate for the window's top-left corner.
-- `y` (`integer`, required) - The y-coordinate for the window's top-left corner.
+- `x` (`integer`, required): The x-coordinate for the window's top-left corner.
+- `y` (`integer`, required): The y-coordinate for the window's top-left corner.
 
 #### Example
 
@@ -1294,13 +1345,15 @@ do
 end
 ```
 
-### `lurek.window.setScaleMode(mode: string)`
+### lurek.window.setScaleMode
+
+`lurek.window.setScaleMode(mode: string)`
 
 Sets the content scale mode. Controls how the game's logical resolution maps to the window size.
 
 **Parameters**
 
-- `mode` (`string`, required) - The scale mode name (e.g., "stretch", "letterbox", "pixel-perfect").
+- `mode` (`string`, required): The scale mode name (e.g., "stretch", "letterbox", "pixel-perfect").
 
 #### Example
 
@@ -1318,13 +1371,15 @@ do
 end
 ```
 
-### `lurek.window.setTitle(title: string)`
+### lurek.window.setTitle
+
+`lurek.window.setTitle(title: string)`
 
 Sets the window title bar text. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `title` (`string`, required) - The new window title to display.
+- `title` (`string`, required): The new window title to display.
 
 #### Example
 
@@ -1344,13 +1399,15 @@ do
 end
 ```
 
-### `lurek.window.setVSync(mode: integer)`
+### lurek.window.setVSync
+
+`lurek.window.setVSync(mode: integer)`
 
 Sets the vertical sync mode. Controls how frame presentation is synchronized with the display.
 
 **Parameters**
 
-- `mode` (`integer`, required) - VSync mode: 0 = off, 1 = on, -1 = adaptive.
+- `mode` (`integer`, required): VSync mode: 0 = off, 1 = on, -1 = adaptive.
 
 #### Example
 
@@ -1372,16 +1429,18 @@ do
 end
 ```
 
-### `lurek.window.showMessageBox(title: string, message: string, [box_type]: string, [btn_type]: string) -> string`
+### lurek.window.showMessageBox
+
+`lurek.window.showMessageBox(title: string, message: string, [box_type]: string, [btn_type]: string) -> string`
 
 Displays a native OS message box dialog. Blocks execution until the user dismisses it.
 
 **Parameters**
 
-- `title` (`string`, required) - The dialog title.
-- `message` (`string`, required) - The message body text.
-- `box_type` (`string`, optional) - Dialog icon type: "info" (default), "warning", or "error".
-- `btn_type` (`string`, optional) - Button layout: "ok" (default), "okcancel", or "yesno".
+- `title` (`string`, required): The dialog title.
+- `message` (`string`, required): The message body text.
+- `box_type` (`string`, optional): Dialog icon type: "info" (default), "warning", or "error".
+- `btn_type` (`string`, optional): Button layout: "ok" (default), "okcancel", or "yesno".
 
 **Returns**: `string` - The button the user clicked.
 
@@ -1433,13 +1492,15 @@ end
 print("content/examples/window.lua")
 ```
 
-### `lurek.window.toPixels(value: number) -> number`
+### lurek.window.toPixels
+
+`lurek.window.toPixels(value: number) -> number`
 
 Converts a value from logical (DPI-independent) units to physical pixel units using the current DPI scale.
 
 **Parameters**
 
-- `value` (`number`, required) - The value in logical units.
+- `value` (`number`, required): The value in logical units.
 
 **Returns**: `number` - The value in physical pixels.
 
@@ -1457,13 +1518,15 @@ do
 end
 ```
 
-### `lurek.window.windowConfig(opts: table)`
+### lurek.window.windowConfig
+
+`lurek.window.windowConfig(opts: table)`
 
 Applies multiple window settings at once from a configuration table. Supports title, width, height, fullscreen, fullscreentype, vsync, position (x, y), scaleMode, and display index.
 
 **Parameters**
 
-- `opts` (`table`, required) - Configuration table with optional fields: title (string), width (number), height (number), fullscreen (boolean), fullscreentype (string), vsync (number), x (number), y (number), scaleMode (string), display (number).
+- `opts` (`table`, required): Configuration table with optional fields: title (string), width (number), height (number), fullscreen (boolean), fullscreentype (string), vsync (number), x (number), y (number), scaleMode (string), display (number).
 
 #### Example
 
@@ -1490,11 +1553,15 @@ end
 ```
 
 
-## Examples
+[⬆ back to top](#table-of-contents)
+
+## 💡 Examples
 
 - [window.lua](../blob/main/content/examples/window.lua) - Window title, size, fullscreen
 
-## Reference Games
+[⬆ back to top](#table-of-contents)
+
+## 🎮 Reference Games
 
 - [brick_breaker](../tree/main/content/games/action/brick_breaker) (action)
 - [bullet_hell](../tree/main/content/games/action/bullet_hell) (action)
@@ -1517,12 +1584,14 @@ end
 - [frogger](../tree/main/content/games/arcade/frogger) (arcade)
 - [galaga](../tree/main/content/games/arcade/galaga) (arcade)
 
-## Related Modules
+[⬆ back to top](#table-of-contents)
 
-- Previous: [[ui|Module-ui]]
-- [[audio|Module-audio]] - Sound loading and playback wrapping rodio; Mixer / Bus instances live in SharedState.
-- [[camera|Module-camera]] - 2D camera and viewport types. Pure data; no GPU resources.
-- [[effect|Module-effect]] - Post-processing pipeline: blur, bloom, distortion, color grading, custom WGSL passes.
-- [[image|Module-image]] - CPU-side ImageData (RGBA8 buffer) with blit, resize, fill, region, diff, PNG encode.
-- [[input|Module-input]] - Per-frame keyboard / mouse / gamepad / touch state translated from winit events.
-- [[light|Module-light]] - 2D point-light data model. Pure container; renderer owns all GPU work.
+## 🔗 Related Modules
+
+- Previous: [ui](Module-ui)
+- [audio](Module-audio) - Sound loading and playback wrapping rodio; Mixer / Bus instances live in SharedState.
+- [camera](Module-camera) - 2D camera and viewport types. Pure data; no GPU resources.
+- [effect](Module-effect) - Post-processing pipeline: blur, bloom, distortion, color grading, custom WGSL passes.
+- [image](Module-image) - CPU-side ImageData (RGBA8 buffer) with blit, resize, fill, region, diff, PNG encode.
+- [input](Module-input) - Per-frame keyboard / mouse / gamepad / touch state translated from winit events.
+- [light](Module-light) - 2D point-light data model. Pure container; renderer owns all GPU work.

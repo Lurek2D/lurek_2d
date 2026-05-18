@@ -4,292 +4,241 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
-- [Purpose](#purpose)
-- [Summary](#summary)
-- [Minimal Module Example](#minimal-module-example)
-- [Key Types](#key-types)
-- [API Overview](#api-overview)
-- [Module Functions](#module-functions)
-  - [lurek.tilemap.fromLDtk(jsonStr: string, [levelName]: string) -> LTileMap](#lurektilemapfromldtkjsonstr-string-levelname-string-ltilemap)
-  - [lurek.tilemap.fromScreenHex(sx: number, sy: number, size: number) -> integer](#lurektilemapfromscreenhexsx-number-sy-number-size-number-integer)
-  - [lurek.tilemap.fromScreenIso(sx: number, sy: number, tw: number, th: number) -> number](#lurektilemapfromscreenisosx-number-sy-number-tw-number-th-number-number)
-  - [lurek.tilemap.hexArea(q: integer, r: integer, radius: integer) -> table](#lurektilemaphexareaq-integer-r-integer-radius-integer-table)
-  - [lurek.tilemap.hexDistance(q1: integer, r1: integer, q2: integer, r2: integer) -> integer](#lurektilemaphexdistanceq1-integer-r1-integer-q2-integer-r2-integer-integer)
-  - [lurek.tilemap.hexLine(q1: integer, r1: integer, q2: integer, r2: integer) -> table](#lurektilemaphexlineq1-integer-r1-integer-q2-integer-r2-integer-table)
-  - [lurek.tilemap.hexNeighbors(q: integer, r: integer) -> table](#lurektilemaphexneighborsq-integer-r-integer-table)
-  - [lurek.tilemap.hexReflect(q: integer, r: integer, centerQ: integer, centerR: integer, axis: string) -> integer](#lurektilemaphexreflectq-integer-r-integer-centerq-integer-centerr-integer-axis-string-integer)
-  - [lurek.tilemap.hexRing(q: integer, r: integer, radius: integer) -> table](#lurektilemaphexringq-integer-r-integer-radius-integer-table)
-  - [lurek.tilemap.hexRotate(q: integer, r: integer, centerQ: integer, centerR: integer, steps: integer) -> integer](#lurektilemaphexrotateq-integer-r-integer-centerq-integer-centerr-integer-steps-integer-integer)
-  - [lurek.tilemap.hexRound(q: number, r: number) -> integer](#lurektilemaphexroundq-number-r-number-integer)
-  - [lurek.tilemap.hexSpiral(q: integer, r: integer, radius: integer) -> table](#lurektilemaphexspiralq-integer-r-integer-radius-integer-table)
-  - [lurek.tilemap.isoDirectionFromAngle(angle: number) -> integer](#lurektilemapisodirectionfromangleangle-number-integer)
-  - [lurek.tilemap.isoDirectionName(direction: integer) -> string](#lurektilemapisodirectionnamedirection-integer-string)
-  - [lurek.tilemap.isoRotate(direction: integer, steps: integer) -> integer](#lurektilemapisorotatedirection-integer-steps-integer-integer)
-  - [lurek.tilemap.loadTMX(xml: string) -> table](#lurektilemaploadtmxxml-string-table)
-  - [lurek.tilemap.newAutoTileSheet(tileW: integer, tileH: integer, layout: string) -> LAutoTileSheet](#lurektilemapnewautotilesheettilew-integer-tileh-integer-layout-string-lautotilesheet)
-  - [lurek.tilemap.newChunkMap([chunkSize]: integer) -> LChunkMap](#lurektilemapnewchunkmapchunksize-integer-lchunkmap)
-  - [lurek.tilemap.newIsoMap(width: integer, height: integer, tileW: integer, tileH: integer, levelHeight: integer, [partCount]: integer) -> LIsoMap](#lurektilemapnewisomapwidth-integer-height-integer-tilew-integer-tileh-integer-levelheight-integer-partcount-integer-lisomap)
-  - [lurek.tilemap.newLargeMapRenderer(tileW: integer, tileH: integer) -> LLargeMapRenderer](#lurektilemapnewlargemaprenderertilew-integer-tileh-integer-llargemaprenderer)
-  - [lurek.tilemap.newMapBlock(width: integer, height: integer, [layers]: integer, [segmentSize]: integer) -> LMapBlock](#lurektilemapnewmapblockwidth-integer-height-integer-layers-integer-segmentsize-integer-lmapblock)
-  - [lurek.tilemap.newMapGen(group: LMapGroup, presetOrWidth: string|integer, segmentSizeOrHeight: integer, [segmentSize]: integer) -> LMapGen](#lurektilemapnewmapgengroup-lmapgroup-presetorwidth-stringinteger-segmentsizeorheight-integer-segmentsize-integer-lmapgen)
-  - [lurek.tilemap.newMapGroup(name: string) -> LMapGroup](#lurektilemapnewmapgroupname-string-lmapgroup)
-  - [lurek.tilemap.newMapScript() -> LMapScript](#lurektilemapnewmapscript-lmapscript)
-  - [lurek.tilemap.newTileMap(tileWidth: integer, tileHeight: integer, [chunkSize]: integer) -> LTileMap](#lurektilemapnewtilemaptilewidth-integer-tileheight-integer-chunksize-integer-ltilemap)
-  - [lurek.tilemap.newTileSet(firstGid: integer, tileCount: integer, columns: integer, tileWidth: integer, tileHeight: integer, [spacing]: integer, [margin]: integer) -> LTileSet](#lurektilemapnewtilesetfirstgid-integer-tilecount-integer-columns-integer-tilewidth-integer-tileheight-integer-spacing-integer-margin-integer-ltileset)
-  - [lurek.tilemap.toScreenHex(q: integer, r: integer, size: number) -> number](#lurektilemaptoscreenhexq-integer-r-integer-size-number-number)
-  - [lurek.tilemap.toScreenIso(tx: number, ty: number, tw: number, th: number) -> number](#lurektilemaptoscreenisotx-number-ty-number-tw-number-th-number-number)
-- [Types and Methods](#types-and-methods)
+- [🎯 Purpose](#purpose)
+- [📋 Summary](#summary)
+- [🧩 Key Types](#key-types)
+- [📖 API Overview](#api-overview)
+- [⚙️ Module Functions](#module-functions)
+  - [lurek.tilemap.fromLDtk](#lurektilemapfromldtk)
+  - [lurek.tilemap.fromScreenHex](#lurektilemapfromscreenhex)
+  - [lurek.tilemap.fromScreenIso](#lurektilemapfromscreeniso)
+  - [lurek.tilemap.hexArea](#lurektilemaphexarea)
+  - [lurek.tilemap.hexDistance](#lurektilemaphexdistance)
+  - [lurek.tilemap.hexLine](#lurektilemaphexline)
+  - [lurek.tilemap.hexNeighbors](#lurektilemaphexneighbors)
+  - [lurek.tilemap.hexReflect](#lurektilemaphexreflect)
+  - [lurek.tilemap.hexRing](#lurektilemaphexring)
+  - [lurek.tilemap.hexRotate](#lurektilemaphexrotate)
+  - [lurek.tilemap.hexRound](#lurektilemaphexround)
+  - [lurek.tilemap.hexSpiral](#lurektilemaphexspiral)
+  - [lurek.tilemap.isoDirectionFromAngle](#lurektilemapisodirectionfromangle)
+  - [lurek.tilemap.isoDirectionName](#lurektilemapisodirectionname)
+  - [lurek.tilemap.isoRotate](#lurektilemapisorotate)
+  - [lurek.tilemap.loadTMX](#lurektilemaploadtmx)
+  - [lurek.tilemap.newAutoTileSheet](#lurektilemapnewautotilesheet)
+  - [lurek.tilemap.newChunkMap](#lurektilemapnewchunkmap)
+  - [lurek.tilemap.newIsoMap](#lurektilemapnewisomap)
+  - [lurek.tilemap.newLargeMapRenderer](#lurektilemapnewlargemaprenderer)
+  - [lurek.tilemap.newMapBlock](#lurektilemapnewmapblock)
+  - [lurek.tilemap.newMapGen](#lurektilemapnewmapgen)
+  - [lurek.tilemap.newMapGroup](#lurektilemapnewmapgroup)
+  - [lurek.tilemap.newMapScript](#lurektilemapnewmapscript)
+  - [lurek.tilemap.newTileMap](#lurektilemapnewtilemap)
+  - [lurek.tilemap.newTileSet](#lurektilemapnewtileset)
+  - [lurek.tilemap.toScreenHex](#lurektilemaptoscreenhex)
+  - [lurek.tilemap.toScreenIso](#lurektilemaptoscreeniso)
+- [🔷 Module Types](#module-types)
   - [LAutoTileSheet](#lautotilesheet)
-  - [LAutoTileSheet:applyToTileSet(tileSet: LTileSet, typeName: string, [startGid]: integer)](#lautotilesheetapplytotilesettileset-ltileset-typename-string-startgid-integer)
-  - [LAutoTileSheet:getBitmaskForTile(tileId: integer) -> integer](#lautotilesheetgetbitmaskfortiletileid-integer-integer)
-  - [LAutoTileSheet:getLayout() -> string](#lautotilesheetgetlayout-string)
-  - [LAutoTileSheet:getQuad(tileId: integer) -> integer](#lautotilesheetgetquadtileid-integer-integer)
-  - [LAutoTileSheet:getTileCount() -> integer](#lautotilesheetgettilecount-integer)
-  - [LAutoTileSheet:getTileForBitmask(bitmask: integer) -> integer](#lautotilesheetgettileforbitmaskbitmask-integer-integer)
-  - [LAutoTileSheet:getTileHeight() -> integer](#lautotilesheetgettileheight-integer)
-  - [LAutoTileSheet:getTileWidth() -> integer](#lautotilesheetgettilewidth-integer)
-  - [LAutoTileSheet:type() -> string](#lautotilesheettype-string)
-  - [LAutoTileSheet:typeOf(name: string) -> boolean](#lautotilesheettypeofname-string-boolean)
   - [LChunkMap](#lchunkmap)
-  - [LChunkMap:chunkTileRange(cx: integer, cy: integer) -> integer](#lchunkmapchunktilerangecx-integer-cy-integer-integer)
-  - [LChunkMap:clearTile(x: integer, y: integer)](#lchunkmapcleartilex-integer-y-integer)
-  - [LChunkMap:fillRect(x0: integer, y0: integer, x1: integer, y1: integer, gid: integer)](#lchunkmapfillrectx0-integer-y0-integer-x1-integer-y1-integer-gid-integer)
-  - [LChunkMap:getChunksInView(vx: number, vy: number, vw: number, vh: number, tw: number, th: number) -> table](#lchunkmapgetchunksinviewvx-number-vy-number-vw-number-vh-number-tw-number-th-number-table)
-  - [LChunkMap:getChunkSize() -> integer](#lchunkmapgetchunksize-integer)
-  - [LChunkMap:getLoadedChunks() -> table](#lchunkmapgetloadedchunks-table)
-  - [LChunkMap:getTile(x: integer, y: integer) -> integer](#lchunkmapgettilex-integer-y-integer-integer)
-  - [LChunkMap:loadChunk(cx: integer, cy: integer)](#lchunkmaploadchunkcx-integer-cy-integer)
-  - [LChunkMap:setTile(x: integer, y: integer, gid: integer)](#lchunkmapsettilex-integer-y-integer-gid-integer)
-  - [LChunkMap:type() -> string](#lchunkmaptype-string)
-  - [LChunkMap:typeOf(name: string) -> boolean](#lchunkmaptypeofname-string-boolean)
-  - [LChunkMap:unloadChunk(cx: integer, cy: integer)](#lchunkmapunloadchunkcx-integer-cy-integer)
   - [LIsoMap](#lisomap)
-  - [LIsoMap:addLevel() -> integer](#lisomapaddlevel-integer)
-  - [LIsoMap:fillLevel(z: integer, part: integer, gid: integer)](#lisomapfilllevelz-integer-part-integer-gid-integer)
-  - [LIsoMap:getHeight() -> integer](#lisomapgetheight-integer)
-  - [LIsoMap:getLevelCount() -> integer](#lisomapgetlevelcount-integer)
-  - [LIsoMap:getLevelHeight() -> integer](#lisomapgetlevelheight-integer)
-  - [LIsoMap:getPartCount() -> integer](#lisomapgetpartcount-integer)
-  - [LIsoMap:getPartOrder() -> integer[]](#lisomapgetpartorder-integer)
-  - [LIsoMap:getTileHeight() -> integer](#lisomapgettileheight-integer)
-  - [LIsoMap:getTilePart(z: integer, x: integer, y: integer, part: integer) -> integer](#lisomapgettilepartz-integer-x-integer-y-integer-part-integer-integer)
-  - [LIsoMap:getTileWidth() -> integer](#lisomapgettilewidth-integer)
-  - [LIsoMap:getWidth() -> integer](#lisomapgetwidth-integer)
-  - [LIsoMap:isLevelVisible(z: integer) -> boolean](#lisomapislevelvisiblez-integer-boolean)
-  - [LIsoMap:screenToTile(sx: number, sy: number) -> number](#lisomapscreentotilesx-number-sy-number-number)
-  - [LIsoMap:setLevelVisible(z: integer, visible: boolean)](#lisomapsetlevelvisiblez-integer-visible-boolean)
-  - [LIsoMap:setOrigin(x: number, y: number)](#lisomapsetoriginx-number-y-number)
-  - [LIsoMap:setPartOrder(order: table)](#lisomapsetpartorderorder-table)
-  - [LIsoMap:setTilePart(z: integer, x: integer, y: integer, part: integer, gid: integer)](#lisomapsettilepartz-integer-x-integer-y-integer-part-integer-gid-integer)
-  - [LIsoMap:tileToScreen(tx: number, ty: number, tz: number) -> number](#lisomaptiletoscreentx-number-ty-number-tz-number-number)
-  - [LIsoMap:type() -> string](#lisomaptype-string)
-  - [LIsoMap:typeOf(name: string) -> boolean](#lisomaptypeofname-string-boolean)
   - [LLargeMapRenderer](#llargemaprenderer)
-  - [LLargeMapRenderer:getChunkSize() -> integer](#llargemaprenderergetchunksize-integer)
-  - [LLargeMapRenderer:getMapSize() -> integer](#llargemaprenderergetmapsize-integer)
-  - [LLargeMapRenderer:getTile(x: integer, y: integer) -> integer](#llargemaprenderergettilex-integer-y-integer-integer)
-  - [LLargeMapRenderer:getTilesetColumns() -> integer](#llargemaprenderergettilesetcolumns-integer)
-  - [LLargeMapRenderer:getTotalChunks() -> integer](#llargemaprenderergettotalchunks-integer)
-  - [LLargeMapRenderer:getVisibleChunks() -> integer](#llargemaprenderergetvisiblechunks-integer)
-  - [LLargeMapRenderer:invalidateAll()](#llargemaprendererinvalidateall)
-  - [LLargeMapRenderer:invalidateChunk(cx: integer, cy: integer)](#llargemaprendererinvalidatechunkcx-integer-cy-integer)
-  - [LLargeMapRenderer:isLodEnabled() -> boolean](#llargemaprendererislodenabled-boolean)
-  - [LLargeMapRenderer:setCamera(x: number, y: number, zoom: number)](#llargemaprenderersetcamerax-number-y-number-zoom-number)
-  - [LLargeMapRenderer:setChunkSize(size: integer)](#llargemaprenderersetchunksizesize-integer)
-  - [LLargeMapRenderer:setLodEnabled(enabled: boolean)](#llargemaprenderersetlodenabledenabled-boolean)
-  - [LLargeMapRenderer:setLodThresholds(levels: table)](#llargemaprenderersetlodthresholdslevels-table)
-  - [LLargeMapRenderer:setMapData(data: table, width: integer, height: integer)](#llargemaprenderersetmapdatadata-table-width-integer-height-integer)
-  - [LLargeMapRenderer:setTile(x: integer, y: integer, tileId: integer)](#llargemaprenderersettilex-integer-y-integer-tileid-integer)
-  - [LLargeMapRenderer:setTilesetColumns(cols: integer)](#llargemaprenderersettilesetcolumnscols-integer)
-  - [LLargeMapRenderer:setViewport(w: number, h: number)](#llargemaprenderersetviewportw-number-h-number)
-  - [LLargeMapRenderer:type() -> string](#llargemaprenderertype-string)
-  - [LLargeMapRenderer:typeOf(name: string) -> boolean](#llargemaprenderertypeofname-string-boolean)
   - [LMapBlock](#lmapblock)
-  - [LMapBlock:getDimensions() -> integer](#lmapblockgetdimensions-integer)
-  - [LMapBlock:getHeight() -> integer](#lmapblockgetheight-integer)
-  - [LMapBlock:getHeightInSegments() -> integer](#lmapblockgetheightinsegments-integer)
-  - [LMapBlock:getLayerCount() -> integer](#lmapblockgetlayercount-integer)
-  - [LMapBlock:getName() -> string](#lmapblockgetname-string)
-  - [LMapBlock:getSegmentSize() -> integer](#lmapblockgetsegmentsize-integer)
-  - [LMapBlock:getSide(edge: string, segment: integer) -> integer](#lmapblockgetsideedge-string-segment-integer-integer)
-  - [LMapBlock:getTile(layer: integer, x: integer, y: integer) -> integer](#lmapblockgettilelayer-integer-x-integer-y-integer-integer)
-  - [LMapBlock:getWeight() -> number](#lmapblockgetweight-number)
-  - [LMapBlock:getWidth() -> integer](#lmapblockgetwidth-integer)
-  - [LMapBlock:getWidthInSegments() -> integer](#lmapblockgetwidthinsegments-integer)
-  - [LMapBlock:setName(name: string)](#lmapblocksetnamename-string)
-  - [LMapBlock:setSide(edge: string, segment: integer, sideId: integer)](#lmapblocksetsideedge-string-segment-integer-sideid-integer)
-  - [LMapBlock:setTile(layer: integer, x: integer, y: integer, gid: integer)](#lmapblocksettilelayer-integer-x-integer-y-integer-gid-integer)
-  - [LMapBlock:setWeight(weight: number)](#lmapblocksetweightweight-number)
-  - [LMapBlock:type() -> string](#lmapblocktype-string)
-  - [LMapBlock:typeOf(name: string) -> boolean](#lmapblocktypeofname-string-boolean)
   - [LMapGen](#lmapgen)
-  - [LMapGen:generate([scriptIdx]: integer, [seed]: integer, [layerName]: string) -> LTileMap](#lmapgengeneratescriptidx-integer-seed-integer-layername-string-ltilemap)
-  - [LMapGen:type() -> string](#lmapgentype-string)
-  - [LMapGen:typeOf(name: string) -> boolean](#lmapgentypeofname-string-boolean)
   - [LMapGroup](#lmapgroup)
-  - [LMapGroup:addBlock(block: LMapBlock)](#lmapgroupaddblockblock-lmapblock)
-  - [LMapGroup:addScript(script: LMapScript)](#lmapgroupaddscriptscript-lmapscript)
-  - [LMapGroup:getBlockCount() -> integer](#lmapgroupgetblockcount-integer)
-  - [LMapGroup:getName() -> string](#lmapgroupgetname-string)
-  - [LMapGroup:getScriptCount() -> integer](#lmapgroupgetscriptcount-integer)
-  - [LMapGroup:removeBlock(idx: integer)](#lmapgroupremoveblockidx-integer)
-  - [LMapGroup:type() -> string](#lmapgrouptype-string)
-  - [LMapGroup:typeOf(name: string) -> boolean](#lmapgrouptypeofname-string-boolean)
   - [LMapScript](#lmapscript)
-  - [LMapScript:addStep(stepDef: table)](#lmapscriptaddstepstepdef-table)
-  - [LMapScript:getStepCount() -> integer](#lmapscriptgetstepcount-integer)
-  - [LMapScript:type() -> string](#lmapscripttype-string)
-  - [LMapScript:typeOf(name: string) -> boolean](#lmapscripttypeofname-string-boolean)
   - [LTileMap](#ltilemap)
-  - [LTileMap:addLayer(name: string, w: integer, h: integer) -> integer](#ltilemapaddlayername-string-w-integer-h-integer-integer)
-  - [LTileMap:addTileSet(tileSet: LTileSet)](#ltilemapaddtilesettileset-ltileset)
-  - [LTileMap:applyAutoTile(layer: integer, typeName: string)](#ltilemapapplyautotilelayer-integer-typename-string)
-  - [LTileMap:applyAutoTile8(layer: integer, typeName: string)](#ltilemapapplyautotile8layer-integer-typename-string)
-  - [LTileMap:applyAutoTile8At(layer: integer, x: integer, y: integer, typeName: string)](#ltilemapapplyautotile8atlayer-integer-x-integer-y-integer-typename-string)
-  - [LTileMap:applyAutoTileAt(layer: integer, x: integer, y: integer, typeName: string)](#ltilemapapplyautotileatlayer-integer-x-integer-y-integer-typename-string)
-  - [LTileMap:checkEntities(layer: integer, entities: table)](#ltilemapcheckentitieslayer-integer-entities-table)
-  - [LTileMap:clearTile(layer: integer, x: integer, y: integer)](#ltilemapcleartilelayer-integer-x-integer-y-integer)
-  - [LTileMap:drawToImage(tileSize: integer) -> LImage](#ltilemapdrawtoimagetilesize-integer-limage)
-  - [LTileMap:fill(layer: integer, gid: integer)](#ltilemapfilllayer-integer-gid-integer)
-  - [LTileMap:findTilesByGid(layer: integer, gid: integer) -> table](#ltilemapfindtilesbygidlayer-integer-gid-integer-table)
-  - [LTileMap:fireTileExit(gid: integer, entity: table, tx: integer, ty: integer)](#ltilemapfiretileexitgid-integer-entity-table-tx-integer-ty-integer)
-  - [LTileMap:fireTileStep(gid: integer, entity: table, tx: integer, ty: integer)](#ltilemapfiretilestepgid-integer-entity-table-tx-integer-ty-integer)
-  - [LTileMap:getChunkSize() -> integer](#ltilemapgetchunksize-integer)
-  - [LTileMap:getLayerColor(idx: integer) -> number](#ltilemapgetlayercoloridx-integer-number)
-  - [LTileMap:getLayerCount() -> integer](#ltilemapgetlayercount-integer)
-  - [LTileMap:getLayerName(idx: integer) -> string](#ltilemapgetlayernameidx-integer-string)
-  - [LTileMap:getLayerOffset(idx: integer) -> number](#ltilemapgetlayeroffsetidx-integer-number)
-  - [LTileMap:getLayerParallax(idx: integer) -> number](#ltilemapgetlayerparallaxidx-integer-number)
-  - [LTileMap:getLayerVisible(idx: integer) -> boolean](#ltilemapgetlayervisibleidx-integer-boolean)
-  - [LTileMap:getOrientation() -> string](#ltilemapgetorientation-string)
-  - [LTileMap:getTile(layer: integer, x: integer, y: integer) -> integer](#ltilemapgettilelayer-integer-x-integer-y-integer-integer)
-  - [LTileMap:getTileDimensions() -> integer](#ltilemapgettiledimensions-integer)
-  - [LTileMap:getTileHeight() -> integer](#ltilemapgettileheight-integer)
-  - [LTileMap:getTileSet(idx: integer) -> LTileSet](#ltilemapgettilesetidx-integer-ltileset)
-  - [LTileMap:getTileSetCount() -> integer](#ltilemapgettilesetcount-integer)
-  - [LTileMap:getTileWidth() -> integer](#ltilemapgettilewidth-integer)
-  - [LTileMap:getViewport() -> number](#ltilemapgetviewport-number)
-  - [LTileMap:isSolid(layer: integer, x: integer, y: integer) -> boolean](#ltilemapissolidlayer-integer-x-integer-y-integer-boolean)
-  - [LTileMap:onTileEnter(gid: integer, func: function)](#ltilemapontileentergid-integer-func-function)
-  - [LTileMap:onTileExit(gid: integer, func: function)](#ltilemapontileexitgid-integer-func-function)
-  - [LTileMap:onTileStep(gid: integer, func: function)](#ltilemapontilestepgid-integer-func-function)
-  - [LTileMap:rectOverlapsSolid(layer: integer, x: number, y: number, w: number, h: number) -> boolean](#ltilemaprectoverlapssolidlayer-integer-x-number-y-number-w-number-h-number-boolean)
-  - [LTileMap:render([ox]: number, [oy]: number)](#ltilemaprenderox-number-oy-number)
-  - [LTileMap:setLayerColor(idx: integer, r: number, g: number, b: number, a: number)](#ltilemapsetlayercoloridx-integer-r-number-g-number-b-number-a-number)
-  - [LTileMap:setLayerOffset(idx: integer, ox: number, oy: number)](#ltilemapsetlayeroffsetidx-integer-ox-number-oy-number)
-  - [LTileMap:setLayerParallax(idx: integer, px: number, py: number)](#ltilemapsetlayerparallaxidx-integer-px-number-py-number)
-  - [LTileMap:setLayerVisible(idx: integer, visible: boolean)](#ltilemapsetlayervisibleidx-integer-visible-boolean)
-  - [LTileMap:setOrientation(orientation: string)](#ltilemapsetorientationorientation-string)
-  - [LTileMap:setTile(layer: integer, x: integer, y: integer, gid: integer)](#ltilemapsettilelayer-integer-x-integer-y-integer-gid-integer)
-  - [LTileMap:setTileTint(layer: integer, x: integer, y: integer, r: number, g: number, b: number, a: number)](#ltilemapsettiletintlayer-integer-x-integer-y-integer-r-number-g-number-b-number-a-number)
-  - [LTileMap:setViewport(x: number, y: number, w: number, h: number)](#ltilemapsetviewportx-number-y-number-w-number-h-number)
-  - [LTileMap:sweepRect(layer: integer, x: number, y: number, w: number, h: number, dx: number, dy: number) -> number](#ltilemapsweeprectlayer-integer-x-number-y-number-w-number-h-number-dx-number-dy-number-number)
-  - [LTileMap:tileToWorld(tx: integer, ty: integer) -> number](#ltilemaptiletoworldtx-integer-ty-integer-number)
-  - [LTileMap:tileTypeIndex(layer: integer) -> table](#ltilemaptiletypeindexlayer-integer-table)
-  - [LTileMap:toNavGrid(layer: integer, gids: table) -> boolean[]](#ltilemaptonavgridlayer-integer-gids-table-boolean)
-  - [LTileMap:type() -> string](#ltilemaptype-string)
-  - [LTileMap:typeOf(name: string) -> boolean](#ltilemaptypeofname-string-boolean)
-  - [LTileMap:update(dt: number)](#ltilemapupdatedt-number)
-  - [LTileMap:worldToTile(wx: number, wy: number) -> integer](#ltilemapworldtotilewx-number-wy-number-integer)
   - [LTileSet](#ltileset)
-  - [LTileSet:getAnimation(tileId: integer) -> table](#ltilesetgetanimationtileid-integer-table)
-  - [LTileSet:getAutoTileId(typeName: string, bitmask: integer) -> integer](#ltilesetgetautotileidtypename-string-bitmask-integer-integer)
-  - [LTileSet:getAutoTileId8(typeName: string, bitmask: integer) -> integer](#ltilesetgetautotileid8typename-string-bitmask-integer-integer)
-  - [LTileSet:getColumns() -> integer](#ltilesetgetcolumns-integer)
-  - [LTileSet:getFirstGid() -> integer](#ltilesetgetfirstgid-integer)
-  - [LTileSet:getMargin() -> integer](#ltilesetgetmargin-integer)
-  - [LTileSet:getQuad(tileId: integer) -> table](#ltilesetgetquadtileid-integer-table)
-  - [LTileSet:getSpacing() -> integer](#ltilesetgetspacing-integer)
-  - [LTileSet:getTileCount() -> integer](#ltilesetgettilecount-integer)
-  - [LTileSet:getTileDimensions() -> integer](#ltilesetgettiledimensions-integer)
-  - [LTileSet:getTileHeight() -> integer](#ltilesetgettileheight-integer)
-  - [LTileSet:getTileWidth() -> integer](#ltilesetgettilewidth-integer)
-  - [LTileSet:isSolid(tileId: integer) -> boolean](#ltilesetissolidtileid-integer-boolean)
-  - [LTileSet:setAnimation(tileId: integer, frames: table)](#ltilesetsetanimationtileid-integer-frames-table)
-  - [LTileSet:setAutoTileRule(typeName: string, bitmask: integer, tileId: integer)](#ltilesetsetautotileruletypename-string-bitmask-integer-tileid-integer)
-  - [LTileSet:setAutoTileRule8(typeName: string, bitmask: integer, tileId: integer)](#ltilesetsetautotilerule8typename-string-bitmask-integer-tileid-integer)
-  - [LTileSet:setSolid(tileId: integer, solid: boolean)](#ltilesetsetsolidtileid-integer-solid-boolean)
-  - [LTileSet:type() -> string](#ltilesettype-string)
-  - [LTileSet:typeOf(name: string) -> boolean](#ltilesettypeofname-string-boolean)
-- [Examples](#examples)
-- [Reference Games](#reference-games)
-- [Related Modules](#related-modules)
+- [🔹 Module Methods](#module-methods)
+  - [LAutoTileSheet:applyToTileSet](#lautotilesheetapplytotileset)
+  - [LAutoTileSheet:getBitmaskForTile](#lautotilesheetgetbitmaskfortile)
+  - [LAutoTileSheet:getLayout](#lautotilesheetgetlayout)
+  - [LAutoTileSheet:getQuad](#lautotilesheetgetquad)
+  - [LAutoTileSheet:getTileCount](#lautotilesheetgettilecount)
+  - [LAutoTileSheet:getTileForBitmask](#lautotilesheetgettileforbitmask)
+  - [LAutoTileSheet:getTileHeight](#lautotilesheetgettileheight)
+  - [LAutoTileSheet:getTileWidth](#lautotilesheetgettilewidth)
+  - [LAutoTileSheet:type](#lautotilesheettype)
+  - [LAutoTileSheet:typeOf](#lautotilesheettypeof)
+  - [LChunkMap:chunkTileRange](#lchunkmapchunktilerange)
+  - [LChunkMap:clearTile](#lchunkmapcleartile)
+  - [LChunkMap:fillRect](#lchunkmapfillrect)
+  - [LChunkMap:getChunksInView](#lchunkmapgetchunksinview)
+  - [LChunkMap:getChunkSize](#lchunkmapgetchunksize)
+  - [LChunkMap:getLoadedChunks](#lchunkmapgetloadedchunks)
+  - [LChunkMap:getTile](#lchunkmapgettile)
+  - [LChunkMap:loadChunk](#lchunkmaploadchunk)
+  - [LChunkMap:setTile](#lchunkmapsettile)
+  - [LChunkMap:type](#lchunkmaptype)
+  - [LChunkMap:typeOf](#lchunkmaptypeof)
+  - [LChunkMap:unloadChunk](#lchunkmapunloadchunk)
+  - [LIsoMap:addLevel](#lisomapaddlevel)
+  - [LIsoMap:fillLevel](#lisomapfilllevel)
+  - [LIsoMap:getHeight](#lisomapgetheight)
+  - [LIsoMap:getLevelCount](#lisomapgetlevelcount)
+  - [LIsoMap:getLevelHeight](#lisomapgetlevelheight)
+  - [LIsoMap:getPartCount](#lisomapgetpartcount)
+  - [LIsoMap:getPartOrder](#lisomapgetpartorder)
+  - [LIsoMap:getTileHeight](#lisomapgettileheight)
+  - [LIsoMap:getTilePart](#lisomapgettilepart)
+  - [LIsoMap:getTileWidth](#lisomapgettilewidth)
+  - [LIsoMap:getWidth](#lisomapgetwidth)
+  - [LIsoMap:isLevelVisible](#lisomapislevelvisible)
+  - [LIsoMap:screenToTile](#lisomapscreentotile)
+  - [LIsoMap:setLevelVisible](#lisomapsetlevelvisible)
+  - [LIsoMap:setOrigin](#lisomapsetorigin)
+  - [LIsoMap:setPartOrder](#lisomapsetpartorder)
+  - [LIsoMap:setTilePart](#lisomapsettilepart)
+  - [LIsoMap:tileToScreen](#lisomaptiletoscreen)
+  - [LIsoMap:type](#lisomaptype)
+  - [LIsoMap:typeOf](#lisomaptypeof)
+  - [LLargeMapRenderer:getChunkSize](#llargemaprenderergetchunksize)
+  - [LLargeMapRenderer:getMapSize](#llargemaprenderergetmapsize)
+  - [LLargeMapRenderer:getTile](#llargemaprenderergettile)
+  - [LLargeMapRenderer:getTilesetColumns](#llargemaprenderergettilesetcolumns)
+  - [LLargeMapRenderer:getTotalChunks](#llargemaprenderergettotalchunks)
+  - [LLargeMapRenderer:getVisibleChunks](#llargemaprenderergetvisiblechunks)
+  - [LLargeMapRenderer:invalidateAll](#llargemaprendererinvalidateall)
+  - [LLargeMapRenderer:invalidateChunk](#llargemaprendererinvalidatechunk)
+  - [LLargeMapRenderer:isLodEnabled](#llargemaprendererislodenabled)
+  - [LLargeMapRenderer:setCamera](#llargemaprenderersetcamera)
+  - [LLargeMapRenderer:setChunkSize](#llargemaprenderersetchunksize)
+  - [LLargeMapRenderer:setLodEnabled](#llargemaprenderersetlodenabled)
+  - [LLargeMapRenderer:setLodThresholds](#llargemaprenderersetlodthresholds)
+  - [LLargeMapRenderer:setMapData](#llargemaprenderersetmapdata)
+  - [LLargeMapRenderer:setTile](#llargemaprenderersettile)
+  - [LLargeMapRenderer:setTilesetColumns](#llargemaprenderersettilesetcolumns)
+  - [LLargeMapRenderer:setViewport](#llargemaprenderersetviewport)
+  - [LLargeMapRenderer:type](#llargemaprenderertype)
+  - [LLargeMapRenderer:typeOf](#llargemaprenderertypeof)
+  - [LMapBlock:getDimensions](#lmapblockgetdimensions)
+  - [LMapBlock:getHeight](#lmapblockgetheight)
+  - [LMapBlock:getHeightInSegments](#lmapblockgetheightinsegments)
+  - [LMapBlock:getLayerCount](#lmapblockgetlayercount)
+  - [LMapBlock:getName](#lmapblockgetname)
+  - [LMapBlock:getSegmentSize](#lmapblockgetsegmentsize)
+  - [LMapBlock:getSide](#lmapblockgetside)
+  - [LMapBlock:getTile](#lmapblockgettile)
+  - [LMapBlock:getWeight](#lmapblockgetweight)
+  - [LMapBlock:getWidth](#lmapblockgetwidth)
+  - [LMapBlock:getWidthInSegments](#lmapblockgetwidthinsegments)
+  - [LMapBlock:setName](#lmapblocksetname)
+  - [LMapBlock:setSide](#lmapblocksetside)
+  - [LMapBlock:setTile](#lmapblocksettile)
+  - [LMapBlock:setWeight](#lmapblocksetweight)
+  - [LMapBlock:type](#lmapblocktype)
+  - [LMapBlock:typeOf](#lmapblocktypeof)
+  - [LMapGen:generate](#lmapgengenerate)
+  - [LMapGen:type](#lmapgentype)
+  - [LMapGen:typeOf](#lmapgentypeof)
+  - [LMapGroup:addBlock](#lmapgroupaddblock)
+  - [LMapGroup:addScript](#lmapgroupaddscript)
+  - [LMapGroup:getBlockCount](#lmapgroupgetblockcount)
+  - [LMapGroup:getName](#lmapgroupgetname)
+  - [LMapGroup:getScriptCount](#lmapgroupgetscriptcount)
+  - [LMapGroup:removeBlock](#lmapgroupremoveblock)
+  - [LMapGroup:type](#lmapgrouptype)
+  - [LMapGroup:typeOf](#lmapgrouptypeof)
+  - [LMapScript:addStep](#lmapscriptaddstep)
+  - [LMapScript:getStepCount](#lmapscriptgetstepcount)
+  - [LMapScript:type](#lmapscripttype)
+  - [LMapScript:typeOf](#lmapscripttypeof)
+  - [LTileMap:addLayer](#ltilemapaddlayer)
+  - [LTileMap:addTileSet](#ltilemapaddtileset)
+  - [LTileMap:applyAutoTile](#ltilemapapplyautotile)
+  - [LTileMap:applyAutoTile8](#ltilemapapplyautotile8)
+  - [LTileMap:applyAutoTile8At](#ltilemapapplyautotile8at)
+  - [LTileMap:applyAutoTileAt](#ltilemapapplyautotileat)
+  - [LTileMap:checkEntities](#ltilemapcheckentities)
+  - [LTileMap:clearTile](#ltilemapcleartile)
+  - [LTileMap:drawToImage](#ltilemapdrawtoimage)
+  - [LTileMap:fill](#ltilemapfill)
+  - [LTileMap:findTilesByGid](#ltilemapfindtilesbygid)
+  - [LTileMap:fireTileExit](#ltilemapfiretileexit)
+  - [LTileMap:fireTileStep](#ltilemapfiretilestep)
+  - [LTileMap:getChunkSize](#ltilemapgetchunksize)
+  - [LTileMap:getLayerColor](#ltilemapgetlayercolor)
+  - [LTileMap:getLayerCount](#ltilemapgetlayercount)
+  - [LTileMap:getLayerName](#ltilemapgetlayername)
+  - [LTileMap:getLayerOffset](#ltilemapgetlayeroffset)
+  - [LTileMap:getLayerParallax](#ltilemapgetlayerparallax)
+  - [LTileMap:getLayerVisible](#ltilemapgetlayervisible)
+  - [LTileMap:getOrientation](#ltilemapgetorientation)
+  - [LTileMap:getTile](#ltilemapgettile)
+  - [LTileMap:getTileDimensions](#ltilemapgettiledimensions)
+  - [LTileMap:getTileHeight](#ltilemapgettileheight)
+  - [LTileMap:getTileSet](#ltilemapgettileset)
+  - [LTileMap:getTileSetCount](#ltilemapgettilesetcount)
+  - [LTileMap:getTileWidth](#ltilemapgettilewidth)
+  - [LTileMap:getViewport](#ltilemapgetviewport)
+  - [LTileMap:isSolid](#ltilemapissolid)
+  - [LTileMap:onTileEnter](#ltilemapontileenter)
+  - [LTileMap:onTileExit](#ltilemapontileexit)
+  - [LTileMap:onTileStep](#ltilemapontilestep)
+  - [LTileMap:rectOverlapsSolid](#ltilemaprectoverlapssolid)
+  - [LTileMap:render](#ltilemaprender)
+  - [LTileMap:setLayerColor](#ltilemapsetlayercolor)
+  - [LTileMap:setLayerOffset](#ltilemapsetlayeroffset)
+  - [LTileMap:setLayerParallax](#ltilemapsetlayerparallax)
+  - [LTileMap:setLayerVisible](#ltilemapsetlayervisible)
+  - [LTileMap:setOrientation](#ltilemapsetorientation)
+  - [LTileMap:setTile](#ltilemapsettile)
+  - [LTileMap:setTileTint](#ltilemapsettiletint)
+  - [LTileMap:setViewport](#ltilemapsetviewport)
+  - [LTileMap:sweepRect](#ltilemapsweeprect)
+  - [LTileMap:tileToWorld](#ltilemaptiletoworld)
+  - [LTileMap:tileTypeIndex](#ltilemaptiletypeindex)
+  - [LTileMap:toNavGrid](#ltilemaptonavgrid)
+  - [LTileMap:type](#ltilemaptype)
+  - [LTileMap:typeOf](#ltilemaptypeof)
+  - [LTileMap:update](#ltilemapupdate)
+  - [LTileMap:worldToTile](#ltilemapworldtotile)
+  - [LTileSet:getAnimation](#ltilesetgetanimation)
+  - [LTileSet:getAutoTileId](#ltilesetgetautotileid)
+  - [LTileSet:getAutoTileId8](#ltilesetgetautotileid8)
+  - [LTileSet:getColumns](#ltilesetgetcolumns)
+  - [LTileSet:getFirstGid](#ltilesetgetfirstgid)
+  - [LTileSet:getMargin](#ltilesetgetmargin)
+  - [LTileSet:getQuad](#ltilesetgetquad)
+  - [LTileSet:getSpacing](#ltilesetgetspacing)
+  - [LTileSet:getTileCount](#ltilesetgettilecount)
+  - [LTileSet:getTileDimensions](#ltilesetgettiledimensions)
+  - [LTileSet:getTileHeight](#ltilesetgettileheight)
+  - [LTileSet:getTileWidth](#ltilesetgettilewidth)
+  - [LTileSet:isSolid](#ltilesetissolid)
+  - [LTileSet:setAnimation](#ltilesetsetanimation)
+  - [LTileSet:setAutoTileRule](#ltilesetsetautotilerule)
+  - [LTileSet:setAutoTileRule8](#ltilesetsetautotilerule8)
+  - [LTileSet:setSolid](#ltilesetsetsolid)
+  - [LTileSet:type](#ltilesettype)
+  - [LTileSet:typeOf](#ltilesettypeof)
+- [💡 Examples](#examples)
+- [🎮 Reference Games](#reference-games)
+- [🔗 Related Modules](#related-modules)
 
 This page is generated from the current module specs, examples, and Lua API data.
 
 **Module group:** Feature Systems
 **Namespace:** `lurek.tilemap`
 
-## Purpose
+## 🎯 Purpose
 
 Single- to multi-layer tile maps with animated tiles, TMX/LDtk import, autotile, iso sort.
 
-## Summary
+[⬆ back to top](#table-of-contents)
+
+## 📋 Summary
 
 Multi-layer tile map system supporting TMX (Tiled) and LDtk import, autotile rules, isometric grids, chunk-based streaming, procedural generation, and polygon region detection. `TileMap` stores stacked `TileLayer` grids with per-cell tile IDs, flip flags, and collision data. `TileSet` defines tile properties, animations, and collision shapes.
 
 `AutoTileSheet` applies bitmask-based neighbor rules for seamless terrain transitions. `IsoMap` handles diamond and staggered isometric coordinate systems with proper depth sorting. `ChunkMap` divides large maps into loadable/unloadable rectangular chunks for open-world streaming. Procedural generators create cave, dungeon, and terrain maps from noise or cellular automata. Polygon regions detect and export contiguous shapes for physics colliders. Exposed as `lurek.tilemap.*`. Feature Systems tier.
 
-## Minimal Module Example
+[⬆ back to top](#table-of-contents)
 
-Module example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Call in lurek.draw(). Pass negative camera offset so the world
-  -- scrolls in the opposite direction of camera movement.
-  local map = lurek.tilemap.newTileMap(16, 16)
-  map:addLayer("background", 32, 32)
-  local cam_x, cam_y = 0, 0
-  function lurek.draw() map:render(-cam_x, -cam_y) end
-end
-
---@api-stub: LTileMap:drawToImage
--- Draws or renders this tile map to the current render target
-do
-  -- Rasterize the map into an image for minimap thumbnails or screenshots.
-  -- tileSize = pixel size per tile in the output image (2 = tiny preview).
-  local map = lurek.tilemap.newTileMap(16, 16)
-  map:addLayer("background", 32, 32)
-  local thumb = map:drawToImage(2)
-  lurek.log.info("rendered map preview to ImageData", "tilemap")
-end
-
---@api-stub: LTileMap:update
--- Advances this tile map by the given delta time
-do
-  -- Call in lurek.process(dt) to advance tile animations.
-  -- Without this, animated tiles (water, torches) stay frozen.
-  local map = lurek.tilemap.newTileMap(16, 16)
-  map:addLayer("water", 32, 32)
-  function lurek.process(dt) map:update(dt) end
-end
-
--- =============================================================================
--- TileMap — Tile Callbacks
--- =============================================================================
-
---@api-stub: LTileMap:onTileEnter
--- Fires the callback registered for the tile enter event on this tile map
-do
-  -- Register a callback for when an entity first enters a tile with this GID.
-  -- Use for: traps, collectibles, zone transitions, lava damage on entry.
-  local map = lurek.tilemap.newTileMap(16, 16)
-  map:addLayer("triggers", 32, 32)
-  map:onTileEnter(5, function(wx, wy, tx, ty)
-    lurek.log.info("entity entered trigger tile at (" .. tx .. "," .. ty .. ")", "tilemap")
-  end)
-  lurek.log.info("tile enter callback registered for gid=5", "tilemap")
-end
-
---@api-stub: LTileMap:onTileStep
-```
-
-## Key Types
+## 🧩 Key Types
 
 - `LAutoTileSheet` (10 methods) - Lua-side handle wrapping an `AutoTileSheet` that maps bitmasks to tile quads for auto-tiling.
 - `LChunkMap` (12 methods) - Lua-side handle wrapping a `ChunkMap` for infinite or very large tile grids stored in dynamically loaded chunks.
@@ -302,7 +251,9 @@ end
 - `LTileMap` (50 methods) - Lua-side handle wrapping a `TileMap` with layers, tile data, collision, viewports, auto-tiling, and tile callbacks.
 - `LTileSet` (19 methods) - Lua-side handle wrapping a `TileSet` for defining tile atlases, animations, solidity, and auto-tile rules.
 
-## API Overview
+[⬆ back to top](#table-of-contents)
+
+## 📖 API Overview
 
 - Source spec: [docs/specs/tilemap.md](../blob/main/docs/specs/tilemap.md)
 
@@ -328,16 +279,20 @@ lurek.tilemap.newChunkMap([chunkSize]: integer) -> LChunkMap -- Creates a new in
 -- ... 10 more module functions
 ```
 
-## Module Functions
+[⬆ back to top](#table-of-contents)
 
-### `lurek.tilemap.fromLDtk(jsonStr: string, [levelName]: string) -> LTileMap`
+## ⚙️ Module Functions
+
+### lurek.tilemap.fromLDtk
+
+`lurek.tilemap.fromLDtk(jsonStr: string, [levelName]: string) -> LTileMap`
 
 Loads a tilemap from an LDtk JSON string, optionally targeting a specific level.
 
 **Parameters**
 
-- `jsonStr` (`string`, required) - Raw LDtk JSON content.
-- `levelName` (`string`, optional) - Level name to load, or nil for the first level.
+- `jsonStr` (`string`, required): Raw LDtk JSON content.
+- `levelName` (`string`, optional): Level name to load, or nil for the first level.
 
 **Returns**: `LTileMap` - Loaded tilemap.
 
@@ -396,15 +351,17 @@ do
 end
 ```
 
-### `lurek.tilemap.fromScreenHex(sx: number, sy: number, size: number) -> integer`
+### lurek.tilemap.fromScreenHex
+
+`lurek.tilemap.fromScreenHex(sx: number, sy: number, size: number) -> integer`
 
 Converts screen-space pixel coordinates to axial hex coordinates.
 
 **Parameters**
 
-- `sx` (`number`, required) - Screen X.
-- `sy` (`number`, required) - Screen Y.
-- `size` (`number`, required) - Hex cell size in pixels.
+- `sx` (`number`, required): Screen X.
+- `sy` (`number`, required): Screen Y.
+- `size` (`number`, required): Hex cell size in pixels.
 
 **Returns**: `integer` - Axial Q.
 
@@ -421,16 +378,18 @@ do
 end
 ```
 
-### `lurek.tilemap.fromScreenIso(sx: number, sy: number, tw: number, th: number) -> number`
+### lurek.tilemap.fromScreenIso
+
+`lurek.tilemap.fromScreenIso(sx: number, sy: number, tw: number, th: number) -> number`
 
 Converts screen-space coordinates back to tile coordinates for isometric projection.
 
 **Parameters**
 
-- `sx` (`number`, required) - Screen X.
-- `sy` (`number`, required) - Screen Y.
-- `tw` (`number`, required) - Tile width in pixels.
-- `th` (`number`, required) - Tile height in pixels.
+- `sx` (`number`, required): Screen X.
+- `sy` (`number`, required): Screen Y.
+- `tw` (`number`, required): Tile width in pixels.
+- `th` (`number`, required): Tile height in pixels.
 
 **Returns**: `number` - Tile X.
 
@@ -448,15 +407,17 @@ do
 end
 ```
 
-### `lurek.tilemap.hexArea(q: integer, r: integer, radius: integer) -> table`
+### lurek.tilemap.hexArea
+
+`lurek.tilemap.hexArea(q: integer, r: integer, radius: integer) -> table`
 
 Returns all hex cells within a filled area of a given radius.
 
 **Parameters**
 
-- `q` (`integer`, required) - Center Q.
-- `r` (`integer`, required) - Center R.
-- `radius` (`integer`, required) - Area radius.
+- `q` (`integer`, required): Center Q.
+- `r` (`integer`, required): Center R.
+- `radius` (`integer`, required): Area radius.
 
 **Returns**: `table` - Array of `{q, r}` pairs inside the area.
 
@@ -476,16 +437,18 @@ do
 end
 ```
 
-### `lurek.tilemap.hexDistance(q1: integer, r1: integer, q2: integer, r2: integer) -> integer`
+### lurek.tilemap.hexDistance
+
+`lurek.tilemap.hexDistance(q1: integer, r1: integer, q2: integer, r2: integer) -> integer`
 
 Computes the hex grid distance between two axial coordinates.
 
 **Parameters**
 
-- `q1` (`integer`, required) - First Q.
-- `r1` (`integer`, required) - First R.
-- `q2` (`integer`, required) - Second Q.
-- `r2` (`integer`, required) - Second R.
+- `q1` (`integer`, required): First Q.
+- `r1` (`integer`, required): First R.
+- `q2` (`integer`, required): Second Q.
+- `r2` (`integer`, required): Second R.
 
 **Returns**: `integer` - Distance in hex steps.
 
@@ -506,16 +469,18 @@ do
 end
 ```
 
-### `lurek.tilemap.hexLine(q1: integer, r1: integer, q2: integer, r2: integer) -> table`
+### lurek.tilemap.hexLine
+
+`lurek.tilemap.hexLine(q1: integer, r1: integer, q2: integer, r2: integer) -> table`
 
 Returns all hex cells along a line between two axial coordinates.
 
 **Parameters**
 
-- `q1` (`integer`, required) - Start Q.
-- `r1` (`integer`, required) - Start R.
-- `q2` (`integer`, required) - End Q.
-- `r2` (`integer`, required) - End R.
+- `q1` (`integer`, required): Start Q.
+- `r1` (`integer`, required): Start R.
+- `q2` (`integer`, required): End Q.
+- `r2` (`integer`, required): End R.
 
 **Returns**: `table` - Array of `{q, r}` pairs along the line.
 
@@ -534,14 +499,16 @@ do
 end
 ```
 
-### `lurek.tilemap.hexNeighbors(q: integer, r: integer) -> table`
+### lurek.tilemap.hexNeighbors
+
+`lurek.tilemap.hexNeighbors(q: integer, r: integer) -> table`
 
 Returns the six neighboring hex cells of a given axial coordinate.
 
 **Parameters**
 
-- `q` (`integer`, required) - Axial Q.
-- `r` (`integer`, required) - Axial R.
+- `q` (`integer`, required): Axial Q.
+- `r` (`integer`, required): Axial R.
 
 **Returns**: `table` - Array of `{q=number, r=number}` neighbor cells.
 
@@ -560,17 +527,19 @@ do
 end
 ```
 
-### `lurek.tilemap.hexReflect(q: integer, r: integer, centerQ: integer, centerR: integer, axis: string) -> integer`
+### lurek.tilemap.hexReflect
+
+`lurek.tilemap.hexReflect(q: integer, r: integer, centerQ: integer, centerR: integer, axis: string) -> integer`
 
 Reflects a hex cell across an axis through a center point.
 
 **Parameters**
 
-- `q` (`integer`, required) - Cell Q.
-- `r` (`integer`, required) - Cell R.
-- `centerQ` (`integer`, required) - Pivot Q.
-- `centerR` (`integer`, required) - Pivot R.
-- `axis` (`string`, required) - Reflection axis name.
+- `q` (`integer`, required): Cell Q.
+- `r` (`integer`, required): Cell R.
+- `centerQ` (`integer`, required): Pivot Q.
+- `centerR` (`integer`, required): Pivot R.
+- `axis` (`string`, required): Reflection axis name.
 
 **Returns**: `integer` - Reflected Q.
 
@@ -587,15 +556,17 @@ do
 end
 ```
 
-### `lurek.tilemap.hexRing(q: integer, r: integer, radius: integer) -> table`
+### lurek.tilemap.hexRing
+
+`lurek.tilemap.hexRing(q: integer, r: integer, radius: integer) -> table`
 
 Returns all hex cells forming a ring at a given radius around a center.
 
 **Parameters**
 
-- `q` (`integer`, required) - Center Q.
-- `r` (`integer`, required) - Center R.
-- `radius` (`integer`, required) - Ring radius in hex steps.
+- `q` (`integer`, required): Center Q.
+- `r` (`integer`, required): Center R.
+- `radius` (`integer`, required): Ring radius in hex steps.
 
 **Returns**: `table` - Array of `{q, r}` pairs on the ring.
 
@@ -612,17 +583,19 @@ do
 end
 ```
 
-### `lurek.tilemap.hexRotate(q: integer, r: integer, centerQ: integer, centerR: integer, steps: integer) -> integer`
+### lurek.tilemap.hexRotate
+
+`lurek.tilemap.hexRotate(q: integer, r: integer, centerQ: integer, centerR: integer, steps: integer) -> integer`
 
 Rotates a hex cell around a center point by a number of 60-degree steps.
 
 **Parameters**
 
-- `q` (`integer`, required) - Cell Q.
-- `r` (`integer`, required) - Cell R.
-- `centerQ` (`integer`, required) - Pivot Q.
-- `centerR` (`integer`, required) - Pivot R.
-- `steps` (`integer`, required) - Number of 60-degree rotation steps (positive = clockwise).
+- `q` (`integer`, required): Cell Q.
+- `r` (`integer`, required): Cell R.
+- `centerQ` (`integer`, required): Pivot Q.
+- `centerR` (`integer`, required): Pivot R.
+- `steps` (`integer`, required): Number of 60-degree rotation steps (positive = clockwise).
 
 **Returns**: `integer` - Rotated Q.
 
@@ -639,14 +612,16 @@ do
 end
 ```
 
-### `lurek.tilemap.hexRound(q: number, r: number) -> integer`
+### lurek.tilemap.hexRound
+
+`lurek.tilemap.hexRound(q: number, r: number) -> integer`
 
 Rounds fractional axial hex coordinates to the nearest integer hex cell.
 
 **Parameters**
 
-- `q` (`number`, required) - Fractional Q.
-- `r` (`number`, required) - Fractional R.
+- `q` (`number`, required): Fractional Q.
+- `r` (`number`, required): Fractional R.
 
 **Returns**: `integer` - Rounded Q.
 
@@ -663,15 +638,17 @@ do
 end
 ```
 
-### `lurek.tilemap.hexSpiral(q: integer, r: integer, radius: integer) -> table`
+### lurek.tilemap.hexSpiral
+
+`lurek.tilemap.hexSpiral(q: integer, r: integer, radius: integer) -> table`
 
 Returns all hex cells in a spiral pattern out to a given radius.
 
 **Parameters**
 
-- `q` (`integer`, required) - Center Q.
-- `r` (`integer`, required) - Center R.
-- `radius` (`integer`, required) - Maximum radius.
+- `q` (`integer`, required): Center Q.
+- `r` (`integer`, required): Center R.
+- `radius` (`integer`, required): Maximum radius.
 
 **Returns**: `table` - Array of `{q, r}` pairs in spiral order.
 
@@ -689,13 +666,15 @@ do
 end
 ```
 
-### `lurek.tilemap.isoDirectionFromAngle(angle: number) -> integer`
+### lurek.tilemap.isoDirectionFromAngle
+
+`lurek.tilemap.isoDirectionFromAngle(angle: number) -> integer`
 
 Converts an angle in degrees to the nearest isometric direction index.
 
 **Parameters**
 
-- `angle` (`number`, required) - Angle in degrees.
+- `angle` (`number`, required): Angle in degrees.
 
 **Returns**: `integer` - Direction index.
 
@@ -713,13 +692,15 @@ do
 end
 ```
 
-### `lurek.tilemap.isoDirectionName(direction: integer) -> string`
+### lurek.tilemap.isoDirectionName
+
+`lurek.tilemap.isoDirectionName(direction: integer) -> string`
 
 Returns a human-readable name for an isometric direction index.
 
 **Parameters**
 
-- `direction` (`integer`, required) - Direction index.
+- `direction` (`integer`, required): Direction index.
 
 **Returns**: `string` - Direction name (e.g. `"north"`, `"east"`, `"south"`, `"west"`).
 
@@ -737,14 +718,16 @@ do
 end
 ```
 
-### `lurek.tilemap.isoRotate(direction: integer, steps: integer) -> integer`
+### lurek.tilemap.isoRotate
+
+`lurek.tilemap.isoRotate(direction: integer, steps: integer) -> integer`
 
 Rotates an isometric direction index by a number of 90-degree steps.
 
 **Parameters**
 
-- `direction` (`integer`, required) - Current direction (0..3).
-- `steps` (`integer`, required) - Number of 90-degree steps.
+- `direction` (`integer`, required): Current direction (0..3).
+- `steps` (`integer`, required): Number of 90-degree steps.
 
 **Returns**: `integer` - Rotated direction.
 
@@ -761,13 +744,15 @@ do
 end
 ```
 
-### `lurek.tilemap.loadTMX(xml: string) -> table`
+### lurek.tilemap.loadTMX
+
+`lurek.tilemap.loadTMX(xml: string) -> table`
 
 Parses a TMX (Tiled XML) string and returns a table describing the map structure.
 
 **Parameters**
 
-- `xml` (`string`, required) - Raw TMX XML content.
+- `xml` (`string`, required): Raw TMX XML content.
 
 **Returns**: `table` - Parsed map with `width`, `height`, `tileWidth`, `tileHeight`, `orientation`, and `layers`.
 
@@ -797,15 +782,17 @@ do
 end
 ```
 
-### `lurek.tilemap.newAutoTileSheet(tileW: integer, tileH: integer, layout: string) -> LAutoTileSheet`
+### lurek.tilemap.newAutoTileSheet
+
+`lurek.tilemap.newAutoTileSheet(tileW: integer, tileH: integer, layout: string) -> LAutoTileSheet`
 
 Creates an auto-tile sheet with a given tile size and layout.
 
 **Parameters**
 
-- `tileW` (`integer`, required) - Tile width in pixels.
-- `tileH` (`integer`, required) - Tile height in pixels.
-- `layout` (`string`, required) - Layout type: `"blob47"`, `"composite48"`, or `"minimal16"`.
+- `tileW` (`integer`, required): Tile width in pixels.
+- `tileH` (`integer`, required): Tile height in pixels.
+- `layout` (`string`, required): Layout type: `"blob47"`, `"composite48"`, or `"minimal16"`.
 
 **Returns**: `LAutoTileSheet` - New auto-tile sheet.
 
@@ -828,13 +815,15 @@ do
 end
 ```
 
-### `lurek.tilemap.newChunkMap([chunkSize]: integer) -> LChunkMap`
+### lurek.tilemap.newChunkMap
+
+`lurek.tilemap.newChunkMap([chunkSize]: integer) -> LChunkMap`
 
 Creates a new infinite chunk-based tile map.
 
 **Parameters**
 
-- `chunkSize` (`integer`, optional) - Tiles per chunk side (default 16).
+- `chunkSize` (`integer`, optional): Tiles per chunk side (default 16).
 
 **Returns**: `LChunkMap` - New chunk map.
 
@@ -857,18 +846,20 @@ do
 end
 ```
 
-### `lurek.tilemap.newIsoMap(width: integer, height: integer, tileW: integer, tileH: integer, levelHeight: integer, [partCount]: integer) -> LIsoMap`
+### lurek.tilemap.newIsoMap
+
+`lurek.tilemap.newIsoMap(width: integer, height: integer, tileW: integer, tileH: integer, levelHeight: integer, [partCount]: integer) -> LIsoMap`
 
 Creates a new isometric map with the given dimensions and tile geometry.
 
 **Parameters**
 
-- `width` (`integer`, required) - Map width in tiles.
-- `height` (`integer`, required) - Map height in tiles.
-- `tileW` (`integer`, required) - Tile width in pixels.
-- `tileH` (`integer`, required) - Tile height in pixels.
-- `levelHeight` (`integer`, required) - Vertical pixel offset between levels.
-- `partCount` (`integer`, optional) - Number of tile parts per cell (default 4).
+- `width` (`integer`, required): Map width in tiles.
+- `height` (`integer`, required): Map height in tiles.
+- `tileW` (`integer`, required): Tile width in pixels.
+- `tileH` (`integer`, required): Tile height in pixels.
+- `levelHeight` (`integer`, required): Vertical pixel offset between levels.
+- `partCount` (`integer`, optional): Number of tile parts per cell (default 4).
 
 **Returns**: `LIsoMap` - New isometric map.
 
@@ -892,14 +883,16 @@ do
 end
 ```
 
-### `lurek.tilemap.newLargeMapRenderer(tileW: integer, tileH: integer) -> LLargeMapRenderer`
+### lurek.tilemap.newLargeMapRenderer
+
+`lurek.tilemap.newLargeMapRenderer(tileW: integer, tileH: integer) -> LLargeMapRenderer`
 
 Creates a chunk-based large-map renderer for efficient rendering of very large maps.
 
 **Parameters**
 
-- `tileW` (`integer`, required) - Tile width in pixels.
-- `tileH` (`integer`, required) - Tile height in pixels.
+- `tileW` (`integer`, required): Tile width in pixels.
+- `tileH` (`integer`, required): Tile height in pixels.
 
 **Returns**: `LLargeMapRenderer` - New large-map renderer.
 
@@ -918,16 +911,18 @@ do
 end
 ```
 
-### `lurek.tilemap.newMapBlock(width: integer, height: integer, [layers]: integer, [segmentSize]: integer) -> LMapBlock`
+### lurek.tilemap.newMapBlock
+
+`lurek.tilemap.newMapBlock(width: integer, height: integer, [layers]: integer, [segmentSize]: integer) -> LMapBlock`
 
 Creates a new procedural map block with the given dimensions.
 
 **Parameters**
 
-- `width` (`integer`, required) - Block width in tiles.
-- `height` (`integer`, required) - Block height in tiles.
-- `layers` (`integer`, optional) - Number of tile layers (default 1).
-- `segmentSize` (`integer`, optional) - Edge segment size in tiles (default 1).
+- `width` (`integer`, required): Block width in tiles.
+- `height` (`integer`, required): Block height in tiles.
+- `layers` (`integer`, optional): Number of tile layers (default 1).
+- `segmentSize` (`integer`, optional): Edge segment size in tiles (default 1).
 
 **Returns**: `LMapBlock` - New map block.
 
@@ -952,16 +947,18 @@ do
 end
 ```
 
-### `lurek.tilemap.newMapGen(group: LMapGroup, presetOrWidth: string|integer, segmentSizeOrHeight: integer, [segmentSize]: integer) -> LMapGen`
+### lurek.tilemap.newMapGen
+
+`lurek.tilemap.newMapGen(group: LMapGroup, presetOrWidth: string|integer, segmentSizeOrHeight: integer, [segmentSize]: integer) -> LMapGen`
 
 Creates a procedural map generator from a group and either a size preset or explicit dimensions.
 
 **Parameters**
 
-- `group` (`LMapGroup`, required) - Block group to generate from.
-- `presetOrWidth` (`string|integer`, required) - Size preset (`"small"`, `"medium"`, `"large"`) or width in tiles.
-- `segmentSizeOrHeight` (`integer`, required) - Segment size (if preset) or height in tiles.
-- `segmentSize` (`integer`, optional) - Segment size when using explicit dimensions.
+- `group` (`LMapGroup`, required): Block group to generate from.
+- `presetOrWidth` (`string|integer`, required): Size preset (`"small"`, `"medium"`, `"large"`) or width in tiles.
+- `segmentSizeOrHeight` (`integer`, required): Segment size (if preset) or height in tiles.
+- `segmentSize` (`integer`, optional): Segment size when using explicit dimensions.
 
 **Returns**: `LMapGen` - New map generator.
 
@@ -982,13 +979,15 @@ do
 end
 ```
 
-### `lurek.tilemap.newMapGroup(name: string) -> LMapGroup`
+### lurek.tilemap.newMapGroup
+
+`lurek.tilemap.newMapGroup(name: string) -> LMapGroup`
 
 Creates a new map group to hold blocks and generation scripts.
 
 **Parameters**
 
-- `name` (`string`, required) - Group name.
+- `name` (`string`, required): Group name.
 
 **Returns**: `LMapGroup` - New map group.
 
@@ -1005,7 +1004,9 @@ do
 end
 ```
 
-### `lurek.tilemap.newMapScript() -> LMapScript`
+### lurek.tilemap.newMapScript
+
+`lurek.tilemap.newMapScript() -> LMapScript`
 
 Creates a new empty map-generation script.
 
@@ -1025,15 +1026,17 @@ do
 end
 ```
 
-### `lurek.tilemap.newTileMap(tileWidth: integer, tileHeight: integer, [chunkSize]: integer) -> LTileMap`
+### lurek.tilemap.newTileMap
+
+`lurek.tilemap.newTileMap(tileWidth: integer, tileHeight: integer, [chunkSize]: integer) -> LTileMap`
 
 Creates a new empty tilemap with the given tile dimensions.
 
 **Parameters**
 
-- `tileWidth` (`integer`, required) - Tile width in pixels.
-- `tileHeight` (`integer`, required) - Tile height in pixels.
-- `chunkSize` (`integer`, optional) - Internal chunk size in tiles (default 16).
+- `tileWidth` (`integer`, required): Tile width in pixels.
+- `tileHeight` (`integer`, required): Tile height in pixels.
+- `chunkSize` (`integer`, optional): Internal chunk size in tiles (default 16).
 
 **Returns**: `LTileMap` - New tilemap.
 
@@ -1052,19 +1055,21 @@ do
 end
 ```
 
-### `lurek.tilemap.newTileSet(firstGid: integer, tileCount: integer, columns: integer, tileWidth: integer, tileHeight: integer, [spacing]: integer, [margin]: integer) -> LTileSet`
+### lurek.tilemap.newTileSet
+
+`lurek.tilemap.newTileSet(firstGid: integer, tileCount: integer, columns: integer, tileWidth: integer, tileHeight: integer, [spacing]: integer, [margin]: integer) -> LTileSet`
 
 Creates a new tileset from atlas parameters.
 
 **Parameters**
 
-- `firstGid` (`integer`, required) - First global tile ID.
-- `tileCount` (`integer`, required) - Total tiles in the set.
-- `columns` (`integer`, required) - Columns in the atlas image.
-- `tileWidth` (`integer`, required) - Tile width in pixels.
-- `tileHeight` (`integer`, required) - Tile height in pixels.
-- `spacing` (`integer`, optional) - Pixel spacing between tiles (default 0).
-- `margin` (`integer`, optional) - Pixel margin around the atlas edge (default 0).
+- `firstGid` (`integer`, required): First global tile ID.
+- `tileCount` (`integer`, required): Total tiles in the set.
+- `columns` (`integer`, required): Columns in the atlas image.
+- `tileWidth` (`integer`, required): Tile width in pixels.
+- `tileHeight` (`integer`, required): Tile height in pixels.
+- `spacing` (`integer`, optional): Pixel spacing between tiles (default 0).
+- `margin` (`integer`, optional): Pixel margin around the atlas edge (default 0).
 
 **Returns**: `LTileSet` - New tileset.
 
@@ -1093,15 +1098,17 @@ do
 end
 ```
 
-### `lurek.tilemap.toScreenHex(q: integer, r: integer, size: number) -> number`
+### lurek.tilemap.toScreenHex
+
+`lurek.tilemap.toScreenHex(q: integer, r: integer, size: number) -> number`
 
 Converts axial hex coordinates to screen-space pixel position.
 
 **Parameters**
 
-- `q` (`integer`, required) - Axial Q coordinate.
-- `r` (`integer`, required) - Axial R coordinate.
-- `size` (`number`, required) - Hex cell size in pixels.
+- `q` (`integer`, required): Axial Q coordinate.
+- `r` (`integer`, required): Axial R coordinate.
+- `size` (`number`, required): Hex cell size in pixels.
 
 **Returns**: `number` - Screen X.
 
@@ -1119,16 +1126,18 @@ do
 end
 ```
 
-### `lurek.tilemap.toScreenIso(tx: number, ty: number, tw: number, th: number) -> number`
+### lurek.tilemap.toScreenIso
+
+`lurek.tilemap.toScreenIso(tx: number, ty: number, tw: number, th: number) -> number`
 
 Converts tile coordinates to screen-space position for isometric projection.
 
 **Parameters**
 
-- `tx` (`number`, required) - Tile X.
-- `ty` (`number`, required) - Tile Y.
-- `tw` (`number`, required) - Tile width in pixels.
-- `th` (`number`, required) - Tile height in pixels.
+- `tx` (`number`, required): Tile X.
+- `ty` (`number`, required): Tile Y.
+- `tw` (`number`, required): Tile width in pixels.
+- `th` (`number`, required): Tile height in pixels.
 
 **Returns**: `number` - Screen X.
 
@@ -1147,11 +1156,21 @@ end
 ```
 
 
-## Types and Methods
+[⬆ back to top](#table-of-contents)
 
-### `LAutoTileSheet`
+## 🔷 Module Types
+
+### LAutoTileSheet
 
 Lua-side handle wrapping an `AutoTileSheet` that maps bitmasks to tile quads for auto-tiling.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side handle wrapping an `AutoTileSheet` that maps bitmasks to tile quads for auto-tiling.
+---@class LAutoTileSheet
+LAutoTileSheet = {}
+```
 
 #### Example
 
@@ -1172,217 +1191,17 @@ do
 end
 ```
 
-### `LAutoTileSheet:applyToTileSet(tileSet: LTileSet, typeName: string, [startGid]: integer)`
-
-Writes the auto-tile bitmask-to-tile rules from this sheet into a tileset.
-
-**Parameters**
-
-- `tileSet` (`LTileSet`, required) - Target tileset to receive the rules.
-- `typeName` (`string`, required) - Logical tile type name to register under.
-- `startGid` (`integer`, optional) - Optional first GID offset.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Transfer all bitmask-to-tile rules from the sheet into a tileset.
-  -- This bridges the sheet's layout with the tileset's auto-tile registry.
-  local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
-  local ats = lurek.tilemap.newAutoTileSheet(16, 16, "blob47")
-  ats:applyToTileSet(ts, "normal")
-  lurek.log.info("auto-tile sheet rules applied to tileset", "tilemap")
-end
-```
-
-### `LAutoTileSheet:getBitmaskForTile(tileId: integer) -> integer`
-
-Returns the bitmask associated with a tile in this auto-tile sheet.
-
-**Parameters**
-
-- `tileId` (`integer`, required) - Tile ID (1-based).
-
-**Returns**: `integer` - Bitmask value, or nil if not found.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Reverse lookup: given a tile ID in the sheet, what bitmask does it represent?
-  -- Useful for debugging or building editor tools.
-  local sheet = lurek.tilemap.newAutoTileSheet(16, 16, "blob47")
-  local mask = sheet:getBitmaskForTile(5)
-  lurek.log.info("tile 5 represents bitmask " .. mask, "tilemap")
-end
-```
-
-### `LAutoTileSheet:getLayout() -> string`
-
-Returns the auto-tile layout type as a string.
-
-**Returns**: `string` - One of `"blob47"`, `"composite48"`, `"minimal16"`.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local sheet = lurek.tilemap.newAutoTileSheet(16, 16, "minimal16")
-  if sheet:getLayout() == "minimal16" then
-    lurek.log.info("using 16-tile autotile ruleset (simplest)", "tilemap")
-  end
-end
-```
-
-### `LAutoTileSheet:getQuad(tileId: integer) -> integer`
-
-Returns the source rectangle for a tile in the auto-tile sheet.
-
-**Parameters**
-
-- `tileId` (`integer`, required) - Tile ID (1-based).
-
-**Returns**: `integer` - X offset in pixels.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Get the source rectangle for rendering a specific auto-tile variant.
-  -- Returns x, y, w, h in pixels relative to the sheet atlas.
-  pcall(function()
-    local sheet = lurek.tilemap.newAutoTileSheet(16, 16, "blob47")
-    local x, y = sheet:getQuad(3)
-    lurek.log.info("autotile 3 quad x=" .. x .. " y=" .. y, "tilemap")
-  end)
-end
-```
-
-### `LAutoTileSheet:getTileCount() -> integer`
-
-Returns the total number of tiles in this auto-tile sheet.
-
-**Returns**: `integer` - Tile count.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local sheet = lurek.tilemap.newAutoTileSheet(16, 16, "blob47")
-  lurek.log.info("blob47 sheet exposes " .. sheet:getTileCount() .. " tile variants", "tilemap")
-end
-```
-
-### `LAutoTileSheet:getTileForBitmask(bitmask: integer) -> integer`
-
-Looks up which tile corresponds to a given bitmask value.
-
-**Parameters**
-
-- `bitmask` (`integer`, required) - Bitmask to resolve.
-
-**Returns**: `integer` - Tile ID (1-based), or nil if no tile matches.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Forward lookup: given a neighbor bitmask, which tile variant to draw?
-  local sheet = lurek.tilemap.newAutoTileSheet(16, 16, "blob47")
-  local id = sheet:getTileForBitmask(15) or 1
-  lurek.log.info("bitmask 15 (all 4 neighbors) -> tile " .. id, "tilemap")
-end
-```
-
-### `LAutoTileSheet:getTileHeight() -> integer`
-
-Returns the height of each tile in the auto-tile sheet, in pixels.
-
-**Returns**: `integer` - Tile height.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Confirm tall tiles for a side-view autotile sheet.
-  local sheet = lurek.tilemap.newAutoTileSheet(16, 32, "minimal16")
-  lurek.log.info("autotile h=" .. sheet:getTileHeight() .. " px", "tilemap")
-end
-```
-
-### `LAutoTileSheet:getTileWidth() -> integer`
-
-Returns the width of each tile in the auto-tile sheet, in pixels.
-
-**Returns**: `integer` - Tile width.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Verify tile dimensions match the atlas before applying rules.
-  local sheet = lurek.tilemap.newAutoTileSheet(32, 16, "blob47")
-  lurek.log.info("autotile w=" .. sheet:getTileWidth() .. " px", "tilemap")
-end
-```
-
-### `LAutoTileSheet:type() -> string`
-
-Returns the type name of this userdata.
-
-**Returns**: `string` - Always `"LAutoTileSheet"`.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local obj = lurek.tilemap.newAutoTileSheet(16, 16, "minimal16")
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LAutoTileSheet"
-end
-```
-
-### `LAutoTileSheet:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to check against.
-
-**Returns**: `boolean` - True if `name` is `"LAutoTileSheet"` or `"Object"`.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local obj = lurek.tilemap.newAutoTileSheet(16, 16, "minimal16")
-  lurek.log.debug("typeOf LAutoTileSheet: " .. tostring(obj:typeOf("LAutoTileSheet")), "example") -- true
-end
-```
-
-### `LChunkMap`
+### LChunkMap
 
 Lua-side handle wrapping a `ChunkMap` for infinite or very large tile grids stored in dynamically loaded chunks.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side handle wrapping a `ChunkMap` for infinite or very large tile grids stored in dynamically loaded chunks.
+---@class LChunkMap
+LChunkMap = {}
+```
 
 #### Example
 
@@ -1403,286 +1222,17 @@ do
 end
 ```
 
-### `LChunkMap:chunkTileRange(cx: integer, cy: integer) -> integer`
-
-Returns the tile-coordinate range covered by a specific chunk.
-
-**Parameters**
-
-- `cx` (`integer`, required) - Chunk X coordinate.
-- `cy` (`integer`, required) - Chunk Y coordinate.
-
-**Returns**: `integer` - Minimum tile X.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Find the tile-coordinate boundaries of a chunk.
-  -- Useful for iterating over all tiles within a chunk.
-  local world = lurek.tilemap.newChunkMap(16)
-  local x0, y0, x1, y1 = world:chunkTileRange(2, -1)
-  lurek.log.info("chunk (2,-1) covers x[" .. x0 .. ".." .. x1 .. "] y[" .. y0 .. ".." .. y1 .. "]", "tilemap")
-end
-```
-
-### `LChunkMap:clearTile(x: integer, y: integer)`
-
-Removes the tile at the given world-tile coordinate.
-
-**Parameters**
-
-- `x` (`integer`, required) - Tile X coordinate.
-- `y` (`integer`, required) - Tile Y coordinate.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Remove a tile (sets to 0). The chunk stays loaded.
-  local world = lurek.tilemap.newChunkMap(16)
-  world:setTile(3, 3, 5)
-  world:clearTile(3, 3)
-  lurek.log.info("tile (3,3) now gid=" .. world:getTile(3, 3), "tilemap")
-end
-```
-
-### `LChunkMap:fillRect(x0: integer, y0: integer, x1: integer, y1: integer, gid: integer)`
-
-Fills a rectangular region of tiles with a given GID.
-
-**Parameters**
-
-- `x0` (`integer`, required) - Left tile coordinate.
-- `y0` (`integer`, required) - Top tile coordinate.
-- `x1` (`integer`, required) - Right tile coordinate (inclusive).
-- `y1` (`integer`, required) - Bottom tile coordinate (inclusive).
-- `gid` (`integer`, required) - Global tile ID to fill with.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Fill a rectangular region. Useful for clearing areas or placing floor tiles.
-  -- Coordinates are inclusive: fills from (x0,y0) to (x1,y1).
-  local world = lurek.tilemap.newChunkMap(16)
-  world:fillRect(0, 0, 31, 31, 1)
-  lurek.log.info("filled 32x32 area with gid=1", "tilemap")
-end
-```
-
-### `LChunkMap:getChunksInView(vx: number, vy: number, vw: number, vh: number, tw: number, th: number) -> table`
-
-Returns chunk coordinates that overlap a viewport region, given tile dimensions.
-
-**Parameters**
-
-- `vx` (`number`, required) - Viewport left edge in world pixels.
-- `vy` (`number`, required) - Viewport top edge in world pixels.
-- `vw` (`number`, required) - Viewport width in pixels.
-- `vh` (`number`, required) - Viewport height in pixels.
-- `tw` (`number`, required) - Tile width in pixels.
-- `th` (`number`, required) - Tile height in pixels.
-
-**Returns**: `table` - Array of `{cx, cy}` pairs.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Given a viewport rectangle and tile dimensions, find which chunks overlap.
-  -- Use for rendering only visible chunks.
-  local world = lurek.tilemap.newChunkMap(16)
-  local chunks = world:getChunksInView(0, 0, 320, 240, 16, 16)
-  lurek.log.info("chunks in view: " .. #chunks, "tilemap")
-end
-```
-
-### `LChunkMap:getChunkSize() -> integer`
-
-Returns the size of each chunk in tiles per side.
-
-**Returns**: `integer` - Chunk size.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Calculate total tiles per chunk for memory estimation.
-  local world = lurek.tilemap.newChunkMap(32)
-  local cs = world:getChunkSize()
-  lurek.log.info("tiles per chunk = " .. cs * cs, "tilemap")
-end
-```
-
-### `LChunkMap:getLoadedChunks() -> table`
-
-Returns a list of all currently loaded chunk coordinates.
-
-**Returns**: `table` - Array of `{cx, cy}` pairs.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Returns an array of {cx, cy} pairs for all chunks currently in memory.
-  local world = lurek.tilemap.newChunkMap(16)
-  world:setTile(0, 0, 1)
-  world:setTile(40, -10, 2)
-  for _, c in ipairs(world:getLoadedChunks()) do
-    lurek.log.debug("chunk loaded cx=" .. c[1] .. " cy=" .. c[2], "tilemap")
-  end
-end
-```
-
-### `LChunkMap:getTile(x: integer, y: integer) -> integer`
-
-Returns the tile GID at the given world-tile coordinate.
-
-**Parameters**
-
-- `x` (`integer`, required) - Tile X coordinate.
-- `y` (`integer`, required) - Tile Y coordinate.
-
-**Returns**: `integer` - Global tile ID.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Read a tile from the infinite world for collision checks.
-  local world = lurek.tilemap.newChunkMap(16)
-  world:setTile(5, 5, 42)
-  local gid = world:getTile(5, 5)
-  lurek.log.info("chunk tile at (5,5) gid=" .. gid, "tilemap")
-end
-```
-
-### `LChunkMap:loadChunk(cx: integer, cy: integer)`
-
-Loads a chunk into memory at the given chunk coordinates.
-
-**Parameters**
-
-- `cx` (`integer`, required) - Chunk X coordinate.
-- `cy` (`integer`, required) - Chunk Y coordinate.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Pre-load chunks before the player reaches them (streaming).
-  -- Chunk coordinates are in chunk-space (tile / chunkSize).
-  local world = lurek.tilemap.newChunkMap(16)
-  for cx = 0, 3 do
-    world:loadChunk(cx, 0)
-  end
-end
-```
-
-### `LChunkMap:setTile(x: integer, y: integer, gid: integer)`
-
-Sets the tile GID at the given world-tile coordinate.
-
-**Parameters**
-
-- `x` (`integer`, required) - Tile X coordinate.
-- `y` (`integer`, required) - Tile Y coordinate.
-- `gid` (`integer`, required) - Global tile ID to place.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Place a tree tile in the open world when the player plants a seed.
-  local world = lurek.tilemap.newChunkMap(16)
-  world:setTile(-10, 20, 15)
-  lurek.log.info("planted tree at (-10,20)", "tilemap")
-end
-```
-
-### `LChunkMap:type() -> string`
-
-Returns the type name of this userdata.
-
-**Returns**: `string` - Always `"LChunkMap"`.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local obj = lurek.tilemap.newChunkMap(16)
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LChunkMap"
-end
-```
-
-### `LChunkMap:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to check against.
-
-**Returns**: `boolean` - True if `name` is `"LChunkMap"` or `"Object"`.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local obj = lurek.tilemap.newChunkMap(16)
-  lurek.log.debug("typeOf LChunkMap: " .. tostring(obj:typeOf("LChunkMap")), "example") -- true
-end
-```
-
-### `LChunkMap:unloadChunk(cx: integer, cy: integer)`
-
-Unloads a chunk from memory at the given chunk coordinates.
-
-**Parameters**
-
-- `cx` (`integer`, required) - Chunk X coordinate.
-- `cy` (`integer`, required) - Chunk Y coordinate.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Unload chunks far from the player to save memory.
-  local world = lurek.tilemap.newChunkMap(16)
-  world:loadChunk(0, 0)
-  world:unloadChunk(0, 0)
-  lurek.log.info("chunks resident: " .. #world:getLoadedChunks(), "tilemap")
-end
-```
-
-### `LIsoMap`
+### LIsoMap
 
 Lua-side handle wrapping an `IsoMap` for isometric tile rendering with multi-level support and configurable part ordering.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side handle wrapping an `IsoMap` for isometric tile rendering with multi-level support and configurable part ordering.
+---@class LIsoMap
+LIsoMap = {}
+```
 
 #### Example
 
@@ -1704,425 +1254,17 @@ do
 end
 ```
 
-### `LIsoMap:addLevel() -> integer`
-
-Adds a new vertical level to the isometric map and returns its index.
-
-**Returns**: `integer` - Index of the new level (1-based).
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Add vertical levels for multi-story buildings.
-  -- Returns the new level's index (1-based).
-  local iso = lurek.tilemap.newIsoMap(16, 16, 64, 32, 24)
-  local z = iso:addLevel()
-  lurek.log.info("added level " .. z .. ", count now " .. iso:getLevelCount(), "tilemap")
-end
-```
-
-### `LIsoMap:fillLevel(z: integer, part: integer, gid: integer)`
-
-Fills all tiles on a level for a given part with a single GID.
-
-**Parameters**
-
-- `z` (`integer`, required) - Level index (1-based).
-- `part` (`integer`, required) - Part index to fill.
-- `gid` (`integer`, required) - Global tile ID to fill with.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Fill all tiles of a specific part on a level.
-  -- Parts: 0=floor, 1=north wall, 2=west wall, 3=object (when partCount=4).
-  local iso = lurek.tilemap.newIsoMap(16, 16, 64, 32, 24)
-  iso:addLevel()
-  iso:fillLevel(1, lurek.tilemap.FLOOR - 1, 1)  -- floor part, gid 1
-end
-```
-
-### `LIsoMap:getHeight() -> integer`
-
-Returns the map height in tiles. This method is available to Lua scripts.
-
-**Returns**: `integer` - Height.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Use height for iterating over all rows in the iso map.
-  local iso = lurek.tilemap.newIsoMap(24, 18, 64, 32, 24)
-  lurek.log.info("iso height=" .. iso:getHeight() .. " tiles", "tilemap")
-end
-```
-
-### `LIsoMap:getLevelCount() -> integer`
-
-Returns the number of vertical levels in the isometric map.
-
-**Returns**: `integer` - Level count.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local iso = lurek.tilemap.newIsoMap(16, 16, 64, 32, 24)
-  iso:addLevel(); iso:addLevel(); iso:addLevel()
-  lurek.log.info("iso has " .. iso:getLevelCount() .. " level(s)", "tilemap")
-end
-```
-
-### `LIsoMap:getLevelHeight() -> integer`
-
-Returns the vertical pixel offset between levels.
-
-**Returns**: `integer` - Level height in pixels.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local iso = lurek.tilemap.newIsoMap(16, 16, 64, 32, 32)
-  lurek.log.info("Z step = " .. iso:getLevelHeight() .. " px between levels", "tilemap")
-end
-```
-
-### `LIsoMap:getPartCount() -> integer`
-
-Returns the number of tile parts per cell.
-
-**Returns**: `integer` - Part count.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local iso = lurek.tilemap.newIsoMap(16, 16, 64, 32, 24, 4)
-  lurek.log.info("iso parts per tile = " .. iso:getPartCount(), "tilemap")
-end
-```
-
-### `LIsoMap:getPartOrder() -> integer[]`
-
-Returns the rendering order of tile parts as an array of part indices.
-
-**Returns**: `integer[]` - Part index values.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Part order controls draw sequence within each cell (floor first, then walls).
-  local iso = lurek.tilemap.newIsoMap(16, 16, 64, 32, 24, 4)
-  local order = iso:getPartOrder()
-  lurek.log.info("iso draw order has " .. #order .. " slots", "tilemap")
-end
-```
-
-### `LIsoMap:getTileHeight() -> integer`
-
-Returns the height of an isometric tile in pixels.
-
-**Returns**: `integer` - Tile height.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local iso = lurek.tilemap.newIsoMap(16, 16, 64, 32, 24)
-  lurek.log.info("iso tile footprint height = " .. iso:getTileHeight() .. " px", "tilemap")
-end
-```
-
-### `LIsoMap:getTilePart(z: integer, x: integer, y: integer, part: integer) -> integer`
-
-Returns the GID for a specific part of a tile at a given position and level.
-
-**Parameters**
-
-- `z` (`integer`, required) - Level index (1-based).
-- `x` (`integer`, required) - Column (1-based).
-- `y` (`integer`, required) - Row (1-based).
-- `part` (`integer`, required) - Part index.
-
-**Returns**: `integer` - Global tile ID.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local iso = lurek.tilemap.newIsoMap(16, 16, 32, 16, 8)
-  iso:addLevel()
-  local gid = iso:getTilePart(1, 1, 1, 0)
-  lurek.log.info("tile part gid: " .. (gid or 0), "tilemap")
-end
-```
-
-### `LIsoMap:getTileWidth() -> integer`
-
-Returns the width of an isometric tile in pixels.
-
-**Returns**: `integer` - Tile width.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local iso = lurek.tilemap.newIsoMap(16, 16, 64, 32, 24)
-  lurek.log.info("iso tile footprint width = " .. iso:getTileWidth() .. " px", "tilemap")
-end
-```
-
-### `LIsoMap:getWidth() -> integer`
-
-Returns the map width in tiles. This method is available to Lua scripts.
-
-**Returns**: `integer` - Width.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Use width for iterating over all columns in the iso map.
-  local iso = lurek.tilemap.newIsoMap(24, 18, 64, 32, 24)
-  lurek.log.info("iso width=" .. iso:getWidth() .. " tiles", "tilemap")
-end
-```
-
-### `LIsoMap:isLevelVisible(z: integer) -> boolean`
-
-Returns whether a vertical level is currently visible.
-
-**Parameters**
-
-- `z` (`integer`, required) - Level index (1-based).
-
-**Returns**: `boolean` - True if the level is visible.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local iso = lurek.tilemap.newIsoMap(16, 16, 64, 32, 24)
-  iso:addLevel()
-  if iso:isLevelVisible(1) then
-    lurek.log.info("ground floor is visible", "tilemap")
-  end
-end
-```
-
-### `LIsoMap:screenToTile(sx: number, sy: number) -> number`
-
-Converts screen-space pixel coordinates to tile-grid coordinates (ignoring Z).
-
-**Parameters**
-
-- `sx` (`number`, required) - Screen X.
-- `sy` (`number`, required) - Screen Y.
-
-**Returns**: `number` - Tile X.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Mouse picking: find which iso tile the cursor is over.
-  local iso = lurek.tilemap.newIsoMap(16, 16, 64, 32, 24)
-  iso:setOrigin(400, 100)
-  local tx, ty = iso:screenToTile(500, 200)
-  lurek.log.info("cursor over iso tile (" .. tx .. ", " .. ty .. ")", "tilemap")
-end
-```
-
-### `LIsoMap:setLevelVisible(z: integer, visible: boolean)`
-
-Sets whether a vertical level is drawn during rendering.
-
-**Parameters**
-
-- `z` (`integer`, required) - Level index (1-based).
-- `visible` (`boolean`, required) - True to show, false to hide.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Hide upper floors to see inside buildings (like The Sims).
-  local iso = lurek.tilemap.newIsoMap(16, 16, 64, 32, 24)
-  iso:addLevel(); iso:addLevel()
-  iso:setLevelVisible(2, false)  -- hide upper floor
-end
-```
-
-### `LIsoMap:setOrigin(x: number, y: number)`
-
-Sets the screen-space origin (top-left anchor) for isometric rendering.
-
-**Parameters**
-
-- `x` (`number`, required) - Origin X in pixels.
-- `y` (`number`, required) - Origin Y in pixels.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Origin = screen-space anchor point for the top-left of the map rendering.
-  -- Center the map on screen by setting origin to (screenW/2, topMargin).
-  local iso = lurek.tilemap.newIsoMap(16, 16, 64, 32, 24)
-  iso:addLevel()
-  iso:setOrigin(400, 100)
-end
-```
-
-### `LIsoMap:setPartOrder(order: table)`
-
-Overrides the rendering order of tile parts.
-
-**Parameters**
-
-- `order` (`table`, required) - Array of part indices in desired draw order.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Override draw order to fix rendering artifacts.
-  -- Default is {0,1,2,3}; swap if walls should draw before/after objects.
-  local iso = lurek.tilemap.newIsoMap(16, 16, 64, 32, 24, 4)
-  iso:setPartOrder({ 0, 2, 1, 3 })  -- swap N-wall and W-wall draw order
-end
-```
-
-### `LIsoMap:setTilePart(z: integer, x: integer, y: integer, part: integer, gid: integer)`
-
-Sets the GID for a specific part of a tile at a given position and level.
-
-**Parameters**
-
-- `z` (`integer`, required) - Level index (1-based).
-- `x` (`integer`, required) - Column (1-based).
-- `y` (`integer`, required) - Row (1-based).
-- `part` (`integer`, required) - Part index (e.g. floor, wall, object).
-- `gid` (`integer`, required) - Global tile ID to place.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Set individual tile parts: floor, walls, or objects at a specific cell.
-  local iso = lurek.tilemap.newIsoMap(16, 16, 32, 16, 8)
-  iso:addLevel()
-  iso:setTilePart(1, 1, 1, 0, 5)  -- level 1, pos (1,1), part 0 (floor), gid 5
-  lurek.log.info("iso tile part set", "tilemap")
-end
-```
-
-### `LIsoMap:tileToScreen(tx: number, ty: number, tz: number) -> number`
-
-Converts tile-grid coordinates to screen-space pixel position.
-
-**Parameters**
-
-- `tx` (`number`, required) - Tile X.
-- `ty` (`number`, required) - Tile Y.
-- `tz` (`number`, required) - Tile Z (level).
-
-**Returns**: `number` - Screen X.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Convert tile (x, y, z) to screen pixel position for sprite placement.
-  local iso = lurek.tilemap.newIsoMap(16, 16, 64, 32, 24)
-  iso:setOrigin(400, 100)
-  local sx, sy = iso:tileToScreen(3, 4, 0)
-  lurek.log.info("tile (3,4,0) at screen (" .. sx .. ", " .. sy .. ")", "tilemap")
-end
-```
-
-### `LIsoMap:type() -> string`
-
-Returns the type name of this userdata.
-
-**Returns**: `string` - Always `"LIsoMap"`.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local obj = lurek.tilemap.newIsoMap(20, 15, 64, 32, 0)
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LIsoMap"
-end
-```
-
-### `LIsoMap:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to check against.
-
-**Returns**: `boolean` - True if `name` is `"LIsoMap"` or `"Object"`.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local obj = lurek.tilemap.newIsoMap(20, 15, 64, 32, 0)
-  lurek.log.debug("typeOf LIsoMap: " .. tostring(obj:typeOf("LIsoMap")), "example") -- true
-end
-```
-
-### `LLargeMapRenderer`
+### LLargeMapRenderer
 
 Lua-side handle wrapping a `LargeMapRenderer` for chunk-based rendering of very large tile maps with LOD support.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side handle wrapping a `LargeMapRenderer` for chunk-based rendering of very large tile maps with LOD support.
+---@class LLargeMapRenderer
+LLargeMapRenderer = {}
+```
 
 #### Example
 
@@ -2139,398 +1281,17 @@ do
 end
 ```
 
-### `LLargeMapRenderer:getChunkSize() -> integer`
-
-Returns the current chunk size. This method is available to Lua scripts.
-
-**Returns**: `integer` - Chunk size in tiles per side.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
-  lmr:setChunkSize(16)
-  lurek.log.info("chunk_size=" .. lmr:getChunkSize(), "tilemap")
-end
-```
-
-### `LLargeMapRenderer:getMapSize() -> integer`
-
-Returns the map dimensions in tiles.
-
-**Returns**: `integer` - Width in tiles.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
-  local data = {}; for i = 1, 10 * 10 do data[i] = 1 end
-  lmr:setMapData(data, 10, 10)
-  local w, h = lmr:getMapSize()
-  lurek.log.info("map size=" .. w .. "x" .. h, "tilemap")
-end
-```
-
-### `LLargeMapRenderer:getTile(x: integer, y: integer) -> integer`
-
-Returns the tile GID at a given position.
-
-**Parameters**
-
-- `x` (`integer`, required) - Column.
-- `y` (`integer`, required) - Row.
-
-**Returns**: `integer` - Tile GID.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local map = lurek.tilemap.newLargeMapRenderer(16, 16)
-  local tile_id = map:getTile(0, 0)
-  lurek.log.debug("tile at (0,0): " .. tostring(tile_id), "example")
-end
-```
-
-### `LLargeMapRenderer:getTilesetColumns() -> integer`
-
-Returns the tileset column count used for UV calculation.
-
-**Returns**: `integer` - Column count.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
-  lmr:setTilesetColumns(8)
-  lurek.log.info("tileset_cols=" .. lmr:getTilesetColumns(), "tilemap")
-end
-```
-
-### `LLargeMapRenderer:getTotalChunks() -> integer`
-
-Returns the total number of chunks in the map.
-
-**Returns**: `integer` - Total chunk count.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
-  local data = {}; for i = 1, 32 * 32 do data[i] = 1 end
-  lmr:setMapData(data, 32, 32)
-  lurek.log.info("total_chunks=" .. lmr:getTotalChunks(), "tilemap")
-end
-```
-
-### `LLargeMapRenderer:getVisibleChunks() -> integer`
-
-Returns the number of chunks currently visible in the viewport.
-
-**Returns**: `integer` - Visible chunk count.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
-  local data = {}; for i = 1, 32 * 32 do data[i] = 1 end
-  lmr:setMapData(data, 32, 32)
-  lmr:setCamera(0, 0, 1.0)
-  lmr:setViewport(800, 600)
-  lurek.log.info("visible_chunks=" .. lmr:getVisibleChunks(), "tilemap")
-end
-```
-
-### `LLargeMapRenderer:invalidateAll()`
-
-Marks all chunks as dirty, forcing a full rebuild on the next render.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
-  lmr:invalidateAll()
-  lurek.log.info("all chunks invalidated", "tilemap")
-end
-```
-
-### `LLargeMapRenderer:invalidateChunk(cx: integer, cy: integer)`
-
-Marks a specific chunk as dirty so it will be rebuilt on the next render.
-
-**Parameters**
-
-- `cx` (`integer`, required) - Chunk X index.
-- `cy` (`integer`, required) - Chunk Y index.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
-  local data = {}; for i = 1, 32 * 32 do data[i] = 1 end
-  lmr:setMapData(data, 32, 32)
-  lmr:setTile(5, 5, 2)
-  lmr:invalidateChunk(0, 0)
-  lurek.log.info("chunk (0,0) invalidated after tile edit", "tilemap")
-end
-```
-
-### `LLargeMapRenderer:isLodEnabled() -> boolean`
-
-Returns whether LOD rendering is currently enabled.
-
-**Returns**: `boolean` - True if LOD is enabled.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
-  lmr:setLodEnabled(false)
-  lurek.log.info("lod=" .. tostring(lmr:isLodEnabled()), "tilemap")
-end
-```
-
-### `LLargeMapRenderer:setCamera(x: number, y: number, zoom: number)`
-
-Sets the camera position and zoom level for determining visible chunks.
-
-**Parameters**
-
-- `x` (`number`, required) - Camera center X in world pixels.
-- `y` (`number`, required) - Camera center Y in world pixels.
-- `zoom` (`number`, required) - Zoom factor (1.0 = normal).
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
-  lmr:setCamera(128, 64, 2.0)
-  lmr:setViewport(800, 600)
-  lurek.log.info("camera at (128,64) zoom 2x", "tilemap")
-end
-```
-
-### `LLargeMapRenderer:setChunkSize(size: integer)`
-
-Sets the chunk size used for rendering subdivision.
-
-**Parameters**
-
-- `size` (`integer`, required) - Chunk size in tiles per side.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
-  lmr:setChunkSize(8)
-  lurek.log.info("chunk_size=" .. lmr:getChunkSize(), "tilemap")
-end
-```
-
-### `LLargeMapRenderer:setLodEnabled(enabled: boolean)`
-
-Enables or disables level-of-detail rendering for distant chunks.
-
-**Parameters**
-
-- `enabled` (`boolean`, required) - True to enable LOD.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
-  lmr:setLodEnabled(true)
-  lurek.log.info("lod_enabled=" .. tostring(lmr:isLodEnabled()), "tilemap")
-end
-```
-
-### `LLargeMapRenderer:setLodThresholds(levels: table)`
-
-Sets the zoom thresholds at which LOD levels change.
-
-**Parameters**
-
-- `levels` (`table`, required) - Array of zoom threshold values.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
-  lmr:setLodEnabled(true)
-  lmr:setLodThresholds({ 32, 64, 128 })
-  lurek.log.info("LOD thresholds configured", "tilemap")
-end
-```
-
-### `LLargeMapRenderer:setMapData(data: table, width: integer, height: integer)`
-
-Replaces all tile data with a flat array of GIDs for the given dimensions.
-
-**Parameters**
-
-- `data` (`table`, required) - Flat array of tile GIDs (row-major order).
-- `width` (`integer`, required) - Map width in tiles.
-- `height` (`integer`, required) - Map height in tiles.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Pattern tile data for a checkerboard effect:
-  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
-  local map_data = {}
-  for i = 1, 8 * 8 do map_data[i] = (i % 4) + 1 end
-  lmr:setMapData(map_data, 8, 8)
-  local w, h = lmr:getMapSize()
-  lurek.log.info("map loaded: " .. w .. "x" .. h, "tilemap")
-end
-```
-
-### `LLargeMapRenderer:setTile(x: integer, y: integer, tileId: integer)`
-
-Sets a single tile GID at a given position.
-
-**Parameters**
-
-- `x` (`integer`, required) - Column.
-- `y` (`integer`, required) - Row.
-- `tileId` (`integer`, required) - Tile GID to place.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local map = lurek.tilemap.newLargeMapRenderer(16, 16)
-  map:setTile(1, 1, 5)
-  lurek.log.debug("tile set at (1,1)", "example")
-end
-```
-
-### `LLargeMapRenderer:setTilesetColumns(cols: integer)`
-
-Sets the column count of the associated tileset atlas for UV calculation.
-
-**Parameters**
-
-- `cols` (`integer`, required) - Number of columns in the tileset image.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
-  lmr:setTilesetColumns(16)
-  lurek.log.info("tileset_cols=" .. lmr:getTilesetColumns(), "tilemap")
-end
-```
-
-### `LLargeMapRenderer:setViewport(w: number, h: number)`
-
-Sets the viewport dimensions for visibility calculations.
-
-**Parameters**
-
-- `w` (`number`, required) - Viewport width in pixels.
-- `h` (`number`, required) - Viewport height in pixels.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
-  lmr:setViewport(1280, 720)
-  lmr:setCamera(0, 0, 1.0)
-  lurek.log.info("viewport set 1280x720", "tilemap")
-end
-```
-
-### `LLargeMapRenderer:type() -> string`
-
-Returns the type name of this userdata.
-
-**Returns**: `string` - Always `"LLargeMapRenderer"`.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local obj = lurek.tilemap.newLargeMapRenderer(16, 16)
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LLargeMapRenderer"
-end
-```
-
-### `LLargeMapRenderer:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to check against.
-
-**Returns**: `boolean` - True if `name` is `"LLargeMapRenderer"` or `"Object"`.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local obj = lurek.tilemap.newLargeMapRenderer(16, 16)
-  lurek.log.debug("typeOf LLargeMapRenderer: " .. tostring(obj:typeOf("LLargeMapRenderer")), "example") -- true
-end
-```
-
-### `LMapBlock`
+### LMapBlock
 
 Lua-side handle wrapping a `MapBlock` used for procedural map generation. A block is a tile grid with edge-matching sides.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side handle wrapping a `MapBlock` used for procedural map generation. A block is a tile grid with edge-matching sides.
+---@class LMapBlock
+LMapBlock = {}
+```
 
 #### Example
 
@@ -2553,346 +1314,17 @@ do
 end
 ```
 
-### `LMapBlock:getDimensions() -> integer`
-
-Returns both width and height of the block in tiles.
-
-**Returns**: `integer` - Width.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local block = lurek.tilemap.newMapBlock(10, 6, 1, 2)
-  local w, h = block:getDimensions()
-  lurek.log.info("block " .. w .. "x" .. h, "tilemap")
-end
-```
-
-### `LMapBlock:getHeight() -> integer`
-
-Returns the block height in tiles. This method is available to Lua scripts.
-
-**Returns**: `integer` - Height.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local block = lurek.tilemap.newMapBlock(8, 12, 1, 4)
-  lurek.log.info("block height " .. block:getHeight() .. " tiles", "tilemap")
-end
-```
-
-### `LMapBlock:getHeightInSegments() -> integer`
-
-Returns the block height measured in segments.
-
-**Returns**: `integer` - Height in segments.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local block = lurek.tilemap.newMapBlock(8, 8, 1, 4)
-  lurek.log.info("block is " .. block:getHeightInSegments() .. " segments tall", "tilemap")
-end
-```
-
-### `LMapBlock:getLayerCount() -> integer`
-
-Returns the number of tile layers in this block.
-
-**Returns**: `integer` - Layer count.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local block = lurek.tilemap.newMapBlock(8, 8, 3, 4)
-  lurek.log.info("block has " .. block:getLayerCount() .. " layer(s)", "tilemap")
-end
-```
-
-### `LMapBlock:getName() -> string`
-
-Returns the block's name. This method is available to Lua scripts.
-
-**Returns**: `string` - Block name.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Identify which procedural block was placed during generation.
-  local block = lurek.tilemap.newMapBlock(8, 8, 1, 4)
-  block:setName("corridor_ew")
-  lurek.log.info("block name=" .. block:getName(), "tilemap")
-end
-```
-
-### `LMapBlock:getSegmentSize() -> integer`
-
-Returns the segment size used for edge matching.
-
-**Returns**: `integer` - Segment size in tiles.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local block = lurek.tilemap.newMapBlock(8, 8, 1, 4)
-  lurek.log.info("segment size = " .. block:getSegmentSize() .. " tiles", "tilemap")
-end
-```
-
-### `LMapBlock:getSide(edge: string, segment: integer) -> integer`
-
-Returns the side ID for an edge segment.
-
-**Parameters**
-
-- `edge` (`string`, required) - Edge direction: `"north"`, `"east"`, `"south"`, or `"west"`.
-- `segment` (`integer`, required) - Segment index along the edge (1-based).
-
-**Returns**: `integer` - Side identifier.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local block = lurek.tilemap.newMapBlock(8, 8, 1, 4)
-  block:setSide("north", 1, 7)
-  local id = block:getSide("north", 1)
-  lurek.log.info("north edge segment 1 connection id=" .. id, "tilemap")
-end
-```
-
-### `LMapBlock:getTile(layer: integer, x: integer, y: integer) -> integer`
-
-Returns the tile GID at a position within the block.
-
-**Parameters**
-
-- `layer` (`integer`, required) - Layer index (1-based).
-- `x` (`integer`, required) - Column (1-based).
-- `y` (`integer`, required) - Row (1-based).
-
-**Returns**: `integer` - Global tile ID.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
-  local data = {}; for i = 1, 4 * 4 do data[i] = i end
-  lmr:setMapData(data, 4, 4)
-  local id = lmr:getTile(1, 2)
-  lurek.log.info("tile(1,2)=" .. tostring(id), "tilemap")
-end
-```
-
-### `LMapBlock:getWeight() -> number`
-
-Returns the current selection weight.
-
-**Returns**: `number` - Weight value.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local block = lurek.tilemap.newMapBlock(8, 8, 1, 4)
-  if block:getWeight() < 1.0 then
-    lurek.log.warn("block '" .. block:getName() .. "' is rare", "tilemap")
-  end
-end
-```
-
-### `LMapBlock:getWidth() -> integer`
-
-Returns the block width in tiles. This method is available to Lua scripts.
-
-**Returns**: `integer` - Width.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local block = lurek.tilemap.newMapBlock(12, 8, 1, 4)
-  lurek.log.info("block width " .. block:getWidth() .. " tiles", "tilemap")
-end
-```
-
-### `LMapBlock:getWidthInSegments() -> integer`
-
-Returns the block width measured in segments.
-
-**Returns**: `integer` - Width in segments.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local block = lurek.tilemap.newMapBlock(8, 8, 1, 4)
-  lurek.log.info("block is " .. block:getWidthInSegments() .. " segments wide", "tilemap")
-end
-```
-
-### `LMapBlock:setName(name: string)`
-
-Sets the block's name for identification during map generation.
-
-**Parameters**
-
-- `name` (`string`, required) - Block name.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local block = lurek.tilemap.newMapBlock(8, 8, 1, 4)
-  block:setName("treasure_room")
-  lurek.log.info("named block: " .. block:getName(), "tilemap")
-end
-```
-
-### `LMapBlock:setSide(edge: string, segment: integer, sideId: integer)`
-
-Sets the side ID for an edge segment, used for edge matching in map generation.
-
-**Parameters**
-
-- `edge` (`string`, required) - Edge direction: `"north"`, `"east"`, `"south"`, or `"west"`.
-- `segment` (`integer`, required) - Segment index along the edge (1-based).
-- `sideId` (`integer`, required) - Side identifier for matching.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Define edge connection IDs for the generator to match adjacent blocks.
-  -- Blocks connect when their shared edge segments have matching side IDs.
-  local block = lurek.tilemap.newMapBlock(8, 8, 1, 4)
-  block:setSide("north", 1, 5)  -- north edge, segment 1, connection ID 5
-  lurek.log.info("block side set", "tilemap")
-end
-```
-
-### `LMapBlock:setTile(layer: integer, x: integer, y: integer, gid: integer)`
-
-Sets a tile GID at a position within the block.
-
-**Parameters**
-
-- `layer` (`integer`, required) - Layer index (1-based).
-- `x` (`integer`, required) - Column (1-based).
-- `y` (`integer`, required) - Row (1-based).
-- `gid` (`integer`, required) - Global tile ID.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
-  local data = {}; for i = 1, 8 * 8 do data[i] = 1 end
-  lmr:setMapData(data, 8, 8)
-  lmr:setTile(3, 2, 5)  -- column 3, row 2 (0-based) -> tile 5
-  lurek.log.info("tile(3,2)=" .. tostring(lmr:getTile(3, 2)), "tilemap")
-end
-```
-
-### `LMapBlock:setWeight(weight: number)`
-
-Sets the selection weight for this block during random placement.
-
-**Parameters**
-
-- `weight` (`number`, required) - Relative weight (higher = more likely to be chosen).
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Higher weight = more likely to appear in procedural generation.
-  -- Use low weights for rare special rooms (boss, treasure).
-  local block = lurek.tilemap.newMapBlock(8, 8, 1, 4)
-  block:setWeight(3.5)  -- 3.5x more common than weight=1 blocks
-  lurek.log.info("weight = " .. block:getWeight(), "tilemap")
-end
-```
-
-### `LMapBlock:type() -> string`
-
-Returns the type name of this userdata.
-
-**Returns**: `string` - Always `"LMapBlock"`.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local obj = lurek.tilemap.newMapBlock(16, 16)
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LMapBlock"
-end
-```
-
-### `LMapBlock:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to check against.
-
-**Returns**: `boolean` - True if `name` is `"LMapBlock"` or `"Object"`.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local obj = lurek.tilemap.newMapBlock(16, 16)
-  lurek.log.debug("typeOf LMapBlock: " .. tostring(obj:typeOf("LMapBlock")), "example") -- true
-end
-```
-
-### `LMapGen`
+### LMapGen
 
 Lua-side handle wrapping a `MapGen` procedural map generator that assembles blocks into a tilemap.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side handle wrapping a `MapGen` procedural map generator that assembles blocks into a tilemap.
+---@class LMapGen
+LMapGen = {}
+```
 
 #### Example
 
@@ -2911,77 +1343,17 @@ do
 end
 ```
 
-### `LMapGen:generate([scriptIdx]: integer, [seed]: integer, [layerName]: string) -> LTileMap`
-
-Runs the map generator, optionally using a specific script, seed, and layer name, returning a new tilemap.
-
-**Parameters**
-
-- `scriptIdx` (`integer`, optional) - Script index in the group (1-based), or nil for default.
-- `seed` (`integer`, optional) - Random seed, or nil for random.
-- `layerName` (`string`, optional) - Output layer name (default `"main"`).
-
-**Returns**: `LTileMap` - Generated tilemap.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- generate(scriptIdx, seed, layerName) -> LTileMap
-  -- scriptIdx = which script to run (nil = default)
-  -- seed = deterministic random seed (nil = random)
-  -- layerName = output layer name (default "main")
-  local grp = lurek.tilemap.newMapGroup("dungeon")
-  grp:addBlock(lurek.tilemap.newMapBlock(8, 8, 1, 4))
-  local gen = lurek.tilemap.newMapGen(grp, "medium", 4)
-  local tm = gen:generate(nil, 42)
-  lurek.log.info("dungeon generated with seed 42", "tilemap")
-end
-```
-
-### `LMapGen:type() -> string`
-
-Returns the type name of this userdata.
-
-**Returns**: `string` - Always `"LMapGen"`.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
-  lurek.log.info("LargeMapRenderer:type = " .. lmr:type(), "tilemap")
-end
-```
-
-### `LMapGen:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to check against.
-
-**Returns**: `boolean` - True if `name` is `"LMapGen"` or `"Object"`.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
-  lurek.log.info("is LLargeMapRenderer: " .. tostring(lmr:typeOf("LLargeMapRenderer")), "tilemap")
-end
-```
-
-### `LMapGroup`
+### LMapGroup
 
 Lua-side handle wrapping a `MapGroup` that holds a collection of map blocks and generation scripts.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side handle wrapping a `MapGroup` that holds a collection of map blocks and generation scripts.
+---@class LMapGroup
+LMapGroup = {}
+```
 
 #### Example
 
@@ -2996,168 +1368,17 @@ do
 end
 ```
 
-### `LMapGroup:addBlock(block: LMapBlock)`
-
-Adds a map block to this group for use in generation.
-
-**Parameters**
-
-- `block` (`LMapBlock`, required) - Block to add.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Build a group with multiple room variants for the generator to pick from.
-  local group = lurek.tilemap.newMapGroup("rooms")
-  group:addBlock(lurek.tilemap.newMapBlock(8, 8, 1, 4))
-  group:addBlock(lurek.tilemap.newMapBlock(12, 8, 1, 4))
-  lurek.log.info("group has " .. group:getBlockCount() .. " blocks", "tilemap")
-end
-```
-
-### `LMapGroup:addScript(script: LMapScript)`
-
-Attaches a map-generation script to this group.
-
-**Parameters**
-
-- `script` (`LMapScript`, required) - Script to add.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Attach generation scripts that run post-processing after block placement.
-  local group = lurek.tilemap.newMapGroup("rooms")
-  local script = lurek.tilemap.newMapScript()
-  script:addStep({ type = "fillRandom", gid = 1, chance = 0.2 })
-  group:addScript(script)
-end
-```
-
-### `LMapGroup:getBlockCount() -> integer`
-
-Returns how many blocks are in this group.
-
-**Returns**: `integer` - Block count.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local group = lurek.tilemap.newMapGroup("rooms")
-  group:addBlock(lurek.tilemap.newMapBlock(8, 8, 1, 4))
-  if group:getBlockCount() == 0 then
-    lurek.log.error("group '" .. group:getName() .. "' is empty", "tilemap")
-  end
-end
-```
-
-### `LMapGroup:getName() -> string`
-
-Returns the group name. This method is available to Lua scripts.
-
-**Returns**: `string` - Group name.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local group = lurek.tilemap.newMapGroup("dungeon_floor_1")
-  lurek.log.info("active group: " .. group:getName(), "tilemap")
-end
-```
-
-### `LMapGroup:getScriptCount() -> integer`
-
-Returns how many scripts are attached to this group.
-
-**Returns**: `integer` - Script count.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local group = lurek.tilemap.newMapGroup("rooms")
-  group:addScript(lurek.tilemap.newMapScript())
-  lurek.log.info("group has " .. group:getScriptCount() .. " script(s)", "tilemap")
-end
-```
-
-### `LMapGroup:removeBlock(idx: integer)`
-
-Removes a block from the group by index.
-
-**Parameters**
-
-- `idx` (`integer`, required) - Block index (1-based).
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Remove blocks by index (e.g. disabling a room type at runtime).
-  local group = lurek.tilemap.newMapGroup("rooms")
-  group:addBlock(lurek.tilemap.newMapBlock(8, 8, 1, 4))
-  group:addBlock(lurek.tilemap.newMapBlock(12, 8, 1, 4))
-  group:removeBlock(1)  -- drop first block
-end
-```
-
-### `LMapGroup:type() -> string`
-
-Returns the type name of this userdata.
-
-**Returns**: `string` - Always `"LMapGroup"`.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local obj = lurek.tilemap.newMapGroup("test_group")
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LMapGroup"
-end
-```
-
-### `LMapGroup:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to check against.
-
-**Returns**: `boolean` - True if `name` is `"LMapGroup"` or `"Object"`.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local obj = lurek.tilemap.newMapGroup("test_group")
-  lurek.log.debug("typeOf LMapGroup: " .. tostring(obj:typeOf("LMapGroup")), "example") -- true
-end
-```
-
-### `LMapScript`
+### LMapScript
 
 Lua-side handle wrapping a `MapScript` that defines a sequence of procedural generation steps.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side handle wrapping a `MapScript` that defines a sequence of procedural generation steps.
+---@class LMapScript
+LMapScript = {}
+```
 
 #### Example
 
@@ -3173,88 +1394,17 @@ do
 end
 ```
 
-### `LMapScript:addStep(stepDef: table)`
-
-Appends a generation step. The step table must have a `type` field and optional parameters.
-
-**Parameters**
-
-- `stepDef` (`table`, required) - Step definition with `type` and parameters like `x`, `y`, `w`, `h`, `gid`, `chance`, etc.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Steps define procedural operations: fill, carve, scatter, path drawing.
-  -- Each step is a table with a "type" field and operation-specific params.
-  local script = lurek.tilemap.newMapScript()
-  script:addStep({ type = "fillRect", x = 0, y = 0, w = 16, h = 16, gid = 1 })
-  script:addStep({ type = "drawPath", x = 1, y = 1, w = 14, h = 14, gid = 2, pathWidth = 2 })
-  lurek.log.info("authored " .. script:getStepCount() .. " step(s)", "tilemap")
-end
-```
-
-### `LMapScript:getStepCount() -> integer`
-
-Returns the number of generation steps in this script.
-
-**Returns**: `integer` - Step count.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local script = lurek.tilemap.newMapScript()
-  script:addStep({ type = "fillArea", x = 1, y = 1, w = 8, h = 8, gid = 1 })
-  lurek.log.info("script step count: " .. script:getStepCount(), "tilemap")
-end
-```
-
-### `LMapScript:type() -> string`
-
-Returns the type name of this userdata.
-
-**Returns**: `string` - Always `"LMapScript"`.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local obj = lurek.tilemap.newMapScript()
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LMapScript"
-end
-```
-
-### `LMapScript:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to check against.
-
-**Returns**: `boolean` - True if `name` is `"LMapScript"` or `"Object"`.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local obj = lurek.tilemap.newMapScript()
-  lurek.log.debug("typeOf LMapScript: " .. tostring(obj:typeOf("LMapScript")), "example") -- true
-end
-```
-
-### `LTileMap`
+### LTileMap
 
 Lua-side handle wrapping a `TileMap` with layers, tile data, collision, viewports, auto-tiling, and tile callbacks.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side handle wrapping a `TileMap` with layers, tile data, collision, viewports, auto-tiling, and tile callbacks.
+---@class LTileMap
+LTileMap = {}
+```
 
 #### Example
 
@@ -3311,1230 +1461,17 @@ do
 end
 ```
 
-### `LTileMap:addLayer(name: string, w: integer, h: integer) -> integer`
-
-Creates a new tile layer with the given name and dimensions.
-
-**Parameters**
-
-- `name` (`string`, required) - Layer name.
-- `w` (`integer`, required) - Width in tiles.
-- `h` (`integer`, required) - Height in tiles.
-
-**Returns**: `integer` - Index of the new layer (1-based).
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Layers stack visually: lower index = drawn first (further back).
-  -- Common pattern: background, main terrain, collision, foreground overlay.
-  local map = lurek.tilemap.newTileMap(16, 16)
-  local bg = map:addLayer("background", 64, 64)
-  local fg = map:addLayer("collision", 64, 64)
-  lurek.log.info("background=layer" .. bg .. " collision=layer" .. fg, "tilemap")
-end
-```
-
-### `LTileMap:addTileSet(tileSet: LTileSet)`
-
-Attaches a tileset to this map for tile rendering.
-
-**Parameters**
-
-- `tileSet` (`LTileSet`, required) - Tileset to add.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Attach tilesets so the map knows which atlas to use for rendering.
-  -- Multiple tilesets can be attached (terrain + props + characters).
-  local map = lurek.tilemap.newTileMap(16, 16)
-  local terrain = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
-  map:addTileSet(terrain)
-  lurek.log.info("map now has " .. map:getTileSetCount() .. " tileset(s)", "tilemap")
-end
-```
-
-### `LTileMap:applyAutoTile(layer: integer, typeName: string)`
-
-Runs 4-bit auto-tiling on an entire layer, replacing tiles according to registered rules.
-
-**Parameters**
-
-- `layer` (`integer`, required) - Layer index (1-based).
-- `typeName` (`string`, required) - Tile type name whose rules to apply.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Run 4-bit auto-tiling on an entire layer. Each tile is replaced by
-  -- the correct variant based on its N/E/S/W neighbors and the registered rules.
-  -- Call after bulk map edits (loading, generation).
-  local map = lurek.tilemap.newTileMap(16, 16)
-  map:addLayer("terrain", 16, 16)
-  map:fill(1, 1)
-  map:applyAutoTile(1, "terrain")
-  lurek.log.info("4-bit auto-tile applied to full layer", "tilemap")
-end
-```
-
-### `LTileMap:applyAutoTile8(layer: integer, typeName: string)`
-
-Runs 8-bit auto-tiling on an entire layer, considering diagonal neighbors.
-
-**Parameters**
-
-- `layer` (`integer`, required) - Layer index (1-based).
-- `typeName` (`string`, required) - Tile type name whose rules to apply.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- 8-bit auto-tiling considers diagonal neighbors for smoother transitions.
-  -- More expensive but produces nicer-looking terrain borders.
-  local map = lurek.tilemap.newTileMap(16, 16)
-  map:addLayer("terrain", 16, 16)
-  map:fill(1, 1)
-  map:applyAutoTile8(1, "terrain")
-  lurek.log.info("8-bit auto-tile applied to full layer", "tilemap")
-end
-```
-
-### `LTileMap:applyAutoTile8At(layer: integer, x: integer, y: integer, typeName: string)`
-
-Runs 8-bit auto-tiling at a single tile position and updates it and its neighbors.
-
-**Parameters**
-
-- `layer` (`integer`, required) - Layer index (1-based).
-- `x` (`integer`, required) - Column (1-based).
-- `y` (`integer`, required) - Row (1-based).
-- `typeName` (`string`, required) - Tile type name whose rules to apply.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- 8-bit single-cell update (diagonal-aware version of applyAutoTileAt).
-  local map = lurek.tilemap.newTileMap(16, 16, 16)
-  map:addLayer("terrain", 20, 20)
-  map:setTile(1, 5, 5, 1)
-  map:applyAutoTile8At(1, 5, 5, "terrain")
-  lurek.log.info("8-bit auto-tile updated at (5,5)", "tilemap")
-end
-```
-
-### `LTileMap:applyAutoTileAt(layer: integer, x: integer, y: integer, typeName: string)`
-
-Runs 4-bit auto-tiling at a single tile position and updates it and its neighbors.
-
-**Parameters**
-
-- `layer` (`integer`, required) - Layer index (1-based).
-- `x` (`integer`, required) - Column (1-based).
-- `y` (`integer`, required) - Row (1-based).
-- `typeName` (`string`, required) - Tile type name whose rules to apply.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Update auto-tiling at a single position and its neighbors.
-  -- Use after placing/removing individual tiles (real-time editing).
-  -- Much cheaper than re-tiling the entire layer.
-  local map = lurek.tilemap.newTileMap(16, 16)
-  map:addLayer("terrain", 16, 16)
-  map:setTile(1, 8, 8, 1)
-  map:applyAutoTileAt(1, 8, 8, "terrain")
-  lurek.log.info("auto-tile updated at (8,8) and neighbors", "tilemap")
-end
-```
-
-### `LTileMap:checkEntities(layer: integer, entities: table)`
-
-Checks a list of entities against registered tile-enter callbacks on a layer.
-
-**Parameters**
-
-- `layer` (`integer`, required) - Layer index (1-based).
-- `entities` (`table`, required) - Array of entity tables, each with `x`/`y` or `[1]`/`[2]` fields.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Call each frame with your entity list to trigger enter/step/exit callbacks.
-  -- Each entity needs x,y fields (world-space pixel position).
-  local map = lurek.tilemap.newTileMap(16, 16)
-  map:addLayer("triggers", 16, 16)
-  map:onTileStep(1, function(entity, tx, ty)
-    lurek.log.info("overlap at " .. tx .. "," .. ty, "tilemap")
-  end)
-  map:checkEntities(1, { { x = 40, y = 40 } })
-  lurek.log.info("entities checked against tile callbacks", "tilemap")
-end
-```
-
-### `LTileMap:clearTile(layer: integer, x: integer, y: integer)`
-
-Removes the tile at a specific grid position, setting it to empty (GID 0).
-
-**Parameters**
-
-- `layer` (`integer`, required) - Layer index (1-based).
-- `x` (`integer`, required) - Column (1-based).
-- `y` (`integer`, required) - Row (1-based).
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Destroy a wall tile when player uses a bomb.
-  local map = lurek.tilemap.newTileMap(16, 16)
-  map:addLayer("walls", 16, 16)
-  map:setTile(1, 8, 8, 5)
-  map:clearTile(1, 8, 8)
-  lurek.log.info("wall destroyed at (8,8)", "tilemap")
-end
-```
-
-### `LTileMap:drawToImage(tileSize: integer) -> LImage`
-
-Rasterizes the map into an image using the given tile size, returning an image handle.
-
-**Parameters**
-
-- `tileSize` (`integer`, required) - Pixel size of each tile in the output image.
-
-**Returns**: `LImage` - Rasterized image of the map.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Rasterize the map into an image for minimap thumbnails or screenshots.
-  -- tileSize = pixel size per tile in the output image (2 = tiny preview).
-  local map = lurek.tilemap.newTileMap(16, 16)
-  map:addLayer("background", 32, 32)
-  local thumb = map:drawToImage(2)
-  lurek.log.info("rendered map preview to ImageData", "tilemap")
-end
-```
-
-### `LTileMap:fill(layer: integer, gid: integer)`
-
-Fills every cell of a layer with the given GID.
-
-**Parameters**
-
-- `layer` (`integer`, required) - Layer index (1-based).
-- `gid` (`integer`, required) - Global tile ID to fill with.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Fill an entire layer with a single GID. Useful for initialization.
-  local map = lurek.tilemap.newTileMap(16, 16)
-  local bg = map:addLayer("background", 32, 32)
-  map:fill(bg, 1)  -- gid 1 = grass tile everywhere
-  lurek.log.info("background filled with grass", "tilemap")
-end
-```
-
-### `LTileMap:findTilesByGid(layer: integer, gid: integer) -> table`
-
-Returns all positions on a layer that contain a specific GID.
-
-**Parameters**
-
-- `layer` (`integer`, required) - Layer index (1-based).
-- `gid` (`integer`, required) - Global tile ID to search for.
-
-**Returns**: `table` - Array of `{x=number, y=number}` positions.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Simpler than tileTypeIndex when you only need positions for one GID.
-  -- Returns an array of {x=number, y=number}.
-  local map = lurek.tilemap.newTileMap(16, 16, 8)
-  map:addLayer("ground", 4, 4)
-  map:setTile(1, 1, 1, 3)
-  map:setTile(1, 3, 3, 3)
-  local pos = map:findTilesByGid(1, 3)
-  lurek.log.info("found gid=3 at " .. #pos .. " positions", "tilemap")
-end
-```
-
-### `LTileMap:fireTileExit(gid: integer, entity: table, tx: integer, ty: integer)`
-
-Manually fires the tile-exit callback for a specific GID and entity at a tile position.
-
-**Parameters**
-
-- `gid` (`integer`, required) - Global tile ID.
-- `entity` (`table`, required) - Entity table to pass to the callback.
-- `tx` (`integer`, required) - Tile column.
-- `ty` (`integer`, required) - Tile row.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Manually fire a tile exit callback.
-  local map = lurek.tilemap.newTileMap(16, 16)
-  map:fireTileExit(5, { id = "player", x = 64, y = 64 }, 2, 3)
-  lurek.log.debug("fireTileExit manually called", "tilemap")
-end
-```
-
-### `LTileMap:fireTileStep(gid: integer, entity: table, tx: integer, ty: integer)`
-
-Manually fires the tile-step callback for a specific GID and entity at a tile position.
-
-**Parameters**
-
-- `gid` (`integer`, required) - Global tile ID.
-- `entity` (`table`, required) - Entity table to pass to the callback.
-- `tx` (`integer`, required) - Tile column.
-- `ty` (`integer`, required) - Tile row.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Manually fire a tile step callback (useful for scripted triggers).
-  local map = lurek.tilemap.newTileMap(16, 16)
-  map:fireTileStep(5, { id = "player", x = 64, y = 64 }, 2, 3)
-  lurek.log.debug("fireTileStep manually called", "tilemap")
-end
-```
-
-### `LTileMap:getChunkSize() -> integer`
-
-Returns the chunk size used for internal tile storage.
-
-**Returns**: `integer` - Chunk size in tiles per side.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Log storage parameters for debugging memory usage.
-  local map = lurek.tilemap.newTileMap(16, 16, 64)
-  lurek.log.info("internal chunk=" .. map:getChunkSize() .. " tiles/side", "tilemap")
-end
-```
-
-### `LTileMap:getLayerColor(idx: integer) -> number`
-
-Returns the tint color of a layer as four RGBA components.
-
-**Parameters**
-
-- `idx` (`integer`, required) - Layer index (1-based).
-
-**Returns**: `number` - Red (0..1).
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Layer tint is RGBA (0..1). Use for time-of-day or mood lighting.
-  local map = lurek.tilemap.newTileMap(16, 16)
-  map:addLayer("background", 32, 32)
-  local r, g, b, a = map:getLayerColor(1)
-  lurek.log.info("background tint rgba=" .. r .. "," .. g .. "," .. b .. "," .. a, "tilemap")
-end
-```
-
-### `LTileMap:getLayerCount() -> integer`
-
-Returns the total number of layers in this map.
-
-**Returns**: `integer` - Layer count.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Iterate all layers for serialization.
-  local map = lurek.tilemap.newTileMap(16, 16)
-  map:addLayer("bg", 32, 32)
-  map:addLayer("fg", 32, 32)
-  lurek.log.info("total layers=" .. map:getLayerCount(), "tilemap")
-end
-```
-
-### `LTileMap:getLayerName(idx: integer) -> string`
-
-Returns the name of a layer by index.
-
-**Parameters**
-
-- `idx` (`integer`, required) - Layer index (1-based).
-
-**Returns**: `string` - Layer name, or nil if index is out of range.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Find a layer by name (useful when loading TMX where indices may vary).
-  local map = lurek.tilemap.newTileMap(16, 16)
-  map:addLayer("collision", 32, 32)
-  local name = map:getLayerName(1)
-  if name == "collision" then
-    lurek.log.info("layer 1 is the collision layer", "tilemap")
-  end
-end
-```
-
-### `LTileMap:getLayerOffset(idx: integer) -> number`
-
-Returns the pixel offset of a layer.
-
-**Parameters**
-
-- `idx` (`integer`, required) - Layer index (1-based).
-
-**Returns**: `number` - Horizontal offset.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local map = lurek.tilemap.newTileMap(16, 16)
-  map:addLayer("background", 32, 32)
-  local ox, oy = map:getLayerOffset(1)
-  lurek.log.info("layer offset px=(" .. ox .. ", " .. oy .. ")", "tilemap")
-end
-```
-
-### `LTileMap:getLayerParallax(idx: integer) -> number`
-
-Returns the parallax scroll factor of a layer.
-
-**Parameters**
-
-- `idx` (`integer`, required) - Layer index (1-based).
-
-**Returns**: `number` - Horizontal parallax factor.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local map = lurek.tilemap.newTileMap(16, 16)
-  map:addLayer("clouds", 64, 32)
-  local px, py = map:getLayerParallax(1)
-  lurek.log.info("clouds parallax=(" .. px .. ", " .. py .. ")", "tilemap")
-end
-```
-
-### `LTileMap:getLayerVisible(idx: integer) -> boolean`
-
-Returns whether a layer is currently visible.
-
-**Parameters**
-
-- `idx` (`integer`, required) - Layer index (1-based).
-
-**Returns**: `boolean` - True if the layer is visible.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local map = lurek.tilemap.newTileMap(16, 16)
-  map:addLayer("collision", 32, 32)
-  if not map:getLayerVisible(1) then
-    lurek.log.warn("collision layer is hidden", "tilemap")
-  end
-end
-```
-
-### `LTileMap:getOrientation() -> string`
-
-Returns the current map orientation as a string.
-
-**Returns**: `string` - One of `"topdown"`, `"sideview"`, `"isometric"`, `"hexagonal"`.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Orientation affects coordinate transforms and rendering order.
-  -- Values: "topdown", "sideview", "isometric", "hexagonal".
-  local map = lurek.tilemap.newTileMap(16, 16)
-  local o = map:getOrientation()
-  if o == "topdown" then
-    lurek.log.info("using top-down 4-way movement", "input")
-  end
-end
-```
-
-### `LTileMap:getTile(layer: integer, x: integer, y: integer) -> integer`
-
-Returns the tile GID at a specific grid position on a layer.
-
-**Parameters**
-
-- `layer` (`integer`, required) - Layer index (1-based).
-- `x` (`integer`, required) - Column (1-based).
-- `y` (`integer`, required) - Row (1-based).
-
-**Returns**: `integer` - Global tile ID at that position.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Check if a position already has a tile before placing.
-  local map = lurek.tilemap.newTileMap(16, 16)
-  map:addLayer("ground", 16, 16)
-  local gid = map:getTile(1, 5, 5)
-  lurek.log.info("tile at (5,5) gid=" .. gid, "tilemap")
-end
-```
-
-### `LTileMap:getTileDimensions() -> integer`
-
-Returns both tile width and height in pixels.
-
-**Returns**: `integer` - Tile width.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local map = lurek.tilemap.newTileMap(16, 16)
-  local tw, th = map:getTileDimensions()
-  lurek.log.info("tile size " .. tw .. "x" .. th, "tilemap")
-end
-```
-
-### `LTileMap:getTileHeight() -> integer`
-
-Returns the height of a single tile in pixels for this map.
-
-**Returns**: `integer` - Tile height in pixels.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Calculate entity snap-to-grid offset.
-  local map = lurek.tilemap.newTileMap(16, 24)
-  lurek.log.info("row height=" .. map:getTileHeight() .. " px", "tilemap")
-end
-```
-
-### `LTileMap:getTileSet(idx: integer) -> LTileSet`
-
-Returns the tileset at the given index.
-
-**Parameters**
-
-- `idx` (`integer`, required) - Tileset index (1-based).
-
-**Returns**: `LTileSet` - The tileset, or nil if index is out of range.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local map = lurek.tilemap.newTileMap(16, 16)
-  map:addTileSet(lurek.tilemap.newTileSet(1, 64, 8, 16, 16))
-  local ts = map:getTileSet(1)
-  if ts then
-    lurek.log.info("first tileset has " .. ts:getTileCount() .. " tiles", "tilemap")
-  end
-end
-```
-
-### `LTileMap:getTileSetCount() -> integer`
-
-Returns how many tilesets are attached to this map.
-
-**Returns**: `integer` - Tileset count.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local map = lurek.tilemap.newTileMap(16, 16)
-  map:addTileSet(lurek.tilemap.newTileSet(1, 32, 8, 16, 16))
-  map:addTileSet(lurek.tilemap.newTileSet(33, 32, 8, 16, 16))
-  lurek.log.info("tilesets attached: " .. map:getTileSetCount(), "tilemap")
-end
-```
-
-### `LTileMap:getTileWidth() -> integer`
-
-Returns the width of a single tile in pixels for this map.
-
-**Returns**: `integer` - Tile width in pixels.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Calculate world-space position from tile coordinate.
-  local map = lurek.tilemap.newTileMap(32, 32)
-  local px = 5 * map:getTileWidth()
-  lurek.log.info("tile col 5 starts at x=" .. px, "tilemap")
-end
-```
-
-### `LTileMap:getViewport() -> number`
-
-Returns the current viewport rectangle, or nils if none is set.
-
-**Returns**: `number` - Left edge.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local map = lurek.tilemap.newTileMap(16, 16)
-  local x, y, w, h = map:getViewport()
-  if x == nil then
-    lurek.log.info("no viewport set, will render full map", "tilemap")
-  end
-end
-```
-
-### `LTileMap:isSolid(layer: integer, x: integer, y: integer) -> boolean`
-
-Checks whether the tile at a given position on a layer is solid.
-
-**Parameters**
-
-- `layer` (`integer`, required) - Layer index (1-based).
-- `x` (`integer`, required) - Column (1-based).
-- `y` (`integer`, required) - Row (1-based).
-
-**Returns**: `boolean` - True if the tile at that position is marked solid.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Quick point check: is the tile at (x,y) marked solid?
-  -- Relies on the attached tileset's setSolid() configuration.
-  local map = lurek.tilemap.newTileMap(16, 16)
-  local layer = map:addLayer("collision", 32, 32)
-  if map:isSolid(layer, 4, 4) then
-    lurek.log.info("(4,4) blocks movement", "physics")
-  end
-end
-```
-
-### `LTileMap:onTileEnter(gid: integer, func: function)`
-
-Registers a callback invoked when an entity enters a tile with the given GID.
-
-**Parameters**
-
-- `gid` (`integer`, required) - Global tile ID to watch for.
-- `func` (`function`, required) - Callback receiving `(wx, wy, tx, ty)`.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Register a callback for when an entity first enters a tile with this GID.
-  -- Use for: traps, collectibles, zone transitions, lava damage on entry.
-  local map = lurek.tilemap.newTileMap(16, 16)
-  map:addLayer("triggers", 32, 32)
-  map:onTileEnter(5, function(wx, wy, tx, ty)
-    lurek.log.info("entity entered trigger tile at (" .. tx .. "," .. ty .. ")", "tilemap")
-  end)
-  lurek.log.info("tile enter callback registered for gid=5", "tilemap")
-end
-```
-
-### `LTileMap:onTileExit(gid: integer, func: function)`
-
-Registers a callback invoked when an entity leaves a tile with the given GID.
-
-**Parameters**
-
-- `gid` (`integer`, required) - Global tile ID to watch for.
-- `func` (`function`, required) - Callback receiving `(entity, tx, ty)`.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- onTileExit fires when an entity leaves a tile. Use for cleanup:
-  -- stop damage-over-time, remove status effects applied on enter.
-  local map = lurek.tilemap.newTileMap(16, 16)
-  map:onTileExit(5, function(entity, tx, ty)
-    lurek.log.debug("entity exited gid=5 at " .. tx .. "," .. ty, "tilemap")
-  end)
-end
-```
-
-### `LTileMap:onTileStep(gid: integer, func: function)`
-
-Registers a callback invoked each frame an entity remains on a tile with the given GID.
-
-**Parameters**
-
-- `gid` (`integer`, required) - Global tile ID to watch for.
-- `func` (`function`, required) - Callback receiving `(entity, tx, ty)`.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- onTileStep fires every frame an entity remains on the tile.
-  -- Use for: continuous damage (poison swamp), slowing effects, particle spawning.
-  local map = lurek.tilemap.newTileMap(16, 16)
-  map:onTileStep(5, function(entity, tx, ty)
-    lurek.log.debug("entity stepping on gid=5 at " .. tx .. "," .. ty, "tilemap")
-  end)
-end
-```
-
-### `LTileMap:rectOverlapsSolid(layer: integer, x: number, y: number, w: number, h: number) -> boolean`
-
-Tests whether a world-space rectangle overlaps any solid tile on a layer.
-
-**Parameters**
-
-- `layer` (`integer`, required) - Layer index (1-based).
-- `x` (`number`, required) - Rectangle left edge in world pixels.
-- `y` (`number`, required) - Rectangle top edge in world pixels.
-- `w` (`number`, required) - Rectangle width in pixels.
-- `h` (`number`, required) - Rectangle height in pixels.
-
-**Returns**: `boolean` - True if any solid tile is overlapped.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Test if a world-space AABB overlaps any solid tile. Use for:
-  -- - Broad-phase collision before precise checks
-  -- - Validating placement positions (can a building fit here?)
-  local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
-  ts:setSolid(1, true)
-  local map = lurek.tilemap.newTileMap(16, 16)
-  map:addLayer("collision", 32, 32)
-  map:setTile(1, 3, 3, 1)
-  local hit = map:rectOverlapsSolid(1, 32, 32, 16, 16)
-  lurek.log.info("rect overlap with solid: " .. tostring(hit), "tilemap")
-end
-```
-
-### `LTileMap:render([ox]: number, [oy]: number)`
-
-Submits render commands for all visible tiles, optionally offset by a scroll position.
-
-**Parameters**
-
-- `ox` (`number`, optional) - Horizontal scroll offset (default 0).
-- `oy` (`number`, optional) - Vertical scroll offset (default 0).
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Call in lurek.draw(). Pass negative camera offset so the world
-  -- scrolls in the opposite direction of camera movement.
-  local map = lurek.tilemap.newTileMap(16, 16)
-  map:addLayer("background", 32, 32)
-  local cam_x, cam_y = 0, 0
-  function lurek.draw() map:render(-cam_x, -cam_y) end
-end
-```
-
-### `LTileMap:setLayerColor(idx: integer, r: number, g: number, b: number, a: number)`
-
-Sets the tint color for an entire layer.
-
-**Parameters**
-
-- `idx` (`integer`, required) - Layer index (1-based).
-- `r` (`number`, required) - Red channel (0..1).
-- `g` (`number`, required) - Green channel (0..1).
-- `b` (`number`, required) - Blue channel (0..1).
-- `a` (`number`, required) - Alpha channel (0..1).
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Tint the background layer blue for a nighttime mood.
-  local map = lurek.tilemap.newTileMap(16, 16)
-  local bgLayer = map:addLayer("background", 16, 16)
-  map:setLayerColor(bgLayer, 0.7, 0.8, 1.0, 1.0)
-  lurek.log.info("background tinted blue for night scene", "tilemap")
-end
-```
-
-### `LTileMap:setLayerOffset(idx: integer, ox: number, oy: number)`
-
-Sets the pixel offset for a layer, shifting all tiles during rendering.
-
-**Parameters**
-
-- `idx` (`integer`, required) - Layer index (1-based).
-- `ox` (`number`, required) - Horizontal offset in pixels.
-- `oy` (`number`, required) - Vertical offset in pixels.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Offset a decal layer by half-tile to overlay between grid cells.
-  local map = lurek.tilemap.newTileMap(16, 16)
-  local decalLayer = map:addLayer("decals", 16, 16)
-  map:setLayerOffset(decalLayer, 4, -2)
-  lurek.log.info("decal layer offset by (4,-2) px", "tilemap")
-end
-```
-
-### `LTileMap:setLayerParallax(idx: integer, px: number, py: number)`
-
-Sets the parallax scroll factor for a layer. Values less than 1 scroll slower than the camera.
-
-**Parameters**
-
-- `idx` (`integer`, required) - Layer index (1-based).
-- `px` (`number`, required) - Horizontal parallax factor.
-- `py` (`number`, required) - Vertical parallax factor.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Values < 1 make the layer scroll slower than the camera (depth illusion).
-  -- 0.4 = layer moves at 40% of camera speed -> appears far away.
-  local map = lurek.tilemap.newTileMap(16, 16)
-  local hillLayer = map:addLayer("bg_hills", 16, 16)
-  map:setLayerParallax(hillLayer, 0.4, 0.0)
-  lurek.log.info("hills parallax set for depth effect", "tilemap")
-end
-```
-
-### `LTileMap:setLayerVisible(idx: integer, visible: boolean)`
-
-Sets whether a layer is drawn during rendering.
-
-**Parameters**
-
-- `idx` (`integer`, required) - Layer index (1-based).
-- `visible` (`boolean`, required) - True to show, false to hide.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Hide debug/collision layers in release builds, show them with a hotkey.
-  local map = lurek.tilemap.newTileMap(16, 16)
-  local dbgLayer = map:addLayer("collision_debug", 16, 16)
-  map:setLayerVisible(dbgLayer, false)
-  lurek.log.info("debug layer hidden", "tilemap")
-end
-```
-
-### `LTileMap:setOrientation(orientation: string)`
-
-Sets the map orientation, affecting coordinate transforms and rendering.
-
-**Parameters**
-
-- `orientation` (`string`, required) - One of `"topdown"`, `"sideview"`, `"isometric"`, `"hexagonal"`.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Switch orientation for different game views.
-  local map = lurek.tilemap.newTileMap(64, 32)
-  map:setOrientation("isometric")
-  lurek.log.info("orientation now " .. map:getOrientation(), "tilemap")
-end
-```
-
-### `LTileMap:setTile(layer: integer, x: integer, y: integer, gid: integer)`
-
-Sets the tile GID at a specific grid position on a layer.
-
-**Parameters**
-
-- `layer` (`integer`, required) - Layer index (1-based).
-- `x` (`integer`, required) - Column (1-based).
-- `y` (`integer`, required) - Row (1-based).
-- `gid` (`integer`, required) - Global tile ID to place.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Place a chest tile at the end of a corridor.
-  local map = lurek.tilemap.newTileMap(16, 16)
-  map:addLayer("objects", 20, 20)
-  map:setTile(1, 10, 10, 42)
-  lurek.log.info("chest placed at (10,10)", "tilemap")
-end
-```
-
-### `LTileMap:setTileTint(layer: integer, x: integer, y: integer, r: number, g: number, b: number, a: number)`
-
-Overrides the color tint for a single tile at a given position.
-
-**Parameters**
-
-- `layer` (`integer`, required) - Layer index (1-based).
-- `x` (`integer`, required) - Column (1-based).
-- `y` (`integer`, required) - Row (1-based).
-- `r` (`number`, required) - Red channel (0..1).
-- `g` (`number`, required) - Green channel (0..1).
-- `b` (`number`, required) - Blue channel (0..1).
-- `a` (`number`, required) - Alpha channel (0..1).
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Per-tile color override. Use for highlighting, damage flash, or selection.
-  -- Red tint on a tile to show it's on fire:
-  local map = lurek.tilemap.newTileMap(16, 16)
-  map:addLayer("ground", 16, 16)
-  map:setTile(1, 5, 5, 1)
-  map:setTileTint(1, 5, 5, 1.0, 0.5, 0.5, 1.0)  -- reddish tint
-  lurek.log.info("tile (5,5) tinted red (burning)", "tilemap")
-end
-```
-
-### `LTileMap:setViewport(x: number, y: number, w: number, h: number)`
-
-Sets the visible area of the map for culling during rendering.
-
-**Parameters**
-
-- `x` (`number`, required) - Left edge in world pixels.
-- `y` (`number`, required) - Top edge in world pixels.
-- `w` (`number`, required) - Viewport width in pixels.
-- `h` (`number`, required) - Viewport height in pixels.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Match viewport to camera view for efficient rendering.
-  local map = lurek.tilemap.newTileMap(16, 16)
-  map:addLayer("bg", 64, 64)
-  map:setViewport(100, 50, 320, 240)
-  lurek.log.info("viewport set to camera view", "tilemap")
-end
-```
-
-### `LTileMap:sweepRect(layer: integer, x: number, y: number, w: number, h: number, dx: number, dy: number) -> number`
-
-Performs a swept AABB collision test against solid tiles on a layer, returning the contact point and normal.
-
-**Parameters**
-
-- `layer` (`integer`, required) - Layer index (1-based).
-- `x` (`number`, required) - Rectangle left edge in world pixels.
-- `y` (`number`, required) - Rectangle top edge in world pixels.
-- `w` (`number`, required) - Rectangle width in pixels.
-- `h` (`number`, required) - Rectangle height in pixels.
-- `dx` (`number`, required) - Horizontal movement delta.
-- `dy` (`number`, required) - Vertical movement delta.
-
-**Returns**: `number` - Contact X position.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Swept AABB: move a rectangle by (dx, dy) and find the first solid tile hit.
-  -- Returns contact position, surface normal, and tile coordinates.
-  -- Essential for platformer character controllers.
-  local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
-  ts:setSolid(1, true)
-  local map = lurek.tilemap.newTileMap(16, 16)
-  map:addLayer("collision", 32, 32)
-  map:setTile(1, 5, 5, 1)
-  local cx, cy, nx, ny, hitCol, hitRow = map:sweepRect(1, 0, 80, 16, 16, 100, 0)
-  lurek.log.info("sweep contact at (" .. cx .. "," .. cy .. ") normal=(" .. nx .. "," .. ny .. ") tile=(" .. hitCol .. "," .. hitRow .. ")", "tilemap")
-end
-```
-
-### `LTileMap:tileToWorld(tx: integer, ty: integer) -> number`
-
-Converts tile-grid coordinates to world-space pixel coordinates (top-left corner of the tile).
-
-**Parameters**
-
-- `tx` (`integer`, required) - Tile column (1-based).
-- `ty` (`integer`, required) - Tile row (1-based).
-
-**Returns**: `number` - World X position in pixels.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Convert tile coordinates back to pixel coordinates (top-left corner).
-  -- Use for spawning entities at tile centers: add tileW/2, tileH/2.
-  local map = lurek.tilemap.newTileMap(16, 16)
-  map:addLayer("background", 32, 32)
-  local wx, wy = map:tileToWorld(5, 8)
-  lurek.log.info("spawn pos px=(" .. wx .. ", " .. wy .. ")", "tilemap")
-end
-```
-
-### `LTileMap:tileTypeIndex(layer: integer) -> table`
-
-Builds an index mapping each GID present on a layer to an array of `{x, y}` positions.
-
-**Parameters**
-
-- `layer` (`integer`, required) - Layer index (1-based).
-
-**Returns**: `table` - Table keyed by GID, each value an array of `{x=number, y=number}`.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Returns a lookup table: index[gid] = {{x=1,y=1}, {x=2,y=1}, ...}
-  -- Use once after loading to quickly locate special tiles (spawns, chests, exits).
-  local map = lurek.tilemap.newTileMap(16, 16, 8)
-  map:addLayer("ground", 4, 4)
-  map:setTile(1, 1, 1, 7)
-  map:setTile(1, 2, 1, 7)
-  local idx = map:tileTypeIndex(1)
-  if idx[7] then
-    lurek.log.debug("gid 7 appears " .. #idx[7] .. " times", "tilemap")
-  end
-end
-```
-
-### `LTileMap:toNavGrid(layer: integer, gids: table) -> boolean[]`
-
-Converts a layer into a 2D boolean grid for pathfinding. Tiles with GIDs in the given list are marked walkable.
-
-**Parameters**
-
-- `layer` (`integer`, required) - Layer index (1-based).
-- `gids` (`table`, required) - Array of walkable GIDs.
-
-**Returns**: `boolean[]` - Flat walkable grid (true = walkable), row-major order.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Convert a tile layer into a boolean walkability grid for pathfinding.
-  -- Pass an array of GIDs that should be considered walkable.
-  -- Returns a 2D array of booleans.
-  local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
-  ts:setSolid(1, true)
-  local map = lurek.tilemap.newTileMap(16, 16)
-  map:addLayer("ground", 8, 8)
-  map:fill(1, 1)
-  local grid = map:toNavGrid(1, { 1 })
-  lurek.log.info("nav grid: " .. #grid .. " rows", "tilemap")
-end
-```
-
-### `LTileMap:type() -> string`
-
-Returns the type name of this userdata.
-
-**Returns**: `string` - Always `"LTileMap"`.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local obj = lurek.tilemap.newTileMap(20, 15, 16)
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LTileMap"
-end
-```
-
-### `LTileMap:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to check against.
-
-**Returns**: `boolean` - True if `name` is `"LTileMap"` or `"Object"`.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  local obj = lurek.tilemap.newTileMap(20, 15, 16)
-  lurek.log.debug("typeOf LTileMap: " .. tostring(obj:typeOf("LTileMap")), "example") -- true
-end
-```
-
-### `LTileMap:update(dt: number)`
-
-Advances tile animations by the given delta time.
-
-**Parameters**
-
-- `dt` (`number`, required) - Time elapsed in seconds since last update.
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Call in lurek.process(dt) to advance tile animations.
-  -- Without this, animated tiles (water, torches) stay frozen.
-  local map = lurek.tilemap.newTileMap(16, 16)
-  map:addLayer("water", 32, 32)
-  function lurek.process(dt) map:update(dt) end
-end
-```
-
-### `LTileMap:worldToTile(wx: number, wy: number) -> integer`
-
-Converts world-space pixel coordinates to tile-grid coordinates.
-
-**Parameters**
-
-- `wx` (`number`, required) - World X position in pixels.
-- `wy` (`number`, required) - World Y position in pixels.
-
-**Returns**: `integer` - Tile column (1-based).
-
-#### Example
-
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
-
-```lua
-do
-  -- Convert pixel coordinates to tile grid coordinates.
-  -- Essential for: finding which tile the player is standing on,
-  -- converting mouse position to grid cell, etc.
-  local map = lurek.tilemap.newTileMap(16, 16)
-  map:addLayer("background", 64, 64)
-  local tx, ty = map:worldToTile(128, 96)
-  lurek.log.info("world (128,96) -> tile (" .. tx .. ", " .. ty .. ")", "tilemap")
-end
-```
-
-### `LTileSet`
+### LTileSet
 
 Lua-side handle wrapping a `TileSet` for defining tile atlases, animations, solidity, and auto-tile rules.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side handle wrapping a `TileSet` for defining tile atlases, animations, solidity, and auto-tile rules.
+---@class LTileSet
+LTileSet = {}
+```
 
 #### Example
 
@@ -4561,15 +1498,4794 @@ do
 end
 ```
 
-### `LTileSet:getAnimation(tileId: integer) -> table`
+
+[⬆ back to top](#table-of-contents)
+
+## 🔹 Module Methods
+
+### LAutoTileSheet:applyToTileSet
+
+`LAutoTileSheet:applyToTileSet(tileSet: LTileSet, typeName: string, [startGid]: integer)`
+
+Writes the auto-tile bitmask-to-tile rules from this sheet into a tileset.
+
+**Parameters**
+
+- `tileSet` (`LTileSet`, required): Target tileset to receive the rules.
+- `typeName` (`string`, required): Logical tile type name to register under.
+- `startGid` (`integer`, optional): Optional first GID offset.
+
+**Lua API Stub**
+
+```lua
+--- Writes the auto-tile bitmask-to-tile rules from this sheet into a tileset.
+---@param tileSet LTileSet Target tileset to receive the rules.
+---@param typeName string Logical tile type name to register under.
+---@param startGid? number Optional first GID offset.
+function LAutoTileSheet:applyToTileSet(tileSet, typeName, startGid) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Transfer all bitmask-to-tile rules from the sheet into a tileset.
+  -- This bridges the sheet's layout with the tileset's auto-tile registry.
+  local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
+  local ats = lurek.tilemap.newAutoTileSheet(16, 16, "blob47")
+  ats:applyToTileSet(ts, "normal")
+  lurek.log.info("auto-tile sheet rules applied to tileset", "tilemap")
+end
+```
+
+### LAutoTileSheet:getBitmaskForTile
+
+`LAutoTileSheet:getBitmaskForTile(tileId: integer) -> integer`
+
+Returns the bitmask associated with a tile in this auto-tile sheet.
+
+**Parameters**
+
+- `tileId` (`integer`, required): Tile ID (1-based).
+
+**Returns**: `integer` - Bitmask value, or nil if not found.
+
+**Lua API Stub**
+
+```lua
+--- Returns the bitmask associated with a tile in this auto-tile sheet.
+---@param tileId number Tile ID (1-based).
+---@return number Bitmask value, or nil if not found.
+function LAutoTileSheet:getBitmaskForTile(tileId) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Reverse lookup: given a tile ID in the sheet, what bitmask does it represent?
+  -- Useful for debugging or building editor tools.
+  local sheet = lurek.tilemap.newAutoTileSheet(16, 16, "blob47")
+  local mask = sheet:getBitmaskForTile(5)
+  lurek.log.info("tile 5 represents bitmask " .. mask, "tilemap")
+end
+```
+
+### LAutoTileSheet:getLayout
+
+`LAutoTileSheet:getLayout() -> string`
+
+Returns the auto-tile layout type as a string.
+
+**Returns**: `string` - One of `"blob47"`, `"composite48"`, `"minimal16"`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the auto-tile layout type as a string.
+---@return string One of `"blob47"`, `"composite48"`, `"minimal16"`.
+function LAutoTileSheet:getLayout() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local sheet = lurek.tilemap.newAutoTileSheet(16, 16, "minimal16")
+  if sheet:getLayout() == "minimal16" then
+    lurek.log.info("using 16-tile autotile ruleset (simplest)", "tilemap")
+  end
+end
+```
+
+### LAutoTileSheet:getQuad
+
+`LAutoTileSheet:getQuad(tileId: integer) -> integer`
+
+Returns the source rectangle for a tile in the auto-tile sheet.
+
+**Parameters**
+
+- `tileId` (`integer`, required): Tile ID (1-based).
+
+**Returns**: `integer` - X offset in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns the source rectangle for a tile in the auto-tile sheet.
+---@param tileId number Tile ID (1-based).
+---@return number a X offset in pixels.
+---@return number b Y offset in pixels.
+---@return number c Width in pixels.
+---@return number d Height in pixels.
+function LAutoTileSheet:getQuad(tileId) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Get the source rectangle for rendering a specific auto-tile variant.
+  -- Returns x, y, w, h in pixels relative to the sheet atlas.
+  pcall(function()
+    local sheet = lurek.tilemap.newAutoTileSheet(16, 16, "blob47")
+    local x, y = sheet:getQuad(3)
+    lurek.log.info("autotile 3 quad x=" .. x .. " y=" .. y, "tilemap")
+  end)
+end
+```
+
+### LAutoTileSheet:getTileCount
+
+`LAutoTileSheet:getTileCount() -> integer`
+
+Returns the total number of tiles in this auto-tile sheet.
+
+**Returns**: `integer` - Tile count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the total number of tiles in this auto-tile sheet.
+---@return number Tile count.
+function LAutoTileSheet:getTileCount() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local sheet = lurek.tilemap.newAutoTileSheet(16, 16, "blob47")
+  lurek.log.info("blob47 sheet exposes " .. sheet:getTileCount() .. " tile variants", "tilemap")
+end
+```
+
+### LAutoTileSheet:getTileForBitmask
+
+`LAutoTileSheet:getTileForBitmask(bitmask: integer) -> integer`
+
+Looks up which tile corresponds to a given bitmask value.
+
+**Parameters**
+
+- `bitmask` (`integer`, required): Bitmask to resolve.
+
+**Returns**: `integer` - Tile ID (1-based), or nil if no tile matches.
+
+**Lua API Stub**
+
+```lua
+--- Looks up which tile corresponds to a given bitmask value.
+---@param bitmask number Bitmask to resolve.
+---@return number Tile ID (1-based), or nil if no tile matches.
+function LAutoTileSheet:getTileForBitmask(bitmask) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Forward lookup: given a neighbor bitmask, which tile variant to draw?
+  local sheet = lurek.tilemap.newAutoTileSheet(16, 16, "blob47")
+  local id = sheet:getTileForBitmask(15) or 1
+  lurek.log.info("bitmask 15 (all 4 neighbors) -> tile " .. id, "tilemap")
+end
+```
+
+### LAutoTileSheet:getTileHeight
+
+`LAutoTileSheet:getTileHeight() -> integer`
+
+Returns the height of each tile in the auto-tile sheet, in pixels.
+
+**Returns**: `integer` - Tile height.
+
+**Lua API Stub**
+
+```lua
+--- Returns the height of each tile in the auto-tile sheet, in pixels.
+---@return number Tile height.
+function LAutoTileSheet:getTileHeight() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Confirm tall tiles for a side-view autotile sheet.
+  local sheet = lurek.tilemap.newAutoTileSheet(16, 32, "minimal16")
+  lurek.log.info("autotile h=" .. sheet:getTileHeight() .. " px", "tilemap")
+end
+```
+
+### LAutoTileSheet:getTileWidth
+
+`LAutoTileSheet:getTileWidth() -> integer`
+
+Returns the width of each tile in the auto-tile sheet, in pixels.
+
+**Returns**: `integer` - Tile width.
+
+**Lua API Stub**
+
+```lua
+--- Returns the width of each tile in the auto-tile sheet, in pixels.
+---@return number Tile width.
+function LAutoTileSheet:getTileWidth() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Verify tile dimensions match the atlas before applying rules.
+  local sheet = lurek.tilemap.newAutoTileSheet(32, 16, "blob47")
+  lurek.log.info("autotile w=" .. sheet:getTileWidth() .. " px", "tilemap")
+end
+```
+
+### LAutoTileSheet:type
+
+`LAutoTileSheet:type() -> string`
+
+Returns the type name of this userdata.
+
+**Returns**: `string` - Always `"LAutoTileSheet"`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name of this userdata.
+---@return string Always `"LAutoTileSheet"`.
+function LAutoTileSheet:type() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local obj = lurek.tilemap.newAutoTileSheet(16, 16, "minimal16")
+  lurek.log.debug("type: " .. obj:type(), "example") -- "LAutoTileSheet"
+end
+```
+
+### LAutoTileSheet:typeOf
+
+`LAutoTileSheet:typeOf(name: string) -> boolean`
+
+Checks whether this object matches the given type name.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to check against.
+
+**Returns**: `boolean` - True if `name` is `"LAutoTileSheet"` or `"Object"`.
+
+**Lua API Stub**
+
+```lua
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check against.
+---@return boolean True if `name` is `"LAutoTileSheet"` or `"Object"`.
+function LAutoTileSheet:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local obj = lurek.tilemap.newAutoTileSheet(16, 16, "minimal16")
+  lurek.log.debug("typeOf LAutoTileSheet: " .. tostring(obj:typeOf("LAutoTileSheet")), "example") -- true
+end
+```
+
+### LChunkMap:chunkTileRange
+
+`LChunkMap:chunkTileRange(cx: integer, cy: integer) -> integer`
+
+Returns the tile-coordinate range covered by a specific chunk.
+
+**Parameters**
+
+- `cx` (`integer`, required): Chunk X coordinate.
+- `cy` (`integer`, required): Chunk Y coordinate.
+
+**Returns**: `integer` - Minimum tile X.
+
+**Lua API Stub**
+
+```lua
+--- Returns the tile-coordinate range covered by a specific chunk.
+---@param cx number Chunk X coordinate.
+---@param cy number Chunk Y coordinate.
+---@return number a Minimum tile X.
+---@return number b Minimum tile Y.
+---@return number c Maximum tile X.
+---@return number d Maximum tile Y.
+function LChunkMap:chunkTileRange(cx, cy) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Find the tile-coordinate boundaries of a chunk.
+  -- Useful for iterating over all tiles within a chunk.
+  local world = lurek.tilemap.newChunkMap(16)
+  local x0, y0, x1, y1 = world:chunkTileRange(2, -1)
+  lurek.log.info("chunk (2,-1) covers x[" .. x0 .. ".." .. x1 .. "] y[" .. y0 .. ".." .. y1 .. "]", "tilemap")
+end
+```
+
+### LChunkMap:clearTile
+
+`LChunkMap:clearTile(x: integer, y: integer)`
+
+Removes the tile at the given world-tile coordinate.
+
+**Parameters**
+
+- `x` (`integer`, required): Tile X coordinate.
+- `y` (`integer`, required): Tile Y coordinate.
+
+**Lua API Stub**
+
+```lua
+--- Removes the tile at the given world-tile coordinate.
+---@param x number Tile X coordinate.
+---@param y number Tile Y coordinate.
+function LChunkMap:clearTile(x, y) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Remove a tile (sets to 0). The chunk stays loaded.
+  local world = lurek.tilemap.newChunkMap(16)
+  world:setTile(3, 3, 5)
+  world:clearTile(3, 3)
+  lurek.log.info("tile (3,3) now gid=" .. world:getTile(3, 3), "tilemap")
+end
+```
+
+### LChunkMap:fillRect
+
+`LChunkMap:fillRect(x0: integer, y0: integer, x1: integer, y1: integer, gid: integer)`
+
+Fills a rectangular region of tiles with a given GID.
+
+**Parameters**
+
+- `x0` (`integer`, required): Left tile coordinate.
+- `y0` (`integer`, required): Top tile coordinate.
+- `x1` (`integer`, required): Right tile coordinate (inclusive).
+- `y1` (`integer`, required): Bottom tile coordinate (inclusive).
+- `gid` (`integer`, required): Global tile ID to fill with.
+
+**Lua API Stub**
+
+```lua
+--- Fills a rectangular region of tiles with a given GID.
+---@param x0 number Left tile coordinate.
+---@param y0 number Top tile coordinate.
+---@param x1 number Right tile coordinate (inclusive).
+---@param y1 number Bottom tile coordinate (inclusive).
+---@param gid number Global tile ID to fill with.
+function LChunkMap:fillRect(x0, y0, x1, y1, gid) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Fill a rectangular region. Useful for clearing areas or placing floor tiles.
+  -- Coordinates are inclusive: fills from (x0,y0) to (x1,y1).
+  local world = lurek.tilemap.newChunkMap(16)
+  world:fillRect(0, 0, 31, 31, 1)
+  lurek.log.info("filled 32x32 area with gid=1", "tilemap")
+end
+```
+
+### LChunkMap:getChunksInView
+
+`LChunkMap:getChunksInView(vx: number, vy: number, vw: number, vh: number, tw: number, th: number) -> table`
+
+Returns chunk coordinates that overlap a viewport region, given tile dimensions.
+
+**Parameters**
+
+- `vx` (`number`, required): Viewport left edge in world pixels.
+- `vy` (`number`, required): Viewport top edge in world pixels.
+- `vw` (`number`, required): Viewport width in pixels.
+- `vh` (`number`, required): Viewport height in pixels.
+- `tw` (`number`, required): Tile width in pixels.
+- `th` (`number`, required): Tile height in pixels.
+
+**Returns**: `table` - Array of `{cx, cy}` pairs.
+
+**Lua API Stub**
+
+```lua
+--- Returns chunk coordinates that overlap a viewport region, given tile dimensions.
+---@param vx number Viewport left edge in world pixels.
+---@param vy number Viewport top edge in world pixels.
+---@param vw number Viewport width in pixels.
+---@param vh number Viewport height in pixels.
+---@param tw number Tile width in pixels.
+---@param th number Tile height in pixels.
+---@return LChunkMapGetChunksInViewResult Array of `{cx, cy}` pairs.
+function LChunkMap:getChunksInView(vx, vy, vw, vh, tw, th) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Given a viewport rectangle and tile dimensions, find which chunks overlap.
+  -- Use for rendering only visible chunks.
+  local world = lurek.tilemap.newChunkMap(16)
+  local chunks = world:getChunksInView(0, 0, 320, 240, 16, 16)
+  lurek.log.info("chunks in view: " .. #chunks, "tilemap")
+end
+```
+
+### LChunkMap:getChunkSize
+
+`LChunkMap:getChunkSize() -> integer`
+
+Returns the size of each chunk in tiles per side.
+
+**Returns**: `integer` - Chunk size.
+
+**Lua API Stub**
+
+```lua
+--- Returns the size of each chunk in tiles per side.
+---@return number Chunk size.
+function LChunkMap:getChunkSize() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Calculate total tiles per chunk for memory estimation.
+  local world = lurek.tilemap.newChunkMap(32)
+  local cs = world:getChunkSize()
+  lurek.log.info("tiles per chunk = " .. cs * cs, "tilemap")
+end
+```
+
+### LChunkMap:getLoadedChunks
+
+`LChunkMap:getLoadedChunks() -> table`
+
+Returns a list of all currently loaded chunk coordinates.
+
+**Returns**: `table` - Array of `{cx, cy}` pairs.
+
+**Lua API Stub**
+
+```lua
+--- Returns a list of all currently loaded chunk coordinates.
+---@return LChunkMapGetLoadedChunksResult Array of `{cx, cy}` pairs.
+function LChunkMap:getLoadedChunks() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Returns an array of {cx, cy} pairs for all chunks currently in memory.
+  local world = lurek.tilemap.newChunkMap(16)
+  world:setTile(0, 0, 1)
+  world:setTile(40, -10, 2)
+  for _, c in ipairs(world:getLoadedChunks()) do
+    lurek.log.debug("chunk loaded cx=" .. c[1] .. " cy=" .. c[2], "tilemap")
+  end
+end
+```
+
+### LChunkMap:getTile
+
+`LChunkMap:getTile(x: integer, y: integer) -> integer`
+
+Returns the tile GID at the given world-tile coordinate.
+
+**Parameters**
+
+- `x` (`integer`, required): Tile X coordinate.
+- `y` (`integer`, required): Tile Y coordinate.
+
+**Returns**: `integer` - Global tile ID.
+
+**Lua API Stub**
+
+```lua
+--- Returns the tile GID at the given world-tile coordinate.
+---@param x number Tile X coordinate.
+---@param y number Tile Y coordinate.
+---@return number Global tile ID.
+function LChunkMap:getTile(x, y) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Read a tile from the infinite world for collision checks.
+  local world = lurek.tilemap.newChunkMap(16)
+  world:setTile(5, 5, 42)
+  local gid = world:getTile(5, 5)
+  lurek.log.info("chunk tile at (5,5) gid=" .. gid, "tilemap")
+end
+```
+
+### LChunkMap:loadChunk
+
+`LChunkMap:loadChunk(cx: integer, cy: integer)`
+
+Loads a chunk into memory at the given chunk coordinates.
+
+**Parameters**
+
+- `cx` (`integer`, required): Chunk X coordinate.
+- `cy` (`integer`, required): Chunk Y coordinate.
+
+**Lua API Stub**
+
+```lua
+--- Loads a chunk into memory at the given chunk coordinates.
+---@param cx number Chunk X coordinate.
+---@param cy number Chunk Y coordinate.
+function LChunkMap:loadChunk(cx, cy) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Pre-load chunks before the player reaches them (streaming).
+  -- Chunk coordinates are in chunk-space (tile / chunkSize).
+  local world = lurek.tilemap.newChunkMap(16)
+  for cx = 0, 3 do
+    world:loadChunk(cx, 0)
+  end
+end
+```
+
+### LChunkMap:setTile
+
+`LChunkMap:setTile(x: integer, y: integer, gid: integer)`
+
+Sets the tile GID at the given world-tile coordinate.
+
+**Parameters**
+
+- `x` (`integer`, required): Tile X coordinate.
+- `y` (`integer`, required): Tile Y coordinate.
+- `gid` (`integer`, required): Global tile ID to place.
+
+**Lua API Stub**
+
+```lua
+--- Sets the tile GID at the given world-tile coordinate.
+---@param x number Tile X coordinate.
+---@param y number Tile Y coordinate.
+---@param gid number Global tile ID to place.
+function LChunkMap:setTile(x, y, gid) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Place a tree tile in the open world when the player plants a seed.
+  local world = lurek.tilemap.newChunkMap(16)
+  world:setTile(-10, 20, 15)
+  lurek.log.info("planted tree at (-10,20)", "tilemap")
+end
+```
+
+### LChunkMap:type
+
+`LChunkMap:type() -> string`
+
+Returns the type name of this userdata.
+
+**Returns**: `string` - Always `"LChunkMap"`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name of this userdata.
+---@return string Always `"LChunkMap"`.
+function LChunkMap:type() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local obj = lurek.tilemap.newChunkMap(16)
+  lurek.log.debug("type: " .. obj:type(), "example") -- "LChunkMap"
+end
+```
+
+### LChunkMap:typeOf
+
+`LChunkMap:typeOf(name: string) -> boolean`
+
+Checks whether this object matches the given type name.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to check against.
+
+**Returns**: `boolean` - True if `name` is `"LChunkMap"` or `"Object"`.
+
+**Lua API Stub**
+
+```lua
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check against.
+---@return boolean True if `name` is `"LChunkMap"` or `"Object"`.
+function LChunkMap:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local obj = lurek.tilemap.newChunkMap(16)
+  lurek.log.debug("typeOf LChunkMap: " .. tostring(obj:typeOf("LChunkMap")), "example") -- true
+end
+```
+
+### LChunkMap:unloadChunk
+
+`LChunkMap:unloadChunk(cx: integer, cy: integer)`
+
+Unloads a chunk from memory at the given chunk coordinates.
+
+**Parameters**
+
+- `cx` (`integer`, required): Chunk X coordinate.
+- `cy` (`integer`, required): Chunk Y coordinate.
+
+**Lua API Stub**
+
+```lua
+--- Unloads a chunk from memory at the given chunk coordinates.
+---@param cx number Chunk X coordinate.
+---@param cy number Chunk Y coordinate.
+function LChunkMap:unloadChunk(cx, cy) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Unload chunks far from the player to save memory.
+  local world = lurek.tilemap.newChunkMap(16)
+  world:loadChunk(0, 0)
+  world:unloadChunk(0, 0)
+  lurek.log.info("chunks resident: " .. #world:getLoadedChunks(), "tilemap")
+end
+```
+
+### LIsoMap:addLevel
+
+`LIsoMap:addLevel() -> integer`
+
+Adds a new vertical level to the isometric map and returns its index.
+
+**Returns**: `integer` - Index of the new level (1-based).
+
+**Lua API Stub**
+
+```lua
+--- Adds a new vertical level to the isometric map and returns its index.
+---@return number Index of the new level (1-based).
+function LIsoMap:addLevel() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Add vertical levels for multi-story buildings.
+  -- Returns the new level's index (1-based).
+  local iso = lurek.tilemap.newIsoMap(16, 16, 64, 32, 24)
+  local z = iso:addLevel()
+  lurek.log.info("added level " .. z .. ", count now " .. iso:getLevelCount(), "tilemap")
+end
+```
+
+### LIsoMap:fillLevel
+
+`LIsoMap:fillLevel(z: integer, part: integer, gid: integer)`
+
+Fills all tiles on a level for a given part with a single GID.
+
+**Parameters**
+
+- `z` (`integer`, required): Level index (1-based).
+- `part` (`integer`, required): Part index to fill.
+- `gid` (`integer`, required): Global tile ID to fill with.
+
+**Lua API Stub**
+
+```lua
+--- Fills all tiles on a level for a given part with a single GID.
+---@param z number Level index (1-based).
+---@param part number Part index to fill.
+---@param gid number Global tile ID to fill with.
+function LIsoMap:fillLevel(z, part, gid) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Fill all tiles of a specific part on a level.
+  -- Parts: 0=floor, 1=north wall, 2=west wall, 3=object (when partCount=4).
+  local iso = lurek.tilemap.newIsoMap(16, 16, 64, 32, 24)
+  iso:addLevel()
+  iso:fillLevel(1, lurek.tilemap.FLOOR - 1, 1)  -- floor part, gid 1
+end
+```
+
+### LIsoMap:getHeight
+
+`LIsoMap:getHeight() -> integer`
+
+Returns the map height in tiles. This method is available to Lua scripts.
+
+**Returns**: `integer` - Height.
+
+**Lua API Stub**
+
+```lua
+--- Returns the map height in tiles. This method is available to Lua scripts.
+---@return number Height.
+function LIsoMap:getHeight() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Use height for iterating over all rows in the iso map.
+  local iso = lurek.tilemap.newIsoMap(24, 18, 64, 32, 24)
+  lurek.log.info("iso height=" .. iso:getHeight() .. " tiles", "tilemap")
+end
+```
+
+### LIsoMap:getLevelCount
+
+`LIsoMap:getLevelCount() -> integer`
+
+Returns the number of vertical levels in the isometric map.
+
+**Returns**: `integer` - Level count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of vertical levels in the isometric map.
+---@return number Level count.
+function LIsoMap:getLevelCount() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local iso = lurek.tilemap.newIsoMap(16, 16, 64, 32, 24)
+  iso:addLevel(); iso:addLevel(); iso:addLevel()
+  lurek.log.info("iso has " .. iso:getLevelCount() .. " level(s)", "tilemap")
+end
+```
+
+### LIsoMap:getLevelHeight
+
+`LIsoMap:getLevelHeight() -> integer`
+
+Returns the vertical pixel offset between levels.
+
+**Returns**: `integer` - Level height in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns the vertical pixel offset between levels.
+---@return number Level height in pixels.
+function LIsoMap:getLevelHeight() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local iso = lurek.tilemap.newIsoMap(16, 16, 64, 32, 32)
+  lurek.log.info("Z step = " .. iso:getLevelHeight() .. " px between levels", "tilemap")
+end
+```
+
+### LIsoMap:getPartCount
+
+`LIsoMap:getPartCount() -> integer`
+
+Returns the number of tile parts per cell.
+
+**Returns**: `integer` - Part count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of tile parts per cell.
+---@return number Part count.
+function LIsoMap:getPartCount() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local iso = lurek.tilemap.newIsoMap(16, 16, 64, 32, 24, 4)
+  lurek.log.info("iso parts per tile = " .. iso:getPartCount(), "tilemap")
+end
+```
+
+### LIsoMap:getPartOrder
+
+`LIsoMap:getPartOrder() -> integer[]`
+
+Returns the rendering order of tile parts as an array of part indices.
+
+**Returns**: `integer[]` - Part index values.
+
+**Lua API Stub**
+
+```lua
+--- Returns the rendering order of tile parts as an array of part indices.
+---@return number[] Part index values.
+function LIsoMap:getPartOrder() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Part order controls draw sequence within each cell (floor first, then walls).
+  local iso = lurek.tilemap.newIsoMap(16, 16, 64, 32, 24, 4)
+  local order = iso:getPartOrder()
+  lurek.log.info("iso draw order has " .. #order .. " slots", "tilemap")
+end
+```
+
+### LIsoMap:getTileHeight
+
+`LIsoMap:getTileHeight() -> integer`
+
+Returns the height of an isometric tile in pixels.
+
+**Returns**: `integer` - Tile height.
+
+**Lua API Stub**
+
+```lua
+--- Returns the height of an isometric tile in pixels.
+---@return number Tile height.
+function LIsoMap:getTileHeight() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local iso = lurek.tilemap.newIsoMap(16, 16, 64, 32, 24)
+  lurek.log.info("iso tile footprint height = " .. iso:getTileHeight() .. " px", "tilemap")
+end
+```
+
+### LIsoMap:getTilePart
+
+`LIsoMap:getTilePart(z: integer, x: integer, y: integer, part: integer) -> integer`
+
+Returns the GID for a specific part of a tile at a given position and level.
+
+**Parameters**
+
+- `z` (`integer`, required): Level index (1-based).
+- `x` (`integer`, required): Column (1-based).
+- `y` (`integer`, required): Row (1-based).
+- `part` (`integer`, required): Part index.
+
+**Returns**: `integer` - Global tile ID.
+
+**Lua API Stub**
+
+```lua
+--- Returns the GID for a specific part of a tile at a given position and level.
+---@param z number Level index (1-based).
+---@param x number Column (1-based).
+---@param y number Row (1-based).
+---@param part number Part index.
+---@return number Global tile ID.
+function LIsoMap:getTilePart(z, x, y, part) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local iso = lurek.tilemap.newIsoMap(16, 16, 32, 16, 8)
+  iso:addLevel()
+  local gid = iso:getTilePart(1, 1, 1, 0)
+  lurek.log.info("tile part gid: " .. (gid or 0), "tilemap")
+end
+```
+
+### LIsoMap:getTileWidth
+
+`LIsoMap:getTileWidth() -> integer`
+
+Returns the width of an isometric tile in pixels.
+
+**Returns**: `integer` - Tile width.
+
+**Lua API Stub**
+
+```lua
+--- Returns the width of an isometric tile in pixels.
+---@return number Tile width.
+function LIsoMap:getTileWidth() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local iso = lurek.tilemap.newIsoMap(16, 16, 64, 32, 24)
+  lurek.log.info("iso tile footprint width = " .. iso:getTileWidth() .. " px", "tilemap")
+end
+```
+
+### LIsoMap:getWidth
+
+`LIsoMap:getWidth() -> integer`
+
+Returns the map width in tiles. This method is available to Lua scripts.
+
+**Returns**: `integer` - Width.
+
+**Lua API Stub**
+
+```lua
+--- Returns the map width in tiles. This method is available to Lua scripts.
+---@return number Width.
+function LIsoMap:getWidth() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Use width for iterating over all columns in the iso map.
+  local iso = lurek.tilemap.newIsoMap(24, 18, 64, 32, 24)
+  lurek.log.info("iso width=" .. iso:getWidth() .. " tiles", "tilemap")
+end
+```
+
+### LIsoMap:isLevelVisible
+
+`LIsoMap:isLevelVisible(z: integer) -> boolean`
+
+Returns whether a vertical level is currently visible.
+
+**Parameters**
+
+- `z` (`integer`, required): Level index (1-based).
+
+**Returns**: `boolean` - True if the level is visible.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether a vertical level is currently visible.
+---@param z number Level index (1-based).
+---@return boolean True if the level is visible.
+function LIsoMap:isLevelVisible(z) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local iso = lurek.tilemap.newIsoMap(16, 16, 64, 32, 24)
+  iso:addLevel()
+  if iso:isLevelVisible(1) then
+    lurek.log.info("ground floor is visible", "tilemap")
+  end
+end
+```
+
+### LIsoMap:screenToTile
+
+`LIsoMap:screenToTile(sx: number, sy: number) -> number`
+
+Converts screen-space pixel coordinates to tile-grid coordinates (ignoring Z).
+
+**Parameters**
+
+- `sx` (`number`, required): Screen X.
+- `sy` (`number`, required): Screen Y.
+
+**Returns**: `number` - Tile X.
+
+**Lua API Stub**
+
+```lua
+--- Converts screen-space pixel coordinates to tile-grid coordinates (ignoring Z).
+---@param sx number Screen X.
+---@param sy number Screen Y.
+---@return number a Tile X.
+---@return number b Tile Y.
+function LIsoMap:screenToTile(sx, sy) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Mouse picking: find which iso tile the cursor is over.
+  local iso = lurek.tilemap.newIsoMap(16, 16, 64, 32, 24)
+  iso:setOrigin(400, 100)
+  local tx, ty = iso:screenToTile(500, 200)
+  lurek.log.info("cursor over iso tile (" .. tx .. ", " .. ty .. ")", "tilemap")
+end
+```
+
+### LIsoMap:setLevelVisible
+
+`LIsoMap:setLevelVisible(z: integer, visible: boolean)`
+
+Sets whether a vertical level is drawn during rendering.
+
+**Parameters**
+
+- `z` (`integer`, required): Level index (1-based).
+- `visible` (`boolean`, required): True to show, false to hide.
+
+**Lua API Stub**
+
+```lua
+--- Sets whether a vertical level is drawn during rendering.
+---@param z number Level index (1-based).
+---@param visible boolean True to show, false to hide.
+function LIsoMap:setLevelVisible(z, visible) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Hide upper floors to see inside buildings (like The Sims).
+  local iso = lurek.tilemap.newIsoMap(16, 16, 64, 32, 24)
+  iso:addLevel(); iso:addLevel()
+  iso:setLevelVisible(2, false)  -- hide upper floor
+end
+```
+
+### LIsoMap:setOrigin
+
+`LIsoMap:setOrigin(x: number, y: number)`
+
+Sets the screen-space origin (top-left anchor) for isometric rendering.
+
+**Parameters**
+
+- `x` (`number`, required): Origin X in pixels.
+- `y` (`number`, required): Origin Y in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Sets the screen-space origin (top-left anchor) for isometric rendering.
+---@param x number Origin X in pixels.
+---@param y number Origin Y in pixels.
+function LIsoMap:setOrigin(x, y) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Origin = screen-space anchor point for the top-left of the map rendering.
+  -- Center the map on screen by setting origin to (screenW/2, topMargin).
+  local iso = lurek.tilemap.newIsoMap(16, 16, 64, 32, 24)
+  iso:addLevel()
+  iso:setOrigin(400, 100)
+end
+```
+
+### LIsoMap:setPartOrder
+
+`LIsoMap:setPartOrder(order: table)`
+
+Overrides the rendering order of tile parts.
+
+**Parameters**
+
+- `order` (`table`, required): Array of part indices in desired draw order.
+
+**Lua API Stub**
+
+```lua
+--- Overrides the rendering order of tile parts.
+---@param order table Array of part indices in desired draw order.
+function LIsoMap:setPartOrder(order) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Override draw order to fix rendering artifacts.
+  -- Default is {0,1,2,3}; swap if walls should draw before/after objects.
+  local iso = lurek.tilemap.newIsoMap(16, 16, 64, 32, 24, 4)
+  iso:setPartOrder({ 0, 2, 1, 3 })  -- swap N-wall and W-wall draw order
+end
+```
+
+### LIsoMap:setTilePart
+
+`LIsoMap:setTilePart(z: integer, x: integer, y: integer, part: integer, gid: integer)`
+
+Sets the GID for a specific part of a tile at a given position and level.
+
+**Parameters**
+
+- `z` (`integer`, required): Level index (1-based).
+- `x` (`integer`, required): Column (1-based).
+- `y` (`integer`, required): Row (1-based).
+- `part` (`integer`, required): Part index (e.g. floor, wall, object).
+- `gid` (`integer`, required): Global tile ID to place.
+
+**Lua API Stub**
+
+```lua
+--- Sets the GID for a specific part of a tile at a given position and level.
+---@param z number Level index (1-based).
+---@param x number Column (1-based).
+---@param y number Row (1-based).
+---@param part number Part index (e.g. floor, wall, object).
+---@param gid number Global tile ID to place.
+function LIsoMap:setTilePart(z, x, y, part, gid) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Set individual tile parts: floor, walls, or objects at a specific cell.
+  local iso = lurek.tilemap.newIsoMap(16, 16, 32, 16, 8)
+  iso:addLevel()
+  iso:setTilePart(1, 1, 1, 0, 5)  -- level 1, pos (1,1), part 0 (floor), gid 5
+  lurek.log.info("iso tile part set", "tilemap")
+end
+```
+
+### LIsoMap:tileToScreen
+
+`LIsoMap:tileToScreen(tx: number, ty: number, tz: number) -> number`
+
+Converts tile-grid coordinates to screen-space pixel position.
+
+**Parameters**
+
+- `tx` (`number`, required): Tile X.
+- `ty` (`number`, required): Tile Y.
+- `tz` (`number`, required): Tile Z (level).
+
+**Returns**: `number` - Screen X.
+
+**Lua API Stub**
+
+```lua
+--- Converts tile-grid coordinates to screen-space pixel position.
+---@param tx number Tile X.
+---@param ty number Tile Y.
+---@param tz number Tile Z (level).
+---@return number a Screen X.
+---@return number b Screen Y.
+function LIsoMap:tileToScreen(tx, ty, tz) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Convert tile (x, y, z) to screen pixel position for sprite placement.
+  local iso = lurek.tilemap.newIsoMap(16, 16, 64, 32, 24)
+  iso:setOrigin(400, 100)
+  local sx, sy = iso:tileToScreen(3, 4, 0)
+  lurek.log.info("tile (3,4,0) at screen (" .. sx .. ", " .. sy .. ")", "tilemap")
+end
+```
+
+### LIsoMap:type
+
+`LIsoMap:type() -> string`
+
+Returns the type name of this userdata.
+
+**Returns**: `string` - Always `"LIsoMap"`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name of this userdata.
+---@return string Always `"LIsoMap"`.
+function LIsoMap:type() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local obj = lurek.tilemap.newIsoMap(20, 15, 64, 32, 0)
+  lurek.log.debug("type: " .. obj:type(), "example") -- "LIsoMap"
+end
+```
+
+### LIsoMap:typeOf
+
+`LIsoMap:typeOf(name: string) -> boolean`
+
+Checks whether this object matches the given type name.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to check against.
+
+**Returns**: `boolean` - True if `name` is `"LIsoMap"` or `"Object"`.
+
+**Lua API Stub**
+
+```lua
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check against.
+---@return boolean True if `name` is `"LIsoMap"` or `"Object"`.
+function LIsoMap:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local obj = lurek.tilemap.newIsoMap(20, 15, 64, 32, 0)
+  lurek.log.debug("typeOf LIsoMap: " .. tostring(obj:typeOf("LIsoMap")), "example") -- true
+end
+```
+
+### LLargeMapRenderer:getChunkSize
+
+`LLargeMapRenderer:getChunkSize() -> integer`
+
+Returns the current chunk size. This method is available to Lua scripts.
+
+**Returns**: `integer` - Chunk size in tiles per side.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current chunk size. This method is available to Lua scripts.
+---@return number Chunk size in tiles per side.
+function LLargeMapRenderer:getChunkSize() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
+  lmr:setChunkSize(16)
+  lurek.log.info("chunk_size=" .. lmr:getChunkSize(), "tilemap")
+end
+```
+
+### LLargeMapRenderer:getMapSize
+
+`LLargeMapRenderer:getMapSize() -> integer`
+
+Returns the map dimensions in tiles.
+
+**Returns**: `integer` - Width in tiles.
+
+**Lua API Stub**
+
+```lua
+--- Returns the map dimensions in tiles.
+---@return number a Width in tiles.
+---@return number b Height in tiles.
+function LLargeMapRenderer:getMapSize() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
+  local data = {}; for i = 1, 10 * 10 do data[i] = 1 end
+  lmr:setMapData(data, 10, 10)
+  local w, h = lmr:getMapSize()
+  lurek.log.info("map size=" .. w .. "x" .. h, "tilemap")
+end
+```
+
+### LLargeMapRenderer:getTile
+
+`LLargeMapRenderer:getTile(x: integer, y: integer) -> integer`
+
+Returns the tile GID at a given position.
+
+**Parameters**
+
+- `x` (`integer`, required): Column.
+- `y` (`integer`, required): Row.
+
+**Returns**: `integer` - Tile GID.
+
+**Lua API Stub**
+
+```lua
+--- Returns the tile GID at a given position.
+---@param x number Column.
+---@param y number Row.
+---@return number Tile GID.
+function LLargeMapRenderer:getTile(x, y) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local map = lurek.tilemap.newLargeMapRenderer(16, 16)
+  local tile_id = map:getTile(0, 0)
+  lurek.log.debug("tile at (0,0): " .. tostring(tile_id), "example")
+end
+```
+
+### LLargeMapRenderer:getTilesetColumns
+
+`LLargeMapRenderer:getTilesetColumns() -> integer`
+
+Returns the tileset column count used for UV calculation.
+
+**Returns**: `integer` - Column count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the tileset column count used for UV calculation.
+---@return number Column count.
+function LLargeMapRenderer:getTilesetColumns() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
+  lmr:setTilesetColumns(8)
+  lurek.log.info("tileset_cols=" .. lmr:getTilesetColumns(), "tilemap")
+end
+```
+
+### LLargeMapRenderer:getTotalChunks
+
+`LLargeMapRenderer:getTotalChunks() -> integer`
+
+Returns the total number of chunks in the map.
+
+**Returns**: `integer` - Total chunk count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the total number of chunks in the map.
+---@return number Total chunk count.
+function LLargeMapRenderer:getTotalChunks() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
+  local data = {}; for i = 1, 32 * 32 do data[i] = 1 end
+  lmr:setMapData(data, 32, 32)
+  lurek.log.info("total_chunks=" .. lmr:getTotalChunks(), "tilemap")
+end
+```
+
+### LLargeMapRenderer:getVisibleChunks
+
+`LLargeMapRenderer:getVisibleChunks() -> integer`
+
+Returns the number of chunks currently visible in the viewport.
+
+**Returns**: `integer` - Visible chunk count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of chunks currently visible in the viewport.
+---@return number Visible chunk count.
+function LLargeMapRenderer:getVisibleChunks() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
+  local data = {}; for i = 1, 32 * 32 do data[i] = 1 end
+  lmr:setMapData(data, 32, 32)
+  lmr:setCamera(0, 0, 1.0)
+  lmr:setViewport(800, 600)
+  lurek.log.info("visible_chunks=" .. lmr:getVisibleChunks(), "tilemap")
+end
+```
+
+### LLargeMapRenderer:invalidateAll
+
+`LLargeMapRenderer:invalidateAll()`
+
+Marks all chunks as dirty, forcing a full rebuild on the next render.
+
+**Lua API Stub**
+
+```lua
+--- Marks all chunks as dirty, forcing a full rebuild on the next render.
+function LLargeMapRenderer:invalidateAll() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
+  lmr:invalidateAll()
+  lurek.log.info("all chunks invalidated", "tilemap")
+end
+```
+
+### LLargeMapRenderer:invalidateChunk
+
+`LLargeMapRenderer:invalidateChunk(cx: integer, cy: integer)`
+
+Marks a specific chunk as dirty so it will be rebuilt on the next render.
+
+**Parameters**
+
+- `cx` (`integer`, required): Chunk X index.
+- `cy` (`integer`, required): Chunk Y index.
+
+**Lua API Stub**
+
+```lua
+--- Marks a specific chunk as dirty so it will be rebuilt on the next render.
+---@param cx number Chunk X index.
+---@param cy number Chunk Y index.
+function LLargeMapRenderer:invalidateChunk(cx, cy) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
+  local data = {}; for i = 1, 32 * 32 do data[i] = 1 end
+  lmr:setMapData(data, 32, 32)
+  lmr:setTile(5, 5, 2)
+  lmr:invalidateChunk(0, 0)
+  lurek.log.info("chunk (0,0) invalidated after tile edit", "tilemap")
+end
+```
+
+### LLargeMapRenderer:isLodEnabled
+
+`LLargeMapRenderer:isLodEnabled() -> boolean`
+
+Returns whether LOD rendering is currently enabled.
+
+**Returns**: `boolean` - True if LOD is enabled.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether LOD rendering is currently enabled.
+---@return boolean True if LOD is enabled.
+function LLargeMapRenderer:isLodEnabled() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
+  lmr:setLodEnabled(false)
+  lurek.log.info("lod=" .. tostring(lmr:isLodEnabled()), "tilemap")
+end
+```
+
+### LLargeMapRenderer:setCamera
+
+`LLargeMapRenderer:setCamera(x: number, y: number, zoom: number)`
+
+Sets the camera position and zoom level for determining visible chunks.
+
+**Parameters**
+
+- `x` (`number`, required): Camera center X in world pixels.
+- `y` (`number`, required): Camera center Y in world pixels.
+- `zoom` (`number`, required): Zoom factor (1.0 = normal).
+
+**Lua API Stub**
+
+```lua
+--- Sets the camera position and zoom level for determining visible chunks.
+---@param x number Camera center X in world pixels.
+---@param y number Camera center Y in world pixels.
+---@param zoom number Zoom factor (1.0 = normal).
+function LLargeMapRenderer:setCamera(x, y, zoom) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
+  lmr:setCamera(128, 64, 2.0)
+  lmr:setViewport(800, 600)
+  lurek.log.info("camera at (128,64) zoom 2x", "tilemap")
+end
+```
+
+### LLargeMapRenderer:setChunkSize
+
+`LLargeMapRenderer:setChunkSize(size: integer)`
+
+Sets the chunk size used for rendering subdivision.
+
+**Parameters**
+
+- `size` (`integer`, required): Chunk size in tiles per side.
+
+**Lua API Stub**
+
+```lua
+--- Sets the chunk size used for rendering subdivision.
+---@param size number Chunk size in tiles per side.
+function LLargeMapRenderer:setChunkSize(size) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
+  lmr:setChunkSize(8)
+  lurek.log.info("chunk_size=" .. lmr:getChunkSize(), "tilemap")
+end
+```
+
+### LLargeMapRenderer:setLodEnabled
+
+`LLargeMapRenderer:setLodEnabled(enabled: boolean)`
+
+Enables or disables level-of-detail rendering for distant chunks.
+
+**Parameters**
+
+- `enabled` (`boolean`, required): True to enable LOD.
+
+**Lua API Stub**
+
+```lua
+--- Enables or disables level-of-detail rendering for distant chunks.
+---@param enabled boolean True to enable LOD.
+function LLargeMapRenderer:setLodEnabled(enabled) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
+  lmr:setLodEnabled(true)
+  lurek.log.info("lod_enabled=" .. tostring(lmr:isLodEnabled()), "tilemap")
+end
+```
+
+### LLargeMapRenderer:setLodThresholds
+
+`LLargeMapRenderer:setLodThresholds(levels: table)`
+
+Sets the zoom thresholds at which LOD levels change.
+
+**Parameters**
+
+- `levels` (`table`, required): Array of zoom threshold values.
+
+**Lua API Stub**
+
+```lua
+--- Sets the zoom thresholds at which LOD levels change.
+---@param levels table Array of zoom threshold values.
+function LLargeMapRenderer:setLodThresholds(levels) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
+  lmr:setLodEnabled(true)
+  lmr:setLodThresholds({ 32, 64, 128 })
+  lurek.log.info("LOD thresholds configured", "tilemap")
+end
+```
+
+### LLargeMapRenderer:setMapData
+
+`LLargeMapRenderer:setMapData(data: table, width: integer, height: integer)`
+
+Replaces all tile data with a flat array of GIDs for the given dimensions.
+
+**Parameters**
+
+- `data` (`table`, required): Flat array of tile GIDs (row-major order).
+- `width` (`integer`, required): Map width in tiles.
+- `height` (`integer`, required): Map height in tiles.
+
+**Lua API Stub**
+
+```lua
+--- Replaces all tile data with a flat array of GIDs for the given dimensions.
+---@param data table Flat array of tile GIDs (row-major order).
+---@param width number Map width in tiles.
+---@param height number Map height in tiles.
+function LLargeMapRenderer:setMapData(data, width, height) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Pattern tile data for a checkerboard effect:
+  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
+  local map_data = {}
+  for i = 1, 8 * 8 do map_data[i] = (i % 4) + 1 end
+  lmr:setMapData(map_data, 8, 8)
+  local w, h = lmr:getMapSize()
+  lurek.log.info("map loaded: " .. w .. "x" .. h, "tilemap")
+end
+```
+
+### LLargeMapRenderer:setTile
+
+`LLargeMapRenderer:setTile(x: integer, y: integer, tileId: integer)`
+
+Sets a single tile GID at a given position.
+
+**Parameters**
+
+- `x` (`integer`, required): Column.
+- `y` (`integer`, required): Row.
+- `tileId` (`integer`, required): Tile GID to place.
+
+**Lua API Stub**
+
+```lua
+--- Sets a single tile GID at a given position.
+---@param x number Column.
+---@param y number Row.
+---@param tileId number Tile GID to place.
+function LLargeMapRenderer:setTile(x, y, tileId) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local map = lurek.tilemap.newLargeMapRenderer(16, 16)
+  map:setTile(1, 1, 5)
+  lurek.log.debug("tile set at (1,1)", "example")
+end
+```
+
+### LLargeMapRenderer:setTilesetColumns
+
+`LLargeMapRenderer:setTilesetColumns(cols: integer)`
+
+Sets the column count of the associated tileset atlas for UV calculation.
+
+**Parameters**
+
+- `cols` (`integer`, required): Number of columns in the tileset image.
+
+**Lua API Stub**
+
+```lua
+--- Sets the column count of the associated tileset atlas for UV calculation.
+---@param cols number Number of columns in the tileset image.
+function LLargeMapRenderer:setTilesetColumns(cols) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
+  lmr:setTilesetColumns(16)
+  lurek.log.info("tileset_cols=" .. lmr:getTilesetColumns(), "tilemap")
+end
+```
+
+### LLargeMapRenderer:setViewport
+
+`LLargeMapRenderer:setViewport(w: number, h: number)`
+
+Sets the viewport dimensions for visibility calculations.
+
+**Parameters**
+
+- `w` (`number`, required): Viewport width in pixels.
+- `h` (`number`, required): Viewport height in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Sets the viewport dimensions for visibility calculations.
+---@param w number Viewport width in pixels.
+---@param h number Viewport height in pixels.
+function LLargeMapRenderer:setViewport(w, h) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
+  lmr:setViewport(1280, 720)
+  lmr:setCamera(0, 0, 1.0)
+  lurek.log.info("viewport set 1280x720", "tilemap")
+end
+```
+
+### LLargeMapRenderer:type
+
+`LLargeMapRenderer:type() -> string`
+
+Returns the type name of this userdata.
+
+**Returns**: `string` - Always `"LLargeMapRenderer"`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name of this userdata.
+---@return string Always `"LLargeMapRenderer"`.
+function LLargeMapRenderer:type() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local obj = lurek.tilemap.newLargeMapRenderer(16, 16)
+  lurek.log.debug("type: " .. obj:type(), "example") -- "LLargeMapRenderer"
+end
+```
+
+### LLargeMapRenderer:typeOf
+
+`LLargeMapRenderer:typeOf(name: string) -> boolean`
+
+Checks whether this object matches the given type name.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to check against.
+
+**Returns**: `boolean` - True if `name` is `"LLargeMapRenderer"` or `"Object"`.
+
+**Lua API Stub**
+
+```lua
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check against.
+---@return boolean True if `name` is `"LLargeMapRenderer"` or `"Object"`.
+function LLargeMapRenderer:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local obj = lurek.tilemap.newLargeMapRenderer(16, 16)
+  lurek.log.debug("typeOf LLargeMapRenderer: " .. tostring(obj:typeOf("LLargeMapRenderer")), "example") -- true
+end
+```
+
+### LMapBlock:getDimensions
+
+`LMapBlock:getDimensions() -> integer`
+
+Returns both width and height of the block in tiles.
+
+**Returns**: `integer` - Width.
+
+**Lua API Stub**
+
+```lua
+--- Returns both width and height of the block in tiles.
+---@return number a Width.
+---@return number b Height.
+function LMapBlock:getDimensions() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local block = lurek.tilemap.newMapBlock(10, 6, 1, 2)
+  local w, h = block:getDimensions()
+  lurek.log.info("block " .. w .. "x" .. h, "tilemap")
+end
+```
+
+### LMapBlock:getHeight
+
+`LMapBlock:getHeight() -> integer`
+
+Returns the block height in tiles. This method is available to Lua scripts.
+
+**Returns**: `integer` - Height.
+
+**Lua API Stub**
+
+```lua
+--- Returns the block height in tiles. This method is available to Lua scripts.
+---@return number Height.
+function LMapBlock:getHeight() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local block = lurek.tilemap.newMapBlock(8, 12, 1, 4)
+  lurek.log.info("block height " .. block:getHeight() .. " tiles", "tilemap")
+end
+```
+
+### LMapBlock:getHeightInSegments
+
+`LMapBlock:getHeightInSegments() -> integer`
+
+Returns the block height measured in segments.
+
+**Returns**: `integer` - Height in segments.
+
+**Lua API Stub**
+
+```lua
+--- Returns the block height measured in segments.
+---@return number Height in segments.
+function LMapBlock:getHeightInSegments() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local block = lurek.tilemap.newMapBlock(8, 8, 1, 4)
+  lurek.log.info("block is " .. block:getHeightInSegments() .. " segments tall", "tilemap")
+end
+```
+
+### LMapBlock:getLayerCount
+
+`LMapBlock:getLayerCount() -> integer`
+
+Returns the number of tile layers in this block.
+
+**Returns**: `integer` - Layer count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of tile layers in this block.
+---@return number Layer count.
+function LMapBlock:getLayerCount() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local block = lurek.tilemap.newMapBlock(8, 8, 3, 4)
+  lurek.log.info("block has " .. block:getLayerCount() .. " layer(s)", "tilemap")
+end
+```
+
+### LMapBlock:getName
+
+`LMapBlock:getName() -> string`
+
+Returns the block's name. This method is available to Lua scripts.
+
+**Returns**: `string` - Block name.
+
+**Lua API Stub**
+
+```lua
+--- Returns the block's name. This method is available to Lua scripts.
+---@return string Block name.
+function LMapBlock:getName() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Identify which procedural block was placed during generation.
+  local block = lurek.tilemap.newMapBlock(8, 8, 1, 4)
+  block:setName("corridor_ew")
+  lurek.log.info("block name=" .. block:getName(), "tilemap")
+end
+```
+
+### LMapBlock:getSegmentSize
+
+`LMapBlock:getSegmentSize() -> integer`
+
+Returns the segment size used for edge matching.
+
+**Returns**: `integer` - Segment size in tiles.
+
+**Lua API Stub**
+
+```lua
+--- Returns the segment size used for edge matching.
+---@return number Segment size in tiles.
+function LMapBlock:getSegmentSize() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local block = lurek.tilemap.newMapBlock(8, 8, 1, 4)
+  lurek.log.info("segment size = " .. block:getSegmentSize() .. " tiles", "tilemap")
+end
+```
+
+### LMapBlock:getSide
+
+`LMapBlock:getSide(edge: string, segment: integer) -> integer`
+
+Returns the side ID for an edge segment.
+
+**Parameters**
+
+- `edge` (`string`, required): Edge direction: `"north"`, `"east"`, `"south"`, or `"west"`.
+- `segment` (`integer`, required): Segment index along the edge (1-based).
+
+**Returns**: `integer` - Side identifier.
+
+**Lua API Stub**
+
+```lua
+--- Returns the side ID for an edge segment.
+---@param edge string Edge direction: `"north"`, `"east"`, `"south"`, or `"west"`.
+---@param segment number Segment index along the edge (1-based).
+---@return number Side identifier.
+function LMapBlock:getSide(edge, segment) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local block = lurek.tilemap.newMapBlock(8, 8, 1, 4)
+  block:setSide("north", 1, 7)
+  local id = block:getSide("north", 1)
+  lurek.log.info("north edge segment 1 connection id=" .. id, "tilemap")
+end
+```
+
+### LMapBlock:getTile
+
+`LMapBlock:getTile(layer: integer, x: integer, y: integer) -> integer`
+
+Returns the tile GID at a position within the block.
+
+**Parameters**
+
+- `layer` (`integer`, required): Layer index (1-based).
+- `x` (`integer`, required): Column (1-based).
+- `y` (`integer`, required): Row (1-based).
+
+**Returns**: `integer` - Global tile ID.
+
+**Lua API Stub**
+
+```lua
+--- Returns the tile GID at a position within the block.
+---@param layer number Layer index (1-based).
+---@param x number Column (1-based).
+---@param y number Row (1-based).
+---@return number Global tile ID.
+function LMapBlock:getTile(layer, x, y) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
+  local data = {}; for i = 1, 4 * 4 do data[i] = i end
+  lmr:setMapData(data, 4, 4)
+  local id = lmr:getTile(1, 2)
+  lurek.log.info("tile(1,2)=" .. tostring(id), "tilemap")
+end
+```
+
+### LMapBlock:getWeight
+
+`LMapBlock:getWeight() -> number`
+
+Returns the current selection weight.
+
+**Returns**: `number` - Weight value.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current selection weight.
+---@return number Weight value.
+function LMapBlock:getWeight() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local block = lurek.tilemap.newMapBlock(8, 8, 1, 4)
+  if block:getWeight() < 1.0 then
+    lurek.log.warn("block '" .. block:getName() .. "' is rare", "tilemap")
+  end
+end
+```
+
+### LMapBlock:getWidth
+
+`LMapBlock:getWidth() -> integer`
+
+Returns the block width in tiles. This method is available to Lua scripts.
+
+**Returns**: `integer` - Width.
+
+**Lua API Stub**
+
+```lua
+--- Returns the block width in tiles. This method is available to Lua scripts.
+---@return number Width.
+function LMapBlock:getWidth() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local block = lurek.tilemap.newMapBlock(12, 8, 1, 4)
+  lurek.log.info("block width " .. block:getWidth() .. " tiles", "tilemap")
+end
+```
+
+### LMapBlock:getWidthInSegments
+
+`LMapBlock:getWidthInSegments() -> integer`
+
+Returns the block width measured in segments.
+
+**Returns**: `integer` - Width in segments.
+
+**Lua API Stub**
+
+```lua
+--- Returns the block width measured in segments.
+---@return number Width in segments.
+function LMapBlock:getWidthInSegments() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local block = lurek.tilemap.newMapBlock(8, 8, 1, 4)
+  lurek.log.info("block is " .. block:getWidthInSegments() .. " segments wide", "tilemap")
+end
+```
+
+### LMapBlock:setName
+
+`LMapBlock:setName(name: string)`
+
+Sets the block's name for identification during map generation.
+
+**Parameters**
+
+- `name` (`string`, required): Block name.
+
+**Lua API Stub**
+
+```lua
+--- Sets the block's name for identification during map generation.
+---@param name string Block name.
+function LMapBlock:setName(name) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local block = lurek.tilemap.newMapBlock(8, 8, 1, 4)
+  block:setName("treasure_room")
+  lurek.log.info("named block: " .. block:getName(), "tilemap")
+end
+```
+
+### LMapBlock:setSide
+
+`LMapBlock:setSide(edge: string, segment: integer, sideId: integer)`
+
+Sets the side ID for an edge segment, used for edge matching in map generation.
+
+**Parameters**
+
+- `edge` (`string`, required): Edge direction: `"north"`, `"east"`, `"south"`, or `"west"`.
+- `segment` (`integer`, required): Segment index along the edge (1-based).
+- `sideId` (`integer`, required): Side identifier for matching.
+
+**Lua API Stub**
+
+```lua
+--- Sets the side ID for an edge segment, used for edge matching in map generation.
+---@param edge string Edge direction: `"north"`, `"east"`, `"south"`, or `"west"`.
+---@param segment number Segment index along the edge (1-based).
+---@param sideId number Side identifier for matching.
+function LMapBlock:setSide(edge, segment, sideId) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Define edge connection IDs for the generator to match adjacent blocks.
+  -- Blocks connect when their shared edge segments have matching side IDs.
+  local block = lurek.tilemap.newMapBlock(8, 8, 1, 4)
+  block:setSide("north", 1, 5)  -- north edge, segment 1, connection ID 5
+  lurek.log.info("block side set", "tilemap")
+end
+```
+
+### LMapBlock:setTile
+
+`LMapBlock:setTile(layer: integer, x: integer, y: integer, gid: integer)`
+
+Sets a tile GID at a position within the block.
+
+**Parameters**
+
+- `layer` (`integer`, required): Layer index (1-based).
+- `x` (`integer`, required): Column (1-based).
+- `y` (`integer`, required): Row (1-based).
+- `gid` (`integer`, required): Global tile ID.
+
+**Lua API Stub**
+
+```lua
+--- Sets a tile GID at a position within the block.
+---@param layer number Layer index (1-based).
+---@param x number Column (1-based).
+---@param y number Row (1-based).
+---@param gid number Global tile ID.
+function LMapBlock:setTile(layer, x, y, gid) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
+  local data = {}; for i = 1, 8 * 8 do data[i] = 1 end
+  lmr:setMapData(data, 8, 8)
+  lmr:setTile(3, 2, 5)  -- column 3, row 2 (0-based) -> tile 5
+  lurek.log.info("tile(3,2)=" .. tostring(lmr:getTile(3, 2)), "tilemap")
+end
+```
+
+### LMapBlock:setWeight
+
+`LMapBlock:setWeight(weight: number)`
+
+Sets the selection weight for this block during random placement.
+
+**Parameters**
+
+- `weight` (`number`, required): Relative weight (higher = more likely to be chosen).
+
+**Lua API Stub**
+
+```lua
+--- Sets the selection weight for this block during random placement.
+---@param weight number Relative weight (higher = more likely to be chosen).
+function LMapBlock:setWeight(weight) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Higher weight = more likely to appear in procedural generation.
+  -- Use low weights for rare special rooms (boss, treasure).
+  local block = lurek.tilemap.newMapBlock(8, 8, 1, 4)
+  block:setWeight(3.5)  -- 3.5x more common than weight=1 blocks
+  lurek.log.info("weight = " .. block:getWeight(), "tilemap")
+end
+```
+
+### LMapBlock:type
+
+`LMapBlock:type() -> string`
+
+Returns the type name of this userdata.
+
+**Returns**: `string` - Always `"LMapBlock"`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name of this userdata.
+---@return string Always `"LMapBlock"`.
+function LMapBlock:type() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local obj = lurek.tilemap.newMapBlock(16, 16)
+  lurek.log.debug("type: " .. obj:type(), "example") -- "LMapBlock"
+end
+```
+
+### LMapBlock:typeOf
+
+`LMapBlock:typeOf(name: string) -> boolean`
+
+Checks whether this object matches the given type name.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to check against.
+
+**Returns**: `boolean` - True if `name` is `"LMapBlock"` or `"Object"`.
+
+**Lua API Stub**
+
+```lua
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check against.
+---@return boolean True if `name` is `"LMapBlock"` or `"Object"`.
+function LMapBlock:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local obj = lurek.tilemap.newMapBlock(16, 16)
+  lurek.log.debug("typeOf LMapBlock: " .. tostring(obj:typeOf("LMapBlock")), "example") -- true
+end
+```
+
+### LMapGen:generate
+
+`LMapGen:generate([scriptIdx]: integer, [seed]: integer, [layerName]: string) -> LTileMap`
+
+Runs the map generator, optionally using a specific script, seed, and layer name, returning a new tilemap.
+
+**Parameters**
+
+- `scriptIdx` (`integer`, optional): Script index in the group (1-based), or nil for default.
+- `seed` (`integer`, optional): Random seed, or nil for random.
+- `layerName` (`string`, optional): Output layer name (default `"main"`).
+
+**Returns**: `LTileMap` - Generated tilemap.
+
+**Lua API Stub**
+
+```lua
+--- Runs the map generator, optionally using a specific script, seed, and layer name, returning a new tilemap.
+---@param scriptIdx? number Script index in the group (1-based), or nil for default.
+---@param seed? number Random seed, or nil for random.
+---@param layerName? string Output layer name (default `"main"`).
+---@return LTileMap Generated tilemap.
+function LMapGen:generate(scriptIdx, seed, layerName) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- generate(scriptIdx, seed, layerName) -> LTileMap
+  -- scriptIdx = which script to run (nil = default)
+  -- seed = deterministic random seed (nil = random)
+  -- layerName = output layer name (default "main")
+  local grp = lurek.tilemap.newMapGroup("dungeon")
+  grp:addBlock(lurek.tilemap.newMapBlock(8, 8, 1, 4))
+  local gen = lurek.tilemap.newMapGen(grp, "medium", 4)
+  local tm = gen:generate(nil, 42)
+  lurek.log.info("dungeon generated with seed 42", "tilemap")
+end
+```
+
+### LMapGen:type
+
+`LMapGen:type() -> string`
+
+Returns the type name of this userdata.
+
+**Returns**: `string` - Always `"LMapGen"`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name of this userdata.
+---@return string Always `"LMapGen"`.
+function LMapGen:type() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
+  lurek.log.info("LargeMapRenderer:type = " .. lmr:type(), "tilemap")
+end
+```
+
+### LMapGen:typeOf
+
+`LMapGen:typeOf(name: string) -> boolean`
+
+Checks whether this object matches the given type name.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to check against.
+
+**Returns**: `boolean` - True if `name` is `"LMapGen"` or `"Object"`.
+
+**Lua API Stub**
+
+```lua
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check against.
+---@return boolean True if `name` is `"LMapGen"` or `"Object"`.
+function LMapGen:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
+  lurek.log.info("is LLargeMapRenderer: " .. tostring(lmr:typeOf("LLargeMapRenderer")), "tilemap")
+end
+```
+
+### LMapGroup:addBlock
+
+`LMapGroup:addBlock(block: LMapBlock)`
+
+Adds a map block to this group for use in generation.
+
+**Parameters**
+
+- `block` (`LMapBlock`, required): Block to add.
+
+**Lua API Stub**
+
+```lua
+--- Adds a map block to this group for use in generation.
+---@param block LMapBlock Block to add.
+function LMapGroup:addBlock(block) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Build a group with multiple room variants for the generator to pick from.
+  local group = lurek.tilemap.newMapGroup("rooms")
+  group:addBlock(lurek.tilemap.newMapBlock(8, 8, 1, 4))
+  group:addBlock(lurek.tilemap.newMapBlock(12, 8, 1, 4))
+  lurek.log.info("group has " .. group:getBlockCount() .. " blocks", "tilemap")
+end
+```
+
+### LMapGroup:addScript
+
+`LMapGroup:addScript(script: LMapScript)`
+
+Attaches a map-generation script to this group.
+
+**Parameters**
+
+- `script` (`LMapScript`, required): Script to add.
+
+**Lua API Stub**
+
+```lua
+--- Attaches a map-generation script to this group.
+---@param script LMapScript Script to add.
+function LMapGroup:addScript(script) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Attach generation scripts that run post-processing after block placement.
+  local group = lurek.tilemap.newMapGroup("rooms")
+  local script = lurek.tilemap.newMapScript()
+  script:addStep({ type = "fillRandom", gid = 1, chance = 0.2 })
+  group:addScript(script)
+end
+```
+
+### LMapGroup:getBlockCount
+
+`LMapGroup:getBlockCount() -> integer`
+
+Returns how many blocks are in this group.
+
+**Returns**: `integer` - Block count.
+
+**Lua API Stub**
+
+```lua
+--- Returns how many blocks are in this group.
+---@return number Block count.
+function LMapGroup:getBlockCount() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local group = lurek.tilemap.newMapGroup("rooms")
+  group:addBlock(lurek.tilemap.newMapBlock(8, 8, 1, 4))
+  if group:getBlockCount() == 0 then
+    lurek.log.error("group '" .. group:getName() .. "' is empty", "tilemap")
+  end
+end
+```
+
+### LMapGroup:getName
+
+`LMapGroup:getName() -> string`
+
+Returns the group name. This method is available to Lua scripts.
+
+**Returns**: `string` - Group name.
+
+**Lua API Stub**
+
+```lua
+--- Returns the group name. This method is available to Lua scripts.
+---@return string Group name.
+function LMapGroup:getName() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local group = lurek.tilemap.newMapGroup("dungeon_floor_1")
+  lurek.log.info("active group: " .. group:getName(), "tilemap")
+end
+```
+
+### LMapGroup:getScriptCount
+
+`LMapGroup:getScriptCount() -> integer`
+
+Returns how many scripts are attached to this group.
+
+**Returns**: `integer` - Script count.
+
+**Lua API Stub**
+
+```lua
+--- Returns how many scripts are attached to this group.
+---@return number Script count.
+function LMapGroup:getScriptCount() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local group = lurek.tilemap.newMapGroup("rooms")
+  group:addScript(lurek.tilemap.newMapScript())
+  lurek.log.info("group has " .. group:getScriptCount() .. " script(s)", "tilemap")
+end
+```
+
+### LMapGroup:removeBlock
+
+`LMapGroup:removeBlock(idx: integer)`
+
+Removes a block from the group by index.
+
+**Parameters**
+
+- `idx` (`integer`, required): Block index (1-based).
+
+**Lua API Stub**
+
+```lua
+--- Removes a block from the group by index.
+---@param idx number Block index (1-based).
+function LMapGroup:removeBlock(idx) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Remove blocks by index (e.g. disabling a room type at runtime).
+  local group = lurek.tilemap.newMapGroup("rooms")
+  group:addBlock(lurek.tilemap.newMapBlock(8, 8, 1, 4))
+  group:addBlock(lurek.tilemap.newMapBlock(12, 8, 1, 4))
+  group:removeBlock(1)  -- drop first block
+end
+```
+
+### LMapGroup:type
+
+`LMapGroup:type() -> string`
+
+Returns the type name of this userdata.
+
+**Returns**: `string` - Always `"LMapGroup"`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name of this userdata.
+---@return string Always `"LMapGroup"`.
+function LMapGroup:type() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local obj = lurek.tilemap.newMapGroup("test_group")
+  lurek.log.debug("type: " .. obj:type(), "example") -- "LMapGroup"
+end
+```
+
+### LMapGroup:typeOf
+
+`LMapGroup:typeOf(name: string) -> boolean`
+
+Checks whether this object matches the given type name.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to check against.
+
+**Returns**: `boolean` - True if `name` is `"LMapGroup"` or `"Object"`.
+
+**Lua API Stub**
+
+```lua
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check against.
+---@return boolean True if `name` is `"LMapGroup"` or `"Object"`.
+function LMapGroup:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local obj = lurek.tilemap.newMapGroup("test_group")
+  lurek.log.debug("typeOf LMapGroup: " .. tostring(obj:typeOf("LMapGroup")), "example") -- true
+end
+```
+
+### LMapScript:addStep
+
+`LMapScript:addStep(stepDef: table)`
+
+Appends a generation step. The step table must have a `type` field and optional parameters.
+
+**Parameters**
+
+- `stepDef` (`table`, required): Step definition with `type` and parameters like `x`, `y`, `w`, `h`, `gid`, `chance`, etc.
+
+**Lua API Stub**
+
+```lua
+--- Appends a generation step. The step table must have a `type` field and optional parameters.
+---@param stepDef table Step definition with `type` and parameters like `x`, `y`, `w`, `h`, `gid`, `chance`, etc.
+function LMapScript:addStep(stepDef) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Steps define procedural operations: fill, carve, scatter, path drawing.
+  -- Each step is a table with a "type" field and operation-specific params.
+  local script = lurek.tilemap.newMapScript()
+  script:addStep({ type = "fillRect", x = 0, y = 0, w = 16, h = 16, gid = 1 })
+  script:addStep({ type = "drawPath", x = 1, y = 1, w = 14, h = 14, gid = 2, pathWidth = 2 })
+  lurek.log.info("authored " .. script:getStepCount() .. " step(s)", "tilemap")
+end
+```
+
+### LMapScript:getStepCount
+
+`LMapScript:getStepCount() -> integer`
+
+Returns the number of generation steps in this script.
+
+**Returns**: `integer` - Step count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of generation steps in this script.
+---@return number Step count.
+function LMapScript:getStepCount() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local script = lurek.tilemap.newMapScript()
+  script:addStep({ type = "fillArea", x = 1, y = 1, w = 8, h = 8, gid = 1 })
+  lurek.log.info("script step count: " .. script:getStepCount(), "tilemap")
+end
+```
+
+### LMapScript:type
+
+`LMapScript:type() -> string`
+
+Returns the type name of this userdata.
+
+**Returns**: `string` - Always `"LMapScript"`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name of this userdata.
+---@return string Always `"LMapScript"`.
+function LMapScript:type() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local obj = lurek.tilemap.newMapScript()
+  lurek.log.debug("type: " .. obj:type(), "example") -- "LMapScript"
+end
+```
+
+### LMapScript:typeOf
+
+`LMapScript:typeOf(name: string) -> boolean`
+
+Checks whether this object matches the given type name.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to check against.
+
+**Returns**: `boolean` - True if `name` is `"LMapScript"` or `"Object"`.
+
+**Lua API Stub**
+
+```lua
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check against.
+---@return boolean True if `name` is `"LMapScript"` or `"Object"`.
+function LMapScript:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local obj = lurek.tilemap.newMapScript()
+  lurek.log.debug("typeOf LMapScript: " .. tostring(obj:typeOf("LMapScript")), "example") -- true
+end
+```
+
+### LTileMap:addLayer
+
+`LTileMap:addLayer(name: string, w: integer, h: integer) -> integer`
+
+Creates a new tile layer with the given name and dimensions.
+
+**Parameters**
+
+- `name` (`string`, required): Layer name.
+- `w` (`integer`, required): Width in tiles.
+- `h` (`integer`, required): Height in tiles.
+
+**Returns**: `integer` - Index of the new layer (1-based).
+
+**Lua API Stub**
+
+```lua
+--- Creates a new tile layer with the given name and dimensions.
+---@param name string Layer name.
+---@param w number Width in tiles.
+---@param h number Height in tiles.
+---@return number Index of the new layer (1-based).
+function LTileMap:addLayer(name, w, h) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Layers stack visually: lower index = drawn first (further back).
+  -- Common pattern: background, main terrain, collision, foreground overlay.
+  local map = lurek.tilemap.newTileMap(16, 16)
+  local bg = map:addLayer("background", 64, 64)
+  local fg = map:addLayer("collision", 64, 64)
+  lurek.log.info("background=layer" .. bg .. " collision=layer" .. fg, "tilemap")
+end
+```
+
+### LTileMap:addTileSet
+
+`LTileMap:addTileSet(tileSet: LTileSet)`
+
+Attaches a tileset to this map for tile rendering.
+
+**Parameters**
+
+- `tileSet` (`LTileSet`, required): Tileset to add.
+
+**Lua API Stub**
+
+```lua
+--- Attaches a tileset to this map for tile rendering.
+---@param tileSet LTileSet Tileset to add.
+function LTileMap:addTileSet(tileSet) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Attach tilesets so the map knows which atlas to use for rendering.
+  -- Multiple tilesets can be attached (terrain + props + characters).
+  local map = lurek.tilemap.newTileMap(16, 16)
+  local terrain = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
+  map:addTileSet(terrain)
+  lurek.log.info("map now has " .. map:getTileSetCount() .. " tileset(s)", "tilemap")
+end
+```
+
+### LTileMap:applyAutoTile
+
+`LTileMap:applyAutoTile(layer: integer, typeName: string)`
+
+Runs 4-bit auto-tiling on an entire layer, replacing tiles according to registered rules.
+
+**Parameters**
+
+- `layer` (`integer`, required): Layer index (1-based).
+- `typeName` (`string`, required): Tile type name whose rules to apply.
+
+**Lua API Stub**
+
+```lua
+--- Runs 4-bit auto-tiling on an entire layer, replacing tiles according to registered rules.
+---@param layer number Layer index (1-based).
+---@param typeName string Tile type name whose rules to apply.
+function LTileMap:applyAutoTile(layer, typeName) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Run 4-bit auto-tiling on an entire layer. Each tile is replaced by
+  -- the correct variant based on its N/E/S/W neighbors and the registered rules.
+  -- Call after bulk map edits (loading, generation).
+  local map = lurek.tilemap.newTileMap(16, 16)
+  map:addLayer("terrain", 16, 16)
+  map:fill(1, 1)
+  map:applyAutoTile(1, "terrain")
+  lurek.log.info("4-bit auto-tile applied to full layer", "tilemap")
+end
+```
+
+### LTileMap:applyAutoTile8
+
+`LTileMap:applyAutoTile8(layer: integer, typeName: string)`
+
+Runs 8-bit auto-tiling on an entire layer, considering diagonal neighbors.
+
+**Parameters**
+
+- `layer` (`integer`, required): Layer index (1-based).
+- `typeName` (`string`, required): Tile type name whose rules to apply.
+
+**Lua API Stub**
+
+```lua
+--- Runs 8-bit auto-tiling on an entire layer, considering diagonal neighbors.
+---@param layer number Layer index (1-based).
+---@param typeName string Tile type name whose rules to apply.
+function LTileMap:applyAutoTile8(layer, typeName) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- 8-bit auto-tiling considers diagonal neighbors for smoother transitions.
+  -- More expensive but produces nicer-looking terrain borders.
+  local map = lurek.tilemap.newTileMap(16, 16)
+  map:addLayer("terrain", 16, 16)
+  map:fill(1, 1)
+  map:applyAutoTile8(1, "terrain")
+  lurek.log.info("8-bit auto-tile applied to full layer", "tilemap")
+end
+```
+
+### LTileMap:applyAutoTile8At
+
+`LTileMap:applyAutoTile8At(layer: integer, x: integer, y: integer, typeName: string)`
+
+Runs 8-bit auto-tiling at a single tile position and updates it and its neighbors.
+
+**Parameters**
+
+- `layer` (`integer`, required): Layer index (1-based).
+- `x` (`integer`, required): Column (1-based).
+- `y` (`integer`, required): Row (1-based).
+- `typeName` (`string`, required): Tile type name whose rules to apply.
+
+**Lua API Stub**
+
+```lua
+--- Runs 8-bit auto-tiling at a single tile position and updates it and its neighbors.
+---@param layer number Layer index (1-based).
+---@param x number Column (1-based).
+---@param y number Row (1-based).
+---@param typeName string Tile type name whose rules to apply.
+function LTileMap:applyAutoTile8At(layer, x, y, typeName) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- 8-bit single-cell update (diagonal-aware version of applyAutoTileAt).
+  local map = lurek.tilemap.newTileMap(16, 16, 16)
+  map:addLayer("terrain", 20, 20)
+  map:setTile(1, 5, 5, 1)
+  map:applyAutoTile8At(1, 5, 5, "terrain")
+  lurek.log.info("8-bit auto-tile updated at (5,5)", "tilemap")
+end
+```
+
+### LTileMap:applyAutoTileAt
+
+`LTileMap:applyAutoTileAt(layer: integer, x: integer, y: integer, typeName: string)`
+
+Runs 4-bit auto-tiling at a single tile position and updates it and its neighbors.
+
+**Parameters**
+
+- `layer` (`integer`, required): Layer index (1-based).
+- `x` (`integer`, required): Column (1-based).
+- `y` (`integer`, required): Row (1-based).
+- `typeName` (`string`, required): Tile type name whose rules to apply.
+
+**Lua API Stub**
+
+```lua
+--- Runs 4-bit auto-tiling at a single tile position and updates it and its neighbors.
+---@param layer number Layer index (1-based).
+---@param x number Column (1-based).
+---@param y number Row (1-based).
+---@param typeName string Tile type name whose rules to apply.
+function LTileMap:applyAutoTileAt(layer, x, y, typeName) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Update auto-tiling at a single position and its neighbors.
+  -- Use after placing/removing individual tiles (real-time editing).
+  -- Much cheaper than re-tiling the entire layer.
+  local map = lurek.tilemap.newTileMap(16, 16)
+  map:addLayer("terrain", 16, 16)
+  map:setTile(1, 8, 8, 1)
+  map:applyAutoTileAt(1, 8, 8, "terrain")
+  lurek.log.info("auto-tile updated at (8,8) and neighbors", "tilemap")
+end
+```
+
+### LTileMap:checkEntities
+
+`LTileMap:checkEntities(layer: integer, entities: table)`
+
+Checks a list of entities against registered tile-enter callbacks on a layer.
+
+**Parameters**
+
+- `layer` (`integer`, required): Layer index (1-based).
+- `entities` (`table`, required): Array of entity tables, each with `x`/`y` or `[1]`/`[2]` fields.
+
+**Lua API Stub**
+
+```lua
+--- Checks a list of entities against registered tile-enter callbacks on a layer.
+---@param layer number Layer index (1-based).
+---@param entities table Array of entity tables, each with `x`/`y` or `[1]`/`[2]` fields.
+function LTileMap:checkEntities(layer, entities) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Call each frame with your entity list to trigger enter/step/exit callbacks.
+  -- Each entity needs x,y fields (world-space pixel position).
+  local map = lurek.tilemap.newTileMap(16, 16)
+  map:addLayer("triggers", 16, 16)
+  map:onTileStep(1, function(entity, tx, ty)
+    lurek.log.info("overlap at " .. tx .. "," .. ty, "tilemap")
+  end)
+  map:checkEntities(1, { { x = 40, y = 40 } })
+  lurek.log.info("entities checked against tile callbacks", "tilemap")
+end
+```
+
+### LTileMap:clearTile
+
+`LTileMap:clearTile(layer: integer, x: integer, y: integer)`
+
+Removes the tile at a specific grid position, setting it to empty (GID 0).
+
+**Parameters**
+
+- `layer` (`integer`, required): Layer index (1-based).
+- `x` (`integer`, required): Column (1-based).
+- `y` (`integer`, required): Row (1-based).
+
+**Lua API Stub**
+
+```lua
+--- Removes the tile at a specific grid position, setting it to empty (GID 0).
+---@param layer number Layer index (1-based).
+---@param x number Column (1-based).
+---@param y number Row (1-based).
+function LTileMap:clearTile(layer, x, y) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Destroy a wall tile when player uses a bomb.
+  local map = lurek.tilemap.newTileMap(16, 16)
+  map:addLayer("walls", 16, 16)
+  map:setTile(1, 8, 8, 5)
+  map:clearTile(1, 8, 8)
+  lurek.log.info("wall destroyed at (8,8)", "tilemap")
+end
+```
+
+### LTileMap:drawToImage
+
+`LTileMap:drawToImage(tileSize: integer) -> LImage`
+
+Rasterizes the map into an image using the given tile size, returning an image handle.
+
+**Parameters**
+
+- `tileSize` (`integer`, required): Pixel size of each tile in the output image.
+
+**Returns**: `LImage` - Rasterized image of the map.
+
+**Lua API Stub**
+
+```lua
+--- Rasterizes the map into an image using the given tile size, returning an image handle.
+---@param tileSize number Pixel size of each tile in the output image.
+---@return LImage Rasterized image of the map.
+function LTileMap:drawToImage(tileSize) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Rasterize the map into an image for minimap thumbnails or screenshots.
+  -- tileSize = pixel size per tile in the output image (2 = tiny preview).
+  local map = lurek.tilemap.newTileMap(16, 16)
+  map:addLayer("background", 32, 32)
+  local thumb = map:drawToImage(2)
+  lurek.log.info("rendered map preview to ImageData", "tilemap")
+end
+```
+
+### LTileMap:fill
+
+`LTileMap:fill(layer: integer, gid: integer)`
+
+Fills every cell of a layer with the given GID.
+
+**Parameters**
+
+- `layer` (`integer`, required): Layer index (1-based).
+- `gid` (`integer`, required): Global tile ID to fill with.
+
+**Lua API Stub**
+
+```lua
+--- Fills every cell of a layer with the given GID.
+---@param layer number Layer index (1-based).
+---@param gid number Global tile ID to fill with.
+function LTileMap:fill(layer, gid) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Fill an entire layer with a single GID. Useful for initialization.
+  local map = lurek.tilemap.newTileMap(16, 16)
+  local bg = map:addLayer("background", 32, 32)
+  map:fill(bg, 1)  -- gid 1 = grass tile everywhere
+  lurek.log.info("background filled with grass", "tilemap")
+end
+```
+
+### LTileMap:findTilesByGid
+
+`LTileMap:findTilesByGid(layer: integer, gid: integer) -> table`
+
+Returns all positions on a layer that contain a specific GID.
+
+**Parameters**
+
+- `layer` (`integer`, required): Layer index (1-based).
+- `gid` (`integer`, required): Global tile ID to search for.
+
+**Returns**: `table` - Array of `{x=number, y=number}` positions.
+
+**Lua API Stub**
+
+```lua
+--- Returns all positions on a layer that contain a specific GID.
+---@param layer number Layer index (1-based).
+---@param gid number Global tile ID to search for.
+---@return LTileMapFindTilesByGidResult Array of `{x=number, y=number}` positions.
+function LTileMap:findTilesByGid(layer, gid) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Simpler than tileTypeIndex when you only need positions for one GID.
+  -- Returns an array of {x=number, y=number}.
+  local map = lurek.tilemap.newTileMap(16, 16, 8)
+  map:addLayer("ground", 4, 4)
+  map:setTile(1, 1, 1, 3)
+  map:setTile(1, 3, 3, 3)
+  local pos = map:findTilesByGid(1, 3)
+  lurek.log.info("found gid=3 at " .. #pos .. " positions", "tilemap")
+end
+```
+
+### LTileMap:fireTileExit
+
+`LTileMap:fireTileExit(gid: integer, entity: table, tx: integer, ty: integer)`
+
+Manually fires the tile-exit callback for a specific GID and entity at a tile position.
+
+**Parameters**
+
+- `gid` (`integer`, required): Global tile ID.
+- `entity` (`table`, required): Entity table to pass to the callback.
+- `tx` (`integer`, required): Tile column.
+- `ty` (`integer`, required): Tile row.
+
+**Lua API Stub**
+
+```lua
+--- Manually fires the tile-exit callback for a specific GID and entity at a tile position.
+---@param gid number Global tile ID.
+---@param entity table Entity table to pass to the callback.
+---@param tx number Tile column.
+---@param ty number Tile row.
+function LTileMap:fireTileExit(gid, entity, tx, ty) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Manually fire a tile exit callback.
+  local map = lurek.tilemap.newTileMap(16, 16)
+  map:fireTileExit(5, { id = "player", x = 64, y = 64 }, 2, 3)
+  lurek.log.debug("fireTileExit manually called", "tilemap")
+end
+```
+
+### LTileMap:fireTileStep
+
+`LTileMap:fireTileStep(gid: integer, entity: table, tx: integer, ty: integer)`
+
+Manually fires the tile-step callback for a specific GID and entity at a tile position.
+
+**Parameters**
+
+- `gid` (`integer`, required): Global tile ID.
+- `entity` (`table`, required): Entity table to pass to the callback.
+- `tx` (`integer`, required): Tile column.
+- `ty` (`integer`, required): Tile row.
+
+**Lua API Stub**
+
+```lua
+--- Manually fires the tile-step callback for a specific GID and entity at a tile position.
+---@param gid number Global tile ID.
+---@param entity table Entity table to pass to the callback.
+---@param tx number Tile column.
+---@param ty number Tile row.
+function LTileMap:fireTileStep(gid, entity, tx, ty) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Manually fire a tile step callback (useful for scripted triggers).
+  local map = lurek.tilemap.newTileMap(16, 16)
+  map:fireTileStep(5, { id = "player", x = 64, y = 64 }, 2, 3)
+  lurek.log.debug("fireTileStep manually called", "tilemap")
+end
+```
+
+### LTileMap:getChunkSize
+
+`LTileMap:getChunkSize() -> integer`
+
+Returns the chunk size used for internal tile storage.
+
+**Returns**: `integer` - Chunk size in tiles per side.
+
+**Lua API Stub**
+
+```lua
+--- Returns the chunk size used for internal tile storage.
+---@return number Chunk size in tiles per side.
+function LTileMap:getChunkSize() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Log storage parameters for debugging memory usage.
+  local map = lurek.tilemap.newTileMap(16, 16, 64)
+  lurek.log.info("internal chunk=" .. map:getChunkSize() .. " tiles/side", "tilemap")
+end
+```
+
+### LTileMap:getLayerColor
+
+`LTileMap:getLayerColor(idx: integer) -> number`
+
+Returns the tint color of a layer as four RGBA components.
+
+**Parameters**
+
+- `idx` (`integer`, required): Layer index (1-based).
+
+**Returns**: `number` - Red (0..1).
+
+**Lua API Stub**
+
+```lua
+--- Returns the tint color of a layer as four RGBA components.
+---@param idx number Layer index (1-based).
+---@return number a Red (0..1).
+---@return number b Green (0..1).
+---@return number c Blue (0..1).
+---@return number d Alpha (0..1).
+function LTileMap:getLayerColor(idx) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Layer tint is RGBA (0..1). Use for time-of-day or mood lighting.
+  local map = lurek.tilemap.newTileMap(16, 16)
+  map:addLayer("background", 32, 32)
+  local r, g, b, a = map:getLayerColor(1)
+  lurek.log.info("background tint rgba=" .. r .. "," .. g .. "," .. b .. "," .. a, "tilemap")
+end
+```
+
+### LTileMap:getLayerCount
+
+`LTileMap:getLayerCount() -> integer`
+
+Returns the total number of layers in this map.
+
+**Returns**: `integer` - Layer count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the total number of layers in this map.
+---@return number Layer count.
+function LTileMap:getLayerCount() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Iterate all layers for serialization.
+  local map = lurek.tilemap.newTileMap(16, 16)
+  map:addLayer("bg", 32, 32)
+  map:addLayer("fg", 32, 32)
+  lurek.log.info("total layers=" .. map:getLayerCount(), "tilemap")
+end
+```
+
+### LTileMap:getLayerName
+
+`LTileMap:getLayerName(idx: integer) -> string`
+
+Returns the name of a layer by index.
+
+**Parameters**
+
+- `idx` (`integer`, required): Layer index (1-based).
+
+**Returns**: `string` - Layer name, or nil if index is out of range.
+
+**Lua API Stub**
+
+```lua
+--- Returns the name of a layer by index.
+---@param idx number Layer index (1-based).
+---@return string Layer name, or nil if index is out of range.
+function LTileMap:getLayerName(idx) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Find a layer by name (useful when loading TMX where indices may vary).
+  local map = lurek.tilemap.newTileMap(16, 16)
+  map:addLayer("collision", 32, 32)
+  local name = map:getLayerName(1)
+  if name == "collision" then
+    lurek.log.info("layer 1 is the collision layer", "tilemap")
+  end
+end
+```
+
+### LTileMap:getLayerOffset
+
+`LTileMap:getLayerOffset(idx: integer) -> number`
+
+Returns the pixel offset of a layer.
+
+**Parameters**
+
+- `idx` (`integer`, required): Layer index (1-based).
+
+**Returns**: `number` - Horizontal offset.
+
+**Lua API Stub**
+
+```lua
+--- Returns the pixel offset of a layer.
+---@param idx number Layer index (1-based).
+---@return number a Horizontal offset.
+---@return number b Vertical offset.
+function LTileMap:getLayerOffset(idx) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local map = lurek.tilemap.newTileMap(16, 16)
+  map:addLayer("background", 32, 32)
+  local ox, oy = map:getLayerOffset(1)
+  lurek.log.info("layer offset px=(" .. ox .. ", " .. oy .. ")", "tilemap")
+end
+```
+
+### LTileMap:getLayerParallax
+
+`LTileMap:getLayerParallax(idx: integer) -> number`
+
+Returns the parallax scroll factor of a layer.
+
+**Parameters**
+
+- `idx` (`integer`, required): Layer index (1-based).
+
+**Returns**: `number` - Horizontal parallax factor.
+
+**Lua API Stub**
+
+```lua
+--- Returns the parallax scroll factor of a layer.
+---@param idx number Layer index (1-based).
+---@return number a Horizontal parallax factor.
+---@return number b Vertical parallax factor.
+function LTileMap:getLayerParallax(idx) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local map = lurek.tilemap.newTileMap(16, 16)
+  map:addLayer("clouds", 64, 32)
+  local px, py = map:getLayerParallax(1)
+  lurek.log.info("clouds parallax=(" .. px .. ", " .. py .. ")", "tilemap")
+end
+```
+
+### LTileMap:getLayerVisible
+
+`LTileMap:getLayerVisible(idx: integer) -> boolean`
+
+Returns whether a layer is currently visible.
+
+**Parameters**
+
+- `idx` (`integer`, required): Layer index (1-based).
+
+**Returns**: `boolean` - True if the layer is visible.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether a layer is currently visible.
+---@param idx number Layer index (1-based).
+---@return boolean True if the layer is visible.
+function LTileMap:getLayerVisible(idx) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local map = lurek.tilemap.newTileMap(16, 16)
+  map:addLayer("collision", 32, 32)
+  if not map:getLayerVisible(1) then
+    lurek.log.warn("collision layer is hidden", "tilemap")
+  end
+end
+```
+
+### LTileMap:getOrientation
+
+`LTileMap:getOrientation() -> string`
+
+Returns the current map orientation as a string.
+
+**Returns**: `string` - One of `"topdown"`, `"sideview"`, `"isometric"`, `"hexagonal"`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current map orientation as a string.
+---@return string One of `"topdown"`, `"sideview"`, `"isometric"`, `"hexagonal"`.
+function LTileMap:getOrientation() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Orientation affects coordinate transforms and rendering order.
+  -- Values: "topdown", "sideview", "isometric", "hexagonal".
+  local map = lurek.tilemap.newTileMap(16, 16)
+  local o = map:getOrientation()
+  if o == "topdown" then
+    lurek.log.info("using top-down 4-way movement", "input")
+  end
+end
+```
+
+### LTileMap:getTile
+
+`LTileMap:getTile(layer: integer, x: integer, y: integer) -> integer`
+
+Returns the tile GID at a specific grid position on a layer.
+
+**Parameters**
+
+- `layer` (`integer`, required): Layer index (1-based).
+- `x` (`integer`, required): Column (1-based).
+- `y` (`integer`, required): Row (1-based).
+
+**Returns**: `integer` - Global tile ID at that position.
+
+**Lua API Stub**
+
+```lua
+--- Returns the tile GID at a specific grid position on a layer.
+---@param layer number Layer index (1-based).
+---@param x number Column (1-based).
+---@param y number Row (1-based).
+---@return number Global tile ID at that position.
+function LTileMap:getTile(layer, x, y) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Check if a position already has a tile before placing.
+  local map = lurek.tilemap.newTileMap(16, 16)
+  map:addLayer("ground", 16, 16)
+  local gid = map:getTile(1, 5, 5)
+  lurek.log.info("tile at (5,5) gid=" .. gid, "tilemap")
+end
+```
+
+### LTileMap:getTileDimensions
+
+`LTileMap:getTileDimensions() -> integer`
+
+Returns both tile width and height in pixels.
+
+**Returns**: `integer` - Tile width.
+
+**Lua API Stub**
+
+```lua
+--- Returns both tile width and height in pixels.
+---@return number a Tile width.
+---@return number b Tile height.
+function LTileMap:getTileDimensions() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local map = lurek.tilemap.newTileMap(16, 16)
+  local tw, th = map:getTileDimensions()
+  lurek.log.info("tile size " .. tw .. "x" .. th, "tilemap")
+end
+```
+
+### LTileMap:getTileHeight
+
+`LTileMap:getTileHeight() -> integer`
+
+Returns the height of a single tile in pixels for this map.
+
+**Returns**: `integer` - Tile height in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns the height of a single tile in pixels for this map.
+---@return number Tile height in pixels.
+function LTileMap:getTileHeight() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Calculate entity snap-to-grid offset.
+  local map = lurek.tilemap.newTileMap(16, 24)
+  lurek.log.info("row height=" .. map:getTileHeight() .. " px", "tilemap")
+end
+```
+
+### LTileMap:getTileSet
+
+`LTileMap:getTileSet(idx: integer) -> LTileSet`
+
+Returns the tileset at the given index.
+
+**Parameters**
+
+- `idx` (`integer`, required): Tileset index (1-based).
+
+**Returns**: `LTileSet` - The tileset, or nil if index is out of range.
+
+**Lua API Stub**
+
+```lua
+--- Returns the tileset at the given index.
+---@param idx number Tileset index (1-based).
+---@return LTileSet The tileset, or nil if index is out of range.
+function LTileMap:getTileSet(idx) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local map = lurek.tilemap.newTileMap(16, 16)
+  map:addTileSet(lurek.tilemap.newTileSet(1, 64, 8, 16, 16))
+  local ts = map:getTileSet(1)
+  if ts then
+    lurek.log.info("first tileset has " .. ts:getTileCount() .. " tiles", "tilemap")
+  end
+end
+```
+
+### LTileMap:getTileSetCount
+
+`LTileMap:getTileSetCount() -> integer`
+
+Returns how many tilesets are attached to this map.
+
+**Returns**: `integer` - Tileset count.
+
+**Lua API Stub**
+
+```lua
+--- Returns how many tilesets are attached to this map.
+---@return number Tileset count.
+function LTileMap:getTileSetCount() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local map = lurek.tilemap.newTileMap(16, 16)
+  map:addTileSet(lurek.tilemap.newTileSet(1, 32, 8, 16, 16))
+  map:addTileSet(lurek.tilemap.newTileSet(33, 32, 8, 16, 16))
+  lurek.log.info("tilesets attached: " .. map:getTileSetCount(), "tilemap")
+end
+```
+
+### LTileMap:getTileWidth
+
+`LTileMap:getTileWidth() -> integer`
+
+Returns the width of a single tile in pixels for this map.
+
+**Returns**: `integer` - Tile width in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns the width of a single tile in pixels for this map.
+---@return number Tile width in pixels.
+function LTileMap:getTileWidth() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Calculate world-space position from tile coordinate.
+  local map = lurek.tilemap.newTileMap(32, 32)
+  local px = 5 * map:getTileWidth()
+  lurek.log.info("tile col 5 starts at x=" .. px, "tilemap")
+end
+```
+
+### LTileMap:getViewport
+
+`LTileMap:getViewport() -> number`
+
+Returns the current viewport rectangle, or nils if none is set.
+
+**Returns**: `number` - Left edge.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current viewport rectangle, or nils if none is set.
+---@return number a Left edge.
+---@return number b Top edge.
+---@return number c Width.
+---@return number d Height.
+function LTileMap:getViewport() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local map = lurek.tilemap.newTileMap(16, 16)
+  local x, y, w, h = map:getViewport()
+  if x == nil then
+    lurek.log.info("no viewport set, will render full map", "tilemap")
+  end
+end
+```
+
+### LTileMap:isSolid
+
+`LTileMap:isSolid(layer: integer, x: integer, y: integer) -> boolean`
+
+Checks whether the tile at a given position on a layer is solid.
+
+**Parameters**
+
+- `layer` (`integer`, required): Layer index (1-based).
+- `x` (`integer`, required): Column (1-based).
+- `y` (`integer`, required): Row (1-based).
+
+**Returns**: `boolean` - True if the tile at that position is marked solid.
+
+**Lua API Stub**
+
+```lua
+--- Checks whether the tile at a given position on a layer is solid.
+---@param layer number Layer index (1-based).
+---@param x number Column (1-based).
+---@param y number Row (1-based).
+---@return boolean True if the tile at that position is marked solid.
+function LTileMap:isSolid(layer, x, y) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Quick point check: is the tile at (x,y) marked solid?
+  -- Relies on the attached tileset's setSolid() configuration.
+  local map = lurek.tilemap.newTileMap(16, 16)
+  local layer = map:addLayer("collision", 32, 32)
+  if map:isSolid(layer, 4, 4) then
+    lurek.log.info("(4,4) blocks movement", "physics")
+  end
+end
+```
+
+### LTileMap:onTileEnter
+
+`LTileMap:onTileEnter(gid: integer, func: function)`
+
+Registers a callback invoked when an entity enters a tile with the given GID.
+
+**Parameters**
+
+- `gid` (`integer`, required): Global tile ID to watch for.
+- `func` (`function`, required): Callback receiving `(wx, wy, tx, ty)`.
+
+**Lua API Stub**
+
+```lua
+--- Registers a callback invoked when an entity enters a tile with the given GID.
+---@param gid number Global tile ID to watch for.
+---@param func function Callback receiving `(wx, wy, tx, ty)`.
+function LTileMap:onTileEnter(gid, func) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Register a callback for when an entity first enters a tile with this GID.
+  -- Use for: traps, collectibles, zone transitions, lava damage on entry.
+  local map = lurek.tilemap.newTileMap(16, 16)
+  map:addLayer("triggers", 32, 32)
+  map:onTileEnter(5, function(wx, wy, tx, ty)
+    lurek.log.info("entity entered trigger tile at (" .. tx .. "," .. ty .. ")", "tilemap")
+  end)
+  lurek.log.info("tile enter callback registered for gid=5", "tilemap")
+end
+```
+
+### LTileMap:onTileExit
+
+`LTileMap:onTileExit(gid: integer, func: function)`
+
+Registers a callback invoked when an entity leaves a tile with the given GID.
+
+**Parameters**
+
+- `gid` (`integer`, required): Global tile ID to watch for.
+- `func` (`function`, required): Callback receiving `(entity, tx, ty)`.
+
+**Lua API Stub**
+
+```lua
+--- Registers a callback invoked when an entity leaves a tile with the given GID.
+---@param gid number Global tile ID to watch for.
+---@param func function Callback receiving `(entity, tx, ty)`.
+function LTileMap:onTileExit(gid, func) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- onTileExit fires when an entity leaves a tile. Use for cleanup:
+  -- stop damage-over-time, remove status effects applied on enter.
+  local map = lurek.tilemap.newTileMap(16, 16)
+  map:onTileExit(5, function(entity, tx, ty)
+    lurek.log.debug("entity exited gid=5 at " .. tx .. "," .. ty, "tilemap")
+  end)
+end
+```
+
+### LTileMap:onTileStep
+
+`LTileMap:onTileStep(gid: integer, func: function)`
+
+Registers a callback invoked each frame an entity remains on a tile with the given GID.
+
+**Parameters**
+
+- `gid` (`integer`, required): Global tile ID to watch for.
+- `func` (`function`, required): Callback receiving `(entity, tx, ty)`.
+
+**Lua API Stub**
+
+```lua
+--- Registers a callback invoked each frame an entity remains on a tile with the given GID.
+---@param gid number Global tile ID to watch for.
+---@param func function Callback receiving `(entity, tx, ty)`.
+function LTileMap:onTileStep(gid, func) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- onTileStep fires every frame an entity remains on the tile.
+  -- Use for: continuous damage (poison swamp), slowing effects, particle spawning.
+  local map = lurek.tilemap.newTileMap(16, 16)
+  map:onTileStep(5, function(entity, tx, ty)
+    lurek.log.debug("entity stepping on gid=5 at " .. tx .. "," .. ty, "tilemap")
+  end)
+end
+```
+
+### LTileMap:rectOverlapsSolid
+
+`LTileMap:rectOverlapsSolid(layer: integer, x: number, y: number, w: number, h: number) -> boolean`
+
+Tests whether a world-space rectangle overlaps any solid tile on a layer.
+
+**Parameters**
+
+- `layer` (`integer`, required): Layer index (1-based).
+- `x` (`number`, required): Rectangle left edge in world pixels.
+- `y` (`number`, required): Rectangle top edge in world pixels.
+- `w` (`number`, required): Rectangle width in pixels.
+- `h` (`number`, required): Rectangle height in pixels.
+
+**Returns**: `boolean` - True if any solid tile is overlapped.
+
+**Lua API Stub**
+
+```lua
+--- Tests whether a world-space rectangle overlaps any solid tile on a layer.
+---@param layer number Layer index (1-based).
+---@param x number Rectangle left edge in world pixels.
+---@param y number Rectangle top edge in world pixels.
+---@param w number Rectangle width in pixels.
+---@param h number Rectangle height in pixels.
+---@return boolean True if any solid tile is overlapped.
+function LTileMap:rectOverlapsSolid(layer, x, y, w, h) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Test if a world-space AABB overlaps any solid tile. Use for:
+  -- - Broad-phase collision before precise checks
+  -- - Validating placement positions (can a building fit here?)
+  local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
+  ts:setSolid(1, true)
+  local map = lurek.tilemap.newTileMap(16, 16)
+  map:addLayer("collision", 32, 32)
+  map:setTile(1, 3, 3, 1)
+  local hit = map:rectOverlapsSolid(1, 32, 32, 16, 16)
+  lurek.log.info("rect overlap with solid: " .. tostring(hit), "tilemap")
+end
+```
+
+### LTileMap:render
+
+`LTileMap:render([ox]: number, [oy]: number)`
+
+Submits render commands for all visible tiles, optionally offset by a scroll position.
+
+**Parameters**
+
+- `ox` (`number`, optional): Horizontal scroll offset (default 0).
+- `oy` (`number`, optional): Vertical scroll offset (default 0).
+
+**Lua API Stub**
+
+```lua
+--- Submits render commands for all visible tiles, optionally offset by a scroll position.
+---@param ox? number Horizontal scroll offset (default 0).
+---@param oy? number Vertical scroll offset (default 0).
+function LTileMap:render(ox, oy) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Call in lurek.draw(). Pass negative camera offset so the world
+  -- scrolls in the opposite direction of camera movement.
+  local map = lurek.tilemap.newTileMap(16, 16)
+  map:addLayer("background", 32, 32)
+  local cam_x, cam_y = 0, 0
+  function lurek.draw() map:render(-cam_x, -cam_y) end
+end
+```
+
+### LTileMap:setLayerColor
+
+`LTileMap:setLayerColor(idx: integer, r: number, g: number, b: number, a: number)`
+
+Sets the tint color for an entire layer.
+
+**Parameters**
+
+- `idx` (`integer`, required): Layer index (1-based).
+- `r` (`number`, required): Red channel (0..1).
+- `g` (`number`, required): Green channel (0..1).
+- `b` (`number`, required): Blue channel (0..1).
+- `a` (`number`, required): Alpha channel (0..1).
+
+**Lua API Stub**
+
+```lua
+--- Sets the tint color for an entire layer.
+---@param idx number Layer index (1-based).
+---@param r number Red channel (0..1).
+---@param g number Green channel (0..1).
+---@param b number Blue channel (0..1).
+---@param a number Alpha channel (0..1).
+function LTileMap:setLayerColor(idx, r, g, b, a) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Tint the background layer blue for a nighttime mood.
+  local map = lurek.tilemap.newTileMap(16, 16)
+  local bgLayer = map:addLayer("background", 16, 16)
+  map:setLayerColor(bgLayer, 0.7, 0.8, 1.0, 1.0)
+  lurek.log.info("background tinted blue for night scene", "tilemap")
+end
+```
+
+### LTileMap:setLayerOffset
+
+`LTileMap:setLayerOffset(idx: integer, ox: number, oy: number)`
+
+Sets the pixel offset for a layer, shifting all tiles during rendering.
+
+**Parameters**
+
+- `idx` (`integer`, required): Layer index (1-based).
+- `ox` (`number`, required): Horizontal offset in pixels.
+- `oy` (`number`, required): Vertical offset in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Sets the pixel offset for a layer, shifting all tiles during rendering.
+---@param idx number Layer index (1-based).
+---@param ox number Horizontal offset in pixels.
+---@param oy number Vertical offset in pixels.
+function LTileMap:setLayerOffset(idx, ox, oy) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Offset a decal layer by half-tile to overlay between grid cells.
+  local map = lurek.tilemap.newTileMap(16, 16)
+  local decalLayer = map:addLayer("decals", 16, 16)
+  map:setLayerOffset(decalLayer, 4, -2)
+  lurek.log.info("decal layer offset by (4,-2) px", "tilemap")
+end
+```
+
+### LTileMap:setLayerParallax
+
+`LTileMap:setLayerParallax(idx: integer, px: number, py: number)`
+
+Sets the parallax scroll factor for a layer. Values less than 1 scroll slower than the camera.
+
+**Parameters**
+
+- `idx` (`integer`, required): Layer index (1-based).
+- `px` (`number`, required): Horizontal parallax factor.
+- `py` (`number`, required): Vertical parallax factor.
+
+**Lua API Stub**
+
+```lua
+--- Sets the parallax scroll factor for a layer. Values less than 1 scroll slower than the camera.
+---@param idx number Layer index (1-based).
+---@param px number Horizontal parallax factor.
+---@param py number Vertical parallax factor.
+function LTileMap:setLayerParallax(idx, px, py) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Values < 1 make the layer scroll slower than the camera (depth illusion).
+  -- 0.4 = layer moves at 40% of camera speed -> appears far away.
+  local map = lurek.tilemap.newTileMap(16, 16)
+  local hillLayer = map:addLayer("bg_hills", 16, 16)
+  map:setLayerParallax(hillLayer, 0.4, 0.0)
+  lurek.log.info("hills parallax set for depth effect", "tilemap")
+end
+```
+
+### LTileMap:setLayerVisible
+
+`LTileMap:setLayerVisible(idx: integer, visible: boolean)`
+
+Sets whether a layer is drawn during rendering.
+
+**Parameters**
+
+- `idx` (`integer`, required): Layer index (1-based).
+- `visible` (`boolean`, required): True to show, false to hide.
+
+**Lua API Stub**
+
+```lua
+--- Sets whether a layer is drawn during rendering.
+---@param idx number Layer index (1-based).
+---@param visible boolean True to show, false to hide.
+function LTileMap:setLayerVisible(idx, visible) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Hide debug/collision layers in release builds, show them with a hotkey.
+  local map = lurek.tilemap.newTileMap(16, 16)
+  local dbgLayer = map:addLayer("collision_debug", 16, 16)
+  map:setLayerVisible(dbgLayer, false)
+  lurek.log.info("debug layer hidden", "tilemap")
+end
+```
+
+### LTileMap:setOrientation
+
+`LTileMap:setOrientation(orientation: string)`
+
+Sets the map orientation, affecting coordinate transforms and rendering.
+
+**Parameters**
+
+- `orientation` (`string`, required): One of `"topdown"`, `"sideview"`, `"isometric"`, `"hexagonal"`.
+
+**Lua API Stub**
+
+```lua
+--- Sets the map orientation, affecting coordinate transforms and rendering.
+---@param orientation string One of `"topdown"`, `"sideview"`, `"isometric"`, `"hexagonal"`.
+function LTileMap:setOrientation(orientation) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Switch orientation for different game views.
+  local map = lurek.tilemap.newTileMap(64, 32)
+  map:setOrientation("isometric")
+  lurek.log.info("orientation now " .. map:getOrientation(), "tilemap")
+end
+```
+
+### LTileMap:setTile
+
+`LTileMap:setTile(layer: integer, x: integer, y: integer, gid: integer)`
+
+Sets the tile GID at a specific grid position on a layer.
+
+**Parameters**
+
+- `layer` (`integer`, required): Layer index (1-based).
+- `x` (`integer`, required): Column (1-based).
+- `y` (`integer`, required): Row (1-based).
+- `gid` (`integer`, required): Global tile ID to place.
+
+**Lua API Stub**
+
+```lua
+--- Sets the tile GID at a specific grid position on a layer.
+---@param layer number Layer index (1-based).
+---@param x number Column (1-based).
+---@param y number Row (1-based).
+---@param gid number Global tile ID to place.
+function LTileMap:setTile(layer, x, y, gid) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Place a chest tile at the end of a corridor.
+  local map = lurek.tilemap.newTileMap(16, 16)
+  map:addLayer("objects", 20, 20)
+  map:setTile(1, 10, 10, 42)
+  lurek.log.info("chest placed at (10,10)", "tilemap")
+end
+```
+
+### LTileMap:setTileTint
+
+`LTileMap:setTileTint(layer: integer, x: integer, y: integer, r: number, g: number, b: number, a: number)`
+
+Overrides the color tint for a single tile at a given position.
+
+**Parameters**
+
+- `layer` (`integer`, required): Layer index (1-based).
+- `x` (`integer`, required): Column (1-based).
+- `y` (`integer`, required): Row (1-based).
+- `r` (`number`, required): Red channel (0..1).
+- `g` (`number`, required): Green channel (0..1).
+- `b` (`number`, required): Blue channel (0..1).
+- `a` (`number`, required): Alpha channel (0..1).
+
+**Lua API Stub**
+
+```lua
+--- Overrides the color tint for a single tile at a given position.
+---@param layer number Layer index (1-based).
+---@param x number Column (1-based).
+---@param y number Row (1-based).
+---@param r number Red channel (0..1).
+---@param g number Green channel (0..1).
+---@param b number Blue channel (0..1).
+---@param a number Alpha channel (0..1).
+function LTileMap:setTileTint(layer, x, y, r, g, b, a) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Per-tile color override. Use for highlighting, damage flash, or selection.
+  -- Red tint on a tile to show it's on fire:
+  local map = lurek.tilemap.newTileMap(16, 16)
+  map:addLayer("ground", 16, 16)
+  map:setTile(1, 5, 5, 1)
+  map:setTileTint(1, 5, 5, 1.0, 0.5, 0.5, 1.0)  -- reddish tint
+  lurek.log.info("tile (5,5) tinted red (burning)", "tilemap")
+end
+```
+
+### LTileMap:setViewport
+
+`LTileMap:setViewport(x: number, y: number, w: number, h: number)`
+
+Sets the visible area of the map for culling during rendering.
+
+**Parameters**
+
+- `x` (`number`, required): Left edge in world pixels.
+- `y` (`number`, required): Top edge in world pixels.
+- `w` (`number`, required): Viewport width in pixels.
+- `h` (`number`, required): Viewport height in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Sets the visible area of the map for culling during rendering.
+---@param x number Left edge in world pixels.
+---@param y number Top edge in world pixels.
+---@param w number Viewport width in pixels.
+---@param h number Viewport height in pixels.
+function LTileMap:setViewport(x, y, w, h) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Match viewport to camera view for efficient rendering.
+  local map = lurek.tilemap.newTileMap(16, 16)
+  map:addLayer("bg", 64, 64)
+  map:setViewport(100, 50, 320, 240)
+  lurek.log.info("viewport set to camera view", "tilemap")
+end
+```
+
+### LTileMap:sweepRect
+
+`LTileMap:sweepRect(layer: integer, x: number, y: number, w: number, h: number, dx: number, dy: number) -> number`
+
+Performs a swept AABB collision test against solid tiles on a layer, returning the contact point and normal.
+
+**Parameters**
+
+- `layer` (`integer`, required): Layer index (1-based).
+- `x` (`number`, required): Rectangle left edge in world pixels.
+- `y` (`number`, required): Rectangle top edge in world pixels.
+- `w` (`number`, required): Rectangle width in pixels.
+- `h` (`number`, required): Rectangle height in pixels.
+- `dx` (`number`, required): Horizontal movement delta.
+- `dy` (`number`, required): Vertical movement delta.
+
+**Returns**: `number` - Contact X position.
+
+**Lua API Stub**
+
+```lua
+--- Performs a swept AABB collision test against solid tiles on a layer, returning the contact point and normal.
+---@param layer number Layer index (1-based).
+---@param x number Rectangle left edge in world pixels.
+---@param y number Rectangle top edge in world pixels.
+---@param w number Rectangle width in pixels.
+---@param h number Rectangle height in pixels.
+---@param dx number Horizontal movement delta.
+---@param dy number Vertical movement delta.
+---@return number a Contact X position.
+---@return number b Contact Y position.
+---@return number c Normal X component.
+---@return number d Normal Y component.
+---@return number e Tile column hit (1-based, or 0 if no hit).
+---@return number f Tile row hit (1-based, or 0 if no hit).
+function LTileMap:sweepRect(layer, x, y, w, h, dx, dy) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Swept AABB: move a rectangle by (dx, dy) and find the first solid tile hit.
+  -- Returns contact position, surface normal, and tile coordinates.
+  -- Essential for platformer character controllers.
+  local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
+  ts:setSolid(1, true)
+  local map = lurek.tilemap.newTileMap(16, 16)
+  map:addLayer("collision", 32, 32)
+  map:setTile(1, 5, 5, 1)
+  local cx, cy, nx, ny, hitCol, hitRow = map:sweepRect(1, 0, 80, 16, 16, 100, 0)
+  lurek.log.info("sweep contact at (" .. cx .. "," .. cy .. ") normal=(" .. nx .. "," .. ny .. ") tile=(" .. hitCol .. "," .. hitRow .. ")", "tilemap")
+end
+```
+
+### LTileMap:tileToWorld
+
+`LTileMap:tileToWorld(tx: integer, ty: integer) -> number`
+
+Converts tile-grid coordinates to world-space pixel coordinates (top-left corner of the tile).
+
+**Parameters**
+
+- `tx` (`integer`, required): Tile column (1-based).
+- `ty` (`integer`, required): Tile row (1-based).
+
+**Returns**: `number` - World X position in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Converts tile-grid coordinates to world-space pixel coordinates (top-left corner of the tile).
+---@param tx number Tile column (1-based).
+---@param ty number Tile row (1-based).
+---@return number a World X position in pixels.
+---@return number b World Y position in pixels.
+function LTileMap:tileToWorld(tx, ty) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Convert tile coordinates back to pixel coordinates (top-left corner).
+  -- Use for spawning entities at tile centers: add tileW/2, tileH/2.
+  local map = lurek.tilemap.newTileMap(16, 16)
+  map:addLayer("background", 32, 32)
+  local wx, wy = map:tileToWorld(5, 8)
+  lurek.log.info("spawn pos px=(" .. wx .. ", " .. wy .. ")", "tilemap")
+end
+```
+
+### LTileMap:tileTypeIndex
+
+`LTileMap:tileTypeIndex(layer: integer) -> table`
+
+Builds an index mapping each GID present on a layer to an array of `{x, y}` positions.
+
+**Parameters**
+
+- `layer` (`integer`, required): Layer index (1-based).
+
+**Returns**: `table` - Table keyed by GID, each value an array of `{x=number, y=number}`.
+
+**Lua API Stub**
+
+```lua
+--- Builds an index mapping each GID present on a layer to an array of `{x, y}` positions.
+---@param layer number Layer index (1-based).
+---@return LTileMapTileTypeIndexResult Table keyed by GID, each value an array of `{x=number, y=number}`.
+function LTileMap:tileTypeIndex(layer) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Returns a lookup table: index[gid] = {{x=1,y=1}, {x=2,y=1}, ...}
+  -- Use once after loading to quickly locate special tiles (spawns, chests, exits).
+  local map = lurek.tilemap.newTileMap(16, 16, 8)
+  map:addLayer("ground", 4, 4)
+  map:setTile(1, 1, 1, 7)
+  map:setTile(1, 2, 1, 7)
+  local idx = map:tileTypeIndex(1)
+  if idx[7] then
+    lurek.log.debug("gid 7 appears " .. #idx[7] .. " times", "tilemap")
+  end
+end
+```
+
+### LTileMap:toNavGrid
+
+`LTileMap:toNavGrid(layer: integer, gids: table) -> boolean[]`
+
+Converts a layer into a 2D boolean grid for pathfinding. Tiles with GIDs in the given list are marked walkable.
+
+**Parameters**
+
+- `layer` (`integer`, required): Layer index (1-based).
+- `gids` (`table`, required): Array of walkable GIDs.
+
+**Returns**: `boolean[]` - Flat walkable grid (true = walkable), row-major order.
+
+**Lua API Stub**
+
+```lua
+--- Converts a layer into a 2D boolean grid for pathfinding. Tiles with GIDs in the given list are marked walkable.
+---@param layer number Layer index (1-based).
+---@param gids table Array of walkable GIDs.
+---@return boolean[] Flat walkable grid (true = walkable), row-major order.
+function LTileMap:toNavGrid(layer, gids) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Convert a tile layer into a boolean walkability grid for pathfinding.
+  -- Pass an array of GIDs that should be considered walkable.
+  -- Returns a 2D array of booleans.
+  local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
+  ts:setSolid(1, true)
+  local map = lurek.tilemap.newTileMap(16, 16)
+  map:addLayer("ground", 8, 8)
+  map:fill(1, 1)
+  local grid = map:toNavGrid(1, { 1 })
+  lurek.log.info("nav grid: " .. #grid .. " rows", "tilemap")
+end
+```
+
+### LTileMap:type
+
+`LTileMap:type() -> string`
+
+Returns the type name of this userdata.
+
+**Returns**: `string` - Always `"LTileMap"`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name of this userdata.
+---@return string Always `"LTileMap"`.
+function LTileMap:type() end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local obj = lurek.tilemap.newTileMap(20, 15, 16)
+  lurek.log.debug("type: " .. obj:type(), "example") -- "LTileMap"
+end
+```
+
+### LTileMap:typeOf
+
+`LTileMap:typeOf(name: string) -> boolean`
+
+Checks whether this object matches the given type name.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to check against.
+
+**Returns**: `boolean` - True if `name` is `"LTileMap"` or `"Object"`.
+
+**Lua API Stub**
+
+```lua
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check against.
+---@return boolean True if `name` is `"LTileMap"` or `"Object"`.
+function LTileMap:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  local obj = lurek.tilemap.newTileMap(20, 15, 16)
+  lurek.log.debug("typeOf LTileMap: " .. tostring(obj:typeOf("LTileMap")), "example") -- true
+end
+```
+
+### LTileMap:update
+
+`LTileMap:update(dt: number)`
+
+Advances tile animations by the given delta time.
+
+**Parameters**
+
+- `dt` (`number`, required): Time elapsed in seconds since last update.
+
+**Lua API Stub**
+
+```lua
+--- Advances tile animations by the given delta time.
+---@param dt number Time elapsed in seconds since last update.
+function LTileMap:update(dt) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Call in lurek.process(dt) to advance tile animations.
+  -- Without this, animated tiles (water, torches) stay frozen.
+  local map = lurek.tilemap.newTileMap(16, 16)
+  map:addLayer("water", 32, 32)
+  function lurek.process(dt) map:update(dt) end
+end
+```
+
+### LTileMap:worldToTile
+
+`LTileMap:worldToTile(wx: number, wy: number) -> integer`
+
+Converts world-space pixel coordinates to tile-grid coordinates.
+
+**Parameters**
+
+- `wx` (`number`, required): World X position in pixels.
+- `wy` (`number`, required): World Y position in pixels.
+
+**Returns**: `integer` - Tile column (1-based).
+
+**Lua API Stub**
+
+```lua
+--- Converts world-space pixel coordinates to tile-grid coordinates.
+---@param wx number World X position in pixels.
+---@param wy number World Y position in pixels.
+---@return number a Tile column (1-based).
+---@return number b Tile row (1-based).
+function LTileMap:worldToTile(wx, wy) end
+```
+
+#### Example
+
+Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+
+```lua
+do
+  -- Convert pixel coordinates to tile grid coordinates.
+  -- Essential for: finding which tile the player is standing on,
+  -- converting mouse position to grid cell, etc.
+  local map = lurek.tilemap.newTileMap(16, 16)
+  map:addLayer("background", 64, 64)
+  local tx, ty = map:worldToTile(128, 96)
+  lurek.log.info("world (128,96) -> tile (" .. tx .. ", " .. ty .. ")", "tilemap")
+end
+```
+
+### LTileSet:getAnimation
+
+`LTileSet:getAnimation(tileId: integer) -> table`
 
 Returns the animation frames for a tile, or nil if none are set.
 
 **Parameters**
 
-- `tileId` (`integer`, required) - Tile ID to query (1-based).
+- `tileId` (`integer`, required): Tile ID to query (1-based).
 
 **Returns**: `table` - Array of `{tileid=number, duration=number}` frames, or nil.
+
+**Lua API Stub**
+
+```lua
+--- Returns the animation frames for a tile, or nil if none are set.
+---@param tileId number Tile ID to query (1-based).
+---@return LTileSetGetAnimationResult Array of `{tileid=number, duration=number}` frames, or nil.
+function LTileSet:getAnimation(tileId) end
+```
 
 #### Example
 
@@ -4587,16 +6303,28 @@ do
 end
 ```
 
-### `LTileSet:getAutoTileId(typeName: string, bitmask: integer) -> integer`
+### LTileSet:getAutoTileId
+
+`LTileSet:getAutoTileId(typeName: string, bitmask: integer) -> integer`
 
 Looks up the tile ID for a 4-bit auto-tile bitmask and type name.
 
 **Parameters**
 
-- `typeName` (`string`, required) - Logical tile type name.
-- `bitmask` (`integer`, required) - 4-bit neighbor bitmask (0..15).
+- `typeName` (`string`, required): Logical tile type name.
+- `bitmask` (`integer`, required): 4-bit neighbor bitmask (0..15).
 
 **Returns**: `integer` - Resolved tile ID (1-based), or nil if no rule matches.
+
+**Lua API Stub**
+
+```lua
+--- Looks up the tile ID for a 4-bit auto-tile bitmask and type name.
+---@param typeName string Logical tile type name.
+---@param bitmask number 4-bit neighbor bitmask (0..15).
+---@return number Resolved tile ID (1-based), or nil if no rule matches.
+function LTileSet:getAutoTileId(typeName, bitmask) end
+```
 
 #### Example
 
@@ -4613,16 +6341,28 @@ do
 end
 ```
 
-### `LTileSet:getAutoTileId8(typeName: string, bitmask: integer) -> integer`
+### LTileSet:getAutoTileId8
+
+`LTileSet:getAutoTileId8(typeName: string, bitmask: integer) -> integer`
 
 Looks up the tile ID for an 8-bit auto-tile bitmask and type name.
 
 **Parameters**
 
-- `typeName` (`string`, required) - Logical tile type name.
-- `bitmask` (`integer`, required) - 8-bit neighbor bitmask (0..255).
+- `typeName` (`string`, required): Logical tile type name.
+- `bitmask` (`integer`, required): 8-bit neighbor bitmask (0..255).
 
 **Returns**: `integer` - Resolved tile ID (1-based), or nil if no rule matches.
+
+**Lua API Stub**
+
+```lua
+--- Looks up the tile ID for an 8-bit auto-tile bitmask and type name.
+---@param typeName string Logical tile type name.
+---@param bitmask number 8-bit neighbor bitmask (0..255).
+---@return number Resolved tile ID (1-based), or nil if no rule matches.
+function LTileSet:getAutoTileId8(typeName, bitmask) end
+```
 
 #### Example
 
@@ -4638,11 +6378,21 @@ do
 end
 ```
 
-### `LTileSet:getColumns() -> integer`
+### LTileSet:getColumns
+
+`LTileSet:getColumns() -> integer`
 
 Returns the number of columns in the tileset atlas image.
 
 **Returns**: `integer` - Column count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of columns in the tileset atlas image.
+---@return number Column count.
+function LTileSet:getColumns() end
+```
 
 #### Example
 
@@ -4657,11 +6407,21 @@ do
 end
 ```
 
-### `LTileSet:getFirstGid() -> integer`
+### LTileSet:getFirstGid
+
+`LTileSet:getFirstGid() -> integer`
 
 Returns the first global tile ID (GID) of this tileset.
 
 **Returns**: `integer` - First GID assigned to this tileset.
+
+**Lua API Stub**
+
+```lua
+--- Returns the first global tile ID (GID) of this tileset.
+---@return number First GID assigned to this tileset.
+function LTileSet:getFirstGid() end
+```
 
 #### Example
 
@@ -4676,11 +6436,21 @@ do
 end
 ```
 
-### `LTileSet:getMargin() -> integer`
+### LTileSet:getMargin
+
+`LTileSet:getMargin() -> integer`
 
 Returns the margin around the edge of the atlas image, in pixels.
 
 **Returns**: `integer` - Margin in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns the margin around the edge of the atlas image, in pixels.
+---@return number Margin in pixels.
+function LTileSet:getMargin() end
+```
 
 #### Example
 
@@ -4695,15 +6465,26 @@ do
 end
 ```
 
-### `LTileSet:getQuad(tileId: integer) -> table`
+### LTileSet:getQuad
+
+`LTileSet:getQuad(tileId: integer) -> table`
 
 Returns the source rectangle (UV quad) for a tile in the atlas.
 
 **Parameters**
 
-- `tileId` (`integer`, required) - Tile ID (1-based).
+- `tileId` (`integer`, required): Tile ID (1-based).
 
 **Returns**: `table` - Table with fields `x`, `y`, `width`, `height` in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns the source rectangle (UV quad) for a tile in the atlas.
+---@param tileId number Tile ID (1-based).
+---@return LTileSetGetQuadResult Table with fields `x`, `y`, `width`, `height` in pixels.
+function LTileSet:getQuad(tileId) end
+```
 
 #### Example
 
@@ -4718,11 +6499,21 @@ do
 end
 ```
 
-### `LTileSet:getSpacing() -> integer`
+### LTileSet:getSpacing
+
+`LTileSet:getSpacing() -> integer`
 
 Returns the spacing between tiles in the atlas image, in pixels.
 
 **Returns**: `integer` - Spacing in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns the spacing between tiles in the atlas image, in pixels.
+---@return number Spacing in pixels.
+function LTileSet:getSpacing() end
+```
 
 #### Example
 
@@ -4737,11 +6528,21 @@ do
 end
 ```
 
-### `LTileSet:getTileCount() -> integer`
+### LTileSet:getTileCount
+
+`LTileSet:getTileCount() -> integer`
 
 Returns the total number of tiles defined in this tileset.
 
 **Returns**: `integer` - Total tile count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the total number of tiles defined in this tileset.
+---@return number Total tile count.
+function LTileSet:getTileCount() end
+```
 
 #### Example
 
@@ -4755,11 +6556,22 @@ do
 end
 ```
 
-### `LTileSet:getTileDimensions() -> integer`
+### LTileSet:getTileDimensions
+
+`LTileSet:getTileDimensions() -> integer`
 
 Returns both tile width and height in pixels.
 
 **Returns**: `integer` - Tile width in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns both tile width and height in pixels.
+---@return number a Tile width in pixels.
+---@return number b Tile height in pixels.
+function LTileSet:getTileDimensions() end
+```
 
 #### Example
 
@@ -4774,11 +6586,21 @@ do
 end
 ```
 
-### `LTileSet:getTileHeight() -> integer`
+### LTileSet:getTileHeight
+
+`LTileSet:getTileHeight() -> integer`
 
 Returns the height of a single tile in pixels.
 
 **Returns**: `integer` - Tile height in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns the height of a single tile in pixels.
+---@return number Tile height in pixels.
+function LTileSet:getTileHeight() end
+```
 
 #### Example
 
@@ -4792,11 +6614,21 @@ do
 end
 ```
 
-### `LTileSet:getTileWidth() -> integer`
+### LTileSet:getTileWidth
+
+`LTileSet:getTileWidth() -> integer`
 
 Returns the width of a single tile in pixels.
 
 **Returns**: `integer` - Tile width in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns the width of a single tile in pixels.
+---@return number Tile width in pixels.
+function LTileSet:getTileWidth() end
+```
 
 #### Example
 
@@ -4810,15 +6642,26 @@ do
 end
 ```
 
-### `LTileSet:isSolid(tileId: integer) -> boolean`
+### LTileSet:isSolid
+
+`LTileSet:isSolid(tileId: integer) -> boolean`
 
 Checks whether a tile is marked as solid.
 
 **Parameters**
 
-- `tileId` (`integer`, required) - Tile ID to check (1-based).
+- `tileId` (`integer`, required): Tile ID to check (1-based).
 
 **Returns**: `boolean` - True if the tile is solid.
+
+**Lua API Stub**
+
+```lua
+--- Checks whether a tile is marked as solid.
+---@param tileId number Tile ID to check (1-based).
+---@return boolean True if the tile is solid.
+function LTileSet:isSolid(tileId) end
+```
 
 #### Example
 
@@ -4835,14 +6678,25 @@ do
 end
 ```
 
-### `LTileSet:setAnimation(tileId: integer, frames: table)`
+### LTileSet:setAnimation
+
+`LTileSet:setAnimation(tileId: integer, frames: table)`
 
 Assigns an animation sequence to a tile. Each frame references another tile ID and a duration.
 
 **Parameters**
 
-- `tileId` (`integer`, required) - Tile ID to animate (1-based).
-- `frames` (`table`, required) - Array of `{tileid=number, duration=number}` frame definitions.
+- `tileId` (`integer`, required): Tile ID to animate (1-based).
+- `frames` (`table`, required): Array of `{tileid=number, duration=number}` frame definitions.
+
+**Lua API Stub**
+
+```lua
+--- Assigns an animation sequence to a tile. Each frame references another tile ID and a duration.
+---@param tileId number Tile ID to animate (1-based).
+---@param frames table Array of `{tileid=number, duration=number}` frame definitions.
+function LTileSet:setAnimation(tileId, frames) end
+```
 
 #### Example
 
@@ -4863,15 +6717,27 @@ do
 end
 ```
 
-### `LTileSet:setAutoTileRule(typeName: string, bitmask: integer, tileId: integer)`
+### LTileSet:setAutoTileRule
+
+`LTileSet:setAutoTileRule(typeName: string, bitmask: integer, tileId: integer)`
 
 Registers a 4-bit auto-tile rule mapping a bitmask to a tile ID for a named tile type.
 
 **Parameters**
 
-- `typeName` (`string`, required) - Logical tile type name (e.g. "grass").
-- `bitmask` (`integer`, required) - 4-bit neighbor bitmask (0..15).
-- `tileId` (`integer`, required) - Tile ID to use for this bitmask (1-based).
+- `typeName` (`string`, required): Logical tile type name (e.g. "grass").
+- `bitmask` (`integer`, required): 4-bit neighbor bitmask (0..15).
+- `tileId` (`integer`, required): Tile ID to use for this bitmask (1-based).
+
+**Lua API Stub**
+
+```lua
+--- Registers a 4-bit auto-tile rule mapping a bitmask to a tile ID for a named tile type.
+---@param typeName string Logical tile type name (e.g. "grass").
+---@param bitmask number 4-bit neighbor bitmask (0..15).
+---@param tileId number Tile ID to use for this bitmask (1-based).
+function LTileSet:setAutoTileRule(typeName, bitmask, tileId) end
+```
 
 #### Example
 
@@ -4888,15 +6754,27 @@ do
 end
 ```
 
-### `LTileSet:setAutoTileRule8(typeName: string, bitmask: integer, tileId: integer)`
+### LTileSet:setAutoTileRule8
+
+`LTileSet:setAutoTileRule8(typeName: string, bitmask: integer, tileId: integer)`
 
 Registers an 8-bit auto-tile rule mapping a bitmask to a tile ID for a named tile type.
 
 **Parameters**
 
-- `typeName` (`string`, required) - Logical tile type name.
-- `bitmask` (`integer`, required) - 8-bit neighbor bitmask (0..255).
-- `tileId` (`integer`, required) - Tile ID to use for this bitmask (1-based).
+- `typeName` (`string`, required): Logical tile type name.
+- `bitmask` (`integer`, required): 8-bit neighbor bitmask (0..255).
+- `tileId` (`integer`, required): Tile ID to use for this bitmask (1-based).
+
+**Lua API Stub**
+
+```lua
+--- Registers an 8-bit auto-tile rule mapping a bitmask to a tile ID for a named tile type.
+---@param typeName string Logical tile type name.
+---@param bitmask number 8-bit neighbor bitmask (0..255).
+---@param tileId number Tile ID to use for this bitmask (1-based).
+function LTileSet:setAutoTileRule8(typeName, bitmask, tileId) end
+```
 
 #### Example
 
@@ -4913,14 +6791,25 @@ do
 end
 ```
 
-### `LTileSet:setSolid(tileId: integer, solid: boolean)`
+### LTileSet:setSolid
+
+`LTileSet:setSolid(tileId: integer, solid: boolean)`
 
 Marks a tile as solid or non-solid for collision queries.
 
 **Parameters**
 
-- `tileId` (`integer`, required) - Tile ID to modify (1-based).
-- `solid` (`boolean`, required) - Whether the tile blocks movement.
+- `tileId` (`integer`, required): Tile ID to modify (1-based).
+- `solid` (`boolean`, required): Whether the tile blocks movement.
+
+**Lua API Stub**
+
+```lua
+--- Marks a tile as solid or non-solid for collision queries.
+---@param tileId number Tile ID to modify (1-based).
+---@param solid boolean Whether the tile blocks movement.
+function LTileSet:setSolid(tileId, solid) end
+```
 
 #### Example
 
@@ -4937,11 +6826,21 @@ do
 end
 ```
 
-### `LTileSet:type() -> string`
+### LTileSet:type
+
+`LTileSet:type() -> string`
 
 Returns the type name of this userdata.
 
 **Returns**: `string` - Always `"LTileSet"`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name of this userdata.
+---@return string Always `"LTileSet"`.
+function LTileSet:type() end
+```
 
 #### Example
 
@@ -4954,15 +6853,26 @@ do
 end
 ```
 
-### `LTileSet:typeOf(name: string) -> boolean`
+### LTileSet:typeOf
+
+`LTileSet:typeOf(name: string) -> boolean`
 
 Checks whether this object matches the given type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to check against.
+- `name` (`string`, required): Type name to check against.
 
 **Returns**: `boolean` - True if `name` is `"LTileSet"` or `"Object"`.
+
+**Lua API Stub**
+
+```lua
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check against.
+---@return boolean True if `name` is `"LTileSet"` or `"Object"`.
+function LTileSet:typeOf(name) end
+```
 
 #### Example
 
@@ -4976,21 +6886,27 @@ end
 ```
 
 
-## Examples
+[⬆ back to top](#table-of-contents)
+
+## 💡 Examples
 
 - [tilemap.lua](../blob/main/content/examples/tilemap.lua) - Tile layers, auto-tile
 
-## Reference Games
+[⬆ back to top](#table-of-contents)
+
+## 🎮 Reference Games
 
 No direct references were found in `content/games/**/main.lua`.
 
-## Related Modules
+[⬆ back to top](#table-of-contents)
 
-- Previous: [[thread|Module-thread]]
-- Next: [[timer|Module-timer]]
-- [[ai|Module-ai]] - Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU.
-- [[animation|Module-animation]] - Sprite animation: source-rect changes over time. Imports only math; headless-testable.
-- [[automation|Module-automation]] - Automated input simulation for headless tests, QA replay, recorded sessions.
-- [[ecs|Module-ecs]] - Entity-Component-System: identity / data / behaviour separation for runtime composition.
-- [[i18n|Module-i18n]] - Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*).
-- [[minimap|Module-minimap]] - Grid-based minimap data model: fog of war, tracked objects, pings, viewport overlay.
+## 🔗 Related Modules
+
+- Previous: [thread](Module-thread)
+- Next: [timer](Module-timer)
+- [ai](Module-ai) - Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU.
+- [animation](Module-animation) - Sprite animation: source-rect changes over time. Imports only math; headless-testable.
+- [automation](Module-automation) - Automated input simulation for headless tests, QA replay, recorded sessions.
+- [ecs](Module-ecs) - Entity-Component-System: identity / data / behaviour separation for runtime composition.
+- [i18n](Module-i18n) - Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*).
+- [minimap](Module-minimap) - Grid-based minimap data model: fog of war, tracked objects, pings, viewport overlay.

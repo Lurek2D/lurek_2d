@@ -4,111 +4,61 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
-- [Purpose](#purpose)
-- [Summary](#summary)
-- [Minimal Module Example](#minimal-module-example)
-- [Key Types](#key-types)
-- [API Overview](#api-overview)
-- [Module Functions](#module-functions)
-  - [lurek.debugbridge.broadcast(event: string, json_data: string)](#lurekdebugbridgebroadcastevent-string-jsondata-string)
-  - [lurek.debugbridge.capturePrint(msg: string, [source]: string, [line]: integer)](#lurekdebugbridgecaptureprintmsg-string-source-string-line-integer)
-  - [lurek.debugbridge.clearPrintHistory()](#lurekdebugbridgeclearprinthistory)
-  - [lurek.debugbridge.consumeHotReloadRequest() -> boolean](#lurekdebugbridgeconsumehotreloadrequest-boolean)
-  - [lurek.debugbridge.getClientCount() -> integer](#lurekdebugbridgegetclientcount-integer)
-  - [lurek.debugbridge.getPerformance() -> table](#lurekdebugbridgegetperformance-table)
-  - [lurek.debugbridge.getPort() -> integer](#lurekdebugbridgegetport-integer)
-  - [lurek.debugbridge.getPrintHistory([count]: integer) -> table](#lurekdebugbridgegetprinthistorycount-integer-table)
-  - [lurek.debugbridge.getProtocolInfo() -> table](#lurekdebugbridgegetprotocolinfo-table)
-  - [lurek.debugbridge.isRunning() -> boolean](#lurekdebugbridgeisrunning-boolean)
-  - [lurek.debugbridge.isScreenshotRequested() -> boolean](#lurekdebugbridgeisscreenshotrequested-boolean)
-  - [lurek.debugbridge.poll()](#lurekdebugbridgepoll)
-  - [lurek.debugbridge.requestScreenshot([scale]: integer)](#lurekdebugbridgerequestscreenshotscale-integer)
-  - [lurek.debugbridge.setMaxPrintHistory(max: integer)](#lurekdebugbridgesetmaxprinthistorymax-integer)
-  - [lurek.debugbridge.start([port]: integer) -> boolean](#lurekdebugbridgestartport-integer-boolean)
-  - [lurek.debugbridge.stop()](#lurekdebugbridgestop)
-- [Examples](#examples)
-- [Reference Games](#reference-games)
-- [Related Modules](#related-modules)
+- [🎯 Purpose](#purpose)
+- [📋 Summary](#summary)
+- [🧩 Key Types](#key-types)
+- [📖 API Overview](#api-overview)
+- [⚙️ Module Functions](#module-functions)
+  - [lurek.debugbridge.broadcast](#lurekdebugbridgebroadcast)
+  - [lurek.debugbridge.capturePrint](#lurekdebugbridgecaptureprint)
+  - [lurek.debugbridge.clearPrintHistory](#lurekdebugbridgeclearprinthistory)
+  - [lurek.debugbridge.consumeHotReloadRequest](#lurekdebugbridgeconsumehotreloadrequest)
+  - [lurek.debugbridge.getClientCount](#lurekdebugbridgegetclientcount)
+  - [lurek.debugbridge.getPerformance](#lurekdebugbridgegetperformance)
+  - [lurek.debugbridge.getPort](#lurekdebugbridgegetport)
+  - [lurek.debugbridge.getPrintHistory](#lurekdebugbridgegetprinthistory)
+  - [lurek.debugbridge.getProtocolInfo](#lurekdebugbridgegetprotocolinfo)
+  - [lurek.debugbridge.isRunning](#lurekdebugbridgeisrunning)
+  - [lurek.debugbridge.isScreenshotRequested](#lurekdebugbridgeisscreenshotrequested)
+  - [lurek.debugbridge.poll](#lurekdebugbridgepoll)
+  - [lurek.debugbridge.requestScreenshot](#lurekdebugbridgerequestscreenshot)
+  - [lurek.debugbridge.setMaxPrintHistory](#lurekdebugbridgesetmaxprinthistory)
+  - [lurek.debugbridge.start](#lurekdebugbridgestart)
+  - [lurek.debugbridge.stop](#lurekdebugbridgestop)
+- [💡 Examples](#examples)
+- [🎮 Reference Games](#reference-games)
+- [🔗 Related Modules](#related-modules)
 
 This page is generated from the current module specs, examples, and Lua API data.
 
 **Module group:** Edge / Integration
 **Namespace:** `lurek.debugbridge`
 
-## Purpose
+## 🎯 Purpose
 
 TCP debug bridge (127.0.0.1, JSON-over-TCP) for the VS Code extension and MCP server.
 
-## Summary
+[⬆ back to top](#table-of-contents)
+
+## 📋 Summary
 
 TCP debug bridge enabling external tools (VS Code extension, remote inspectors) to connect to a running Lurek2D instance. The bridge server listens on a configurable port and accepts JSON-RPC requests for breakpoint management, variable inspection, expression evaluation, screenshot capture, performance metrics, and print history retrieval.
 
 `BridgeShared` holds the synchronized state between the game thread and the bridge I/O thread via `Arc<Mutex<>>`. Print capture intercepts `lurek.log` output and stores it in a bounded ring buffer for external consumption. The module is disabled in release builds by default and only activates when explicitly started from Lua via `lurek.debugbridge.start()`. Edge/Integration tier.
 
-## Minimal Module Example
+[⬆ back to top](#table-of-contents)
 
-Module example from [debugbridge.lua](../blob/main/content/examples/debugbridge.lua):
-
-```lua
-    if lurek.debugbridge.isRunning() then
-      lurek.debugbridge.stop()
-      lurek.log.info("debug bridge stopped cleanly", "debugbridge")
-    end
-  end
-  -- Call in lurek.quit callback so the port is freed before the process exits.
-  function lurek.quit()
-    shutdown_bridge()
-  end
-end
-
---@api-stub: lurek.debugbridge.isRunning
--- Returns true when the debug bridge server thread is active.
-do
-  -- Use this to guard bridge calls that would error if the server is not up.
-  -- Example: conditionally enable an in-game debug overlay.
-  local function get_debug_status_text()
-    if lurek.debugbridge.isRunning() then
-      return "BRIDGE: ONLINE (port " .. lurek.debugbridge.getPort() .. ")"
-    else
-      return "BRIDGE: OFFLINE"
-    end
-  end
-  lurek.log.info(get_debug_status_text(), "debugbridge")
-end
-
---@api-stub: lurek.debugbridge.getPort
--- Returns the bound TCP port, or zero when the bridge is not running.
-do
-  -- Useful for displaying connection info in a developer HUD or writing
-  -- a project file that external tools can read to auto-connect.
-  local port = lurek.debugbridge.getPort()
-  if port > 0 then
-    lurek.log.info("IDE connect string: tcp://127.0.0.1:" .. port, "debugbridge")
-  else
-    lurek.log.debug("no active bridge port — start the bridge first", "debugbridge")
-  end
-end
-
---@api-stub: lurek.debugbridge.getClientCount
--- Returns the number of currently connected debugger/tool clients.
-do
-  -- Broadcast expensive diagnostics only when at least one client is listening.
-  -- This avoids serialization overhead in production builds with no debugger.
-  local player_hp = 85
-  local player_x, player_y = 120.5, 64.0
-  if lurek.debugbridge.getClientCount() > 0 then
-    local payload = string.format(
-```
-
-## Key Types
+## 🧩 Key Types
 
 This module has no separate Lua-visible classes in the generated API data.
 
-## API Overview
+[⬆ back to top](#table-of-contents)
+
+## 📖 API Overview
 
 - Source spec: [docs/specs/debugbridge.md](../blob/main/docs/specs/debugbridge.md)
 
@@ -131,16 +81,20 @@ lurek.debugbridge.start([port]: integer) -> boolean -- Starts the localhost debu
 lurek.debugbridge.stop() -- Stops the debug bridge server and joins its server thread.
 ```
 
-## Module Functions
+[⬆ back to top](#table-of-contents)
 
-### `lurek.debugbridge.broadcast(event: string, json_data: string)`
+## ⚙️ Module Functions
+
+### lurek.debugbridge.broadcast
+
+`lurek.debugbridge.broadcast(event: string, json_data: string)`
 
 Queues a JSON string payload broadcast for debug bridge clients.
 
 **Parameters**
 
-- `event` (`string`, required) - Event name sent to clients.
-- `json_data` (`string`, required) - Payload string wrapped as JSON for clients.
+- `event` (`string`, required): Event name sent to clients.
+- `json_data` (`string`, required): Payload string wrapped as JSON for clients.
 
 #### Example
 
@@ -160,15 +114,17 @@ do
 end
 ```
 
-### `lurek.debugbridge.capturePrint(msg: string, [source]: string, [line]: integer)`
+### lurek.debugbridge.capturePrint
+
+`lurek.debugbridge.capturePrint(msg: string, [source]: string, [line]: integer)`
 
 Captures a print message and broadcasts it to debug bridge clients.
 
 **Parameters**
 
-- `msg` (`string`, required) - Printed message text.
-- `source` (`string`, optional) - Source label; defaults to `?`.
-- `line` (`integer`, optional) - Source line; defaults to zero.
+- `msg` (`string`, required): Printed message text.
+- `source` (`string`, optional): Source label; defaults to `?`.
+- `line` (`integer`, optional): Source line; defaults to zero.
 
 #### Example
 
@@ -193,7 +149,9 @@ do
 end
 ```
 
-### `lurek.debugbridge.clearPrintHistory()`
+### lurek.debugbridge.clearPrintHistory
+
+`lurek.debugbridge.clearPrintHistory()`
 
 Clears all entries from the captured print history buffer.
 
@@ -213,7 +171,9 @@ do
 end
 ```
 
-### `lurek.debugbridge.consumeHotReloadRequest() -> boolean`
+### lurek.debugbridge.consumeHotReloadRequest
+
+`lurek.debugbridge.consumeHotReloadRequest() -> boolean`
 
 Returns and clears the pending hot reload request flag.
 
@@ -239,7 +199,9 @@ do
 end
 ```
 
-### `lurek.debugbridge.getClientCount() -> integer`
+### lurek.debugbridge.getClientCount
+
+`lurek.debugbridge.getClientCount() -> integer`
 
 Returns the number of connected debug bridge clients.
 
@@ -264,7 +226,9 @@ do
 end
 ```
 
-### `lurek.debugbridge.getPerformance() -> table`
+### lurek.debugbridge.getPerformance
+
+`lurek.debugbridge.getPerformance() -> table`
 
 Returns debug bridge performance metrics.
 
@@ -288,7 +252,9 @@ do
 end
 ```
 
-### `lurek.debugbridge.getPort() -> integer`
+### lurek.debugbridge.getPort
+
+`lurek.debugbridge.getPort() -> integer`
 
 Returns the configured TCP port for the debug bridge.
 
@@ -311,13 +277,15 @@ do
 end
 ```
 
-### `lurek.debugbridge.getPrintHistory([count]: integer) -> table`
+### lurek.debugbridge.getPrintHistory
+
+`lurek.debugbridge.getPrintHistory([count]: integer) -> table`
 
 Returns captured print history entries.
 
 **Parameters**
 
-- `count` (`integer`, optional) - Number of newest entries; nil or zero returns all entries.
+- `count` (`integer`, optional): Number of newest entries; nil or zero returns all entries.
 
 **Returns**: `table` - Array table of entries with `timestamp`, `message`, `source`, and `line` fields.
 
@@ -338,7 +306,9 @@ do
 end
 ```
 
-### `lurek.debugbridge.getProtocolInfo() -> table`
+### lurek.debugbridge.getProtocolInfo
+
+`lurek.debugbridge.getProtocolInfo() -> table`
 
 Returns debug bridge protocol version, capabilities, and handshake nonce.
 
@@ -362,7 +332,9 @@ do
 end
 ```
 
-### `lurek.debugbridge.isRunning() -> boolean`
+### lurek.debugbridge.isRunning
+
+`lurek.debugbridge.isRunning() -> boolean`
 
 Returns whether the debug bridge server is currently running.
 
@@ -387,7 +359,9 @@ do
 end
 ```
 
-### `lurek.debugbridge.isScreenshotRequested() -> boolean`
+### lurek.debugbridge.isScreenshotRequested
+
+`lurek.debugbridge.isScreenshotRequested() -> boolean`
 
 Returns whether a screenshot request is pending.
 
@@ -410,7 +384,9 @@ do
 end
 ```
 
-### `lurek.debugbridge.poll()`
+### lurek.debugbridge.poll
+
+`lurek.debugbridge.poll()`
 
 Polls pending debugger requests, evaluates supported methods, and queues responses.
 
@@ -431,13 +407,15 @@ do
 end
 ```
 
-### `lurek.debugbridge.requestScreenshot([scale]: integer)`
+### lurek.debugbridge.requestScreenshot
+
+`lurek.debugbridge.requestScreenshot([scale]: integer)`
 
 Requests a screenshot from the runtime.
 
 **Parameters**
 
-- `scale` (`integer`, optional) - Screenshot scale clamped from 1 to 8; defaults to 1.
+- `scale` (`integer`, optional): Screenshot scale clamped from 1 to 8; defaults to 1.
 
 #### Example
 
@@ -456,13 +434,15 @@ do
 end
 ```
 
-### `lurek.debugbridge.setMaxPrintHistory(max: integer)`
+### lurek.debugbridge.setMaxPrintHistory
+
+`lurek.debugbridge.setMaxPrintHistory(max: integer)`
 
 Sets the maximum retained print history entry count.
 
 **Parameters**
 
-- `max` (`integer`, required) - Maximum retained print entries.
+- `max` (`integer`, required): Maximum retained print entries.
 
 #### Example
 
@@ -479,13 +459,15 @@ do
 end
 ```
 
-### `lurek.debugbridge.start([port]: integer) -> boolean`
+### lurek.debugbridge.start
+
+`lurek.debugbridge.start([port]: integer) -> boolean`
 
 Starts the localhost debug bridge server on a port.
 
 **Parameters**
 
-- `port` (`integer`, optional) - TCP port to bind on `127.0.0.1`; defaults to 19740 and must be at least 1024.
+- `port` (`integer`, optional): TCP port to bind on `127.0.0.1`; defaults to 19740 and must be at least 1024.
 
 **Returns**: `boolean` - True when the server was started, false when it was already running.
 
@@ -514,7 +496,9 @@ do
 end
 ```
 
-### `lurek.debugbridge.stop()`
+### lurek.debugbridge.stop
+
+`lurek.debugbridge.stop()`
 
 Stops the debug bridge server and joins its server thread.
 
@@ -540,20 +524,26 @@ end
 ```
 
 
-## Examples
+[⬆ back to top](#table-of-contents)
+
+## 💡 Examples
 
 - [debugbridge.lua](../blob/main/content/examples/debugbridge.lua) - Live debug variable bridge
 
-## Reference Games
+[⬆ back to top](#table-of-contents)
+
+## 🎮 Reference Games
 
 No direct references were found in `content/games/**/main.lua`.
 
-## Related Modules
+[⬆ back to top](#table-of-contents)
 
-- Previous: [[dataframe|Module-dataframe]]
-- Next: [[devtools|Module-devtools]]
-- [[app|Module-app]] - Application entry-point: winit event loop, wgpu surface / device, Lua VM, frame pacing.
-- [[bin|Module-bin]] - Alternative main()-bearing binaries built alongside the primary lurek2d executable.
-- [[devtools|Module-devtools]] - In-process logger, frame profiler, rolling stats, hot-reload file watcher (lurek.devtools.*).
-- [[docs|Module-docs]] - In-engine API documentation catalog and lightweight schema validation for structured game data.
-- [[lua_api|Module-lua_api]] - Lua scripting bridge: collects every lurek.* sub-API and seals the sandboxed lurek global.
+## 🔗 Related Modules
+
+- Previous: [dataframe](Module-dataframe)
+- Next: [devtools](Module-devtools)
+- [app](Module-app) - Application entry-point: winit event loop, wgpu surface / device, Lua VM, frame pacing.
+- [bin](Module-bin) - Alternative main()-bearing binaries built alongside the primary lurek2d executable.
+- [devtools](Module-devtools) - In-process logger, frame profiler, rolling stats, hot-reload file watcher (lurek.devtools.*).
+- [docs](Module-docs) - In-engine API documentation catalog and lightweight schema validation for structured game data.
+- [lua_api](Module-lua_api) - Lua scripting bridge: collects every lurek.* sub-API and seals the sandboxed lurek global.

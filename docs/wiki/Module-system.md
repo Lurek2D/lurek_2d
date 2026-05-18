@@ -4,121 +4,71 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
-- [Purpose](#purpose)
-- [Summary](#summary)
-- [Minimal Module Example](#minimal-module-example)
-- [Key Types](#key-types)
-- [API Overview](#api-overview)
-- [Module Functions](#module-functions)
-  - [lurek.runtime.errorSnapshot(msg: string) -> string](#lurekruntimeerrorsnapshotmsg-string-string)
-  - [lurek.runtime.getArch() -> string](#lurekruntimegetarch-string)
-  - [lurek.runtime.getArgs() -> string[]](#lurekruntimegetargs-string)
-  - [lurek.runtime.getBatchResults(results: table) -> number](#lurekruntimegetbatchresultsresults-table-number)
-  - [lurek.runtime.getClipboardText() -> string](#lurekruntimegetclipboardtext-string)
-  - [lurek.runtime.getConfig() -> table](#lurekruntimegetconfig-table)
-  - [lurek.runtime.getDebugOverlay() -> boolean](#lurekruntimegetdebugoverlay-boolean)
-  - [lurek.runtime.getEnv(name: string) -> string](#lurekruntimegetenvname-string-string)
-  - [lurek.runtime.getInfo() -> table](#lurekruntimegetinfo-table)
-  - [lurek.runtime.getLastError() -> table](#lurekruntimegetlasterror-table)
-  - [lurek.runtime.getLogLevel() -> string](#lurekruntimegetloglevel-string)
-  - [lurek.runtime.getMemorySize() -> number](#lurekruntimegetmemorysize-number)
-  - [lurek.runtime.getMessage(id: string) -> string](#lurekruntimegetmessageid-string-string)
-  - [lurek.runtime.getMessageCount() -> number](#lurekruntimegetmessagecount-number)
-  - [lurek.runtime.getOS() -> string](#lurekruntimegetos-string)
-  - [lurek.runtime.getPowerInfo() -> string](#lurekruntimegetpowerinfo-string)
-  - [lurek.runtime.getPreferredLocales() -> string[]](#lurekruntimegetpreferredlocales-string)
-  - [lurek.runtime.getProcessorCount() -> number](#lurekruntimegetprocessorcount-number)
-  - [lurek.runtime.getVersion() -> string](#lurekruntimegetversion-string)
-  - [lurek.runtime.hasMessage(id: string) -> boolean](#lurekruntimehasmessageid-string-boolean)
-  - [lurek.runtime.log(level: string, message: string)](#lurekruntimeloglevel-string-message-string)
-  - [lurek.runtime.openURL(url: string) -> boolean](#lurekruntimeopenurlurl-string-boolean)
-  - [lurek.runtime.parseArgs([args]: table) -> table](#lurekruntimeparseargsargs-table-table)
-  - [lurek.runtime.reloadConfig()](#lurekruntimereloadconfig)
-  - [lurek.runtime.runBatch(tasks: table, [opts]: table) -> table](#lurekruntimerunbatchtasks-table-opts-table-table)
-  - [lurek.runtime.setClipboardText(text: string)](#lurekruntimesetclipboardtexttext-string)
-  - [lurek.runtime.setDebugOverlay(enabled: boolean)](#lurekruntimesetdebugoverlayenabled-boolean)
-  - [lurek.runtime.setLogLevel(level: string)](#lurekruntimesetloglevellevel-string)
-- [Examples](#examples)
-- [Reference Games](#reference-games)
-- [Related Modules](#related-modules)
+- [🎯 Purpose](#purpose)
+- [📋 Summary](#summary)
+- [🧩 Key Types](#key-types)
+- [📖 API Overview](#api-overview)
+- [⚙️ Module Functions](#module-functions)
+  - [lurek.runtime.errorSnapshot](#lurekruntimeerrorsnapshot)
+  - [lurek.runtime.getArch](#lurekruntimegetarch)
+  - [lurek.runtime.getArgs](#lurekruntimegetargs)
+  - [lurek.runtime.getBatchResults](#lurekruntimegetbatchresults)
+  - [lurek.runtime.getClipboardText](#lurekruntimegetclipboardtext)
+  - [lurek.runtime.getConfig](#lurekruntimegetconfig)
+  - [lurek.runtime.getDebugOverlay](#lurekruntimegetdebugoverlay)
+  - [lurek.runtime.getEnv](#lurekruntimegetenv)
+  - [lurek.runtime.getInfo](#lurekruntimegetinfo)
+  - [lurek.runtime.getLastError](#lurekruntimegetlasterror)
+  - [lurek.runtime.getLogLevel](#lurekruntimegetloglevel)
+  - [lurek.runtime.getMemorySize](#lurekruntimegetmemorysize)
+  - [lurek.runtime.getMessage](#lurekruntimegetmessage)
+  - [lurek.runtime.getMessageCount](#lurekruntimegetmessagecount)
+  - [lurek.runtime.getOS](#lurekruntimegetos)
+  - [lurek.runtime.getPowerInfo](#lurekruntimegetpowerinfo)
+  - [lurek.runtime.getPreferredLocales](#lurekruntimegetpreferredlocales)
+  - [lurek.runtime.getProcessorCount](#lurekruntimegetprocessorcount)
+  - [lurek.runtime.getVersion](#lurekruntimegetversion)
+  - [lurek.runtime.hasMessage](#lurekruntimehasmessage)
+  - [lurek.runtime.log](#lurekruntimelog)
+  - [lurek.runtime.openURL](#lurekruntimeopenurl)
+  - [lurek.runtime.parseArgs](#lurekruntimeparseargs)
+  - [lurek.runtime.reloadConfig](#lurekruntimereloadconfig)
+  - [lurek.runtime.runBatch](#lurekruntimerunbatch)
+  - [lurek.runtime.setClipboardText](#lurekruntimesetclipboardtext)
+  - [lurek.runtime.setDebugOverlay](#lurekruntimesetdebugoverlay)
+  - [lurek.runtime.setLogLevel](#lurekruntimesetloglevel)
+- [💡 Examples](#examples)
+- [🎮 Reference Games](#reference-games)
+- [🔗 Related Modules](#related-modules)
 
 This page is generated from the current module specs, examples, and Lua API data.
 
 **Module group:** Other
 **Namespace:** `lurek.system`
 
-## Purpose
+## 🎯 Purpose
 
 lurek.system - Provides OS-level utilities including clipboard, system info, environment variables, and platform detection.
 
-## Summary
+[⬆ back to top](#table-of-contents)
+
+## 📋 Summary
 
 lurek.system - Provides OS-level utilities including clipboard, system info, environment variables, and platform detection.
 
-## Minimal Module Example
+[⬆ back to top](#table-of-contents)
 
-General example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-  -- Use an AI world to manage all NPCs in a level. Each world is independent,
-  -- so you can pause dungeon AI while overworld agents keep running.
-  -- Scenario: open-world RPG with separate AI worlds per region.
-  local world = lurek.ai.newWorld()
-  world:addAgent("guard_01")
-  -- Call world:update(dt) every frame to tick all registered agents.
-  function lurek.process(dt) world:update(dt) end
-end
-
---@api-stub: lurek.ai.newBlackboard
--- Creates an empty AI blackboard for typed local facts
-do
-  -- Blackboards are key-value stores for AI knowledge. Agents read/write facts
-  -- here so decision logic stays decoupled from game state.
-  -- Scenario: stealth game guard shares "alert_level" across patrol group.
-  local bb = lurek.ai.newBlackboard()
-  bb:setNumber("alert_level", 0.3)
-  bb:setBool("player_seen", false)
-end
-
---@api-stub: lurek.ai.newStateMachine
--- Creates an empty finite state machine with Lua-backed states and transitions
-do
-  -- FSMs are ideal for NPCs with clear, discrete behavior phases.
-  -- Each state has onEnter/onUpdate/onExit callbacks for clean transitions.
-  -- Scenario: guard patrol AI — idle → patrol → alert → chase → attack.
-  local fsm = lurek.ai.newStateMachine()
-  fsm:addState("patrol", { onEnter = function() lurek.log.info("patrolling", "ai") end })
-  fsm:addState("chase", {})
-  fsm:setInitialState("patrol")
-end
-
---@api-stub: lurek.ai.newBehaviorTree
--- Creates an empty behavior tree that can receive a root node
-do
-  -- Behavior trees compose complex AI from simple reusable nodes.
-  -- Set a root node, then call bt:tick(dt) each frame to evaluate.
-  -- Scenario: boss phase transitions — check HP, pick attack pattern, execute.
-  local bt = lurek.ai.newBehaviorTree()
-  local root = lurek.ai.newSequence()
-  root:addChild(lurek.ai.newAction(function() return "success" end))
-  bt:setRoot(root)
-end
-
---@api-stub: lurek.ai.newSelector
--- Creates a behavior tree selector node with no children
-do
-  -- A selector tries each child until one succeeds (OR logic).
-```
-
-## Key Types
+## 🧩 Key Types
 
 This module has no separate Lua-visible classes in the generated API data.
 
-## API Overview
+[⬆ back to top](#table-of-contents)
+
+## 📖 API Overview
 
 
 ```lua
@@ -143,15 +93,19 @@ lurek.runtime.getProcessorCount() -> number -- Returns the number of logical pro
 -- ... 10 more module functions
 ```
 
-## Module Functions
+[⬆ back to top](#table-of-contents)
 
-### `lurek.runtime.errorSnapshot(msg: string) -> string`
+## ⚙️ Module Functions
+
+### lurek.runtime.errorSnapshot
+
+`lurek.runtime.errorSnapshot(msg: string) -> string`
 
 Creates a JSON-encoded error snapshot from a message string, useful for diagnostics and error reporting.
 
 **Parameters**
 
-- `msg` (`string`, required) - The error message to capture.
+- `msg` (`string`, required): The error message to capture.
 
 **Returns**: `string` - JSON string containing the error snapshot with stack and context information.
 
@@ -168,7 +122,9 @@ do
 end
 ```
 
-### `lurek.runtime.getArch() -> string`
+### lurek.runtime.getArch
+
+`lurek.runtime.getArch() -> string`
 
 Returns the CPU architecture of the host system.
 
@@ -187,7 +143,9 @@ do
 end
 ```
 
-### `lurek.runtime.getArgs() -> string[]`
+### lurek.runtime.getArgs
+
+`lurek.runtime.getArgs() -> string[]`
 
 Returns the command-line arguments passed to the engine as a 1-indexed table of strings.
 
@@ -207,13 +165,15 @@ do
 end
 ```
 
-### `lurek.runtime.getBatchResults(results: table) -> number`
+### lurek.runtime.getBatchResults
+
+`lurek.runtime.getBatchResults(results: table) -> number`
 
 Summarizes batch results by counting passed, failed, and skipped tasks.
 
 **Parameters**
 
-- `results` (`table`, required) - The results table returned by `runBatch`.
+- `results` (`table`, required): The results table returned by `runBatch`.
 
 **Returns**: `number` - Count of passed tasks.
 
@@ -233,7 +193,9 @@ do
 end
 ```
 
-### `lurek.runtime.getClipboardText() -> string`
+### lurek.runtime.getClipboardText
+
+`lurek.runtime.getClipboardText() -> string`
 
 Reads the current text content from the system clipboard. Returns an empty string if the clipboard is unavailable or contains no text.
 
@@ -254,7 +216,9 @@ do
 end
 ```
 
-### `lurek.runtime.getConfig() -> table`
+### lurek.runtime.getConfig
+
+`lurek.runtime.getConfig() -> table`
 
 Returns a table containing the current engine runtime configuration values.
 
@@ -283,7 +247,9 @@ do
 end
 ```
 
-### `lurek.runtime.getDebugOverlay() -> boolean`
+### lurek.runtime.getDebugOverlay
+
+`lurek.runtime.getDebugOverlay() -> boolean`
 
 Returns whether the on-screen debug overlay is currently enabled.
 
@@ -302,13 +268,15 @@ do
 end
 ```
 
-### `lurek.runtime.getEnv(name: string) -> string`
+### lurek.runtime.getEnv
+
+`lurek.runtime.getEnv(name: string) -> string`
 
 Reads an environment variable by name. Returns `nil` if the variable is not set.
 
 **Parameters**
 
-- `name` (`string`, required) - The environment variable name.
+- `name` (`string`, required): The environment variable name.
 
 **Returns**: `string` - The variable value. Returns `nil` when the variable is not set.
 
@@ -326,7 +294,9 @@ do
 end
 ```
 
-### `lurek.runtime.getInfo() -> table`
+### lurek.runtime.getInfo
+
+`lurek.runtime.getInfo() -> table`
 
 Returns a table with comprehensive engine and host information.
 
@@ -346,7 +316,9 @@ do
 end
 ```
 
-### `lurek.runtime.getLastError() -> table`
+### lurek.runtime.getLastError
+
+`lurek.runtime.getLastError() -> table`
 
 Returns the last error for Lua scripts in this module.
 
@@ -366,7 +338,9 @@ do
 end
 ```
 
-### `lurek.runtime.getLogLevel() -> string`
+### lurek.runtime.getLogLevel
+
+`lurek.runtime.getLogLevel() -> string`
 
 Returns the current engine log verbosity level as a string.
 
@@ -386,7 +360,9 @@ do
 end
 ```
 
-### `lurek.runtime.getMemorySize() -> number`
+### lurek.runtime.getMemorySize
+
+`lurek.runtime.getMemorySize() -> number`
 
 Returns the total physical memory of the host system in megabytes.
 
@@ -405,13 +381,15 @@ do
 end
 ```
 
-### `lurek.runtime.getMessage(id: string) -> string`
+### lurek.runtime.getMessage
+
+`lurek.runtime.getMessage(id: string) -> string`
 
 Resolves a message string by its identifier from the engine message catalog.
 
 **Parameters**
 
-- `id` (`string`, required) - The message identifier to look up.
+- `id` (`string`, required): The message identifier to look up.
 
 **Returns**: `string` - The resolved message text. Returns `nil` when the identifier is not found.
 
@@ -428,7 +406,9 @@ do
 end
 ```
 
-### `lurek.runtime.getMessageCount() -> number`
+### lurek.runtime.getMessageCount
+
+`lurek.runtime.getMessageCount() -> number`
 
 Returns the total number of messages registered in the engine message catalog.
 
@@ -449,7 +429,9 @@ do
 end
 ```
 
-### `lurek.runtime.getOS() -> string`
+### lurek.runtime.getOS
+
+`lurek.runtime.getOS() -> string`
 
 Returns the name of the host operating system as a string.
 
@@ -468,7 +450,9 @@ do
 end
 ```
 
-### `lurek.runtime.getPowerInfo() -> string`
+### lurek.runtime.getPowerInfo
+
+`lurek.runtime.getPowerInfo() -> string`
 
 Returns the current power supply state, battery percentage, and estimated time remaining.
 
@@ -487,7 +471,9 @@ do
 end
 ```
 
-### `lurek.runtime.getPreferredLocales() -> string[]`
+### lurek.runtime.getPreferredLocales
+
+`lurek.runtime.getPreferredLocales() -> string[]`
 
 Returns a list of the user's preferred locale identifiers from the operating system.
 
@@ -506,7 +492,9 @@ do
 end
 ```
 
-### `lurek.runtime.getProcessorCount() -> number`
+### lurek.runtime.getProcessorCount
+
+`lurek.runtime.getProcessorCount() -> number`
 
 Returns the number of logical processors available on the host machine.
 
@@ -525,7 +513,9 @@ do
 end
 ```
 
-### `lurek.runtime.getVersion() -> string`
+### lurek.runtime.getVersion
+
+`lurek.runtime.getVersion() -> string`
 
 Returns the semantic version string of the Lurek2D engine.
 
@@ -543,13 +533,15 @@ do
 end
 ```
 
-### `lurek.runtime.hasMessage(id: string) -> boolean`
+### lurek.runtime.hasMessage
+
+`lurek.runtime.hasMessage(id: string) -> boolean`
 
 Checks whether a message identifier exists in the engine message catalog.
 
 **Parameters**
 
-- `id` (`string`, required) - The message identifier to check.
+- `id` (`string`, required): The message identifier to check.
 
 **Returns**: `boolean` - `true` if the message identifier is registered.
 
@@ -569,14 +561,16 @@ do
 end
 ```
 
-### `lurek.runtime.log(level: string, message: string)`
+### lurek.runtime.log
+
+`lurek.runtime.log(level: string, message: string)`
 
 Writes a message to the engine log at the specified severity level.
 
 **Parameters**
 
-- `level` (`string`, required) - Log level: `"error"`, `"warn"`, `"info"`, `"debug"`, or `"trace"`. Defaults to `"info"` if unrecognized.
-- `message` (`string`, required) - The message text to log.
+- `level` (`string`, required): Log level: `"error"`, `"warn"`, `"info"`, `"debug"`, or `"trace"`. Defaults to `"info"` if unrecognized.
+- `message` (`string`, required): The message text to log.
 
 #### Example
 
@@ -591,13 +585,15 @@ do
 end
 ```
 
-### `lurek.runtime.openURL(url: string) -> boolean`
+### lurek.runtime.openURL
+
+`lurek.runtime.openURL(url: string) -> boolean`
 
 Opens a URL in the default system browser. Only `http://`, `https://`, and `mailto:` schemes are permitted.
 
 **Parameters**
 
-- `url` (`string`, required) - The URL to open.
+- `url` (`string`, required): The URL to open.
 
 **Returns**: `boolean` - `true` if the URL was accepted and the open command launched successfully.
 
@@ -656,13 +652,15 @@ end
 do
 ```
 
-### `lurek.runtime.parseArgs([args]: table) -> table`
+### lurek.runtime.parseArgs
+
+`lurek.runtime.parseArgs([args]: table) -> table`
 
 Parses command-line arguments into structured flags, options, and positional values. Supports `--key=value`, `--key value`, `-flag`, and `--` end-of-options.
 
 **Parameters**
 
-- `args` (`table`, optional) - Optional table of argument strings. Uses `os.args` if omitted.
+- `args` (`table`, optional): Optional table of argument strings. Uses `os.args` if omitted.
 
 **Returns**: `table` - Table with fields: `flags` (table of boolean), `options` (table of string), `positional` (array of string).
 
@@ -681,7 +679,9 @@ do
 end
 ```
 
-### `lurek.runtime.reloadConfig()`
+### lurek.runtime.reloadConfig
+
+`lurek.runtime.reloadConfig()`
 
 Requests a reload of the engine configuration from `conf.lua`. The reload is deferred until the next frame.
 
@@ -697,14 +697,16 @@ do
 end
 ```
 
-### `lurek.runtime.runBatch(tasks: table, [opts]: table) -> table`
+### lurek.runtime.runBatch
+
+`lurek.runtime.runBatch(tasks: table, [opts]: table) -> table`
 
 Executes a table of named task functions sequentially, collecting pass/fail results and elapsed time for each.
 
 **Parameters**
 
-- `tasks` (`table`, required) - Table mapping task names (string) to task functions (function).
-- `opts` (`table`, optional) - Options table. Set `stopOnError = true` to skip remaining tasks after the first failure.
+- `tasks` (`table`, required): Table mapping task names (string) to task functions (function).
+- `opts` (`table`, optional): Options table. Set `stopOnError = true` to skip remaining tasks after the first failure.
 
 **Returns**: `table` - Table mapping each task name to a result table.
 
@@ -725,13 +727,15 @@ do
 end
 ```
 
-### `lurek.runtime.setClipboardText(text: string)`
+### lurek.runtime.setClipboardText
+
+`lurek.runtime.setClipboardText(text: string)`
 
 Copies a string to the system clipboard. Logs a warning if the clipboard is unavailable or the write fails.
 
 **Parameters**
 
-- `text` (`string`, required) - The text to place on the clipboard.
+- `text` (`string`, required): The text to place on the clipboard.
 
 #### Example
 
@@ -746,13 +750,15 @@ do
 end
 ```
 
-### `lurek.runtime.setDebugOverlay(enabled: boolean)`
+### lurek.runtime.setDebugOverlay
+
+`lurek.runtime.setDebugOverlay(enabled: boolean)`
 
 Enables or disables the on-screen debug overlay that shows FPS, draw calls, and other diagnostics.
 
 **Parameters**
 
-- `enabled` (`boolean`, required) - `true` to show the debug overlay, `false` to hide it.
+- `enabled` (`boolean`, required): `true` to show the debug overlay, `false` to hide it.
 
 #### Example
 
@@ -766,13 +772,15 @@ do
 end
 ```
 
-### `lurek.runtime.setLogLevel(level: string)`
+### lurek.runtime.setLogLevel
+
+`lurek.runtime.setLogLevel(level: string)`
 
 Sets the engine-wide log verbosity level at runtime.
 
 **Parameters**
 
-- `level` (`string`, required) - Log level: `"error"`, `"warn"`, `"info"`, `"debug"`, or `"trace"`.
+- `level` (`string`, required): Log level: `"error"`, `"warn"`, `"info"`, `"debug"`, or `"trace"`.
 
 #### Example
 
@@ -788,16 +796,22 @@ end
 ```
 
 
-## Examples
+[⬆ back to top](#table-of-contents)
+
+## 💡 Examples
 
 No module-specific example file was found.
 
-## Reference Games
+[⬆ back to top](#table-of-contents)
+
+## 🎮 Reference Games
 
 No direct references were found in `content/games/**/main.lua`.
 
-## Related Modules
+[⬆ back to top](#table-of-contents)
 
-- Previous: [[sprite|Module-sprite]]
-- Next: [[terminal|Module-terminal]]
-- [[engine|Module-engine]] - lurek.engine -- Runtime metadata and diagnostics bindings for version, platform, uptime, FPS, frame counters, resource memory budgets, frame timing profile tables, and configuration reload revision exposed to Lua scripts.
+## 🔗 Related Modules
+
+- Previous: [sprite](Module-sprite)
+- Next: [terminal](Module-terminal)
+- [engine](Module-engine) - lurek.engine -- Runtime metadata and diagnostics bindings for version, platform, uptime, FPS, frame counters, resource memory budgets, frame timing profile tables, and configuration reload revision exposed to Lua scripts.

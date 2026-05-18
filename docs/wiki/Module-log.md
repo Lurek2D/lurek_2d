@@ -4,113 +4,63 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
-- [Purpose](#purpose)
-- [Summary](#summary)
-- [Minimal Module Example](#minimal-module-example)
-- [Key Types](#key-types)
-- [API Overview](#api-overview)
-- [Module Functions](#module-functions)
-  - [lurek.log.addSink(config: table) -> integer](#lureklogaddsinkconfig-table-integer)
-  - [lurek.log.clearSinks()](#lureklogclearsinks)
-  - [lurek.log.debug(message: string, [tag]: string)](#lureklogdebugmessage-string-tag-string)
-  - [lurek.log.debug_fields(message: string, fields_tbl: table)](#lureklogdebugfieldsmessage-string-fieldstbl-table)
-  - [lurek.log.error(message: string, [tag]: string)](#lureklogerrormessage-string-tag-string)
-  - [lurek.log.error_fields(message: string, fields_tbl: table)](#lureklogerrorfieldsmessage-string-fieldstbl-table)
-  - [lurek.log.flushFile(id: integer)](#lureklogflushfileid-integer)
-  - [lurek.log.getLevel() -> string](#lurekloggetlevel-string)
-  - [lurek.log.info(message: string, [tag]: string)](#lurekloginfomessage-string-tag-string)
-  - [lurek.log.info_fields(message: string, fields_tbl: table)](#lurekloginfofieldsmessage-string-fieldstbl-table)
-  - [lurek.log.listSinks() -> table](#lurekloglistsinks-table)
-  - [lurek.log.print(level: string, message: string, [tag]: string)](#lureklogprintlevel-string-message-string-tag-string)
-  - [lurek.log.readMemory(id: integer, [drain]: boolean) -> table](#lureklogreadmemoryid-integer-drain-boolean-table)
-  - [lurek.log.removeSink(id: integer) -> boolean](#lureklogremovesinkid-integer-boolean)
-  - [lurek.log.setLevel(level: string)](#lureklogsetlevellevel-string)
-  - [lurek.log.struct(level_str: string, message: string, fields_tbl: table)](#lureklogstructlevelstr-string-message-string-fieldstbl-table)
-  - [lurek.log.warn(message: string, [tag]: string)](#lureklogwarnmessage-string-tag-string)
-  - [lurek.log.warn_fields(message: string, fields_tbl: table)](#lureklogwarnfieldsmessage-string-fieldstbl-table)
-- [Examples](#examples)
-- [Reference Games](#reference-games)
-- [Related Modules](#related-modules)
+- [🎯 Purpose](#purpose)
+- [📋 Summary](#summary)
+- [🧩 Key Types](#key-types)
+- [📖 API Overview](#api-overview)
+- [⚙️ Module Functions](#module-functions)
+  - [lurek.log.addSink](#lureklogaddsink)
+  - [lurek.log.clearSinks](#lureklogclearsinks)
+  - [lurek.log.debug](#lureklogdebug)
+  - [lurek.log.debug_fields](#lureklogdebugfields)
+  - [lurek.log.error](#lureklogerror)
+  - [lurek.log.error_fields](#lureklogerrorfields)
+  - [lurek.log.flushFile](#lureklogflushfile)
+  - [lurek.log.getLevel](#lurekloggetlevel)
+  - [lurek.log.info](#lurekloginfo)
+  - [lurek.log.info_fields](#lurekloginfofields)
+  - [lurek.log.listSinks](#lurekloglistsinks)
+  - [lurek.log.print](#lureklogprint)
+  - [lurek.log.readMemory](#lureklogreadmemory)
+  - [lurek.log.removeSink](#lureklogremovesink)
+  - [lurek.log.setLevel](#lureklogsetlevel)
+  - [lurek.log.struct](#lureklogstruct)
+  - [lurek.log.warn](#lureklogwarn)
+  - [lurek.log.warn_fields](#lureklogwarnfields)
+- [💡 Examples](#examples)
+- [🎮 Reference Games](#reference-games)
+- [🔗 Related Modules](#related-modules)
 
 This page is generated from the current module specs, examples, and Lua API data.
 
 **Module group:** Foundations
 **Namespace:** `lurek.log`
 
-## Purpose
+## 🎯 Purpose
 
 Lua-accessible logging facade over the Rust log crate, controlled via RUST_LOG.
 
-## Summary
+[⬆ back to top](#table-of-contents)
+
+## 📋 Summary
 
 Structured logging facade with global level control and dispatch to registered sinks. Messages carry severity level, optional tag, and structured key-value fields (`LogFields`). The module supports memory sinks (bounded ring buffer for recent entries), rotating file sinks (size-based rotation with configurable retention), and callback sinks for Lua-side log handling.
 
 Level filtering is per-sink via `SinkLevel` — each sink independently chooses its minimum severity threshold. The global level gates all emission before dispatch to avoid formatting costs on suppressed messages. Runtime level mutation via string names enables dynamic verbosity adjustment. Used by all engine modules via `log_msg!` macro. Exposed as `lurek.log.*`. Foundations tier.
 
-## Minimal Module Example
+[⬆ back to top](#table-of-contents)
 
-Module example from [log.lua](../blob/main/content/examples/log.lua):
-
-```lua
--- content/examples/log.lua
--- Demonstrates every lurek.log.* function with realistic game-dev usage.
--- Run: cargo run -- content/examples/log.lua
-
---@api-stub: lurek.log.setLevel
--- Sets the minimum severity for log output across all sinks
-do
-  -- During development use "debug" to see everything;
-  -- in shipping builds switch to "warn" to reduce noise.
-  local is_dev_build = true
-  if is_dev_build then
-    lurek.log.setLevel("debug")
-  else
-    lurek.log.setLevel("warn")
-  end
-end
-
---@api-stub: lurek.log.getLevel
--- Returns the current global log level as a string
-do
-  -- Use this to conditionally build expensive debug strings only when needed.
-  local level = lurek.log.getLevel()
-  if level == "debug" or level == "trace" then
-    local world_state = "entities=214 particles=890 dt=16.4ms"
-    lurek.log.debug("world snapshot: " .. world_state, "perf")
-  end
-end
-
---@api-stub: lurek.log.debug
--- Logs a debug message visible only at debug/trace level
-do
-  -- Track per-frame values that help you diagnose movement or physics issues.
-  local player = { x = 312.5, y = 144.0, vx = 2.1, vy = -0.3 }
-  lurek.log.debug(
-    string.format("player pos=(%.1f,%.1f) vel=(%.2f,%.2f)", player.x, player.y, player.vx, player.vy),
-    "movement"
-  )
-end
-
---@api-stub: lurek.log.info
--- Logs an informational message for notable lifecycle events
-do
-  -- Record transitions that help you understand session flow in the log file.
-  local level_name = "dungeon_b2"
-  local enemy_count = 23
-  local spawn_time_ms = 4.7
-  lurek.log.info(
-    "loaded '" .. level_name .. "': " .. enemy_count .. " enemies in " .. spawn_time_ms .. "ms",
-```
-
-## Key Types
+## 🧩 Key Types
 
 This module has no separate Lua-visible classes in the generated API data.
 
-## API Overview
+[⬆ back to top](#table-of-contents)
+
+## 📖 API Overview
 
 - Source spec: [docs/specs/log.md](../blob/main/docs/specs/log.md)
 
@@ -135,15 +85,19 @@ lurek.log.warn(message: string, [tag]: string) -- Logs a warning message with an
 lurek.log.warn_fields(message: string, fields_tbl: table) -- Logs a warning message with structured fields.
 ```
 
-## Module Functions
+[⬆ back to top](#table-of-contents)
 
-### `lurek.log.addSink(config: table) -> integer`
+## ⚙️ Module Functions
+
+### lurek.log.addSink
+
+`lurek.log.addSink(config: table) -> integer`
 
 Adds a memory, file, rotating, or callback sink from a config table.
 
 **Parameters**
 
-- `config` (`table`, required) - Sink config with `type`, `level`, format, tag, path, capacity, or callback fields.
+- `config` (`table`, required): Sink config with `type`, `level`, format, tag, path, capacity, or callback fields.
 
 **Returns**: `integer` - Sink id.
 
@@ -171,7 +125,9 @@ do
 end
 ```
 
-### `lurek.log.clearSinks()`
+### lurek.log.clearSinks
+
+`lurek.log.clearSinks()`
 
 Removes all sinks and releases callback registry keys.
 
@@ -190,14 +146,16 @@ do
 end
 ```
 
-### `lurek.log.debug(message: string, [tag]: string)`
+### lurek.log.debug
+
+`lurek.log.debug(message: string, [tag]: string)`
 
 Logs a debug message with an optional tag.
 
 **Parameters**
 
-- `message` (`string`, required) - Message text.
-- `tag` (`string`, optional) - Log tag shown in the sink output (default `"Lua"`).
+- `message` (`string`, required): Message text.
+- `tag` (`string`, optional): Log tag shown in the sink output (default `"Lua"`).
 
 #### Example
 
@@ -214,14 +172,16 @@ do
 end
 ```
 
-### `lurek.log.debug_fields(message: string, fields_tbl: table)`
+### lurek.log.debug_fields
+
+`lurek.log.debug_fields(message: string, fields_tbl: table)`
 
 Logs a debug message with structured fields.
 
 **Parameters**
 
-- `message` (`string`, required) - Message text.
-- `fields_tbl` (`table`, required) - Scalar field table converted to strings.
+- `message` (`string`, required): Message text.
+- `fields_tbl` (`table`, required): Scalar field table converted to strings.
 
 #### Example
 
@@ -239,14 +199,16 @@ do
 end
 ```
 
-### `lurek.log.error(message: string, [tag]: string)`
+### lurek.log.error
+
+`lurek.log.error(message: string, [tag]: string)`
 
 Logs an error message with an optional tag.
 
 **Parameters**
 
-- `message` (`string`, required) - Message text.
-- `tag` (`string`, optional) - Log tag shown in the sink output (default `"Lua"`).
+- `message` (`string`, required): Message text.
+- `tag` (`string`, optional): Log tag shown in the sink output (default `"Lua"`).
 
 #### Example
 
@@ -264,14 +226,16 @@ do
 end
 ```
 
-### `lurek.log.error_fields(message: string, fields_tbl: table)`
+### lurek.log.error_fields
+
+`lurek.log.error_fields(message: string, fields_tbl: table)`
 
 Logs an error message with structured fields.
 
 **Parameters**
 
-- `message` (`string`, required) - Message text.
-- `fields_tbl` (`table`, required) - Scalar field table converted to strings.
+- `message` (`string`, required): Message text.
+- `fields_tbl` (`table`, required): Scalar field table converted to strings.
 
 #### Example
 
@@ -289,13 +253,15 @@ do
 end
 ```
 
-### `lurek.log.flushFile(id: integer)`
+### lurek.log.flushFile
+
+`lurek.log.flushFile(id: integer)`
 
 Flushes a file-backed sink by id when it exists.
 
 **Parameters**
 
-- `id` (`integer`, required) - Sink id.
+- `id` (`integer`, required): Sink id.
 
 #### Example
 
@@ -311,7 +277,9 @@ do
 end
 ```
 
-### `lurek.log.getLevel() -> string`
+### lurek.log.getLevel
+
+`lurek.log.getLevel() -> string`
 
 Returns the global log level string.
 
@@ -332,14 +300,16 @@ do
 end
 ```
 
-### `lurek.log.info(message: string, [tag]: string)`
+### lurek.log.info
+
+`lurek.log.info(message: string, [tag]: string)`
 
 Logs an info message with an optional tag.
 
 **Parameters**
 
-- `message` (`string`, required) - Message text.
-- `tag` (`string`, optional) - Log tag shown in the sink output (default `"Lua"`).
+- `message` (`string`, required): Message text.
+- `tag` (`string`, optional): Log tag shown in the sink output (default `"Lua"`).
 
 #### Example
 
@@ -358,14 +328,16 @@ do
 end
 ```
 
-### `lurek.log.info_fields(message: string, fields_tbl: table)`
+### lurek.log.info_fields
+
+`lurek.log.info_fields(message: string, fields_tbl: table)`
 
 Logs an info message with structured fields.
 
 **Parameters**
 
-- `message` (`string`, required) - Message text.
-- `fields_tbl` (`table`, required) - Scalar field table converted to strings.
+- `message` (`string`, required): Message text.
+- `fields_tbl` (`table`, required): Scalar field table converted to strings.
 
 #### Example
 
@@ -383,7 +355,9 @@ do
 end
 ```
 
-### `lurek.log.listSinks() -> table`
+### lurek.log.listSinks
+
+`lurek.log.listSinks() -> table`
 
 Returns metadata for all registered sinks.
 
@@ -407,15 +381,17 @@ do
 end
 ```
 
-### `lurek.log.print(level: string, message: string, [tag]: string)`
+### lurek.log.print
+
+`lurek.log.print(level: string, message: string, [tag]: string)`
 
 Logs a message at a runtime-selected level with an optional tag.
 
 **Parameters**
 
-- `level` (`string`, required) - Log level string.
-- `message` (`string`, required) - Message text.
-- `tag` (`string`, optional) - Optional tag, defaulting to `Lua`.
+- `level` (`string`, required): Log level string.
+- `message` (`string`, required): Message text.
+- `tag` (`string`, optional): Optional tag, defaulting to `Lua`.
 
 #### Example
 
@@ -430,14 +406,16 @@ do
 end
 ```
 
-### `lurek.log.readMemory(id: integer, [drain]: boolean) -> table`
+### lurek.log.readMemory
+
+`lurek.log.readMemory(id: integer, [drain]: boolean) -> table`
 
 Reads entries from a memory sink and optionally drains them.
 
 **Parameters**
 
-- `id` (`integer`, required) - Memory sink id.
-- `drain` (`boolean`, optional) - Optional drain flag, defaulting to false.
+- `id` (`integer`, required): Memory sink id.
+- `drain` (`boolean`, optional): Optional drain flag, defaulting to false.
 
 **Returns**: `table` - Array table of memory log entries.
 
@@ -461,13 +439,15 @@ do
 end
 ```
 
-### `lurek.log.removeSink(id: integer) -> boolean`
+### lurek.log.removeSink
+
+`lurek.log.removeSink(id: integer) -> boolean`
 
 Removes a sink by id and releases any callback registry key.
 
 **Parameters**
 
-- `id` (`integer`, required) - Sink id.
+- `id` (`integer`, required): Sink id.
 
 **Returns**: `boolean` - True when a sink was removed.
 
@@ -486,13 +466,15 @@ do
 end
 ```
 
-### `lurek.log.setLevel(level: string)`
+### lurek.log.setLevel
+
+`lurek.log.setLevel(level: string)`
 
 Sets the global log level. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `level` (`string`, required) - Level `error`, `warn`, `info`, `debug`, `trace`, `off`, or `none`.
+- `level` (`string`, required): Level `error`, `warn`, `info`, `debug`, `trace`, `off`, or `none`.
 
 #### Example
 
@@ -511,15 +493,17 @@ do
 end
 ```
 
-### `lurek.log.struct(level_str: string, message: string, fields_tbl: table)`
+### lurek.log.struct
+
+`lurek.log.struct(level_str: string, message: string, fields_tbl: table)`
 
 Logs a structured message at a runtime-selected level.
 
 **Parameters**
 
-- `level_str` (`string`, required) - Log level string.
-- `message` (`string`, required) - Message text.
-- `fields_tbl` (`table`, required) - Scalar field table converted to strings.
+- `level_str` (`string`, required): Log level string.
+- `message` (`string`, required): Message text.
+- `fields_tbl` (`table`, required): Scalar field table converted to strings.
 
 #### Example
 
@@ -538,14 +522,16 @@ do
 end
 ```
 
-### `lurek.log.warn(message: string, [tag]: string)`
+### lurek.log.warn
+
+`lurek.log.warn(message: string, [tag]: string)`
 
 Logs a warning message with an optional tag.
 
 **Parameters**
 
-- `message` (`string`, required) - Message text.
-- `tag` (`string`, optional) - Log tag shown in the sink output (default `"Lua"`).
+- `message` (`string`, required): Message text.
+- `tag` (`string`, optional): Log tag shown in the sink output (default `"Lua"`).
 
 #### Example
 
@@ -565,14 +551,16 @@ do
 end
 ```
 
-### `lurek.log.warn_fields(message: string, fields_tbl: table)`
+### lurek.log.warn_fields
+
+`lurek.log.warn_fields(message: string, fields_tbl: table)`
 
 Logs a warning message with structured fields.
 
 **Parameters**
 
-- `message` (`string`, required) - Message text.
-- `fields_tbl` (`table`, required) - Scalar field table converted to strings.
+- `message` (`string`, required): Message text.
+- `fields_tbl` (`table`, required): Scalar field table converted to strings.
 
 #### Example
 
@@ -595,21 +583,27 @@ end
 ```
 
 
-## Examples
+[⬆ back to top](#table-of-contents)
+
+## 💡 Examples
 
 - [log.lua](../blob/main/content/examples/log.lua) - Structured log output
 
-## Reference Games
+[⬆ back to top](#table-of-contents)
+
+## 🎮 Reference Games
 
 No direct references were found in `content/games/**/main.lua`.
 
-## Related Modules
+[⬆ back to top](#table-of-contents)
 
-- Previous: [[light|Module-light]]
-- Next: [[lua_api|Module-lua_api]]
-- [[compute|Module-compute]] - Dense N-D numerical array library exposed as lurek.compute.*; CPU-only matrix / signal workloads.
-- [[data|Module-data]] - Binary data toolkit: byte buffers, compression, hashing, encoding, structured pack / unpack.
-- [[dataframe|Module-dataframe]] - In-memory column-major tabular data with lightweight SQL-style queries (lurek.dataframe.*).
-- [[globe|Module-globe]] - XCOM-style Geoscape province sphere: topology, orbit camera, fog-of-war, markers, day/night.
-- [[graph|Module-graph]] - Directed flow-simulation graph: typed items flow through nodes, accumulate, decay, react.
-- [[math|Module-math]] - Foundational 2D math, geometry, and color types. Leaf of the engine dependency graph.
+## 🔗 Related Modules
+
+- Previous: [light](Module-light)
+- Next: [lua_api](Module-lua_api)
+- [compute](Module-compute) - Dense N-D numerical array library exposed as lurek.compute.*; CPU-only matrix / signal workloads.
+- [data](Module-data) - Binary data toolkit: byte buffers, compression, hashing, encoding, structured pack / unpack.
+- [dataframe](Module-dataframe) - In-memory column-major tabular data with lightweight SQL-style queries (lurek.dataframe.*).
+- [globe](Module-globe) - XCOM-style Geoscape province sphere: topology, orbit camera, fog-of-war, markers, day/night.
+- [graph](Module-graph) - Directed flow-simulation graph: typed items flow through nodes, accumulate, decay, react.
+- [math](Module-math) - Foundational 2D math, geometry, and color types. Leaf of the engine dependency graph.

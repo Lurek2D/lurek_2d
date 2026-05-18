@@ -4,165 +4,116 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
-- [Purpose](#purpose)
-- [Summary](#summary)
-- [Minimal Module Example](#minimal-module-example)
-- [Key Types](#key-types)
-- [API Overview](#api-overview)
-- [Module Functions](#module-functions)
-  - [lurek.pipeline.fromTable(definition: table) -> LPipeline](#lurekpipelinefromtabledefinition-table-lpipeline)
-  - [lurek.pipeline.newPipeline([name]: string) -> LPipeline](#lurekpipelinenewpipelinename-string-lpipeline)
-  - [lurek.pipeline.newStep(name: string, [callback]: function) -> LPipelineStep](#lurekpipelinenewstepname-string-callback-function-lpipelinestep)
-- [Types and Methods](#types-and-methods)
+- [🎯 Purpose](#purpose)
+- [📋 Summary](#summary)
+- [🧩 Key Types](#key-types)
+- [📖 API Overview](#api-overview)
+- [⚙️ Module Functions](#module-functions)
+  - [lurek.pipeline.fromTable](#lurekpipelinefromtable)
+  - [lurek.pipeline.newPipeline](#lurekpipelinenewpipeline)
+  - [lurek.pipeline.newStep](#lurekpipelinenewstep)
+- [🔷 Module Types](#module-types)
   - [LPipeline](#lpipeline)
-  - [LPipeline:addBranch(name: string, deps: table, when: function, thenFn: function, [elseFn]: function) -> LPipeline](#lpipelineaddbranchname-string-deps-table-when-function-thenfn-function-elsefn-function-lpipeline)
-  - [LPipeline:addConditional(name: string, deps: table, callback: function, condition: function) -> LPipeline](#lpipelineaddconditionalname-string-deps-table-callback-function-condition-function-lpipeline)
-  - [LPipeline:addStep(step: LPipelineStep) -> LPipeline](#lpipelineaddstepstep-lpipelinestep-lpipeline)
-  - [LPipeline:addSubPipeline(subPipeline: LPipeline, alias: string, [deps]: table)](#lpipelineaddsubpipelinesubpipeline-lpipeline-alias-string-deps-table)
-  - [LPipeline:cancel()](#lpipelinecancel)
-  - [LPipeline:clear()](#lpipelineclear)
-  - [LPipeline:getContext() -> table](#lpipelinegetcontext-table)
-  - [LPipeline:getErrorMode() -> string](#lpipelinegeterrormode-string)
-  - [LPipeline:getExecutionOrder() -> string[]](#lpipelinegetexecutionorder-string)
-  - [LPipeline:getName() -> string](#lpipelinegetname-string)
-  - [LPipeline:getParallelGroups() -> string[]](#lpipelinegetparallelgroups-string)
-  - [LPipeline:getResult() -> table](#lpipelinegetresult-table)
-  - [LPipeline:getStep(name: string) -> LPipelineStep](#lpipelinegetstepname-string-lpipelinestep)
-  - [LPipeline:getStepCount() -> integer](#lpipelinegetstepcount-integer)
-  - [LPipeline:getSteps() -> LPipelineStep[]](#lpipelinegetsteps-lpipelinestep)
-  - [LPipeline:getStepsByTag(tag: string) -> LPipelineStep[]](#lpipelinegetstepsbytagtag-string-lpipelinestep)
-  - [LPipeline:isComplete() -> boolean](#lpipelineiscomplete-boolean)
-  - [LPipeline:isRunning() -> boolean](#lpipelineisrunning-boolean)
-  - [LPipeline:onEvent(callback: function)](#lpipelineoneventcallback-function)
-  - [LPipeline:onProgress(callback: function)](#lpipelineonprogresscallback-function)
-  - [LPipeline:removeStep(name: string)](#lpipelineremovestepname-string)
-  - [LPipeline:reset()](#lpipelinereset)
-  - [LPipeline:run([context]: table) -> table](#lpipelineruncontext-table-table)
-  - [LPipeline:runAsync([context]: table)](#lpipelinerunasynccontext-table)
-  - [LPipeline:setErrorMode(mode: string)](#lpipelineseterrormodemode-string)
-  - [LPipeline:setName(name: string)](#lpipelinesetnamename-string)
-  - [LPipeline:setOnComplete([callback]: function)](#lpipelinesetoncompletecallback-function)
-  - [LPipeline:setOnStepComplete([callback]: function)](#lpipelinesetonstepcompletecallback-function)
-  - [LPipeline:setOnStepError([callback]: function)](#lpipelinesetonsteperrorcallback-function)
-  - [LPipeline:toAscii() -> string](#lpipelinetoascii-string)
-  - [LPipeline:toTable() -> table](#lpipelinetotable-table)
-  - [LPipeline:type() -> string](#lpipelinetype-string)
-  - [LPipeline:typeOf(name: string) -> boolean](#lpipelinetypeofname-string-boolean)
-  - [LPipeline:update(dt: number) -> boolean](#lpipelineupdatedt-number-boolean)
-  - [LPipeline:validate() -> boolean](#lpipelinevalidate-boolean)
   - [LPipelineStep](#lpipelinestep)
-  - [LPipelineStep:dependsOn(dep: string|LPipelineStep) -> LPipelineStep](#lpipelinestepdependsondep-stringlpipelinestep-lpipelinestep)
-  - [LPipelineStep:getAttempt() -> integer](#lpipelinestepgetattempt-integer)
-  - [LPipelineStep:getData(key: string) -> string](#lpipelinestepgetdatakey-string-string)
-  - [LPipelineStep:getDelay() -> number](#lpipelinestepgetdelay-number)
-  - [LPipelineStep:getDependencies() -> string[]](#lpipelinestepgetdependencies-string)
-  - [LPipelineStep:getDependencyCount() -> integer](#lpipelinestepgetdependencycount-integer)
-  - [LPipelineStep:getDuration() -> number](#lpipelinestepgetduration-number)
-  - [LPipelineStep:getError() -> string](#lpipelinestepgeterror-string)
-  - [LPipelineStep:getName() -> string](#lpipelinestepgetname-string)
-  - [LPipelineStep:getRetryCount() -> integer](#lpipelinestepgetretrycount-integer)
-  - [LPipelineStep:getStatus() -> string](#lpipelinestepgetstatus-string)
-  - [LPipelineStep:getTag() -> string](#lpipelinestepgettag-string)
-  - [LPipelineStep:getTimeout() -> number](#lpipelinestepgettimeout-number)
-  - [LPipelineStep:isAsync() -> boolean](#lpipelinestepisasync-boolean)
-  - [LPipelineStep:isOptional() -> boolean](#lpipelinestepisoptional-boolean)
-  - [LPipelineStep:setAsync(enabled: boolean)](#lpipelinestepsetasyncenabled-boolean)
-  - [LPipelineStep:setCallback(callback: function)](#lpipelinestepsetcallbackcallback-function)
-  - [LPipelineStep:setCondition([condition]: function)](#lpipelinestepsetconditioncondition-function)
-  - [LPipelineStep:setData(key: string, value: string)](#lpipelinestepsetdatakey-string-value-string)
-  - [LPipelineStep:setDelay(seconds: number)](#lpipelinestepsetdelayseconds-number)
-  - [LPipelineStep:setOnError([callback]: function)](#lpipelinestepsetonerrorcallback-function)
-  - [LPipelineStep:setOptional(optional: boolean)](#lpipelinestepsetoptionaloptional-boolean)
-  - [LPipelineStep:setRetryCount(count: integer)](#lpipelinestepsetretrycountcount-integer)
-  - [LPipelineStep:setRetryDelay(seconds: number)](#lpipelinestepsetretrydelayseconds-number)
-  - [LPipelineStep:setTag(tag: string)](#lpipelinestepsettagtag-string)
-  - [LPipelineStep:setTimeout(seconds: number)](#lpipelinestepsettimeoutseconds-number)
-  - [LPipelineStep:type() -> string](#lpipelinesteptype-string)
-  - [LPipelineStep:typeOf(name: string) -> boolean](#lpipelinesteptypeofname-string-boolean)
-- [Examples](#examples)
-- [Reference Games](#reference-games)
-- [Related Modules](#related-modules)
+- [🔹 Module Methods](#module-methods)
+  - [LPipeline:addBranch](#lpipelineaddbranch)
+  - [LPipeline:addConditional](#lpipelineaddconditional)
+  - [LPipeline:addStep](#lpipelineaddstep)
+  - [LPipeline:addSubPipeline](#lpipelineaddsubpipeline)
+  - [LPipeline:cancel](#lpipelinecancel)
+  - [LPipeline:clear](#lpipelineclear)
+  - [LPipeline:getContext](#lpipelinegetcontext)
+  - [LPipeline:getErrorMode](#lpipelinegeterrormode)
+  - [LPipeline:getExecutionOrder](#lpipelinegetexecutionorder)
+  - [LPipeline:getName](#lpipelinegetname)
+  - [LPipeline:getParallelGroups](#lpipelinegetparallelgroups)
+  - [LPipeline:getResult](#lpipelinegetresult)
+  - [LPipeline:getStep](#lpipelinegetstep)
+  - [LPipeline:getStepCount](#lpipelinegetstepcount)
+  - [LPipeline:getSteps](#lpipelinegetsteps)
+  - [LPipeline:getStepsByTag](#lpipelinegetstepsbytag)
+  - [LPipeline:isComplete](#lpipelineiscomplete)
+  - [LPipeline:isRunning](#lpipelineisrunning)
+  - [LPipeline:onEvent](#lpipelineonevent)
+  - [LPipeline:onProgress](#lpipelineonprogress)
+  - [LPipeline:removeStep](#lpipelineremovestep)
+  - [LPipeline:reset](#lpipelinereset)
+  - [LPipeline:run](#lpipelinerun)
+  - [LPipeline:runAsync](#lpipelinerunasync)
+  - [LPipeline:setErrorMode](#lpipelineseterrormode)
+  - [LPipeline:setName](#lpipelinesetname)
+  - [LPipeline:setOnComplete](#lpipelinesetoncomplete)
+  - [LPipeline:setOnStepComplete](#lpipelinesetonstepcomplete)
+  - [LPipeline:setOnStepError](#lpipelinesetonsteperror)
+  - [LPipeline:toAscii](#lpipelinetoascii)
+  - [LPipeline:toTable](#lpipelinetotable)
+  - [LPipeline:type](#lpipelinetype)
+  - [LPipeline:typeOf](#lpipelinetypeof)
+  - [LPipeline:update](#lpipelineupdate)
+  - [LPipeline:validate](#lpipelinevalidate)
+  - [LPipelineStep:dependsOn](#lpipelinestepdependson)
+  - [LPipelineStep:getAttempt](#lpipelinestepgetattempt)
+  - [LPipelineStep:getData](#lpipelinestepgetdata)
+  - [LPipelineStep:getDelay](#lpipelinestepgetdelay)
+  - [LPipelineStep:getDependencies](#lpipelinestepgetdependencies)
+  - [LPipelineStep:getDependencyCount](#lpipelinestepgetdependencycount)
+  - [LPipelineStep:getDuration](#lpipelinestepgetduration)
+  - [LPipelineStep:getError](#lpipelinestepgeterror)
+  - [LPipelineStep:getName](#lpipelinestepgetname)
+  - [LPipelineStep:getRetryCount](#lpipelinestepgetretrycount)
+  - [LPipelineStep:getStatus](#lpipelinestepgetstatus)
+  - [LPipelineStep:getTag](#lpipelinestepgettag)
+  - [LPipelineStep:getTimeout](#lpipelinestepgettimeout)
+  - [LPipelineStep:isAsync](#lpipelinestepisasync)
+  - [LPipelineStep:isOptional](#lpipelinestepisoptional)
+  - [LPipelineStep:setAsync](#lpipelinestepsetasync)
+  - [LPipelineStep:setCallback](#lpipelinestepsetcallback)
+  - [LPipelineStep:setCondition](#lpipelinestepsetcondition)
+  - [LPipelineStep:setData](#lpipelinestepsetdata)
+  - [LPipelineStep:setDelay](#lpipelinestepsetdelay)
+  - [LPipelineStep:setOnError](#lpipelinestepsetonerror)
+  - [LPipelineStep:setOptional](#lpipelinestepsetoptional)
+  - [LPipelineStep:setRetryCount](#lpipelinestepsetretrycount)
+  - [LPipelineStep:setRetryDelay](#lpipelinestepsetretrydelay)
+  - [LPipelineStep:setTag](#lpipelinestepsettag)
+  - [LPipelineStep:setTimeout](#lpipelinestepsettimeout)
+  - [LPipelineStep:type](#lpipelinesteptype)
+  - [LPipelineStep:typeOf](#lpipelinesteptypeof)
+- [💡 Examples](#examples)
+- [🎮 Reference Games](#reference-games)
+- [🔗 Related Modules](#related-modules)
 
 This page is generated from the current module specs, examples, and Lua API data.
 
 **Module group:** Feature Systems
 **Namespace:** `lurek.pipeline`
 
-## Purpose
+## 🎯 Purpose
 
 DAG-based workflow orchestration: analytics, test sequences, asset / mod processing.
 
-## Summary
+[⬆ back to top](#table-of-contents)
+
+## 📋 Summary
 
 DAG-based workflow orchestration engine for sequencing multi-step operations with dependency ordering, parallel execution, and error handling. `Pipeline` stores named steps as a directed acyclic graph — topological sort determines execution order, and parallel-level grouping identifies steps that can run concurrently. Sub-pipelines merge under namespace prefixes with outer dependency edges.
 
 Steps support conditional execution (run-if predicates), retry with backoff, timeout limits, and named outputs that flow as inputs to downstream steps. `PipelineScheduler` drives async execution with progress tracking and cancellation. Error modes configure whether failures abort the pipeline or allow partial completion. Used for asset processing, test sequencing, analytics collection, and mod build workflows. Exposed as `lurek.pipeline.*`. Feature Systems tier.
 
-## Minimal Module Example
+[⬆ back to top](#table-of-contents)
 
-Module example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
-
-```lua
-  local pl = lurek.pipeline.newPipeline("loader")
-  pl:addStep(lurek.pipeline.newStep("scan_files", function() end))
-  pl:runAsync()
-
-  -- Typical game loop integration:
-  local done = false
-  function lurek.process(dt)
-    if not done and pl:update(dt) then
-      done = true
-      lurek.log.info("loading complete — transitioning to gameplay", "boot")
-    end
-  end
-end
-
---@api-stub: LPipeline:cancel
--- Cancels the current operation of this pipeline.
-do
-  -- cancel() stops all pending/waiting steps. Already-running or completed steps are unaffected.
-  -- Use when the player cancels a loading screen or disconnects.
-  local pl = lurek.pipeline.newPipeline("multiplayer_join")
-  pl:addStep(lurek.pipeline.newStep("handshake", function() end))
-  pl:addStep(lurek.pipeline.newStep("sync_state", function() end))
-  pl:runAsync()
-  -- Player pressed Escape — cancel remaining work
-  pl:cancel()
-end
-
---@api-stub: LPipeline:reset
--- Resets this pipeline to its default state.
-do
-  -- reset() clears all step statuses back to "pending" and removes context.
-  -- Lets you re-run the same pipeline (e.g., retry a failed boot, reload a level).
-  local pl = lurek.pipeline.newPipeline("level_pipeline")
-  pl:addStep(lurek.pipeline.newStep("load_map", function(ctx) ctx.map = "level_1" end))
-  pl:run()
-  -- Player finished the level — reset and run again for level 2
-  pl:reset()
-  pl:run({ level = 2 })
-end
-
---@api-stub: LPipeline:isRunning
--- Returns true if this pipeline is currently running.
-do
-  -- isRunning() returns true between runAsync() and completion.
-  -- Use to guard against double-starting or to show loading indicators.
-  local pl = lurek.pipeline.newPipeline("loader")
-  pl:addStep(lurek.pipeline.newStep("work", function() end))
-  pl:runAsync()
-```
-
-## Key Types
+## 🧩 Key Types
 
 - `LPipeline` (35 methods) - A full pipeline that orchestrates multiple steps with dependency resolution, error modes, and async scheduling.
 - `LPipelineStep` (28 methods) - A single executable step within a pipeline, wrapping callback, condition, retry, and error hooks.
 
-## API Overview
+[⬆ back to top](#table-of-contents)
+
+## 📖 API Overview
 
 - Source spec: [docs/specs/pipeline.md](../blob/main/docs/specs/pipeline.md)
 
@@ -172,15 +123,19 @@ lurek.pipeline.newPipeline([name]: string) -> LPipeline -- Creates a new empty p
 lurek.pipeline.newStep(name: string, [callback]: function) -> LPipelineStep -- Creates a new pipeline step with the given name and an optional callback function.
 ```
 
-## Module Functions
+[⬆ back to top](#table-of-contents)
 
-### `lurek.pipeline.fromTable(definition: table) -> LPipeline`
+## ⚙️ Module Functions
+
+### lurek.pipeline.fromTable
+
+`lurek.pipeline.fromTable(definition: table) -> LPipeline`
 
 Creates a pipeline pre-populated with steps from a declarative table definition. Each step entry can specify name, deps, delay, optional, retryCount, retryDelay, async, tag, and fn.
 
 **Parameters**
 
-- `definition` (`table`, required) - A table with optional name, errorMode, and a steps array.
+- `definition` (`table`, required): A table with optional name, errorMode, and a steps array.
 
 **Returns**: `LPipeline` - The constructed pipeline.
 
@@ -215,13 +170,15 @@ do
 end
 ```
 
-### `lurek.pipeline.newPipeline([name]: string) -> LPipeline`
+### lurek.pipeline.newPipeline
+
+`lurek.pipeline.newPipeline([name]: string) -> LPipeline`
 
 Creates a new empty pipeline with an optional name. Add steps via addStep() or addConditional().
 
 **Parameters**
 
-- `name` (`string`, optional) - Pipeline name (defaults to "pipeline").
+- `name` (`string`, optional): Pipeline name (defaults to "pipeline").
 
 **Returns**: `LPipeline` - The new pipeline object.
 
@@ -249,14 +206,16 @@ do
 end
 ```
 
-### `lurek.pipeline.newStep(name: string, [callback]: function) -> LPipelineStep`
+### lurek.pipeline.newStep
+
+`lurek.pipeline.newStep(name: string, [callback]: function) -> LPipelineStep`
 
 Creates a new pipeline step with the given name and an optional callback function.
 
 **Parameters**
 
-- `name` (`string`, required) - Unique step name.
-- `callback` (`function`, optional) - Optional callback executed when this step runs.
+- `name` (`string`, required): Unique step name.
+- `callback` (`function`, optional): Optional callback executed when this step runs.
 
 **Returns**: `LPipelineStep` - The new step object.
 
@@ -280,11 +239,21 @@ end
 ```
 
 
-## Types and Methods
+[⬆ back to top](#table-of-contents)
 
-### `LPipeline`
+## 🔷 Module Types
+
+### LPipeline
 
 A full pipeline that orchestrates multiple steps with dependency resolution, error modes, and async scheduling.
+
+**Lua API Definition**
+
+```lua
+--- A full pipeline that orchestrates multiple steps with dependency resolution, error modes, and async scheduling.
+---@class LPipeline
+LPipeline = {}
+```
 
 #### Example
 
@@ -317,19 +286,70 @@ do
 end
 ```
 
-### `LPipeline:addBranch(name: string, deps: table, when: function, thenFn: function, [elseFn]: function) -> LPipeline`
+### LPipelineStep
+
+A single executable step within a pipeline, wrapping callback, condition, retry, and error hooks.
+
+**Lua API Definition**
+
+```lua
+--- A single executable step within a pipeline, wrapping callback, condition, retry, and error hooks.
+---@class LPipelineStep
+LPipelineStep = {}
+```
+
+#### Example
+
+Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+
+```lua
+do
+  -- newStep(name, callback?) creates an LPipelineStep.
+  -- The callback receives a shared context table that all steps in the pipeline can read/write.
+  -- Use steps to represent discrete units of work: loading assets, initializing systems, etc.
+  local step = lurek.pipeline.newStep("load_audio", function(ctx)
+    -- ctx is the shared pipeline context — store results here for downstream steps
+    ctx.audio_loaded = true
+    ctx.audio_sources = 32
+  end)
+  -- Tags help filter and group steps later (e.g., "skip all 'net' steps in offline mode")
+  step:setTag("boot")
+end
+```
+
+
+[⬆ back to top](#table-of-contents)
+
+## 🔹 Module Methods
+
+### LPipeline:addBranch
+
+`LPipeline:addBranch(name: string, deps: table, when: function, thenFn: function, [elseFn]: function) -> LPipeline`
 
 Adds a branching construct: evaluates a predicate, then runs either the "then" or "else" callback based on the result.
 
 **Parameters**
 
-- `name` (`string`, required) - Base name for the branch (generates internal guard/then/else sub-steps).
-- `deps` (`table`, required) - Array of dependency step names that must complete before the branch evaluates.
-- `when` (`function`, required) - Predicate function receiving context; returns true for the "then" path.
-- `thenFn` (`function`, required) - Callback executed if the predicate returns true.
-- `elseFn` (`function`, optional) - Callback executed if the predicate returns false. Defaults to a no-op.
+- `name` (`string`, required): Base name for the branch (generates internal guard/then/else sub-steps).
+- `deps` (`table`, required): Array of dependency step names that must complete before the branch evaluates.
+- `when` (`function`, required): Predicate function receiving context; returns true for the "then" path.
+- `thenFn` (`function`, required): Callback executed if the predicate returns true.
+- `elseFn` (`function`, optional): Callback executed if the predicate returns false. Defaults to a no-op.
 
 **Returns**: `LPipeline` - Returns self for method chaining.
+
+**Lua API Stub**
+
+```lua
+--- Adds a branching construct: evaluates a predicate, then runs either the "then" or "else" callback based on the result.
+---@param name string Base name for the branch (generates internal guard/then/else sub-steps).
+---@param deps table Array of dependency step names that must complete before the branch evaluates.
+---@param when function Predicate function receiving context; returns true for the "then" path.
+---@param thenFn function Callback executed if the predicate returns true.
+---@param elseFn? function Callback executed if the predicate returns false. Defaults to a no-op.
+---@return LPipeline Returns self for method chaining.
+function LPipeline:addBranch(name, deps, when, thenFn, elseFn) end
+```
 
 #### Example
 
@@ -364,18 +384,32 @@ do
 end
 ```
 
-### `LPipeline:addConditional(name: string, deps: table, callback: function, condition: function) -> LPipeline`
+### LPipeline:addConditional
+
+`LPipeline:addConditional(name: string, deps: table, callback: function, condition: function) -> LPipeline`
 
 Convenience method to create and add a step with dependencies and a condition in one call.
 
 **Parameters**
 
-- `name` (`string`, required) - Unique step name.
-- `deps` (`table`, required) - Array of dependency step names.
-- `callback` (`function`, required) - The step callback function.
-- `condition` (`function`, required) - Predicate function; step runs only if it returns true.
+- `name` (`string`, required): Unique step name.
+- `deps` (`table`, required): Array of dependency step names.
+- `callback` (`function`, required): The step callback function.
+- `condition` (`function`, required): Predicate function; step runs only if it returns true.
 
 **Returns**: `LPipeline` - Returns self for method chaining.
+
+**Lua API Stub**
+
+```lua
+--- Convenience method to create and add a step with dependencies and a condition in one call.
+---@param name string Unique step name.
+---@param deps table Array of dependency step names.
+---@param callback function The step callback function.
+---@param condition function Predicate function; step runs only if it returns true.
+---@return LPipeline Returns self for method chaining.
+function LPipeline:addConditional(name, deps, callback, condition) end
+```
 
 #### Example
 
@@ -403,15 +437,26 @@ do
 end
 ```
 
-### `LPipeline:addStep(step: LPipelineStep) -> LPipeline`
+### LPipeline:addStep
+
+`LPipeline:addStep(step: LPipelineStep) -> LPipeline`
 
 Adds an existing step object to this pipeline. The step will be scheduled according to its declared dependencies.
 
 **Parameters**
 
-- `step` (`LPipelineStep`, required) - The step to add.
+- `step` (`LPipelineStep`, required): The step to add.
 
 **Returns**: `LPipeline` - Returns self for method chaining.
+
+**Lua API Stub**
+
+```lua
+--- Adds an existing step object to this pipeline. The step will be scheduled according to its declared dependencies.
+---@param step LPipelineStep The step to add.
+---@return LPipeline Returns self for method chaining.
+function LPipeline:addStep(step) end
+```
 
 #### Example
 
@@ -434,15 +479,27 @@ do
 end
 ```
 
-### `LPipeline:addSubPipeline(subPipeline: LPipeline, alias: string, [deps]: table)`
+### LPipeline:addSubPipeline
+
+`LPipeline:addSubPipeline(subPipeline: LPipeline, alias: string, [deps]: table)`
 
 Embeds another pipeline's steps into this pipeline under an alias prefix, with optional outer dependencies.
 
 **Parameters**
 
-- `subPipeline` (`LPipeline`, required) - The pipeline whose steps will be merged in.
-- `alias` (`string`, required) - A prefix applied to all merged step names to avoid collisions.
-- `deps` (`table`, optional) - Optional array of step names that all merged steps depend on.
+- `subPipeline` (`LPipeline`, required): The pipeline whose steps will be merged in.
+- `alias` (`string`, required): A prefix applied to all merged step names to avoid collisions.
+- `deps` (`table`, optional): Optional array of step names that all merged steps depend on.
+
+**Lua API Stub**
+
+```lua
+--- Embeds another pipeline's steps into this pipeline under an alias prefix, with optional outer dependencies.
+---@param subPipeline LPipeline The pipeline whose steps will be merged in.
+---@param alias string A prefix applied to all merged step names to avoid collisions.
+---@param deps? table Optional array of step names that all merged steps depend on.
+function LPipeline:addSubPipeline(subPipeline, alias, deps) end
+```
 
 #### Example
 
@@ -467,9 +524,18 @@ do
 end
 ```
 
-### `LPipeline:cancel()`
+### LPipeline:cancel
+
+`LPipeline:cancel()`
 
 Cancels all pending and waiting steps. Steps already running or completed are unaffected.
+
+**Lua API Stub**
+
+```lua
+--- Cancels all pending and waiting steps. Steps already running or completed are unaffected.
+function LPipeline:cancel() end
+```
 
 #### Example
 
@@ -488,9 +554,18 @@ do
 end
 ```
 
-### `LPipeline:clear()`
+### LPipeline:clear
+
+`LPipeline:clear()`
 
 Removes all steps from the pipeline, resetting it to an empty state.
+
+**Lua API Stub**
+
+```lua
+--- Removes all steps from the pipeline, resetting it to an empty state.
+function LPipeline:clear() end
+```
 
 #### Example
 
@@ -508,11 +583,22 @@ do
 end
 ```
 
-### `LPipeline:getContext() -> table`
+### LPipeline:getContext
+
+`LPipeline:getContext() -> table`
 
 Returns the shared context table used by the current or most recent pipeline execution, or nil if none exists.
 
 **Returns**: `table` - The pipeline context table.
+
+**Lua API Stub**
+
+```lua
+--- Returns the shared context table used by the current or most recent pipeline execution, or nil if none exists.
+---@return table a The pipeline context table.
+---@return nil b If no context has been set.
+function LPipeline:getContext() end
+```
 
 #### Example
 
@@ -534,11 +620,21 @@ do
 end
 ```
 
-### `LPipeline:getErrorMode() -> string`
+### LPipeline:getErrorMode
+
+`LPipeline:getErrorMode() -> string`
 
 Returns the current error mode of the pipeline as a string.
 
 **Returns**: `string` - "abort" or "continue".
+
+**Lua API Stub**
+
+```lua
+--- Returns the current error mode of the pipeline as a string.
+---@return string "abort" or "continue".
+function LPipeline:getErrorMode() end
+```
 
 #### Example
 
@@ -553,11 +649,22 @@ do
 end
 ```
 
-### `LPipeline:getExecutionOrder() -> string[]`
+### LPipeline:getExecutionOrder
+
+`LPipeline:getExecutionOrder() -> string[]`
 
 Computes the topologically sorted execution order of all steps, respecting dependencies.
 
 **Returns**: `string[]` - Step names in execution order, or nil on error.
+
+**Lua API Stub**
+
+```lua
+--- Computes the topologically sorted execution order of all steps, respecting dependencies.
+---@return string[] a Step names in execution order, or nil on error.
+---@return string b Error message if ordering failed (e.g., circular dependency), or nil on success.
+function LPipeline:getExecutionOrder() end
+```
 
 #### Example
 
@@ -583,11 +690,21 @@ do
 end
 ```
 
-### `LPipeline:getName() -> string`
+### LPipeline:getName
+
+`LPipeline:getName() -> string`
 
 Returns the name of this pipeline. This method is available to Lua scripts.
 
 **Returns**: `string` - Pipeline name.
+
+**Lua API Stub**
+
+```lua
+--- Returns the name of this pipeline. This method is available to Lua scripts.
+---@return string Pipeline name.
+function LPipeline:getName() end
+```
 
 #### Example
 
@@ -601,11 +718,22 @@ do
 end
 ```
 
-### `LPipeline:getParallelGroups() -> string[]`
+### LPipeline:getParallelGroups
+
+`LPipeline:getParallelGroups() -> string[]`
 
 Groups steps into parallel execution tiers. Steps within the same group have no mutual dependencies and can run concurrently.
 
 **Returns**: `string[]` - Array of arrays, each inner array is a group of step names. Nil on error.
+
+**Lua API Stub**
+
+```lua
+--- Groups steps into parallel execution tiers. Steps within the same group have no mutual dependencies and can run concurrently.
+---@return string[] a Array of arrays, each inner array is a group of step names. Nil on error.
+---@return string b Error message if grouping failed, or nil on success.
+function LPipeline:getParallelGroups() end
+```
 
 #### Example
 
@@ -628,11 +756,21 @@ do
 end
 ```
 
-### `LPipeline:getResult() -> table`
+### LPipeline:getResult
+
+`LPipeline:getResult() -> table`
 
 Returns the current pipeline result summary table, or nil if no steps exist. Useful for inspecting state after run or during async execution.
 
 **Returns**: `table` - Result table with success, completed, failed, skipped, cancelled, totalDuration, errors fields, or nil if no steps exist.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current pipeline result summary table, or nil if no steps exist. Useful for inspecting state after run or during async execution.
+---@return LPipelineGetResultResult Result table with success, completed, failed, skipped, cancelled, totalDuration, errors fields, or nil if no steps exist.
+function LPipeline:getResult() end
+```
 
 #### Example
 
@@ -654,15 +792,26 @@ do
 end
 ```
 
-### `LPipeline:getStep(name: string) -> LPipelineStep`
+### LPipeline:getStep
+
+`LPipeline:getStep(name: string) -> LPipelineStep`
 
 Retrieves a step object by name, or nil if no step with that name exists in this pipeline.
 
 **Parameters**
 
-- `name` (`string`, required) - Name of the step to find.
+- `name` (`string`, required): Name of the step to find.
 
 **Returns**: `LPipelineStep` - The step object, or nil if no step with that name exists.
+
+**Lua API Stub**
+
+```lua
+--- Retrieves a step object by name, or nil if no step with that name exists in this pipeline.
+---@param name string Name of the step to find.
+---@return LPipelineStep The step object, or nil if no step with that name exists.
+function LPipeline:getStep(name) end
+```
 
 #### Example
 
@@ -685,11 +834,21 @@ do
 end
 ```
 
-### `LPipeline:getStepCount() -> integer`
+### LPipeline:getStepCount
+
+`LPipeline:getStepCount() -> integer`
 
 Returns the total number of steps in this pipeline.
 
 **Returns**: `integer` - Step count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the total number of steps in this pipeline.
+---@return number Step count.
+function LPipeline:getStepCount() end
+```
 
 #### Example
 
@@ -706,11 +865,21 @@ do
 end
 ```
 
-### `LPipeline:getSteps() -> LPipelineStep[]`
+### LPipeline:getSteps
+
+`LPipeline:getSteps() -> LPipelineStep[]`
 
 Returns a table containing all step objects currently in this pipeline.
 
 **Returns**: `LPipelineStep[]` - LPipelineStep objects.
+
+**Lua API Stub**
+
+```lua
+--- Returns a table containing all step objects currently in this pipeline.
+---@return LPipelineStep[] LPipelineStep objects.
+function LPipeline:getSteps() end
+```
 
 #### Example
 
@@ -730,15 +899,26 @@ do
 end
 ```
 
-### `LPipeline:getStepsByTag(tag: string) -> LPipelineStep[]`
+### LPipeline:getStepsByTag
+
+`LPipeline:getStepsByTag(tag: string) -> LPipelineStep[]`
 
 Returns all steps that have the specified tag assigned.
 
 **Parameters**
 
-- `tag` (`string`, required) - The tag to filter by.
+- `tag` (`string`, required): The tag to filter by.
 
 **Returns**: `LPipelineStep[]` - Matching LPipelineStep objects.
+
+**Lua API Stub**
+
+```lua
+--- Returns all steps that have the specified tag assigned.
+---@param tag string The tag to filter by.
+---@return LPipelineStep[] Matching LPipelineStep objects.
+function LPipeline:getStepsByTag(tag) end
+```
 
 #### Example
 
@@ -760,11 +940,21 @@ do
 end
 ```
 
-### `LPipeline:isComplete() -> boolean`
+### LPipeline:isComplete
+
+`LPipeline:isComplete() -> boolean`
 
 Returns whether all steps have reached a terminal state (completed, failed, skipped, or cancelled).
 
 **Returns**: `boolean` - True if no steps are still pending or running.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether all steps have reached a terminal state (completed, failed, skipped, or cancelled).
+---@return boolean True if no steps are still pending or running.
+function LPipeline:isComplete() end
+```
 
 #### Example
 
@@ -781,11 +971,21 @@ do
 end
 ```
 
-### `LPipeline:isRunning() -> boolean`
+### LPipeline:isRunning
+
+`LPipeline:isRunning() -> boolean`
 
 Returns whether the pipeline is currently in async execution mode (started via runAsync and not yet finished).
 
 **Returns**: `boolean` - True if the pipeline is actively running.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether the pipeline is currently in async execution mode (started via runAsync and not yet finished).
+---@return boolean True if the pipeline is actively running.
+function LPipeline:isRunning() end
+```
 
 #### Example
 
@@ -804,13 +1004,23 @@ do
 end
 ```
 
-### `LPipeline:onEvent(callback: function)`
+### LPipeline:onEvent
+
+`LPipeline:onEvent(callback: function)`
 
 Registers a low-level event callback for all pipeline lifecycle events. Receives (eventName, stepName, status, detail).
 
 **Parameters**
 
-- `callback` (`function`, required) - A function receiving (eventName, stepName, status, detail).
+- `callback` (`function`, required): A function receiving (eventName, stepName, status, detail).
+
+**Lua API Stub**
+
+```lua
+--- Registers a low-level event callback for all pipeline lifecycle events. Receives (eventName, stepName, status, detail).
+---@param callback function A function receiving (eventName, stepName, status, detail).
+function LPipeline:onEvent(callback) end
+```
 
 #### Example
 
@@ -831,13 +1041,23 @@ do
 end
 ```
 
-### `LPipeline:onProgress(callback: function)`
+### LPipeline:onProgress
+
+`LPipeline:onProgress(callback: function)`
 
 Registers a progress callback invoked after each step finishes (regardless of outcome). Receives (stepName, statusString).
 
 **Parameters**
 
-- `callback` (`function`, required) - A function receiving (stepName, status).
+- `callback` (`function`, required): A function receiving (stepName, status).
+
+**Lua API Stub**
+
+```lua
+--- Registers a progress callback invoked after each step finishes (regardless of outcome). Receives (stepName, statusString).
+---@param callback function A function receiving (stepName, status).
+function LPipeline:onProgress(callback) end
+```
 
 #### Example
 
@@ -858,13 +1078,23 @@ do
 end
 ```
 
-### `LPipeline:removeStep(name: string)`
+### LPipeline:removeStep
+
+`LPipeline:removeStep(name: string)`
 
 Removes a step from the pipeline by name. Any other steps that depend on it may fail or be skipped.
 
 **Parameters**
 
-- `name` (`string`, required) - Name of the step to remove.
+- `name` (`string`, required): Name of the step to remove.
+
+**Lua API Stub**
+
+```lua
+--- Removes a step from the pipeline by name. Any other steps that depend on it may fail or be skipped.
+---@param name string Name of the step to remove.
+function LPipeline:removeStep(name) end
+```
 
 #### Example
 
@@ -883,9 +1113,18 @@ do
 end
 ```
 
-### `LPipeline:reset()`
+### LPipeline:reset
+
+`LPipeline:reset()`
 
 Resets the pipeline and all steps back to their initial pending state, clearing context and async state.
+
+**Lua API Stub**
+
+```lua
+--- Resets the pipeline and all steps back to their initial pending state, clearing context and async state.
+function LPipeline:reset() end
+```
 
 #### Example
 
@@ -904,15 +1143,26 @@ do
 end
 ```
 
-### `LPipeline:run([context]: table) -> table`
+### LPipeline:run
+
+`LPipeline:run([context]: table) -> table`
 
 Executes all pipeline steps synchronously in dependency order. Blocks until all steps complete, fail, or are cancelled.
 
 **Parameters**
 
-- `context` (`table`, optional) - An optional shared context table passed to every step callback. A fresh table is created if omitted.
+- `context` (`table`, optional): An optional shared context table passed to every step callback. A fresh table is created if omitted.
 
 **Returns**: `table` - A result table with fields: success (boolean), completed, failed, skipped, cancelled (arrays of names), totalDuration (number), errors (array of {name, msg}).
+
+**Lua API Stub**
+
+```lua
+--- Executes all pipeline steps synchronously in dependency order. Blocks until all steps complete, fail, or are cancelled.
+---@param context? table An optional shared context table passed to every step callback. A fresh table is created if omitted.
+---@return LPipelineRunResult A result table with fields: success (boolean), completed, failed, skipped, cancelled (arrays of names), totalDuration (number), errors (array of {name, msg}).
+function LPipeline:run(context) end
+```
 
 #### Example
 
@@ -935,13 +1185,23 @@ do
 end
 ```
 
-### `LPipeline:runAsync([context]: table)`
+### LPipeline:runAsync
+
+`LPipeline:runAsync([context]: table)`
 
 Starts asynchronous (coroutine-based) execution of the pipeline. Call update(dt) each frame to advance steps.
 
 **Parameters**
 
-- `context` (`table`, optional) - An optional shared context table. A fresh table is created if omitted.
+- `context` (`table`, optional): An optional shared context table. A fresh table is created if omitted.
+
+**Lua API Stub**
+
+```lua
+--- Starts asynchronous (coroutine-based) execution of the pipeline. Call update(dt) each frame to advance steps.
+---@param context? table An optional shared context table. A fresh table is created if omitted.
+function LPipeline:runAsync(context) end
+```
 
 #### Example
 
@@ -962,13 +1222,23 @@ do
 end
 ```
 
-### `LPipeline:setErrorMode(mode: string)`
+### LPipeline:setErrorMode
+
+`LPipeline:setErrorMode(mode: string)`
 
 Sets how the pipeline handles step failures. "abort" stops on first failure; "continue" runs remaining steps.
 
 **Parameters**
 
-- `mode` (`string`, required) - Either "abort" or "continue".
+- `mode` (`string`, required): Either "abort" or "continue".
+
+**Lua API Stub**
+
+```lua
+--- Sets how the pipeline handles step failures. "abort" stops on first failure; "continue" runs remaining steps.
+---@param mode string Either "abort" or "continue".
+function LPipeline:setErrorMode(mode) end
+```
 
 #### Example
 
@@ -987,13 +1257,23 @@ do
 end
 ```
 
-### `LPipeline:setName(name: string)`
+### LPipeline:setName
+
+`LPipeline:setName(name: string)`
 
 Changes the name of this pipeline. This method is available to Lua scripts.
 
 **Parameters**
 
-- `name` (`string`, required) - New pipeline name.
+- `name` (`string`, required): New pipeline name.
+
+**Lua API Stub**
+
+```lua
+--- Changes the name of this pipeline. This method is available to Lua scripts.
+---@param name string New pipeline name.
+function LPipeline:setName(name) end
+```
 
 #### Example
 
@@ -1009,13 +1289,23 @@ do
 end
 ```
 
-### `LPipeline:setOnComplete([callback]: function)`
+### LPipeline:setOnComplete
+
+`LPipeline:setOnComplete([callback]: function)`
 
 Registers a callback invoked when the entire pipeline finishes execution. Receives the result table.
 
 **Parameters**
 
-- `callback` (`function`, optional) - A function receiving the result table. Pass nil to remove.
+- `callback` (`function`, optional): A function receiving the result table. Pass nil to remove.
+
+**Lua API Stub**
+
+```lua
+--- Registers a callback invoked when the entire pipeline finishes execution. Receives the result table.
+---@param callback? function A function receiving the result table. Pass nil to remove.
+function LPipeline:setOnComplete(callback) end
+```
 
 #### Example
 
@@ -1039,13 +1329,23 @@ do
 end
 ```
 
-### `LPipeline:setOnStepComplete([callback]: function)`
+### LPipeline:setOnStepComplete
+
+`LPipeline:setOnStepComplete([callback]: function)`
 
 Registers a callback invoked each time any step completes successfully. Receives (stepName, context).
 
 **Parameters**
 
-- `callback` (`function`, optional) - A function receiving (stepName, context). Pass nil to remove.
+- `callback` (`function`, optional): A function receiving (stepName, context). Pass nil to remove.
+
+**Lua API Stub**
+
+```lua
+--- Registers a callback invoked each time any step completes successfully. Receives (stepName, context).
+---@param callback? function A function receiving (stepName, context). Pass nil to remove.
+function LPipeline:setOnStepComplete(callback) end
+```
 
 #### Example
 
@@ -1070,13 +1370,23 @@ do
 end
 ```
 
-### `LPipeline:setOnStepError([callback]: function)`
+### LPipeline:setOnStepError
+
+`LPipeline:setOnStepError([callback]: function)`
 
 Registers a callback invoked each time any step fails. Receives (stepName, errorMessage).
 
 **Parameters**
 
-- `callback` (`function`, optional) - A function receiving (stepName, errorMessage). Pass nil to remove.
+- `callback` (`function`, optional): A function receiving (stepName, errorMessage). Pass nil to remove.
+
+**Lua API Stub**
+
+```lua
+--- Registers a callback invoked each time any step fails. Receives (stepName, errorMessage).
+---@param callback? function A function receiving (stepName, errorMessage). Pass nil to remove.
+function LPipeline:setOnStepError(callback) end
+```
 
 #### Example
 
@@ -1097,11 +1407,21 @@ do
 end
 ```
 
-### `LPipeline:toAscii() -> string`
+### LPipeline:toAscii
+
+`LPipeline:toAscii() -> string`
 
 Returns an ASCII art diagram of the pipeline's dependency graph for debugging and visualization.
 
 **Returns**: `string` - Multi-line ASCII diagram.
+
+**Lua API Stub**
+
+```lua
+--- Returns an ASCII art diagram of the pipeline's dependency graph for debugging and visualization.
+---@return string Multi-line ASCII diagram.
+function LPipeline:toAscii() end
+```
 
 #### Example
 
@@ -1120,11 +1440,21 @@ do
 end
 ```
 
-### `LPipeline:toTable() -> table`
+### LPipeline:toTable
+
+`LPipeline:toTable() -> table`
 
 Serializes the pipeline configuration into a plain Lua table for inspection or persistence.
 
 **Returns**: `table` - A table with name, errorMode, and steps array fields.
+
+**Lua API Stub**
+
+```lua
+--- Serializes the pipeline configuration into a plain Lua table for inspection or persistence.
+---@return LPipelineToTableResult A table with name, errorMode, and steps array fields.
+function LPipeline:toTable() end
+```
 
 #### Example
 
@@ -1143,11 +1473,21 @@ do
 end
 ```
 
-### `LPipeline:type() -> string`
+### LPipeline:type
+
+`LPipeline:type() -> string`
 
 Returns the type name of this object ("LPipeline").
 
 **Returns**: `string` - Type identifier.
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name of this object ("LPipeline").
+---@return string Type identifier.
+function LPipeline:type() end
+```
 
 #### Example
 
@@ -1160,15 +1500,26 @@ do
 end
 ```
 
-### `LPipeline:typeOf(name: string) -> boolean`
+### LPipeline:typeOf
+
+`LPipeline:typeOf(name: string) -> boolean`
 
 Checks whether this object is of a given type name. Accepts "LPipeline", "Pipeline", or "Object".
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to check against.
+- `name` (`string`, required): Type name to check against.
 
 **Returns**: `boolean` - True if the type matches.
+
+**Lua API Stub**
+
+```lua
+--- Checks whether this object is of a given type name. Accepts "LPipeline", "Pipeline", or "Object".
+---@param name string Type name to check against.
+---@return boolean True if the type matches.
+function LPipeline:typeOf(name) end
+```
 
 #### Example
 
@@ -1184,15 +1535,26 @@ do
 end
 ```
 
-### `LPipeline:update(dt: number) -> boolean`
+### LPipeline:update
+
+`LPipeline:update(dt: number) -> boolean`
 
 Advances an async pipeline by one frame tick. Resumes coroutines, checks dependencies, and fires callbacks. Call every frame after runAsync().
 
 **Parameters**
 
-- `dt` (`number`, required) - Delta time in seconds since last frame.
+- `dt` (`number`, required): Delta time in seconds since last frame.
 
 **Returns**: `boolean` - True when the entire pipeline has finished (all steps done); false if still running.
+
+**Lua API Stub**
+
+```lua
+--- Advances an async pipeline by one frame tick. Resumes coroutines, checks dependencies, and fires callbacks. Call every frame after runAsync().
+---@param dt number Delta time in seconds since last frame.
+---@return boolean True when the entire pipeline has finished (all steps done); false if still running.
+function LPipeline:update(dt) end
+```
 
 #### Example
 
@@ -1218,11 +1580,22 @@ do
 end
 ```
 
-### `LPipeline:validate() -> boolean`
+### LPipeline:validate
+
+`LPipeline:validate() -> boolean`
 
 Validates the pipeline structure, checking for missing dependencies and circular references.
 
 **Returns**: `boolean` - True if the pipeline is valid.
+
+**Lua API Stub**
+
+```lua
+--- Validates the pipeline structure, checking for missing dependencies and circular references.
+---@return boolean a True if the pipeline is valid.
+---@return string[] b Error message strings (empty if valid).
+function LPipeline:validate() end
+```
 
 #### Example
 
@@ -1247,38 +1620,26 @@ do
 end
 ```
 
-### `LPipelineStep`
+### LPipelineStep:dependsOn
 
-A single executable step within a pipeline, wrapping callback, condition, retry, and error hooks.
-
-#### Example
-
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
-
-```lua
-do
-  -- newStep(name, callback?) creates an LPipelineStep.
-  -- The callback receives a shared context table that all steps in the pipeline can read/write.
-  -- Use steps to represent discrete units of work: loading assets, initializing systems, etc.
-  local step = lurek.pipeline.newStep("load_audio", function(ctx)
-    -- ctx is the shared pipeline context — store results here for downstream steps
-    ctx.audio_loaded = true
-    ctx.audio_sources = 32
-  end)
-  -- Tags help filter and group steps later (e.g., "skip all 'net' steps in offline mode")
-  step:setTag("boot")
-end
-```
-
-### `LPipelineStep:dependsOn(dep: string|LPipelineStep) -> LPipelineStep`
+`LPipelineStep:dependsOn(dep: string|LPipelineStep) -> LPipelineStep`
 
 Declares that this step depends on another step (by name or reference). The dependency must complete before this step runs.
 
 **Parameters**
 
-- `dep` (`string|LPipelineStep`, required) - The dependency step name or step object.
+- `dep` (`string|LPipelineStep`, required): The dependency step name or step object.
 
 **Returns**: `LPipelineStep` - Returns self for method chaining.
+
+**Lua API Stub**
+
+```lua
+--- Declares that this step depends on another step (by name or reference). The dependency must complete before this step runs.
+---@param dep string|LPipelineStep The dependency step name or step object.
+---@return LPipelineStep Returns self for method chaining.
+function LPipelineStep:dependsOn(dep) end
+```
 
 #### Example
 
@@ -1293,11 +1654,21 @@ do
 end
 ```
 
-### `LPipelineStep:getAttempt() -> integer`
+### LPipelineStep:getAttempt
+
+`LPipelineStep:getAttempt() -> integer`
 
 Returns the current attempt number (1-based). Increases with each retry.
 
 **Returns**: `integer` - Attempt number.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current attempt number (1-based). Increases with each retry.
+---@return number Attempt number.
+function LPipelineStep:getAttempt() end
+```
 
 #### Example
 
@@ -1311,15 +1682,26 @@ do
 end
 ```
 
-### `LPipelineStep:getData(key: string) -> string`
+### LPipelineStep:getData
+
+`LPipelineStep:getData(key: string) -> string`
 
 Retrieves a metadata value previously stored with setData.
 
 **Parameters**
 
-- `key` (`string`, required) - Metadata key to look up.
+- `key` (`string`, required): Metadata key to look up.
 
 **Returns**: `string` - The stored value, or nil if the key does not exist.
+
+**Lua API Stub**
+
+```lua
+--- Retrieves a metadata value previously stored with setData.
+---@param key string Metadata key to look up.
+---@return string The stored value, or nil if the key does not exist.
+function LPipelineStep:getData(key) end
+```
 
 #### Example
 
@@ -1334,11 +1716,21 @@ do
 end
 ```
 
-### `LPipelineStep:getDelay() -> number`
+### LPipelineStep:getDelay
+
+`LPipelineStep:getDelay() -> number`
 
 Returns the configured delay for this step.
 
 **Returns**: `number` - Delay in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Returns the configured delay for this step.
+---@return number Delay in seconds.
+function LPipelineStep:getDelay() end
+```
 
 #### Example
 
@@ -1352,11 +1744,21 @@ do
 end
 ```
 
-### `LPipelineStep:getDependencies() -> string[]`
+### LPipelineStep:getDependencies
+
+`LPipelineStep:getDependencies() -> string[]`
 
 Returns a list of step names that this step depends on.
 
 **Returns**: `string[]` - Dependency step name strings.
+
+**Lua API Stub**
+
+```lua
+--- Returns a list of step names that this step depends on.
+---@return string[] Dependency step name strings.
+function LPipelineStep:getDependencies() end
+```
 
 #### Example
 
@@ -1372,11 +1774,21 @@ do
 end
 ```
 
-### `LPipelineStep:getDependencyCount() -> integer`
+### LPipelineStep:getDependencyCount
+
+`LPipelineStep:getDependencyCount() -> integer`
 
 Returns the number of dependencies this step has.
 
 **Returns**: `integer` - Dependency count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of dependencies this step has.
+---@return number Dependency count.
+function LPipelineStep:getDependencyCount() end
+```
 
 #### Example
 
@@ -1392,11 +1804,21 @@ do
 end
 ```
 
-### `LPipelineStep:getDuration() -> number`
+### LPipelineStep:getDuration
+
+`LPipelineStep:getDuration() -> number`
 
 Returns how long this step took to execute in seconds (measured from start to completion or failure).
 
 **Returns**: `number` - Duration in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Returns how long this step took to execute in seconds (measured from start to completion or failure).
+---@return number Duration in seconds.
+function LPipelineStep:getDuration() end
+```
 
 #### Example
 
@@ -1410,11 +1832,21 @@ do
 end
 ```
 
-### `LPipelineStep:getError() -> string`
+### LPipelineStep:getError
+
+`LPipelineStep:getError() -> string`
 
 Returns the error message if this step failed, or nil if it has not failed.
 
 **Returns**: `string` - Error message, or nil if the step has not failed.
+
+**Lua API Stub**
+
+```lua
+--- Returns the error message if this step failed, or nil if it has not failed.
+---@return string Error message, or nil if the step has not failed.
+function LPipelineStep:getError() end
+```
 
 #### Example
 
@@ -1429,11 +1861,21 @@ do
 end
 ```
 
-### `LPipelineStep:getName() -> string`
+### LPipelineStep:getName
+
+`LPipelineStep:getName() -> string`
 
 Returns the unique name of this pipeline step.
 
 **Returns**: `string` - The step name.
+
+**Lua API Stub**
+
+```lua
+--- Returns the unique name of this pipeline step.
+---@return string The step name.
+function LPipelineStep:getName() end
+```
 
 #### Example
 
@@ -1447,11 +1889,21 @@ do
 end
 ```
 
-### `LPipelineStep:getRetryCount() -> integer`
+### LPipelineStep:getRetryCount
+
+`LPipelineStep:getRetryCount() -> integer`
 
 Returns the configured retry count for this step.
 
 **Returns**: `integer` - Number of retry attempts.
+
+**Lua API Stub**
+
+```lua
+--- Returns the configured retry count for this step.
+---@return number Number of retry attempts.
+function LPipelineStep:getRetryCount() end
+```
 
 #### Example
 
@@ -1465,11 +1917,21 @@ do
 end
 ```
 
-### `LPipelineStep:getStatus() -> string`
+### LPipelineStep:getStatus
+
+`LPipelineStep:getStatus() -> string`
 
 Returns the current execution status of this step as a string ("pending", "waiting", "running", "completed", "failed", "skipped", "cancelled").
 
 **Returns**: `string` - Current step status.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current execution status of this step as a string ("pending", "waiting", "running", "completed", "failed", "skipped", "cancelled").
+---@return string Current step status.
+function LPipelineStep:getStatus() end
+```
 
 #### Example
 
@@ -1483,11 +1945,21 @@ do
 end
 ```
 
-### `LPipelineStep:getTag() -> string`
+### LPipelineStep:getTag
+
+`LPipelineStep:getTag() -> string`
 
 Returns the tag assigned to this step, or nil if none is set.
 
 **Returns**: `string` - The step tag, or nil if no tag is assigned.
+
+**Lua API Stub**
+
+```lua
+--- Returns the tag assigned to this step, or nil if none is set.
+---@return string The step tag, or nil if no tag is assigned.
+function LPipelineStep:getTag() end
+```
 
 #### Example
 
@@ -1501,11 +1973,21 @@ do
 end
 ```
 
-### `LPipelineStep:getTimeout() -> number`
+### LPipelineStep:getTimeout
+
+`LPipelineStep:getTimeout() -> number`
 
 Returns the configured timeout for this step, or 0 if none is set.
 
 **Returns**: `number` - Timeout in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Returns the configured timeout for this step, or 0 if none is set.
+---@return number Timeout in seconds.
+function LPipelineStep:getTimeout() end
+```
 
 #### Example
 
@@ -1519,11 +2001,21 @@ do
 end
 ```
 
-### `LPipelineStep:isAsync() -> boolean`
+### LPipelineStep:isAsync
+
+`LPipelineStep:isAsync() -> boolean`
 
 Returns whether this step is configured for asynchronous coroutine execution.
 
 **Returns**: `boolean` - True if the step runs as a coroutine.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this step is configured for asynchronous coroutine execution.
+---@return boolean True if the step runs as a coroutine.
+function LPipelineStep:isAsync() end
+```
 
 #### Example
 
@@ -1537,11 +2029,21 @@ do
 end
 ```
 
-### `LPipelineStep:isOptional() -> boolean`
+### LPipelineStep:isOptional
+
+`LPipelineStep:isOptional() -> boolean`
 
 Returns whether this step is marked as optional.
 
 **Returns**: `boolean` - True if the step is optional.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this step is marked as optional.
+---@return boolean True if the step is optional.
+function LPipelineStep:isOptional() end
+```
 
 #### Example
 
@@ -1555,13 +2057,23 @@ do
 end
 ```
 
-### `LPipelineStep:setAsync(enabled: boolean)`
+### LPipelineStep:setAsync
+
+`LPipelineStep:setAsync(enabled: boolean)`
 
 Marks this step as asynchronous. Async steps run as coroutines and can yield between frames.
 
 **Parameters**
 
-- `enabled` (`boolean`, required) - True to enable coroutine-based async execution.
+- `enabled` (`boolean`, required): True to enable coroutine-based async execution.
+
+**Lua API Stub**
+
+```lua
+--- Marks this step as asynchronous. Async steps run as coroutines and can yield between frames.
+---@param enabled boolean True to enable coroutine-based async execution.
+function LPipelineStep:setAsync(enabled) end
+```
 
 #### Example
 
@@ -1580,13 +2092,23 @@ do
 end
 ```
 
-### `LPipelineStep:setCallback(callback: function)`
+### LPipelineStep:setCallback
+
+`LPipelineStep:setCallback(callback: function)`
 
 Sets the main execution function for this step. Called when the step runs.
 
 **Parameters**
 
-- `callback` (`function`, required) - A function receiving the pipeline context table and optionally returning a result value.
+- `callback` (`function`, required): A function receiving the pipeline context table and optionally returning a result value.
+
+**Lua API Stub**
+
+```lua
+--- Sets the main execution function for this step. Called when the step runs.
+---@param callback function A function receiving the pipeline context table and optionally returning a result value.
+function LPipelineStep:setCallback(callback) end
+```
 
 #### Example
 
@@ -1604,13 +2126,23 @@ do
 end
 ```
 
-### `LPipelineStep:setCondition([condition]: function)`
+### LPipelineStep:setCondition
+
+`LPipelineStep:setCondition([condition]: function)`
 
 Sets a predicate function that determines whether this step should execute. If the predicate returns false, the step is skipped.
 
 **Parameters**
 
-- `condition` (`function`, optional) - A function receiving the context table and returning a boolean. Pass nil to remove the condition.
+- `condition` (`function`, optional): A function receiving the context table and returning a boolean. Pass nil to remove the condition.
+
+**Lua API Stub**
+
+```lua
+--- Sets a predicate function that determines whether this step should execute. If the predicate returns false, the step is skipped.
+---@param condition? function A function receiving the context table and returning a boolean. Pass nil to remove the condition.
+function LPipelineStep:setCondition(condition) end
+```
 
 #### Example
 
@@ -1628,14 +2160,25 @@ do
 end
 ```
 
-### `LPipelineStep:setData(key: string, value: string)`
+### LPipelineStep:setData
+
+`LPipelineStep:setData(key: string, value: string)`
 
 Stores a key-value metadata pair on this step. Useful for passing configuration between steps.
 
 **Parameters**
 
-- `key` (`string`, required) - Metadata key.
-- `value` (`string`, required) - Metadata value.
+- `key` (`string`, required): Metadata key.
+- `value` (`string`, required): Metadata value.
+
+**Lua API Stub**
+
+```lua
+--- Stores a key-value metadata pair on this step. Useful for passing configuration between steps.
+---@param key string Metadata key.
+---@param value string Metadata value.
+function LPipelineStep:setData(key, value) end
+```
 
 #### Example
 
@@ -1651,13 +2194,23 @@ do
 end
 ```
 
-### `LPipelineStep:setDelay(seconds: number)`
+### LPipelineStep:setDelay
+
+`LPipelineStep:setDelay(seconds: number)`
 
 Sets a delay in seconds before this step begins execution after its dependencies are satisfied.
 
 **Parameters**
 
-- `seconds` (`number`, required) - Delay duration in seconds.
+- `seconds` (`number`, required): Delay duration in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Sets a delay in seconds before this step begins execution after its dependencies are satisfied.
+---@param seconds number Delay duration in seconds.
+function LPipelineStep:setDelay(seconds) end
+```
 
 #### Example
 
@@ -1671,13 +2224,23 @@ do
 end
 ```
 
-### `LPipelineStep:setOnError([callback]: function)`
+### LPipelineStep:setOnError
+
+`LPipelineStep:setOnError([callback]: function)`
 
 Sets an error handler callback invoked when this step fails after all retries are exhausted.
 
 **Parameters**
 
-- `callback` (`function`, optional) - A function receiving (stepName, errorMessage). Pass nil to remove.
+- `callback` (`function`, optional): A function receiving (stepName, errorMessage). Pass nil to remove.
+
+**Lua API Stub**
+
+```lua
+--- Sets an error handler callback invoked when this step fails after all retries are exhausted.
+---@param callback? function A function receiving (stepName, errorMessage). Pass nil to remove.
+function LPipelineStep:setOnError(callback) end
+```
 
 #### Example
 
@@ -1695,13 +2258,23 @@ do
 end
 ```
 
-### `LPipelineStep:setOptional(optional: boolean)`
+### LPipelineStep:setOptional
+
+`LPipelineStep:setOptional(optional: boolean)`
 
 Marks this step as optional. Optional steps do not cause pipeline failure if they fail.
 
 **Parameters**
 
-- `optional` (`boolean`, required) - True to mark the step as optional.
+- `optional` (`boolean`, required): True to mark the step as optional.
+
+**Lua API Stub**
+
+```lua
+--- Marks this step as optional. Optional steps do not cause pipeline failure if they fail.
+---@param optional boolean True to mark the step as optional.
+function LPipelineStep:setOptional(optional) end
+```
 
 #### Example
 
@@ -1715,13 +2288,23 @@ do
 end
 ```
 
-### `LPipelineStep:setRetryCount(count: integer)`
+### LPipelineStep:setRetryCount
+
+`LPipelineStep:setRetryCount(count: integer)`
 
 Sets how many times this step should be retried after a failure before being marked as failed.
 
 **Parameters**
 
-- `count` (`integer`, required) - Number of retry attempts (0 means no retries).
+- `count` (`integer`, required): Number of retry attempts (0 means no retries).
+
+**Lua API Stub**
+
+```lua
+--- Sets how many times this step should be retried after a failure before being marked as failed.
+---@param count number Number of retry attempts (0 means no retries).
+function LPipelineStep:setRetryCount(count) end
+```
 
 #### Example
 
@@ -1735,13 +2318,23 @@ do
 end
 ```
 
-### `LPipelineStep:setRetryDelay(seconds: number)`
+### LPipelineStep:setRetryDelay
+
+`LPipelineStep:setRetryDelay(seconds: number)`
 
 Sets the delay in seconds between retry attempts for this step.
 
 **Parameters**
 
-- `seconds` (`number`, required) - Delay between retries.
+- `seconds` (`number`, required): Delay between retries.
+
+**Lua API Stub**
+
+```lua
+--- Sets the delay in seconds between retry attempts for this step.
+---@param seconds number Delay between retries.
+function LPipelineStep:setRetryDelay(seconds) end
+```
 
 #### Example
 
@@ -1756,13 +2349,23 @@ do
 end
 ```
 
-### `LPipelineStep:setTag(tag: string)`
+### LPipelineStep:setTag
+
+`LPipelineStep:setTag(tag: string)`
 
 Assigns a tag string to this step for grouping and filtering purposes.
 
 **Parameters**
 
-- `tag` (`string`, required) - A category tag for this step.
+- `tag` (`string`, required): A category tag for this step.
+
+**Lua API Stub**
+
+```lua
+--- Assigns a tag string to this step for grouping and filtering purposes.
+---@param tag string A category tag for this step.
+function LPipelineStep:setTag(tag) end
+```
 
 #### Example
 
@@ -1776,13 +2379,23 @@ do
 end
 ```
 
-### `LPipelineStep:setTimeout(seconds: number)`
+### LPipelineStep:setTimeout
+
+`LPipelineStep:setTimeout(seconds: number)`
 
 Sets a maximum execution time for this step. If exceeded in async mode, the step may be considered failed.
 
 **Parameters**
 
-- `seconds` (`number`, required) - Timeout duration in seconds.
+- `seconds` (`number`, required): Timeout duration in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Sets a maximum execution time for this step. If exceeded in async mode, the step may be considered failed.
+---@param seconds number Timeout duration in seconds.
+function LPipelineStep:setTimeout(seconds) end
+```
 
 #### Example
 
@@ -1796,11 +2409,21 @@ do
 end
 ```
 
-### `LPipelineStep:type() -> string`
+### LPipelineStep:type
+
+`LPipelineStep:type() -> string`
 
 Returns the type name of this object ("LPipelineStep").
 
 **Returns**: `string` - Type identifier.
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name of this object ("LPipelineStep").
+---@return string Type identifier.
+function LPipelineStep:type() end
+```
 
 #### Example
 
@@ -1813,15 +2436,26 @@ do
 end
 ```
 
-### `LPipelineStep:typeOf(name: string) -> boolean`
+### LPipelineStep:typeOf
+
+`LPipelineStep:typeOf(name: string) -> boolean`
 
 Checks whether this object is of a given type name. Accepts "LPipelineStep", "PipelineStep", or "Object".
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to check against.
+- `name` (`string`, required): Type name to check against.
 
 **Returns**: `boolean` - True if the type matches.
+
+**Lua API Stub**
+
+```lua
+--- Checks whether this object is of a given type name. Accepts "LPipelineStep", "PipelineStep", or "Object".
+---@param name string Type name to check against.
+---@return boolean True if the type matches.
+function LPipelineStep:typeOf(name) end
+```
 
 #### Example
 
@@ -1835,21 +2469,27 @@ end
 ```
 
 
-## Examples
+[⬆ back to top](#table-of-contents)
+
+## 💡 Examples
 
 - [pipeline.lua](../blob/main/content/examples/pipeline.lua) - Render pipeline composition
 
-## Reference Games
+[⬆ back to top](#table-of-contents)
+
+## 🎮 Reference Games
 
 No direct references were found in `content/games/**/main.lua`.
 
-## Related Modules
+[⬆ back to top](#table-of-contents)
 
-- Previous: [[physics|Module-physics]]
-- Next: [[procgen|Module-procgen]]
-- [[ai|Module-ai]] - Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU.
-- [[animation|Module-animation]] - Sprite animation: source-rect changes over time. Imports only math; headless-testable.
-- [[automation|Module-automation]] - Automated input simulation for headless tests, QA replay, recorded sessions.
-- [[ecs|Module-ecs]] - Entity-Component-System: identity / data / behaviour separation for runtime composition.
-- [[i18n|Module-i18n]] - Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*).
-- [[minimap|Module-minimap]] - Grid-based minimap data model: fog of war, tracked objects, pings, viewport overlay.
+## 🔗 Related Modules
+
+- Previous: [physics](Module-physics)
+- Next: [procgen](Module-procgen)
+- [ai](Module-ai) - Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU.
+- [animation](Module-animation) - Sprite animation: source-rect changes over time. Imports only math; headless-testable.
+- [automation](Module-automation) - Automated input simulation for headless tests, QA replay, recorded sessions.
+- [ecs](Module-ecs) - Entity-Component-System: identity / data / behaviour separation for runtime composition.
+- [i18n](Module-i18n) - Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*).
+- [minimap](Module-minimap) - Grid-based minimap data model: fog of war, tracked objects, pings, viewport overlay.

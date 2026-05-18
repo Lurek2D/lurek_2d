@@ -4,104 +4,56 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
-- [Purpose](#purpose)
-- [Summary](#summary)
-- [Minimal Module Example](#minimal-module-example)
-- [Key Types](#key-types)
-- [API Overview](#api-overview)
-- [Module Functions](#module-functions)
-  - [lurek.repl.new([max_history]: integer) -> LReplSession](#lurekreplnewmaxhistory-integer-lreplsession)
-- [Types and Methods](#types-and-methods)
+- [🎯 Purpose](#purpose)
+- [📋 Summary](#summary)
+- [🧩 Key Types](#key-types)
+- [📖 API Overview](#api-overview)
+- [⚙️ Module Functions](#module-functions)
+  - [lurek.repl.new](#lurekreplnew)
+- [🔷 Module Types](#module-types)
   - [LReplSession](#lreplsession)
-  - [LReplSession:clear()](#lreplsessionclear)
-  - [LReplSession:complete(prefix: string) -> string[]](#lreplsessioncompleteprefix-string-string)
-  - [LReplSession:eval(code: string) -> string](#lreplsessionevalcode-string-string)
-  - [LReplSession:history() -> string[]](#lreplsessionhistory-string)
-  - [LReplSession:len() -> integer](#lreplsessionlen-integer)
-  - [LReplSession:type() -> string](#lreplsessiontype-string)
-  - [LReplSession:typeOf(name: string) -> boolean](#lreplsessiontypeofname-string-boolean)
-- [Examples](#examples)
-- [Reference Games](#reference-games)
-- [Related Modules](#related-modules)
+- [🔹 Module Methods](#module-methods)
+  - [LReplSession:clear](#lreplsessionclear)
+  - [LReplSession:complete](#lreplsessioncomplete)
+  - [LReplSession:eval](#lreplsessioneval)
+  - [LReplSession:history](#lreplsessionhistory)
+  - [LReplSession:len](#lreplsessionlen)
+  - [LReplSession:type](#lreplsessiontype)
+  - [LReplSession:typeOf](#lreplsessiontypeof)
+- [💡 Examples](#examples)
+- [🎮 Reference Games](#reference-games)
+- [🔗 Related Modules](#related-modules)
 
 This page is generated from the current module specs, examples, and Lua API data.
 
 **Module group:** Core Runtime
 **Namespace:** `lurek.repl`
 
-## Purpose
+## 🎯 Purpose
 
 Release-safe Lua REPL core used by the GUI CLI mode and devtools wrappers; headless also reuses its value-formatting helper.
 
-## Summary
+[⬆ back to top](#table-of-contents)
+
+## 📋 Summary
 
 Release-safe Lua REPL (Read-Eval-Print Loop) core providing interactive command execution with bounded history, tab completion, multi-line input detection, and formatted value display. `ReplSession` manages input state, history navigation, and colon-command dispatch (`:help`, `:clear`, `:vars`, `:time`, `:reset`).
 
 Value formatting recursively converts Lua values to human-readable strings with configurable depth limits and table truncation. Tab completion resolves partial identifiers against the Lua global table and loaded module namespaces. The REPL core is headless — it processes string input and returns string output, making it reusable by both the GUI terminal and the debug bridge. Exposed as `lurek.repl.*`. Core Runtime tier.
 
-## Minimal Module Example
+[⬆ back to top](#table-of-contents)
 
-Module example from [repl.lua](../blob/main/content/examples/repl.lua):
-
-```lua
--- content/examples/repl.lua
--- Demonstrates the lurek.repl module: in-game developer console with eval, history, and tab-completion.
--- Run: cargo run -- content/examples/repl.lua
-
---@api-stub: lurek.repl.new
--- Creates a REPL session with bounded command history (default 200 entries)
-do
-  -- Use a small history limit for a dev console that only keeps recent commands.
-  -- Omit the argument to get the default 200-entry buffer.
-  local console = lurek.repl.new(64)
-
-  -- A larger session for an automated test runner that replays many commands
-  local test_runner = lurek.repl.new(500)
-
-  -- Default history size (200) is fine for most in-game consoles
-  local default_console = lurek.repl.new()
-end
-
---@api-stub: LReplSession:eval
--- Evaluates a Lua string and returns the display result (value, output, or error text)
-do
-  local console = lurek.repl.new(32)
-
-  -- Evaluate an expression — returns the stringified result
-  local result = console:eval("2 + 2")
-  lurek.log.info("expr result: " .. result, "repl")
-
-  -- Execute a statement that modifies game state at runtime
-  console:eval("player_speed = 400")
-
-  -- Errors are returned as strings, not thrown — safe for player input
-  local err = console:eval("this is not valid lua!!")
-  lurek.log.info("error output: " .. err, "repl")
-
-  -- Use eval to toggle debug overlays from the in-game console
-  console:eval("show_hitboxes = not show_hitboxes")
-end
-
---@api-stub: LReplSession:history
--- Returns all recorded inputs as an array, oldest entry first
-do
-  local console = lurek.repl.new(16)
-
-  -- Simulate a player typing several console commands during a session
-  console:eval("god_mode = true")
-  console:eval("spawn_enemy('goblin', 3)")
-  console:eval("tp(100, 200)")
-```
-
-## Key Types
+## 🧩 Key Types
 
 - `LReplSession` (7 methods) - Lua-side REPL session handle with bounded history.
 
-## API Overview
+[⬆ back to top](#table-of-contents)
+
+## 📖 API Overview
 
 - Source spec: [docs/specs/repl.md](../blob/main/docs/specs/repl.md)
 
@@ -109,15 +61,19 @@ do
 lurek.repl.new([max_history]: integer) -> LReplSession -- Creates a release-safe REPL session with bounded command history.
 ```
 
-## Module Functions
+[⬆ back to top](#table-of-contents)
 
-### `lurek.repl.new([max_history]: integer) -> LReplSession`
+## ⚙️ Module Functions
+
+### lurek.repl.new
+
+`lurek.repl.new([max_history]: integer) -> LReplSession`
 
 Creates a release-safe REPL session with bounded command history.
 
 **Parameters**
 
-- `max_history` (`integer`, optional) - Maximum number of history entries; defaults to 200.
+- `max_history` (`integer`, optional): Maximum number of history entries; defaults to 200.
 
 **Returns**: `LReplSession` - REPL session handle for eval, history, and completion.
 
@@ -140,11 +96,21 @@ end
 ```
 
 
-## Types and Methods
+[⬆ back to top](#table-of-contents)
 
-### `LReplSession`
+## 🔷 Module Types
+
+### LReplSession
 
 Lua-side REPL session handle with bounded history.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side REPL session handle with bounded history.
+---@class LReplSession
+LReplSession = {}
+```
 
 #### Example
 
@@ -164,9 +130,23 @@ do
 end
 ```
 
-### `LReplSession:clear()`
+
+[⬆ back to top](#table-of-contents)
+
+## 🔹 Module Methods
+
+### LReplSession:clear
+
+`LReplSession:clear()`
 
 Clears all entries from this REPL session history.
+
+**Lua API Stub**
+
+```lua
+--- Clears all entries from this REPL session history.
+function LReplSession:clear() end
+```
 
 #### Example
 
@@ -190,15 +170,26 @@ do
 end
 ```
 
-### `LReplSession:complete(prefix: string) -> string[]`
+### LReplSession:complete
+
+`LReplSession:complete(prefix: string) -> string[]`
 
 Returns completion candidates that begin with the supplied prefix.
 
 **Parameters**
 
-- `prefix` (`string`, required) - Prefix text to complete.
+- `prefix` (`string`, required): Prefix text to complete.
 
 **Returns**: `string[]` - Matching completion strings.
+
+**Lua API Stub**
+
+```lua
+--- Returns completion candidates that begin with the supplied prefix.
+---@param prefix string Prefix text to complete.
+---@return string[] Matching completion strings.
+function LReplSession:complete(prefix) end
+```
 
 #### Example
 
@@ -223,15 +214,26 @@ do
 end
 ```
 
-### `LReplSession:eval(code: string) -> string`
+### LReplSession:eval
+
+`LReplSession:eval(code: string) -> string`
 
 Evaluates Lua code and records the input in this REPL history.
 
 **Parameters**
 
-- `code` (`string`, required) - Lua expression, statement, or REPL command to evaluate.
+- `code` (`string`, required): Lua expression, statement, or REPL command to evaluate.
 
 **Returns**: `string` - Display text for the result, command, or error.
+
+**Lua API Stub**
+
+```lua
+--- Evaluates Lua code and records the input in this REPL history.
+---@param code string Lua expression, statement, or REPL command to evaluate.
+---@return string Display text for the result, command, or error.
+function LReplSession:eval(code) end
+```
 
 #### Example
 
@@ -257,11 +259,21 @@ do
 end
 ```
 
-### `LReplSession:history() -> string[]`
+### LReplSession:history
+
+`LReplSession:history() -> string[]`
 
 Returns the recorded REPL input history in oldest-first order.
 
 **Returns**: `string[]` - History entry strings.
+
+**Lua API Stub**
+
+```lua
+--- Returns the recorded REPL input history in oldest-first order.
+---@return string[] History entry strings.
+function LReplSession:history() end
+```
 
 #### Example
 
@@ -284,11 +296,21 @@ do
 end
 ```
 
-### `LReplSession:len() -> integer`
+### LReplSession:len
+
+`LReplSession:len() -> integer`
 
 Returns the number of entries stored in this REPL history.
 
 **Returns**: `integer` - History entry count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of entries stored in this REPL history.
+---@return number History entry count.
+function LReplSession:len() end
+```
 
 #### Example
 
@@ -312,11 +334,21 @@ do
 end
 ```
 
-### `LReplSession:type() -> string`
+### LReplSession:type
+
+`LReplSession:type() -> string`
 
 Returns the Lua-visible type name for this REPL session handle.
 
 **Returns**: `string` - The string `LReplSession`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this REPL session handle.
+---@return string The string `LReplSession`.
+function LReplSession:type() end
+```
 
 #### Example
 
@@ -332,15 +364,26 @@ do
 end
 ```
 
-### `LReplSession:typeOf(name: string) -> boolean`
+### LReplSession:typeOf
+
+`LReplSession:typeOf(name: string) -> boolean`
 
 Returns whether this REPL session handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `LReplSession` and `Object`.
+- `name` (`string`, required): Type name to compare against `LReplSession` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this REPL session handle matches a supported type name.
+---@param name string Type name to compare against `LReplSession` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LReplSession:typeOf(name) end
+```
 
 #### Example
 
@@ -363,21 +406,27 @@ end
 ```
 
 
-## Examples
+[⬆ back to top](#table-of-contents)
+
+## 💡 Examples
 
 - [repl.lua](../blob/main/content/examples/repl.lua) - API example
 
-## Reference Games
+[⬆ back to top](#table-of-contents)
+
+## 🎮 Reference Games
 
 No direct references were found in `content/games/**/main.lua`.
 
-## Related Modules
+[⬆ back to top](#table-of-contents)
 
-- Previous: [[render|Module-render]]
-- Next: [[runtime|Module-runtime]]
-- [[event|Module-event]] - Centralised event queue: OS input, window state, custom Lua events, automation injections.
-- [[filesystem|Module-filesystem]] - Sandboxed virtual filesystem (GameFS); blocks path-traversal escape from the game directory.
-- [[network|Module-network]] - Multiplayer stack: ENet, raw TCP, async HTTP, WebSocket. Heavy crate tree.
-- [[runtime|Module-runtime]] - Foundational shared state, engine config, error types, resource keys, log catalogue. Root of the dep tree.
-- [[thread|Module-thread]] - Background threading with per-thread isolated Lua VMs (B-04: VMs cannot be shared).
-- [[timer|Module-timer]] - Frame-timing (Clock) and deferred / repeating callback scheduling (Scheduler).
+## 🔗 Related Modules
+
+- Previous: [render](Module-render)
+- Next: [runtime](Module-runtime)
+- [event](Module-event) - Centralised event queue: OS input, window state, custom Lua events, automation injections.
+- [filesystem](Module-filesystem) - Sandboxed virtual filesystem (GameFS); blocks path-traversal escape from the game directory.
+- [network](Module-network) - Multiplayer stack: ENet, raw TCP, async HTTP, WebSocket. Heavy crate tree.
+- [runtime](Module-runtime) - Foundational shared state, engine config, error types, resource keys, log catalogue. Root of the dep tree.
+- [thread](Module-thread) - Background threading with per-thread isolated Lua VMs (B-04: VMs cannot be shared).
+- [timer](Module-timer) - Frame-timing (Clock) and deferred / repeating callback scheduling (Scheduler).

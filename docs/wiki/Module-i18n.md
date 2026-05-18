@@ -4,131 +4,81 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
-- [Purpose](#purpose)
-- [Summary](#summary)
-- [Minimal Module Example](#minimal-module-example)
-- [Key Types](#key-types)
-- [API Overview](#api-overview)
-- [Module Functions](#module-functions)
-  - [lurek.i18n.buildIndex() -> string[]](#lureki18nbuildindex-string)
-  - [lurek.i18n.categories() -> string[]](#lureki18ncategories-string)
-  - [lurek.i18n.detectLocale() -> string](#lureki18ndetectlocale-string)
-  - [lurek.i18n.formatDate(timestamp: integer, [fmt]: string) -> string](#lureki18nformatdatetimestamp-integer-fmt-string-string)
-  - [lurek.i18n.formatNumber(n: number, [opts]: table) -> string](#lureki18nformatnumbern-number-opts-table-string)
-  - [lurek.i18n.getAvailableLanguages() -> string[]](#lureki18ngetavailablelanguages-string)
-  - [lurek.i18n.getBase() -> string](#lureki18ngetbase-string)
-  - [lurek.i18n.getFallbacks() -> string[]](#lureki18ngetfallbacks-string)
-  - [lurek.i18n.getKeys() -> string[]](#lureki18ngetkeys-string)
-  - [lurek.i18n.getLanguage() -> string](#lureki18ngetlanguage-string)
-  - [lurek.i18n.getLanguages() -> string[]](#lureki18ngetlanguages-string)
-  - [lurek.i18n.getLoadedLocales() -> string[]](#lureki18ngetloadedlocales-string)
-  - [lurek.i18n.hasKey(key: string) -> boolean](#lureki18nhaskeykey-string-boolean)
-  - [lurek.i18n.hasLanguage(locale: string) -> boolean](#lureki18nhaslanguagelocale-string-boolean)
-  - [lurek.i18n.interpolate(template: string, vars: table) -> string](#lureki18ninterpolatetemplate-string-vars-table-string)
-  - [lurek.i18n.isRTL([locale]: string) -> boolean](#lureki18nisrtllocale-string-boolean)
-  - [lurek.i18n.keyCount() -> integer](#lureki18nkeycount-integer)
-  - [lurek.i18n.keysInCategory(category: string) -> string[]](#lureki18nkeysincategorycategory-string-string)
-  - [lurek.i18n.loadString(locale: string, content: string, format: string)](#lureki18nloadstringlocale-string-content-string-format-string)
-  - [lurek.i18n.loadTable(locale: string, tbl: table)](#lureki18nloadtablelocale-string-tbl-table)
-  - [lurek.i18n.localeCoverage(reference: string) -> table](#lureki18nlocalecoveragereference-string-table)
-  - [lurek.i18n.mergeLocale(locale: string, entries: table)](#lureki18nmergelocalelocale-string-entries-table)
-  - [lurek.i18n.offChange()](#lureki18noffchange)
-  - [lurek.i18n.onChange(cb: function)](#lureki18nonchangecb-function)
-  - [lurek.i18n.onLanguageChange(cb: function)](#lureki18nonlanguagechangecb-function)
-  - [lurek.i18n.pluralFor(n: number) -> string](#lureki18npluralforn-number-string)
-  - [lurek.i18n.search(query: string, [limit]: integer) -> table](#lureki18nsearchquery-string-limit-integer-table)
-  - [lurek.i18n.searchIndexed(index: table, query: string, [limit]: integer) -> string[]](#lureki18nsearchindexedindex-table-query-string-limit-integer-string)
-  - [lurek.i18n.setBase(locale: string)](#lureki18nsetbaselocale-string)
-  - [lurek.i18n.setFallbacks(locales: table)](#lureki18nsetfallbackslocales-table)
-  - [lurek.i18n.setKey(locale: string, key: string, value: string)](#lureki18nsetkeylocale-string-key-string-value-string)
-  - [lurek.i18n.setLanguage(locale: string)](#lureki18nsetlanguagelocale-string)
-  - [lurek.i18n.t(key: string, [vars]: table, [count]: number) -> string](#lureki18ntkey-string-vars-table-count-number-string)
-  - [lurek.i18n.tGender(key: string, gender: string, [vars]: table) -> string](#lureki18ntgenderkey-string-gender-string-vars-table-string)
-  - [lurek.i18n.unloadTable(locale: string) -> boolean](#lureki18nunloadtablelocale-string-boolean)
-  - [lurek.i18n.validateLocale(locale: string) -> boolean](#lureki18nvalidatelocalelocale-string-boolean)
-- [Examples](#examples)
-- [Reference Games](#reference-games)
-- [Related Modules](#related-modules)
+- [🎯 Purpose](#purpose)
+- [📋 Summary](#summary)
+- [🧩 Key Types](#key-types)
+- [📖 API Overview](#api-overview)
+- [⚙️ Module Functions](#module-functions)
+  - [lurek.i18n.buildIndex](#lureki18nbuildindex)
+  - [lurek.i18n.categories](#lureki18ncategories)
+  - [lurek.i18n.detectLocale](#lureki18ndetectlocale)
+  - [lurek.i18n.formatDate](#lureki18nformatdate)
+  - [lurek.i18n.formatNumber](#lureki18nformatnumber)
+  - [lurek.i18n.getAvailableLanguages](#lureki18ngetavailablelanguages)
+  - [lurek.i18n.getBase](#lureki18ngetbase)
+  - [lurek.i18n.getFallbacks](#lureki18ngetfallbacks)
+  - [lurek.i18n.getKeys](#lureki18ngetkeys)
+  - [lurek.i18n.getLanguage](#lureki18ngetlanguage)
+  - [lurek.i18n.getLanguages](#lureki18ngetlanguages)
+  - [lurek.i18n.getLoadedLocales](#lureki18ngetloadedlocales)
+  - [lurek.i18n.hasKey](#lureki18nhaskey)
+  - [lurek.i18n.hasLanguage](#lureki18nhaslanguage)
+  - [lurek.i18n.interpolate](#lureki18ninterpolate)
+  - [lurek.i18n.isRTL](#lureki18nisrtl)
+  - [lurek.i18n.keyCount](#lureki18nkeycount)
+  - [lurek.i18n.keysInCategory](#lureki18nkeysincategory)
+  - [lurek.i18n.loadString](#lureki18nloadstring)
+  - [lurek.i18n.loadTable](#lureki18nloadtable)
+  - [lurek.i18n.localeCoverage](#lureki18nlocalecoverage)
+  - [lurek.i18n.mergeLocale](#lureki18nmergelocale)
+  - [lurek.i18n.offChange](#lureki18noffchange)
+  - [lurek.i18n.onChange](#lureki18nonchange)
+  - [lurek.i18n.onLanguageChange](#lureki18nonlanguagechange)
+  - [lurek.i18n.pluralFor](#lureki18npluralfor)
+  - [lurek.i18n.search](#lureki18nsearch)
+  - [lurek.i18n.searchIndexed](#lureki18nsearchindexed)
+  - [lurek.i18n.setBase](#lureki18nsetbase)
+  - [lurek.i18n.setFallbacks](#lureki18nsetfallbacks)
+  - [lurek.i18n.setKey](#lureki18nsetkey)
+  - [lurek.i18n.setLanguage](#lureki18nsetlanguage)
+  - [lurek.i18n.t](#lureki18nt)
+  - [lurek.i18n.tGender](#lureki18ntgender)
+  - [lurek.i18n.unloadTable](#lureki18nunloadtable)
+  - [lurek.i18n.validateLocale](#lureki18nvalidatelocale)
+- [💡 Examples](#examples)
+- [🎮 Reference Games](#reference-games)
+- [🔗 Related Modules](#related-modules)
 
 This page is generated from the current module specs, examples, and Lua API data.
 
 **Module group:** Feature Systems
 **Namespace:** `lurek.i18n`
 
-## Purpose
+## 🎯 Purpose
 
 Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*).
 
-## Summary
+[⬆ back to top](#table-of-contents)
+
+## 📋 Summary
 
 Internationalization and localization system managing translated text catalogs with interpolation, pluralization, and number/date formatting. `Catalog` loads locale data from files (one file per language) mapping string keys to translated values. Interpolation substitutes named placeholders with runtime values. Pluralization selects the correct form based on count and locale-specific plural rules (CLDR categories: zero, one, two, few, many, other).
 
 Number formatting respects locale decimal separators, grouping, and currency symbols. Date formatting follows locale patterns. Coverage analysis identifies missing translations and untranslated keys across locale pairs. Fallback chains allow incomplete locales to inherit from a base language. Exposed as `lurek.i18n.*`. Feature Systems tier.
 
-## Minimal Module Example
+[⬆ back to top](#table-of-contents)
 
-Module example from [i18n.lua](../blob/main/content/examples/i18n.lua):
-
-```lua
--- content/examples/i18n.lua
--- Demonstrates the lurek.i18n localization API: loading translations, switching locales, formatting, and search.
--- Run: cargo run -- content/examples/i18n.lua
-
---@api-stub: lurek.i18n.loadTable
--- Loads translations for a locale from a nested Lua table flattened with dot-separated keys
-do
-  -- Tables nest naturally; the engine flattens them into dot-separated keys
-  -- e.g. { ui = { start = "Start" } } becomes "ui.start" = "Start"
-  lurek.i18n.loadTable("en", {
-    ui = { start = "Start Game", quit = "Quit", settings = "Settings" },
-    hud = {
-      score = "Score: {n}",
-      lives = { one = "1 life left", other = "{count} lives left" },
-    },
-    dialog = { npc_greet = "Hello, adventurer!" },
-  })
-  lurek.i18n.loadTable("pl", {
-    ui = { start = "Nowa Gra", quit = "Wyjdź", settings = "Ustawienia" },
-    hud = {
-      score = "Wynik: {n}",
-      lives = { one = "1 życie", other = "{count} żyć" },
-    },
-    dialog = { npc_greet = "Witaj, poszukiwaczu przygód!" },
-  })
-end
-
---@api-stub: lurek.i18n.loadString
--- Loads translations for a locale from TOML or JSON source text
-do
-  -- Use TOML when shipping translation files alongside the game
-  local toml_src = [[
-[ui]
-ok     = "OK"
-cancel = "Cancel"
-apply  = "Apply Changes"
-
-[item]
-sword  = "Iron Sword"
-shield = "Oak Shield"
-potion = "Health Potion"
-]]
-  lurek.i18n.loadString("en_items", toml_src, "toml")
-  lurek.i18n.setLanguage("en_items")
-  -- Verify the keys are accessible after TOML parse
-  lurek.log.info("item.sword = " .. lurek.i18n.t("item.sword"), "i18n")
-  lurek.log.info("ui.apply = " .. lurek.i18n.t("ui.apply"), "i18n")
-end
-```
-
-## Key Types
+## 🧩 Key Types
 
 This module has no separate Lua-visible classes in the generated API data.
 
-## API Overview
+[⬆ back to top](#table-of-contents)
+
+## 📖 API Overview
 
 - Source spec: [docs/specs/i18n.md](../blob/main/docs/specs/i18n.md)
 
@@ -154,9 +104,13 @@ lurek.i18n.keysInCategory(category: string) -> string[] -- Returns translation k
 -- ... 18 more module functions
 ```
 
-## Module Functions
+[⬆ back to top](#table-of-contents)
 
-### `lurek.i18n.buildIndex() -> string[]`
+## ⚙️ Module Functions
+
+### lurek.i18n.buildIndex
+
+`lurek.i18n.buildIndex() -> string[]`
 
 Builds a word-to-keys search index from the catalog.
 
@@ -179,7 +133,9 @@ do
 end
 ```
 
-### `lurek.i18n.categories() -> string[]`
+### lurek.i18n.categories
+
+`lurek.i18n.categories() -> string[]`
 
 Returns top-level translation key categories.
 
@@ -206,7 +162,9 @@ do
 end
 ```
 
-### `lurek.i18n.detectLocale() -> string`
+### lurek.i18n.detectLocale
+
+`lurek.i18n.detectLocale() -> string`
 
 Detects the system locale when available.
 
@@ -229,14 +187,16 @@ do
 end
 ```
 
-### `lurek.i18n.formatDate(timestamp: integer, [fmt]: string) -> string`
+### lurek.i18n.formatDate
+
+`lurek.i18n.formatDate(timestamp: integer, [fmt]: string) -> string`
 
 Formats a timestamp with the active locale and a named format.
 
 **Parameters**
 
-- `timestamp` (`integer`, required) - Unix timestamp value.
-- `fmt` (`string`, optional) - Format name, defaulting to `short`.
+- `timestamp` (`integer`, required): Unix timestamp value.
+- `fmt` (`string`, optional): Format name, defaulting to `short`.
 
 **Returns**: `string` - Formatted date string.
 
@@ -257,14 +217,16 @@ do
 end
 ```
 
-### `lurek.i18n.formatNumber(n: number, [opts]: table) -> string`
+### lurek.i18n.formatNumber
+
+`lurek.i18n.formatNumber(n: number, [opts]: table) -> string`
 
 Formats a number with locale-aware separators and optional decimal precision.
 
 **Parameters**
 
-- `n` (`number`, required) - Number to format.
-- `opts` (`table`, optional) - Table with `decimals` field, defaulting to 2.
+- `n` (`number`, required): Number to format.
+- `opts` (`table`, optional): Table with `decimals` field, defaulting to 2.
 
 **Returns**: `string` - Formatted number string.
 
@@ -287,7 +249,9 @@ do
 end
 ```
 
-### `lurek.i18n.getAvailableLanguages() -> string[]`
+### lurek.i18n.getAvailableLanguages
+
+`lurek.i18n.getAvailableLanguages() -> string[]`
 
 Returns sorted locale codes currently loaded in the catalog.
 
@@ -305,7 +269,9 @@ do
 end
 ```
 
-### `lurek.i18n.getBase() -> string`
+### lurek.i18n.getBase
+
+`lurek.i18n.getBase() -> string`
 
 Returns the base locale string stored by the localization module.
 
@@ -325,7 +291,9 @@ do
 end
 ```
 
-### `lurek.i18n.getFallbacks() -> string[]`
+### lurek.i18n.getFallbacks
+
+`lurek.i18n.getFallbacks() -> string[]`
 
 Returns fallback locale codes in lookup order.
 
@@ -344,7 +312,9 @@ do
 end
 ```
 
-### `lurek.i18n.getKeys() -> string[]`
+### lurek.i18n.getKeys
+
+`lurek.i18n.getKeys() -> string[]`
 
 Returns sorted translation keys known to the catalog.
 
@@ -370,7 +340,9 @@ do
 end
 ```
 
-### `lurek.i18n.getLanguage() -> string`
+### lurek.i18n.getLanguage
+
+`lurek.i18n.getLanguage() -> string`
 
 Returns the active locale code string.
 
@@ -392,7 +364,9 @@ do
 end
 ```
 
-### `lurek.i18n.getLanguages() -> string[]`
+### lurek.i18n.getLanguages
+
+`lurek.i18n.getLanguages() -> string[]`
 
 Returns sorted locale codes currently loaded in the catalog.
 
@@ -415,7 +389,9 @@ do
 end
 ```
 
-### `lurek.i18n.getLoadedLocales() -> string[]`
+### lurek.i18n.getLoadedLocales
+
+`lurek.i18n.getLoadedLocales() -> string[]`
 
 Returns locale codes currently loaded in the catalog.
 
@@ -435,13 +411,15 @@ do
 end
 ```
 
-### `lurek.i18n.hasKey(key: string) -> boolean`
+### lurek.i18n.hasKey
+
+`lurek.i18n.hasKey(key: string) -> boolean`
 
 Returns whether the catalog contains a translation key in active or fallback locales.
 
 **Parameters**
 
-- `key` (`string`, required) - Translation key to check.
+- `key` (`string`, required): Translation key to check.
 
 **Returns**: `boolean` - True when the key is available.
 
@@ -465,13 +443,15 @@ do
 end
 ```
 
-### `lurek.i18n.hasLanguage(locale: string) -> boolean`
+### lurek.i18n.hasLanguage
+
+`lurek.i18n.hasLanguage(locale: string) -> boolean`
 
 Returns whether a locale has translations loaded.
 
 **Parameters**
 
-- `locale` (`string`, required) - Locale code to check.
+- `locale` (`string`, required): Locale code to check.
 
 **Returns**: `boolean` - True when the locale exists in the catalog.
 
@@ -493,14 +473,16 @@ do
 end
 ```
 
-### `lurek.i18n.interpolate(template: string, vars: table) -> string`
+### lurek.i18n.interpolate
+
+`lurek.i18n.interpolate(template: string, vars: table) -> string`
 
 Replaces `{name}` placeholders in a template using string variables.
 
 **Parameters**
 
-- `template` (`string`, required) - Template text containing placeholders.
-- `vars` (`table`, required) - Map table from placeholder names to replacement strings.
+- `template` (`string`, required): Template text containing placeholders.
+- `vars` (`table`, required): Map table from placeholder names to replacement strings.
 
 **Returns**: `string` - Interpolated text.
 
@@ -522,13 +504,15 @@ do
 end
 ```
 
-### `lurek.i18n.isRTL([locale]: string) -> boolean`
+### lurek.i18n.isRTL
+
+`lurek.i18n.isRTL([locale]: string) -> boolean`
 
 Returns whether a locale is written right-to-left.
 
 **Parameters**
 
-- `locale` (`string`, optional) - Locale code; defaults to the active locale.
+- `locale` (`string`, optional): Locale code; defaults to the active locale.
 
 **Returns**: `boolean` - True for right-to-left locales.
 
@@ -549,7 +533,9 @@ do
 end
 ```
 
-### `lurek.i18n.keyCount() -> integer`
+### lurek.i18n.keyCount
+
+`lurek.i18n.keyCount() -> integer`
 
 Returns the number of translation keys known to the catalog.
 
@@ -572,13 +558,15 @@ do
 end
 ```
 
-### `lurek.i18n.keysInCategory(category: string) -> string[]`
+### lurek.i18n.keysInCategory
+
+`lurek.i18n.keysInCategory(category: string) -> string[]`
 
 Returns translation keys belonging to one category prefix.
 
 **Parameters**
 
-- `category` (`string`, required) - Category prefix.
+- `category` (`string`, required): Category prefix.
 
 **Returns**: `string[]` - Translation keys.
 
@@ -602,15 +590,17 @@ do
 end
 ```
 
-### `lurek.i18n.loadString(locale: string, content: string, format: string)`
+### lurek.i18n.loadString
+
+`lurek.i18n.loadString(locale: string, content: string, format: string)`
 
 Loads translations for a locale from TOML or JSON source text.
 
 **Parameters**
 
-- `locale` (`string`, required) - Locale code to load.
-- `content` (`string`, required) - TOML or JSON translation source.
-- `format` (`string`, required) - Source format, either `toml` or `json`.
+- `locale` (`string`, required): Locale code to load.
+- `content` (`string`, required): TOML or JSON translation source.
+- `format` (`string`, required): Source format, either `toml` or `json`.
 
 #### Example
 
@@ -638,14 +628,16 @@ potion = "Health Potion"
 end
 ```
 
-### `lurek.i18n.loadTable(locale: string, tbl: table)`
+### lurek.i18n.loadTable
+
+`lurek.i18n.loadTable(locale: string, tbl: table)`
 
 Loads translations for a locale from a nested Lua table flattened with dot-separated keys.
 
 **Parameters**
 
-- `locale` (`string`, required) - Locale code to load.
-- `tbl` (`table`, required) - Translation table containing strings, numbers, booleans, or nested tables.
+- `locale` (`string`, required): Locale code to load.
+- `tbl` (`table`, required): Translation table containing strings, numbers, booleans, or nested tables.
 
 #### Example
 
@@ -674,13 +666,15 @@ do
 end
 ```
 
-### `lurek.i18n.localeCoverage(reference: string) -> table`
+### lurek.i18n.localeCoverage
+
+`lurek.i18n.localeCoverage(reference: string) -> table`
 
 Returns missing translation keys for all locales compared to a reference locale.
 
 **Parameters**
 
-- `reference` (`string`, required) - Locale code used as the coverage reference.
+- `reference` (`string`, required): Locale code used as the coverage reference.
 
 **Returns**: `table` - Array of gap rows with `key` and `missing_in` fields.
 
@@ -703,14 +697,16 @@ do
 end
 ```
 
-### `lurek.i18n.mergeLocale(locale: string, entries: table)`
+### lurek.i18n.mergeLocale
+
+`lurek.i18n.mergeLocale(locale: string, entries: table)`
 
 Merges flat translation entries into an existing locale.
 
 **Parameters**
 
-- `locale` (`string`, required) - Locale code to merge into.
-- `entries` (`table`, required) - Map table from translation keys to strings.
+- `locale` (`string`, required): Locale code to merge into.
+- `entries` (`table`, required): Map table from translation keys to strings.
 
 #### Example
 
@@ -725,7 +721,9 @@ do
     ["dialog.outro"] = "Farewell, until next time.",
 ```
 
-### `lurek.i18n.offChange()`
+### lurek.i18n.offChange
+
+`lurek.i18n.offChange()`
 
 Removes every registered locale-change callback.
 
@@ -743,13 +741,15 @@ do
 end
 ```
 
-### `lurek.i18n.onChange(cb: function)`
+### lurek.i18n.onChange
+
+`lurek.i18n.onChange(cb: function)`
 
 Registers a locale-change callback using the shorter alias name.
 
 **Parameters**
 
-- `cb` (`function`, required) - Callback receiving `(new_locale, old_locale)`.
+- `cb` (`function`, required): Callback receiving `(new_locale, old_locale)`.
 
 #### Example
 
@@ -766,13 +766,15 @@ do
 end
 ```
 
-### `lurek.i18n.onLanguageChange(cb: function)`
+### lurek.i18n.onLanguageChange
+
+`lurek.i18n.onLanguageChange(cb: function)`
 
 Registers a callback invoked when the active locale changes.
 
 **Parameters**
 
-- `cb` (`function`, required) - Callback receiving `(new_locale, old_locale)`.
+- `cb` (`function`, required): Callback receiving `(new_locale, old_locale)`.
 
 #### Example
 
@@ -790,13 +792,15 @@ do
 end
 ```
 
-### `lurek.i18n.pluralFor(n: number) -> string`
+### lurek.i18n.pluralFor
+
+`lurek.i18n.pluralFor(n: number) -> string`
 
 Returns the English plural category key for a number.
 
 **Parameters**
 
-- `n` (`number`, required) - Count used for plural selection.
+- `n` (`number`, required): Count used for plural selection.
 
 **Returns**: `string` - Plural category, usually `one` or `other`.
 
@@ -816,14 +820,16 @@ do
 end
 ```
 
-### `lurek.i18n.search(query: string, [limit]: integer) -> table`
+### lurek.i18n.search
+
+`lurek.i18n.search(query: string, [limit]: integer) -> table`
 
 Searches translation keys and values for a query string.
 
 **Parameters**
 
-- `query` (`string`, required) - Search query.
-- `limit` (`integer`, optional) - Maximum result count; zero or nil means no truncation.
+- `query` (`string`, required): Search query.
+- `limit` (`integer`, optional): Maximum result count; zero or nil means no truncation.
 
 **Returns**: `table` - Array of rows with `key` and `value` fields.
 
@@ -847,15 +853,17 @@ do
 end
 ```
 
-### `lurek.i18n.searchIndexed(index: table, query: string, [limit]: integer) -> string[]`
+### lurek.i18n.searchIndexed
+
+`lurek.i18n.searchIndexed(index: table, query: string, [limit]: integer) -> string[]`
 
 Searches a prebuilt word index and returns matching keys.
 
 **Parameters**
 
-- `index` (`table`, required) - Index table returned by `buildIndex`.
-- `query` (`string`, required) - Search query.
-- `limit` (`integer`, optional) - Maximum key count; zero or nil means no truncation.
+- `index` (`table`, required): Index table returned by `buildIndex`.
+- `query` (`string`, required): Search query.
+- `limit` (`integer`, optional): Maximum key count; zero or nil means no truncation.
 
 **Returns**: `string[]` - Matching translation keys.
 
@@ -880,13 +888,15 @@ do
 end
 ```
 
-### `lurek.i18n.setBase(locale: string)`
+### lurek.i18n.setBase
+
+`lurek.i18n.setBase(locale: string)`
 
 Sets the base locale string stored by the localization module.
 
 **Parameters**
 
-- `locale` (`string`, required) - Base locale code.
+- `locale` (`string`, required): Base locale code.
 
 #### Example
 
@@ -900,13 +910,15 @@ do
 end
 ```
 
-### `lurek.i18n.setFallbacks(locales: table)`
+### lurek.i18n.setFallbacks
+
+`lurek.i18n.setFallbacks(locales: table)`
 
 Replaces the fallback locale list used for missing translations.
 
 **Parameters**
 
-- `locales` (`table`, required) - Array table of locale codes in fallback order.
+- `locales` (`table`, required): Array table of locale codes in fallback order.
 
 #### Example
 
@@ -923,15 +935,17 @@ do
 end
 ```
 
-### `lurek.i18n.setKey(locale: string, key: string, value: string)`
+### lurek.i18n.setKey
+
+`lurek.i18n.setKey(locale: string, key: string, value: string)`
 
 Sets one translation value for one locale and key.
 
 **Parameters**
 
-- `locale` (`string`, required) - Locale code to update.
-- `key` (`string`, required) - Translation key.
-- `value` (`string`, required) - Translation text.
+- `locale` (`string`, required): Locale code to update.
+- `key` (`string`, required): Translation key.
+- `value` (`string`, required): Translation text.
 
 #### Example
 
@@ -950,13 +964,15 @@ do
 end
 ```
 
-### `lurek.i18n.setLanguage(locale: string)`
+### lurek.i18n.setLanguage
+
+`lurek.i18n.setLanguage(locale: string)`
 
 Sets the active locale and invokes registered change callbacks with new and old locale values.
 
 **Parameters**
 
-- `locale` (`string`, required) - Locale code to activate.
+- `locale` (`string`, required): Locale code to activate.
 
 #### Example
 
@@ -974,15 +990,17 @@ do
 end
 ```
 
-### `lurek.i18n.t(key: string, [vars]: table, [count]: number) -> string`
+### lurek.i18n.t
+
+`lurek.i18n.t(key: string, [vars]: table, [count]: number) -> string`
 
 Translates a key using the active locale, optional variables, and optional English plural selection.
 
 **Parameters**
 
-- `key` (`string`, required) - Translation key.
-- `vars` (`table`, optional) - Interpolation variables.
-- `count` (`number`, optional) - Plural count, also inserted as `{count}` when variables are used.
+- `key` (`string`, required): Translation key.
+- `vars` (`table`, optional): Interpolation variables.
+- `count` (`number`, optional): Plural count, also inserted as `{count}` when variables are used.
 
 **Returns**: `string` - Translated and interpolated text, or the catalog fallback for the key.
 
@@ -1014,15 +1032,17 @@ do
 end
 ```
 
-### `lurek.i18n.tGender(key: string, gender: string, [vars]: table) -> string`
+### lurek.i18n.tGender
+
+`lurek.i18n.tGender(key: string, gender: string, [vars]: table) -> string`
 
 Translates a gender-specific key variant when present, then falls back to the base key.
 
 **Parameters**
 
-- `key` (`string`, required) - Base translation key.
-- `gender` (`string`, required) - Gender suffix appended to the key.
-- `vars` (`table`, optional) - Interpolation variables.
+- `key` (`string`, required): Base translation key.
+- `gender` (`string`, required): Gender suffix appended to the key.
+- `vars` (`table`, optional): Interpolation variables.
 
 **Returns**: `string` - Gender-specific or fallback translated text.
 
@@ -1050,13 +1070,15 @@ do
 end
 ```
 
-### `lurek.i18n.unloadTable(locale: string) -> boolean`
+### lurek.i18n.unloadTable
+
+`lurek.i18n.unloadTable(locale: string) -> boolean`
 
 Removes all translations for a locale from the catalog.
 
 **Parameters**
 
-- `locale` (`string`, required) - Locale code to unload.
+- `locale` (`string`, required): Locale code to unload.
 
 **Returns**: `boolean` - True when a locale table was removed.
 
@@ -1077,13 +1099,15 @@ do
 end
 ```
 
-### `lurek.i18n.validateLocale(locale: string) -> boolean`
+### lurek.i18n.validateLocale
+
+`lurek.i18n.validateLocale(locale: string) -> boolean`
 
 Returns whether a locale code has a valid syntax.
 
 **Parameters**
 
-- `locale` (`string`, required) - Locale code to validate.
+- `locale` (`string`, required): Locale code to validate.
 
 **Returns**: `boolean` - True when the code is valid.
 
@@ -1104,21 +1128,27 @@ end
 ```
 
 
-## Examples
+[⬆ back to top](#table-of-contents)
+
+## 💡 Examples
 
 - [i18n.lua](../blob/main/content/examples/i18n.lua) - Localisation strings
 
-## Reference Games
+[⬆ back to top](#table-of-contents)
+
+## 🎮 Reference Games
 
 No direct references were found in `content/games/**/main.lua`.
 
-## Related Modules
+[⬆ back to top](#table-of-contents)
 
-- Previous: [[html|Module-html]]
-- Next: [[image|Module-image]]
-- [[ai|Module-ai]] - Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU.
-- [[animation|Module-animation]] - Sprite animation: source-rect changes over time. Imports only math; headless-testable.
-- [[automation|Module-automation]] - Automated input simulation for headless tests, QA replay, recorded sessions.
-- [[ecs|Module-ecs]] - Entity-Component-System: identity / data / behaviour separation for runtime composition.
-- [[minimap|Module-minimap]] - Grid-based minimap data model: fog of war, tracked objects, pings, viewport overlay.
-- [[mods|Module-mods]] - Mod-loading framework: virtual filesystem mounts + sandboxed runtime config.
+## 🔗 Related Modules
+
+- Previous: [html](Module-html)
+- Next: [image](Module-image)
+- [ai](Module-ai) - Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU.
+- [animation](Module-animation) - Sprite animation: source-rect changes over time. Imports only math; headless-testable.
+- [automation](Module-automation) - Automated input simulation for headless tests, QA replay, recorded sessions.
+- [ecs](Module-ecs) - Entity-Component-System: identity / data / behaviour separation for runtime composition.
+- [minimap](Module-minimap) - Grid-based minimap data model: fog of war, tracked objects, pings, viewport overlay.
+- [mods](Module-mods) - Mod-loading framework: virtual filesystem mounts + sandboxed runtime config.

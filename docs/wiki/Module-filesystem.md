@@ -4,168 +4,119 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
-- [Purpose](#purpose)
-- [Summary](#summary)
-- [Minimal Module Example](#minimal-module-example)
-- [Key Types](#key-types)
-- [API Overview](#api-overview)
-- [Module Functions](#module-functions)
-  - [lurek.filesystem.append(path: string, data: string)](#lurekfilesystemappendpath-string-data-string)
-  - [lurek.filesystem.copy(src: string, dst: string)](#lurekfilesystemcopysrc-string-dst-string)
-  - [lurek.filesystem.createDirectory(path: string)](#lurekfilesystemcreatedirectorypath-string)
-  - [lurek.filesystem.createTempFile([prefix]: string) -> string](#lurekfilesystemcreatetempfileprefix-string-string)
-  - [lurek.filesystem.exists(path: string) -> boolean](#lurekfilesystemexistspath-string-boolean)
-  - [lurek.filesystem.getDirectoryItems(path: string) -> string[]](#lurekfilesystemgetdirectoryitemspath-string-string)
-  - [lurek.filesystem.getIdentity() -> string](#lurekfilesystemgetidentity-string)
-  - [lurek.filesystem.getInfo(path: string) -> table](#lurekfilesystemgetinfopath-string-table)
-  - [lurek.filesystem.getSaveDirectory() -> string](#lurekfilesystemgetsavedirectory-string)
-  - [lurek.filesystem.getSource() -> string](#lurekfilesystemgetsource-string)
-  - [lurek.filesystem.getUserDirectory() -> string](#lurekfilesystemgetuserdirectory-string)
-  - [lurek.filesystem.getWorkingDirectory() -> string](#lurekfilesystemgetworkingdirectory-string)
-  - [lurek.filesystem.glob(pattern: string) -> string[]](#lurekfilesystemglobpattern-string-string)
-  - [lurek.filesystem.isDirectory(path: string) -> boolean](#lurekfilesystemisdirectorypath-string-boolean)
-  - [lurek.filesystem.isFile(path: string) -> boolean](#lurekfilesystemisfilepath-string-boolean)
-  - [lurek.filesystem.lines(path: string) -> function](#lurekfilesystemlinespath-string-function)
-  - [lurek.filesystem.listRecursive(path: string) -> string[]](#lurekfilesystemlistrecursivepath-string-string)
-  - [lurek.filesystem.load(path: string) -> function](#lurekfilesystemloadpath-string-function)
-  - [lurek.filesystem.mkdir(path: string)](#lurekfilesystemmkdirpath-string)
-  - [lurek.filesystem.mount(src: string, mp: string) -> boolean](#lurekfilesystemmountsrc-string-mp-string-boolean)
-  - [lurek.filesystem.mountZip(archive_path: string, prefix: string) -> LZipMount](#lurekfilesystemmountziparchivepath-string-prefix-string-lzipmount)
-  - [lurek.filesystem.move(src: string, dst: string)](#lurekfilesystemmovesrc-string-dst-string)
-  - [lurek.filesystem.newFileData(path: string) -> LFileData](#lurekfilesystemnewfiledatapath-string-lfiledata)
-  - [lurek.filesystem.openFile(path: string, mode: string) -> LFileHandle](#lurekfilesystemopenfilepath-string-mode-string-lfilehandle)
-  - [lurek.filesystem.pollAsync(handle_id: integer) -> string](#lurekfilesystempollasynchandleid-integer-string)
-  - [lurek.filesystem.pollAsyncWrite(handle_id: integer) -> string](#lurekfilesystempollasyncwritehandleid-integer-string)
-  - [lurek.filesystem.pollWatchers() -> string[]](#lurekfilesystempollwatchers-string)
-  - [lurek.filesystem.read(path: string) -> string](#lurekfilesystemreadpath-string-string)
-  - [lurek.filesystem.readAsync(path: string) -> integer](#lurekfilesystemreadasyncpath-string-integer)
-  - [lurek.filesystem.readBytes(path: string) -> string](#lurekfilesystemreadbytespath-string-string)
-  - [lurek.filesystem.readJson(path: string) -> string](#lurekfilesystemreadjsonpath-string-string)
-  - [lurek.filesystem.readOrWriteJson(path: string, default_json: string) -> string](#lurekfilesystemreadorwritejsonpath-string-defaultjson-string-string)
-  - [lurek.filesystem.remove(path: string)](#lurekfilesystemremovepath-string)
-  - [lurek.filesystem.removeDir(path: string)](#lurekfilesystemremovedirpath-string)
-  - [lurek.filesystem.setIdentity(name: string)](#lurekfilesystemsetidentityname-string)
-  - [lurek.filesystem.stat(path: string) -> table](#lurekfilesystemstatpath-string-table)
-  - [lurek.filesystem.toAbsolutePath(path: string) -> string](#lurekfilesystemtoabsolutepathpath-string-string)
-  - [lurek.filesystem.unmount(mp: string) -> boolean](#lurekfilesystemunmountmp-string-boolean)
-  - [lurek.filesystem.unwatchPath(path: string)](#lurekfilesystemunwatchpathpath-string)
-  - [lurek.filesystem.watchPath(path: string)](#lurekfilesystemwatchpathpath-string)
-  - [lurek.filesystem.write(path: string, data: string)](#lurekfilesystemwritepath-string-data-string)
-  - [lurek.filesystem.writeAsync(path: string, data: string) -> integer](#lurekfilesystemwriteasyncpath-string-data-string-integer)
-  - [lurek.filesystem.writeBytes(path: string, data: string)](#lurekfilesystemwritebytespath-string-data-string)
-  - [lurek.filesystem.writeJson(path: string, json: string)](#lurekfilesystemwritejsonpath-string-json-string)
-- [Types and Methods](#types-and-methods)
+- [🎯 Purpose](#purpose)
+- [📋 Summary](#summary)
+- [🧩 Key Types](#key-types)
+- [📖 API Overview](#api-overview)
+- [⚙️ Module Functions](#module-functions)
+  - [lurek.filesystem.append](#lurekfilesystemappend)
+  - [lurek.filesystem.copy](#lurekfilesystemcopy)
+  - [lurek.filesystem.createDirectory](#lurekfilesystemcreatedirectory)
+  - [lurek.filesystem.createTempFile](#lurekfilesystemcreatetempfile)
+  - [lurek.filesystem.exists](#lurekfilesystemexists)
+  - [lurek.filesystem.getDirectoryItems](#lurekfilesystemgetdirectoryitems)
+  - [lurek.filesystem.getIdentity](#lurekfilesystemgetidentity)
+  - [lurek.filesystem.getInfo](#lurekfilesystemgetinfo)
+  - [lurek.filesystem.getSaveDirectory](#lurekfilesystemgetsavedirectory)
+  - [lurek.filesystem.getSource](#lurekfilesystemgetsource)
+  - [lurek.filesystem.getUserDirectory](#lurekfilesystemgetuserdirectory)
+  - [lurek.filesystem.getWorkingDirectory](#lurekfilesystemgetworkingdirectory)
+  - [lurek.filesystem.glob](#lurekfilesystemglob)
+  - [lurek.filesystem.isDirectory](#lurekfilesystemisdirectory)
+  - [lurek.filesystem.isFile](#lurekfilesystemisfile)
+  - [lurek.filesystem.lines](#lurekfilesystemlines)
+  - [lurek.filesystem.listRecursive](#lurekfilesystemlistrecursive)
+  - [lurek.filesystem.load](#lurekfilesystemload)
+  - [lurek.filesystem.mkdir](#lurekfilesystemmkdir)
+  - [lurek.filesystem.mount](#lurekfilesystemmount)
+  - [lurek.filesystem.mountZip](#lurekfilesystemmountzip)
+  - [lurek.filesystem.move](#lurekfilesystemmove)
+  - [lurek.filesystem.newFileData](#lurekfilesystemnewfiledata)
+  - [lurek.filesystem.openFile](#lurekfilesystemopenfile)
+  - [lurek.filesystem.pollAsync](#lurekfilesystempollasync)
+  - [lurek.filesystem.pollAsyncWrite](#lurekfilesystempollasyncwrite)
+  - [lurek.filesystem.pollWatchers](#lurekfilesystempollwatchers)
+  - [lurek.filesystem.read](#lurekfilesystemread)
+  - [lurek.filesystem.readAsync](#lurekfilesystemreadasync)
+  - [lurek.filesystem.readBytes](#lurekfilesystemreadbytes)
+  - [lurek.filesystem.readJson](#lurekfilesystemreadjson)
+  - [lurek.filesystem.readOrWriteJson](#lurekfilesystemreadorwritejson)
+  - [lurek.filesystem.remove](#lurekfilesystemremove)
+  - [lurek.filesystem.removeDir](#lurekfilesystemremovedir)
+  - [lurek.filesystem.setIdentity](#lurekfilesystemsetidentity)
+  - [lurek.filesystem.stat](#lurekfilesystemstat)
+  - [lurek.filesystem.toAbsolutePath](#lurekfilesystemtoabsolutepath)
+  - [lurek.filesystem.unmount](#lurekfilesystemunmount)
+  - [lurek.filesystem.unwatchPath](#lurekfilesystemunwatchpath)
+  - [lurek.filesystem.watchPath](#lurekfilesystemwatchpath)
+  - [lurek.filesystem.write](#lurekfilesystemwrite)
+  - [lurek.filesystem.writeAsync](#lurekfilesystemwriteasync)
+  - [lurek.filesystem.writeBytes](#lurekfilesystemwritebytes)
+  - [lurek.filesystem.writeJson](#lurekfilesystemwritejson)
+- [🔷 Module Types](#module-types)
   - [LFileData](#lfiledata)
-  - [LFileData:getFilename() -> string](#lfiledatagetfilename-string)
-  - [LFileData:getSize() -> integer](#lfiledatagetsize-integer)
-  - [LFileData:getString() -> string](#lfiledatagetstring-string)
-  - [LFileData:type() -> string](#lfiledatatype-string)
-  - [LFileData:typeOf(name: string) -> boolean](#lfiledatatypeofname-string-boolean)
   - [LFileHandle](#lfilehandle)
-  - [LFileHandle:close()](#lfilehandleclose)
-  - [LFileHandle:flush()](#lfilehandleflush)
-  - [LFileHandle:getMode() -> string](#lfilehandlegetmode-string)
-  - [LFileHandle:getSize() -> integer](#lfilehandlegetsize-integer)
-  - [LFileHandle:isEOF() -> boolean](#lfilehandleiseof-boolean)
-  - [LFileHandle:read([count]: integer) -> string](#lfilehandlereadcount-integer-string)
-  - [LFileHandle:readLine() -> string](#lfilehandlereadline-string)
-  - [LFileHandle:seek(pos: integer)](#lfilehandleseekpos-integer)
-  - [LFileHandle:tell() -> integer](#lfilehandletell-integer)
-  - [LFileHandle:type() -> string](#lfilehandletype-string)
-  - [LFileHandle:typeOf(name: string) -> boolean](#lfilehandletypeofname-string-boolean)
-  - [LFileHandle:write(data: string)](#lfilehandlewritedata-string)
   - [LZipMount](#lzipmount)
-  - [LZipMount:contains(virtual_path: string) -> boolean](#lzipmountcontainsvirtualpath-string-boolean)
-  - [LZipMount:listFiles() -> string[]](#lzipmountlistfiles-string)
-  - [LZipMount:prefix() -> string](#lzipmountprefix-string)
-  - [LZipMount:readFile(virtual_path: string) -> string](#lzipmountreadfilevirtualpath-string-string)
-  - [LZipMount:type() -> string](#lzipmounttype-string)
-  - [LZipMount:typeOf(name: string) -> boolean](#lzipmounttypeofname-string-boolean)
-- [Examples](#examples)
-- [Reference Games](#reference-games)
-- [Related Modules](#related-modules)
+- [🔹 Module Methods](#module-methods)
+  - [LFileData:getFilename](#lfiledatagetfilename)
+  - [LFileData:getSize](#lfiledatagetsize)
+  - [LFileData:getString](#lfiledatagetstring)
+  - [LFileData:type](#lfiledatatype)
+  - [LFileData:typeOf](#lfiledatatypeof)
+  - [LFileHandle:close](#lfilehandleclose)
+  - [LFileHandle:flush](#lfilehandleflush)
+  - [LFileHandle:getMode](#lfilehandlegetmode)
+  - [LFileHandle:getSize](#lfilehandlegetsize)
+  - [LFileHandle:isEOF](#lfilehandleiseof)
+  - [LFileHandle:read](#lfilehandleread)
+  - [LFileHandle:readLine](#lfilehandlereadline)
+  - [LFileHandle:seek](#lfilehandleseek)
+  - [LFileHandle:tell](#lfilehandletell)
+  - [LFileHandle:type](#lfilehandletype)
+  - [LFileHandle:typeOf](#lfilehandletypeof)
+  - [LFileHandle:write](#lfilehandlewrite)
+  - [LZipMount:contains](#lzipmountcontains)
+  - [LZipMount:listFiles](#lzipmountlistfiles)
+  - [LZipMount:prefix](#lzipmountprefix)
+  - [LZipMount:readFile](#lzipmountreadfile)
+  - [LZipMount:type](#lzipmounttype)
+  - [LZipMount:typeOf](#lzipmounttypeof)
+- [💡 Examples](#examples)
+- [🎮 Reference Games](#reference-games)
+- [🔗 Related Modules](#related-modules)
 
 This page is generated from the current module specs, examples, and Lua API data.
 
 **Module group:** Core Runtime
 **Namespace:** `lurek.filesystem`
 
-## Purpose
+## 🎯 Purpose
 
 Sandboxed virtual filesystem (GameFS); blocks path-traversal escape from the game directory.
 
-## Summary
+[⬆ back to top](#table-of-contents)
+
+## 📋 Summary
 
 Sandboxed virtual filesystem preventing path traversal attacks from game scripts. `GameFS` wraps all I/O operations behind a security boundary — every path is resolved against the game's base directory and checked for `..` components, symbolic links, and absolute prefixes before the OS is consulted. Violations produce `EngineError::FsPathTraversal`.
 
 Supports synchronous and asynchronous read/write, directory listing, glob matching, file watching, and ZIP archive mounting. `AsyncLoader` runs file I/O on a background thread with a poll-based completion API. `ZipMount` overlays compressed archives as read-only virtual directories. `FileHandle` provides buffered cursor-based streaming I/O. File metadata (`FileInfo`) includes size, timestamps, and type classification. Exposed as `lurek.filesystem.*`. Core Runtime tier.
 
-## Minimal Module Example
+[⬆ back to top](#table-of-contents)
 
-Module example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
-
-```lua
--- Polls watched paths and returns paths that changed since the previous poll
-do
-  -- pollWatchers() returns an array of paths that were modified since the last poll.
-  -- Call it once per frame (or at a slower interval) to implement hot-reload.
-  -- The returned array is empty when nothing changed — this is the normal case.
-  local timer = 0
-  function lurek.process(dt)
-    timer = timer + dt
-    if timer < 1 then return end
-    timer = 0
-    -- Poll at 1-second intervals to reduce overhead while staying responsive
-    for _, path in ipairs(lurek.filesystem.pollWatchers()) do
-      lurek.log.info("changed: " .. path, "hotreload")
-      -- Here you would reload the resource: re-parse a level, re-run a script, etc.
-    end
-  end
-end
-
---@api-stub: LFileHandle:read
--- Reads a UTF-8 text file from GameFS
-do
-  -- read() loads the entire file as a UTF-8 string. Use it for config files,
-  -- level data, dialogue CSVs, or any text-based game data.
-  -- Wrapping in pcall handles missing files gracefully.
-  local ok, toml = pcall(lurek.filesystem.read, "config/options.toml")
-  if ok then
-    lurek.log.info("loaded options.toml (" .. #toml .. " bytes)", "config")
-    -- Parse the TOML string here to extract game settings
-  end
-end
-
---@api-stub: LFileHandle:write
--- Writes a UTF-8 text file through GameFS
-do
-  -- write() creates or overwrites a file with text content. GameFS resolves the
-  -- path relative to the save directory, so writes are sandboxed and safe.
-  -- Use this for simple save data, high scores, or small config persistence.
-  local score = 12450
-  lurek.filesystem.write("save/highscore.txt", tostring(score))
-  -- The file now exists at <save_dir>/highscore.txt and will persist across runs.
-end
-
---@api-stub: lurek.filesystem.writeJson
--- Writes JSON text through GameFS
-do
-  -- writeJson() stores a JSON string to a file. You build the JSON string yourself
-  -- (or use lurek.data.encode). This is the standard way to persist structured
-  -- game state like player profiles, inventory, or settings.
-```
-
-## Key Types
+## 🧩 Key Types
 
 - `LFileData` (5 methods)
 - `LFileHandle` (12 methods) - Lua-side handle for a mutable file stream opened through GameFS.
 - `LZipMount` (6 methods) - Lua-side handle for a mounted ZIP archive view.
 
-## API Overview
+[⬆ back to top](#table-of-contents)
+
+## 📖 API Overview
 
 - Source spec: [docs/specs/filesystem.md](../blob/main/docs/specs/filesystem.md)
 
@@ -191,16 +142,20 @@ lurek.filesystem.load(path: string) -> function -- Loads a Lua chunk from GameFS
 -- ... 26 more module functions
 ```
 
-## Module Functions
+[⬆ back to top](#table-of-contents)
 
-### `lurek.filesystem.append(path: string, data: string)`
+## ⚙️ Module Functions
+
+### lurek.filesystem.append
+
+`lurek.filesystem.append(path: string, data: string)`
 
 Appends UTF-8 text to a GameFS file.
 
 **Parameters**
 
-- `path` (`string`, required) - GameFS path to append to.
-- `data` (`string`, required) - Text to append.
+- `path` (`string`, required): GameFS path to append to.
+- `data` (`string`, required): Text to append.
 
 #### Example
 
@@ -217,14 +172,16 @@ do
 end
 ```
 
-### `lurek.filesystem.copy(src: string, dst: string)`
+### lurek.filesystem.copy
+
+`lurek.filesystem.copy(src: string, dst: string)`
 
 Copies one GameFS file to another path.
 
 **Parameters**
 
 - `src` (`string`, required)
-- `dst` (`string`, required) - Destination path.
+- `dst` (`string`, required): Destination path.
 
 #### Example
 
@@ -239,13 +196,15 @@ do
 end
 ```
 
-### `lurek.filesystem.createDirectory(path: string)`
+### lurek.filesystem.createDirectory
+
+`lurek.filesystem.createDirectory(path: string)`
 
 Creates a GameFS directory and any missing parents.
 
 **Parameters**
 
-- `path` (`string`, required) - Directory path to create.
+- `path` (`string`, required): Directory path to create.
 
 #### Example
 
@@ -261,13 +220,15 @@ do
 end
 ```
 
-### `lurek.filesystem.createTempFile([prefix]: string) -> string`
+### lurek.filesystem.createTempFile
+
+`lurek.filesystem.createTempFile([prefix]: string) -> string`
 
 Creates a temporary file through GameFS.
 
 **Parameters**
 
-- `prefix` (`string`, optional) - Optional filename prefix, defaulting to `tmp`.
+- `prefix` (`string`, optional): Optional filename prefix, defaulting to `tmp`.
 
 **Returns**: `string` - Created temporary file path.
 
@@ -287,13 +248,15 @@ do
 end
 ```
 
-### `lurek.filesystem.exists(path: string) -> boolean`
+### lurek.filesystem.exists
+
+`lurek.filesystem.exists(path: string) -> boolean`
 
 Returns whether a path exists in GameFS.
 
 **Parameters**
 
-- `path` (`string`, required) - GameFS path to check.
+- `path` (`string`, required): GameFS path to check.
 
 **Returns**: `boolean` - True when the path exists.
 
@@ -313,13 +276,15 @@ do
 end
 ```
 
-### `lurek.filesystem.getDirectoryItems(path: string) -> string[]`
+### lurek.filesystem.getDirectoryItems
+
+`lurek.filesystem.getDirectoryItems(path: string) -> string[]`
 
 Lists immediate entries in a GameFS directory.
 
 **Parameters**
 
-- `path` (`string`, required) - Directory path to list.
+- `path` (`string`, required): Directory path to list.
 
 **Returns**: `string[]` - Entry names.
 
@@ -341,7 +306,9 @@ do
 end
 ```
 
-### `lurek.filesystem.getIdentity() -> string`
+### lurek.filesystem.getIdentity
+
+`lurek.filesystem.getIdentity() -> string`
 
 Returns the current filesystem identity string.
 
@@ -360,13 +327,15 @@ do
 end
 ```
 
-### `lurek.filesystem.getInfo(path: string) -> table`
+### lurek.filesystem.getInfo
+
+`lurek.filesystem.getInfo(path: string) -> table`
 
 Returns file metadata for a GameFS path when available.
 
 **Parameters**
 
-- `path` (`string`, required) - GameFS path to inspect.
+- `path` (`string`, required): GameFS path to inspect.
 
 **Returns**: `table` - Metadata table with type, size, modtime, and readonly fields, or nil on error.
 
@@ -388,7 +357,9 @@ do
 end
 ```
 
-### `lurek.filesystem.getSaveDirectory() -> string`
+### lurek.filesystem.getSaveDirectory
+
+`lurek.filesystem.getSaveDirectory() -> string`
 
 Returns the save directory path used by GameFS.
 
@@ -408,7 +379,9 @@ do
 end
 ```
 
-### `lurek.filesystem.getSource() -> string`
+### lurek.filesystem.getSource
+
+`lurek.filesystem.getSource() -> string`
 
 Returns the GameFS source root string.
 
@@ -428,7 +401,9 @@ do
 end
 ```
 
-### `lurek.filesystem.getUserDirectory() -> string`
+### lurek.filesystem.getUserDirectory
+
+`lurek.filesystem.getUserDirectory() -> string`
 
 Returns the current user's directory path.
 
@@ -448,7 +423,9 @@ do
 end
 ```
 
-### `lurek.filesystem.getWorkingDirectory() -> string`
+### lurek.filesystem.getWorkingDirectory
+
+`lurek.filesystem.getWorkingDirectory() -> string`
 
 Returns the process working directory.
 
@@ -467,13 +444,15 @@ do
 end
 ```
 
-### `lurek.filesystem.glob(pattern: string) -> string[]`
+### lurek.filesystem.glob
+
+`lurek.filesystem.glob(pattern: string) -> string[]`
 
 Returns GameFS paths matching a glob pattern.
 
 **Parameters**
 
-- `pattern` (`string`, required) - Glob pattern.
+- `pattern` (`string`, required): Glob pattern.
 
 **Returns**: `string[]` - Matching path strings.
 
@@ -494,13 +473,15 @@ do
 end
 ```
 
-### `lurek.filesystem.isDirectory(path: string) -> boolean`
+### lurek.filesystem.isDirectory
+
+`lurek.filesystem.isDirectory(path: string) -> boolean`
 
 Returns whether a GameFS path is a directory.
 
 **Parameters**
 
-- `path` (`string`, required) - GameFS path to check.
+- `path` (`string`, required): GameFS path to check.
 
 **Returns**: `boolean` - True when the path is a directory.
 
@@ -519,13 +500,15 @@ do
 end
 ```
 
-### `lurek.filesystem.isFile(path: string) -> boolean`
+### lurek.filesystem.isFile
+
+`lurek.filesystem.isFile(path: string) -> boolean`
 
 Returns whether a GameFS path is a regular file.
 
 **Parameters**
 
-- `path` (`string`, required) - GameFS path to check.
+- `path` (`string`, required): GameFS path to check.
 
 **Returns**: `boolean` - True when the path is a file.
 
@@ -548,13 +531,15 @@ do
 end
 ```
 
-### `lurek.filesystem.lines(path: string) -> function`
+### lurek.filesystem.lines
+
+`lurek.filesystem.lines(path: string) -> function`
 
 Creates an iterator function over lines in a text file.
 
 **Parameters**
 
-- `path` (`string`, required) - GameFS path to read.
+- `path` (`string`, required): GameFS path to read.
 
 **Returns**: `function` - Iterator returning the next line string or nil at EOF.
 
@@ -577,13 +562,15 @@ do
 end
 ```
 
-### `lurek.filesystem.listRecursive(path: string) -> string[]`
+### lurek.filesystem.listRecursive
+
+`lurek.filesystem.listRecursive(path: string) -> string[]`
 
 Lists all paths under a GameFS directory recursively.
 
 **Parameters**
 
-- `path` (`string`, required) - Root directory path.
+- `path` (`string`, required): Root directory path.
 
 **Returns**: `string[]` - Path strings.
 
@@ -604,13 +591,15 @@ do
 end
 ```
 
-### `lurek.filesystem.load(path: string) -> function`
+### lurek.filesystem.load
+
+`lurek.filesystem.load(path: string) -> function`
 
 Loads a Lua chunk from GameFS and returns it as a Lua function.
 
 **Parameters**
 
-- `path` (`string`, required) - GameFS path to a Lua script chunk.
+- `path` (`string`, required): GameFS path to a Lua script chunk.
 
 **Returns**: `function` - Compiled Lua chunk function.
 
@@ -631,13 +620,15 @@ do
 end
 ```
 
-### `lurek.filesystem.mkdir(path: string)`
+### lurek.filesystem.mkdir
+
+`lurek.filesystem.mkdir(path: string)`
 
 Creates a directory under the GameFS base directory.
 
 **Parameters**
 
-- `path` (`string`, required) - Relative directory path to create.
+- `path` (`string`, required): Relative directory path to create.
 
 #### Example
 
@@ -654,12 +645,14 @@ do
 end
 ```
 
-### `lurek.filesystem.mount(src: string, mp: string) -> boolean`
+### lurek.filesystem.mount
+
+`lurek.filesystem.mount(src: string, mp: string) -> boolean`
 
 **Parameters**
 
 - `src` (`string`, required)
-- `mp` (`string`, required) - Virtual mount point.
+- `mp` (`string`, required): Virtual mount point.
 
 **Returns**: `boolean` - True when the mount succeeds.
 
@@ -680,14 +673,16 @@ do
 end
 ```
 
-### `lurek.filesystem.mountZip(archive_path: string, prefix: string) -> LZipMount`
+### lurek.filesystem.mountZip
+
+`lurek.filesystem.mountZip(archive_path: string, prefix: string) -> LZipMount`
 
 Opens a ZIP archive and exposes it through a virtual prefix.
 
 **Parameters**
 
-- `archive_path` (`string`, required) - Archive path on disk.
-- `prefix` (`string`, required) - Virtual path prefix for archive contents.
+- `archive_path` (`string`, required): Archive path on disk.
+- `prefix` (`string`, required): Virtual path prefix for archive contents.
 
 **Returns**: `LZipMount` - New ZIP mount handle.
 
@@ -712,14 +707,16 @@ do
 end
 ```
 
-### `lurek.filesystem.move(src: string, dst: string)`
+### lurek.filesystem.move
+
+`lurek.filesystem.move(src: string, dst: string)`
 
 Moves or renames one GameFS file to another path.
 
 **Parameters**
 
 - `src` (`string`, required)
-- `dst` (`string`, required) - Destination path.
+- `dst` (`string`, required): Destination path.
 
 #### Example
 
@@ -736,13 +733,15 @@ do
 end
 ```
 
-### `lurek.filesystem.newFileData(path: string) -> LFileData`
+### lurek.filesystem.newFileData
+
+`lurek.filesystem.newFileData(path: string) -> LFileData`
 
 Loads a file into an immutable file data handle.
 
 **Parameters**
 
-- `path` (`string`, required) - GameFS path to load.
+- `path` (`string`, required): GameFS path to load.
 
 **Returns**: `LFileData` - New file data handle containing path and bytes.
 
@@ -763,14 +762,16 @@ do
 end
 ```
 
-### `lurek.filesystem.openFile(path: string, mode: string) -> LFileHandle`
+### lurek.filesystem.openFile
+
+`lurek.filesystem.openFile(path: string, mode: string) -> LFileHandle`
 
 Opens a GameFS file handle in a requested mode.
 
 **Parameters**
 
-- `path` (`string`, required) - GameFS path to open.
-- `mode` (`string`, required) - File mode understood by GameFS.
+- `path` (`string`, required): GameFS path to open.
+- `mode` (`string`, required): File mode understood by GameFS.
 
 **Returns**: `LFileHandle` - Open file handle.
 
@@ -791,13 +792,15 @@ do
 end
 ```
 
-### `lurek.filesystem.pollAsync(handle_id: integer) -> string`
+### lurek.filesystem.pollAsync
+
+`lurek.filesystem.pollAsync(handle_id: integer) -> string`
 
 Polls an asynchronous file load request.
 
 **Parameters**
 
-- `handle_id` (`integer`, required) - Async load handle id.
+- `handle_id` (`integer`, required): Async load handle id.
 
 **Returns**: `string` - Completed bytes/result, pending marker, or nil depending on async state.
 
@@ -826,13 +829,15 @@ do
 end
 ```
 
-### `lurek.filesystem.pollAsyncWrite(handle_id: integer) -> string`
+### lurek.filesystem.pollAsyncWrite
+
+`lurek.filesystem.pollAsyncWrite(handle_id: integer) -> string`
 
 Polls an asynchronous file write request.
 
 **Parameters**
 
-- `handle_id` (`integer`, required) - Async write handle id.
+- `handle_id` (`integer`, required): Async write handle id.
 
 **Returns**: `string` - Completed status, pending marker, or nil depending on async state.
 
@@ -863,7 +868,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.filesystem.mount
 -- Mounts an external source path at a GameFS mount point
 do
@@ -876,7 +880,6 @@ do
     -- Now lurek.filesystem.read("mods/extra/config.toml") reads from ../mods/extra/
   end
 end
-
 --@api-stub: lurek.filesystem.unmount
 -- Removes a GameFS mount point
 do
@@ -887,11 +890,15 @@ do
     -- Files under mods/extra/ are no longer accessible through GameFS.
   end
 end
-
 --@api-stub: lurek.filesystem.load
+-- Loads a Lua chunk from GameFS and returns it as a Lua function
+do
+  -- load() compiles a Lua script from GameFS and returns it as a callable function.
 ```
 
-### `lurek.filesystem.pollWatchers() -> string[]`
+### lurek.filesystem.pollWatchers
+
+`lurek.filesystem.pollWatchers() -> string[]`
 
 Polls watched paths and returns paths that changed since the previous poll.
 
@@ -920,13 +927,15 @@ do
 end
 ```
 
-### `lurek.filesystem.read(path: string) -> string`
+### lurek.filesystem.read
+
+`lurek.filesystem.read(path: string) -> string`
 
 Reads a UTF-8 text file from GameFS.
 
 **Parameters**
 
-- `path` (`string`, required) - GameFS path to read.
+- `path` (`string`, required): GameFS path to read.
 
 **Returns**: `string` - File contents as text.
 
@@ -945,13 +954,15 @@ do
 end
 ```
 
-### `lurek.filesystem.readAsync(path: string) -> integer`
+### lurek.filesystem.readAsync
+
+`lurek.filesystem.readAsync(path: string) -> integer`
 
 Starts an asynchronous file load request.
 
 **Parameters**
 
-- `path` (`string`, required) - GameFS path to read asynchronously.
+- `path` (`string`, required): GameFS path to read asynchronously.
 
 **Returns**: `integer` - Async load handle id.
 
@@ -972,13 +983,15 @@ do
 end
 ```
 
-### `lurek.filesystem.readBytes(path: string) -> string`
+### lurek.filesystem.readBytes
+
+`lurek.filesystem.readBytes(path: string) -> string`
 
 Reads a binary file from GameFS and returns the bytes as a Lua string.
 
 **Parameters**
 
-- `path` (`string`, required) - GameFS path to read.
+- `path` (`string`, required): GameFS path to read.
 
 **Returns**: `string` - Raw file bytes.
 
@@ -998,13 +1011,15 @@ do
 end
 ```
 
-### `lurek.filesystem.readJson(path: string) -> string`
+### lurek.filesystem.readJson
+
+`lurek.filesystem.readJson(path: string) -> string`
 
 Reads a JSON document as text from GameFS.
 
 **Parameters**
 
-- `path` (`string`, required) - GameFS path to read.
+- `path` (`string`, required): GameFS path to read.
 
 **Returns**: `string` - JSON text.
 
@@ -1022,14 +1037,16 @@ do
 end
 ```
 
-### `lurek.filesystem.readOrWriteJson(path: string, default_json: string) -> string`
+### lurek.filesystem.readOrWriteJson
+
+`lurek.filesystem.readOrWriteJson(path: string, default_json: string) -> string`
 
 Reads a JSON file or writes and returns default JSON when the file is absent.
 
 **Parameters**
 
-- `path` (`string`, required) - GameFS path to read.
-- `default_json` (`string`, required) - JSON text written when the path does not exist.
+- `path` (`string`, required): GameFS path to read.
+- `default_json` (`string`, required): JSON text written when the path does not exist.
 
 **Returns**: `string` - Existing or newly written JSON text.
 
@@ -1052,13 +1069,15 @@ do
 end
 ```
 
-### `lurek.filesystem.remove(path: string)`
+### lurek.filesystem.remove
+
+`lurek.filesystem.remove(path: string)`
 
 Removes a GameFS file or supported path.
 
 **Parameters**
 
-- `path` (`string`, required) - Path to remove.
+- `path` (`string`, required): Path to remove.
 
 #### Example
 
@@ -1075,13 +1094,15 @@ do
 end
 ```
 
-### `lurek.filesystem.removeDir(path: string)`
+### lurek.filesystem.removeDir
+
+`lurek.filesystem.removeDir(path: string)`
 
 Removes a GameFS directory by its path.
 
 **Parameters**
 
-- `path` (`string`, required) - Directory path to remove.
+- `path` (`string`, required): Directory path to remove.
 
 #### Example
 
@@ -1098,13 +1119,15 @@ do
 end
 ```
 
-### `lurek.filesystem.setIdentity(name: string)`
+### lurek.filesystem.setIdentity
+
+`lurek.filesystem.setIdentity(name: string)`
 
 Sets the filesystem identity string used by save paths.
 
 **Parameters**
 
-- `name` (`string`, required) - New filesystem identity.
+- `name` (`string`, required): New filesystem identity.
 
 #### Example
 
@@ -1120,13 +1143,15 @@ do
 end
 ```
 
-### `lurek.filesystem.stat(path: string) -> table`
+### lurek.filesystem.stat
+
+`lurek.filesystem.stat(path: string) -> table`
 
 Returns size and file/directory flags for a GameFS path.
 
 **Parameters**
 
-- `path` (`string`, required) - Path to inspect.
+- `path` (`string`, required): Path to inspect.
 
 **Returns**: `table` - Table with `size`, `isFile`, and `isDir` fields.
 
@@ -1145,13 +1170,15 @@ do
 end
 ```
 
-### `lurek.filesystem.toAbsolutePath(path: string) -> string`
+### lurek.filesystem.toAbsolutePath
+
+`lurek.filesystem.toAbsolutePath(path: string) -> string`
 
 Resolves a GameFS-relative path against the filesystem base directory.
 
 **Parameters**
 
-- `path` (`string`, required) - Relative path to resolve.
+- `path` (`string`, required): Relative path to resolve.
 
 **Returns**: `string` - Absolute filesystem path string.
 
@@ -1170,13 +1197,15 @@ do
 end
 ```
 
-### `lurek.filesystem.unmount(mp: string) -> boolean`
+### lurek.filesystem.unmount
+
+`lurek.filesystem.unmount(mp: string) -> boolean`
 
 Removes a GameFS mount point by its name.
 
 **Parameters**
 
-- `mp` (`string`, required) - Virtual mount point to remove.
+- `mp` (`string`, required): Virtual mount point to remove.
 
 **Returns**: `boolean` - True when a mount was removed.
 
@@ -1195,13 +1224,15 @@ do
 end
 ```
 
-### `lurek.filesystem.unwatchPath(path: string)`
+### lurek.filesystem.unwatchPath
+
+`lurek.filesystem.unwatchPath(path: string)`
 
 Removes a path from the module-local file watcher.
 
 **Parameters**
 
-- `path` (`string`, required) - Watched path to remove.
+- `path` (`string`, required): Watched path to remove.
 
 #### Example
 
@@ -1217,13 +1248,15 @@ do
 end
 ```
 
-### `lurek.filesystem.watchPath(path: string)`
+### lurek.filesystem.watchPath
+
+`lurek.filesystem.watchPath(path: string)`
 
 Adds a path to the module-local file watcher.
 
 **Parameters**
 
-- `path` (`string`, required) - Path to watch for changes.
+- `path` (`string`, required): Path to watch for changes.
 
 #### Example
 
@@ -1240,14 +1273,16 @@ do
 end
 ```
 
-### `lurek.filesystem.write(path: string, data: string)`
+### lurek.filesystem.write
+
+`lurek.filesystem.write(path: string, data: string)`
 
 Writes a UTF-8 text file through GameFS.
 
 **Parameters**
 
-- `path` (`string`, required) - GameFS path to write.
-- `data` (`string`, required) - Text contents.
+- `path` (`string`, required): GameFS path to write.
+- `data` (`string`, required): Text contents.
 
 #### Example
 
@@ -1260,14 +1295,16 @@ do
 end
 ```
 
-### `lurek.filesystem.writeAsync(path: string, data: string) -> integer`
+### lurek.filesystem.writeAsync
+
+`lurek.filesystem.writeAsync(path: string, data: string) -> integer`
 
 Starts an asynchronous file write request.
 
 **Parameters**
 
-- `path` (`string`, required) - GameFS path to write.
-- `data` (`string`, required) - Raw bytes stored in a Lua string.
+- `path` (`string`, required): GameFS path to write.
+- `data` (`string`, required): Raw bytes stored in a Lua string.
 
 **Returns**: `integer` - Async write handle id.
 
@@ -1289,14 +1326,16 @@ do
 end
 ```
 
-### `lurek.filesystem.writeBytes(path: string, data: string)`
+### lurek.filesystem.writeBytes
+
+`lurek.filesystem.writeBytes(path: string, data: string)`
 
 Writes binary data through GameFS.
 
 **Parameters**
 
-- `path` (`string`, required) - GameFS path to write.
-- `data` (`string`, required) - Raw bytes stored in a Lua string.
+- `path` (`string`, required): GameFS path to write.
+- `data` (`string`, required): Raw bytes stored in a Lua string.
 
 #### Example
 
@@ -1312,14 +1351,16 @@ do
 end
 ```
 
-### `lurek.filesystem.writeJson(path: string, json: string)`
+### lurek.filesystem.writeJson
+
+`lurek.filesystem.writeJson(path: string, json: string)`
 
 Writes JSON text through the GameFS layer.
 
 **Parameters**
 
-- `path` (`string`, required) - GameFS path to write.
-- `json` (`string`, required) - JSON text to store.
+- `path` (`string`, required): GameFS path to write.
+- `json` (`string`, required): JSON text to store.
 
 #### Example
 
@@ -1335,11 +1376,19 @@ end
 ```
 
 
-## Types and Methods
+[⬆ back to top](#table-of-contents)
 
-### `LFileData`
+## 🔷 Module Types
 
+### LFileData
 
+**Lua API Definition**
+
+```lua
+--- Lua-side handle for immutable file bytes and their source path.
+---@class LFileData
+LFileData = {}
+```
 
 #### Example
 
@@ -1358,109 +1407,17 @@ do
 end
 ```
 
-### `LFileData:getFilename() -> string`
-
-Returns the path associated with this file data object.
-
-**Returns**: `string` - Original file path.
-
-#### Example
-
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
-
-```lua
-do
-  -- getFilename() returns the path originally used to load this file data.
-  -- Handy for logging, error messages, or displaying asset names in debug UIs.
-  pcall(function()
-    local fd = lurek.filesystem.newFileData("assets/levels/forest.json")
-    lurek.log.info("loaded " .. fd:getFilename(), "scene")
-  end)
-end
-```
-
-### `LFileData:getSize() -> integer`
-
-Returns the byte length of this file data.
-
-**Returns**: `integer` - File data size in bytes.
-
-#### Example
-
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
-
-```lua
-do
-  local fd = lurek.filesystem.newFileData("content/examples/filesystem.lua")
-  local sz = fd:getSize()
-  lurek.log.debug("FileData size: " .. sz .. " bytes", "fs") -- 11
-end
-```
-
-### `LFileData:getString() -> string`
-
-Returns file data bytes as a Lua string without UTF-8 validation.
-
-**Returns**: `string` - Lua string containing the raw file bytes.
-
-#### Example
-
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
-
-```lua
-do
-  -- getString() gives you the raw bytes as a Lua string. Unlike read(), there's
-  -- no UTF-8 validation — you get the exact bytes. Use this for binary inspection
-  -- or when passing data to APIs that expect raw byte strings.
-  pcall(function()
-    local fd = lurek.filesystem.newFileData("config/options.toml")
-    local body = fd:getString()
-    lurek.log.info("first byte: " .. string.byte(body, 1), "config")
-  end)
-end
-```
-
-### `LFileData:type() -> string`
-
-Returns the Lua-visible type name for this file data handle.
-
-**Returns**: `string` - The string `LFileData`.
-
-#### Example
-
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
-
-```lua
-do
-  local obj = lurek.filesystem.newFileData('content/examples/filesystem.lua')
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LFileData"
-end
-```
-
-### `LFileData:typeOf(name: string) -> boolean`
-
-Returns whether this file data handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to compare against `LFileData` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-#### Example
-
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
-
-```lua
-do
-  local obj = lurek.filesystem.newFileData('content/examples/filesystem.lua')
-  lurek.log.debug("typeOf LFileData: " .. tostring(obj:typeOf("LFileData")), "example") -- true
-end
-```
-
-### `LFileHandle`
+### LFileHandle
 
 Lua-side handle for a mutable file stream opened through GameFS.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side handle for a mutable file stream opened through GameFS.
+---@class LFileHandle
+LFileHandle = {}
+```
 
 #### Example
 
@@ -1479,272 +1436,17 @@ do
 end
 ```
 
-### `LFileHandle:close()`
-
-Closes this file handle on this object.
-
-#### Example
-
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
-
-```lua
-do
-  -- close() releases the file handle and flushes remaining data. Always call this
-  -- when done — leaving handles open can prevent other operations on the same file.
-  local fh = lurek.filesystem.openFile("save/slot1.dat", "w")
-  fh:write("hp=100;mana=50")
-  fh:close()
-end
-```
-
-### `LFileHandle:flush()`
-
-Flushes pending writes on this file handle.
-
-#### Example
-
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
-
-```lua
-do
-  -- flush() forces buffered data to disk immediately. Use it after critical writes
-  -- (checkpoints, autosaves) to ensure data survives a crash before you close.
-  local fh = lurek.filesystem.openFile("save/journal.log", "a")
-  fh:write("checkpoint=forest_02\n")
-  fh:flush()  -- Data is on disk now, even if close() is delayed
-  fh:close()
-end
-```
-
-### `LFileHandle:getMode() -> string`
-
-Returns the mode used to open this file handle.
-
-**Returns**: `string` - File mode string.
-
-#### Example
-
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
-
-```lua
-do
-  -- getMode() returns the mode string ("r", "w", or "a") used when opening.
-  -- Useful for assertions or debug logging when handles are passed around.
-  local fh = lurek.filesystem.openFile("save/slot1.dat", "r")
-  lurek.log.debug("opened slot1 in mode " .. fh:getMode(), "save")
-  fh:close()
-end
-```
-
-### `LFileHandle:getSize() -> integer`
-
-Returns the size of the open file in bytes.
-
-**Returns**: `integer` - File size in bytes.
-
-#### Example
-
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
-
-```lua
-do
-  -- getSize() returns the total file size regardless of cursor position.
-  -- Combine with tell() to calculate remaining bytes or show progress.
-  pcall(function()
-    local fh = lurek.filesystem.openFile("assets/levels/forest.json", "r")
-    lurek.log.info("level file size: " .. fh:getSize(), "scene")
-    fh:close()
-  end)
-end
-```
-
-### `LFileHandle:isEOF() -> boolean`
-
-Returns whether the file cursor is at end of file.
-
-**Returns**: `boolean` - True when no more bytes remain.
-
-#### Example
-
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
-
-```lua
-do
-  -- isEOF() returns true when no more bytes remain. Use it as a loop condition
-  -- for chunk-based reading when you don't know the file size upfront.
-  pcall(function()
-    local fh = lurek.filesystem.openFile("save/telemetry.log", "r")
-    while not fh:isEOF() do
-      local chunk = fh:read(256)  -- Read in 256-byte chunks
-      if not chunk or #chunk == 0 then break end
-    end
-    fh:close()
-  end)
-end
-```
-
-### `LFileHandle:read([count]: integer) -> string`
-
-Reads up to an optional byte count and returns text using lossless UTF-8 replacement.
-
-**Parameters**
-
-- `count` (`integer`, optional) - Optional maximum number of bytes to read.
-
-**Returns**: `string` - String decoded from the bytes that were read.
-
-#### Example
-
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
-
-```lua
-do
-  -- read() with no argument reads the entire file from the current cursor position.
-  -- With a count argument, it reads at most that many bytes — useful for parsing
-  -- binary headers or reading files in chunks to avoid large allocations.
-  local fh = lurek.filesystem.openFile("save/slot1.dat", "r")
-  local body = fh:read()  -- Read everything
-  fh:close()
-  lurek.log.info("slot1 size: " .. #body .. " bytes", "save")
-end
-```
-
-### `LFileHandle:readLine() -> string`
-
-Reads the next line from this file handle.
-
-**Returns**: `string` - Line string when available, or nil at EOF.
-
-#### Example
-
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
-
-```lua
-do
-  -- readLine() returns the next line (without the newline character) or nil at EOF.
-  -- Use it for streaming line-by-line processing of large files through a handle.
-  pcall(function()
-    local fh = lurek.filesystem.openFile("save/telemetry.log", "r")
-    local first = fh:readLine()
-    fh:close()
-    lurek.log.info("first telemetry line: " .. (first or "<empty>"), "fs")
-  end)
-end
-```
-
-### `LFileHandle:seek(pos: integer)`
-
-Moves the file cursor to an absolute byte position.
-
-**Parameters**
-
-- `pos` (`integer`, required) - Absolute byte offset.
-
-#### Example
-
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
-
-```lua
-do
-  -- seek() repositions the read/write cursor to an absolute byte offset.
-  -- Use it for random access: reading specific offsets in structured binary files,
-  -- or skipping headers to reach payload data directly.
-  local fh = lurek.filesystem.openFile("save/slot1.dat", "r")
-  fh:seek(16)               -- Jump past a 16-byte header
-  local chunk = fh:read(8)  -- Read 8 bytes of payload
-  fh:close()
-  lurek.log.debug("bytes 16..23 = " .. chunk, "save")
-end
-```
-
-### `LFileHandle:tell() -> integer`
-
-Returns the current file cursor position.
-
-**Returns**: `integer` - Current absolute byte offset.
-
-#### Example
-
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
-
-```lua
-do
-  -- tell() reports the current byte offset. After reading N bytes, tell() returns N.
-  -- Use it to calculate how far into a file you've parsed, or to save/restore
-  -- position for multi-pass parsing.
-  pcall(function()
-    local fh = lurek.filesystem.openFile("assets/levels/forest.json", "r")
-    fh:read(64)
-    lurek.log.info("cursor at byte " .. fh:tell(), "scene")
-    fh:close()
-  end)
-end
-```
-
-### `LFileHandle:type() -> string`
-
-Returns the Lua-visible type name for this file handle.
-
-**Returns**: `string` - The string `LFileHandle`.
-
-#### Example
-
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
-
-```lua
-do
-  local obj = lurek.filesystem.openFile('save/score.txt', 'r')
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LFileHandle"
-end
-```
-
-### `LFileHandle:typeOf(name: string) -> boolean`
-
-Returns whether this file handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to compare against `LFileHandle` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-#### Example
-
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
-
-```lua
-do
-  local obj = lurek.filesystem.openFile('save/score.txt', 'r')
-  lurek.log.debug("typeOf LFileHandle: " .. tostring(obj:typeOf("LFileHandle")), "example") -- true
-end
-```
-
-### `LFileHandle:write(data: string)`
-
-Writes a string to this file handle.
-
-**Parameters**
-
-- `data` (`string`, required) - Text bytes to write.
-
-#### Example
-
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
-
-```lua
-do
-  -- write() appends text at the current cursor position. Returns nil.
-  -- Use openFile with "w" mode to start fresh, or "a" to append.
-  local fh = lurek.filesystem.openFile("save/score.txt", "w")
-  local n = fh:write("12450")
-  fh:close()
-  lurek.log.info("wrote " .. n .. " bytes to score.txt", "save")
-end
-```
-
-### `LZipMount`
+### LZipMount
 
 Lua-side handle for a mounted ZIP archive view.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side handle for a mounted ZIP archive view.
+---@class LZipMount
+LZipMount = {}
+```
 
 #### Example
 
@@ -1767,15 +1469,565 @@ do
 end
 ```
 
-### `LZipMount:contains(virtual_path: string) -> boolean`
+
+[⬆ back to top](#table-of-contents)
+
+## 🔹 Module Methods
+
+### LFileData:getFilename
+
+`LFileData:getFilename() -> string`
+
+Returns the path associated with this file data object.
+
+**Returns**: `string` - Original file path.
+
+**Lua API Stub**
+
+```lua
+--- Returns the path associated with this file data object.
+---@return string Original file path.
+function LFileData:getFilename() end
+```
+
+#### Example
+
+Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+
+```lua
+do
+  -- getFilename() returns the path originally used to load this file data.
+  -- Handy for logging, error messages, or displaying asset names in debug UIs.
+  pcall(function()
+    local fd = lurek.filesystem.newFileData("assets/levels/forest.json")
+    lurek.log.info("loaded " .. fd:getFilename(), "scene")
+  end)
+end
+```
+
+### LFileData:getSize
+
+`LFileData:getSize() -> integer`
+
+Returns the byte length of this file data.
+
+**Returns**: `integer` - File data size in bytes.
+
+**Lua API Stub**
+
+```lua
+--- Returns the byte length of this file data.
+---@return number File data size in bytes.
+function LFileData:getSize() end
+```
+
+#### Example
+
+Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+
+```lua
+do
+  local fd = lurek.filesystem.newFileData("content/examples/filesystem.lua")
+  local sz = fd:getSize()
+  lurek.log.debug("FileData size: " .. sz .. " bytes", "fs") -- 11
+end
+```
+
+### LFileData:getString
+
+`LFileData:getString() -> string`
+
+Returns file data bytes as a Lua string without UTF-8 validation.
+
+**Returns**: `string` - Lua string containing the raw file bytes.
+
+**Lua API Stub**
+
+```lua
+--- Returns file data bytes as a Lua string without UTF-8 validation.
+---@return string Lua string containing the raw file bytes.
+function LFileData:getString() end
+```
+
+#### Example
+
+Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+
+```lua
+do
+  -- getString() gives you the raw bytes as a Lua string. Unlike read(), there's
+  -- no UTF-8 validation — you get the exact bytes. Use this for binary inspection
+  -- or when passing data to APIs that expect raw byte strings.
+  pcall(function()
+    local fd = lurek.filesystem.newFileData("config/options.toml")
+    local body = fd:getString()
+    lurek.log.info("first byte: " .. string.byte(body, 1), "config")
+  end)
+end
+```
+
+### LFileData:type
+
+`LFileData:type() -> string`
+
+Returns the Lua-visible type name for this file data handle.
+
+**Returns**: `string` - The string `LFileData`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this file data handle.
+---@return string The string `LFileData`.
+function LFileData:type() end
+```
+
+#### Example
+
+Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+
+```lua
+do
+  local obj = lurek.filesystem.newFileData('content/examples/filesystem.lua')
+  lurek.log.debug("type: " .. obj:type(), "example") -- "LFileData"
+end
+```
+
+### LFileData:typeOf
+
+`LFileData:typeOf(name: string) -> boolean`
+
+Returns whether this file data handle matches a supported type name.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to compare against `LFileData` and `Object`.
+
+**Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this file data handle matches a supported type name.
+---@param name string Type name to compare against `LFileData` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LFileData:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+
+```lua
+do
+  local obj = lurek.filesystem.newFileData('content/examples/filesystem.lua')
+  lurek.log.debug("typeOf LFileData: " .. tostring(obj:typeOf("LFileData")), "example") -- true
+end
+```
+
+### LFileHandle:close
+
+`LFileHandle:close()`
+
+Closes this file handle on this object.
+
+**Lua API Stub**
+
+```lua
+--- Closes this file handle on this object.
+function LFileHandle:close() end
+```
+
+#### Example
+
+Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+
+```lua
+do
+  -- close() releases the file handle and flushes remaining data. Always call this
+  -- when done — leaving handles open can prevent other operations on the same file.
+  local fh = lurek.filesystem.openFile("save/slot1.dat", "w")
+  fh:write("hp=100;mana=50")
+  fh:close()
+end
+```
+
+### LFileHandle:flush
+
+`LFileHandle:flush()`
+
+Flushes pending writes on this file handle.
+
+**Lua API Stub**
+
+```lua
+--- Flushes pending writes on this file handle.
+function LFileHandle:flush() end
+```
+
+#### Example
+
+Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+
+```lua
+do
+  -- flush() forces buffered data to disk immediately. Use it after critical writes
+  -- (checkpoints, autosaves) to ensure data survives a crash before you close.
+  local fh = lurek.filesystem.openFile("save/journal.log", "a")
+  fh:write("checkpoint=forest_02\n")
+  fh:flush()  -- Data is on disk now, even if close() is delayed
+  fh:close()
+end
+```
+
+### LFileHandle:getMode
+
+`LFileHandle:getMode() -> string`
+
+Returns the mode used to open this file handle.
+
+**Returns**: `string` - File mode string.
+
+**Lua API Stub**
+
+```lua
+--- Returns the mode used to open this file handle.
+---@return string File mode string.
+function LFileHandle:getMode() end
+```
+
+#### Example
+
+Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+
+```lua
+do
+  -- getMode() returns the mode string ("r", "w", or "a") used when opening.
+  -- Useful for assertions or debug logging when handles are passed around.
+  local fh = lurek.filesystem.openFile("save/slot1.dat", "r")
+  lurek.log.debug("opened slot1 in mode " .. fh:getMode(), "save")
+  fh:close()
+end
+```
+
+### LFileHandle:getSize
+
+`LFileHandle:getSize() -> integer`
+
+Returns the size of the open file in bytes.
+
+**Returns**: `integer` - File size in bytes.
+
+**Lua API Stub**
+
+```lua
+--- Returns the size of the open file in bytes.
+---@return number File size in bytes.
+function LFileHandle:getSize() end
+```
+
+#### Example
+
+Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+
+```lua
+do
+  -- getSize() returns the total file size regardless of cursor position.
+  -- Combine with tell() to calculate remaining bytes or show progress.
+  pcall(function()
+    local fh = lurek.filesystem.openFile("assets/levels/forest.json", "r")
+    lurek.log.info("level file size: " .. fh:getSize(), "scene")
+    fh:close()
+  end)
+end
+```
+
+### LFileHandle:isEOF
+
+`LFileHandle:isEOF() -> boolean`
+
+Returns whether the file cursor is at end of file.
+
+**Returns**: `boolean` - True when no more bytes remain.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether the file cursor is at end of file.
+---@return boolean True when no more bytes remain.
+function LFileHandle:isEOF() end
+```
+
+#### Example
+
+Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+
+```lua
+do
+  -- isEOF() returns true when no more bytes remain. Use it as a loop condition
+  -- for chunk-based reading when you don't know the file size upfront.
+  pcall(function()
+    local fh = lurek.filesystem.openFile("save/telemetry.log", "r")
+    while not fh:isEOF() do
+      local chunk = fh:read(256)  -- Read in 256-byte chunks
+      if not chunk or #chunk == 0 then break end
+    end
+    fh:close()
+  end)
+end
+```
+
+### LFileHandle:read
+
+`LFileHandle:read([count]: integer) -> string`
+
+Reads up to an optional byte count and returns text using lossless UTF-8 replacement.
+
+**Parameters**
+
+- `count` (`integer`, optional): Optional maximum number of bytes to read.
+
+**Returns**: `string` - String decoded from the bytes that were read.
+
+**Lua API Stub**
+
+```lua
+--- Reads up to an optional byte count and returns text using lossless UTF-8 replacement.
+---@param count? number Optional maximum number of bytes to read.
+---@return string String decoded from the bytes that were read.
+function LFileHandle:read(count) end
+```
+
+#### Example
+
+Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+
+```lua
+do
+  -- read() with no argument reads the entire file from the current cursor position.
+  -- With a count argument, it reads at most that many bytes — useful for parsing
+  -- binary headers or reading files in chunks to avoid large allocations.
+  local fh = lurek.filesystem.openFile("save/slot1.dat", "r")
+  local body = fh:read()  -- Read everything
+  fh:close()
+  lurek.log.info("slot1 size: " .. #body .. " bytes", "save")
+end
+```
+
+### LFileHandle:readLine
+
+`LFileHandle:readLine() -> string`
+
+Reads the next line from this file handle.
+
+**Returns**: `string` - Line string when available, or nil at EOF.
+
+**Lua API Stub**
+
+```lua
+--- Reads the next line from this file handle.
+---@return string Line string when available, or nil at EOF.
+function LFileHandle:readLine() end
+```
+
+#### Example
+
+Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+
+```lua
+do
+  -- readLine() returns the next line (without the newline character) or nil at EOF.
+  -- Use it for streaming line-by-line processing of large files through a handle.
+  pcall(function()
+    local fh = lurek.filesystem.openFile("save/telemetry.log", "r")
+    local first = fh:readLine()
+    fh:close()
+    lurek.log.info("first telemetry line: " .. (first or "<empty>"), "fs")
+  end)
+end
+```
+
+### LFileHandle:seek
+
+`LFileHandle:seek(pos: integer)`
+
+Moves the file cursor to an absolute byte position.
+
+**Parameters**
+
+- `pos` (`integer`, required): Absolute byte offset.
+
+**Lua API Stub**
+
+```lua
+--- Moves the file cursor to an absolute byte position.
+---@param pos number Absolute byte offset.
+function LFileHandle:seek(pos) end
+```
+
+#### Example
+
+Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+
+```lua
+do
+  -- seek() repositions the read/write cursor to an absolute byte offset.
+  -- Use it for random access: reading specific offsets in structured binary files,
+  -- or skipping headers to reach payload data directly.
+  local fh = lurek.filesystem.openFile("save/slot1.dat", "r")
+  fh:seek(16)               -- Jump past a 16-byte header
+  local chunk = fh:read(8)  -- Read 8 bytes of payload
+  fh:close()
+  lurek.log.debug("bytes 16..23 = " .. chunk, "save")
+end
+```
+
+### LFileHandle:tell
+
+`LFileHandle:tell() -> integer`
+
+Returns the current file cursor position.
+
+**Returns**: `integer` - Current absolute byte offset.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current file cursor position.
+---@return number Current absolute byte offset.
+function LFileHandle:tell() end
+```
+
+#### Example
+
+Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+
+```lua
+do
+  -- tell() reports the current byte offset. After reading N bytes, tell() returns N.
+  -- Use it to calculate how far into a file you've parsed, or to save/restore
+  -- position for multi-pass parsing.
+  pcall(function()
+    local fh = lurek.filesystem.openFile("assets/levels/forest.json", "r")
+    fh:read(64)
+    lurek.log.info("cursor at byte " .. fh:tell(), "scene")
+    fh:close()
+  end)
+end
+```
+
+### LFileHandle:type
+
+`LFileHandle:type() -> string`
+
+Returns the Lua-visible type name for this file handle.
+
+**Returns**: `string` - The string `LFileHandle`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this file handle.
+---@return string The string `LFileHandle`.
+function LFileHandle:type() end
+```
+
+#### Example
+
+Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+
+```lua
+do
+  local obj = lurek.filesystem.openFile('save/score.txt', 'r')
+  lurek.log.debug("type: " .. obj:type(), "example") -- "LFileHandle"
+end
+```
+
+### LFileHandle:typeOf
+
+`LFileHandle:typeOf(name: string) -> boolean`
+
+Returns whether this file handle matches a supported type name.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to compare against `LFileHandle` and `Object`.
+
+**Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this file handle matches a supported type name.
+---@param name string Type name to compare against `LFileHandle` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LFileHandle:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+
+```lua
+do
+  local obj = lurek.filesystem.openFile('save/score.txt', 'r')
+  lurek.log.debug("typeOf LFileHandle: " .. tostring(obj:typeOf("LFileHandle")), "example") -- true
+end
+```
+
+### LFileHandle:write
+
+`LFileHandle:write(data: string)`
+
+Writes a string to this file handle.
+
+**Parameters**
+
+- `data` (`string`, required): Text bytes to write.
+
+**Lua API Stub**
+
+```lua
+--- Writes a string to this file handle.
+---@param data string Text bytes to write.
+function LFileHandle:write(data) end
+```
+
+#### Example
+
+Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+
+```lua
+do
+  -- write() appends text at the current cursor position. Returns nil.
+  -- Use openFile with "w" mode to start fresh, or "a" to append.
+  local fh = lurek.filesystem.openFile("save/score.txt", "w")
+  local n = fh:write("12450")
+  fh:close()
+  lurek.log.info("wrote " .. n .. " bytes to score.txt", "save")
+end
+```
+
+### LZipMount:contains
+
+`LZipMount:contains(virtual_path: string) -> boolean`
 
 Returns whether a virtual path exists in the ZIP mount.
 
 **Parameters**
 
-- `virtual_path` (`string`, required) - Path inside the mount prefix.
+- `virtual_path` (`string`, required): Path inside the mount prefix.
 
 **Returns**: `boolean` - True when the file exists in the archive.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether a virtual path exists in the ZIP mount.
+---@param virtual_path string Path inside the mount prefix.
+---@return boolean True when the file exists in the archive.
+function LZipMount:contains(virtual_path) end
+```
 
 #### Example
 
@@ -1794,11 +2046,21 @@ do
 end
 ```
 
-### `LZipMount:listFiles() -> string[]`
+### LZipMount:listFiles
+
+`LZipMount:listFiles() -> string[]`
 
 Returns every virtual file path in the ZIP mount.
 
 **Returns**: `string[]` - Mounted file paths.
+
+**Lua API Stub**
+
+```lua
+--- Returns every virtual file path in the ZIP mount.
+---@return string[] Mounted file paths.
+function LZipMount:listFiles() end
+```
 
 #### Example
 
@@ -1816,11 +2078,21 @@ do
 end
 ```
 
-### `LZipMount:prefix() -> string`
+### LZipMount:prefix
+
+`LZipMount:prefix() -> string`
 
 Returns the virtual prefix used by this ZIP mount.
 
 **Returns**: `string` - Mount prefix.
+
+**Lua API Stub**
+
+```lua
+--- Returns the virtual prefix used by this ZIP mount.
+---@return string Mount prefix.
+function LZipMount:prefix() end
+```
 
 #### Example
 
@@ -1837,15 +2109,26 @@ do
 end
 ```
 
-### `LZipMount:readFile(virtual_path: string) -> string`
+### LZipMount:readFile
+
+`LZipMount:readFile(virtual_path: string) -> string`
 
 Reads a file from the ZIP mount by virtual path.
 
 **Parameters**
 
-- `virtual_path` (`string`, required) - Path inside the mount prefix.
+- `virtual_path` (`string`, required): Path inside the mount prefix.
 
 **Returns**: `string` - Raw file bytes as a Lua string.
+
+**Lua API Stub**
+
+```lua
+--- Reads a file from the ZIP mount by virtual path.
+---@param virtual_path string Path inside the mount prefix.
+---@return string Raw file bytes as a Lua string.
+function LZipMount:readFile(virtual_path) end
+```
 
 #### Example
 
@@ -1863,11 +2146,21 @@ do
 end
 ```
 
-### `LZipMount:type() -> string`
+### LZipMount:type
+
+`LZipMount:type() -> string`
 
 Returns the Lua-visible type name for this ZIP mount handle.
 
 **Returns**: `string` - The string `LZipMount`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this ZIP mount handle.
+---@return string The string `LZipMount`.
+function LZipMount:type() end
+```
 
 #### Example
 
@@ -1885,15 +2178,26 @@ do
 end
 ```
 
-### `LZipMount:typeOf(name: string) -> boolean`
+### LZipMount:typeOf
+
+`LZipMount:typeOf(name: string) -> boolean`
 
 Returns whether this ZIP mount handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `LZipMount` and `Object`.
+- `name` (`string`, required): Type name to compare against `LZipMount` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this ZIP mount handle matches a supported type name.
+---@param name string Type name to compare against `LZipMount` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LZipMount:typeOf(name) end
+```
 
 #### Example
 
@@ -1912,21 +2216,27 @@ end
 ```
 
 
-## Examples
+[⬆ back to top](#table-of-contents)
+
+## 💡 Examples
 
 - [filesystem.lua](../blob/main/content/examples/filesystem.lua) - API example
 
-## Reference Games
+[⬆ back to top](#table-of-contents)
+
+## 🎮 Reference Games
 
 No direct references were found in `content/games/**/main.lua`.
 
-## Related Modules
+[⬆ back to top](#table-of-contents)
 
-- Previous: [[event|Module-event]]
-- Next: [[globe|Module-globe]]
-- [[event|Module-event]] - Centralised event queue: OS input, window state, custom Lua events, automation injections.
-- [[network|Module-network]] - Multiplayer stack: ENet, raw TCP, async HTTP, WebSocket. Heavy crate tree.
-- [[repl|Module-repl]] - Release-safe Lua REPL core used by the GUI CLI mode and devtools wrappers; headless also reuses its value-formatting helper.
-- [[runtime|Module-runtime]] - Foundational shared state, engine config, error types, resource keys, log catalogue. Root of the dep tree.
-- [[thread|Module-thread]] - Background threading with per-thread isolated Lua VMs (B-04: VMs cannot be shared).
-- [[timer|Module-timer]] - Frame-timing (Clock) and deferred / repeating callback scheduling (Scheduler).
+## 🔗 Related Modules
+
+- Previous: [event](Module-event)
+- Next: [globe](Module-globe)
+- [event](Module-event) - Centralised event queue: OS input, window state, custom Lua events, automation injections.
+- [network](Module-network) - Multiplayer stack: ENet, raw TCP, async HTTP, WebSocket. Heavy crate tree.
+- [repl](Module-repl) - Release-safe Lua REPL core used by the GUI CLI mode and devtools wrappers; headless also reuses its value-formatting helper.
+- [runtime](Module-runtime) - Foundational shared state, engine config, error types, resource keys, log catalogue. Root of the dep tree.
+- [thread](Module-thread) - Background threading with per-thread isolated Lua VMs (B-04: VMs cannot be shared).
+- [timer](Module-timer) - Frame-timing (Clock) and deferred / repeating callback scheduling (Scheduler).

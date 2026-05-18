@@ -4,136 +4,87 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
-- [Purpose](#purpose)
-- [Summary](#summary)
-- [Minimal Module Example](#minimal-module-example)
-- [Key Types](#key-types)
-- [API Overview](#api-overview)
-- [Module Functions](#module-functions)
-  - [lurek.province.exists(name: string) -> boolean](#lurekprovinceexistsname-string-boolean)
-  - [lurek.province.get(name: string) -> LProvinceRegistry](#lurekprovincegetname-string-lprovinceregistry)
-  - [lurek.province.getActive() -> LProvinceRegistry](#lurekprovincegetactive-lprovinceregistry)
-  - [lurek.province.newFromPng(name: string, png_path: string) -> LProvinceRegistry](#lurekprovincenewfrompngname-string-pngpath-string-lprovinceregistry)
-  - [lurek.province.remove(name: string) -> boolean](#lurekprovinceremovename-string-boolean)
-  - [lurek.province.sanitizeMarkedPng(input_png: string, output_png: string, [opts]: table) -> table](#lurekprovincesanitizemarkedpnginputpng-string-outputpng-string-opts-table-table)
-  - [lurek.province.setActive(name: string) -> boolean](#lurekprovincesetactivename-string-boolean)
-  - [lurek.province.zoomCameraAt(anchor_x: number, anchor_y: number, cam_x: number, cam_y: number, old_zoom: number, new_zoom: number) -> number, number](#lurekprovincezoomcameraatanchorx-number-anchory-number-camx-number-camy-number-oldzoom-number-newzoom-number-number-number)
-- [Types and Methods](#types-and-methods)
+- [🎯 Purpose](#purpose)
+- [📋 Summary](#summary)
+- [🧩 Key Types](#key-types)
+- [📖 API Overview](#api-overview)
+- [⚙️ Module Functions](#module-functions)
+  - [lurek.province.exists](#lurekprovinceexists)
+  - [lurek.province.get](#lurekprovinceget)
+  - [lurek.province.getActive](#lurekprovincegetactive)
+  - [lurek.province.newFromPng](#lurekprovincenewfrompng)
+  - [lurek.province.remove](#lurekprovinceremove)
+  - [lurek.province.sanitizeMarkedPng](#lurekprovincesanitizemarkedpng)
+  - [lurek.province.setActive](#lurekprovincesetactive)
+  - [lurek.province.zoomCameraAt](#lurekprovincezoomcameraat)
+- [🔷 Module Types](#module-types)
   - [LProvinceRegistry](#lprovinceregistry)
-  - [LProvinceRegistry:adjacencies() -> table](#lprovinceregistryadjacencies-table)
-  - [LProvinceRegistry:borderSegments() -> table](#lprovinceregistrybordersegments-table)
-  - [LProvinceRegistry:fitCamera(screen_w: number, screen_h: number, [pixel_size]: number) -> number, number, number](#lprovinceregistryfitcamerascreenw-number-screenh-number-pixelsize-number-number-number-number)
-  - [LProvinceRegistry:getAt(x: integer, y: integer) -> integer](#lprovinceregistrygetatx-integer-y-integer-integer)
-  - [LProvinceRegistry:getBorderClass(a: integer, b: integer) -> string](#lprovinceregistrygetborderclassa-integer-b-integer-string)
-  - [LProvinceRegistry:getChangesSince(revision: integer) -> table](#lprovinceregistrygetchangessincerevision-integer-table)
-  - [LProvinceRegistry:getHeight() -> integer](#lprovinceregistrygetheight-integer)
-  - [LProvinceRegistry:getName() -> string](#lprovinceregistrygetname-string)
-  - [LProvinceRegistry:getNeighbors(id: integer) -> integer[]](#lprovinceregistrygetneighborsid-integer-integer)
-  - [LProvinceRegistry:getProvince(id: integer) -> table](#lprovinceregistrygetprovinceid-integer-table)
-  - [LProvinceRegistry:getRevision() -> integer](#lprovinceregistrygetrevision-integer)
-  - [LProvinceRegistry:getWidth() -> integer](#lprovinceregistrygetwidth-integer)
-  - [LProvinceRegistry:importMetadataFromFiles(opts: table) -> table](#lprovinceregistryimportmetadatafromfilesopts-table-table)
-  - [LProvinceRegistry:provinceCount() -> integer](#lprovinceregistryprovincecount-integer)
-  - [LProvinceRegistry:provinceIds() -> integer[]](#lprovinceregistryprovinceids-integer)
-  - [LProvinceRegistry:provinceSpans() -> table](#lprovinceregistryprovincespans-table)
-  - [LProvinceRegistry:render([opts]: table)](#lprovinceregistryrenderopts-table)
-  - [LProvinceRegistry:screenToMap(screen_x: number, screen_y: number, cam_x: number, cam_y: number, zoom: number, [pixel_size]: number) -> number, number](#lprovinceregistryscreentomapscreenx-number-screeny-number-camx-number-camy-number-zoom-number-pixelsize-number-number-number)
-  - [LProvinceRegistry:screenToProvince(screen_x: number, screen_y: number, cam_x: number, cam_y: number, zoom: number, [pixel_size]: number) -> integer](#lprovinceregistryscreentoprovincescreenx-number-screeny-number-camx-number-camy-number-zoom-number-pixelsize-number-integer)
-  - [LProvinceRegistry:setAttr(id: integer, key: string, value: string) -> boolean](#lprovinceregistrysetattrid-integer-key-string-value-string-boolean)
-  - [LProvinceRegistry:setBorderClass(a: integer, b: integer, class: string)](#lprovinceregistrysetborderclassa-integer-b-integer-class-string)
-  - [LProvinceRegistry:setBorderStyle(id: integer, border_style: integer) -> boolean](#lprovinceregistrysetborderstyleid-integer-borderstyle-integer-boolean)
-  - [LProvinceRegistry:setCapital(id: integer, x: number, y: number) -> boolean](#lprovinceregistrysetcapitalid-integer-x-number-y-number-boolean)
-  - [LProvinceRegistry:setFogState(id: integer, fog_state: integer) -> boolean](#lprovinceregistrysetfogstateid-integer-fogstate-integer-boolean)
-  - [LProvinceRegistry:setLabelLine(id: integer, ax: number, ay: number, bx: number, by: number) -> boolean](#lprovinceregistrysetlabellineid-integer-ax-number-ay-number-bx-number-by-number-boolean)
-  - [LProvinceRegistry:setLabelText(id: integer, text: string) -> boolean](#lprovinceregistrysetlabeltextid-integer-text-string-boolean)
-  - [LProvinceRegistry:setPoliticalColor(id: integer, r: number, g: number, b: number, [a]: number) -> boolean](#lprovinceregistrysetpoliticalcolorid-integer-r-number-g-number-b-number-a-number-boolean)
-  - [LProvinceRegistry:setTerrainType(id: integer, terrain_type: integer) -> boolean](#lprovinceregistrysetterraintypeid-integer-terraintype-integer-boolean)
-  - [LProvinceRegistry:setVisibilityState(id: integer, visibility_state: integer) -> boolean](#lprovinceregistrysetvisibilitystateid-integer-visibilitystate-integer-boolean)
-  - [LProvinceRegistry:type() -> string](#lprovinceregistrytype-string)
-  - [LProvinceRegistry:typeOf(name: string) -> boolean](#lprovinceregistrytypeofname-string-boolean)
-- [Examples](#examples)
-- [Reference Games](#reference-games)
-- [Related Modules](#related-modules)
+- [🔹 Module Methods](#module-methods)
+  - [LProvinceRegistry:adjacencies](#lprovinceregistryadjacencies)
+  - [LProvinceRegistry:borderSegments](#lprovinceregistrybordersegments)
+  - [LProvinceRegistry:fitCamera](#lprovinceregistryfitcamera)
+  - [LProvinceRegistry:getAt](#lprovinceregistrygetat)
+  - [LProvinceRegistry:getBorderClass](#lprovinceregistrygetborderclass)
+  - [LProvinceRegistry:getChangesSince](#lprovinceregistrygetchangessince)
+  - [LProvinceRegistry:getHeight](#lprovinceregistrygetheight)
+  - [LProvinceRegistry:getName](#lprovinceregistrygetname)
+  - [LProvinceRegistry:getNeighbors](#lprovinceregistrygetneighbors)
+  - [LProvinceRegistry:getProvince](#lprovinceregistrygetprovince)
+  - [LProvinceRegistry:getRevision](#lprovinceregistrygetrevision)
+  - [LProvinceRegistry:getWidth](#lprovinceregistrygetwidth)
+  - [LProvinceRegistry:importMetadataFromFiles](#lprovinceregistryimportmetadatafromfiles)
+  - [LProvinceRegistry:provinceCount](#lprovinceregistryprovincecount)
+  - [LProvinceRegistry:provinceIds](#lprovinceregistryprovinceids)
+  - [LProvinceRegistry:provinceSpans](#lprovinceregistryprovincespans)
+  - [LProvinceRegistry:render](#lprovinceregistryrender)
+  - [LProvinceRegistry:screenToMap](#lprovinceregistryscreentomap)
+  - [LProvinceRegistry:screenToProvince](#lprovinceregistryscreentoprovince)
+  - [LProvinceRegistry:setAttr](#lprovinceregistrysetattr)
+  - [LProvinceRegistry:setBorderClass](#lprovinceregistrysetborderclass)
+  - [LProvinceRegistry:setBorderStyle](#lprovinceregistrysetborderstyle)
+  - [LProvinceRegistry:setCapital](#lprovinceregistrysetcapital)
+  - [LProvinceRegistry:setFogState](#lprovinceregistrysetfogstate)
+  - [LProvinceRegistry:setLabelLine](#lprovinceregistrysetlabelline)
+  - [LProvinceRegistry:setLabelText](#lprovinceregistrysetlabeltext)
+  - [LProvinceRegistry:setPoliticalColor](#lprovinceregistrysetpoliticalcolor)
+  - [LProvinceRegistry:setTerrainType](#lprovinceregistrysetterraintype)
+  - [LProvinceRegistry:setVisibilityState](#lprovinceregistrysetvisibilitystate)
+  - [LProvinceRegistry:type](#lprovinceregistrytype)
+  - [LProvinceRegistry:typeOf](#lprovinceregistrytypeof)
+- [💡 Examples](#examples)
+- [🎮 Reference Games](#reference-games)
+- [🔗 Related Modules](#related-modules)
 
 This page is generated from the current module specs, examples, and Lua API data.
 
 **Module group:** Feature Systems
 **Namespace:** `lurek.province`
 
-## Purpose
+## 🎯 Purpose
 
 Engine-native province runtime: topology, style state, revisioned deltas, geometry cache, Lua bridge.
 
-## Summary
+[⬆ back to top](#table-of-contents)
+
+## 📋 Summary
 
 Engine-native province runtime for strategy-game maps providing topology management, style state, revisioned change streams, geometry caching, and a Lua bridge. `ProvinceRegistry` stores per-province metadata (name, type, owner, resource values) with a `ProvinceGraph` encoding adjacency relationships and border geometry.
 
 `ProvinceStyle` maps provinces to visual states (color, highlight, pattern) via named map modes. The geometry cache pre-computes province outlines, centroids, and fill regions for efficient rendering. Change streams emit revisioned deltas when province state mutates — downstream systems subscribe to apply incremental updates. Import pipeline converts bitmap province maps (color-coded pixels) into structured registry data. Exposed as `lurek.province.*`. Feature Systems tier — classified CORE-KEEP.
 
-## Minimal Module Example
+[⬆ back to top](#table-of-contents)
 
-Module example from [province.lua](../blob/main/content/examples/province.lua):
-
-```lua
--- =============================================================================
--- Module functions: lurek.province.*
--- =============================================================================
-
---@api-stub: lurek.province.newFromPng
--- Creates a province registry from a color-coded PNG where each unique color is a distinct province
-do
-  -- Load a strategy map image; each pixel color defines which province owns that cell.
-  -- The registry name ("world") is used later to retrieve or set it active.
-  local reg = lurek.province.newFromPng("world", "content/games/strategy/eu2/map.png")
-  local count = reg:provinceCount()
-  lurek.log.info("created registry 'world' with " .. count .. " provinces", "province")
-end
-
---@api-stub: lurek.province.get
--- Retrieves an existing province registry by name, returning nil if not found
-do
-  -- Use get() to access a previously created registry without re-parsing the PNG.
-  local reg = lurek.province.get("world")
-  if reg then
-    lurek.log.info("retrieved 'world': " .. reg:getWidth() .. "x" .. reg:getHeight() .. " cells", "province")
-  else
-    lurek.log.warn("registry 'world' not found", "province")
-  end
-end
-
---@api-stub: lurek.province.exists
--- Checks whether a registry with the given name has been created
-do
-  -- Useful before calling get() to avoid nil checks, or to guard against duplicate creation.
-  local has_world = lurek.province.exists("world")
-  local has_missing = lurek.province.exists("nonexistent_map")
-  lurek.log.info("world exists=" .. tostring(has_world) .. ", nonexistent=" .. tostring(has_missing), "province")
-end
-
---@api-stub: lurek.province.setActive
--- Sets the named registry as the active one for rendering and global queries
-do
-  -- Only one registry can be active at a time. Set it before calling render().
-  local ok = lurek.province.setActive("world")
-  lurek.log.info("setActive('world')=" .. tostring(ok), "province")
-end
-
---@api-stub: lurek.province.getActive
--- Returns the currently active province registry handle, or nil if none is set
-do
-  -- Retrieve the active registry to use in callbacks without passing it around.
-  local active = lurek.province.getActive()
-```
-
-## Key Types
+## 🧩 Key Types
 
 - `LProvinceRegistry` (31 methods) - Handle to a named province registry, exposing spatial queries, style mutations, rendering, and change tracking to Lua scripts.
 
-## API Overview
+[⬆ back to top](#table-of-contents)
+
+## 📖 API Overview
 
 - Source spec: [docs/specs/province.md](../blob/main/docs/specs/province.md)
 
@@ -148,15 +99,19 @@ lurek.province.setActive(name: string) -> boolean -- Sets the named registry as 
 lurek.province.zoomCameraAt(anchor_x: number, anchor_y: number, cam_x: number, cam_y: number, old_zoom: number, new_zoom: number) -> number, number -- Computes new camera position after zooming centered on an anchor point. Keeps the anchor point visually sta...
 ```
 
-## Module Functions
+[⬆ back to top](#table-of-contents)
 
-### `lurek.province.exists(name: string) -> boolean`
+## ⚙️ Module Functions
+
+### lurek.province.exists
+
+`lurek.province.exists(name: string) -> boolean`
 
 Checks whether a province registry with the given name exists.
 
 **Parameters**
 
-- `name` (`string`, required) - Registry name to check.
+- `name` (`string`, required): Registry name to check.
 
 **Returns**: `boolean` - True if the registry exists.
 
@@ -173,13 +128,15 @@ do
 end
 ```
 
-### `lurek.province.get(name: string) -> LProvinceRegistry`
+### lurek.province.get
+
+`lurek.province.get(name: string) -> LProvinceRegistry`
 
 Retrieves an existing province registry by name. Returns nil if no registry with that name has been created.
 
 **Parameters**
 
-- `name` (`string`, required) - Registry name to look up.
+- `name` (`string`, required): Registry name to look up.
 
 **Returns**: `LProvinceRegistry` - The registry handle, or nil if not found.
 
@@ -199,7 +156,9 @@ do
 end
 ```
 
-### `lurek.province.getActive() -> LProvinceRegistry`
+### lurek.province.getActive
+
+`lurek.province.getActive() -> LProvinceRegistry`
 
 Returns the currently active province registry, or nil if none is set.
 
@@ -219,14 +178,16 @@ do
 end
 ```
 
-### `lurek.province.newFromPng(name: string, png_path: string) -> LProvinceRegistry`
+### lurek.province.newFromPng
+
+`lurek.province.newFromPng(name: string, png_path: string) -> LProvinceRegistry`
 
 Creates a new province registry by loading a color-coded PNG where each unique color represents a distinct province. The PNG is parsed into a grid and adjacencies are computed automatically.
 
 **Parameters**
 
-- `name` (`string`, required) - Unique registry name for later retrieval.
-- `png_path` (`string`, required) - Path to the province map PNG (relative to game directory or absolute).
+- `name` (`string`, required): Unique registry name for later retrieval.
+- `png_path` (`string`, required): Path to the province map PNG (relative to game directory or absolute).
 
 **Returns**: `LProvinceRegistry` - The newly created registry handle.
 
@@ -244,13 +205,15 @@ do
 end
 ```
 
-### `lurek.province.remove(name: string) -> boolean`
+### lurek.province.remove
+
+`lurek.province.remove(name: string) -> boolean`
 
 Removes a province registry by name and clears the active registry if it was the one removed. Returns true if a registry was actually removed.
 
 **Parameters**
 
-- `name` (`string`, required) - Registry name to remove.
+- `name` (`string`, required): Registry name to remove.
 
 **Returns**: `boolean` - True if the registry existed and was removed.
 
@@ -269,15 +232,17 @@ do
 end
 ```
 
-### `lurek.province.sanitizeMarkedPng(input_png: string, output_png: string, [opts]: table) -> table`
+### lurek.province.sanitizeMarkedPng
+
+`lurek.province.sanitizeMarkedPng(input_png: string, output_png: string, [opts]: table) -> table`
 
 Pre-processes a marker PNG by replacing capital and label marker pixels with the surrounding province color. Outputs a cleaned PNG suitable for `newFromPng`. Returns a summary of pixel replacements.
 
 **Parameters**
 
-- `input_png` (`string`, required) - Path to the source marker PNG.
-- `output_png` (`string`, required) - Path to write the sanitized output PNG.
-- `opts` (`table`, optional) - Marker detection thresholds: capital_min (number?), label_r_min (number?), label_g_max (number?), label_b_min (number?), search_radius (number?).
+- `input_png` (`string`, required): Path to the source marker PNG.
+- `output_png` (`string`, required): Path to write the sanitized output PNG.
+- `opts` (`table`, optional): Marker detection thresholds: capital_min (number?), label_r_min (number?), label_g_max (number?), label_b_min (number?), search_radius (number?).
 
 **Returns**: `table` - Summary with fields: replaced_pixels (number), unresolved_pixels (number).
 
@@ -300,13 +265,15 @@ do
 end
 ```
 
-### `lurek.province.setActive(name: string) -> boolean`
+### lurek.province.setActive
+
+`lurek.province.setActive(name: string) -> boolean`
 
 Sets the named registry as the active province registry. Returns false if no registry with that name exists.
 
 **Parameters**
 
-- `name` (`string`, required) - Registry name to activate.
+- `name` (`string`, required): Registry name to activate.
 
 **Returns**: `boolean` - True if the registry was found and activated.
 
@@ -322,18 +289,20 @@ do
 end
 ```
 
-### `lurek.province.zoomCameraAt(anchor_x: number, anchor_y: number, cam_x: number, cam_y: number, old_zoom: number, new_zoom: number) -> number, number`
+### lurek.province.zoomCameraAt
+
+`lurek.province.zoomCameraAt(anchor_x: number, anchor_y: number, cam_x: number, cam_y: number, old_zoom: number, new_zoom: number) -> number, number`
 
 Computes new camera position after zooming centered on an anchor point. Keeps the anchor point visually stationary on screen while the zoom level changes.
 
 **Parameters**
 
-- `anchor_x` (`number`, required) - Anchor x in screen space.
-- `anchor_y` (`number`, required) - Anchor y in screen space.
-- `cam_x` (`number`, required) - Current camera x.
-- `cam_y` (`number`, required) - Current camera y.
-- `old_zoom` (`number`, required) - Previous zoom level.
-- `new_zoom` (`number`, required) - Target zoom level.
+- `anchor_x` (`number`, required): Anchor x in screen space.
+- `anchor_y` (`number`, required): Anchor y in screen space.
+- `cam_x` (`number`, required): Current camera x.
+- `cam_y` (`number`, required): Current camera y.
+- `old_zoom` (`number`, required): Previous zoom level.
+- `new_zoom` (`number`, required): Target zoom level.
 
 **Returns**: `number, number` - New camera x and y after zoom adjustment.
 
@@ -355,11 +324,21 @@ end
 ```
 
 
-## Types and Methods
+[⬆ back to top](#table-of-contents)
 
-### `LProvinceRegistry`
+## 🔷 Module Types
+
+### LProvinceRegistry
 
 Handle to a named province registry, exposing spatial queries, style mutations, rendering, and change tracking to Lua scripts.
+
+**Lua API Definition**
+
+```lua
+--- Handle to a named province registry, exposing spatial queries, style mutations, rendering, and change tracking to Lua scripts.
+---@class LProvinceRegistry
+LProvinceRegistry = {}
+```
 
 #### Example
 
@@ -377,11 +356,26 @@ do
 end
 ```
 
-### `LProvinceRegistry:adjacencies() -> table`
+
+[⬆ back to top](#table-of-contents)
+
+## 🔹 Module Methods
+
+### LProvinceRegistry:adjacencies
+
+`LProvinceRegistry:adjacencies() -> table`
 
 Returns all adjacency pairs in the registry. Each entry has `province_a` and `province_b` fields representing two neighboring provinces.
 
 **Returns**: `table` - Array of tables with fields: province_a (number), province_b (number).
+
+**Lua API Stub**
+
+```lua
+--- Returns all adjacency pairs in the registry. Each entry has `province_a` and `province_b` fields representing two neighboring provinces.
+---@return LProvinceRegistryAdjacenciesResult Array of tables with fields: province_a (number), province_b (number).
+function LProvinceRegistry:adjacencies() end
+```
 
 #### Example
 
@@ -402,11 +396,21 @@ do
 end
 ```
 
-### `LProvinceRegistry:borderSegments() -> table`
+### LProvinceRegistry:borderSegments
+
+`LProvinceRegistry:borderSegments() -> table`
 
 Returns all border line segments between adjacent provinces. Each segment is a line from (x0,y0) to (x1,y1) separating province_a from province_b.
 
 **Returns**: `table` - Array of tables with fields: province_a (number), province_b (number), x0 (number), y0 (number), x1 (number), y1 (number).
+
+**Lua API Stub**
+
+```lua
+--- Returns all border line segments between adjacent provinces. Each segment is a line from (x0,y0) to (x1,y1) separating province_a from province_b.
+---@return LProvinceRegistryBorderSegmentsResult Array of tables with fields: province_a (number), province_b (number), x0 (number), y0 (number), x1 (number), y1 (number).
+function LProvinceRegistry:borderSegments() end
+```
 
 #### Example
 
@@ -428,17 +432,32 @@ do
 end
 ```
 
-### `LProvinceRegistry:fitCamera(screen_w: number, screen_h: number, [pixel_size]: number) -> number, number, number`
+### LProvinceRegistry:fitCamera
+
+`LProvinceRegistry:fitCamera(screen_w: number, screen_h: number, [pixel_size]: number) -> number, number, number`
 
 Computes camera position and zoom so the entire province map fits within the given screen dimensions.
 
 **Parameters**
 
-- `screen_w` (`number`, required) - Screen width in pixels.
-- `screen_h` (`number`, required) - Screen height in pixels.
-- `pixel_size` (`number`, optional) - Size of one map cell in screen pixels (default 1.0).
+- `screen_w` (`number`, required): Screen width in pixels.
+- `screen_h` (`number`, required): Screen height in pixels.
+- `pixel_size` (`number`, optional): Size of one map cell in screen pixels (default 1.0).
 
 **Returns**: `number, number, number` - Camera x, camera y, and zoom factor.
+
+**Lua API Stub**
+
+```lua
+--- Computes camera position and zoom so the entire province map fits within the given screen dimensions.
+---@param screen_w number Screen width in pixels.
+---@param screen_h number Screen height in pixels.
+---@param pixel_size? number Size of one map cell in screen pixels (default 1.0).
+---@return number a Camera x, camera y, and zoom factor.
+---@return number b Camera x, camera y, and zoom factor.
+---@return number c Camera x, camera y, and zoom factor.
+function LProvinceRegistry:fitCamera(screen_w, screen_h, pixel_size) end
+```
 
 #### Example
 
@@ -456,16 +475,28 @@ do
 end
 ```
 
-### `LProvinceRegistry:getAt(x: integer, y: integer) -> integer`
+### LProvinceRegistry:getAt
+
+`LProvinceRegistry:getAt(x: integer, y: integer) -> integer`
 
 Returns the province ID at the given grid cell coordinates. Returns 0 if the cell is unowned (sea, wasteland, etc.).
 
 **Parameters**
 
-- `x` (`integer`, required) - Zero-based column index.
-- `y` (`integer`, required) - Zero-based row index.
+- `x` (`integer`, required): Zero-based column index.
+- `y` (`integer`, required): Zero-based row index.
 
 **Returns**: `integer` - Province ID at (x, y), or 0 for unowned cells.
+
+**Lua API Stub**
+
+```lua
+--- Returns the province ID at the given grid cell coordinates. Returns 0 if the cell is unowned (sea, wasteland, etc.).
+---@param x number Zero-based column index.
+---@param y number Zero-based row index.
+---@return number Province ID at (x, y), or 0 for unowned cells.
+function LProvinceRegistry:getAt(x, y) end
+```
 
 #### Example
 
@@ -486,16 +517,28 @@ do
 end
 ```
 
-### `LProvinceRegistry:getBorderClass(a: integer, b: integer) -> string`
+### LProvinceRegistry:getBorderClass
+
+`LProvinceRegistry:getBorderClass(a: integer, b: integer) -> string`
 
 Returns the border classification string between two adjacent provinces (e.g. "river", "mountain", "sea"), or nil if no class is set.
 
 **Parameters**
 
-- `a` (`integer`, required) - First province ID.
-- `b` (`integer`, required) - Second province ID.
+- `a` (`integer`, required): First province ID.
+- `b` (`integer`, required): Second province ID.
 
 **Returns**: `string` - Border class name, or nil.
+
+**Lua API Stub**
+
+```lua
+--- Returns the border classification string between two adjacent provinces (e.g. "river", "mountain", "sea"), or nil if no class is set.
+---@param a number First province ID.
+---@param b number Second province ID.
+---@return string Border class name, or nil.
+function LProvinceRegistry:getBorderClass(a, b) end
+```
 
 #### Example
 
@@ -516,15 +559,26 @@ do
 end
 ```
 
-### `LProvinceRegistry:getChangesSince(revision: integer) -> table`
+### LProvinceRegistry:getChangesSince
+
+`LProvinceRegistry:getChangesSince(revision: integer) -> table`
 
 Returns all province changes that occurred after the given revision. Each entry contains the revision number and a change record describing what was modified (political_color, terrain_type, border_style, fog_state, visibility_state, or border_class).
 
 **Parameters**
 
-- `revision` (`integer`, required) - The revision to query from (exclusive). Pass the last known revision to get only new changes.
+- `revision` (`integer`, required): The revision to query from (exclusive). Pass the last known revision to get only new changes.
 
 **Returns**: `table` - Array of change tables, each with a `revision` field and change-specific fields (kind, province_id, etc.).
+
+**Lua API Stub**
+
+```lua
+--- Returns all province changes that occurred after the given revision. Each entry contains the revision number and a change record describing what was modified (political_color, terrain_type, border_style, fog_state, visibility_state, or border_class).
+---@param revision number The revision to query from (exclusive). Pass the last known revision to get only new changes.
+---@return LProvinceRegistryGetChangesSinceResult Array of change tables, each with a `revision` field and change-specific fields (kind, province_id, etc.).
+function LProvinceRegistry:getChangesSince(revision) end
+```
 
 #### Example
 
@@ -547,11 +601,21 @@ do
 end
 ```
 
-### `LProvinceRegistry:getHeight() -> integer`
+### LProvinceRegistry:getHeight
+
+`LProvinceRegistry:getHeight() -> integer`
 
 Returns the height of the province grid in cells (pixels of the source PNG).
 
 **Returns**: `integer` - Grid height in cells.
+
+**Lua API Stub**
+
+```lua
+--- Returns the height of the province grid in cells (pixels of the source PNG).
+---@return number Grid height in cells.
+function LProvinceRegistry:getHeight() end
+```
 
 #### Example
 
@@ -568,11 +632,21 @@ do
 end
 ```
 
-### `LProvinceRegistry:getName() -> string`
+### LProvinceRegistry:getName
+
+`LProvinceRegistry:getName() -> string`
 
 Returns the string name used to identify this registry in the province system.
 
 **Returns**: `string` - The registry name passed to `newFromPng`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the string name used to identify this registry in the province system.
+---@return string The registry name passed to `newFromPng`.
+function LProvinceRegistry:getName() end
+```
 
 #### Example
 
@@ -589,15 +663,26 @@ do
 end
 ```
 
-### `LProvinceRegistry:getNeighbors(id: integer) -> integer[]`
+### LProvinceRegistry:getNeighbors
+
+`LProvinceRegistry:getNeighbors(id: integer) -> integer[]`
 
 Returns a table of province IDs that share a border with the given province.
 
 **Parameters**
 
-- `id` (`integer`, required) - Province ID to query.
+- `id` (`integer`, required): Province ID to query.
 
 **Returns**: `integer[]` - Array of neighboring province IDs.
+
+**Lua API Stub**
+
+```lua
+--- Returns a table of province IDs that share a border with the given province.
+---@param id number Province ID to query.
+---@return number[] Array of neighboring province IDs.
+function LProvinceRegistry:getNeighbors(id) end
+```
 
 #### Example
 
@@ -617,15 +702,26 @@ do
 end
 ```
 
-### `LProvinceRegistry:getProvince(id: integer) -> table`
+### LProvinceRegistry:getProvince
+
+`LProvinceRegistry:getProvince(id: integer) -> table`
 
 Returns a snapshot table describing a single province: its ID, revision, style (political_color, terrain_type, border_style, fog_state, visibility_state), centroid, and custom attributes.
 
 **Parameters**
 
-- `id` (`integer`, required) - Province ID to query.
+- `id` (`integer`, required): Province ID to query.
 
 **Returns**: `table` - Province snapshot table, or nil if the ID does not exist.
+
+**Lua API Stub**
+
+```lua
+--- Returns a snapshot table describing a single province: its ID, revision, style (political_color, terrain_type, border_style, fog_state, visibility_state), centroid, and custom attributes.
+---@param id number Province ID to query.
+---@return LProvinceRegistryGetProvinceResult Province snapshot table, or nil if the ID does not exist.
+function LProvinceRegistry:getProvince(id) end
+```
 
 #### Example
 
@@ -645,11 +741,21 @@ do
 end
 ```
 
-### `LProvinceRegistry:getRevision() -> integer`
+### LProvinceRegistry:getRevision
+
+`LProvinceRegistry:getRevision() -> integer`
 
 Returns the current change revision counter. Incremented on every mutation (color, terrain, border, fog changes). Use with `getChangesSince` for incremental updates.
 
 **Returns**: `integer` - Current revision number.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current change revision counter. Incremented on every mutation (color, terrain, border, fog changes). Use with `getChangesSince` for incremental updates.
+---@return number Current revision number.
+function LProvinceRegistry:getRevision() end
+```
 
 #### Example
 
@@ -668,11 +774,21 @@ do
 end
 ```
 
-### `LProvinceRegistry:getWidth() -> integer`
+### LProvinceRegistry:getWidth
+
+`LProvinceRegistry:getWidth() -> integer`
 
 Returns the width of the province grid in cells (pixels of the source PNG).
 
 **Returns**: `integer` - Grid width in cells.
+
+**Lua API Stub**
+
+```lua
+--- Returns the width of the province grid in cells (pixels of the source PNG).
+---@return number Grid width in cells.
+function LProvinceRegistry:getWidth() end
+```
 
 #### Example
 
@@ -689,15 +805,26 @@ do
 end
 ```
 
-### `LProvinceRegistry:importMetadataFromFiles(opts: table) -> table`
+### LProvinceRegistry:importMetadataFromFiles
+
+`LProvinceRegistry:importMetadataFromFiles(opts: table) -> table`
 
 Bulk-imports province metadata (colors, capitals, labels, terrain) from external files (PNG color map, CSV color table, TOML province definitions, marker PNG). Returns a summary of how many provinces were mapped.
 
 **Parameters**
 
-- `opts` (`table`, required) - Options table with fields: color_map_png (string, required), color_csv (string, required), marker_png (string?), province_toml (string?), water_terrain_tokens (table?), water_terrain_type (number?), land_terrain_type (number?), set_political_colors (boolean?), set_label_text (boolean?), set_capitals (boolean?), set_label_lines (boolean?), marker_options (table?).
+- `opts` (`table`, required): Options table with fields: color_map_png (string, required), color_csv (string, required), marker_png (string?), province_toml (string?), water_terrain_tokens (table?), water_terrain_type (number?), land_terrain_type (number?), set_political_colors (boolean?), set_label_text (boolean?), set_capitals (boolean?), set_label_lines (boolean?), marker_options (table?).
 
 **Returns**: `table` - Summary with fields: mapped_provinces (number), capitals_set (number), label_lines_set (number), labels_set (number).
+
+**Lua API Stub**
+
+```lua
+--- Bulk-imports province metadata (colors, capitals, labels, terrain) from external files (PNG color map, CSV color table, TOML province definitions, marker PNG). Returns a summary of how many provinces were mapped.
+---@param opts table Options table with fields: color_map_png (string, required), color_csv (string, required), marker_png (string?), province_toml (string?), water_terrain_tokens (table?), water_terrain_type (number?), land_terrain_type (number?), set_political_colors (boolean?), set_label_text (boolean?), set_capitals (boolean?), set_label_lines (boolean?), marker_options (table?).
+---@return LProvinceRegistryImportMetadataFromFilesResult Summary with fields: mapped_provinces (number), capitals_set (number), label_lines_set (number), labels_set (number).
+function LProvinceRegistry:importMetadataFromFiles(opts) end
+```
 
 #### Example
 
@@ -730,11 +857,21 @@ do
 end
 ```
 
-### `LProvinceRegistry:provinceCount() -> integer`
+### LProvinceRegistry:provinceCount
+
+`LProvinceRegistry:provinceCount() -> integer`
 
 Returns the total number of distinct provinces in this registry (excluding ID 0).
 
 **Returns**: `integer` - Count of provinces.
+
+**Lua API Stub**
+
+```lua
+--- Returns the total number of distinct provinces in this registry (excluding ID 0).
+---@return number Count of provinces.
+function LProvinceRegistry:provinceCount() end
+```
 
 #### Example
 
@@ -751,11 +888,21 @@ do
 end
 ```
 
-### `LProvinceRegistry:provinceIds() -> integer[]`
+### LProvinceRegistry:provinceIds
+
+`LProvinceRegistry:provinceIds() -> integer[]`
 
 Returns a sequential table of all province IDs in this registry.
 
 **Returns**: `integer[]` - Province ID numbers.
+
+**Lua API Stub**
+
+```lua
+--- Returns a sequential table of all province IDs in this registry.
+---@return number[] Province ID numbers.
+function LProvinceRegistry:provinceIds() end
+```
 
 #### Example
 
@@ -772,11 +919,21 @@ do
 end
 ```
 
-### `LProvinceRegistry:provinceSpans() -> table`
+### LProvinceRegistry:provinceSpans
+
+`LProvinceRegistry:provinceSpans() -> table`
 
 Returns the raw span data for all provinces. Each span is a horizontal run of cells belonging to one province, useful for custom rendering or spatial analysis.
 
 **Returns**: `table` - Array of tables with fields: province_id (number), y (number), x0 (number), x1 (number).
+
+**Lua API Stub**
+
+```lua
+--- Returns the raw span data for all provinces. Each span is a horizontal run of cells belonging to one province, useful for custom rendering or spatial analysis.
+---@return LProvinceRegistryProvinceSpansResult Array of tables with fields: province_id (number), y (number), x0 (number), x1 (number).
+function LProvinceRegistry:provinceSpans() end
+```
 
 #### Example
 
@@ -794,13 +951,23 @@ do
 end
 ```
 
-### `LProvinceRegistry:render([opts]: table)`
+### LProvinceRegistry:render
+
+`LProvinceRegistry:render([opts]: table)`
 
 Renders the province map to the screen using the current camera and style settings. Generates draw commands for fills, borders, labels, and capitals based on the provided options.
 
 **Parameters**
 
-- `opts` (`table`, optional) - Render options: map_mode (string?), x/y/zoom/pixel_size/screen_w/screen_h (number?), draw_fills/draw_borders/draw_labels/draw_capitals (boolean?), border_width (number?), hovered_id/selected_id (integer?).
+- `opts` (`table`, optional): Render options: map_mode (string?), x/y/zoom/pixel_size/screen_w/screen_h (number?), draw_fills/draw_borders/draw_labels/draw_capitals (boolean?), border_width (number?), hovered_id/selected_id (integer?).
+
+**Lua API Stub**
+
+```lua
+--- Renders the province map to the screen using the current camera and style settings. Generates draw commands for fills, borders, labels, and capitals based on the provided options.
+---@param opts? table Render options: map_mode (string?), x/y/zoom/pixel_size/screen_w/screen_h (number?), draw_fills/draw_borders/draw_labels/draw_capitals (boolean?), border_width (number?), hovered_id/selected_id (integer?).
+function LProvinceRegistry:render(opts) end
+```
 
 #### Example
 
@@ -835,20 +1002,37 @@ do
 end
 ```
 
-### `LProvinceRegistry:screenToMap(screen_x: number, screen_y: number, cam_x: number, cam_y: number, zoom: number, [pixel_size]: number) -> number, number`
+### LProvinceRegistry:screenToMap
+
+`LProvinceRegistry:screenToMap(screen_x: number, screen_y: number, cam_x: number, cam_y: number, zoom: number, [pixel_size]: number) -> number, number`
 
 Converts screen-space pixel coordinates to map-space floating-point coordinates using the current camera transform.
 
 **Parameters**
 
-- `screen_x` (`number`, required) - Screen x in pixels.
-- `screen_y` (`number`, required) - Screen y in pixels.
-- `cam_x` (`number`, required) - Camera center x in map space.
-- `cam_y` (`number`, required) - Camera center y in map space.
-- `zoom` (`number`, required) - Current zoom factor.
-- `pixel_size` (`number`, optional) - Cell size in screen pixels (default 1.0).
+- `screen_x` (`number`, required): Screen x in pixels.
+- `screen_y` (`number`, required): Screen y in pixels.
+- `cam_x` (`number`, required): Camera center x in map space.
+- `cam_y` (`number`, required): Camera center y in map space.
+- `zoom` (`number`, required): Current zoom factor.
+- `pixel_size` (`number`, optional): Cell size in screen pixels (default 1.0).
 
 **Returns**: `number, number` - Map-space x and y.
+
+**Lua API Stub**
+
+```lua
+--- Converts screen-space pixel coordinates to map-space floating-point coordinates using the current camera transform.
+---@param screen_x number Screen x in pixels.
+---@param screen_y number Screen y in pixels.
+---@param cam_x number Camera center x in map space.
+---@param cam_y number Camera center y in map space.
+---@param zoom number Current zoom factor.
+---@param pixel_size? number Cell size in screen pixels (default 1.0).
+---@return number a Map-space x and y.
+---@return number b Map-space x and y.
+function LProvinceRegistry:screenToMap(screen_x, screen_y, cam_x, cam_y, zoom, pixel_size) end
+```
 
 #### Example
 
@@ -867,20 +1051,36 @@ do
 end
 ```
 
-### `LProvinceRegistry:screenToProvince(screen_x: number, screen_y: number, cam_x: number, cam_y: number, zoom: number, [pixel_size]: number) -> integer`
+### LProvinceRegistry:screenToProvince
+
+`LProvinceRegistry:screenToProvince(screen_x: number, screen_y: number, cam_x: number, cam_y: number, zoom: number, [pixel_size]: number) -> integer`
 
 Converts screen-space coordinates directly to a province ID. Returns nil if the cursor is outside the map or over an unowned cell.
 
 **Parameters**
 
-- `screen_x` (`number`, required) - Screen x in pixels.
-- `screen_y` (`number`, required) - Screen y in pixels.
-- `cam_x` (`number`, required) - Camera center x in map space.
-- `cam_y` (`number`, required) - Camera center y in map space.
-- `zoom` (`number`, required) - Current zoom factor.
-- `pixel_size` (`number`, optional) - Cell size in screen pixels (default 1.0).
+- `screen_x` (`number`, required): Screen x in pixels.
+- `screen_y` (`number`, required): Screen y in pixels.
+- `cam_x` (`number`, required): Camera center x in map space.
+- `cam_y` (`number`, required): Camera center y in map space.
+- `zoom` (`number`, required): Current zoom factor.
+- `pixel_size` (`number`, optional): Cell size in screen pixels (default 1.0).
 
 **Returns**: `integer` - Province ID under the cursor, or nil if none.
+
+**Lua API Stub**
+
+```lua
+--- Converts screen-space coordinates directly to a province ID. Returns nil if the cursor is outside the map or over an unowned cell.
+---@param screen_x number Screen x in pixels.
+---@param screen_y number Screen y in pixels.
+---@param cam_x number Camera center x in map space.
+---@param cam_y number Camera center y in map space.
+---@param zoom number Current zoom factor.
+---@param pixel_size? number Cell size in screen pixels (default 1.0).
+---@return number Province ID under the cursor, or nil if none.
+function LProvinceRegistry:screenToProvince(screen_x, screen_y, cam_x, cam_y, zoom, pixel_size) end
+```
 
 #### Example
 
@@ -902,17 +1102,30 @@ do
 end
 ```
 
-### `LProvinceRegistry:setAttr(id: integer, key: string, value: string) -> boolean`
+### LProvinceRegistry:setAttr
+
+`LProvinceRegistry:setAttr(id: integer, key: string, value: string) -> boolean`
 
 Sets a custom string attribute on a province. Attributes are returned in the `attrs` table of `getProvince` and can store arbitrary game metadata.
 
 **Parameters**
 
-- `id` (`integer`, required) - Province ID.
-- `key` (`string`, required) - Attribute name.
-- `value` (`string`, required) - Attribute value.
+- `id` (`integer`, required): Province ID.
+- `key` (`string`, required): Attribute name.
+- `value` (`string`, required): Attribute value.
 
 **Returns**: `boolean` - True if the province ID exists.
+
+**Lua API Stub**
+
+```lua
+--- Sets a custom string attribute on a province. Attributes are returned in the `attrs` table of `getProvince` and can store arbitrary game metadata.
+---@param id number Province ID.
+---@param key string Attribute name.
+---@param value string Attribute value.
+---@return boolean True if the province ID exists.
+function LProvinceRegistry:setAttr(id, key, value) end
+```
 
 #### Example
 
@@ -931,15 +1144,27 @@ do
 end
 ```
 
-### `LProvinceRegistry:setBorderClass(a: integer, b: integer, class: string)`
+### LProvinceRegistry:setBorderClass
+
+`LProvinceRegistry:setBorderClass(a: integer, b: integer, class: string)`
 
 Sets the border classification between two adjacent provinces. Used to control border rendering style (e.g. rivers drawn as blue lines).
 
 **Parameters**
 
-- `a` (`integer`, required) - First province ID.
-- `b` (`integer`, required) - Second province ID.
-- `class` (`string`, required) - Border class name (e.g. "river", "mountain", "sea").
+- `a` (`integer`, required): First province ID.
+- `b` (`integer`, required): Second province ID.
+- `class` (`string`, required): Border class name (e.g. "river", "mountain", "sea").
+
+**Lua API Stub**
+
+```lua
+--- Sets the border classification between two adjacent provinces. Used to control border rendering style (e.g. rivers drawn as blue lines).
+---@param a number First province ID.
+---@param b number Second province ID.
+---@param class string Border class name (e.g. "river", "mountain", "sea").
+function LProvinceRegistry:setBorderClass(a, b, class) end
+```
 
 #### Example
 
@@ -957,16 +1182,28 @@ do
 end
 ```
 
-### `LProvinceRegistry:setBorderStyle(id: integer, border_style: integer) -> boolean`
+### LProvinceRegistry:setBorderStyle
+
+`LProvinceRegistry:setBorderStyle(id: integer, border_style: integer) -> boolean`
 
 Sets the border rendering style index for a province. Controls line thickness, color, or pattern when borders are drawn.
 
 **Parameters**
 
-- `id` (`integer`, required) - Province ID.
-- `border_style` (`integer`, required) - Border style index (game-defined meaning).
+- `id` (`integer`, required): Province ID.
+- `border_style` (`integer`, required): Border style index (game-defined meaning).
 
 **Returns**: `boolean` - True if the province ID exists.
+
+**Lua API Stub**
+
+```lua
+--- Sets the border rendering style index for a province. Controls line thickness, color, or pattern when borders are drawn.
+---@param id number Province ID.
+---@param border_style number Border style index (game-defined meaning).
+---@return boolean True if the province ID exists.
+function LProvinceRegistry:setBorderStyle(id, border_style) end
+```
 
 #### Example
 
@@ -983,17 +1220,30 @@ do
 end
 ```
 
-### `LProvinceRegistry:setCapital(id: integer, x: number, y: number) -> boolean`
+### LProvinceRegistry:setCapital
+
+`LProvinceRegistry:setCapital(id: integer, x: number, y: number) -> boolean`
 
 Sets the capital marker position for a province. The capital is drawn as a small icon during `render` when `draw_capitals` is enabled.
 
 **Parameters**
 
-- `id` (`integer`, required) - Province ID.
-- `x` (`number`, required) - Capital x position in map space.
-- `y` (`number`, required) - Capital y position in map space.
+- `id` (`integer`, required): Province ID.
+- `x` (`number`, required): Capital x position in map space.
+- `y` (`number`, required): Capital y position in map space.
 
 **Returns**: `boolean` - True if the province ID exists.
+
+**Lua API Stub**
+
+```lua
+--- Sets the capital marker position for a province. The capital is drawn as a small icon during `render` when `draw_capitals` is enabled.
+---@param id number Province ID.
+---@param x number Capital x position in map space.
+---@param y number Capital y position in map space.
+---@return boolean True if the province ID exists.
+function LProvinceRegistry:setCapital(id, x, y) end
+```
 
 #### Example
 
@@ -1010,16 +1260,28 @@ do
 end
 ```
 
-### `LProvinceRegistry:setFogState(id: integer, fog_state: integer) -> boolean`
+### LProvinceRegistry:setFogState
+
+`LProvinceRegistry:setFogState(id: integer, fog_state: integer) -> boolean`
 
 Sets the fog-of-war state for a province. Typically 0 = revealed, 1 = fogged, 2 = hidden. Controls rendering opacity or overlay.
 
 **Parameters**
 
-- `id` (`integer`, required) - Province ID.
-- `fog_state` (`integer`, required) - Fog state value (game-defined meaning).
+- `id` (`integer`, required): Province ID.
+- `fog_state` (`integer`, required): Fog state value (game-defined meaning).
 
 **Returns**: `boolean` - True if the province ID exists.
+
+**Lua API Stub**
+
+```lua
+--- Sets the fog-of-war state for a province. Typically 0 = revealed, 1 = fogged, 2 = hidden. Controls rendering opacity or overlay.
+---@param id number Province ID.
+---@param fog_state number Fog state value (game-defined meaning).
+---@return boolean True if the province ID exists.
+function LProvinceRegistry:setFogState(id, fog_state) end
+```
 
 #### Example
 
@@ -1036,19 +1298,34 @@ do
 end
 ```
 
-### `LProvinceRegistry:setLabelLine(id: integer, ax: number, ay: number, bx: number, by: number) -> boolean`
+### LProvinceRegistry:setLabelLine
+
+`LProvinceRegistry:setLabelLine(id: integer, ax: number, ay: number, bx: number, by: number) -> boolean`
 
 Sets the label baseline for a province. The label text is rendered along the line from (ax,ay) to (bx,by), allowing curved or angled province names.
 
 **Parameters**
 
-- `id` (`integer`, required) - Province ID.
-- `ax` (`number`, required) - Start x of the label line in map space.
-- `ay` (`number`, required) - Start y of the label line in map space.
-- `bx` (`number`, required) - End x of the label line in map space.
-- `by` (`number`, required) - End y of the label line in map space.
+- `id` (`integer`, required): Province ID.
+- `ax` (`number`, required): Start x of the label line in map space.
+- `ay` (`number`, required): Start y of the label line in map space.
+- `bx` (`number`, required): End x of the label line in map space.
+- `by` (`number`, required): End y of the label line in map space.
 
 **Returns**: `boolean` - True if the province ID exists.
+
+**Lua API Stub**
+
+```lua
+--- Sets the label baseline for a province. The label text is rendered along the line from (ax,ay) to (bx,by), allowing curved or angled province names.
+---@param id number Province ID.
+---@param ax number Start x of the label line in map space.
+---@param ay number Start y of the label line in map space.
+---@param bx number End x of the label line in map space.
+---@param by number End y of the label line in map space.
+---@return boolean True if the province ID exists.
+function LProvinceRegistry:setLabelLine(id, ax, ay, bx, by) end
+```
 
 #### Example
 
@@ -1066,16 +1343,28 @@ do
 end
 ```
 
-### `LProvinceRegistry:setLabelText(id: integer, text: string) -> boolean`
+### LProvinceRegistry:setLabelText
+
+`LProvinceRegistry:setLabelText(id: integer, text: string) -> boolean`
 
 Sets the display name text for a province. Rendered on the map when `draw_labels` is enabled in `render` options.
 
 **Parameters**
 
-- `id` (`integer`, required) - Province ID.
-- `text` (`string`, required) - Province display name.
+- `id` (`integer`, required): Province ID.
+- `text` (`string`, required): Province display name.
 
 **Returns**: `boolean` - True if the province ID exists.
+
+**Lua API Stub**
+
+```lua
+--- Sets the display name text for a province. Rendered on the map when `draw_labels` is enabled in `render` options.
+---@param id number Province ID.
+---@param text string Province display name.
+---@return boolean True if the province ID exists.
+function LProvinceRegistry:setLabelText(id, text) end
+```
 
 #### Example
 
@@ -1092,19 +1381,34 @@ do
 end
 ```
 
-### `LProvinceRegistry:setPoliticalColor(id: integer, r: number, g: number, b: number, [a]: number) -> boolean`
+### LProvinceRegistry:setPoliticalColor
+
+`LProvinceRegistry:setPoliticalColor(id: integer, r: number, g: number, b: number, [a]: number) -> boolean`
 
 Sets the political map color for a province. Used in political map mode rendering and change tracking.
 
 **Parameters**
 
-- `id` (`integer`, required) - Province ID.
-- `r` (`number`, required) - Red component (0.0–1.0).
-- `g` (`number`, required) - Green component (0.0–1.0).
-- `b` (`number`, required) - Blue component (0.0–1.0).
-- `a` (`number`, optional) - Alpha component (default 1.0).
+- `id` (`integer`, required): Province ID.
+- `r` (`number`, required): Red component (0.0–1.0).
+- `g` (`number`, required): Green component (0.0–1.0).
+- `b` (`number`, required): Blue component (0.0–1.0).
+- `a` (`number`, optional): Alpha component (default 1.0).
 
 **Returns**: `boolean` - True if the province ID exists.
+
+**Lua API Stub**
+
+```lua
+--- Sets the political map color for a province. Used in political map mode rendering and change tracking.
+---@param id number Province ID.
+---@param r number Red component (0.0–1.0).
+---@param g number Green component (0.0–1.0).
+---@param b number Blue component (0.0–1.0).
+---@param a? number Alpha component (default 1.0).
+---@return boolean True if the province ID exists.
+function LProvinceRegistry:setPoliticalColor(id, r, g, b, a) end
+```
 
 #### Example
 
@@ -1121,16 +1425,28 @@ do
 end
 ```
 
-### `LProvinceRegistry:setTerrainType(id: integer, terrain_type: integer) -> boolean`
+### LProvinceRegistry:setTerrainType
+
+`LProvinceRegistry:setTerrainType(id: integer, terrain_type: integer) -> boolean`
 
 Sets the terrain type index for a province. Terrain type controls which fill color or texture is used in terrain map mode.
 
 **Parameters**
 
-- `id` (`integer`, required) - Province ID.
-- `terrain_type` (`integer`, required) - Terrain type index (game-defined meaning).
+- `id` (`integer`, required): Province ID.
+- `terrain_type` (`integer`, required): Terrain type index (game-defined meaning).
 
 **Returns**: `boolean` - True if the province ID exists.
+
+**Lua API Stub**
+
+```lua
+--- Sets the terrain type index for a province. Terrain type controls which fill color or texture is used in terrain map mode.
+---@param id number Province ID.
+---@param terrain_type number Terrain type index (game-defined meaning).
+---@return boolean True if the province ID exists.
+function LProvinceRegistry:setTerrainType(id, terrain_type) end
+```
 
 #### Example
 
@@ -1148,16 +1464,28 @@ do
 end
 ```
 
-### `LProvinceRegistry:setVisibilityState(id: integer, visibility_state: integer) -> boolean`
+### LProvinceRegistry:setVisibilityState
+
+`LProvinceRegistry:setVisibilityState(id: integer, visibility_state: integer) -> boolean`
 
 Sets the visibility state for a province. Used for strategic visibility layers separate from fog (e.g. scouted vs. unscouted).
 
 **Parameters**
 
-- `id` (`integer`, required) - Province ID.
-- `visibility_state` (`integer`, required) - Visibility state value (game-defined meaning).
+- `id` (`integer`, required): Province ID.
+- `visibility_state` (`integer`, required): Visibility state value (game-defined meaning).
 
 **Returns**: `boolean` - True if the province ID exists.
+
+**Lua API Stub**
+
+```lua
+--- Sets the visibility state for a province. Used for strategic visibility layers separate from fog (e.g. scouted vs. unscouted).
+---@param id number Province ID.
+---@param visibility_state number Visibility state value (game-defined meaning).
+---@return boolean True if the province ID exists.
+function LProvinceRegistry:setVisibilityState(id, visibility_state) end
+```
 
 #### Example
 
@@ -1175,11 +1503,21 @@ do
 end
 ```
 
-### `LProvinceRegistry:type() -> string`
+### LProvinceRegistry:type
+
+`LProvinceRegistry:type() -> string`
 
 Returns the type name string for this userdata object.
 
 **Returns**: `string` - Always "LProvinceRegistry".
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name string for this userdata object.
+---@return string Always "LProvinceRegistry".
+function LProvinceRegistry:type() end
+```
 
 #### Example
 
@@ -1195,15 +1533,26 @@ do
 end
 ```
 
-### `LProvinceRegistry:typeOf(name: string) -> boolean`
+### LProvinceRegistry:typeOf
+
+`LProvinceRegistry:typeOf(name: string) -> boolean`
 
 Checks whether this object matches the given type name. Returns true for "LProvinceRegistry" and "Object".
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to check.
+- `name` (`string`, required): Type name to check.
 
 **Returns**: `boolean` - True if the name matches.
+
+**Lua API Stub**
+
+```lua
+--- Checks whether this object matches the given type name. Returns true for "LProvinceRegistry" and "Object".
+---@param name string Type name to check.
+---@return boolean True if the name matches.
+function LProvinceRegistry:typeOf(name) end
+```
 
 #### Example
 
@@ -1223,21 +1572,27 @@ end
 ```
 
 
-## Examples
+[⬆ back to top](#table-of-contents)
+
+## 💡 Examples
 
 - [province.lua](../blob/main/content/examples/province.lua) - API example
 
-## Reference Games
+[⬆ back to top](#table-of-contents)
+
+## 🎮 Reference Games
 
 - [eu2](../tree/main/content/games/strategy/eu2) (strategy)
 
-## Related Modules
+[⬆ back to top](#table-of-contents)
 
-- Previous: [[procgen|Module-procgen]]
-- Next: [[raycaster|Module-raycaster]]
-- [[ai|Module-ai]] - Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU.
-- [[animation|Module-animation]] - Sprite animation: source-rect changes over time. Imports only math; headless-testable.
-- [[automation|Module-automation]] - Automated input simulation for headless tests, QA replay, recorded sessions.
-- [[ecs|Module-ecs]] - Entity-Component-System: identity / data / behaviour separation for runtime composition.
-- [[i18n|Module-i18n]] - Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*).
-- [[minimap|Module-minimap]] - Grid-based minimap data model: fog of war, tracked objects, pings, viewport overlay.
+## 🔗 Related Modules
+
+- Previous: [procgen](Module-procgen)
+- Next: [raycaster](Module-raycaster)
+- [ai](Module-ai) - Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU.
+- [animation](Module-animation) - Sprite animation: source-rect changes over time. Imports only math; headless-testable.
+- [automation](Module-automation) - Automated input simulation for headless tests, QA replay, recorded sessions.
+- [ecs](Module-ecs) - Entity-Component-System: identity / data / behaviour separation for runtime composition.
+- [i18n](Module-i18n) - Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*).
+- [minimap](Module-minimap) - Grid-based minimap data model: fog of war, tracked objects, pings, viewport overlay.

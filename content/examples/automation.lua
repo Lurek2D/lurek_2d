@@ -1,230 +1,354 @@
 -- content/examples/automation.lua
 -- Demonstrates the lurek.automation module for scripted input playback, macros, and test automation.
 -- Run: cargo run -- content/examples/automation.lua
---@api-stub: lurek.automation.load
--- Loads an automation script from a Lua table of steps and optional metadata
+--@api-stub: lurek.automation.getCondition
+-- Reads a named boolean condition that automation steps can use in when/assert expressions.
 do
-  -- Define an automation script as a table with steps array and optional meta.
-  -- Each step has a time (seconds from script start), action type, and parameters.
-  -- Common actions: "keypress", "keyrelease", "mousepress", "mouserelease", "mousemove", "wait"
-  local menu_skip = {
-    meta = { description = "skip main menu and start game" },
+  -- Conditions are shared with automation scripts, so a game can expose state
+  -- without giving the script direct access to gameplay tables.
+  lurek.automation.setCondition("boss_defeated", true)
+  lurek.automation.setCondition("exit_unlocked", false)
+
+  local boss_done = lurek.automation.getCondition("boss_defeated") == true
+  local exit_ready = lurek.automation.getCondition("exit_unlocked") == true
+  local route = boss_done and exit_ready and "leave_arena" or "keep_testing"
+
+  lurek.log.info("automation route: " .. route, "automation")
+end
+--@api-stub: lurek.automation.getCurrentScript
+-- Returns the active script name, or nil when no script is playing.
+do
+  -- The active name is useful for debug HUDs and for checking that a test
+  -- harness started the route it intended to run.
+  lurek.automation.load("current_script_demo", {
+    meta = { description = "short script used to show current script lookup" },
     steps = {
       { time = 0.0, action = "wait" },
-      { time = 0.5, action = "keypress",   key = "return" },
-      { time = 0.6, action = "keyrelease", key = "return" },
-      { time = 1.2, action = "keypress",   key = "return" },
-      { time = 1.3, action = "keyrelease", key = "return" },
-    },
-  }
-  -- The name is used to reference this script in start(), saveMacro(), etc.
-  lurek.automation.load("menu_skip", menu_skip)
-end
---@api-stub: lurek.automation.unload
--- Unloads a named automation script to free memory
-do
-  -- Load a temporary calibration script for the tutorial
-  lurek.automation.load("tutorial_tap", {
-    steps = {
-      { time = 0.0, action = "keypress",   key = "space" },
-      { time = 0.1, action = "keyrelease", key = "space" },
+      { time = 0.1, action = "keypress", key = "space" },
+      { time = 0.2, action = "keyrelease", key = "space" },
     },
   })
-  -- After the tutorial finishes, remove the script to keep memory clean
-  local removed = lurek.automation.unload("tutorial_tap")
-  if removed then
-    lurek.log.info("tutorial_tap script cleaned up", "automation")
+  lurek.automation.start("current_script_demo")
+
+  local active = lurek.automation.getCurrentScript()
+  if active then
+    lurek.log.debug("playing automation script: " .. active, "automation")
+  end
+
+  lurek.automation.stop()
+end
+--@api-stub: lurek.automation.getCurrentStep
+-- Reports the index of the next step that playback will evaluate.
+do
+  -- getCurrentStep tracks the next pending step. It starts at 0, then moves
+  -- forward as update(dt) dispatches timed input events.
+  lurek.automation.load("step_cursor_demo", {
+    steps = {
+      { time = 0.0, action = "keypress", key = "right" },
+      { time = 0.2, action = "keyrelease", key = "right" },
+      { time = 0.3, action = "keypress", key = "space" },
+    },
+  })
+  lurek.automation.start("step_cursor_demo")
+  lurek.automation.update(0.05)
+
+  local next_step = lurek.automation.getCurrentStep()
+  lurek.log.debug("next automation step index: " .. next_step, "automation")
+
+  lurek.automation.stop()
+end
+--@api-stub: lurek.automation.getElapsedTime
+-- Returns scaled playback time for the current script in seconds.
+do
+  -- Elapsed time is affected by setPlaybackSpeed. At 2x speed, an update of
+  -- 0.25 seconds advances automation by roughly 0.5 seconds.
+  lurek.automation.load("elapsed_time_demo", {
+    steps = {
+      { time = 0.0, action = "wait" },
+      { time = 1.0, action = "keypress", key = "return" },
+    },
+  })
+  lurek.automation.setPlaybackSpeed(2.0)
+  lurek.automation.start("elapsed_time_demo")
+  lurek.automation.update(0.25)
+
+  local elapsed = lurek.automation.getElapsedTime()
+  lurek.log.info(string.format("automation elapsed: %.2fs", elapsed), "automation")
+
+  lurek.automation.stop()
+  lurek.automation.setPlaybackSpeed(1.0)
+end
+--@api-stub: lurek.automation.getLastError
+-- Returns the most recent automation failure message when an assert or macro step fails.
+do
+  -- An assert action uses the same condition expression syntax as when:
+  -- names, true/false, !, &&, ||, and parentheses.
+  lurek.automation.setCondition("door_open", false)
+  lurek.automation.load("last_error_demo", {
+    steps = {
+      { time = 0.0, action = "assert", assert = "door_open" },
+      { time = 0.1, action = "keypress", key = "up" },
+    },
+  })
+  lurek.automation.start("last_error_demo")
+  lurek.automation.update(0.1)
+
+  local message = lurek.automation.getLastError()
+  if message then
+    lurek.log.warn("automation stopped with: " .. message, "automation")
+  end
+
+  lurek.automation.stop()
+end
+--@api-stub: lurek.automation.getPlaybackSpeed
+-- Reads the current automation playback speed multiplier.
+do
+  -- A debug overlay can show the multiplier so timing-sensitive scripts are
+  -- not mistaken for real-time input playback.
+  lurek.automation.setPlaybackSpeed(0.5)
+  local speed = lurek.automation.getPlaybackSpeed()
+
+  if speed ~= 1.0 then
+    lurek.log.info(string.format("automation running at %.1fx speed", speed), "automation")
+  end
+
+  lurek.automation.setPlaybackSpeed(1.0)
+end
+--@api-stub: lurek.automation.getScripts
+-- Returns the names of all currently loaded automation scripts.
+do
+  -- The returned array is useful for a debug console command such as
+  -- "automation list". Sort it when you want deterministic display order.
+  lurek.automation.load("inventory_open_demo", {
+    steps = { { time = 0.0, action = "keypress", key = "i" } },
+  })
+  lurek.automation.load("inventory_close_demo", {
+    steps = { { time = 0.0, action = "keyrelease", key = "i" } },
+  })
+
+  local scripts = lurek.automation.getScripts()
+  table.sort(scripts)
+  lurek.log.debug("loaded scripts: " .. table.concat(scripts, ", "), "automation")
+end
+--@api-stub: lurek.automation.getStepCount
+-- Returns how many steps are in the active script.
+do
+  -- Step count is only reported for the active script. Use it with
+  -- getCurrentStep to build a simple progress indicator.
+  lurek.automation.load("step_count_demo", {
+    steps = {
+      { time = 0.0, action = "keypress", key = "right" },
+      { time = 0.4, action = "keyrelease", key = "right" },
+      { time = 0.5, action = "keypress", key = "space" },
+      { time = 0.6, action = "keyrelease", key = "space" },
+    },
+  })
+  lurek.automation.start("step_count_demo")
+
+  local total = lurek.automation.getStepCount()
+  lurek.log.info("step_count_demo contains " .. total .. " steps", "automation")
+
+  lurek.automation.stop()
+end
+--@api-stub: lurek.automation.getStepLimit
+-- Returns the configured maximum number of retained steps for a loaded script.
+do
+  -- Scripts default to the engine limit, but setStepLimit can lower the cap
+  -- for CI runs or generated scripts that should never grow without bound.
+  lurek.automation.load("limit_lookup_demo", {
+    steps = {
+      { time = 0.0, action = "keypress", key = "a" },
+      { time = 0.1, action = "keyrelease", key = "a" },
+    },
+  })
+  lurek.automation.setStepLimit("limit_lookup_demo", 8)
+
+  local limit = lurek.automation.getStepLimit("limit_lookup_demo")
+  if limit then
+    lurek.log.debug("limit_lookup_demo step limit: " .. limit, "automation")
+  end
+end
+--@api-stub: lurek.automation.hasMacro
+-- Checks whether a named macro has been saved.
+do
+  -- Use hasMacro before playMacro so a missing optional macro does not turn
+  -- into a runtime error during a test run.
+  lurek.automation.load("confirm_button_source", {
+    steps = {
+      { time = 0.0, action = "keypress", key = "return" },
+      { time = 0.1, action = "keyrelease", key = "return" },
+    },
+  })
+  lurek.automation.saveMacro("confirm_button", "confirm_button_source")
+
+  if lurek.automation.hasMacro("confirm_button") then
+    lurek.log.info("confirm_button macro is ready", "automation")
   end
 end
 --@api-stub: lurek.automation.hasScript
--- Returns whether a script is loaded by name
+-- Checks whether a script is already loaded under a given name.
 do
-  -- Guard against double-loading: only register the attract-mode script once
-  if not lurek.automation.hasScript("attract_loop") then
-    lurek.automation.load("attract_loop", {
+  -- Loading a script with the same name replaces the old one. Guard with
+  -- hasScript when a setup routine may run more than once.
+  if not lurek.automation.hasScript("menu_skip_guarded") then
+    lurek.automation.load("menu_skip_guarded", {
+      meta = { description = "skip title and open the first save slot" },
       steps = {
-        { time = 0.0, action = "keypress", key = "right" },
-        { time = 1.0, action = "keyrelease", key = "right" },
-        { time = 2.0, action = "keypress", key = "space" },
-        { time = 2.1, action = "keyrelease", key = "space" },
+        { time = 0.0, action = "keypress", key = "return" },
+        { time = 0.1, action = "keyrelease", key = "return" },
+        { time = 0.4, action = "keypress", key = "return" },
+        { time = 0.5, action = "keyrelease", key = "return" },
       },
     })
   end
 end
---@api-stub: lurek.automation.getScripts
--- Returns an array of all loaded script names
+--@api-stub: lurek.automation.isComplete
+-- Reports whether the active script has dispatched all of its steps.
 do
-  -- Useful for debug overlays or test harness inventory
-  lurek.automation.load("walk_right", { steps = { { time = 0, action = "keypress", key = "d" } } })
-  lurek.automation.load("jump_combo", { steps = { { time = 0, action = "keypress", key = "space" } } })
-  local scripts = lurek.automation.getScripts()
-  for i, name in ipairs(scripts) do
-    lurek.log.debug("script [" .. i .. "]: " .. name, "automation")
-  end
-end
---@api-stub: lurek.automation.start
--- Starts playback of a loaded automation script by name
-do
-  -- Typical pattern: load in conf, start in init
-  lurek.automation.load("speed_run", {
-    meta = { description = "automated speed-run route" },
+  -- A completed script remains complete until stop() resets playback state.
+  -- This is useful for chaining routes in a longer test scenario.
+  lurek.automation.load("complete_demo", {
     steps = {
-      { time = 0.0, action = "keypress",   key = "d" },
-      { time = 2.5, action = "keyrelease", key = "d" },
-      { time = 2.6, action = "keypress",   key = "space" },
-      { time = 2.7, action = "keyrelease", key = "space" },
+      { time = 0.0, action = "wait" },
     },
   })
-  -- Start playback — the script will inject input events when update() is called
-  function lurek.init()
-    lurek.automation.start("speed_run")
+  lurek.automation.start("complete_demo")
+  lurek.automation.update(0.01)
+
+  if lurek.automation.isComplete() then
+    lurek.log.info("complete_demo finished", "automation")
   end
+
+  lurek.automation.stop()
 end
---@api-stub: lurek.automation.stop
--- Stops the currently running automation script immediately
+--@api-stub: lurek.automation.isFailed
+-- Reports whether playback is halted because an assert, macro, or visual check failed.
 do
-  -- Let the player break out of automation by pressing Escape
-  function lurek.keypressed(key)
-    if key == "escape" and lurek.automation.isRunning() then
-      lurek.automation.stop()
-      lurek.log.info("player cancelled automation", "automation")
-    end
+  -- Failed state is separate from complete state, so test harnesses can tell
+  -- the difference between a finished route and a broken route.
+  lurek.automation.setCondition("player_alive", false)
+  lurek.automation.load("failure_state_demo", {
+    steps = {
+      { time = 0.0, action = "assert", assert = "player_alive" },
+    },
+  })
+  lurek.automation.start("failure_state_demo")
+  lurek.automation.update(0.05)
+
+  if lurek.automation.isFailed() then
+    lurek.log.error("automation route failed before completion", "automation")
   end
+
+  lurek.automation.stop()
 end
---@api-stub: lurek.automation.pause
--- Pauses automation playback without losing progress
+--@api-stub: lurek.automation.isHighlightMode
+-- Reads whether visual highlighting of automated input is enabled.
 do
-  -- Pause automation when the game menu opens so input does not bleed through
-  local menu_visible = false
-  function lurek.keypressed(key)
-    if key == "escape" then
-      menu_visible = not menu_visible
-      if menu_visible and lurek.automation.isRunning() then
-        lurek.automation.pause()
-      end
-    end
+  -- Highlight mode is just a stored flag. Rendering code can read it and draw
+  -- its own overlay around the UI element currently being exercised.
+  lurek.automation.setHighlightMode(true)
+
+  if lurek.automation.isHighlightMode() then
+    lurek.log.debug("automation highlight overlay enabled", "automation")
   end
-end
---@api-stub: lurek.automation.resume
--- Resumes paused automation playback from where it left off
-do
-  -- Resume automation when the menu closes
-  local menu_visible = true
-  function lurek.keypressed(key)
-    if key == "escape" and menu_visible then
-      menu_visible = false
-      if lurek.automation.isPaused() then
-        lurek.automation.resume()
-      end
-    end
-  end
-end
---@api-stub: lurek.automation.update
--- Advances automation playback by dt seconds; dispatches input events for passed steps
-do
-  -- Call update() every frame in process() to drive the automation timeline
-  -- The module compares elapsed time against each step's time field
-  -- and fires the corresponding input event when the step is reached
-  function lurek.process(dt)
-    lurek.automation.update(dt)
-  end
-end
---@api-stub: lurek.automation.isRunning
--- Returns true when an automation script is actively playing
-do
-  -- Show an indicator so players know the game is in auto-play mode
-  function lurek.draw_ui()
-    if lurek.automation.isRunning() then
-      lurek.render.setColor(1, 1, 0, 1)
-      lurek.render.print("[AUTO] press ESC to cancel", 8, 8)
-      lurek.render.setColor(1, 1, 1, 1)
-    end
-  end
+
+  lurek.automation.setHighlightMode(false)
 end
 --@api-stub: lurek.automation.isPaused
--- Returns true when automation is loaded and paused
+-- Reports whether playback is currently paused.
 do
-  -- Dim the auto indicator when paused
-  function lurek.draw_ui()
-    if lurek.automation.isPaused() then
-      lurek.render.setColor(0.5, 0.5, 0.5, 0.7)
-      lurek.render.print("[AUTO PAUSED]", 8, 8)
-      lurek.render.setColor(1, 1, 1, 1)
-    end
+  -- Paused playback keeps the active script and current step, but update(dt)
+  -- will not advance until resume() is called.
+  lurek.automation.load("paused_state_demo", {
+    steps = {
+      { time = 0.0, action = "keypress", key = "right" },
+      { time = 1.0, action = "keyrelease", key = "right" },
+    },
+  })
+  lurek.automation.start("paused_state_demo")
+  lurek.automation.pause()
+
+  if lurek.automation.isPaused() then
+    lurek.log.info("automation paused while modal menu is open", "automation")
   end
+
+  lurek.automation.stop()
 end
---@api-stub: lurek.automation.isComplete
--- Returns true when the current script has played all steps
+--@api-stub: lurek.automation.isRunning
+-- Reports whether a script is actively advancing through update(dt).
 do
-  -- Chain scripts: when one finishes, start the next
-  local queue = { "phase_1", "phase_2", "phase_3" }
-  local qi = 1
-  function lurek.process(dt)
-    lurek.automation.update(dt)
-    if lurek.automation.isComplete() then
-      lurek.automation.stop()
-      qi = qi + 1
-      if qi <= #queue then
-        lurek.automation.start(queue[qi])
-      end
-    end
+  -- isRunning returns false while paused, complete, failed, or idle.
+  lurek.automation.load("running_state_demo", {
+    steps = {
+      { time = 0.2, action = "keypress", key = "d" },
+      { time = 0.4, action = "keyrelease", key = "d" },
+    },
+  })
+  lurek.automation.start("running_state_demo")
+
+  if lurek.automation.isRunning() then
+    lurek.log.debug("running_state_demo is active", "automation")
   end
+
+  lurek.automation.stop()
 end
---@api-stub: lurek.automation.getCurrentStep
--- Returns the 1-based index of the step currently being processed
+--@api-stub: lurek.automation.listMacros
+-- Returns the names of all saved automation macros.
 do
-  -- Display a progress bar during automation playback
-  function lurek.draw_ui()
-    if lurek.automation.isRunning() then
-      local step = lurek.automation.getCurrentStep()
-      local total = lurek.automation.getStepCount()
-      local pct = step / math.max(total, 1)
-      lurek.render.rectangle("fill", 8, 8, 200 * pct, 12)
-    end
-  end
+  -- Macros are reusable script copies. A QA overlay can list them so testers
+  -- know which short input sequences are available for replay.
+  lurek.automation.load("macro_confirm_source", {
+    steps = {
+      { time = 0.0, action = "keypress", key = "return" },
+      { time = 0.08, action = "keyrelease", key = "return" },
+    },
+  })
+  lurek.automation.load("macro_cancel_source", {
+    steps = {
+      { time = 0.0, action = "keypress", key = "escape" },
+      { time = 0.08, action = "keyrelease", key = "escape" },
+    },
+  })
+  lurek.automation.saveMacro("confirm", "macro_confirm_source")
+  lurek.automation.saveMacro("cancel", "macro_cancel_source")
+
+  local macros = lurek.automation.listMacros()
+  table.sort(macros)
+  lurek.log.info("registered macros: " .. table.concat(macros, ", "), "automation")
 end
---@api-stub: lurek.automation.getStepCount
--- Returns the total number of steps in the currently active script
+--@api-stub: lurek.automation.load
+-- Loads a Lua-table script containing timed steps and optional metadata.
 do
-  -- Log how many steps will execute before starting a long automation run
-  function lurek.init()
-    lurek.automation.start("speed_run")
-    local count = lurek.automation.getStepCount()
-    lurek.log.info("speed_run: " .. count .. " input steps queued", "automation")
-  end
-end
---@api-stub: lurek.automation.getCurrentScript
--- Returns the name of the active script, or nil if nothing is playing
-do
-  -- Show the current automation script name in a debug HUD
-  function lurek.draw_ui()
-    local name = lurek.automation.getCurrentScript()
-    if name then
-      lurek.render.print("playing: " .. name, 8, 24)
-    else
-      lurek.render.print("automation idle", 8, 24)
-    end
-  end
-end
---@api-stub: lurek.automation.getElapsedTime
--- Returns the time in seconds since the current script started
-do
-  -- Show a running timer while automation plays for QA timing analysis
-  function lurek.draw_ui()
-    if lurek.automation.isRunning() then
-      local elapsed = lurek.automation.getElapsedTime()
-      lurek.render.print(string.format("auto t=%.2fs", elapsed), 8, 40)
-    end
-  end
+  -- A script is a table with optional meta.description and a steps array.
+  -- Valid action strings include keypress, keyrelease, mousemove, mousepress,
+  -- mouserelease, mousewheel, textinput, wait, callmacro, assert, and visualassert.
+  -- The when field skips a step unless its condition expression is true.
+  local checkout_route = {
+    meta = { description = "open inventory, choose item, and confirm use" },
+    steps = {
+      { time = 0.00, action = "keypress", key = "i", scancode = "i" },
+      { time = 0.08, action = "keyrelease", key = "i", scancode = "i" },
+      { time = 0.20, action = "mousemove", x = 320, y = 180, dx = 320, dy = 180 },
+      { time = 0.25, action = "mousepress", x = 320, y = 180, button = 1, clicks = 1 },
+      { time = 0.32, action = "mouserelease", x = 320, y = 180, button = 1 },
+      { time = 0.45, action = "textinput", text = "potion" },
+      { time = 0.70, action = "keypress", key = "return", when = "inventory_open" },
+      { time = 0.78, action = "keyrelease", key = "return", when = "inventory_open" },
+      { time = 1.00, action = "wait" },
+    },
+  }
+
+  lurek.automation.load("checkout_route", checkout_route)
+  lurek.automation.setCondition("inventory_open", true)
 end
 --@api-stub: lurek.automation.loadFromToml
--- Loads an automation script from a TOML-formatted string
+-- Loads a script from TOML text using the same step fields as load().
 do
-  -- TOML format is useful for loading scripts from external files or configs
-  -- Each [[steps]] block defines one step with time, action, and key fields
+  -- TOML is convenient for external automation files checked into a project.
+  -- Use decimal time values so the TOML parser reads them as floats.
   local toml_text = [=[
 [meta]
-description = "press jump then dash"
+description = "press jump, then dash when the route is clear"
 
 [[steps]]
 time = 0.0
@@ -232,194 +356,272 @@ action = "keypress"
 key = "space"
 
 [[steps]]
-time = 0.15
+time = 0.1
 action = "keyrelease"
 key = "space"
 
 [[steps]]
-time = 0.3
+time = 0.2
 action = "keypress"
 key = "lshift"
+when = "route_clear && !dialog_open"
 
 [[steps]]
-time = 0.4
+time = 0.3
 action = "keyrelease"
 key = "lshift"
+when = "route_clear && !dialog_open"
 ]=]
-  lurek.automation.loadFromToml("jump_dash", toml_text)
+
+  lurek.automation.loadFromToml("jump_dash_route", toml_text)
+  lurek.automation.setCondition("route_clear", true)
+  lurek.automation.setCondition("dialog_open", false)
 end
---@api-stub: lurek.automation.getStepLimit
--- Returns the maximum step count for a loaded script, or nil if unlimited
+--@api-stub: lurek.automation.pause
+-- Pauses playback without clearing the active script or progress.
 do
-  -- Check whether a script has a step limit before running it in CI
-  local limit = lurek.automation.getStepLimit("speed_run")
-  if limit then
-    lurek.log.info("speed_run capped at " .. limit .. " steps", "automation")
-  else
-    lurek.log.info("speed_run has no step limit", "automation")
-  end
-end
---@api-stub: lurek.automation.setStepLimit
--- Sets the maximum number of steps a script will execute before auto-stopping
-do
-  -- Cap long scripts during CI to avoid infinite loops in broken automation
-  local CI_STEP_CAP = 128
-  local ok = lurek.automation.setStepLimit("speed_run", CI_STEP_CAP)
-  if ok then
-    lurek.log.info("speed_run limited to " .. CI_STEP_CAP .. " steps for CI", "automation")
-  end
-end
---@api-stub: lurek.automation.saveMacro
--- Saves a loaded script as a reusable macro by name
-do
-  -- Macros are lightweight named copies stored for quick replay
-  -- Useful for common input sequences reused across different test scenarios
-  lurek.automation.load("confirm_dialog", {
+  -- Pause when a modal menu, loading screen, or manual inspection tool opens.
+  -- The same script can later continue from its current step with resume().
+  lurek.automation.load("pause_demo", {
     steps = {
-      { time = 0.0, action = "keypress",   key = "return" },
+      { time = 0.0, action = "keypress", key = "right" },
+      { time = 2.0, action = "keyrelease", key = "right" },
+    },
+  })
+  lurek.automation.start("pause_demo")
+  lurek.automation.update(0.25)
+  lurek.automation.pause()
+
+  lurek.log.debug("pause_demo paused at step " .. lurek.automation.getCurrentStep(), "automation")
+
+  lurek.automation.stop()
+end
+--@api-stub: lurek.automation.playMacro
+-- Starts playback of a previously saved macro.
+do
+  -- A macro is saved by name, but playback runs the script copy stored inside
+  -- the macro. Use hasMacro first when the macro is optional.
+  lurek.automation.load("macro_play_source", {
+    steps = {
+      { time = 0.0, action = "keypress", key = "return" },
       { time = 0.1, action = "keyrelease", key = "return" },
     },
   })
-  lurek.automation.saveMacro("confirm", "confirm_dialog")
-end
---@api-stub: lurek.automation.playMacro
--- Starts playback of a previously saved macro
-do
-  -- Play a macro whenever a dialog appears to auto-dismiss it during testing
-  function lurek.init()
-    if lurek.automation.hasMacro("confirm") then
-      lurek.automation.playMacro("confirm")
-    end
+  lurek.automation.saveMacro("play_confirm", "macro_play_source")
+
+  if lurek.automation.hasMacro("play_confirm") then
+    lurek.automation.playMacro("play_confirm")
+    lurek.automation.update(0.2)
+    lurek.automation.stop()
   end
 end
---@api-stub: lurek.automation.hasMacro
--- Returns true if a macro with the given name has been saved
+--@api-stub: lurek.automation.resume
+-- Resumes a paused script from its current progress point.
 do
-  -- Verify required macros exist before starting an automated test run
-  local required = { "confirm", "cancel", "menu_nav" }
-  for _, name in ipairs(required) do
-    if not lurek.automation.hasMacro(name) then
-      lurek.log.warn("missing required macro: " .. name, "automation")
-    end
+  -- resume() is a no-op unless the simulator is paused. This makes it safe
+  -- to call when closing a menu that may or may not have paused automation.
+  lurek.automation.load("resume_demo", {
+    steps = {
+      { time = 0.0, action = "keypress", key = "right" },
+      { time = 0.5, action = "keyrelease", key = "right" },
+    },
+  })
+  lurek.automation.start("resume_demo")
+  lurek.automation.pause()
+  lurek.automation.resume()
+
+  if lurek.automation.isRunning() then
+    lurek.log.info("resume_demo continued after pause", "automation")
   end
+
+  lurek.automation.stop()
 end
---@api-stub: lurek.automation.listMacros
--- Returns an array of all saved macro names
+--@api-stub: lurek.automation.saveMacro
+-- Stores a loaded script as a reusable named macro.
 do
-  -- Print available macros at startup for QA reference
-  local macros = lurek.automation.listMacros()
-  if #macros > 0 then
-    lurek.log.info("available macros: " .. table.concat(macros, ", "), "automation")
-  else
-    lurek.log.info("no macros registered", "automation")
+  -- saveMacro copies an existing loaded script. The original script can be
+  -- unloaded later without removing the saved macro.
+  lurek.automation.load("save_macro_source", {
+    meta = { description = "confirm the currently focused dialog" },
+    steps = {
+      { time = 0.00, action = "keypress", key = "return" },
+      { time = 0.08, action = "keyrelease", key = "return" },
+    },
+  })
+  lurek.automation.saveMacro("dialog_confirm", "save_macro_source")
+  lurek.automation.unload("save_macro_source")
+
+  if lurek.automation.hasMacro("dialog_confirm") then
+    lurek.log.debug("dialog_confirm macro saved", "automation")
   end
-end
---@api-stub: lurek.automation.setPlaybackSpeed
--- Sets the speed multiplier for automation playback (1.0 = real-time)
-do
-  -- Run automation at 4x speed during CI to complete tests faster
-  -- Use 0.5x for slow-motion debugging of input timing issues
-  local is_ci = false -- os.getenv not available in lurek sandbox
-  if is_ci then
-    lurek.automation.setPlaybackSpeed(4.0)
-  else
-    lurek.automation.setPlaybackSpeed(1.0)
-  end
-end
---@api-stub: lurek.automation.getPlaybackSpeed
--- Returns the current playback speed multiplier
-do
-  -- Show speed indicator when running faster than real-time
-  function lurek.draw_ui()
-    local speed = lurek.automation.getPlaybackSpeed()
-    if speed ~= 1.0 then
-      lurek.render.print(string.format("[%.1fx]", speed), 8, 56)
-    end
-  end
-end
---@api-stub: lurek.automation.setHighlightMode
--- Enables visual highlight mode to show which inputs automation is injecting
-do
-  -- Enable highlight mode during recording or debugging so the developer
-  -- can visually confirm which inputs are being injected
-  local debug_mode = true
-  lurek.automation.setHighlightMode(debug_mode)
-end
---@api-stub: lurek.automation.isHighlightMode
--- Returns true when highlight mode is active
-do
-  -- Draw a pulsing indicator when highlight mode shows injected inputs
-  function lurek.draw()
-    if lurek.automation.isHighlightMode() then
-      local alpha = 0.3 + 0.3 * math.sin(lurek.timer.getTime() * 4)
-      lurek.render.setColor(1, 1, 0, alpha)
-      lurek.render.rectangle("fill", 0, 0, 16, 16)
-      lurek.render.setColor(1, 1, 1, 1)
-    end
-  end
-end
---@api-stub: lurek.automation.waitUntil
--- Suspends automation until a predicate returns true or a timeout elapses
-do
-  -- Wait for a loading screen to finish before continuing the automation
-  -- The predicate is called each frame during update(); if it returns true
-  -- or the timeout (seconds) expires, playback resumes
-  local level_loaded = false
-  function lurek.init()
-    lurek.automation.waitUntil(function()
-      return level_loaded
-    end, 10.0)
-  end
-  -- Somewhere else in the game:
-  -- level_loaded = true  -- this unblocks the automation
 end
 --@api-stub: lurek.automation.setCondition
--- Sets a named boolean condition that automation steps can reference
+-- Sets a named boolean condition used by when/assert expressions.
 do
-  -- Conditions let automation scripts branch or wait based on game state
-  -- without the script needing direct access to game variables
-  local boss_defeated = false
-  function lurek.process(dt)
-    -- Update the condition each frame so automation scripts can react
-    lurek.automation.setCondition("boss_defeated", boss_defeated)
-    lurek.automation.update(dt)
+  -- Conditions support simple boolean expressions. Unknown names evaluate to
+  -- false, so set every condition your route depends on before playback.
+  local player_ready = true
+  local dialog_open = false
+  lurek.automation.setCondition("player_ready", player_ready)
+  lurek.automation.setCondition("dialog_open", dialog_open)
+
+  lurek.automation.load("conditioned_route", {
+    steps = {
+      { time = 0.0, action = "keypress", key = "space", when = "player_ready && !dialog_open" },
+      { time = 0.1, action = "keyrelease", key = "space", when = "player_ready && !dialog_open" },
+    },
+  })
+end
+--@api-stub: lurek.automation.setHighlightMode
+-- Enables or disables the automation highlight flag for debug visuals.
+do
+  -- The engine stores the flag; your render code decides how to visualize it.
+  -- Turn it on for manual debugging and off for normal CI playback.
+  local manual_debug_session = true
+  lurek.automation.setHighlightMode(manual_debug_session)
+
+  if manual_debug_session then
+    lurek.log.info("input highlight mode enabled for automation", "automation")
+  end
+
+  lurek.automation.setHighlightMode(false)
+end
+--@api-stub: lurek.automation.setPlaybackSpeed
+-- Sets a multiplier applied to dt during automation update().
+do
+  -- Values above 1.0 make scripts complete faster; values between 0 and 1
+  -- slow them down for visual debugging. Negative values are clamped to 0.
+  lurek.automation.load("speed_demo", {
+    steps = {
+      { time = 0.0, action = "keypress", key = "d" },
+      { time = 1.0, action = "keyrelease", key = "d" },
+    },
+  })
+  lurek.automation.setPlaybackSpeed(3.0)
+  lurek.automation.start("speed_demo")
+  lurek.automation.update(0.2)
+
+  lurek.log.debug("speed_demo elapsed: " .. lurek.automation.getElapsedTime(), "automation")
+
+  lurek.automation.stop()
+  lurek.automation.setPlaybackSpeed(1.0)
+end
+--@api-stub: lurek.automation.setStepLimit
+-- Sets the maximum number of retained steps for a loaded script.
+do
+  -- Repeat expansion happens when a script is loaded. Lowering the step limit
+  -- truncates the loaded script so generated routes cannot run too long.
+  lurek.automation.load("limited_repeats", {
+    steps = {
+      { time = 0.0, action = "keypress", key = "right", ["repeat"] = 10, repeatInterval = 0.1 },
+      { time = 1.2, action = "keyrelease", key = "right" },
+    },
+  })
+
+  local changed = lurek.automation.setStepLimit("limited_repeats", 4)
+  if changed then
+    lurek.automation.start("limited_repeats")
+    lurek.log.info("limited_repeats retained " .. lurek.automation.getStepCount() .. " steps", "automation")
+    lurek.automation.stop()
   end
 end
---@api-stub: lurek.automation.getCondition
--- Returns the current value of a named automation condition
+--@api-stub: lurek.automation.start
+-- Starts playback of a loaded automation script from the beginning.
 do
-  -- Read conditions from the debug overlay to verify game state during replays
-  function lurek.draw_ui()
-    local boss = lurek.automation.getCondition("boss_defeated")
-    local door = lurek.automation.getCondition("door_open")
-    lurek.render.print("boss_defeated=" .. tostring(boss), 8, 72)
-    lurek.render.print("door_open=" .. tostring(door), 8, 88)
+  -- start() resets elapsed time and current step for the named script. It
+  -- raises an error if the script has not been loaded.
+  lurek.automation.load("start_route", {
+    meta = { description = "move right and jump once" },
+    steps = {
+      { time = 0.0, action = "keypress", key = "d" },
+      { time = 0.4, action = "keyrelease", key = "d" },
+      { time = 0.5, action = "keypress", key = "space" },
+      { time = 0.6, action = "keyrelease", key = "space" },
+    },
+  })
+
+  lurek.automation.start("start_route")
+  lurek.log.info("start_route started", "automation")
+  lurek.automation.stop()
+end
+--@api-stub: lurek.automation.stop
+-- Stops playback and clears the active script state.
+do
+  -- stop() is safe to call from a cancel key, a failed assertion handler, or
+  -- the end of a scenario. It returns the simulator to idle.
+  lurek.automation.load("stop_demo", {
+    steps = {
+      { time = 0.0, action = "keypress", key = "left" },
+      { time = 3.0, action = "keyrelease", key = "left" },
+    },
+  })
+  lurek.automation.start("stop_demo")
+  lurek.automation.update(0.2)
+  lurek.automation.stop()
+
+  if not lurek.automation.isRunning() then
+    lurek.log.debug("stop_demo returned automation to idle", "automation")
   end
 end
---@api-stub: lurek.automation.isFailed
--- Returns true when the current automation script encountered an error
+--@api-stub: lurek.automation.unload
+-- Removes a loaded script by name and stops it first if it is active.
 do
-  -- Check for failures each frame and abort the test run if automation breaks
+  -- Use unload for temporary scripts generated by a level, tutorial, or test
+  -- case so the registry does not keep stale routes around.
+  lurek.automation.load("temporary_route", {
+    steps = {
+      { time = 0.0, action = "keypress", key = "tab" },
+      { time = 0.1, action = "keyrelease", key = "tab" },
+    },
+  })
+  lurek.automation.start("temporary_route")
+
+  local removed = lurek.automation.unload("temporary_route")
+  if removed then
+    lurek.log.info("temporary_route unloaded", "automation")
+  end
+end
+--@api-stub: lurek.automation.update
+-- Advances playback by dt seconds and dispatches due input events.
+do
+  -- Call update(dt) once per frame from lurek.process(dt). The simulator
+  -- compares scaled elapsed time with each step's time and queues input events.
+  lurek.automation.load("update_loop_demo", {
+    steps = {
+      { time = 0.0, action = "keypress", key = "right" },
+      { time = 0.4, action = "keyrelease", key = "right" },
+      { time = 0.5, action = "keypress", key = "space" },
+      { time = 0.6, action = "keyrelease", key = "space" },
+    },
+  })
+  lurek.automation.start("update_loop_demo")
+
   function lurek.process(dt)
     lurek.automation.update(dt)
-    if lurek.automation.isFailed() then
-      local err = lurek.automation.getLastError() or "unknown error"
-      lurek.log.error("automation failed: " .. err, "automation")
+    if lurek.automation.isComplete() or lurek.automation.isFailed() then
       lurek.automation.stop()
     end
   end
 end
---@api-stub: lurek.automation.getLastError
--- Returns the last error message string, or nil if no error occurred
+--@api-stub: lurek.automation.waitUntil
+-- Suspends automation updates until a predicate returns true or the timeout elapses.
 do
-  -- After a test run completes, check if there was an error and report it
-  function lurek.quit()
-    local err = lurek.automation.getLastError()
-    if err then
-      lurek.log.error("automation error on exit: " .. err, "automation")
-    else
-      lurek.log.info("automation completed cleanly", "automation")
-    end
-  end
+  -- waitUntil is useful around loading screens. While the predicate is false,
+  -- update(dt) returns early and no script steps are dispatched.
+  local level_ready = false
+  lurek.automation.load("wait_until_demo", {
+    steps = {
+      { time = 0.0, action = "keypress", key = "return" },
+      { time = 0.1, action = "keyrelease", key = "return" },
+    },
+  })
+  lurek.automation.start("wait_until_demo")
+  lurek.automation.waitUntil(function()
+    return level_ready
+  end, 5.0)
+
+  level_ready = true
+  lurek.automation.update(0.1)
+  lurek.automation.stop()
 end
 print("content/examples/automation.lua")

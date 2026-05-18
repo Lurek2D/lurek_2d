@@ -4,189 +4,1222 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
 - [action](#action)
+  - [brick_breaker](#brickbreaker)
+  - [bullet_hell](#bullethell)
+  - [cannon_fodder](#cannonfodder)
+  - [endless_runner](#endlessrunner)
+  - [fighting_game](#fightinggame)
+  - [horde_survivor](#hordesurvivor)
+  - [infiltration](#infiltration)
+  - [metroidvania](#metroidvania)
+  - [platform_fighter](#platformfighter)
+  - [platformer](#platformer)
+  - [roguelite](#roguelite)
+  - [sniper](#sniper)
+  - [soulslike](#soulslike)
+  - [stealth](#stealth)
+  - [vertical_climber](#verticalclimber)
 - [arcade](#arcade)
+  - [asteroids](#asteroids)
+  - [centipede](#centipede)
+  - [donkey_kong](#donkeykong)
+  - [frogger](#frogger)
+  - [galaga](#galaga)
+  - [pac_man](#pacman)
+  - [pong](#pong)
+  - [snake](#snake)
+  - [space_invaders](#spaceinvaders)
+  - [tetris](#tetris)
 - [retro](#retro)
+  - [another_world](#anotherworld)
+  - [boulder_dash](#boulderdash)
+  - [cannon_fodder](#cannonfodder)
+  - [commando](#commando)
+  - [dungeon_crawler](#dungeoncrawler)
+  - [giana_sisters](#gianasisters)
+  - [lemmings](#lemmings)
+  - [paradroid](#paradroid)
+  - [raycaster_fps](#raycasterfps)
+  - [sensible_soccer](#sensiblesoccer)
+  - [shadow_beast](#shadowbeast)
+  - [turrican](#turrican)
 - [rpg](#rpg)
+  - [adventure](#adventure)
+  - [alchemy](#alchemy)
+  - [courtroom](#courtroom)
+  - [creature_collector](#creaturecollector)
+  - [dialog_demo](#dialogdemo)
+  - [dungeon_eye](#dungeoneye)
+  - [horror](#horror)
+  - [loot_rpg](#lootrpg)
+  - [loot_rpg_demo](#lootrpgdemo)
+  - [merchant](#merchant)
+  - [merchant_demo](#merchantdemo)
+  - [roguelike](#roguelike)
+  - [social_deduction](#socialdeduction)
+  - [star_voyage](#starvoyage)
+  - [survival_crafting](#survivalcrafting)
+  - [visual_novel](#visualnovel)
 - [showcase](#showcase)
+  - [automation_demo](#automationdemo)
+  - [debugbridge_demo](#debugbridgedemo)
+  - [demo_game](#demogame)
+  - [devtools_demo](#devtoolsdemo)
+  - [docs_demo](#docsdemo)
+  - [entity_showcase](#entityshowcase)
+  - [globe_demo](#globedemo)
+  - [hacking_game](#hackinggame)
+  - [hello_world](#helloworld)
+  - [html-dialog](#html-dialog)
+  - [html-hud](#html-hud)
+  - [html-inventory](#html-inventory)
+  - [html-load-document](#html-load-document)
+  - [html-scoreboard](#html-scoreboard)
+  - [html-settings](#html-settings)
+  - [light_demo](#lightdemo)
+  - [light_showcase](#lightshowcase)
+  - [localization_demo](#localizationdemo)
+  - [minimap_demo](#minimapdemo)
+  - [modding_demo](#moddingdemo)
+  - [music_composer](#musiccomposer)
+  - [nine_slice_demo](#nineslicedemo)
+  - [overlay_demo](#overlaydemo)
+  - [particles_demo](#particlesdemo)
+  - [patterns_demo](#patternsdemo)
+  - [pipeline_showcase](#pipelineshowcase)
+  - [postfx_demo](#postfxdemo)
+  - [province_demo](#provincedemo)
+  - [scene_demo](#scenedemo)
+  - [signal_demo](#signaldemo)
+  - [sprites](#sprites)
+  - [terminal_demo](#terminaldemo)
+  - [tween_demo](#tweendemo)
+  - [vending_lights](#vendinglights)
 - [simulation](#simulation)
+  - [colony_sim](#colonysim)
+  - [cooking_sim](#cookingsim)
+  - [factory](#factory)
+  - [farming_sim](#farmingsim)
+  - [god_game](#godgame)
+  - [hotel_manager](#hotelmanager)
+  - [idle_game](#idlegame)
+  - [medical_sim](#medicalsim)
+  - [mining](#mining)
+  - [physics_demo](#physicsdemo)
+  - [physics_sandbox](#physicssandbox)
+  - [railroad](#railroad)
+  - [settlers_rise](#settlersrise)
+  - [tower_sim](#towersim)
+  - [tycoon](#tycoon)
+  - [vehicle_builder](#vehiclebuilder)
+  - [wildlife_photo](#wildlifephoto)
+  - [zoo_tycoon](#zootycoon)
 - [sports](#sports)
+  - [boxing_ring](#boxingring)
+  - [drift_racing](#driftracing)
+  - [fishing](#fishing)
+  - [golf_classic](#golfclassic)
+  - [pinball](#pinball)
+  - [rhythm_game](#rhythmgame)
+  - [sensible_soccer](#sensiblesoccer)
+  - [ski_jump](#skijump)
+  - [sports_manager](#sportsmanager)
+  - [tennis_classic](#tennisclassic)
+  - [track_and_field](#trackandfield)
+  - [trajectory_sports](#trajectorysports)
 - [strategy](#strategy)
+  - [bridge_builder](#bridgebuilder)
+  - [card_game](#cardgame)
+  - [deckbuilder](#deckbuilder)
+  - [eu2](#eu2)
+  - [hex_strategy](#hexstrategy)
+  - [logic_game](#logicgame)
+  - [match3](#match3)
+  - [maze_defense](#mazedefense)
+  - [party_games](#partygames)
+  - [physics_puzzle](#physicspuzzle)
+  - [rts](#rts)
+  - [tactical_battle](#tacticalbattle)
+  - [tower_defense](#towerdefense)
+  - [wargame](#wargame)
+  - [worms_artillery](#wormsartillery)
 
 Reference games come from `content/games/`. Module usage is detected by scanning each `main.lua`.
 
 ## action
 
-| Game | Description | Modules |
-|---|---|---|
-| [brick_breaker](../tree/main/content/games/action/brick_breaker) | Classic Arkanoid-style brick breaking game. Bounce the ball off your paddle to destroy rows of bricks, collect power-ups, and advance through increasingly di... | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), timer ([[Module-timer]]), tween ([[Module-tween]]), window ([[Module-window]]) |
-| [bullet_hell](../tree/main/content/games/action/bullet_hell) | Dodge intricate bullet patterns, graze for bonus points, and bomb your way through relentless waves. | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [cannon_fodder](../tree/main/content/games/action/cannon_fodder) | Top-down military squad action inspired by Cannon Fodder (Amiga). Lead four soldiers across a tile-based jungle map, click to move the squad, while they auto... | event ([[Module-event]]), math ([[Module-math]]), render ([[Module-render]]), window ([[Module-window]]) |
-| [endless_runner](../tree/main/content/games/action/endless_runner) | Auto-scrolling side-view runner — dodge tall barriers, slide under low beams, leap across gaps, and collect coins while the world accelerates. | event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), timer ([[Module-timer]]), tween ([[Module-tween]]), window ([[Module-window]]) |
-| [fighting_game](../tree/main/content/games/action/fighting_game) | 1v1 fighting game with Player vs AI — land combos, build super meter, and win best of 3 rounds. | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), timer ([[Module-timer]]), tween ([[Module-tween]]), window ([[Module-window]]) |
-| [horde_survivor](../tree/main/content/games/action/horde_survivor) | Vampire Survivors-style top-down horde survival — auto-attack with orbiting projectiles while dodging waves of enemies. | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), timer ([[Module-timer]]), tween ([[Module-tween]]), window ([[Module-window]]) |
-| [infiltration](../tree/main/content/games/action/infiltration) | Top-down stealth puzzle — sneak through a guarded facility using gadgets, avoid cameras, hack terminals, and escape with the data. | event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [metroidvania](../tree/main/content/games/action/metroidvania) | Side-scrolling exploration platformer with interconnected rooms, ability unlocks, and multiple enemy types. | event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [platform_fighter](../tree/main/content/games/action/platform_fighter) | Smash Bros-inspired 2-player local platform fighter with damage percentage, knockback scaling, stocks, and blast zones. | event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [platformer](../tree/main/content/games/action/platformer) | Classic side-scrolling 2D platformer — run, jump, and stomp through three tile-based levels. | event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), timer ([[Module-timer]]), tween ([[Module-tween]]), window ([[Module-window]]) |
-| [roguelite](../tree/main/content/games/action/roguelite) | Hades-style top-down action roguelite — fight through room-based dungeons, collect perks, and face bosses every five rooms. | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), timer ([[Module-timer]]), tween ([[Module-tween]]), window ([[Module-window]]) |
-| [sniper](../tree/main/content/games/action/sniper) | A ballistics puzzle sniper game built with Lurek2D. | event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), window ([[Module-window]]) |
-| [soulslike](../tree/main/content/games/action/soulslike) | Precision boss fight with stamina management, dodge i-frames, estus heals, and a 3-phase boss AI. | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), timer ([[Module-timer]]), tween ([[Module-tween]]), window ([[Module-window]]) |
-| [stealth](../tree/main/content/games/action/stealth) | Top-down stealth game — sneak past patrolling guards, collect keycards, and reach the exit unseen. | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), timer ([[Module-timer]]), tween ([[Module-tween]]), window ([[Module-window]]) |
-| [vertical_climber](../tree/main/content/games/action/vertical_climber) | Endless Doodle Jump-style vertical platformer — auto-bounce upward through procedurally generated platforms, dodge enemies, and climb as high as you can. | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), timer ([[Module-timer]]), tween ([[Module-tween]]), window ([[Module-window]]) |
+### [brick_breaker](../tree/main/content/games/action/brick_breaker)
+
+![brick_breaker screenshot](../raw/main/content/games/action/brick_breaker/screen.png)
+
+Classic Arkanoid-style brick breaking game. Bounce the ball off your paddle to destroy rows of bricks, collect power-ups, and advance through increasingly di...
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+
+### [bullet_hell](../tree/main/content/games/action/bullet_hell)
+
+![bullet_hell screenshot](../raw/main/content/games/action/bullet_hell/screen.png)
+
+Dodge intricate bullet patterns, graze for bonus points, and bomb your way through relentless waves.
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [cannon_fodder](../tree/main/content/games/action/cannon_fodder)
+
+![cannon_fodder screenshot](../raw/main/content/games/action/cannon_fodder/screen.png)
+
+Top-down military squad action inspired by Cannon Fodder (Amiga). Lead four soldiers across a tile-based jungle map, click to move the squad, while they auto...
+
+**Modules:** [event](Module-event), [math](Module-math), [render](Module-render), [window](Module-window)
+
+### [endless_runner](../tree/main/content/games/action/endless_runner)
+
+![endless_runner screenshot](../raw/main/content/games/action/endless_runner/screen.png)
+
+Auto-scrolling side-view runner — dodge tall barriers, slide under low beams, leap across gaps, and collect coins while the world accelerates.
+
+**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+
+### [fighting_game](../tree/main/content/games/action/fighting_game)
+
+![fighting_game screenshot](../raw/main/content/games/action/fighting_game/screen.png)
+
+1v1 fighting game with Player vs AI — land combos, build super meter, and win best of 3 rounds.
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+
+### [horde_survivor](../tree/main/content/games/action/horde_survivor)
+
+![horde_survivor screenshot](../raw/main/content/games/action/horde_survivor/screen.png)
+
+Vampire Survivors-style top-down horde survival — auto-attack with orbiting projectiles while dodging waves of enemies.
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+
+### [infiltration](../tree/main/content/games/action/infiltration)
+
+![infiltration screenshot](../raw/main/content/games/action/infiltration/screen.png)
+
+Top-down stealth puzzle — sneak through a guarded facility using gadgets, avoid cameras, hack terminals, and escape with the data.
+
+**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [metroidvania](../tree/main/content/games/action/metroidvania)
+
+![metroidvania screenshot](../raw/main/content/games/action/metroidvania/screen.png)
+
+Side-scrolling exploration platformer with interconnected rooms, ability unlocks, and multiple enemy types.
+
+**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [platform_fighter](../tree/main/content/games/action/platform_fighter)
+
+![platform_fighter screenshot](../raw/main/content/games/action/platform_fighter/screen.png)
+
+Smash Bros-inspired 2-player local platform fighter with damage percentage, knockback scaling, stocks, and blast zones.
+
+**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [platformer](../tree/main/content/games/action/platformer)
+
+![platformer screenshot](../raw/main/content/games/action/platformer/screen.png)
+
+Classic side-scrolling 2D platformer — run, jump, and stomp through three tile-based levels.
+
+**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+
+### [roguelite](../tree/main/content/games/action/roguelite)
+
+![roguelite screenshot](../raw/main/content/games/action/roguelite/screen.png)
+
+Hades-style top-down action roguelite — fight through room-based dungeons, collect perks, and face bosses every five rooms.
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+
+### [sniper](../tree/main/content/games/action/sniper)
+
+![sniper screenshot](../raw/main/content/games/action/sniper/screen.png)
+
+A ballistics puzzle sniper game built with Lurek2D.
+
+**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [window](Module-window)
+
+### [soulslike](../tree/main/content/games/action/soulslike)
+
+![soulslike screenshot](../raw/main/content/games/action/soulslike/screen.png)
+
+Precision boss fight with stamina management, dodge i-frames, estus heals, and a 3-phase boss AI.
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+
+### [stealth](../tree/main/content/games/action/stealth)
+
+![stealth screenshot](../raw/main/content/games/action/stealth/screen.png)
+
+Top-down stealth game — sneak past patrolling guards, collect keycards, and reach the exit unseen.
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+
+### [vertical_climber](../tree/main/content/games/action/vertical_climber)
+
+![vertical_climber screenshot](../raw/main/content/games/action/vertical_climber/screen.png)
+
+Endless Doodle Jump-style vertical platformer — auto-bounce upward through procedurally generated platforms, dodge enemies, and climb as high as you can.
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+
 
 ## arcade
 
-| Game | Description | Modules |
-|---|---|---|
-| [asteroids](../tree/main/content/games/arcade/asteroids) | _Fly, shoot, and survive the asteroid field — classic arcade action with thrust physics, screen wrapping, and particle explosions._ | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), timer ([[Module-timer]]), tween ([[Module-tween]]), window ([[Module-window]]) |
-| [centipede](../tree/main/content/games/arcade/centipede) | Classic arcade shooter — blast a segmented centipede as it winds through a mushroom field. | event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), timer ([[Module-timer]]), tween ([[Module-tween]]), window ([[Module-window]]) |
-| [donkey_kong](../tree/main/content/games/arcade/donkey_kong) | Classic platform climber — navigate sloped girders, dodge rolling barrels, and rescue Pauline at the top. | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), timer ([[Module-timer]]), tween ([[Module-tween]]), window ([[Module-window]]) |
-| [frogger](../tree/main/content/games/arcade/frogger) | Classic Frogger arcade game — guide the frog across busy roads and treacherous rivers to reach the home slots. | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [galaga](../tree/main/content/games/arcade/galaga) | Classic Galaga arcade shooter with formation enemies, dive-bombing attacks, boss capture mechanics, and dual-fire power-ups. | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [pac_man](../tree/main/content/games/arcade/pac_man) | _Navigate a maze, eat dots, avoid four ghosts with distinct AI personalities — classic arcade action with power pellets and chase/scatter modes._ | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), timer ([[Module-timer]]), tween ([[Module-tween]]), window ([[Module-window]]) |
-| [pong](../tree/main/content/games/arcade/pong) | Classic two-player paddle game. First to 7 wins. | event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), timer ([[Module-timer]]), tween ([[Module-tween]]), window ([[Module-window]]) |
-| [snake](../tree/main/content/games/arcade/snake) | _Eat, grow, avoid yourself — classic arcade snake with particles and tweened score._ | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), timer ([[Module-timer]]), tween ([[Module-tween]]), window ([[Module-window]]) |
-| [space_invaders](../tree/main/content/games/arcade/space_invaders) | Defend Earth from descending alien formations. Shoot them before they reach you. | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [tetris](../tree/main/content/games/arcade/tetris) | _Rotate and stack falling tetrominoes — classic arcade puzzle with hold piece, ghost preview, and line-clear particles._ | event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), timer ([[Module-timer]]), tween ([[Module-tween]]), window ([[Module-window]]) |
+### [asteroids](../tree/main/content/games/arcade/asteroids)
+
+![asteroids screenshot](../raw/main/content/games/arcade/asteroids/screen.png)
+
+_Fly, shoot, and survive the asteroid field — classic arcade action with thrust physics, screen wrapping, and particle explosions._
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+
+### [centipede](../tree/main/content/games/arcade/centipede)
+
+![centipede screenshot](../raw/main/content/games/arcade/centipede/screen.png)
+
+Classic arcade shooter — blast a segmented centipede as it winds through a mushroom field.
+
+**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+
+### [donkey_kong](../tree/main/content/games/arcade/donkey_kong)
+
+![donkey_kong screenshot](../raw/main/content/games/arcade/donkey_kong/screen.png)
+
+Classic platform climber — navigate sloped girders, dodge rolling barrels, and rescue Pauline at the top.
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+
+### [frogger](../tree/main/content/games/arcade/frogger)
+
+![frogger screenshot](../raw/main/content/games/arcade/frogger/screen.png)
+
+Classic Frogger arcade game — guide the frog across busy roads and treacherous rivers to reach the home slots.
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [galaga](../tree/main/content/games/arcade/galaga)
+
+![galaga screenshot](../raw/main/content/games/arcade/galaga/screen.png)
+
+Classic Galaga arcade shooter with formation enemies, dive-bombing attacks, boss capture mechanics, and dual-fire power-ups.
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [pac_man](../tree/main/content/games/arcade/pac_man)
+
+![pac_man screenshot](../raw/main/content/games/arcade/pac_man/screen.png)
+
+_Navigate a maze, eat dots, avoid four ghosts with distinct AI personalities — classic arcade action with power pellets and chase/scatter modes._
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+
+### [pong](../tree/main/content/games/arcade/pong)
+
+![pong screenshot](../raw/main/content/games/arcade/pong/screen.png)
+
+Classic two-player paddle game. First to 7 wins.
+
+**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+
+### [snake](../tree/main/content/games/arcade/snake)
+
+![snake screenshot](../raw/main/content/games/arcade/snake/screen.png)
+
+_Eat, grow, avoid yourself — classic arcade snake with particles and tweened score._
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+
+### [space_invaders](../tree/main/content/games/arcade/space_invaders)
+
+![space_invaders screenshot](../raw/main/content/games/arcade/space_invaders/screen.png)
+
+Defend Earth from descending alien formations. Shoot them before they reach you.
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [tetris](../tree/main/content/games/arcade/tetris)
+
+![tetris screenshot](../raw/main/content/games/arcade/tetris/screen.png)
+
+_Rotate and stack falling tetrominoes — classic arcade puzzle with hold piece, ghost preview, and line-clear particles._
+
+**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+
 
 ## retro
 
-| Game | Description | Modules |
-|---|---|---|
-| [another_world](../tree/main/content/games/retro/another_world) | Cinematic puzzle-platformer inspired by Eric Chahi's 1991 classic. Navigate interconnected alien scenes, fight hostile creatures with a three-mode energy gun... | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [boulder_dash](../tree/main/content/games/retro/boulder_dash) | _Dig through a cave, collect sparkling diamonds, dodge falling boulders, and escape before the clock runs out._ | event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [cannon_fodder](../tree/main/content/games/retro/cannon_fodder) | _Command a squad of soldiers through five escalating jungle missions — move, shoot, and use grenades wisely, because every casualty is permanent._ | event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [commando](../tree/main/content/games/retro/commando) | Vertical-scrolling top-down shooter inspired by Capcom's 1985 arcade classic. Fight through dense jungle, rescue POW prisoners, hurl grenades at bunkers, and... | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [dungeon_crawler](../tree/main/content/games/retro/dungeon_crawler) | **Category:** retro | event ([[Module-event]]), input ([[Module-input]]), raycaster ([[Module-raycaster]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [giana_sisters](../tree/main/content/games/retro/giana_sisters) | **Category:** retro | event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [lemmings](../tree/main/content/games/retro/lemmings) | **Category:** retro | event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [paradroid](../tree/main/content/games/retro/paradroid) | **Category:** retro | event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), tween ([[Module-tween]]), window ([[Module-window]]) |
-| [raycaster_fps](../tree/main/content/games/retro/raycaster_fps) | **Category:** retro | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [sensible_soccer](../tree/main/content/games/retro/sensible_soccer) | **Category:** Retro | event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [shadow_beast](../tree/main/content/games/retro/shadow_beast) | Atmospheric side-scrolling action game inspired by Psygnosis' 1989 Amiga masterpiece. Battle through a dark, beautiful world with 5-layer parallax scrolling,... | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [turrican](../tree/main/content/games/retro/turrican) | Run-and-gun platformer inspired by Manfred Trenz's legendary 1990 C-64/Amiga classic, featuring a dual weapon system and tile-based levels. | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), timer ([[Module-timer]]), tween ([[Module-tween]]), window ([[Module-window]]) |
+### [another_world](../tree/main/content/games/retro/another_world)
+
+![another_world screenshot](../raw/main/content/games/retro/another_world/screen.png)
+
+Cinematic puzzle-platformer inspired by Eric Chahi's 1991 classic. Navigate interconnected alien scenes, fight hostile creatures with a three-mode energy gun...
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [boulder_dash](../tree/main/content/games/retro/boulder_dash)
+
+![boulder_dash screenshot](../raw/main/content/games/retro/boulder_dash/screen.png)
+
+_Dig through a cave, collect sparkling diamonds, dodge falling boulders, and escape before the clock runs out._
+
+**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [cannon_fodder](../tree/main/content/games/retro/cannon_fodder)
+
+![cannon_fodder screenshot](../raw/main/content/games/retro/cannon_fodder/screen.png)
+
+_Command a squad of soldiers through five escalating jungle missions — move, shoot, and use grenades wisely, because every casualty is permanent._
+
+**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [commando](../tree/main/content/games/retro/commando)
+
+![commando screenshot](../raw/main/content/games/retro/commando/screen.png)
+
+Vertical-scrolling top-down shooter inspired by Capcom's 1985 arcade classic. Fight through dense jungle, rescue POW prisoners, hurl grenades at bunkers, and...
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [dungeon_crawler](../tree/main/content/games/retro/dungeon_crawler)
+
+![dungeon_crawler screenshot](../raw/main/content/games/retro/dungeon_crawler/screen.png)
+
+**Category:** retro
+
+**Modules:** [event](Module-event), [input](Module-input), [raycaster](Module-raycaster), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [giana_sisters](../tree/main/content/games/retro/giana_sisters)
+
+![giana_sisters screenshot](../raw/main/content/games/retro/giana_sisters/screen.png)
+
+**Category:** retro
+
+**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [lemmings](../tree/main/content/games/retro/lemmings)
+
+![lemmings screenshot](../raw/main/content/games/retro/lemmings/screen.png)
+
+**Category:** retro
+
+**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [paradroid](../tree/main/content/games/retro/paradroid)
+
+![paradroid screenshot](../raw/main/content/games/retro/paradroid/screen.png)
+
+**Category:** retro
+
+**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [tween](Module-tween), [window](Module-window)
+
+### [raycaster_fps](../tree/main/content/games/retro/raycaster_fps)
+
+![raycaster_fps screenshot](../raw/main/content/games/retro/raycaster_fps/screen.png)
+
+**Category:** retro
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [sensible_soccer](../tree/main/content/games/retro/sensible_soccer)
+
+![sensible_soccer screenshot](../raw/main/content/games/retro/sensible_soccer/screen.png)
+
+**Category:** Retro
+
+**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [shadow_beast](../tree/main/content/games/retro/shadow_beast)
+
+![shadow_beast screenshot](../raw/main/content/games/retro/shadow_beast/screen.png)
+
+Atmospheric side-scrolling action game inspired by Psygnosis' 1989 Amiga masterpiece. Battle through a dark, beautiful world with 5-layer parallax scrolling,...
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [turrican](../tree/main/content/games/retro/turrican)
+
+![turrican screenshot](../raw/main/content/games/retro/turrican/screen.png)
+
+Run-and-gun platformer inspired by Manfred Trenz's legendary 1990 C-64/Amiga classic, featuring a dual weapon system and tile-based levels.
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+
 
 ## rpg
 
-| Game | Description | Modules |
-|---|---|---|
-| [adventure](../tree/main/content/games/rpg/adventure) | **Category:** rpg | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), timer ([[Module-timer]]), tween ([[Module-tween]]), window ([[Module-window]]) |
-| [alchemy](../tree/main/content/games/rpg/alchemy) | **Category:** RPG | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [courtroom](../tree/main/content/games/rpg/courtroom) | **Category:** RPG | event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [creature_collector](../tree/main/content/games/rpg/creature_collector) | _Pokemon-style creature collection RPG with tile-based overworld, turn-based battles, type advantages, and party management._ | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [dialog_demo](../tree/main/content/games/rpg/dialog_demo) | **Category:** RPG | event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [dungeon_eye](../tree/main/content/games/rpg/dungeon_eye) | First-person dungeon crawler inspired by Eye of the Beholder (PC 1992). Navigate a hand-crafted grid dungeon using a raycaster renderer, fight enemies in mel... | event ([[Module-event]]), raycaster ([[Module-raycaster]]), render ([[Module-render]]), window ([[Module-window]]) |
-| [horror](../tree/main/content/games/rpg/horror) | **Category:** rpg | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), timer ([[Module-timer]]), tween ([[Module-tween]]), window ([[Module-window]]) |
-| [loot_rpg](../tree/main/content/games/rpg/loot_rpg) | _Descend through procedural dungeons, smash enemies for gear, and climb floors until your build is unstoppable._ | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), timer ([[Module-timer]]), tween ([[Module-tween]]), window ([[Module-window]]) |
-| [loot_rpg_demo](../tree/main/content/games/rpg/loot_rpg_demo) | _A focused demo of the Lurek2D loot-and-combat loop — fight enemies, collect tiered gear, and see how many floors you can climb._ | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), timer ([[Module-timer]]), tween ([[Module-tween]]), window ([[Module-window]]) |
-| [merchant](../tree/main/content/games/rpg/merchant) | _Run a medieval trading shop over five days — buy low, sell high, serve customers, and build your reputation to maximise final gold._ | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [merchant_demo](../tree/main/content/games/rpg/merchant_demo) | _A playable demo of the Lurek2D merchant simulation — buy, sell, serve customers, and turn a profit over five in-game days._ | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [roguelike](../tree/main/content/games/rpg/roguelike) | **Category**: rpg | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [social_deduction](../tree/main/content/games/rpg/social_deduction) | **Category:** RPG | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), tween ([[Module-tween]]), window ([[Module-window]]) |
-| [star_voyage](../tree/main/content/games/rpg/star_voyage) | Space exploration RPG inspired by Star Control 2 (PC 1994). Navigate a vast starfield, approach alien worlds to dock, and engage in branching dialog with pro... | event ([[Module-event]]), input ([[Module-input]]), math ([[Module-math]]), render ([[Module-render]]), window ([[Module-window]]) |
-| [survival_crafting](../tree/main/content/games/rpg/survival_crafting) | **Category:** RPG | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [visual_novel](../tree/main/content/games/rpg/visual_novel) | A branching visual novel with three acts, three characters, affection tracking, and multiple endings. | event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
+### [adventure](../tree/main/content/games/rpg/adventure)
+
+![adventure screenshot](../raw/main/content/games/rpg/adventure/screen.png)
+
+**Category:** rpg
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+
+### [alchemy](../tree/main/content/games/rpg/alchemy)
+
+![alchemy screenshot](../raw/main/content/games/rpg/alchemy/screen.png)
+
+**Category:** RPG
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [courtroom](../tree/main/content/games/rpg/courtroom)
+
+![courtroom screenshot](../raw/main/content/games/rpg/courtroom/screen.png)
+
+**Category:** RPG
+
+**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [creature_collector](../tree/main/content/games/rpg/creature_collector)
+
+![creature_collector screenshot](../raw/main/content/games/rpg/creature_collector/screen.png)
+
+_Pokemon-style creature collection RPG with tile-based overworld, turn-based battles, type advantages, and party management._
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [dialog_demo](../tree/main/content/games/rpg/dialog_demo)
+
+![dialog_demo screenshot](../raw/main/content/games/rpg/dialog_demo/screen.png)
+
+**Category:** RPG
+
+**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [dungeon_eye](../tree/main/content/games/rpg/dungeon_eye)
+
+![dungeon_eye screenshot](../raw/main/content/games/rpg/dungeon_eye/screen.png)
+
+First-person dungeon crawler inspired by Eye of the Beholder (PC 1992). Navigate a hand-crafted grid dungeon using a raycaster renderer, fight enemies in mel...
+
+**Modules:** [event](Module-event), [raycaster](Module-raycaster), [render](Module-render), [window](Module-window)
+
+### [horror](../tree/main/content/games/rpg/horror)
+
+![horror screenshot](../raw/main/content/games/rpg/horror/screen.png)
+
+**Category:** rpg
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+
+### [loot_rpg](../tree/main/content/games/rpg/loot_rpg)
+
+![loot_rpg screenshot](../raw/main/content/games/rpg/loot_rpg/screen.png)
+
+_Descend through procedural dungeons, smash enemies for gear, and climb floors until your build is unstoppable._
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+
+### [loot_rpg_demo](../tree/main/content/games/rpg/loot_rpg_demo)
+
+![loot_rpg_demo screenshot](../raw/main/content/games/rpg/loot_rpg_demo/screen.png)
+
+_A focused demo of the Lurek2D loot-and-combat loop — fight enemies, collect tiered gear, and see how many floors you can climb._
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+
+### [merchant](../tree/main/content/games/rpg/merchant)
+
+![merchant screenshot](../raw/main/content/games/rpg/merchant/screen.png)
+
+_Run a medieval trading shop over five days — buy low, sell high, serve customers, and build your reputation to maximise final gold._
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [merchant_demo](../tree/main/content/games/rpg/merchant_demo)
+
+![merchant_demo screenshot](../raw/main/content/games/rpg/merchant_demo/screen.png)
+
+_A playable demo of the Lurek2D merchant simulation — buy, sell, serve customers, and turn a profit over five in-game days._
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [roguelike](../tree/main/content/games/rpg/roguelike)
+
+![roguelike screenshot](../raw/main/content/games/rpg/roguelike/screen.png)
+
+**Category**: rpg
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [social_deduction](../tree/main/content/games/rpg/social_deduction)
+
+![social_deduction screenshot](../raw/main/content/games/rpg/social_deduction/screen.png)
+
+**Category:** RPG
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [tween](Module-tween), [window](Module-window)
+
+### [star_voyage](../tree/main/content/games/rpg/star_voyage)
+
+![star_voyage screenshot](../raw/main/content/games/rpg/star_voyage/screen.png)
+
+Space exploration RPG inspired by Star Control 2 (PC 1994). Navigate a vast starfield, approach alien worlds to dock, and engage in branching dialog with pro...
+
+**Modules:** [event](Module-event), [input](Module-input), [math](Module-math), [render](Module-render), [window](Module-window)
+
+### [survival_crafting](../tree/main/content/games/rpg/survival_crafting)
+
+![survival_crafting screenshot](../raw/main/content/games/rpg/survival_crafting/screen.png)
+
+**Category:** RPG
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [visual_novel](../tree/main/content/games/rpg/visual_novel)
+
+![visual_novel screenshot](../raw/main/content/games/rpg/visual_novel/screen.png)
+
+A branching visual novel with three acts, three characters, affection tracking, and multiple endings.
+
+**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
 
 ## showcase
 
-| Game | Description | Modules |
-|---|---|---|
-| [automation_demo](../tree/main/content/games/showcase/automation_demo) | **Category:** showcase | event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [debugbridge_demo](../tree/main/content/games/showcase/debugbridge_demo) | Simulated debug bridge visualization demonstrating runtime inspection concepts: a debug console with typed commands, real-time engine metrics, entity inspect... | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), timer ([[Module-timer]]), tween ([[Module-tween]]), window ([[Module-window]]) |
-| [demo_game](../tree/main/content/games/showcase/demo_game) | Physics-based shooting gallery with moving targets, combo scoring, and power-ups. Aim with the mouse and fire balls at swaying targets across three increasin... | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), timer ([[Module-timer]]), tween ([[Module-tween]]), window ([[Module-window]]) |
-| [devtools_demo](../tree/main/content/games/showcase/devtools_demo) | Developer tools profiling showcase: toggle real-time FPS graphs, memory profilers, entity inspectors, performance heatmaps, and draw call counters while a li... | event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), tween ([[Module-tween]]), window ([[Module-window]]) |
-| [docs_demo](../tree/main/content/games/showcase/docs_demo) | Interactive API documentation browser and viewer: navigate 12 lurek.* namespaces in a sidebar, inspect function signatures with syntax-highlighted params a... | event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), timer ([[Module-timer]]), tween ([[Module-tween]]), window ([[Module-window]]) |
-| [entity_showcase](../tree/main/content/games/showcase/entity_showcase) | **Category:** showcase | event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [globe_demo](../tree/main/content/games/showcase/globe_demo) | A showcase of the lurek.globe.* API: an interactive world globe with ~200 | event ([[Module-event]]), globe ([[Module-globe]]), input ([[Module-input]]), render ([[Module-render]]) |
-| [hacking_game](../tree/main/content/games/showcase/hacking_game) | Terminal-based hacking game with full CRT aesthetics. Type commands at the prompt to scan networks, connect to servers, crack passwords, and download classif... | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), timer ([[Module-timer]]), tween ([[Module-tween]]), window ([[Module-window]]) |
-| [hello_world](../tree/main/content/games/showcase/hello_world) | Complete engine feature sampler showcasing basic Lurek2D capabilities in a single interactive screen: animated text, geometric shapes, mouse tracking, partic... | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), timer ([[Module-timer]]), tween ([[Module-tween]]), window ([[Module-window]]) |
-| [html-dialog](../tree/main/content/games/showcase/html-dialog) | An RPG-style NPC conversation system using HTML dialog boxes with branching | event ([[Module-event]]), html ([[Module-html]]), input ([[Module-input]]), render ([[Module-render]]), window ([[Module-window]]) |
-| [html-hud](../tree/main/content/games/showcase/html-hud) | ﻿# HTML HUD Demo | event ([[Module-event]]), html ([[Module-html]]), input ([[Module-input]]), render ([[Module-render]]), window ([[Module-window]]) |
-| [html-inventory](../tree/main/content/games/showcase/html-inventory) | An inventory grid screen built entirely with HTML/CSS, demonstrating how to | event ([[Module-event]]), html ([[Module-html]]), input ([[Module-input]]), render ([[Module-render]]), window ([[Module-window]]) |
-| [html-load-document](../tree/main/content/games/showcase/html-load-document) | No description in the game index. | event ([[Module-event]]), html ([[Module-html]]), input ([[Module-input]]), render ([[Module-render]]), window ([[Module-window]]) |
-| [html-scoreboard](../tree/main/content/games/showcase/html-scoreboard) | A live leaderboard that automatically refreshes every two seconds, built with | event ([[Module-event]]), html ([[Module-html]]), input ([[Module-input]]), render ([[Module-render]]), window ([[Module-window]]) |
-| [html-settings](../tree/main/content/games/showcase/html-settings) | A full settings screen with toggle switches and radio groups, demonstrating | event ([[Module-event]]), html ([[Module-html]]), input ([[Module-input]]), render ([[Module-render]]), window ([[Module-window]]) |
-| [light_demo](../tree/main/content/games/showcase/light_demo) | Complete 2D lighting system showcase featuring dynamic point lights, spotlights, flickering torches, shadow-casting wall occluders, and ambient light control... | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), light ([[Module-light]]), particle ([[Module-particle]]), render ([[Module-render]]), timer ([[Module-timer]]), tween ([[Module-tween]]), +1 |
-| [light_showcase](../tree/main/content/games/showcase/light_showcase) | **Category:** showcase | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), window ([[Module-window]]) |
-| [localization_demo](../tree/main/content/games/showcase/localization_demo) | **Category:** showcase | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), timer ([[Module-timer]]), tween ([[Module-tween]]), window ([[Module-window]]) |
-| [minimap_demo](../tree/main/content/games/showcase/minimap_demo) | **Category:** showcase | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [modding_demo](../tree/main/content/games/showcase/modding_demo) | **Category:** showcase | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), timer ([[Module-timer]]), tween ([[Module-tween]]), window ([[Module-window]]) |
-| [music_composer](../tree/main/content/games/showcase/music_composer) | Visual piano roll music sequencer. Place and remove notes on a 32-beat × 24-note grid across three colored tracks, then play back in a looping sweep with smo... | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [nine_slice_demo](../tree/main/content/games/showcase/nine_slice_demo) | **Category:** showcase | event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [overlay_demo](../tree/main/content/games/showcase/overlay_demo) | Screen overlay effects showcase demonstrating weather particles, time-of-day tinting, fog, and vignette — all composable and intensity-adjustable. | event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), tween ([[Module-tween]]), window ([[Module-window]]) |
-| [particles_demo](../tree/main/content/games/showcase/particles_demo) | **Category:** showcase | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), window ([[Module-window]]) |
-| [patterns_demo](../tree/main/content/games/showcase/patterns_demo) | **Category:** showcase | event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), window ([[Module-window]]) |
-| [pipeline_showcase](../tree/main/content/games/showcase/pipeline_showcase) | Interactive visualization of the full Lurek2D engine callback pipeline — ready, process, process_physics, process_late, render, render_ui — across three scen... | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [postfx_demo](../tree/main/content/games/showcase/postfx_demo) | Complete post-processing effects stacking showcase with 10 toggleable effects, adjustable intensity, and real-time before/after comparison. | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), timer ([[Module-timer]]), tween ([[Module-tween]]), window ([[Module-window]]) |
-| [province_demo](../tree/main/content/games/showcase/province_demo) | Procedural Voronoi-like province map generator with terrain, ownership, fog of war, pathfinding, and multiple visualization modes. | event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), window ([[Module-window]]) |
-| [scene_demo](../tree/main/content/games/showcase/scene_demo) | Scene state machine with enter/exit callbacks, three transition effects, and a collect-the-coins mini-game — all wired through a reusable scene manager. | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), tween ([[Module-tween]]), window ([[Module-window]]) |
-| [signal_demo](../tree/main/content/games/showcase/signal_demo) | Complete pub-sub event signal system showcase demonstrating the publisher-subscriber pattern with five distinct signal types, cascading chain reactions, and ... | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), timer ([[Module-timer]]), tween ([[Module-tween]]), window ([[Module-window]]) |
-| [sprites](../tree/main/content/games/showcase/sprites) | **Category:** showcase | camera ([[Module-camera]]), event ([[Module-event]]), image ([[Module-image]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), timer ([[Module-timer]]), tween ([[Module-tween]]), +1 |
-| [terminal_demo](../tree/main/content/games/showcase/terminal_demo) | Full-screen terminal UI character creation wizard with box-drawing borders, colored text, stat allocation, and multi-page navigation — all rendered on an 80×... | render ([[Module-render]]), terminal ([[Module-terminal]]), window ([[Module-window]]) |
-| [tween_demo](../tree/main/content/games/showcase/tween_demo) | **Category:** showcase | event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), tween ([[Module-tween]]), window ([[Module-window]]) |
-| [vending_lights](../tree/main/content/games/showcase/vending_lights) | No description in the game index. | event ([[Module-event]]), input ([[Module-input]]), light ([[Module-light]]), render ([[Module-render]]), window ([[Module-window]]) |
+### [automation_demo](../tree/main/content/games/showcase/automation_demo)
+
+![automation_demo screenshot](../raw/main/content/games/showcase/automation_demo/screen.png)
+
+**Category:** showcase
+
+**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [debugbridge_demo](../tree/main/content/games/showcase/debugbridge_demo)
+
+![debugbridge_demo screenshot](../raw/main/content/games/showcase/debugbridge_demo/screen.png)
+
+Simulated debug bridge visualization demonstrating runtime inspection concepts: a debug console with typed commands, real-time engine metrics, entity inspect...
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+
+### [demo_game](../tree/main/content/games/showcase/demo_game)
+
+![demo_game screenshot](../raw/main/content/games/showcase/demo_game/screen.png)
+
+Physics-based shooting gallery with moving targets, combo scoring, and power-ups. Aim with the mouse and fire balls at swaying targets across three increasin...
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+
+### [devtools_demo](../tree/main/content/games/showcase/devtools_demo)
+
+![devtools_demo screenshot](../raw/main/content/games/showcase/devtools_demo/screen.png)
+
+Developer tools profiling showcase: toggle real-time FPS graphs, memory profilers, entity inspectors, performance heatmaps, and draw call counters while a li...
+
+**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [tween](Module-tween), [window](Module-window)
+
+### [docs_demo](../tree/main/content/games/showcase/docs_demo)
+
+![docs_demo screenshot](../raw/main/content/games/showcase/docs_demo/screen.png)
+
+Interactive API documentation browser and viewer: navigate 12 lurek.* namespaces in a sidebar, inspect function signatures with syntax-highlighted params a...
+
+**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+
+### [entity_showcase](../tree/main/content/games/showcase/entity_showcase)
+
+![entity_showcase screenshot](../raw/main/content/games/showcase/entity_showcase/screen.png)
+
+**Category:** showcase
+
+**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [globe_demo](../tree/main/content/games/showcase/globe_demo)
+
+![globe_demo screenshot](../raw/main/content/games/showcase/globe_demo/screen.png)
+
+A showcase of the lurek.globe.* API: an interactive world globe with ~200
+
+**Modules:** [event](Module-event), [globe](Module-globe), [input](Module-input), [render](Module-render)
+
+### [hacking_game](../tree/main/content/games/showcase/hacking_game)
+
+![hacking_game screenshot](../raw/main/content/games/showcase/hacking_game/screen.png)
+
+Terminal-based hacking game with full CRT aesthetics. Type commands at the prompt to scan networks, connect to servers, crack passwords, and download classif...
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+
+### [hello_world](../tree/main/content/games/showcase/hello_world)
+
+![hello_world screenshot](../raw/main/content/games/showcase/hello_world/screen.png)
+
+Complete engine feature sampler showcasing basic Lurek2D capabilities in a single interactive screen: animated text, geometric shapes, mouse tracking, partic...
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+
+### [html-dialog](../tree/main/content/games/showcase/html-dialog)
+
+![html-dialog screenshot](../raw/main/content/games/showcase/html-dialog/screen.png)
+
+An RPG-style NPC conversation system using HTML dialog boxes with branching
+
+**Modules:** [event](Module-event), [html](Module-html), [input](Module-input), [render](Module-render), [window](Module-window)
+
+### [html-hud](../tree/main/content/games/showcase/html-hud)
+
+![html-hud screenshot](../raw/main/content/games/showcase/html-hud/screen.png)
+
+﻿# HTML HUD Demo
+
+**Modules:** [event](Module-event), [html](Module-html), [input](Module-input), [render](Module-render), [window](Module-window)
+
+### [html-inventory](../tree/main/content/games/showcase/html-inventory)
+
+![html-inventory screenshot](../raw/main/content/games/showcase/html-inventory/screen.png)
+
+An inventory grid screen built entirely with HTML/CSS, demonstrating how to
+
+**Modules:** [event](Module-event), [html](Module-html), [input](Module-input), [render](Module-render), [window](Module-window)
+
+### [html-load-document](../tree/main/content/games/showcase/html-load-document)
+
+A showcase game that uses only external HTML/CSS files for UI via lurek.html.loadDocument.
+
+**Modules:** [event](Module-event), [html](Module-html), [input](Module-input), [render](Module-render), [window](Module-window)
+
+### [html-scoreboard](../tree/main/content/games/showcase/html-scoreboard)
+
+![html-scoreboard screenshot](../raw/main/content/games/showcase/html-scoreboard/screen.png)
+
+A live leaderboard that automatically refreshes every two seconds, built with
+
+**Modules:** [event](Module-event), [html](Module-html), [input](Module-input), [render](Module-render), [window](Module-window)
+
+### [html-settings](../tree/main/content/games/showcase/html-settings)
+
+![html-settings screenshot](../raw/main/content/games/showcase/html-settings/screen.png)
+
+A full settings screen with toggle switches and radio groups, demonstrating
+
+**Modules:** [event](Module-event), [html](Module-html), [input](Module-input), [render](Module-render), [window](Module-window)
+
+### [light_demo](../tree/main/content/games/showcase/light_demo)
+
+![light_demo screenshot](../raw/main/content/games/showcase/light_demo/screen.png)
+
+Complete 2D lighting system showcase featuring dynamic point lights, spotlights, flickering torches, shadow-casting wall occluders, and ambient light control...
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [light](Module-light), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
+
+### [light_showcase](../tree/main/content/games/showcase/light_showcase)
+
+![light_showcase screenshot](../raw/main/content/games/showcase/light_showcase/screen.png)
+
+**Category:** showcase
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [window](Module-window)
+
+### [localization_demo](../tree/main/content/games/showcase/localization_demo)
+
+![localization_demo screenshot](../raw/main/content/games/showcase/localization_demo/screen.png)
+
+**Category:** showcase
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+
+### [minimap_demo](../tree/main/content/games/showcase/minimap_demo)
+
+![minimap_demo screenshot](../raw/main/content/games/showcase/minimap_demo/screen.png)
+
+**Category:** showcase
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [modding_demo](../tree/main/content/games/showcase/modding_demo)
+
+![modding_demo screenshot](../raw/main/content/games/showcase/modding_demo/screen.png)
+
+**Category:** showcase
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+
+### [music_composer](../tree/main/content/games/showcase/music_composer)
+
+![music_composer screenshot](../raw/main/content/games/showcase/music_composer/screen.png)
+
+Visual piano roll music sequencer. Place and remove notes on a 32-beat × 24-note grid across three colored tracks, then play back in a looping sweep with smo...
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [nine_slice_demo](../tree/main/content/games/showcase/nine_slice_demo)
+
+![nine_slice_demo screenshot](../raw/main/content/games/showcase/nine_slice_demo/screen.png)
+
+**Category:** showcase
+
+**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [overlay_demo](../tree/main/content/games/showcase/overlay_demo)
+
+![overlay_demo screenshot](../raw/main/content/games/showcase/overlay_demo/screen.png)
+
+Screen overlay effects showcase demonstrating weather particles, time-of-day tinting, fog, and vignette — all composable and intensity-adjustable.
+
+**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [tween](Module-tween), [window](Module-window)
+
+### [particles_demo](../tree/main/content/games/showcase/particles_demo)
+
+![particles_demo screenshot](../raw/main/content/games/showcase/particles_demo/screen.png)
+
+**Category:** showcase
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [window](Module-window)
+
+### [patterns_demo](../tree/main/content/games/showcase/patterns_demo)
+
+![patterns_demo screenshot](../raw/main/content/games/showcase/patterns_demo/screen.png)
+
+**Category:** showcase
+
+**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [window](Module-window)
+
+### [pipeline_showcase](../tree/main/content/games/showcase/pipeline_showcase)
+
+![pipeline_showcase screenshot](../raw/main/content/games/showcase/pipeline_showcase/screen.png)
+
+Interactive visualization of the full Lurek2D engine callback pipeline — ready, process, process_physics, process_late, render, render_ui — across three scen...
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [postfx_demo](../tree/main/content/games/showcase/postfx_demo)
+
+![postfx_demo screenshot](../raw/main/content/games/showcase/postfx_demo/screen.png)
+
+Complete post-processing effects stacking showcase with 10 toggleable effects, adjustable intensity, and real-time before/after comparison.
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+
+### [province_demo](../tree/main/content/games/showcase/province_demo)
+
+![province_demo screenshot](../raw/main/content/games/showcase/province_demo/screen.png)
+
+Procedural Voronoi-like province map generator with terrain, ownership, fog of war, pathfinding, and multiple visualization modes.
+
+**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [window](Module-window)
+
+### [scene_demo](../tree/main/content/games/showcase/scene_demo)
+
+![scene_demo screenshot](../raw/main/content/games/showcase/scene_demo/screen.png)
+
+Scene state machine with enter/exit callbacks, three transition effects, and a collect-the-coins mini-game — all wired through a reusable scene manager.
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [tween](Module-tween), [window](Module-window)
+
+### [signal_demo](../tree/main/content/games/showcase/signal_demo)
+
+![signal_demo screenshot](../raw/main/content/games/showcase/signal_demo/screen.png)
+
+Complete pub-sub event signal system showcase demonstrating the publisher-subscriber pattern with five distinct signal types, cascading chain reactions, and ...
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+
+### [sprites](../tree/main/content/games/showcase/sprites)
+
+![sprites screenshot](../raw/main/content/games/showcase/sprites/screen.png)
+
+**Category:** showcase
+
+**Modules:** [camera](Module-camera), [event](Module-event), [image](Module-image), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), +1
+
+### [terminal_demo](../tree/main/content/games/showcase/terminal_demo)
+
+![terminal_demo screenshot](../raw/main/content/games/showcase/terminal_demo/screen.png)
+
+Full-screen terminal UI character creation wizard with box-drawing borders, colored text, stat allocation, and multi-page navigation — all rendered on an 80×...
+
+**Modules:** [render](Module-render), [terminal](Module-terminal), [window](Module-window)
+
+### [tween_demo](../tree/main/content/games/showcase/tween_demo)
+
+![tween_demo screenshot](../raw/main/content/games/showcase/tween_demo/screen.png)
+
+**Category:** showcase
+
+**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [tween](Module-tween), [window](Module-window)
+
+### [vending_lights](../tree/main/content/games/showcase/vending_lights)
+
+No description available.
+
+**Modules:** [event](Module-event), [input](Module-input), [light](Module-light), [render](Module-render), [window](Module-window)
+
 
 ## simulation
 
-| Game | Description | Modules |
-|---|---|---|
-| [colony_sim](../tree/main/content/games/simulation/colony_sim) | **Category:** simulation | event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [cooking_sim](../tree/main/content/games/simulation/cooking_sim) | Kitchen cooking simulation where you prep ingredients, cook dishes, and serve customers under time pressure. | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [factory](../tree/main/content/games/simulation/factory) | Factory automation game inspired by Factorio-lite: place conveyor belts, miners, smelters, and assemblers to build a production line that turns raw ore into ... | event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [farming_sim](../tree/main/content/games/simulation/farming_sim) | Grow crops, trade at the market, and earn 200 gold to win. Manage your farm through day/night cycles and weather events. | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), timer ([[Module-timer]]), tween ([[Module-tween]]), window ([[Module-window]]) |
-| [god_game](../tree/main/content/games/simulation/god_game) | **Category:** Simulation | event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [hotel_manager](../tree/main/content/games/simulation/hotel_manager) | **Category:** Simulation | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [idle_game](../tree/main/content/games/simulation/idle_game) | **Category:** Simulation | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [medical_sim](../tree/main/content/games/simulation/medical_sim) | Hospital management simulation — triage patients, assign staff, upgrade departments, and maintain a 4+ star rating. | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [mining](../tree/main/content/games/simulation/mining) | **Category:** Simulation | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [physics_demo](../tree/main/content/games/simulation/physics_demo) | **Category:** simulation | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), tween ([[Module-tween]]), window ([[Module-window]]) |
-| [physics_sandbox](../tree/main/content/games/simulation/physics_sandbox) | Free-form physics playground where you build structures and destroy them with explosions, heavy balls, and gravity manipulation. | event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [railroad](../tree/main/content/games/simulation/railroad) | **Category:** Simulation | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [settlers_rise](../tree/main/content/games/simulation/settlers_rise) | Settlement-building simulation inspired by The Settlers 2 (Amiga 1998). Place production buildings on a procedurally generated map, watch settlers carry good... | event ([[Module-event]]), input ([[Module-input]]), math ([[Module-math]]), pathfind ([[Module-pathfind]]), render ([[Module-render]]), window ([[Module-window]]) |
-| [tower_sim](../tree/main/content/games/simulation/tower_sim) | **Category:** simulation | event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [tycoon](../tree/main/content/games/simulation/tycoon) | Business empire tycoon — buy ventures, hire managers, upgrade revenue, and prestige your way to a million gold. | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [vehicle_builder](../tree/main/content/games/simulation/vehicle_builder) | Grid-based vehicle construction and physics-driven test track game. Design vehicles from modular parts on a snap-to-grid editor, then switch to a side-scroll... | event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [wildlife_photo](../tree/main/content/games/simulation/wildlife_photo) | Explore a scrolling nature landscape, frame wildlife in your camera viewfinder, and snap photos to fill your species journal. Photograph all 8 species to com... | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), timer ([[Module-timer]]), tween ([[Module-tween]]), window ([[Module-window]]) |
-| [zoo_tycoon](../tree/main/content/games/simulation/zoo_tycoon) | **Category:** Simulation | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
+### [colony_sim](../tree/main/content/games/simulation/colony_sim)
+
+![colony_sim screenshot](../raw/main/content/games/simulation/colony_sim/screen.png)
+
+**Category:** simulation
+
+**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [cooking_sim](../tree/main/content/games/simulation/cooking_sim)
+
+![cooking_sim screenshot](../raw/main/content/games/simulation/cooking_sim/screen.png)
+
+Kitchen cooking simulation where you prep ingredients, cook dishes, and serve customers under time pressure.
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [factory](../tree/main/content/games/simulation/factory)
+
+![factory screenshot](../raw/main/content/games/simulation/factory/screen.png)
+
+Factory automation game inspired by Factorio-lite: place conveyor belts, miners, smelters, and assemblers to build a production line that turns raw ore into ...
+
+**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [farming_sim](../tree/main/content/games/simulation/farming_sim)
+
+![farming_sim screenshot](../raw/main/content/games/simulation/farming_sim/screen.png)
+
+Grow crops, trade at the market, and earn 200 gold to win. Manage your farm through day/night cycles and weather events.
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+
+### [god_game](../tree/main/content/games/simulation/god_game)
+
+![god_game screenshot](../raw/main/content/games/simulation/god_game/screen.png)
+
+**Category:** Simulation
+
+**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [hotel_manager](../tree/main/content/games/simulation/hotel_manager)
+
+![hotel_manager screenshot](../raw/main/content/games/simulation/hotel_manager/screen.png)
+
+**Category:** Simulation
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [idle_game](../tree/main/content/games/simulation/idle_game)
+
+![idle_game screenshot](../raw/main/content/games/simulation/idle_game/screen.png)
+
+**Category:** Simulation
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [medical_sim](../tree/main/content/games/simulation/medical_sim)
+
+![medical_sim screenshot](../raw/main/content/games/simulation/medical_sim/screen.png)
+
+Hospital management simulation — triage patients, assign staff, upgrade departments, and maintain a 4+ star rating.
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [mining](../tree/main/content/games/simulation/mining)
+
+![mining screenshot](../raw/main/content/games/simulation/mining/screen.png)
+
+**Category:** Simulation
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [physics_demo](../tree/main/content/games/simulation/physics_demo)
+
+![physics_demo screenshot](../raw/main/content/games/simulation/physics_demo/screen.png)
+
+**Category:** simulation
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+
+### [physics_sandbox](../tree/main/content/games/simulation/physics_sandbox)
+
+![physics_sandbox screenshot](../raw/main/content/games/simulation/physics_sandbox/screen.png)
+
+Free-form physics playground where you build structures and destroy them with explosions, heavy balls, and gravity manipulation.
+
+**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [railroad](../tree/main/content/games/simulation/railroad)
+
+![railroad screenshot](../raw/main/content/games/simulation/railroad/screen.png)
+
+**Category:** Simulation
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [settlers_rise](../tree/main/content/games/simulation/settlers_rise)
+
+![settlers_rise screenshot](../raw/main/content/games/simulation/settlers_rise/screen.png)
+
+Settlement-building simulation inspired by The Settlers 2 (Amiga 1998). Place production buildings on a procedurally generated map, watch settlers carry good...
+
+**Modules:** [event](Module-event), [input](Module-input), [math](Module-math), [pathfind](Module-pathfind), [render](Module-render), [window](Module-window)
+
+### [tower_sim](../tree/main/content/games/simulation/tower_sim)
+
+![tower_sim screenshot](../raw/main/content/games/simulation/tower_sim/screen.png)
+
+**Category:** simulation
+
+**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [tycoon](../tree/main/content/games/simulation/tycoon)
+
+![tycoon screenshot](../raw/main/content/games/simulation/tycoon/screen.png)
+
+Business empire tycoon — buy ventures, hire managers, upgrade revenue, and prestige your way to a million gold.
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [vehicle_builder](../tree/main/content/games/simulation/vehicle_builder)
+
+![vehicle_builder screenshot](../raw/main/content/games/simulation/vehicle_builder/screen.png)
+
+Grid-based vehicle construction and physics-driven test track game. Design vehicles from modular parts on a snap-to-grid editor, then switch to a side-scroll...
+
+**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [wildlife_photo](../tree/main/content/games/simulation/wildlife_photo)
+
+![wildlife_photo screenshot](../raw/main/content/games/simulation/wildlife_photo/screen.png)
+
+Explore a scrolling nature landscape, frame wildlife in your camera viewfinder, and snap photos to fill your species journal. Photograph all 8 species to com...
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+
+### [zoo_tycoon](../tree/main/content/games/simulation/zoo_tycoon)
+
+![zoo_tycoon screenshot](../raw/main/content/games/simulation/zoo_tycoon/screen.png)
+
+**Category:** Simulation
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
 
 ## sports
 
-| Game | Description | Modules |
-|---|---|---|
-| [boxing_ring](../tree/main/content/games/sports/boxing_ring) | Side-view boxing game with a full 3-round fight system, stamina management, combo tracking, and an AI opponent that gets tougher each round. | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), timer ([[Module-timer]]), tween ([[Module-tween]]), window ([[Module-window]]) |
-| [drift_racing](../tree/main/content/games/sports/drift_racing) | **Category:** Sports | event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [fishing](../tree/main/content/games/sports/fishing) | **Category:** Sports | event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [golf_classic](../tree/main/content/games/sports/golf_classic) | **Category:** Sports | event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [pinball](../tree/main/content/games/sports/pinball) | **Category:** Sports | event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [rhythm_game](../tree/main/content/games/sports/rhythm_game) | **Category:** Sports | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), timer ([[Module-timer]]), tween ([[Module-tween]]), window ([[Module-window]]) |
-| [sensible_soccer](../tree/main/content/games/sports/sensible_soccer) | Arcade top-down football inspired by Sensible Soccer (Amiga 1997). 5-a-side with aftertouch shooting, CPU opponents, and a 90-second match clock. | event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), window ([[Module-window]]) |
-| [ski_jump](../tree/main/content/games/sports/ski_jump) | _Choose your hill, crouch for speed on the approach, time your jump at the ramp lip, and lean through the air for maximum distance and style points._ | event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [sports_manager](../tree/main/content/games/sports/sports_manager) | **Category:** Sports | event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [tennis_classic](../tree/main/content/games/sports/tennis_classic) | Complete top-down tennis game with serve/return mechanics, topspin/slice, AI opponent, and full tennis scoring (games, sets, match). | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [track_and_field](../tree/main/content/games/sports/track_and_field) | **Category:** sports | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), timer ([[Module-timer]]), tween ([[Module-tween]]), window ([[Module-window]]) |
-| [trajectory_sports](../tree/main/content/games/sports/trajectory_sports) | **Category:** sports | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
+### [boxing_ring](../tree/main/content/games/sports/boxing_ring)
+
+![boxing_ring screenshot](../raw/main/content/games/sports/boxing_ring/screen.png)
+
+Side-view boxing game with a full 3-round fight system, stamina management, combo tracking, and an AI opponent that gets tougher each round.
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+
+### [drift_racing](../tree/main/content/games/sports/drift_racing)
+
+![drift_racing screenshot](../raw/main/content/games/sports/drift_racing/screen.png)
+
+**Category:** Sports
+
+**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [fishing](../tree/main/content/games/sports/fishing)
+
+![fishing screenshot](../raw/main/content/games/sports/fishing/screen.png)
+
+**Category:** Sports
+
+**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [golf_classic](../tree/main/content/games/sports/golf_classic)
+
+![golf_classic screenshot](../raw/main/content/games/sports/golf_classic/screen.png)
+
+**Category:** Sports
+
+**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [pinball](../tree/main/content/games/sports/pinball)
+
+![pinball screenshot](../raw/main/content/games/sports/pinball/screen.png)
+
+**Category:** Sports
+
+**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [rhythm_game](../tree/main/content/games/sports/rhythm_game)
+
+![rhythm_game screenshot](../raw/main/content/games/sports/rhythm_game/screen.png)
+
+**Category:** Sports
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+
+### [sensible_soccer](../tree/main/content/games/sports/sensible_soccer)
+
+![sensible_soccer screenshot](../raw/main/content/games/sports/sensible_soccer/screen.png)
+
+Arcade top-down football inspired by Sensible Soccer (Amiga 1997). 5-a-side with aftertouch shooting, CPU opponents, and a 90-second match clock.
+
+**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [window](Module-window)
+
+### [ski_jump](../tree/main/content/games/sports/ski_jump)
+
+![ski_jump screenshot](../raw/main/content/games/sports/ski_jump/screen.png)
+
+_Choose your hill, crouch for speed on the approach, time your jump at the ramp lip, and lean through the air for maximum distance and style points._
+
+**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [sports_manager](../tree/main/content/games/sports/sports_manager)
+
+![sports_manager screenshot](../raw/main/content/games/sports/sports_manager/screen.png)
+
+**Category:** Sports
+
+**Modules:** [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [tennis_classic](../tree/main/content/games/sports/tennis_classic)
+
+![tennis_classic screenshot](../raw/main/content/games/sports/tennis_classic/screen.png)
+
+Complete top-down tennis game with serve/return mechanics, topspin/slice, AI opponent, and full tennis scoring (games, sets, match).
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [track_and_field](../tree/main/content/games/sports/track_and_field)
+
+![track_and_field screenshot](../raw/main/content/games/sports/track_and_field/screen.png)
+
+**Category:** sports
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+
+### [trajectory_sports](../tree/main/content/games/sports/trajectory_sports)
+
+![trajectory_sports screenshot](../raw/main/content/games/sports/trajectory_sports/screen.png)
+
+**Category:** sports
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
 
 ## strategy
 
-| Game | Description | Modules |
-|---|---|---|
-| [bridge_builder](../tree/main/content/games/strategy/bridge_builder) | **Category:** strategy | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), timer ([[Module-timer]]), tween ([[Module-tween]]), window ([[Module-window]]) |
-| [card_game](../tree/main/content/games/strategy/card_game) | **Category:** strategy | camera ([[Module-camera]]), event ([[Module-event]]), input ([[Module-input]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [deckbuilder](../tree/main/content/games/strategy/deckbuilder) | Slay-the-Spire-style turn-based card battler. Build your deck as you climb three floors. | event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), tween ([[Module-tween]]), window ([[Module-window]]) |
-| [eu2](../tree/main/content/games/strategy/eu2) | No description in the game index. | event ([[Module-event]]), input ([[Module-input]]), province ([[Module-province]]), render ([[Module-render]]), timer ([[Module-timer]]), window ([[Module-window]]) |
-| [hex_strategy](../tree/main/content/games/strategy/hex_strategy) | Turn-based hex-grid expansion game — claim territory, build cities, and accumulate resources over successive turns. | event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), window ([[Module-window]]) |
-| [logic_game](../tree/main/content/games/strategy/logic_game) | Robot programming puzzle — write a program of movement commands to guide your robot to the goal in limited steps. | event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), window ([[Module-window]]) |
-| [match3](../tree/main/content/games/strategy/match3) | **Category:** strategy | event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), window ([[Module-window]]) |
-| [maze_defense](../tree/main/content/games/strategy/maze_defense) | Hybrid tower defense where YOU build the maze. Place walls to extend the enemy path, then add towers to mow them down — but you can never fully block the route. | event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), window ([[Module-window]]) |
-| [party_games](../tree/main/content/games/strategy/party_games) | 4 mini-game party collection for 2 players: Reaction, Memory, Typing Race, and Math Duel. | event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), window ([[Module-window]]) |
-| [physics_puzzle](../tree/main/content/games/strategy/physics_puzzle) | Place planks, ramps, and blocks to guide a falling ball into the goal — with a limited shape budget. | event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), window ([[Module-window]]) |
-| [rts](../tree/main/content/games/strategy/rts) | Real-time strategy game — build a base, train units, harvest resources, and survive 5 enemy waves. | event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), window ([[Module-window]]) |
-| [tactical_battle](../tree/main/content/games/strategy/tactical_battle) | Turn-based grid squad tactics with 4 unit types, terrain effects, and AI-driven enemy turns. | event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), window ([[Module-window]]) |
-| [tower_defense](../tree/main/content/games/strategy/tower_defense) | Classic grid-based tower defense — place towers on a pre-laid path, survive 6 enemy waves. | event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), window ([[Module-window]]) |
-| [wargame](../tree/main/content/games/strategy/wargame) | Hex-grid turn-based wargame with infantry, tanks, artillery, and recon across terrain-varied battlefields. | event ([[Module-event]]), input ([[Module-input]]), particle ([[Module-particle]]), render ([[Module-render]]), window ([[Module-window]]) |
-| [worms_artillery](../tree/main/content/games/strategy/worms_artillery) | Turn-based artillery game inspired by Worms (Amiga 1998). Two teams take turns firing bazookas across procedurally generated terrain, with wind drift, blast ... | event ([[Module-event]]), input ([[Module-input]]), math ([[Module-math]]), particle ([[Module-particle]]), render ([[Module-render]]), window ([[Module-window]]) |
+### [bridge_builder](../tree/main/content/games/strategy/bridge_builder)
+
+![bridge_builder screenshot](../raw/main/content/games/strategy/bridge_builder/screen.png)
+
+**Category:** strategy
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [timer](Module-timer), [tween](Module-tween), [window](Module-window)
+
+### [card_game](../tree/main/content/games/strategy/card_game)
+
+![card_game screenshot](../raw/main/content/games/strategy/card_game/screen.png)
+
+**Category:** strategy
+
+**Modules:** [camera](Module-camera), [event](Module-event), [input](Module-input), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [deckbuilder](../tree/main/content/games/strategy/deckbuilder)
+
+![deckbuilder screenshot](../raw/main/content/games/strategy/deckbuilder/screen.png)
+
+Slay-the-Spire-style turn-based card battler. Build your deck as you climb three floors.
+
+**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [tween](Module-tween), [window](Module-window)
+
+### [eu2](../tree/main/content/games/strategy/eu2)
+
+EU2 Province Viewer demo for Lurek2D.
+
+**Modules:** [event](Module-event), [input](Module-input), [province](Module-province), [render](Module-render), [timer](Module-timer), [window](Module-window)
+
+### [hex_strategy](../tree/main/content/games/strategy/hex_strategy)
+
+![hex_strategy screenshot](../raw/main/content/games/strategy/hex_strategy/screen.png)
+
+Turn-based hex-grid expansion game — claim territory, build cities, and accumulate resources over successive turns.
+
+**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [window](Module-window)
+
+### [logic_game](../tree/main/content/games/strategy/logic_game)
+
+![logic_game screenshot](../raw/main/content/games/strategy/logic_game/screen.png)
+
+Robot programming puzzle — write a program of movement commands to guide your robot to the goal in limited steps.
+
+**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [window](Module-window)
+
+### [match3](../tree/main/content/games/strategy/match3)
+
+![match3 screenshot](../raw/main/content/games/strategy/match3/screen.png)
+
+**Category:** strategy
+
+**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [window](Module-window)
+
+### [maze_defense](../tree/main/content/games/strategy/maze_defense)
+
+![maze_defense screenshot](../raw/main/content/games/strategy/maze_defense/screen.png)
+
+Hybrid tower defense where YOU build the maze. Place walls to extend the enemy path, then add towers to mow them down — but you can never fully block the route.
+
+**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [window](Module-window)
+
+### [party_games](../tree/main/content/games/strategy/party_games)
+
+![party_games screenshot](../raw/main/content/games/strategy/party_games/screen.png)
+
+4 mini-game party collection for 2 players: Reaction, Memory, Typing Race, and Math Duel.
+
+**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [window](Module-window)
+
+### [physics_puzzle](../tree/main/content/games/strategy/physics_puzzle)
+
+![physics_puzzle screenshot](../raw/main/content/games/strategy/physics_puzzle/screen.png)
+
+Place planks, ramps, and blocks to guide a falling ball into the goal — with a limited shape budget.
+
+**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [window](Module-window)
+
+### [rts](../tree/main/content/games/strategy/rts)
+
+![rts screenshot](../raw/main/content/games/strategy/rts/screen.png)
+
+Real-time strategy game — build a base, train units, harvest resources, and survive 5 enemy waves.
+
+**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [window](Module-window)
+
+### [tactical_battle](../tree/main/content/games/strategy/tactical_battle)
+
+![tactical_battle screenshot](../raw/main/content/games/strategy/tactical_battle/screen.png)
+
+Turn-based grid squad tactics with 4 unit types, terrain effects, and AI-driven enemy turns.
+
+**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [window](Module-window)
+
+### [tower_defense](../tree/main/content/games/strategy/tower_defense)
+
+![tower_defense screenshot](../raw/main/content/games/strategy/tower_defense/screen.png)
+
+Classic grid-based tower defense — place towers on a pre-laid path, survive 6 enemy waves.
+
+**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [window](Module-window)
+
+### [wargame](../tree/main/content/games/strategy/wargame)
+
+![wargame screenshot](../raw/main/content/games/strategy/wargame/screen.png)
+
+Hex-grid turn-based wargame with infantry, tanks, artillery, and recon across terrain-varied battlefields.
+
+**Modules:** [event](Module-event), [input](Module-input), [particle](Module-particle), [render](Module-render), [window](Module-window)
+
+### [worms_artillery](../tree/main/content/games/strategy/worms_artillery)
+
+![worms_artillery screenshot](../raw/main/content/games/strategy/worms_artillery/screen.png)
+
+Turn-based artillery game inspired by Worms (Amiga 1998). Two teams take turns firing bazookas across procedurally generated terrain, with wind drift, blast ...
+
+**Modules:** [event](Module-event), [input](Module-input), [math](Module-math), [particle](Module-particle), [render](Module-render), [window](Module-window)

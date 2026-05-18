@@ -1,856 +1,681 @@
 -- content/examples/devtools.lua
 -- lurek.devtools API examples: logging, profiling, file watching, REPL, watches, and inspection.
 -- Run: cargo run -- content/examples/devtools.lua
---@api-stub: lurek.devtools.log
--- Adds a message to the devtools log using an explicit severity level
-do
-  -- Use log() when the severity is determined at runtime.
-  -- Levels: "trace", "debug", "info", "warn", "error", "fatal"
-  -- Common pattern: choose severity based on game state thresholds.
-  local hp, max_hp = 12, 100
-  local level = (hp < max_hp * 0.2) and "warn" or "info"
-  lurek.devtools.log(level, "player hp " .. hp .. "/" .. max_hp)
 
-  -- Useful for generic logging helpers where the caller decides severity.
-  local function log_asset(severity, asset_path, msg)
-    lurek.devtools.log(severity, "[asset:" .. asset_path .. "] " .. msg)
-  end
-  log_asset("debug", "hero.png", "loaded 256x256 RGBA")
+--@api-stub: lurek.devtools.log
+-- Logs one message with a runtime-selected severity.
+do
+  -- Use log() when game state chooses the severity at runtime.
+  local previous = lurek.devtools.getLogLevel()
+  lurek.devtools.setLogLevel("trace")
+  local hp, max_hp = 14, 100
+  local level = (hp / max_hp) < 0.2 and "warn" or "info"
+  lurek.devtools.log(level, "player hp " .. hp .. "/" .. max_hp)
+  lurek.devtools.setLogLevel(previous)
 end
+
 --@api-stub: lurek.devtools.trace
--- Adds a trace-level diagnostic message to the devtools log
+-- Records very detailed diagnostics for a frame-level investigation.
 do
-  -- Trace is the most verbose level. Use for per-frame data only needed
-  -- during deep debugging sessions. Hidden by default until setLogLevel("trace").
-  local dt = 1 / 60
-  lurek.devtools.trace("tick dt=" .. string.format("%.4f", dt) .. " entities=128")
+  -- Trace is useful for temporary frame-by-frame probes.
+  local previous = lurek.devtools.getLogLevel()
+  lurek.devtools.setLogLevel("trace")
+  lurek.devtools.trace(string.format("frame dt=%.4f visible=%d", 1 / 60, 73))
+  lurek.devtools.setLogLevel(previous)
 end
+
 --@api-stub: lurek.devtools.debug
--- Adds a debug-level diagnostic message to the devtools log
+-- Records implementation details that help during local debugging.
 do
-  -- Debug is for implementation details useful during development.
-  -- Example: tracking state machine transitions.
-  local state = "attacking"
-  local target_id = 42
-  lurek.devtools.debug("AI state -> " .. state .. " target=" .. target_id)
+  -- Debug messages fit state transitions and branch choices.
+  local previous = lurek.devtools.getLogLevel()
+  lurek.devtools.setLogLevel("debug")
+  lurek.devtools.debug("state patrol -> chase for entity 42")
+  lurek.devtools.setLogLevel(previous)
 end
+
 --@api-stub: lurek.devtools.info
--- Adds an info-level diagnostic message to the devtools log
+-- Records a normal milestone that is useful in playtest logs.
 do
-  -- Info is for milestones and confirmations during normal operation.
-  -- Example: level loaded, save complete, connection established.
-  local level_name = "forest_01"
-  local entity_count = 87
-  lurek.devtools.info("level '" .. level_name .. "' loaded: " .. entity_count .. " entities")
+  -- Info entries can stay enabled during development.
+  lurek.devtools.info("loaded level forest_01 with 87 entities")
 end
+
 --@api-stub: lurek.devtools.warn
--- Adds a warning-level diagnostic message to the devtools log
+-- Records a recoverable problem and the fallback being used.
 do
-  -- Warn is for recoverable problems that may degrade quality.
-  -- Example: fallback texture used, slow frame detected, deprecated API call.
-  local texture = "assets/hero_alt.png"
-  lurek.devtools.warn("texture not found: " .. texture .. " — using placeholder")
+  -- Warn when the game can continue with a fallback path.
+  lurek.devtools.warn("missing textures/hero_alt.png; using textures/hero.png")
 end
+
 --@api-stub: lurek.devtools.error
--- Adds an error-level diagnostic message to the devtools log
+-- Records an operation failure that the game handled.
 do
-  -- Error is for failures that impact gameplay but do not crash.
-  -- Example: save failed, network timeout, script error caught by pcall.
-  local path = "save/slot1.sav"
-  local ok = false
-  if not ok then
-    lurek.devtools.error("save failed: " .. path .. " (disk full?)")
+  -- Error is appropriate for failed work that does not crash the runtime.
+  local save_ok = false
+  if not save_ok then
+    lurek.devtools.error("save failed for save/slot1.sav: permission denied")
   end
 end
+
 --@api-stub: lurek.devtools.fatal
--- Adds a fatal-level diagnostic message to the devtools log
+-- Records an unrecoverable condition before shutdown code runs.
 do
-  -- Fatal is for unrecoverable states. It logs the message but does NOT
-  -- raise or halt execution — your code must handle shutdown separately.
-  local ok, err = pcall(function()
-    error("GPU device lost")
-  end)
-  if not ok then
-    lurek.devtools.fatal("critical failure: " .. tostring(err))
-    -- Game would initiate graceful shutdown here.
+  -- fatal() logs the message; it does not throw by itself.
+  local shutdown_requested = true
+  if shutdown_requested then
+    lurek.devtools.fatal("critical renderer state; requesting shutdown")
   end
 end
+
 --@api-stub: lurek.devtools.setLogLevel
--- Sets the minimum severity that remains visible in devtools log output
+-- Changes which log severities are retained by devtools.
 do
-  -- Messages below this level are silently discarded.
-  -- Set to "debug" during development, "info" or "warn" for shipping builds.
-  local is_shipping = false
-  lurek.devtools.setLogLevel(is_shipping and "warn" or "debug")
-  -- This trace message will be hidden because level is "debug":
-  lurek.devtools.trace("this is suppressed")
-  -- This debug message will pass:
-  lurek.devtools.debug("this is visible")
+  -- Store and restore global devtools state around focused examples.
+  local previous = lurek.devtools.getLogLevel()
+  lurek.devtools.setLogLevel("debug")
+  lurek.devtools.trace("hidden while level is debug")
+  lurek.devtools.debug("debug logging enabled for local tools")
+  lurek.devtools.setLogLevel(previous)
 end
+
 --@api-stub: lurek.devtools.getLogLevel
--- Returns the minimum severity currently used by devtools log output
+-- Reads the active minimum log severity before doing extra debug work.
 do
-  -- Use to conditionally skip expensive string formatting.
+  -- Guard verbose formatting with the current level.
+  local previous = lurek.devtools.getLogLevel()
+  lurek.devtools.setLogLevel("debug")
   local current = lurek.devtools.getLogLevel()
   if current == "trace" or current == "debug" then
-    -- Only build expensive debug strings when they would actually be logged.
-    local dump = "entity_positions={...}"  -- imagine a costly serialization
-    lurek.devtools.debug(dump)
+    lurek.devtools.debug("visible_entities=73, chunk=forest_north")
   end
+  lurek.devtools.setLogLevel(previous)
 end
+
 --@api-stub: lurek.devtools.setLogConsole
--- Enables or disables mirroring devtools log entries to the console
+-- Toggles whether accepted log entries mirror to the process console.
 do
-  -- When true, all devtools.log/info/warn/etc. messages also appear in stdout.
-  -- Useful during development without an in-game console overlay.
+  -- Preserve the previous value so examples do not affect later blocks.
+  local previous = lurek.devtools.getLogConsole()
   lurek.devtools.setLogConsole(true)
-  lurek.devtools.info("messages now visible in terminal output")
+  lurek.devtools.info("console mirror enabled for one capture")
+  lurek.devtools.setLogConsole(previous)
 end
+
 --@api-stub: lurek.devtools.getLogConsole
--- Returns whether devtools log entries are mirrored to the console
+-- Reads the console mirror setting for debug UI status text.
 do
-  -- Guard expensive debug output behind console-enabled checks.
-  if lurek.devtools.getLogConsole() then
-    lurek.devtools.debug("console active — verbose output enabled")
-  end
+  -- A settings screen can show this as a checkbox state.
+  local enabled = lurek.devtools.getLogConsole()
+  local label = enabled and "terminal logging on" or "terminal logging off"
+  lurek.devtools.info("devtools option: " .. label)
 end
+
 --@api-stub: lurek.devtools.setLogFile
--- Sets the file path used by devtools file logging state
+-- Stores the devtools log file path.
 do
-  -- Direct devtools log output to a file for post-session analysis.
-  -- Combine with a session ID to keep logs separated per play session.
-  local session_id = os.time and os.time() or 1700000000
-  local path = "save/logs/session_" .. session_id .. ".log"
-  lurek.devtools.setLogFile(path)
-  lurek.devtools.info("file logging started: " .. path)
+  -- The binding stores the path string; this block clears it afterward.
+  lurek.devtools.setLogFile("save/devtools/session_debug.log")
+  local configured = lurek.devtools.getLogFile()
+  lurek.devtools.setLogFile("")
+  lurek.devtools.info("file log target checked: " .. configured)
 end
+
 --@api-stub: lurek.devtools.getLogFile
--- Returns the file path currently stored as the devtools log target
+-- Reads the configured log file path for a settings or report panel.
 do
-  -- Check if file logging is configured before relying on it.
+  -- Empty string means file logging is disabled.
+  lurek.devtools.setLogFile("save/devtools/playtest.log")
   local path = lurek.devtools.getLogFile()
-  if path == "" then
-    lurek.devtools.warn("no log file set — crash reports will lack file output")
-  else
-    lurek.devtools.debug("logging to: " .. path)
-  end
+  lurek.devtools.setLogFile("")
+  lurek.devtools.info("file logging target: " .. (path == "" and "disabled" or path))
 end
+
 --@api-stub: lurek.devtools.getLogHistory
--- Returns recent devtools log entries as structured tables
+-- Pulls recent log rows for an in-game console overlay.
 do
-  -- Retrieve the last N log entries. Each entry has:
-  --   .level (string), .timestamp (number), .message (string),
-  --   .source (string), .line (number), .category (string or nil)
-  lurek.devtools.info("loading level forest_01")
-  lurek.devtools.warn("missing optional asset")
-  local recent = lurek.devtools.getLogHistory(5)
-  for _, entry in ipairs(recent) do
-    -- Display in an in-game console overlay:
-    lurek.devtools.trace("[" .. entry.level .. "] " .. entry.message)
-  end
-end
---@api-stub: lurek.devtools.clearLog
--- Clears all in-memory devtools log entries
-do
-  -- Clear stale messages on scene transitions so the debug console
-  -- only shows messages relevant to the current scene.
-  lurek.devtools.info("old scene messages")
+  -- Each row contains level, timestamp, message, source, line, and category.
   lurek.devtools.clearLog()
-  lurek.devtools.info("scene transition complete — log cleared")
-  local history = lurek.devtools.getLogHistory(100)
-  -- Only the "scene transition" message remains.
-  lurek.devtools.debug("entries after clear: " .. #history)
-end
---@api-stub: lurek.devtools.setProfilingEnabled
--- Enables or disables collection of CPU profiling zones
-do
-  -- Toggle profiling with a debug key. When disabled, profilePush/Pop
-  -- calls become no-ops with near-zero overhead.
-  local debug_mode = true
-  lurek.devtools.setProfilingEnabled(debug_mode)
-  lurek.devtools.info("profiler " .. (debug_mode and "enabled" or "disabled"))
-end
---@api-stub: lurek.devtools.isProfilingEnabled
--- Returns whether CPU profiling zone collection is currently enabled
-do
-  -- Use to guard expensive profiling annotations that build strings.
-  if lurek.devtools.isProfilingEnabled() then
-    lurek.devtools.profilePush("ai_decision_tree")
-    -- ... AI logic ...
-    lurek.devtools.profilePop()
+  lurek.devtools.info("console overlay opened")
+  lurek.devtools.warn("optional minimap data not loaded")
+  local recent = lurek.devtools.getLogHistory(5)
+  for index, entry in ipairs(recent) do
+    lurek.devtools.debug(index .. ": [" .. tostring(entry.level) .. "] " .. tostring(entry.message))
   end
 end
---@api-stub: lurek.devtools.profilePush
--- Starts a named profiling zone on the current profiler stack
+
+--@api-stub: lurek.devtools.clearLog
+-- Clears stale log rows before entering a new scene.
 do
-  -- Push/Pop zones nest. The profiler builds a tree:
-  --   game_update
-  --     physics_step
-  --     ai_update
-  --       pathfinding
-  --     render_submit
+  -- Clear the old scene log before adding new-scene messages.
+  lurek.devtools.info("leaving village scene")
+  lurek.devtools.clearLog()
+  lurek.devtools.info("entered dungeon scene")
+  lurek.devtools.debug("log rows after reset: " .. #lurek.devtools.getLogHistory(0))
+end
+
+--@api-stub: lurek.devtools.setProfilingEnabled
+-- Enables profiler capture for a small debug measurement.
+do
+  -- Profiling zones are retained only while profiling is enabled.
+  lurek.devtools.setProfilingEnabled(true)
+  lurek.devtools.profilePush("inventory_sort")
+  local slots = {3, 1, 2}
+  table.sort(slots)
+  lurek.devtools.profilePop("inventory_sort")
+  lurek.devtools.profileFrame()
+  lurek.devtools.setProfilingEnabled(false)
+end
+
+--@api-stub: lurek.devtools.isProfilingEnabled
+-- Checks whether profiler annotations should run this frame.
+do
+  -- This keeps optional zone code cheap when profiling is disabled.
+  lurek.devtools.setProfilingEnabled(true)
+  if lurek.devtools.isProfilingEnabled() then
+    lurek.devtools.profilePush("ai_decision")
+    lurek.devtools.debug("profiled action=flank")
+    lurek.devtools.profilePop("ai_decision")
+  end
+  lurek.devtools.profileFrame()
+  lurek.devtools.setProfilingEnabled(false)
+end
+
+--@api-stub: lurek.devtools.profilePush
+-- Starts a named profiling zone on the current profiler stack.
+do
+  -- Zones can nest to show which subsystem owned the time.
   lurek.devtools.setProfilingEnabled(true)
   lurek.devtools.profilePush("game_update")
   lurek.devtools.profilePush("physics_step")
-  -- ... physics simulation ...
-  lurek.devtools.profilePop()
-  lurek.devtools.profilePush("ai_update")
-  lurek.devtools.profilePush("pathfinding")
-  -- ... A* search ...
-  lurek.devtools.profilePop()
-  lurek.devtools.profilePop()
-  lurek.devtools.profilePop()
+  lurek.devtools.debug("physics bodies=24")
+  lurek.devtools.profilePop("physics_step")
+  lurek.devtools.profilePop("game_update")
+  lurek.devtools.profileFrame()
+  lurek.devtools.setProfilingEnabled(false)
 end
+
 --@api-stub: lurek.devtools.profilePop
--- Ends the current profiling zone on the profiler stack
+-- Ends the current profiling zone on the profiler stack.
 do
-  -- Always match every Push with a Pop. Mismatched calls produce
-  -- incorrect zone trees. Wrap in pcall if the work might error.
+  -- Balance each push with a pop even when protected work fails.
   lurek.devtools.setProfilingEnabled(true)
-  lurek.devtools.profilePush("render_world")
+  lurek.devtools.profilePush("spawn_wave")
   local ok, err = pcall(function()
-    -- ... draw calls that might fail ...
+    error("spawn budget exceeded")
   end)
-  lurek.devtools.profilePop()  -- Pop even if the work errored.
+  lurek.devtools.profilePop("spawn_wave")
   if not ok then
-    lurek.devtools.error("render failed: " .. tostring(err))
+    lurek.devtools.error("spawn failed: " .. tostring(err))
   end
+  lurek.devtools.profileFrame()
+  lurek.devtools.setProfilingEnabled(false)
 end
 
 --@api-stub: lurek.devtools.profileFrame
--- Closes the current profiling frame and stores its zone tree for later inspection
+-- Closes the current profiling frame and stores its zone tree.
 do
-  -- Call once per frame at the end of your game loop.
-  -- The stored frame can be queried later with getProfileData.
-  function lurek.process(dt)
-    lurek.devtools.profilePush("frame")
-    -- ... entire frame logic ...
-    lurek.devtools.profilePop()
-    lurek.devtools.profileFrame()  -- Stores this frame's zone tree.
-  end
+  -- Call this after update and render profiling zones close.
+  lurek.devtools.setProfilingEnabled(true)
+  lurek.devtools.profilePush("frame")
+  lurek.devtools.recordFrameTime(1 / 60)
+  lurek.devtools.profilePop("frame")
+  lurek.devtools.profileFrame()
+  lurek.devtools.setProfilingEnabled(false)
 end
 
 --@api-stub: lurek.devtools.getProfileFrameCount
--- Returns how many profiling frames are currently stored
+-- Counts retained profiler frames before showing a report button.
 do
-  -- Frames accumulate until resetProfile() is called.
-  -- Use to determine when you have enough data for meaningful statistics.
-  local n = lurek.devtools.getProfileFrameCount()
-  if n >= 60 then
-    lurek.devtools.info("profiler: " .. n .. " frames buffered — ready for analysis")
-  else
-    lurek.devtools.debug("profiler: " .. n .. "/60 frames collected")
-  end
+  -- Frame count tells a UI whether enough data exists for a report.
+  lurek.devtools.setProfilingEnabled(true)
+  lurek.devtools.profilePush("warmup_frame")
+  lurek.devtools.profilePop("warmup_frame")
+  lurek.devtools.profileFrame()
+  lurek.devtools.debug("profile frames=" .. lurek.devtools.getProfileFrameCount())
+  lurek.devtools.setProfilingEnabled(false)
 end
 
 --@api-stub: lurek.devtools.getProfileData
--- Returns the profiler zone tree for a retained frame
+-- Reads profiler zones from a retained frame for a debug overlay.
 do
-  -- Each zone entry has: .name, .time (total seconds), .selfTime (excluding children),
-  -- .startTime (relative offset), and .children (nested zones array).
-  -- Frame index 0 = oldest retained frame.
+  -- Zone timing fields can be displayed after profileFrame().
+  lurek.devtools.setProfilingEnabled(true)
+  lurek.devtools.profilePush("render_submit")
+  lurek.devtools.profilePop("render_submit")
+  lurek.devtools.profileFrame()
   local zones = lurek.devtools.getProfileData(0)
-  for _, z in ipairs(zones) do
-    local ms = z.time * 1000
-    local self_ms = z.selfTime * 1000
-    lurek.devtools.debug(
-      string.format("  %s: %.2fms total, %.2fms self", z.name, ms, self_ms)
-    )
+  for _, zone in ipairs(zones) do
+    local total_ms = (tonumber(zone.time) or 0) * 1000
+    lurek.devtools.debug(tostring(zone.name) .. " total=" .. string.format("%.3fms", total_ms))
   end
+  lurek.devtools.setProfilingEnabled(false)
 end
 
 --@api-stub: lurek.devtools.resetProfile
--- Clears profiler state, active zones, and retained profiling frames
+-- Clears profiler state, active zones, and retained profiling frames.
 do
-  -- Use when starting a benchmark from a known clean state.
+  -- Reset before a focused measurement to avoid old frames in reports.
   lurek.devtools.resetProfile()
-  lurek.devtools.info("profiler reset — starting fresh benchmark")
+  lurek.devtools.setProfilingEnabled(true)
   lurek.devtools.profilePush("benchmark_run")
-  -- ... code under test ...
-  lurek.devtools.profilePop()
+  lurek.devtools.recordFrameTime(0.016)
+  lurek.devtools.profilePop("benchmark_run")
   lurek.devtools.profileFrame()
+  lurek.devtools.info("profiler frames after reset: " .. lurek.devtools.getProfileFrameCount())
+  lurek.devtools.setProfilingEnabled(false)
 end
 
 --@api-stub: lurek.devtools.profilerReport
--- Aggregates retained profiler frames into per-zone timing rows
+-- Aggregates retained profiler frames into per-zone timing rows.
 do
-  -- Builds a summary across all retained frames.
-  -- Each row: .name, .calls, .total_ms, .avg_ms, .min_ms, .max_ms, .self_ms
-  -- Perfect for displaying a profiler overlay or writing a report.
+  -- Reports are useful for a sortable debug table.
+  lurek.devtools.resetProfile()
   lurek.devtools.setProfilingEnabled(true)
   lurek.devtools.profilePush("sim")
-  lurek.devtools.profilePop()
+  lurek.devtools.profilePop("sim")
   lurek.devtools.profileFrame()
   local report = lurek.devtools.profilerReport()
   for _, row in ipairs(report) do
-    lurek.devtools.info(string.format(
-      "%s: avg=%.2fms, calls=%d, self=%.2fms",
-      row.name, row.avg_ms, row.calls, row.self_ms
-    ))
+    local avg_ms = tonumber(row.avg_ms) or 0
+    lurek.devtools.info(tostring(row.name) .. " avg=" .. string.format("%.3fms", avg_ms))
   end
+  lurek.devtools.setProfilingEnabled(false)
 end
 
--- =============================================================================
--- FRAME TIMING
--- =============================================================================
-
 --@api-stub: lurek.devtools.recordFrameTime
--- Records one CPU frame duration sample for devtools frame statistics
+-- Records one CPU frame duration sample for devtools frame statistics.
 do
-  -- Call every frame with the delta time. Devtools accumulates samples
-  -- for statistical analysis (min, max, avg, percentiles).
-  function lurek.process(dt)
-    lurek.devtools.recordFrameTime(dt)
-  end
+  -- Use seconds, usually the dt passed to the process callback.
+  lurek.devtools.recordFrameTime(1 / 60)
+  lurek.devtools.recordFrameTime(1 / 55)
+  local stats = lurek.devtools.getFrameStats()
+  lurek.devtools.info("CPU frame samples recorded: " .. tostring(stats.samples))
 end
 
 --@api-stub: lurek.devtools.getFrameStats
--- Returns aggregate CPU frame timing statistics from recorded samples
+-- Reads CPU frame timing metrics for an FPS overlay.
 do
-  -- Returns a table: .fps, .dt, .avg, .min, .max, .p50, .p95, .p99, .samples
-  -- Use for an FPS counter overlay or performance budget warnings.
+  -- Values are seconds except fps and samples.
   lurek.devtools.recordFrameTime(0.016)
-  lurek.devtools.recordFrameTime(0.017)
-  lurek.devtools.recordFrameTime(0.032)  -- A spike frame
-  local s = lurek.devtools.getFrameStats()
-  lurek.devtools.info(string.format(
-    "FPS: %.0f | avg: %.1fms | p99: %.1fms | samples: %d",
-    s.fps, s.avg * 1000, s.p99 * 1000, s.samples
-  ))
-  if s.p99 > 0.020 then
-    lurek.devtools.warn("p99 exceeds 20ms budget — investigate hitches")
-  end
+  lurek.devtools.recordFrameTime(0.032)
+  local stats = lurek.devtools.getFrameStats()
+  local avg_ms = (tonumber(stats.avg) or 0) * 1000
+  local p99_ms = (tonumber(stats.p99) or 0) * 1000
+  lurek.devtools.info(string.format("CPU avg=%.1fms p99=%.1fms", avg_ms, p99_ms))
 end
 
 --@api-stub: lurek.devtools.recordGpuFrameTime
--- Records one GPU frame duration sample for devtools frame statistics
+-- Records one GPU frame duration sample for devtools frame statistics.
 do
-  -- Separate GPU timing lets you distinguish CPU-bound from GPU-bound frames.
-  -- Pass the GPU-side frame duration (from timestamp queries or estimation).
-  function lurek.process(dt)
-    local gpu_dt = dt * 0.7  -- Hypothetical GPU measurement
-    lurek.devtools.recordGpuFrameTime(gpu_dt)
-  end
+  -- GPU samples can come from timestamp queries or renderer estimates.
+  lurek.devtools.recordGpuFrameTime(0.008)
+  lurek.devtools.recordGpuFrameTime(0.018)
+  local gpu = lurek.devtools.getGpuFrameStats()
+  lurek.devtools.debug("GPU samples recorded: " .. tostring(gpu.samples))
 end
 
 --@api-stub: lurek.devtools.getGpuFrameStats
--- Returns aggregate GPU frame timing statistics from recorded samples
+-- Reads GPU frame timing metrics and compares them to CPU stats.
 do
-  -- Same structure as getFrameStats but for GPU timings.
-  -- Compare CPU vs GPU stats to identify the bottleneck.
+  -- Same table shape as getFrameStats.
+  lurek.devtools.recordFrameTime(0.016)
   lurek.devtools.recordGpuFrameTime(0.008)
-  lurek.devtools.recordGpuFrameTime(0.009)
   local gpu = lurek.devtools.getGpuFrameStats()
   local cpu = lurek.devtools.getFrameStats()
-  local bottleneck = (gpu.avg > cpu.avg) and "GPU" or "CPU"
-  lurek.devtools.info("bottleneck: " .. bottleneck ..
-    " (cpu=" .. string.format("%.1f", cpu.avg * 1000) ..
-    "ms, gpu=" .. string.format("%.1f", gpu.avg * 1000) .. "ms)")
+  local bottleneck = (tonumber(gpu.avg) or 0) > (tonumber(cpu.avg) or 0) and "GPU" or "CPU"
+  lurek.devtools.info("current bottleneck=" .. bottleneck)
 end
 
 --@api-stub: lurek.devtools.getFrameHistory
--- Returns retained CPU frame duration samples in insertion order
+-- Reads retained CPU frame duration samples in insertion order.
 do
-  -- Returns an array of raw dt values (seconds). Use for plotting
-  -- a frame-time graph in a debug overlay.
+  -- History can feed a sparkline or hitch detector.
   lurek.devtools.recordFrameTime(0.016)
-  lurek.devtools.recordFrameTime(0.017)
   lurek.devtools.recordFrameTime(0.033)
-  local history = lurek.devtools.getFrameHistory()
-  -- Find the worst frame in the history for spike detection:
   local worst = 0
-  for _, dt in ipairs(history) do
-    if dt > worst then worst = dt end
+  for _, dt in ipairs(lurek.devtools.getFrameHistory()) do
+    if dt > worst then
+      worst = dt
+    end
   end
-  lurek.devtools.debug("worst frame in history: " .. string.format("%.1f", worst * 1000) .. "ms")
+  lurek.devtools.debug(string.format("worst CPU frame %.1fms", worst * 1000))
 end
 
 --@api-stub: lurek.devtools.setFrameHistorySize
--- Sets the maximum number of CPU frame duration samples retained by devtools
+-- Sets the retained CPU frame sample window size.
 do
-  -- Default is usually small. Increase for longer frame graphs.
-  -- 600 samples at 60fps = 10 seconds of history.
-  lurek.devtools.setFrameHistorySize(600)
-  lurek.devtools.info("frame history: 10s window at 60fps")
+  -- Restore the previous capacity after the example.
+  local previous = lurek.devtools.getFrameHistorySize()
+  lurek.devtools.setFrameHistorySize(120)
+  lurek.devtools.info("CPU frame history capacity=" .. lurek.devtools.getFrameHistorySize())
+  lurek.devtools.setFrameHistorySize(previous)
 end
 
 --@api-stub: lurek.devtools.getFrameHistorySize
--- Returns the current CPU frame history capacity
+-- Reads the current CPU frame history capacity after clamping.
 do
-  -- Values above 10000 are clamped internally. Use to verify the cap.
+  -- The Rust implementation clamps capacity into a safe range.
+  local previous = lurek.devtools.getFrameHistorySize()
   lurek.devtools.setFrameHistorySize(50000)
-  local actual = lurek.devtools.getFrameHistorySize()
-  lurek.devtools.info("requested 50000, got " .. actual .. " (internal cap applies)")
+  lurek.devtools.info("requested 50000 CPU samples, actual=" .. lurek.devtools.getFrameHistorySize())
+  lurek.devtools.setFrameHistorySize(previous)
 end
 
--- =============================================================================
--- FILE WATCHING (module-level)
--- =============================================================================
-
 --@api-stub: lurek.devtools.watch
--- Adds a path to the module-level devtools file watcher
+-- Adds a path to the module-level devtools file watcher.
 do
-  -- Returns true if the path was newly added, false if already watched.
-  -- Use for hot-reload workflows: watch script files and reload on change.
-  local added = lurek.devtools.watch("content/examples/devtools.lua")
-  lurek.devtools.info("watch added: " .. tostring(added))
-
-  -- Watching the same path twice returns false (no duplicate):
-  local dup = lurek.devtools.watch("content/examples/devtools.lua")
-  lurek.devtools.debug("duplicate add: " .. tostring(dup))
+  -- Watching a path twice returns false the second time.
+  lurek.devtools.clearWatches()
+  local path = "content/examples/devtools.lua"
+  local first = lurek.devtools.watch(path)
+  local second = lurek.devtools.watch(path)
+  lurek.devtools.info("watch first=" .. tostring(first) .. " second=" .. tostring(second))
 end
 
 --@api-stub: lurek.devtools.unwatch
--- Removes a path from the module-level devtools file watcher
+-- Removes a path from the module-level devtools file watcher.
 do
-  -- Returns true if the path was actually being watched and is now removed.
-  lurek.devtools.watch("content/levels/forest_01.toml")
-  local removed = lurek.devtools.unwatch("content/levels/forest_01.toml")
-  lurek.devtools.debug("unwatched forest_01: " .. tostring(removed))
-
-  -- Unwatching a path not in the list returns false:
-  local noop = lurek.devtools.unwatch("nonexistent.lua")
-  lurek.devtools.debug("unwatch nonexistent: " .. tostring(noop))
+  -- unwatch() returns true only when the path was present.
+  local path = "content/examples/devtools.lua"
+  lurek.devtools.watch(path)
+  local removed = lurek.devtools.unwatch(path)
+  local removed_again = lurek.devtools.unwatch(path)
+  lurek.devtools.debug("unwatch removed=" .. tostring(removed) .. " again=" .. tostring(removed_again))
 end
 
 --@api-stub: lurek.devtools.getWatchedPaths
--- Returns all paths currently watched by the module-level file watcher
+-- Lists watched paths for a hot-reload status panel.
 do
-  -- Returns a sorted array of path strings. Use to display
-  -- which files are being monitored in a debug panel.
-  lurek.devtools.watch("conf.toml")
-  lurek.devtools.watch("main.lua")
+  -- The binding returns a sorted array of path strings.
+  lurek.devtools.clearWatches()
+  lurek.devtools.watch("content/examples/devtools.lua")
+  lurek.devtools.watch("Cargo.toml")
   local paths = lurek.devtools.getWatchedPaths()
-  lurek.devtools.info("monitoring " .. #paths .. " file(s):")
-  for _, p in ipairs(paths) do
-    lurek.devtools.debug("  " .. p)
-  end
+  lurek.devtools.info("watcher paths=" .. #paths)
 end
 
 --@api-stub: lurek.devtools.scan
--- Polls module-level file watches and returns paths that changed since the previous scan
+-- Polls watched files and returns paths changed since the previous scan.
 do
-  -- Call scan() each frame (or at your watch interval). It returns only
-  -- the paths that changed since the last scan — use to trigger reload.
+  -- The first scan records mtimes; later scans report modifications.
+  lurek.devtools.clearWatches()
   lurek.devtools.watch("content/examples/devtools.lua")
-  lurek.devtools.watch("conf.toml")
-  function lurek.process(dt)
-    local changed = lurek.devtools.scan()
-    for _, path in ipairs(changed) do
-      lurek.devtools.info("hot-reload triggered: " .. path)
-      -- Reload the changed script or config here.
-    end
-  end
+  local changed = lurek.devtools.scan()
+  lurek.devtools.debug("changed paths this scan=" .. #changed)
 end
 
 --@api-stub: lurek.devtools.clearWatches
--- Removes every path from the module-level file watcher
+-- Removes every path from the module-level file watcher.
 do
-  -- Use on scene transitions to stop watching old scene files.
-  lurek.devtools.watch("old_scene.lua")
-  lurek.devtools.watch("old_data.toml")
+  -- Clear old scene files before registering the next scene's assets.
+  lurek.devtools.watch("content/examples/devtools.lua")
+  lurek.devtools.watch("Cargo.toml")
   lurek.devtools.clearWatches()
-  local remaining = lurek.devtools.getWatchedPaths()
-  lurek.devtools.info("watches after clear: " .. #remaining)  -- 0
+  lurek.devtools.info("watches after clear=" .. #lurek.devtools.getWatchedPaths())
 end
 
 --@api-stub: lurek.devtools.getWatchInterval
--- Returns the polling interval hint used by devtools watch UIs
+-- Reads the watcher polling interval hint.
 do
-  -- The interval is a hint for UIs that visualize watch state.
-  -- A smaller interval means faster detection but more filesystem polling.
+  -- UI code can display this beside the hot-reload toggle.
   local interval = lurek.devtools.getWatchInterval()
-  lurek.devtools.info("current watch poll interval: " .. interval .. "s")
+  lurek.devtools.info(string.format("watch poll interval %.2fs", interval))
 end
 
 --@api-stub: lurek.devtools.setWatchInterval
--- Sets the polling interval hint used by devtools watch UIs
+-- Sets the watcher polling interval hint for hot-reload UI.
 do
-  -- Set to 0.25s for responsive hot-reload; increase for battery savings.
-  -- Minimum is 0.01s (clamped internally).
+  -- Values below 0.01 are clamped by the binding.
+  local previous = lurek.devtools.getWatchInterval()
   lurek.devtools.setWatchInterval(0.25)
-  lurek.devtools.info("watch interval set to " .. lurek.devtools.getWatchInterval() .. "s")
+  lurek.devtools.info(string.format("watch interval set to %.2fs", lurek.devtools.getWatchInterval()))
+  lurek.devtools.setWatchInterval(previous)
 end
-
--- =============================================================================
--- DEBUGGING & INSPECTION
--- =============================================================================
 
 --@api-stub: lurek.devtools.getCallStack
--- Returns Lua call stack frames using the Lua debug library
+-- Captures a short Lua call stack for an error report.
 do
-  -- Returns up to max_depth frames (default 20, max 100).
-  -- Each frame: .source, .line, .name, .what
-  -- Useful for error reporting or building stack traces in-game.
-  local function inner_function()
+  -- Each frame has source, line, name, and what fields.
+  local function capture_stack_for_quest(quest_id)
     local frames = lurek.devtools.getCallStack(5)
-    -- Each frame table has: source, line, name, what fields.
-    lurek.devtools.debug(string.format("captured %d call frames", #frames))
+    local top = frames[1]
+    local source = top and top.source or "?"
+    lurek.devtools.debug("quest " .. quest_id .. " stack frames=" .. #frames .. " top=" .. tostring(source))
   end
-  inner_function()
+  capture_stack_for_quest("q_find_relic")
 end
 
---@api-stub: LReplConsole:eval
--- Evaluates Lua code in the current state and returns success plus values or failure plus an error message
+--@api-stub: lurek.devtools.eval
+-- Evaluates Lua code in the current state and returns success plus values.
 do
-  -- Returns (true, result) on success, (false, error_string) on failure.
-  -- Use for in-game console commands, debug expressions, or live tweaking.
+  -- eval() returns true plus values, or false plus an error string.
   local ok, value = lurek.devtools.eval("return 2 + 2")
   if ok then
-    lurek.devtools.info("eval result: " .. tostring(value))
+    lurek.devtools.info("eval math result=" .. tostring(value))
   end
-
-  -- Error case: syntax or runtime error returns false + message.
-  local ok2, err = lurek.devtools.eval("return undefined_var.field")
+  local ok2, err = lurek.devtools.eval("return missing_table.field")
   if not ok2 then
-    lurek.devtools.warn("eval error: " .. tostring(err))
+    lurek.devtools.warn("eval failed safely: " .. tostring(err))
   end
 end
 
 --@api-stub: lurek.devtools.openConsole
--- Marks the devtools console as open for UI state tracking
+-- Marks the devtools console as open for UI state tracking.
 do
-  -- This is a UI state flag. It does not render anything — your game UI
-  -- reads isConsoleOpen() to decide whether to draw the console panel.
+  -- The game can read isConsoleOpen() when drawing its own console panel.
   lurek.devtools.openConsole()
   lurek.devtools.debug("console open flag: " .. tostring(lurek.devtools.isConsoleOpen()))
 end
 
 --@api-stub: lurek.devtools.isConsoleOpen
--- Returns whether the devtools console is marked open
+-- Returns whether the devtools console is marked open.
 do
-  -- Use in your draw_ui callback to conditionally render the console.
-  function lurek.draw_ui()
-    if lurek.devtools.isConsoleOpen() then
-      -- Draw console background, input field, log history...
-      lurek.devtools.trace("drawing console overlay")
-    end
+  -- Use this flag to decide whether a game-owned console panel should be visible.
+  lurek.devtools.openConsole()
+  local should_draw_console = lurek.devtools.isConsoleOpen()
+  if should_draw_console then
+    lurek.devtools.trace("console overlay would draw this frame")
   end
 end
 
 --@api-stub: lurek.devtools.openEntityInspector
--- Marks the devtools entity inspector as open for UI state tracking
+-- Marks the devtools entity inspector as open for UI state tracking.
 do
-  -- Another UI flag for an entity/component inspector panel.
-  -- Your game decides what "entity inspector" means.
+  -- This is a UI flag; the game still decides how to render the inspector.
   lurek.devtools.openEntityInspector()
   lurek.devtools.debug("entity inspector opened")
 end
 
 --@api-stub: lurek.devtools.isEntityInspectorOpen
--- Returns whether the devtools entity inspector is marked open
+-- Returns whether the devtools entity inspector is marked open.
 do
-  -- Pattern: toggle panels with keyboard shortcuts.
-  function lurek.draw_ui()
-    if lurek.devtools.isEntityInspectorOpen() then
-      -- Show entity list, components, selected entity details...
-      lurek.devtools.trace("drawing entity inspector")
-    end
+  -- Gate inspector work behind this state flag.
+  lurek.devtools.openEntityInspector()
+  if lurek.devtools.isEntityInspectorOpen() then
+    lurek.devtools.trace("entity inspector would draw this frame")
   end
 end
 
--- =============================================================================
--- WATCH EXPRESSIONS
--- =============================================================================
-
 --@api-stub: lurek.devtools.exposeWatch
--- Registers a watch expression callback for snapshots and watch panels
+-- Registers a watch expression callback for snapshots and watch panels.
 do
-  -- Watches are named getter callbacks. External tools (VS Code extension,
-  -- in-game overlay) can poll getWatches() to display live values.
-  -- Optional category groups watches in the UI.
-  local player = { x = 256.5, y = 128.0, hp = 80, max_hp = 100 }
+  -- Watches are named getter callbacks evaluated when getWatches() runs.
+  local player = {x = 256.5, y = 128.0, hp = 80, max_hp = 100}
   lurek.devtools.exposeWatch("player.x", function() return player.x end, "position")
   lurek.devtools.exposeWatch("player.y", function() return player.y end, "position")
-  lurek.devtools.exposeWatch("player.hp", function()
-    return player.hp .. "/" .. player.max_hp
-  end, "combat")
-  lurek.devtools.debug("3 watches registered for player state")
+  lurek.devtools.exposeWatch("player.hp", function() return player.hp .. "/" .. player.max_hp end, "combat")
+  lurek.devtools.debug("player watches registered")
 end
 
 --@api-stub: lurek.devtools.removeWatch
--- Removes a previously exposed watch expression by id
+-- Removes a previously exposed watch expression by id.
 do
-  -- exposeWatch returns a numeric id. Pass it to removeWatch to unregister.
-  -- Returns true if the watch existed and was removed.
+  -- exposeWatch returns the numeric id consumed by removeWatch().
   local score = 0
   local id = lurek.devtools.exposeWatch("score", function() return score end, "hud")
-  lurek.devtools.debug("watch id=" .. id)
   local removed = lurek.devtools.removeWatch(id)
-  lurek.devtools.debug("removed: " .. tostring(removed))  -- true
-  local again = lurek.devtools.removeWatch(id)
-  lurek.devtools.debug("remove again: " .. tostring(again))  -- false (already gone)
+  local removed_again = lurek.devtools.removeWatch(id)
+  lurek.devtools.debug("watch removed=" .. tostring(removed) .. " again=" .. tostring(removed_again))
 end
 
 --@api-stub: lurek.devtools.getWatches
--- Evaluates exposed watch callbacks and returns their current values
+-- Evaluates exposed watch callbacks and returns their current values.
 do
-  -- Returns an array of {name, category, value} tables.
-  -- The getter is called at query time so values are always fresh.
+  -- Rows contain name, category, and value fields.
   local frame_count = 0
   lurek.devtools.exposeWatch("frames", function() return frame_count end, "engine")
-  lurek.devtools.exposeWatch("time", function() return frame_count / 60 end, "engine")
   frame_count = 120
-
-  local watches = lurek.devtools.getWatches()
-  for _, w in ipairs(watches) do
-    lurek.devtools.info(w.category .. "/" .. w.name .. " = " .. tostring(w.value))
+  for _, watch in ipairs(lurek.devtools.getWatches()) do
+    lurek.devtools.info(tostring(watch.category) .. "/" .. tostring(watch.name) .. "=" .. tostring(watch.value))
   end
 end
-
--- =============================================================================
--- SNAPSHOTS
--- =============================================================================
 
 --@api-stub: lurek.devtools.snapshot
--- Captures a combined devtools snapshot containing frame stats, watch values, profile data, and recent logs
+-- Captures frame stats, watch values, profile data, logs, and watch count.
 do
-  -- A snapshot bundles everything into one table:
-  --   .frameStats (same as getFrameStats)
-  --   .watches (same as getWatches)
-  --   .profile (zone data)
-  --   .log (recent entries)
-  --   .watchCount (number of registered watches)
-  -- Use to serialize the full devtools state for external tools or crash reports.
+  -- snapshot() is useful for one-click debug reports.
   lurek.devtools.recordFrameTime(0.016)
-  lurek.devtools.exposeWatch("test", function() return "ok" end)
+  lurek.devtools.exposeWatch("snapshot.ok", function() return "ok" end, "debug")
   local snap = lurek.devtools.snapshot()
-  lurek.devtools.info(string.format(
-    "snapshot: fps=%.0f, watches=%d, log_entries=%d",
-    snap.frameStats.fps, snap.watchCount, #snap.log
-  ))
+  local fps = tonumber(snap.frameStats.fps) or 0
+  lurek.devtools.info(string.format("snapshot fps=%.0f watches=%d", fps, snap.watchCount))
 end
 
--- =============================================================================
--- FILE WATCHER USERDATA (per-path watcher)
--- =============================================================================
-
 --@api-stub: lurek.devtools.newFileWatcher
--- Creates a dedicated file watcher userdata for one path
+-- Creates a dedicated file watcher userdata for one path.
 do
-  -- Unlike module-level watch/scan, newFileWatcher creates a handle
-  -- with its own callback. Use for watching specific config files.
-  local fw = lurek.devtools.newFileWatcher("content/examples/devtools.lua")
-  fw:onChanged(function()
-    lurek.devtools.info("devtools.lua modified — reloading")
+  -- The handle has its own callback and can be polled manually.
+  local watcher = lurek.devtools.newFileWatcher("content/examples/devtools.lua")
+  watcher:onChanged(function()
+    lurek.devtools.info("devtools.lua modified; reload would run")
   end)
-  -- Poll in your game loop:
-  function lurek.process(dt)
-    fw:check()
-  end
+  watcher:check()
 end
 
 --@api-stub: LFileWatcher:onChanged
--- Fires the callback registered for the changed event on this file watcher.
+-- Sets the callback invoked when this watcher observes a change.
 do
-  -- The callback receives no arguments. Use a closure to capture context.
-  local fw = lurek.devtools.newFileWatcher("conf.toml")
+  -- Use a closure to capture reload state for a specific file.
+  local watcher = lurek.devtools.newFileWatcher("conf.toml")
   local reload_count = 0
-  fw:onChanged(function()
+  watcher:onChanged(function()
     reload_count = reload_count + 1
-    lurek.devtools.info("conf.toml reloaded (#" .. reload_count .. ")")
-    -- Re-read the config file, apply changes...
+    lurek.devtools.info("conf.toml reload count=" .. reload_count)
   end)
 end
 
 --@api-stub: LFileWatcher:check
--- Checks on this file watcher and returns the result.
+-- Polls the watcher and invokes the change callback when a change is found.
 do
-  -- Returns true if a change was detected (and callback was fired).
-  -- Returns false if no change. Call periodically.
-  local fw = lurek.devtools.newFileWatcher("content/examples/devtools.lua")
-  fw:onChanged(function() end)
-  function lurek.process(dt)
-    local changed = fw:check()
-    if changed then
-      lurek.devtools.info("file changed this frame")
-    end
-  end
+  -- check() returns true only when at least one change is detected.
+  local watcher = lurek.devtools.newFileWatcher("content/examples/devtools.lua")
+  watcher:onChanged(function() lurek.devtools.info("file changed") end)
+  local changed = watcher:check()
+  lurek.devtools.debug("file watcher changed=" .. tostring(changed))
 end
 
 --@api-stub: LFileWatcher:getPath
--- Returns the path of this file watcher.
+-- Returns the watched path.
 do
-  -- Useful when you store multiple watchers in a list.
-  local fw = lurek.devtools.newFileWatcher("content/levels/forest_01.toml")
-  fw:onChanged(function()
-    lurek.devtools.info("changed: " .. fw:getPath())
-  end)
-  lurek.devtools.debug("watcher target: " .. fw:getPath())
+  -- Useful when several watchers share one polling list.
+  local watcher = lurek.devtools.newFileWatcher("content/levels/forest_01.toml")
+  lurek.devtools.debug("watcher target: " .. watcher:getPath())
 end
 
 --@api-stub: LFileWatcher:cancel
--- Cancels the current operation of this file watcher.
+-- Cancels this watcher and removes its callback.
 do
-  -- After cancel(), check() becomes a no-op and the callback is cleared.
-  -- Use when a watched file is no longer relevant (e.g., scene unloaded).
-  local fw = lurek.devtools.newFileWatcher("conf.toml")
-  fw:onChanged(function() lurek.devtools.info("changed") end)
-  fw:cancel()
-  lurek.devtools.debug("watcher cancelled for: " .. fw:getPath())
-  -- fw:check() will now always return false.
+  -- After cancel(), check() becomes a no-op and returns false.
+  local watcher = lurek.devtools.newFileWatcher("conf.toml")
+  watcher:onChanged(function() lurek.devtools.info("changed") end)
+  watcher:cancel()
+  lurek.devtools.debug("watcher cancelled for: " .. watcher:getPath())
 end
 
--- =============================================================================
--- REPL CONSOLE
--- =============================================================================
+--@api-stub: LFileWatcher:type
+-- Returns the Lua-visible type name for this file watcher handle.
+do
+  -- The type string can drive debug inspector dispatch.
+  local watcher = lurek.devtools.newFileWatcher("save/")
+  lurek.devtools.debug("file watcher type=" .. watcher:type())
+end
+
+--@api-stub: LFileWatcher:typeOf
+-- Returns whether this file watcher handle matches a supported type name.
+do
+  -- File watchers match LFileWatcher and Object.
+  local watcher = lurek.devtools.newFileWatcher("save/")
+  lurek.devtools.debug("is LFileWatcher=" .. tostring(watcher:typeOf("LFileWatcher")))
+end
 
 --@api-stub: lurek.devtools.newRepl
--- Creates a REPL console userdata with bounded command history
+-- Creates a REPL console userdata with bounded command history.
 do
   -- The REPL evaluates code in the current Lua VM and stores history.
-  -- max_history limits stored lines (default 200).
-  -- Use for in-game developer consoles.
   local repl = lurek.devtools.newRepl(100)
   local result = repl:eval("return math.pi * 2")
-  lurek.devtools.info("repl: pi*2 = " .. tostring(result))
+  lurek.devtools.info("repl pi*2=" .. tostring(result))
 end
 
 --@api-stub: LReplConsole:eval
--- Performs the eval operation on this repl console.
+-- Evaluates Lua code through this REPL console and records it in history.
 do
-  -- eval() runs Lua code and returns the result.
-  -- The command is automatically added to history.
+  -- eval() can return a value and can also run side effects.
   local repl = lurek.devtools.newRepl(50)
   local greeting = repl:eval("return string.upper('hello world')")
-  lurek.devtools.info("> " .. tostring(greeting))
-
-  -- Side effects work too:
   repl:eval("_G.debug_flag = true")
   local flag = repl:eval("return _G.debug_flag")
-  lurek.devtools.debug("debug_flag = " .. tostring(flag))
+  lurek.devtools.info("repl greeting=" .. tostring(greeting) .. " flag=" .. tostring(flag))
 end
 
 --@api-stub: LReplConsole:history
--- Performs the history operation on this repl console.
+-- Returns this REPL console's recorded command history.
 do
-  -- Returns an array of previously evaluated command strings.
-  -- Use for command recall (up/down arrow in a console UI).
+  -- Use history for command recall in a developer console.
   local repl = lurek.devtools.newRepl(20)
   repl:eval("x = 1")
   repl:eval("x = x + 1")
   repl:eval("return x")
-  local hist = repl:history()
-  lurek.devtools.info("history (" .. #hist .. " entries):")
-  for i, line in ipairs(hist) do
-    lurek.devtools.debug("  " .. i .. ": " .. line)
-  end
+  local history = repl:history()
+  lurek.devtools.info("repl history entries=" .. #history)
 end
 
 --@api-stub: LReplConsole:clear
--- Clears all items from this repl console.
+-- Clears this REPL console's command history.
 do
-  -- Wipes command history. Use for a "clear" command in the console.
+  -- A console clear command can wipe stored history.
   local repl = lurek.devtools.newRepl(10)
   repl:eval("return 1")
   repl:eval("return 2")
-  lurek.devtools.debug("before clear: " .. repl:len() .. " entries")
   repl:clear()
-  lurek.devtools.debug("after clear: " .. repl:len() .. " entries")  -- 0
+  lurek.devtools.debug("repl history after clear=" .. repl:len())
 end
 
 --@api-stub: LReplConsole:len
--- Performs the len operation on this repl console.
+-- Returns the number of entries stored in this REPL console history.
 do
-  -- Returns the number of entries stored in history.
-  -- Use to show "5/100" in the console status bar.
+  -- Show len() beside the configured history capacity.
   local repl = lurek.devtools.newRepl(100)
-  repl:eval("print('a')")
-  repl:eval("print('b')")
+  repl:eval("return 'a'")
+  repl:eval("return 'b'")
   lurek.devtools.info("REPL history: " .. repl:len() .. "/100")
 end
 
--- =============================================================================
--- TYPE INTROSPECTION (LFileWatcher)
--- =============================================================================
-
 --@api-stub: LReplConsole:type
--- Returns the Lua-visible type name for this file watcher handle
+-- Returns the Lua-visible type name for this REPL console handle.
 do
-  -- Returns the string "LFileWatcher". Use for debugging or type dispatch.
-  local fw = lurek.devtools.newFileWatcher("save/")
-  lurek.devtools.debug("type = " .. fw:type())  -- "LFileWatcher"
+  -- The type string helps generic inspectors label the handle.
+  local repl = lurek.devtools.newRepl(50)
+  lurek.devtools.debug("repl type=" .. repl:type())
 end
 
 --@api-stub: LReplConsole:typeOf
--- Returns whether this file watcher handle matches a supported type name
+-- Returns whether this REPL console handle matches a supported type name.
 do
-  -- Checks against "LFileWatcher" and the base "Object" type.
-  local fw = lurek.devtools.newFileWatcher("save/")
-  lurek.devtools.debug("is LFileWatcher: " .. tostring(fw:typeOf("LFileWatcher")))  -- true
-  lurek.devtools.debug("is Object: " .. tostring(fw:typeOf("Object")))  -- true
-  lurek.devtools.debug("is LSource: " .. tostring(fw:typeOf("LSource")))  -- false
-end
-
--- =============================================================================
--- TYPE INTROSPECTION (LReplConsole)
--- =============================================================================
-
---@api-stub: LReplConsole:type
--- Returns the Lua-visible type name for this REPL console handle
-do
-  -- Returns the string "LReplConsole".
+  -- REPL consoles match LReplConsole and Object.
   local repl = lurek.devtools.newRepl(50)
-  lurek.devtools.debug("type = " .. repl:type())  -- "LReplConsole"
-end
-
---@api-stub: LReplConsole:typeOf
--- Returns whether this REPL console handle matches a supported type name
-do
-  -- Checks against "LReplConsole" and the base "Object" type.
-  local repl = lurek.devtools.newRepl(50)
-  lurek.devtools.debug("is LReplConsole: " .. tostring(repl:typeOf("LReplConsole")))  -- true
-  lurek.devtools.debug("is Object: " .. tostring(repl:typeOf("Object")))  -- true
-  lurek.devtools.debug("is LFileWatcher: " .. tostring(repl:typeOf("LFileWatcher")))  -- false
+  lurek.devtools.debug("is LReplConsole=" .. tostring(repl:typeOf("LReplConsole")))
 end
 
 print("content/examples/devtools.lua")
-
--- =============================================================================
--- STUBS: 8 uncovered lurek.devtools API item(s)
--- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
--- =============================================================================
-
--- -----------------------------------------------------------------------------
--- LFileWatcher methods
--- -----------------------------------------------------------------------------
-
--- =============================================================================
--- STUBS: 3 uncovered lurek.devtools API item(s)
--- Generated by tools/audit/example_add_missing.py
--- REQUIRED: replace every --@api-stub: block below with a real scenario.
--- Run .github/prompts/flesh-out-example.prompt.md for instructions.
--- The final committed file must contain ZERO --@api-stub: lines.
--- =============================================================================
-
--- ---- Stub: lurek.devtools.eval -------------------------------------------
---@api-stub: lurek.devtools.eval
--- Evaluates Lua code in the current state and returns success plus values or failure plus an error message.
-do
-  -- eval() runs a Lua snippet string in the live runtime and returns results.
-  local result = lurek.devtools.eval("return 2 + 2")
-  lurek.log.debug("eval result: " .. tostring(result), "devtools") -- 4
-end
-
--- -----------------------------------------------------------------------------
--- LFileWatcher methods
--- -----------------------------------------------------------------------------
-
--- ---- Stub: LFileWatcher:type ---------------------------------------------
---@api-stub: LFileWatcher:type
--- Returns the Lua-visible type name for this file watcher handle.
-do
-  local obj = lurek.devtools.newFileWatcher('.')
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LFileWatcher"
-end
-
--- ---- Stub: LFileWatcher:typeOf -------------------------------------------
---@api-stub: LFileWatcher:typeOf
--- Returns whether this file watcher handle matches a supported type name.
-do
-  local obj = lurek.devtools.newFileWatcher('.')
-  lurek.log.debug("typeOf LFileWatcher: " .. tostring(obj:typeOf("LFileWatcher")), "example") -- true
-end

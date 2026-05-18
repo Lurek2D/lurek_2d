@@ -2,450 +2,466 @@
 -- lurek.compute API examples.
 -- Run: cargo run -- content/examples/compute.lua
 --@api-stub: lurek.compute.newArray
--- Creates a zero-filled array with the requested shape and data type
+-- Allocates a typed zero-filled array for game data grids
 do
-  -- newArray(shape, dtype?) creates a multidimensional array initialized to zero.
-  -- Use it when you need a pre-allocated buffer with known dimensions.
-  -- Common for heat maps, tile grids, or any 2D spatial data in your game.
-  local heat = lurek.compute.newArray({64, 64}, "float32")
+  -- newArray(shape, dtype?) builds a zero-filled LArray with fixed dimensions.
+  -- A game can keep per-tile simulation values in this kind of dense grid.
+  local heat = lurek.compute.newArray({8, 8}, "float32")
 
-  -- Set corner cells to act as heat sources for a diffusion simulation
-  heat:set(1, 1, 1.0)   -- top-left heat source
-  heat:set(64, 64, 1.0) -- bottom-right heat source
+  -- The first two arguments are row and column; the last argument is value.
+  heat:set(1, 1, 1.0)
+  heat:set(8, 8, 0.75)
 
-  -- getSize() returns total element count (64*64 = 4096)
-  lurek.log.info("heat grid: " .. heat:getSize() .. " cells", "compute")
+  -- getSize() is useful when deciding whether a buffer is small enough for a frame job.
+  lurek.log.info("heat grid cells=" .. heat:getSize() .. " seed=" .. heat:get(1, 1), "compute")
 end
 --@api-stub: lurek.compute.zeros
--- Creates a zero-filled array with the requested shape and data type
+-- Creates a zero-filled scratch buffer
 do
-  -- zeros() is an alias for newArray(). Both produce zero-filled arrays.
-  -- Here we model a 3x3 damage grid for an area-of-effect spell.
-  local damage = lurek.compute.zeros({3, 3})
+  -- zeros(shape, dtype?) is ideal for counters that start empty each turn.
+  -- This grid records damage around an explosion before applying it to entities.
+  local damage = lurek.compute.zeros({3, 3}, "float32")
 
-  -- The center cell deals full damage
+  -- Center cell gets full damage; nearby cells are filled separately by game logic.
   damage:set(2, 2, 25.0)
 
-  -- sum() reduces the entire array to a single total
+  -- sum() gives a quick total for balancing the area effect.
   local total = damage:sum()
-  lurek.log.info("total damage: " .. total, "compute")
+  lurek.log.info("blast total damage=" .. total, "combat")
 end
 --@api-stub: lurek.compute.ones
--- Creates a one-filled array with the requested shape and data type
+-- Creates a one-filled mask or multiplier array
 do
-  -- ones() fills every element with 1.0. Useful as an initial mask
-  -- or multiplicative identity before applying per-cell modifiers.
-  local mask = lurek.compute.ones({8, 8})
+  -- ones(shape, dtype?) starts every cell at 1.0.
+  -- A visibility multiplier can begin fully visible, then later fade blocked cells.
+  local visibility = lurek.compute.ones({4, 4}, "float32")
 
-  -- clamp() bounds all values between min and max.
-  -- Here we simulate fading a visibility mask to 50% opacity.
-  local faded = mask:clamp(0.0, 0.5)
+  -- clamp() keeps the demonstration bounded without changing the original array.
+  local dimmed = visibility:clamp(0.0, 0.5)
 
-  -- mean() returns the average value across all elements
-  lurek.log.info("faded mean: " .. faded:mean(), "compute")
+  -- Mean opacity is a compact value to feed into debug HUD text.
+  lurek.log.info("visibility mean=" .. dimmed:mean(), "fov")
 end
 --@api-stub: lurek.compute.range
--- Creates a one-dimensional range array
+-- Builds a numeric sequence as an LArray
 do
-  -- range(start, stop, step?) generates a 1D sequence: [start, start+step, ..., <stop).
-  -- Handy for animation frame indices, time samples, or lookup tables.
-  local frames = lurek.compute.range(0, 10, 1)
+  -- range(start, stop, step?, dtype?) generates values from start up to, but not including, stop.
+  -- Frame timelines, level curves, and sampled motion paths often start from a simple range.
+  local frames = lurek.compute.range(0, 8, 1, "float32")
 
-  -- pow(exp) raises each element to a power. Here: quadratic easing curve.
-  local doubled = frames:pow(2)
+  -- Squaring the range creates a tiny quadratic timing curve.
+  local curve = frames:pow(2)
 
-  -- get() uses 1-based indexing: element 6 holds value (5)^2 = 25
-  lurek.log.info("frame[5]^2 = " .. doubled:get(6), "compute")
+  -- get() uses Lua-style one-based indexing; index 5 contains 4^2.
+  lurek.log.info("curve sample=" .. curve:get(5), "animation")
 end
 --@api-stub: lurek.compute.fromTable
--- Creates an array from a flat Lua table and optional shape
+-- Converts Lua table data into an LArray
 do
-  -- fromTable(data, shape?, dtype?) converts a Lua table into a compute array.
-  -- Shape defaults to {#data} (1D). Pass a shape table to interpret as 2D/3D.
-  -- Example: audio waveform samples for an envelope curve.
-  local samples = {0.1, 0.2, 0.4, 0.8, 1.0, 0.8, 0.4}
-  local wave = lurek.compute.fromTable(samples)
+  -- fromTable(data, shape?, dtype?) copies numeric Lua data into compute storage.
+  -- Passing a shape turns a flat table into a grid without changing element order.
+  local tiles = {
+    0, 1, 0,
+    2, 3, 2,
+    0, 1, 0,
+  }
+  local terrain = lurek.compute.fromTable(tiles, {3, 3}, "int32")
 
-  -- max() finds the peak value in the array
-  local peak = wave:max()
-  lurek.log.info("wave peak: " .. peak, "compute")
+  -- The center tile keeps its authored ID after conversion.
+  lurek.log.info("center terrain id=" .. terrain:get(2, 2), "tiles")
 end
 --@api-stub: lurek.compute.getParThreshold
--- Returns the global compute parallelism threshold
+-- Reads the global parallel execution threshold
 do
-  -- The parallel threshold controls when array operations switch from
-  -- single-threaded to multi-threaded execution. Arrays smaller than this
-  -- threshold run sequentially to avoid thread-spawn overhead.
+  -- The threshold is the element count where compute operations may use parallel work.
+  -- Game code can inspect it before deciding whether to batch many small arrays.
   local threshold = lurek.compute.getParThreshold()
-  lurek.log.info("compute parallel threshold=" .. threshold, "compute")
+  local sample = lurek.compute.zeros({4, 4})
+
+  -- This small example stays cheap and only reports whether it is below the threshold.
+  local below_threshold = sample:getSize() < threshold
+  lurek.log.info("small compute job below threshold=" .. tostring(below_threshold), "compute")
 end
 --@api-stub: lurek.compute.setParThreshold
--- Sets the global compute parallelism threshold and returns the previous value
+-- Changes the global parallel threshold and reports the previous value
 do
-  -- Tune the threshold based on your game's workload.
-  -- Lower values = more parallelism (good for large grids).
-  -- Higher values = less overhead (good for many small arrays).
+  -- setParThreshold(threshold) returns the old value.
+  -- Keep examples conservative: restore the setting so later blocks are not surprised.
   local previous = lurek.compute.getParThreshold()
 
-  -- Set to 1024: arrays with >=1024 elements use parallel execution
-  lurek.compute.setParThreshold(1024)
+  -- A small threshold can help benchmark tile-grid operations during development.
+  local old_from_set = lurek.compute.setParThreshold(128)
   local updated = lurek.compute.getParThreshold()
+  lurek.compute.setParThreshold(previous)
 
-  lurek.log.info("threshold " .. previous .. " -> " .. updated, "compute")
+  lurek.log.info("threshold " .. old_from_set .. " -> " .. updated .. " -> " .. previous, "compute")
 end
 --@api-stub: lurek.compute.gaussianKernel
--- Creates a square Gaussian kernel array
+-- Creates a normalized blur kernel
 do
-  -- gaussianKernel(size, sigma) creates a normalized convolution kernel.
-  -- Use for blur effects, smooth terrain generation, or anti-aliased shadows.
-  -- size=5 gives a 5x5 kernel; sigma=1.2 controls the blur spread.
-  local kernel = lurek.compute.gaussianKernel(5, 1.2)
+  -- gaussianKernel(size, sigma) creates a square kernel for smoothing 2D data.
+  -- In a game, this can soften fog values or smooth procedural terrain height.
+  local kernel = lurek.compute.gaussianKernel(3, 1.0)
 
-  -- A properly normalized Gaussian kernel sums to approximately 1.0
-  local weight_sum = kernel:sum()
-  lurek.log.info("gaussian sum (should be approx 1.0): " .. weight_sum, "compute")
+  -- The weights should sum near 1.0, which preserves overall brightness or height.
+  lurek.log.info("gaussian weight sum=" .. kernel:sum(), "render")
 end
 --@api-stub: lurek.compute.rotate2dMatrix
--- Creates a 2D rotation matrix
+-- Creates a 2D rotation matrix in radians
 do
-  -- rotate2dMatrix(angle_rad) returns a 2x2 rotation matrix.
-  -- Multiply by point arrays to rotate sprite vertices, projectile directions, etc.
-  local angle = math.pi / 4 -- 45 degrees
-
+  -- rotate2dMatrix(angle_rad) returns a 2x2 matrix.
+  -- A turret or projectile system can use it to rotate local offsets into world space.
+  local angle = math.pi / 4
   local rot = lurek.compute.rotate2dMatrix(angle)
 
-  -- Points stored as rows: each row is (x, y)
-  local pts = lurek.compute.fromTable({1, 0, 0, 1}, {2, 2})
+  -- Points are stored as rows, so each row is one (x, y) pair.
+  local muzzle_offsets = lurek.compute.fromTable({1, 0, 0, 1}, {2, 2})
 
-  -- transformPoints applies the matrix to each point row
-  local rotated = rot:transformPoints(pts)
-  lurek.log.info("rotated[1,1] = " .. rotated:get(1, 1), "compute")
+  -- transformPoints applies the matrix to both offsets.
+  local rotated = rot:transformPoints(muzzle_offsets)
+  lurek.log.info("rotated offset x=" .. rotated:get(1, 1), "combat")
 end
 --@api-stub: lurek.compute.affine2d
--- Creates a 2D affine transform matrix
+-- Creates a combined translate, rotate, and scale matrix
 do
-  -- affine2d(tx, ty, angle_rad, sx, sy) builds a full 2D transform.
-  -- Combines translation, rotation, and scale in one matrix.
-  -- Use for camera transforms, sprite batch positioning, or UI layout math.
-  local tx, ty = 100, 50          -- translate 100px right, 50px down
-  local angle = 0.0               -- no rotation
-  local sx, sy = 2.0, 2.0         -- double scale
-
+  -- affine2d(tx, ty, angle_rad, sx, sy) builds a 2D transform matrix.
+  -- This is useful when previewing where local sprite points land on screen.
+  local tx, ty = 100, 50
+  local angle = 0.0
+  local sx, sy = 2.0, 2.0
   local m = lurek.compute.affine2d(tx, ty, angle, sx, sy)
 
-  -- Transform the origin point to verify translation applies
-  local origin = lurek.compute.fromTable({0, 0}, {1, 2})
-  local moved = m:transformPoints(origin)
-  lurek.log.info("moved x = " .. moved:get(1, 1), "compute")
+  -- The local point (4, 3) scales to (8, 6), then translates to (108, 56).
+  local local_point = lurek.compute.fromTable({4, 3}, {1, 2})
+  local screen_point = m:transformPoints(local_point)
+  lurek.log.info("screen point=" .. screen_point:get(1, 1) .. "," .. screen_point:get(1, 2), "render")
 end
 --@api-stub: lurek.compute.fft
--- Computes the FFT of real-valued samples
+-- Converts real samples into frequency bins
 do
-  -- fft(samples) takes a flat table of real values and returns complex frequency bins.
-  -- Each bin is a table with .re (real) and .im (imaginary) components.
-  -- Use for audio visualization, rhythm detection, or signal analysis.
+  -- fft(samples) returns a table of bins, each with re and im fields.
+  -- A rhythm game can inspect bins to detect dominant beats in short windows.
   local samples = {0.0, 1.0, 0.0, -1.0, 0.0, 1.0, 0.0, -1.0}
-
   local spectrum = lurek.compute.fft(samples)
 
-  -- Bin 0 (DC component) shows the average signal level
+  -- Lua tables are one-based; the first bin is the DC component.
   local bin0 = spectrum[1]
-  lurek.log.info("bin 0 re=" .. bin0.re .. " im=" .. bin0.im, "fft")
+  lurek.log.info("fft dc re=" .. bin0.re .. " im=" .. bin0.im, "audio")
 end
 --@api-stub: lurek.compute.ifft
--- Computes the inverse FFT of complex frequency pairs
+-- Rebuilds real samples from frequency bins
 do
-  -- ifft(freqs) reconstructs time-domain samples from frequency bins.
-  -- Round-trip: fft -> modify spectrum -> ifft gives filtered audio.
+  -- ifft(freqs) accepts the complex bin table returned by fft().
+  -- The round trip is useful when prototyping simple audio filters or beat tools.
   local samples = {1.0, 0.5, 0.0, -0.5}
   local freqs = lurek.compute.fft(samples)
 
-  -- Reconstruct the original signal from its frequency representation
+  -- Reconstructing without changing the bins should preserve the first sample.
   local rebuilt = lurek.compute.ifft(freqs)
-  lurek.log.info("rebuilt[1] = " .. rebuilt[1], "fft")
+  lurek.log.info("rebuilt sample=" .. rebuilt[1], "audio")
 end
 --@api-stub: lurek.compute.fftMagnitude
--- Computes FFT magnitudes for real-valued samples
+-- Computes frequency magnitudes directly
 do
-  -- fftMagnitude(samples) returns |bin| magnitudes directly as a flat table.
-  -- Faster than computing fft() then manually calculating sqrt(re^2 + im^2).
-  -- Use for spectrum visualizers or beat detection thresholds.
+  -- fftMagnitude(samples) returns a number table of bin strengths.
+  -- It skips manual sqrt(re*re + im*im) work in Lua.
   local samples = {0.0, 1.0, 0.0, -1.0, 0.0, 1.0, 0.0, -1.0}
-
   local mags = lurek.compute.fftMagnitude(samples)
-  lurek.log.info("mag[2] = " .. mags[2], "fft")
+
+  -- A visualizer might map this magnitude to the height of a bar.
+  lurek.log.info("spectrum bar 2=" .. mags[2], "audio")
 end
 --@api-stub: LArray:getShape
--- Returns the shape of this array
+-- Reports the size of each array dimension
 do
-  -- getShape() returns a table of dimension sizes.
-  -- For a 4x6 grid, returns {4, 6}. Use to validate array dimensions
-  -- before operations that require specific shapes.
-  local grid = lurek.compute.zeros({4, 6})
+  -- getShape() returns an integer table, such as {rows, columns} for 2D arrays.
+  -- Check it before combining grids that must match.
+  local grid = lurek.compute.zeros({4, 6}, "float32")
   local shape = grid:getShape()
-  lurek.log.info("grid is " .. shape[1] .. "x" .. shape[2], "compute")
+
+  lurek.log.info("influence grid=" .. shape[1] .. "x" .. shape[2], "ai")
 end
 --@api-stub: LArray:getDimensions
--- Returns the number of dimensions of this array
+-- Reports how many axes an array has
 do
-  -- getDimensions() returns 1 for vectors, 2 for matrices, etc.
-  -- Useful for branching logic that handles both 1D and 2D data.
-  local v = lurek.compute.range(0, 5)
-  if v:getDimensions() == 1 then
-    lurek.log.info("vector, len=" .. v:getSize(), "compute")
+  -- getDimensions() returns 1 for vectors, 2 for matrices, and so on.
+  -- Script utilities can reject unexpected shapes early.
+  local path_costs = lurek.compute.range(0, 5, 1)
+  local heatmap = lurek.compute.zeros({2, 3})
+
+  if path_costs:getDimensions() == 1 and heatmap:getDimensions() == 2 then
+    lurek.log.info("vector and grid dimensions are valid", "compute")
   end
 end
 --@api-stub: LArray:getSize
--- Returns the total number of elements in this array
+-- Counts all elements across every dimension
 do
-  -- getSize() returns the product of all dimensions.
-  -- A {16,16} array has 256 elements total.
-  local img = lurek.compute.zeros({16, 16})
-  local n = img:getSize()
-  lurek.log.info("img has " .. n .. " pixels", "compute")
+  -- getSize() returns the product of the shape dimensions.
+  -- Use it for progress bars or to estimate how much work a grid pass will do.
+  local minimap = lurek.compute.zeros({8, 8})
+  local cells = minimap:getSize()
+
+  lurek.log.info("minimap cell count=" .. cells, "ui")
 end
 --@api-stub: LArray:getDataType
--- Returns the data type of this array
+-- Reports the element storage type
 do
-  -- getDataType() returns "float32", "int32", etc.
-  -- Use int32 for tile IDs, bitmasks, or entity indices.
-  -- Use float32 for positions, velocities, or weights.
-  local mask = lurek.compute.zeros({8}, "int32")
-  local dt = mask:getDataType()
-  if dt == "int32" then lurek.log.info("ready for bitwise ops", "compute") end
-end
---@api-stub: LArray:isOnGPU
--- Returns true if this array is stored on the GPU
-do
-  -- isOnGPU() lets you check whether data lives on CPU or GPU memory.
-  -- Currently all arrays are CPU-backed; this future-proofs your code
-  -- for when GPU compute kernels are added.
-  local arr = lurek.compute.zeros({4})
-  if not arr:isOnGPU() then
-    lurek.log.debug("running compute on CPU", "compute")
+  -- getDataType() returns names like float32 or int32.
+  -- int32 is a natural fit for tile IDs, bit masks, and inventory slot IDs.
+  local tile_ids = lurek.compute.zeros({8}, "int32")
+  local dtype = tile_ids:getDataType()
+
+  if dtype == "int32" then
+    lurek.log.info("tile id buffer supports integer masks", "tiles")
   end
 end
---@api-stub: LArray:get
--- Returns the element value at the given indices
+--@api-stub: LArray:isOnGPU
+-- Reports whether array storage is GPU-backed
 do
-  pcall(function()
-    -- get(i, j, ...) reads a single element using 1-based indices.
-    -- For a 2D array, get(row, col). For 1D, get(index).
-    local m = lurek.compute.fromTable({1, 2, 3, 4}, {2, 2})
+  -- isOnGPU() currently returns false for CPU-backed arrays.
+  -- Keeping the check in debug tools makes future GPU paths easier to inspect.
+  local scratch = lurek.compute.zeros({4})
+  local storage = "cpu"
+  if scratch:isOnGPU() then
+    storage = "gpu"
+  end
 
-    -- Row 1, Column 2 = value 2 (row-major storage)
-    local top_right = m:get(1, 2)
-    lurek.log.info("m[1,2] = " .. top_right, "compute")
-  end)
+  lurek.log.debug("compute scratch storage=" .. storage, "compute")
+end
+--@api-stub: LArray:get
+-- Reads a single value with one-based indices
+do
+  -- get(i, j, ...) uses one index per dimension.
+  -- For a 2D board, read as get(row, col), matching Lua table habits.
+  local board = lurek.compute.fromTable({
+    0, 2,
+    1, 0,
+  }, {2, 2}, "int32")
+
+  -- The top-right cell contains tile ID 2.
+  lurek.log.info("top right tile=" .. board:get(1, 2), "tiles")
 end
 --@api-stub: LArray:set
--- Sets the element value at the given indices
+-- Writes a single value with one-based indices
 do
-  -- set(i, j, ..., value) writes a single element.
-  -- Last argument is always the value; preceding args are indices.
+  -- set(i, j, ..., value) uses all arguments except the last as indices.
+  -- The last argument is the numeric value to store.
   local board = lurek.compute.zeros({3, 3})
 
-  -- Place a piece in the centre of a tic-tac-toe board
+  -- Mark the center cell as occupied by a player piece.
   board:set(2, 2, 1.0)
-  lurek.log.info("centre = " .. board:get(2, 2), "compute")
+  lurek.log.info("center occupied=" .. board:get(2, 2), "puzzle")
 end
 --@api-stub: LArray:toTable
--- Converts this array to a flat Lua table
+-- Copies array data back to a flat Lua table
 do
-  -- toTable() extracts all values as a flat Lua table in storage order.
-  -- Use when you need to pass array data to Lua APIs that expect tables,
-  -- or for serialization/save game data.
-  local arr = lurek.compute.range(0, 4)
-  local flat = arr:toTable()
-  lurek.log.info("flat[3] = " .. flat[3] .. ", count=" .. #flat, "compute")
+  -- toTable() returns values in storage order.
+  -- This is useful for save data, debug overlays, or APIs that expect Lua tables.
+  local cooldowns = lurek.compute.fromTable({0.0, 0.5, 1.0, 1.5})
+  local flat = cooldowns:toTable()
+
+  lurek.log.info("cooldown count=" .. #flat .. " third=" .. flat[3], "ui")
 end
 --@api-stub: LArray:reshape
--- Returns a reshaped copy of this array
+-- Reinterprets array data with a new shape
 do
-  -- reshape(shape) reinterprets the flat data with new dimensions.
-  -- Total element count must stay the same (6 elements -> {2,3} is valid).
-  -- Use to convert a 1D range into a 2D grid for spatial operations.
+  -- reshape(shape) changes dimensions while preserving the same total element count.
+  -- It is handy when generated 1D data needs to become a tile grid.
   local row = lurek.compute.range(0, 6)
   local grid = row:reshape({2, 3})
 
-  -- After reshape: row 2, col 3 = last element = 5.0
-  lurek.log.info("grid[2,3] = " .. grid:get(2, 3), "compute")
+  -- After reshape, row 2 column 3 holds the last generated value.
+  lurek.log.info("spawn grid last value=" .. grid:get(2, 3), "procgen")
 end
 --@api-stub: LArray:clone
--- Returns a deep copy of this array
+-- Makes an independent copy of an array
 do
-  -- clone() creates an independent copy. Mutations to the clone
-  -- do not affect the original. Essential when you need a snapshot
-  -- of state (e.g., previous frame's tile map for diffing).
-  local original = lurek.compute.ones({4})
-  local copy = original:clone()
+  -- clone() is the safe way to keep a snapshot before mutating current state.
+  -- This mirrors saving last frame's occupancy map for change detection.
+  local previous_frame = lurek.compute.ones({4})
+  local current_frame = previous_frame:clone()
 
-  -- Modify the copy; original stays unchanged
-  copy:fill(0.0)
-  lurek.log.info("orig sum=" .. original:sum() .. " copy sum=" .. copy:sum(), "compute")
+  -- Mutating the clone does not affect the source snapshot.
+  current_frame:fill(0.0)
+  lurek.log.info("previous=" .. previous_frame:sum() .. " current=" .. current_frame:sum(), "tiles")
 end
 --@api-stub: LArray:transpose
--- Returns a transposed copy of this 2D array
+-- Swaps rows and columns of a 2D array
 do
-  -- transpose() swaps rows and columns of a 2D array.
-  -- A {2,3} array becomes {3,2}. Useful for switching between
-  -- row-major and column-major data layouts.
+  -- transpose() turns a {2, 3} grid into {3, 2}.
+  -- This helps when a tool exports columns but the game reads rows.
   local m = lurek.compute.fromTable({1, 2, 3, 4, 5, 6}, {2, 3})
   local t = m:transpose()
-  lurek.log.info("t shape: " .. t:getShape()[1] .. "x" .. t:getShape()[2], "compute")
+  local shape = t:getShape()
+
+  lurek.log.info("transposed shape=" .. shape[1] .. "x" .. shape[2], "tools")
 end
 --@api-stub: LArray:fill
--- Fills all elements of this array with a single value (in place)
+-- Overwrites every element in place
 do
-  -- fill(val) overwrites every element. Use to reset a scratch buffer
-  -- between frames without allocating a new array.
-  local scratch = lurek.compute.zeros({32, 32})
+  -- fill(val) reuses an existing buffer instead of allocating a replacement.
+  -- This is a good pattern for per-frame scratch masks.
+  local fog = lurek.compute.zeros({4, 4})
 
-  -- Mark all cells as "unexplored" (-1)
-  scratch:fill(-1.0)
-  lurek.log.info("scratch sum after fill: " .. scratch:sum(), "compute")
+  -- Mark all cells unexplored, using -1 as the local script convention.
+  fog:fill(-1.0)
+  lurek.log.info("fog reset sum=" .. fog:sum(), "fov")
 end
 --@api-stub: LArray:pow
--- Returns a new array with each element raised to an exponent
+-- Raises each element to a scalar exponent
 do
-  -- pow(exp) applies element-wise exponentiation.
-  -- Use for quadratic/cubic easing, distance falloff curves, or gamma correction.
-  local v = lurek.compute.fromTable({1, 2, 3, 4})
-  local sq = v:pow(2) -- square each element
+  -- pow(exp) returns a new array; the original stays unchanged.
+  -- Squared distances are common in cheap range checks.
+  local distance_steps = lurek.compute.fromTable({1, 2, 3, 4})
+  local squared = distance_steps:pow(2)
 
-  lurek.log.info("4^2 = " .. sq:get(4), "compute")
+  lurek.log.info("max squared distance=" .. squared:max(), "ai")
 end
 --@api-stub: LArray:sqrt
--- Returns a new array with element-wise square roots
+-- Computes square roots element by element
 do
-  -- sqrt() computes the square root of each element.
-  -- Common for distance calculations: dist = sqrt(dx^2 + dy^2)
-  local sq = lurek.compute.fromTable({1, 4, 9, 16})
-  local roots = sq:sqrt()
-  lurek.log.info("sqrt(16) = " .. roots:get(4), "compute")
+  -- sqrt() turns squared magnitudes back into distances.
+  -- Values should be non-negative for real-valued results.
+  local squared_ranges = lurek.compute.fromTable({1, 4, 9, 16})
+  local ranges = squared_ranges:sqrt()
+
+  lurek.log.info("longest range=" .. ranges:get(4), "ai")
 end
 --@api-stub: LArray:abs
--- Returns a new array with element-wise absolute values
+-- Removes the sign from every value
 do
-  -- abs() removes sign from each element.
-  -- Useful for computing magnitude of velocity changes or displacement vectors.
-  local deltas = lurek.compute.fromTable({-3, 1, -2, 4})
-  local mag = deltas:abs()
-  lurek.log.info("abs sum = " .. mag:sum(), "compute")
+  -- abs() is useful for screen shake or input deltas where direction is irrelevant.
+  local input_deltas = lurek.compute.fromTable({-3, 1, -2, 4})
+  local magnitudes = input_deltas:abs()
+
+  lurek.log.info("total input movement=" .. magnitudes:sum(), "input")
 end
 --@api-stub: LArray:neg
--- Returns a new array with each element negated
+-- Flips the sign of every value
 do
-  -- neg() flips the sign of every element.
-  -- Use for inverting forces, creating counter-impulses, or flipping gradients.
+  -- neg() returns a new array with each value multiplied by -1.
+  -- Knockback code can use this to build an opposite impulse.
   local impulse = lurek.compute.fromTable({2, -1, 4})
-  local counter = impulse:neg()
-  lurek.log.info("counter[1] = " .. counter:get(1), "compute")
+  local counter_impulse = impulse:neg()
+
+  lurek.log.info("counter impulse x=" .. counter_impulse:get(1), "physics")
 end
 --@api-stub: LArray:clamp
--- Returns a new array with values clamped between min and max
+-- Bounds values inside a numeric range
 do
-  -- clamp(min, max) bounds every element.
-  -- Essential for health bars, color channels, or any bounded game stat.
+  -- clamp(min, max) is a safe final step for health, stamina, and color channels.
   local hp = lurek.compute.fromTable({120, -5, 75, 200})
 
-  -- Clamp health points to valid range [0, 100]
+  -- Values below 0 become 0; values above 100 become 100.
   local clamped = hp:clamp(0, 100)
-  lurek.log.info("clamped max = " .. clamped:max(), "compute")
+  lurek.log.info("highest legal hp=" .. clamped:max(), "combat")
 end
 --@api-stub: LArray:threshold
--- Returns a mask array where values above the threshold become 1, else 0
+-- Converts values above a cutoff into a mask
 do
-  -- threshold(val) creates a binary mask: 1 where element > val, else 0.
-  -- Use for visibility culling, fog-of-war edges, or damage zones.
-  local field = lurek.compute.range(0, 8)
+  -- threshold(val) returns 1 where element > val, otherwise 0.
+  -- This makes masks for visibility, danger zones, or spawn eligibility.
+  local danger = lurek.compute.fromTable({0.1, 0.8, 0.4, 0.9})
 
-  -- Only cells with value > 4 are "visible"
-  local visible = field:threshold(4.0)
-  lurek.log.info("cells visible: " .. visible:sum(), "compute")
+  -- Count cells hot enough to warn the player.
+  local warning_mask = danger:threshold(0.5)
+  lurek.log.info("danger cells=" .. warning_mask:countNonZero(), "ui")
 end
 --@api-stub: LArray:countNonZero
--- Returns the count of non-zero elements
+-- Counts elements that are not zero
 do
-  -- countNonZero() counts elements that are not exactly 0.
-  -- Efficient way to count active tiles, occupied slots, or lit cells.
-  local occupied = lurek.compute.fromTable({0, 1, 0, 1, 1, 0})
-  local live = occupied:countNonZero()
-  lurek.log.info("occupied tiles: " .. live, "compute")
+  -- countNonZero() is a compact way to count active flags.
+  -- A board game can count occupied cells without looping in Lua.
+  local occupied = lurek.compute.fromTable({0, 1, 0, 1, 1, 0}, nil, "int32")
+  local occupied_count = occupied:countNonZero()
+
+  lurek.log.info("occupied tile count=" .. occupied_count, "tiles")
 end
 --@api-stub: LArray:argmin
--- Returns the 1-based flat index of the minimum element
+-- Finds the flat index of the smallest value
 do
-  -- argmin() finds WHERE the minimum is, not what it is.
-  -- Use to find the nearest enemy, cheapest path node, or lowest score.
+  -- argmin() returns a one-based flat index, matching Lua table indexing.
+  -- AI steering can use this to pick the nearest candidate.
   local distances = lurek.compute.fromTable({12, 4, 9, 7})
-  local nearest = distances:argmin()
-  lurek.log.info("nearest enemy index: " .. nearest, "ai")
+  local nearest_index = distances:argmin()
+
+  lurek.log.info("nearest target index=" .. nearest_index, "ai")
 end
 --@api-stub: LArray:argmax
--- Returns the 1-based flat index of the maximum element
+-- Finds the flat index of the largest value
 do
-  -- argmax() finds WHERE the maximum is.
-  -- Use in AI decision-making: pick the action with highest utility score.
-  local scores = lurek.compute.fromTable({0.2, 0.5, 0.9, 0.4})
-  local choice = scores:argmax()
-  lurek.log.info("AI picks action " .. choice, "ai")
+  -- argmax() returns a one-based flat index for the strongest value.
+  -- Utility AI can use it to choose the best scored action.
+  local action_scores = lurek.compute.fromTable({0.2, 0.5, 0.9, 0.4})
+  local action_index = action_scores:argmax()
+
+  lurek.log.info("chosen action index=" .. action_index, "ai")
 end
 --@api-stub: LArray:any
--- Returns true if any element is non-zero
+-- Tests whether at least one element is active
 do
-  -- any() is a fast existence check.
-  -- Use for "did anything collide?", "is any enemy alive?", etc.
-  local hits = lurek.compute.fromTable({0, 0, 1, 0})
-  if hits:any() then
-    lurek.log.warn("at least one hit registered", "combat")
+  -- any() answers existence questions without counting every active value in Lua.
+  -- Collision or trigger systems often need this yes/no result.
+  local collision_flags = lurek.compute.fromTable({0, 0, 1, 0}, nil, "int32")
+
+  if collision_flags:any() then
+    lurek.log.warn("collision flag detected", "physics")
   end
 end
 --@api-stub: LArray:all
--- Returns true if all elements are non-zero
+-- Tests whether every element is active
 do
-  -- all() checks that every element passes.
-  -- Use for puzzle completion: "are all switches activated?"
-  local switches = lurek.compute.fromTable({1, 1, 1, 1})
-  if switches:all() then
-    lurek.log.info("door unlocked", "puzzle")
+  -- all() is a natural fit for completion checks.
+  -- For a puzzle room, every pressure plate must be active before the door opens.
+  local pressure_plates = lurek.compute.fromTable({1, 1, 1, 1}, nil, "int32")
+
+  if pressure_plates:all() then
+    lurek.log.info("all plates active", "puzzle")
   end
 end
 --@api-stub: LArray:sum
--- Returns the total sum of all elements (or sum along an axis)
+-- Adds values across the array or one axis
 do
-  -- sum() with no argument reduces the entire array to a scalar.
-  -- sum(axis) reduces along one dimension, returning a smaller array.
-  local hits = lurek.compute.fromTable({3, 1, 4, 1, 5, 9})
-  local total = hits:sum()
-  lurek.log.info("total damage: " .. total, "compute")
+  -- sum() with no argument returns one number.
+  -- sum(axis) returns an LArray reduced along the one-based axis.
+  local damage_grid = lurek.compute.fromTable({
+    3, 1, 4,
+    1, 5, 9,
+  }, {2, 3})
+  local total_damage = damage_grid:sum()
+  local row_totals = damage_grid:sum(2)
+
+  lurek.log.info("damage total=" .. total_damage .. " first row=" .. row_totals:get(1), "combat")
 end
 --@api-stub: LArray:mean
--- Returns the arithmetic mean of all elements (or mean along an axis)
+-- Averages values across the array or one axis
 do
-  -- mean() computes the average. Use for frame time monitoring,
-  -- smoothed input values, or AI utility averaging.
+  -- mean() gives a scalar average when called without an axis.
+  -- Frame pacing and AI utility scoring both benefit from simple averages.
   local frame_ms = lurek.compute.fromTable({16.1, 16.7, 17.2, 16.9, 16.4})
-  local avg = frame_ms:mean()
-  lurek.log.info("avg frame ms: " .. avg, "perf")
+  local average_frame_ms = frame_ms:mean()
+
+  lurek.log.info("average frame ms=" .. average_frame_ms, "perf")
 end
 --@api-stub: LArray:min
--- Returns the minimum element value (or minimum along an axis)
+-- Finds the smallest value globally or along one axis
 do
-  -- min() finds the smallest value across the array.
-  -- Useful for finding cheapest path cost, lowest health, etc.
-  local costs = lurek.compute.fromTable({7, 3, 9, 4})
-  local cheapest = costs:min()
-  lurek.log.info("cheapest cost: " .. cheapest, "compute")
+  -- min() returns the smallest scalar value when no axis is supplied.
+  -- Pathfinding tools can use it to find the cheapest candidate cost.
+  local path_costs = lurek.compute.fromTable({7, 3, 9, 4})
+  local cheapest_cost = path_costs:min()
+
+  lurek.log.info("cheapest path cost=" .. cheapest_cost, "ai")
 end
 --@api-stub: LArray:max
--- Returns the maximum element value (or maximum along an axis)
+-- Finds the largest value globally or along one axis
 do
-  -- max() finds the largest value.
-  -- Use for worst-case latency, highest score, peak damage dealt.
-  local latencies = lurek.compute.fromTable({12, 30, 18, 25})
-  local worst = latencies:max()
-  lurek.log.info("worst latency: " .. worst .. "ms", "net")
+  -- max() returns the largest scalar value when no axis is supplied.
+  -- HUD code can use it for peak damage, highest score, or worst latency.
+  local damage_rolls = lurek.compute.fromTable({12, 30, 18, 25})
+  local peak_damage = damage_rolls:max()
+
+  lurek.log.info("peak damage=" .. peak_damage, "combat")
 end
 --@api-stub: LArray:matmul
 -- Performs matrix multiplication with another 2D array
@@ -779,7 +795,7 @@ end
 --@api-stub: LArray:typeOf
 -- Returns true if this array handle matches the given type name string
 do
-  -- typeOf(name) accepts "LArray", "Array", or "Object" — all return true.
+  -- typeOf(name) accepts "LArray", "Array", or "Object" â€” all return true.
   -- Use for duck-typing checks in utility functions that accept multiple types.
   local arr = lurek.compute.zeros({2})
   if arr:typeOf("Array") then

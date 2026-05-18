@@ -4,125 +4,76 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
-- [Purpose](#purpose)
-- [Summary](#summary)
-- [Minimal Module Example](#minimal-module-example)
-- [Key Types](#key-types)
-- [API Overview](#api-overview)
-- [Module Functions](#module-functions)
-  - [lurek.event.clear()](#lurekeventclear)
-  - [lurek.event.clearHistory()](#lurekeventclearhistory)
-  - [lurek.event.enableHistory(capacity: integer)](#lurekeventenablehistorycapacity-integer)
-  - [lurek.event.exit([code]: integer)](#lurekeventexitcode-integer)
-  - [lurek.event.flushDeferred() -> integer](#lurekeventflushdeferred-integer)
-  - [lurek.event.getHistory() -> table](#lurekeventgethistory-table)
-  - [lurek.event.newSignal() -> LSignal](#lurekeventnewsignal-lsignal)
-  - [lurek.event.poll() -> function](#lurekeventpoll-function)
-  - [lurek.event.pump()](#lurekeventpump)
-  - [lurek.event.push(name: string, ...: any)](#lurekeventpushname-string-any)
-  - [lurek.event.pushDeferred(name: string, ...: any)](#lurekeventpushdeferredname-string-any)
-  - [lurek.event.pushDeferredPriority(name: string, priority: string, ...: any)](#lurekeventpushdeferredpriorityname-string-priority-string-any)
-  - [lurek.event.pushPriority(name: string, priority: string, ...: any)](#lurekeventpushpriorityname-string-priority-string-any)
-  - [lurek.event.quit()](#lurekeventquit)
-  - [lurek.event.restart()](#lurekeventrestart)
-  - [lurek.event.wait([timeout]: number) -> boolean](#lurekeventwaittimeout-number-boolean)
-- [Types and Methods](#types-and-methods)
+- [🎯 Purpose](#purpose)
+- [📋 Summary](#summary)
+- [🧩 Key Types](#key-types)
+- [📖 API Overview](#api-overview)
+- [⚙️ Module Functions](#module-functions)
+  - [lurek.event.clear](#lurekeventclear)
+  - [lurek.event.clearHistory](#lurekeventclearhistory)
+  - [lurek.event.enableHistory](#lurekeventenablehistory)
+  - [lurek.event.exit](#lurekeventexit)
+  - [lurek.event.flushDeferred](#lurekeventflushdeferred)
+  - [lurek.event.getHistory](#lurekeventgethistory)
+  - [lurek.event.newSignal](#lurekeventnewsignal)
+  - [lurek.event.poll](#lurekeventpoll)
+  - [lurek.event.pump](#lurekeventpump)
+  - [lurek.event.push](#lurekeventpush)
+  - [lurek.event.pushDeferred](#lurekeventpushdeferred)
+  - [lurek.event.pushDeferredPriority](#lurekeventpushdeferredpriority)
+  - [lurek.event.pushPriority](#lurekeventpushpriority)
+  - [lurek.event.quit](#lurekeventquit)
+  - [lurek.event.restart](#lurekeventrestart)
+  - [lurek.event.wait](#lurekeventwait)
+- [🔷 Module Types](#module-types)
   - [LSignal](#lsignal)
-  - [LSignal:clear(name: string) -> integer](#lsignalclearname-string-integer)
-  - [LSignal:clearAll() -> integer](#lsignalclearall-integer)
-  - [LSignal:connect(name: string, func: function) -> integer](#lsignalconnectname-string-func-function-integer)
-  - [LSignal:emit(name: string, ...: any)](#lsignalemitname-string-any)
-  - [LSignal:getCount(name: string) -> integer](#lsignalgetcountname-string-integer)
-  - [LSignal:getTotalCount() -> integer](#lsignalgettotalcount-integer)
-  - [LSignal:once(name: string, callback: function) -> integer](#lsignaloncename-string-callback-function-integer)
-  - [LSignal:register(name: string, callback: function) -> integer](#lsignalregistername-string-callback-function-integer)
-  - [LSignal:registerWithFilter(name: string, callback: function, filter: function) -> integer](#lsignalregisterwithfiltername-string-callback-function-filter-function-integer)
-  - [LSignal:remove(handle: integer) -> boolean](#lsignalremovehandle-integer-boolean)
-  - [LSignal:type() -> string](#lsignaltype-string)
-  - [LSignal:typeOf(name: string) -> boolean](#lsignaltypeofname-string-boolean)
-- [Examples](#examples)
-- [Reference Games](#reference-games)
-- [Related Modules](#related-modules)
+- [🔹 Module Methods](#module-methods)
+  - [LSignal:clear](#lsignalclear)
+  - [LSignal:clearAll](#lsignalclearall)
+  - [LSignal:connect](#lsignalconnect)
+  - [LSignal:emit](#lsignalemit)
+  - [LSignal:getCount](#lsignalgetcount)
+  - [LSignal:getTotalCount](#lsignalgettotalcount)
+  - [LSignal:once](#lsignalonce)
+  - [LSignal:register](#lsignalregister)
+  - [LSignal:registerWithFilter](#lsignalregisterwithfilter)
+  - [LSignal:remove](#lsignalremove)
+  - [LSignal:type](#lsignaltype)
+  - [LSignal:typeOf](#lsignaltypeof)
+- [💡 Examples](#examples)
+- [🎮 Reference Games](#reference-games)
+- [🔗 Related Modules](#related-modules)
 
 This page is generated from the current module specs, examples, and Lua API data.
 
 **Module group:** Core Runtime
 **Namespace:** `lurek.event`
 
-## Purpose
+## 🎯 Purpose
 
 Centralised event queue: OS input, window state, custom Lua events, automation injections.
 
-## Summary
+[⬆ back to top](#table-of-contents)
+
+## 📋 Summary
 
 Centralized event queue and signal dispatch layer providing the backbone for inter-system communication. `EventQueue` is a dual-lane FIFO (high and normal priority) backed by `VecDeque` — `poll()` drains high-priority events first while maintaining FIFO order within each lane. `wait(timeout_ms)` blocks on a condvar without spin-looping.
 
 `Event` payload is `Vec<EventArg>` supporting scalar values and shallow-cloned table payloads. `Signal` is a typed pub-sub primitive — subscribers register closures that fire synchronously on `emit()`. Event history can be enabled for replay and debugging. Deferred events queue for next-frame delivery, enabling safe event emission during iteration. Exposed as `lurek.event.*`. Core Runtime tier importing only `runtime`.
 
-## Minimal Module Example
+[⬆ back to top](#table-of-contents)
 
-Module example from [event.lua](../blob/main/content/examples/event.lua):
-
-```lua
--- content/examples/event.lua
--- Demonstrates every lurek.event function and LSignal class method with realistic game usage.
--- Run: cargo run -- content/examples/event.lua
-
---@api-stub: lurek.event.newSignal
--- Creates an isolated signal dispatcher for decoupled Lua-side pub/sub communication
-do
-  -- Use signals to decouple game systems: combat emits damage, UI listens and updates HUD
-  local combat_bus = lurek.event.newSignal()
-  combat_bus:register("damage_dealt", function(target, amount)
-    lurek.log.info(target .. " took " .. amount .. " damage", "combat")
-  end)
-  combat_bus:emit("damage_dealt", "skeleton_warrior", 25)
-end
-
---@api-stub: lurek.event.push
--- Pushes a named event with arguments into the shared queue for cross-system communication
-do
-  -- Push game events that other systems poll during the frame loop
-  lurek.event.push("enemy_spawned", "goblin", 128, 256)
-  lurek.event.push("coin_collected", 10)
-  -- Events accumulate in the queue until polled or cleared
-  for name, a, b in lurek.event.poll() do
-    if name == "coin_collected" then
-      lurek.log.info("player gained " .. tostring(a) .. " coins", "game")
-    end
-  end
-end
-
---@api-stub: lurek.event.pushPriority
--- Pushes an event with explicit priority so high-priority events are polled first
-do
-  -- High-priority events jump ahead in the queue, useful for system-critical signals
-  lurek.event.push("background_music", "forest_theme")
-  lurek.event.pushPriority("player_death", "high", "hero", "lava")
-  -- When polling, "player_death" appears before "background_music"
-  for name, a, b in lurek.event.poll() do
-    if name == "player_death" then
-      lurek.log.info(tostring(a) .. " died from " .. tostring(b), "game")
-    end
-  end
-end
-
---@api-stub: lurek.event.poll
--- Returns a polling iterator that drains queued events one at a time
-do
-  -- Typical frame-loop pattern: pump OS events, then poll game events
-  lurek.event.push("input_action", "jump")
-```
-
-## Key Types
+## 🧩 Key Types
 
 - `LSignal` (12 methods) - Lua-side signal object storing subscriptions and Lua callback registry keys.
 
-## API Overview
+[⬆ back to top](#table-of-contents)
+
+## 📖 API Overview
 
 - Source spec: [docs/specs/event.md](../blob/main/docs/specs/event.md)
 
@@ -145,9 +96,13 @@ lurek.event.restart() -- Requests a full engine restart cycle from the runtime.
 lurek.event.wait([timeout]: number) -> boolean -- Waits for the next queued event and returns success, name, and argument table.
 ```
 
-## Module Functions
+[⬆ back to top](#table-of-contents)
 
-### `lurek.event.clear()`
+## ⚙️ Module Functions
+
+### lurek.event.clear
+
+`lurek.event.clear()`
 
 Clears all pending events from the shared event queue.
 
@@ -164,7 +119,9 @@ do
 end
 ```
 
-### `lurek.event.clearHistory()`
+### lurek.event.clearHistory
+
+`lurek.event.clearHistory()`
 
 Clears retained pushed event history.
 
@@ -184,13 +141,15 @@ do
 end
 ```
 
-### `lurek.event.enableHistory(capacity: integer)`
+### lurek.event.enableHistory
+
+`lurek.event.enableHistory(capacity: integer)`
 
 Enables event push history with a maximum retained capacity.
 
 **Parameters**
 
-- `capacity` (`integer`, required) - Maximum number of pushed events to keep; zero disables retention.
+- `capacity` (`integer`, required): Maximum number of pushed events to keep; zero disables retention.
 
 #### Example
 
@@ -207,13 +166,15 @@ do
 end
 ```
 
-### `lurek.event.exit([code]: integer)`
+### lurek.event.exit
+
+`lurek.event.exit([code]: integer)`
 
 Requests engine shutdown with an optional process exit code.
 
 **Parameters**
 
-- `code` (`integer`, optional) - Optional exit code, defaulting to 0.
+- `code` (`integer`, optional): Optional exit code, defaulting to 0.
 
 #### Example
 
@@ -232,7 +193,9 @@ do
 end
 ```
 
-### `lurek.event.flushDeferred() -> integer`
+### lurek.event.flushDeferred
+
+`lurek.event.flushDeferred() -> integer`
 
 Moves all deferred events into the shared event queue and clears the deferred buffer.
 
@@ -252,7 +215,9 @@ do
   lurek.log.info("flushed " .. moved .. " end-of-frame events", "game")
 ```
 
-### `lurek.event.getHistory() -> table`
+### lurek.event.getHistory
+
+`lurek.event.getHistory() -> table`
 
 Returns retained pushed event history entries.
 
@@ -276,7 +241,9 @@ do
 end
 ```
 
-### `lurek.event.newSignal() -> LSignal`
+### lurek.event.newSignal
+
+`lurek.event.newSignal() -> LSignal`
 
 Creates an isolated signal dispatcher for Lua callbacks.
 
@@ -297,7 +264,9 @@ do
 end
 ```
 
-### `lurek.event.poll() -> function`
+### lurek.event.poll
+
+`lurek.event.poll() -> function`
 
 Creates a polling function that returns the next queued event each time it is called.
 
@@ -322,7 +291,9 @@ do
 end
 ```
 
-### `lurek.event.pump()`
+### lurek.event.pump
+
+`lurek.event.pump()`
 
 Pumps the shared event queue without removing events for Lua.
 
@@ -341,14 +312,16 @@ do
 end
 ```
 
-### `lurek.event.push(name: string, ...: any)`
+### lurek.event.push
+
+`lurek.event.push(name: string, ...: any)`
 
 Pushes a normal-priority event into the shared event queue and optional history.
 
 **Parameters**
 
-- `name` (`string`, required) - Event name.
-- `...` (`any`, required) - Additional event arguments.
+- `name` (`string`, required): Event name.
+- `...` (`any`, required): Additional event arguments.
 
 #### Example
 
@@ -368,14 +341,16 @@ do
 end
 ```
 
-### `lurek.event.pushDeferred(name: string, ...: any)`
+### lurek.event.pushDeferred
+
+`lurek.event.pushDeferred(name: string, ...: any)`
 
 Adds a normal-priority event to the deferred buffer instead of the live queue.
 
 **Parameters**
 
-- `name` (`string`, required) - Event name to enqueue later.
-- `...` (`any`, required) - Additional event arguments stored with the event.
+- `name` (`string`, required): Event name to enqueue later.
+- `...` (`any`, required): Additional event arguments stored with the event.
 
 #### Example
 
@@ -393,15 +368,17 @@ do
 end
 ```
 
-### `lurek.event.pushDeferredPriority(name: string, priority: string, ...: any)`
+### lurek.event.pushDeferredPriority
+
+`lurek.event.pushDeferredPriority(name: string, priority: string, ...: any)`
 
 Adds an event with explicit priority to the deferred buffer.
 
 **Parameters**
 
-- `name` (`string`, required) - Event name to enqueue later.
-- `priority` (`string`, required) - Priority string `high` or `normal`.
-- `...` (`any`, required) - Additional event arguments stored with the event.
+- `name` (`string`, required): Event name to enqueue later.
+- `priority` (`string`, required): Priority string `high` or `normal`.
+- `...` (`any`, required): Additional event arguments stored with the event.
 
 #### Example
 
@@ -417,15 +394,17 @@ do
 end
 ```
 
-### `lurek.event.pushPriority(name: string, priority: string, ...: any)`
+### lurek.event.pushPriority
+
+`lurek.event.pushPriority(name: string, priority: string, ...: any)`
 
 Pushes an event with explicit priority into the shared event queue and optional history.
 
 **Parameters**
 
-- `name` (`string`, required) - Event name.
-- `priority` (`string`, required) - Priority string `high` or `normal`.
-- `...` (`any`, required) - Additional event arguments.
+- `name` (`string`, required): Event name.
+- `priority` (`string`, required): Priority string `high` or `normal`.
+- `...` (`any`, required): Additional event arguments.
 
 #### Example
 
@@ -445,7 +424,9 @@ do
 end
 ```
 
-### `lurek.event.quit()`
+### lurek.event.quit
+
+`lurek.event.quit()`
 
 Requests engine shutdown with exit code zero.
 
@@ -464,7 +445,9 @@ do
 end
 ```
 
-### `lurek.event.restart()`
+### lurek.event.restart
+
+`lurek.event.restart()`
 
 Requests a full engine restart cycle from the runtime.
 
@@ -483,13 +466,15 @@ do
 end
 ```
 
-### `lurek.event.wait([timeout]: number) -> boolean`
+### lurek.event.wait
+
+`lurek.event.wait([timeout]: number) -> boolean`
 
 Waits for the next queued event and returns success, name, and argument table.
 
 **Parameters**
 
-- `timeout` (`number`, optional) - Optional timeout in seconds.
+- `timeout` (`number`, optional): Optional timeout in seconds.
 
 **Returns**: `boolean` - True when an event was received before timeout.
 
@@ -510,11 +495,21 @@ end
 ```
 
 
-## Types and Methods
+[⬆ back to top](#table-of-contents)
 
-### `LSignal`
+## 🔷 Module Types
+
+### LSignal
 
 Lua-side signal object storing subscriptions and Lua callback registry keys.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side signal object storing subscriptions and Lua callback registry keys.
+---@class LSignal
+LSignal = {}
+```
 
 #### Example
 
@@ -531,15 +526,31 @@ do
 end
 ```
 
-### `LSignal:clear(name: string) -> integer`
+
+[⬆ back to top](#table-of-contents)
+
+## 🔹 Module Methods
+
+### LSignal:clear
+
+`LSignal:clear(name: string) -> integer`
 
 Removes all callbacks registered for one exact signal event name.
 
 **Parameters**
 
-- `name` (`string`, required) - Signal event name to clear.
+- `name` (`string`, required): Signal event name to clear.
 
 **Returns**: `integer` - Number of callbacks removed.
+
+**Lua API Stub**
+
+```lua
+--- Removes all callbacks registered for one exact signal event name.
+---@param name string Signal event name to clear.
+---@return number Number of callbacks removed.
+function LSignal:clear(name) end
+```
 
 #### Example
 
@@ -558,11 +569,21 @@ do
 end
 ```
 
-### `LSignal:clearAll() -> integer`
+### LSignal:clearAll
+
+`LSignal:clearAll() -> integer`
 
 Removes every callback from this signal object.
 
 **Returns**: `integer` - Number of callbacks removed.
+
+**Lua API Stub**
+
+```lua
+--- Removes every callback from this signal object.
+---@return number Number of callbacks removed.
+function LSignal:clearAll() end
+```
 
 #### Example
 
@@ -580,16 +601,28 @@ do
 end
 ```
 
-### `LSignal:connect(name: string, func: function) -> integer`
+### LSignal:connect
+
+`LSignal:connect(name: string, func: function) -> integer`
 
 Registers a callback for an exact name or wildcard signal pattern.
 
 **Parameters**
 
-- `name` (`string`, required) - Exact signal event name or wildcard pattern.
-- `func` (`function`, required) - Lua function invoked with emitted signal arguments.
+- `name` (`string`, required): Exact signal event name or wildcard pattern.
+- `func` (`function`, required): Lua function invoked with emitted signal arguments.
 
 **Returns**: `integer` - Subscription handle used for removal.
+
+**Lua API Stub**
+
+```lua
+--- Registers a callback for an exact name or wildcard signal pattern.
+---@param name string Exact signal event name or wildcard pattern.
+---@param func function Lua function invoked with emitted signal arguments.
+---@return number Subscription handle used for removal.
+function LSignal:connect(name, func) end
+```
 
 #### Example
 
@@ -613,14 +646,25 @@ do
 end
 ```
 
-### `LSignal:emit(name: string, ...: any)`
+### LSignal:emit
+
+`LSignal:emit(name: string, ...: any)`
 
 Emits a signal event and invokes matching callbacks with the remaining arguments.
 
 **Parameters**
 
-- `name` (`string`, required) - Signal event name to emit.
-- `...` (`any`, required) - Additional arguments passed to matching callbacks.
+- `name` (`string`, required): Signal event name to emit.
+- `...` (`any`, required): Additional arguments passed to matching callbacks.
+
+**Lua API Stub**
+
+```lua
+--- Emits a signal event and invokes matching callbacks with the remaining arguments.
+---@param name string Signal event name to emit.
+---@param ... any Additional arguments passed to matching callbacks.
+function LSignal:emit(name, ...) end
+```
 
 #### Example
 
@@ -643,15 +687,26 @@ do
 end
 ```
 
-### `LSignal:getCount(name: string) -> integer`
+### LSignal:getCount
+
+`LSignal:getCount(name: string) -> integer`
 
 Returns the callback count for one exact signal event name.
 
 **Parameters**
 
-- `name` (`string`, required) - Signal event name.
+- `name` (`string`, required): Signal event name.
 
 **Returns**: `integer` - Number of callbacks registered for the event.
+
+**Lua API Stub**
+
+```lua
+--- Returns the callback count for one exact signal event name.
+---@param name string Signal event name.
+---@return number Number of callbacks registered for the event.
+function LSignal:getCount(name) end
+```
 
 #### Example
 
@@ -671,11 +726,21 @@ do
 end
 ```
 
-### `LSignal:getTotalCount() -> integer`
+### LSignal:getTotalCount
+
+`LSignal:getTotalCount() -> integer`
 
 Returns the total callback count across all signal event names.
 
 **Returns**: `integer` - Total callback count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the total callback count across all signal event names.
+---@return number Total callback count.
+function LSignal:getTotalCount() end
+```
 
 #### Example
 
@@ -693,16 +758,28 @@ do
 end
 ```
 
-### `LSignal:once(name: string, callback: function) -> integer`
+### LSignal:once
+
+`LSignal:once(name: string, callback: function) -> integer`
 
 Registers a callback that is removed after its next matching emission.
 
 **Parameters**
 
-- `name` (`string`, required) - Signal event name.
-- `callback` (`function`, required) - Lua function invoked once with emitted signal arguments.
+- `name` (`string`, required): Signal event name.
+- `callback` (`function`, required): Lua function invoked once with emitted signal arguments.
 
 **Returns**: `integer` - Subscription handle used for removal before it fires.
+
+**Lua API Stub**
+
+```lua
+--- Registers a callback that is removed after its next matching emission.
+---@param name string Signal event name.
+---@param callback function Lua function invoked once with emitted signal arguments.
+---@return number Subscription handle used for removal before it fires.
+function LSignal:once(name, callback) end
+```
 
 #### Example
 
@@ -723,16 +800,28 @@ do
 end
 ```
 
-### `LSignal:register(name: string, callback: function) -> integer`
+### LSignal:register
+
+`LSignal:register(name: string, callback: function) -> integer`
 
 Registers a callback for an exact signal event name.
 
 **Parameters**
 
-- `name` (`string`, required) - Signal event name.
-- `callback` (`function`, required) - Lua function invoked with emitted signal arguments.
+- `name` (`string`, required): Signal event name.
+- `callback` (`function`, required): Lua function invoked with emitted signal arguments.
 
 **Returns**: `integer` - Subscription handle used for removal.
+
+**Lua API Stub**
+
+```lua
+--- Registers a callback for an exact signal event name.
+---@param name string Signal event name.
+---@param callback function Lua function invoked with emitted signal arguments.
+---@return number Subscription handle used for removal.
+function LSignal:register(name, callback) end
+```
 
 #### Example
 
@@ -754,17 +843,30 @@ do
 end
 ```
 
-### `LSignal:registerWithFilter(name: string, callback: function, filter: function) -> integer`
+### LSignal:registerWithFilter
+
+`LSignal:registerWithFilter(name: string, callback: function, filter: function) -> integer`
 
 Registers a callback that runs only when a filter callback returns true.
 
 **Parameters**
 
-- `name` (`string`, required) - Signal event name.
-- `callback` (`function`, required) - Lua function invoked after the filter accepts the signal.
-- `filter` (`function`, required) - Lua predicate called with emitted arguments.
+- `name` (`string`, required): Signal event name.
+- `callback` (`function`, required): Lua function invoked after the filter accepts the signal.
+- `filter` (`function`, required): Lua predicate called with emitted arguments.
 
 **Returns**: `integer` - Subscription handle used for removal.
+
+**Lua API Stub**
+
+```lua
+--- Registers a callback that runs only when a filter callback returns true.
+---@param name string Signal event name.
+---@param callback function Lua function invoked after the filter accepts the signal.
+---@param filter function Lua predicate called with emitted arguments.
+---@return number Subscription handle used for removal.
+function LSignal:registerWithFilter(name, callback, filter) end
+```
 
 #### Example
 
@@ -789,15 +891,26 @@ do
 end
 ```
 
-### `LSignal:remove(handle: integer) -> boolean`
+### LSignal:remove
+
+`LSignal:remove(handle: integer) -> boolean`
 
 Removes a signal callback by subscription handle.
 
 **Parameters**
 
-- `handle` (`integer`, required) - Subscription handle returned by registration.
+- `handle` (`integer`, required): Subscription handle returned by registration.
 
 **Returns**: `boolean` - True when a callback was removed.
+
+**Lua API Stub**
+
+```lua
+--- Removes a signal callback by subscription handle.
+---@param handle number Subscription handle returned by registration.
+---@return boolean True when a callback was removed.
+function LSignal:remove(handle) end
+```
 
 #### Example
 
@@ -818,11 +931,21 @@ do
 end
 ```
 
-### `LSignal:type() -> string`
+### LSignal:type
+
+`LSignal:type() -> string`
 
 Returns the Lua-visible type name for this signal handle.
 
 **Returns**: `string` - The string `LSignal`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this signal handle.
+---@return string The string `LSignal`.
+function LSignal:type() end
+```
 
 #### Example
 
@@ -837,15 +960,26 @@ do
 end
 ```
 
-### `LSignal:typeOf(name: string) -> boolean`
+### LSignal:typeOf
+
+`LSignal:typeOf(name: string) -> boolean`
 
 Returns whether this signal handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `LSignal`, `Signal`, and `Object`.
+- `name` (`string`, required): Type name to compare against `LSignal`, `Signal`, and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this signal handle matches a supported type name.
+---@param name string Type name to compare against `LSignal`, `Signal`, and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LSignal:typeOf(name) end
+```
 
 #### Example
 
@@ -868,11 +1002,15 @@ end
 ```
 
 
-## Examples
+[⬆ back to top](#table-of-contents)
+
+## 💡 Examples
 
 - [event.lua](../blob/main/content/examples/event.lua) - Custom event bus
 
-## Reference Games
+[⬆ back to top](#table-of-contents)
+
+## 🎮 Reference Games
 
 - [brick_breaker](../tree/main/content/games/action/brick_breaker) (action)
 - [bullet_hell](../tree/main/content/games/action/bullet_hell) (action)
@@ -895,13 +1033,15 @@ end
 - [frogger](../tree/main/content/games/arcade/frogger) (arcade)
 - [galaga](../tree/main/content/games/arcade/galaga) (arcade)
 
-## Related Modules
+[⬆ back to top](#table-of-contents)
 
-- Previous: [[engine|Module-engine]]
-- Next: [[filesystem|Module-filesystem]]
-- [[filesystem|Module-filesystem]] - Sandboxed virtual filesystem (GameFS); blocks path-traversal escape from the game directory.
-- [[network|Module-network]] - Multiplayer stack: ENet, raw TCP, async HTTP, WebSocket. Heavy crate tree.
-- [[repl|Module-repl]] - Release-safe Lua REPL core used by the GUI CLI mode and devtools wrappers; headless also reuses its value-formatting helper.
-- [[runtime|Module-runtime]] - Foundational shared state, engine config, error types, resource keys, log catalogue. Root of the dep tree.
-- [[thread|Module-thread]] - Background threading with per-thread isolated Lua VMs (B-04: VMs cannot be shared).
-- [[timer|Module-timer]] - Frame-timing (Clock) and deferred / repeating callback scheduling (Scheduler).
+## 🔗 Related Modules
+
+- Previous: [engine](Module-engine)
+- Next: [filesystem](Module-filesystem)
+- [filesystem](Module-filesystem) - Sandboxed virtual filesystem (GameFS); blocks path-traversal escape from the game directory.
+- [network](Module-network) - Multiplayer stack: ENet, raw TCP, async HTTP, WebSocket. Heavy crate tree.
+- [repl](Module-repl) - Release-safe Lua REPL core used by the GUI CLI mode and devtools wrappers; headless also reuses its value-formatting helper.
+- [runtime](Module-runtime) - Foundational shared state, engine config, error types, resource keys, log catalogue. Root of the dep tree.
+- [thread](Module-thread) - Background threading with per-thread isolated Lua VMs (B-04: VMs cannot be shared).
+- [timer](Module-timer) - Frame-timing (Clock) and deferred / repeating callback scheduling (Scheduler).

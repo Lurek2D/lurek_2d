@@ -4,166 +4,117 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
-- [Purpose](#purpose)
-- [Summary](#summary)
-- [Minimal Module Example](#minimal-module-example)
-- [Key Types](#key-types)
-- [API Overview](#api-overview)
-- [Module Functions](#module-functions)
-  - [lurek.ecs.newUniverse() -> LUniverse](#lurekecsnewuniverse-luniverse)
-- [Types and Methods](#types-and-methods)
+- [🎯 Purpose](#purpose)
+- [📋 Summary](#summary)
+- [🧩 Key Types](#key-types)
+- [📖 API Overview](#api-overview)
+- [⚙️ Module Functions](#module-functions)
+  - [lurek.ecs.newUniverse](#lurekecsnewuniverse)
+- [🔷 Module Types](#module-types)
   - [LUniverse](#luniverse)
-  - [LUniverse:addRelation(from: integer, name: string, to: integer)](#luniverseaddrelationfrom-integer-name-string-to-integer)
-  - [LUniverse:addSystem(system: table, [opts]: table)](#luniverseaddsystemsystem-table-opts-table)
-  - [LUniverse:addTag(id: integer, tag: string)](#luniverseaddtagid-integer-tag-string)
-  - [LUniverse:applySnapshot(snapshot: table)](#luniverseapplysnapshotsnapshot-table)
-  - [LUniverse:bitmapTag(id: integer, name: string) -> integer](#luniversebitmaptagid-integer-name-string-integer)
-  - [LUniverse:bitmapUntag(id: integer, name: string)](#luniversebitmapuntagid-integer-name-string)
-  - [LUniverse:clear()](#luniverseclear)
-  - [LUniverse:clearRelations(from: integer, name: string)](#luniverseclearrelationsfrom-integer-name-string)
-  - [LUniverse:defineBlueprint(name: string, components: table)](#luniversedefineblueprintname-string-components-table)
-  - [LUniverse:defineTag(name: string) -> integer](#luniversedefinetagname-string-integer)
-  - [LUniverse:deserialize(snapshot: table)](#luniversedeserializesnapshot-table)
-  - [LUniverse:each(name: string, callback: function)](#luniverseeachname-string-callback-function)
-  - [LUniverse:emit(event: string, ...: table)](#luniverseemitevent-string-table)
-  - [LUniverse:extendBlueprint(name: string, parent: string, overrides: table)](#luniverseextendblueprintname-string-parent-string-overrides-table)
-  - [LUniverse:flushObservers()](#luniverseflushobservers)
-  - [LUniverse:get(id: integer, name: string) -> table|number|string|boolean|nil](#luniversegetid-integer-name-string-tablenumberstringbooleannil)
-  - [LUniverse:getBitmapTagBit(name: string) -> integer](#luniversegetbitmaptagbitname-string-integer)
-  - [LUniverse:getBlueprintComponents(name: string) -> table](#luniversegetblueprintcomponentsname-string-table)
-  - [LUniverse:getChildren(parent_id: integer) -> integer[]](#luniversegetchildrenparentid-integer-integer)
-  - [LUniverse:getComponents(id: integer) -> string[]](#luniversegetcomponentsid-integer-string)
-  - [LUniverse:getDirtyEntities() -> integer[]](#luniversegetdirtyentities-integer)
-  - [LUniverse:getEntities() -> integer[]](#luniversegetentities-integer)
-  - [LUniverse:getEntitiesByLayer(layer: integer) -> integer[]](#luniversegetentitiesbylayerlayer-integer-integer)
-  - [LUniverse:getEntitiesByTag(tag: string) -> integer[]](#luniversegetentitiesbytagtag-string-integer)
-  - [LUniverse:getEntitiesSorted() -> integer[]](#luniversegetentitiessorted-integer)
-  - [LUniverse:getEntityCount() -> integer](#luniversegetentitycount-integer)
-  - [LUniverse:getLayer(id: integer) -> integer](#luniversegetlayerid-integer-integer)
-  - [LUniverse:getParent(child_id: integer) -> integer](#luniversegetparentchildid-integer-integer)
-  - [LUniverse:getRelated(from: integer, name: string) -> integer[]](#luniversegetrelatedfrom-integer-name-string-integer)
-  - [LUniverse:getSystemCount() -> integer](#luniversegetsystemcount-integer)
-  - [LUniverse:getTags(id: integer) -> string[]](#luniversegettagsid-integer-string)
-  - [LUniverse:has(id: integer, name: string) -> boolean](#luniversehasid-integer-name-string-boolean)
-  - [LUniverse:hasBitmapTag(id: integer, name: string) -> boolean](#luniversehasbitmaptagid-integer-name-string-boolean)
-  - [LUniverse:hasBlueprint(name: string) -> boolean](#luniversehasblueprintname-string-boolean)
-  - [LUniverse:hasRelation(from: integer, name: string, to: integer) -> boolean](#luniversehasrelationfrom-integer-name-string-to-integer-boolean)
-  - [LUniverse:hasTag(id: integer, tag: string) -> boolean](#luniversehastagid-integer-tag-string-boolean)
-  - [LUniverse:isAlive(id: integer) -> boolean](#luniverseisaliveid-integer-boolean)
-  - [LUniverse:kill(id: integer)](#luniversekillid-integer)
-  - [LUniverse:killRecursive(id: integer)](#luniversekillrecursiveid-integer)
-  - [LUniverse:listBlueprints() -> string[]](#luniverselistblueprints-string)
-  - [LUniverse:onComponentAdded(name: string, cb: function)](#luniverseoncomponentaddedname-string-cb-function)
-  - [LUniverse:onComponentRemoved(name: string, cb: function)](#luniverseoncomponentremovedname-string-cb-function)
-  - [LUniverse:query(...: string) -> integer[]](#luniversequery-string-integer)
-  - [LUniverse:queryBitmapAll(names: table) -> integer[]](#luniversequerybitmapallnames-table-integer)
-  - [LUniverse:queryBitmapAny(names: table) -> integer[]](#luniversequerybitmapanynames-table-integer)
-  - [LUniverse:queryBitmapTag(name: string) -> integer[]](#luniversequerybitmaptagname-string-integer)
-  - [LUniverse:queryMulti(names_table: table, callback: function)](#luniversequerymultinamestable-table-callback-function)
-  - [LUniverse:queryNot(with_tbl: table, without_tbl: table) -> integer[]](#luniversequerynotwithtbl-table-withouttbl-table-integer)
-  - [LUniverse:release()](#luniverserelease)
-  - [LUniverse:remove(id: integer, name: string)](#luniverseremoveid-integer-name-string)
-  - [LUniverse:removeBlueprint(name: string) -> boolean](#luniverseremoveblueprintname-string-boolean)
-  - [LUniverse:removeRelation(from: integer, name: string, to: integer)](#luniverseremoverelationfrom-integer-name-string-to-integer)
-  - [LUniverse:removeSystem(system: table)](#luniverseremovesystemsystem-table)
-  - [LUniverse:removeTag(id: integer, tag: string)](#luniverseremovetagid-integer-tag-string)
-  - [LUniverse:render()](#luniverserender)
-  - [LUniverse:serialize() -> table](#luniverseserialize-table)
-  - [LUniverse:set(id: integer, name: string, value: table)](#luniversesetid-integer-name-string-value-table)
-  - [LUniverse:setLayer(id: integer, layer: integer)](#luniversesetlayerid-integer-layer-integer)
-  - [LUniverse:setParent(child_id: integer, [parent_id]: integer)](#luniversesetparentchildid-integer-parentid-integer)
-  - [LUniverse:snapshot() -> table](#luniversesnapshot-table)
-  - [LUniverse:spawn() -> integer](#luniversespawn-integer)
-  - [LUniverse:spawnBlueprint(name: string, [overrides]: table) -> integer](#luniversespawnblueprintname-string-overrides-table-integer)
-  - [LUniverse:spawnBulk(name: string, count: integer, [overrides]: table) -> integer[]](#luniversespawnbulkname-string-count-integer-overrides-table-integer)
-  - [LUniverse:takeSnapshotDiff() -> table](#luniversetakesnapshotdiff-table)
-  - [LUniverse:type() -> string](#luniversetype-string)
-  - [LUniverse:typeOf(name: string) -> boolean](#luniversetypeofname-string-boolean)
-  - [LUniverse:update(dt: number)](#luniverseupdatedt-number)
-  - [LUniverse:updatePhase(phase: string, dt: number)](#luniverseupdatephasephase-string-dt-number)
-- [Examples](#examples)
-- [Reference Games](#reference-games)
-- [Related Modules](#related-modules)
+- [🔹 Module Methods](#module-methods)
+  - [LUniverse:addRelation](#luniverseaddrelation)
+  - [LUniverse:addSystem](#luniverseaddsystem)
+  - [LUniverse:addTag](#luniverseaddtag)
+  - [LUniverse:applySnapshot](#luniverseapplysnapshot)
+  - [LUniverse:bitmapTag](#luniversebitmaptag)
+  - [LUniverse:bitmapUntag](#luniversebitmapuntag)
+  - [LUniverse:clear](#luniverseclear)
+  - [LUniverse:clearRelations](#luniverseclearrelations)
+  - [LUniverse:defineBlueprint](#luniversedefineblueprint)
+  - [LUniverse:defineTag](#luniversedefinetag)
+  - [LUniverse:deserialize](#luniversedeserialize)
+  - [LUniverse:each](#luniverseeach)
+  - [LUniverse:emit](#luniverseemit)
+  - [LUniverse:extendBlueprint](#luniverseextendblueprint)
+  - [LUniverse:flushObservers](#luniverseflushobservers)
+  - [LUniverse:get](#luniverseget)
+  - [LUniverse:getBitmapTagBit](#luniversegetbitmaptagbit)
+  - [LUniverse:getBlueprintComponents](#luniversegetblueprintcomponents)
+  - [LUniverse:getChildren](#luniversegetchildren)
+  - [LUniverse:getComponents](#luniversegetcomponents)
+  - [LUniverse:getDirtyEntities](#luniversegetdirtyentities)
+  - [LUniverse:getEntities](#luniversegetentities)
+  - [LUniverse:getEntitiesByLayer](#luniversegetentitiesbylayer)
+  - [LUniverse:getEntitiesByTag](#luniversegetentitiesbytag)
+  - [LUniverse:getEntitiesSorted](#luniversegetentitiessorted)
+  - [LUniverse:getEntityCount](#luniversegetentitycount)
+  - [LUniverse:getLayer](#luniversegetlayer)
+  - [LUniverse:getParent](#luniversegetparent)
+  - [LUniverse:getRelated](#luniversegetrelated)
+  - [LUniverse:getSystemCount](#luniversegetsystemcount)
+  - [LUniverse:getTags](#luniversegettags)
+  - [LUniverse:has](#luniversehas)
+  - [LUniverse:hasBitmapTag](#luniversehasbitmaptag)
+  - [LUniverse:hasBlueprint](#luniversehasblueprint)
+  - [LUniverse:hasRelation](#luniversehasrelation)
+  - [LUniverse:hasTag](#luniversehastag)
+  - [LUniverse:isAlive](#luniverseisalive)
+  - [LUniverse:kill](#luniversekill)
+  - [LUniverse:killRecursive](#luniversekillrecursive)
+  - [LUniverse:listBlueprints](#luniverselistblueprints)
+  - [LUniverse:onComponentAdded](#luniverseoncomponentadded)
+  - [LUniverse:onComponentRemoved](#luniverseoncomponentremoved)
+  - [LUniverse:query](#luniversequery)
+  - [LUniverse:queryBitmapAll](#luniversequerybitmapall)
+  - [LUniverse:queryBitmapAny](#luniversequerybitmapany)
+  - [LUniverse:queryBitmapTag](#luniversequerybitmaptag)
+  - [LUniverse:queryMulti](#luniversequerymulti)
+  - [LUniverse:queryNot](#luniversequerynot)
+  - [LUniverse:release](#luniverserelease)
+  - [LUniverse:remove](#luniverseremove)
+  - [LUniverse:removeBlueprint](#luniverseremoveblueprint)
+  - [LUniverse:removeRelation](#luniverseremoverelation)
+  - [LUniverse:removeSystem](#luniverseremovesystem)
+  - [LUniverse:removeTag](#luniverseremovetag)
+  - [LUniverse:render](#luniverserender)
+  - [LUniverse:serialize](#luniverseserialize)
+  - [LUniverse:set](#luniverseset)
+  - [LUniverse:setLayer](#luniversesetlayer)
+  - [LUniverse:setParent](#luniversesetparent)
+  - [LUniverse:snapshot](#luniversesnapshot)
+  - [LUniverse:spawn](#luniversespawn)
+  - [LUniverse:spawnBlueprint](#luniversespawnblueprint)
+  - [LUniverse:spawnBulk](#luniversespawnbulk)
+  - [LUniverse:takeSnapshotDiff](#luniversetakesnapshotdiff)
+  - [LUniverse:type](#luniversetype)
+  - [LUniverse:typeOf](#luniversetypeof)
+  - [LUniverse:update](#luniverseupdate)
+  - [LUniverse:updatePhase](#luniverseupdatephase)
+- [💡 Examples](#examples)
+- [🎮 Reference Games](#reference-games)
+- [🔗 Related Modules](#related-modules)
 
 This page is generated from the current module specs, examples, and Lua API data.
 
 **Module group:** Feature Systems
 **Namespace:** `lurek.ecs`
 
-## Purpose
+## 🎯 Purpose
 
 Entity-Component-System: identity / data / behaviour separation for runtime composition.
 
-## Summary
+[⬆ back to top](#table-of-contents)
+
+## 📋 Summary
 
 Lua-first Entity-Component-System runtime centered on the `Universe` container. Entities are packed generational IDs (24-bit slot + 8-bit generation) with slot reuse invalidating stale handles. Components are Lua values stored per-entity in Lua registry tables — no Rust-side component storage. Core operations: `spawn`, `kill`, `isAlive`, `set`/`get`/`has`/`remove` component, with batch queries via `query`, `queryNot`, `queryMulti`.
 
 Supports parent-child relationships with recursive kill propagation, string and bitmap tags (up to 63 named bits), numeric layers, and blueprints for template-based spawning. Systems register as named Lua callbacks executed in dependency order during `update` and `render` phases. Snapshot serialization enables save/load and network sync via `serialize`/`deserialize` with diff-based delta compression. Exposed as `lurek.ecs.*`.
 
-## Minimal Module Example
+[⬆ back to top](#table-of-contents)
 
-Module example from [ecs.lua](../blob/main/content/examples/ecs.lua):
-
-```lua
-    end
-  }
-  world:addSystem(move_system, { priority = 10 })
-
-  -- Hook world:update(dt) into lurek.process — the engine calls this each frame.
-  -- dt is the frame delta in seconds (e.g. ~0.016 at 60 FPS).
-  function lurek.process(dt) world:update(dt) end
-end
-
---@api-stub: LUniverse:render
--- Runs all registered render-phase systems (render or draw callbacks)
-do
-  local world = lurek.ecs.newUniverse()
-
-  -- Render systems use `render(self, world)` or `draw(self, world)`.
-  -- They run after update, in priority order, during the draw pass.
-  local draw_system = {
-    render = function(self, w)
-      for _, id in ipairs(w:query("position", "sprite")) do
-        local p = w:get(id, "position")
-        lurek.render.rectangle("fill", p.x, p.y, 16, 16)
-      end
-    end
-  }
-  world:addSystem(draw_system, { priority = 100 })
-
-  -- Hook into lurek.draw — the engine calls this for the render pass.
-  function lurek.draw() world:render() end
-end
-
---@api-stub: LUniverse:emit
--- Dispatches a named event to all systems that define a matching method
-do
-  local world = lurek.ecs.newUniverse()
-
-  -- emit() calls event-named functions on every registered system.
-  -- Systems opt-in by defining a method with that name.
-  -- The system receives (self, world, ...extra_args).
-  local hp_system = {
-    damage = function(self, w, id, amount)
-      local h = w:get(id, "health")
-      if h then
-        h.hp = h.hp - amount
-        if h.hp <= 0 then w:kill(id) end
-      end
-    end
-  }
-  world:addSystem(hp_system)
-```
-
-## Key Types
+## 🧩 Key Types
 
 - `LUniverse` (68 methods) - Lua-side handle for one ECS universe.
 
-## API Overview
+[⬆ back to top](#table-of-contents)
+
+## 📖 API Overview
 
 - Source spec: [docs/specs/ecs.md](../blob/main/docs/specs/ecs.md)
 
@@ -171,9 +122,13 @@ do
 lurek.ecs.newUniverse() -> LUniverse -- Creates an empty ECS universe for entity, component, system, and relationship management.
 ```
 
-## Module Functions
+[⬆ back to top](#table-of-contents)
 
-### `lurek.ecs.newUniverse() -> LUniverse`
+## ⚙️ Module Functions
+
+### lurek.ecs.newUniverse
+
+`lurek.ecs.newUniverse() -> LUniverse`
 
 Creates an empty ECS universe for entity, component, system, and relationship management.
 
@@ -198,11 +153,21 @@ end
 ```
 
 
-## Types and Methods
+[⬆ back to top](#table-of-contents)
 
-### `LUniverse`
+## 🔷 Module Types
+
+### LUniverse
 
 Lua-side handle for one ECS universe.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side handle for one ECS universe.
+---@class LUniverse
+LUniverse = {}
+```
 
 #### Example
 
@@ -222,15 +187,32 @@ do
 end
 ```
 
-### `LUniverse:addRelation(from: integer, name: string, to: integer)`
+
+[⬆ back to top](#table-of-contents)
+
+## 🔹 Module Methods
+
+### LUniverse:addRelation
+
+`LUniverse:addRelation(from: integer, name: string, to: integer)`
 
 Adds a named directed relation from one entity to another.
 
 **Parameters**
 
-- `from` (`integer`, required) - Source entity id.
-- `name` (`string`, required) - Relation name.
-- `to` (`integer`, required) - Target entity id.
+- `from` (`integer`, required): Source entity id.
+- `name` (`string`, required): Relation name.
+- `to` (`integer`, required): Target entity id.
+
+**Lua API Stub**
+
+```lua
+--- Adds a named directed relation from one entity to another.
+---@param from number Source entity id.
+---@param name string Relation name.
+---@param to number Target entity id.
+function LUniverse:addRelation(from, name, to) end
+```
 
 #### Example
 
@@ -251,14 +233,25 @@ do
 end
 ```
 
-### `LUniverse:addSystem(system: table, [opts]: table)`
+### LUniverse:addSystem
+
+`LUniverse:addSystem(system: table, [opts]: table)`
 
 Registers a Lua system table with optional phase, priority, name, and dependency metadata.
 
 **Parameters**
 
-- `system` (`table`, required) - System table containing update, render, draw, or event methods.
-- `opts` (`table`, optional) - Optional table with priority, phase, name, and after fields.
+- `system` (`table`, required): System table containing update, render, draw, or event methods.
+- `opts` (`table`, optional): Optional table with priority, phase, name, and after fields.
+
+**Lua API Stub**
+
+```lua
+--- Registers a Lua system table with optional phase, priority, name, and dependency metadata.
+---@param system table System table containing update, render, draw, or event methods.
+---@param opts? table Optional table with priority, phase, name, and after fields.
+function LUniverse:addSystem(system, opts) end
+```
 
 #### Example
 
@@ -291,14 +284,25 @@ do
 end
 ```
 
-### `LUniverse:addTag(id: integer, tag: string)`
+### LUniverse:addTag
+
+`LUniverse:addTag(id: integer, tag: string)`
 
 Assigns a string tag name to an entity in this universe.
 
 **Parameters**
 
-- `id` (`integer`, required) - Entity id to tag.
-- `tag` (`string`, required) - Tag name to add.
+- `id` (`integer`, required): Entity id to tag.
+- `tag` (`string`, required): Tag name to add.
+
+**Lua API Stub**
+
+```lua
+--- Assigns a string tag name to an entity in this universe.
+---@param id number Entity id to tag.
+---@param tag string Tag name to add.
+function LUniverse:addTag(id, tag) end
+```
 
 #### Example
 
@@ -319,13 +323,23 @@ do
 end
 ```
 
-### `LUniverse:applySnapshot(snapshot: table)`
+### LUniverse:applySnapshot
+
+`LUniverse:applySnapshot(snapshot: table)`
 
 Replaces this universe state from a Lua table snapshot.
 
 **Parameters**
 
-- `snapshot` (`table`, required) - Snapshot table previously produced by `snapshot` or `serialize`.
+- `snapshot` (`table`, required): Snapshot table previously produced by `snapshot` or `serialize`.
+
+**Lua API Stub**
+
+```lua
+--- Replaces this universe state from a Lua table snapshot.
+---@param snapshot table Snapshot table previously produced by `snapshot` or `serialize`.
+function LUniverse:applySnapshot(snapshot) end
+```
 
 #### Example
 
@@ -348,16 +362,28 @@ do
 end
 ```
 
-### `LUniverse:bitmapTag(id: integer, name: string) -> integer`
+### LUniverse:bitmapTag
+
+`LUniverse:bitmapTag(id: integer, name: string) -> integer`
 
 Adds a bitmap tag to an entity, defining the tag if needed.
 
 **Parameters**
 
-- `id` (`integer`, required) - Entity id to tag.
-- `name` (`string`, required) - Bitmap tag name.
+- `id` (`integer`, required): Entity id to tag.
+- `name` (`string`, required): Bitmap tag name.
 
 **Returns**: `integer` - Bit index used by the bitmap tag.
+
+**Lua API Stub**
+
+```lua
+--- Adds a bitmap tag to an entity, defining the tag if needed.
+---@param id number Entity id to tag.
+---@param name string Bitmap tag name.
+---@return number Bit index used by the bitmap tag.
+function LUniverse:bitmapTag(id, name) end
+```
 
 #### Example
 
@@ -377,14 +403,25 @@ do
 end
 ```
 
-### `LUniverse:bitmapUntag(id: integer, name: string)`
+### LUniverse:bitmapUntag
+
+`LUniverse:bitmapUntag(id: integer, name: string)`
 
 Removes a bitmap tag from an entity.
 
 **Parameters**
 
-- `id` (`integer`, required) - Entity id to update.
-- `name` (`string`, required) - Bitmap tag name to remove.
+- `id` (`integer`, required): Entity id to update.
+- `name` (`string`, required): Bitmap tag name to remove.
+
+**Lua API Stub**
+
+```lua
+--- Removes a bitmap tag from an entity.
+---@param id number Entity id to update.
+---@param name string Bitmap tag name to remove.
+function LUniverse:bitmapUntag(id, name) end
+```
 
 #### Example
 
@@ -404,9 +441,18 @@ do
 end
 ```
 
-### `LUniverse:clear()`
+### LUniverse:clear
+
+`LUniverse:clear()`
 
 Clears all entities, components, systems, and ECS state from this universe.
+
+**Lua API Stub**
+
+```lua
+--- Clears all entities, components, systems, and ECS state from this universe.
+function LUniverse:clear() end
+```
 
 #### Example
 
@@ -424,14 +470,25 @@ do
 end
 ```
 
-### `LUniverse:clearRelations(from: integer, name: string)`
+### LUniverse:clearRelations
+
+`LUniverse:clearRelations(from: integer, name: string)`
 
 Removes every target for one named relation from an entity.
 
 **Parameters**
 
-- `from` (`integer`, required) - Source entity id.
-- `name` (`string`, required) - Relation name to clear.
+- `from` (`integer`, required): Source entity id.
+- `name` (`string`, required): Relation name to clear.
+
+**Lua API Stub**
+
+```lua
+--- Removes every target for one named relation from an entity.
+---@param from number Source entity id.
+---@param name string Relation name to clear.
+function LUniverse:clearRelations(from, name) end
+```
 
 #### Example
 
@@ -453,14 +510,25 @@ do
 end
 ```
 
-### `LUniverse:defineBlueprint(name: string, components: table)`
+### LUniverse:defineBlueprint
+
+`LUniverse:defineBlueprint(name: string, components: table)`
 
 Defines a named entity blueprint from a component table.
 
 **Parameters**
 
-- `name` (`string`, required) - Blueprint name.
-- `components` (`table`, required) - Component table copied when the blueprint is spawned.
+- `name` (`string`, required): Blueprint name.
+- `components` (`table`, required): Component table copied when the blueprint is spawned.
+
+**Lua API Stub**
+
+```lua
+--- Defines a named entity blueprint from a component table.
+---@param name string Blueprint name.
+---@param components table Component table copied when the blueprint is spawned.
+function LUniverse:defineBlueprint(name, components) end
+```
 
 #### Example
 
@@ -482,15 +550,26 @@ do
 end
 ```
 
-### `LUniverse:defineTag(name: string) -> integer`
+### LUniverse:defineTag
+
+`LUniverse:defineTag(name: string) -> integer`
 
 Defines a bitmap tag name and assigns it a bit slot.
 
 **Parameters**
 
-- `name` (`string`, required) - Bitmap tag name to define.
+- `name` (`string`, required): Bitmap tag name to define.
 
 **Returns**: `integer` - Bit index assigned to the tag.
+
+**Lua API Stub**
+
+```lua
+--- Defines a bitmap tag name and assigns it a bit slot.
+---@param name string Bitmap tag name to define.
+---@return number Bit index assigned to the tag.
+function LUniverse:defineTag(name) end
+```
 
 #### Example
 
@@ -509,13 +588,23 @@ do
 end
 ```
 
-### `LUniverse:deserialize(snapshot: table)`
+### LUniverse:deserialize
+
+`LUniverse:deserialize(snapshot: table)`
 
 Replaces this universe state from a serialized Lua snapshot.
 
 **Parameters**
 
-- `snapshot` (`table`, required) - Snapshot table previously produced by `serialize` or `snapshot`.
+- `snapshot` (`table`, required): Snapshot table previously produced by `serialize` or `snapshot`.
+
+**Lua API Stub**
+
+```lua
+--- Replaces this universe state from a serialized Lua snapshot.
+---@param snapshot table Snapshot table previously produced by `serialize` or `snapshot`.
+function LUniverse:deserialize(snapshot) end
+```
 
 #### Example
 
@@ -539,14 +628,25 @@ do
 end
 ```
 
-### `LUniverse:each(name: string, callback: function)`
+### LUniverse:each
+
+`LUniverse:each(name: string, callback: function)`
 
 Iterates entities with one component and calls a Lua callback for each match.
 
 **Parameters**
 
-- `name` (`string`, required) - Component name used to select entities.
-- `callback` (`function`, required) - Callback invoked by the ECS backend for each matching entity.
+- `name` (`string`, required): Component name used to select entities.
+- `callback` (`function`, required): Callback invoked by the ECS backend for each matching entity.
+
+**Lua API Stub**
+
+```lua
+--- Iterates entities with one component and calls a Lua callback for each match.
+---@param name string Component name used to select entities.
+---@param callback function Callback invoked by the ECS backend for each matching entity.
+function LUniverse:each(name, callback) end
+```
 
 #### Example
 
@@ -567,14 +667,25 @@ do
 end
 ```
 
-### `LUniverse:emit(event: string, ...: table)`
+### LUniverse:emit
+
+`LUniverse:emit(event: string, ...: table)`
 
 Calls matching event-named functions on registered systems.
 
 **Parameters**
 
-- `event` (`string`, required) - Function name looked up on each system table.
-- `...` (`table`, required) - Extra values forwarded after the system and universe arguments.
+- `event` (`string`, required): Function name looked up on each system table.
+- `...` (`table`, required): Extra values forwarded after the system and universe arguments.
+
+**Lua API Stub**
+
+```lua
+--- Calls matching event-named functions on registered systems.
+---@param event string Function name looked up on each system table.
+---@param ... table Extra values forwarded after the system and universe arguments.
+function LUniverse:emit(event, ...) end
+```
 
 #### Example
 
@@ -607,15 +718,27 @@ do
 end
 ```
 
-### `LUniverse:extendBlueprint(name: string, parent: string, overrides: table)`
+### LUniverse:extendBlueprint
+
+`LUniverse:extendBlueprint(name: string, parent: string, overrides: table)`
 
 Defines a blueprint that inherits from a parent blueprint and applies overrides.
 
 **Parameters**
 
-- `name` (`string`, required) - Child blueprint name to define.
-- `parent` (`string`, required) - Existing parent blueprint name.
-- `overrides` (`table`, required) - Component overrides applied over the parent definition.
+- `name` (`string`, required): Child blueprint name to define.
+- `parent` (`string`, required): Existing parent blueprint name.
+- `overrides` (`table`, required): Component overrides applied over the parent definition.
+
+**Lua API Stub**
+
+```lua
+--- Defines a blueprint that inherits from a parent blueprint and applies overrides.
+---@param name string Child blueprint name to define.
+---@param parent string Existing parent blueprint name.
+---@param overrides table Component overrides applied over the parent definition.
+function LUniverse:extendBlueprint(name, parent, overrides) end
+```
 
 #### Example
 
@@ -642,9 +765,18 @@ do
 end
 ```
 
-### `LUniverse:flushObservers()`
+### LUniverse:flushObservers
+
+`LUniverse:flushObservers()`
 
 Delivers queued component add and remove events to registered observer callbacks.
+
+**Lua API Stub**
+
+```lua
+--- Delivers queued component add and remove events to registered observer callbacks.
+function LUniverse:flushObservers() end
+```
 
 #### Example
 
@@ -669,16 +801,28 @@ do
 end
 ```
 
-### `LUniverse:get(id: integer, name: string) -> table|number|string|boolean|nil`
+### LUniverse:get
+
+`LUniverse:get(id: integer, name: string) -> table|number|string|boolean|nil`
 
 Returns a component value from an entity.
 
 **Parameters**
 
-- `id` (`integer`, required) - Entity id to read.
-- `name` (`string`, required) - Component name to read.
+- `id` (`integer`, required): Entity id to read.
+- `name` (`string`, required): Component name to read.
 
 **Returns**: `table|number|string|boolean|nil` - Stored component value, or nil when the entity does not have that component.
+
+**Lua API Stub**
+
+```lua
+--- Returns a component value from an entity.
+---@param id number Entity id to read.
+---@param name string Component name to read.
+---@return table number|string|boolean|nil | Stored component value, or nil when the entity does not have that component.
+function LUniverse:get(id, name) end
+```
 
 #### Example
 
@@ -704,15 +848,26 @@ do
 end
 ```
 
-### `LUniverse:getBitmapTagBit(name: string) -> integer`
+### LUniverse:getBitmapTagBit
+
+`LUniverse:getBitmapTagBit(name: string) -> integer`
 
 Returns the bit index assigned to a bitmap tag name.
 
 **Parameters**
 
-- `name` (`string`, required) - Bitmap tag name to inspect.
+- `name` (`string`, required): Bitmap tag name to inspect.
 
 **Returns**: `integer` - Bit index when the tag exists, or nil when the tag is undefined.
+
+**Lua API Stub**
+
+```lua
+--- Returns the bit index assigned to a bitmap tag name.
+---@param name string Bitmap tag name to inspect.
+---@return number Bit index when the tag exists, or nil when the tag is undefined.
+function LUniverse:getBitmapTagBit(name) end
+```
 
 #### Example
 
@@ -733,15 +888,26 @@ do
 end
 ```
 
-### `LUniverse:getBlueprintComponents(name: string) -> table`
+### LUniverse:getBlueprintComponents
+
+`LUniverse:getBlueprintComponents(name: string) -> table`
 
 Returns the component table stored for a blueprint.
 
 **Parameters**
 
-- `name` (`string`, required) - Blueprint name to inspect.
+- `name` (`string`, required): Blueprint name to inspect.
 
 **Returns**: `table` - Blueprint component table.
+
+**Lua API Stub**
+
+```lua
+--- Returns the component table stored for a blueprint.
+---@param name string Blueprint name to inspect.
+---@return table Blueprint component table.
+function LUniverse:getBlueprintComponents(name) end
+```
 
 #### Example
 
@@ -761,15 +927,26 @@ do
 end
 ```
 
-### `LUniverse:getChildren(parent_id: integer) -> integer[]`
+### LUniverse:getChildren
+
+`LUniverse:getChildren(parent_id: integer) -> integer[]`
 
 Returns child entity ids for a parent entity.
 
 **Parameters**
 
-- `parent_id` (`integer`, required) - Parent entity id to inspect.
+- `parent_id` (`integer`, required): Parent entity id to inspect.
 
 **Returns**: `integer[]` - Array table of child entity ids.
+
+**Lua API Stub**
+
+```lua
+--- Returns child entity ids for a parent entity.
+---@param parent_id number Parent entity id to inspect.
+---@return number[] Array table of child entity ids.
+function LUniverse:getChildren(parent_id) end
+```
 
 #### Example
 
@@ -793,15 +970,26 @@ do
 end
 ```
 
-### `LUniverse:getComponents(id: integer) -> string[]`
+### LUniverse:getComponents
+
+`LUniverse:getComponents(id: integer) -> string[]`
 
 Returns component names currently stored on an entity.
 
 **Parameters**
 
-- `id` (`integer`, required) - Entity id to inspect.
+- `id` (`integer`, required): Entity id to inspect.
 
 **Returns**: `string[]` - Component name strings.
+
+**Lua API Stub**
+
+```lua
+--- Returns component names currently stored on an entity.
+---@param id number Entity id to inspect.
+---@return string[] Component name strings.
+function LUniverse:getComponents(id) end
+```
 
 #### Example
 
@@ -823,11 +1011,21 @@ do
 end
 ```
 
-### `LUniverse:getDirtyEntities() -> integer[]`
+### LUniverse:getDirtyEntities
+
+`LUniverse:getDirtyEntities() -> integer[]`
 
 Returns entities marked dirty by recent ECS mutations.
 
 **Returns**: `integer[]` - Array table of dirty entity ids.
+
+**Lua API Stub**
+
+```lua
+--- Returns entities marked dirty by recent ECS mutations.
+---@return number[] Array table of dirty entity ids.
+function LUniverse:getDirtyEntities() end
+```
 
 #### Example
 
@@ -851,11 +1049,21 @@ do
 end
 ```
 
-### `LUniverse:getEntities() -> integer[]`
+### LUniverse:getEntities
+
+`LUniverse:getEntities() -> integer[]`
 
 Returns all live entity ids in this universe.
 
 **Returns**: `integer[]` - Array table of live entity ids.
+
+**Lua API Stub**
+
+```lua
+--- Returns all live entity ids in this universe.
+---@return number[] Array table of live entity ids.
+function LUniverse:getEntities() end
+```
 
 #### Example
 
@@ -873,15 +1081,26 @@ do
 end
 ```
 
-### `LUniverse:getEntitiesByLayer(layer: integer) -> integer[]`
+### LUniverse:getEntitiesByLayer
+
+`LUniverse:getEntitiesByLayer(layer: integer) -> integer[]`
 
 Returns entities assigned to a numeric layer.
 
 **Parameters**
 
-- `layer` (`integer`, required) - Layer value used for lookup.
+- `layer` (`integer`, required): Layer value used for lookup.
 
 **Returns**: `integer[]` - Array table of matching entity ids.
+
+**Lua API Stub**
+
+```lua
+--- Returns entities assigned to a numeric layer.
+---@param layer number Layer value used for lookup.
+---@return number[] Array table of matching entity ids.
+function LUniverse:getEntitiesByLayer(layer) end
+```
 
 #### Example
 
@@ -903,15 +1122,26 @@ do
 end
 ```
 
-### `LUniverse:getEntitiesByTag(tag: string) -> integer[]`
+### LUniverse:getEntitiesByTag
+
+`LUniverse:getEntitiesByTag(tag: string) -> integer[]`
 
 Returns entities that have a string tag.
 
 **Parameters**
 
-- `tag` (`string`, required) - Tag name used for lookup.
+- `tag` (`string`, required): Tag name used for lookup.
 
 **Returns**: `integer[]` - Array table of matching entity ids.
+
+**Lua API Stub**
+
+```lua
+--- Returns entities that have a string tag.
+---@param tag string Tag name used for lookup.
+---@return number[] Array table of matching entity ids.
+function LUniverse:getEntitiesByTag(tag) end
+```
 
 #### Example
 
@@ -932,11 +1162,21 @@ do
 end
 ```
 
-### `LUniverse:getEntitiesSorted() -> integer[]`
+### LUniverse:getEntitiesSorted
+
+`LUniverse:getEntitiesSorted() -> integer[]`
 
 Returns live entities sorted by ECS layer and stable entity ordering.
 
 **Returns**: `integer[]` - Array table of sorted entity ids.
+
+**Lua API Stub**
+
+```lua
+--- Returns live entities sorted by ECS layer and stable entity ordering.
+---@return number[] Array table of sorted entity ids.
+function LUniverse:getEntitiesSorted() end
+```
 
 #### Example
 
@@ -958,11 +1198,21 @@ do
 end
 ```
 
-### `LUniverse:getEntityCount() -> integer`
+### LUniverse:getEntityCount
+
+`LUniverse:getEntityCount() -> integer`
 
 Returns the number of live entities in this universe.
 
 **Returns**: `integer` - Live entity count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of live entities in this universe.
+---@return number Live entity count.
+function LUniverse:getEntityCount() end
+```
 
 #### Example
 
@@ -982,15 +1232,26 @@ do
 end
 ```
 
-### `LUniverse:getLayer(id: integer) -> integer`
+### LUniverse:getLayer
+
+`LUniverse:getLayer(id: integer) -> integer`
 
 Returns the numeric layer assigned to an entity.
 
 **Parameters**
 
-- `id` (`integer`, required) - Entity id to inspect.
+- `id` (`integer`, required): Entity id to inspect.
 
 **Returns**: `integer` - Layer value, using the ECS default when no explicit layer exists.
+
+**Lua API Stub**
+
+```lua
+--- Returns the numeric layer assigned to an entity.
+---@param id number Entity id to inspect.
+---@return number Layer value, using the ECS default when no explicit layer exists.
+function LUniverse:getLayer(id) end
+```
 
 #### Example
 
@@ -1010,15 +1271,26 @@ do
 end
 ```
 
-### `LUniverse:getParent(child_id: integer) -> integer`
+### LUniverse:getParent
+
+`LUniverse:getParent(child_id: integer) -> integer`
 
 Returns the parent entity id for a child entity.
 
 **Parameters**
 
-- `child_id` (`integer`, required) - Entity id whose parent is read.
+- `child_id` (`integer`, required): Entity id whose parent is read.
 
 **Returns**: `integer` - Parent entity id, or nil when the entity has no parent.
+
+**Lua API Stub**
+
+```lua
+--- Returns the parent entity id for a child entity.
+---@param child_id number Entity id whose parent is read.
+---@return number Parent entity id, or nil when the entity has no parent.
+function LUniverse:getParent(child_id) end
+```
 
 #### Example
 
@@ -1039,16 +1311,28 @@ do
 end
 ```
 
-### `LUniverse:getRelated(from: integer, name: string) -> integer[]`
+### LUniverse:getRelated
+
+`LUniverse:getRelated(from: integer, name: string) -> integer[]`
 
 Returns targets linked from an entity by a named relation.
 
 **Parameters**
 
-- `from` (`integer`, required) - Source entity id.
-- `name` (`string`, required) - Relation name.
+- `from` (`integer`, required): Source entity id.
+- `name` (`string`, required): Relation name.
 
 **Returns**: `integer[]` - Array table of related target entity ids.
+
+**Lua API Stub**
+
+```lua
+--- Returns targets linked from an entity by a named relation.
+---@param from number Source entity id.
+---@param name string Relation name.
+---@return number[] Array table of related target entity ids.
+function LUniverse:getRelated(from, name) end
+```
 
 #### Example
 
@@ -1072,11 +1356,21 @@ do
 end
 ```
 
-### `LUniverse:getSystemCount() -> integer`
+### LUniverse:getSystemCount
+
+`LUniverse:getSystemCount() -> integer`
 
 Returns the number of registered systems.
 
 **Returns**: `integer` - Registered system count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of registered systems.
+---@return number Registered system count.
+function LUniverse:getSystemCount() end
+```
 
 #### Example
 
@@ -1093,15 +1387,26 @@ do
 end
 ```
 
-### `LUniverse:getTags(id: integer) -> string[]`
+### LUniverse:getTags
+
+`LUniverse:getTags(id: integer) -> string[]`
 
 Returns string tags assigned to an entity.
 
 **Parameters**
 
-- `id` (`integer`, required) - Entity id to inspect.
+- `id` (`integer`, required): Entity id to inspect.
 
 **Returns**: `string[]` - Tag names.
+
+**Lua API Stub**
+
+```lua
+--- Returns string tags assigned to an entity.
+---@param id number Entity id to inspect.
+---@return string[] Tag names.
+function LUniverse:getTags(id) end
+```
 
 #### Example
 
@@ -1122,16 +1427,28 @@ do
 end
 ```
 
-### `LUniverse:has(id: integer, name: string) -> boolean`
+### LUniverse:has
+
+`LUniverse:has(id: integer, name: string) -> boolean`
 
 Returns whether an entity has a named component.
 
 **Parameters**
 
-- `id` (`integer`, required) - Entity id to inspect.
-- `name` (`string`, required) - Component name to check.
+- `id` (`integer`, required): Entity id to inspect.
+- `name` (`string`, required): Component name to check.
 
 **Returns**: `boolean` - True when the component exists on the entity.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether an entity has a named component.
+---@param id number Entity id to inspect.
+---@param name string Component name to check.
+---@return boolean True when the component exists on the entity.
+function LUniverse:has(id, name) end
+```
 
 #### Example
 
@@ -1152,16 +1469,28 @@ do
 end
 ```
 
-### `LUniverse:hasBitmapTag(id: integer, name: string) -> boolean`
+### LUniverse:hasBitmapTag
+
+`LUniverse:hasBitmapTag(id: integer, name: string) -> boolean`
 
 Returns whether an entity has a bitmap tag.
 
 **Parameters**
 
-- `id` (`integer`, required) - Entity id to inspect.
-- `name` (`string`, required) - Bitmap tag name to check.
+- `id` (`integer`, required): Entity id to inspect.
+- `name` (`string`, required): Bitmap tag name to check.
 
 **Returns**: `boolean` - True when the entity has the bitmap tag.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether an entity has a bitmap tag.
+---@param id number Entity id to inspect.
+---@param name string Bitmap tag name to check.
+---@return boolean True when the entity has the bitmap tag.
+function LUniverse:hasBitmapTag(id, name) end
+```
 
 #### Example
 
@@ -1182,15 +1511,26 @@ do
 end
 ```
 
-### `LUniverse:hasBlueprint(name: string) -> boolean`
+### LUniverse:hasBlueprint
+
+`LUniverse:hasBlueprint(name: string) -> boolean`
 
 Returns whether a named blueprint exists.
 
 **Parameters**
 
-- `name` (`string`, required) - Blueprint name to check.
+- `name` (`string`, required): Blueprint name to check.
 
 **Returns**: `boolean` - True when the blueprint is registered.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether a named blueprint exists.
+---@param name string Blueprint name to check.
+---@return boolean True when the blueprint is registered.
+function LUniverse:hasBlueprint(name) end
+```
 
 #### Example
 
@@ -1209,17 +1549,30 @@ do
 end
 ```
 
-### `LUniverse:hasRelation(from: integer, name: string, to: integer) -> boolean`
+### LUniverse:hasRelation
+
+`LUniverse:hasRelation(from: integer, name: string, to: integer) -> boolean`
 
 Returns whether a named directed relation exists between two entities.
 
 **Parameters**
 
-- `from` (`integer`, required) - Source entity id.
-- `name` (`string`, required) - Relation name.
-- `to` (`integer`, required) - Target entity id.
+- `from` (`integer`, required): Source entity id.
+- `name` (`string`, required): Relation name.
+- `to` (`integer`, required): Target entity id.
 
 **Returns**: `boolean` - True when the relation exists.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether a named directed relation exists between two entities.
+---@param from number Source entity id.
+---@param name string Relation name.
+---@param to number Target entity id.
+---@return boolean True when the relation exists.
+function LUniverse:hasRelation(from, name, to) end
+```
 
 #### Example
 
@@ -1242,16 +1595,28 @@ do
 end
 ```
 
-### `LUniverse:hasTag(id: integer, tag: string) -> boolean`
+### LUniverse:hasTag
+
+`LUniverse:hasTag(id: integer, tag: string) -> boolean`
 
 Returns whether an entity has a string tag.
 
 **Parameters**
 
-- `id` (`integer`, required) - Entity id to inspect.
-- `tag` (`string`, required) - Tag name to check.
+- `id` (`integer`, required): Entity id to inspect.
+- `tag` (`string`, required): Tag name to check.
 
 **Returns**: `boolean` - True when the entity has the tag.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether an entity has a string tag.
+---@param id number Entity id to inspect.
+---@param tag string Tag name to check.
+---@return boolean True when the entity has the tag.
+function LUniverse:hasTag(id, tag) end
+```
 
 #### Example
 
@@ -1271,15 +1636,26 @@ do
 end
 ```
 
-### `LUniverse:isAlive(id: integer) -> boolean`
+### LUniverse:isAlive
+
+`LUniverse:isAlive(id: integer) -> boolean`
 
 Returns whether an entity id currently exists in this universe.
 
 **Parameters**
 
-- `id` (`integer`, required) - Entity id to test.
+- `id` (`integer`, required): Entity id to test.
 
 **Returns**: `boolean` - True when the entity is alive.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether an entity id currently exists in this universe.
+---@param id number Entity id to test.
+---@return boolean True when the entity is alive.
+function LUniverse:isAlive(id) end
+```
 
 #### Example
 
@@ -1300,13 +1676,23 @@ do
 end
 ```
 
-### `LUniverse:kill(id: integer)`
+### LUniverse:kill
+
+`LUniverse:kill(id: integer)`
 
 Deletes an entity and removes its components from this universe.
 
 **Parameters**
 
-- `id` (`integer`, required) - Entity id to delete.
+- `id` (`integer`, required): Entity id to delete.
+
+**Lua API Stub**
+
+```lua
+--- Deletes an entity and removes its components from this universe.
+---@param id number Entity id to delete.
+function LUniverse:kill(id) end
+```
 
 #### Example
 
@@ -1325,13 +1711,23 @@ do
 end
 ```
 
-### `LUniverse:killRecursive(id: integer)`
+### LUniverse:killRecursive
+
+`LUniverse:killRecursive(id: integer)`
 
 Deletes an entity and all descendant entities in its hierarchy.
 
 **Parameters**
 
-- `id` (`integer`, required) - Root entity id to delete.
+- `id` (`integer`, required): Root entity id to delete.
+
+**Lua API Stub**
+
+```lua
+--- Deletes an entity and all descendant entities in its hierarchy.
+---@param id number Root entity id to delete.
+function LUniverse:killRecursive(id) end
+```
 
 #### Example
 
@@ -1354,11 +1750,21 @@ do
 end
 ```
 
-### `LUniverse:listBlueprints() -> string[]`
+### LUniverse:listBlueprints
+
+`LUniverse:listBlueprints() -> string[]`
 
 Returns names of all registered blueprints.
 
 **Returns**: `string[]` - Blueprint names.
+
+**Lua API Stub**
+
+```lua
+--- Returns names of all registered blueprints.
+---@return string[] Blueprint names.
+function LUniverse:listBlueprints() end
+```
 
 #### Example
 
@@ -1378,14 +1784,25 @@ do
 end
 ```
 
-### `LUniverse:onComponentAdded(name: string, cb: function)`
+### LUniverse:onComponentAdded
+
+`LUniverse:onComponentAdded(name: string, cb: function)`
 
 Registers a callback for queued component-add events with a given component name.
 
 **Parameters**
 
-- `name` (`string`, required) - Component name whose add events are observed.
-- `cb` (`function`, required) - Callback receiving entity id and component name.
+- `name` (`string`, required): Component name whose add events are observed.
+- `cb` (`function`, required): Callback receiving entity id and component name.
+
+**Lua API Stub**
+
+```lua
+--- Registers a callback for queued component-add events with a given component name.
+---@param name string Component name whose add events are observed.
+---@param cb function Callback receiving entity id and component name.
+function LUniverse:onComponentAdded(name, cb) end
+```
 
 #### Example
 
@@ -1408,14 +1825,25 @@ do
 end
 ```
 
-### `LUniverse:onComponentRemoved(name: string, cb: function)`
+### LUniverse:onComponentRemoved
+
+`LUniverse:onComponentRemoved(name: string, cb: function)`
 
 Registers a callback for queued component-remove events with a given component name.
 
 **Parameters**
 
-- `name` (`string`, required) - Component name whose remove events are observed.
-- `cb` (`function`, required) - Callback receiving entity id and component name.
+- `name` (`string`, required): Component name whose remove events are observed.
+- `cb` (`function`, required): Callback receiving entity id and component name.
+
+**Lua API Stub**
+
+```lua
+--- Registers a callback for queued component-remove events with a given component name.
+---@param name string Component name whose remove events are observed.
+---@param cb function Callback receiving entity id and component name.
+function LUniverse:onComponentRemoved(name, cb) end
+```
 
 #### Example
 
@@ -1438,15 +1866,26 @@ do
 end
 ```
 
-### `LUniverse:query(...: string) -> integer[]`
+### LUniverse:query
+
+`LUniverse:query(...: string) -> integer[]`
 
 Returns entities that have all component names passed as varargs.
 
 **Parameters**
 
-- `...` (`string`, required) - Component names that every returned entity must have.
+- `...` (`string`, required): Component names that every returned entity must have.
 
 **Returns**: `integer[]` - Array table of matching entity ids.
+
+**Lua API Stub**
+
+```lua
+--- Returns entities that have all component names passed as varargs.
+---@param ... string Component names that every returned entity must have.
+---@return number[] Array table of matching entity ids.
+function LUniverse:query(...) end
+```
 
 #### Example
 
@@ -1478,15 +1917,26 @@ do
 end
 ```
 
-### `LUniverse:queryBitmapAll(names: table) -> integer[]`
+### LUniverse:queryBitmapAll
+
+`LUniverse:queryBitmapAll(names: table) -> integer[]`
 
 Returns entities that have every bitmap tag from a list.
 
 **Parameters**
 
-- `names` (`table`, required) - Array table of bitmap tag names.
+- `names` (`table`, required): Array table of bitmap tag names.
 
 **Returns**: `integer[]` - Array table of matching entity ids.
+
+**Lua API Stub**
+
+```lua
+--- Returns entities that have every bitmap tag from a list.
+---@param names table Array table of bitmap tag names.
+---@return number[] Array table of matching entity ids.
+function LUniverse:queryBitmapAll(names) end
+```
 
 #### Example
 
@@ -1509,15 +1959,26 @@ do
 end
 ```
 
-### `LUniverse:queryBitmapAny(names: table) -> integer[]`
+### LUniverse:queryBitmapAny
+
+`LUniverse:queryBitmapAny(names: table) -> integer[]`
 
 Returns entities with at least one bitmap tag from a list.
 
 **Parameters**
 
-- `names` (`table`, required) - Array table of bitmap tag names.
+- `names` (`table`, required): Array table of bitmap tag names.
 
 **Returns**: `integer[]` - Array table of matching entity ids.
+
+**Lua API Stub**
+
+```lua
+--- Returns entities with at least one bitmap tag from a list.
+---@param names table Array table of bitmap tag names.
+---@return number[] Array table of matching entity ids.
+function LUniverse:queryBitmapAny(names) end
+```
 
 #### Example
 
@@ -1538,15 +1999,26 @@ do
 end
 ```
 
-### `LUniverse:queryBitmapTag(name: string) -> integer[]`
+### LUniverse:queryBitmapTag
+
+`LUniverse:queryBitmapTag(name: string) -> integer[]`
 
 Returns entities with one bitmap tag.
 
 **Parameters**
 
-- `name` (`string`, required) - Bitmap tag name used for lookup.
+- `name` (`string`, required): Bitmap tag name used for lookup.
 
 **Returns**: `integer[]` - Array table of matching entity ids.
+
+**Lua API Stub**
+
+```lua
+--- Returns entities with one bitmap tag.
+---@param name string Bitmap tag name used for lookup.
+---@return number[] Array table of matching entity ids.
+function LUniverse:queryBitmapTag(name) end
+```
 
 #### Example
 
@@ -1569,14 +2041,25 @@ do
 end
 ```
 
-### `LUniverse:queryMulti(names_table: table, callback: function)`
+### LUniverse:queryMulti
+
+`LUniverse:queryMulti(names_table: table, callback: function)`
 
 Iterates entities that have all component names from a table.
 
 **Parameters**
 
-- `names_table` (`table`, required) - Array table of component names.
-- `callback` (`function`, required) - Callback invoked by the ECS backend for each matching entity.
+- `names_table` (`table`, required): Array table of component names.
+- `callback` (`function`, required): Callback invoked by the ECS backend for each matching entity.
+
+**Lua API Stub**
+
+```lua
+--- Iterates entities that have all component names from a table.
+---@param names_table table Array table of component names.
+---@param callback function Callback invoked by the ECS backend for each matching entity.
+function LUniverse:queryMulti(names_table, callback) end
+```
 
 #### Example
 
@@ -1603,16 +2086,28 @@ do
 end
 ```
 
-### `LUniverse:queryNot(with_tbl: table, without_tbl: table) -> integer[]`
+### LUniverse:queryNot
+
+`LUniverse:queryNot(with_tbl: table, without_tbl: table) -> integer[]`
 
 Returns entities that include one component set and exclude another component set.
 
 **Parameters**
 
-- `with_tbl` (`table`, required) - Array table of required component names.
-- `without_tbl` (`table`, required) - Array table of forbidden component names.
+- `with_tbl` (`table`, required): Array table of required component names.
+- `without_tbl` (`table`, required): Array table of forbidden component names.
 
 **Returns**: `integer[]` - Array table of matching entity ids.
+
+**Lua API Stub**
+
+```lua
+--- Returns entities that include one component set and exclude another component set.
+---@param with_tbl table Array table of required component names.
+---@param without_tbl table Array table of forbidden component names.
+---@return number[] Array table of matching entity ids.
+function LUniverse:queryNot(with_tbl, without_tbl) end
+```
 
 #### Example
 
@@ -1637,9 +2132,18 @@ do
 end
 ```
 
-### `LUniverse:release()`
+### LUniverse:release
+
+`LUniverse:release()`
 
 Releases universe contents by clearing all ECS state.
+
+**Lua API Stub**
+
+```lua
+--- Releases universe contents by clearing all ECS state.
+function LUniverse:release() end
+```
 
 #### Example
 
@@ -1656,14 +2160,25 @@ do
 end
 ```
 
-### `LUniverse:remove(id: integer, name: string)`
+### LUniverse:remove
+
+`LUniverse:remove(id: integer, name: string)`
 
 Removes a named component from an entity.
 
 **Parameters**
 
-- `id` (`integer`, required) - Entity id to mutate.
-- `name` (`string`, required) - Component name to remove.
+- `id` (`integer`, required): Entity id to mutate.
+- `name` (`string`, required): Component name to remove.
+
+**Lua API Stub**
+
+```lua
+--- Removes a named component from an entity.
+---@param id number Entity id to mutate.
+---@param name string Component name to remove.
+function LUniverse:remove(id, name) end
+```
 
 #### Example
 
@@ -1685,15 +2200,26 @@ do
 end
 ```
 
-### `LUniverse:removeBlueprint(name: string) -> boolean`
+### LUniverse:removeBlueprint
+
+`LUniverse:removeBlueprint(name: string) -> boolean`
 
 Removes a named blueprint from this universe.
 
 **Parameters**
 
-- `name` (`string`, required) - Blueprint name to remove.
+- `name` (`string`, required): Blueprint name to remove.
 
 **Returns**: `boolean` - True when a blueprint was removed.
+
+**Lua API Stub**
+
+```lua
+--- Removes a named blueprint from this universe.
+---@param name string Blueprint name to remove.
+---@return boolean True when a blueprint was removed.
+function LUniverse:removeBlueprint(name) end
+```
 
 #### Example
 
@@ -1711,15 +2237,27 @@ do
 end
 ```
 
-### `LUniverse:removeRelation(from: integer, name: string, to: integer)`
+### LUniverse:removeRelation
+
+`LUniverse:removeRelation(from: integer, name: string, to: integer)`
 
 Removes a named directed relation between two entities.
 
 **Parameters**
 
-- `from` (`integer`, required) - Source entity id.
-- `name` (`string`, required) - Relation name.
-- `to` (`integer`, required) - Target entity id.
+- `from` (`integer`, required): Source entity id.
+- `name` (`string`, required): Relation name.
+- `to` (`integer`, required): Target entity id.
+
+**Lua API Stub**
+
+```lua
+--- Removes a named directed relation between two entities.
+---@param from number Source entity id.
+---@param name string Relation name.
+---@param to number Target entity id.
+function LUniverse:removeRelation(from, name, to) end
+```
 
 #### Example
 
@@ -1740,13 +2278,23 @@ do
 end
 ```
 
-### `LUniverse:removeSystem(system: table)`
+### LUniverse:removeSystem
+
+`LUniverse:removeSystem(system: table)`
 
 Removes a previously registered Lua system table.
 
 **Parameters**
 
-- `system` (`table`, required) - System table to remove from this universe.
+- `system` (`table`, required): System table to remove from this universe.
+
+**Lua API Stub**
+
+```lua
+--- Removes a previously registered Lua system table.
+---@param system table System table to remove from this universe.
+function LUniverse:removeSystem(system) end
+```
 
 #### Example
 
@@ -1769,14 +2317,25 @@ do
 end
 ```
 
-### `LUniverse:removeTag(id: integer, tag: string)`
+### LUniverse:removeTag
+
+`LUniverse:removeTag(id: integer, tag: string)`
 
 Removes a string tag from an entity.
 
 **Parameters**
 
-- `id` (`integer`, required) - Entity id to update.
-- `tag` (`string`, required) - Tag name to remove.
+- `id` (`integer`, required): Entity id to update.
+- `tag` (`string`, required): Tag name to remove.
+
+**Lua API Stub**
+
+```lua
+--- Removes a string tag from an entity.
+---@param id number Entity id to update.
+---@param tag string Tag name to remove.
+function LUniverse:removeTag(id, tag) end
+```
 
 #### Example
 
@@ -1795,9 +2354,18 @@ do
 end
 ```
 
-### `LUniverse:render()`
+### LUniverse:render
+
+`LUniverse:render()`
 
 Runs registered render-phase systems using their render or draw callbacks.
+
+**Lua API Stub**
+
+```lua
+--- Runs registered render-phase systems using their render or draw callbacks.
+function LUniverse:render() end
+```
 
 #### Example
 
@@ -1824,11 +2392,21 @@ do
 end
 ```
 
-### `LUniverse:serialize() -> table`
+### LUniverse:serialize
+
+`LUniverse:serialize() -> table`
 
 Serializes this universe into a Lua table snapshot.
 
 **Returns**: `table` - Snapshot table containing entities and component state.
+
+**Lua API Stub**
+
+```lua
+--- Serializes this universe into a Lua table snapshot.
+---@return LUniverseSerializeResult Snapshot table containing entities and component state.
+function LUniverse:serialize() end
+```
 
 #### Example
 
@@ -1849,15 +2427,27 @@ do
 end
 ```
 
-### `LUniverse:set(id: integer, name: string, value: table)`
+### LUniverse:set
+
+`LUniverse:set(id: integer, name: string, value: table)`
 
 Stores or replaces a component value on an entity.
 
 **Parameters**
 
-- `id` (`integer`, required) - Entity id that receives the component.
-- `name` (`string`, required) - Component name.
-- `value` (`table`, required) - Lua value stored as the component payload.
+- `id` (`integer`, required): Entity id that receives the component.
+- `name` (`string`, required): Component name.
+- `value` (`table`, required): Lua value stored as the component payload.
+
+**Lua API Stub**
+
+```lua
+--- Stores or replaces a component value on an entity.
+---@param id number Entity id that receives the component.
+---@param name string Component name.
+---@param value table Lua value stored as the component payload.
+function LUniverse:set(id, name, value) end
+```
 
 #### Example
 
@@ -1883,14 +2473,25 @@ do
 end
 ```
 
-### `LUniverse:setLayer(id: integer, layer: integer)`
+### LUniverse:setLayer
+
+`LUniverse:setLayer(id: integer, layer: integer)`
 
 Assigns a numeric layer to an entity.
 
 **Parameters**
 
-- `id` (`integer`, required) - Entity id to update.
-- `layer` (`integer`, required) - Layer value stored on the entity.
+- `id` (`integer`, required): Entity id to update.
+- `layer` (`integer`, required): Layer value stored on the entity.
+
+**Lua API Stub**
+
+```lua
+--- Assigns a numeric layer to an entity.
+---@param id number Entity id to update.
+---@param layer number Layer value stored on the entity.
+function LUniverse:setLayer(id, layer) end
+```
 
 #### Example
 
@@ -1910,14 +2511,25 @@ do
 end
 ```
 
-### `LUniverse:setParent(child_id: integer, [parent_id]: integer)`
+### LUniverse:setParent
+
+`LUniverse:setParent(child_id: integer, [parent_id]: integer)`
 
 Sets or clears the parent entity for a child entity.
 
 **Parameters**
 
-- `child_id` (`integer`, required) - Entity id whose parent changes.
-- `parent_id` (`integer`, optional) - Parent entity id, or nil to clear the parent.
+- `child_id` (`integer`, required): Entity id whose parent changes.
+- `parent_id` (`integer`, optional): Parent entity id, or nil to clear the parent.
+
+**Lua API Stub**
+
+```lua
+--- Sets or clears the parent entity for a child entity.
+---@param child_id number Entity id whose parent changes.
+---@param parent_id? number Parent entity id, or nil to clear the parent.
+function LUniverse:setParent(child_id, parent_id) end
+```
 
 #### Example
 
@@ -1941,11 +2553,21 @@ do
 end
 ```
 
-### `LUniverse:snapshot() -> table`
+### LUniverse:snapshot
+
+`LUniverse:snapshot() -> table`
 
 Serializes this universe into a Lua table snapshot.
 
 **Returns**: `table` - Snapshot table containing entities and component state.
+
+**Lua API Stub**
+
+```lua
+--- Serializes this universe into a Lua table snapshot.
+---@return LUniverseSnapshotResult Snapshot table containing entities and component state.
+function LUniverse:snapshot() end
+```
 
 #### Example
 
@@ -1967,11 +2589,21 @@ do
 end
 ```
 
-### `LUniverse:spawn() -> integer`
+### LUniverse:spawn
+
+`LUniverse:spawn() -> integer`
 
 Creates a new entity in this universe.
 
 **Returns**: `integer` - Numeric entity id for the spawned entity.
+
+**Lua API Stub**
+
+```lua
+--- Creates a new entity in this universe.
+---@return number Numeric entity id for the spawned entity.
+function LUniverse:spawn() end
+```
 
 #### Example
 
@@ -1992,16 +2624,28 @@ do
 end
 ```
 
-### `LUniverse:spawnBlueprint(name: string, [overrides]: table) -> integer`
+### LUniverse:spawnBlueprint
+
+`LUniverse:spawnBlueprint(name: string, [overrides]: table) -> integer`
 
 Spawns an entity from a named blueprint with optional component overrides.
 
 **Parameters**
 
-- `name` (`string`, required) - Blueprint name to instantiate.
-- `overrides` (`table`, optional) - Optional component overrides applied to this spawn.
+- `name` (`string`, required): Blueprint name to instantiate.
+- `overrides` (`table`, optional): Optional component overrides applied to this spawn.
 
 **Returns**: `integer` - Entity id created from the blueprint.
+
+**Lua API Stub**
+
+```lua
+--- Spawns an entity from a named blueprint with optional component overrides.
+---@param name string Blueprint name to instantiate.
+---@param overrides? table Optional component overrides applied to this spawn.
+---@return number Entity id created from the blueprint.
+function LUniverse:spawnBlueprint(name, overrides) end
+```
 
 #### Example
 
@@ -2027,17 +2671,30 @@ do
 end
 ```
 
-### `LUniverse:spawnBulk(name: string, count: integer, [overrides]: table) -> integer[]`
+### LUniverse:spawnBulk
+
+`LUniverse:spawnBulk(name: string, count: integer, [overrides]: table) -> integer[]`
 
 Spawns multiple entities from a blueprint using shared optional overrides.
 
 **Parameters**
 
-- `name` (`string`, required) - Blueprint name to instantiate.
-- `count` (`integer`, required) - Number of entities to spawn.
-- `overrides` (`table`, optional) - Optional component overrides applied to each spawned entity.
+- `name` (`string`, required): Blueprint name to instantiate.
+- `count` (`integer`, required): Number of entities to spawn.
+- `overrides` (`table`, optional): Optional component overrides applied to each spawned entity.
 
 **Returns**: `integer[]` - Array table of spawned entity ids.
+
+**Lua API Stub**
+
+```lua
+--- Spawns multiple entities from a blueprint using shared optional overrides.
+---@param name string Blueprint name to instantiate.
+---@param count number Number of entities to spawn.
+---@param overrides? table Optional component overrides applied to each spawned entity.
+---@return number[] Array table of spawned entity ids.
+function LUniverse:spawnBulk(name, count, overrides) end
+```
 
 #### Example
 
@@ -2059,11 +2716,21 @@ do
 end
 ```
 
-### `LUniverse:takeSnapshotDiff() -> table`
+### LUniverse:takeSnapshotDiff
+
+`LUniverse:takeSnapshotDiff() -> table`
 
 Returns and clears accumulated ECS snapshot diff data.
 
 **Returns**: `table` - Diff table with added_components, removed_components, deleted_entities, and dirty_entities arrays.
+
+**Lua API Stub**
+
+```lua
+--- Returns and clears accumulated ECS snapshot diff data.
+---@return LUniverseTakeSnapshotDiffResult Diff table with added_components, removed_components, deleted_entities, and dirty_entities arrays.
+function LUniverse:takeSnapshotDiff() end
+```
 
 #### Example
 
@@ -2093,11 +2760,21 @@ do
 end
 ```
 
-### `LUniverse:type() -> string`
+### LUniverse:type
+
+`LUniverse:type() -> string`
 
 Returns the Lua-visible type name for this universe handle.
 
 **Returns**: `string` - The string `LUniverse`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this universe handle.
+---@return string The string `LUniverse`.
+function LUniverse:type() end
+```
 
 #### Example
 
@@ -2112,15 +2789,26 @@ do
 end
 ```
 
-### `LUniverse:typeOf(name: string) -> boolean`
+### LUniverse:typeOf
+
+`LUniverse:typeOf(name: string) -> boolean`
 
 Returns whether this universe handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `LUniverse` and `Object`.
+- `name` (`string`, required): Type name to compare against `LUniverse` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this universe handle matches a supported type name.
+---@param name string Type name to compare against `LUniverse` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LUniverse:typeOf(name) end
+```
 
 #### Example
 
@@ -2137,13 +2825,23 @@ do
 end
 ```
 
-### `LUniverse:update(dt: number)`
+### LUniverse:update
+
+`LUniverse:update(dt: number)`
 
 Runs registered update-phase systems with a frame delta.
 
 **Parameters**
 
-- `dt` (`number`, required) - Frame delta time in seconds.
+- `dt` (`number`, required): Frame delta time in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Runs registered update-phase systems with a frame delta.
+---@param dt number Frame delta time in seconds.
+function LUniverse:update(dt) end
+```
 
 #### Example
 
@@ -2171,14 +2869,25 @@ do
 end
 ```
 
-### `LUniverse:updatePhase(phase: string, dt: number)`
+### LUniverse:updatePhase
+
+`LUniverse:updatePhase(phase: string, dt: number)`
 
 Runs registered systems assigned to a named phase.
 
 **Parameters**
 
-- `phase` (`string`, required) - System phase name to run.
-- `dt` (`number`, required) - Frame delta time in seconds.
+- `phase` (`string`, required): System phase name to run.
+- `dt` (`number`, required): Frame delta time in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Runs registered systems assigned to a named phase.
+---@param phase string System phase name to run.
+---@param dt number Frame delta time in seconds.
+function LUniverse:updatePhase(phase, dt) end
+```
 
 #### Example
 
@@ -2214,21 +2923,27 @@ end
 ```
 
 
-## Examples
+[⬆ back to top](#table-of-contents)
+
+## 💡 Examples
 
 - [ecs.lua](../blob/main/content/examples/ecs.lua) - Entity-Component-System
 
-## Reference Games
+[⬆ back to top](#table-of-contents)
+
+## 🎮 Reference Games
 
 No direct references were found in `content/games/**/main.lua`.
 
-## Related Modules
+[⬆ back to top](#table-of-contents)
 
-- Previous: [[docs|Module-docs]]
-- Next: [[effect|Module-effect]]
-- [[ai|Module-ai]] - Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU.
-- [[animation|Module-animation]] - Sprite animation: source-rect changes over time. Imports only math; headless-testable.
-- [[automation|Module-automation]] - Automated input simulation for headless tests, QA replay, recorded sessions.
-- [[i18n|Module-i18n]] - Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*).
-- [[minimap|Module-minimap]] - Grid-based minimap data model: fog of war, tracked objects, pings, viewport overlay.
-- [[mods|Module-mods]] - Mod-loading framework: virtual filesystem mounts + sandboxed runtime config.
+## 🔗 Related Modules
+
+- Previous: [docs](Module-docs)
+- Next: [effect](Module-effect)
+- [ai](Module-ai) - Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU.
+- [animation](Module-animation) - Sprite animation: source-rect changes over time. Imports only math; headless-testable.
+- [automation](Module-automation) - Automated input simulation for headless tests, QA replay, recorded sessions.
+- [i18n](Module-i18n) - Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*).
+- [minimap](Module-minimap) - Grid-based minimap data model: fog of war, tracked objects, pings, viewport overlay.
+- [mods](Module-mods) - Mod-loading framework: virtual filesystem mounts + sandboxed runtime config.

@@ -4,203 +4,154 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
-- [Purpose](#purpose)
-- [Summary](#summary)
-- [Minimal Module Example](#minimal-module-example)
-- [Key Types](#key-types)
-- [API Overview](#api-overview)
-- [Module Functions](#module-functions)
-  - [lurek.particle.fromTOML(path: string) -> LParticleSystem](#lurekparticlefromtomlpath-string-lparticlesystem)
-  - [lurek.particle.newPreset(name: string) -> LParticleSystem](#lurekparticlenewpresetname-string-lparticlesystem)
-  - [lurek.particle.newSystem([config]: table) -> LParticleSystem](#lurekparticlenewsystemconfig-table-lparticlesystem)
-  - [lurek.particle.newTrail(lifetime: number, start_width: number) -> LTrail](#lurekparticlenewtraillifetime-number-startwidth-number-ltrail)
-- [Types and Methods](#types-and-methods)
+- [🎯 Purpose](#purpose)
+- [📋 Summary](#summary)
+- [🧩 Key Types](#key-types)
+- [📖 API Overview](#api-overview)
+- [⚙️ Module Functions](#module-functions)
+  - [lurek.particle.fromTOML](#lurekparticlefromtoml)
+  - [lurek.particle.newPreset](#lurekparticlenewpreset)
+  - [lurek.particle.newSystem](#lurekparticlenewsystem)
+  - [lurek.particle.newTrail](#lurekparticlenewtrail)
+- [🔷 Module Types](#module-types)
   - [LParticleSystem](#lparticlesystem)
-  - [LParticleSystem:addAttractor(x: number, y: number, strength: number, radius: number)](#lparticlesystemaddattractorx-number-y-number-strength-number-radius-number)
-  - [LParticleSystem:addSubEmitter(config_tbl: table, [burst_count]: integer)](#lparticlesystemaddsubemitterconfigtbl-table-burstcount-integer)
-  - [LParticleSystem:addSubSystem(config_tbl: table) -> integer](#lparticlesystemaddsubsystemconfigtbl-table-integer)
-  - [LParticleSystem:clearAttractors()](#lparticlesystemclearattractors)
-  - [LParticleSystem:clearBounds()](#lparticlesystemclearbounds)
-  - [LParticleSystem:clearCollidesWithPhysics()](#lparticlesystemclearcollideswithphysics)
-  - [LParticleSystem:clone() -> LParticleSystem](#lparticlesystemclone-lparticlesystem)
-  - [LParticleSystem:count() -> integer](#lparticlesystemcount-integer)
-  - [LParticleSystem:drawToImage(w: integer, h: integer) -> LImageData](#lparticlesystemdrawtoimagew-integer-h-integer-limagedata)
-  - [LParticleSystem:emit(count: integer)](#lparticlesystememitcount-integer)
-  - [LParticleSystem:getAttractorCount() -> integer](#lparticlesystemgetattractorcount-integer)
-  - [LParticleSystem:getBufferSize() -> integer](#lparticlesystemgetbuffersize-integer)
-  - [LParticleSystem:getColors() -> table](#lparticlesystemgetcolors-table)
-  - [LParticleSystem:getCount() -> integer](#lparticlesystemgetcount-integer)
-  - [LParticleSystem:getDirection() -> number](#lparticlesystemgetdirection-number)
-  - [LParticleSystem:getEmissionArea() -> string](#lparticlesystemgetemissionarea-string)
-  - [LParticleSystem:getEmissionRate() -> number](#lparticlesystemgetemissionrate-number)
-  - [LParticleSystem:getEmitterLifetime() -> number](#lparticlesystemgetemitterlifetime-number)
-  - [LParticleSystem:getFlipbook() -> integer](#lparticlesystemgetflipbook-integer)
-  - [LParticleSystem:getGravity() -> number](#lparticlesystemgetgravity-number)
-  - [LParticleSystem:getInsertMode() -> string](#lparticlesystemgetinsertmode-string)
-  - [LParticleSystem:getLinearAcceleration() -> number](#lparticlesystemgetlinearacceleration-number)
-  - [LParticleSystem:getLinearDamping() -> number](#lparticlesystemgetlineardamping-number)
-  - [LParticleSystem:getOffset() -> number](#lparticlesystemgetoffset-number)
-  - [LParticleSystem:getParticleLifetime() -> number](#lparticlesystemgetparticlelifetime-number)
-  - [LParticleSystem:getPosition() -> number](#lparticlesystemgetposition-number)
-  - [LParticleSystem:getRadialAcceleration() -> number](#lparticlesystemgetradialacceleration-number)
-  - [LParticleSystem:getRotation() -> number](#lparticlesystemgetrotation-number)
-  - [LParticleSystem:getShape() -> string](#lparticlesystemgetshape-string)
-  - [LParticleSystem:getSizes() -> number[]](#lparticlesystemgetsizes-number)
-  - [LParticleSystem:getSizeVariation() -> number](#lparticlesystemgetsizevariation-number)
-  - [LParticleSystem:getSpeed() -> number](#lparticlesystemgetspeed-number)
-  - [LParticleSystem:getSpin() -> number](#lparticlesystemgetspin-number)
-  - [LParticleSystem:getSpinVariation() -> number](#lparticlesystemgetspinvariation-number)
-  - [LParticleSystem:getSpread() -> number](#lparticlesystemgetspread-number)
-  - [LParticleSystem:getTangentialAcceleration() -> number](#lparticlesystemgettangentialacceleration-number)
-  - [LParticleSystem:hasCollidesWithPhysics() -> boolean](#lparticlesystemhascollideswithphysics-boolean)
-  - [LParticleSystem:hasRelativeRotation() -> boolean](#lparticlesystemhasrelativerotation-boolean)
-  - [LParticleSystem:isActive() -> boolean](#lparticlesystemisactive-boolean)
-  - [LParticleSystem:isEmpty() -> boolean](#lparticlesystemisempty-boolean)
-  - [LParticleSystem:isFull() -> boolean](#lparticlesystemisfull-boolean)
-  - [LParticleSystem:isPaused() -> boolean](#lparticlesystemispaused-boolean)
-  - [LParticleSystem:isStopped() -> boolean](#lparticlesystemisstopped-boolean)
-  - [LParticleSystem:moveTo(x: number, y: number)](#lparticlesystemmovetox-number-y-number)
-  - [LParticleSystem:pause()](#lparticlesystempause)
-  - [LParticleSystem:release() -> boolean](#lparticlesystemrelease-boolean)
-  - [LParticleSystem:render([ox]: number, [oy]: number)](#lparticlesystemrenderox-number-oy-number)
-  - [LParticleSystem:reset()](#lparticlesystemreset)
-  - [LParticleSystem:resume()](#lparticlesystemresume)
-  - [LParticleSystem:setBounds(xmin: number, xmax: number, ymin: number, ymax: number, restitution: number)](#lparticlesystemsetboundsxmin-number-xmax-number-ymin-number-ymax-number-restitution-number)
-  - [LParticleSystem:setBufferSize(n: integer)](#lparticlesystemsetbuffersizen-integer)
-  - [LParticleSystem:setCollidesWithPhysics(world_ud: LWorld, [probe_radius]: number, [restitution]: number)](#lparticlesystemsetcollideswithphysicsworldud-lworld-proberadius-number-restitution-number)
-  - [LParticleSystem:setColors(...: table)](#lparticlesystemsetcolors-table)
-  - [LParticleSystem:setCustomEmissionShape(cb: function)](#lparticlesystemsetcustomemissionshapecb-function)
-  - [LParticleSystem:setDirection(dir: number)](#lparticlesystemsetdirectiondir-number)
-  - [LParticleSystem:setEmissionArea(dist: string, w: number, h: number, [angle]: number, [dir_rel]: boolean)](#lparticlesystemsetemissionareadist-string-w-number-h-number-angle-number-dirrel-boolean)
-  - [LParticleSystem:setEmissionRate(rate: number)](#lparticlesystemsetemissionraterate-number)
-  - [LParticleSystem:setEmitterLifetime(t: number)](#lparticlesystemsetemitterlifetimet-number)
-  - [LParticleSystem:setFlipbook(cols: integer, rows: integer, fps: number)](#lparticlesystemsetflipbookcols-integer-rows-integer-fps-number)
-  - [LParticleSystem:setGravity(gx: number, gy: number)](#lparticlesystemsetgravitygx-number-gy-number)
-  - [LParticleSystem:setInsertMode(mode: string)](#lparticlesystemsetinsertmodemode-string)
-  - [LParticleSystem:setLinearAcceleration(xmin: number, ymin: number, xmax: number, ymax: number)](#lparticlesystemsetlinearaccelerationxmin-number-ymin-number-xmax-number-ymax-number)
-  - [LParticleSystem:setLinearDamping(min: number, max: number)](#lparticlesystemsetlineardampingmin-number-max-number)
-  - [LParticleSystem:setOffset(ox: number, oy: number)](#lparticlesystemsetoffsetox-number-oy-number)
-  - [LParticleSystem:setOnDeathBatch(cb: function)](#lparticlesystemsetondeathbatchcb-function)
-  - [LParticleSystem:setParticleLifetime(min: number, max: number)](#lparticlesystemsetparticlelifetimemin-number-max-number)
-  - [LParticleSystem:setPosition(x: number, y: number)](#lparticlesystemsetpositionx-number-y-number)
-  - [LParticleSystem:setRadialAcceleration(min: number, max: number)](#lparticlesystemsetradialaccelerationmin-number-max-number)
-  - [LParticleSystem:setRelativeRotation(v: boolean)](#lparticlesystemsetrelativerotationv-boolean)
-  - [LParticleSystem:setRotation(min: number, max: number)](#lparticlesystemsetrotationmin-number-max-number)
-  - [LParticleSystem:setShape(shape: string)](#lparticlesystemsetshapeshape-string)
-  - [LParticleSystem:setSizes(...: number)](#lparticlesystemsetsizes-number)
-  - [LParticleSystem:setSizeVariation(v: number)](#lparticlesystemsetsizevariationv-number)
-  - [LParticleSystem:setSpeed(min: number, max: number)](#lparticlesystemsetspeedmin-number-max-number)
-  - [LParticleSystem:setSpin(min: number, max: number)](#lparticlesystemsetspinmin-number-max-number)
-  - [LParticleSystem:setSpinVariation(v: number)](#lparticlesystemsetspinvariationv-number)
-  - [LParticleSystem:setSpread(spread: number)](#lparticlesystemsetspreadspread-number)
-  - [LParticleSystem:setTangentialAcceleration(min: number, max: number)](#lparticlesystemsettangentialaccelerationmin-number-max-number)
-  - [LParticleSystem:start()](#lparticlesystemstart)
-  - [LParticleSystem:stop()](#lparticlesystemstop)
-  - [LParticleSystem:subSystemCount() -> integer](#lparticlesystemsubsystemcount-integer)
-  - [LParticleSystem:toImage(w: integer, h: integer) -> LImageData](#lparticlesystemtoimagew-integer-h-integer-limagedata)
-  - [LParticleSystem:type() -> string](#lparticlesystemtype-string)
-  - [LParticleSystem:typeOf(name: string) -> boolean](#lparticlesystemtypeofname-string-boolean)
-  - [LParticleSystem:update(dt: number)](#lparticlesystemupdatedt-number)
-  - [LParticleSystem:warmUp(seconds: number)](#lparticlesystemwarmupseconds-number)
   - [LTrail](#ltrail)
-  - [LTrail:clear()](#ltrailclear)
-  - [LTrail:drawToImage(w: integer, h: integer) -> LImageData](#ltraildrawtoimagew-integer-h-integer-limagedata)
-  - [LTrail:getLifetime() -> number](#ltrailgetlifetime-number)
-  - [LTrail:getPointCount() -> integer](#ltrailgetpointcount-integer)
-  - [LTrail:getWidth() -> number](#ltrailgetwidth-number)
-  - [LTrail:pushPoint(x: number, y: number)](#ltrailpushpointx-number-y-number)
-  - [LTrail:setHeadColor(r: number, g: number, b: number, a: number)](#ltrailsetheadcolorr-number-g-number-b-number-a-number)
-  - [LTrail:setLifetime(lifetime: number)](#ltrailsetlifetimelifetime-number)
-  - [LTrail:setMinDistance(distance: number)](#ltrailsetmindistancedistance-number)
-  - [LTrail:setTailColor(r: number, g: number, b: number, a: number)](#ltrailsettailcolorr-number-g-number-b-number-a-number)
-  - [LTrail:setWidth(start: number, [end]: number)](#ltrailsetwidthstart-number-end-number)
-  - [LTrail:type() -> string](#ltrailtype-string)
-  - [LTrail:typeOf(name: string) -> boolean](#ltrailtypeofname-string-boolean)
-  - [LTrail:update(dt: number)](#ltrailupdatedt-number)
-- [Examples](#examples)
-- [Reference Games](#reference-games)
-- [Related Modules](#related-modules)
+- [🔹 Module Methods](#module-methods)
+  - [LParticleSystem:addAttractor](#lparticlesystemaddattractor)
+  - [LParticleSystem:addSubEmitter](#lparticlesystemaddsubemitter)
+  - [LParticleSystem:addSubSystem](#lparticlesystemaddsubsystem)
+  - [LParticleSystem:clearAttractors](#lparticlesystemclearattractors)
+  - [LParticleSystem:clearBounds](#lparticlesystemclearbounds)
+  - [LParticleSystem:clearCollidesWithPhysics](#lparticlesystemclearcollideswithphysics)
+  - [LParticleSystem:clone](#lparticlesystemclone)
+  - [LParticleSystem:count](#lparticlesystemcount)
+  - [LParticleSystem:drawToImage](#lparticlesystemdrawtoimage)
+  - [LParticleSystem:emit](#lparticlesystememit)
+  - [LParticleSystem:getAttractorCount](#lparticlesystemgetattractorcount)
+  - [LParticleSystem:getBufferSize](#lparticlesystemgetbuffersize)
+  - [LParticleSystem:getColors](#lparticlesystemgetcolors)
+  - [LParticleSystem:getCount](#lparticlesystemgetcount)
+  - [LParticleSystem:getDirection](#lparticlesystemgetdirection)
+  - [LParticleSystem:getEmissionArea](#lparticlesystemgetemissionarea)
+  - [LParticleSystem:getEmissionRate](#lparticlesystemgetemissionrate)
+  - [LParticleSystem:getEmitterLifetime](#lparticlesystemgetemitterlifetime)
+  - [LParticleSystem:getFlipbook](#lparticlesystemgetflipbook)
+  - [LParticleSystem:getGravity](#lparticlesystemgetgravity)
+  - [LParticleSystem:getInsertMode](#lparticlesystemgetinsertmode)
+  - [LParticleSystem:getLinearAcceleration](#lparticlesystemgetlinearacceleration)
+  - [LParticleSystem:getLinearDamping](#lparticlesystemgetlineardamping)
+  - [LParticleSystem:getOffset](#lparticlesystemgetoffset)
+  - [LParticleSystem:getParticleLifetime](#lparticlesystemgetparticlelifetime)
+  - [LParticleSystem:getPosition](#lparticlesystemgetposition)
+  - [LParticleSystem:getRadialAcceleration](#lparticlesystemgetradialacceleration)
+  - [LParticleSystem:getRotation](#lparticlesystemgetrotation)
+  - [LParticleSystem:getShape](#lparticlesystemgetshape)
+  - [LParticleSystem:getSizes](#lparticlesystemgetsizes)
+  - [LParticleSystem:getSizeVariation](#lparticlesystemgetsizevariation)
+  - [LParticleSystem:getSpeed](#lparticlesystemgetspeed)
+  - [LParticleSystem:getSpin](#lparticlesystemgetspin)
+  - [LParticleSystem:getSpinVariation](#lparticlesystemgetspinvariation)
+  - [LParticleSystem:getSpread](#lparticlesystemgetspread)
+  - [LParticleSystem:getTangentialAcceleration](#lparticlesystemgettangentialacceleration)
+  - [LParticleSystem:hasCollidesWithPhysics](#lparticlesystemhascollideswithphysics)
+  - [LParticleSystem:hasRelativeRotation](#lparticlesystemhasrelativerotation)
+  - [LParticleSystem:isActive](#lparticlesystemisactive)
+  - [LParticleSystem:isEmpty](#lparticlesystemisempty)
+  - [LParticleSystem:isFull](#lparticlesystemisfull)
+  - [LParticleSystem:isPaused](#lparticlesystemispaused)
+  - [LParticleSystem:isStopped](#lparticlesystemisstopped)
+  - [LParticleSystem:moveTo](#lparticlesystemmoveto)
+  - [LParticleSystem:pause](#lparticlesystempause)
+  - [LParticleSystem:release](#lparticlesystemrelease)
+  - [LParticleSystem:render](#lparticlesystemrender)
+  - [LParticleSystem:reset](#lparticlesystemreset)
+  - [LParticleSystem:resume](#lparticlesystemresume)
+  - [LParticleSystem:setBounds](#lparticlesystemsetbounds)
+  - [LParticleSystem:setBufferSize](#lparticlesystemsetbuffersize)
+  - [LParticleSystem:setCollidesWithPhysics](#lparticlesystemsetcollideswithphysics)
+  - [LParticleSystem:setColors](#lparticlesystemsetcolors)
+  - [LParticleSystem:setCustomEmissionShape](#lparticlesystemsetcustomemissionshape)
+  - [LParticleSystem:setDirection](#lparticlesystemsetdirection)
+  - [LParticleSystem:setEmissionArea](#lparticlesystemsetemissionarea)
+  - [LParticleSystem:setEmissionRate](#lparticlesystemsetemissionrate)
+  - [LParticleSystem:setEmitterLifetime](#lparticlesystemsetemitterlifetime)
+  - [LParticleSystem:setFlipbook](#lparticlesystemsetflipbook)
+  - [LParticleSystem:setGravity](#lparticlesystemsetgravity)
+  - [LParticleSystem:setInsertMode](#lparticlesystemsetinsertmode)
+  - [LParticleSystem:setLinearAcceleration](#lparticlesystemsetlinearacceleration)
+  - [LParticleSystem:setLinearDamping](#lparticlesystemsetlineardamping)
+  - [LParticleSystem:setOffset](#lparticlesystemsetoffset)
+  - [LParticleSystem:setOnDeathBatch](#lparticlesystemsetondeathbatch)
+  - [LParticleSystem:setParticleLifetime](#lparticlesystemsetparticlelifetime)
+  - [LParticleSystem:setPosition](#lparticlesystemsetposition)
+  - [LParticleSystem:setRadialAcceleration](#lparticlesystemsetradialacceleration)
+  - [LParticleSystem:setRelativeRotation](#lparticlesystemsetrelativerotation)
+  - [LParticleSystem:setRotation](#lparticlesystemsetrotation)
+  - [LParticleSystem:setShape](#lparticlesystemsetshape)
+  - [LParticleSystem:setSizes](#lparticlesystemsetsizes)
+  - [LParticleSystem:setSizeVariation](#lparticlesystemsetsizevariation)
+  - [LParticleSystem:setSpeed](#lparticlesystemsetspeed)
+  - [LParticleSystem:setSpin](#lparticlesystemsetspin)
+  - [LParticleSystem:setSpinVariation](#lparticlesystemsetspinvariation)
+  - [LParticleSystem:setSpread](#lparticlesystemsetspread)
+  - [LParticleSystem:setTangentialAcceleration](#lparticlesystemsettangentialacceleration)
+  - [LParticleSystem:start](#lparticlesystemstart)
+  - [LParticleSystem:stop](#lparticlesystemstop)
+  - [LParticleSystem:subSystemCount](#lparticlesystemsubsystemcount)
+  - [LParticleSystem:toImage](#lparticlesystemtoimage)
+  - [LParticleSystem:type](#lparticlesystemtype)
+  - [LParticleSystem:typeOf](#lparticlesystemtypeof)
+  - [LParticleSystem:update](#lparticlesystemupdate)
+  - [LParticleSystem:warmUp](#lparticlesystemwarmup)
+  - [LTrail:clear](#ltrailclear)
+  - [LTrail:drawToImage](#ltraildrawtoimage)
+  - [LTrail:getLifetime](#ltrailgetlifetime)
+  - [LTrail:getPointCount](#ltrailgetpointcount)
+  - [LTrail:getWidth](#ltrailgetwidth)
+  - [LTrail:pushPoint](#ltrailpushpoint)
+  - [LTrail:setHeadColor](#ltrailsetheadcolor)
+  - [LTrail:setLifetime](#ltrailsetlifetime)
+  - [LTrail:setMinDistance](#ltrailsetmindistance)
+  - [LTrail:setTailColor](#ltrailsettailcolor)
+  - [LTrail:setWidth](#ltrailsetwidth)
+  - [LTrail:type](#ltrailtype)
+  - [LTrail:typeOf](#ltrailtypeof)
+  - [LTrail:update](#ltrailupdate)
+- [💡 Examples](#examples)
+- [🎮 Reference Games](#reference-games)
+- [🔗 Related Modules](#related-modules)
 
 This page is generated from the current module specs, examples, and Lua API data.
 
 **Module group:** Feature Systems
 **Namespace:** `lurek.particle`
 
-## Purpose
+## 🎯 Purpose
 
 Emitter-based 2D particle systems with bounded pools and Euler integration.
 
-## Summary
+[⬆ back to top](#table-of-contents)
+
+## 📋 Summary
 
 Emitter-based 2D particle systems with bounded pools and Euler integration. `ParticleSystem` manages a fixed-capacity pool of `Particle` instances that spawn from configurable emission shapes (point, circle, ring, rectangle, cone, line), evolve with velocity/acceleration/gravity, and expire after a lifetime. Properties interpolate over life: color, size, rotation, opacity, with per-axis randomization ranges.
 
 Trails render connected segments behind moving particles. Attractors and force zones apply positional forces. Sub-emitters spawn child particles on birth/death/collision events. Physics collision bounces particles off bounds or world geometry. Texture animation cycles through atlas frames over particle lifetime. The module is CPU-only with deterministic simulation given the same seed. Exposed as `lurek.particle.*`. Feature Systems tier — classified CORE-KEEP.
 
-## Minimal Module Example
+[⬆ back to top](#table-of-contents)
 
-Module example from [particle.lua](../blob/main/content/examples/particle.lua):
-
-```lua
-  -- update(dt) must be called every frame to advance particle simulation.
-  -- It moves particles, applies gravity/acceleration, ages them, and removes dead ones.
-  -- Also triggers physics collision and callbacks if configured.
-
-  local sys = lurek.particle.newSystem({ maxParticles = 128, emissionRate = 30 })
-  sys:start()
-  function lurek.process(dt)
-    -- Pass the frame delta time; particles simulate in real-time
-    sys:update(dt)
-  end
-end
-
---@api-stub: LParticleSystem:emit
--- Performs the emit operation on this particle system.
-do
-  -- emit(count) spawns exactly `count` particles in one burst.
-  -- Unlike continuous emission via start(), this is a one-shot effect.
-  -- Perfect for impacts, explosions, or hit sparks.
-
-  -- Example: hit spark burst when a bullet strikes a wall
-  local hit = lurek.particle.newSystem({
-    maxParticles = 64,
-    lifetimeMin = 0.1, lifetimeMax = 0.3,
-    speedMin = 100, speedMax = 250,
-    spread = math.pi,  -- full circle burst
-  })
-  hit:setPosition(160, 120)   -- spawn at the impact point
-  hit:setColors({1, 1, 0.5, 1}, {1, 0.3, 0, 0})  -- yellow to orange fade
-  hit:setSizes(3, 1)          -- shrink as they die
-  hit:emit(24)                -- burst 24 sparks instantly
-end
-
---@api-stub: LParticleSystem:start
--- Starts the operation managed by this particle system.
-do
-  -- start() begins continuous particle emission at the configured emissionRate.
-  -- Emission continues until stop() is called or emitterLifetime expires.
-  -- The system must also be update()d each frame to actually simulate particles.
-
-  -- Example: rain falling across the full screen width
-  local rain = lurek.particle.newSystem({
-    maxParticles = 512, emissionRate = 200,
-    lifetimeMin = 0.8, lifetimeMax = 1.2,
-    speedMin = 300, speedMax = 450,
-    direction = math.pi/2,  -- fall downward
-    spread = 0.05,
-  })
-  rain:setPosition(400, 0)
-```
-
-## Key Types
+## 🧩 Key Types
 
 - `LParticleSystem` (86 methods) - Lua-side handle for a particle system stored in shared runtime state.
 - `LTrail` (14 methods) - Lua-side wrapper for a trail effect.
 
-## API Overview
+[⬆ back to top](#table-of-contents)
+
+## 📖 API Overview
 
 - Source spec: [docs/specs/particle.md](../blob/main/docs/specs/particle.md)
 
@@ -211,15 +162,19 @@ lurek.particle.newSystem([config]: table) -> LParticleSystem -- Creates a partic
 lurek.particle.newTrail(lifetime: number, start_width: number) -> LTrail -- Creates a trail effect. This function is exposed to Lua scripts.
 ```
 
-## Module Functions
+[⬆ back to top](#table-of-contents)
 
-### `lurek.particle.fromTOML(path: string) -> LParticleSystem`
+## ⚙️ Module Functions
+
+### lurek.particle.fromTOML
+
+`lurek.particle.fromTOML(path: string) -> LParticleSystem`
 
 Creates a particle system from a TOML config file.
 
 **Parameters**
 
-- `path` (`string`, required) - TOML file path.
+- `path` (`string`, required): TOML file path.
 
 **Returns**: `LParticleSystem` - New particle system handle.
 
@@ -253,13 +208,15 @@ gravity_y = 200.0
 end
 ```
 
-### `lurek.particle.newPreset(name: string) -> LParticleSystem`
+### lurek.particle.newPreset
+
+`lurek.particle.newPreset(name: string) -> LParticleSystem`
 
 Creates a particle system from a named preset.
 
 **Parameters**
 
-- `name` (`string`, required) - Preset name: `fire`, `smoke`, `rain`, `snow`, or `sparks`.
+- `name` (`string`, required): Preset name: `fire`, `smoke`, `rain`, `snow`, or `sparks`.
 
 **Returns**: `LParticleSystem` - New particle system handle.
 
@@ -282,13 +239,15 @@ do
 end
 ```
 
-### `lurek.particle.newSystem([config]: table) -> LParticleSystem`
+### lurek.particle.newSystem
+
+`lurek.particle.newSystem([config]: table) -> LParticleSystem`
 
 Creates a particle system from an optional config table.
 
 **Parameters**
 
-- `config` (`table`, optional) - Particle config table.
+- `config` (`table`, optional): Particle config table.
 
 **Returns**: `LParticleSystem` - New particle system handle.
 
@@ -322,14 +281,16 @@ do
 end
 ```
 
-### `lurek.particle.newTrail(lifetime: number, start_width: number) -> LTrail`
+### lurek.particle.newTrail
+
+`lurek.particle.newTrail(lifetime: number, start_width: number) -> LTrail`
 
 Creates a trail effect. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `lifetime` (`number`, required) - Trail point lifetime.
-- `start_width` (`number`, required) - Trail start width.
+- `lifetime` (`number`, required): Trail point lifetime.
+- `start_width` (`number`, required): Trail start width.
 
 **Returns**: `LTrail` - New trail handle.
 
@@ -356,11 +317,21 @@ end
 ```
 
 
-## Types and Methods
+[⬆ back to top](#table-of-contents)
 
-### `LParticleSystem`
+## 🔷 Module Types
+
+### LParticleSystem
 
 Lua-side handle for a particle system stored in shared runtime state.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side handle for a particle system stored in shared runtime state.
+---@class LParticleSystem
+LParticleSystem = {}
+```
 
 #### Example
 
@@ -392,16 +363,68 @@ gravity_y = 200.0
 end
 ```
 
-### `LParticleSystem:addAttractor(x: number, y: number, strength: number, radius: number)`
+### LTrail
+
+Lua-side wrapper for a trail effect.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side wrapper for a trail effect.
+---@class LTrail
+LTrail = {}
+```
+
+#### Example
+
+Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
+
+```lua
+do
+  -- newTrail(lifetime, start_width) creates a line trail that fades over time.
+  -- lifetime: how long each trail point persists (seconds)
+  -- start_width: width in pixels at the head of the trail
+  -- Trails are ideal for sword swings, projectile paths, and cursor effects.
+
+  -- Example: glowing sword slash trail
+  local sword_trail = lurek.particle.newTrail(0.35, 12.0)
+  -- Head color: bright yellow-white at the slash origin
+  sword_trail:setHeadColor(1.0, 0.95, 0.6, 1.0)
+  -- Tail color: fades to orange and fully transparent
+  sword_trail:setTailColor(1.0, 0.4, 0.0, 0.0)
+  -- Push points each frame as the weapon tip moves
+  sword_trail:pushPoint(100, 200)
+end
+```
+
+
+[⬆ back to top](#table-of-contents)
+
+## 🔹 Module Methods
+
+### LParticleSystem:addAttractor
+
+`LParticleSystem:addAttractor(x: number, y: number, strength: number, radius: number)`
 
 Adds an attractor to the particle system.
 
 **Parameters**
 
-- `x` (`number`, required) - Attractor x position.
-- `y` (`number`, required) - Attractor y position.
-- `strength` (`number`, required) - Attraction strength.
-- `radius` (`number`, required) - Attraction radius.
+- `x` (`number`, required): Attractor x position.
+- `y` (`number`, required): Attractor y position.
+- `strength` (`number`, required): Attraction strength.
+- `radius` (`number`, required): Attraction radius.
+
+**Lua API Stub**
+
+```lua
+--- Adds an attractor to the particle system.
+---@param x number Attractor x position.
+---@param y number Attractor y position.
+---@param strength number Attraction strength.
+---@param radius number Attraction radius.
+function LParticleSystem:addAttractor(x, y, strength, radius) end
+```
 
 #### Example
 
@@ -427,14 +450,25 @@ do
 end
 ```
 
-### `LParticleSystem:addSubEmitter(config_tbl: table, [burst_count]: integer)`
+### LParticleSystem:addSubEmitter
+
+`LParticleSystem:addSubEmitter(config_tbl: table, [burst_count]: integer)`
 
 Configures a death sub-emitter from a config table.
 
 **Parameters**
 
-- `config_tbl` (`table`, required) - Particle config table.
-- `burst_count` (`integer`, optional) - Burst count per death.
+- `config_tbl` (`table`, required): Particle config table.
+- `burst_count` (`integer`, optional): Burst count per death.
+
+**Lua API Stub**
+
+```lua
+--- Configures a death sub-emitter from a config table.
+---@param config_tbl table Particle config table.
+---@param burst_count? number Burst count per death.
+function LParticleSystem:addSubEmitter(config_tbl, burst_count) end
+```
 
 #### Example
 
@@ -467,15 +501,26 @@ do
 end
 ```
 
-### `LParticleSystem:addSubSystem(config_tbl: table) -> integer`
+### LParticleSystem:addSubSystem
+
+`LParticleSystem:addSubSystem(config_tbl: table) -> integer`
 
 Adds a particle sub-system from a config table.
 
 **Parameters**
 
-- `config_tbl` (`table`, required) - Particle config table.
+- `config_tbl` (`table`, required): Particle config table.
 
 **Returns**: `integer` - One-based sub-system index.
+
+**Lua API Stub**
+
+```lua
+--- Adds a particle sub-system from a config table.
+---@param config_tbl table Particle config table.
+---@return number One-based sub-system index.
+function LParticleSystem:addSubSystem(config_tbl) end
+```
 
 #### Example
 
@@ -509,9 +554,18 @@ do
 end
 ```
 
-### `LParticleSystem:clearAttractors()`
+### LParticleSystem:clearAttractors
+
+`LParticleSystem:clearAttractors()`
 
 Clears all attractors on this object.
+
+**Lua API Stub**
+
+```lua
+--- Clears all attractors on this object.
+function LParticleSystem:clearAttractors() end
+```
 
 #### Example
 
@@ -530,9 +584,18 @@ do
 end
 ```
 
-### `LParticleSystem:clearBounds()`
+### LParticleSystem:clearBounds
+
+`LParticleSystem:clearBounds()`
 
 Clears collision bounds on this object.
+
+**Lua API Stub**
+
+```lua
+--- Clears collision bounds on this object.
+function LParticleSystem:clearBounds() end
+```
 
 #### Example
 
@@ -550,9 +613,18 @@ do
 end
 ```
 
-### `LParticleSystem:clearCollidesWithPhysics()`
+### LParticleSystem:clearCollidesWithPhysics
+
+`LParticleSystem:clearCollidesWithPhysics()`
 
 Disables particle collision against a physics world.
+
+**Lua API Stub**
+
+```lua
+--- Disables particle collision against a physics world.
+function LParticleSystem:clearCollidesWithPhysics() end
+```
 
 #### Example
 
@@ -571,11 +643,21 @@ do
 end
 ```
 
-### `LParticleSystem:clone() -> LParticleSystem`
+### LParticleSystem:clone
+
+`LParticleSystem:clone() -> LParticleSystem`
 
 Clones this particle system configuration into a new system handle.
 
 **Returns**: `LParticleSystem` - New particle system handle.
+
+**Lua API Stub**
+
+```lua
+--- Clones this particle system configuration into a new system handle.
+---@return LParticleSystem New particle system handle.
+function LParticleSystem:clone() end
+```
 
 #### Example
 
@@ -601,11 +683,21 @@ do
 end
 ```
 
-### `LParticleSystem:count() -> integer`
+### LParticleSystem:count
+
+`LParticleSystem:count() -> integer`
 
 Returns the current particle count.
 
 **Returns**: `integer` - Particle count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current particle count.
+---@return number Particle count.
+function LParticleSystem:count() end
+```
 
 #### Example
 
@@ -626,16 +718,28 @@ do
 end
 ```
 
-### `LParticleSystem:drawToImage(w: integer, h: integer) -> LImageData`
+### LParticleSystem:drawToImage
+
+`LParticleSystem:drawToImage(w: integer, h: integer) -> LImageData`
 
 Draws particles to image data. This method is available to Lua scripts.
 
 **Parameters**
 
-- `w` (`integer`, required) - Image width.
-- `h` (`integer`, required) - Image height.
+- `w` (`integer`, required): Image width.
+- `h` (`integer`, required): Image height.
 
 **Returns**: `LImageData` - Image data containing the rendered particles.
+
+**Lua API Stub**
+
+```lua
+--- Draws particles to image data. This method is available to Lua scripts.
+---@param w number Image width.
+---@param h number Image height.
+---@return LImageData Image data containing the rendered particles.
+function LParticleSystem:drawToImage(w, h) end
+```
 
 #### Example
 
@@ -655,13 +759,23 @@ do
 end
 ```
 
-### `LParticleSystem:emit(count: integer)`
+### LParticleSystem:emit
+
+`LParticleSystem:emit(count: integer)`
 
 Emits particles immediately. This method is available to Lua scripts.
 
 **Parameters**
 
-- `count` (`integer`, required) - Number of particles to emit.
+- `count` (`integer`, required): Number of particles to emit.
+
+**Lua API Stub**
+
+```lua
+--- Emits particles immediately. This method is available to Lua scripts.
+---@param count number Number of particles to emit.
+function LParticleSystem:emit(count) end
+```
 
 #### Example
 
@@ -687,11 +801,21 @@ do
 end
 ```
 
-### `LParticleSystem:getAttractorCount() -> integer`
+### LParticleSystem:getAttractorCount
+
+`LParticleSystem:getAttractorCount() -> integer`
 
 Returns attractor count. This method is available to Lua scripts.
 
 **Returns**: `integer` - Attractor count.
+
+**Lua API Stub**
+
+```lua
+--- Returns attractor count. This method is available to Lua scripts.
+---@return number Attractor count.
+function LParticleSystem:getAttractorCount() end
+```
 
 #### Example
 
@@ -708,11 +832,21 @@ do
 end
 ```
 
-### `LParticleSystem:getBufferSize() -> integer`
+### LParticleSystem:getBufferSize
+
+`LParticleSystem:getBufferSize() -> integer`
 
 Returns maximum particle buffer size.
 
 **Returns**: `integer` - Maximum particle count.
+
+**Lua API Stub**
+
+```lua
+--- Returns maximum particle buffer size.
+---@return number Maximum particle count.
+function LParticleSystem:getBufferSize() end
+```
 
 #### Example
 
@@ -728,11 +862,21 @@ do
 end
 ```
 
-### `LParticleSystem:getColors() -> table`
+### LParticleSystem:getColors
+
+`LParticleSystem:getColors() -> table`
 
 Returns particle color keyframes.
 
 **Returns**: `table` - Array table of RGBA color tables.
+
+**Lua API Stub**
+
+```lua
+--- Returns particle color keyframes.
+---@return LParticleSystemGetColorsResult Array table of RGBA color tables.
+function LParticleSystem:getColors() end
+```
 
 #### Example
 
@@ -749,11 +893,21 @@ do
 end
 ```
 
-### `LParticleSystem:getCount() -> integer`
+### LParticleSystem:getCount
+
+`LParticleSystem:getCount() -> integer`
 
 Returns particle count and errors if the handle was released.
 
 **Returns**: `integer` - Particle count.
+
+**Lua API Stub**
+
+```lua
+--- Returns particle count and errors if the handle was released.
+---@return number Particle count.
+function LParticleSystem:getCount() end
+```
 
 #### Example
 
@@ -771,11 +925,21 @@ do
 end
 ```
 
-### `LParticleSystem:getDirection() -> number`
+### LParticleSystem:getDirection
+
+`LParticleSystem:getDirection() -> number`
 
 Returns emission direction. This method is available to Lua scripts.
 
 **Returns**: `number` - Direction angle.
+
+**Lua API Stub**
+
+```lua
+--- Returns emission direction. This method is available to Lua scripts.
+---@return number Direction angle.
+function LParticleSystem:getDirection() end
+```
 
 #### Example
 
@@ -791,11 +955,23 @@ do
 end
 ```
 
-### `LParticleSystem:getEmissionArea() -> string`
+### LParticleSystem:getEmissionArea
+
+`LParticleSystem:getEmissionArea() -> string`
 
 Returns emission area distribution and size.
 
 **Returns**: `string` - Distribution name.
+
+**Lua API Stub**
+
+```lua
+--- Returns emission area distribution and size.
+---@return string a Distribution name.
+---@return number b Area width.
+---@return number c Area height.
+function LParticleSystem:getEmissionArea() end
+```
 
 #### Example
 
@@ -812,11 +988,21 @@ do
 end
 ```
 
-### `LParticleSystem:getEmissionRate() -> number`
+### LParticleSystem:getEmissionRate
+
+`LParticleSystem:getEmissionRate() -> number`
 
 Returns emission rate. This method is available to Lua scripts.
 
 **Returns**: `number` - Particles per second.
+
+**Lua API Stub**
+
+```lua
+--- Returns emission rate. This method is available to Lua scripts.
+---@return number Particles per second.
+function LParticleSystem:getEmissionRate() end
+```
 
 #### Example
 
@@ -833,11 +1019,21 @@ do
 end
 ```
 
-### `LParticleSystem:getEmitterLifetime() -> number`
+### LParticleSystem:getEmitterLifetime
+
+`LParticleSystem:getEmitterLifetime() -> number`
 
 Returns emitter lifetime. This method is available to Lua scripts.
 
 **Returns**: `number` - Emitter lifetime.
+
+**Lua API Stub**
+
+```lua
+--- Returns emitter lifetime. This method is available to Lua scripts.
+---@return number Emitter lifetime.
+function LParticleSystem:getEmitterLifetime() end
+```
 
 #### Example
 
@@ -855,11 +1051,23 @@ do
 end
 ```
 
-### `LParticleSystem:getFlipbook() -> integer`
+### LParticleSystem:getFlipbook
+
+`LParticleSystem:getFlipbook() -> integer`
 
 Returns flipbook grid and frame rate when configured.
 
 **Returns**: `integer` - Column count, or nil when unconfigured.
+
+**Lua API Stub**
+
+```lua
+--- Returns flipbook grid and frame rate when configured.
+---@return number a Column count, or nil when unconfigured.
+---@return number b Row count, or nil when unconfigured.
+---@return number c Frame rate, or nil when unconfigured.
+function LParticleSystem:getFlipbook() end
+```
 
 #### Example
 
@@ -879,11 +1087,22 @@ do
 end
 ```
 
-### `LParticleSystem:getGravity() -> number`
+### LParticleSystem:getGravity
+
+`LParticleSystem:getGravity() -> number`
 
 Returns particle gravity. This method is available to Lua scripts.
 
 **Returns**: `number` - Gravity x.
+
+**Lua API Stub**
+
+```lua
+--- Returns particle gravity. This method is available to Lua scripts.
+---@return number a Gravity x.
+---@return number b Gravity y.
+function LParticleSystem:getGravity() end
+```
 
 #### Example
 
@@ -900,11 +1119,21 @@ do
 end
 ```
 
-### `LParticleSystem:getInsertMode() -> string`
+### LParticleSystem:getInsertMode
+
+`LParticleSystem:getInsertMode() -> string`
 
 Returns particle insert mode. This method is available to Lua scripts.
 
 **Returns**: `string` - Insert mode name.
+
+**Lua API Stub**
+
+```lua
+--- Returns particle insert mode. This method is available to Lua scripts.
+---@return string Insert mode name.
+function LParticleSystem:getInsertMode() end
+```
 
 #### Example
 
@@ -921,11 +1150,24 @@ do
 end
 ```
 
-### `LParticleSystem:getLinearAcceleration() -> number`
+### LParticleSystem:getLinearAcceleration
+
+`LParticleSystem:getLinearAcceleration() -> number`
 
 Returns linear acceleration range.
 
 **Returns**: `number` - Minimum x acceleration.
+
+**Lua API Stub**
+
+```lua
+--- Returns linear acceleration range.
+---@return number a Minimum x acceleration.
+---@return number b Minimum y acceleration.
+---@return number c Maximum x acceleration.
+---@return number d Maximum y acceleration.
+function LParticleSystem:getLinearAcceleration() end
+```
 
 #### Example
 
@@ -943,11 +1185,22 @@ do
 end
 ```
 
-### `LParticleSystem:getLinearDamping() -> number`
+### LParticleSystem:getLinearDamping
+
+`LParticleSystem:getLinearDamping() -> number`
 
 Returns linear damping range. This method is available to Lua scripts.
 
 **Returns**: `number` - Minimum damping.
+
+**Lua API Stub**
+
+```lua
+--- Returns linear damping range. This method is available to Lua scripts.
+---@return number a Minimum damping.
+---@return number b Maximum damping.
+function LParticleSystem:getLinearDamping() end
+```
 
 #### Example
 
@@ -963,11 +1216,22 @@ do
 end
 ```
 
-### `LParticleSystem:getOffset() -> number`
+### LParticleSystem:getOffset
+
+`LParticleSystem:getOffset() -> number`
 
 Returns particle spawn offset. This method is available to Lua scripts.
 
 **Returns**: `number` - Offset x.
+
+**Lua API Stub**
+
+```lua
+--- Returns particle spawn offset. This method is available to Lua scripts.
+---@return number a Offset x.
+---@return number b Offset y.
+function LParticleSystem:getOffset() end
+```
 
 #### Example
 
@@ -983,11 +1247,22 @@ do
 end
 ```
 
-### `LParticleSystem:getParticleLifetime() -> number`
+### LParticleSystem:getParticleLifetime
+
+`LParticleSystem:getParticleLifetime() -> number`
 
 Returns particle lifetime range. This method is available to Lua scripts.
 
 **Returns**: `number` - Minimum lifetime.
+
+**Lua API Stub**
+
+```lua
+--- Returns particle lifetime range. This method is available to Lua scripts.
+---@return number a Minimum lifetime.
+---@return number b Maximum lifetime.
+function LParticleSystem:getParticleLifetime() end
+```
 
 #### Example
 
@@ -1003,11 +1278,22 @@ do
 end
 ```
 
-### `LParticleSystem:getPosition() -> number`
+### LParticleSystem:getPosition
+
+`LParticleSystem:getPosition() -> number`
 
 Returns emitter position. This method is available to Lua scripts.
 
 **Returns**: `number` - Emitter x coordinate.
+
+**Lua API Stub**
+
+```lua
+--- Returns emitter position. This method is available to Lua scripts.
+---@return number a Emitter x coordinate.
+---@return number b Emitter y coordinate.
+function LParticleSystem:getPosition() end
+```
 
 #### Example
 
@@ -1024,11 +1310,22 @@ do
 end
 ```
 
-### `LParticleSystem:getRadialAcceleration() -> number`
+### LParticleSystem:getRadialAcceleration
+
+`LParticleSystem:getRadialAcceleration() -> number`
 
 Returns radial acceleration range.
 
 **Returns**: `number` - Minimum acceleration.
+
+**Lua API Stub**
+
+```lua
+--- Returns radial acceleration range.
+---@return number a Minimum acceleration.
+---@return number b Maximum acceleration.
+function LParticleSystem:getRadialAcceleration() end
+```
 
 #### Example
 
@@ -1048,11 +1345,22 @@ do
 end
 ```
 
-### `LParticleSystem:getRotation() -> number`
+### LParticleSystem:getRotation
+
+`LParticleSystem:getRotation() -> number`
 
 Returns particle rotation range. This method is available to Lua scripts.
 
 **Returns**: `number` - Minimum rotation.
+
+**Lua API Stub**
+
+```lua
+--- Returns particle rotation range. This method is available to Lua scripts.
+---@return number a Minimum rotation.
+---@return number b Maximum rotation.
+function LParticleSystem:getRotation() end
+```
 
 #### Example
 
@@ -1068,11 +1376,21 @@ do
 end
 ```
 
-### `LParticleSystem:getShape() -> string`
+### LParticleSystem:getShape
+
+`LParticleSystem:getShape() -> string`
 
 Returns particle shape. This method is available to Lua scripts.
 
 **Returns**: `string` - Shape name.
+
+**Lua API Stub**
+
+```lua
+--- Returns particle shape. This method is available to Lua scripts.
+---@return string Shape name.
+function LParticleSystem:getShape() end
+```
 
 #### Example
 
@@ -1090,11 +1408,21 @@ do
 end
 ```
 
-### `LParticleSystem:getSizes() -> number[]`
+### LParticleSystem:getSizes
+
+`LParticleSystem:getSizes() -> number[]`
 
 Returns particle size keyframes. This method is available to Lua scripts.
 
 **Returns**: `number[]` - Array table of size values.
+
+**Lua API Stub**
+
+```lua
+--- Returns particle size keyframes. This method is available to Lua scripts.
+---@return number[] Array table of size values.
+function LParticleSystem:getSizes() end
+```
 
 #### Example
 
@@ -1111,11 +1439,21 @@ do
 end
 ```
 
-### `LParticleSystem:getSizeVariation() -> number`
+### LParticleSystem:getSizeVariation
+
+`LParticleSystem:getSizeVariation() -> number`
 
 Returns size variation. This method is available to Lua scripts.
 
 **Returns**: `number` - Size variation.
+
+**Lua API Stub**
+
+```lua
+--- Returns size variation. This method is available to Lua scripts.
+---@return number Size variation.
+function LParticleSystem:getSizeVariation() end
+```
 
 #### Example
 
@@ -1131,11 +1469,22 @@ do
 end
 ```
 
-### `LParticleSystem:getSpeed() -> number`
+### LParticleSystem:getSpeed
+
+`LParticleSystem:getSpeed() -> number`
 
 Returns particle speed range. This method is available to Lua scripts.
 
 **Returns**: `number` - Minimum speed.
+
+**Lua API Stub**
+
+```lua
+--- Returns particle speed range. This method is available to Lua scripts.
+---@return number a Minimum speed.
+---@return number b Maximum speed.
+function LParticleSystem:getSpeed() end
+```
 
 #### Example
 
@@ -1151,11 +1500,22 @@ do
 end
 ```
 
-### `LParticleSystem:getSpin() -> number`
+### LParticleSystem:getSpin
+
+`LParticleSystem:getSpin() -> number`
 
 Returns particle spin range. This method is available to Lua scripts.
 
 **Returns**: `number` - Minimum spin.
+
+**Lua API Stub**
+
+```lua
+--- Returns particle spin range. This method is available to Lua scripts.
+---@return number a Minimum spin.
+---@return number b Maximum spin.
+function LParticleSystem:getSpin() end
+```
 
 #### Example
 
@@ -1171,11 +1531,21 @@ do
 end
 ```
 
-### `LParticleSystem:getSpinVariation() -> number`
+### LParticleSystem:getSpinVariation
+
+`LParticleSystem:getSpinVariation() -> number`
 
 Returns spin variation. This method is available to Lua scripts.
 
 **Returns**: `number` - Spin variation.
+
+**Lua API Stub**
+
+```lua
+--- Returns spin variation. This method is available to Lua scripts.
+---@return number Spin variation.
+function LParticleSystem:getSpinVariation() end
+```
 
 #### Example
 
@@ -1192,11 +1562,21 @@ do
 end
 ```
 
-### `LParticleSystem:getSpread() -> number`
+### LParticleSystem:getSpread
+
+`LParticleSystem:getSpread() -> number`
 
 Returns emission spread. This method is available to Lua scripts.
 
 **Returns**: `number` - Spread angle.
+
+**Lua API Stub**
+
+```lua
+--- Returns emission spread. This method is available to Lua scripts.
+---@return number Spread angle.
+function LParticleSystem:getSpread() end
+```
 
 #### Example
 
@@ -1213,11 +1593,22 @@ do
 end
 ```
 
-### `LParticleSystem:getTangentialAcceleration() -> number`
+### LParticleSystem:getTangentialAcceleration
+
+`LParticleSystem:getTangentialAcceleration() -> number`
 
 Returns tangential acceleration range.
 
 **Returns**: `number` - Minimum acceleration.
+
+**Lua API Stub**
+
+```lua
+--- Returns tangential acceleration range.
+---@return number a Minimum acceleration.
+---@return number b Maximum acceleration.
+function LParticleSystem:getTangentialAcceleration() end
+```
 
 #### Example
 
@@ -1235,11 +1626,21 @@ do
 end
 ```
 
-### `LParticleSystem:hasCollidesWithPhysics() -> boolean`
+### LParticleSystem:hasCollidesWithPhysics
+
+`LParticleSystem:hasCollidesWithPhysics() -> boolean`
 
 Returns whether particle physics collision is enabled.
 
 **Returns**: `boolean` - True when collision is enabled.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether particle physics collision is enabled.
+---@return boolean True when collision is enabled.
+function LParticleSystem:hasCollidesWithPhysics() end
+```
 
 #### Example
 
@@ -1258,11 +1659,21 @@ do
 end
 ```
 
-### `LParticleSystem:hasRelativeRotation() -> boolean`
+### LParticleSystem:hasRelativeRotation
+
+`LParticleSystem:hasRelativeRotation() -> boolean`
 
 Returns whether relative rotation is enabled.
 
 **Returns**: `boolean` - True when relative rotation is enabled.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether relative rotation is enabled.
+---@return boolean True when relative rotation is enabled.
+function LParticleSystem:hasRelativeRotation() end
+```
 
 #### Example
 
@@ -1280,11 +1691,21 @@ do
 end
 ```
 
-### `LParticleSystem:isActive() -> boolean`
+### LParticleSystem:isActive
+
+`LParticleSystem:isActive() -> boolean`
 
 Returns whether the particle system is active.
 
 **Returns**: `boolean` - True when active.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether the particle system is active.
+---@return boolean True when active.
+function LParticleSystem:isActive() end
+```
 
 #### Example
 
@@ -1310,11 +1731,21 @@ do
 end
 ```
 
-### `LParticleSystem:isEmpty() -> boolean`
+### LParticleSystem:isEmpty
+
+`LParticleSystem:isEmpty() -> boolean`
 
 Returns whether the particle system has no particles or is missing.
 
 **Returns**: `boolean` - True when empty.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether the particle system has no particles or is missing.
+---@return boolean True when empty.
+function LParticleSystem:isEmpty() end
+```
 
 #### Example
 
@@ -1335,11 +1766,21 @@ do
 end
 ```
 
-### `LParticleSystem:isFull() -> boolean`
+### LParticleSystem:isFull
+
+`LParticleSystem:isFull() -> boolean`
 
 Returns whether the particle system has reached capacity.
 
 **Returns**: `boolean` - True when full.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether the particle system has reached capacity.
+---@return boolean True when full.
+function LParticleSystem:isFull() end
+```
 
 #### Example
 
@@ -1363,11 +1804,21 @@ do
 end
 ```
 
-### `LParticleSystem:isPaused() -> boolean`
+### LParticleSystem:isPaused
+
+`LParticleSystem:isPaused() -> boolean`
 
 Returns whether the particle system is paused.
 
 **Returns**: `boolean` - True when paused.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether the particle system is paused.
+---@return boolean True when paused.
+function LParticleSystem:isPaused() end
+```
 
 #### Example
 
@@ -1386,11 +1837,21 @@ do
 end
 ```
 
-### `LParticleSystem:isStopped() -> boolean`
+### LParticleSystem:isStopped
+
+`LParticleSystem:isStopped() -> boolean`
 
 Returns whether the particle system is stopped or missing.
 
 **Returns**: `boolean` - True when stopped.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether the particle system is stopped or missing.
+---@return boolean True when stopped.
+function LParticleSystem:isStopped() end
+```
 
 #### Example
 
@@ -1409,14 +1870,25 @@ do
 end
 ```
 
-### `LParticleSystem:moveTo(x: number, y: number)`
+### LParticleSystem:moveTo
+
+`LParticleSystem:moveTo(x: number, y: number)`
 
 Moves the particle emitter. This method is available to Lua scripts.
 
 **Parameters**
 
-- `x` (`number`, required) - Emitter x coordinate.
-- `y` (`number`, required) - Emitter y coordinate.
+- `x` (`number`, required): Emitter x coordinate.
+- `y` (`number`, required): Emitter y coordinate.
+
+**Lua API Stub**
+
+```lua
+--- Moves the particle emitter. This method is available to Lua scripts.
+---@param x number Emitter x coordinate.
+---@param y number Emitter y coordinate.
+function LParticleSystem:moveTo(x, y) end
+```
 
 #### Example
 
@@ -1445,9 +1917,18 @@ do
 end
 ```
 
-### `LParticleSystem:pause()`
+### LParticleSystem:pause
+
+`LParticleSystem:pause()`
 
 Pauses particle emission and updates.
+
+**Lua API Stub**
+
+```lua
+--- Pauses particle emission and updates.
+function LParticleSystem:pause() end
+```
 
 #### Example
 
@@ -1468,11 +1949,21 @@ do
 end
 ```
 
-### `LParticleSystem:release() -> boolean`
+### LParticleSystem:release
+
+`LParticleSystem:release() -> boolean`
 
 Releases the particle system from shared storage.
 
 **Returns**: `boolean` - True after release.
+
+**Lua API Stub**
+
+```lua
+--- Releases the particle system from shared storage.
+---@return boolean True after release.
+function LParticleSystem:release() end
+```
 
 #### Example
 
@@ -1491,14 +1982,25 @@ do
 end
 ```
 
-### `LParticleSystem:render([ox]: number, [oy]: number)`
+### LParticleSystem:render
+
+`LParticleSystem:render([ox]: number, [oy]: number)`
 
 Enqueues particle render commands with an optional offset.
 
 **Parameters**
 
-- `ox` (`number`, optional) - X offset.
-- `oy` (`number`, optional) - Y offset.
+- `ox` (`number`, optional): X offset.
+- `oy` (`number`, optional): Y offset.
+
+**Lua API Stub**
+
+```lua
+--- Enqueues particle render commands with an optional offset.
+---@param ox? number X offset.
+---@param oy? number Y offset.
+function LParticleSystem:render(ox, oy) end
+```
 
 #### Example
 
@@ -1523,9 +2025,18 @@ do
 end
 ```
 
-### `LParticleSystem:reset()`
+### LParticleSystem:reset
+
+`LParticleSystem:reset()`
 
 Resets particles and emitter state.
+
+**Lua API Stub**
+
+```lua
+--- Resets particles and emitter state.
+function LParticleSystem:reset() end
+```
 
 #### Example
 
@@ -1546,9 +2057,18 @@ do
 end
 ```
 
-### `LParticleSystem:resume()`
+### LParticleSystem:resume
+
+`LParticleSystem:resume()`
 
 Resumes a paused particle system if it was previously paused.
+
+**Lua API Stub**
+
+```lua
+--- Resumes a paused particle system if it was previously paused.
+function LParticleSystem:resume() end
+```
 
 #### Example
 
@@ -1567,17 +2087,31 @@ do
 end
 ```
 
-### `LParticleSystem:setBounds(xmin: number, xmax: number, ymin: number, ymax: number, restitution: number)`
+### LParticleSystem:setBounds
+
+`LParticleSystem:setBounds(xmin: number, xmax: number, ymin: number, ymax: number, restitution: number)`
 
 Sets collision bounds for particles.
 
 **Parameters**
 
-- `xmin` (`number`, required) - Minimum x bound.
-- `xmax` (`number`, required) - Maximum x bound.
-- `ymin` (`number`, required) - Minimum y bound.
-- `ymax` (`number`, required) - Maximum y bound.
-- `restitution` (`number`, required) - Bounce restitution factor.
+- `xmin` (`number`, required): Minimum x bound.
+- `xmax` (`number`, required): Maximum x bound.
+- `ymin` (`number`, required): Minimum y bound.
+- `ymax` (`number`, required): Maximum y bound.
+- `restitution` (`number`, required): Bounce restitution factor.
+
+**Lua API Stub**
+
+```lua
+--- Sets collision bounds for particles.
+---@param xmin number Minimum x bound.
+---@param xmax number Maximum x bound.
+---@param ymin number Minimum y bound.
+---@param ymax number Maximum y bound.
+---@param restitution number Bounce restitution factor.
+function LParticleSystem:setBounds(xmin, xmax, ymin, ymax, restitution) end
+```
 
 #### Example
 
@@ -1601,13 +2135,23 @@ do
 end
 ```
 
-### `LParticleSystem:setBufferSize(n: integer)`
+### LParticleSystem:setBufferSize
+
+`LParticleSystem:setBufferSize(n: integer)`
 
 Sets maximum particle buffer size.
 
 **Parameters**
 
-- `n` (`integer`, required) - Maximum particle count.
+- `n` (`integer`, required): Maximum particle count.
+
+**Lua API Stub**
+
+```lua
+--- Sets maximum particle buffer size.
+---@param n number Maximum particle count.
+function LParticleSystem:setBufferSize(n) end
+```
 
 #### Example
 
@@ -1627,15 +2171,27 @@ do
 end
 ```
 
-### `LParticleSystem:setCollidesWithPhysics(world_ud: LWorld, [probe_radius]: number, [restitution]: number)`
+### LParticleSystem:setCollidesWithPhysics
+
+`LParticleSystem:setCollidesWithPhysics(world_ud: LWorld, [probe_radius]: number, [restitution]: number)`
 
 Enables particle collision against a physics world.
 
 **Parameters**
 
-- `world_ud` (`LWorld`, required) - Physics world handle.
-- `probe_radius` (`number`, optional) - Collision probe radius.
-- `restitution` (`number`, optional) - Bounce restitution.
+- `world_ud` (`LWorld`, required): Physics world handle.
+- `probe_radius` (`number`, optional): Collision probe radius.
+- `restitution` (`number`, optional): Bounce restitution.
+
+**Lua API Stub**
+
+```lua
+--- Enables particle collision against a physics world.
+---@param world_ud LWorld Physics world handle.
+---@param probe_radius? number Collision probe radius.
+---@param restitution? number Bounce restitution.
+function LParticleSystem:setCollidesWithPhysics(world_ud, probe_radius, restitution) end
+```
 
 #### Example
 
@@ -1667,13 +2223,23 @@ do
 end
 ```
 
-### `LParticleSystem:setColors(...: table)`
+### LParticleSystem:setColors
+
+`LParticleSystem:setColors(...: table)`
 
 Sets particle color keyframes from one or more RGBA tables.
 
 **Parameters**
 
-- `...` (`table`, required) - One or more `{r, g, b, a}` color tables.
+- `...` (`table`, required): One or more `{r, g, b, a}` color tables.
+
+**Lua API Stub**
+
+```lua
+--- Sets particle color keyframes from one or more RGBA tables.
+---@param ... table One or more `{r, g, b, a}` color tables.
+function LParticleSystem:setColors(...) end
+```
 
 #### Example
 
@@ -1698,13 +2264,23 @@ do
 end
 ```
 
-### `LParticleSystem:setCustomEmissionShape(cb: function)`
+### LParticleSystem:setCustomEmissionShape
+
+`LParticleSystem:setCustomEmissionShape(cb: function)`
 
 Sets a Lua callback for custom emission positions.
 
 **Parameters**
 
-- `cb` (`function`, required) - Callback returning an x/y position.
+- `cb` (`function`, required): Callback returning an x/y position.
+
+**Lua API Stub**
+
+```lua
+--- Sets a Lua callback for custom emission positions.
+---@param cb function Callback returning an x/y position.
+function LParticleSystem:setCustomEmissionShape(cb) end
+```
 
 #### Example
 
@@ -1735,13 +2311,23 @@ do
 end
 ```
 
-### `LParticleSystem:setDirection(dir: number)`
+### LParticleSystem:setDirection
+
+`LParticleSystem:setDirection(dir: number)`
 
 Sets emission direction. This method is available to Lua scripts.
 
 **Parameters**
 
-- `dir` (`number`, required) - Direction angle.
+- `dir` (`number`, required): Direction angle.
+
+**Lua API Stub**
+
+```lua
+--- Sets emission direction. This method is available to Lua scripts.
+---@param dir number Direction angle.
+function LParticleSystem:setDirection(dir) end
+```
 
 #### Example
 
@@ -1761,17 +2347,31 @@ do
 end
 ```
 
-### `LParticleSystem:setEmissionArea(dist: string, w: number, h: number, [angle]: number, [dir_rel]: boolean)`
+### LParticleSystem:setEmissionArea
+
+`LParticleSystem:setEmissionArea(dist: string, w: number, h: number, [angle]: number, [dir_rel]: boolean)`
 
 Sets emission area distribution and size.
 
 **Parameters**
 
-- `dist` (`string`, required) - Distribution name.
-- `w` (`number`, required) - Area width.
-- `h` (`number`, required) - Area height.
-- `angle` (`number`, optional) - Area angle.
-- `dir_rel` (`boolean`, optional) - Direction-relative flag.
+- `dist` (`string`, required): Distribution name.
+- `w` (`number`, required): Area width.
+- `h` (`number`, required): Area height.
+- `angle` (`number`, optional): Area angle.
+- `dir_rel` (`boolean`, optional): Direction-relative flag.
+
+**Lua API Stub**
+
+```lua
+--- Sets emission area distribution and size.
+---@param dist string Distribution name.
+---@param w number Area width.
+---@param h number Area height.
+---@param angle? number Area angle.
+---@param dir_rel? boolean Direction-relative flag.
+function LParticleSystem:setEmissionArea(dist, w, h, angle, dir_rel) end
+```
 
 #### Example
 
@@ -1793,13 +2393,23 @@ do
 end
 ```
 
-### `LParticleSystem:setEmissionRate(rate: number)`
+### LParticleSystem:setEmissionRate
+
+`LParticleSystem:setEmissionRate(rate: number)`
 
 Sets emission rate. This method is available to Lua scripts.
 
 **Parameters**
 
-- `rate` (`number`, required) - Particles per second.
+- `rate` (`number`, required): Particles per second.
+
+**Lua API Stub**
+
+```lua
+--- Sets emission rate. This method is available to Lua scripts.
+---@param rate number Particles per second.
+function LParticleSystem:setEmissionRate(rate) end
+```
 
 #### Example
 
@@ -1818,13 +2428,23 @@ do
 end
 ```
 
-### `LParticleSystem:setEmitterLifetime(t: number)`
+### LParticleSystem:setEmitterLifetime
+
+`LParticleSystem:setEmitterLifetime(t: number)`
 
 Sets emitter lifetime. This method is available to Lua scripts.
 
 **Parameters**
 
-- `t` (`number`, required) - Emitter lifetime.
+- `t` (`number`, required): Emitter lifetime.
+
+**Lua API Stub**
+
+```lua
+--- Sets emitter lifetime. This method is available to Lua scripts.
+---@param t number Emitter lifetime.
+function LParticleSystem:setEmitterLifetime(t) end
+```
 
 #### Example
 
@@ -1845,15 +2465,27 @@ do
 end
 ```
 
-### `LParticleSystem:setFlipbook(cols: integer, rows: integer, fps: number)`
+### LParticleSystem:setFlipbook
+
+`LParticleSystem:setFlipbook(cols: integer, rows: integer, fps: number)`
 
 Sets flipbook grid and frame rate. This method is available to Lua scripts.
 
 **Parameters**
 
-- `cols` (`integer`, required) - Grid column count.
-- `rows` (`integer`, required) - Grid row count.
-- `fps` (`number`, required) - Playback frame rate.
+- `cols` (`integer`, required): Grid column count.
+- `rows` (`integer`, required): Grid row count.
+- `fps` (`number`, required): Playback frame rate.
+
+**Lua API Stub**
+
+```lua
+--- Sets flipbook grid and frame rate. This method is available to Lua scripts.
+---@param cols number Grid column count.
+---@param rows number Grid row count.
+---@param fps number Playback frame rate.
+function LParticleSystem:setFlipbook(cols, rows, fps) end
+```
 
 #### Example
 
@@ -1873,14 +2505,25 @@ do
 end
 ```
 
-### `LParticleSystem:setGravity(gx: number, gy: number)`
+### LParticleSystem:setGravity
+
+`LParticleSystem:setGravity(gx: number, gy: number)`
 
 Sets particle gravity. This method is available to Lua scripts.
 
 **Parameters**
 
-- `gx` (`number`, required) - Gravity x.
-- `gy` (`number`, required) - Gravity y.
+- `gx` (`number`, required): Gravity x.
+- `gy` (`number`, required): Gravity y.
+
+**Lua API Stub**
+
+```lua
+--- Sets particle gravity. This method is available to Lua scripts.
+---@param gx number Gravity x.
+---@param gy number Gravity y.
+function LParticleSystem:setGravity(gx, gy) end
+```
 
 #### Example
 
@@ -1902,13 +2545,23 @@ do
 end
 ```
 
-### `LParticleSystem:setInsertMode(mode: string)`
+### LParticleSystem:setInsertMode
+
+`LParticleSystem:setInsertMode(mode: string)`
 
 Sets particle insert mode. This method is available to Lua scripts.
 
 **Parameters**
 
-- `mode` (`string`, required) - Insert mode: `top`, `bottom`, or `random`.
+- `mode` (`string`, required): Insert mode: `top`, `bottom`, or `random`.
+
+**Lua API Stub**
+
+```lua
+--- Sets particle insert mode. This method is available to Lua scripts.
+---@param mode string Insert mode: `top`, `bottom`, or `random`.
+function LParticleSystem:setInsertMode(mode) end
+```
 
 #### Example
 
@@ -1929,16 +2582,29 @@ do
 end
 ```
 
-### `LParticleSystem:setLinearAcceleration(xmin: number, ymin: number, xmax: number, ymax: number)`
+### LParticleSystem:setLinearAcceleration
+
+`LParticleSystem:setLinearAcceleration(xmin: number, ymin: number, xmax: number, ymax: number)`
 
 Sets linear acceleration range. This method is available to Lua scripts.
 
 **Parameters**
 
-- `xmin` (`number`, required) - Minimum x acceleration.
-- `ymin` (`number`, required) - Minimum y acceleration.
-- `xmax` (`number`, required) - Maximum x acceleration.
-- `ymax` (`number`, required) - Maximum y acceleration.
+- `xmin` (`number`, required): Minimum x acceleration.
+- `ymin` (`number`, required): Minimum y acceleration.
+- `xmax` (`number`, required): Maximum x acceleration.
+- `ymax` (`number`, required): Maximum y acceleration.
+
+**Lua API Stub**
+
+```lua
+--- Sets linear acceleration range. This method is available to Lua scripts.
+---@param xmin number Minimum x acceleration.
+---@param ymin number Minimum y acceleration.
+---@param xmax number Maximum x acceleration.
+---@param ymax number Maximum y acceleration.
+function LParticleSystem:setLinearAcceleration(xmin, ymin, xmax, ymax) end
+```
 
 #### Example
 
@@ -1960,14 +2626,25 @@ do
 end
 ```
 
-### `LParticleSystem:setLinearDamping(min: number, max: number)`
+### LParticleSystem:setLinearDamping
+
+`LParticleSystem:setLinearDamping(min: number, max: number)`
 
 Sets linear damping range. This method is available to Lua scripts.
 
 **Parameters**
 
-- `min` (`number`, required) - Minimum damping.
-- `max` (`number`, required) - Maximum damping.
+- `min` (`number`, required): Minimum damping.
+- `max` (`number`, required): Maximum damping.
+
+**Lua API Stub**
+
+```lua
+--- Sets linear damping range. This method is available to Lua scripts.
+---@param min number Minimum damping.
+---@param max number Maximum damping.
+function LParticleSystem:setLinearDamping(min, max) end
+```
 
 #### Example
 
@@ -1988,14 +2665,25 @@ do
 end
 ```
 
-### `LParticleSystem:setOffset(ox: number, oy: number)`
+### LParticleSystem:setOffset
+
+`LParticleSystem:setOffset(ox: number, oy: number)`
 
 Sets particle spawn offset. This method is available to Lua scripts.
 
 **Parameters**
 
-- `ox` (`number`, required) - Spawn offset x.
-- `oy` (`number`, required) - Spawn offset y.
+- `ox` (`number`, required): Spawn offset x.
+- `oy` (`number`, required): Spawn offset y.
+
+**Lua API Stub**
+
+```lua
+--- Sets particle spawn offset. This method is available to Lua scripts.
+---@param ox number Spawn offset x.
+---@param oy number Spawn offset y.
+function LParticleSystem:setOffset(ox, oy) end
+```
 
 #### Example
 
@@ -2014,13 +2702,23 @@ do
 end
 ```
 
-### `LParticleSystem:setOnDeathBatch(cb: function)`
+### LParticleSystem:setOnDeathBatch
+
+`LParticleSystem:setOnDeathBatch(cb: function)`
 
 Sets a Lua callback invoked with batched particle death records.
 
 **Parameters**
 
-- `cb` (`function`, required) - Death batch callback.
+- `cb` (`function`, required): Death batch callback.
+
+**Lua API Stub**
+
+```lua
+--- Sets a Lua callback invoked with batched particle death records.
+---@param cb function Death batch callback.
+function LParticleSystem:setOnDeathBatch(cb) end
+```
 
 #### Example
 
@@ -2055,14 +2753,25 @@ do
 end
 ```
 
-### `LParticleSystem:setParticleLifetime(min: number, max: number)`
+### LParticleSystem:setParticleLifetime
+
+`LParticleSystem:setParticleLifetime(min: number, max: number)`
 
 Sets particle lifetime range. This method is available to Lua scripts.
 
 **Parameters**
 
-- `min` (`number`, required) - Minimum lifetime.
-- `max` (`number`, required) - Maximum lifetime.
+- `min` (`number`, required): Minimum lifetime.
+- `max` (`number`, required): Maximum lifetime.
+
+**Lua API Stub**
+
+```lua
+--- Sets particle lifetime range. This method is available to Lua scripts.
+---@param min number Minimum lifetime.
+---@param max number Maximum lifetime.
+function LParticleSystem:setParticleLifetime(min, max) end
+```
 
 #### Example
 
@@ -2082,14 +2791,25 @@ do
 end
 ```
 
-### `LParticleSystem:setPosition(x: number, y: number)`
+### LParticleSystem:setPosition
+
+`LParticleSystem:setPosition(x: number, y: number)`
 
 Sets emitter position. This method is available to Lua scripts.
 
 **Parameters**
 
-- `x` (`number`, required) - Emitter x coordinate.
-- `y` (`number`, required) - Emitter y coordinate.
+- `x` (`number`, required): Emitter x coordinate.
+- `y` (`number`, required): Emitter y coordinate.
+
+**Lua API Stub**
+
+```lua
+--- Sets emitter position. This method is available to Lua scripts.
+---@param x number Emitter x coordinate.
+---@param y number Emitter y coordinate.
+function LParticleSystem:setPosition(x, y) end
+```
 
 #### Example
 
@@ -2113,14 +2833,25 @@ do
 end
 ```
 
-### `LParticleSystem:setRadialAcceleration(min: number, max: number)`
+### LParticleSystem:setRadialAcceleration
+
+`LParticleSystem:setRadialAcceleration(min: number, max: number)`
 
 Sets radial acceleration range. This method is available to Lua scripts.
 
 **Parameters**
 
-- `min` (`number`, required) - Minimum radial acceleration.
-- `max` (`number`, required) - Maximum radial acceleration.
+- `min` (`number`, required): Minimum radial acceleration.
+- `max` (`number`, required): Maximum radial acceleration.
+
+**Lua API Stub**
+
+```lua
+--- Sets radial acceleration range. This method is available to Lua scripts.
+---@param min number Minimum radial acceleration.
+---@param max number Maximum radial acceleration.
+function LParticleSystem:setRadialAcceleration(min, max) end
+```
 
 #### Example
 
@@ -2141,13 +2872,23 @@ do
 end
 ```
 
-### `LParticleSystem:setRelativeRotation(v: boolean)`
+### LParticleSystem:setRelativeRotation
+
+`LParticleSystem:setRelativeRotation(v: boolean)`
 
 Sets whether particle rotation is relative to movement.
 
 **Parameters**
 
-- `v` (`boolean`, required) - Relative rotation flag.
+- `v` (`boolean`, required): Relative rotation flag.
+
+**Lua API Stub**
+
+```lua
+--- Sets whether particle rotation is relative to movement.
+---@param v boolean Relative rotation flag.
+function LParticleSystem:setRelativeRotation(v) end
+```
 
 #### Example
 
@@ -2169,14 +2910,25 @@ do
 end
 ```
 
-### `LParticleSystem:setRotation(min: number, max: number)`
+### LParticleSystem:setRotation
+
+`LParticleSystem:setRotation(min: number, max: number)`
 
 Sets particle rotation range. This method is available to Lua scripts.
 
 **Parameters**
 
-- `min` (`number`, required) - Minimum rotation.
-- `max` (`number`, required) - Maximum rotation.
+- `min` (`number`, required): Minimum rotation.
+- `max` (`number`, required): Maximum rotation.
+
+**Lua API Stub**
+
+```lua
+--- Sets particle rotation range. This method is available to Lua scripts.
+---@param min number Minimum rotation.
+---@param max number Maximum rotation.
+function LParticleSystem:setRotation(min, max) end
+```
 
 #### Example
 
@@ -2197,13 +2949,23 @@ do
 end
 ```
 
-### `LParticleSystem:setShape(shape: string)`
+### LParticleSystem:setShape
+
+`LParticleSystem:setShape(shape: string)`
 
 Sets particle shape. This method is available to Lua scripts.
 
 **Parameters**
 
-- `shape` (`string`, required) - Shape name.
+- `shape` (`string`, required): Shape name.
+
+**Lua API Stub**
+
+```lua
+--- Sets particle shape. This method is available to Lua scripts.
+---@param shape string Shape name.
+function LParticleSystem:setShape(shape) end
+```
 
 #### Example
 
@@ -2224,13 +2986,23 @@ do
 end
 ```
 
-### `LParticleSystem:setSizes(...: number)`
+### LParticleSystem:setSizes
+
+`LParticleSystem:setSizes(...: number)`
 
 Sets the particle size keyframes used during a particle's lifetime. Pass two or more values to interpolate between them.
 
 **Parameters**
 
-- `...` (`number`, required) - Two or more size values that the particle lerps through over its lifetime (e.g. `4, 1` shrinks from 4 to 1).
+- `...` (`number`, required): Two or more size values that the particle lerps through over its lifetime (e.g. `4, 1` shrinks from 4 to 1).
+
+**Lua API Stub**
+
+```lua
+--- Sets the particle size keyframes used during a particle's lifetime. Pass two or more values to interpolate between them.
+---@param ... number Two or more size values that the particle lerps through over its lifetime (e.g. `4, 1` shrinks from 4 to 1).
+function LParticleSystem:setSizes(...) end
+```
 
 #### Example
 
@@ -2250,13 +3022,23 @@ do
 end
 ```
 
-### `LParticleSystem:setSizeVariation(v: number)`
+### LParticleSystem:setSizeVariation
+
+`LParticleSystem:setSizeVariation(v: number)`
 
 Sets size variation. This method is available to Lua scripts.
 
 **Parameters**
 
-- `v` (`number`, required) - Size variation.
+- `v` (`number`, required): Size variation.
+
+**Lua API Stub**
+
+```lua
+--- Sets size variation. This method is available to Lua scripts.
+---@param v number Size variation.
+function LParticleSystem:setSizeVariation(v) end
+```
 
 #### Example
 
@@ -2276,14 +3058,25 @@ do
 end
 ```
 
-### `LParticleSystem:setSpeed(min: number, max: number)`
+### LParticleSystem:setSpeed
+
+`LParticleSystem:setSpeed(min: number, max: number)`
 
 Sets particle speed range. This method is available to Lua scripts.
 
 **Parameters**
 
-- `min` (`number`, required) - Minimum speed.
-- `max` (`number`, required) - Maximum speed.
+- `min` (`number`, required): Minimum speed.
+- `max` (`number`, required): Maximum speed.
+
+**Lua API Stub**
+
+```lua
+--- Sets particle speed range. This method is available to Lua scripts.
+---@param min number Minimum speed.
+---@param max number Maximum speed.
+function LParticleSystem:setSpeed(min, max) end
+```
 
 #### Example
 
@@ -2305,14 +3098,25 @@ do
 end
 ```
 
-### `LParticleSystem:setSpin(min: number, max: number)`
+### LParticleSystem:setSpin
+
+`LParticleSystem:setSpin(min: number, max: number)`
 
 Sets particle spin range. This method is available to Lua scripts.
 
 **Parameters**
 
-- `min` (`number`, required) - Minimum spin.
-- `max` (`number`, required) - Maximum spin.
+- `min` (`number`, required): Minimum spin.
+- `max` (`number`, required): Maximum spin.
+
+**Lua API Stub**
+
+```lua
+--- Sets particle spin range. This method is available to Lua scripts.
+---@param min number Minimum spin.
+---@param max number Maximum spin.
+function LParticleSystem:setSpin(min, max) end
+```
 
 #### Example
 
@@ -2334,13 +3138,23 @@ do
 end
 ```
 
-### `LParticleSystem:setSpinVariation(v: number)`
+### LParticleSystem:setSpinVariation
+
+`LParticleSystem:setSpinVariation(v: number)`
 
 Sets spin variation. This method is available to Lua scripts.
 
 **Parameters**
 
-- `v` (`number`, required) - Spin variation factor.
+- `v` (`number`, required): Spin variation factor.
+
+**Lua API Stub**
+
+```lua
+--- Sets spin variation. This method is available to Lua scripts.
+---@param v number Spin variation factor.
+function LParticleSystem:setSpinVariation(v) end
+```
 
 #### Example
 
@@ -2360,13 +3174,23 @@ do
 end
 ```
 
-### `LParticleSystem:setSpread(spread: number)`
+### LParticleSystem:setSpread
+
+`LParticleSystem:setSpread(spread: number)`
 
 Sets emission spread. This method is available to Lua scripts.
 
 **Parameters**
 
-- `spread` (`number`, required) - Spread angle.
+- `spread` (`number`, required): Spread angle.
+
+**Lua API Stub**
+
+```lua
+--- Sets emission spread. This method is available to Lua scripts.
+---@param spread number Spread angle.
+function LParticleSystem:setSpread(spread) end
+```
 
 #### Example
 
@@ -2387,14 +3211,25 @@ do
 end
 ```
 
-### `LParticleSystem:setTangentialAcceleration(min: number, max: number)`
+### LParticleSystem:setTangentialAcceleration
+
+`LParticleSystem:setTangentialAcceleration(min: number, max: number)`
 
 Sets tangential acceleration range for emitted particles.
 
 **Parameters**
 
-- `min` (`number`, required) - Minimum tangential acceleration.
-- `max` (`number`, required) - Maximum tangential acceleration.
+- `min` (`number`, required): Minimum tangential acceleration.
+- `max` (`number`, required): Maximum tangential acceleration.
+
+**Lua API Stub**
+
+```lua
+--- Sets tangential acceleration range for emitted particles.
+---@param min number Minimum tangential acceleration.
+---@param max number Maximum tangential acceleration.
+function LParticleSystem:setTangentialAcceleration(min, max) end
+```
 
 #### Example
 
@@ -2416,9 +3251,18 @@ do
 end
 ```
 
-### `LParticleSystem:start()`
+### LParticleSystem:start
+
+`LParticleSystem:start()`
 
 Starts particle emission on this object.
+
+**Lua API Stub**
+
+```lua
+--- Starts particle emission on this object.
+function LParticleSystem:start() end
+```
 
 #### Example
 
@@ -2445,9 +3289,18 @@ do
 end
 ```
 
-### `LParticleSystem:stop()`
+### LParticleSystem:stop
+
+`LParticleSystem:stop()`
 
 Stops particle emission on this object.
+
+**Lua API Stub**
+
+```lua
+--- Stops particle emission on this object.
+function LParticleSystem:stop() end
+```
 
 #### Example
 
@@ -2475,11 +3328,21 @@ do
 end
 ```
 
-### `LParticleSystem:subSystemCount() -> integer`
+### LParticleSystem:subSystemCount
+
+`LParticleSystem:subSystemCount() -> integer`
 
 Returns particle sub-system count.
 
 **Returns**: `integer` - Sub-system count.
+
+**Lua API Stub**
+
+```lua
+--- Returns particle sub-system count.
+---@return number Sub-system count.
+function LParticleSystem:subSystemCount() end
+```
 
 #### Example
 
@@ -2496,16 +3359,28 @@ do
 end
 ```
 
-### `LParticleSystem:toImage(w: integer, h: integer) -> LImageData`
+### LParticleSystem:toImage
+
+`LParticleSystem:toImage(w: integer, h: integer) -> LImageData`
 
 Draws particles to image data. This method is available to Lua scripts.
 
 **Parameters**
 
-- `w` (`integer`, required) - Image width.
-- `h` (`integer`, required) - Image height.
+- `w` (`integer`, required): Image width.
+- `h` (`integer`, required): Image height.
 
 **Returns**: `LImageData` - Image data containing the rendered particles.
+
+**Lua API Stub**
+
+```lua
+--- Draws particles to image data. This method is available to Lua scripts.
+---@param w number Image width.
+---@param h number Image height.
+---@return LImageData Image data containing the rendered particles.
+function LParticleSystem:toImage(w, h) end
+```
 
 #### Example
 
@@ -2524,11 +3399,21 @@ do
 end
 ```
 
-### `LParticleSystem:type() -> string`
+### LParticleSystem:type
+
+`LParticleSystem:type() -> string`
 
 Returns the Lua-visible type name for this particle system handle.
 
 **Returns**: `string` - The string `LParticleSystem`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this particle system handle.
+---@return string The string `LParticleSystem`.
+function LParticleSystem:type() end
+```
 
 #### Example
 
@@ -2542,15 +3427,26 @@ do
 end
 ```
 
-### `LParticleSystem:typeOf(name: string) -> boolean`
+### LParticleSystem:typeOf
+
+`LParticleSystem:typeOf(name: string) -> boolean`
 
 Returns whether this particle system handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `LParticleSystem`, `ParticleSystem`, `Drawable`, and `Object`.
+- `name` (`string`, required): Type name to compare against `LParticleSystem`, `ParticleSystem`, `Drawable`, and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this particle system handle matches a supported type name.
+---@param name string Type name to compare against `LParticleSystem`, `ParticleSystem`, `Drawable`, and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LParticleSystem:typeOf(name) end
+```
 
 #### Example
 
@@ -2566,13 +3462,23 @@ do
 end
 ```
 
-### `LParticleSystem:update(dt: number)`
+### LParticleSystem:update
+
+`LParticleSystem:update(dt: number)`
 
 Updates the particle system, applies optional physics collision, and invokes pending callbacks.
 
 **Parameters**
 
-- `dt` (`number`, required) - Delta time in seconds.
+- `dt` (`number`, required): Delta time in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Updates the particle system, applies optional physics collision, and invokes pending callbacks.
+---@param dt number Delta time in seconds.
+function LParticleSystem:update(dt) end
+```
 
 #### Example
 
@@ -2589,13 +3495,23 @@ do
 end
 ```
 
-### `LParticleSystem:warmUp(seconds: number)`
+### LParticleSystem:warmUp
+
+`LParticleSystem:warmUp(seconds: number)`
 
 Advances the system by a warm-up duration.
 
 **Parameters**
 
-- `seconds` (`number`, required) - Warm-up duration in seconds.
+- `seconds` (`number`, required): Warm-up duration in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Advances the system by a warm-up duration.
+---@param seconds number Warm-up duration in seconds.
+function LParticleSystem:warmUp(seconds) end
+```
 
 #### Example
 
@@ -2620,35 +3536,18 @@ do
 end
 ```
 
-### `LTrail`
+### LTrail:clear
 
-Lua-side wrapper for a trail effect.
-
-#### Example
-
-Exact example from [particle.lua](../blob/main/content/examples/particle.lua):
-
-```lua
-do
-  -- newTrail(lifetime, start_width) creates a line trail that fades over time.
-  -- lifetime: how long each trail point persists (seconds)
-  -- start_width: width in pixels at the head of the trail
-  -- Trails are ideal for sword swings, projectile paths, and cursor effects.
-
-  -- Example: glowing sword slash trail
-  local sword_trail = lurek.particle.newTrail(0.35, 12.0)
-  -- Head color: bright yellow-white at the slash origin
-  sword_trail:setHeadColor(1.0, 0.95, 0.6, 1.0)
-  -- Tail color: fades to orange and fully transparent
-  sword_trail:setTailColor(1.0, 0.4, 0.0, 0.0)
-  -- Push points each frame as the weapon tip moves
-  sword_trail:pushPoint(100, 200)
-end
-```
-
-### `LTrail:clear()`
+`LTrail:clear()`
 
 Clears all trail points on this object.
+
+**Lua API Stub**
+
+```lua
+--- Clears all trail points on this object.
+function LTrail:clear() end
+```
 
 #### Example
 
@@ -2668,16 +3567,28 @@ do
 end
 ```
 
-### `LTrail:drawToImage(w: integer, h: integer) -> LImageData`
+### LTrail:drawToImage
+
+`LTrail:drawToImage(w: integer, h: integer) -> LImageData`
 
 Draws the trail to image data. This method is available to Lua scripts.
 
 **Parameters**
 
-- `w` (`integer`, required) - Width of output image.
-- `h` (`integer`, required) - Height of output image.
+- `w` (`integer`, required): Width of output image.
+- `h` (`integer`, required): Height of output image.
 
 **Returns**: `LImageData` - Image data containing the rendered trail.
+
+**Lua API Stub**
+
+```lua
+--- Draws the trail to image data. This method is available to Lua scripts.
+---@param w number Width of output image.
+---@param h number Height of output image.
+---@return LImageData Image data containing the rendered trail.
+function LTrail:drawToImage(w, h) end
+```
 
 #### Example
 
@@ -2697,11 +3608,21 @@ do
 end
 ```
 
-### `LTrail:getLifetime() -> number`
+### LTrail:getLifetime
+
+`LTrail:getLifetime() -> number`
 
 Returns trail point lifetime. This method is available to Lua scripts.
 
 **Returns**: `number` - Lifetime in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Returns trail point lifetime. This method is available to Lua scripts.
+---@return number Lifetime in seconds.
+function LTrail:getLifetime() end
+```
 
 #### Example
 
@@ -2719,11 +3640,21 @@ do
 end
 ```
 
-### `LTrail:getPointCount() -> integer`
+### LTrail:getPointCount
+
+`LTrail:getPointCount() -> integer`
 
 Returns trail point count. This method is available to Lua scripts.
 
 **Returns**: `integer` - Point count.
+
+**Lua API Stub**
+
+```lua
+--- Returns trail point count. This method is available to Lua scripts.
+---@return number Point count.
+function LTrail:getPointCount() end
+```
 
 #### Example
 
@@ -2741,11 +3672,22 @@ do
 end
 ```
 
-### `LTrail:getWidth() -> number`
+### LTrail:getWidth
+
+`LTrail:getWidth() -> number`
 
 Returns trail width settings from this object.
 
 **Returns**: `number` - Start width.
+
+**Lua API Stub**
+
+```lua
+--- Returns trail width settings from this object.
+---@return number a Start width.
+---@return number b End width.
+function LTrail:getWidth() end
+```
 
 #### Example
 
@@ -2762,14 +3704,25 @@ do
 end
 ```
 
-### `LTrail:pushPoint(x: number, y: number)`
+### LTrail:pushPoint
+
+`LTrail:pushPoint(x: number, y: number)`
 
 Adds a point to the trail. This method is available to Lua scripts.
 
 **Parameters**
 
-- `x` (`number`, required) - Point x coordinate.
-- `y` (`number`, required) - Point y coordinate.
+- `x` (`number`, required): Point x coordinate.
+- `y` (`number`, required): Point y coordinate.
+
+**Lua API Stub**
+
+```lua
+--- Adds a point to the trail. This method is available to Lua scripts.
+---@param x number Point x coordinate.
+---@param y number Point y coordinate.
+function LTrail:pushPoint(x, y) end
+```
 
 #### Example
 
@@ -2793,16 +3746,29 @@ do
 end
 ```
 
-### `LTrail:setHeadColor(r: number, g: number, b: number, a: number)`
+### LTrail:setHeadColor
+
+`LTrail:setHeadColor(r: number, g: number, b: number, a: number)`
 
 Sets the color of the leading edge of the trail.
 
 **Parameters**
 
-- `r` (`number`, required) - Red channel.
-- `g` (`number`, required) - Green channel.
-- `b` (`number`, required) - Blue channel.
-- `a` (`number`, required) - Alpha channel.
+- `r` (`number`, required): Red channel.
+- `g` (`number`, required): Green channel.
+- `b` (`number`, required): Blue channel.
+- `a` (`number`, required): Alpha channel.
+
+**Lua API Stub**
+
+```lua
+--- Sets the color of the leading edge of the trail.
+---@param r number Red channel.
+---@param g number Green channel.
+---@param b number Blue channel.
+---@param a number Alpha channel.
+function LTrail:setHeadColor(r, g, b, a) end
+```
 
 #### Example
 
@@ -2820,13 +3786,23 @@ do
 end
 ```
 
-### `LTrail:setLifetime(lifetime: number)`
+### LTrail:setLifetime
+
+`LTrail:setLifetime(lifetime: number)`
 
 Sets trail point lifetime. This method is available to Lua scripts.
 
 **Parameters**
 
-- `lifetime` (`number`, required) - Point lifetime in seconds.
+- `lifetime` (`number`, required): Point lifetime in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Sets trail point lifetime. This method is available to Lua scripts.
+---@param lifetime number Point lifetime in seconds.
+function LTrail:setLifetime(lifetime) end
+```
 
 #### Example
 
@@ -2845,13 +3821,23 @@ do
 end
 ```
 
-### `LTrail:setMinDistance(distance: number)`
+### LTrail:setMinDistance
+
+`LTrail:setMinDistance(distance: number)`
 
 Sets minimum distance between trail points.
 
 **Parameters**
 
-- `distance` (`number`, required) - Minimum distance between points.
+- `distance` (`number`, required): Minimum distance between points.
+
+**Lua API Stub**
+
+```lua
+--- Sets minimum distance between trail points.
+---@param distance number Minimum distance between points.
+function LTrail:setMinDistance(distance) end
+```
 
 #### Example
 
@@ -2872,16 +3858,29 @@ do
 end
 ```
 
-### `LTrail:setTailColor(r: number, g: number, b: number, a: number)`
+### LTrail:setTailColor
+
+`LTrail:setTailColor(r: number, g: number, b: number, a: number)`
 
 Sets the color of the trailing edge of the trail.
 
 **Parameters**
 
-- `r` (`number`, required) - Red channel.
-- `g` (`number`, required) - Green channel.
-- `b` (`number`, required) - Blue channel.
-- `a` (`number`, required) - Alpha channel.
+- `r` (`number`, required): Red channel.
+- `g` (`number`, required): Green channel.
+- `b` (`number`, required): Blue channel.
+- `a` (`number`, required): Alpha channel.
+
+**Lua API Stub**
+
+```lua
+--- Sets the color of the trailing edge of the trail.
+---@param r number Red channel.
+---@param g number Green channel.
+---@param b number Blue channel.
+---@param a number Alpha channel.
+function LTrail:setTailColor(r, g, b, a) end
+```
 
 #### Example
 
@@ -2899,14 +3898,25 @@ do
 end
 ```
 
-### `LTrail:setWidth(start: number, [end]: number)`
+### LTrail:setWidth
+
+`LTrail:setWidth(start: number, [end]: number)`
 
 Sets trail start and optional end width.
 
 **Parameters**
 
-- `start` (`number`, required) - Start width.
-- `end` (`number`, optional) - End width.
+- `start` (`number`, required): Start width.
+- `end` (`number`, optional): End width.
+
+**Lua API Stub**
+
+```lua
+--- Sets trail start and optional end width.
+---@param start number Start width.
+---@param end_? number End width.
+function LTrail:setWidth(start, end_) end
+```
 
 #### Example
 
@@ -2926,11 +3936,21 @@ do
 end
 ```
 
-### `LTrail:type() -> string`
+### LTrail:type
+
+`LTrail:type() -> string`
 
 Returns the Lua-visible type name for this trail handle.
 
 **Returns**: `string` - The string `LTrail`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this trail handle.
+---@return string The string `LTrail`.
+function LTrail:type() end
+```
 
 #### Example
 
@@ -2946,15 +3966,26 @@ do
 end
 ```
 
-### `LTrail:typeOf(name: string) -> boolean`
+### LTrail:typeOf
+
+`LTrail:typeOf(name: string) -> boolean`
 
 Returns whether this trail handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `LTrail` and `Object`.
+- `name` (`string`, required): Type name to compare against `LTrail` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this trail handle matches a supported type name.
+---@param name string Type name to compare against `LTrail` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LTrail:typeOf(name) end
+```
 
 #### Example
 
@@ -2972,13 +4003,23 @@ do
 end
 ```
 
-### `LTrail:update(dt: number)`
+### LTrail:update
+
+`LTrail:update(dt: number)`
 
 Updates trail point lifetimes. This method is available to Lua scripts.
 
 **Parameters**
 
-- `dt` (`number`, required) - Delta time in seconds.
+- `dt` (`number`, required): Delta time in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Updates trail point lifetimes. This method is available to Lua scripts.
+---@param dt number Delta time in seconds.
+function LTrail:update(dt) end
+```
 
 #### Example
 
@@ -2998,11 +4039,15 @@ end
 ```
 
 
-## Examples
+[⬆ back to top](#table-of-contents)
+
+## 💡 Examples
 
 - [particle.lua](../blob/main/content/examples/particle.lua) - Particle system
 
-## Reference Games
+[⬆ back to top](#table-of-contents)
+
+## 🎮 Reference Games
 
 - [brick_breaker](../tree/main/content/games/action/brick_breaker) (action)
 - [endless_runner](../tree/main/content/games/action/endless_runner) (action)
@@ -3025,13 +4070,15 @@ end
 - [tetris](../tree/main/content/games/arcade/tetris) (arcade)
 - [paradroid](../tree/main/content/games/retro/paradroid) (retro)
 
-## Related Modules
+[⬆ back to top](#table-of-contents)
 
-- Previous: [[parallax|Module-parallax]]
-- Next: [[pathfind|Module-pathfind]]
-- [[ai|Module-ai]] - Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU.
-- [[animation|Module-animation]] - Sprite animation: source-rect changes over time. Imports only math; headless-testable.
-- [[automation|Module-automation]] - Automated input simulation for headless tests, QA replay, recorded sessions.
-- [[ecs|Module-ecs]] - Entity-Component-System: identity / data / behaviour separation for runtime composition.
-- [[i18n|Module-i18n]] - Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*).
-- [[minimap|Module-minimap]] - Grid-based minimap data model: fog of war, tracked objects, pings, viewport overlay.
+## 🔗 Related Modules
+
+- Previous: [parallax](Module-parallax)
+- Next: [pathfind](Module-pathfind)
+- [ai](Module-ai) - Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU.
+- [animation](Module-animation) - Sprite animation: source-rect changes over time. Imports only math; headless-testable.
+- [automation](Module-automation) - Automated input simulation for headless tests, QA replay, recorded sessions.
+- [ecs](Module-ecs) - Entity-Component-System: identity / data / behaviour separation for runtime composition.
+- [i18n](Module-i18n) - Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*).
+- [minimap](Module-minimap) - Grid-based minimap data model: fog of war, tracked objects, pings, viewport overlay.

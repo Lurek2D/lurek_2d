@@ -4,186 +4,138 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
-- [Purpose](#purpose)
-- [Summary](#summary)
-- [Minimal Module Example](#minimal-module-example)
-- [Key Types](#key-types)
-- [API Overview](#api-overview)
-- [Module Functions](#module-functions)
-  - [lurek.terminal.addCompletion(candidate: string)](#lurekterminaladdcompletioncandidate-string)
-  - [lurek.terminal.applyTheme(terminal: LTerminal, theme: string)](#lurekterminalapplythemeterminal-lterminal-theme-string)
-  - [lurek.terminal.clearCmdHistory(terminal: LTerminal)](#lurekterminalclearcmdhistoryterminal-lterminal)
-  - [lurek.terminal.clearCompletions()](#lurekterminalclearcompletions)
-  - [lurek.terminal.cmdHistoryLen(terminal: LTerminal) -> integer](#lurekterminalcmdhistorylenterminal-lterminal-integer)
-  - [lurek.terminal.getCompletions(prefix: string) -> string[]](#lurekterminalgetcompletionsprefix-string-string)
-  - [lurek.terminal.getMaxCols() -> integer](#lurekterminalgetmaxcols-integer)
-  - [lurek.terminal.getMaxRows() -> integer](#lurekterminalgetmaxrows-integer)
-  - [lurek.terminal.getScrollback(terminal: LTerminal, offset: integer, count: integer) -> string[]](#lurekterminalgetscrollbackterminal-lterminal-offset-integer-count-integer-string)
-  - [lurek.terminal.newBorder(col: integer, row: integer, width: integer, height: integer) -> LWidget](#lurekterminalnewbordercol-integer-row-integer-width-integer-height-integer-lwidget)
-  - [lurek.terminal.newButton(col: integer, row: integer, width: integer, [height]: integer, [text]: string) -> LWidget](#lurekterminalnewbuttoncol-integer-row-integer-width-integer-height-integer-text-string-lwidget)
-  - [lurek.terminal.newLabel(col: integer, row: integer, [text]: string) -> LWidget](#lurekterminalnewlabelcol-integer-row-integer-text-string-lwidget)
-  - [lurek.terminal.newList(col: integer, row: integer, width: integer, height: integer) -> LWidget](#lurekterminalnewlistcol-integer-row-integer-width-integer-height-integer-lwidget)
-  - [lurek.terminal.newPanel(col: integer, row: integer, [width]: integer, [height]: integer) -> LWidget](#lurekterminalnewpanelcol-integer-row-integer-width-integer-height-integer-lwidget)
-  - [lurek.terminal.newTerminal([cols]: integer, [rows]: integer) -> LTerminal](#lurekterminalnewterminalcols-integer-rows-integer-lterminal)
-  - [lurek.terminal.newTextBox(col: integer, row: integer, width: integer) -> LWidget](#lurekterminalnewtextboxcol-integer-row-integer-width-integer-lwidget)
-  - [lurek.terminal.nextCmd(terminal: LTerminal) -> string](#lurekterminalnextcmdterminal-lterminal-string)
-  - [lurek.terminal.nextCompletion(prefix: string) -> string](#lurekterminalnextcompletionprefix-string-string)
-  - [lurek.terminal.parseAnsi(text: string) -> table](#lurekterminalparseansitext-string-table)
-  - [lurek.terminal.prevCmd(terminal: LTerminal) -> string](#lurekterminalprevcmdterminal-lterminal-string)
-  - [lurek.terminal.printAnsi(terminal: LTerminal, col: integer, row: integer, text: string)](#lurekterminalprintansiterminal-lterminal-col-integer-row-integer-text-string)
-  - [lurek.terminal.printHighlighted(terminal: LTerminal, col: integer, row: integer, text: string, rules: table)](#lurekterminalprinthighlightedterminal-lterminal-col-integer-row-integer-text-string-rules-table)
-  - [lurek.terminal.pushCmdHistory(terminal: LTerminal, cmd: string)](#lurekterminalpushcmdhistoryterminal-lterminal-cmd-string)
-  - [lurek.terminal.pushScrollback(terminal: LTerminal, line: string)](#lurekterminalpushscrollbackterminal-lterminal-line-string)
-  - [lurek.terminal.removeCompletion(candidate: string)](#lurekterminalremovecompletioncandidate-string)
-  - [lurek.terminal.resetCompletion()](#lurekterminalresetcompletion)
-  - [lurek.terminal.scrollbackLen(terminal: LTerminal) -> integer](#lurekterminalscrollbacklenterminal-lterminal-integer)
-  - [lurek.terminal.setScrollbackCap(terminal: LTerminal, cap: integer)](#lurekterminalsetscrollbackcapterminal-lterminal-cap-integer)
-  - [lurek.terminal.stripAnsi(text: string) -> string](#lurekterminalstripansitext-string-string)
-- [Types and Methods](#types-and-methods)
+- [🎯 Purpose](#purpose)
+- [📋 Summary](#summary)
+- [🧩 Key Types](#key-types)
+- [📖 API Overview](#api-overview)
+- [⚙️ Module Functions](#module-functions)
+  - [lurek.terminal.addCompletion](#lurekterminaladdcompletion)
+  - [lurek.terminal.applyTheme](#lurekterminalapplytheme)
+  - [lurek.terminal.clearCmdHistory](#lurekterminalclearcmdhistory)
+  - [lurek.terminal.clearCompletions](#lurekterminalclearcompletions)
+  - [lurek.terminal.cmdHistoryLen](#lurekterminalcmdhistorylen)
+  - [lurek.terminal.getCompletions](#lurekterminalgetcompletions)
+  - [lurek.terminal.getMaxCols](#lurekterminalgetmaxcols)
+  - [lurek.terminal.getMaxRows](#lurekterminalgetmaxrows)
+  - [lurek.terminal.getScrollback](#lurekterminalgetscrollback)
+  - [lurek.terminal.newBorder](#lurekterminalnewborder)
+  - [lurek.terminal.newButton](#lurekterminalnewbutton)
+  - [lurek.terminal.newLabel](#lurekterminalnewlabel)
+  - [lurek.terminal.newList](#lurekterminalnewlist)
+  - [lurek.terminal.newPanel](#lurekterminalnewpanel)
+  - [lurek.terminal.newTerminal](#lurekterminalnewterminal)
+  - [lurek.terminal.newTextBox](#lurekterminalnewtextbox)
+  - [lurek.terminal.nextCmd](#lurekterminalnextcmd)
+  - [lurek.terminal.nextCompletion](#lurekterminalnextcompletion)
+  - [lurek.terminal.parseAnsi](#lurekterminalparseansi)
+  - [lurek.terminal.prevCmd](#lurekterminalprevcmd)
+  - [lurek.terminal.printAnsi](#lurekterminalprintansi)
+  - [lurek.terminal.printHighlighted](#lurekterminalprinthighlighted)
+  - [lurek.terminal.pushCmdHistory](#lurekterminalpushcmdhistory)
+  - [lurek.terminal.pushScrollback](#lurekterminalpushscrollback)
+  - [lurek.terminal.removeCompletion](#lurekterminalremovecompletion)
+  - [lurek.terminal.resetCompletion](#lurekterminalresetcompletion)
+  - [lurek.terminal.scrollbackLen](#lurekterminalscrollbacklen)
+  - [lurek.terminal.setScrollbackCap](#lurekterminalsetscrollbackcap)
+  - [lurek.terminal.stripAnsi](#lurekterminalstripansi)
+- [🔷 Module Types](#module-types)
   - [LTerminal](#lterminal)
-  - [LTerminal:addWidget(widget: LWidget)](#lterminaladdwidgetwidget-lwidget)
-  - [LTerminal:autoResize()](#lterminalautoresize)
-  - [LTerminal:clear()](#lterminalclear)
-  - [LTerminal:clearWidgets()](#lterminalclearwidgets)
-  - [LTerminal:get(col: integer, row: integer) -> integer, number, number, number, number, number, number, number, number](#lterminalgetcol-integer-row-integer-integer-number-number-number-number-number-number-number-number)
-  - [LTerminal:getCellSize() -> number, number](#lterminalgetcellsize-number-number)
-  - [LTerminal:getDimensions() -> integer, integer](#lterminalgetdimensions-integer-integer)
-  - [LTerminal:getFocused() -> LWidget](#lterminalgetfocused-lwidget)
-  - [LTerminal:getWidgetCount() -> integer](#lterminalgetwidgetcount-integer)
-  - [LTerminal:keypressed(key: string) -> boolean](#lterminalkeypressedkey-string-boolean)
-  - [LTerminal:mousepressed(px: number, py: number, [button]: integer)](#lterminalmousepressedpx-number-py-number-button-integer)
-  - [LTerminal:print(col: integer, row: integer, text: string)](#lterminalprintcol-integer-row-integer-text-string)
-  - [LTerminal:removeWidget(widget: LWidget)](#lterminalremovewidgetwidget-lwidget)
-  - [LTerminal:render([x]: number, [y]: number)](#lterminalrenderx-number-y-number)
-  - [LTerminal:resetCellSize()](#lterminalresetcellsize)
-  - [LTerminal:set(col: integer, row: integer, ch: string|number, [fr]: number, [fg]: number, [fb]: number, [fa]: number, [br]: number, [bg]: number, [bb]: number, [ba]: number)](#lterminalsetcol-integer-row-integer-ch-stringnumber-fr-number-fg-number-fb-number-fa-number-br-number-bg-number-bb-number-ba-number)
-  - [LTerminal:setCellSize(w: number, h: number)](#lterminalsetcellsizew-number-h-number)
-  - [LTerminal:setFocus([widget]: LWidget)](#lterminalsetfocuswidget-lwidget)
-  - [LTerminal:setFont(height: integer)](#lterminalsetfontheight-integer)
-  - [LTerminal:textinput(text: string) -> boolean](#lterminaltextinputtext-string-boolean)
-  - [LTerminal:type() -> string](#lterminaltype-string)
-  - [LTerminal:typeOf(name: string) -> boolean](#lterminaltypeofname-string-boolean)
   - [LWidget](#lwidget)
-  - [LWidget:addChild(child: LWidget)](#lwidgetaddchildchild-lwidget)
-  - [LWidget:addItem(item: string)](#lwidgetadditemitem-string)
-  - [LWidget:clearChildren()](#lwidgetclearchildren)
-  - [LWidget:clearItems()](#lwidgetclearitems)
-  - [LWidget:getChild(index: integer) -> LWidget](#lwidgetgetchildindex-integer-lwidget)
-  - [LWidget:getChildCount() -> integer](#lwidgetgetchildcount-integer)
-  - [LWidget:getColor() -> number, number, number, number](#lwidgetgetcolor-number-number-number-number)
-  - [LWidget:getItem(index: integer) -> string](#lwidgetgetitemindex-integer-string)
-  - [LWidget:getItemCount() -> integer](#lwidgetgetitemcount-integer)
-  - [LWidget:getMaxLength() -> integer](#lwidgetgetmaxlength-integer)
-  - [LWidget:getPosition() -> integer, integer](#lwidgetgetposition-integer-integer)
-  - [LWidget:getSelected() -> integer](#lwidgetgetselected-integer)
-  - [LWidget:getSize() -> integer, integer](#lwidgetgetsize-integer-integer)
-  - [LWidget:getStyle() -> string](#lwidgetgetstyle-string)
-  - [LWidget:getTag() -> string](#lwidgetgettag-string)
-  - [LWidget:getText() -> string](#lwidgetgettext-string)
-  - [LWidget:getTitle() -> string](#lwidgetgettitle-string)
-  - [LWidget:isEnabled() -> boolean](#lwidgetisenabled-boolean)
-  - [LWidget:isVisible() -> boolean](#lwidgetisvisible-boolean)
-  - [LWidget:removeChild(child: LWidget)](#lwidgetremovechildchild-lwidget)
-  - [LWidget:removeItem(index: integer)](#lwidgetremoveitemindex-integer)
-  - [LWidget:setColor(r: number, g: number, b: number, [a]: number)](#lwidgetsetcolorr-number-g-number-b-number-a-number)
-  - [LWidget:setEnabled(enabled: boolean)](#lwidgetsetenabledenabled-boolean)
-  - [LWidget:setMaxLength(maxLength: integer)](#lwidgetsetmaxlengthmaxlength-integer)
-  - [LWidget:setOnChange([callback]: function)](#lwidgetsetonchangecallback-function)
-  - [LWidget:setOnClick([callback]: function)](#lwidgetsetonclickcallback-function)
-  - [LWidget:setOnSelect([callback]: function)](#lwidgetsetonselectcallback-function)
-  - [LWidget:setPosition(col: integer, row: integer)](#lwidgetsetpositioncol-integer-row-integer)
-  - [LWidget:setSelected([index]: integer)](#lwidgetsetselectedindex-integer)
-  - [LWidget:setSize(width: integer, height: integer)](#lwidgetsetsizewidth-integer-height-integer)
-  - [LWidget:setStyle(styleName: string)](#lwidgetsetstylestylename-string)
-  - [LWidget:setTag(tag: string)](#lwidgetsettagtag-string)
-  - [LWidget:setText(text: string)](#lwidgetsettexttext-string)
-  - [LWidget:setTitle(title: string)](#lwidgetsettitletitle-string)
-  - [LWidget:setVisible(visible: boolean)](#lwidgetsetvisiblevisible-boolean)
-  - [LWidget:type() -> string](#lwidgettype-string)
-  - [LWidget:typeOf(name: string) -> boolean](#lwidgettypeofname-string-boolean)
-- [Examples](#examples)
-- [Reference Games](#reference-games)
-- [Related Modules](#related-modules)
+- [🔹 Module Methods](#module-methods)
+  - [LTerminal:addWidget](#lterminaladdwidget)
+  - [LTerminal:autoResize](#lterminalautoresize)
+  - [LTerminal:clear](#lterminalclear)
+  - [LTerminal:clearWidgets](#lterminalclearwidgets)
+  - [LTerminal:get](#lterminalget)
+  - [LTerminal:getCellSize](#lterminalgetcellsize)
+  - [LTerminal:getDimensions](#lterminalgetdimensions)
+  - [LTerminal:getFocused](#lterminalgetfocused)
+  - [LTerminal:getWidgetCount](#lterminalgetwidgetcount)
+  - [LTerminal:keypressed](#lterminalkeypressed)
+  - [LTerminal:mousepressed](#lterminalmousepressed)
+  - [LTerminal:print](#lterminalprint)
+  - [LTerminal:removeWidget](#lterminalremovewidget)
+  - [LTerminal:render](#lterminalrender)
+  - [LTerminal:resetCellSize](#lterminalresetcellsize)
+  - [LTerminal:set](#lterminalset)
+  - [LTerminal:setCellSize](#lterminalsetcellsize)
+  - [LTerminal:setFocus](#lterminalsetfocus)
+  - [LTerminal:setFont](#lterminalsetfont)
+  - [LTerminal:textinput](#lterminaltextinput)
+  - [LTerminal:type](#lterminaltype)
+  - [LTerminal:typeOf](#lterminaltypeof)
+  - [LWidget:addChild](#lwidgetaddchild)
+  - [LWidget:addItem](#lwidgetadditem)
+  - [LWidget:clearChildren](#lwidgetclearchildren)
+  - [LWidget:clearItems](#lwidgetclearitems)
+  - [LWidget:getChild](#lwidgetgetchild)
+  - [LWidget:getChildCount](#lwidgetgetchildcount)
+  - [LWidget:getColor](#lwidgetgetcolor)
+  - [LWidget:getItem](#lwidgetgetitem)
+  - [LWidget:getItemCount](#lwidgetgetitemcount)
+  - [LWidget:getMaxLength](#lwidgetgetmaxlength)
+  - [LWidget:getPosition](#lwidgetgetposition)
+  - [LWidget:getSelected](#lwidgetgetselected)
+  - [LWidget:getSize](#lwidgetgetsize)
+  - [LWidget:getStyle](#lwidgetgetstyle)
+  - [LWidget:getTag](#lwidgetgettag)
+  - [LWidget:getText](#lwidgetgettext)
+  - [LWidget:getTitle](#lwidgetgettitle)
+  - [LWidget:isEnabled](#lwidgetisenabled)
+  - [LWidget:isVisible](#lwidgetisvisible)
+  - [LWidget:removeChild](#lwidgetremovechild)
+  - [LWidget:removeItem](#lwidgetremoveitem)
+  - [LWidget:setColor](#lwidgetsetcolor)
+  - [LWidget:setEnabled](#lwidgetsetenabled)
+  - [LWidget:setMaxLength](#lwidgetsetmaxlength)
+  - [LWidget:setOnChange](#lwidgetsetonchange)
+  - [LWidget:setOnClick](#lwidgetsetonclick)
+  - [LWidget:setOnSelect](#lwidgetsetonselect)
+  - [LWidget:setPosition](#lwidgetsetposition)
+  - [LWidget:setSelected](#lwidgetsetselected)
+  - [LWidget:setSize](#lwidgetsetsize)
+  - [LWidget:setStyle](#lwidgetsetstyle)
+  - [LWidget:setTag](#lwidgetsettag)
+  - [LWidget:setText](#lwidgetsettext)
+  - [LWidget:setTitle](#lwidgetsettitle)
+  - [LWidget:setVisible](#lwidgetsetvisible)
+  - [LWidget:type](#lwidgettype)
+  - [LWidget:typeOf](#lwidgettypeof)
+- [💡 Examples](#examples)
+- [🎮 Reference Games](#reference-games)
+- [🔗 Related Modules](#related-modules)
 
 This page is generated from the current module specs, examples, and Lua API data.
 
 **Module group:** Feature Systems
 **Namespace:** `lurek.terminal`
 
-## Purpose
+## 🎯 Purpose
 
 Character-cell text-mode terminal for roguelikes, debug consoles, ASCII rendering.
 
-## Summary
+[⬆ back to top](#table-of-contents)
+
+## 📋 Summary
 
 Character-grid terminal emulator with ANSI escape sequence parsing, widget system, tab completion, scrollback buffer, command history, and syntax highlighting. `Terminal` manages a character grid with per-cell foreground/background colors, attributes (bold, italic, underline, blink), and cursor position. ANSI parsing handles CSI sequences for color, cursor movement, and screen clearing.
 
 Widgets provide pre-built terminal UI components with default shaded cell backgrounds for buttons, text boxes, lists, borders, and panels. `CompletionEngine` offers context-aware tab completion from registered word sources. Command history supports persistent storage with search and navigation. Syntax highlighting applies token-based coloring for Lua code display. Events signal key press, resize, and scroll actions for interactive applications. Exposed as `lurek.terminal.*`. Feature Systems tier.
 
-## Minimal Module Example
+[⬆ back to top](#table-of-contents)
 
-Module example from [terminal.lua](../blob/main/content/examples/terminal.lua):
-
-```lua
-  -- Call render(x, y) inside lurek.draw() to display the terminal.
-  -- x, y are optional pixel offsets (default 0, 0).
-  local term = lurek.terminal.newTerminal(80, 25)
-  term:addWidget(lurek.terminal.newLabel(2, 2, "Game HUD"))
-
-  -- In a real game, this would be inside lurek.draw():
-  function lurek.draw()
-    -- Render the terminal at the top-left corner of the window.
-    term:render(0, 0)
-  end
-end
-
---@api-stub: LTerminal:print
--- Writes text to the terminal grid starting at a specific cell
-do
-  -- print(col, row, text) writes a string of characters into consecutive cells.
-  -- Faster than calling set() per character; uses default fg/bg from the theme.
-  ---@type LTerminal
-  local term = lurek.terminal.newTerminal(80, 25)
-
-  -- Simulate a REPL-style dev console.
-  term:print(1, 1, "lurek> print(2 + 2)")
-  term:print(1, 2, "4")
-  term:print(1, 3, "lurek> _")
-end
-
---@api-stub: LTerminal:setFont
--- Selects the nearest built-in bitmap font by pixel height and refits the window
-do
-  -- setFont picks the closest available monospace glyph set by height.
-  -- The terminal auto-resizes the window to match the new cell dimensions.
-  local term = lurek.terminal.newTerminal(80, 25)
-
-  -- A large font for a roguelike where each cell should be clearly visible.
-  term:setFont(24)
-
-  -- A small font for a dense debug console with many rows.
-  local debug_term = lurek.terminal.newTerminal(120, 50)
-  debug_term:setFont(12)
-end
-
---@api-stub: LTerminal:setCellSize
--- Overrides the cell width and height used for rendering and refits the window
-do
-  -- setCellSize manually controls pixel dimensions per cell, ignoring font metrics.
-  -- Useful for square-cell roguelikes or pixel-art tile grids.
-  local term = lurek.terminal.newTerminal(80, 25)
-```
-
-## Key Types
+## 🧩 Key Types
 
 - `LTerminal` (22 methods) - Lua-side userdata wrapping a terminal emulator grid with cell access, widgets, input, and rendering.
 - `LWidget` (37 methods) - Lua-side userdata wrapping a terminal widget (label, button, text box, list, border, or panel).
 
-## API Overview
+[⬆ back to top](#table-of-contents)
+
+## 📖 API Overview
 
 - Source spec: [docs/specs/terminal.md](../blob/main/docs/specs/terminal.md)
 
@@ -209,15 +161,19 @@ lurek.terminal.nextCompletion(prefix: string) -> string -- Cycles to the next ma
 -- ... 11 more module functions
 ```
 
-## Module Functions
+[⬆ back to top](#table-of-contents)
 
-### `lurek.terminal.addCompletion(candidate: string)`
+## ⚙️ Module Functions
+
+### lurek.terminal.addCompletion
+
+`lurek.terminal.addCompletion(candidate: string)`
 
 Registers a candidate string for tab-completion in the shared completion engine.
 
 **Parameters**
 
-- `candidate` (`string`, required) - The completion candidate to add.
+- `candidate` (`string`, required): The completion candidate to add.
 
 #### Example
 
@@ -236,14 +192,16 @@ do
 end
 ```
 
-### `lurek.terminal.applyTheme(terminal: LTerminal, theme: string)`
+### lurek.terminal.applyTheme
+
+`lurek.terminal.applyTheme(terminal: LTerminal, theme: string)`
 
 Applies a named color theme to the terminal, setting default foreground and background colors.
 
 **Parameters**
 
-- `terminal` (`LTerminal`, required) - The terminal to theme.
-- `theme` (`string`, required) - Theme name: "solarized_dark", "solarized_light", "monokai", "dracula", or "nord".
+- `terminal` (`LTerminal`, required): The terminal to theme.
+- `theme` (`string`, required): Theme name: "solarized_dark", "solarized_light", "monokai", "dracula", or "nord".
 
 #### Example
 
@@ -264,13 +222,15 @@ do
 end
 ```
 
-### `lurek.terminal.clearCmdHistory(terminal: LTerminal)`
+### lurek.terminal.clearCmdHistory
+
+`lurek.terminal.clearCmdHistory(terminal: LTerminal)`
 
 Removes all entries from the terminal command history.
 
 **Parameters**
 
-- `terminal` (`LTerminal`, required) - The terminal to clear.
+- `terminal` (`LTerminal`, required): The terminal to clear.
 
 #### Example
 
@@ -288,7 +248,9 @@ do
 end
 ```
 
-### `lurek.terminal.clearCompletions()`
+### lurek.terminal.clearCompletions
+
+`lurek.terminal.clearCompletions()`
 
 Removes all registered completion candidates from the shared completion engine.
 
@@ -306,13 +268,15 @@ do
 end
 ```
 
-### `lurek.terminal.cmdHistoryLen(terminal: LTerminal) -> integer`
+### lurek.terminal.cmdHistoryLen
+
+`lurek.terminal.cmdHistoryLen(terminal: LTerminal) -> integer`
 
 Returns the number of commands currently stored in the terminal command history.
 
 **Parameters**
 
-- `terminal` (`LTerminal`, required) - The terminal to query.
+- `terminal` (`LTerminal`, required): The terminal to query.
 
 **Returns**: `integer` - History entry count.
 
@@ -332,13 +296,15 @@ do
 end
 ```
 
-### `lurek.terminal.getCompletions(prefix: string) -> string[]`
+### lurek.terminal.getCompletions
+
+`lurek.terminal.getCompletions(prefix: string) -> string[]`
 
 Returns all completion candidates matching the given prefix string.
 
 **Parameters**
 
-- `prefix` (`string`, required) - The prefix to match against.
+- `prefix` (`string`, required): The prefix to match against.
 
 **Returns**: `string[]` - Matching candidate strings.
 
@@ -359,7 +325,9 @@ do
 end
 ```
 
-### `lurek.terminal.getMaxCols() -> integer`
+### lurek.terminal.getMaxCols
+
+`lurek.terminal.getMaxCols() -> integer`
 
 Returns the engine-defined maximum number of columns a terminal grid can have.
 
@@ -378,7 +346,9 @@ do
 end
 ```
 
-### `lurek.terminal.getMaxRows() -> integer`
+### lurek.terminal.getMaxRows
+
+`lurek.terminal.getMaxRows() -> integer`
 
 Returns the engine-defined maximum number of rows a terminal grid can have.
 
@@ -396,15 +366,17 @@ do
 end
 ```
 
-### `lurek.terminal.getScrollback(terminal: LTerminal, offset: integer, count: integer) -> string[]`
+### lurek.terminal.getScrollback
+
+`lurek.terminal.getScrollback(terminal: LTerminal, offset: integer, count: integer) -> string[]`
 
 Retrieves a range of lines from the terminal scrollback buffer.
 
 **Parameters**
 
-- `terminal` (`LTerminal`, required) - The terminal to read from.
-- `offset` (`integer`, required) - 0-based offset from the newest line.
-- `count` (`integer`, required) - Number of lines to retrieve.
+- `terminal` (`LTerminal`, required): The terminal to read from.
+- `offset` (`integer`, required): 0-based offset from the newest line.
+- `count` (`integer`, required): Number of lines to retrieve.
 
 **Returns**: `string[]` - Scrollback line strings.
 
@@ -431,16 +403,18 @@ do
 end
 ```
 
-### `lurek.terminal.newBorder(col: integer, row: integer, width: integer, height: integer) -> LWidget`
+### lurek.terminal.newBorder
+
+`lurek.terminal.newBorder(col: integer, row: integer, width: integer, height: integer) -> LWidget`
 
 Creates a new decorative border widget drawn using box-drawing characters.
 
 **Parameters**
 
-- `col` (`integer`, required) - Column position (1-based).
-- `row` (`integer`, required) - Row position (1-based).
-- `width` (`integer`, required) - Border width in cells.
-- `height` (`integer`, required) - Border height in cells.
+- `col` (`integer`, required): Column position (1-based).
+- `row` (`integer`, required): Row position (1-based).
+- `width` (`integer`, required): Border width in cells.
+- `height` (`integer`, required): Border height in cells.
 
 **Returns**: `LWidget` - The new border widget.
 
@@ -469,17 +443,19 @@ do
 end
 ```
 
-### `lurek.terminal.newButton(col: integer, row: integer, width: integer, [height]: integer, [text]: string) -> LWidget`
+### lurek.terminal.newButton
+
+`lurek.terminal.newButton(col: integer, row: integer, width: integer, [height]: integer, [text]: string) -> LWidget`
 
 Creates a new clickable button widget with the given position, size, and label text.
 
 **Parameters**
 
-- `col` (`integer`, required) - Column position (1-based).
-- `row` (`integer`, required) - Row position (1-based).
-- `width` (`integer`, required) - Button width in cells.
-- `height` (`integer`, optional) - Button height in cells (default 1).
-- `text` (`string`, optional) - Button label text (default empty).
+- `col` (`integer`, required): Column position (1-based).
+- `row` (`integer`, required): Row position (1-based).
+- `width` (`integer`, required): Button width in cells.
+- `height` (`integer`, optional): Button height in cells (default 1).
+- `text` (`string`, optional): Button label text (default empty).
 
 **Returns**: `LWidget` - The new button widget.
 
@@ -508,15 +484,17 @@ do
 end
 ```
 
-### `lurek.terminal.newLabel(col: integer, row: integer, [text]: string) -> LWidget`
+### lurek.terminal.newLabel
+
+`lurek.terminal.newLabel(col: integer, row: integer, [text]: string) -> LWidget`
 
 Creates a new label widget that displays static text at the given cell position.
 
 **Parameters**
 
-- `col` (`integer`, required) - Column position (1-based).
-- `row` (`integer`, required) - Row position (1-based).
-- `text` (`string`, optional) - Initial text (default empty).
+- `col` (`integer`, required): Column position (1-based).
+- `row` (`integer`, required): Row position (1-based).
+- `text` (`string`, optional): Initial text (default empty).
 
 **Returns**: `LWidget` - The new label widget.
 
@@ -541,16 +519,18 @@ do
 end
 ```
 
-### `lurek.terminal.newList(col: integer, row: integer, width: integer, height: integer) -> LWidget`
+### lurek.terminal.newList
+
+`lurek.terminal.newList(col: integer, row: integer, width: integer, height: integer) -> LWidget`
 
 Creates a new scrollable list widget for displaying and selecting items.
 
 **Parameters**
 
-- `col` (`integer`, required) - Column position (1-based).
-- `row` (`integer`, required) - Row position (1-based).
-- `width` (`integer`, required) - List width in cells.
-- `height` (`integer`, required) - List height in cells (visible rows).
+- `col` (`integer`, required): Column position (1-based).
+- `row` (`integer`, required): Row position (1-based).
+- `width` (`integer`, required): List width in cells.
+- `height` (`integer`, required): List height in cells (visible rows).
 
 **Returns**: `LWidget` - The new list widget.
 
@@ -579,16 +559,18 @@ do
 end
 ```
 
-### `lurek.terminal.newPanel(col: integer, row: integer, [width]: integer, [height]: integer) -> LWidget`
+### lurek.terminal.newPanel
+
+`lurek.terminal.newPanel(col: integer, row: integer, [width]: integer, [height]: integer) -> LWidget`
 
 Creates a new panel widget that can contain child widgets for grouped layout.
 
 **Parameters**
 
-- `col` (`integer`, required) - Column position (1-based).
-- `row` (`integer`, required) - Row position (1-based).
-- `width` (`integer`, optional) - Panel width in cells (default 1).
-- `height` (`integer`, optional) - Panel height in cells (default 1).
+- `col` (`integer`, required): Column position (1-based).
+- `row` (`integer`, required): Row position (1-based).
+- `width` (`integer`, optional): Panel width in cells (default 1).
+- `height` (`integer`, optional): Panel height in cells (default 1).
 
 **Returns**: `LWidget` - The new panel widget.
 
@@ -614,14 +596,16 @@ do
 end
 ```
 
-### `lurek.terminal.newTerminal([cols]: integer, [rows]: integer) -> LTerminal`
+### lurek.terminal.newTerminal
+
+`lurek.terminal.newTerminal([cols]: integer, [rows]: integer) -> LTerminal`
 
 Creates a new terminal emulator grid and stages a window size that fits its active cell metrics.
 
 **Parameters**
 
-- `cols` (`integer`, optional) - Number of columns (default 80).
-- `rows` (`integer`, optional) - Number of rows (default 40).
+- `cols` (`integer`, optional): Number of columns (default 80).
+- `rows` (`integer`, optional): Number of rows (default 40).
 
 **Returns**: `LTerminal` - The new terminal object.
 
@@ -647,15 +631,17 @@ do
 end
 ```
 
-### `lurek.terminal.newTextBox(col: integer, row: integer, width: integer) -> LWidget`
+### lurek.terminal.newTextBox
+
+`lurek.terminal.newTextBox(col: integer, row: integer, width: integer) -> LWidget`
 
 Creates a new single-line text input widget at the given position with a fixed width.
 
 **Parameters**
 
-- `col` (`integer`, required) - Column position (1-based).
-- `row` (`integer`, required) - Row position (1-based).
-- `width` (`integer`, required) - Input field width in cells.
+- `col` (`integer`, required): Column position (1-based).
+- `row` (`integer`, required): Row position (1-based).
+- `width` (`integer`, required): Input field width in cells.
 
 **Returns**: `LWidget` - The new text box widget.
 
@@ -682,13 +668,15 @@ do
 end
 ```
 
-### `lurek.terminal.nextCmd(terminal: LTerminal) -> string`
+### lurek.terminal.nextCmd
+
+`lurek.terminal.nextCmd(terminal: LTerminal) -> string`
 
 Navigates forward in the terminal command history, returning the next command or nil if at the end.
 
 **Parameters**
 
-- `terminal` (`LTerminal`, required) - The terminal to navigate.
+- `terminal` (`LTerminal`, required): The terminal to navigate.
 
 **Returns**: `string` - The next command, or nil.
 
@@ -712,13 +700,15 @@ do
 end
 ```
 
-### `lurek.terminal.nextCompletion(prefix: string) -> string`
+### lurek.terminal.nextCompletion
+
+`lurek.terminal.nextCompletion(prefix: string) -> string`
 
 Cycles to the next matching completion candidate for the given prefix, wrapping around after the last match.
 
 **Parameters**
 
-- `prefix` (`string`, required) - The prefix to match against.
+- `prefix` (`string`, required): The prefix to match against.
 
 **Returns**: `string` - The next matching candidate, or nil if none match.
 
@@ -742,13 +732,15 @@ do
 end
 ```
 
-### `lurek.terminal.parseAnsi(text: string) -> table`
+### lurek.terminal.parseAnsi
+
+`lurek.terminal.parseAnsi(text: string) -> table`
 
 Parses ANSI escape sequences in a string into an array of span tables with text, bold, fg, and bg fields.
 
 **Parameters**
 
-- `text` (`string`, required) - Input string with ANSI codes.
+- `text` (`string`, required): Input string with ANSI codes.
 
 **Returns**: `table` - Array of span tables: { text=string, bold=boolean, fg?={r,g,b}, bg?={r,g,b} }.
 
@@ -770,13 +762,15 @@ do
 end
 ```
 
-### `lurek.terminal.prevCmd(terminal: LTerminal) -> string`
+### lurek.terminal.prevCmd
+
+`lurek.terminal.prevCmd(terminal: LTerminal) -> string`
 
 Navigates backward in the terminal command history, returning the previous command or nil if at the start.
 
 **Parameters**
 
-- `terminal` (`LTerminal`, required) - The terminal to navigate.
+- `terminal` (`LTerminal`, required): The terminal to navigate.
 
 **Returns**: `string` - The previous command, or nil.
 
@@ -806,16 +800,18 @@ do
 end
 ```
 
-### `lurek.terminal.printAnsi(terminal: LTerminal, col: integer, row: integer, text: string)`
+### lurek.terminal.printAnsi
+
+`lurek.terminal.printAnsi(terminal: LTerminal, col: integer, row: integer, text: string)`
 
 Renders ANSI-colored text directly onto the terminal grid at the given cell position.
 
 **Parameters**
 
-- `terminal` (`LTerminal`, required) - The terminal to print to.
-- `col` (`integer`, required) - Starting column (1-based).
-- `row` (`integer`, required) - Row to print on (1-based).
-- `text` (`string`, required) - Text containing ANSI escape sequences.
+- `terminal` (`LTerminal`, required): The terminal to print to.
+- `col` (`integer`, required): Starting column (1-based).
+- `row` (`integer`, required): Row to print on (1-based).
+- `text` (`string`, required): Text containing ANSI escape sequences.
 
 #### Example
 
@@ -833,17 +829,19 @@ do
 end
 ```
 
-### `lurek.terminal.printHighlighted(terminal: LTerminal, col: integer, row: integer, text: string, rules: table)`
+### lurek.terminal.printHighlighted
+
+`lurek.terminal.printHighlighted(terminal: LTerminal, col: integer, row: integer, text: string, rules: table)`
 
 Renders syntax-highlighted text onto the terminal grid using a table of highlight rules with regex patterns and colors.
 
 **Parameters**
 
-- `terminal` (`LTerminal`, required) - The terminal to print to.
-- `col` (`integer`, required) - Starting column (1-based).
-- `row` (`integer`, required) - Row to print on (1-based).
-- `text` (`string`, required) - The text to highlight.
-- `rules` (`table`, required) - Array of rule tables, each with `pattern` (string), `fg` (table {r,g,b} 0-255), and optional `bg` (table {r,g,b} 0-255).
+- `terminal` (`LTerminal`, required): The terminal to print to.
+- `col` (`integer`, required): Starting column (1-based).
+- `row` (`integer`, required): Row to print on (1-based).
+- `text` (`string`, required): The text to highlight.
+- `rules` (`table`, required): Array of rule tables, each with `pattern` (string), `fg` (table {r,g,b} 0-255), and optional `bg` (table {r,g,b} 0-255).
 
 #### Example
 
@@ -869,14 +867,16 @@ do
 end
 ```
 
-### `lurek.terminal.pushCmdHistory(terminal: LTerminal, cmd: string)`
+### lurek.terminal.pushCmdHistory
+
+`lurek.terminal.pushCmdHistory(terminal: LTerminal, cmd: string)`
 
 Appends a command string to the terminal command history for up/down arrow recall.
 
 **Parameters**
 
-- `terminal` (`LTerminal`, required) - The terminal to push to.
-- `cmd` (`string`, required) - The command string to store.
+- `terminal` (`LTerminal`, required): The terminal to push to.
+- `cmd` (`string`, required): The command string to store.
 
 #### Example
 
@@ -898,14 +898,16 @@ do
 end
 ```
 
-### `lurek.terminal.pushScrollback(terminal: LTerminal, line: string)`
+### lurek.terminal.pushScrollback
+
+`lurek.terminal.pushScrollback(terminal: LTerminal, line: string)`
 
 Appends a line of text to the terminal scrollback buffer for later retrieval.
 
 **Parameters**
 
-- `terminal` (`LTerminal`, required) - The terminal to push to.
-- `line` (`string`, required) - The text line to append.
+- `terminal` (`LTerminal`, required): The terminal to push to.
+- `line` (`string`, required): The text line to append.
 
 #### Example
 
@@ -925,13 +927,15 @@ do
 end
 ```
 
-### `lurek.terminal.removeCompletion(candidate: string)`
+### lurek.terminal.removeCompletion
+
+`lurek.terminal.removeCompletion(candidate: string)`
 
 Removes a previously registered completion candidate from the shared completion engine.
 
 **Parameters**
 
-- `candidate` (`string`, required) - The completion candidate to remove.
+- `candidate` (`string`, required): The completion candidate to remove.
 
 #### Example
 
@@ -945,7 +949,9 @@ do
 end
 ```
 
-### `lurek.terminal.resetCompletion()`
+### lurek.terminal.resetCompletion
+
+`lurek.terminal.resetCompletion()`
 
 Resets the completion cycling state so the next call to nextCompletion starts from the first match.
 
@@ -964,13 +970,15 @@ do
 end
 ```
 
-### `lurek.terminal.scrollbackLen(terminal: LTerminal) -> integer`
+### lurek.terminal.scrollbackLen
+
+`lurek.terminal.scrollbackLen(terminal: LTerminal) -> integer`
 
 Returns the number of lines currently stored in the terminal scrollback buffer.
 
 **Parameters**
 
-- `terminal` (`LTerminal`, required) - The terminal to query.
+- `terminal` (`LTerminal`, required): The terminal to query.
 
 **Returns**: `integer` - Line count.
 
@@ -996,14 +1004,16 @@ do
 end
 ```
 
-### `lurek.terminal.setScrollbackCap(terminal: LTerminal, cap: integer)`
+### lurek.terminal.setScrollbackCap
+
+`lurek.terminal.setScrollbackCap(terminal: LTerminal, cap: integer)`
 
 Sets the maximum number of lines retained in the terminal scrollback buffer. Older lines are discarded when the cap is exceeded.
 
 **Parameters**
 
-- `terminal` (`LTerminal`, required) - The terminal to configure.
-- `cap` (`integer`, required) - Maximum number of scrollback lines.
+- `terminal` (`LTerminal`, required): The terminal to configure.
+- `cap` (`integer`, required): Maximum number of scrollback lines.
 
 #### Example
 
@@ -1021,13 +1031,15 @@ do
 end
 ```
 
-### `lurek.terminal.stripAnsi(text: string) -> string`
+### lurek.terminal.stripAnsi
+
+`lurek.terminal.stripAnsi(text: string) -> string`
 
 Removes all ANSI escape sequences from a string, returning plain text.
 
 **Parameters**
 
-- `text` (`string`, required) - Input string with ANSI codes.
+- `text` (`string`, required): Input string with ANSI codes.
 
 **Returns**: `string` - Clean text without escape sequences.
 
@@ -1048,11 +1060,21 @@ end
 ```
 
 
-## Types and Methods
+[⬆ back to top](#table-of-contents)
 
-### `LTerminal`
+## 🔷 Module Types
+
+### LTerminal
 
 Lua-side userdata wrapping a terminal emulator grid with cell access, widgets, input, and rendering.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side userdata wrapping a terminal emulator grid with cell access, widgets, input, and rendering.
+---@class LTerminal
+LTerminal = {}
+```
 
 #### Example
 
@@ -1076,565 +1098,17 @@ do
 end
 ```
 
-### `LTerminal:addWidget(widget: LWidget)`
-
-Attaches a widget to this terminal so it is rendered and receives input events.
-
-**Parameters**
-
-- `widget` (`LWidget`, required) - The widget to attach.
-
-#### Example
-
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
-
-```lua
-do
-  -- Widgets must be added to a terminal before they appear on screen.
-  -- The terminal owns rendering order: widgets draw on top of raw cells.
-  local term = lurek.terminal.newTerminal(80, 25)
-
-  -- Build a simple HUD with two labels.
-  local hp_label = lurek.terminal.newLabel(2, 2, "HP: 100/100")
-  local mp_label = lurek.terminal.newLabel(2, 3, "MP: 50/50")
-  term:addWidget(hp_label)
-  term:addWidget(mp_label)
-end
-```
-
-### `LTerminal:autoResize()`
-
-Requests the window to resize so it exactly fits the terminal grid at the current cell size.
-
-#### Example
-
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
-
-```lua
-do
-  -- autoResize recalculates window size from (cols * cell_w, rows * cell_h).
-  -- Call after changing font or cell size if you want a pixel-perfect fit.
-  local term = lurek.terminal.newTerminal(80, 25)
-  term:setFont(20)
-  term:autoResize()
-end
-```
-
-### `LTerminal:clear()`
-
-Clears all cells in the terminal grid, resetting characters and colors to defaults.
-
-#### Example
-
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
-
-```lua
-do
-  -- Call clear() at the start of each frame for a roguelike or when switching screens.
-  local term = lurek.terminal.newTerminal(80, 25)
-  term:set(1, 1, "#", 1, 1, 1, 1)
-  term:set(2, 1, "#", 1, 1, 1, 1)
-
-  -- Wipe the entire grid back to default (empty cells with theme colors).
-  term:clear()
-end
-```
-
-### `LTerminal:clearWidgets()`
-
-Removes all attached widgets from this terminal at once.
-
-#### Example
-
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
-
-```lua
-do
-  -- Use clearWidgets when transitioning between screens (e.g., menu -> gameplay).
-  local term = lurek.terminal.newTerminal(80, 25)
-  term:addWidget(lurek.terminal.newLabel(1, 1, "Loading..."))
-  term:addWidget(lurek.terminal.newLabel(1, 2, "Please wait"))
-
-  -- Wipe everything before building the new screen.
-  term:clearWidgets()
-end
-```
-
-### `LTerminal:get(col: integer, row: integer) -> integer, number, number, number, number, number, number, number, number`
-
-Reads the character and colors at a specific cell in the terminal grid.
-
-**Parameters**
-
-- `col` (`integer`, required) - Column index (1-based).
-- `row` (`integer`, required) - Row index (1-based).
-
-**Returns**: `integer, number, number, number, number, number, number, number, number` - Character codepoint, fg RGBA, bg RGBA.
-
-#### Example
-
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
-
-```lua
-do
-  -- get(col, row) returns 9 values: char codepoint, fg RGBA (4), bg RGBA (4).
-  -- Useful for collision detection in roguelikes or copying cell data.
-  local term = lurek.terminal.newTerminal(80, 25)
-  term:set(3, 3, "X", 1, 0, 0, 1, 0, 0, 0, 0)
-
-  local ch, fr, fg, fb, fa, br, bg, bb, ba = term:get(3, 3)
-  lurek.log.debug("cell='" .. string.char(ch) .. "' fg=(" .. fr .. "," .. fg .. "," .. fb .. ")", "term")
-end
-```
-
-### `LTerminal:getCellSize() -> number, number`
-
-Returns the active terminal cell width and height in pixels, using custom override or font metrics.
-
-**Returns**: `number, number` - Cell width and height in pixels.
-
-#### Example
-
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
-
-```lua
-do
-  -- getCellSize returns the current effective cell dimensions, whether from
-  -- a manual override or the active font metrics.
-  local term = lurek.terminal.newTerminal(80, 25)
-  term:setCellSize(18, 18)
-
-  local cw, ch = term:getCellSize()
-  lurek.log.debug("cell pixels: " .. cw .. "x" .. ch, "term") -- 18x18
-end
-```
-
-### `LTerminal:getDimensions() -> integer, integer`
-
-Returns the number of columns and rows in the terminal grid.
-
-**Returns**: `integer, integer` - Column count, row count.
-
-#### Example
-
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
-
-```lua
-do
-  -- getDimensions() returns cols, rows. Use to center content or set boundaries.
-  local term = lurek.terminal.newTerminal(80, 25)
-  local cols, rows = term:getDimensions()
-
-  -- Center a title label horizontally.
-  local title_text = "DUNGEON"
-  local center_col = math.floor((cols - #title_text) / 2) + 1
-  local title = lurek.terminal.newLabel(center_col, 1, title_text)
-  term:addWidget(title)
-end
-```
-
-### `LTerminal:getFocused() -> LWidget`
-
-Returns the widget that currently has keyboard focus, or nil if no widget is focused.
-
-**Returns**: `LWidget` - The focused widget, or nil.
-
-#### Example
-
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
-
-```lua
-do
-  -- Use getFocused to check state before forwarding input events.
-  local term = lurek.terminal.newTerminal(80, 25)
-  local input = lurek.terminal.newTextBox(2, 24, 60)
-  term:addWidget(input)
-  term:setFocus(input)
-
-  local focused = term:getFocused()
-  if focused == input then
-    lurek.log.debug("command input has focus", "term")
-  end
-end
-```
-
-### `LTerminal:getWidgetCount() -> integer`
-
-Returns the number of widgets currently attached to this terminal.
-
-**Returns**: `integer` - Widget count.
-
-#### Example
-
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
-
-```lua
-do
-  -- Check widget count to avoid adding duplicate widgets or for debug info.
-  local term = lurek.terminal.newTerminal(80, 25)
-  term:addWidget(lurek.terminal.newLabel(1, 1, "a"))
-  term:addWidget(lurek.terminal.newLabel(1, 2, "b"))
-
-  local count = term:getWidgetCount()
-  lurek.log.debug("attached widgets: " .. count, "term") -- 2
-end
-```
-
-### `LTerminal:keypressed(key: string) -> boolean`
-
-Forwards a key press event to the terminal for widget input processing.
-
-**Parameters**
-
-- `key` (`string`, required) - The key name (e.g. "return", "backspace", "left").
-
-**Returns**: `boolean` - True if the terminal consumed the key event.
-
-#### Example
-
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
-
-```lua
-do
-  -- Call keypressed from your lurek.keypressed callback to dispatch keys to widgets.
-  -- Returns true if the terminal consumed the event (e.g., button activation).
-  local term = lurek.terminal.newTerminal(80, 25)
-  local btn = lurek.terminal.newButton(2, 2, 10, 1, "OK")
-  btn:setOnClick(function()
-    lurek.log.info("OK button activated via keyboard", "ui")
-  end)
-  term:addWidget(btn)
-  term:setFocus(btn)
-
-  -- Simulate pressing Enter while the button has focus.
-  local consumed = term:keypressed("return")
-  lurek.log.debug("key consumed: " .. tostring(consumed), "term") -- true
-end
-```
-
-### `LTerminal:mousepressed(px: number, py: number, [button]: integer)`
-
-Forwards a mouse press event to the terminal, converting pixel coordinates to cell coordinates.
-
-**Parameters**
-
-- `px` (`number`, required) - Pixel X position of the mouse click.
-- `py` (`number`, required) - Pixel Y position of the mouse click.
-- `button` (`integer`, optional) - Mouse button index (default 1 for left).
-
-#### Example
-
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
-
-```lua
-do
-  -- Call from lurek.mousepressed to let the terminal handle button clicks.
-  -- The terminal converts pixel positions to cell coordinates internally.
-  local term = lurek.terminal.newTerminal(80, 24)
-  local btn = lurek.terminal.newButton(2, 2, 10, 1, "Click me")
-  btn:setOnClick(function()
-    lurek.log.info("button clicked via mouse", "ui")
-  end)
-  term:addWidget(btn)
-
-  -- Simulate a mouse click at pixel position (20, 30), left button.
-  term:mousepressed(20, 30, 1)
-end
-```
-
-### `LTerminal:print(col: integer, row: integer, text: string)`
-
-Writes text to the terminal grid starting at a specific cell.
-
-**Parameters**
-
-- `col` (`integer`, required) - Column index (1-based) where writing starts.
-- `row` (`integer`, required) - Row index (1-based) where writing starts.
-- `text` (`string`, required) - Text to write into consecutive cells.
-
-#### Example
-
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
-
-```lua
-do
-  -- print(col, row, text) writes a string of characters into consecutive cells.
-  -- Faster than calling set() per character; uses default fg/bg from the theme.
-  ---@type LTerminal
-  local term = lurek.terminal.newTerminal(80, 25)
-
-  -- Simulate a REPL-style dev console.
-  term:print(1, 1, "lurek> print(2 + 2)")
-  term:print(1, 2, "4")
-  term:print(1, 3, "lurek> _")
-end
-```
-
-### `LTerminal:removeWidget(widget: LWidget)`
-
-Detaches a widget from this terminal, removing it from rendering and input handling.
-
-**Parameters**
-
-- `widget` (`LWidget`, required) - The widget to detach.
-
-#### Example
-
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
-
-```lua
-do
-  -- Remove widgets for temporary notifications that expire after a few seconds.
-  local term = lurek.terminal.newTerminal(80, 25)
-
-  -- A toast notification that should disappear after being shown.
-  local toast = lurek.terminal.newLabel(20, 1, "Item picked up!")
-  term:addWidget(toast)
-
-  -- Later (e.g., after 2 seconds): remove it.
-  term:removeWidget(toast)
-end
-```
-
-### `LTerminal:render([x]: number, [y]: number)`
-
-Renders the terminal grid and widgets and stages a window size matching the grid and active cell size.
-
-**Parameters**
-
-- `x` (`number`, optional) - Screen X offset in pixels (default 0).
-- `y` (`number`, optional) - Screen Y offset in pixels (default 0).
-
-#### Example
-
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
-
-```lua
-do
-  -- Call render(x, y) inside lurek.draw() to display the terminal.
-  -- x, y are optional pixel offsets (default 0, 0).
-  local term = lurek.terminal.newTerminal(80, 25)
-  term:addWidget(lurek.terminal.newLabel(2, 2, "Game HUD"))
-
-  -- In a real game, this would be inside lurek.draw():
-  function lurek.draw()
-    -- Render the terminal at the top-left corner of the window.
-    term:render(0, 0)
-  end
-end
-```
-
-### `LTerminal:resetCellSize()`
-
-Removes any custom cell size override, reverting to the active font metrics and refitting the window.
-
-#### Example
-
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
-
-```lua
-do
-  -- After experimenting with custom cell sizes, reset to let the font control layout.
-  local term = lurek.terminal.newTerminal(80, 25)
-  term:setCellSize(20, 20)
-
-  -- Revert to automatic sizing based on the active font.
-  term:resetCellSize()
-end
-```
-
-### `LTerminal:set(col: integer, row: integer, ch: string|number, [fr]: number, [fg]: number, [fb]: number, [fa]: number, [br]: number, [bg]: number, [bb]: number, [ba]: number)`
-
-Writes a character with foreground and background color to a specific cell in the terminal grid.
-
-**Parameters**
-
-- `col` (`integer`, required) - Column index (1-based).
-- `row` (`integer`, required) - Row index (1-based).
-- `ch` (`string|number`, required) - Character as a string or Unicode codepoint.
-- `fr` (`number`, optional) - Foreground red (0-1, default 1).
-- `fg` (`number`, optional) - Foreground green (0-1, default 1).
-- `fb` (`number`, optional) - Foreground blue (0-1, default 1).
-- `fa` (`number`, optional) - Foreground alpha (0-1, default 1).
-- `br` (`number`, optional) - Background red (0-1, default 0).
-- `bg` (`number`, optional) - Background green (0-1, default 0).
-- `bb` (`number`, optional) - Background blue (0-1, default 0).
-- `ba` (`number`, optional) - Background alpha (0-1, default 0).
-
-#### Example
-
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
-
-```lua
-do
-  -- set(col, row, ch, fr, fg, fb, fa, br, bg, bb, ba) writes one cell.
-  -- Colors are 0-1 floats: fg RGBA then bg RGBA. Omitted channels default to 1/0.
-  local term = lurek.terminal.newTerminal(80, 25)
-
-  -- Draw the player '@' symbol in green on a dark background.
-  term:set(10, 5, "@", 0, 1, 0, 1, 0.1, 0.1, 0.1, 1)
-
-  -- Draw a red '!' for a danger indicator (no background specified = transparent).
-  term:set(11, 5, "!", 1, 0.2, 0.2, 1)
-
-  -- You can also pass a Unicode codepoint as a number instead of a string.
-  term:set(12, 5, 9829, 1, 0, 0, 1) -- heart symbol (U+2665)
-end
-```
-
-### `LTerminal:setCellSize(w: number, h: number)`
-
-Overrides the cell width and height used for rendering this terminal grid and refits the window.
-
-**Parameters**
-
-- `w` (`number`, required) - Cell width in pixels.
-- `h` (`number`, required) - Cell height in pixels.
-
-#### Example
-
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
-
-```lua
-do
-  -- setCellSize manually controls pixel dimensions per cell, ignoring font metrics.
-  -- Useful for square-cell roguelikes or pixel-art tile grids.
-  local term = lurek.terminal.newTerminal(80, 25)
-
-  -- Force square 16x16 cells for a tile-based dungeon view.
-  term:setCellSize(16, 16)
-end
-```
-
-### `LTerminal:setFocus([widget]: LWidget)`
-
-Sets which widget currently has keyboard focus, or clears focus when nil is passed.
-
-**Parameters**
-
-- `widget` (`LWidget`, optional) - The widget to focus, or nil to clear focus.
-
-#### Example
-
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
-
-```lua
-do
-  -- Only one widget can have focus at a time. Focused TextBoxes receive typed text.
-  -- Pass nil to clear focus entirely (no widget receives keyboard input).
-  local term = lurek.terminal.newTerminal(80, 25)
-  local cmd_input = lurek.terminal.newTextBox(2, 24, 60)
-  term:addWidget(cmd_input)
-
-  -- Give focus to the command input so typing goes there.
-  term:setFocus(cmd_input)
-end
-```
-
-### `LTerminal:setFont(height: integer)`
-
-Selects the nearest built-in bitmap font by pixel height and refits the window to the terminal grid.
-
-**Parameters**
-
-- `height` (`integer`, required) - Desired font height in pixels.
-
-#### Example
-
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
-
-```lua
-do
-  -- setFont picks the closest available monospace glyph set by height.
-  -- The terminal auto-resizes the window to match the new cell dimensions.
-  local term = lurek.terminal.newTerminal(80, 25)
-
-  -- A large font for a roguelike where each cell should be clearly visible.
-  term:setFont(24)
-
-  -- A small font for a dense debug console with many rows.
-  local debug_term = lurek.terminal.newTerminal(120, 50)
-  debug_term:setFont(12)
-end
-```
-
-### `LTerminal:textinput(text: string) -> boolean`
-
-Forwards a text input event to the terminal for character entry into focused widgets.
-
-**Parameters**
-
-- `text` (`string`, required) - The text characters entered.
-
-**Returns**: `boolean` - True if the terminal consumed the text input.
-
-#### Example
-
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
-
-```lua
-do
-  -- Call textinput from your lurek.textinput callback for typing into TextBoxes.
-  -- Returns true if the terminal consumed the character.
-  local term = lurek.terminal.newTerminal(80, 25)
-  local input = lurek.terminal.newTextBox(2, 24, 60)
-  term:addWidget(input)
-  term:setFocus(input)
-
-  -- Simulate the player typing "hi" into the console.
-  term:textinput("h")
-  term:textinput("i")
-  -- input:getText() now returns "hi"
-end
-```
-
-### `LTerminal:type() -> string`
-
-Returns the type name string "LTerminal".
-
-**Returns**: `string` - Always "LTerminal".
-
-#### Example
-
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
-
-```lua
-do
-  -- type() returns the string identifier of the userdata object.
-  -- Useful for runtime type checks in generic code.
-  local terminal_obj = lurek.terminal.newTerminal(80, 24)
-  local t = terminal_obj:type()
-  lurek.log.info("type = " .. t, "terminal") -- "LTerminal"
-end
-```
-
-### `LTerminal:typeOf(name: string) -> boolean`
-
-Checks whether this object matches a given type name. Accepts "LTerminal" or "Object".
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to test against.
-
-**Returns**: `boolean` - True if the name matches.
-
-#### Example
-
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
-
-```lua
-do
-  -- typeOf accepts "LTerminal" or "Object" (the base type for all engine userdata).
-  local terminal_obj = lurek.terminal.newTerminal(80, 24)
-  lurek.log.info("is LTerminal: " .. tostring(terminal_obj:typeOf("LTerminal")), "terminal") -- true
-  lurek.log.info("is Object: " .. tostring(terminal_obj:typeOf("Object")), "terminal")       -- true
-  lurek.log.info("is wrong: " .. tostring(terminal_obj:typeOf("Unknown")), "terminal")       -- false
-end
-```
-
-### `LWidget`
+### LWidget
 
 Lua-side userdata wrapping a terminal widget (label, button, text box, list, border, or panel).
+
+**Lua API Definition**
+
+```lua
+--- Lua-side userdata wrapping a terminal widget (label, button, text box, list, border, or panel).
+---@class LWidget
+LWidget = {}
+```
 
 #### Example
 
@@ -1661,13 +1135,831 @@ do
 end
 ```
 
-### `LWidget:addChild(child: LWidget)`
+
+[⬆ back to top](#table-of-contents)
+
+## 🔹 Module Methods
+
+### LTerminal:addWidget
+
+`LTerminal:addWidget(widget: LWidget)`
+
+Attaches a widget to this terminal so it is rendered and receives input events.
+
+**Parameters**
+
+- `widget` (`LWidget`, required): The widget to attach.
+
+**Lua API Stub**
+
+```lua
+--- Attaches a widget to this terminal so it is rendered and receives input events.
+---@param widget LWidget The widget to attach.
+function LTerminal:addWidget(widget) end
+```
+
+#### Example
+
+Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+
+```lua
+do
+  -- Widgets must be added to a terminal before they appear on screen.
+  -- The terminal owns rendering order: widgets draw on top of raw cells.
+  local term = lurek.terminal.newTerminal(80, 25)
+
+  -- Build a simple HUD with two labels.
+  local hp_label = lurek.terminal.newLabel(2, 2, "HP: 100/100")
+  local mp_label = lurek.terminal.newLabel(2, 3, "MP: 50/50")
+  term:addWidget(hp_label)
+  term:addWidget(mp_label)
+end
+```
+
+### LTerminal:autoResize
+
+`LTerminal:autoResize()`
+
+Requests the window to resize so it exactly fits the terminal grid at the current cell size.
+
+**Lua API Stub**
+
+```lua
+--- Requests the window to resize so it exactly fits the terminal grid at the current cell size.
+function LTerminal:autoResize() end
+```
+
+#### Example
+
+Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+
+```lua
+do
+  -- autoResize recalculates window size from (cols * cell_w, rows * cell_h).
+  -- Call after changing font or cell size if you want a pixel-perfect fit.
+  local term = lurek.terminal.newTerminal(80, 25)
+  term:setFont(20)
+  term:autoResize()
+end
+```
+
+### LTerminal:clear
+
+`LTerminal:clear()`
+
+Clears all cells in the terminal grid, resetting characters and colors to defaults.
+
+**Lua API Stub**
+
+```lua
+--- Clears all cells in the terminal grid, resetting characters and colors to defaults.
+function LTerminal:clear() end
+```
+
+#### Example
+
+Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+
+```lua
+do
+  -- Call clear() at the start of each frame for a roguelike or when switching screens.
+  local term = lurek.terminal.newTerminal(80, 25)
+  term:set(1, 1, "#", 1, 1, 1, 1)
+  term:set(2, 1, "#", 1, 1, 1, 1)
+
+  -- Wipe the entire grid back to default (empty cells with theme colors).
+  term:clear()
+end
+```
+
+### LTerminal:clearWidgets
+
+`LTerminal:clearWidgets()`
+
+Removes all attached widgets from this terminal at once.
+
+**Lua API Stub**
+
+```lua
+--- Removes all attached widgets from this terminal at once.
+function LTerminal:clearWidgets() end
+```
+
+#### Example
+
+Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+
+```lua
+do
+  -- Use clearWidgets when transitioning between screens (e.g., menu -> gameplay).
+  local term = lurek.terminal.newTerminal(80, 25)
+  term:addWidget(lurek.terminal.newLabel(1, 1, "Loading..."))
+  term:addWidget(lurek.terminal.newLabel(1, 2, "Please wait"))
+
+  -- Wipe everything before building the new screen.
+  term:clearWidgets()
+end
+```
+
+### LTerminal:get
+
+`LTerminal:get(col: integer, row: integer) -> integer, number, number, number, number, number, number, number, number`
+
+Reads the character and colors at a specific cell in the terminal grid.
+
+**Parameters**
+
+- `col` (`integer`, required): Column index (1-based).
+- `row` (`integer`, required): Row index (1-based).
+
+**Returns**: `integer, number, number, number, number, number, number, number, number` - Character codepoint, fg RGBA, bg RGBA.
+
+**Lua API Stub**
+
+```lua
+--- Reads the character and colors at a specific cell in the terminal grid.
+---@param col number Column index (1-based).
+---@param row number Row index (1-based).
+---@return number a Character codepoint, fg RGBA, bg RGBA.
+---@return number b Character codepoint, fg RGBA, bg RGBA.
+---@return number c Character codepoint, fg RGBA, bg RGBA.
+---@return number d Character codepoint, fg RGBA, bg RGBA.
+---@return number e Character codepoint, fg RGBA, bg RGBA.
+---@return number f Character codepoint, fg RGBA, bg RGBA.
+---@return number g Character codepoint, fg RGBA, bg RGBA.
+---@return number h Character codepoint, fg RGBA, bg RGBA.
+---@return number i Character codepoint, fg RGBA, bg RGBA.
+function LTerminal:get(col, row) end
+```
+
+#### Example
+
+Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+
+```lua
+do
+  -- get(col, row) returns 9 values: char codepoint, fg RGBA (4), bg RGBA (4).
+  -- Useful for collision detection in roguelikes or copying cell data.
+  local term = lurek.terminal.newTerminal(80, 25)
+  term:set(3, 3, "X", 1, 0, 0, 1, 0, 0, 0, 0)
+
+  local ch, fr, fg, fb, fa, br, bg, bb, ba = term:get(3, 3)
+  lurek.log.debug("cell='" .. string.char(ch) .. "' fg=(" .. fr .. "," .. fg .. "," .. fb .. ")", "term")
+end
+```
+
+### LTerminal:getCellSize
+
+`LTerminal:getCellSize() -> number, number`
+
+Returns the active terminal cell width and height in pixels, using custom override or font metrics.
+
+**Returns**: `number, number` - Cell width and height in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns the active terminal cell width and height in pixels, using custom override or font metrics.
+---@return number a Cell width and height in pixels.
+---@return number b Cell width and height in pixels.
+function LTerminal:getCellSize() end
+```
+
+#### Example
+
+Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+
+```lua
+do
+  -- getCellSize returns the current effective cell dimensions, whether from
+  -- a manual override or the active font metrics.
+  local term = lurek.terminal.newTerminal(80, 25)
+  term:setCellSize(18, 18)
+
+  local cw, ch = term:getCellSize()
+  lurek.log.debug("cell pixels: " .. cw .. "x" .. ch, "term") -- 18x18
+end
+```
+
+### LTerminal:getDimensions
+
+`LTerminal:getDimensions() -> integer, integer`
+
+Returns the number of columns and rows in the terminal grid.
+
+**Returns**: `integer, integer` - Column count, row count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of columns and rows in the terminal grid.
+---@return number a Column count, row count.
+---@return number b Column count, row count.
+function LTerminal:getDimensions() end
+```
+
+#### Example
+
+Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+
+```lua
+do
+  -- getDimensions() returns cols, rows. Use to center content or set boundaries.
+  local term = lurek.terminal.newTerminal(80, 25)
+  local cols, rows = term:getDimensions()
+
+  -- Center a title label horizontally.
+  local title_text = "DUNGEON"
+  local center_col = math.floor((cols - #title_text) / 2) + 1
+  local title = lurek.terminal.newLabel(center_col, 1, title_text)
+  term:addWidget(title)
+end
+```
+
+### LTerminal:getFocused
+
+`LTerminal:getFocused() -> LWidget`
+
+Returns the widget that currently has keyboard focus, or nil if no widget is focused.
+
+**Returns**: `LWidget` - The focused widget, or nil.
+
+**Lua API Stub**
+
+```lua
+--- Returns the widget that currently has keyboard focus, or nil if no widget is focused.
+---@return LWidget The focused widget, or nil.
+function LTerminal:getFocused() end
+```
+
+#### Example
+
+Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+
+```lua
+do
+  -- Use getFocused to check state before forwarding input events.
+  local term = lurek.terminal.newTerminal(80, 25)
+  local input = lurek.terminal.newTextBox(2, 24, 60)
+  term:addWidget(input)
+  term:setFocus(input)
+
+  local focused = term:getFocused()
+  if focused == input then
+    lurek.log.debug("command input has focus", "term")
+  end
+end
+```
+
+### LTerminal:getWidgetCount
+
+`LTerminal:getWidgetCount() -> integer`
+
+Returns the number of widgets currently attached to this terminal.
+
+**Returns**: `integer` - Widget count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of widgets currently attached to this terminal.
+---@return number Widget count.
+function LTerminal:getWidgetCount() end
+```
+
+#### Example
+
+Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+
+```lua
+do
+  -- Check widget count to avoid adding duplicate widgets or for debug info.
+  local term = lurek.terminal.newTerminal(80, 25)
+  term:addWidget(lurek.terminal.newLabel(1, 1, "a"))
+  term:addWidget(lurek.terminal.newLabel(1, 2, "b"))
+
+  local count = term:getWidgetCount()
+  lurek.log.debug("attached widgets: " .. count, "term") -- 2
+end
+```
+
+### LTerminal:keypressed
+
+`LTerminal:keypressed(key: string) -> boolean`
+
+Forwards a key press event to the terminal for widget input processing.
+
+**Parameters**
+
+- `key` (`string`, required): The key name (e.g. "return", "backspace", "left").
+
+**Returns**: `boolean` - True if the terminal consumed the key event.
+
+**Lua API Stub**
+
+```lua
+--- Forwards a key press event to the terminal for widget input processing.
+---@param key string The key name (e.g. "return", "backspace", "left").
+---@return boolean True if the terminal consumed the key event.
+function LTerminal:keypressed(key) end
+```
+
+#### Example
+
+Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+
+```lua
+do
+  -- Call keypressed from your lurek.keypressed callback to dispatch keys to widgets.
+  -- Returns true if the terminal consumed the event (e.g., button activation).
+  local term = lurek.terminal.newTerminal(80, 25)
+  local btn = lurek.terminal.newButton(2, 2, 10, 1, "OK")
+  btn:setOnClick(function()
+    lurek.log.info("OK button activated via keyboard", "ui")
+  end)
+  term:addWidget(btn)
+  term:setFocus(btn)
+
+  -- Simulate pressing Enter while the button has focus.
+  local consumed = term:keypressed("return")
+  lurek.log.debug("key consumed: " .. tostring(consumed), "term") -- true
+end
+```
+
+### LTerminal:mousepressed
+
+`LTerminal:mousepressed(px: number, py: number, [button]: integer)`
+
+Forwards a mouse press event to the terminal, converting pixel coordinates to cell coordinates.
+
+**Parameters**
+
+- `px` (`number`, required): Pixel X position of the mouse click.
+- `py` (`number`, required): Pixel Y position of the mouse click.
+- `button` (`integer`, optional): Mouse button index (default 1 for left).
+
+**Lua API Stub**
+
+```lua
+--- Forwards a mouse press event to the terminal, converting pixel coordinates to cell coordinates.
+---@param px number Pixel X position of the mouse click.
+---@param py number Pixel Y position of the mouse click.
+---@param button? number Mouse button index (default 1 for left).
+function LTerminal:mousepressed(px, py, button) end
+```
+
+#### Example
+
+Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+
+```lua
+do
+  -- Call from lurek.mousepressed to let the terminal handle button clicks.
+  -- The terminal converts pixel positions to cell coordinates internally.
+  local term = lurek.terminal.newTerminal(80, 24)
+  local btn = lurek.terminal.newButton(2, 2, 10, 1, "Click me")
+  btn:setOnClick(function()
+    lurek.log.info("button clicked via mouse", "ui")
+  end)
+  term:addWidget(btn)
+
+  -- Simulate a mouse click at pixel position (20, 30), left button.
+  term:mousepressed(20, 30, 1)
+end
+```
+
+### LTerminal:print
+
+`LTerminal:print(col: integer, row: integer, text: string)`
+
+Writes text to the terminal grid starting at a specific cell.
+
+**Parameters**
+
+- `col` (`integer`, required): Column index (1-based) where writing starts.
+- `row` (`integer`, required): Row index (1-based) where writing starts.
+- `text` (`string`, required): Text to write into consecutive cells.
+
+**Lua API Stub**
+
+```lua
+--- Writes text to the terminal grid starting at a specific cell.
+---@param col number Column index (1-based) where writing starts.
+---@param row number Row index (1-based) where writing starts.
+---@param text string Text to write into consecutive cells.
+function LTerminal:print(col, row, text) end
+```
+
+#### Example
+
+Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+
+```lua
+do
+  -- print(col, row, text) writes a string of characters into consecutive cells.
+  -- Faster than calling set() per character; uses default fg/bg from the theme.
+  ---@type LTerminal
+  local term = lurek.terminal.newTerminal(80, 25)
+
+  -- Simulate a REPL-style dev console.
+  term:print(1, 1, "lurek> print(2 + 2)")
+  term:print(1, 2, "4")
+  term:print(1, 3, "lurek> _")
+end
+```
+
+### LTerminal:removeWidget
+
+`LTerminal:removeWidget(widget: LWidget)`
+
+Detaches a widget from this terminal, removing it from rendering and input handling.
+
+**Parameters**
+
+- `widget` (`LWidget`, required): The widget to detach.
+
+**Lua API Stub**
+
+```lua
+--- Detaches a widget from this terminal, removing it from rendering and input handling.
+---@param widget LWidget The widget to detach.
+function LTerminal:removeWidget(widget) end
+```
+
+#### Example
+
+Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+
+```lua
+do
+  -- Remove widgets for temporary notifications that expire after a few seconds.
+  local term = lurek.terminal.newTerminal(80, 25)
+
+  -- A toast notification that should disappear after being shown.
+  local toast = lurek.terminal.newLabel(20, 1, "Item picked up!")
+  term:addWidget(toast)
+
+  -- Later (e.g., after 2 seconds): remove it.
+  term:removeWidget(toast)
+end
+```
+
+### LTerminal:render
+
+`LTerminal:render([x]: number, [y]: number)`
+
+Renders the terminal grid and widgets and stages a window size matching the grid and active cell size.
+
+**Parameters**
+
+- `x` (`number`, optional): Screen X offset in pixels (default 0).
+- `y` (`number`, optional): Screen Y offset in pixels (default 0).
+
+**Lua API Stub**
+
+```lua
+--- Renders the terminal grid and widgets and stages a window size matching the grid and active cell size.
+---@param x? number Screen X offset in pixels (default 0).
+---@param y? number Screen Y offset in pixels (default 0).
+function LTerminal:render(x, y) end
+```
+
+#### Example
+
+Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+
+```lua
+do
+  -- Call render(x, y) inside lurek.draw() to display the terminal.
+  -- x, y are optional pixel offsets (default 0, 0).
+  local term = lurek.terminal.newTerminal(80, 25)
+  term:addWidget(lurek.terminal.newLabel(2, 2, "Game HUD"))
+
+  -- In a real game, this would be inside lurek.draw():
+  function lurek.draw()
+    -- Render the terminal at the top-left corner of the window.
+    term:render(0, 0)
+  end
+end
+```
+
+### LTerminal:resetCellSize
+
+`LTerminal:resetCellSize()`
+
+Removes any custom cell size override, reverting to the active font metrics and refitting the window.
+
+**Lua API Stub**
+
+```lua
+--- Removes any custom cell size override, reverting to the active font metrics and refitting the window.
+function LTerminal:resetCellSize() end
+```
+
+#### Example
+
+Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+
+```lua
+do
+  -- After experimenting with custom cell sizes, reset to let the font control layout.
+  local term = lurek.terminal.newTerminal(80, 25)
+  term:setCellSize(20, 20)
+
+  -- Revert to automatic sizing based on the active font.
+  term:resetCellSize()
+end
+```
+
+### LTerminal:set
+
+`LTerminal:set(col: integer, row: integer, ch: string|number, [fr]: number, [fg]: number, [fb]: number, [fa]: number, [br]: number, [bg]: number, [bb]: number, [ba]: number)`
+
+Writes a character with foreground and background color to a specific cell in the terminal grid.
+
+**Parameters**
+
+- `col` (`integer`, required): Column index (1-based).
+- `row` (`integer`, required): Row index (1-based).
+- `ch` (`string|number`, required): Character as a string or Unicode codepoint.
+- `fr` (`number`, optional): Foreground red (0-1, default 1).
+- `fg` (`number`, optional): Foreground green (0-1, default 1).
+- `fb` (`number`, optional): Foreground blue (0-1, default 1).
+- `fa` (`number`, optional): Foreground alpha (0-1, default 1).
+- `br` (`number`, optional): Background red (0-1, default 0).
+- `bg` (`number`, optional): Background green (0-1, default 0).
+- `bb` (`number`, optional): Background blue (0-1, default 0).
+- `ba` (`number`, optional): Background alpha (0-1, default 0).
+
+**Lua API Stub**
+
+```lua
+--- Writes a character with foreground and background color to a specific cell in the terminal grid.
+---@param col number Column index (1-based).
+---@param row number Row index (1-based).
+---@param ch string|number Character as a string or Unicode codepoint.
+---@param fr? number Foreground red (0-1, default 1).
+---@param fg? number Foreground green (0-1, default 1).
+---@param fb? number Foreground blue (0-1, default 1).
+---@param fa? number Foreground alpha (0-1, default 1).
+---@param br? number Background red (0-1, default 0).
+---@param bg? number Background green (0-1, default 0).
+---@param bb? number Background blue (0-1, default 0).
+---@param ba? number Background alpha (0-1, default 0).
+function LTerminal:set(col, row, ch, fr, fg, fb, fa, br, bg, bb, ba) end
+```
+
+#### Example
+
+Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+
+```lua
+do
+  -- set(col, row, ch, fr, fg, fb, fa, br, bg, bb, ba) writes one cell.
+  -- Colors are 0-1 floats: fg RGBA then bg RGBA. Omitted channels default to 1/0.
+  local term = lurek.terminal.newTerminal(80, 25)
+
+  -- Draw the player '@' symbol in green on a dark background.
+  term:set(10, 5, "@", 0, 1, 0, 1, 0.1, 0.1, 0.1, 1)
+
+  -- Draw a red '!' for a danger indicator (no background specified = transparent).
+  term:set(11, 5, "!", 1, 0.2, 0.2, 1)
+
+  -- You can also pass a Unicode codepoint as a number instead of a string.
+  term:set(12, 5, 9829, 1, 0, 0, 1) -- heart symbol (U+2665)
+end
+```
+
+### LTerminal:setCellSize
+
+`LTerminal:setCellSize(w: number, h: number)`
+
+Overrides the cell width and height used for rendering this terminal grid and refits the window.
+
+**Parameters**
+
+- `w` (`number`, required): Cell width in pixels.
+- `h` (`number`, required): Cell height in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Overrides the cell width and height used for rendering this terminal grid and refits the window.
+---@param w number Cell width in pixels.
+---@param h number Cell height in pixels.
+function LTerminal:setCellSize(w, h) end
+```
+
+#### Example
+
+Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+
+```lua
+do
+  -- setCellSize manually controls pixel dimensions per cell, ignoring font metrics.
+  -- Useful for square-cell roguelikes or pixel-art tile grids.
+  local term = lurek.terminal.newTerminal(80, 25)
+
+  -- Force square 16x16 cells for a tile-based dungeon view.
+  term:setCellSize(16, 16)
+end
+```
+
+### LTerminal:setFocus
+
+`LTerminal:setFocus([widget]: LWidget)`
+
+Sets which widget currently has keyboard focus, or clears focus when nil is passed.
+
+**Parameters**
+
+- `widget` (`LWidget`, optional): The widget to focus, or nil to clear focus.
+
+**Lua API Stub**
+
+```lua
+--- Sets which widget currently has keyboard focus, or clears focus when nil is passed.
+---@param widget? LWidget The widget to focus, or nil to clear focus.
+function LTerminal:setFocus(widget) end
+```
+
+#### Example
+
+Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+
+```lua
+do
+  -- Only one widget can have focus at a time. Focused TextBoxes receive typed text.
+  -- Pass nil to clear focus entirely (no widget receives keyboard input).
+  local term = lurek.terminal.newTerminal(80, 25)
+  local cmd_input = lurek.terminal.newTextBox(2, 24, 60)
+  term:addWidget(cmd_input)
+
+  -- Give focus to the command input so typing goes there.
+  term:setFocus(cmd_input)
+end
+```
+
+### LTerminal:setFont
+
+`LTerminal:setFont(height: integer)`
+
+Selects the nearest built-in bitmap font by pixel height and refits the window to the terminal grid.
+
+**Parameters**
+
+- `height` (`integer`, required): Desired font height in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Selects the nearest built-in bitmap font by pixel height and refits the window to the terminal grid.
+---@param height number Desired font height in pixels.
+function LTerminal:setFont(height) end
+```
+
+#### Example
+
+Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+
+```lua
+do
+  -- setFont picks the closest available monospace glyph set by height.
+  -- The terminal auto-resizes the window to match the new cell dimensions.
+  local term = lurek.terminal.newTerminal(80, 25)
+
+  -- A large font for a roguelike where each cell should be clearly visible.
+  term:setFont(24)
+
+  -- A small font for a dense debug console with many rows.
+  local debug_term = lurek.terminal.newTerminal(120, 50)
+  debug_term:setFont(12)
+end
+```
+
+### LTerminal:textinput
+
+`LTerminal:textinput(text: string) -> boolean`
+
+Forwards a text input event to the terminal for character entry into focused widgets.
+
+**Parameters**
+
+- `text` (`string`, required): The text characters entered.
+
+**Returns**: `boolean` - True if the terminal consumed the text input.
+
+**Lua API Stub**
+
+```lua
+--- Forwards a text input event to the terminal for character entry into focused widgets.
+---@param text string The text characters entered.
+---@return boolean True if the terminal consumed the text input.
+function LTerminal:textinput(text) end
+```
+
+#### Example
+
+Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+
+```lua
+do
+  -- Call textinput from your lurek.textinput callback for typing into TextBoxes.
+  -- Returns true if the terminal consumed the character.
+  local term = lurek.terminal.newTerminal(80, 25)
+  local input = lurek.terminal.newTextBox(2, 24, 60)
+  term:addWidget(input)
+  term:setFocus(input)
+
+  -- Simulate the player typing "hi" into the console.
+  term:textinput("h")
+  term:textinput("i")
+  -- input:getText() now returns "hi"
+end
+```
+
+### LTerminal:type
+
+`LTerminal:type() -> string`
+
+Returns the type name string "LTerminal".
+
+**Returns**: `string` - Always "LTerminal".
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name string "LTerminal".
+---@return string Always "LTerminal".
+function LTerminal:type() end
+```
+
+#### Example
+
+Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+
+```lua
+do
+  -- type() returns the string identifier of the userdata object.
+  -- Useful for runtime type checks in generic code.
+  local terminal_obj = lurek.terminal.newTerminal(80, 24)
+  local t = terminal_obj:type()
+  lurek.log.info("type = " .. t, "terminal") -- "LTerminal"
+end
+```
+
+### LTerminal:typeOf
+
+`LTerminal:typeOf(name: string) -> boolean`
+
+Checks whether this object matches a given type name. Accepts "LTerminal" or "Object".
+
+**Parameters**
+
+- `name` (`string`, required): Type name to test against.
+
+**Returns**: `boolean` - True if the name matches.
+
+**Lua API Stub**
+
+```lua
+--- Checks whether this object matches a given type name. Accepts "LTerminal" or "Object".
+---@param name string Type name to test against.
+---@return boolean True if the name matches.
+function LTerminal:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+
+```lua
+do
+  -- typeOf accepts "LTerminal" or "Object" (the base type for all engine userdata).
+  local terminal_obj = lurek.terminal.newTerminal(80, 24)
+  lurek.log.info("is LTerminal: " .. tostring(terminal_obj:typeOf("LTerminal")), "terminal") -- true
+  lurek.log.info("is Object: " .. tostring(terminal_obj:typeOf("Object")), "terminal")       -- true
+  lurek.log.info("is wrong: " .. tostring(terminal_obj:typeOf("Unknown")), "terminal")       -- false
+end
+```
+
+### LWidget:addChild
+
+`LWidget:addChild(child: LWidget)`
 
 Adds a child widget to a panel widget. The child becomes part of the panel layout and rendering.
 
 **Parameters**
 
-- `child` (`LWidget`, required) - The child widget to add.
+- `child` (`LWidget`, required): The child widget to add.
+
+**Lua API Stub**
+
+```lua
+--- Adds a child widget to a panel widget. The child becomes part of the panel layout and rendering.
+---@param child LWidget The child widget to add.
+function LWidget:addChild(child) end
+```
 
 #### Example
 
@@ -1684,13 +1976,23 @@ do
 end
 ```
 
-### `LWidget:addItem(item: string)`
+### LWidget:addItem
+
+`LWidget:addItem(item: string)`
 
 Appends a text item to a list widget.
 
 **Parameters**
 
-- `item` (`string`, required) - The item text to add.
+- `item` (`string`, required): The item text to add.
+
+**Lua API Stub**
+
+```lua
+--- Appends a text item to a list widget.
+---@param item string The item text to add.
+function LWidget:addItem(item) end
+```
 
 #### Example
 
@@ -1707,9 +2009,18 @@ do
 end
 ```
 
-### `LWidget:clearChildren()`
+### LWidget:clearChildren
+
+`LWidget:clearChildren()`
 
 Removes all child widgets from a panel widget.
+
+**Lua API Stub**
+
+```lua
+--- Removes all child widgets from a panel widget.
+function LWidget:clearChildren() end
+```
 
 #### Example
 
@@ -1727,9 +2038,18 @@ do
 end
 ```
 
-### `LWidget:clearItems()`
+### LWidget:clearItems
+
+`LWidget:clearItems()`
 
 Removes all items from a list widget.
+
+**Lua API Stub**
+
+```lua
+--- Removes all items from a list widget.
+function LWidget:clearItems() end
+```
 
 #### Example
 
@@ -1748,15 +2068,26 @@ do
 end
 ```
 
-### `LWidget:getChild(index: integer) -> LWidget`
+### LWidget:getChild
+
+`LWidget:getChild(index: integer) -> LWidget`
 
 Returns a child widget from a panel by its 1-based index, or nil if the index is out of range.
 
 **Parameters**
 
-- `index` (`integer`, required) - 1-based child index.
+- `index` (`integer`, required): 1-based child index.
 
 **Returns**: `LWidget` - The child widget, or nil.
+
+**Lua API Stub**
+
+```lua
+--- Returns a child widget from a panel by its 1-based index, or nil if the index is out of range.
+---@param index number 1-based child index.
+---@return LWidget The child widget, or nil.
+function LWidget:getChild(index) end
+```
 
 #### Example
 
@@ -1776,11 +2107,21 @@ do
 end
 ```
 
-### `LWidget:getChildCount() -> integer`
+### LWidget:getChildCount
+
+`LWidget:getChildCount() -> integer`
 
 Returns the number of child widgets in a panel widget.
 
 **Returns**: `integer` - Child count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of child widgets in a panel widget.
+---@return number Child count.
+function LWidget:getChildCount() end
+```
 
 #### Example
 
@@ -1797,11 +2138,24 @@ do
 end
 ```
 
-### `LWidget:getColor() -> number, number, number, number`
+### LWidget:getColor
+
+`LWidget:getColor() -> number, number, number, number`
 
 Returns the foreground color of the widget as RGBA components.
 
 **Returns**: `number, number, number, number` - Red, green, blue, and alpha channels.
+
+**Lua API Stub**
+
+```lua
+--- Returns the foreground color of the widget as RGBA components.
+---@return number a Red, green, blue, and alpha channels.
+---@return number b Red, green, blue, and alpha channels.
+---@return number c Red, green, blue, and alpha channels.
+---@return number d Red, green, blue, and alpha channels.
+function LWidget:getColor() end
+```
 
 #### Example
 
@@ -1816,15 +2170,26 @@ do
 end
 ```
 
-### `LWidget:getItem(index: integer) -> string`
+### LWidget:getItem
+
+`LWidget:getItem(index: integer) -> string`
 
 Returns the text of a list item by its 1-based index.
 
 **Parameters**
 
-- `index` (`integer`, required) - 1-based item index.
+- `index` (`integer`, required): 1-based item index.
 
 **Returns**: `string` - The item text.
+
+**Lua API Stub**
+
+```lua
+--- Returns the text of a list item by its 1-based index.
+---@param index number 1-based item index.
+---@return string The item text.
+function LWidget:getItem(index) end
+```
 
 #### Example
 
@@ -1842,11 +2207,21 @@ do
 end
 ```
 
-### `LWidget:getItemCount() -> integer`
+### LWidget:getItemCount
+
+`LWidget:getItemCount() -> integer`
 
 Returns the number of items in a list widget.
 
 **Returns**: `integer` - Item count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of items in a list widget.
+---@return number Item count.
+function LWidget:getItemCount() end
+```
 
 #### Example
 
@@ -1863,11 +2238,21 @@ do
 end
 ```
 
-### `LWidget:getMaxLength() -> integer`
+### LWidget:getMaxLength
+
+`LWidget:getMaxLength() -> integer`
 
 Returns the maximum character limit of a text box widget.
 
 **Returns**: `integer` - Maximum character count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the maximum character limit of a text box widget.
+---@return number Maximum character count.
+function LWidget:getMaxLength() end
+```
 
 #### Example
 
@@ -1883,11 +2268,22 @@ do
 end
 ```
 
-### `LWidget:getPosition() -> integer, integer`
+### LWidget:getPosition
+
+`LWidget:getPosition() -> integer, integer`
 
 Returns the widget position as 1-based column and row.
 
 **Returns**: `integer, integer` - Column, row.
+
+**Lua API Stub**
+
+```lua
+--- Returns the widget position as 1-based column and row.
+---@return number a Column, row.
+---@return number b Column, row.
+function LWidget:getPosition() end
+```
 
 #### Example
 
@@ -1905,11 +2301,21 @@ do
 end
 ```
 
-### `LWidget:getSelected() -> integer`
+### LWidget:getSelected
+
+`LWidget:getSelected() -> integer`
 
 Returns the 1-based index of the currently selected list item, or nil if nothing is selected.
 
 **Returns**: `integer` - Selected item index, or nil.
+
+**Lua API Stub**
+
+```lua
+--- Returns the 1-based index of the currently selected list item, or nil if nothing is selected.
+---@return number Selected item index, or nil.
+function LWidget:getSelected() end
+```
 
 #### Example
 
@@ -1929,11 +2335,22 @@ do
 end
 ```
 
-### `LWidget:getSize() -> integer, integer`
+### LWidget:getSize
+
+`LWidget:getSize() -> integer, integer`
 
 Returns the widget dimensions as width and height in cell units.
 
 **Returns**: `integer, integer` - Width, height.
+
+**Lua API Stub**
+
+```lua
+--- Returns the widget dimensions as width and height in cell units.
+---@return number a Width, height.
+---@return number b Width, height.
+function LWidget:getSize() end
+```
 
 #### Example
 
@@ -1947,11 +2364,21 @@ do
 end
 ```
 
-### `LWidget:getStyle() -> string`
+### LWidget:getStyle
+
+`LWidget:getStyle() -> string`
 
 Returns the current border style name of a border or panel widget.
 
 **Returns**: `string` - The border style name.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current border style name of a border or panel widget.
+---@return string The border style name.
+function LWidget:getStyle() end
+```
 
 #### Example
 
@@ -1967,11 +2394,21 @@ do
 end
 ```
 
-### `LWidget:getTag() -> string`
+### LWidget:getTag
+
+`LWidget:getTag() -> string`
 
 Returns the current tag string assigned to the widget.
 
 **Returns**: `string` - The tag value.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current tag string assigned to the widget.
+---@return string The tag value.
+function LWidget:getTag() end
+```
 
 #### Example
 
@@ -1989,11 +2426,21 @@ do
 end
 ```
 
-### `LWidget:getText() -> string`
+### LWidget:getText
+
+`LWidget:getText() -> string`
 
 Returns the current text content of a label, button, or text box widget.
 
 **Returns**: `string` - The widget text.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current text content of a label, button, or text box widget.
+---@return string The widget text.
+function LWidget:getText() end
+```
 
 #### Example
 
@@ -2010,11 +2457,21 @@ do
 end
 ```
 
-### `LWidget:getTitle() -> string`
+### LWidget:getTitle
+
+`LWidget:getTitle() -> string`
 
 Returns the current title text of a border or panel widget.
 
 **Returns**: `string` - The title text.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current title text of a border or panel widget.
+---@return string The title text.
+function LWidget:getTitle() end
+```
 
 #### Example
 
@@ -2030,11 +2487,21 @@ do
 end
 ```
 
-### `LWidget:isEnabled() -> boolean`
+### LWidget:isEnabled
+
+`LWidget:isEnabled() -> boolean`
 
 Returns whether the widget is currently enabled for user interaction.
 
 **Returns**: `boolean` - True if enabled.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether the widget is currently enabled for user interaction.
+---@return boolean True if enabled.
+function LWidget:isEnabled() end
+```
 
 #### Example
 
@@ -2051,11 +2518,21 @@ do
 end
 ```
 
-### `LWidget:isVisible() -> boolean`
+### LWidget:isVisible
+
+`LWidget:isVisible() -> boolean`
 
 Returns whether the widget is currently visible.
 
 **Returns**: `boolean` - True if visible.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether the widget is currently visible.
+---@return boolean True if visible.
+function LWidget:isVisible() end
+```
 
 #### Example
 
@@ -2072,13 +2549,23 @@ do
 end
 ```
 
-### `LWidget:removeChild(child: LWidget)`
+### LWidget:removeChild
+
+`LWidget:removeChild(child: LWidget)`
 
 Removes a child widget from a panel, detaching it from the panel layout.
 
 **Parameters**
 
-- `child` (`LWidget`, required) - The child widget to remove.
+- `child` (`LWidget`, required): The child widget to remove.
+
+**Lua API Stub**
+
+```lua
+--- Removes a child widget from a panel, detaching it from the panel layout.
+---@param child LWidget The child widget to remove.
+function LWidget:removeChild(child) end
+```
 
 #### Example
 
@@ -2095,13 +2582,23 @@ do
 end
 ```
 
-### `LWidget:removeItem(index: integer)`
+### LWidget:removeItem
+
+`LWidget:removeItem(index: integer)`
 
 Removes a list item by its 1-based index.
 
 **Parameters**
 
-- `index` (`integer`, required) - 1-based item index to remove.
+- `index` (`integer`, required): 1-based item index to remove.
+
+**Lua API Stub**
+
+```lua
+--- Removes a list item by its 1-based index.
+---@param index number 1-based item index to remove.
+function LWidget:removeItem(index) end
+```
 
 #### Example
 
@@ -2121,16 +2618,29 @@ do
 end
 ```
 
-### `LWidget:setColor(r: number, g: number, b: number, [a]: number)`
+### LWidget:setColor
+
+`LWidget:setColor(r: number, g: number, b: number, [a]: number)`
 
 Sets the foreground color of the widget as RGBA components (0-1 range).
 
 **Parameters**
 
-- `r` (`number`, required) - Red channel.
-- `g` (`number`, required) - Green channel.
-- `b` (`number`, required) - Blue channel.
-- `a` (`number`, optional) - Alpha channel (default 1).
+- `r` (`number`, required): Red channel.
+- `g` (`number`, required): Green channel.
+- `b` (`number`, required): Blue channel.
+- `a` (`number`, optional): Alpha channel (default 1).
+
+**Lua API Stub**
+
+```lua
+--- Sets the foreground color of the widget as RGBA components (0-1 range).
+---@param r number Red channel.
+---@param g number Green channel.
+---@param b number Blue channel.
+---@param a? number Alpha channel (default 1).
+function LWidget:setColor(r, g, b, a) end
+```
 
 #### Example
 
@@ -2150,13 +2660,23 @@ do
 end
 ```
 
-### `LWidget:setEnabled(enabled: boolean)`
+### LWidget:setEnabled
+
+`LWidget:setEnabled(enabled: boolean)`
 
 Controls whether the widget accepts user interaction (clicks, typing).
 
 **Parameters**
 
-- `enabled` (`boolean`, required) - True to enable, false to disable.
+- `enabled` (`boolean`, required): True to enable, false to disable.
+
+**Lua API Stub**
+
+```lua
+--- Controls whether the widget accepts user interaction (clicks, typing).
+---@param enabled boolean True to enable, false to disable.
+function LWidget:setEnabled(enabled) end
+```
 
 #### Example
 
@@ -2174,13 +2694,23 @@ do
 end
 ```
 
-### `LWidget:setMaxLength(maxLength: integer)`
+### LWidget:setMaxLength
+
+`LWidget:setMaxLength(maxLength: integer)`
 
 Sets the maximum number of characters allowed in a text box widget.
 
 **Parameters**
 
-- `maxLength` (`integer`, required) - Maximum character count.
+- `maxLength` (`integer`, required): Maximum character count.
+
+**Lua API Stub**
+
+```lua
+--- Sets the maximum number of characters allowed in a text box widget.
+---@param maxLength number Maximum character count.
+function LWidget:setMaxLength(maxLength) end
+```
 
 #### Example
 
@@ -2194,13 +2724,23 @@ do
 end
 ```
 
-### `LWidget:setOnChange([callback]: function)`
+### LWidget:setOnChange
+
+`LWidget:setOnChange([callback]: function)`
 
 Registers a callback function invoked when the text content of a text box widget changes. Only valid for text box widgets.
 
 **Parameters**
 
-- `callback` (`function`, optional) - The change handler, or nil to clear.
+- `callback` (`function`, optional): The change handler, or nil to clear.
+
+**Lua API Stub**
+
+```lua
+--- Registers a callback function invoked when the text content of a text box widget changes. Only valid for text box widgets.
+---@param callback? function The change handler, or nil to clear.
+function LWidget:setOnChange(callback) end
+```
 
 #### Example
 
@@ -2218,13 +2758,23 @@ do
 end
 ```
 
-### `LWidget:setOnClick([callback]: function)`
+### LWidget:setOnClick
+
+`LWidget:setOnClick([callback]: function)`
 
 Registers a callback function invoked when a button widget is clicked. Only valid for button widgets.
 
 **Parameters**
 
-- `callback` (`function`, optional) - The click handler, or nil to clear.
+- `callback` (`function`, optional): The click handler, or nil to clear.
+
+**Lua API Stub**
+
+```lua
+--- Registers a callback function invoked when a button widget is clicked. Only valid for button widgets.
+---@param callback? function The click handler, or nil to clear.
+function LWidget:setOnClick(callback) end
+```
 
 #### Example
 
@@ -2243,13 +2793,23 @@ do
 end
 ```
 
-### `LWidget:setOnSelect([callback]: function)`
+### LWidget:setOnSelect
+
+`LWidget:setOnSelect([callback]: function)`
 
 Registers a callback function invoked when the selected item in a list widget changes. Only valid for list widgets.
 
 **Parameters**
 
-- `callback` (`function`, optional) - The selection handler, or nil to clear.
+- `callback` (`function`, optional): The selection handler, or nil to clear.
+
+**Lua API Stub**
+
+```lua
+--- Registers a callback function invoked when the selected item in a list widget changes. Only valid for list widgets.
+---@param callback? function The selection handler, or nil to clear.
+function LWidget:setOnSelect(callback) end
+```
 
 #### Example
 
@@ -2268,14 +2828,25 @@ do
 end
 ```
 
-### `LWidget:setPosition(col: integer, row: integer)`
+### LWidget:setPosition
+
+`LWidget:setPosition(col: integer, row: integer)`
 
 Sets the widget position in 1-based cell coordinates within the terminal grid.
 
 **Parameters**
 
-- `col` (`integer`, required) - Column index (1-based).
-- `row` (`integer`, required) - Row index (1-based).
+- `col` (`integer`, required): Column index (1-based).
+- `row` (`integer`, required): Row index (1-based).
+
+**Lua API Stub**
+
+```lua
+--- Sets the widget position in 1-based cell coordinates within the terminal grid.
+---@param col number Column index (1-based).
+---@param row number Row index (1-based).
+function LWidget:setPosition(col, row) end
+```
 
 #### Example
 
@@ -2291,13 +2862,23 @@ do
 end
 ```
 
-### `LWidget:setSelected([index]: integer)`
+### LWidget:setSelected
+
+`LWidget:setSelected([index]: integer)`
 
 Sets the currently selected item in a list widget by 1-based index, or clears the selection with nil. Fires the onSelect callback if changed.
 
 **Parameters**
 
-- `index` (`integer`, optional) - 1-based item index, or nil to clear selection.
+- `index` (`integer`, optional): 1-based item index, or nil to clear selection.
+
+**Lua API Stub**
+
+```lua
+--- Sets the currently selected item in a list widget by 1-based index, or clears the selection with nil. Fires the onSelect callback if changed.
+---@param index? number 1-based item index, or nil to clear selection.
+function LWidget:setSelected(index) end
+```
 
 #### Example
 
@@ -2314,14 +2895,25 @@ do
 end
 ```
 
-### `LWidget:setSize(width: integer, height: integer)`
+### LWidget:setSize
+
+`LWidget:setSize(width: integer, height: integer)`
 
 Sets the widget dimensions in cell units, clamped to a minimum of 1x1.
 
 **Parameters**
 
-- `width` (`integer`, required) - Width in cells.
-- `height` (`integer`, required) - Height in cells.
+- `width` (`integer`, required): Width in cells.
+- `height` (`integer`, required): Height in cells.
+
+**Lua API Stub**
+
+```lua
+--- Sets the widget dimensions in cell units, clamped to a minimum of 1x1.
+---@param width number Width in cells.
+---@param height number Height in cells.
+function LWidget:setSize(width, height) end
+```
 
 #### Example
 
@@ -2343,13 +2935,23 @@ do
 end
 ```
 
-### `LWidget:setStyle(styleName: string)`
+### LWidget:setStyle
+
+`LWidget:setStyle(styleName: string)`
 
 Sets the border drawing style for a border or panel widget.
 
 **Parameters**
 
-- `styleName` (`string`, required) - Border style name (e.g. "single", "double", "rounded", "heavy", "none").
+- `styleName` (`string`, required): Border style name (e.g. "single", "double", "rounded", "heavy", "none").
+
+**Lua API Stub**
+
+```lua
+--- Sets the border drawing style for a border or panel widget.
+---@param styleName string Border style name (e.g. "single", "double", "rounded", "heavy", "none").
+function LWidget:setStyle(styleName) end
+```
 
 #### Example
 
@@ -2363,13 +2965,23 @@ do
 end
 ```
 
-### `LWidget:setTag(tag: string)`
+### LWidget:setTag
+
+`LWidget:setTag(tag: string)`
 
 Assigns an arbitrary string tag to the widget for identification or grouping.
 
 **Parameters**
 
-- `tag` (`string`, required) - The tag value.
+- `tag` (`string`, required): The tag value.
+
+**Lua API Stub**
+
+```lua
+--- Assigns an arbitrary string tag to the widget for identification or grouping.
+---@param tag string The tag value.
+function LWidget:setTag(tag) end
+```
 
 #### Example
 
@@ -2384,13 +2996,23 @@ do
 end
 ```
 
-### `LWidget:setText(text: string)`
+### LWidget:setText
+
+`LWidget:setText(text: string)`
 
 Sets the display text of a label, button, or text box widget. Fires the onChange callback if the text actually changed.
 
 **Parameters**
 
-- `text` (`string`, required) - The new text content.
+- `text` (`string`, required): The new text content.
+
+**Lua API Stub**
+
+```lua
+--- Sets the display text of a label, button, or text box widget. Fires the onChange callback if the text actually changed.
+---@param text string The new text content.
+function LWidget:setText(text) end
+```
 
 #### Example
 
@@ -2406,13 +3028,23 @@ do
 end
 ```
 
-### `LWidget:setTitle(title: string)`
+### LWidget:setTitle
+
+`LWidget:setTitle(title: string)`
 
 Sets the title text displayed in the border of a border or panel widget.
 
 **Parameters**
 
-- `title` (`string`, required) - The title text.
+- `title` (`string`, required): The title text.
+
+**Lua API Stub**
+
+```lua
+--- Sets the title text displayed in the border of a border or panel widget.
+---@param title string The title text.
+function LWidget:setTitle(title) end
+```
 
 #### Example
 
@@ -2426,13 +3058,23 @@ do
 end
 ```
 
-### `LWidget:setVisible(visible: boolean)`
+### LWidget:setVisible
+
+`LWidget:setVisible(visible: boolean)`
 
 Controls whether the widget is drawn and receives input events.
 
 **Parameters**
 
-- `visible` (`boolean`, required) - True to show, false to hide.
+- `visible` (`boolean`, required): True to show, false to hide.
+
+**Lua API Stub**
+
+```lua
+--- Controls whether the widget is drawn and receives input events.
+---@param visible boolean True to show, false to hide.
+function LWidget:setVisible(visible) end
+```
 
 #### Example
 
@@ -2451,11 +3093,21 @@ do
 end
 ```
 
-### `LWidget:type() -> string`
+### LWidget:type
+
+`LWidget:type() -> string`
 
 Returns the type name string "LWidget".
 
 **Returns**: `string` - Always "LWidget".
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name string "LWidget".
+---@return string Always "LWidget".
+function LWidget:type() end
+```
 
 #### Example
 
@@ -2469,15 +3121,26 @@ do
 end
 ```
 
-### `LWidget:typeOf(name: string) -> boolean`
+### LWidget:typeOf
+
+`LWidget:typeOf(name: string) -> boolean`
 
 Checks whether this object matches a given type name. Accepts "LWidget" or "Object".
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to test against.
+- `name` (`string`, required): Type name to test against.
 
 **Returns**: `boolean` - True if the name matches.
+
+**Lua API Stub**
+
+```lua
+--- Checks whether this object matches a given type name. Accepts "LWidget" or "Object".
+---@param name string Type name to test against.
+---@return boolean True if the name matches.
+function LWidget:typeOf(name) end
+```
 
 #### Example
 
@@ -2493,21 +3156,27 @@ end
 ```
 
 
-## Examples
+[⬆ back to top](#table-of-contents)
+
+## 💡 Examples
 
 - [terminal.lua](../blob/main/content/examples/terminal.lua) - In-game terminal widget
 
-## Reference Games
+[⬆ back to top](#table-of-contents)
+
+## 🎮 Reference Games
 
 - [terminal_demo](../tree/main/content/games/showcase/terminal_demo) (showcase)
 
-## Related Modules
+[⬆ back to top](#table-of-contents)
 
-- Previous: [[system|Module-system]]
-- Next: [[thread|Module-thread]]
-- [[ai|Module-ai]] - Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU.
-- [[animation|Module-animation]] - Sprite animation: source-rect changes over time. Imports only math; headless-testable.
-- [[automation|Module-automation]] - Automated input simulation for headless tests, QA replay, recorded sessions.
-- [[ecs|Module-ecs]] - Entity-Component-System: identity / data / behaviour separation for runtime composition.
-- [[i18n|Module-i18n]] - Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*).
-- [[minimap|Module-minimap]] - Grid-based minimap data model: fog of war, tracked objects, pings, viewport overlay.
+## 🔗 Related Modules
+
+- Previous: [system](Module-system)
+- Next: [thread](Module-thread)
+- [ai](Module-ai) - Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU.
+- [animation](Module-animation) - Sprite animation: source-rect changes over time. Imports only math; headless-testable.
+- [automation](Module-automation) - Automated input simulation for headless tests, QA replay, recorded sessions.
+- [ecs](Module-ecs) - Entity-Component-System: identity / data / behaviour separation for runtime composition.
+- [i18n](Module-i18n) - Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*).
+- [minimap](Module-minimap) - Grid-based minimap data model: fog of war, tracked objects, pings, viewport overlay.

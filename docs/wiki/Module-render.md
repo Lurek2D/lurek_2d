@@ -4,300 +4,249 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
-- [Purpose](#purpose)
-- [Summary](#summary)
-- [Minimal Module Example](#minimal-module-example)
-- [Key Types](#key-types)
-- [API Overview](#api-overview)
-- [Module Functions](#module-functions)
-  - [lurek.render.applyTransform(mat: table)](#lurekrenderapplytransformmat-table)
-  - [lurek.render.arc(mode: string, x: number, y: number, radius: number, angle1: number, angle2: number, [segments]: number)](#lurekrenderarcmode-string-x-number-y-number-radius-number-angle1-number-angle2-number-segments-number)
-  - [lurek.render.beginSortGroup(id: integer)](#lurekrenderbeginsortgroupid-integer)
-  - [lurek.render.captureScreenshot(callback: function)](#lurekrendercapturescreenshotcallback-function)
-  - [lurek.render.circle(mode: string, x: number, y: number, radius: number)](#lurekrendercirclemode-string-x-number-y-number-radius-number)
-  - [lurek.render.clear([r]: number, [g]: number, [b]: number)](#lurekrenderclearr-number-g-number-b-number)
-  - [lurek.render.clearStencil()](#lurekrenderclearstencil)
-  - [lurek.render.currentLayer() -> string](#lurekrendercurrentlayer-string)
-  - [lurek.render.draw(drawable: LImage|LCanvas|LSpriteBatch|LMesh, [x]: number, [y]: number, [r]: number, [sx]: number, [sy]: number, [ox]: number, [oy]: number)](#lurekrenderdrawdrawable-limagelcanvaslspritebatchlmesh-x-number-y-number-r-number-sx-number-sy-number-ox-number-oy-number)
-  - [lurek.render.drawBevelRect(x: number, y: number, w: number, h: number, [bevelW]: number, [style]: string, [opts]: table)](#lurekrenderdrawbevelrectx-number-y-number-w-number-h-number-bevelw-number-style-string-opts-table)
-  - [lurek.render.drawColoredPolygon(vertices: table, colors: table, [mode]: string)](#lurekrenderdrawcoloredpolygonvertices-table-colors-table-mode-string)
-  - [lurek.render.drawCubicBezier(x1: number, y1: number, cx1: number, cy1: number, cx2: number, cy2: number, x2: number, y2: number, [segs]: number)](#lurekrenderdrawcubicbezierx1-number-y1-number-cx1-number-cy1-number-cx2-number-cy2-number-x2-number-y2-number-segs-number)
-  - [lurek.render.drawGradientRect(x: number, y: number, w: number, h: number, c1: table, c2: table, [dir]: string)](#lurekrenderdrawgradientrectx-number-y-number-w-number-h-number-c1-table-c2-table-dir-string)
-  - [lurek.render.drawHexTile(cx: number, cy: number, size: number, [orientation]: string, [mode]: string)](#lurekrenderdrawhextilecx-number-cy-number-size-number-orientation-string-mode-string)
-  - [lurek.render.drawIsoCubeTile(sx: number, sy: number, halfW: number, halfH: number, [opts]: table)](#lurekrenderdrawisocubetilesx-number-sy-number-halfw-number-halfh-number-opts-table)
-  - [lurek.render.drawMany(list: table)](#lurekrenderdrawmanylist-table)
-  - [lurek.render.drawNineSlice(slice: LNineSlice, x: number, y: number, w: number, h: number)](#lurekrenderdrawninesliceslice-lnineslice-x-number-y-number-w-number-h-number)
-  - [lurek.render.drawPath(path: table, [mode]: string, [close]: boolean)](#lurekrenderdrawpathpath-table-mode-string-close-boolean)
-  - [lurek.render.drawq(image: LImage, quad: LQuad, [x]: number, [y]: number, [r]: number, [sx]: number, [sy]: number, [ox]: number, [oy]: number)](#lurekrenderdrawqimage-limage-quad-lquad-x-number-y-number-r-number-sx-number-sy-number-ox-number-oy-number)
-  - [lurek.render.drawQuadBezier(x1: number, y1: number, cx: number, cy: number, x2: number, y2: number, [segments]: number)](#lurekrenderdrawquadbezierx1-number-y1-number-cx-number-cy-number-x2-number-y2-number-segments-number)
-  - [lurek.render.drawQuadBezier(x1: number, y1: number, cx: number, cy: number, x2: number, y2: number, [segs]: integer)](#lurekrenderdrawquadbezierx1-number-y1-number-cx-number-cy-number-x2-number-y2-number-segs-integer)
-  - [lurek.render.ellipse(mode: string, x: number, y: number, rx: number, ry: number)](#lurekrenderellipsemode-string-x-number-y-number-rx-number-ry-number)
-  - [lurek.render.flushSortGroup(id: integer)](#lurekrenderflushsortgroupid-integer)
-  - [lurek.render.getBackgroundColor() -> number, number, number, number](#lurekrendergetbackgroundcolor-number-number-number-number)
-  - [lurek.render.getBlendMode() -> string](#lurekrendergetblendmode-string)
-  - [lurek.render.getCanvas() -> LCanvas](#lurekrendergetcanvas-lcanvas)
-  - [lurek.render.getCanvasSize(canvas: LCanvas) -> number, number](#lurekrendergetcanvassizecanvas-lcanvas-number-number)
-  - [lurek.render.getColor() -> number, number, number, number](#lurekrendergetcolor-number-number-number-number)
-  - [lurek.render.getColorMask() -> boolean, boolean, boolean, boolean](#lurekrendergetcolormask-boolean-boolean-boolean-boolean)
-  - [lurek.render.getDefaultFilter() -> string, string, number](#lurekrendergetdefaultfilter-string-string-number)
-  - [lurek.render.getDefaultFont([pixelHeight]: integer) -> LFont](#lurekrendergetdefaultfontpixelheight-integer-lfont)
-  - [lurek.render.getDepthMode() -> string, boolean](#lurekrendergetdepthmode-string-boolean)
-  - [lurek.render.getDimensions() -> number, number](#lurekrendergetdimensions-number-number)
-  - [lurek.render.getFont() -> LFont](#lurekrendergetfont-lfont)
-  - [lurek.render.getFontAscent(font: LFont) -> number](#lurekrendergetfontascentfont-lfont-number)
-  - [lurek.render.getFontCellWidth(font: LFont) -> number](#lurekrendergetfontcellwidthfont-lfont-number)
-  - [lurek.render.getFontDescent(font: LFont) -> number](#lurekrendergetfontdescentfont-lfont-number)
-  - [lurek.render.getFontHeight(font: LFont) -> number](#lurekrendergetfontheightfont-lfont-number)
-  - [lurek.render.getFontLineHeight(font: LFont) -> number](#lurekrendergetfontlineheightfont-lfont-number)
-  - [lurek.render.getFontSizes() -> number[]](#lurekrendergetfontsizes-number)
-  - [lurek.render.getFontWidth(font: LFont, text: string) -> number](#lurekrendergetfontwidthfont-lfont-text-string-number)
-  - [lurek.render.getFontWrap(text: string, limit: number) -> LuaValue, number](#lurekrendergetfontwraptext-string-limit-number-luavalue-number)
-  - [lurek.render.getHeight() -> number](#lurekrendergetheight-number)
-  - [lurek.render.getLayerZOrder(name: string) -> number](#lurekrendergetlayerzordername-string-number)
-  - [lurek.render.getLineWidth() -> number](#lurekrendergetlinewidth-number)
-  - [lurek.render.getPointSize() -> number](#lurekrendergetpointsize-number)
-  - [lurek.render.getScissor() -> number, number, number, number](#lurekrendergetscissor-number-number-number-number)
-  - [lurek.render.getShader() -> LShader](#lurekrendergetshader-lshader)
-  - [lurek.render.getStats() -> table](#lurekrendergetstats-table)
-  - [lurek.render.getStencilMode() -> string, string, number](#lurekrendergetstencilmode-string-string-number)
-  - [lurek.render.getWidth() -> number](#lurekrendergetwidth-number)
-  - [lurek.render.intersectScissor(x: number, y: number, w: number, h: number)](#lurekrenderintersectscissorx-number-y-number-w-number-h-number)
-  - [lurek.render.isLayerVisible(name: string) -> boolean](#lurekrenderislayervisiblename-string-boolean)
-  - [lurek.render.isWireframe() -> boolean](#lurekrenderiswireframe-boolean)
-  - [lurek.render.line(...: number)](#lurekrenderline-number)
-  - [lurek.render.loadModel(path: string) -> LObjModel](#lurekrenderloadmodelpath-string-lobjmodel)
-  - [lurek.render.loadObj(path: string) -> LObjModel](#lurekrenderloadobjpath-string-lobjmodel)
-  - [lurek.render.newCanvas(width: integer, height: integer) -> LCanvas](#lurekrendernewcanvaswidth-integer-height-integer-lcanvas)
-  - [lurek.render.newDrawLayer() -> LDrawLayer](#lurekrendernewdrawlayer-ldrawlayer)
-  - [lurek.render.newFont(pathOrSize: string|number, [size]: number) -> LFont](#lurekrendernewfontpathorsize-stringnumber-size-number-lfont)
-  - [lurek.render.newImage(pathOrData: string|LImageData, [colorSpace]: string) -> LImage](#lurekrendernewimagepathordata-stringlimagedata-colorspace-string-limage)
-  - [lurek.render.newLayer(name: string, [zOrder]: integer)](#lurekrendernewlayername-string-zorder-integer)
-  - [lurek.render.newMesh(verts: table, [mode]: string) -> LMesh](#lurekrendernewmeshverts-table-mode-string-lmesh)
-  - [lurek.render.newNineSlice(image: LImage, top: number, right: number, bottom: number, left: number) -> LNineSlice](#lurekrendernewninesliceimage-limage-top-number-right-number-bottom-number-left-number-lnineslice)
-  - [lurek.render.newQuad(x: number, y: number, w: number, h: number, sw: number, sh: number) -> LQuad](#lurekrendernewquadx-number-y-number-w-number-h-number-sw-number-sh-number-lquad)
-  - [lurek.render.newShader(code: string) -> LShader](#lurekrendernewshadercode-string-lshader)
-  - [lurek.render.newShape() -> LShape](#lurekrendernewshape-lshape)
-  - [lurek.render.newSpriteBatch(image: LImage, [max]: integer) -> LSpriteBatch](#lurekrendernewspritebatchimage-limage-max-integer-lspritebatch)
-  - [lurek.render.origin()](#lurekrenderorigin)
-  - [lurek.render.points(...: table|number)](#lurekrenderpoints-tablenumber)
-  - [lurek.render.polygon(mode: string, ...: number)](#lurekrenderpolygonmode-string-number)
-  - [lurek.render.pop()](#lurekrenderpop)
-  - [lurek.render.popLayer(id: integer)](#lurekrenderpoplayerid-integer)
-  - [lurek.render.print(text: string, [x]: number, [y]: number, [scale]: number)](#lurekrenderprinttext-string-x-number-y-number-scale-number)
-  - [lurek.render.printf(text: string, x: number, y: number, limit: number, [align]: string)](#lurekrenderprintftext-string-x-number-y-number-limit-number-align-string)
-  - [lurek.render.printRich(spans: table, x: number, y: number)](#lurekrenderprintrichspans-table-x-number-y-number)
-  - [lurek.render.printRotated(text: string, x: number, y: number, angle: number, [scale]: number)](#lurekrenderprintrotatedtext-string-x-number-y-number-angle-number-scale-number)
-  - [lurek.render.push()](#lurekrenderpush)
-  - [lurek.render.pushLayer(id: integer, [alpha]: number, [blendMode]: string)](#lurekrenderpushlayerid-integer-alpha-number-blendmode-string)
-  - [lurek.render.pushSortKey(depth: number)](#lurekrenderpushsortkeydepth-number)
-  - [lurek.render.rectangle(mode: string, x: number, y: number, w: number, h: number, [rx]: number, [ry]: number)](#lurekrenderrectanglemode-string-x-number-y-number-w-number-h-number-rx-number-ry-number)
-  - [lurek.render.resetCanvas(canvas: LCanvas)](#lurekrenderresetcanvascanvas-lcanvas)
-  - [lurek.render.rotate(angle: number)](#lurekrenderrotateangle-number)
-  - [lurek.render.saveScreenshot(path: string)](#lurekrendersavescreenshotpath-string)
-  - [lurek.render.scale(sx: number, [sy]: number)](#lurekrenderscalesx-number-sy-number)
-  - [lurek.render.setBackgroundColor(r: number, g: number, b: number)](#lurekrendersetbackgroundcolorr-number-g-number-b-number)
-  - [lurek.render.setBlendMode(mode: string)](#lurekrendersetblendmodemode-string)
-  - [lurek.render.setCanvas([canvas]: LCanvas)](#lurekrendersetcanvascanvas-lcanvas)
-  - [lurek.render.setColor(r: number, g: number, b: number, [a]: number)](#lurekrendersetcolorr-number-g-number-b-number-a-number)
-  - [lurek.render.setColorMask([r]: boolean, [g]: boolean, [b]: boolean, [a]: boolean)](#lurekrendersetcolormaskr-boolean-g-boolean-b-boolean-a-boolean)
-  - [lurek.render.setDefaultFilter(min: string, mag: string, [anisotropy]: integer)](#lurekrendersetdefaultfiltermin-string-mag-string-anisotropy-integer)
-  - [lurek.render.setDepthMode(mode: string, [write]: boolean)](#lurekrendersetdepthmodemode-string-write-boolean)
-  - [lurek.render.setFont(font: LFont)](#lurekrendersetfontfont-lfont)
-  - [lurek.render.setFontLineHeight(font: LFont, lh: number)](#lurekrendersetfontlineheightfont-lfont-lh-number)
-  - [lurek.render.setLayer(name: string)](#lurekrendersetlayername-string)
-  - [lurek.render.setLayerVisible(name: string, visible: boolean)](#lurekrendersetlayervisiblename-string-visible-boolean)
-  - [lurek.render.setLayerZOrder(name: string, z: integer)](#lurekrendersetlayerzordername-string-z-integer)
-  - [lurek.render.setLineWidth(w: number)](#lurekrendersetlinewidthw-number)
-  - [lurek.render.setPointSize(size: number)](#lurekrendersetpointsizesize-number)
-  - [lurek.render.setScissor([x]: number, [y]: number, [w]: number, [h]: number)](#lurekrendersetscissorx-number-y-number-w-number-h-number)
-  - [lurek.render.setShader([shader]: LShader)](#lurekrendersetshadershader-lshader)
-  - [lurek.render.setStencilMode(action: string, [compare]: string, [value]: number)](#lurekrendersetstencilmodeaction-string-compare-string-value-number)
-  - [lurek.render.setStencilTest([compare]: string, [value]: number)](#lurekrendersetstenciltestcompare-string-value-number)
-  - [lurek.render.setWireframe(enabled: boolean)](#lurekrendersetwireframeenabled-boolean)
-  - [lurek.render.shear(kx: number, ky: number)](#lurekrendershearkx-number-ky-number)
-  - [lurek.render.stencil([action]: string, [value]: number)](#lurekrenderstencilaction-string-value-number)
-  - [lurek.render.translate(x: number, y: number)](#lurekrendertranslatex-number-y-number)
-  - [lurek.render.triangle(mode: string, x1: number, y1: number, x2: number, y2: number, x3: number, y3: number)](#lurekrendertrianglemode-string-x1-number-y1-number-x2-number-y2-number-x3-number-y3-number)
-- [Types and Methods](#types-and-methods)
+- [🎯 Purpose](#purpose)
+- [📋 Summary](#summary)
+- [🧩 Key Types](#key-types)
+- [📖 API Overview](#api-overview)
+- [⚙️ Module Functions](#module-functions)
+  - [lurek.render.applyTransform](#lurekrenderapplytransform)
+  - [lurek.render.arc](#lurekrenderarc)
+  - [lurek.render.beginSortGroup](#lurekrenderbeginsortgroup)
+  - [lurek.render.captureScreenshot](#lurekrendercapturescreenshot)
+  - [lurek.render.circle](#lurekrendercircle)
+  - [lurek.render.clear](#lurekrenderclear)
+  - [lurek.render.clearStencil](#lurekrenderclearstencil)
+  - [lurek.render.currentLayer](#lurekrendercurrentlayer)
+  - [lurek.render.draw](#lurekrenderdraw)
+  - [lurek.render.drawBevelRect](#lurekrenderdrawbevelrect)
+  - [lurek.render.drawColoredPolygon](#lurekrenderdrawcoloredpolygon)
+  - [lurek.render.drawCubicBezier](#lurekrenderdrawcubicbezier)
+  - [lurek.render.drawGradientRect](#lurekrenderdrawgradientrect)
+  - [lurek.render.drawHexTile](#lurekrenderdrawhextile)
+  - [lurek.render.drawIsoCubeTile](#lurekrenderdrawisocubetile)
+  - [lurek.render.drawMany](#lurekrenderdrawmany)
+  - [lurek.render.drawNineSlice](#lurekrenderdrawnineslice)
+  - [lurek.render.drawPath](#lurekrenderdrawpath)
+  - [lurek.render.drawq](#lurekrenderdrawq)
+  - [lurek.render.drawQuadBezier](#lurekrenderdrawquadbezier)
+  - [lurek.render.drawQuadBezier](#lurekrenderdrawquadbezier)
+  - [lurek.render.ellipse](#lurekrenderellipse)
+  - [lurek.render.flushSortGroup](#lurekrenderflushsortgroup)
+  - [lurek.render.getBackgroundColor](#lurekrendergetbackgroundcolor)
+  - [lurek.render.getBlendMode](#lurekrendergetblendmode)
+  - [lurek.render.getCanvas](#lurekrendergetcanvas)
+  - [lurek.render.getCanvasSize](#lurekrendergetcanvassize)
+  - [lurek.render.getColor](#lurekrendergetcolor)
+  - [lurek.render.getColorMask](#lurekrendergetcolormask)
+  - [lurek.render.getDefaultFilter](#lurekrendergetdefaultfilter)
+  - [lurek.render.getDefaultFont](#lurekrendergetdefaultfont)
+  - [lurek.render.getDepthMode](#lurekrendergetdepthmode)
+  - [lurek.render.getDimensions](#lurekrendergetdimensions)
+  - [lurek.render.getFont](#lurekrendergetfont)
+  - [lurek.render.getFontAscent](#lurekrendergetfontascent)
+  - [lurek.render.getFontCellWidth](#lurekrendergetfontcellwidth)
+  - [lurek.render.getFontDescent](#lurekrendergetfontdescent)
+  - [lurek.render.getFontHeight](#lurekrendergetfontheight)
+  - [lurek.render.getFontLineHeight](#lurekrendergetfontlineheight)
+  - [lurek.render.getFontSizes](#lurekrendergetfontsizes)
+  - [lurek.render.getFontWidth](#lurekrendergetfontwidth)
+  - [lurek.render.getFontWrap](#lurekrendergetfontwrap)
+  - [lurek.render.getHeight](#lurekrendergetheight)
+  - [lurek.render.getLayerZOrder](#lurekrendergetlayerzorder)
+  - [lurek.render.getLineWidth](#lurekrendergetlinewidth)
+  - [lurek.render.getPointSize](#lurekrendergetpointsize)
+  - [lurek.render.getScissor](#lurekrendergetscissor)
+  - [lurek.render.getShader](#lurekrendergetshader)
+  - [lurek.render.getStats](#lurekrendergetstats)
+  - [lurek.render.getStencilMode](#lurekrendergetstencilmode)
+  - [lurek.render.getWidth](#lurekrendergetwidth)
+  - [lurek.render.intersectScissor](#lurekrenderintersectscissor)
+  - [lurek.render.isLayerVisible](#lurekrenderislayervisible)
+  - [lurek.render.isWireframe](#lurekrenderiswireframe)
+  - [lurek.render.line](#lurekrenderline)
+  - [lurek.render.loadModel](#lurekrenderloadmodel)
+  - [lurek.render.loadObj](#lurekrenderloadobj)
+  - [lurek.render.newCanvas](#lurekrendernewcanvas)
+  - [lurek.render.newDrawLayer](#lurekrendernewdrawlayer)
+  - [lurek.render.newFont](#lurekrendernewfont)
+  - [lurek.render.newImage](#lurekrendernewimage)
+  - [lurek.render.newLayer](#lurekrendernewlayer)
+  - [lurek.render.newMesh](#lurekrendernewmesh)
+  - [lurek.render.newNineSlice](#lurekrendernewnineslice)
+  - [lurek.render.newQuad](#lurekrendernewquad)
+  - [lurek.render.newShader](#lurekrendernewshader)
+  - [lurek.render.newShape](#lurekrendernewshape)
+  - [lurek.render.newSpriteBatch](#lurekrendernewspritebatch)
+  - [lurek.render.origin](#lurekrenderorigin)
+  - [lurek.render.points](#lurekrenderpoints)
+  - [lurek.render.polygon](#lurekrenderpolygon)
+  - [lurek.render.pop](#lurekrenderpop)
+  - [lurek.render.popLayer](#lurekrenderpoplayer)
+  - [lurek.render.print](#lurekrenderprint)
+  - [lurek.render.printf](#lurekrenderprintf)
+  - [lurek.render.printRich](#lurekrenderprintrich)
+  - [lurek.render.printRotated](#lurekrenderprintrotated)
+  - [lurek.render.push](#lurekrenderpush)
+  - [lurek.render.pushLayer](#lurekrenderpushlayer)
+  - [lurek.render.pushSortKey](#lurekrenderpushsortkey)
+  - [lurek.render.rectangle](#lurekrenderrectangle)
+  - [lurek.render.resetCanvas](#lurekrenderresetcanvas)
+  - [lurek.render.rotate](#lurekrenderrotate)
+  - [lurek.render.saveScreenshot](#lurekrendersavescreenshot)
+  - [lurek.render.scale](#lurekrenderscale)
+  - [lurek.render.setBackgroundColor](#lurekrendersetbackgroundcolor)
+  - [lurek.render.setBlendMode](#lurekrendersetblendmode)
+  - [lurek.render.setCanvas](#lurekrendersetcanvas)
+  - [lurek.render.setColor](#lurekrendersetcolor)
+  - [lurek.render.setColorMask](#lurekrendersetcolormask)
+  - [lurek.render.setDefaultFilter](#lurekrendersetdefaultfilter)
+  - [lurek.render.setDepthMode](#lurekrendersetdepthmode)
+  - [lurek.render.setFont](#lurekrendersetfont)
+  - [lurek.render.setFontLineHeight](#lurekrendersetfontlineheight)
+  - [lurek.render.setLayer](#lurekrendersetlayer)
+  - [lurek.render.setLayerVisible](#lurekrendersetlayervisible)
+  - [lurek.render.setLayerZOrder](#lurekrendersetlayerzorder)
+  - [lurek.render.setLineWidth](#lurekrendersetlinewidth)
+  - [lurek.render.setPointSize](#lurekrendersetpointsize)
+  - [lurek.render.setScissor](#lurekrendersetscissor)
+  - [lurek.render.setShader](#lurekrendersetshader)
+  - [lurek.render.setStencilMode](#lurekrendersetstencilmode)
+  - [lurek.render.setStencilTest](#lurekrendersetstenciltest)
+  - [lurek.render.setWireframe](#lurekrendersetwireframe)
+  - [lurek.render.shear](#lurekrendershear)
+  - [lurek.render.stencil](#lurekrenderstencil)
+  - [lurek.render.translate](#lurekrendertranslate)
+  - [lurek.render.triangle](#lurekrendertriangle)
+- [🔷 Module Types](#module-types)
   - [LCanvas](#lcanvas)
-  - [LCanvas:getDimensions() -> number, number](#lcanvasgetdimensions-number-number)
-  - [LCanvas:getHeight() -> number](#lcanvasgetheight-number)
-  - [LCanvas:getWidth() -> number](#lcanvasgetwidth-number)
-  - [LCanvas:release() -> boolean](#lcanvasrelease-boolean)
-  - [LCanvas:type() -> string](#lcanvastype-string)
-  - [LCanvas:typeOf(name: string) -> string](#lcanvastypeofname-string-string)
   - [LDrawLayer](#ldrawlayer)
-  - [LDrawLayer:clear()](#ldrawlayerclear)
-  - [LDrawLayer:flush()](#ldrawlayerflush)
-  - [LDrawLayer:getCount() -> number](#ldrawlayergetcount-number)
-  - [LDrawLayer:queue(z: number, f: function)](#ldrawlayerqueuez-number-f-function)
-  - [LDrawLayer:type() -> string](#ldrawlayertype-string)
-  - [LDrawLayer:typeOf(name: string) -> boolean](#ldrawlayertypeofname-string-boolean)
   - [LFont](#lfont)
-  - [LFont:getAscent() -> number](#lfontgetascent-number)
-  - [LFont:getDescent() -> number](#lfontgetdescent-number)
-  - [LFont:getHeight() -> number](#lfontgetheight-number)
-  - [LFont:getLineHeight() -> number](#lfontgetlineheight-number)
-  - [LFont:getWidth(text: string) -> number](#lfontgetwidthtext-string-number)
-  - [LFont:getWrap(text: string, limit: number) -> table, number](#lfontgetwraptext-string-limit-number-table-number)
-  - [LFont:release() -> boolean](#lfontrelease-boolean)
-  - [LFont:setLineHeight(height: number)](#lfontsetlineheightheight-number)
-  - [LFont:type() -> string](#lfonttype-string)
-  - [LFont:typeOf(name: string) -> string](#lfonttypeofname-string-string)
   - [LImage](#limage)
-  - [LImage:getDimensions() -> number, number](#limagegetdimensions-number-number)
-  - [LImage:getHeight() -> number](#limagegetheight-number)
-  - [LImage:getId() -> number](#limagegetid-number)
-  - [LImage:getWidth() -> number](#limagegetwidth-number)
-  - [LImage:release() -> boolean](#limagerelease-boolean)
-  - [LImage:type() -> string](#limagetype-string)
-  - [LImage:typeOf(name: string) -> string](#limagetypeofname-string-string)
   - [LImageData](#limagedata)
-  - [LImageData:blit(source: LImageData, dstX: integer, dstY: integer)](#limagedatablitsource-limagedata-dstx-integer-dsty-integer)
-  - [LImageData:diff(other: LImageData) -> number](#limagedatadiffother-limagedata-number)
-  - [LImageData:getHeight() -> number](#limagedatagetheight-number)
-  - [LImageData:getRegion(x: integer, y: integer, w: integer, h: integer) -> LImageData](#limagedatagetregionx-integer-y-integer-w-integer-h-integer-limagedata)
-  - [LImageData:getWidth() -> number](#limagedatagetwidth-number)
-  - [LImageData:mapPixels(callback: function)](#limagedatamappixelscallback-function)
-  - [LImageData:resize(w: integer, h: integer) -> LImageData](#limagedataresizew-integer-h-integer-limagedata)
-  - [LImageData:type() -> string](#limagedatatype-string)
-  - [LImageData:typeOf(name: string) -> boolean](#limagedatatypeofname-string-boolean)
   - [LMesh](#lmesh)
-  - [LMesh:getVertex(index: integer) -> number, number, number, number, number, number, number, number](#lmeshgetvertexindex-integer-number-number-number-number-number-number-number-number)
-  - [LMesh:getVertexCount() -> number](#lmeshgetvertexcount-number)
-  - [LMesh:release() -> boolean](#lmeshrelease-boolean)
-  - [LMesh:setTexture([image]: LImage)](#lmeshsettextureimage-limage)
-  - [LMesh:setVertex(index: integer, data: table)](#lmeshsetvertexindex-integer-data-table)
-  - [LMesh:type() -> string](#lmeshtype-string)
-  - [LMesh:typeOf(name: string) -> string](#lmeshtypeofname-string-string)
   - [LNineSlice](#lnineslice)
-  - [LNineSlice:getInsets() -> number, number, number, number](#lnineslicegetinsets-number-number-number-number)
-  - [LNineSlice:getTextureSize() -> number, number](#lnineslicegettexturesize-number-number)
-  - [LNineSlice:type() -> string](#lnineslicetype-string)
-  - [LNineSlice:typeOf(name: string) -> boolean](#lnineslicetypeofname-string-boolean)
   - [LObjModel](#lobjmodel)
-  - [LObjModel:getFaceCount() -> number](#lobjmodelgetfacecount-number)
-  - [LObjModel:getNormalCount() -> number](#lobjmodelgetnormalcount-number)
-  - [LObjModel:getUvCount() -> number](#lobjmodelgetuvcount-number)
-  - [LObjModel:getVertexCount() -> number](#lobjmodelgetvertexcount-number)
-  - [LObjModel:projectToMesh(camera: table, screenW: number, screenH: number) -> table](#lobjmodelprojecttomeshcamera-table-screenw-number-screenh-number-table)
-  - [LObjModel:renderToImage(width: integer, height: integer, [rotation]: number) -> LImage](#lobjmodelrendertoimagewidth-integer-height-integer-rotation-number-limage)
   - [LQuad](#lquad)
-  - [LQuad:getTextureDimensions() -> number, number](#lquadgettexturedimensions-number-number)
-  - [LQuad:getViewport() -> number, number, number, number](#lquadgetviewport-number-number-number-number)
-  - [LQuad:setViewport(x: number, y: number, w: number, h: number)](#lquadsetviewportx-number-y-number-w-number-h-number)
-  - [LQuad:type() -> string](#lquadtype-string)
-  - [LQuad:typeOf(name: string) -> string](#lquadtypeofname-string-string)
   - [LShader](#lshader)
-  - [LShader:hasUniform(name: string) -> boolean](#lshaderhasuniformname-string-boolean)
-  - [LShader:release() -> boolean](#lshaderrelease-boolean)
-  - [LShader:send(name: string, value: number|boolean|table)](#lshadersendname-string-value-numberbooleantable)
-  - [LShader:type() -> string](#lshadertype-string)
-  - [LShader:typeOf(name: string) -> string](#lshadertypeofname-string-string)
   - [LShape](#lshape)
-  - [LShape:arc(mode: string, x: number, y: number, r: number, astart: number, aend: number, [segments]: number)](#lshapearcmode-string-x-number-y-number-r-number-astart-number-aend-number-segments-number)
-  - [LShape:circle(mode: string, x: number, y: number, r: number)](#lshapecirclemode-string-x-number-y-number-r-number)
-  - [LShape:clear()](#lshapeclear)
-  - [LShape:draw(x: number, y: number, [rotation]: number, [sx]: number, [sy]: number, [ox]: number, [oy]: number)](#lshapedrawx-number-y-number-rotation-number-sx-number-sy-number-ox-number-oy-number)
-  - [LShape:ellipse(mode: string, x: number, y: number, rx: number, ry: number)](#lshapeellipsemode-string-x-number-y-number-rx-number-ry-number)
-  - [LShape:getCommandCount() -> number](#lshapegetcommandcount-number)
-  - [LShape:line(x1: number, y1: number, x2: number, y2: number)](#lshapelinex1-number-y1-number-x2-number-y2-number)
-  - [LShape:polygon(mode: string, ...: number)](#lshapepolygonmode-string-number)
-  - [LShape:polyline(...: number)](#lshapepolyline-number)
-  - [LShape:rectangle(mode: string, x: number, y: number, w: number, h: number)](#lshaperectanglemode-string-x-number-y-number-w-number-h-number)
-  - [LShape:roundedRectangle(mode: string, x: number, y: number, w: number, h: number, rx: number, [ry]: number)](#lshaperoundedrectanglemode-string-x-number-y-number-w-number-h-number-rx-number-ry-number)
-  - [LShape:setColor(r: number, g: number, b: number, [a]: number)](#lshapesetcolorr-number-g-number-b-number-a-number)
-  - [LShape:setLineWidth(w: number)](#lshapesetlinewidthw-number)
-  - [LShape:triangle(mode: string, x1: number, y1: number, x2: number, y2: number, x3: number, y3: number)](#lshapetrianglemode-string-x1-number-y1-number-x2-number-y2-number-x3-number-y3-number)
-  - [LShape:type() -> string](#lshapetype-string)
-  - [LShape:typeOf(name: string) -> boolean](#lshapetypeofname-string-boolean)
   - [LSpriteBatch](#lspritebatch)
-  - [LSpriteBatch:add(x: number, y: number, [r]: number, [sx]: number, [sy]: number, [ox]: number, [oy]: number) -> number](#lspritebatchaddx-number-y-number-r-number-sx-number-sy-number-ox-number-oy-number-number)
-  - [LSpriteBatch:clear()](#lspritebatchclear)
-  - [LSpriteBatch:getBufferSize() -> number](#lspritebatchgetbuffersize-number)
-  - [LSpriteBatch:getCount() -> number](#lspritebatchgetcount-number)
-  - [LSpriteBatch:release() -> boolean](#lspritebatchrelease-boolean)
-  - [LSpriteBatch:type() -> string](#lspritebatchtype-string)
-  - [LSpriteBatch:typeOf(name: string) -> string](#lspritebatchtypeofname-string-string)
-- [Examples](#examples)
-- [Reference Games](#reference-games)
-- [Related Modules](#related-modules)
+- [🔹 Module Methods](#module-methods)
+  - [LCanvas:getDimensions](#lcanvasgetdimensions)
+  - [LCanvas:getHeight](#lcanvasgetheight)
+  - [LCanvas:getWidth](#lcanvasgetwidth)
+  - [LCanvas:release](#lcanvasrelease)
+  - [LCanvas:type](#lcanvastype)
+  - [LCanvas:typeOf](#lcanvastypeof)
+  - [LDrawLayer:clear](#ldrawlayerclear)
+  - [LDrawLayer:flush](#ldrawlayerflush)
+  - [LDrawLayer:getCount](#ldrawlayergetcount)
+  - [LDrawLayer:queue](#ldrawlayerqueue)
+  - [LDrawLayer:type](#ldrawlayertype)
+  - [LDrawLayer:typeOf](#ldrawlayertypeof)
+  - [LFont:getAscent](#lfontgetascent)
+  - [LFont:getDescent](#lfontgetdescent)
+  - [LFont:getHeight](#lfontgetheight)
+  - [LFont:getLineHeight](#lfontgetlineheight)
+  - [LFont:getWidth](#lfontgetwidth)
+  - [LFont:getWrap](#lfontgetwrap)
+  - [LFont:release](#lfontrelease)
+  - [LFont:setLineHeight](#lfontsetlineheight)
+  - [LFont:type](#lfonttype)
+  - [LFont:typeOf](#lfonttypeof)
+  - [LImage:getDimensions](#limagegetdimensions)
+  - [LImage:getHeight](#limagegetheight)
+  - [LImage:getId](#limagegetid)
+  - [LImage:getWidth](#limagegetwidth)
+  - [LImage:release](#limagerelease)
+  - [LImage:type](#limagetype)
+  - [LImage:typeOf](#limagetypeof)
+  - [LImageData:blit](#limagedatablit)
+  - [LImageData:diff](#limagedatadiff)
+  - [LImageData:getHeight](#limagedatagetheight)
+  - [LImageData:getRegion](#limagedatagetregion)
+  - [LImageData:getWidth](#limagedatagetwidth)
+  - [LImageData:mapPixels](#limagedatamappixels)
+  - [LImageData:resize](#limagedataresize)
+  - [LImageData:type](#limagedatatype)
+  - [LImageData:typeOf](#limagedatatypeof)
+  - [LMesh:getVertex](#lmeshgetvertex)
+  - [LMesh:getVertexCount](#lmeshgetvertexcount)
+  - [LMesh:release](#lmeshrelease)
+  - [LMesh:setTexture](#lmeshsettexture)
+  - [LMesh:setVertex](#lmeshsetvertex)
+  - [LMesh:type](#lmeshtype)
+  - [LMesh:typeOf](#lmeshtypeof)
+  - [LNineSlice:getInsets](#lnineslicegetinsets)
+  - [LNineSlice:getTextureSize](#lnineslicegettexturesize)
+  - [LNineSlice:type](#lnineslicetype)
+  - [LNineSlice:typeOf](#lnineslicetypeof)
+  - [LObjModel:getFaceCount](#lobjmodelgetfacecount)
+  - [LObjModel:getNormalCount](#lobjmodelgetnormalcount)
+  - [LObjModel:getUvCount](#lobjmodelgetuvcount)
+  - [LObjModel:getVertexCount](#lobjmodelgetvertexcount)
+  - [LObjModel:projectToMesh](#lobjmodelprojecttomesh)
+  - [LObjModel:renderToImage](#lobjmodelrendertoimage)
+  - [LQuad:getTextureDimensions](#lquadgettexturedimensions)
+  - [LQuad:getViewport](#lquadgetviewport)
+  - [LQuad:setViewport](#lquadsetviewport)
+  - [LQuad:type](#lquadtype)
+  - [LQuad:typeOf](#lquadtypeof)
+  - [LShader:hasUniform](#lshaderhasuniform)
+  - [LShader:release](#lshaderrelease)
+  - [LShader:send](#lshadersend)
+  - [LShader:type](#lshadertype)
+  - [LShader:typeOf](#lshadertypeof)
+  - [LShape:arc](#lshapearc)
+  - [LShape:circle](#lshapecircle)
+  - [LShape:clear](#lshapeclear)
+  - [LShape:draw](#lshapedraw)
+  - [LShape:ellipse](#lshapeellipse)
+  - [LShape:getCommandCount](#lshapegetcommandcount)
+  - [LShape:line](#lshapeline)
+  - [LShape:polygon](#lshapepolygon)
+  - [LShape:polyline](#lshapepolyline)
+  - [LShape:rectangle](#lshaperectangle)
+  - [LShape:roundedRectangle](#lshaperoundedrectangle)
+  - [LShape:setColor](#lshapesetcolor)
+  - [LShape:setLineWidth](#lshapesetlinewidth)
+  - [LShape:triangle](#lshapetriangle)
+  - [LShape:type](#lshapetype)
+  - [LShape:typeOf](#lshapetypeof)
+  - [LSpriteBatch:add](#lspritebatchadd)
+  - [LSpriteBatch:clear](#lspritebatchclear)
+  - [LSpriteBatch:getBufferSize](#lspritebatchgetbuffersize)
+  - [LSpriteBatch:getCount](#lspritebatchgetcount)
+  - [LSpriteBatch:release](#lspritebatchrelease)
+  - [LSpriteBatch:type](#lspritebatchtype)
+  - [LSpriteBatch:typeOf](#lspritebatchtypeof)
+- [💡 Examples](#examples)
+- [🎮 Reference Games](#reference-games)
+- [🔗 Related Modules](#related-modules)
 
 This page is generated from the current module specs, examples, and Lua API data.
 
 **Module group:** Platform Services
 **Namespace:** `lurek.render`
 
-## Purpose
+## 🎯 Purpose
 
 wgpu 22 renderer with deferred RenderCommand queue; nothing executes during Lua callbacks.
 
-## Summary
+[⬆ back to top](#table-of-contents)
+
+## 📋 Summary
 
 wgpu 22 GPU renderer with a deferred `RenderCommand` queue — no GPU work executes during Lua callbacks. Lua scripts emit draw commands (rectangles, circles, lines, polygons, text, textures, meshes) into a frame-local command buffer. At frame end the renderer sorts by layer/depth, batches compatible draws, and encodes wgpu render passes.
 
 `GpuRenderer` owns the device, queue, swap chain, and all GPU resources (textures, buffers, pipelines, shaders). `Font` handles text shaping and glyph atlas management via fontdue. Canvas targets enable off-screen rendering to textures. Post-processing applies shader passes from the `PostFxPipeline`. Custom WGSL shaders can be loaded and bound with uniform data. Mesh rendering supports indexed geometry with vertex attributes. Shape helpers generate circle, rounded-rect, polygon, and arc geometry. Exposed as `lurek.render.*`. Platform Services tier.
 
-## Minimal Module Example
+[⬆ back to top](#table-of-contents)
 
-Module example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
--- Draws a drawable object (Image, Canvas, SpriteBatch, or Mesh) at the given position with optional transform
-do
-  -- Parameters: drawable, x, y, rotation, scaleX, scaleY, originX, originY
-  -- Origin offsets shift the point around which rotation and scaling happen.
-  -- Setting origin to the center of a sprite enables rotation around its midpoint.
-  local img
-  function lurek.init()
-    img = lurek.render.newImage("img/player.png")
-  end
-  function lurek.draw()
-    local w, h = img:getWidth(), img:getHeight()
-    -- Draw centered at (200, 200), rotated 45 degrees, no scale offset
-    lurek.render.draw(img, 200, 200, math.pi/4, 1, 1, w/2, h/2)
-  end
-end
-
---@api-stub: lurek.render.drawq
--- Draws a sub-region of an image defined by a Quad, with optional transform
-do
-  -- drawq renders only the rectangle defined by the Quad.
-  -- Essential for sprite sheet animation: change the Quad each frame.
-  local sheet, frames
-  function lurek.init()
-    sheet = lurek.render.newImage("img/sheet.png")
-    -- Define 4 animation frames, each 32x32, in a horizontal strip
-    frames = {}
-    for i = 0, 3 do
-      frames[i+1] = lurek.render.newQuad(i*32, 0, 32, 32, 256, 256)
-    end
-  end
-  function lurek.draw()
-    -- Pick frame based on time for simple animation
-    local idx = math.floor(lurek.timer.getTime() * 8) % 4 + 1
-    lurek.render.drawq(sheet, frames[idx], 100, 100)
-  end
-end
-
---@api-stub: lurek.render.drawMany
--- Batch-draws multiple images in one call
-do
-  -- drawMany takes an array of draw-entry tables for efficient bulk rendering.
-  -- Each entry: {image, x, y, r, sx, sy, ox, oy} — mirrors lurek.render.draw params.
-  -- Use for particle systems or tile layers that share the same texture.
-  local img
-  function lurek.init()
-    img = lurek.render.newImage("img/star.png")
-  end
-  function lurek.draw()
-```
-
-## Key Types
+## 🧩 Key Types
 
 - `LCanvas` (6 methods) - Off-screen render target that can be drawn to and then composited onto the screen.
 - `LDrawLayer` (6 methods) - Z-ordered draw callback layer for sorting draw calls by depth before flushing.
@@ -312,7 +261,9 @@ do
 - `LShape` (16 methods) - Retained compound shape that accumulates drawing commands and can be rendered in one call.
 - `LSpriteBatch` (7 methods) - Batched sprite renderer for efficiently drawing many copies of the same texture.
 
-## API Overview
+[⬆ back to top](#table-of-contents)
+
+## 📖 API Overview
 
 - Source spec: [docs/specs/render.md](../blob/main/docs/specs/render.md)
 
@@ -338,15 +289,19 @@ lurek.render.drawPath(path: table, [mode]: string, [close]: boolean) -- Draws a 
 -- ... 90 more module functions
 ```
 
-## Module Functions
+[⬆ back to top](#table-of-contents)
 
-### `lurek.render.applyTransform(mat: table)`
+## ⚙️ Module Functions
+
+### lurek.render.applyTransform
+
+`lurek.render.applyTransform(mat: table)`
 
 Multiplies the current transformation matrix by a 3x3 matrix (9 values in row-major order).
 
 **Parameters**
 
-- `mat` (`table`, required) - Flat table of 9 numbers representing a 3x3 transform matrix.
+- `mat` (`table`, required): Flat table of 9 numbers representing a 3x3 transform matrix.
 
 #### Example
 
@@ -367,19 +322,21 @@ do
 end
 ```
 
-### `lurek.render.arc(mode: string, x: number, y: number, radius: number, angle1: number, angle2: number, [segments]: number)`
+### lurek.render.arc
+
+`lurek.render.arc(mode: string, x: number, y: number, radius: number, angle1: number, angle2: number, [segments]: number)`
 
 Draws a filled or outlined circular arc segment.
 
 **Parameters**
 
-- `mode` (`string`, required) - "fill" or "line".
-- `x` (`number`, required) - Center X.
-- `y` (`number`, required) - Center Y.
-- `radius` (`number`, required) - Arc radius.
-- `angle1` (`number`, required) - Start angle in radians.
-- `angle2` (`number`, required) - End angle in radians.
-- `segments` (`number`, optional) - Number of arc segments (default 32).
+- `mode` (`string`, required): "fill" or "line".
+- `x` (`number`, required): Center X.
+- `y` (`number`, required): Center Y.
+- `radius` (`number`, required): Arc radius.
+- `angle1` (`number`, required): Start angle in radians.
+- `angle2` (`number`, required): End angle in radians.
+- `segments` (`number`, optional): Number of arc segments (default 32).
 
 #### Example
 
@@ -393,13 +350,15 @@ do
 end
 ```
 
-### `lurek.render.beginSortGroup(id: integer)`
+### lurek.render.beginSortGroup
+
+`lurek.render.beginSortGroup(id: integer)`
 
 Begins a depth-sorted rendering group. Draw calls within this group are sorted by pushSortKey values.
 
 **Parameters**
 
-- `id` (`integer`, required) - Group identifier.
+- `id` (`integer`, required): Group identifier.
 
 #### Example
 
@@ -422,13 +381,15 @@ do
 end
 ```
 
-### `lurek.render.captureScreenshot(callback: function)`
+### lurek.render.captureScreenshot
+
+`lurek.render.captureScreenshot(callback: function)`
 
 Captures a screenshot as ImageData and passes it to a callback (stub: returns 1x1 placeholder).
 
 **Parameters**
 
-- `callback` (`function`, required) - Called with an LImageData argument.
+- `callback` (`function`, required): Called with an LImageData argument.
 
 #### Example
 
@@ -446,16 +407,18 @@ do
 end
 ```
 
-### `lurek.render.circle(mode: string, x: number, y: number, radius: number)`
+### lurek.render.circle
+
+`lurek.render.circle(mode: string, x: number, y: number, radius: number)`
 
 Draws a filled or outlined circle at the given position.
 
 **Parameters**
 
-- `mode` (`string`, required) - "fill" or "line".
-- `x` (`number`, required) - Center X.
-- `y` (`number`, required) - Center Y.
-- `radius` (`number`, required) - Circle radius in pixels.
+- `mode` (`string`, required): "fill" or "line".
+- `x` (`number`, required): Center X.
+- `y` (`number`, required): Center Y.
+- `radius` (`number`, required): Circle radius in pixels.
 
 #### Example
 
@@ -469,15 +432,17 @@ do
 end
 ```
 
-### `lurek.render.clear([r]: number, [g]: number, [b]: number)`
+### lurek.render.clear
+
+`lurek.render.clear([r]: number, [g]: number, [b]: number)`
 
 Clears all queued render commands for the current frame.
 
 **Parameters**
 
-- `r` (`number`, optional) - Unused (reserved for future clear-color override).
-- `g` (`number`, optional) - Unused.
-- `b` (`number`, optional) - Unused.
+- `r` (`number`, optional): Unused (reserved for future clear-color override).
+- `g` (`number`, optional): Unused.
+- `b` (`number`, optional): Unused.
 
 #### Example
 
@@ -491,7 +456,9 @@ do
 end
 ```
 
-### `lurek.render.clearStencil()`
+### lurek.render.clearStencil
+
+`lurek.render.clearStencil()`
 
 Resets the stencil state to defaults (no stencil operations).
 
@@ -511,7 +478,9 @@ do
 end
 ```
 
-### `lurek.render.currentLayer() -> string`
+### lurek.render.currentLayer
+
+`lurek.render.currentLayer() -> string`
 
 Returns the name of the currently active rendering layer.
 
@@ -528,20 +497,22 @@ do
 end
 ```
 
-### `lurek.render.draw(drawable: LImage|LCanvas|LSpriteBatch|LMesh, [x]: number, [y]: number, [r]: number, [sx]: number, [sy]: number, [ox]: number, [oy]: number)`
+### lurek.render.draw
+
+`lurek.render.draw(drawable: LImage|LCanvas|LSpriteBatch|LMesh, [x]: number, [y]: number, [r]: number, [sx]: number, [sy]: number, [ox]: number, [oy]: number)`
 
 Draws a drawable object (Image, Canvas, SpriteBatch, or Mesh) at the given position with optional transform.
 
 **Parameters**
 
-- `drawable` (`LImage|LCanvas|LSpriteBatch|LMesh`, required) - The drawable object to render.
-- `x` (`number`, optional) - X position (default 0).
-- `y` (`number`, optional) - Y position (default 0).
-- `r` (`number`, optional) - Rotation in radians (default 0).
-- `sx` (`number`, optional) - Scale X (default 1).
-- `sy` (`number`, optional) - Scale Y (default 1).
-- `ox` (`number`, optional) - Origin offset X (default 0).
-- `oy` (`number`, optional) - Origin offset Y (default 0).
+- `drawable` (`LImage|LCanvas|LSpriteBatch|LMesh`, required): The drawable object to render.
+- `x` (`number`, optional): X position (default 0).
+- `y` (`number`, optional): Y position (default 0).
+- `r` (`number`, optional): Rotation in radians (default 0).
+- `sx` (`number`, optional): Scale X (default 1).
+- `sy` (`number`, optional): Scale Y (default 1).
+- `ox` (`number`, optional): Origin offset X (default 0).
+- `oy` (`number`, optional): Origin offset Y (default 0).
 
 #### Example
 
@@ -560,19 +531,21 @@ do
 end
 ```
 
-### `lurek.render.drawBevelRect(x: number, y: number, w: number, h: number, [bevelW]: number, [style]: string, [opts]: table)`
+### lurek.render.drawBevelRect
+
+`lurek.render.drawBevelRect(x: number, y: number, w: number, h: number, [bevelW]: number, [style]: string, [opts]: table)`
 
 Draws a beveled rectangle with highlight, shadow, and fill colors for 3D-style UI elements.
 
 **Parameters**
 
-- `x` (`number`, required) - Left edge X.
-- `y` (`number`, required) - Top edge Y.
-- `w` (`number`, required) - Width (must be positive).
-- `h` (`number`, required) - Height (must be positive).
-- `bevelW` (`number`, optional) - Bevel border width (default 2).
-- `style` (`string`, optional) - Bevel style: "raised" (default), "sunken", "ridge", "groove", "flat".
-- `opts` (`table`, optional) - Options: highlight, shadow, fillColor (each a {r,g,b,a} table).
+- `x` (`number`, required): Left edge X.
+- `y` (`number`, required): Top edge Y.
+- `w` (`number`, required): Width (must be positive).
+- `h` (`number`, required): Height (must be positive).
+- `bevelW` (`number`, optional): Bevel border width (default 2).
+- `style` (`string`, optional): Bevel style: "raised" (default), "sunken", "ridge", "groove", "flat".
+- `opts` (`table`, optional): Options: highlight, shadow, fillColor (each a {r,g,b,a} table).
 
 #### Example
 
@@ -594,15 +567,17 @@ do
 end
 ```
 
-### `lurek.render.drawColoredPolygon(vertices: table, colors: table, [mode]: string)`
+### lurek.render.drawColoredPolygon
+
+`lurek.render.drawColoredPolygon(vertices: table, colors: table, [mode]: string)`
 
 Draws a polygon with per-vertex colors.
 
 **Parameters**
 
-- `vertices` (`table`, required) - Flat array of x,y coordinates: {x1, y1, x2, y2, ...}.
-- `colors` (`table`, required) - Array of color tables: {{r, g, b, a}, ...}, one per vertex.
-- `mode` (`string`, optional) - "fill" (default) or "line".
+- `vertices` (`table`, required): Flat array of x,y coordinates: {x1, y1, x2, y2, ...}.
+- `colors` (`table`, required): Array of color tables: {{r, g, b, a}, ...}, one per vertex.
+- `mode` (`string`, optional): "fill" (default) or "line".
 
 #### Example
 
@@ -622,21 +597,23 @@ do
 end
 ```
 
-### `lurek.render.drawCubicBezier(x1: number, y1: number, cx1: number, cy1: number, cx2: number, cy2: number, x2: number, y2: number, [segs]: number)`
+### lurek.render.drawCubicBezier
+
+`lurek.render.drawCubicBezier(x1: number, y1: number, cx1: number, cy1: number, cx2: number, cy2: number, x2: number, y2: number, [segs]: number)`
 
 Draws a cubic Bezier curve through start, two control points, and end.
 
 **Parameters**
 
-- `x1` (`number`, required) - Start X.
-- `y1` (`number`, required) - Start Y.
-- `cx1` (`number`, required) - First control point X.
-- `cy1` (`number`, required) - First control point Y.
-- `cx2` (`number`, required) - Second control point X.
-- `cy2` (`number`, required) - Second control point Y.
-- `x2` (`number`, required) - End X.
-- `y2` (`number`, required) - End Y.
-- `segs` (`number`, optional) - Number of line segments (default 16).
+- `x1` (`number`, required): Start X.
+- `y1` (`number`, required): Start Y.
+- `cx1` (`number`, required): First control point X.
+- `cy1` (`number`, required): First control point Y.
+- `cx2` (`number`, required): Second control point X.
+- `cy2` (`number`, required): Second control point Y.
+- `x2` (`number`, required): End X.
+- `y2` (`number`, required): End Y.
+- `segs` (`number`, optional): Number of line segments (default 16).
 
 #### Example
 
@@ -659,19 +636,21 @@ do
 end
 ```
 
-### `lurek.render.drawGradientRect(x: number, y: number, w: number, h: number, c1: table, c2: table, [dir]: string)`
+### lurek.render.drawGradientRect
+
+`lurek.render.drawGradientRect(x: number, y: number, w: number, h: number, c1: table, c2: table, [dir]: string)`
 
 Draws a rectangle with a two-color gradient fill.
 
 **Parameters**
 
-- `x` (`number`, required) - Left edge X.
-- `y` (`number`, required) - Top edge Y.
-- `w` (`number`, required) - Width (must be positive).
-- `h` (`number`, required) - Height (must be positive).
-- `c1` (`table`, required) - Start color {r, g, b [, a]}.
-- `c2` (`table`, required) - End color {r, g, b [, a]}.
-- `dir` (`string`, optional) - Direction: "vertical" (default), "horizontal", "diagDown", "diagUp", "radial".
+- `x` (`number`, required): Left edge X.
+- `y` (`number`, required): Top edge Y.
+- `w` (`number`, required): Width (must be positive).
+- `h` (`number`, required): Height (must be positive).
+- `c1` (`table`, required): Start color {r, g, b [, a]}.
+- `c2` (`table`, required): End color {r, g, b [, a]}.
+- `dir` (`string`, optional): Direction: "vertical" (default), "horizontal", "diagDown", "diagUp", "radial".
 
 #### Example
 
@@ -693,17 +672,19 @@ do
 end
 ```
 
-### `lurek.render.drawHexTile(cx: number, cy: number, size: number, [orientation]: string, [mode]: string)`
+### lurek.render.drawHexTile
+
+`lurek.render.drawHexTile(cx: number, cy: number, size: number, [orientation]: string, [mode]: string)`
 
 Draws a regular hexagonal tile at the given center position.
 
 **Parameters**
 
-- `cx` (`number`, required) - Center X.
-- `cy` (`number`, required) - Center Y.
-- `size` (`number`, required) - Hex radius (must be positive).
-- `orientation` (`string`, optional) - "pointyTop" (default) or "flatTop".
-- `mode` (`string`, optional) - "line" (default) or "fill".
+- `cx` (`number`, required): Center X.
+- `cy` (`number`, required): Center Y.
+- `size` (`number`, required): Hex radius (must be positive).
+- `orientation` (`string`, optional): "pointyTop" (default) or "flatTop".
+- `mode` (`string`, optional): "line" (default) or "fill".
 
 #### Example
 
@@ -723,17 +704,19 @@ do
 end
 ```
 
-### `lurek.render.drawIsoCubeTile(sx: number, sy: number, halfW: number, halfH: number, [opts]: table)`
+### lurek.render.drawIsoCubeTile
+
+`lurek.render.drawIsoCubeTile(sx: number, sy: number, halfW: number, halfH: number, [opts]: table)`
 
 Draws an isometric cube tile with configurable face colors and optional textures.
 
 **Parameters**
 
-- `sx` (`number`, required) - Screen X position of the tile center.
-- `sy` (`number`, required) - Screen Y position of the tile center.
-- `halfW` (`number`, required) - Half-width of the tile diamond.
-- `halfH` (`number`, required) - Half-height of the tile diamond.
-- `opts` (`table`, optional) - Options: depth, topColor, leftColor, rightColor, topTexture, leftTexture, rightTexture.
+- `sx` (`number`, required): Screen X position of the tile center.
+- `sy` (`number`, required): Screen Y position of the tile center.
+- `halfW` (`number`, required): Half-width of the tile diamond.
+- `halfH` (`number`, required): Half-height of the tile diamond.
+- `opts` (`table`, optional): Options: depth, topColor, leftColor, rightColor, topTexture, leftTexture, rightTexture.
 
 #### Example
 
@@ -753,13 +736,15 @@ do
 end
 ```
 
-### `lurek.render.drawMany(list: table)`
+### lurek.render.drawMany
+
+`lurek.render.drawMany(list: table)`
 
 Batch-draws multiple images in one call. Each entry is a table: {image, x, y, r, sx, sy, ox, oy}.
 
 **Parameters**
 
-- `list` (`table`, required) - Array of draw entry tables.
+- `list` (`table`, required): Array of draw entry tables.
 
 #### Example
 
@@ -784,17 +769,19 @@ do
 end
 ```
 
-### `lurek.render.drawNineSlice(slice: LNineSlice, x: number, y: number, w: number, h: number)`
+### lurek.render.drawNineSlice
+
+`lurek.render.drawNineSlice(slice: LNineSlice, x: number, y: number, w: number, h: number)`
 
 Draws a 9-slice image stretched to fill the given rectangle, keeping borders unscaled.
 
 **Parameters**
 
-- `slice` (`LNineSlice`, required) - The 9-slice handle to draw.
-- `x` (`number`, required) - Left edge X.
-- `y` (`number`, required) - Top edge Y.
-- `w` (`number`, required) - Target width.
-- `h` (`number`, required) - Target height.
+- `slice` (`LNineSlice`, required): The 9-slice handle to draw.
+- `x` (`number`, required): Left edge X.
+- `y` (`number`, required): Top edge Y.
+- `w` (`number`, required): Target width.
+- `h` (`number`, required): Target height.
 
 #### Example
 
@@ -816,15 +803,17 @@ do
 end
 ```
 
-### `lurek.render.drawPath(path: table, [mode]: string, [close]: boolean)`
+### lurek.render.drawPath
+
+`lurek.render.drawPath(path: table, [mode]: string, [close]: boolean)`
 
 Draws a vector path composed of moveTo, lineTo, quadTo, and cubicTo segments.
 
 **Parameters**
 
-- `path` (`table`, required) - Array of segment tables, each with a "type" field and coordinates.
-- `mode` (`string`, optional) - "line" (default) or "fill".
-- `close` (`boolean`, optional) - Close the path back to start (default false).
+- `path` (`table`, required): Array of segment tables, each with a "type" field and coordinates.
+- `mode` (`string`, optional): "line" (default) or "fill".
+- `close` (`boolean`, optional): Close the path back to start (default false).
 
 #### Example
 
@@ -845,21 +834,23 @@ do
 end
 ```
 
-### `lurek.render.drawq(image: LImage, quad: LQuad, [x]: number, [y]: number, [r]: number, [sx]: number, [sy]: number, [ox]: number, [oy]: number)`
+### lurek.render.drawq
+
+`lurek.render.drawq(image: LImage, quad: LQuad, [x]: number, [y]: number, [r]: number, [sx]: number, [sy]: number, [ox]: number, [oy]: number)`
 
 Draws a sub-region of an image defined by a Quad, with optional transform.
 
 **Parameters**
 
-- `image` (`LImage`, required) - Source image to draw from.
-- `quad` (`LQuad`, required) - Quad defining the source rectangle within the image.
-- `x` (`number`, optional) - X position (default 0).
-- `y` (`number`, optional) - Y position (default 0).
-- `r` (`number`, optional) - Rotation in radians (default 0).
-- `sx` (`number`, optional) - Scale X (default 1).
-- `sy` (`number`, optional) - Scale Y (default 1).
-- `ox` (`number`, optional) - Origin offset X (default 0).
-- `oy` (`number`, optional) - Origin offset Y (default 0).
+- `image` (`LImage`, required): Source image to draw from.
+- `quad` (`LQuad`, required): Quad defining the source rectangle within the image.
+- `x` (`number`, optional): X position (default 0).
+- `y` (`number`, optional): Y position (default 0).
+- `r` (`number`, optional): Rotation in radians (default 0).
+- `sx` (`number`, optional): Scale X (default 1).
+- `sy` (`number`, optional): Scale Y (default 1).
+- `ox` (`number`, optional): Origin offset X (default 0).
+- `oy` (`number`, optional): Origin offset Y (default 0).
 
 #### Example
 
@@ -886,19 +877,21 @@ do
 end
 ```
 
-### `lurek.render.drawQuadBezier(x1: number, y1: number, cx: number, cy: number, x2: number, y2: number, [segments]: number)`
+### lurek.render.drawQuadBezier
+
+`lurek.render.drawQuadBezier(x1: number, y1: number, cx: number, cy: number, x2: number, y2: number, [segments]: number)`
 
 Draws a quadratic Bezier curve through start, control, and end points.
 
 **Parameters**
 
-- `x1` (`number`, required) - Start X.
-- `y1` (`number`, required) - Start Y.
-- `cx` (`number`, required) - Control point X.
-- `cy` (`number`, required) - Control point Y.
-- `x2` (`number`, required) - End X.
-- `y2` (`number`, required) - End Y.
-- `segments` (`number`, optional) - Number of line segments (default 16).
+- `x1` (`number`, required): Start X.
+- `y1` (`number`, required): Start Y.
+- `cx` (`number`, required): Control point X.
+- `cy` (`number`, required): Control point Y.
+- `x2` (`number`, required): End X.
+- `y2` (`number`, required): End Y.
+- `segments` (`number`, optional): Number of line segments (default 16).
 
 #### Example
 
@@ -921,19 +914,21 @@ do
 end
 ```
 
-### `lurek.render.drawQuadBezier(x1: number, y1: number, cx: number, cy: number, x2: number, y2: number, [segs]: integer)`
+### lurek.render.drawQuadBezier
+
+`lurek.render.drawQuadBezier(x1: number, y1: number, cx: number, cy: number, x2: number, y2: number, [segs]: integer)`
 
 Draws a quadratic Bezier curve through start, control, and end points.
 
 **Parameters**
 
-- `x1` (`number`, required) - Start X.
-- `y1` (`number`, required) - Start Y.
-- `cx` (`number`, required) - Control point X.
-- `cy` (`number`, required) - Control point Y.
-- `x2` (`number`, required) - End X.
-- `y2` (`number`, required) - End Y.
-- `segs` (`integer`, optional) - Number of line segments (default 16).
+- `x1` (`number`, required): Start X.
+- `y1` (`number`, required): Start Y.
+- `cx` (`number`, required): Control point X.
+- `cy` (`number`, required): Control point Y.
+- `x2` (`number`, required): End X.
+- `y2` (`number`, required): End Y.
+- `segs` (`integer`, optional): Number of line segments (default 16).
 
 #### Example
 
@@ -956,17 +951,19 @@ do
 end
 ```
 
-### `lurek.render.ellipse(mode: string, x: number, y: number, rx: number, ry: number)`
+### lurek.render.ellipse
+
+`lurek.render.ellipse(mode: string, x: number, y: number, rx: number, ry: number)`
 
 Draws a filled or outlined ellipse at the given position.
 
 **Parameters**
 
-- `mode` (`string`, required) - "fill" or "line".
-- `x` (`number`, required) - Center X.
-- `y` (`number`, required) - Center Y.
-- `rx` (`number`, required) - Horizontal radius.
-- `ry` (`number`, required) - Vertical radius.
+- `mode` (`string`, required): "fill" or "line".
+- `x` (`number`, required): Center X.
+- `y` (`number`, required): Center Y.
+- `rx` (`number`, required): Horizontal radius.
+- `ry` (`number`, required): Vertical radius.
 
 #### Example
 
@@ -980,13 +977,15 @@ do
 end
 ```
 
-### `lurek.render.flushSortGroup(id: integer)`
+### lurek.render.flushSortGroup
+
+`lurek.render.flushSortGroup(id: integer)`
 
 Ends a sort group and emits all accumulated draw calls in sorted order.
 
 **Parameters**
 
-- `id` (`integer`, required) - Group identifier matching the beginSortGroup call.
+- `id` (`integer`, required): Group identifier matching the beginSortGroup call.
 
 #### Example
 
@@ -1005,7 +1004,9 @@ do
 end
 ```
 
-### `lurek.render.getBackgroundColor() -> number, number, number, number`
+### lurek.render.getBackgroundColor
+
+`lurek.render.getBackgroundColor() -> number, number, number, number`
 
 Returns the current background clear color.
 
@@ -1027,7 +1028,9 @@ do
 end
 ```
 
-### `lurek.render.getBlendMode() -> string`
+### lurek.render.getBlendMode
+
+`lurek.render.getBlendMode() -> string`
 
 Returns the current blend mode name.
 
@@ -1044,7 +1047,9 @@ do
 end
 ```
 
-### `lurek.render.getCanvas() -> LCanvas`
+### lurek.render.getCanvas
+
+`lurek.render.getCanvas() -> LCanvas`
 
 Returns the currently active canvas, or nil if drawing to the screen.
 
@@ -1063,13 +1068,15 @@ do
 end
 ```
 
-### `lurek.render.getCanvasSize(canvas: LCanvas) -> number, number`
+### lurek.render.getCanvasSize
+
+`lurek.render.getCanvasSize(canvas: LCanvas) -> number, number`
 
 Returns the pixel dimensions of a canvas.
 
 **Parameters**
 
-- `canvas` (`LCanvas`, required) - Canvas handle to query.
+- `canvas` (`LCanvas`, required): Canvas handle to query.
 
 **Returns**: `number, number` - Width and height in pixels.
 
@@ -1088,7 +1095,9 @@ do
 end
 ```
 
-### `lurek.render.getColor() -> number, number, number, number`
+### lurek.render.getColor
+
+`lurek.render.getColor() -> number, number, number, number`
 
 Returns the current drawing color.
 
@@ -1110,7 +1119,9 @@ do
 end
 ```
 
-### `lurek.render.getColorMask() -> boolean, boolean, boolean, boolean`
+### lurek.render.getColorMask
+
+`lurek.render.getColorMask() -> boolean, boolean, boolean, boolean`
 
 Returns the current color write mask.
 
@@ -1127,7 +1138,9 @@ do
 end
 ```
 
-### `lurek.render.getDefaultFilter() -> string, string, number`
+### lurek.render.getDefaultFilter
+
+`lurek.render.getDefaultFilter() -> string, string, number`
 
 Returns the current default texture filtering settings.
 
@@ -1144,13 +1157,15 @@ do
 end
 ```
 
-### `lurek.render.getDefaultFont([pixelHeight]: integer) -> LFont`
+### lurek.render.getDefaultFont
+
+`lurek.render.getDefaultFont([pixelHeight]: integer) -> LFont`
 
 Returns a built-in default font at the nearest available pixel height.
 
 **Parameters**
 
-- `pixelHeight` (`integer`, optional) - Desired pixel height (default 14).
+- `pixelHeight` (`integer`, optional): Desired pixel height (default 14).
 
 **Returns**: `LFont` - The built-in font handle.
 
@@ -1169,7 +1184,9 @@ do
 end
 ```
 
-### `lurek.render.getDepthMode() -> string, boolean`
+### lurek.render.getDepthMode
+
+`lurek.render.getDepthMode() -> string, boolean`
 
 Returns the current depth comparison mode and write-enable flag.
 
@@ -1186,7 +1203,9 @@ do
 end
 ```
 
-### `lurek.render.getDimensions() -> number, number`
+### lurek.render.getDimensions
+
+`lurek.render.getDimensions() -> number, number`
 
 Returns the current window width and height.
 
@@ -1203,7 +1222,9 @@ do
 end
 ```
 
-### `lurek.render.getFont() -> LFont`
+### lurek.render.getFont
+
+`lurek.render.getFont() -> LFont`
 
 Returns the currently active font, or nil if none is set.
 
@@ -1222,13 +1243,15 @@ do
 end
 ```
 
-### `lurek.render.getFontAscent(font: LFont) -> number`
+### lurek.render.getFontAscent
+
+`lurek.render.getFontAscent(font: LFont) -> number`
 
 Returns the ascent (pixels above baseline) of the given font.
 
 **Parameters**
 
-- `font` (`LFont`, required) - Font handle to query.
+- `font` (`LFont`, required): Font handle to query.
 
 **Returns**: `number` - Ascent in pixels.
 
@@ -1246,13 +1269,15 @@ do
 end
 ```
 
-### `lurek.render.getFontCellWidth(font: LFont) -> number`
+### lurek.render.getFontCellWidth
+
+`lurek.render.getFontCellWidth(font: LFont) -> number`
 
 Returns the fixed cell width of a bitmap font.
 
 **Parameters**
 
-- `font` (`LFont`, required) - Font handle to query.
+- `font` (`LFont`, required): Font handle to query.
 
 **Returns**: `number` - Cell width in pixels.
 
@@ -1272,13 +1297,15 @@ do
 end
 ```
 
-### `lurek.render.getFontDescent(font: LFont) -> number`
+### lurek.render.getFontDescent
+
+`lurek.render.getFontDescent(font: LFont) -> number`
 
 Returns the descent (pixels below baseline) of the given font.
 
 **Parameters**
 
-- `font` (`LFont`, required) - Font handle to query.
+- `font` (`LFont`, required): Font handle to query.
 
 **Returns**: `number` - Descent in pixels.
 
@@ -1296,13 +1323,15 @@ do
 end
 ```
 
-### `lurek.render.getFontHeight(font: LFont) -> number`
+### lurek.render.getFontHeight
+
+`lurek.render.getFontHeight(font: LFont) -> number`
 
 Returns the line height of the given font.
 
 **Parameters**
 
-- `font` (`LFont`, required) - Font handle to query.
+- `font` (`LFont`, required): Font handle to query.
 
 **Returns**: `number` - Line height in pixels.
 
@@ -1325,13 +1354,15 @@ do
 end
 ```
 
-### `lurek.render.getFontLineHeight(font: LFont) -> number`
+### lurek.render.getFontLineHeight
+
+`lurek.render.getFontLineHeight(font: LFont) -> number`
 
 Returns the line spacing of the given font.
 
 **Parameters**
 
-- `font` (`LFont`, required) - Font handle to query.
+- `font` (`LFont`, required): Font handle to query.
 
 **Returns**: `number` - Line height in pixels.
 
@@ -1349,7 +1380,9 @@ do
 end
 ```
 
-### `lurek.render.getFontSizes() -> number[]`
+### lurek.render.getFontSizes
+
+`lurek.render.getFontSizes() -> number[]`
 
 Returns all available built-in font pixel heights.
 
@@ -1370,14 +1403,16 @@ do
 end
 ```
 
-### `lurek.render.getFontWidth(font: LFont, text: string) -> number`
+### lurek.render.getFontWidth
+
+`lurek.render.getFontWidth(font: LFont, text: string) -> number`
 
 Measures the pixel width of text using the given font.
 
 **Parameters**
 
-- `font` (`LFont`, required) - Font handle to measure with.
-- `text` (`string`, required) - Text to measure.
+- `font` (`LFont`, required): Font handle to measure with.
+- `text` (`string`, required): Text to measure.
 
 **Returns**: `number` - Width in pixels.
 
@@ -1400,14 +1435,16 @@ do
 end
 ```
 
-### `lurek.render.getFontWrap(text: string, limit: number) -> LuaValue, number`
+### lurek.render.getFontWrap
+
+`lurek.render.getFontWrap(text: string, limit: number) -> LuaValue, number`
 
 Word-wraps text using the active font and returns the resulting lines and widest line width.
 
 **Parameters**
 
-- `text` (`string`, required) - Text to wrap.
-- `limit` (`number`, required) - Maximum line width in pixels.
+- `text` (`string`, required): Text to wrap.
+- `limit` (`number`, required): Maximum line width in pixels.
 
 **Returns**: `LuaValue, number` - Wrapped lines as a table when a font is active, or nil otherwise, followed by the widest line width.
 
@@ -1428,7 +1465,9 @@ do
 end
 ```
 
-### `lurek.render.getHeight() -> number`
+### lurek.render.getHeight
+
+`lurek.render.getHeight() -> number`
 
 Returns the current window height in pixels.
 
@@ -1445,13 +1484,15 @@ do
 end
 ```
 
-### `lurek.render.getLayerZOrder(name: string) -> number`
+### lurek.render.getLayerZOrder
+
+`lurek.render.getLayerZOrder(name: string) -> number`
 
 Returns the z-order value of a named rendering layer.
 
 **Parameters**
 
-- `name` (`string`, required) - Layer name.
+- `name` (`string`, required): Layer name.
 
 **Returns**: `number` - Z-order value (default 0 if unset).
 
@@ -1466,7 +1507,9 @@ do
 end
 ```
 
-### `lurek.render.getLineWidth() -> number`
+### lurek.render.getLineWidth
+
+`lurek.render.getLineWidth() -> number`
 
 Returns the current line width used for line-mode drawing.
 
@@ -1486,7 +1529,9 @@ do
 end
 ```
 
-### `lurek.render.getPointSize() -> number`
+### lurek.render.getPointSize
+
+`lurek.render.getPointSize() -> number`
 
 Returns the current point diameter used for point drawing.
 
@@ -1503,7 +1548,9 @@ do
 end
 ```
 
-### `lurek.render.getScissor() -> number, number, number, number`
+### lurek.render.getScissor
+
+`lurek.render.getScissor() -> number, number, number, number`
 
 Returns the current scissor rectangle, or nothing if no scissor is set.
 
@@ -1522,7 +1569,9 @@ do
 end
 ```
 
-### `lurek.render.getShader() -> LShader`
+### lurek.render.getShader
+
+`lurek.render.getShader() -> LShader`
 
 Returns the currently active shader, or nil if using the default.
 
@@ -1541,7 +1590,9 @@ do
 end
 ```
 
-### `lurek.render.getStats() -> table`
+### lurek.render.getStats
+
+`lurek.render.getStats() -> table`
 
 Returns a table of rendering statistics for the current frame.
 
@@ -1562,7 +1613,9 @@ do
 end
 ```
 
-### `lurek.render.getStencilMode() -> string, string, number`
+### lurek.render.getStencilMode
+
+`lurek.render.getStencilMode() -> string, string, number`
 
 Returns the current stencil action, compare mode, and reference value.
 
@@ -1579,7 +1632,9 @@ do
 end
 ```
 
-### `lurek.render.getWidth() -> number`
+### lurek.render.getWidth
+
+`lurek.render.getWidth() -> number`
 
 Returns the current window width in pixels.
 
@@ -1596,16 +1651,18 @@ do
 end
 ```
 
-### `lurek.render.intersectScissor(x: number, y: number, w: number, h: number)`
+### lurek.render.intersectScissor
+
+`lurek.render.intersectScissor(x: number, y: number, w: number, h: number)`
 
 Intersects the given rectangle with the current scissor, narrowing the drawable region.
 
 **Parameters**
 
-- `x` (`number`, required) - Left edge.
-- `y` (`number`, required) - Top edge.
-- `w` (`number`, required) - Width.
-- `h` (`number`, required) - Height.
+- `x` (`number`, required): Left edge.
+- `y` (`number`, required): Top edge.
+- `w` (`number`, required): Width.
+- `h` (`number`, required): Height.
 
 #### Example
 
@@ -1623,13 +1680,15 @@ do
 end
 ```
 
-### `lurek.render.isLayerVisible(name: string) -> boolean`
+### lurek.render.isLayerVisible
+
+`lurek.render.isLayerVisible(name: string) -> boolean`
 
 Returns whether a named rendering layer is currently visible.
 
 **Parameters**
 
-- `name` (`string`, required) - Layer name.
+- `name` (`string`, required): Layer name.
 
 **Returns**: `boolean` - True if the layer is visible.
 
@@ -1645,7 +1704,9 @@ do
 end
 ```
 
-### `lurek.render.isWireframe() -> boolean`
+### lurek.render.isWireframe
+
+`lurek.render.isWireframe() -> boolean`
 
 Returns whether wireframe rendering is currently active.
 
@@ -1663,13 +1724,15 @@ do
 end
 ```
 
-### `lurek.render.line(...: number)`
+### lurek.render.line
+
+`lurek.render.line(...: number)`
 
 Draws a line between two points, or a polyline through multiple points.
 
 **Parameters**
 
-- `...` (`number`, required) - Coordinate values: x1, y1, x2, y2 for a line, or more for a polyline.
+- `...` (`number`, required): Coordinate values: x1, y1, x2, y2 for a line, or more for a polyline.
 
 #### Example
 
@@ -1683,13 +1746,15 @@ do
 end
 ```
 
-### `lurek.render.loadModel(path: string) -> LObjModel`
+### lurek.render.loadModel
+
+`lurek.render.loadModel(path: string) -> LObjModel`
 
 Loads a 3D model file (OBJ format) and returns a handle for 2D projection and sprite rendering.
 
 **Parameters**
 
-- `path` (`string`, required) - File path to the model file relative to the game directory.
+- `path` (`string`, required): File path to the model file relative to the game directory.
 
 **Returns**: `LObjModel` - The loaded model handle.
 
@@ -1707,13 +1772,15 @@ do
 end
 ```
 
-### `lurek.render.loadObj(path: string) -> LObjModel`
+### lurek.render.loadObj
+
+`lurek.render.loadObj(path: string) -> LObjModel`
 
 Loads a Wavefront OBJ model file and returns a model handle for projection and rendering.
 
 **Parameters**
 
-- `path` (`string`, required) - File path to the .obj file relative to the game directory.
+- `path` (`string`, required): File path to the .obj file relative to the game directory.
 
 **Returns**: `LObjModel` - The loaded OBJ model handle.
 
@@ -1732,14 +1799,16 @@ do
 end
 ```
 
-### `lurek.render.newCanvas(width: integer, height: integer) -> LCanvas`
+### lurek.render.newCanvas
+
+`lurek.render.newCanvas(width: integer, height: integer) -> LCanvas`
 
 Creates a new off-screen render target with the given dimensions.
 
 **Parameters**
 
-- `width` (`integer`, required) - Canvas width in pixels (must be > 0).
-- `height` (`integer`, required) - Canvas height in pixels (must be > 0).
+- `width` (`integer`, required): Canvas width in pixels (must be > 0).
+- `height` (`integer`, required): Canvas height in pixels (must be > 0).
 
 **Returns**: `LCanvas` - The created canvas handle.
 
@@ -1758,7 +1827,9 @@ do
 end
 ```
 
-### `lurek.render.newDrawLayer() -> LDrawLayer`
+### lurek.render.newDrawLayer
+
+`lurek.render.newDrawLayer() -> LDrawLayer`
 
 Creates a new z-ordered draw layer for sorting draw callbacks by depth.
 
@@ -1785,14 +1856,16 @@ do
 end
 ```
 
-### `lurek.render.newFont(pathOrSize: string|number, [size]: number) -> LFont`
+### lurek.render.newFont
+
+`lurek.render.newFont(pathOrSize: string|number, [size]: number) -> LFont`
 
 Creates a new bitmap font from a PNG sprite sheet path or returns a built-in font by pixel height.
 
 **Parameters**
 
-- `pathOrSize` (`string|number`, required) - File path to a PNG font sheet, or a pixel height for a built-in font.
-- `size` (`number`, optional) - Cell height in pixels when loading from a file (default 14).
+- `pathOrSize` (`string|number`, required): File path to a PNG font sheet, or a pixel height for a built-in font.
+- `size` (`number`, optional): Cell height in pixels when loading from a file (default 14).
 
 **Returns**: `LFont` - The created font handle.
 
@@ -1812,14 +1885,16 @@ do
 end
 ```
 
-### `lurek.render.newImage(pathOrData: string|LImageData, [colorSpace]: string) -> LImage`
+### lurek.render.newImage
+
+`lurek.render.newImage(pathOrData: string|LImageData, [colorSpace]: string) -> LImage`
 
 Loads a texture from a file path or creates one from an ImageData object.
 
 **Parameters**
 
-- `pathOrData` (`string|LImageData`, required) - File path to an image, or an ImageData object.
-- `colorSpace` (`string`, optional) - Color space: "srgb" (default) or "linear".
+- `pathOrData` (`string|LImageData`, required): File path to an image, or an ImageData object.
+- `colorSpace` (`string`, optional): Color space: "srgb" (default) or "linear".
 
 **Returns**: `LImage` - The loaded image handle.
 
@@ -1840,14 +1915,16 @@ do
 end
 ```
 
-### `lurek.render.newLayer(name: string, [zOrder]: integer)`
+### lurek.render.newLayer
+
+`lurek.render.newLayer(name: string, [zOrder]: integer)`
 
 Creates a named rendering layer with an optional z-order for draw call organization.
 
 **Parameters**
 
-- `name` (`string`, required) - Layer name.
-- `zOrder` (`integer`, optional) - Z-order for layer sorting (default 0).
+- `name` (`string`, required): Layer name.
+- `zOrder` (`integer`, optional): Z-order for layer sorting (default 0).
 
 #### Example
 
@@ -1865,14 +1942,16 @@ do
 end
 ```
 
-### `lurek.render.newMesh(verts: table, [mode]: string) -> LMesh`
+### lurek.render.newMesh
+
+`lurek.render.newMesh(verts: table, [mode]: string) -> LMesh`
 
 Creates a custom vertex mesh from an array of vertex data tables.
 
 **Parameters**
 
-- `verts` (`table`, required) - Array of vertex tables: {{x, y, u, v, r, g, b, a}, ...}.
-- `mode` (`string`, optional) - Draw mode: "triangles" (default), "fan", or "strip".
+- `verts` (`table`, required): Array of vertex tables: {{x, y, u, v, r, g, b, a}, ...}.
+- `mode` (`string`, optional): Draw mode: "triangles" (default), "fan", or "strip".
 
 **Returns**: `LMesh` - The created mesh handle.
 
@@ -1899,17 +1978,19 @@ do
 end
 ```
 
-### `lurek.render.newNineSlice(image: LImage, top: number, right: number, bottom: number, left: number) -> LNineSlice`
+### lurek.render.newNineSlice
+
+`lurek.render.newNineSlice(image: LImage, top: number, right: number, bottom: number, left: number) -> LNineSlice`
 
 Creates a 9-slice definition from an image and four border insets for scalable UI rendering.
 
 **Parameters**
 
-- `image` (`LImage`, required) - Source texture.
-- `top` (`number`, required) - Top border inset in pixels.
-- `right` (`number`, required) - Right border inset.
-- `bottom` (`number`, required) - Bottom border inset.
-- `left` (`number`, required) - Left border inset.
+- `image` (`LImage`, required): Source texture.
+- `top` (`number`, required): Top border inset in pixels.
+- `right` (`number`, required): Right border inset.
+- `bottom` (`number`, required): Bottom border inset.
+- `left` (`number`, required): Left border inset.
 
 **Returns**: `LNineSlice` - The 9-slice handle.
 
@@ -1932,18 +2013,20 @@ do
 end
 ```
 
-### `lurek.render.newQuad(x: number, y: number, w: number, h: number, sw: number, sh: number) -> LQuad`
+### lurek.render.newQuad
+
+`lurek.render.newQuad(x: number, y: number, w: number, h: number, sw: number, sh: number) -> LQuad`
 
 Creates a Quad defining a rectangular sub-region of a texture for sprite-sheet rendering.
 
 **Parameters**
 
-- `x` (`number`, required) - Left edge in texture pixels.
-- `y` (`number`, required) - Top edge in texture pixels.
-- `w` (`number`, required) - Width in texture pixels.
-- `h` (`number`, required) - Height in texture pixels.
-- `sw` (`number`, required) - Full source texture width.
-- `sh` (`number`, required) - Full source texture height.
+- `x` (`number`, required): Left edge in texture pixels.
+- `y` (`number`, required): Top edge in texture pixels.
+- `w` (`number`, required): Width in texture pixels.
+- `h` (`number`, required): Height in texture pixels.
+- `sw` (`number`, required): Full source texture width.
+- `sh` (`number`, required): Full source texture height.
 
 **Returns**: `LQuad` - The created quad.
 
@@ -1964,13 +2047,15 @@ do
 end
 ```
 
-### `lurek.render.newShader(code: string) -> LShader`
+### lurek.render.newShader
+
+`lurek.render.newShader(code: string) -> LShader`
 
 Compiles a WGSL shader program from source code and returns a handle.
 
 **Parameters**
 
-- `code` (`string`, required) - WGSL shader source code.
+- `code` (`string`, required): WGSL shader source code.
 
 **Returns**: `LShader` - The compiled shader handle.
 
@@ -1993,7 +2078,9 @@ do
 end
 ```
 
-### `lurek.render.newShape() -> LShape`
+### lurek.render.newShape
+
+`lurek.render.newShape() -> LShape`
 
 Creates a new retained compound shape for accumulating draw commands.
 
@@ -2022,14 +2109,16 @@ do
 end
 ```
 
-### `lurek.render.newSpriteBatch(image: LImage, [max]: integer) -> LSpriteBatch`
+### lurek.render.newSpriteBatch
+
+`lurek.render.newSpriteBatch(image: LImage, [max]: integer) -> LSpriteBatch`
 
 Creates a batched sprite renderer for efficiently drawing many copies of the same texture.
 
 **Parameters**
 
-- `image` (`LImage`, required) - Source texture for all sprites in the batch.
-- `max` (`integer`, optional) - Maximum number of entries (default 1000).
+- `image` (`LImage`, required): Source texture for all sprites in the batch.
+- `max` (`integer`, optional): Maximum number of entries (default 1000).
 
 **Returns**: `LSpriteBatch` - The created sprite batch handle.
 
@@ -2049,7 +2138,9 @@ do
 end
 ```
 
-### `lurek.render.origin()`
+### lurek.render.origin
+
+`lurek.render.origin()`
 
 Resets the current transformation matrix to the identity (no transform).
 
@@ -2070,13 +2161,15 @@ do
 end
 ```
 
-### `lurek.render.points(...: table|number)`
+### lurek.render.points
+
+`lurek.render.points(...: table|number)`
 
 Draws one or more points. Accepts either a table of {x,y} pairs or flat x,y coordinate values.
 
 **Parameters**
 
-- `...` (`table|number`, required) - Point data as a table of {x,y} sub-tables, or flat x1,y1,x2,y2,... values.
+- `...` (`table|number`, required): Point data as a table of {x,y} sub-tables, or flat x1,y1,x2,y2,... values.
 
 #### Example
 
@@ -2092,14 +2185,16 @@ do
 end
 ```
 
-### `lurek.render.polygon(mode: string, ...: number)`
+### lurek.render.polygon
+
+`lurek.render.polygon(mode: string, ...: number)`
 
 Draws a polygon from a flat list of x,y vertex coordinates.
 
 **Parameters**
 
-- `mode` (`string`, required) - "fill" or "line".
-- `...` (`number`, required) - Flat vertex coordinates: x1, y1, x2, y2, ... (minimum 3 vertices).
+- `mode` (`string`, required): "fill" or "line".
+- `...` (`number`, required): Flat vertex coordinates: x1, y1, x2, y2, ... (minimum 3 vertices).
 
 #### Example
 
@@ -2113,7 +2208,9 @@ do
 end
 ```
 
-### `lurek.render.pop()`
+### lurek.render.pop
+
+`lurek.render.pop()`
 
 Pops the top transformation matrix from the transform stack, restoring the previous one.
 
@@ -2135,13 +2232,15 @@ do
 end
 ```
 
-### `lurek.render.popLayer(id: integer)`
+### lurek.render.popLayer
+
+`lurek.render.popLayer(id: integer)`
 
 Ends a compositing layer and composites it with the previous content.
 
 **Parameters**
 
-- `id` (`integer`, required) - Layer identifier matching the pushLayer call.
+- `id` (`integer`, required): Layer identifier matching the pushLayer call.
 
 #### Example
 
@@ -2158,16 +2257,18 @@ do
 end
 ```
 
-### `lurek.render.print(text: string, [x]: number, [y]: number, [scale]: number)`
+### lurek.render.print
+
+`lurek.render.print(text: string, [x]: number, [y]: number, [scale]: number)`
 
 Draws text using the active font at the given position.
 
 **Parameters**
 
-- `text` (`string`, required) - Text to render.
-- `x` (`number`, optional) - X position (default 0).
-- `y` (`number`, optional) - Y position (default 0).
-- `scale` (`number`, optional) - Text scale factor (default 1).
+- `text` (`string`, required): Text to render.
+- `x` (`number`, optional): X position (default 0).
+- `y` (`number`, optional): Y position (default 0).
+- `scale` (`number`, optional): Text scale factor (default 1).
 
 #### Example
 
@@ -2186,17 +2287,19 @@ do
 end
 ```
 
-### `lurek.render.printf(text: string, x: number, y: number, limit: number, [align]: string)`
+### lurek.render.printf
+
+`lurek.render.printf(text: string, x: number, y: number, limit: number, [align]: string)`
 
 Draws word-wrapped and aligned text within a pixel-width limit.
 
 **Parameters**
 
-- `text` (`string`, required) - Text to render.
-- `x` (`number`, required) - X position.
-- `y` (`number`, required) - Y position.
-- `limit` (`number`, required) - Maximum line width in pixels for wrapping.
-- `align` (`string`, optional) - Alignment: "left" (default), "center", "right", or "justify".
+- `text` (`string`, required): Text to render.
+- `x` (`number`, required): X position.
+- `y` (`number`, required): Y position.
+- `limit` (`number`, required): Maximum line width in pixels for wrapping.
+- `align` (`string`, optional): Alignment: "left" (default), "center", "right", or "justify".
 
 #### Example
 
@@ -2217,15 +2320,17 @@ do
 end
 ```
 
-### `lurek.render.printRich(spans: table, x: number, y: number)`
+### lurek.render.printRich
+
+`lurek.render.printRich(spans: table, x: number, y: number)`
 
 Draws rich text composed of individually styled spans at the given position.
 
 **Parameters**
 
-- `spans` (`table`, required) - Array of span tables, each with fields: text, r, g, b, a, scale.
-- `x` (`number`, required) - X position.
-- `y` (`number`, required) - Y position.
+- `spans` (`table`, required): Array of span tables, each with fields: text, r, g, b, a, scale.
+- `x` (`number`, required): X position.
+- `y` (`number`, required): Y position.
 
 #### Example
 
@@ -2245,17 +2350,19 @@ do
 end
 ```
 
-### `lurek.render.printRotated(text: string, x: number, y: number, angle: number, [scale]: number)`
+### lurek.render.printRotated
+
+`lurek.render.printRotated(text: string, x: number, y: number, angle: number, [scale]: number)`
 
 Draws text centered and rotated around its midpoint.
 
 **Parameters**
 
-- `text` (`string`, required) - Text to render.
-- `x` (`number`, required) - Center X position.
-- `y` (`number`, required) - Center Y position.
-- `angle` (`number`, required) - Rotation angle in radians.
-- `scale` (`number`, optional) - Text scale factor (default 1).
+- `text` (`string`, required): Text to render.
+- `x` (`number`, required): Center X position.
+- `y` (`number`, required): Center Y position.
+- `angle` (`number`, required): Rotation angle in radians.
+- `scale` (`number`, optional): Text scale factor (default 1).
 
 #### Example
 
@@ -2273,7 +2380,9 @@ do
 end
 ```
 
-### `lurek.render.push()`
+### lurek.render.push
+
+`lurek.render.push()`
 
 Pushes the current transformation matrix onto the transform stack.
 
@@ -2296,15 +2405,17 @@ do
 end
 ```
 
-### `lurek.render.pushLayer(id: integer, [alpha]: number, [blendMode]: string)`
+### lurek.render.pushLayer
+
+`lurek.render.pushLayer(id: integer, [alpha]: number, [blendMode]: string)`
 
 Begins a compositing layer with the given alpha and blend mode. Must be paired with popLayer.
 
 **Parameters**
 
-- `id` (`integer`, required) - Layer identifier (must match the popLayer call).
-- `alpha` (`number`, optional) - Layer opacity (0–1, default 1).
-- `blendMode` (`string`, optional) - Blend mode: "alpha" (default), "add", "multiply", "replace", "screen".
+- `id` (`integer`, required): Layer identifier (must match the popLayer call).
+- `alpha` (`number`, optional): Layer opacity (0–1, default 1).
+- `blendMode` (`string`, optional): Blend mode: "alpha" (default), "add", "multiply", "replace", "screen".
 
 #### Example
 
@@ -2325,13 +2436,15 @@ do
 end
 ```
 
-### `lurek.render.pushSortKey(depth: number)`
+### lurek.render.pushSortKey
+
+`lurek.render.pushSortKey(depth: number)`
 
 Sets the depth sort key for subsequent draw calls within the current sort group.
 
 **Parameters**
 
-- `depth` (`number`, required) - Sort depth value (lower draws first).
+- `depth` (`number`, required): Sort depth value (lower draws first).
 
 #### Example
 
@@ -2351,19 +2464,21 @@ do
 end
 ```
 
-### `lurek.render.rectangle(mode: string, x: number, y: number, w: number, h: number, [rx]: number, [ry]: number)`
+### lurek.render.rectangle
+
+`lurek.render.rectangle(mode: string, x: number, y: number, w: number, h: number, [rx]: number, [ry]: number)`
 
 Draws a rectangle. If rx is provided, draws a rounded rectangle.
 
 **Parameters**
 
-- `mode` (`string`, required) - "fill" or "line".
-- `x` (`number`, required) - Left edge X.
-- `y` (`number`, required) - Top edge Y.
-- `w` (`number`, required) - Width.
-- `h` (`number`, required) - Height.
-- `rx` (`number`, optional) - Horizontal corner radius for rounded rectangle.
-- `ry` (`number`, optional) - Vertical corner radius (defaults to rx).
+- `mode` (`string`, required): "fill" or "line".
+- `x` (`number`, required): Left edge X.
+- `y` (`number`, required): Top edge Y.
+- `w` (`number`, required): Width.
+- `h` (`number`, required): Height.
+- `rx` (`number`, optional): Horizontal corner radius for rounded rectangle.
+- `ry` (`number`, optional): Vertical corner radius (defaults to rx).
 
 #### Example
 
@@ -2377,13 +2492,15 @@ do
 end
 ```
 
-### `lurek.render.resetCanvas(canvas: LCanvas)`
+### lurek.render.resetCanvas
+
+`lurek.render.resetCanvas(canvas: LCanvas)`
 
 Marks a canvas as needing a full clear before its next render pass. Use before re-rendering to avoid content accumulation.
 
 **Parameters**
 
-- `canvas` (`LCanvas`, required) - Canvas to reset.
+- `canvas` (`LCanvas`, required): Canvas to reset.
 
 #### Example
 
@@ -2398,13 +2515,15 @@ do
 end
 ```
 
-### `lurek.render.rotate(angle: number)`
+### lurek.render.rotate
+
+`lurek.render.rotate(angle: number)`
 
 Applies a rotation to the current transformation matrix.
 
 **Parameters**
 
-- `angle` (`number`, required) - Rotation angle in radians.
+- `angle` (`number`, required): Rotation angle in radians.
 
 #### Example
 
@@ -2424,13 +2543,15 @@ do
 end
 ```
 
-### `lurek.render.saveScreenshot(path: string)`
+### lurek.render.saveScreenshot
+
+`lurek.render.saveScreenshot(path: string)`
 
 Saves a screenshot of the current frame to a file under the save/ directory.
 
 **Parameters**
 
-- `path` (`string`, required) - Output path (must start with "save/").
+- `path` (`string`, required): Output path (must start with "save/").
 
 #### Example
 
@@ -2448,14 +2569,16 @@ do
 end
 ```
 
-### `lurek.render.scale(sx: number, [sy]: number)`
+### lurek.render.scale
+
+`lurek.render.scale(sx: number, [sy]: number)`
 
 Applies scaling to the current transformation matrix.
 
 **Parameters**
 
-- `sx` (`number`, required) - Horizontal scale factor.
-- `sy` (`number`, optional) - Vertical scale factor (defaults to sx for uniform scaling).
+- `sx` (`number`, required): Horizontal scale factor.
+- `sy` (`number`, optional): Vertical scale factor (defaults to sx for uniform scaling).
 
 #### Example
 
@@ -2478,15 +2601,17 @@ do
 end
 ```
 
-### `lurek.render.setBackgroundColor(r: number, g: number, b: number)`
+### lurek.render.setBackgroundColor
+
+`lurek.render.setBackgroundColor(r: number, g: number, b: number)`
 
 Sets the background clear color used at the start of each frame.
 
 **Parameters**
 
-- `r` (`number`, required) - Red channel (0–1).
-- `g` (`number`, required) - Green channel (0–1).
-- `b` (`number`, required) - Blue channel (0–1).
+- `r` (`number`, required): Red channel (0–1).
+- `g` (`number`, required): Green channel (0–1).
+- `b` (`number`, required): Blue channel (0–1).
 
 #### Example
 
@@ -2501,13 +2626,15 @@ do
 end
 ```
 
-### `lurek.render.setBlendMode(mode: string)`
+### lurek.render.setBlendMode
+
+`lurek.render.setBlendMode(mode: string)`
 
 Sets the blend mode for subsequent draw operations.
 
 **Parameters**
 
-- `mode` (`string`, required) - One of: "alpha", "add", "multiply", "replace", "screen".
+- `mode` (`string`, required): One of: "alpha", "add", "multiply", "replace", "screen".
 
 #### Example
 
@@ -2529,13 +2656,15 @@ do
 end
 ```
 
-### `lurek.render.setCanvas([canvas]: LCanvas)`
+### lurek.render.setCanvas
+
+`lurek.render.setCanvas([canvas]: LCanvas)`
 
 Redirects all subsequent drawing to the given canvas. Pass nil to draw to the screen again.
 
 **Parameters**
 
-- `canvas` (`LCanvas`, optional) - Canvas to draw to, or nil for the main screen.
+- `canvas` (`LCanvas`, optional): Canvas to draw to, or nil for the main screen.
 
 #### Example
 
@@ -2562,16 +2691,18 @@ do
 end
 ```
 
-### `lurek.render.setColor(r: number, g: number, b: number, [a]: number)`
+### lurek.render.setColor
+
+`lurek.render.setColor(r: number, g: number, b: number, [a]: number)`
 
 Sets the active drawing color for all subsequent draw operations.
 
 **Parameters**
 
-- `r` (`number`, required) - Red channel (0–1).
-- `g` (`number`, required) - Green channel (0–1).
-- `b` (`number`, required) - Blue channel (0–1).
-- `a` (`number`, optional) - Alpha channel (0–1, default 1).
+- `r` (`number`, required): Red channel (0–1).
+- `g` (`number`, required): Green channel (0–1).
+- `b` (`number`, required): Blue channel (0–1).
+- `a` (`number`, optional): Alpha channel (0–1, default 1).
 
 #### Example
 
@@ -2587,16 +2718,18 @@ do
 end
 ```
 
-### `lurek.render.setColorMask([r]: boolean, [g]: boolean, [b]: boolean, [a]: boolean)`
+### lurek.render.setColorMask
+
+`lurek.render.setColorMask([r]: boolean, [g]: boolean, [b]: boolean, [a]: boolean)`
 
 Sets which color channels are written during draw calls. Call with no args to enable all.
 
 **Parameters**
 
-- `r` (`boolean`, optional) - Enable red channel.
-- `g` (`boolean`, optional) - Enable green channel.
-- `b` (`boolean`, optional) - Enable blue channel.
-- `a` (`boolean`, optional) - Enable alpha channel.
+- `r` (`boolean`, optional): Enable red channel.
+- `g` (`boolean`, optional): Enable green channel.
+- `b` (`boolean`, optional): Enable blue channel.
+- `a` (`boolean`, optional): Enable alpha channel.
 
 #### Example
 
@@ -2614,15 +2747,17 @@ do
 end
 ```
 
-### `lurek.render.setDefaultFilter(min: string, mag: string, [anisotropy]: integer)`
+### lurek.render.setDefaultFilter
+
+`lurek.render.setDefaultFilter(min: string, mag: string, [anisotropy]: integer)`
 
 Sets the default texture filtering mode for newly created images.
 
 **Parameters**
 
-- `min` (`string`, required) - Minification filter: "nearest" or "linear".
-- `mag` (`string`, required) - Magnification filter: "nearest" or "linear".
-- `anisotropy` (`integer`, optional) - Anisotropy level (default 1).
+- `min` (`string`, required): Minification filter: "nearest" or "linear".
+- `mag` (`string`, required): Magnification filter: "nearest" or "linear".
+- `anisotropy` (`integer`, optional): Anisotropy level (default 1).
 
 #### Example
 
@@ -2639,14 +2774,16 @@ do
 end
 ```
 
-### `lurek.render.setDepthMode(mode: string, [write]: boolean)`
+### lurek.render.setDepthMode
+
+`lurek.render.setDepthMode(mode: string, [write]: boolean)`
 
 Sets the depth comparison mode and whether depth writes are enabled.
 
 **Parameters**
 
-- `mode` (`string`, required) - Compare mode: "always", "never", "less", "lequal", "equal", "notequal", "greater", "gequal".
-- `write` (`boolean`, optional) - Enable depth buffer writes (default false).
+- `mode` (`string`, required): Compare mode: "always", "never", "less", "lequal", "equal", "notequal", "greater", "gequal".
+- `write` (`boolean`, optional): Enable depth buffer writes (default false).
 
 #### Example
 
@@ -2662,13 +2799,15 @@ do
 end
 ```
 
-### `lurek.render.setFont(font: LFont)`
+### lurek.render.setFont
+
+`lurek.render.setFont(font: LFont)`
 
 Sets the active font used by print, printf, and other text rendering calls.
 
 **Parameters**
 
-- `font` (`LFont`, required) - Font handle to make active.
+- `font` (`LFont`, required): Font handle to make active.
 
 #### Example
 
@@ -2688,14 +2827,16 @@ do
 end
 ```
 
-### `lurek.render.setFontLineHeight(font: LFont, lh: number)`
+### lurek.render.setFontLineHeight
+
+`lurek.render.setFontLineHeight(font: LFont, lh: number)`
 
 Sets the line height override for a font (currently a no-op stub).
 
 **Parameters**
 
-- `font` (`LFont`, required) - Font handle.
-- `lh` (`number`, required) - Line height value.
+- `font` (`LFont`, required): Font handle.
+- `lh` (`number`, required): Line height value.
 
 #### Example
 
@@ -2710,13 +2851,15 @@ do
 end
 ```
 
-### `lurek.render.setLayer(name: string)`
+### lurek.render.setLayer
+
+`lurek.render.setLayer(name: string)`
 
 Sets the active rendering layer by name. Creates the layer if it does not exist.
 
 **Parameters**
 
-- `name` (`string`, required) - Layer name to activate.
+- `name` (`string`, required): Layer name to activate.
 
 #### Example
 
@@ -2734,14 +2877,16 @@ do
 end
 ```
 
-### `lurek.render.setLayerVisible(name: string, visible: boolean)`
+### lurek.render.setLayerVisible
+
+`lurek.render.setLayerVisible(name: string, visible: boolean)`
 
 Sets whether a named rendering layer is visible.
 
 **Parameters**
 
-- `name` (`string`, required) - Layer name.
-- `visible` (`boolean`, required) - True to show, false to hide.
+- `name` (`string`, required): Layer name.
+- `visible` (`boolean`, required): True to show, false to hide.
 
 #### Example
 
@@ -2757,14 +2902,16 @@ do
 end
 ```
 
-### `lurek.render.setLayerZOrder(name: string, z: integer)`
+### lurek.render.setLayerZOrder
+
+`lurek.render.setLayerZOrder(name: string, z: integer)`
 
 Sets the z-order value of a named rendering layer.
 
 **Parameters**
 
-- `name` (`string`, required) - Layer name.
-- `z` (`integer`, required) - New z-order value.
+- `name` (`string`, required): Layer name.
+- `z` (`integer`, required): New z-order value.
 
 #### Example
 
@@ -2784,13 +2931,15 @@ do
 end
 ```
 
-### `lurek.render.setLineWidth(w: number)`
+### lurek.render.setLineWidth
+
+`lurek.render.setLineWidth(w: number)`
 
 Sets the line width for subsequent line-mode draw calls.
 
 **Parameters**
 
-- `w` (`number`, required) - Line width in pixels.
+- `w` (`number`, required): Line width in pixels.
 
 #### Example
 
@@ -2806,13 +2955,15 @@ do
 end
 ```
 
-### `lurek.render.setPointSize(size: number)`
+### lurek.render.setPointSize
+
+`lurek.render.setPointSize(size: number)`
 
 Sets the point size for subsequent point draw calls.
 
 **Parameters**
 
-- `size` (`number`, required) - Point diameter in pixels.
+- `size` (`number`, required): Point diameter in pixels.
 
 #### Example
 
@@ -2827,16 +2978,18 @@ do
 end
 ```
 
-### `lurek.render.setScissor([x]: number, [y]: number, [w]: number, [h]: number)`
+### lurek.render.setScissor
+
+`lurek.render.setScissor([x]: number, [y]: number, [w]: number, [h]: number)`
 
 Sets or clears the scissor rectangle. Only pixels inside this region are drawn. Call with no args to clear.
 
 **Parameters**
 
-- `x` (`number`, optional) - Left edge of the scissor rectangle.
-- `y` (`number`, optional) - Top edge.
-- `w` (`number`, optional) - Width.
-- `h` (`number`, optional) - Height.
+- `x` (`number`, optional): Left edge of the scissor rectangle.
+- `y` (`number`, optional): Top edge.
+- `w` (`number`, optional): Width.
+- `h` (`number`, optional): Height.
 
 #### Example
 
@@ -2856,13 +3009,15 @@ do
 end
 ```
 
-### `lurek.render.setShader([shader]: LShader)`
+### lurek.render.setShader
+
+`lurek.render.setShader([shader]: LShader)`
 
 Activates a shader for subsequent draw calls. Pass nil to restore the default shader.
 
 **Parameters**
 
-- `shader` (`LShader`, optional) - Shader handle to activate, or nil for default.
+- `shader` (`LShader`, optional): Shader handle to activate, or nil for default.
 
 #### Example
 
@@ -2884,15 +3039,17 @@ do
 end
 ```
 
-### `lurek.render.setStencilMode(action: string, [compare]: string, [value]: number)`
+### lurek.render.setStencilMode
+
+`lurek.render.setStencilMode(action: string, [compare]: string, [value]: number)`
 
 Sets the stencil write action, compare function, and reference value at once.
 
 **Parameters**
 
-- `action` (`string`, required) - Stencil action: "keep", "zero", "replace", "increment", "decrement", etc.
-- `compare` (`string`, optional) - Compare function (default "always").
-- `value` (`number`, optional) - Reference value (default 0).
+- `action` (`string`, required): Stencil action: "keep", "zero", "replace", "increment", "decrement", etc.
+- `compare` (`string`, optional): Compare function (default "always").
+- `value` (`number`, optional): Reference value (default 0).
 
 #### Example
 
@@ -2909,14 +3066,16 @@ do
 end
 ```
 
-### `lurek.render.setStencilTest([compare]: string, [value]: number)`
+### lurek.render.setStencilTest
+
+`lurek.render.setStencilTest([compare]: string, [value]: number)`
 
 Configures the stencil comparison test for subsequent draws. Pass nil to disable.
 
 **Parameters**
 
-- `compare` (`string`, optional) - Compare function: "equal", "notequal", "less", "greater", etc. Nil disables.
-- `value` (`number`, optional) - Reference value to compare against (default 1).
+- `compare` (`string`, optional): Compare function: "equal", "notequal", "less", "greater", etc. Nil disables.
+- `value` (`number`, optional): Reference value to compare against (default 1).
 
 #### Example
 
@@ -2934,13 +3093,15 @@ do
 end
 ```
 
-### `lurek.render.setWireframe(enabled: boolean)`
+### lurek.render.setWireframe
+
+`lurek.render.setWireframe(enabled: boolean)`
 
 Enables or disables wireframe rendering mode.
 
 **Parameters**
 
-- `enabled` (`boolean`, required) - True for wireframe, false for solid.
+- `enabled` (`boolean`, required): True for wireframe, false for solid.
 
 #### Example
 
@@ -2960,14 +3121,16 @@ do
 end
 ```
 
-### `lurek.render.shear(kx: number, ky: number)`
+### lurek.render.shear
+
+`lurek.render.shear(kx: number, ky: number)`
 
 Applies a shear (skew) to the current transformation matrix.
 
 **Parameters**
 
-- `kx` (`number`, required) - Horizontal shear factor.
-- `ky` (`number`, required) - Vertical shear factor.
+- `kx` (`number`, required): Horizontal shear factor.
+- `ky` (`number`, required): Vertical shear factor.
 
 #### Example
 
@@ -2986,14 +3149,16 @@ do
 end
 ```
 
-### `lurek.render.stencil([action]: string, [value]: number)`
+### lurek.render.stencil
+
+`lurek.render.stencil([action]: string, [value]: number)`
 
 Begins a stencil write pass with the given action and reference value.
 
 **Parameters**
 
-- `action` (`string`, optional) - Stencil action: "replace" (default), "zero", "increment", "decrement", etc.
-- `value` (`number`, optional) - Stencil reference value (default 1).
+- `action` (`string`, optional): Stencil action: "replace" (default), "zero", "increment", "decrement", etc.
+- `value` (`number`, optional): Stencil reference value (default 1).
 
 #### Example
 
@@ -3017,14 +3182,16 @@ do
 end
 ```
 
-### `lurek.render.translate(x: number, y: number)`
+### lurek.render.translate
+
+`lurek.render.translate(x: number, y: number)`
 
 Applies a translation to the current transformation matrix.
 
 **Parameters**
 
-- `x` (`number`, required) - Horizontal translation in pixels.
-- `y` (`number`, required) - Vertical translation in pixels.
+- `x` (`number`, required): Horizontal translation in pixels.
+- `y` (`number`, required): Vertical translation in pixels.
 
 #### Example
 
@@ -3043,19 +3210,21 @@ do
 end
 ```
 
-### `lurek.render.triangle(mode: string, x1: number, y1: number, x2: number, y2: number, x3: number, y3: number)`
+### lurek.render.triangle
+
+`lurek.render.triangle(mode: string, x1: number, y1: number, x2: number, y2: number, x3: number, y3: number)`
 
 Draws a triangle from three vertex positions.
 
 **Parameters**
 
-- `mode` (`string`, required) - "fill" or "line".
-- `x1` (`number`, required) - First vertex X.
-- `y1` (`number`, required) - First vertex Y.
-- `x2` (`number`, required) - Second vertex X.
-- `y2` (`number`, required) - Second vertex Y.
-- `x3` (`number`, required) - Third vertex X.
-- `y3` (`number`, required) - Third vertex Y.
+- `mode` (`string`, required): "fill" or "line".
+- `x1` (`number`, required): First vertex X.
+- `y1` (`number`, required): First vertex Y.
+- `x2` (`number`, required): Second vertex X.
+- `y2` (`number`, required): Second vertex Y.
+- `x3` (`number`, required): Third vertex X.
+- `y3` (`number`, required): Third vertex Y.
 
 #### Example
 
@@ -3070,11 +3239,21 @@ end
 ```
 
 
-## Types and Methods
+[⬆ back to top](#table-of-contents)
 
-### `LCanvas`
+## 🔷 Module Types
+
+### LCanvas
 
 Off-screen render target that can be drawn to and then composited onto the screen.
+
+**Lua API Definition**
+
+```lua
+--- Off-screen render target that can be drawn to and then composited onto the screen.
+---@class LCanvas
+LCanvas = {}
+```
 
 #### Example
 
@@ -3089,131 +3268,17 @@ do
 end
 ```
 
-### `LCanvas:getDimensions() -> number, number`
-
-Returns both width and height of this canvas.
-
-**Returns**: `number, number` - Width and height in pixels.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  local c
-  function lurek.init()
-    c = lurek.render.newCanvas(320, 240)
-    local w, h = c:getDimensions()
-    lurek.log.debug("canvas: " .. w .. "x" .. h)
-  end
-end
-```
-
-### `LCanvas:getHeight() -> number`
-
-Returns the height of this canvas in pixels.
-
-**Returns**: `number` - Height in pixels.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  local c
-  function lurek.init()
-    c = lurek.render.newCanvas(320, 240)
-    lurek.log.debug("canvas height: " .. c:getHeight())
-  end
-end
-```
-
-### `LCanvas:getWidth() -> number`
-
-Returns the width of this canvas in pixels.
-
-**Returns**: `number` - Width in pixels.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  local c
-  function lurek.init()
-    c = lurek.render.newCanvas(320, 240)
-    lurek.log.debug("canvas width: " .. c:getWidth())
-  end
-end
-```
-
-### `LCanvas:release() -> boolean`
-
-Releases the canvas GPU resource. If this canvas is currently active, drawing reverts to the screen.
-
-**Returns**: `boolean` - True if the canvas was still valid and was released.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Free a temporary render target after compositing is complete.
-  local rt = lurek.render.newCanvas(320, 240)
-  rt:release()
-  lurek.log.info("canvas released", "render")
-end
-```
-
-### `LCanvas:type() -> string`
-
-Returns the type name string for this canvas object.
-
-**Returns**: `string` - Always "LCanvas".
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Check the handle type for generic drawable management.
-  local rt = lurek.render.newCanvas(320, 240)
-  lurek.log.debug("canvas type: " .. rt:type())
-end
-```
-
-### `LCanvas:typeOf(name: string) -> string`
-
-Returns the type name of this object.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to check.
-
-**Returns**: `string` - Always "Canvas".
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Type-guard before calling canvas-specific methods.
-  local rt = lurek.render.newCanvas(320, 240)
-  if rt:typeOf("LCanvas") then
-    lurek.log.debug("confirmed LCanvas handle")
-  end
-end
-```
-
-### `LDrawLayer`
+### LDrawLayer
 
 Z-ordered draw callback layer for sorting draw calls by depth before flushing.
+
+**Lua API Definition**
+
+```lua
+--- Z-ordered draw callback layer for sorting draw calls by depth before flushing.
+---@class LDrawLayer
+LDrawLayer = {}
+```
 
 #### Example
 
@@ -3236,141 +3301,17 @@ do
 end
 ```
 
-### `LDrawLayer:clear()`
-
-Discards all queued callbacks without executing them.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Discard queued callbacks without executing them.
-  local dl
-  function lurek.init() dl = lurek.render.newDrawLayer() end
-  function lurek.process(dt)
-    dl:clear()  -- discard stale frame data before queuing new draws
-  end
-end
-```
-
-### `LDrawLayer:flush()`
-
-Sorts all queued callbacks by z-depth and executes them in order, then empties the layer.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Sorts queued callbacks by z-depth and executes them, then empties the queue.
-  local dl
-  function lurek.init() dl = lurek.render.newDrawLayer() end
-  function lurek.draw()
-    dl:queue(0, function() lurek.render.rectangle("fill", 0, 0, 800, 600) end)
-    dl:flush()
-  end
-end
-```
-
-### `LDrawLayer:getCount() -> number`
-
-Returns the number of callbacks currently queued.
-
-**Returns**: `number` - Queue length.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  local dl
-  function lurek.init()
-    dl = lurek.render.newDrawLayer()
-    dl:queue(0, function() end)
-    dl:queue(1, function() end)
-    lurek.log.debug("queued callbacks: " .. dl:getCount())  -- 2
-  end
-end
-```
-
-### `LDrawLayer:queue(z: number, f: function)`
-
-Enqueues a draw callback at the given z-depth. Callbacks execute when flush() is called.
-
-**Parameters**
-
-- `z` (`number`, required) - Z-depth value used for sorting (lower draws first).
-- `f` (`function`, required) - Callback to invoke during flush.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Enqueues a draw callback at the given z-depth.
-  -- Callbacks execute sorted by z when flush() is called.
-  local dl
-  function lurek.init() dl = lurek.render.newDrawLayer() end
-  function lurek.draw()
-    dl:queue(10, function() lurek.render.rectangle("fill", 50, 50, 32, 32) end)
-    dl:queue(5, function() lurek.render.circle("fill", 66, 66, 20) end)
-    dl:flush()  -- circle draws first (z=5), then rectangle (z=10)
-  end
-end
-```
-
-### `LDrawLayer:type() -> string`
-
-Returns the type name string for this draw layer.
-
-**Returns**: `string` - Always "LDrawLayer".
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  local dl
-  function lurek.init()
-    dl = lurek.render.newDrawLayer()
-    lurek.log.debug("type: " .. dl:type())  -- "LDrawLayer"
-  end
-end
-```
-
-### `LDrawLayer:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to check ("LDrawLayer", "DrawLayer", or "Object").
-
-**Returns**: `boolean` - True if the name matches.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  local dl
-  function lurek.init()
-    dl = lurek.render.newDrawLayer()
-    if dl:typeOf("LDrawLayer") then lurek.log.debug("confirmed DrawLayer") end
-  end
-end
-```
-
-### `LFont`
+### LFont
 
 Bitmap font handle for measuring and rendering text.
+
+**Lua API Definition**
+
+```lua
+--- Bitmap font handle for measuring and rendering text.
+---@class LFont
+LFont = {}
+```
 
 #### Example
 
@@ -3387,236 +3328,17 @@ do
 end
 ```
 
-### `LFont:getAscent() -> number`
-
-Returns the ascent (pixels above the baseline) of this font.
-
-**Returns**: `number` - Ascent in pixels.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Ascent = pixels above baseline (uppercase letter tops).
-  local f
-  function lurek.init()
-    f = lurek.render.newFont(18)
-    lurek.log.debug("ascent: " .. tostring(f:getAscent()) .. "px")
-  end
-end
-```
-
-### `LFont:getDescent() -> number`
-
-Returns the descent (pixels below the baseline) of this font.
-
-**Returns**: `number` - Descent in pixels (positive value extending downward).
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Descent = pixels below baseline (tails of g, p, y).
-  local f
-  function lurek.init()
-    f = lurek.render.newFont(18)
-    lurek.log.debug("descent: " .. tostring(f:getDescent()) .. "px")
-  end
-end
-```
-
-### `LFont:getHeight() -> number`
-
-Returns the line height of this font in pixels.
-
-**Returns**: `number` - Line height in pixels.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Use font height to calculate vertical spacing between lines.
-  pcall(function()
-    local f = lurek.render.getDefaultFont(16)
-    local h = f:getHeight()
-    lurek.log.debug("font height: " .. tostring(h) .. "px")
-  end)
-end
-```
-
-### `LFont:getLineHeight() -> number`
-
-Returns the spacing between consecutive lines of text.
-
-**Returns**: `number` - Line height in pixels.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Line height = vertical distance between baselines of consecutive lines.
-  local f
-  function lurek.init()
-    f = lurek.render.newFont(18)
-    lurek.log.debug("line height: " .. f:getLineHeight())
-  end
-end
-```
-
-### `LFont:getWidth(text: string) -> number`
-
-Measures the pixel width of a string when rendered with this font.
-
-**Parameters**
-
-- `text` (`string`, required) - The text to measure.
-
-**Returns**: `number` - Width in pixels.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Center text horizontally by measuring its rendered width.
-  pcall(function()
-    local f = lurek.render.getDefaultFont(16)
-    local w = f:getWidth("Game Over")
-    lurek.log.debug("text width: " .. tostring(w) .. "px")
-  end)
-end
-```
-
-### `LFont:getWrap(text: string, limit: number) -> table, number`
-
-Word-wraps text to fit within a pixel width limit and returns the resulting lines.
-
-**Parameters**
-
-- `text` (`string`, required) - The text to wrap.
-- `limit` (`number`, required) - Maximum line width in pixels.
-
-**Returns**: `table, number` - Array of wrapped line strings, and the widest line width.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Word-wraps text to a pixel width. Returns (lines, widest_line_width).
-  -- Use to pre-calculate dialog box dimensions.
-  local f
-  function lurek.init()
-    f = lurek.render.newFont(14)
-    local lines, widest = f:getWrap("A long sentence that must be wrapped.", 120)
-    lurek.log.debug("wrapped to " .. #lines .. " lines, widest=" .. tostring(widest))
-  end
-end
-```
-
-### `LFont:release() -> boolean`
-
-Releases the font resource. The handle becomes invalid after this call.
-
-**Returns**: `boolean` - True if the font was still valid and was released.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Free a temporary font after building a text atlas.
-  pcall(function()
-    local f = lurek.render.newFont(22)
-    f:release()
-    lurek.log.debug("font released")
-  end)
-end
-```
-
-### `LFont:setLineHeight(height: number)`
-
-Overrides the line height used for multi-line text rendering.
-
-**Parameters**
-
-- `height` (`number`, required) - New line height in pixels.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Override the default line spacing for tighter or looser text layout.
-  local f
-  function lurek.init()
-    f = lurek.render.newFont(18)
-    f:setLineHeight(24)  -- force 24px between lines
-  end
-end
-```
-
-### `LFont:type() -> string`
-
-Returns the type name string for this font object.
-
-**Returns**: `string` - Always "LFont".
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Identify handle type in a debug panel.
-  pcall(function()
-    local f = lurek.render.getDefaultFont(16)
-    lurek.log.debug("font handle type: " .. f:type())
-  end)
-end
-```
-
-### `LFont:typeOf(name: string) -> string`
-
-Returns the type name of this object.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to check.
-
-**Returns**: `string` - Always "Font".
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Type-guard for generic resource cleanup functions.
-  pcall(function()
-    local f = lurek.render.getDefaultFont(16)
-    if f:typeOf("LFont") then
-      lurek.log.debug("confirmed LFont handle")
-    end
-  end)
-end
-```
-
-### `LImage`
+### LImage
 
 GPU-backed texture handle used for drawing images to screen.
+
+**Lua API Definition**
+
+```lua
+--- GPU-backed texture handle used for drawing images to screen.
+---@class LImage
+LImage = {}
+```
 
 #### Example
 
@@ -3635,259 +3357,17 @@ do
 end
 ```
 
-### `LImage:getDimensions() -> number, number`
-
-Returns both width and height of this image.
-
-**Returns**: `number, number` - Width and height in pixels.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Get both dimensions at once for origin offset calculation.
-  pcall(function()
-    local img = lurek.render.newImage("img/hero.png")
-    local w, h = img:getDimensions()
-    lurek.log.debug("image: " .. w .. "x" .. h)
-  end)
-end
-```
-
-### `LImage:getHeight() -> number`
-
-Returns the height of this image in pixels.
-
-**Returns**: `number` - Height in pixels.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Use image height for vertical stacking or collision bounds.
-  pcall(function()
-    local img = lurek.render.newImage("img/hero.png")
-    lurek.log.debug("image height: " .. img:getHeight() .. "px")
-  end)
-end
-```
-
-### `LImage:getId() -> number`
-
-Returns the internal numeric handle ID for this image.
-
-**Returns**: `number` - Opaque image handle identifier.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Opaque handle identifier for internal tracking or debug logging.
-  local ok, img = pcall(lurek.render.newImage, "assets/textures/placeholder.png")
-  if ok and img then
-    lurek.log.info("texture handle ID: " .. tostring(img:getId()))
-  end
-end
-```
-
-### `LImage:getWidth() -> number`
-
-Returns the width of this image in pixels.
-
-**Returns**: `number` - Width in pixels.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Use image width for centering or collision bounds.
-  pcall(function()
-    local img = lurek.render.newImage("img/hero.png")
-    lurek.log.debug("image width: " .. img:getWidth() .. "px")
-  end)
-end
-```
-
-### `LImage:release() -> boolean`
-
-Releases the GPU memory for this image. The handle becomes invalid after this call.
-
-**Returns**: `boolean` - True if the image was still valid and was released.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Free a temporary image after generating a texture atlas.
-  pcall(function()
-    local img = lurek.render.newImage("img/temp_asset.png")
-    img:release()
-    lurek.log.debug("image GPU memory freed")
-  end)
-end
-```
-
-### `LImage:type() -> string`
-
-Returns the type name string for this image object.
-
-**Returns**: `string` - Always "LImage".
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Identify drawable type in a debug inspector.
-  pcall(function()
-    local img = lurek.render.newImage("img/hero.png")
-    lurek.log.debug("handle type: " .. img:type())
-  end)
-end
-```
-
-### `LImage:typeOf(name: string) -> string`
-
-Returns the type name of this object.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to check.
-
-**Returns**: `string` - Always "Image".
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Type-guard for a generic drawable renderer.
-  pcall(function()
-    local img = lurek.render.newImage("img/hero.png")
-    if img:typeOf("LImage") then
-      lurek.log.debug("confirmed LImage handle")
-    end
-  end)
-end
-```
-
-### `LImageData`
+### LImageData
 
 Raw pixel buffer for CPU-side image manipulation before uploading to a GPU texture.
 
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
+**Lua API Definition**
 
 ```lua
-do
-  -- Extracts a rectangular sub-region as a new ImageData.
-  -- Useful for splitting sprite sheets on the CPU side.
-  local atlas = lurek.image.newImageData(256, 256)
-  if atlas then
-    local tile = atlas:getRegion(0, 0, 32, 32)  -- first tile
-    if tile then
-      lurek.log.debug("tile size: " .. tile:getWidth() .. "x" .. tile:getHeight())
-    end
-  end
-end
+--- Raw pixel buffer for CPU-side image manipulation before uploading to a GPU texture.
+---@class LImageData
+LImageData = {}
 ```
-
-### `LImageData:blit(source: LImageData, dstX: integer, dstY: integer)`
-
-Copies pixel data from another ImageData onto this one at the specified position.
-
-**Parameters**
-
-- `source` (`LImageData`, required) - The source image data to copy from.
-- `dstX` (`integer`, required) - Destination X offset in pixels.
-- `dstY` (`integer`, required) - Destination Y offset in pixels.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Copies pixels from a source ImageData onto this one at a given offset.
-  -- Use for compositing atlas pages or stamping decals.
-  local dst = lurek.image.newImageData(128, 128)
-  local src = lurek.image.newImageData(32, 32)
-  if dst and src then
-    dst:blit(src, 10, 10)  -- paste src at (10, 10) on dst
-  end
-end
-```
-
-### `LImageData:diff(other: LImageData) -> number`
-
-Computes a numeric difference score between this image and another of the same size.
-
-**Parameters**
-
-- `other` (`LImageData`, required) - The image data to compare against.
-
-**Returns**: `number` - Sum of per-pixel absolute color differences (0 = identical).
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Computes total pixel difference between two same-sized images.
-  -- Returns 0 if identical. Use for screenshot regression tests.
-  local a = lurek.image.newImageData(64, 64)
-  local b = lurek.image.newImageData(64, 64)
-  if a and b then
-    local diff_score = a:diff(b)
-    lurek.log.debug("diff score: " .. tostring(diff_score))
-  end
-end
-```
-
-### `LImageData:getHeight() -> number`
-
-Returns the height of this image data in pixels.
-
-**Returns**: `number` - Height in pixels.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Verify height matches expected atlas layout.
-  local data = lurek.image.newImageData(128, 64)
-  if data then lurek.log.debug("imagedata height: " .. data:getHeight()) end
-end
-```
-
-### `LImageData:getRegion(x: integer, y: integer, w: integer, h: integer) -> LImageData`
-
-Extracts a rectangular sub-region as a new ImageData.
-
-**Parameters**
-
-- `x` (`integer`, required) - Top-left X coordinate of the region.
-- `y` (`integer`, required) - Top-left Y coordinate of the region.
-- `w` (`integer`, required) - Width of the region in pixels.
-- `h` (`integer`, required) - Height of the region in pixels.
-
-**Returns**: `LImageData` - A new ImageData for the region, or nil if out of bounds.
 
 #### Example
 
@@ -3907,122 +3387,17 @@ do
 end
 ```
 
-### `LImageData:getWidth() -> number`
-
-Returns the width of this image data in pixels.
-
-**Returns**: `number` - Width in pixels.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Check ImageData dimensions before pixel-level operations.
-  local data = lurek.image.newImageData(128, 64)
-  if data then lurek.log.debug("imagedata width: " .. data:getWidth()) end
-end
-```
-
-### `LImageData:mapPixels(callback: function)`
-
-Iterates over every pixel and replaces its color with the return value of the callback.
-
-**Parameters**
-
-- `callback` (`function`, required) - Called as callback(x, y, r, g, b, a) → (r, g, b, a) for each pixel.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Iterates every pixel and replaces its color with the callback's return value.
-  -- callback(x, y, r, g, b, a) -> (r, g, b, a)
-  -- Use for color inversion, tinting, or procedural texture generation.
-  local data = lurek.image.newImageData(64, 64)
-  if data then
-    data:mapPixels(function(x, y, r, g, b, a)
-      return 1 - r, 1 - g, 1 - b, a  -- invert colors
-    end)
-  end
-end
-```
-
-### `LImageData:resize(w: integer, h: integer) -> LImageData`
-
-Creates a new ImageData resized to the given dimensions using bilinear sampling.
-
-**Parameters**
-
-- `w` (`integer`, required) - Target width in pixels.
-- `h` (`integer`, required) - Target height in pixels.
-
-**Returns**: `LImageData` - A new resized ImageData, or nil if the operation failed.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Creates a new ImageData resized using bilinear sampling.
-  -- Use for thumbnail generation or texture mip creation.
-  local data = lurek.image.newImageData(128, 128)
-  if data then
-    local thumb = data:resize(32, 32)
-    lurek.log.info("resized to 32x32")
-  end
-end
-```
-
-### `LImageData:type() -> string`
-
-Returns the type name of this object.
-
-**Returns**: `string` - Always "LImageData".
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Runtime type-checking for generic resource managers.
-  local data = lurek.image.newImageData(32, 32)
-  if data then lurek.log.debug("type: " .. data:type()) end
-end
-```
-
-### `LImageData:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to check ("ImageData" or "Object").
-
-**Returns**: `boolean` - True if the name matches.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Confirm handle before calling ImageData-specific methods.
-  local data = lurek.image.newImageData(32, 32)
-  if data and data:typeOf("LImageData") then
-    lurek.log.debug("confirmed LImageData handle")
-  end
-end
-```
-
-### `LMesh`
+### LMesh
 
 Custom vertex mesh for advanced 2D geometry rendering with per-vertex color and UV data.
+
+**Lua API Definition**
+
+```lua
+--- Custom vertex mesh for advanced 2D geometry rendering with per-vertex color and UV data.
+---@class LMesh
+LMesh = {}
+```
 
 #### Example
 
@@ -4047,192 +3422,17 @@ do
 end
 ```
 
-### `LMesh:getVertex(index: integer) -> number, number, number, number, number, number, number, number`
-
-Returns the data for a single vertex by 1-based index.
-
-**Parameters**
-
-- `index` (`integer`, required) - 1-based vertex index.
-
-**Returns**: `number, number, number, number, number, number, number, number` - x, y, u, v, r, g, b, a.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Returns x, y, u, v, r, g, b, a for the vertex at the given 1-based index.
-  local m
-  function lurek.init()
-    m = lurek.render.newMesh({
-      { 0, 0, 0, 0, 1, 0, 0, 1 },
-      { 64, 0, 1, 0, 0, 1, 0, 1 },
-      { 32, 64, 0.5, 1, 0, 0, 1, 1 },
-    })
-    local x, y, u, v, r, g, b, a = m:getVertex(1)
-    lurek.log.debug("v1 pos: " .. tostring(x) .. "," .. tostring(y))
-  end
-end
-```
-
-### `LMesh:getVertexCount() -> number`
-
-Returns the number of vertices in this mesh.
-
-**Returns**: `number` - Vertex count.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Check vertex count for debug display or LOD decisions.
-  local mesh = lurek.render.newMesh({
-    { 0, 0, 0, 0, 1, 1, 1, 1 },
-    { 64, 0, 1, 0, 1, 1, 1, 1 },
-    { 32, 64, 0.5, 1, 1, 1, 1, 1 },
-  }, "triangles")
-  lurek.log.debug("mesh verts: " .. mesh:getVertexCount())
-end
-```
-
-### `LMesh:release() -> boolean`
-
-Releases the mesh GPU resource and invalidates the handle.
-
-**Returns**: `boolean` - True if the mesh was valid and was released.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Free mesh GPU memory when leaving a level.
-  local mesh = lurek.render.newMesh({
-    { 0, 0, 0, 0, 1, 1, 1, 1 },
-    { 32, 0, 1, 0, 1, 1, 1, 1 },
-    { 16, 32, 0.5, 1, 1, 1, 1, 1 },
-  }, "triangles")
-  mesh:release()
-  lurek.log.debug("mesh released")
-end
-```
-
-### `LMesh:setTexture([image]: LImage)`
-
-Assigns or removes a texture for this mesh. Pass nil to clear the texture.
-
-**Parameters**
-
-- `image` (`LImage`, optional) - Image to use as the mesh texture, or nil to remove.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Assign a texture for UV-mapped rendering. Pass nil to clear.
-  local m, tex
-  function lurek.init()
-    tex = lurek.render.newImage("img/sheet.png")
-    m = lurek.render.newMesh({
-      { 0, 0, 0, 0, 1, 1, 1, 1 },
-      { 64, 0, 1, 0, 1, 1, 1, 1 },
-      { 32, 64, 0.5, 1, 1, 1, 1, 1 },
-    })
-    m:setTexture(tex)  -- UVs now sample from sheet.png
-  end
-end
-```
-
-### `LMesh:setVertex(index: integer, data: table)`
-
-Updates a single vertex by 1-based index. Table format: {x, y, u, v, r, g, b, a}.
-
-**Parameters**
-
-- `index` (`integer`, required) - 1-based vertex index.
-- `data` (`table`, required) - Vertex data: {x, y, u, v, r, g, b, a}.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Update vertex data at runtime for deformable surfaces or animations.
-  local m
-  function lurek.init()
-    m = lurek.render.newMesh({
-      { 0, 0, 0, 0, 1, 1, 1, 1 },
-      { 64, 0, 1, 0, 1, 1, 1, 1 },
-      { 32, 64, 0.5, 1, 1, 1, 1, 1 },
-    })
-  end
-  function lurek.process(dt)
-    -- Animate the top vertex up and down
-    local offset = math.sin(lurek.timer.getTime() * 2) * 10
-    m:setVertex(3, { 32, 64 + offset, 0.5, 1, 1, 1, 1, 1 })
-  end
-end
-```
-
-### `LMesh:type() -> string`
-
-Returns the type name string for this mesh object.
-
-**Returns**: `string` - Always "LMesh".
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Identify handle type in a debug inspector.
-  local mesh = lurek.render.newMesh({
-    { 0, 0, 0, 0, 1, 1, 1, 1 },
-    { 32, 0, 1, 0, 1, 1, 1, 1 },
-    { 16, 32, 0.5, 1, 1, 1, 1, 1 },
-  }, "triangles")
-  lurek.log.debug("mesh type: " .. mesh:type())
-end
-```
-
-### `LMesh:typeOf(name: string) -> string`
-
-Returns the type name of this object.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to check.
-
-**Returns**: `string` - Always "Mesh".
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Type-guard in a generic drawable renderer.
-  local mesh = lurek.render.newMesh({
-    { 0, 0, 0, 0, 1, 1, 1, 1 },
-    { 32, 0, 1, 0, 1, 1, 1, 1 },
-    { 16, 32, 0.5, 1, 1, 1, 1, 1 },
-  }, "triangles")
-  if mesh:typeOf("LMesh") then lurek.log.debug("confirmed LMesh") end
-end
-```
-
-### `LNineSlice`
+### LNineSlice
 
 Texture with defined border insets for scalable 9-slice rendering (e.g., UI panels, buttons).
+
+**Lua API Definition**
+
+```lua
+--- Texture with defined border insets for scalable 9-slice rendering (e.g., UI panels, buttons).
+---@class LNineSlice
+LNineSlice = {}
+```
 
 #### Example
 
@@ -4253,105 +3453,17 @@ do
 end
 ```
 
-### `LNineSlice:getInsets() -> number, number, number, number`
-
-Returns the border insets (top, right, bottom, left) that define the stretchable regions.
-
-**Returns**: `number, number, number, number` - Top, right, bottom, left inset values.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Returns top, right, bottom, left border widths as four numbers.
-  local panel
-  function lurek.init()
-    local ok, img = pcall(lurek.render.newImage, "img/panel.png")
-    if ok then panel = lurek.render.newNineSlice(img, 8, 8, 8, 8) end
-    if panel then
-      local t, r, b, l = panel:getInsets()
-      lurek.log.debug("insets: " .. t .. "," .. r .. "," .. b .. "," .. l)
-    end
-  end
-end
-```
-
-### `LNineSlice:getTextureSize() -> number, number`
-
-Returns the pixel dimensions of the underlying source texture.
-
-**Returns**: `number, number` - Width and height in pixels.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Returns the width and height of the underlying source texture.
-  local panel
-  function lurek.init()
-    local ok, img = pcall(lurek.render.newImage, "img/panel.png")
-    if ok then panel = lurek.render.newNineSlice(img, 8, 8, 8, 8) end
-    if panel then
-      local w, h = panel:getTextureSize()
-      lurek.log.debug("source texture: " .. w .. "x" .. h)
-    end
-  end
-end
-```
-
-### `LNineSlice:type() -> string`
-
-Returns the type name of this object.
-
-**Returns**: `string` - Always "LNineSlice".
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Confirm handle type in a debug inspector.
-  pcall(function()
-    local img = lurek.render.newImage("img/panel.png")
-    local ns = lurek.render.newNineSlice(img, 8, 8, 8, 8)
-    lurek.log.debug("nine-slice type: " .. ns:type())
-  end)
-end
-```
-
-### `LNineSlice:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to check ("NineSlice" or "Object").
-
-**Returns**: `boolean` - True if the name matches.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Type-guard for generic UI element drawing.
-  pcall(function()
-    local img = lurek.render.newImage("img/panel.png")
-    local ns = lurek.render.newNineSlice(img, 8, 8, 8, 8)
-    if ns:typeOf("LNineSlice") then lurek.log.debug("confirmed LNineSlice") end
-  end)
-end
-```
-
-### `LObjModel`
+### LObjModel
 
 Loaded OBJ 3D model handle for CPU-side projection to 2D meshes and sprite rendering.
+
+**Lua API Definition**
+
+```lua
+--- Loaded OBJ 3D model handle for CPU-side projection to 2D meshes and sprite rendering.
+---@class LObjModel
+LObjModel = {}
+```
 
 #### Example
 
@@ -4367,146 +3479,17 @@ do
 end
 ```
 
-### `LObjModel:getFaceCount() -> number`
-
-Returns the number of faces (triangles) in this OBJ model.
-
-**Returns**: `number` - Face count.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  local ok, model = pcall(lurek.render.loadObj, "assets/models/cube.obj")
-  if ok and model then
-    lurek.log.debug("faces: " .. model:getFaceCount())
-  end
-end
-```
-
-### `LObjModel:getNormalCount() -> number`
-
-Returns the number of vertex normals in this OBJ model.
-
-**Returns**: `number` - Normal count.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  local ok, model = pcall(lurek.render.loadObj, "assets/models/cube.obj")
-  if ok and model then
-    lurek.log.debug("normals: " .. model:getNormalCount())
-  end
-end
-```
-
-### `LObjModel:getUvCount() -> number`
-
-Returns the number of UV texture coordinates in this OBJ model.
-
-**Returns**: `number` - UV coordinate count.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  local ok, model = pcall(lurek.render.loadObj, "assets/models/cube.obj")
-  if ok and model then
-    lurek.log.debug("UVs: " .. model:getUvCount())
-  end
-end
-```
-
-### `LObjModel:getVertexCount() -> number`
-
-Returns the number of vertices in this OBJ model.
-
-**Returns**: `number` - Vertex count.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  local ok, model = pcall(lurek.render.loadObj, "assets/models/cube.obj")
-  if ok and model then
-    lurek.log.debug("vertices: " .. model:getVertexCount())
-  end
-end
-```
-
-### `LObjModel:projectToMesh(camera: table, screenW: number, screenH: number) -> table`
-
-Projects the OBJ model into 2D vertex data using a virtual camera, returning a table of vertex rows.
-
-**Parameters**
-
-- `camera` (`table`, required) - Camera parameters: {x, y, z, tx, ty, tz, fov}.
-- `screenW` (`number`, required) - Screen width for projection.
-- `screenH` (`number`, required) - Screen height for projection.
-
-**Returns**: `table` - Array of vertex tables: {{x, y, u, v, r, g, b, a}, ...}.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Projects 3D geometry to 2D screen space for rendering as a mesh or sprite.
-  -- Camera table: {x, y, z, tx, ty, tz, fov}
-  local ok, model = pcall(lurek.render.loadObj, "assets/models/cube.obj")
-  if ok and model then
-    local verts = model:projectToMesh(
-      { x = 0, y = 2, z = -5, tx = 0, ty = 0, tz = 0, fov = 60 },
-      800, 600
-    )
-    lurek.log.debug("projected " .. #verts .. " vertex rows")
-  end
-end
-```
-
-### `LObjModel:renderToImage(width: integer, height: integer, [rotation]: number) -> LImage`
-
-Renders the OBJ model to a GPU texture at the given resolution with optional 90-degree rotation.
-
-**Parameters**
-
-- `width` (`integer`, required) - Output image width in pixels.
-- `height` (`integer`, required) - Output image height in pixels.
-- `rotation` (`number`, optional) - Rotation step (0–3, each step = 90 degrees, default 0).
-
-**Returns**: `LImage` - The rendered image handle.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Bakes the model into a sprite image for fast rendering.
-  -- rotation: 0-3 (each step = 90 degrees).
-  local ok, model = pcall(lurek.render.loadObj, "assets/models/cube.obj")
-  if ok and model then
-    local sprite = model:renderToImage(128, 128, 0)
-    if sprite then
-      lurek.log.debug("rendered model to " .. sprite:getWidth() .. "x" .. sprite:getHeight())
-    end
-  end
-end
-```
-
-### `LQuad`
+### LQuad
 
 Rectangular sub-region of a texture, used for sprite sheets and atlas-based rendering.
+
+**Lua API Definition**
+
+```lua
+--- Rectangular sub-region of a texture, used for sprite sheets and atlas-based rendering.
+---@class LQuad
+LQuad = {}
+```
 
 #### Example
 
@@ -4525,124 +3508,17 @@ do
 end
 ```
 
-### `LQuad:getTextureDimensions() -> number, number`
-
-Returns the full dimensions of the source texture this quad references.
-
-**Returns**: `number, number` - Source texture width and height.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Returns the full source texture width and height this quad references.
-  local q
-  function lurek.init()
-    q = lurek.render.newQuad(0, 0, 32, 32, 256, 256)
-    local sw, sh = q:getTextureDimensions()
-    lurek.log.debug("source texture: " .. sw .. "x" .. sh)
-  end
-end
-```
-
-### `LQuad:getViewport() -> number, number, number, number`
-
-Returns the quad's viewport rectangle within the source texture.
-
-**Returns**: `number, number, number, number` - x, y, width, height in texture pixels.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Returns x, y, width, height of the quad's rectangle within the source texture.
-  local q
-  function lurek.init()
-    q = lurek.render.newQuad(32, 0, 32, 32, 256, 256)
-    local x, y, w, h = q:getViewport()
-    lurek.log.debug("quad viewport: " .. x .. "," .. y .. " " .. w .. "x" .. h)
-  end
-end
-```
-
-### `LQuad:setViewport(x: number, y: number, w: number, h: number)`
-
-Updates the quad's viewport rectangle.
-
-**Parameters**
-
-- `x` (`number`, required) - Left edge in texture pixels.
-- `y` (`number`, required) - Top edge in texture pixels.
-- `w` (`number`, required) - Width in texture pixels.
-- `h` (`number`, required) - Height in texture pixels.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Update the quad's source rectangle for animation frame changes.
-  -- Cheaper than creating a new Quad every frame.
-  local q
-  function lurek.init()
-    q = lurek.render.newQuad(0, 0, 32, 32, 256, 256)
-  end
-  function lurek.process(dt)
-    -- Advance to the next frame in a horizontal strip
-    local frame = math.floor(lurek.timer.getTime() * 10) % 8
-    q:setViewport(frame * 32, 0, 32, 32)
-  end
-end
-```
-
-### `LQuad:type() -> string`
-
-Returns the type name string for this quad object.
-
-**Returns**: `string` - Always "LQuad".
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Identify handle type in a resource debugger.
-  local q = lurek.render.newQuad(0, 0, 32, 32, 256, 256)
-  lurek.log.debug("quad type: " .. q:type())
-end
-```
-
-### `LQuad:typeOf(name: string) -> string`
-
-Returns the type name of this object.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to check.
-
-**Returns**: `string` - Always "Quad".
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Type-guard for a generic spritesheet frame handler.
-  local q = lurek.render.newQuad(0, 0, 32, 32, 256, 256)
-  if q:typeOf("LQuad") then lurek.log.debug("confirmed LQuad") end
-end
-```
-
-### `LShader`
+### LShader
 
 GPU shader program for custom rendering effects (post-processing, distortion, etc.).
+
+**Lua API Definition**
+
+```lua
+--- GPU shader program for custom rendering effects (post-processing, distortion, etc.).
+---@class LShader
+LShader = {}
+```
 
 #### Example
 
@@ -4657,128 +3533,17 @@ do
 end
 ```
 
-### `LShader:hasUniform(name: string) -> boolean`
-
-Checks whether this shader declares a uniform with the given name.
-
-**Parameters**
-
-- `name` (`string`, required) - Uniform name to check.
-
-**Returns**: `boolean` - True if the uniform exists.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Check before sending to avoid errors on shaders missing expected uniforms.
-  local sh
-  function lurek.init()
-    sh = lurek.render.newShader("// shader source")
-    if sh:hasUniform("resolution") then
-      local w, h = lurek.render.getDimensions()
-      sh:send("resolution", { w, h })
-    end
-  end
-end
-```
-
-### `LShader:release() -> boolean`
-
-Releases the shader resource. If active, the default shader is restored.
-
-**Returns**: `boolean` - True if the shader was valid and was released.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  local sh
-  function lurek.init() sh = lurek.render.newShader("// shader source") end
-  function lurek.quit() if sh then sh:release() end end
-end
-```
-
-### `LShader:send(name: string, value: number|boolean|table)`
-
-Sends a uniform value to this shader by name. Supported types: number, boolean, or table (vec2/vec3/vec4).
-
-**Parameters**
-
-- `name` (`string`, required) - Uniform variable name declared in the shader.
-- `value` (`number|boolean|table`, required) - The value to send.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Send uniform values to the shader by name. Supports numbers, booleans, tables.
-  -- Call each frame for time-based effects or changing parameters.
-  local sh
-  function lurek.init()
-    sh = lurek.render.newShader("// WGSL with uniform 'time'")
-  end
-  function lurek.process(dt)
-    if sh and sh:hasUniform("time") then
-      sh:send("time", lurek.timer.getTime())
-    end
-  end
-end
-```
-
-### `LShader:type() -> string`
-
-Returns the type name string for this shader object.
-
-**Returns**: `string` - Always "LShader".
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Identify shader handle in a resource dump.
-  pcall(function()
-    local sh = lurek.render.newShader("// minimal WGSL")
-    lurek.log.debug("shader type: " .. sh:type())
-  end)
-end
-```
-
-### `LShader:typeOf(name: string) -> string`
-
-Returns the type name of this object.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to check.
-
-**Returns**: `string` - Always "Shader".
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- Type-guard before sending uniforms to a shader handle.
-  pcall(function()
-    local sh = lurek.render.newShader("// minimal WGSL")
-    if sh:typeOf("LShader") then lurek.log.debug("confirmed LShader") end
-  end)
-end
-```
-
-### `LShape`
+### LShape
 
 Retained compound shape that accumulates drawing commands and can be rendered in one call.
+
+**Lua API Definition**
+
+```lua
+--- Retained compound shape that accumulates drawing commands and can be rendered in one call.
+---@class LShape
+LShape = {}
+```
 
 #### Example
 
@@ -4803,19 +3568,2263 @@ do
 end
 ```
 
-### `LShape:arc(mode: string, x: number, y: number, r: number, astart: number, aend: number, [segments]: number)`
+### LSpriteBatch
+
+Batched sprite renderer for efficiently drawing many copies of the same texture.
+
+**Lua API Definition**
+
+```lua
+--- Batched sprite renderer for efficiently drawing many copies of the same texture.
+---@class LSpriteBatch
+LSpriteBatch = {}
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- SpriteBatches reduce draw calls for tile maps and particle systems.
+  -- All sprites share the same texture. Specify max capacity upfront.
+  local batch
+  function lurek.init()
+    local tileset = lurek.render.newImage("img/tiles.png")
+    batch = lurek.render.newSpriteBatch(tileset, 2048)  -- up to 2048 tiles
+  end
+end
+```
+
+
+[⬆ back to top](#table-of-contents)
+
+## 🔹 Module Methods
+
+### LCanvas:getDimensions
+
+`LCanvas:getDimensions() -> number, number`
+
+Returns both width and height of this canvas.
+
+**Returns**: `number, number` - Width and height in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns both width and height of this canvas.
+---@return number a Width and height in pixels.
+---@return number b Width and height in pixels.
+function LCanvas:getDimensions() end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  local c
+  function lurek.init()
+    c = lurek.render.newCanvas(320, 240)
+    local w, h = c:getDimensions()
+    lurek.log.debug("canvas: " .. w .. "x" .. h)
+  end
+end
+```
+
+### LCanvas:getHeight
+
+`LCanvas:getHeight() -> number`
+
+Returns the height of this canvas in pixels.
+
+**Returns**: `number` - Height in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns the height of this canvas in pixels.
+---@return number Height in pixels.
+function LCanvas:getHeight() end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  local c
+  function lurek.init()
+    c = lurek.render.newCanvas(320, 240)
+    lurek.log.debug("canvas height: " .. c:getHeight())
+  end
+end
+```
+
+### LCanvas:getWidth
+
+`LCanvas:getWidth() -> number`
+
+Returns the width of this canvas in pixels.
+
+**Returns**: `number` - Width in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns the width of this canvas in pixels.
+---@return number Width in pixels.
+function LCanvas:getWidth() end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  local c
+  function lurek.init()
+    c = lurek.render.newCanvas(320, 240)
+    lurek.log.debug("canvas width: " .. c:getWidth())
+  end
+end
+```
+
+### LCanvas:release
+
+`LCanvas:release() -> boolean`
+
+Releases the canvas GPU resource. If this canvas is currently active, drawing reverts to the screen.
+
+**Returns**: `boolean` - True if the canvas was still valid and was released.
+
+**Lua API Stub**
+
+```lua
+--- Releases the canvas GPU resource. If this canvas is currently active, drawing reverts to the screen.
+---@return boolean True if the canvas was still valid and was released.
+function LCanvas:release() end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Free a temporary render target after compositing is complete.
+  local rt = lurek.render.newCanvas(320, 240)
+  rt:release()
+  lurek.log.info("canvas released", "render")
+end
+```
+
+### LCanvas:type
+
+`LCanvas:type() -> string`
+
+Returns the type name string for this canvas object.
+
+**Returns**: `string` - Always "LCanvas".
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name string for this canvas object.
+---@return string Always "LCanvas".
+function LCanvas:type() end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Check the handle type for generic drawable management.
+  local rt = lurek.render.newCanvas(320, 240)
+  lurek.log.debug("canvas type: " .. rt:type())
+end
+```
+
+### LCanvas:typeOf
+
+`LCanvas:typeOf(name: string) -> string`
+
+Returns the type name of this object.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to check.
+
+**Returns**: `string` - Always "Canvas".
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name of this object.
+---@param name string Type name to check.
+---@return string Always "Canvas".
+function LCanvas:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Type-guard before calling canvas-specific methods.
+  local rt = lurek.render.newCanvas(320, 240)
+  if rt:typeOf("LCanvas") then
+    lurek.log.debug("confirmed LCanvas handle")
+  end
+end
+```
+
+### LDrawLayer:clear
+
+`LDrawLayer:clear()`
+
+Discards all queued callbacks without executing them.
+
+**Lua API Stub**
+
+```lua
+--- Discards all queued callbacks without executing them.
+function LDrawLayer:clear() end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Discard queued callbacks without executing them.
+  local dl
+  function lurek.init() dl = lurek.render.newDrawLayer() end
+  function lurek.process(dt)
+    dl:clear()  -- discard stale frame data before queuing new draws
+  end
+end
+```
+
+### LDrawLayer:flush
+
+`LDrawLayer:flush()`
+
+Sorts all queued callbacks by z-depth and executes them in order, then empties the layer.
+
+**Lua API Stub**
+
+```lua
+--- Sorts all queued callbacks by z-depth and executes them in order, then empties the layer.
+function LDrawLayer:flush() end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Sorts queued callbacks by z-depth and executes them, then empties the queue.
+  local dl
+  function lurek.init() dl = lurek.render.newDrawLayer() end
+  function lurek.draw()
+    dl:queue(0, function() lurek.render.rectangle("fill", 0, 0, 800, 600) end)
+    dl:flush()
+  end
+end
+```
+
+### LDrawLayer:getCount
+
+`LDrawLayer:getCount() -> number`
+
+Returns the number of callbacks currently queued.
+
+**Returns**: `number` - Queue length.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of callbacks currently queued.
+---@return number Queue length.
+function LDrawLayer:getCount() end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  local dl
+  function lurek.init()
+    dl = lurek.render.newDrawLayer()
+    dl:queue(0, function() end)
+    dl:queue(1, function() end)
+    lurek.log.debug("queued callbacks: " .. dl:getCount())  -- 2
+  end
+end
+```
+
+### LDrawLayer:queue
+
+`LDrawLayer:queue(z: number, f: function)`
+
+Enqueues a draw callback at the given z-depth. Callbacks execute when flush() is called.
+
+**Parameters**
+
+- `z` (`number`, required): Z-depth value used for sorting (lower draws first).
+- `f` (`function`, required): Callback to invoke during flush.
+
+**Lua API Stub**
+
+```lua
+--- Enqueues a draw callback at the given z-depth. Callbacks execute when flush() is called.
+---@param z number Z-depth value used for sorting (lower draws first).
+---@param f function Callback to invoke during flush.
+function LDrawLayer:queue(z, f) end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Enqueues a draw callback at the given z-depth.
+  -- Callbacks execute sorted by z when flush() is called.
+  local dl
+  function lurek.init() dl = lurek.render.newDrawLayer() end
+  function lurek.draw()
+    dl:queue(10, function() lurek.render.rectangle("fill", 50, 50, 32, 32) end)
+    dl:queue(5, function() lurek.render.circle("fill", 66, 66, 20) end)
+    dl:flush()  -- circle draws first (z=5), then rectangle (z=10)
+  end
+end
+```
+
+### LDrawLayer:type
+
+`LDrawLayer:type() -> string`
+
+Returns the type name string for this draw layer.
+
+**Returns**: `string` - Always "LDrawLayer".
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name string for this draw layer.
+---@return string Always "LDrawLayer".
+function LDrawLayer:type() end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  local dl
+  function lurek.init()
+    dl = lurek.render.newDrawLayer()
+    lurek.log.debug("type: " .. dl:type())  -- "LDrawLayer"
+  end
+end
+```
+
+### LDrawLayer:typeOf
+
+`LDrawLayer:typeOf(name: string) -> boolean`
+
+Checks whether this object matches the given type name.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to check ("LDrawLayer", "DrawLayer", or "Object").
+
+**Returns**: `boolean` - True if the name matches.
+
+**Lua API Stub**
+
+```lua
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check ("LDrawLayer", "DrawLayer", or "Object").
+---@return boolean True if the name matches.
+function LDrawLayer:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  local dl
+  function lurek.init()
+    dl = lurek.render.newDrawLayer()
+    if dl:typeOf("LDrawLayer") then lurek.log.debug("confirmed DrawLayer") end
+  end
+end
+```
+
+### LFont:getAscent
+
+`LFont:getAscent() -> number`
+
+Returns the ascent (pixels above the baseline) of this font.
+
+**Returns**: `number` - Ascent in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns the ascent (pixels above the baseline) of this font.
+---@return number Ascent in pixels.
+function LFont:getAscent() end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Ascent = pixels above baseline (uppercase letter tops).
+  local f
+  function lurek.init()
+    f = lurek.render.newFont(18)
+    lurek.log.debug("ascent: " .. tostring(f:getAscent()) .. "px")
+  end
+end
+```
+
+### LFont:getDescent
+
+`LFont:getDescent() -> number`
+
+Returns the descent (pixels below the baseline) of this font.
+
+**Returns**: `number` - Descent in pixels (positive value extending downward).
+
+**Lua API Stub**
+
+```lua
+--- Returns the descent (pixels below the baseline) of this font.
+---@return number Descent in pixels (positive value extending downward).
+function LFont:getDescent() end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Descent = pixels below baseline (tails of g, p, y).
+  local f
+  function lurek.init()
+    f = lurek.render.newFont(18)
+    lurek.log.debug("descent: " .. tostring(f:getDescent()) .. "px")
+  end
+end
+```
+
+### LFont:getHeight
+
+`LFont:getHeight() -> number`
+
+Returns the line height of this font in pixels.
+
+**Returns**: `number` - Line height in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns the line height of this font in pixels.
+---@return number Line height in pixels.
+function LFont:getHeight() end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Use font height to calculate vertical spacing between lines.
+  pcall(function()
+    local f = lurek.render.getDefaultFont(16)
+    local h = f:getHeight()
+    lurek.log.debug("font height: " .. tostring(h) .. "px")
+  end)
+end
+```
+
+### LFont:getLineHeight
+
+`LFont:getLineHeight() -> number`
+
+Returns the spacing between consecutive lines of text.
+
+**Returns**: `number` - Line height in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns the spacing between consecutive lines of text.
+---@return number Line height in pixels.
+function LFont:getLineHeight() end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Line height = vertical distance between baselines of consecutive lines.
+  local f
+  function lurek.init()
+    f = lurek.render.newFont(18)
+    lurek.log.debug("line height: " .. f:getLineHeight())
+  end
+end
+```
+
+### LFont:getWidth
+
+`LFont:getWidth(text: string) -> number`
+
+Measures the pixel width of a string when rendered with this font.
+
+**Parameters**
+
+- `text` (`string`, required): The text to measure.
+
+**Returns**: `number` - Width in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Measures the pixel width of a string when rendered with this font.
+---@param text string The text to measure.
+---@return number Width in pixels.
+function LFont:getWidth(text) end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Center text horizontally by measuring its rendered width.
+  pcall(function()
+    local f = lurek.render.getDefaultFont(16)
+    local w = f:getWidth("Game Over")
+    lurek.log.debug("text width: " .. tostring(w) .. "px")
+  end)
+end
+```
+
+### LFont:getWrap
+
+`LFont:getWrap(text: string, limit: number) -> table, number`
+
+Word-wraps text to fit within a pixel width limit and returns the resulting lines.
+
+**Parameters**
+
+- `text` (`string`, required): The text to wrap.
+- `limit` (`number`, required): Maximum line width in pixels.
+
+**Returns**: `table, number` - Array of wrapped line strings, and the widest line width.
+
+**Lua API Stub**
+
+```lua
+--- Word-wraps text to fit within a pixel width limit and returns the resulting lines.
+---@param text string The text to wrap.
+---@param limit number Maximum line width in pixels.
+---@return table a Array of wrapped line strings, and the widest line width.
+---@return number b Array of wrapped line strings, and the widest line width.
+function LFont:getWrap(text, limit) end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Word-wraps text to a pixel width. Returns (lines, widest_line_width).
+  -- Use to pre-calculate dialog box dimensions.
+  local f
+  function lurek.init()
+    f = lurek.render.newFont(14)
+    local lines, widest = f:getWrap("A long sentence that must be wrapped.", 120)
+    lurek.log.debug("wrapped to " .. #lines .. " lines, widest=" .. tostring(widest))
+  end
+end
+```
+
+### LFont:release
+
+`LFont:release() -> boolean`
+
+Releases the font resource. The handle becomes invalid after this call.
+
+**Returns**: `boolean` - True if the font was still valid and was released.
+
+**Lua API Stub**
+
+```lua
+--- Releases the font resource. The handle becomes invalid after this call.
+---@return boolean True if the font was still valid and was released.
+function LFont:release() end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Free a temporary font after building a text atlas.
+  pcall(function()
+    local f = lurek.render.newFont(22)
+    f:release()
+    lurek.log.debug("font released")
+  end)
+end
+```
+
+### LFont:setLineHeight
+
+`LFont:setLineHeight(height: number)`
+
+Overrides the line height used for multi-line text rendering.
+
+**Parameters**
+
+- `height` (`number`, required): New line height in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Overrides the line height used for multi-line text rendering.
+---@param height number New line height in pixels.
+function LFont:setLineHeight(height) end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Override the default line spacing for tighter or looser text layout.
+  local f
+  function lurek.init()
+    f = lurek.render.newFont(18)
+    f:setLineHeight(24)  -- force 24px between lines
+  end
+end
+```
+
+### LFont:type
+
+`LFont:type() -> string`
+
+Returns the type name string for this font object.
+
+**Returns**: `string` - Always "LFont".
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name string for this font object.
+---@return string Always "LFont".
+function LFont:type() end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Identify handle type in a debug panel.
+  pcall(function()
+    local f = lurek.render.getDefaultFont(16)
+    lurek.log.debug("font handle type: " .. f:type())
+  end)
+end
+```
+
+### LFont:typeOf
+
+`LFont:typeOf(name: string) -> string`
+
+Returns the type name of this object.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to check.
+
+**Returns**: `string` - Always "Font".
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name of this object.
+---@param name string Type name to check.
+---@return string Always "Font".
+function LFont:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Type-guard for generic resource cleanup functions.
+  pcall(function()
+    local f = lurek.render.getDefaultFont(16)
+    if f:typeOf("LFont") then
+      lurek.log.debug("confirmed LFont handle")
+    end
+  end)
+end
+```
+
+### LImage:getDimensions
+
+`LImage:getDimensions() -> number, number`
+
+Returns both width and height of this image.
+
+**Returns**: `number, number` - Width and height in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns both width and height of this image.
+---@return number a Width and height in pixels.
+---@return number b Width and height in pixels.
+function LImage:getDimensions() end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Get both dimensions at once for origin offset calculation.
+  pcall(function()
+    local img = lurek.render.newImage("img/hero.png")
+    local w, h = img:getDimensions()
+    lurek.log.debug("image: " .. w .. "x" .. h)
+  end)
+end
+```
+
+### LImage:getHeight
+
+`LImage:getHeight() -> number`
+
+Returns the height of this image in pixels.
+
+**Returns**: `number` - Height in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns the height of this image in pixels.
+---@return number Height in pixels.
+function LImage:getHeight() end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Use image height for vertical stacking or collision bounds.
+  pcall(function()
+    local img = lurek.render.newImage("img/hero.png")
+    lurek.log.debug("image height: " .. img:getHeight() .. "px")
+  end)
+end
+```
+
+### LImage:getId
+
+`LImage:getId() -> number`
+
+Returns the internal numeric handle ID for this image.
+
+**Returns**: `number` - Opaque image handle identifier.
+
+**Lua API Stub**
+
+```lua
+--- Returns the internal numeric handle ID for this image.
+---@return number Opaque image handle identifier.
+function LImage:getId() end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Opaque handle identifier for internal tracking or debug logging.
+  local ok, img = pcall(lurek.render.newImage, "assets/textures/placeholder.png")
+  if ok and img then
+    lurek.log.info("texture handle ID: " .. tostring(img:getId()))
+  end
+end
+```
+
+### LImage:getWidth
+
+`LImage:getWidth() -> number`
+
+Returns the width of this image in pixels.
+
+**Returns**: `number` - Width in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns the width of this image in pixels.
+---@return number Width in pixels.
+function LImage:getWidth() end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Use image width for centering or collision bounds.
+  pcall(function()
+    local img = lurek.render.newImage("img/hero.png")
+    lurek.log.debug("image width: " .. img:getWidth() .. "px")
+  end)
+end
+```
+
+### LImage:release
+
+`LImage:release() -> boolean`
+
+Releases the GPU memory for this image. The handle becomes invalid after this call.
+
+**Returns**: `boolean` - True if the image was still valid and was released.
+
+**Lua API Stub**
+
+```lua
+--- Releases the GPU memory for this image. The handle becomes invalid after this call.
+---@return boolean True if the image was still valid and was released.
+function LImage:release() end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Free a temporary image after generating a texture atlas.
+  pcall(function()
+    local img = lurek.render.newImage("img/temp_asset.png")
+    img:release()
+    lurek.log.debug("image GPU memory freed")
+  end)
+end
+```
+
+### LImage:type
+
+`LImage:type() -> string`
+
+Returns the type name string for this image object.
+
+**Returns**: `string` - Always "LImage".
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name string for this image object.
+---@return string Always "LImage".
+function LImage:type() end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Identify drawable type in a debug inspector.
+  pcall(function()
+    local img = lurek.render.newImage("img/hero.png")
+    lurek.log.debug("handle type: " .. img:type())
+  end)
+end
+```
+
+### LImage:typeOf
+
+`LImage:typeOf(name: string) -> string`
+
+Returns the type name of this object.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to check.
+
+**Returns**: `string` - Always "Image".
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name of this object.
+---@param name string Type name to check.
+---@return string Always "Image".
+function LImage:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Type-guard for a generic drawable renderer.
+  pcall(function()
+    local img = lurek.render.newImage("img/hero.png")
+    if img:typeOf("LImage") then
+      lurek.log.debug("confirmed LImage handle")
+    end
+  end)
+end
+```
+
+### LImageData:blit
+
+`LImageData:blit(source: LImageData, dstX: integer, dstY: integer)`
+
+Copies pixel data from another ImageData onto this one at the specified position.
+
+**Parameters**
+
+- `source` (`LImageData`, required): The source image data to copy from.
+- `dstX` (`integer`, required): Destination X offset in pixels.
+- `dstY` (`integer`, required): Destination Y offset in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Copies pixel data from another ImageData onto this one at the specified position.
+---@param source LImageData The source image data to copy from.
+---@param dstX number Destination X offset in pixels.
+---@param dstY number Destination Y offset in pixels.
+function LImageData:blit(source, dstX, dstY) end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Copies pixels from a source ImageData onto this one at a given offset.
+  -- Use for compositing atlas pages or stamping decals.
+  local dst = lurek.image.newImageData(128, 128)
+  local src = lurek.image.newImageData(32, 32)
+  if dst and src then
+    dst:blit(src, 10, 10)  -- paste src at (10, 10) on dst
+  end
+end
+```
+
+### LImageData:diff
+
+`LImageData:diff(other: LImageData) -> number`
+
+Computes a numeric difference score between this image and another of the same size.
+
+**Parameters**
+
+- `other` (`LImageData`, required): The image data to compare against.
+
+**Returns**: `number` - Sum of per-pixel absolute color differences (0 = identical).
+
+**Lua API Stub**
+
+```lua
+--- Computes a numeric difference score between this image and another of the same size.
+---@param other LImageData The image data to compare against.
+---@return number Sum of per-pixel absolute color differences (0 = identical).
+function LImageData:diff(other) end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Computes total pixel difference between two same-sized images.
+  -- Returns 0 if identical. Use for screenshot regression tests.
+  local a = lurek.image.newImageData(64, 64)
+  local b = lurek.image.newImageData(64, 64)
+  if a and b then
+    local diff_score = a:diff(b)
+    lurek.log.debug("diff score: " .. tostring(diff_score))
+  end
+end
+```
+
+### LImageData:getHeight
+
+`LImageData:getHeight() -> number`
+
+Returns the height of this image data in pixels.
+
+**Returns**: `number` - Height in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns the height of this image data in pixels.
+---@return number Height in pixels.
+function LImageData:getHeight() end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Verify height matches expected atlas layout.
+  local data = lurek.image.newImageData(128, 64)
+  if data then lurek.log.debug("imagedata height: " .. data:getHeight()) end
+end
+```
+
+### LImageData:getRegion
+
+`LImageData:getRegion(x: integer, y: integer, w: integer, h: integer) -> LImageData`
+
+Extracts a rectangular sub-region as a new ImageData.
+
+**Parameters**
+
+- `x` (`integer`, required): Top-left X coordinate of the region.
+- `y` (`integer`, required): Top-left Y coordinate of the region.
+- `w` (`integer`, required): Width of the region in pixels.
+- `h` (`integer`, required): Height of the region in pixels.
+
+**Returns**: `LImageData` - A new ImageData for the region, or nil if out of bounds.
+
+**Lua API Stub**
+
+```lua
+--- Extracts a rectangular sub-region as a new ImageData.
+---@param x number Top-left X coordinate of the region.
+---@param y number Top-left Y coordinate of the region.
+---@param w number Width of the region in pixels.
+---@param h number Height of the region in pixels.
+---@return LImageData A new ImageData for the region, or nil if out of bounds.
+function LImageData:getRegion(x, y, w, h) end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Extracts a rectangular sub-region as a new ImageData.
+  -- Useful for splitting sprite sheets on the CPU side.
+  local atlas = lurek.image.newImageData(256, 256)
+  if atlas then
+    local tile = atlas:getRegion(0, 0, 32, 32)  -- first tile
+    if tile then
+      lurek.log.debug("tile size: " .. tile:getWidth() .. "x" .. tile:getHeight())
+    end
+  end
+end
+```
+
+### LImageData:getWidth
+
+`LImageData:getWidth() -> number`
+
+Returns the width of this image data in pixels.
+
+**Returns**: `number` - Width in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns the width of this image data in pixels.
+---@return number Width in pixels.
+function LImageData:getWidth() end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Check ImageData dimensions before pixel-level operations.
+  local data = lurek.image.newImageData(128, 64)
+  if data then lurek.log.debug("imagedata width: " .. data:getWidth()) end
+end
+```
+
+### LImageData:mapPixels
+
+`LImageData:mapPixels(callback: function)`
+
+Iterates over every pixel and replaces its color with the return value of the callback.
+
+**Parameters**
+
+- `callback` (`function`, required): Called as callback(x, y, r, g, b, a) → (r, g, b, a) for each pixel.
+
+**Lua API Stub**
+
+```lua
+--- Iterates over every pixel and replaces its color with the return value of the callback.
+---@param callback function Called as callback(x, y, r, g, b, a) → (r, g, b, a) for each pixel.
+function LImageData:mapPixels(callback) end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Iterates every pixel and replaces its color with the callback's return value.
+  -- callback(x, y, r, g, b, a) -> (r, g, b, a)
+  -- Use for color inversion, tinting, or procedural texture generation.
+  local data = lurek.image.newImageData(64, 64)
+  if data then
+    data:mapPixels(function(x, y, r, g, b, a)
+      return 1 - r, 1 - g, 1 - b, a  -- invert colors
+    end)
+  end
+end
+```
+
+### LImageData:resize
+
+`LImageData:resize(w: integer, h: integer) -> LImageData`
+
+Creates a new ImageData resized to the given dimensions using bilinear sampling.
+
+**Parameters**
+
+- `w` (`integer`, required): Target width in pixels.
+- `h` (`integer`, required): Target height in pixels.
+
+**Returns**: `LImageData` - A new resized ImageData, or nil if the operation failed.
+
+**Lua API Stub**
+
+```lua
+--- Creates a new ImageData resized to the given dimensions using bilinear sampling.
+---@param w number Target width in pixels.
+---@param h number Target height in pixels.
+---@return LImageData A new resized ImageData, or nil if the operation failed.
+function LImageData:resize(w, h) end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Creates a new ImageData resized using bilinear sampling.
+  -- Use for thumbnail generation or texture mip creation.
+  local data = lurek.image.newImageData(128, 128)
+  if data then
+    local thumb = data:resize(32, 32)
+    lurek.log.info("resized to 32x32")
+  end
+end
+```
+
+### LImageData:type
+
+`LImageData:type() -> string`
+
+Returns the type name of this object.
+
+**Returns**: `string` - Always "LImageData".
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name of this object.
+---@return string Always "LImageData".
+function LImageData:type() end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Runtime type-checking for generic resource managers.
+  local data = lurek.image.newImageData(32, 32)
+  if data then lurek.log.debug("type: " .. data:type()) end
+end
+```
+
+### LImageData:typeOf
+
+`LImageData:typeOf(name: string) -> boolean`
+
+Checks whether this object matches the given type name.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to check ("ImageData" or "Object").
+
+**Returns**: `boolean` - True if the name matches.
+
+**Lua API Stub**
+
+```lua
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check ("ImageData" or "Object").
+---@return boolean True if the name matches.
+function LImageData:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Confirm handle before calling ImageData-specific methods.
+  local data = lurek.image.newImageData(32, 32)
+  if data and data:typeOf("LImageData") then
+    lurek.log.debug("confirmed LImageData handle")
+  end
+end
+```
+
+### LMesh:getVertex
+
+`LMesh:getVertex(index: integer) -> number, number, number, number, number, number, number, number`
+
+Returns the data for a single vertex by 1-based index.
+
+**Parameters**
+
+- `index` (`integer`, required): 1-based vertex index.
+
+**Returns**: `number, number, number, number, number, number, number, number` - x, y, u, v, r, g, b, a.
+
+**Lua API Stub**
+
+```lua
+--- Returns the data for a single vertex by 1-based index.
+---@param index number 1-based vertex index.
+---@return number a x, y, u, v, r, g, b, a.
+---@return number b x, y, u, v, r, g, b, a.
+---@return number c x, y, u, v, r, g, b, a.
+---@return number d x, y, u, v, r, g, b, a.
+---@return number e x, y, u, v, r, g, b, a.
+---@return number f x, y, u, v, r, g, b, a.
+---@return number g x, y, u, v, r, g, b, a.
+---@return number h x, y, u, v, r, g, b, a.
+function LMesh:getVertex(index) end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Returns x, y, u, v, r, g, b, a for the vertex at the given 1-based index.
+  local m
+  function lurek.init()
+    m = lurek.render.newMesh({
+      { 0, 0, 0, 0, 1, 0, 0, 1 },
+      { 64, 0, 1, 0, 0, 1, 0, 1 },
+      { 32, 64, 0.5, 1, 0, 0, 1, 1 },
+    })
+    local x, y, u, v, r, g, b, a = m:getVertex(1)
+    lurek.log.debug("v1 pos: " .. tostring(x) .. "," .. tostring(y))
+  end
+end
+```
+
+### LMesh:getVertexCount
+
+`LMesh:getVertexCount() -> number`
+
+Returns the number of vertices in this mesh.
+
+**Returns**: `number` - Vertex count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of vertices in this mesh.
+---@return number Vertex count.
+function LMesh:getVertexCount() end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Check vertex count for debug display or LOD decisions.
+  local mesh = lurek.render.newMesh({
+    { 0, 0, 0, 0, 1, 1, 1, 1 },
+    { 64, 0, 1, 0, 1, 1, 1, 1 },
+    { 32, 64, 0.5, 1, 1, 1, 1, 1 },
+  }, "triangles")
+  lurek.log.debug("mesh verts: " .. mesh:getVertexCount())
+end
+```
+
+### LMesh:release
+
+`LMesh:release() -> boolean`
+
+Releases the mesh GPU resource and invalidates the handle.
+
+**Returns**: `boolean` - True if the mesh was valid and was released.
+
+**Lua API Stub**
+
+```lua
+--- Releases the mesh GPU resource and invalidates the handle.
+---@return boolean True if the mesh was valid and was released.
+function LMesh:release() end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Free mesh GPU memory when leaving a level.
+  local mesh = lurek.render.newMesh({
+    { 0, 0, 0, 0, 1, 1, 1, 1 },
+    { 32, 0, 1, 0, 1, 1, 1, 1 },
+    { 16, 32, 0.5, 1, 1, 1, 1, 1 },
+  }, "triangles")
+  mesh:release()
+  lurek.log.debug("mesh released")
+end
+```
+
+### LMesh:setTexture
+
+`LMesh:setTexture([image]: LImage)`
+
+Assigns or removes a texture for this mesh. Pass nil to clear the texture.
+
+**Parameters**
+
+- `image` (`LImage`, optional): Image to use as the mesh texture, or nil to remove.
+
+**Lua API Stub**
+
+```lua
+--- Assigns or removes a texture for this mesh. Pass nil to clear the texture.
+---@param image? LImage Image to use as the mesh texture, or nil to remove.
+function LMesh:setTexture(image) end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Assign a texture for UV-mapped rendering. Pass nil to clear.
+  local m, tex
+  function lurek.init()
+    tex = lurek.render.newImage("img/sheet.png")
+    m = lurek.render.newMesh({
+      { 0, 0, 0, 0, 1, 1, 1, 1 },
+      { 64, 0, 1, 0, 1, 1, 1, 1 },
+      { 32, 64, 0.5, 1, 1, 1, 1, 1 },
+    })
+    m:setTexture(tex)  -- UVs now sample from sheet.png
+  end
+end
+```
+
+### LMesh:setVertex
+
+`LMesh:setVertex(index: integer, data: table)`
+
+Updates a single vertex by 1-based index. Table format: {x, y, u, v, r, g, b, a}.
+
+**Parameters**
+
+- `index` (`integer`, required): 1-based vertex index.
+- `data` (`table`, required): Vertex data: {x, y, u, v, r, g, b, a}.
+
+**Lua API Stub**
+
+```lua
+--- Updates a single vertex by 1-based index. Table format: {x, y, u, v, r, g, b, a}.
+---@param index number 1-based vertex index.
+---@param data table Vertex data: {x, y, u, v, r, g, b, a}.
+function LMesh:setVertex(index, data) end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Update vertex data at runtime for deformable surfaces or animations.
+  local m
+  function lurek.init()
+    m = lurek.render.newMesh({
+      { 0, 0, 0, 0, 1, 1, 1, 1 },
+      { 64, 0, 1, 0, 1, 1, 1, 1 },
+      { 32, 64, 0.5, 1, 1, 1, 1, 1 },
+    })
+  end
+  function lurek.process(dt)
+    -- Animate the top vertex up and down
+    local offset = math.sin(lurek.timer.getTime() * 2) * 10
+    m:setVertex(3, { 32, 64 + offset, 0.5, 1, 1, 1, 1, 1 })
+  end
+end
+```
+
+### LMesh:type
+
+`LMesh:type() -> string`
+
+Returns the type name string for this mesh object.
+
+**Returns**: `string` - Always "LMesh".
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name string for this mesh object.
+---@return string Always "LMesh".
+function LMesh:type() end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Identify handle type in a debug inspector.
+  local mesh = lurek.render.newMesh({
+    { 0, 0, 0, 0, 1, 1, 1, 1 },
+    { 32, 0, 1, 0, 1, 1, 1, 1 },
+    { 16, 32, 0.5, 1, 1, 1, 1, 1 },
+  }, "triangles")
+  lurek.log.debug("mesh type: " .. mesh:type())
+end
+```
+
+### LMesh:typeOf
+
+`LMesh:typeOf(name: string) -> string`
+
+Returns the type name of this object.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to check.
+
+**Returns**: `string` - Always "Mesh".
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name of this object.
+---@param name string Type name to check.
+---@return string Always "Mesh".
+function LMesh:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Type-guard in a generic drawable renderer.
+  local mesh = lurek.render.newMesh({
+    { 0, 0, 0, 0, 1, 1, 1, 1 },
+    { 32, 0, 1, 0, 1, 1, 1, 1 },
+    { 16, 32, 0.5, 1, 1, 1, 1, 1 },
+  }, "triangles")
+  if mesh:typeOf("LMesh") then lurek.log.debug("confirmed LMesh") end
+end
+```
+
+### LNineSlice:getInsets
+
+`LNineSlice:getInsets() -> number, number, number, number`
+
+Returns the border insets (top, right, bottom, left) that define the stretchable regions.
+
+**Returns**: `number, number, number, number` - Top, right, bottom, left inset values.
+
+**Lua API Stub**
+
+```lua
+--- Returns the border insets (top, right, bottom, left) that define the stretchable regions.
+---@return number a Top, right, bottom, left inset values.
+---@return number b Top, right, bottom, left inset values.
+---@return number c Top, right, bottom, left inset values.
+---@return number d Top, right, bottom, left inset values.
+function LNineSlice:getInsets() end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Returns top, right, bottom, left border widths as four numbers.
+  local panel
+  function lurek.init()
+    local ok, img = pcall(lurek.render.newImage, "img/panel.png")
+    if ok then panel = lurek.render.newNineSlice(img, 8, 8, 8, 8) end
+    if panel then
+      local t, r, b, l = panel:getInsets()
+      lurek.log.debug("insets: " .. t .. "," .. r .. "," .. b .. "," .. l)
+    end
+  end
+end
+```
+
+### LNineSlice:getTextureSize
+
+`LNineSlice:getTextureSize() -> number, number`
+
+Returns the pixel dimensions of the underlying source texture.
+
+**Returns**: `number, number` - Width and height in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns the pixel dimensions of the underlying source texture.
+---@return number a Width and height in pixels.
+---@return number b Width and height in pixels.
+function LNineSlice:getTextureSize() end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Returns the width and height of the underlying source texture.
+  local panel
+  function lurek.init()
+    local ok, img = pcall(lurek.render.newImage, "img/panel.png")
+    if ok then panel = lurek.render.newNineSlice(img, 8, 8, 8, 8) end
+    if panel then
+      local w, h = panel:getTextureSize()
+      lurek.log.debug("source texture: " .. w .. "x" .. h)
+    end
+  end
+end
+```
+
+### LNineSlice:type
+
+`LNineSlice:type() -> string`
+
+Returns the type name of this object.
+
+**Returns**: `string` - Always "LNineSlice".
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name of this object.
+---@return string Always "LNineSlice".
+function LNineSlice:type() end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Confirm handle type in a debug inspector.
+  pcall(function()
+    local img = lurek.render.newImage("img/panel.png")
+    local ns = lurek.render.newNineSlice(img, 8, 8, 8, 8)
+    lurek.log.debug("nine-slice type: " .. ns:type())
+  end)
+end
+```
+
+### LNineSlice:typeOf
+
+`LNineSlice:typeOf(name: string) -> boolean`
+
+Checks whether this object matches the given type name.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to check ("NineSlice" or "Object").
+
+**Returns**: `boolean` - True if the name matches.
+
+**Lua API Stub**
+
+```lua
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check ("NineSlice" or "Object").
+---@return boolean True if the name matches.
+function LNineSlice:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Type-guard for generic UI element drawing.
+  pcall(function()
+    local img = lurek.render.newImage("img/panel.png")
+    local ns = lurek.render.newNineSlice(img, 8, 8, 8, 8)
+    if ns:typeOf("LNineSlice") then lurek.log.debug("confirmed LNineSlice") end
+  end)
+end
+```
+
+### LObjModel:getFaceCount
+
+`LObjModel:getFaceCount() -> number`
+
+Returns the number of faces (triangles) in this OBJ model.
+
+**Returns**: `number` - Face count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of faces (triangles) in this OBJ model.
+---@return number Face count.
+function LObjModel:getFaceCount() end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  local ok, model = pcall(lurek.render.loadObj, "assets/models/cube.obj")
+  if ok and model then
+    lurek.log.debug("faces: " .. model:getFaceCount())
+  end
+end
+```
+
+### LObjModel:getNormalCount
+
+`LObjModel:getNormalCount() -> number`
+
+Returns the number of vertex normals in this OBJ model.
+
+**Returns**: `number` - Normal count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of vertex normals in this OBJ model.
+---@return number Normal count.
+function LObjModel:getNormalCount() end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  local ok, model = pcall(lurek.render.loadObj, "assets/models/cube.obj")
+  if ok and model then
+    lurek.log.debug("normals: " .. model:getNormalCount())
+  end
+end
+```
+
+### LObjModel:getUvCount
+
+`LObjModel:getUvCount() -> number`
+
+Returns the number of UV texture coordinates in this OBJ model.
+
+**Returns**: `number` - UV coordinate count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of UV texture coordinates in this OBJ model.
+---@return number UV coordinate count.
+function LObjModel:getUvCount() end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  local ok, model = pcall(lurek.render.loadObj, "assets/models/cube.obj")
+  if ok and model then
+    lurek.log.debug("UVs: " .. model:getUvCount())
+  end
+end
+```
+
+### LObjModel:getVertexCount
+
+`LObjModel:getVertexCount() -> number`
+
+Returns the number of vertices in this OBJ model.
+
+**Returns**: `number` - Vertex count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of vertices in this OBJ model.
+---@return number Vertex count.
+function LObjModel:getVertexCount() end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  local ok, model = pcall(lurek.render.loadObj, "assets/models/cube.obj")
+  if ok and model then
+    lurek.log.debug("vertices: " .. model:getVertexCount())
+  end
+end
+```
+
+### LObjModel:projectToMesh
+
+`LObjModel:projectToMesh(camera: table, screenW: number, screenH: number) -> table`
+
+Projects the OBJ model into 2D vertex data using a virtual camera, returning a table of vertex rows.
+
+**Parameters**
+
+- `camera` (`table`, required): Camera parameters: {x, y, z, tx, ty, tz, fov}.
+- `screenW` (`number`, required): Screen width for projection.
+- `screenH` (`number`, required): Screen height for projection.
+
+**Returns**: `table` - Array of vertex tables: {{x, y, u, v, r, g, b, a}, ...}.
+
+**Lua API Stub**
+
+```lua
+--- Projects the OBJ model into 2D vertex data using a virtual camera, returning a table of vertex rows.
+---@param camera table Camera parameters: {x, y, z, tx, ty, tz, fov}.
+---@param screenW number Screen width for projection.
+---@param screenH number Screen height for projection.
+---@return LObjModelProjectToMeshResult Array of vertex tables: {{x, y, u, v, r, g, b, a}, ...}.
+function LObjModel:projectToMesh(camera, screenW, screenH) end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Projects 3D geometry to 2D screen space for rendering as a mesh or sprite.
+  -- Camera table: {x, y, z, tx, ty, tz, fov}
+  local ok, model = pcall(lurek.render.loadObj, "assets/models/cube.obj")
+  if ok and model then
+    local verts = model:projectToMesh(
+      { x = 0, y = 2, z = -5, tx = 0, ty = 0, tz = 0, fov = 60 },
+      800, 600
+    )
+    lurek.log.debug("projected " .. #verts .. " vertex rows")
+  end
+end
+```
+
+### LObjModel:renderToImage
+
+`LObjModel:renderToImage(width: integer, height: integer, [rotation]: number) -> LImage`
+
+Renders the OBJ model to a GPU texture at the given resolution with optional 90-degree rotation.
+
+**Parameters**
+
+- `width` (`integer`, required): Output image width in pixels.
+- `height` (`integer`, required): Output image height in pixels.
+- `rotation` (`number`, optional): Rotation step (0–3, each step = 90 degrees, default 0).
+
+**Returns**: `LImage` - The rendered image handle.
+
+**Lua API Stub**
+
+```lua
+--- Renders the OBJ model to a GPU texture at the given resolution with optional 90-degree rotation.
+---@param width number Output image width in pixels.
+---@param height number Output image height in pixels.
+---@param rotation? number Rotation step (0–3, each step = 90 degrees, default 0).
+---@return LImage The rendered image handle.
+function LObjModel:renderToImage(width, height, rotation) end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Bakes the model into a sprite image for fast rendering.
+  -- rotation: 0-3 (each step = 90 degrees).
+  local ok, model = pcall(lurek.render.loadObj, "assets/models/cube.obj")
+  if ok and model then
+    local sprite = model:renderToImage(128, 128, 0)
+    if sprite then
+      lurek.log.debug("rendered model to " .. sprite:getWidth() .. "x" .. sprite:getHeight())
+    end
+  end
+end
+```
+
+### LQuad:getTextureDimensions
+
+`LQuad:getTextureDimensions() -> number, number`
+
+Returns the full dimensions of the source texture this quad references.
+
+**Returns**: `number, number` - Source texture width and height.
+
+**Lua API Stub**
+
+```lua
+--- Returns the full dimensions of the source texture this quad references.
+---@return number a Source texture width and height.
+---@return number b Source texture width and height.
+function LQuad:getTextureDimensions() end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Returns the full source texture width and height this quad references.
+  local q
+  function lurek.init()
+    q = lurek.render.newQuad(0, 0, 32, 32, 256, 256)
+    local sw, sh = q:getTextureDimensions()
+    lurek.log.debug("source texture: " .. sw .. "x" .. sh)
+  end
+end
+```
+
+### LQuad:getViewport
+
+`LQuad:getViewport() -> number, number, number, number`
+
+Returns the quad's viewport rectangle within the source texture.
+
+**Returns**: `number, number, number, number` - x, y, width, height in texture pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns the quad's viewport rectangle within the source texture.
+---@return number a x, y, width, height in texture pixels.
+---@return number b x, y, width, height in texture pixels.
+---@return number c x, y, width, height in texture pixels.
+---@return number d x, y, width, height in texture pixels.
+function LQuad:getViewport() end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Returns x, y, width, height of the quad's rectangle within the source texture.
+  local q
+  function lurek.init()
+    q = lurek.render.newQuad(32, 0, 32, 32, 256, 256)
+    local x, y, w, h = q:getViewport()
+    lurek.log.debug("quad viewport: " .. x .. "," .. y .. " " .. w .. "x" .. h)
+  end
+end
+```
+
+### LQuad:setViewport
+
+`LQuad:setViewport(x: number, y: number, w: number, h: number)`
+
+Updates the quad's viewport rectangle.
+
+**Parameters**
+
+- `x` (`number`, required): Left edge in texture pixels.
+- `y` (`number`, required): Top edge in texture pixels.
+- `w` (`number`, required): Width in texture pixels.
+- `h` (`number`, required): Height in texture pixels.
+
+**Lua API Stub**
+
+```lua
+--- Updates the quad's viewport rectangle.
+---@param x number Left edge in texture pixels.
+---@param y number Top edge in texture pixels.
+---@param w number Width in texture pixels.
+---@param h number Height in texture pixels.
+function LQuad:setViewport(x, y, w, h) end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Update the quad's source rectangle for animation frame changes.
+  -- Cheaper than creating a new Quad every frame.
+  local q
+  function lurek.init()
+    q = lurek.render.newQuad(0, 0, 32, 32, 256, 256)
+  end
+  function lurek.process(dt)
+    -- Advance to the next frame in a horizontal strip
+    local frame = math.floor(lurek.timer.getTime() * 10) % 8
+    q:setViewport(frame * 32, 0, 32, 32)
+  end
+end
+```
+
+### LQuad:type
+
+`LQuad:type() -> string`
+
+Returns the type name string for this quad object.
+
+**Returns**: `string` - Always "LQuad".
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name string for this quad object.
+---@return string Always "LQuad".
+function LQuad:type() end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Identify handle type in a resource debugger.
+  local q = lurek.render.newQuad(0, 0, 32, 32, 256, 256)
+  lurek.log.debug("quad type: " .. q:type())
+end
+```
+
+### LQuad:typeOf
+
+`LQuad:typeOf(name: string) -> string`
+
+Returns the type name of this object.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to check.
+
+**Returns**: `string` - Always "Quad".
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name of this object.
+---@param name string Type name to check.
+---@return string Always "Quad".
+function LQuad:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Type-guard for a generic spritesheet frame handler.
+  local q = lurek.render.newQuad(0, 0, 32, 32, 256, 256)
+  if q:typeOf("LQuad") then lurek.log.debug("confirmed LQuad") end
+end
+```
+
+### LShader:hasUniform
+
+`LShader:hasUniform(name: string) -> boolean`
+
+Checks whether this shader declares a uniform with the given name.
+
+**Parameters**
+
+- `name` (`string`, required): Uniform name to check.
+
+**Returns**: `boolean` - True if the uniform exists.
+
+**Lua API Stub**
+
+```lua
+--- Checks whether this shader declares a uniform with the given name.
+---@param name string Uniform name to check.
+---@return boolean True if the uniform exists.
+function LShader:hasUniform(name) end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Check before sending to avoid errors on shaders missing expected uniforms.
+  local sh
+  function lurek.init()
+    sh = lurek.render.newShader("// shader source")
+    if sh:hasUniform("resolution") then
+      local w, h = lurek.render.getDimensions()
+      sh:send("resolution", { w, h })
+    end
+  end
+end
+```
+
+### LShader:release
+
+`LShader:release() -> boolean`
+
+Releases the shader resource. If active, the default shader is restored.
+
+**Returns**: `boolean` - True if the shader was valid and was released.
+
+**Lua API Stub**
+
+```lua
+--- Releases the shader resource. If active, the default shader is restored.
+---@return boolean True if the shader was valid and was released.
+function LShader:release() end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  local sh
+  function lurek.init() sh = lurek.render.newShader("// shader source") end
+  function lurek.quit() if sh then sh:release() end end
+end
+```
+
+### LShader:send
+
+`LShader:send(name: string, value: number|boolean|table)`
+
+Sends a uniform value to this shader by name. Supported types: number, boolean, or table (vec2/vec3/vec4).
+
+**Parameters**
+
+- `name` (`string`, required): Uniform variable name declared in the shader.
+- `value` (`number|boolean|table`, required): The value to send.
+
+**Lua API Stub**
+
+```lua
+--- Sends a uniform value to this shader by name. Supported types: number, boolean, or table (vec2/vec3/vec4).
+---@param name string Uniform variable name declared in the shader.
+---@param value number|boolean|table The value to send.
+function LShader:send(name, value) end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Send uniform values to the shader by name. Supports numbers, booleans, tables.
+  -- Call each frame for time-based effects or changing parameters.
+  local sh
+  function lurek.init()
+    sh = lurek.render.newShader("// WGSL with uniform 'time'")
+  end
+  function lurek.process(dt)
+    if sh and sh:hasUniform("time") then
+      sh:send("time", lurek.timer.getTime())
+    end
+  end
+end
+```
+
+### LShader:type
+
+`LShader:type() -> string`
+
+Returns the type name string for this shader object.
+
+**Returns**: `string` - Always "LShader".
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name string for this shader object.
+---@return string Always "LShader".
+function LShader:type() end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Identify shader handle in a resource dump.
+  pcall(function()
+    local sh = lurek.render.newShader("// minimal WGSL")
+    lurek.log.debug("shader type: " .. sh:type())
+  end)
+end
+```
+
+### LShader:typeOf
+
+`LShader:typeOf(name: string) -> string`
+
+Returns the type name of this object.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to check.
+
+**Returns**: `string` - Always "Shader".
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name of this object.
+---@param name string Type name to check.
+---@return string Always "Shader".
+function LShader:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [render.lua](../blob/main/content/examples/render.lua):
+
+```lua
+do
+  -- Type-guard before sending uniforms to a shader handle.
+  pcall(function()
+    local sh = lurek.render.newShader("// minimal WGSL")
+    if sh:typeOf("LShader") then lurek.log.debug("confirmed LShader") end
+  end)
+end
+```
+
+### LShape:arc
+
+`LShape:arc(mode: string, x: number, y: number, r: number, astart: number, aend: number, [segments]: number)`
 
 Adds a filled or outlined arc command to the shape.
 
 **Parameters**
 
-- `mode` (`string`, required) - "fill" or "line".
-- `x` (`number`, required) - Center X.
-- `y` (`number`, required) - Center Y.
-- `r` (`number`, required) - Radius.
-- `astart` (`number`, required) - Start angle in radians.
-- `aend` (`number`, required) - End angle in radians.
-- `segments` (`number`, optional) - Number of arc segments (default 32).
+- `mode` (`string`, required): "fill" or "line".
+- `x` (`number`, required): Center X.
+- `y` (`number`, required): Center Y.
+- `r` (`number`, required): Radius.
+- `astart` (`number`, required): Start angle in radians.
+- `aend` (`number`, required): End angle in radians.
+- `segments` (`number`, optional): Number of arc segments (default 32).
+
+**Lua API Stub**
+
+```lua
+--- Adds a filled or outlined arc command to the shape.
+---@param mode string "fill" or "line".
+---@param x number Center X.
+---@param y number Center Y.
+---@param r number Radius.
+---@param astart number Start angle in radians.
+---@param aend number End angle in radians.
+---@param segments? number Number of arc segments (default 32).
+function LShape:arc(mode, x, y, r, astart, aend, segments) end
+```
 
 #### Example
 
@@ -4834,16 +5843,29 @@ do
 end
 ```
 
-### `LShape:circle(mode: string, x: number, y: number, r: number)`
+### LShape:circle
+
+`LShape:circle(mode: string, x: number, y: number, r: number)`
 
 Adds a filled or outlined circle command to the shape.
 
 **Parameters**
 
-- `mode` (`string`, required) - "fill" or "line".
-- `x` (`number`, required) - Center X.
-- `y` (`number`, required) - Center Y.
-- `r` (`number`, required) - Radius.
+- `mode` (`string`, required): "fill" or "line".
+- `x` (`number`, required): Center X.
+- `y` (`number`, required): Center Y.
+- `r` (`number`, required): Radius.
+
+**Lua API Stub**
+
+```lua
+--- Adds a filled or outlined circle command to the shape.
+---@param mode string "fill" or "line".
+---@param x number Center X.
+---@param y number Center Y.
+---@param r number Radius.
+function LShape:circle(mode, x, y, r) end
+```
 
 #### Example
 
@@ -4861,9 +5883,18 @@ do
 end
 ```
 
-### `LShape:clear()`
+### LShape:clear
+
+`LShape:clear()`
 
 Removes all drawing commands from this shape, making it empty.
+
+**Lua API Stub**
+
+```lua
+--- Removes all drawing commands from this shape, making it empty.
+function LShape:clear() end
+```
 
 #### Example
 
@@ -4879,19 +5910,35 @@ do
 end
 ```
 
-### `LShape:draw(x: number, y: number, [rotation]: number, [sx]: number, [sy]: number, [ox]: number, [oy]: number)`
+### LShape:draw
+
+`LShape:draw(x: number, y: number, [rotation]: number, [sx]: number, [sy]: number, [ox]: number, [oy]: number)`
 
 Renders the accumulated shape commands to the screen with optional transform.
 
 **Parameters**
 
-- `x` (`number`, required) - X position.
-- `y` (`number`, required) - Y position.
-- `rotation` (`number`, optional) - Rotation in radians (default 0).
-- `sx` (`number`, optional) - Scale X (default 1).
-- `sy` (`number`, optional) - Scale Y (default 1).
-- `ox` (`number`, optional) - Origin offset X (default 0).
-- `oy` (`number`, optional) - Origin offset Y (default 0).
+- `x` (`number`, required): X position.
+- `y` (`number`, required): Y position.
+- `rotation` (`number`, optional): Rotation in radians (default 0).
+- `sx` (`number`, optional): Scale X (default 1).
+- `sy` (`number`, optional): Scale Y (default 1).
+- `ox` (`number`, optional): Origin offset X (default 0).
+- `oy` (`number`, optional): Origin offset Y (default 0).
+
+**Lua API Stub**
+
+```lua
+--- Renders the accumulated shape commands to the screen with optional transform.
+---@param x number X position.
+---@param y number Y position.
+---@param rotation? number Rotation in radians (default 0).
+---@param sx? number Scale X (default 1).
+---@param sy? number Scale Y (default 1).
+---@param ox? number Origin offset X (default 0).
+---@param oy? number Origin offset Y (default 0).
+function LShape:draw(x, y, rotation, sx, sy, ox, oy) end
+```
 
 #### Example
 
@@ -4913,17 +5960,31 @@ do
 end
 ```
 
-### `LShape:ellipse(mode: string, x: number, y: number, rx: number, ry: number)`
+### LShape:ellipse
+
+`LShape:ellipse(mode: string, x: number, y: number, rx: number, ry: number)`
 
 Adds an ellipse command to the shape.
 
 **Parameters**
 
-- `mode` (`string`, required) - "fill" or "line".
-- `x` (`number`, required) - Center X.
-- `y` (`number`, required) - Center Y.
-- `rx` (`number`, required) - Horizontal radius.
-- `ry` (`number`, required) - Vertical radius.
+- `mode` (`string`, required): "fill" or "line".
+- `x` (`number`, required): Center X.
+- `y` (`number`, required): Center Y.
+- `rx` (`number`, required): Horizontal radius.
+- `ry` (`number`, required): Vertical radius.
+
+**Lua API Stub**
+
+```lua
+--- Adds an ellipse command to the shape.
+---@param mode string "fill" or "line".
+---@param x number Center X.
+---@param y number Center Y.
+---@param rx number Horizontal radius.
+---@param ry number Vertical radius.
+function LShape:ellipse(mode, x, y, rx, ry) end
+```
 
 #### Example
 
@@ -4941,11 +6002,21 @@ do
 end
 ```
 
-### `LShape:getCommandCount() -> number`
+### LShape:getCommandCount
+
+`LShape:getCommandCount() -> number`
 
 Returns the number of drawing commands accumulated in this shape.
 
 **Returns**: `number` - Command count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of drawing commands accumulated in this shape.
+---@return number Command count.
+function LShape:getCommandCount() end
+```
 
 #### Example
 
@@ -4964,16 +6035,29 @@ do
 end
 ```
 
-### `LShape:line(x1: number, y1: number, x2: number, y2: number)`
+### LShape:line
+
+`LShape:line(x1: number, y1: number, x2: number, y2: number)`
 
 Adds a line segment command to the shape.
 
 **Parameters**
 
-- `x1` (`number`, required) - Start X.
-- `y1` (`number`, required) - Start Y.
-- `x2` (`number`, required) - End X.
-- `y2` (`number`, required) - End Y.
+- `x1` (`number`, required): Start X.
+- `y1` (`number`, required): Start Y.
+- `x2` (`number`, required): End X.
+- `y2` (`number`, required): End Y.
+
+**Lua API Stub**
+
+```lua
+--- Adds a line segment command to the shape.
+---@param x1 number Start X.
+---@param y1 number Start Y.
+---@param x2 number End X.
+---@param y2 number End Y.
+function LShape:line(x1, y1, x2, y2) end
+```
 
 #### Example
 
@@ -4991,14 +6075,25 @@ do
 end
 ```
 
-### `LShape:polygon(mode: string, ...: number)`
+### LShape:polygon
+
+`LShape:polygon(mode: string, ...: number)`
 
 Adds a polygon command to the shape from a flat list of x,y coordinate pairs.
 
 **Parameters**
 
-- `mode` (`string`, required) - "fill" or "line".
-- `...` (`number`, required) - Flat coordinate values: x1, y1, x2, y2, ... (minimum 3 vertices / 6 values).
+- `mode` (`string`, required): "fill" or "line".
+- `...` (`number`, required): Flat coordinate values: x1, y1, x2, y2, ... (minimum 3 vertices / 6 values).
+
+**Lua API Stub**
+
+```lua
+--- Adds a polygon command to the shape from a flat list of x,y coordinate pairs.
+---@param mode string "fill" or "line".
+---@param ... number Flat coordinate values: x1, y1, x2, y2, ... (minimum 3 vertices / 6 values).
+function LShape:polygon(mode, ...) end
+```
 
 #### Example
 
@@ -5016,13 +6111,23 @@ do
 end
 ```
 
-### `LShape:polyline(...: number)`
+### LShape:polyline
+
+`LShape:polyline(...: number)`
 
 Adds a connected polyline command to the shape from a flat list of x,y coordinate pairs.
 
 **Parameters**
 
-- `...` (`number`, required) - Flat coordinate values: x1, y1, x2, y2, ... (minimum 2 points / 4 values).
+- `...` (`number`, required): Flat coordinate values: x1, y1, x2, y2, ... (minimum 2 points / 4 values).
+
+**Lua API Stub**
+
+```lua
+--- Adds a connected polyline command to the shape from a flat list of x,y coordinate pairs.
+---@param ... number Flat coordinate values: x1, y1, x2, y2, ... (minimum 2 points / 4 values).
+function LShape:polyline(...) end
+```
 
 #### Example
 
@@ -5039,17 +6144,31 @@ do
 end
 ```
 
-### `LShape:rectangle(mode: string, x: number, y: number, w: number, h: number)`
+### LShape:rectangle
+
+`LShape:rectangle(mode: string, x: number, y: number, w: number, h: number)`
 
 Adds a rectangle command to the shape.
 
 **Parameters**
 
-- `mode` (`string`, required) - "fill" or "line".
-- `x` (`number`, required) - Left edge X.
-- `y` (`number`, required) - Top edge Y.
-- `w` (`number`, required) - Width.
-- `h` (`number`, required) - Height.
+- `mode` (`string`, required): "fill" or "line".
+- `x` (`number`, required): Left edge X.
+- `y` (`number`, required): Top edge Y.
+- `w` (`number`, required): Width.
+- `h` (`number`, required): Height.
+
+**Lua API Stub**
+
+```lua
+--- Adds a rectangle command to the shape.
+---@param mode string "fill" or "line".
+---@param x number Left edge X.
+---@param y number Top edge Y.
+---@param w number Width.
+---@param h number Height.
+function LShape:rectangle(mode, x, y, w, h) end
+```
 
 #### Example
 
@@ -5067,19 +6186,35 @@ do
 end
 ```
 
-### `LShape:roundedRectangle(mode: string, x: number, y: number, w: number, h: number, rx: number, [ry]: number)`
+### LShape:roundedRectangle
+
+`LShape:roundedRectangle(mode: string, x: number, y: number, w: number, h: number, rx: number, [ry]: number)`
 
 Adds a rounded rectangle command to the shape.
 
 **Parameters**
 
-- `mode` (`string`, required) - "fill" or "line".
-- `x` (`number`, required) - Left edge X.
-- `y` (`number`, required) - Top edge Y.
-- `w` (`number`, required) - Width.
-- `h` (`number`, required) - Height.
-- `rx` (`number`, required) - Horizontal corner radius.
-- `ry` (`number`, optional) - Vertical corner radius (defaults to rx).
+- `mode` (`string`, required): "fill" or "line".
+- `x` (`number`, required): Left edge X.
+- `y` (`number`, required): Top edge Y.
+- `w` (`number`, required): Width.
+- `h` (`number`, required): Height.
+- `rx` (`number`, required): Horizontal corner radius.
+- `ry` (`number`, optional): Vertical corner radius (defaults to rx).
+
+**Lua API Stub**
+
+```lua
+--- Adds a rounded rectangle command to the shape.
+---@param mode string "fill" or "line".
+---@param x number Left edge X.
+---@param y number Top edge Y.
+---@param w number Width.
+---@param h number Height.
+---@param rx number Horizontal corner radius.
+---@param ry? number Vertical corner radius (defaults to rx).
+function LShape:roundedRectangle(mode, x, y, w, h, rx, ry) end
+```
 
 #### Example
 
@@ -5098,16 +6233,29 @@ do
 end
 ```
 
-### `LShape:setColor(r: number, g: number, b: number, [a]: number)`
+### LShape:setColor
+
+`LShape:setColor(r: number, g: number, b: number, [a]: number)`
 
 Sets the drawing color for subsequent shape commands.
 
 **Parameters**
 
-- `r` (`number`, required) - Red channel (0–1).
-- `g` (`number`, required) - Green channel (0–1).
-- `b` (`number`, required) - Blue channel (0–1).
-- `a` (`number`, optional) - Alpha channel (0–1, default 1).
+- `r` (`number`, required): Red channel (0–1).
+- `g` (`number`, required): Green channel (0–1).
+- `b` (`number`, required): Blue channel (0–1).
+- `a` (`number`, optional): Alpha channel (0–1, default 1).
+
+**Lua API Stub**
+
+```lua
+--- Sets the drawing color for subsequent shape commands.
+---@param r number Red channel (0–1).
+---@param g number Green channel (0–1).
+---@param b number Blue channel (0–1).
+---@param a? number Alpha channel (0–1, default 1).
+function LShape:setColor(r, g, b, a) end
+```
 
 #### Example
 
@@ -5128,13 +6276,23 @@ do
 end
 ```
 
-### `LShape:setLineWidth(w: number)`
+### LShape:setLineWidth
+
+`LShape:setLineWidth(w: number)`
 
 Sets the line width for subsequent line-mode shape commands.
 
 **Parameters**
 
-- `w` (`number`, required) - Line width in pixels.
+- `w` (`number`, required): Line width in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Sets the line width for subsequent line-mode shape commands.
+---@param w number Line width in pixels.
+function LShape:setLineWidth(w) end
+```
 
 #### Example
 
@@ -5152,19 +6310,35 @@ do
 end
 ```
 
-### `LShape:triangle(mode: string, x1: number, y1: number, x2: number, y2: number, x3: number, y3: number)`
+### LShape:triangle
+
+`LShape:triangle(mode: string, x1: number, y1: number, x2: number, y2: number, x3: number, y3: number)`
 
 Adds a triangle command to the shape.
 
 **Parameters**
 
-- `mode` (`string`, required) - "fill" or "line".
-- `x1` (`number`, required) - First vertex X.
-- `y1` (`number`, required) - First vertex Y.
-- `x2` (`number`, required) - Second vertex X.
-- `y2` (`number`, required) - Second vertex Y.
-- `x3` (`number`, required) - Third vertex X.
-- `y3` (`number`, required) - Third vertex Y.
+- `mode` (`string`, required): "fill" or "line".
+- `x1` (`number`, required): First vertex X.
+- `y1` (`number`, required): First vertex Y.
+- `x2` (`number`, required): Second vertex X.
+- `y2` (`number`, required): Second vertex Y.
+- `x3` (`number`, required): Third vertex X.
+- `y3` (`number`, required): Third vertex Y.
+
+**Lua API Stub**
+
+```lua
+--- Adds a triangle command to the shape.
+---@param mode string "fill" or "line".
+---@param x1 number First vertex X.
+---@param y1 number First vertex Y.
+---@param x2 number Second vertex X.
+---@param y2 number Second vertex Y.
+---@param x3 number Third vertex X.
+---@param y3 number Third vertex Y.
+function LShape:triangle(mode, x1, y1, x2, y2, x3, y3) end
+```
 
 #### Example
 
@@ -5182,11 +6356,21 @@ do
 end
 ```
 
-### `LShape:type() -> string`
+### LShape:type
+
+`LShape:type() -> string`
 
 Returns the type name string for this shape object.
 
 **Returns**: `string` - Always "LShape".
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name string for this shape object.
+---@return string Always "LShape".
+function LShape:type() end
+```
 
 #### Example
 
@@ -5200,15 +6384,26 @@ do
 end
 ```
 
-### `LShape:typeOf(name: string) -> boolean`
+### LShape:typeOf
+
+`LShape:typeOf(name: string) -> boolean`
 
 Checks whether this object matches the given type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to check ("Shape" or "Object").
+- `name` (`string`, required): Type name to check ("Shape" or "Object").
 
 **Returns**: `boolean` - True if the name matches.
+
+**Lua API Stub**
+
+```lua
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check ("Shape" or "Object").
+---@return boolean True if the name matches.
+function LShape:typeOf(name) end
+```
 
 #### Example
 
@@ -5222,41 +6417,38 @@ do
 end
 ```
 
-### `LSpriteBatch`
+### LSpriteBatch:add
 
-Batched sprite renderer for efficiently drawing many copies of the same texture.
-
-#### Example
-
-Exact example from [render.lua](../blob/main/content/examples/render.lua):
-
-```lua
-do
-  -- SpriteBatches reduce draw calls for tile maps and particle systems.
-  -- All sprites share the same texture. Specify max capacity upfront.
-  local batch
-  function lurek.init()
-    local tileset = lurek.render.newImage("img/tiles.png")
-    batch = lurek.render.newSpriteBatch(tileset, 2048)  -- up to 2048 tiles
-  end
-end
-```
-
-### `LSpriteBatch:add(x: number, y: number, [r]: number, [sx]: number, [sy]: number, [ox]: number, [oy]: number) -> number`
+`LSpriteBatch:add(x: number, y: number, [r]: number, [sx]: number, [sy]: number, [ox]: number, [oy]: number) -> number`
 
 Adds a sprite entry to the batch at the given position with optional transform.
 
 **Parameters**
 
-- `x` (`number`, required) - X position.
-- `y` (`number`, required) - Y position.
-- `r` (`number`, optional) - Rotation in radians.
-- `sx` (`number`, optional) - Scale X (default 1).
-- `sy` (`number`, optional) - Scale Y (default 1).
-- `ox` (`number`, optional) - Origin offset X.
-- `oy` (`number`, optional) - Origin offset Y.
+- `x` (`number`, required): X position.
+- `y` (`number`, required): Y position.
+- `r` (`number`, optional): Rotation in radians.
+- `sx` (`number`, optional): Scale X (default 1).
+- `sy` (`number`, optional): Scale Y (default 1).
+- `ox` (`number`, optional): Origin offset X.
+- `oy` (`number`, optional): Origin offset Y.
 
 **Returns**: `number` - Index of the added entry.
+
+**Lua API Stub**
+
+```lua
+--- Adds a sprite entry to the batch at the given position with optional transform.
+---@param x number X position.
+---@param y number Y position.
+---@param r? number Rotation in radians.
+---@param sx? number Scale X (default 1).
+---@param sy? number Scale Y (default 1).
+---@param ox? number Origin offset X.
+---@param oy? number Origin offset Y.
+---@return number Index of the added entry.
+function LSpriteBatch:add(x, y, r, sx, sy, ox, oy) end
+```
 
 #### Example
 
@@ -5278,9 +6470,18 @@ do
 end
 ```
 
-### `LSpriteBatch:clear()`
+### LSpriteBatch:clear
+
+`LSpriteBatch:clear()`
 
 Removes all entries from the sprite batch.
+
+**Lua API Stub**
+
+```lua
+--- Removes all entries from the sprite batch.
+function LSpriteBatch:clear() end
+```
 
 #### Example
 
@@ -5298,11 +6499,21 @@ do
 end
 ```
 
-### `LSpriteBatch:getBufferSize() -> number`
+### LSpriteBatch:getBufferSize
+
+`LSpriteBatch:getBufferSize() -> number`
 
 Returns the maximum number of entries this batch can hold.
 
 **Returns**: `number` - Buffer capacity.
+
+**Lua API Stub**
+
+```lua
+--- Returns the maximum number of entries this batch can hold.
+---@return number Buffer capacity.
+function LSpriteBatch:getBufferSize() end
+```
 
 #### Example
 
@@ -5319,11 +6530,21 @@ do
 end
 ```
 
-### `LSpriteBatch:getCount() -> number`
+### LSpriteBatch:getCount
+
+`LSpriteBatch:getCount() -> number`
 
 Returns the number of sprite entries currently in the batch.
 
 **Returns**: `number` - Entry count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of sprite entries currently in the batch.
+---@return number Entry count.
+function LSpriteBatch:getCount() end
+```
 
 #### Example
 
@@ -5340,11 +6561,21 @@ do
 end
 ```
 
-### `LSpriteBatch:release() -> boolean`
+### LSpriteBatch:release
+
+`LSpriteBatch:release() -> boolean`
 
 Releases the sprite batch resource.
 
 **Returns**: `boolean` - True if the batch was valid and was released.
+
+**Lua API Stub**
+
+```lua
+--- Releases the sprite batch resource.
+---@return boolean True if the batch was valid and was released.
+function LSpriteBatch:release() end
+```
 
 #### Example
 
@@ -5362,11 +6593,21 @@ do
 end
 ```
 
-### `LSpriteBatch:type() -> string`
+### LSpriteBatch:type
+
+`LSpriteBatch:type() -> string`
 
 Returns the type name string for this sprite batch.
 
 **Returns**: `string` - Always "LSpriteBatch".
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name string for this sprite batch.
+---@return string Always "LSpriteBatch".
+function LSpriteBatch:type() end
+```
 
 #### Example
 
@@ -5383,15 +6624,26 @@ do
 end
 ```
 
-### `LSpriteBatch:typeOf(name: string) -> string`
+### LSpriteBatch:typeOf
+
+`LSpriteBatch:typeOf(name: string) -> string`
 
 Returns the type name of this object.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to check.
+- `name` (`string`, required): Type name to check.
 
 **Returns**: `string` - Always "SpriteBatch".
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name of this object.
+---@param name string Type name to check.
+---@return string Always "SpriteBatch".
+function LSpriteBatch:typeOf(name) end
+```
 
 #### Example
 
@@ -5409,11 +6661,15 @@ end
 ```
 
 
-## Examples
+[⬆ back to top](#table-of-contents)
+
+## 💡 Examples
 
 - [render.lua](../blob/main/content/examples/render.lua) - Shapes, sprites, canvas, blend modes
 
-## Reference Games
+[⬆ back to top](#table-of-contents)
+
+## 🎮 Reference Games
 
 - [brick_breaker](../tree/main/content/games/action/brick_breaker) (action)
 - [bullet_hell](../tree/main/content/games/action/bullet_hell) (action)
@@ -5436,13 +6692,15 @@ end
 - [frogger](../tree/main/content/games/arcade/frogger) (arcade)
 - [galaga](../tree/main/content/games/arcade/galaga) (arcade)
 
-## Related Modules
+[⬆ back to top](#table-of-contents)
 
-- Previous: [[raycaster|Module-raycaster]]
-- Next: [[repl|Module-repl]]
-- [[audio|Module-audio]] - Sound loading and playback wrapping rodio; Mixer / Bus instances live in SharedState.
-- [[camera|Module-camera]] - 2D camera and viewport types. Pure data; no GPU resources.
-- [[effect|Module-effect]] - Post-processing pipeline: blur, bloom, distortion, color grading, custom WGSL passes.
-- [[image|Module-image]] - CPU-side ImageData (RGBA8 buffer) with blit, resize, fill, region, diff, PNG encode.
-- [[input|Module-input]] - Per-frame keyboard / mouse / gamepad / touch state translated from winit events.
-- [[light|Module-light]] - 2D point-light data model. Pure container; renderer owns all GPU work.
+## 🔗 Related Modules
+
+- Previous: [raycaster](Module-raycaster)
+- Next: [repl](Module-repl)
+- [audio](Module-audio) - Sound loading and playback wrapping rodio; Mixer / Bus instances live in SharedState.
+- [camera](Module-camera) - 2D camera and viewport types. Pure data; no GPU resources.
+- [effect](Module-effect) - Post-processing pipeline: blur, bloom, distortion, color grading, custom WGSL passes.
+- [image](Module-image) - CPU-side ImageData (RGBA8 buffer) with blit, resize, fill, region, diff, PNG encode.
+- [input](Module-input) - Per-frame keyboard / mouse / gamepad / touch state translated from winit events.
+- [light](Module-light) - 2D point-light data model. Pure container; renderer owns all GPU work.

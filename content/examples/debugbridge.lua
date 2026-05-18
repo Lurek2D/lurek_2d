@@ -2,220 +2,249 @@
 -- Debug bridge: localhost TCP server for VS Code extension and external debuggers.
 -- Run: cargo run -- content/examples/debugbridge.lua
 --@api-stub: lurek.debugbridge.start
--- Starts the localhost debug bridge server on a given TCP port.
+-- Starts a local debug bridge listener for editor and tool clients.
 do
-  -- Start the bridge early in lurek.init so tools can connect before the first frame.
-  -- Port must be >= 1024. Default is 19740 if omitted.
-  local port = 17800
+  -- A game can start the bridge during developer boot, then keep running normally
+  -- if the port is already busy. The API rejects ports below 1024.
+  local debug_port = 17800
+  local started = false
   local ok, err = pcall(function()
-    local started = lurek.debugbridge.start(port)
-    if started then
-      lurek.log.info("debug bridge listening on 127.0.0.1:" .. port, "debugbridge")
-    else
-      -- Already running from a previous call — safe to ignore.
-      lurek.log.debug("debug bridge was already running", "debugbridge")
-    end
+    started = lurek.debugbridge.start(debug_port)
   end)
   if not ok then
-    -- Port may be in use by another instance — non-fatal for gameplay.
+    -- Another running copy may already own the port; gameplay should continue.
     lurek.log.warn("debug bridge failed: " .. tostring(err), "debugbridge")
+  elseif started then
+    lurek.log.info("debug bridge listening on 127.0.0.1:" .. debug_port, "debugbridge")
+    -- Examples clean up immediately so test runs do not leave a server thread open.
+    lurek.debugbridge.stop()
+  else
+    lurek.log.debug("debug bridge was already active", "debugbridge")
   end
 end
 --@api-stub: lurek.debugbridge.stop
--- Stops the debug bridge server and joins its background thread.
+-- Stops the debug bridge and releases its listener thread.
 do
-  -- Typical use: stop the bridge on game exit to release the port cleanly.
-  -- Pair with isRunning() to avoid stopping a bridge that was never started.
+  -- Game shutdown code can call this helper from its quit path. It is safe to
+  -- skip the call when the bridge was never started.
   local function shutdown_bridge()
     if lurek.debugbridge.isRunning() then
       lurek.debugbridge.stop()
       lurek.log.info("debug bridge stopped cleanly", "debugbridge")
+    else
+      lurek.log.debug("debug bridge already stopped", "debugbridge")
     end
   end
-  -- Call in lurek.quit callback so the port is freed before the process exits.
-  function lurek.quit()
-    shutdown_bridge()
-  end
+  shutdown_bridge()
 end
 --@api-stub: lurek.debugbridge.isRunning
--- Returns true when the debug bridge server thread is active.
+-- Checks whether the debug bridge server thread is active.
 do
-  -- Use this to guard bridge calls that would error if the server is not up.
-  -- Example: conditionally enable an in-game debug overlay.
-  local function get_debug_status_text()
+  -- Developer HUDs can show bridge status without trying to open sockets or
+  -- contact external tools during every frame.
+  local hud = { status = "offline", tint = "gray" }
+  local function refresh_debug_hud()
     if lurek.debugbridge.isRunning() then
-      return "BRIDGE: ONLINE (port " .. lurek.debugbridge.getPort() .. ")"
+      hud.status = "online on " .. lurek.debugbridge.getPort()
+      hud.tint = "green"
     else
-      return "BRIDGE: OFFLINE"
+      hud.status = "offline"
+      hud.tint = "gray"
     end
   end
-  lurek.log.info(get_debug_status_text(), "debugbridge")
+  refresh_debug_hud()
+  lurek.log.info("debug HUD: " .. hud.status .. " (" .. hud.tint .. ")", "debugbridge")
 end
 --@api-stub: lurek.debugbridge.getPort
--- Returns the bound TCP port, or zero when the bridge is not running.
+-- Reads the configured debug bridge TCP port.
 do
-  -- Useful for displaying connection info in a developer HUD or writing
-  -- a project file that external tools can read to auto-connect.
+  -- The value is useful for connection hints. After a successful start it can
+  -- stay configured even after the example stops the listener.
   local port = lurek.debugbridge.getPort()
   if port > 0 then
-    lurek.log.info("IDE connect string: tcp://127.0.0.1:" .. port, "debugbridge")
+    local connect_hint = "tcp://127.0.0.1:" .. port
+    lurek.log.info("debug tools can connect with " .. connect_hint, "debugbridge")
   else
-    lurek.log.debug("no active bridge port — start the bridge first", "debugbridge")
+    lurek.log.debug("no debug bridge port configured yet", "debugbridge")
   end
 end
 --@api-stub: lurek.debugbridge.getClientCount
--- Returns the number of currently connected debugger/tool clients.
+-- Counts connected debugger or tooling clients.
 do
-  -- Broadcast expensive diagnostics only when at least one client is listening.
-  -- This avoids serialization overhead in production builds with no debugger.
-  local player_hp = 85
-  local player_x, player_y = 120.5, 64.0
-  if lurek.debugbridge.getClientCount() > 0 then
+  -- Use the count to avoid building detailed payloads when no external tool is
+  -- listening. The example still produces a readable fallback log.
+  local clients = lurek.debugbridge.getClientCount()
+  if clients == 0 then
+    lurek.log.debug("skip live player telemetry; no debug clients", "debugbridge")
+  else
+    local player = { hp = 85, x = 120.5, y = 64.0 }
     local payload = string.format(
-      '{"hp":%d,"x":%.1f,"y":%.1f}', player_hp, player_x, player_y
+      '{"hp":%d,"x":%.1f,"y":%.1f}',
+      player.hp,
+      player.x,
+      player.y
     )
     lurek.debugbridge.broadcast("player_state", payload)
+    lurek.log.info("sent player telemetry to " .. clients .. " debug client(s)", "debugbridge")
   end
 end
 --@api-stub: lurek.debugbridge.poll
--- Polls pending debugger requests, evaluates them, and queues responses.
+-- Processes pending debug bridge requests from clients.
 do
-  -- Call poll() once per frame inside lurek.process so the bridge can respond
-  -- to breakpoints, watch expressions, and eval requests from the IDE.
-  -- Without this call the bridge accepts connections but never replies.
-  function lurek.process(dt)
+  -- Poll once in the game's update path. The function is cheap when no requests
+  -- are queued and it also updates bridge frame metrics when time data exists.
+  local function update_debug_tools(dt)
     if lurek.debugbridge.isRunning() then
+      lurek.debugbridge.poll()
+      lurek.log.debug("debug bridge polled after dt=" .. tostring(dt), "debugbridge")
+    else
+      -- Calling poll while stopped is also harmless, but most games guard it.
       lurek.debugbridge.poll()
     end
   end
+  update_debug_tools(1 / 60)
 end
 --@api-stub: lurek.debugbridge.capturePrint
--- Captures a print message and broadcasts it to connected debug clients.
+-- Captures a console-style message for bridge history and clients.
 do
-  -- Override the global print() so every script message also appears in the
-  -- VS Code extension output panel with file and line metadata.
-  local original_print = print
-  print = function(...)
+  -- Games can route their own debug console through the bridge without
+  -- replacing Lua's global print function.
+  local function capture_debug_message(source, line, ...)
     local parts = {}
     for i = 1, select("#", ...) do
       parts[i] = tostring(select(i, ...))
     end
-    local msg = table.concat(parts, "\t")
-    -- source and line are optional; pass them when known for clickable links.
-    lurek.debugbridge.capturePrint(msg, "game.lua", 0)
-    original_print(...)
+    local message = table.concat(parts, "\t")
+    lurek.debugbridge.capturePrint(message, source, line)
+    lurek.log.info(message, "debug-console")
   end
-  print("hello from captured print")
+  capture_debug_message("content/examples/debugbridge.lua", 27, "loaded", "debug bridge sample")
 end
 --@api-stub: lurek.debugbridge.getPrintHistory
--- Returns an array of recent captured print entries.
+-- Reads recent messages captured by the debug bridge.
 do
-  -- Each entry has: timestamp (number), message (string), source (string), line (number).
-  -- Pass a count to limit results; nil or 0 returns all entries.
-  local last_10 = lurek.debugbridge.getPrintHistory(10)
-  for _, entry in ipairs(last_10) do
-    -- Format: [source:line] message
-    local loc = entry.source .. ":" .. entry.line
-    lurek.log.debug("[" .. loc .. "] " .. entry.message, "console")
+  -- Capture a small breadcrumb, then fetch the latest rows for a pause menu or
+  -- editor output panel. Each row has timestamp, message, source, and line.
+  lurek.debugbridge.capturePrint("opening debug console", "ui/debug_console.lua", 14)
+  local recent = lurek.debugbridge.getPrintHistory(3)
+  for index, entry in ipairs(recent) do
+    local location = tostring(entry.source) .. ":" .. tostring(entry.line)
+    local text = "#" .. index .. " [" .. location .. "] " .. tostring(entry.message)
+    lurek.log.debug(text, "debug-console")
   end
 end
 --@api-stub: lurek.debugbridge.clearPrintHistory
--- Clears all captured print history entries from memory.
+-- Clears captured print history entries.
 do
-  -- Clear history when transitioning between scenes so the debug panel
-  -- only shows messages relevant to the current scene.
-  local function enter_scene(name)
+  -- Clear history when moving between scenes so the debug panel starts with
+  -- messages from the new scene only.
+  local function enter_scene(scene_name)
+    lurek.debugbridge.capturePrint("leaving previous scene", "scene.lua", 40)
     lurek.debugbridge.clearPrintHistory()
-    lurek.log.info("scene entered: " .. name .. " (print history cleared)", "scene")
+    local remaining = #lurek.debugbridge.getPrintHistory(0)
+    lurek.log.info("scene entered: " .. scene_name .. "; history rows=" .. remaining, "scene")
   end
   enter_scene("dungeon_floor_3")
 end
 --@api-stub: lurek.debugbridge.setMaxPrintHistory
--- Sets the maximum number of print history entries retained in memory.
+-- Sets the retained print history capacity.
 do
-  -- Higher limits give more scrollback in the debug panel but use more RAM.
-  -- Use a large buffer during development and a small one for playtests.
-  local is_dev_build = true
-  local max_entries = is_dev_build and 4096 or 256
+  -- Tune this per build type. The engine clamps the value to a safe internal
+  -- range, so game settings can stay simple.
+  local build_kind = "playtest"
+  local max_entries = build_kind == "development" and 4096 or 64
   lurek.debugbridge.setMaxPrintHistory(max_entries)
-  lurek.log.info("print history capacity set to " .. max_entries, "debugbridge")
+  for i = 1, 3 do
+    lurek.debugbridge.capturePrint("history sample " .. i, "debugbridge.lua", 90 + i)
+  end
+  local retained = #lurek.debugbridge.getPrintHistory(0)
+  lurek.log.info("print history capacity=" .. max_entries .. ", rows=" .. retained, "debugbridge")
 end
 --@api-stub: lurek.debugbridge.getPerformance
--- Returns a table of debug bridge performance metrics.
+-- Reads debug bridge performance metrics.
 do
-  -- Useful for monitoring bridge overhead itself. Returns numeric fields
-  -- like messages_sent, messages_received, bytes_in, bytes_out.
+  -- Performance values summarize recent frame deltas recorded while polling:
+  -- fps, dt, avgDt, minDt, and maxDt.
+  lurek.debugbridge.poll()
   local perf = lurek.debugbridge.getPerformance()
-  -- Log a summary every N seconds to track bridge traffic without flooding.
-  local summary = "bridge perf:"
-  for k, v in pairs(perf) do
-    summary = summary .. " " .. k .. "=" .. tostring(v)
-  end
-  lurek.log.info(summary, "debugbridge")
+  local fps = perf.fps or 0
+  local avg_dt = perf.avgDt or 0
+  local status = string.format("bridge perf fps=%.1f avgDt=%.4f", fps, avg_dt)
+  lurek.log.info(status, "debugbridge")
 end
 --@api-stub: lurek.debugbridge.requestScreenshot
--- Requests a screenshot capture at the given scale (1-8, default 1).
+-- Queues a screenshot request for the runtime.
 do
-  -- Bind a key so developers can grab hi-res screenshots for bug reports.
-  -- Scale 2 gives 2x resolution for sharper inspection of pixel art.
-  local function on_screenshot_key()
-    lurek.debugbridge.requestScreenshot(2)
-    lurek.log.info("screenshot queued at 2x scale", "debugbridge")
+  -- A bug-report shortcut can ask for a higher scale. The runtime clamps the
+  -- scale from 1 to 8, so user settings cannot request an unsafe capture size.
+  local function queue_bug_report_capture(reason)
+    local requested_scale = reason == "pixel_art" and 2 or 1
+    lurek.debugbridge.requestScreenshot(requested_scale)
+    lurek.log.info("screenshot queued at " .. requested_scale .. "x for " .. reason, "debugbridge")
   end
-  -- In a real game this would be inside lurek.init with lurek.input.bind.
-  on_screenshot_key()
+  queue_bug_report_capture("pixel_art")
 end
 --@api-stub: lurek.debugbridge.isScreenshotRequested
--- Returns true when a screenshot capture is still pending.
+-- Checks whether a screenshot request is pending.
 do
-  -- Show a brief flash or icon overlay while the capture is in progress.
-  -- Check this in lurek.draw_ui so the indicator disappears once consumed.
-  local function draw_capture_indicator()
+  -- A UI layer can show a small capture indicator until the runtime consumes
+  -- the request. This block queues one first so the state is visible.
+  lurek.debugbridge.requestScreenshot(1)
+  local function refresh_capture_indicator()
     if lurek.debugbridge.isScreenshotRequested() then
-      lurek.log.debug("screenshot pending — frame will be captured", "debugbridge")
+      lurek.log.debug("screenshot pending; show capture indicator", "debugbridge")
+    else
+      lurek.log.debug("no screenshot pending", "debugbridge")
     end
   end
-  draw_capture_indicator()
+  refresh_capture_indicator()
 end
 --@api-stub: lurek.debugbridge.broadcast
--- Sends a named event with a JSON payload string to all connected clients.
+-- Broadcasts a named event payload to connected clients.
 do
-  -- Use broadcast to push custom game events to external analysis tools.
-  -- The VS Code extension listens for known event names and renders them.
-  local event_name = "enemy_spawned"
-  local enemy = { id = 42, kind = "skeleton", x = 320, y = 192 }
-  local json = string.format(
+  -- The payload parameter is a string. Build a small JSON string yourself when
+  -- external tools expect structured game data.
+  local enemy = { id = 42, kind = "skeleton", x = 320, y = 192, room = 3 }
+  local payload = string.format(
     '{"id":%d,"kind":"%s","x":%d,"y":%d}',
-    enemy.id, enemy.kind, enemy.x, enemy.y
+    enemy.id,
+    enemy.kind,
+    enemy.x,
+    enemy.y
   )
-  lurek.debugbridge.broadcast(event_name, json)
+  lurek.debugbridge.broadcast("enemy_spawned", payload)
+  lurek.log.debug("broadcast enemy_spawned for room " .. enemy.room, "debugbridge")
 end
 --@api-stub: lurek.debugbridge.getProtocolInfo
--- Returns protocol version, capabilities list, and handshake nonce.
+-- Returns protocol version, capabilities, and handshake nonce.
 do
-  -- Check protocol version to ensure the connected IDE extension is compatible.
-  -- capabilities is an array of supported feature strings (e.g. "eval", "hotreload").
+  -- Show protocol details in a developer-only screen. Clients must use the
+  -- nonce from the handshake path before protected requests are accepted.
   local info = lurek.debugbridge.getProtocolInfo()
-  lurek.log.info(
-    "protocol v" .. info.version
-      .. " | nonce=" .. tostring(info.nonce)
-      .. " | caps=" .. table.concat(info.capabilities, ","),
-    "debugbridge"
-  )
+  local capability_set = {}
+  for _, capability in ipairs(info.capabilities) do
+    capability_set[capability] = true
+  end
+  local supports_eval = capability_set.eval and "yes" or "no"
+  local summary = "protocol v" .. tostring(info.version)
+    .. " eval=" .. supports_eval
+    .. " nonce=" .. tostring(info.nonce)
+  lurek.log.info(summary, "debugbridge")
 end
 --@api-stub: lurek.debugbridge.consumeHotReloadRequest
--- Returns and clears the pending hot-reload flag set by an external tool.
+-- Consumes one pending hot-reload request flag.
 do
-  -- Poll this each frame to detect when the IDE requests a script reload.
-  -- After consuming, reload the active scene or re-run lurek.init logic.
-  local function check_hot_reload()
+  -- Poll this in the update path. The flag is cleared by this call, so a game
+  -- should reload scripts once and then wait for the next request.
+  local function update_hot_reload_watch()
     if lurek.debugbridge.consumeHotReloadRequest() then
-      lurek.log.info("hot reload consumed — reloading scripts", "debugbridge")
-      -- In a real game: dofile("main.lua") or scene:reload()
-      return true
+      local scene_name = "debugbridge_example"
+      lurek.log.info("hot reload requested for " .. scene_name, "debugbridge")
+      -- A real game would rebuild its scene or re-run its safe script loader here.
+    else
+      lurek.log.debug("no hot reload request pending", "debugbridge")
     end
-    return false
   end
-  check_hot_reload()
+  update_hot_reload_watch()
 end
 print("content/examples/debugbridge.lua")

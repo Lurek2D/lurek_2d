@@ -4,156 +4,107 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
-- [Purpose](#purpose)
-- [Summary](#summary)
-- [Minimal Module Example](#minimal-module-example)
-- [Key Types](#key-types)
-- [API Overview](#api-overview)
-- [Module Functions](#module-functions)
-  - [lurek.mods.checkApiVersion(mod_ud: LMod, host_version: string) -> boolean](#lurekmodscheckapiversionmodud-lmod-hostversion-string-boolean)
-  - [lurek.mods.newMod(info: table) -> LMod](#lurekmodsnewmodinfo-table-lmod)
-  - [lurek.mods.newModManager() -> LModManager](#lurekmodsnewmodmanager-lmodmanager)
-  - [lurek.mods.newRegistry() -> LContentRegistry](#lurekmodsnewregistry-lcontentregistry)
-- [Types and Methods](#types-and-methods)
+- [🎯 Purpose](#purpose)
+- [📋 Summary](#summary)
+- [🧩 Key Types](#key-types)
+- [📖 API Overview](#api-overview)
+- [⚙️ Module Functions](#module-functions)
+  - [lurek.mods.checkApiVersion](#lurekmodscheckapiversion)
+  - [lurek.mods.newMod](#lurekmodsnewmod)
+  - [lurek.mods.newModManager](#lurekmodsnewmodmanager)
+  - [lurek.mods.newRegistry](#lurekmodsnewregistry)
+- [🔷 Module Types](#module-types)
   - [LContentRegistry](#lcontentregistry)
-  - [LContentRegistry:get(type_name: string, id: string) -> table](#lcontentregistrygettypename-string-id-string-table)
-  - [LContentRegistry:getAll(type_name: string) -> table](#lcontentregistrygetalltypename-string-table)
-  - [LContentRegistry:getTypes() -> string[]](#lcontentregistrygettypes-string)
-  - [LContentRegistry:register(type_name: string, id: string, obj: table)](#lcontentregistryregistertypename-string-id-string-obj-table)
-  - [LContentRegistry:registerType(type_name: string)](#lcontentregistryregistertypetypename-string)
-  - [LContentRegistry:type() -> string](#lcontentregistrytype-string)
-  - [LContentRegistry:typeOf(name: string) -> boolean](#lcontentregistrytypeofname-string-boolean)
   - [LMod](#lmod)
-  - [LMod:getApiVersion() -> string](#lmodgetapiversion-string)
-  - [LMod:getAuthor() -> string](#lmodgetauthor-string)
-  - [LMod:getCapabilities() -> string[]](#lmodgetcapabilities-string)
-  - [LMod:getConfig() -> table](#lmodgetconfig-table)
-  - [LMod:getConfigSchema() -> table](#lmodgetconfigschema-table)
-  - [LMod:getDependencies() -> integer[]](#lmodgetdependencies-integer)
-  - [LMod:getDescription() -> string](#lmodgetdescription-string)
-  - [LMod:getHook(name: string) -> function](#lmodgethookname-string-function)
-  - [LMod:getHookNames() -> string[]](#lmodgethooknames-string)
-  - [LMod:getId() -> string](#lmodgetid-string)
-  - [LMod:getName() -> string](#lmodgetname-string)
-  - [LMod:getPriority() -> integer](#lmodgetpriority-integer)
-  - [LMod:getVersion() -> string](#lmodgetversion-string)
-  - [LMod:hasHook(name: string) -> boolean](#lmodhashookname-string-boolean)
-  - [LMod:isEnabled() -> boolean](#lmodisenabled-boolean)
-  - [LMod:isLoaded() -> boolean](#lmodisloaded-boolean)
-  - [LMod:releaseRefs()](#lmodreleaserefs)
-  - [LMod:setApiVersion(api_version: string)](#lmodsetapiversionapiversion-string)
-  - [LMod:setCapabilities(caps: table)](#lmodsetcapabilitiescaps-table)
-  - [LMod:setConfig(value: table)](#lmodsetconfigvalue-table)
-  - [LMod:setConfigSchema(schema: table)](#lmodsetconfigschemaschema-table)
-  - [LMod:setEnabled(enabled: boolean)](#lmodsetenabledenabled-boolean)
-  - [LMod:setHook(name: string, func: function)](#lmodsethookname-string-func-function)
-  - [LMod:type() -> string](#lmodtype-string)
-  - [LMod:typeOf(name: string) -> boolean](#lmodtypeofname-string-boolean)
   - [LModManager](#lmodmanager)
-  - [LModManager:clearLoadOrder()](#lmodmanagerclearloadorder)
-  - [LModManager:clearReloadQueue()](#lmodmanagerclearreloadqueue)
-  - [LModManager:getAllMods() -> table](#lmodmanagergetallmods-table)
-  - [LModManager:getLoadOrder() -> table](#lmodmanagergetloadorder-table)
-  - [LModManager:getModCount() -> integer](#lmodmanagergetmodcount-integer)
-  - [LModManager:getModPath(mod_id: string) -> string](#lmodmanagergetmodpathmodid-string-string)
-  - [LModManager:getModsByCapability(capability: string) -> table](#lmodmanagergetmodsbycapabilitycapability-string-table)
-  - [LModManager:getReloadQueue() -> integer[]](#lmodmanagergetreloadqueue-integer)
-  - [LModManager:hasCircularDependencies() -> boolean](#lmodmanagerhascirculardependencies-boolean)
-  - [LModManager:hasMod(mod_id: string) -> boolean](#lmodmanagerhasmodmodid-string-boolean)
-  - [LModManager:markForReload(mod_id: string) -> boolean](#lmodmanagermarkforreloadmodid-string-boolean)
-  - [LModManager:processReloadQueue() -> integer[]](#lmodmanagerprocessreloadqueue-integer)
-  - [LModManager:registerMod(ud: LMod)](#lmodmanagerregistermodud-lmod)
-  - [LModManager:scanFolder(path: string) -> table](#lmodmanagerscanfolderpath-string-table)
-  - [LModManager:setLoadOrder(order_table: table)](#lmodmanagersetloadorderordertable-table)
-  - [LModManager:type() -> string](#lmodmanagertype-string)
-  - [LModManager:typeOf(name: string) -> boolean](#lmodmanagertypeofname-string-boolean)
-  - [LModManager:unregisterMod(mod_id: string) -> boolean](#lmodmanagerunregistermodmodid-string-boolean)
-  - [LModManager:validateDependencies() -> string[]](#lmodmanagervalidatedependencies-string)
-- [Examples](#examples)
-- [Reference Games](#reference-games)
-- [Related Modules](#related-modules)
+- [🔹 Module Methods](#module-methods)
+  - [LContentRegistry:get](#lcontentregistryget)
+  - [LContentRegistry:getAll](#lcontentregistrygetall)
+  - [LContentRegistry:getTypes](#lcontentregistrygettypes)
+  - [LContentRegistry:register](#lcontentregistryregister)
+  - [LContentRegistry:registerType](#lcontentregistryregistertype)
+  - [LContentRegistry:type](#lcontentregistrytype)
+  - [LContentRegistry:typeOf](#lcontentregistrytypeof)
+  - [LMod:getApiVersion](#lmodgetapiversion)
+  - [LMod:getAuthor](#lmodgetauthor)
+  - [LMod:getCapabilities](#lmodgetcapabilities)
+  - [LMod:getConfig](#lmodgetconfig)
+  - [LMod:getConfigSchema](#lmodgetconfigschema)
+  - [LMod:getDependencies](#lmodgetdependencies)
+  - [LMod:getDescription](#lmodgetdescription)
+  - [LMod:getHook](#lmodgethook)
+  - [LMod:getHookNames](#lmodgethooknames)
+  - [LMod:getId](#lmodgetid)
+  - [LMod:getName](#lmodgetname)
+  - [LMod:getPriority](#lmodgetpriority)
+  - [LMod:getVersion](#lmodgetversion)
+  - [LMod:hasHook](#lmodhashook)
+  - [LMod:isEnabled](#lmodisenabled)
+  - [LMod:isLoaded](#lmodisloaded)
+  - [LMod:releaseRefs](#lmodreleaserefs)
+  - [LMod:setApiVersion](#lmodsetapiversion)
+  - [LMod:setCapabilities](#lmodsetcapabilities)
+  - [LMod:setConfig](#lmodsetconfig)
+  - [LMod:setConfigSchema](#lmodsetconfigschema)
+  - [LMod:setEnabled](#lmodsetenabled)
+  - [LMod:setHook](#lmodsethook)
+  - [LMod:type](#lmodtype)
+  - [LMod:typeOf](#lmodtypeof)
+  - [LModManager:clearLoadOrder](#lmodmanagerclearloadorder)
+  - [LModManager:clearReloadQueue](#lmodmanagerclearreloadqueue)
+  - [LModManager:getAllMods](#lmodmanagergetallmods)
+  - [LModManager:getLoadOrder](#lmodmanagergetloadorder)
+  - [LModManager:getModCount](#lmodmanagergetmodcount)
+  - [LModManager:getModPath](#lmodmanagergetmodpath)
+  - [LModManager:getModsByCapability](#lmodmanagergetmodsbycapability)
+  - [LModManager:getReloadQueue](#lmodmanagergetreloadqueue)
+  - [LModManager:hasCircularDependencies](#lmodmanagerhascirculardependencies)
+  - [LModManager:hasMod](#lmodmanagerhasmod)
+  - [LModManager:markForReload](#lmodmanagermarkforreload)
+  - [LModManager:processReloadQueue](#lmodmanagerprocessreloadqueue)
+  - [LModManager:registerMod](#lmodmanagerregistermod)
+  - [LModManager:scanFolder](#lmodmanagerscanfolder)
+  - [LModManager:setLoadOrder](#lmodmanagersetloadorder)
+  - [LModManager:type](#lmodmanagertype)
+  - [LModManager:typeOf](#lmodmanagertypeof)
+  - [LModManager:unregisterMod](#lmodmanagerunregistermod)
+  - [LModManager:validateDependencies](#lmodmanagervalidatedependencies)
+- [💡 Examples](#examples)
+- [🎮 Reference Games](#reference-games)
+- [🔗 Related Modules](#related-modules)
 
 This page is generated from the current module specs, examples, and Lua API data.
 
 **Module group:** Feature Systems
 **Namespace:** `lurek.mods`
 
-## Purpose
+## 🎯 Purpose
 
 Mod-loading framework: virtual filesystem mounts + sandboxed runtime config.
 
-## Summary
+[⬆ back to top](#table-of-contents)
+
+## 📋 Summary
 
 Mod-loading framework providing discovery, manifest parsing, dependency resolution, load-order sorting, and hot-reload for user-created game modifications. `ModManager` scans designated mod directories for `mod.toml` manifests, validates version constraints and dependency graphs, resolves load order via topological sort, and mounts mod assets into the virtual filesystem.
 
 `ModInfo` holds per-mod metadata including name, version, author, dependencies, asset paths, script entry points, and optional integrity signatures. Mods can override existing assets, add new content, or inject Lua scripts that run in a sandboxed context. Enable/disable toggling and priority ordering allow conflict resolution when multiple mods modify the same content. Exposed as `lurek.mods.*`. Feature Systems tier.
 
-## Minimal Module Example
+[⬆ back to top](#table-of-contents)
 
-Module example from [mods.lua](../blob/main/content/examples/mods.lua):
-
-```lua
--- content/examples/mods.lua
--- lurek.mods API examples: mod metadata, mod manager, content registry, hooks, and version checks.
--- Run: cargo run -- content/examples/mods.lua
-
---@api-stub: lurek.mods.newMod
--- Creates a mod metadata handle from a Lua table
-do
-  -- newMod() takes a table with mod metadata fields.
-  -- Required: "id" (unique string identifier using dot-notation).
-  -- Optional: name, version, author, description, priority, dependencies,
-  --           api_version, capabilities, config_schema, assets, signature.
-  local hud_mod = lurek.mods.newMod({
-    id = "core.hud",
-    name = "Core HUD",
-    version = "1.2.0",
-    author = "studio",
-    description = "Provides health bars, minimap, and status icons.",
-    priority = 10,                              -- higher priority = loaded earlier
-    dependencies = {"core.input"},              -- must be loaded before this mod
-    capabilities = {"ui", "render"},            -- declares what subsystems it touches
-    api_version = "1.0.0",                      -- minimum engine API version required
-    config_schema = {                           -- declares user-facing settings
-      {key = "show_minimap", type = "boolean", default = "true"},
-      {key = "opacity",      type = "number",  default = "0.9"},
-    },
-  })
-  -- The returned handle (LMod) exposes getters/setters for all fields.
-  lurek.log.info("built mod " .. hud_mod:getId() .. " v" .. hud_mod:getVersion(), "mods")
-end
-
---@api-stub: lurek.mods.newModManager
--- Creates an empty mod manager
-do
-  -- The mod manager handles registration, dependency validation, load order,
-  -- hot-reload queues, and folder scanning. Create one per game session.
-  local manager = lurek.mods.newModManager()
-  -- Initially empty — use registerMod() or scanFolder() to populate it.
-  lurek.log.info("manager initialised, " .. manager:getModCount() .. " mods", "mods")
-end
-
---@api-stub: lurek.mods.checkApiVersion
--- Checks whether a mod API version is compatible with a host version
-do
-  -- Use this during mod loading to reject mods built for a newer engine API.
-  -- The check uses semver: mod's major must equal host's, mod's minor <= host's.
-  local probe = lurek.mods.newMod({id = "fan.skins", api_version = "1.4.0"})
-  local host_api = "1.6.2"   -- current engine version
-  local ok, msg = lurek.mods.checkApiVersion(probe, host_api)
-```
-
-## Key Types
+## 🧩 Key Types
 
 - `LContentRegistry` (7 methods) - Lua-side content registry for storing typed Lua values by id.
 - `LMod` (25 methods) - Lua-side wrapper for mod metadata, hooks, and config references.
 - `LModManager` (19 methods) - Lua-side wrapper for the mod manager.
 
-## API Overview
+[⬆ back to top](#table-of-contents)
+
+## 📖 API Overview
 
 - Source spec: [docs/specs/mods.md](../blob/main/docs/specs/mods.md)
 
@@ -164,16 +115,20 @@ lurek.mods.newModManager() -> LModManager -- Creates an empty mod manager. This 
 lurek.mods.newRegistry() -> LContentRegistry -- Creates an empty content registry.
 ```
 
-## Module Functions
+[⬆ back to top](#table-of-contents)
 
-### `lurek.mods.checkApiVersion(mod_ud: LMod, host_version: string) -> boolean`
+## ⚙️ Module Functions
+
+### lurek.mods.checkApiVersion
+
+`lurek.mods.checkApiVersion(mod_ud: LMod, host_version: string) -> boolean`
 
 Checks whether a mod API version is compatible with a host version.
 
 **Parameters**
 
-- `mod_ud` (`LMod`, required) - Mod handle.
-- `host_version` (`string`, required) - Host API version string.
+- `mod_ud` (`LMod`, required): Mod handle.
+- `host_version` (`string`, required): Host API version string.
 
 **Returns**: `boolean` - True when compatible.
 
@@ -205,13 +160,15 @@ do
 end
 ```
 
-### `lurek.mods.newMod(info: table) -> LMod`
+### lurek.mods.newMod
+
+`lurek.mods.newMod(info: table) -> LMod`
 
 Creates a mod metadata handle from a Lua table.
 
 **Parameters**
 
-- `info` (`table`, required) - Mod metadata table.
+- `info` (`table`, required): Mod metadata table.
 
 **Returns**: `LMod` - New mod handle.
 
@@ -245,7 +202,9 @@ do
 end
 ```
 
-### `lurek.mods.newModManager() -> LModManager`
+### lurek.mods.newModManager
+
+`lurek.mods.newModManager() -> LModManager`
 
 Creates an empty mod manager. This function is exposed to Lua scripts.
 
@@ -265,7 +224,9 @@ do
 end
 ```
 
-### `lurek.mods.newRegistry() -> LContentRegistry`
+### lurek.mods.newRegistry
+
+`lurek.mods.newRegistry() -> LContentRegistry`
 
 Creates an empty content registry.
 
@@ -286,11 +247,21 @@ end
 ```
 
 
-## Types and Methods
+[⬆ back to top](#table-of-contents)
 
-### `LContentRegistry`
+## 🔷 Module Types
+
+### LContentRegistry
 
 Lua-side content registry for storing typed Lua values by id.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side content registry for storing typed Lua values by id.
+---@class LContentRegistry
+LContentRegistry = {}
+```
 
 #### Example
 
@@ -306,192 +277,17 @@ do
 end
 ```
 
-### `LContentRegistry:get(type_name: string, id: string) -> table`
-
-Returns one stored value by content type and id.
-
-**Parameters**
-
-- `type_name` (`string`, required) - Content type name.
-- `id` (`string`, required) - Entry id.
-
-**Returns**: `table` - Stored Lua value.
-
-#### Example
-
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
-
-```lua
-do
-  -- get(type, id) retrieves a single entry. Returns nil if not found.
-  local reg = lurek.mods.newRegistry()
-  reg:registerType("spell")
-  reg:register("spell", "fireball", {cost = 10, radius = 3.0, element = "fire"})
-  reg:register("spell", "heal", {cost = 5, radius = 0, element = "holy"})
-  local s = reg:get("spell", "fireball")
-  if s then
-    lurek.log.debug("fireball cost=" .. s.cost .. " radius=" .. s.radius, "mods")
-  end
-  -- Missing entries return nil safely.
-  local missing = reg:get("spell", "nonexistent")
-  assert(missing == nil)
-end
-```
-
-### `LContentRegistry:getAll(type_name: string) -> table`
-
-Returns all stored values for a content type keyed by id.
-
-**Parameters**
-
-- `type_name` (`string`, required) - Content type name.
-
-**Returns**: `table` - Table of stored values keyed by id.
-
-#### Example
-
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
-
-```lua
-do
-  -- getAll(type) returns a table keyed by id with all entries of that type.
-  -- Use this to iterate all mod-contributed content for a category.
-  local reg = lurek.mods.newRegistry()
-  reg:registerType("item")
-  reg:register("item", "potion", {name = "Potion", heal = 50})
-  reg:register("item", "elixir", {name = "Elixir", heal = 200})
-  reg:register("item", "antidote", {name = "Antidote", cure = "poison"})
-  local all = reg:getAll("item")
-  -- "all" is a table: {potion = {...}, elixir = {...}, antidote = {...}}
-  local count = 0
-  for _ in pairs(all) do count = count + 1 end
-  lurek.log.debug("item count=" .. count, "mods")
-end
-```
-
-### `LContentRegistry:getTypes() -> string[]`
-
-Returns registered content type names.
-
-**Returns**: `string[]` - Content type names.
-
-#### Example
-
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
-
-```lua
-do
-  -- getTypes() returns an array of all registered type names.
-  -- Use this to discover what content categories are available.
-  local reg = lurek.mods.newRegistry()
-  reg:registerType("creature")
-  reg:registerType("item")
-  reg:registerType("quest")
-  local types = reg:getTypes()
-  lurek.log.debug("type count=" .. #types, "mods")
-end
-```
-
-### `LContentRegistry:register(type_name: string, id: string, obj: table)`
-
-Stores a Lua value under a registered content type and id.
-
-**Parameters**
-
-- `type_name` (`string`, required) - Content type name.
-- `id` (`string`, required) - Entry id.
-- `obj` (`table`, required) - Lua value to store.
-
-#### Example
-
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
-
-```lua
-do
-  -- register(type, id, value) stores any Lua value under a type+id pair.
-  -- The type must be registered first. Value can be a table, string, number, etc.
-  local reg = lurek.mods.newRegistry()
-  reg:registerType("weapon")
-  reg:register("weapon", "iron_sword", {name = "Iron Sword", damage = 12, weight = 3.5})
-  reg:register("weapon", "fire_staff", {name = "Fire Staff", damage = 8, element = "fire"})
-  -- Attempting to register under an unknown type raises an error.
-  -- reg:register("potion", "heal", {}) -- ERROR: content type 'potion' not registered
-  lurek.log.debug("registered 2 weapons", "mods")
-end
-```
-
-### `LContentRegistry:registerType(type_name: string)`
-
-Registers a content type name. This method is available to Lua scripts.
-
-**Parameters**
-
-- `type_name` (`string`, required) - Content type name.
-
-#### Example
-
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
-
-```lua
-do
-  -- registerType(name) declares a content category.
-  -- Must be called before register() can store entries of that type.
-  local reg = lurek.mods.newRegistry()
-  reg:registerType("weapon")
-  reg:registerType("armor")
-  reg:registerType("consumable")
-  lurek.log.debug("registered " .. #reg:getTypes() .. " content types", "mods")
-end
-```
-
-### `LContentRegistry:type() -> string`
-
-Returns the Lua-visible type name for this content registry handle.
-
-**Returns**: `string` - The string `LContentRegistry`.
-
-#### Example
-
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
-
-```lua
-do
-  -- type() returns "LModManager" for mod manager handles.
-  local mgr = lurek.mods.newModManager()
-  local t = mgr:type()
-  assert(t == "LModManager")
-  lurek.log.info("LModManager:type = " .. t, "mods")
-end
-```
-
-### `LContentRegistry:typeOf(name: string) -> boolean`
-
-Returns whether this content registry handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to compare against `LContentRegistry` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-#### Example
-
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
-
-```lua
-do
-  -- typeOf(name) returns true for "LModManager" and "Object".
-  local mgr = lurek.mods.newModManager()
-  assert(mgr:typeOf("LModManager") == true)
-  assert(mgr:typeOf("Object") == true)
-  assert(mgr:typeOf("Unknown") == false)
-  lurek.log.info("is LModManager: " .. tostring(mgr:typeOf("LModManager")), "mods")
-end
-```
-
-### `LMod`
+### LMod
 
 Lua-side wrapper for mod metadata, hooks, and config references.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side wrapper for mod metadata, hooks, and config references.
+---@class LMod
+LMod = {}
+```
 
 #### Example
 
@@ -523,11 +319,312 @@ do
 end
 ```
 
-### `LMod:getApiVersion() -> string`
+### LModManager
+
+Lua-side wrapper for the mod manager.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side wrapper for the mod manager.
+---@class LModManager
+LModManager = {}
+```
+
+#### Example
+
+Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+
+```lua
+do
+  -- The mod manager handles registration, dependency validation, load order,
+  -- hot-reload queues, and folder scanning. Create one per game session.
+  local manager = lurek.mods.newModManager()
+  -- Initially empty — use registerMod() or scanFolder() to populate it.
+  lurek.log.info("manager initialised, " .. manager:getModCount() .. " mods", "mods")
+end
+```
+
+
+[⬆ back to top](#table-of-contents)
+
+## 🔹 Module Methods
+
+### LContentRegistry:get
+
+`LContentRegistry:get(type_name: string, id: string) -> table`
+
+Returns one stored value by content type and id.
+
+**Parameters**
+
+- `type_name` (`string`, required): Content type name.
+- `id` (`string`, required): Entry id.
+
+**Returns**: `table` - Stored Lua value.
+
+**Lua API Stub**
+
+```lua
+--- Returns one stored value by content type and id.
+---@param type_name string Content type name.
+---@param id string Entry id.
+---@return table a Stored Lua value.
+---@return nil b If missing.
+function LContentRegistry:get(type_name, id) end
+```
+
+#### Example
+
+Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+
+```lua
+do
+  -- get(type, id) retrieves a single entry. Returns nil if not found.
+  local reg = lurek.mods.newRegistry()
+  reg:registerType("spell")
+  reg:register("spell", "fireball", {cost = 10, radius = 3.0, element = "fire"})
+  reg:register("spell", "heal", {cost = 5, radius = 0, element = "holy"})
+  local s = reg:get("spell", "fireball")
+  if s then
+    lurek.log.debug("fireball cost=" .. s.cost .. " radius=" .. s.radius, "mods")
+  end
+  -- Missing entries return nil safely.
+  local missing = reg:get("spell", "nonexistent")
+  assert(missing == nil)
+end
+```
+
+### LContentRegistry:getAll
+
+`LContentRegistry:getAll(type_name: string) -> table`
+
+Returns all stored values for a content type keyed by id.
+
+**Parameters**
+
+- `type_name` (`string`, required): Content type name.
+
+**Returns**: `table` - Table of stored values keyed by id.
+
+**Lua API Stub**
+
+```lua
+--- Returns all stored values for a content type keyed by id.
+---@param type_name string Content type name.
+---@return table Table of stored values keyed by id.
+function LContentRegistry:getAll(type_name) end
+```
+
+#### Example
+
+Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+
+```lua
+do
+  -- getAll(type) returns a table keyed by id with all entries of that type.
+  -- Use this to iterate all mod-contributed content for a category.
+  local reg = lurek.mods.newRegistry()
+  reg:registerType("item")
+  reg:register("item", "potion", {name = "Potion", heal = 50})
+  reg:register("item", "elixir", {name = "Elixir", heal = 200})
+  reg:register("item", "antidote", {name = "Antidote", cure = "poison"})
+  local all = reg:getAll("item")
+  -- "all" is a table: {potion = {...}, elixir = {...}, antidote = {...}}
+  local count = 0
+  for _ in pairs(all) do count = count + 1 end
+  lurek.log.debug("item count=" .. count, "mods")
+end
+```
+
+### LContentRegistry:getTypes
+
+`LContentRegistry:getTypes() -> string[]`
+
+Returns registered content type names.
+
+**Returns**: `string[]` - Content type names.
+
+**Lua API Stub**
+
+```lua
+--- Returns registered content type names.
+---@return string[] Content type names.
+function LContentRegistry:getTypes() end
+```
+
+#### Example
+
+Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+
+```lua
+do
+  -- getTypes() returns an array of all registered type names.
+  -- Use this to discover what content categories are available.
+  local reg = lurek.mods.newRegistry()
+  reg:registerType("creature")
+  reg:registerType("item")
+  reg:registerType("quest")
+  local types = reg:getTypes()
+  lurek.log.debug("type count=" .. #types, "mods")
+end
+```
+
+### LContentRegistry:register
+
+`LContentRegistry:register(type_name: string, id: string, obj: table)`
+
+Stores a Lua value under a registered content type and id.
+
+**Parameters**
+
+- `type_name` (`string`, required): Content type name.
+- `id` (`string`, required): Entry id.
+- `obj` (`table`, required): Lua value to store.
+
+**Lua API Stub**
+
+```lua
+--- Stores a Lua value under a registered content type and id.
+---@param type_name string Content type name.
+---@param id string Entry id.
+---@param obj table Lua value to store.
+function LContentRegistry:register(type_name, id, obj) end
+```
+
+#### Example
+
+Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+
+```lua
+do
+  -- register(type, id, value) stores any Lua value under a type+id pair.
+  -- The type must be registered first. Value can be a table, string, number, etc.
+  local reg = lurek.mods.newRegistry()
+  reg:registerType("weapon")
+  reg:register("weapon", "iron_sword", {name = "Iron Sword", damage = 12, weight = 3.5})
+  reg:register("weapon", "fire_staff", {name = "Fire Staff", damage = 8, element = "fire"})
+  -- Attempting to register under an unknown type raises an error.
+  -- reg:register("potion", "heal", {}) -- ERROR: content type 'potion' not registered
+  lurek.log.debug("registered 2 weapons", "mods")
+end
+```
+
+### LContentRegistry:registerType
+
+`LContentRegistry:registerType(type_name: string)`
+
+Registers a content type name. This method is available to Lua scripts.
+
+**Parameters**
+
+- `type_name` (`string`, required): Content type name.
+
+**Lua API Stub**
+
+```lua
+--- Registers a content type name. This method is available to Lua scripts.
+---@param type_name string Content type name.
+function LContentRegistry:registerType(type_name) end
+```
+
+#### Example
+
+Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+
+```lua
+do
+  -- registerType(name) declares a content category.
+  -- Must be called before register() can store entries of that type.
+  local reg = lurek.mods.newRegistry()
+  reg:registerType("weapon")
+  reg:registerType("armor")
+  reg:registerType("consumable")
+  lurek.log.debug("registered " .. #reg:getTypes() .. " content types", "mods")
+end
+```
+
+### LContentRegistry:type
+
+`LContentRegistry:type() -> string`
+
+Returns the Lua-visible type name for this content registry handle.
+
+**Returns**: `string` - The string `LContentRegistry`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this content registry handle.
+---@return string The string `LContentRegistry`.
+function LContentRegistry:type() end
+```
+
+#### Example
+
+Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+
+```lua
+do
+  -- type() returns "LModManager" for mod manager handles.
+  local mgr = lurek.mods.newModManager()
+  local t = mgr:type()
+  assert(t == "LModManager")
+  lurek.log.info("LModManager:type = " .. t, "mods")
+end
+```
+
+### LContentRegistry:typeOf
+
+`LContentRegistry:typeOf(name: string) -> boolean`
+
+Returns whether this content registry handle matches a supported type name.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to compare against `LContentRegistry` and `Object`.
+
+**Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this content registry handle matches a supported type name.
+---@param name string Type name to compare against `LContentRegistry` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LContentRegistry:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+
+```lua
+do
+  -- typeOf(name) returns true for "LModManager" and "Object".
+  local mgr = lurek.mods.newModManager()
+  assert(mgr:typeOf("LModManager") == true)
+  assert(mgr:typeOf("Object") == true)
+  assert(mgr:typeOf("Unknown") == false)
+  lurek.log.info("is LModManager: " .. tostring(mgr:typeOf("LModManager")), "mods")
+end
+```
+
+### LMod:getApiVersion
+
+`LMod:getApiVersion() -> string`
 
 Returns the optional required API version.
 
 **Returns**: `string` - API version string, or nil when unset.
+
+**Lua API Stub**
+
+```lua
+--- Returns the optional required API version.
+---@return string API version string, or nil when unset.
+function LMod:getApiVersion() end
+```
 
 #### Example
 
@@ -547,11 +644,21 @@ do
 end
 ```
 
-### `LMod:getAuthor() -> string`
+### LMod:getAuthor
+
+`LMod:getAuthor() -> string`
 
 Returns the mod author. This method is available to Lua scripts.
 
 **Returns**: `string` - Mod author.
+
+**Lua API Stub**
+
+```lua
+--- Returns the mod author. This method is available to Lua scripts.
+---@return string Mod author.
+function LMod:getAuthor() end
+```
 
 #### Example
 
@@ -566,11 +673,21 @@ do
 end
 ```
 
-### `LMod:getCapabilities() -> string[]`
+### LMod:getCapabilities
+
+`LMod:getCapabilities() -> string[]`
 
 Returns capability names declared by the mod.
 
 **Returns**: `string[]` - Capability names.
+
+**Lua API Stub**
+
+```lua
+--- Returns capability names declared by the mod.
+---@return string[] Capability names.
+function LMod:getCapabilities() end
+```
 
 #### Example
 
@@ -587,11 +704,21 @@ do
 end
 ```
 
-### `LMod:getConfig() -> table`
+### LMod:getConfig
+
+`LMod:getConfig() -> table`
 
 Returns the stored Lua config value.
 
 **Returns**: `table` - Stored config value, or nil when unset.
+
+**Lua API Stub**
+
+```lua
+--- Returns the stored Lua config value.
+---@return table Stored config value, or nil when unset.
+function LMod:getConfig() end
+```
 
 #### Example
 
@@ -608,11 +735,21 @@ do
 end
 ```
 
-### `LMod:getConfigSchema() -> table`
+### LMod:getConfigSchema
+
+`LMod:getConfigSchema() -> table`
 
 Returns config schema entries. This method is available to Lua scripts.
 
 **Returns**: `table` - Array of schema entries with `key`, `type`, and `default` fields.
+
+**Lua API Stub**
+
+```lua
+--- Returns config schema entries. This method is available to Lua scripts.
+---@return LModGetConfigSchemaResult Array of schema entries with `key`, `type`, and `default` fields.
+function LMod:getConfigSchema() end
+```
 
 #### Example
 
@@ -634,11 +771,21 @@ do
 end
 ```
 
-### `LMod:getDependencies() -> integer[]`
+### LMod:getDependencies
+
+`LMod:getDependencies() -> integer[]`
 
 Returns mod dependency ids. This method is available to Lua scripts.
 
 **Returns**: `integer[]` - Array table of dependency ids.
+
+**Lua API Stub**
+
+```lua
+--- Returns mod dependency ids. This method is available to Lua scripts.
+---@return number[] Array table of dependency ids.
+function LMod:getDependencies() end
+```
 
 #### Example
 
@@ -655,11 +802,21 @@ do
 end
 ```
 
-### `LMod:getDescription() -> string`
+### LMod:getDescription
+
+`LMod:getDescription() -> string`
 
 Returns the mod description. This method is available to Lua scripts.
 
 **Returns**: `string` - Mod description.
+
+**Lua API Stub**
+
+```lua
+--- Returns the mod description. This method is available to Lua scripts.
+---@return string Mod description.
+function LMod:getDescription() end
+```
 
 #### Example
 
@@ -674,15 +831,26 @@ do
 end
 ```
 
-### `LMod:getHook(name: string) -> function`
+### LMod:getHook
+
+`LMod:getHook(name: string) -> function`
 
 Returns a stored hook function by name.
 
 **Parameters**
 
-- `name` (`string`, required) - Hook name.
+- `name` (`string`, required): Hook name.
 
 **Returns**: `function` - Hook callback, or nil when missing.
+
+**Lua API Stub**
+
+```lua
+--- Returns a stored hook function by name.
+---@param name string Hook name.
+---@return function Hook callback, or nil when missing.
+function LMod:getHook(name) end
+```
 
 #### Example
 
@@ -706,11 +874,21 @@ do
 end
 ```
 
-### `LMod:getHookNames() -> string[]`
+### LMod:getHookNames
+
+`LMod:getHookNames() -> string[]`
 
 Returns registered hook names. This method is available to Lua scripts.
 
 **Returns**: `string[]` - Hook names.
+
+**Lua API Stub**
+
+```lua
+--- Returns registered hook names. This method is available to Lua scripts.
+---@return string[] Hook names.
+function LMod:getHookNames() end
+```
 
 #### Example
 
@@ -730,11 +908,21 @@ do
 end
 ```
 
-### `LMod:getId() -> string`
+### LMod:getId
+
+`LMod:getId() -> string`
 
 Returns the mod id. This method is available to Lua scripts.
 
 **Returns**: `string` - Mod id.
+
+**Lua API Stub**
+
+```lua
+--- Returns the mod id. This method is available to Lua scripts.
+---@return string Mod id.
+function LMod:getId() end
+```
 
 #### Example
 
@@ -752,11 +940,21 @@ do
 end
 ```
 
-### `LMod:getName() -> string`
+### LMod:getName
+
+`LMod:getName() -> string`
 
 Returns the mod display name. This method is available to Lua scripts.
 
 **Returns**: `string` - Mod name.
+
+**Lua API Stub**
+
+```lua
+--- Returns the mod display name. This method is available to Lua scripts.
+---@return string Mod name.
+function LMod:getName() end
+```
 
 #### Example
 
@@ -773,11 +971,21 @@ do
 end
 ```
 
-### `LMod:getPriority() -> integer`
+### LMod:getPriority
+
+`LMod:getPriority() -> integer`
 
 Returns the mod priority. This method is available to Lua scripts.
 
 **Returns**: `integer` - Mod priority.
+
+**Lua API Stub**
+
+```lua
+--- Returns the mod priority. This method is available to Lua scripts.
+---@return number Mod priority.
+function LMod:getPriority() end
+```
 
 #### Example
 
@@ -796,11 +1004,21 @@ do
 end
 ```
 
-### `LMod:getVersion() -> string`
+### LMod:getVersion
+
+`LMod:getVersion() -> string`
 
 Returns the mod version. This method is available to Lua scripts.
 
 **Returns**: `string` - Mod version.
+
+**Lua API Stub**
+
+```lua
+--- Returns the mod version. This method is available to Lua scripts.
+---@return string Mod version.
+function LMod:getVersion() end
+```
 
 #### Example
 
@@ -819,15 +1037,26 @@ do
 end
 ```
 
-### `LMod:hasHook(name: string) -> boolean`
+### LMod:hasHook
+
+`LMod:hasHook(name: string) -> boolean`
 
 Returns whether a hook name is registered.
 
 **Parameters**
 
-- `name` (`string`, required) - Hook name.
+- `name` (`string`, required): Hook name.
 
 **Returns**: `boolean` - True when the hook exists.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether a hook name is registered.
+---@param name string Hook name.
+---@return boolean True when the hook exists.
+function LMod:hasHook(name) end
+```
 
 #### Example
 
@@ -846,11 +1075,21 @@ do
 end
 ```
 
-### `LMod:isEnabled() -> boolean`
+### LMod:isEnabled
+
+`LMod:isEnabled() -> boolean`
 
 Returns whether the mod is enabled.
 
 **Returns**: `boolean` - True when enabled.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether the mod is enabled.
+---@return boolean True when enabled.
+function LMod:isEnabled() end
+```
 
 #### Example
 
@@ -869,11 +1108,21 @@ do
 end
 ```
 
-### `LMod:isLoaded() -> boolean`
+### LMod:isLoaded
+
+`LMod:isLoaded() -> boolean`
 
 Returns whether the mod is loaded. This method is available to Lua scripts.
 
 **Returns**: `boolean` - True when loaded.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether the mod is loaded. This method is available to Lua scripts.
+---@return boolean True when loaded.
+function LMod:isLoaded() end
+```
 
 #### Example
 
@@ -890,9 +1139,18 @@ do
 end
 ```
 
-### `LMod:releaseRefs()`
+### LMod:releaseRefs
+
+`LMod:releaseRefs()`
 
 Releases stored Lua registry references for hooks and config.
+
+**Lua API Stub**
+
+```lua
+--- Releases stored Lua registry references for hooks and config.
+function LMod:releaseRefs() end
+```
 
 #### Example
 
@@ -912,13 +1170,23 @@ do
 end
 ```
 
-### `LMod:setApiVersion(api_version: string)`
+### LMod:setApiVersion
+
+`LMod:setApiVersion(api_version: string)`
 
 Sets the required API version string.
 
 **Parameters**
 
-- `api_version` (`string`, required) - API version string.
+- `api_version` (`string`, required): API version string.
+
+**Lua API Stub**
+
+```lua
+--- Sets the required API version string.
+---@param api_version string API version string.
+function LMod:setApiVersion(api_version) end
+```
 
 #### Example
 
@@ -934,13 +1202,23 @@ do
 end
 ```
 
-### `LMod:setCapabilities(caps: table)`
+### LMod:setCapabilities
+
+`LMod:setCapabilities(caps: table)`
 
 Sets capability names from an array table.
 
 **Parameters**
 
-- `caps` (`table`, required) - Array table of capability names.
+- `caps` (`table`, required): Array table of capability names.
+
+**Lua API Stub**
+
+```lua
+--- Sets capability names from an array table.
+---@param caps table Array table of capability names.
+function LMod:setCapabilities(caps) end
+```
 
 #### Example
 
@@ -958,13 +1236,23 @@ do
 end
 ```
 
-### `LMod:setConfig(value: table)`
+### LMod:setConfig
+
+`LMod:setConfig(value: table)`
 
 Stores a Lua config value for this mod.
 
 **Parameters**
 
-- `value` (`table`, required) - Config value to store (table, number, string, or boolean).
+- `value` (`table`, required): Config value to store (table, number, string, or boolean).
+
+**Lua API Stub**
+
+```lua
+--- Stores a Lua config value for this mod.
+---@param value table Config value to store (table, number, string, or boolean).
+function LMod:setConfig(value) end
+```
 
 #### Example
 
@@ -980,13 +1268,23 @@ do
 end
 ```
 
-### `LMod:setConfigSchema(schema: table)`
+### LMod:setConfigSchema
+
+`LMod:setConfigSchema(schema: table)`
 
 Sets config schema entries from a Lua table.
 
 **Parameters**
 
-- `schema` (`table`, required) - Array table of schema entries.
+- `schema` (`table`, required): Array table of schema entries.
+
+**Lua API Stub**
+
+```lua
+--- Sets config schema entries from a Lua table.
+---@param schema table Array table of schema entries.
+function LMod:setConfigSchema(schema) end
+```
 
 #### Example
 
@@ -1006,13 +1304,23 @@ do
 end
 ```
 
-### `LMod:setEnabled(enabled: boolean)`
+### LMod:setEnabled
+
+`LMod:setEnabled(enabled: boolean)`
 
 Sets whether the mod is enabled. This method is available to Lua scripts.
 
 **Parameters**
 
-- `enabled` (`boolean`, required) - Enabled flag.
+- `enabled` (`boolean`, required): Enabled flag.
+
+**Lua API Stub**
+
+```lua
+--- Sets whether the mod is enabled. This method is available to Lua scripts.
+---@param enabled boolean Enabled flag.
+function LMod:setEnabled(enabled) end
+```
 
 #### Example
 
@@ -1029,14 +1337,25 @@ do
 end
 ```
 
-### `LMod:setHook(name: string, func: function)`
+### LMod:setHook
+
+`LMod:setHook(name: string, func: function)`
 
 Stores a Lua hook function by name. This method is available to Lua scripts.
 
 **Parameters**
 
-- `name` (`string`, required) - Hook name.
-- `func` (`function`, required) - Hook callback function.
+- `name` (`string`, required): Hook name.
+- `func` (`function`, required): Hook callback function.
+
+**Lua API Stub**
+
+```lua
+--- Stores a Lua hook function by name. This method is available to Lua scripts.
+---@param name string Hook name.
+---@param func function Hook callback function.
+function LMod:setHook(name, func) end
+```
 
 #### Example
 
@@ -1060,11 +1379,21 @@ do
 end
 ```
 
-### `LMod:type() -> string`
+### LMod:type
+
+`LMod:type() -> string`
 
 Returns the Lua-visible type name for this mod handle.
 
 **Returns**: `string` - The string `LMod`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this mod handle.
+---@return string The string `LMod`.
+function LMod:type() end
+```
 
 #### Example
 
@@ -1077,15 +1406,26 @@ do
 end
 ```
 
-### `LMod:typeOf(name: string) -> boolean`
+### LMod:typeOf
+
+`LMod:typeOf(name: string) -> boolean`
 
 Returns whether this mod handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `LMod` and `Object`.
+- `name` (`string`, required): Type name to compare against `LMod` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this mod handle matches a supported type name.
+---@param name string Type name to compare against `LMod` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LMod:typeOf(name) end
+```
 
 #### Example
 
@@ -1098,27 +1438,18 @@ do
 end
 ```
 
-### `LModManager`
+### LModManager:clearLoadOrder
 
-Lua-side wrapper for the mod manager.
-
-#### Example
-
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
-
-```lua
-do
-  -- The mod manager handles registration, dependency validation, load order,
-  -- hot-reload queues, and folder scanning. Create one per game session.
-  local manager = lurek.mods.newModManager()
-  -- Initially empty — use registerMod() or scanFolder() to populate it.
-  lurek.log.info("manager initialised, " .. manager:getModCount() .. " mods", "mods")
-end
-```
-
-### `LModManager:clearLoadOrder()`
+`LModManager:clearLoadOrder()`
 
 Clears explicit load order. This method is available to Lua scripts.
+
+**Lua API Stub**
+
+```lua
+--- Clears explicit load order. This method is available to Lua scripts.
+function LModManager:clearLoadOrder() end
+```
 
 #### Example
 
@@ -1135,9 +1466,18 @@ do
 end
 ```
 
-### `LModManager:clearReloadQueue()`
+### LModManager:clearReloadQueue
+
+`LModManager:clearReloadQueue()`
 
 Clears the reload queue. This method is available to Lua scripts.
+
+**Lua API Stub**
+
+```lua
+--- Clears the reload queue. This method is available to Lua scripts.
+function LModManager:clearReloadQueue() end
+```
 
 #### Example
 
@@ -1155,11 +1495,21 @@ do
 end
 ```
 
-### `LModManager:getAllMods() -> table`
+### LModManager:getAllMods
+
+`LModManager:getAllMods() -> table`
 
 Returns metadata for all registered mods.
 
 **Returns**: `table` - Array table of mod metadata tables.
+
+**Lua API Stub**
+
+```lua
+--- Returns metadata for all registered mods.
+---@return LModManagerGetAllModsResult Array table of mod metadata tables.
+function LModManager:getAllMods() end
+```
 
 #### Example
 
@@ -1178,11 +1528,21 @@ do
 end
 ```
 
-### `LModManager:getLoadOrder() -> table`
+### LModManager:getLoadOrder
+
+`LModManager:getLoadOrder() -> table`
 
 Returns the resolved load order. This method is available to Lua scripts.
 
 **Returns**: `table` - Array table of mod metadata tables.
+
+**Lua API Stub**
+
+```lua
+--- Returns the resolved load order. This method is available to Lua scripts.
+---@return LModManagerGetLoadOrderResult Array table of mod metadata tables.
+function LModManager:getLoadOrder() end
+```
 
 #### Example
 
@@ -1203,11 +1563,21 @@ do
 end
 ```
 
-### `LModManager:getModCount() -> integer`
+### LModManager:getModCount
+
+`LModManager:getModCount() -> integer`
 
 Returns the number of registered mods.
 
 **Returns**: `integer` - Mod count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of registered mods.
+---@return number Mod count.
+function LModManager:getModCount() end
+```
 
 #### Example
 
@@ -1225,15 +1595,26 @@ do
 end
 ```
 
-### `LModManager:getModPath(mod_id: string) -> string`
+### LModManager:getModPath
+
+`LModManager:getModPath(mod_id: string) -> string`
 
 Returns the filesystem path for a registered mod.
 
 **Parameters**
 
-- `mod_id` (`string`, required) - Mod id.
+- `mod_id` (`string`, required): Mod id.
 
 **Returns**: `string` - Mod path, or nil when unknown.
+
+**Lua API Stub**
+
+```lua
+--- Returns the filesystem path for a registered mod.
+---@param mod_id string Mod id.
+---@return string Mod path, or nil when unknown.
+function LModManager:getModPath(mod_id) end
+```
 
 #### Example
 
@@ -1254,15 +1635,26 @@ do
 end
 ```
 
-### `LModManager:getModsByCapability(capability: string) -> table`
+### LModManager:getModsByCapability
+
+`LModManager:getModsByCapability(capability: string) -> table`
 
 Returns metadata for mods declaring a capability.
 
 **Parameters**
 
-- `capability` (`string`, required) - Capability name.
+- `capability` (`string`, required): Capability name.
 
 **Returns**: `table` - Array table of mod metadata tables.
+
+**Lua API Stub**
+
+```lua
+--- Returns metadata for mods declaring a capability.
+---@param capability string Capability name.
+---@return LModManagerGetModsByCapabilityResult Array table of mod metadata tables.
+function LModManager:getModsByCapability(capability) end
+```
 
 #### Example
 
@@ -1283,11 +1675,21 @@ do
 end
 ```
 
-### `LModManager:getReloadQueue() -> integer[]`
+### LModManager:getReloadQueue
+
+`LModManager:getReloadQueue() -> integer[]`
 
 Returns mod ids waiting for reload.
 
 **Returns**: `integer[]` - Array table of mod ids.
+
+**Lua API Stub**
+
+```lua
+--- Returns mod ids waiting for reload.
+---@return number[] Array table of mod ids.
+function LModManager:getReloadQueue() end
+```
 
 #### Example
 
@@ -1308,11 +1710,21 @@ do
 end
 ```
 
-### `LModManager:hasCircularDependencies() -> boolean`
+### LModManager:hasCircularDependencies
+
+`LModManager:hasCircularDependencies() -> boolean`
 
 Returns whether registered mods have circular dependencies.
 
 **Returns**: `boolean` - True when a cycle exists.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether registered mods have circular dependencies.
+---@return boolean True when a cycle exists.
+function LModManager:hasCircularDependencies() end
+```
 
 #### Example
 
@@ -1331,15 +1743,26 @@ do
 end
 ```
 
-### `LModManager:hasMod(mod_id: string) -> boolean`
+### LModManager:hasMod
+
+`LModManager:hasMod(mod_id: string) -> boolean`
 
 Returns whether a mod id is registered.
 
 **Parameters**
 
-- `mod_id` (`string`, required) - Mod id.
+- `mod_id` (`string`, required): Mod id.
 
 **Returns**: `boolean` - True when the mod exists.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether a mod id is registered.
+---@param mod_id string Mod id.
+---@return boolean True when the mod exists.
+function LModManager:hasMod(mod_id) end
+```
 
 #### Example
 
@@ -1360,15 +1783,26 @@ do
 end
 ```
 
-### `LModManager:markForReload(mod_id: string) -> boolean`
+### LModManager:markForReload
+
+`LModManager:markForReload(mod_id: string) -> boolean`
 
 Marks a mod id for reload. This method is available to Lua scripts.
 
 **Parameters**
 
-- `mod_id` (`string`, required) - Mod id.
+- `mod_id` (`string`, required): Mod id.
 
 **Returns**: `boolean` - True when the mod was marked.
+
+**Lua API Stub**
+
+```lua
+--- Marks a mod id for reload. This method is available to Lua scripts.
+---@param mod_id string Mod id.
+---@return boolean True when the mod was marked.
+function LModManager:markForReload(mod_id) end
+```
 
 #### Example
 
@@ -1388,11 +1822,21 @@ do
 end
 ```
 
-### `LModManager:processReloadQueue() -> integer[]`
+### LModManager:processReloadQueue
+
+`LModManager:processReloadQueue() -> integer[]`
 
 Processes and clears the reload queue.
 
 **Returns**: `integer[]` - Array table of processed mod ids.
+
+**Lua API Stub**
+
+```lua
+--- Processes and clears the reload queue.
+---@return number[] Array table of processed mod ids.
+function LModManager:processReloadQueue() end
+```
 
 #### Example
 
@@ -1414,13 +1858,23 @@ do
 end
 ```
 
-### `LModManager:registerMod(ud: LMod)`
+### LModManager:registerMod
+
+`LModManager:registerMod(ud: LMod)`
 
 Registers a mod with the manager. This method is available to Lua scripts.
 
 **Parameters**
 
-- `ud` (`LMod`, required) - Mod handle.
+- `ud` (`LMod`, required): Mod handle.
+
+**Lua API Stub**
+
+```lua
+--- Registers a mod with the manager. This method is available to Lua scripts.
+---@param ud LMod Mod handle.
+function LModManager:registerMod(ud) end
+```
 
 #### Example
 
@@ -1438,15 +1892,26 @@ do
 end
 ```
 
-### `LModManager:scanFolder(path: string) -> table`
+### LModManager:scanFolder
+
+`LModManager:scanFolder(path: string) -> table`
 
 Scans a folder for mod metadata. This method is available to Lua scripts.
 
 **Parameters**
 
-- `path` (`string`, required) - Folder path.
+- `path` (`string`, required): Folder path.
 
 **Returns**: `table` - Array table of discovered mod metadata tables.
+
+**Lua API Stub**
+
+```lua
+--- Scans a folder for mod metadata. This method is available to Lua scripts.
+---@param path string Folder path.
+---@return LModManagerScanFolderResult Array table of discovered mod metadata tables.
+function LModManager:scanFolder(path) end
+```
 
 #### Example
 
@@ -1464,13 +1929,23 @@ do
 end
 ```
 
-### `LModManager:setLoadOrder(order_table: table)`
+### LModManager:setLoadOrder
+
+`LModManager:setLoadOrder(order_table: table)`
 
 Sets explicit load order from an array of mod ids.
 
 **Parameters**
 
-- `order_table` (`table`, required) - Array table of mod ids.
+- `order_table` (`table`, required): Array table of mod ids.
+
+**Lua API Stub**
+
+```lua
+--- Sets explicit load order from an array of mod ids.
+---@param order_table table Array table of mod ids.
+function LModManager:setLoadOrder(order_table) end
+```
 
 #### Example
 
@@ -1492,11 +1967,21 @@ do
 end
 ```
 
-### `LModManager:type() -> string`
+### LModManager:type
+
+`LModManager:type() -> string`
 
 Returns the Lua-visible type name for this mod manager handle.
 
 **Returns**: `string` - The string `LModManager`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this mod manager handle.
+---@return string The string `LModManager`.
+function LModManager:type() end
+```
 
 #### Example
 
@@ -1509,15 +1994,26 @@ do
 end
 ```
 
-### `LModManager:typeOf(name: string) -> boolean`
+### LModManager:typeOf
+
+`LModManager:typeOf(name: string) -> boolean`
 
 Returns whether this mod manager handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `LModManager` and `Object`.
+- `name` (`string`, required): Type name to compare against `LModManager` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this mod manager handle matches a supported type name.
+---@param name string Type name to compare against `LModManager` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LModManager:typeOf(name) end
+```
 
 #### Example
 
@@ -1530,15 +2026,26 @@ do
 end
 ```
 
-### `LModManager:unregisterMod(mod_id: string) -> boolean`
+### LModManager:unregisterMod
+
+`LModManager:unregisterMod(mod_id: string) -> boolean`
 
 Unregisters a mod by id. This method is available to Lua scripts.
 
 **Parameters**
 
-- `mod_id` (`string`, required) - Mod id.
+- `mod_id` (`string`, required): Mod id.
 
 **Returns**: `boolean` - True when a mod was removed.
+
+**Lua API Stub**
+
+```lua
+--- Unregisters a mod by id. This method is available to Lua scripts.
+---@param mod_id string Mod id.
+---@return boolean True when a mod was removed.
+function LModManager:unregisterMod(mod_id) end
+```
 
 #### Example
 
@@ -1558,11 +2065,21 @@ do
 end
 ```
 
-### `LModManager:validateDependencies() -> string[]`
+### LModManager:validateDependencies
+
+`LModManager:validateDependencies() -> string[]`
 
 Returns dependency validation messages.
 
 **Returns**: `string[]` - Validation message strings.
+
+**Lua API Stub**
+
+```lua
+--- Returns dependency validation messages.
+---@return string[] Validation message strings.
+function LModManager:validateDependencies() end
+```
 
 #### Example
 
@@ -1587,21 +2104,27 @@ end
 ```
 
 
-## Examples
+[⬆ back to top](#table-of-contents)
+
+## 💡 Examples
 
 - [mods.lua](../blob/main/content/examples/mods.lua) - Mod loading and sandboxing
 
-## Reference Games
+[⬆ back to top](#table-of-contents)
+
+## 🎮 Reference Games
 
 No direct references were found in `content/games/**/main.lua`.
 
-## Related Modules
+[⬆ back to top](#table-of-contents)
 
-- Previous: [[minimap|Module-minimap]]
-- Next: [[network|Module-network]]
-- [[ai|Module-ai]] - Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU.
-- [[animation|Module-animation]] - Sprite animation: source-rect changes over time. Imports only math; headless-testable.
-- [[automation|Module-automation]] - Automated input simulation for headless tests, QA replay, recorded sessions.
-- [[ecs|Module-ecs]] - Entity-Component-System: identity / data / behaviour separation for runtime composition.
-- [[i18n|Module-i18n]] - Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*).
-- [[minimap|Module-minimap]] - Grid-based minimap data model: fog of war, tracked objects, pings, viewport overlay.
+## 🔗 Related Modules
+
+- Previous: [minimap](Module-minimap)
+- Next: [network](Module-network)
+- [ai](Module-ai) - Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU.
+- [animation](Module-animation) - Sprite animation: source-rect changes over time. Imports only math; headless-testable.
+- [automation](Module-automation) - Automated input simulation for headless tests, QA replay, recorded sessions.
+- [ecs](Module-ecs) - Entity-Component-System: identity / data / behaviour separation for runtime composition.
+- [i18n](Module-i18n) - Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*).
+- [minimap](Module-minimap) - Grid-based minimap data model: fog of war, tracked objects, pings, viewport overlay.

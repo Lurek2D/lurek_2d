@@ -4,113 +4,69 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
-- [Purpose](#purpose)
-- [Summary](#summary)
-- [Minimal Module Example](#minimal-module-example)
-- [Key Types](#key-types)
-- [API Overview](#api-overview)
-- [Examples](#examples)
-- [Reference Games](#reference-games)
-- [Related Modules](#related-modules)
+- [🎯 Purpose](#purpose)
+- [📋 Summary](#summary)
+- [🧩 Key Types](#key-types)
+- [📖 API Overview](#api-overview)
+- [💡 Examples](#examples)
+- [🎮 Reference Games](#reference-games)
+- [🔗 Related Modules](#related-modules)
 
 This page is generated from the current module specs, examples, and Lua API data.
 
 **Module group:** Edge / Integration
 **Namespace:** `lurek.runtime`
 
-## Purpose
+## 🎯 Purpose
 
 Lua scripting bridge: collects every lurek.* sub-API and seals the sandboxed lurek global.
 
-## Summary
+[⬆ back to top](#table-of-contents)
+
+## 📋 Summary
 
 Composition root that creates the Lua VM, registers all `lurek.*` namespaces, and hosts the 70+ userdata type definitions that bridge Rust engine types to Lua scripts. Each `*_api.rs` file in this directory handles one module's bindings — reading Lua arguments, calling into the corresponding business logic, and converting results back to Lua values.
 
 The module enforces binding constraints: no business logic in binding files (TST-03), all state access through `SharedState` borrows, no `borrow_mut()` held across Lua callbacks, and boundary value clamping for all numeric inputs. Userdata types implement `LuaUserData` with method/metamethod registration. This is the Edge/Integration tier entry point — it imports every other module but no module imports it.
 
-## Minimal Module Example
+[⬆ back to top](#table-of-contents)
 
-General example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-  -- Use an AI world to manage all NPCs in a level. Each world is independent,
-  -- so you can pause dungeon AI while overworld agents keep running.
-  -- Scenario: open-world RPG with separate AI worlds per region.
-  local world = lurek.ai.newWorld()
-  world:addAgent("guard_01")
-  -- Call world:update(dt) every frame to tick all registered agents.
-  function lurek.process(dt) world:update(dt) end
-end
-
---@api-stub: lurek.ai.newBlackboard
--- Creates an empty AI blackboard for typed local facts
-do
-  -- Blackboards are key-value stores for AI knowledge. Agents read/write facts
-  -- here so decision logic stays decoupled from game state.
-  -- Scenario: stealth game guard shares "alert_level" across patrol group.
-  local bb = lurek.ai.newBlackboard()
-  bb:setNumber("alert_level", 0.3)
-  bb:setBool("player_seen", false)
-end
-
---@api-stub: lurek.ai.newStateMachine
--- Creates an empty finite state machine with Lua-backed states and transitions
-do
-  -- FSMs are ideal for NPCs with clear, discrete behavior phases.
-  -- Each state has onEnter/onUpdate/onExit callbacks for clean transitions.
-  -- Scenario: guard patrol AI — idle → patrol → alert → chase → attack.
-  local fsm = lurek.ai.newStateMachine()
-  fsm:addState("patrol", { onEnter = function() lurek.log.info("patrolling", "ai") end })
-  fsm:addState("chase", {})
-  fsm:setInitialState("patrol")
-end
-
---@api-stub: lurek.ai.newBehaviorTree
--- Creates an empty behavior tree that can receive a root node
-do
-  -- Behavior trees compose complex AI from simple reusable nodes.
-  -- Set a root node, then call bt:tick(dt) each frame to evaluate.
-  -- Scenario: boss phase transitions — check HP, pick attack pattern, execute.
-  local bt = lurek.ai.newBehaviorTree()
-  local root = lurek.ai.newSequence()
-  root:addChild(lurek.ai.newAction(function() return "success" end))
-  bt:setRoot(root)
-end
-
---@api-stub: lurek.ai.newSelector
--- Creates a behavior tree selector node with no children
-do
-  -- A selector tries each child until one succeeds (OR logic).
-```
-
-## Key Types
+## 🧩 Key Types
 
 This module has no separate Lua-visible classes in the generated API data.
 
-## API Overview
+[⬆ back to top](#table-of-contents)
+
+## 📖 API Overview
 
 - Source spec: [docs/specs/lua_api.md](../blob/main/docs/specs/lua_api.md)
 
 No module functions appear in the generated Lua API data.
 
-## Examples
+[⬆ back to top](#table-of-contents)
+
+## 💡 Examples
 
 No module-specific example file was found.
 
-## Reference Games
+[⬆ back to top](#table-of-contents)
+
+## 🎮 Reference Games
 
 No direct references were found in `content/games/**/main.lua`.
 
-## Related Modules
+[⬆ back to top](#table-of-contents)
 
-- Previous: [[log|Module-log]]
-- Next: [[math|Module-math]]
-- [[app|Module-app]] - Application entry-point: winit event loop, wgpu surface / device, Lua VM, frame pacing.
-- [[bin|Module-bin]] - Alternative main()-bearing binaries built alongside the primary lurek2d executable.
-- [[debugbridge|Module-debugbridge]] - TCP debug bridge (127.0.0.1, JSON-over-TCP) for the VS Code extension and MCP server.
-- [[devtools|Module-devtools]] - In-process logger, frame profiler, rolling stats, hot-reload file watcher (lurek.devtools.*).
-- [[docs|Module-docs]] - In-engine API documentation catalog and lightweight schema validation for structured game data.
+## 🔗 Related Modules
+
+- Previous: [log](Module-log)
+- Next: [math](Module-math)
+- [app](Module-app) - Application entry-point: winit event loop, wgpu surface / device, Lua VM, frame pacing.
+- [bin](Module-bin) - Alternative main()-bearing binaries built alongside the primary lurek2d executable.
+- [debugbridge](Module-debugbridge) - TCP debug bridge (127.0.0.1, JSON-over-TCP) for the VS Code extension and MCP server.
+- [devtools](Module-devtools) - In-process logger, frame profiler, rolling stats, hot-reload file watcher (lurek.devtools.*).
+- [docs](Module-docs) - In-engine API documentation catalog and lightweight schema validation for structured game data.

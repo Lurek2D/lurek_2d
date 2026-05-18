@@ -4,317 +4,268 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
-- [Purpose](#purpose)
-- [Summary](#summary)
-- [Minimal Module Example](#minimal-module-example)
-- [Key Types](#key-types)
-- [API Overview](#api-overview)
-- [Module Functions](#module-functions)
-  - [lurek.audio.add_effect(bus_name: string, effect_type_str: string, [params]: table) -> integer](#lurekaudioaddeffectbusname-string-effecttypestr-string-params-table-integer)
-  - [lurek.audio.applyBandpass(sd_ud: LSoundData, low_hz: number, high_hz: number)](#lurekaudioapplybandpasssdud-lsounddata-lowhz-number-highhz-number)
-  - [lurek.audio.applyGain(sd_ud: LSoundData, gain: number)](#lurekaudioapplygainsdud-lsounddata-gain-number)
-  - [lurek.audio.applyHighpass(sd_ud: LSoundData, cutoff_hz: number)](#lurekaudioapplyhighpasssdud-lsounddata-cutoffhz-number)
-  - [lurek.audio.applyLowpass(sd_ud: LSoundData, cutoff_hz: number)](#lurekaudioapplylowpasssdud-lsounddata-cutoffhz-number)
-  - [lurek.audio.clearFilter(source: LSource|integer)](#lurekaudioclearfiltersource-lsourceinteger)
-  - [lurek.audio.clearMidiSoundFont()](#lurekaudioclearmidisoundfont)
-  - [lurek.audio.clearRandomPitch(src_ud: LSource)](#lurekaudioclearrandompitchsrcud-lsource)
-  - [lurek.audio.clone(source: LSource|integer) -> LSource](#lurekaudioclonesource-lsourceinteger-lsource)
-  - [lurek.audio.create_bus(name: string, [parent_name]: string)](#lurekaudiocreatebusname-string-parentname-string)
-  - [lurek.audio.crossfade(from_ud: LSource, to_ud: LSource, duration: number)](#lurekaudiocrossfadefromud-lsource-toud-lsource-duration-number)
-  - [lurek.audio.fadeIn(source: LSource|integer, dur: number)](#lurekaudiofadeinsource-lsourceinteger-dur-number)
-  - [lurek.audio.getActiveSourceCount() -> integer](#lurekaudiogetactivesourcecount-integer)
-  - [lurek.audio.getBusPeak(bus_name: string) -> number](#lurekaudiogetbuspeakbusname-string-number)
-  - [lurek.audio.getBusRms(bus_name: string) -> number](#lurekaudiogetbusrmsbusname-string-number)
-  - [lurek.audio.getDistanceModel() -> string](#lurekaudiogetdistancemodel-string)
-  - [lurek.audio.getDopplerScale() -> number](#lurekaudiogetdopplerscale-number)
-  - [lurek.audio.getDuration(source: LSource|integer) -> number](#lurekaudiogetdurationsource-lsourceinteger-number)
-  - [lurek.audio.getFadeIn(source: LSource|integer) -> number](#lurekaudiogetfadeinsource-lsourceinteger-number)
-  - [lurek.audio.getFreeBufferCount(qsource_id: integer) -> integer](#lurekaudiogetfreebuffercountqsourceid-integer-integer)
-  - [lurek.audio.getHighpass(source: LSource|integer) -> integer](#lurekaudiogethighpasssource-lsourceinteger-integer)
-  - [lurek.audio.getListener() -> number, number, number](#lurekaudiogetlistener-number-number-number)
-  - [lurek.audio.getListener2D() -> number, number](#lurekaudiogetlistener2d-number-number)
-  - [lurek.audio.getLowpass(source: LSource|integer) -> integer](#lurekaudiogetlowpasssource-lsourceinteger-integer)
-  - [lurek.audio.getMasterVolume() -> number](#lurekaudiogetmastervolume-number)
-  - [lurek.audio.getMaxSources() -> integer](#lurekaudiogetmaxsources-integer)
-  - [lurek.audio.getMeter() -> number](#lurekaudiogetmeter-number)
-  - [lurek.audio.getOrientation(source: LSource|integer) -> number, number, number, number, number, number](#lurekaudiogetorientationsource-lsourceinteger-number-number-number-number-number-number)
-  - [lurek.audio.getPan(source: LSource|integer) -> number](#lurekaudiogetpansource-lsourceinteger-number)
-  - [lurek.audio.getPitch(source: LSource|integer) -> number](#lurekaudiogetpitchsource-lsourceinteger-number)
-  - [lurek.audio.getPlaybackDevice() -> string](#lurekaudiogetplaybackdevice-string)
-  - [lurek.audio.getPlaybackDevices() -> string[]](#lurekaudiogetplaybackdevices-string)
-  - [lurek.audio.getPosition(source: LSource|integer) -> number, number, number](#lurekaudiogetpositionsource-lsourceinteger-number-number-number)
-  - [lurek.audio.getSourceBus(source: LSource|integer) -> LBus](#lurekaudiogetsourcebussource-lsourceinteger-lbus)
-  - [lurek.audio.getSourceCount() -> integer](#lurekaudiogetsourcecount-integer)
-  - [lurek.audio.getSourceType(source: LSource|integer) -> string](#lurekaudiogetsourcetypesource-lsourceinteger-string)
-  - [lurek.audio.getStereoWidth(src_ud: LSource) -> number](#lurekaudiogetstereowidthsrcud-lsource-number)
-  - [lurek.audio.getVelocity(source: LSource|integer) -> number, number, number](#lurekaudiogetvelocitysource-lsourceinteger-number-number-number)
-  - [lurek.audio.getVolume(source: LSource|integer) -> number](#lurekaudiogetvolumesource-lsourceinteger-number)
-  - [lurek.audio.hasMidiSoundFont() -> boolean](#lurekaudiohasmidisoundfont-boolean)
-  - [lurek.audio.isLooping(source: LSource|integer) -> boolean](#lurekaudioisloopingsource-lsourceinteger-boolean)
-  - [lurek.audio.isPaused(source: LSource|integer) -> boolean](#lurekaudioispausedsource-lsourceinteger-boolean)
-  - [lurek.audio.isPlaying(source: LSource|integer) -> boolean](#lurekaudioisplayingsource-lsourceinteger-boolean)
-  - [lurek.audio.isStopped(source: LSource|integer) -> boolean](#lurekaudioisstoppedsource-lsourceinteger-boolean)
-  - [lurek.audio.mixInto(dest_ud: LSoundData, src_ud: LSoundData)](#lurekaudiomixintodestud-lsounddata-srcud-lsounddata)
-  - [lurek.audio.newBus(name: string) -> LBus](#lurekaudionewbusname-string-lbus)
-  - [lurek.audio.newDecoder(source: string, [buffersize]: integer) -> LDecoder](#lurekaudionewdecodersource-string-buffersize-integer-ldecoder)
-  - [lurek.audio.newMidiPlayer([path]: string) -> LMidiPlayer](#lurekaudionewmidiplayerpath-string-lmidiplayer)
-  - [lurek.audio.newPool(file_path: string, voice_count: integer) -> LSoundPool](#lurekaudionewpoolfilepath-string-voicecount-integer-lsoundpool)
-  - [lurek.audio.newQueueableSource(sample_rate: integer, bit_depth: integer, channels: integer, [buffer_count]: integer) -> integer](#lurekaudionewqueueablesourcesamplerate-integer-bitdepth-integer-channels-integer-buffercount-integer-integer)
-  - [lurek.audio.newSawtoothWave(freq: number, duration: number, sample_rate: integer, amplitude: number) -> LSoundData](#lurekaudionewsawtoothwavefreq-number-duration-number-samplerate-integer-amplitude-number-lsounddata)
-  - [lurek.audio.newSineWave(freq: number, duration: number, sample_rate: integer, amplitude: number) -> LSoundData](#lurekaudionewsinewavefreq-number-duration-number-samplerate-integer-amplitude-number-lsounddata)
-  - [lurek.audio.newSoundData(pathOrCount: string|integer, sampleRate: integer, [channels]: integer) -> LSoundData](#lurekaudionewsounddatapathorcount-stringinteger-samplerate-integer-channels-integer-lsounddata)
-  - [lurek.audio.newSource(path: string, [sourceType]: string) -> LSource](#lurekaudionewsourcepath-string-sourcetype-string-lsource)
-  - [lurek.audio.newSquareWave(freq: number, duration: number, sample_rate: integer, amplitude: number) -> LSoundData](#lurekaudionewsquarewavefreq-number-duration-number-samplerate-integer-amplitude-number-lsounddata)
-  - [lurek.audio.newTriangleWave(freq: number, duration: number, sample_rate: integer, amplitude: number) -> LSoundData](#lurekaudionewtrianglewavefreq-number-duration-number-samplerate-integer-amplitude-number-lsounddata)
-  - [lurek.audio.newWhiteNoise(duration: number, sample_rate: integer, amplitude: number, seed: integer) -> LSoundData](#lurekaudionewwhitenoiseduration-number-samplerate-integer-amplitude-number-seed-integer-lsounddata)
-  - [lurek.audio.normalizeFile(input: string, output: string, target: number)](#lurekaudionormalizefileinput-string-output-string-target-number)
-  - [lurek.audio.pause(source: LSource|integer)](#lurekaudiopausesource-lsourceinteger)
-  - [lurek.audio.pauseAll()](#lurekaudiopauseall)
-  - [lurek.audio.play(source: LSource|integer, [options]: table) -> integer](#lurekaudioplaysource-lsourceinteger-options-table-integer)
-  - [lurek.audio.playLooping(source: LSource|integer)](#lurekaudioplayloopingsource-lsourceinteger)
-  - [lurek.audio.playQueueable(qsource_id: integer)](#lurekaudioplayqueueableqsourceid-integer)
-  - [lurek.audio.processOffline(input: string, output: string, effects_tbl: table)](#lurekaudioprocessofflineinput-string-output-string-effectstbl-table)
-  - [lurek.audio.queueSource(qsource_id: integer, sd: LSoundData)](#lurekaudioqueuesourceqsourceid-integer-sd-lsounddata)
-  - [lurek.audio.release(source: LSource|integer) -> boolean](#lurekaudioreleasesource-lsourceinteger-boolean)
-  - [lurek.audio.remove_effect(bus_name: string, effect_id: integer) -> boolean](#lurekaudioremoveeffectbusname-string-effectid-integer-boolean)
-  - [lurek.audio.resume(source: LSource|integer)](#lurekaudioresumesource-lsourceinteger)
-  - [lurek.audio.resumeAll()](#lurekaudioresumeall)
-  - [lurek.audio.saveWAV(sd_ud: LSoundData, filename: string)](#lurekaudiosavewavsdud-lsounddata-filename-string)
-  - [lurek.audio.seek(source: LSource|integer, pos: number)](#lurekaudioseeksource-lsourceinteger-pos-number)
-  - [lurek.audio.set_bus_volume(name: string, volume: number)](#lurekaudiosetbusvolumename-string-volume-number)
-  - [lurek.audio.set_effect_param(bus_name: string, effect_id: integer, param_name: string, value: number) -> boolean](#lurekaudioseteffectparambusname-string-effectid-integer-paramname-string-value-number-boolean)
-  - [lurek.audio.setDistanceModel(model: string)](#lurekaudiosetdistancemodelmodel-string)
-  - [lurek.audio.setDopplerScale(scale: number)](#lurekaudiosetdopplerscalescale-number)
-  - [lurek.audio.setHighpass(source: LSource|integer, cutoff_hz: integer)](#lurekaudiosethighpasssource-lsourceinteger-cutoffhz-integer)
-  - [lurek.audio.setListener(x: number, y: number, [z]: number)](#lurekaudiosetlistenerx-number-y-number-z-number)
-  - [lurek.audio.setListener2D(x: number, y: number)](#lurekaudiosetlistener2dx-number-y-number)
-  - [lurek.audio.setLooping(source: LSource|integer, looping: boolean)](#lurekaudiosetloopingsource-lsourceinteger-looping-boolean)
-  - [lurek.audio.setLowpass(source: LSource|integer, cutoff_hz: integer)](#lurekaudiosetlowpasssource-lsourceinteger-cutoffhz-integer)
-  - [lurek.audio.setMasterVolume(vol: number)](#lurekaudiosetmastervolumevol-number)
-  - [lurek.audio.setMeter(level: number)](#lurekaudiosetmeterlevel-number)
-  - [lurek.audio.setMidiSoundFont(path: string)](#lurekaudiosetmidisoundfontpath-string)
-  - [lurek.audio.setOrientation(source: LSource|integer, fx: number, fy: number, fz: number, ux: number, uy: number, uz: number)](#lurekaudiosetorientationsource-lsourceinteger-fx-number-fy-number-fz-number-ux-number-uy-number-uz-number)
-  - [lurek.audio.setPan(source: LSource|integer, pan: number)](#lurekaudiosetpansource-lsourceinteger-pan-number)
-  - [lurek.audio.setPitch(source: LSource|integer, pitch: number)](#lurekaudiosetpitchsource-lsourceinteger-pitch-number)
-  - [lurek.audio.setPlaybackDevice(name: string)](#lurekaudiosetplaybackdevicename-string)
-  - [lurek.audio.setPosition(source: LSource|integer, x: number, y: number, [z]: number)](#lurekaudiosetpositionsource-lsourceinteger-x-number-y-number-z-number)
-  - [lurek.audio.setRandomPitch(src_ud: LSource, min: number, max: number)](#lurekaudiosetrandompitchsrcud-lsource-min-number-max-number)
-  - [lurek.audio.setSourceBus(source: LSource|integer, bus: LBus)](#lurekaudiosetsourcebussource-lsourceinteger-bus-lbus)
-  - [lurek.audio.setStereoWidth(src_ud: LSource, width: number)](#lurekaudiosetstereowidthsrcud-lsource-width-number)
-  - [lurek.audio.setVelocity(source: LSource|integer, x: number, y: number, [z]: number)](#lurekaudiosetvelocitysource-lsourceinteger-x-number-y-number-z-number)
-  - [lurek.audio.setVolume(source: LSource|integer, vol: number)](#lurekaudiosetvolumesource-lsourceinteger-vol-number)
-  - [lurek.audio.spectrogramToPng(input: string, output: string, width: integer, height: integer)](#lurekaudiospectrogramtopnginput-string-output-string-width-integer-height-integer)
-  - [lurek.audio.stop(source: LSource|integer)](#lurekaudiostopsource-lsourceinteger)
-  - [lurek.audio.stopAll()](#lurekaudiostopall)
-  - [lurek.audio.stopQueueable(qsource_id: integer)](#lurekaudiostopqueueableqsourceid-integer)
-  - [lurek.audio.tell(source: LSource|integer) -> number](#lurekaudiotellsource-lsourceinteger-number)
-  - [lurek.audio.waveformToPng(input: string, output: string, width: integer, height: integer)](#lurekaudiowaveformtopnginput-string-output-string-width-integer-height-integer)
-- [Types and Methods](#types-and-methods)
+- [🎯 Purpose](#purpose)
+- [📋 Summary](#summary)
+- [🧩 Key Types](#key-types)
+- [📖 API Overview](#api-overview)
+- [⚙️ Module Functions](#module-functions)
+  - [lurek.audio.add_effect](#lurekaudioaddeffect)
+  - [lurek.audio.applyBandpass](#lurekaudioapplybandpass)
+  - [lurek.audio.applyGain](#lurekaudioapplygain)
+  - [lurek.audio.applyHighpass](#lurekaudioapplyhighpass)
+  - [lurek.audio.applyLowpass](#lurekaudioapplylowpass)
+  - [lurek.audio.clearFilter](#lurekaudioclearfilter)
+  - [lurek.audio.clearMidiSoundFont](#lurekaudioclearmidisoundfont)
+  - [lurek.audio.clearRandomPitch](#lurekaudioclearrandompitch)
+  - [lurek.audio.clone](#lurekaudioclone)
+  - [lurek.audio.create_bus](#lurekaudiocreatebus)
+  - [lurek.audio.crossfade](#lurekaudiocrossfade)
+  - [lurek.audio.fadeIn](#lurekaudiofadein)
+  - [lurek.audio.getActiveSourceCount](#lurekaudiogetactivesourcecount)
+  - [lurek.audio.getBusPeak](#lurekaudiogetbuspeak)
+  - [lurek.audio.getBusRms](#lurekaudiogetbusrms)
+  - [lurek.audio.getDistanceModel](#lurekaudiogetdistancemodel)
+  - [lurek.audio.getDopplerScale](#lurekaudiogetdopplerscale)
+  - [lurek.audio.getDuration](#lurekaudiogetduration)
+  - [lurek.audio.getFadeIn](#lurekaudiogetfadein)
+  - [lurek.audio.getFreeBufferCount](#lurekaudiogetfreebuffercount)
+  - [lurek.audio.getHighpass](#lurekaudiogethighpass)
+  - [lurek.audio.getListener](#lurekaudiogetlistener)
+  - [lurek.audio.getListener2D](#lurekaudiogetlistener2d)
+  - [lurek.audio.getLowpass](#lurekaudiogetlowpass)
+  - [lurek.audio.getMasterVolume](#lurekaudiogetmastervolume)
+  - [lurek.audio.getMaxSources](#lurekaudiogetmaxsources)
+  - [lurek.audio.getMeter](#lurekaudiogetmeter)
+  - [lurek.audio.getOrientation](#lurekaudiogetorientation)
+  - [lurek.audio.getPan](#lurekaudiogetpan)
+  - [lurek.audio.getPitch](#lurekaudiogetpitch)
+  - [lurek.audio.getPlaybackDevice](#lurekaudiogetplaybackdevice)
+  - [lurek.audio.getPlaybackDevices](#lurekaudiogetplaybackdevices)
+  - [lurek.audio.getPosition](#lurekaudiogetposition)
+  - [lurek.audio.getSourceBus](#lurekaudiogetsourcebus)
+  - [lurek.audio.getSourceCount](#lurekaudiogetsourcecount)
+  - [lurek.audio.getSourceType](#lurekaudiogetsourcetype)
+  - [lurek.audio.getStereoWidth](#lurekaudiogetstereowidth)
+  - [lurek.audio.getVelocity](#lurekaudiogetvelocity)
+  - [lurek.audio.getVolume](#lurekaudiogetvolume)
+  - [lurek.audio.hasMidiSoundFont](#lurekaudiohasmidisoundfont)
+  - [lurek.audio.isLooping](#lurekaudioislooping)
+  - [lurek.audio.isPaused](#lurekaudioispaused)
+  - [lurek.audio.isPlaying](#lurekaudioisplaying)
+  - [lurek.audio.isStopped](#lurekaudioisstopped)
+  - [lurek.audio.mixInto](#lurekaudiomixinto)
+  - [lurek.audio.newBus](#lurekaudionewbus)
+  - [lurek.audio.newDecoder](#lurekaudionewdecoder)
+  - [lurek.audio.newMidiPlayer](#lurekaudionewmidiplayer)
+  - [lurek.audio.newPool](#lurekaudionewpool)
+  - [lurek.audio.newQueueableSource](#lurekaudionewqueueablesource)
+  - [lurek.audio.newSawtoothWave](#lurekaudionewsawtoothwave)
+  - [lurek.audio.newSineWave](#lurekaudionewsinewave)
+  - [lurek.audio.newSoundData](#lurekaudionewsounddata)
+  - [lurek.audio.newSource](#lurekaudionewsource)
+  - [lurek.audio.newSquareWave](#lurekaudionewsquarewave)
+  - [lurek.audio.newTriangleWave](#lurekaudionewtrianglewave)
+  - [lurek.audio.newWhiteNoise](#lurekaudionewwhitenoise)
+  - [lurek.audio.normalizeFile](#lurekaudionormalizefile)
+  - [lurek.audio.pause](#lurekaudiopause)
+  - [lurek.audio.pauseAll](#lurekaudiopauseall)
+  - [lurek.audio.play](#lurekaudioplay)
+  - [lurek.audio.playLooping](#lurekaudioplaylooping)
+  - [lurek.audio.playQueueable](#lurekaudioplayqueueable)
+  - [lurek.audio.processOffline](#lurekaudioprocessoffline)
+  - [lurek.audio.queueSource](#lurekaudioqueuesource)
+  - [lurek.audio.release](#lurekaudiorelease)
+  - [lurek.audio.remove_effect](#lurekaudioremoveeffect)
+  - [lurek.audio.resume](#lurekaudioresume)
+  - [lurek.audio.resumeAll](#lurekaudioresumeall)
+  - [lurek.audio.saveWAV](#lurekaudiosavewav)
+  - [lurek.audio.seek](#lurekaudioseek)
+  - [lurek.audio.set_bus_volume](#lurekaudiosetbusvolume)
+  - [lurek.audio.set_effect_param](#lurekaudioseteffectparam)
+  - [lurek.audio.setDistanceModel](#lurekaudiosetdistancemodel)
+  - [lurek.audio.setDopplerScale](#lurekaudiosetdopplerscale)
+  - [lurek.audio.setHighpass](#lurekaudiosethighpass)
+  - [lurek.audio.setListener](#lurekaudiosetlistener)
+  - [lurek.audio.setListener2D](#lurekaudiosetlistener2d)
+  - [lurek.audio.setLooping](#lurekaudiosetlooping)
+  - [lurek.audio.setLowpass](#lurekaudiosetlowpass)
+  - [lurek.audio.setMasterVolume](#lurekaudiosetmastervolume)
+  - [lurek.audio.setMeter](#lurekaudiosetmeter)
+  - [lurek.audio.setMidiSoundFont](#lurekaudiosetmidisoundfont)
+  - [lurek.audio.setOrientation](#lurekaudiosetorientation)
+  - [lurek.audio.setPan](#lurekaudiosetpan)
+  - [lurek.audio.setPitch](#lurekaudiosetpitch)
+  - [lurek.audio.setPlaybackDevice](#lurekaudiosetplaybackdevice)
+  - [lurek.audio.setPosition](#lurekaudiosetposition)
+  - [lurek.audio.setRandomPitch](#lurekaudiosetrandompitch)
+  - [lurek.audio.setSourceBus](#lurekaudiosetsourcebus)
+  - [lurek.audio.setStereoWidth](#lurekaudiosetstereowidth)
+  - [lurek.audio.setVelocity](#lurekaudiosetvelocity)
+  - [lurek.audio.setVolume](#lurekaudiosetvolume)
+  - [lurek.audio.spectrogramToPng](#lurekaudiospectrogramtopng)
+  - [lurek.audio.stop](#lurekaudiostop)
+  - [lurek.audio.stopAll](#lurekaudiostopall)
+  - [lurek.audio.stopQueueable](#lurekaudiostopqueueable)
+  - [lurek.audio.tell](#lurekaudiotell)
+  - [lurek.audio.waveformToPng](#lurekaudiowaveformtopng)
+- [🔷 Module Types](#module-types)
   - [LBus](#lbus)
-  - [LBus:clearDuck()](#lbusclearduck)
-  - [LBus:getName() -> string](#lbusgetname-string)
-  - [LBus:getPeak() -> number](#lbusgetpeak-number)
-  - [LBus:getPitch() -> number](#lbusgetpitch-number)
-  - [LBus:getVolume() -> number](#lbusgetvolume-number)
-  - [LBus:isPaused() -> boolean](#lbusispaused-boolean)
-  - [LBus:pause()](#lbuspause)
-  - [LBus:resume()](#lbusresume)
-  - [LBus:setDuckTarget(target_name: string, duck_vol: number)](#lbussetducktargettargetname-string-duckvol-number)
-  - [LBus:setPitch(pitch: number)](#lbussetpitchpitch-number)
-  - [LBus:setVolume(vol: number)](#lbussetvolumevol-number)
-  - [LBus:type() -> string](#lbustype-string)
-  - [LBus:typeOf(name: string) -> boolean](#lbustypeofname-string-boolean)
   - [LDecoder](#ldecoder)
-  - [LDecoder:decode() -> LSoundData](#ldecoderdecode-lsounddata)
-  - [LDecoder:getBitDepth() -> integer](#ldecodergetbitdepth-integer)
-  - [LDecoder:getChannelCount() -> integer](#ldecodergetchannelcount-integer)
-  - [LDecoder:getDuration() -> number](#ldecodergetduration-number)
-  - [LDecoder:getSampleRate() -> integer](#ldecodergetsamplerate-integer)
-  - [LDecoder:isSeekable() -> boolean](#ldecoderisseekable-boolean)
-  - [LDecoder:release()](#ldecoderrelease)
-  - [LDecoder:rewind()](#ldecoderrewind)
-  - [LDecoder:seek(offset: number)](#ldecoderseekoffset-number)
-  - [LDecoder:tell() -> number](#ldecodertell-number)
-  - [LDecoder:type() -> string](#ldecodertype-string)
-  - [LDecoder:typeOf(name: string) -> boolean](#ldecodertypeofname-string-boolean)
   - [LMidiPlayer](#lmidiplayer)
-  - [LMidiPlayer:getBus() -> LBus](#lmidiplayergetbus-lbus)
-  - [LMidiPlayer:getChannelCount() -> integer](#lmidiplayergetchannelcount-integer)
-  - [LMidiPlayer:getChannelInstrument(ch: integer) -> integer](#lmidiplayergetchannelinstrumentch-integer-integer)
-  - [LMidiPlayer:getChannels() -> integer](#lmidiplayergetchannels-integer)
-  - [LMidiPlayer:getChannelVolume(ch: integer) -> number](#lmidiplayergetchannelvolumech-integer-number)
-  - [LMidiPlayer:getDuration() -> number](#lmidiplayergetduration-number)
-  - [LMidiPlayer:getFilePath() -> string](#lmidiplayergetfilepath-string)
-  - [LMidiPlayer:getNoteCount() -> integer](#lmidiplayergetnotecount-integer)
-  - [LMidiPlayer:getOriginalTempo() -> number](#lmidiplayergetoriginaltempo-number)
-  - [LMidiPlayer:getSampleRate() -> integer](#lmidiplayergetsamplerate-integer)
-  - [LMidiPlayer:getSoundFontPath() -> string](#lmidiplayergetsoundfontpath-string)
-  - [LMidiPlayer:getTempo() -> number](#lmidiplayergettempo-number)
-  - [LMidiPlayer:getTempoScale() -> number](#lmidiplayergettemposcale-number)
-  - [LMidiPlayer:getTicksPerBeat() -> integer](#lmidiplayergetticksperbeat-integer)
-  - [LMidiPlayer:getTrackCount() -> integer](#lmidiplayergettrackcount-integer)
-  - [LMidiPlayer:getTrackName(idx: integer) -> string](#lmidiplayergettracknameidx-integer-string)
-  - [LMidiPlayer:getVolume() -> number](#lmidiplayergetvolume-number)
-  - [LMidiPlayer:isChannelMuted(ch: integer) -> boolean](#lmidiplayerischannelmutedch-integer-boolean)
-  - [LMidiPlayer:isLoaded() -> boolean](#lmidiplayerisloaded-boolean)
-  - [LMidiPlayer:isLooping() -> boolean](#lmidiplayerislooping-boolean)
-  - [LMidiPlayer:isPaused() -> boolean](#lmidiplayerispaused-boolean)
-  - [LMidiPlayer:isPlaying() -> boolean](#lmidiplayerisplaying-boolean)
-  - [LMidiPlayer:isTrackMuted(idx: integer) -> boolean](#lmidiplayeristrackmutedidx-integer-boolean)
-  - [LMidiPlayer:load(path: string) -> boolean](#lmidiplayerloadpath-string-boolean)
-  - [LMidiPlayer:loadData(data: string) -> boolean](#lmidiplayerloaddatadata-string-boolean)
-  - [LMidiPlayer:pause()](#lmidiplayerpause)
-  - [LMidiPlayer:play()](#lmidiplayerplay)
-  - [LMidiPlayer:seek(secs: number)](#lmidiplayerseeksecs-number)
-  - [LMidiPlayer:setBus([bus]: LBus)](#lmidiplayersetbusbus-lbus)
-  - [LMidiPlayer:setChannelInstrument(ch: integer, inst: integer)](#lmidiplayersetchannelinstrumentch-integer-inst-integer)
-  - [LMidiPlayer:setChannelMuted(ch: integer, muted: boolean)](#lmidiplayersetchannelmutedch-integer-muted-boolean)
-  - [LMidiPlayer:setChannels(channels: integer)](#lmidiplayersetchannelschannels-integer)
-  - [LMidiPlayer:setChannelVolume(ch: integer, vol: number)](#lmidiplayersetchannelvolumech-integer-vol-number)
-  - [LMidiPlayer:setLooping(looping: boolean)](#lmidiplayersetloopinglooping-boolean)
-  - [LMidiPlayer:setOnEnd([cb]: function)](#lmidiplayersetonendcb-function)
-  - [LMidiPlayer:setOnNoteOff([cb]: function)](#lmidiplayersetonnoteoffcb-function)
-  - [LMidiPlayer:setOnNoteOn([cb]: function)](#lmidiplayersetonnoteoncb-function)
-  - [LMidiPlayer:setSampleRate(rate: integer)](#lmidiplayersetsampleraterate-integer)
-  - [LMidiPlayer:setSoundFont(path: string)](#lmidiplayersetsoundfontpath-string)
-  - [LMidiPlayer:setTempo(bpm: number)](#lmidiplayersettempobpm-number)
-  - [LMidiPlayer:setTempoScale(scale: number)](#lmidiplayersettemposcalescale-number)
-  - [LMidiPlayer:setTrackMuted(idx: integer, muted: boolean)](#lmidiplayersettrackmutedidx-integer-muted-boolean)
-  - [LMidiPlayer:setVolume(vol: number)](#lmidiplayersetvolumevol-number)
-  - [LMidiPlayer:soloChannel(ch: integer)](#lmidiplayersolochannelch-integer)
-  - [LMidiPlayer:stop()](#lmidiplayerstop)
-  - [LMidiPlayer:tell() -> number](#lmidiplayertell-number)
-  - [LMidiPlayer:type() -> string](#lmidiplayertype-string)
-  - [LMidiPlayer:typeOf(name: string) -> boolean](#lmidiplayertypeofname-string-boolean)
-  - [LMidiPlayer:unsoloAll()](#lmidiplayerunsoloall)
-  - [LMidiPlayer:useDefaultSoundFont()](#lmidiplayerusedefaultsoundfont)
   - [LSoundData](#lsounddata)
-  - [LSoundData:drawWaveform(target: LImageData, x: integer, y: integer, w: integer, h: integer, r: integer, g: integer, b: integer, a: integer)](#lsounddatadrawwaveformtarget-limagedata-x-integer-y-integer-w-integer-h-integer-r-integer-g-integer-b-integer-a-integer)
-  - [LSoundData:getBitDepth() -> integer](#lsounddatagetbitdepth-integer)
-  - [LSoundData:getChannelCount() -> integer](#lsounddatagetchannelcount-integer)
-  - [LSoundData:getDuration() -> number](#lsounddatagetduration-number)
-  - [LSoundData:getSample(index: integer) -> number](#lsounddatagetsampleindex-integer-number)
-  - [LSoundData:getSampleCount() -> integer](#lsounddatagetsamplecount-integer)
-  - [LSoundData:getSampleRate() -> integer](#lsounddatagetsamplerate-integer)
-  - [LSoundData:setSample(index: integer, value: number)](#lsounddatasetsampleindex-integer-value-number)
-  - [LSoundData:type() -> string](#lsounddatatype-string)
-  - [LSoundData:typeOf(name: string) -> boolean](#lsounddatatypeofname-string-boolean)
   - [LSoundPool](#lsoundpool)
-  - [LSoundPool:getVoiceCount() -> integer](#lsoundpoolgetvoicecount-integer)
-  - [LSoundPool:play() -> integer](#lsoundpoolplay-integer)
-  - [LSoundPool:release()](#lsoundpoolrelease)
-  - [LSoundPool:setBus(name: string)](#lsoundpoolsetbusname-string)
-  - [LSoundPool:setVolume(vol: number)](#lsoundpoolsetvolumevol-number)
-  - [LSoundPool:stopAll()](#lsoundpoolstopall)
-  - [LSoundPool:type() -> string](#lsoundpooltype-string)
-  - [LSoundPool:typeOf(name: string) -> boolean](#lsoundpooltypeofname-string-boolean)
   - [LSource](#lsource)
-  - [LSource:clearFilter()](#lsourceclearfilter)
-  - [LSource:clone() -> LSource](#lsourceclone-lsource)
-  - [LSource:fadeIn(dur: number)](#lsourcefadeindur-number)
-  - [LSource:getDuration() -> number](#lsourcegetduration-number)
-  - [LSource:getFadeIn() -> number](#lsourcegetfadein-number)
-  - [LSource:getHighpass() -> integer](#lsourcegethighpass-integer)
-  - [LSource:getLowpass() -> integer](#lsourcegetlowpass-integer)
-  - [LSource:getPan() -> number](#lsourcegetpan-number)
-  - [LSource:getPitch() -> number](#lsourcegetpitch-number)
-  - [LSource:getType() -> string](#lsourcegettype-string)
-  - [LSource:getVolume() -> number](#lsourcegetvolume-number)
-  - [LSource:isLooping() -> boolean](#lsourceislooping-boolean)
-  - [LSource:isPaused() -> boolean](#lsourceispaused-boolean)
-  - [LSource:isPlaying() -> boolean](#lsourceisplaying-boolean)
-  - [LSource:isStopped() -> boolean](#lsourceisstopped-boolean)
-  - [LSource:pause()](#lsourcepause)
-  - [LSource:play()](#lsourceplay)
-  - [LSource:resume()](#lsourceresume)
-  - [LSource:seek(pos: number)](#lsourceseekpos-number)
-  - [LSource:setHighpass(cutoff_hz: integer)](#lsourcesethighpasscutoffhz-integer)
-  - [LSource:setLooping(looping: boolean)](#lsourcesetloopinglooping-boolean)
-  - [LSource:setLowpass(cutoff_hz: integer)](#lsourcesetlowpasscutoffhz-integer)
-  - [LSource:setPan(pan: number)](#lsourcesetpanpan-number)
-  - [LSource:setPitch(pitch: number)](#lsourcesetpitchpitch-number)
-  - [LSource:setVolume(vol: number)](#lsourcesetvolumevol-number)
-  - [LSource:stop()](#lsourcestop)
-  - [LSource:tell() -> number](#lsourcetell-number)
-  - [LSource:type() -> string](#lsourcetype-string)
-  - [LSource:typeOf(name: string) -> boolean](#lsourcetypeofname-string-boolean)
-- [Examples](#examples)
-- [Reference Games](#reference-games)
-- [Related Modules](#related-modules)
+- [🔹 Module Methods](#module-methods)
+  - [LBus:clearDuck](#lbusclearduck)
+  - [LBus:getName](#lbusgetname)
+  - [LBus:getPeak](#lbusgetpeak)
+  - [LBus:getPitch](#lbusgetpitch)
+  - [LBus:getVolume](#lbusgetvolume)
+  - [LBus:isPaused](#lbusispaused)
+  - [LBus:pause](#lbuspause)
+  - [LBus:resume](#lbusresume)
+  - [LBus:setDuckTarget](#lbussetducktarget)
+  - [LBus:setPitch](#lbussetpitch)
+  - [LBus:setVolume](#lbussetvolume)
+  - [LBus:type](#lbustype)
+  - [LBus:typeOf](#lbustypeof)
+  - [LDecoder:decode](#ldecoderdecode)
+  - [LDecoder:getBitDepth](#ldecodergetbitdepth)
+  - [LDecoder:getChannelCount](#ldecodergetchannelcount)
+  - [LDecoder:getDuration](#ldecodergetduration)
+  - [LDecoder:getSampleRate](#ldecodergetsamplerate)
+  - [LDecoder:isSeekable](#ldecoderisseekable)
+  - [LDecoder:release](#ldecoderrelease)
+  - [LDecoder:rewind](#ldecoderrewind)
+  - [LDecoder:seek](#ldecoderseek)
+  - [LDecoder:tell](#ldecodertell)
+  - [LDecoder:type](#ldecodertype)
+  - [LDecoder:typeOf](#ldecodertypeof)
+  - [LMidiPlayer:getBus](#lmidiplayergetbus)
+  - [LMidiPlayer:getChannelCount](#lmidiplayergetchannelcount)
+  - [LMidiPlayer:getChannelInstrument](#lmidiplayergetchannelinstrument)
+  - [LMidiPlayer:getChannels](#lmidiplayergetchannels)
+  - [LMidiPlayer:getChannelVolume](#lmidiplayergetchannelvolume)
+  - [LMidiPlayer:getDuration](#lmidiplayergetduration)
+  - [LMidiPlayer:getFilePath](#lmidiplayergetfilepath)
+  - [LMidiPlayer:getNoteCount](#lmidiplayergetnotecount)
+  - [LMidiPlayer:getOriginalTempo](#lmidiplayergetoriginaltempo)
+  - [LMidiPlayer:getSampleRate](#lmidiplayergetsamplerate)
+  - [LMidiPlayer:getSoundFontPath](#lmidiplayergetsoundfontpath)
+  - [LMidiPlayer:getTempo](#lmidiplayergettempo)
+  - [LMidiPlayer:getTempoScale](#lmidiplayergettemposcale)
+  - [LMidiPlayer:getTicksPerBeat](#lmidiplayergetticksperbeat)
+  - [LMidiPlayer:getTrackCount](#lmidiplayergettrackcount)
+  - [LMidiPlayer:getTrackName](#lmidiplayergettrackname)
+  - [LMidiPlayer:getVolume](#lmidiplayergetvolume)
+  - [LMidiPlayer:isChannelMuted](#lmidiplayerischannelmuted)
+  - [LMidiPlayer:isLoaded](#lmidiplayerisloaded)
+  - [LMidiPlayer:isLooping](#lmidiplayerislooping)
+  - [LMidiPlayer:isPaused](#lmidiplayerispaused)
+  - [LMidiPlayer:isPlaying](#lmidiplayerisplaying)
+  - [LMidiPlayer:isTrackMuted](#lmidiplayeristrackmuted)
+  - [LMidiPlayer:load](#lmidiplayerload)
+  - [LMidiPlayer:loadData](#lmidiplayerloaddata)
+  - [LMidiPlayer:pause](#lmidiplayerpause)
+  - [LMidiPlayer:play](#lmidiplayerplay)
+  - [LMidiPlayer:seek](#lmidiplayerseek)
+  - [LMidiPlayer:setBus](#lmidiplayersetbus)
+  - [LMidiPlayer:setChannelInstrument](#lmidiplayersetchannelinstrument)
+  - [LMidiPlayer:setChannelMuted](#lmidiplayersetchannelmuted)
+  - [LMidiPlayer:setChannels](#lmidiplayersetchannels)
+  - [LMidiPlayer:setChannelVolume](#lmidiplayersetchannelvolume)
+  - [LMidiPlayer:setLooping](#lmidiplayersetlooping)
+  - [LMidiPlayer:setOnEnd](#lmidiplayersetonend)
+  - [LMidiPlayer:setOnNoteOff](#lmidiplayersetonnoteoff)
+  - [LMidiPlayer:setOnNoteOn](#lmidiplayersetonnoteon)
+  - [LMidiPlayer:setSampleRate](#lmidiplayersetsamplerate)
+  - [LMidiPlayer:setSoundFont](#lmidiplayersetsoundfont)
+  - [LMidiPlayer:setTempo](#lmidiplayersettempo)
+  - [LMidiPlayer:setTempoScale](#lmidiplayersettemposcale)
+  - [LMidiPlayer:setTrackMuted](#lmidiplayersettrackmuted)
+  - [LMidiPlayer:setVolume](#lmidiplayersetvolume)
+  - [LMidiPlayer:soloChannel](#lmidiplayersolochannel)
+  - [LMidiPlayer:stop](#lmidiplayerstop)
+  - [LMidiPlayer:tell](#lmidiplayertell)
+  - [LMidiPlayer:type](#lmidiplayertype)
+  - [LMidiPlayer:typeOf](#lmidiplayertypeof)
+  - [LMidiPlayer:unsoloAll](#lmidiplayerunsoloall)
+  - [LMidiPlayer:useDefaultSoundFont](#lmidiplayerusedefaultsoundfont)
+  - [LSoundData:drawWaveform](#lsounddatadrawwaveform)
+  - [LSoundData:getBitDepth](#lsounddatagetbitdepth)
+  - [LSoundData:getChannelCount](#lsounddatagetchannelcount)
+  - [LSoundData:getDuration](#lsounddatagetduration)
+  - [LSoundData:getSample](#lsounddatagetsample)
+  - [LSoundData:getSampleCount](#lsounddatagetsamplecount)
+  - [LSoundData:getSampleRate](#lsounddatagetsamplerate)
+  - [LSoundData:setSample](#lsounddatasetsample)
+  - [LSoundData:type](#lsounddatatype)
+  - [LSoundData:typeOf](#lsounddatatypeof)
+  - [LSoundPool:getVoiceCount](#lsoundpoolgetvoicecount)
+  - [LSoundPool:play](#lsoundpoolplay)
+  - [LSoundPool:release](#lsoundpoolrelease)
+  - [LSoundPool:setBus](#lsoundpoolsetbus)
+  - [LSoundPool:setVolume](#lsoundpoolsetvolume)
+  - [LSoundPool:stopAll](#lsoundpoolstopall)
+  - [LSoundPool:type](#lsoundpooltype)
+  - [LSoundPool:typeOf](#lsoundpooltypeof)
+  - [LSource:clearFilter](#lsourceclearfilter)
+  - [LSource:clone](#lsourceclone)
+  - [LSource:fadeIn](#lsourcefadein)
+  - [LSource:getDuration](#lsourcegetduration)
+  - [LSource:getFadeIn](#lsourcegetfadein)
+  - [LSource:getHighpass](#lsourcegethighpass)
+  - [LSource:getLowpass](#lsourcegetlowpass)
+  - [LSource:getPan](#lsourcegetpan)
+  - [LSource:getPitch](#lsourcegetpitch)
+  - [LSource:getType](#lsourcegettype)
+  - [LSource:getVolume](#lsourcegetvolume)
+  - [LSource:isLooping](#lsourceislooping)
+  - [LSource:isPaused](#lsourceispaused)
+  - [LSource:isPlaying](#lsourceisplaying)
+  - [LSource:isStopped](#lsourceisstopped)
+  - [LSource:pause](#lsourcepause)
+  - [LSource:play](#lsourceplay)
+  - [LSource:resume](#lsourceresume)
+  - [LSource:seek](#lsourceseek)
+  - [LSource:setHighpass](#lsourcesethighpass)
+  - [LSource:setLooping](#lsourcesetlooping)
+  - [LSource:setLowpass](#lsourcesetlowpass)
+  - [LSource:setPan](#lsourcesetpan)
+  - [LSource:setPitch](#lsourcesetpitch)
+  - [LSource:setVolume](#lsourcesetvolume)
+  - [LSource:stop](#lsourcestop)
+  - [LSource:tell](#lsourcetell)
+  - [LSource:type](#lsourcetype)
+  - [LSource:typeOf](#lsourcetypeof)
+- [💡 Examples](#examples)
+- [🎮 Reference Games](#reference-games)
+- [🔗 Related Modules](#related-modules)
 
 This page is generated from the current module specs, examples, and Lua API data.
 
 **Module group:** Platform Services
 **Namespace:** `lurek.audio`
 
-## Purpose
+## 🎯 Purpose
 
 Sound loading and playback wrapping rodio; Mixer / Bus instances live in SharedState.
 
-## Summary
+[⬆ back to top](#table-of-contents)
+
+## 📋 Summary
 
 Full-featured sound engine built on `rodio` 0.17 handling loading, real-time playback, bus mixing, DSP effects, spatial 2D audio, MIDI synthesis, and offline processing. `Mixer` is the central controller with `SlotMap<SoundKey, AudioEntry>` for O(1) handle lookup. Sounds load as `Static` (fully decoded in-memory buffer for short SFX) or `Stream` (incremental decode for music/voice).
 
 `Bus` provides hierarchical volume/pan/effect routing — game, music, SFX, and voice buses each carry their own `EffectChain` of DSP nodes (reverb, echo, low-pass, high-pass, compressor, distortion, chorus, flanger, pitch-shift). The `SoundPool` manages concurrent instance limits with voice stealing. Spatial audio positions sources in 2D with distance attenuation and stereo panning. MIDI playback converts note events to PCM via a built-in wavetable synthesizer. `OfflineRenderer` captures final mix to WAV without real-time playback. All Lua access goes through `lurek.audio.*`.
 
-## Minimal Module Example
+[⬆ back to top](#table-of-contents)
 
-Module example from [audio.lua](../blob/main/content/examples/audio.lua):
-
-```lua
---@api-stub: lurek.audio.newSource
--- Creates a new audio source from a file path, either fully loaded or streaming
-do
-  function lurek.init()
-    -- "static" loads the entire file into memory — best for short SFX that play often.
-    -- Omitting the second arg (or "stream") streams from disk — best for music/long files.
-    local ok_jump, jump = pcall(lurek.audio.newSource, "sfx/jump.ogg", "static")
-    if not ok_jump then return end
-
-    -- Streaming source for background music — low memory, reads file progressively.
-    local ok_music, music = pcall(lurek.audio.newSource, "music/level.mp3")
-    if not ok_music then return end
-
-    -- Loop the music so it repeats until explicitly stopped.
-    lurek.audio.setLooping(music, true)
-    lurek.audio.play(music)
-
-    -- Store the SFX handle globally so lurek.update() or input callbacks can trigger it.
-    _G.jump_sfx = jump
-  end
-end
-
---@api-stub: LSoundPool:play
--- Starts playback of a source by handle, optionally routing through a named bus
-do
-  function lurek.init()
-    local ok_hit, hit = pcall(lurek.audio.newSource, "sfx/hit.ogg", "static")
-    if not ok_hit then return end
-
-    -- Create a bus for grouping all sound effects — lets you control SFX volume separately.
-    lurek.audio.newBus("sfx")
-
-    -- Route this source through the "sfx" bus. The bus applies its volume/effects to all
-    -- sources assigned to it, so muting SFX for cutscenes is one call.
-    lurek.audio.play(hit, {bus = "sfx"})
-  end
-end
-
---@api-stub: LMidiPlayer:stop
--- Stops playback of a source and resets its position to the beginning
-do
-  function lurek.init()
-    local ok_sirene, sirene = pcall(lurek.audio.newSource, "sfx/alarm.ogg", "static")
-    if not ok_sirene then return end
-
-    lurek.audio.play(sirene)
-```
-
-## Key Types
+## 🧩 Key Types
 
 - `LBus` (13 methods) - Lua-side wrapper around an audio mixing bus for grouped volume and effect control.
 - `LDecoder` (12 methods) - Lua-side wrapper around a streaming audio decoder for incremental PCM extraction.
@@ -323,7 +274,9 @@ do
 - `LSoundPool` (8 methods) - Lua-side wrapper around a pre-allocated pool of identical sound voices for rapid fire effects.
 - `LSource` (29 methods) - Lua-side wrapper around a loaded audio source (sound effect or music stream).
 
-## API Overview
+[⬆ back to top](#table-of-contents)
+
+## 📖 API Overview
 
 - Source spec: [docs/specs/audio.md](../blob/main/docs/specs/audio.md)
 
@@ -349,17 +302,21 @@ lurek.audio.getDuration(source: LSource|integer) -> number -- Returns the total 
 -- ... 81 more module functions
 ```
 
-## Module Functions
+[⬆ back to top](#table-of-contents)
 
-### `lurek.audio.add_effect(bus_name: string, effect_type_str: string, [params]: table) -> integer`
+## ⚙️ Module Functions
+
+### lurek.audio.add_effect
+
+`lurek.audio.add_effect(bus_name: string, effect_type_str: string, [params]: table) -> integer`
 
 Adds an effect to a named audio bus and returns its effect ID.
 
 **Parameters**
 
-- `bus_name` (`string`, required) - Name of the audio bus.
-- `effect_type_str` (`string`, required) - Effect type identifier (e.g. `"lowpass"`, `"highpass"`, `"reverb"`).
-- `params` (`table`, optional) - Optional parameters table; may include a `value` field.
+- `bus_name` (`string`, required): Name of the audio bus.
+- `effect_type_str` (`string`, required): Effect type identifier (e.g. `"lowpass"`, `"highpass"`, `"reverb"`).
+- `params` (`table`, optional): Optional parameters table; may include a `value` field.
 
 **Returns**: `integer` - Numeric effect ID handle for use with `remove_effect` and `set_effect_param`.
 
@@ -381,15 +338,17 @@ do
 end
 ```
 
-### `lurek.audio.applyBandpass(sd_ud: LSoundData, low_hz: number, high_hz: number)`
+### lurek.audio.applyBandpass
+
+`lurek.audio.applyBandpass(sd_ud: LSoundData, low_hz: number, high_hz: number)`
 
 Applies a bandpass filter in-place to the sound data.
 
 **Parameters**
 
-- `sd_ud` (`LSoundData`, required) - The sound data to process.
-- `low_hz` (`number`, required) - Lower cutoff frequency in Hz.
-- `high_hz` (`number`, required) - Upper cutoff frequency in Hz.
+- `sd_ud` (`LSoundData`, required): The sound data to process.
+- `low_hz` (`number`, required): Lower cutoff frequency in Hz.
+- `high_hz` (`number`, required): Upper cutoff frequency in Hz.
 
 #### Example
 
@@ -407,14 +366,16 @@ do
 end
 ```
 
-### `lurek.audio.applyGain(sd_ud: LSoundData, gain: number)`
+### lurek.audio.applyGain
+
+`lurek.audio.applyGain(sd_ud: LSoundData, gain: number)`
 
 Applies a gain multiplier in-place to the sound data.
 
 **Parameters**
 
-- `sd_ud` (`LSoundData`, required) - The sound data to process.
-- `gain` (`number`, required) - Gain multiplier (1.0 = unity, >1.0 = louder, <1.0 = quieter).
+- `sd_ud` (`LSoundData`, required): The sound data to process.
+- `gain` (`number`, required): Gain multiplier (1.0 = unity, >1.0 = louder, <1.0 = quieter).
 
 #### Example
 
@@ -432,14 +393,16 @@ do
 end
 ```
 
-### `lurek.audio.applyHighpass(sd_ud: LSoundData, cutoff_hz: number)`
+### lurek.audio.applyHighpass
+
+`lurek.audio.applyHighpass(sd_ud: LSoundData, cutoff_hz: number)`
 
 Applies a highpass filter in-place to the sound data.
 
 **Parameters**
 
-- `sd_ud` (`LSoundData`, required) - The sound data to process.
-- `cutoff_hz` (`number`, required) - Highpass cutoff frequency in Hz.
+- `sd_ud` (`LSoundData`, required): The sound data to process.
+- `cutoff_hz` (`number`, required): Highpass cutoff frequency in Hz.
 
 #### Example
 
@@ -456,14 +419,16 @@ do
 end
 ```
 
-### `lurek.audio.applyLowpass(sd_ud: LSoundData, cutoff_hz: number)`
+### lurek.audio.applyLowpass
+
+`lurek.audio.applyLowpass(sd_ud: LSoundData, cutoff_hz: number)`
 
 Applies a lowpass filter in-place to the sound data.
 
 **Parameters**
 
-- `sd_ud` (`LSoundData`, required) - The sound data to process.
-- `cutoff_hz` (`number`, required) - Lowpass cutoff frequency in Hz.
+- `sd_ud` (`LSoundData`, required): The sound data to process.
+- `cutoff_hz` (`number`, required): Lowpass cutoff frequency in Hz.
 
 #### Example
 
@@ -481,13 +446,15 @@ do
 end
 ```
 
-### `lurek.audio.clearFilter(source: LSource|integer)`
+### lurek.audio.clearFilter
+
+`lurek.audio.clearFilter(source: LSource|integer)`
 
 Removes all frequency filters from a source.
 
 **Parameters**
 
-- `source` (`LSource|integer`, required) - Audio source or numeric source ID.
+- `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
 #### Example
 
@@ -504,7 +471,9 @@ do
 end
 ```
 
-### `lurek.audio.clearMidiSoundFont()`
+### lurek.audio.clearMidiSoundFont
+
+`lurek.audio.clearMidiSoundFont()`
 
 Clears the loaded SoundFont and reverts MIDI synthesis to default.
 
@@ -523,13 +492,15 @@ do
 end
 ```
 
-### `lurek.audio.clearRandomPitch(src_ud: LSource)`
+### lurek.audio.clearRandomPitch
+
+`lurek.audio.clearRandomPitch(src_ud: LSource)`
 
 Clears any random pitch range previously set on the source.
 
 **Parameters**
 
-- `src_ud` (`LSource`, required) - The audio source to reset.
+- `src_ud` (`LSource`, required): The audio source to reset.
 
 #### Example
 
@@ -549,13 +520,15 @@ do
 end
 ```
 
-### `lurek.audio.clone(source: LSource|integer) -> LSource`
+### lurek.audio.clone
+
+`lurek.audio.clone(source: LSource|integer) -> LSource`
 
 Creates an independent copy of a source sharing the same audio data.
 
 **Parameters**
 
-- `source` (`LSource|integer`, required) - Audio source or numeric source ID to clone.
+- `source` (`LSource|integer`, required): Audio source or numeric source ID to clone.
 
 **Returns**: `LSource` - A new source instance with identical settings.
 
@@ -574,14 +547,16 @@ do
 end
 ```
 
-### `lurek.audio.create_bus(name: string, [parent_name]: string)`
+### lurek.audio.create_bus
+
+`lurek.audio.create_bus(name: string, [parent_name]: string)`
 
 Creates a named audio bus, optionally parented to another bus.
 
 **Parameters**
 
-- `name` (`string`, required) - Unique name for the new bus.
-- `parent_name` (`string`, optional) - Name of the parent bus, or nil for a root bus.
+- `name` (`string`, required): Unique name for the new bus.
+- `parent_name` (`string`, optional): Name of the parent bus, or nil for a root bus.
 
 #### Example
 
@@ -599,15 +574,17 @@ do
 end
 ```
 
-### `lurek.audio.crossfade(from_ud: LSource, to_ud: LSource, duration: number)`
+### lurek.audio.crossfade
+
+`lurek.audio.crossfade(from_ud: LSource, to_ud: LSource, duration: number)`
 
 Crossfades from one audio source to another over the given duration.
 
 **Parameters**
 
-- `from_ud` (`LSource`, required) - The source to fade out.
-- `to_ud` (`LSource`, required) - The source to fade in.
-- `duration` (`number`, required) - Crossfade duration in seconds.
+- `from_ud` (`LSource`, required): The source to fade out.
+- `to_ud` (`LSource`, required): The source to fade in.
+- `duration` (`number`, required): Crossfade duration in seconds.
 
 #### Example
 
@@ -630,14 +607,16 @@ do
 end
 ```
 
-### `lurek.audio.fadeIn(source: LSource|integer, dur: number)`
+### lurek.audio.fadeIn
+
+`lurek.audio.fadeIn(source: LSource|integer, dur: number)`
 
 Sets the fade-in duration for a source so it ramps from silence on play.
 
 **Parameters**
 
-- `source` (`LSource|integer`, required) - Audio source or numeric source ID.
-- `dur` (`number`, required) - Fade-in duration in seconds.
+- `source` (`LSource|integer`, required): Audio source or numeric source ID.
+- `dur` (`number`, required): Fade-in duration in seconds.
 
 #### Example
 
@@ -653,7 +632,9 @@ do
 end
 ```
 
-### `lurek.audio.getActiveSourceCount() -> integer`
+### lurek.audio.getActiveSourceCount
+
+`lurek.audio.getActiveSourceCount() -> integer`
 
 Returns the number of sources currently playing audio.
 
@@ -677,13 +658,15 @@ do
 end
 ```
 
-### `lurek.audio.getBusPeak(bus_name: string) -> number`
+### lurek.audio.getBusPeak
+
+`lurek.audio.getBusPeak(bus_name: string) -> number`
 
 Returns the peak amplitude of the named audio bus over the last processing frame.
 
 **Parameters**
 
-- `bus_name` (`string`, required) - Name of the audio bus to query.
+- `bus_name` (`string`, required): Name of the audio bus to query.
 
 **Returns**: `number` - Peak amplitude in the range [0.0, 1.0+].
 
@@ -704,13 +687,15 @@ do
 end
 ```
 
-### `lurek.audio.getBusRms(bus_name: string) -> number`
+### lurek.audio.getBusRms
+
+`lurek.audio.getBusRms(bus_name: string) -> number`
 
 Returns the RMS (root mean square) amplitude of the named audio bus over the last processing frame.
 
 **Parameters**
 
-- `bus_name` (`string`, required) - Name of the audio bus to query.
+- `bus_name` (`string`, required): Name of the audio bus to query.
 
 **Returns**: `number` - RMS amplitude in the range [0.0, 1.0+].
 
@@ -731,7 +716,9 @@ do
 end
 ```
 
-### `lurek.audio.getDistanceModel() -> string`
+### lurek.audio.getDistanceModel
+
+`lurek.audio.getDistanceModel() -> string`
 
 Returns the current distance attenuation model name.
 
@@ -750,7 +737,9 @@ do
 end
 ```
 
-### `lurek.audio.getDopplerScale() -> number`
+### lurek.audio.getDopplerScale
+
+`lurek.audio.getDopplerScale() -> number`
 
 Returns the current global Doppler effect scale.
 
@@ -769,13 +758,15 @@ do
 end
 ```
 
-### `lurek.audio.getDuration(source: LSource|integer) -> number`
+### lurek.audio.getDuration
+
+`lurek.audio.getDuration(source: LSource|integer) -> number`
 
 Returns the total duration of a source in seconds.
 
 **Parameters**
 
-- `source` (`LSource|integer`, required) - Audio source or numeric source ID.
+- `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
 **Returns**: `number` - Duration in seconds.
 
@@ -792,13 +783,15 @@ do
 end
 ```
 
-### `lurek.audio.getFadeIn(source: LSource|integer) -> number`
+### lurek.audio.getFadeIn
+
+`lurek.audio.getFadeIn(source: LSource|integer) -> number`
 
 Returns the configured fade-in duration of a source.
 
 **Parameters**
 
-- `source` (`LSource|integer`, required) - Audio source or numeric source ID.
+- `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
 **Returns**: `number` - Fade-in duration in seconds.
 
@@ -816,13 +809,15 @@ do
 end
 ```
 
-### `lurek.audio.getFreeBufferCount(qsource_id: integer) -> integer`
+### lurek.audio.getFreeBufferCount
+
+`lurek.audio.getFreeBufferCount(qsource_id: integer) -> integer`
 
 Returns the number of free (available) buffer slots on a queueable source.
 
 **Parameters**
 
-- `qsource_id` (`integer`, required) - Queueable source handle returned by `newQueueableSource`.
+- `qsource_id` (`integer`, required): Queueable source handle returned by `newQueueableSource`.
 
 **Returns**: `integer` - Number of free buffer slots available for queuing.
 
@@ -843,13 +838,15 @@ do
 end
 ```
 
-### `lurek.audio.getHighpass(source: LSource|integer) -> integer`
+### lurek.audio.getHighpass
+
+`lurek.audio.getHighpass(source: LSource|integer) -> integer`
 
 Returns the current highpass filter cutoff of a source.
 
 **Parameters**
 
-- `source` (`LSource|integer`, required) - Audio source or numeric source ID.
+- `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
 **Returns**: `integer` - Cutoff frequency in Hz, or 0 if not set.
 
@@ -867,7 +864,9 @@ do
 end
 ```
 
-### `lurek.audio.getListener() -> number, number, number`
+### lurek.audio.getListener
+
+`lurek.audio.getListener() -> number, number, number`
 
 Returns the current 3D listener position.
 
@@ -887,7 +886,9 @@ do
 end
 ```
 
-### `lurek.audio.getListener2D() -> number, number`
+### lurek.audio.getListener2D
+
+`lurek.audio.getListener2D() -> number, number`
 
 Returns the current 2D listener position.
 
@@ -907,13 +908,15 @@ do
 end
 ```
 
-### `lurek.audio.getLowpass(source: LSource|integer) -> integer`
+### lurek.audio.getLowpass
+
+`lurek.audio.getLowpass(source: LSource|integer) -> integer`
 
 Returns the current lowpass filter cutoff of a source.
 
 **Parameters**
 
-- `source` (`LSource|integer`, required) - Audio source or numeric source ID.
+- `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
 **Returns**: `integer` - Cutoff frequency in Hz, or 0 if not set.
 
@@ -931,7 +934,9 @@ do
 end
 ```
 
-### `lurek.audio.getMasterVolume() -> number`
+### lurek.audio.getMasterVolume
+
+`lurek.audio.getMasterVolume() -> number`
 
 Returns the current global master volume level.
 
@@ -951,7 +956,9 @@ do
 end
 ```
 
-### `lurek.audio.getMaxSources() -> integer`
+### lurek.audio.getMaxSources
+
+`lurek.audio.getMaxSources() -> integer`
 
 Returns the maximum number of simultaneous audio sources supported.
 
@@ -971,7 +978,9 @@ do
 end
 ```
 
-### `lurek.audio.getMeter() -> number`
+### lurek.audio.getMeter
+
+`lurek.audio.getMeter() -> number`
 
 Returns the current master peak level for VU-meter displays.
 
@@ -992,13 +1001,15 @@ do
 end
 ```
 
-### `lurek.audio.getOrientation(source: LSource|integer) -> number, number, number, number, number, number`
+### lurek.audio.getOrientation
+
+`lurek.audio.getOrientation(source: LSource|integer) -> number, number, number, number, number, number`
 
 Returns the orientation vectors of a source.
 
 **Parameters**
 
-- `source` (`LSource|integer`, required) - Audio source or numeric source ID.
+- `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
 **Returns**: `number, number, number, number, number, number` - Forward (fx,fy,fz) and up (ux,uy,uz) vectors.
 
@@ -1019,13 +1030,15 @@ do
 end
 ```
 
-### `lurek.audio.getPan(source: LSource|integer) -> number`
+### lurek.audio.getPan
+
+`lurek.audio.getPan(source: LSource|integer) -> number`
 
 Returns the current stereo pan position of a source.
 
 **Parameters**
 
-- `source` (`LSource|integer`, required) - Audio source or numeric source ID.
+- `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
 **Returns**: `number` - Pan value from -1.0 (left) to 1.0 (right).
 
@@ -1043,13 +1056,15 @@ do
 end
 ```
 
-### `lurek.audio.getPitch(source: LSource|integer) -> number`
+### lurek.audio.getPitch
+
+`lurek.audio.getPitch(source: LSource|integer) -> number`
 
 Returns the current pitch multiplier of a source.
 
 **Parameters**
 
-- `source` (`LSource|integer`, required) - Audio source or numeric source ID.
+- `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
 **Returns**: `number` - Current pitch multiplier.
 
@@ -1067,7 +1082,9 @@ do
 end
 ```
 
-### `lurek.audio.getPlaybackDevice() -> string`
+### lurek.audio.getPlaybackDevice
+
+`lurek.audio.getPlaybackDevice() -> string`
 
 Returns the name of the currently active audio playback device.
 
@@ -1086,7 +1103,9 @@ do
 end
 ```
 
-### `lurek.audio.getPlaybackDevices() -> string[]`
+### lurek.audio.getPlaybackDevices
+
+`lurek.audio.getPlaybackDevices() -> string[]`
 
 Returns a list of available audio playback device names.
 
@@ -1109,13 +1128,15 @@ do
 end
 ```
 
-### `lurek.audio.getPosition(source: LSource|integer) -> number, number, number`
+### lurek.audio.getPosition
+
+`lurek.audio.getPosition(source: LSource|integer) -> number, number, number`
 
 Returns the 3D position of a source.
 
 **Parameters**
 
-- `source` (`LSource|integer`, required) - Audio source or numeric source ID.
+- `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
 **Returns**: `number, number, number` - X, Y, and Z position.
 
@@ -1136,13 +1157,15 @@ do
 end
 ```
 
-### `lurek.audio.getSourceBus(source: LSource|integer) -> LBus`
+### lurek.audio.getSourceBus
+
+`lurek.audio.getSourceBus(source: LSource|integer) -> LBus`
 
 Returns the bus a source is routed through.
 
 **Parameters**
 
-- `source` (`LSource|integer`, required) - Audio source or numeric source ID.
+- `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
 **Returns**: `LBus` - The assigned bus, or nil if using direct output.
 
@@ -1166,7 +1189,9 @@ do
 end
 ```
 
-### `lurek.audio.getSourceCount() -> integer`
+### lurek.audio.getSourceCount
+
+`lurek.audio.getSourceCount() -> integer`
 
 Returns the total number of loaded audio sources (playing or idle).
 
@@ -1189,13 +1214,15 @@ do
 end
 ```
 
-### `lurek.audio.getSourceType(source: LSource|integer) -> string`
+### lurek.audio.getSourceType
+
+`lurek.audio.getSourceType(source: LSource|integer) -> string`
 
 Returns whether a source is static or streaming.
 
 **Parameters**
 
-- `source` (`LSource|integer`, required) - Audio source or numeric source ID.
+- `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
 **Returns**: `string` - Either "static" or "stream".
 
@@ -1218,13 +1245,15 @@ do
 end
 ```
 
-### `lurek.audio.getStereoWidth(src_ud: LSource) -> number`
+### lurek.audio.getStereoWidth
+
+`lurek.audio.getStereoWidth(src_ud: LSource) -> number`
 
 Returns the current stereo width factor of an audio source.
 
 **Parameters**
 
-- `src_ud` (`LSource`, required) - The audio source to query.
+- `src_ud` (`LSource`, required): The audio source to query.
 
 **Returns**: `number` - Stereo width factor (0.0 = mono, 1.0 = full stereo).
 
@@ -1244,13 +1273,15 @@ do
 end
 ```
 
-### `lurek.audio.getVelocity(source: LSource|integer) -> number, number, number`
+### lurek.audio.getVelocity
+
+`lurek.audio.getVelocity(source: LSource|integer) -> number, number, number`
 
 Returns the velocity vector of a source.
 
 **Parameters**
 
-- `source` (`LSource|integer`, required) - Audio source or numeric source ID.
+- `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
 **Returns**: `number, number, number` - X, Y, and Z velocity components.
 
@@ -1271,13 +1302,15 @@ do
 end
 ```
 
-### `lurek.audio.getVolume(source: LSource|integer) -> number`
+### lurek.audio.getVolume
+
+`lurek.audio.getVolume(source: LSource|integer) -> number`
 
 Returns the current volume of a source.
 
 **Parameters**
 
-- `source` (`LSource|integer`, required) - Audio source or numeric source ID.
+- `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
 **Returns**: `number` - Current volume multiplier.
 
@@ -1295,7 +1328,9 @@ do
 end
 ```
 
-### `lurek.audio.hasMidiSoundFont() -> boolean`
+### lurek.audio.hasMidiSoundFont
+
+`lurek.audio.hasMidiSoundFont() -> boolean`
 
 Returns whether a SoundFont file has been loaded for MIDI synthesis.
 
@@ -1316,13 +1351,15 @@ do
 end
 ```
 
-### `lurek.audio.isLooping(source: LSource|integer) -> boolean`
+### lurek.audio.isLooping
+
+`lurek.audio.isLooping(source: LSource|integer) -> boolean`
 
 Returns whether a source has looping enabled.
 
 **Parameters**
 
-- `source` (`LSource|integer`, required) - Audio source or numeric source ID.
+- `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
 **Returns**: `boolean` - True if looping is enabled.
 
@@ -1340,13 +1377,15 @@ do
 end
 ```
 
-### `lurek.audio.isPaused(source: LSource|integer) -> boolean`
+### lurek.audio.isPaused
+
+`lurek.audio.isPaused(source: LSource|integer) -> boolean`
 
 Returns whether a source is currently paused.
 
 **Parameters**
 
-- `source` (`LSource|integer`, required) - Audio source or numeric source ID.
+- `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
 **Returns**: `boolean` - True if the source is paused.
 
@@ -1366,13 +1405,15 @@ do
 end
 ```
 
-### `lurek.audio.isPlaying(source: LSource|integer) -> boolean`
+### lurek.audio.isPlaying
+
+`lurek.audio.isPlaying(source: LSource|integer) -> boolean`
 
 Returns whether a source is currently playing.
 
 **Parameters**
 
-- `source` (`LSource|integer`, required) - Audio source or numeric source ID.
+- `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
 **Returns**: `boolean` - True if the source is playing.
 
@@ -1391,13 +1432,15 @@ do
 end
 ```
 
-### `lurek.audio.isStopped(source: LSource|integer) -> boolean`
+### lurek.audio.isStopped
+
+`lurek.audio.isStopped(source: LSource|integer) -> boolean`
 
 Returns whether a source is currently stopped.
 
 **Parameters**
 
-- `source` (`LSource|integer`, required) - Audio source or numeric source ID.
+- `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
 **Returns**: `boolean` - True if the source is stopped.
 
@@ -1414,14 +1457,16 @@ do
 end
 ```
 
-### `lurek.audio.mixInto(dest_ud: LSoundData, src_ud: LSoundData)`
+### lurek.audio.mixInto
+
+`lurek.audio.mixInto(dest_ud: LSoundData, src_ud: LSoundData)`
 
 Mixes the samples of `src` into `dest` in-place (both must have the same format).
 
 **Parameters**
 
-- `dest_ud` (`LSoundData`, required) - Destination sound data to mix into.
-- `src_ud` (`LSoundData`, required) - Source sound data to mix from.
+- `dest_ud` (`LSoundData`, required): Destination sound data to mix into.
+- `src_ud` (`LSoundData`, required): Source sound data to mix from.
 
 #### Example
 
@@ -1441,13 +1486,15 @@ do
 end
 ```
 
-### `lurek.audio.newBus(name: string) -> LBus`
+### lurek.audio.newBus
+
+`lurek.audio.newBus(name: string) -> LBus`
 
 Creates a new audio mixing bus for grouping and controlling sources.
 
 **Parameters**
 
-- `name` (`string`, required) - Unique name for the bus (e.g. "music", "sfx").
+- `name` (`string`, required): Unique name for the bus (e.g. "music", "sfx").
 
 **Returns**: `LBus` - The new audio bus handle.
 
@@ -1467,14 +1514,16 @@ do
 end
 ```
 
-### `lurek.audio.newDecoder(source: string, [buffersize]: integer) -> LDecoder`
+### lurek.audio.newDecoder
+
+`lurek.audio.newDecoder(source: string, [buffersize]: integer) -> LDecoder`
 
 Creates a streaming audio decoder for the given file. The file is opened relative to the game directory.
 
 **Parameters**
 
-- `source` (`string`, required) - Relative path to the audio file (WAV, OGG, MP3, or FLAC).
-- `buffersize` (`integer`, optional) - Number of samples per decode chunk; defaults to 2048.
+- `source` (`string`, required): Relative path to the audio file (WAV, OGG, MP3, or FLAC).
+- `buffersize` (`integer`, optional): Number of samples per decode chunk; defaults to 2048.
 
 **Returns**: `LDecoder` - A streaming decoder with `decode`, `seek`, `rewind`, and `getSampleRate` methods.
 
@@ -1493,13 +1542,15 @@ do
 end
 ```
 
-### `lurek.audio.newMidiPlayer([path]: string) -> LMidiPlayer`
+### lurek.audio.newMidiPlayer
+
+`lurek.audio.newMidiPlayer([path]: string) -> LMidiPlayer`
 
 Creates a new MIDI player instance, optionally loading a file immediately.
 
 **Parameters**
 
-- `path` (`string`, optional) - Optional relative path to a .mid file to load.
+- `path` (`string`, optional): Optional relative path to a .mid file to load.
 
 **Returns**: `LMidiPlayer` - A new MIDI player ready for playback.
 
@@ -1519,14 +1570,16 @@ do
 end
 ```
 
-### `lurek.audio.newPool(file_path: string, voice_count: integer) -> LSoundPool`
+### lurek.audio.newPool
+
+`lurek.audio.newPool(file_path: string, voice_count: integer) -> LSoundPool`
 
 Creates a polyphonic sound pool that allows the same audio file to play on multiple simultaneous voices.
 
 **Parameters**
 
-- `file_path` (`string`, required) - Relative path to the audio file shared by all voices in the pool.
-- `voice_count` (`integer`, required) - Number of concurrent voices to pre-allocate.
+- `file_path` (`string`, required): Relative path to the audio file shared by all voices in the pool.
+- `voice_count` (`integer`, required): Number of concurrent voices to pre-allocate.
 
 **Returns**: `LSoundPool` - A sound pool with `play`, `stopAll`, `setVolume`, `release`, and `getVoiceCount` methods.
 
@@ -1547,16 +1600,18 @@ do
 end
 ```
 
-### `lurek.audio.newQueueableSource(sample_rate: integer, bit_depth: integer, channels: integer, [buffer_count]: integer) -> integer`
+### lurek.audio.newQueueableSource
+
+`lurek.audio.newQueueableSource(sample_rate: integer, bit_depth: integer, channels: integer, [buffer_count]: integer) -> integer`
 
 Creates a new queueable audio source for streaming PCM data buffer by buffer.
 
 **Parameters**
 
-- `sample_rate` (`integer`, required) - Sample rate in Hz (e.g. 44100).
-- `bit_depth` (`integer`, required) - Bit depth per sample (8 or 16).
-- `channels` (`integer`, required) - Channel count (1 = mono, 2 = stereo).
-- `buffer_count` (`integer`, optional) - Number of internal buffers to pre-allocate; defaults to 4.
+- `sample_rate` (`integer`, required): Sample rate in Hz (e.g. 44100).
+- `bit_depth` (`integer`, required): Bit depth per sample (8 or 16).
+- `channels` (`integer`, required): Channel count (1 = mono, 2 = stereo).
+- `buffer_count` (`integer`, optional): Number of internal buffers to pre-allocate; defaults to 4.
 
 **Returns**: `integer` - An opaque integer handle for use with `queueSource`, `playQueueable`, and `stopQueueable`.
 
@@ -1576,16 +1631,18 @@ do
 end
 ```
 
-### `lurek.audio.newSawtoothWave(freq: number, duration: number, sample_rate: integer, amplitude: number) -> LSoundData`
+### lurek.audio.newSawtoothWave
+
+`lurek.audio.newSawtoothWave(freq: number, duration: number, sample_rate: integer, amplitude: number) -> LSoundData`
 
 Generates a sawtooth wave as a `SoundData` buffer.
 
 **Parameters**
 
-- `freq` (`number`, required) - Frequency in Hz.
-- `duration` (`number`, required) - Duration in seconds.
-- `sample_rate` (`integer`, required) - Sample rate in Hz (e.g. 44100).
-- `amplitude` (`number`, required) - Peak amplitude in the range [0.0, 1.0].
+- `freq` (`number`, required): Frequency in Hz.
+- `duration` (`number`, required): Duration in seconds.
+- `sample_rate` (`integer`, required): Sample rate in Hz (e.g. 44100).
+- `amplitude` (`number`, required): Peak amplitude in the range [0.0, 1.0].
 
 **Returns**: `LSoundData` - A `SoundData` object containing the generated PCM samples.
 
@@ -1603,16 +1660,18 @@ do
 end
 ```
 
-### `lurek.audio.newSineWave(freq: number, duration: number, sample_rate: integer, amplitude: number) -> LSoundData`
+### lurek.audio.newSineWave
+
+`lurek.audio.newSineWave(freq: number, duration: number, sample_rate: integer, amplitude: number) -> LSoundData`
 
 Generates a sine wave as a `SoundData` buffer.
 
 **Parameters**
 
-- `freq` (`number`, required) - Frequency in Hz (e.g. 440.0 for concert A).
-- `duration` (`number`, required) - Duration in seconds.
-- `sample_rate` (`integer`, required) - Sample rate in Hz (e.g. 44100).
-- `amplitude` (`number`, required) - Peak amplitude in the range [0.0, 1.0].
+- `freq` (`number`, required): Frequency in Hz (e.g. 440.0 for concert A).
+- `duration` (`number`, required): Duration in seconds.
+- `sample_rate` (`integer`, required): Sample rate in Hz (e.g. 44100).
+- `amplitude` (`number`, required): Peak amplitude in the range [0.0, 1.0].
 
 **Returns**: `LSoundData` - A `SoundData` object containing the generated PCM samples.
 
@@ -1631,15 +1690,17 @@ do
 end
 ```
 
-### `lurek.audio.newSoundData(pathOrCount: string|integer, sampleRate: integer, [channels]: integer) -> LSoundData`
+### lurek.audio.newSoundData
+
+`lurek.audio.newSoundData(pathOrCount: string|integer, sampleRate: integer, [channels]: integer) -> LSoundData`
 
 Creates a new SoundData object from a file path or blank buffer for procedural audio.
 
 **Parameters**
 
-- `pathOrCount` (`string|integer`, required) - File path to decode, or sample count for blank buffer.
-- `sampleRate` (`integer`, required) - Sample rate in Hz (e.g. 44100, 48000).
-- `channels` (`integer`, optional) - Channel count (1 = mono, 2 = stereo), defaults to 1.
+- `pathOrCount` (`string|integer`, required): File path to decode, or sample count for blank buffer.
+- `sampleRate` (`integer`, required): Sample rate in Hz (e.g. 44100, 48000).
+- `channels` (`integer`, optional): Channel count (1 = mono, 2 = stereo), defaults to 1.
 
 **Returns**: `LSoundData` - Raw PCM sample data for manipulation or playback.
 
@@ -1658,14 +1719,16 @@ do
 end
 ```
 
-### `lurek.audio.newSource(path: string, [sourceType]: string) -> LSource`
+### lurek.audio.newSource
+
+`lurek.audio.newSource(path: string, [sourceType]: string) -> LSource`
 
 Creates a new audio source from a file path, either fully loaded or streaming.
 
 **Parameters**
 
-- `path` (`string`, required) - Relative path to the audio file (WAV, OGG, MP3, FLAC).
-- `sourceType` (`string`, optional) - "static" to load fully into memory, or "stream" (default) for streaming.
+- `path` (`string`, required): Relative path to the audio file (WAV, OGG, MP3, FLAC).
+- `sourceType` (`string`, optional): "static" to load fully into memory, or "stream" (default) for streaming.
 
 **Returns**: `LSource` - A new audio source ready for playback.
 
@@ -1695,16 +1758,18 @@ do
 end
 ```
 
-### `lurek.audio.newSquareWave(freq: number, duration: number, sample_rate: integer, amplitude: number) -> LSoundData`
+### lurek.audio.newSquareWave
+
+`lurek.audio.newSquareWave(freq: number, duration: number, sample_rate: integer, amplitude: number) -> LSoundData`
 
 Generates a square wave as a `SoundData` buffer.
 
 **Parameters**
 
-- `freq` (`number`, required) - Frequency in Hz.
-- `duration` (`number`, required) - Duration in seconds.
-- `sample_rate` (`integer`, required) - Sample rate in Hz (e.g. 44100).
-- `amplitude` (`number`, required) - Peak amplitude in the range [0.0, 1.0].
+- `freq` (`number`, required): Frequency in Hz.
+- `duration` (`number`, required): Duration in seconds.
+- `sample_rate` (`integer`, required): Sample rate in Hz (e.g. 44100).
+- `amplitude` (`number`, required): Peak amplitude in the range [0.0, 1.0].
 
 **Returns**: `LSoundData` - A `SoundData` object containing the generated PCM samples.
 
@@ -1722,16 +1787,18 @@ do
 end
 ```
 
-### `lurek.audio.newTriangleWave(freq: number, duration: number, sample_rate: integer, amplitude: number) -> LSoundData`
+### lurek.audio.newTriangleWave
+
+`lurek.audio.newTriangleWave(freq: number, duration: number, sample_rate: integer, amplitude: number) -> LSoundData`
 
 Generates a triangle wave as a `SoundData` buffer.
 
 **Parameters**
 
-- `freq` (`number`, required) - Frequency in Hz.
-- `duration` (`number`, required) - Duration in seconds.
-- `sample_rate` (`integer`, required) - Sample rate in Hz (e.g. 44100).
-- `amplitude` (`number`, required) - Peak amplitude in the range [0.0, 1.0].
+- `freq` (`number`, required): Frequency in Hz.
+- `duration` (`number`, required): Duration in seconds.
+- `sample_rate` (`integer`, required): Sample rate in Hz (e.g. 44100).
+- `amplitude` (`number`, required): Peak amplitude in the range [0.0, 1.0].
 
 **Returns**: `LSoundData` - A `SoundData` object containing the generated PCM samples.
 
@@ -1749,16 +1816,18 @@ do
 end
 ```
 
-### `lurek.audio.newWhiteNoise(duration: number, sample_rate: integer, amplitude: number, seed: integer) -> LSoundData`
+### lurek.audio.newWhiteNoise
+
+`lurek.audio.newWhiteNoise(duration: number, sample_rate: integer, amplitude: number, seed: integer) -> LSoundData`
 
 Generates white noise as a `SoundData` buffer using a deterministic seed.
 
 **Parameters**
 
-- `duration` (`number`, required) - Duration in seconds.
-- `sample_rate` (`integer`, required) - Sample rate in Hz (e.g. 44100).
-- `amplitude` (`number`, required) - Peak amplitude in the range [0.0, 1.0].
-- `seed` (`integer`, required) - Seed value for the noise generator (same seed produces identical output).
+- `duration` (`number`, required): Duration in seconds.
+- `sample_rate` (`integer`, required): Sample rate in Hz (e.g. 44100).
+- `amplitude` (`number`, required): Peak amplitude in the range [0.0, 1.0].
+- `seed` (`integer`, required): Seed value for the noise generator (same seed produces identical output).
 
 **Returns**: `LSoundData` - A `SoundData` object containing the generated PCM samples.
 
@@ -1778,15 +1847,17 @@ do
 end
 ```
 
-### `lurek.audio.normalizeFile(input: string, output: string, target: number)`
+### lurek.audio.normalizeFile
+
+`lurek.audio.normalizeFile(input: string, output: string, target: number)`
 
 Normalizes an audio file to a target peak amplitude and saves the result.
 
 **Parameters**
 
-- `input` (`string`, required) - Relative path to the input audio file.
-- `output` (`string`, required) - Relative path for the output WAV file.
-- `target` (`number`, required) - Target peak amplitude (e.g. 0.9 for headroom).
+- `input` (`string`, required): Relative path to the input audio file.
+- `output` (`string`, required): Relative path for the output WAV file.
+- `target` (`number`, required): Target peak amplitude (e.g. 0.9 for headroom).
 
 #### Example
 
@@ -1802,13 +1873,15 @@ do
 end
 ```
 
-### `lurek.audio.pause(source: LSource|integer)`
+### lurek.audio.pause
+
+`lurek.audio.pause(source: LSource|integer)`
 
 Pauses playback of a source at its current position.
 
 **Parameters**
 
-- `source` (`LSource|integer`, required) - Audio source or numeric source ID.
+- `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
 #### Example
 
@@ -1822,7 +1895,9 @@ do
 end
 ```
 
-### `lurek.audio.pauseAll()`
+### lurek.audio.pauseAll
+
+`lurek.audio.pauseAll()`
 
 Pauses all currently playing audio sources.
 
@@ -1844,14 +1919,16 @@ do
 end
 ```
 
-### `lurek.audio.play(source: LSource|integer, [options]: table) -> integer`
+### lurek.audio.play
+
+`lurek.audio.play(source: LSource|integer, [options]: table) -> integer`
 
 Starts playback of a source by handle, optionally routing through a named bus.
 
 **Parameters**
 
-- `source` (`LSource|integer`, required) - Audio source or numeric source ID.
-- `options` (`table`, optional) - Optional table with "bus" field for bus routing.
+- `source` (`LSource|integer`, required): Audio source or numeric source ID.
+- `options` (`table`, optional): Optional table with "bus" field for bus routing.
 
 **Returns**: `integer` - Numeric source ID of the playing source.
 
@@ -1866,13 +1943,15 @@ do
 end
 ```
 
-### `lurek.audio.playLooping(source: LSource|integer)`
+### lurek.audio.playLooping
+
+`lurek.audio.playLooping(source: LSource|integer)`
 
 Starts playback of a source with looping enabled in one call.
 
 **Parameters**
 
-- `source` (`LSource|integer`, required) - Audio source or numeric source ID.
+- `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
 #### Example
 
@@ -1892,13 +1971,15 @@ do
 end
 ```
 
-### `lurek.audio.playQueueable(qsource_id: integer)`
+### lurek.audio.playQueueable
+
+`lurek.audio.playQueueable(qsource_id: integer)`
 
 Starts playback of a queueable audio source.
 
 **Parameters**
 
-- `qsource_id` (`integer`, required) - Queueable source handle returned by newQueueableSource.
+- `qsource_id` (`integer`, required): Queueable source handle returned by newQueueableSource.
 
 #### Example
 
@@ -1918,15 +1999,17 @@ do
 end
 ```
 
-### `lurek.audio.processOffline(input: string, output: string, effects_tbl: table)`
+### lurek.audio.processOffline
+
+`lurek.audio.processOffline(input: string, output: string, effects_tbl: table)`
 
 Processes an audio file offline through a chain of effects and writes the result to an output file.
 
 **Parameters**
 
-- `input` (`string`, required) - Relative path to the input audio file.
-- `output` (`string`, required) - Relative path for the output WAV file.
-- `effects_tbl` (`table`, required) - Array of effect tables; each has `type` (string) and optional `p1`, `p2`, `p3` (number) fields.
+- `input` (`string`, required): Relative path to the input audio file.
+- `output` (`string`, required): Relative path for the output WAV file.
+- `effects_tbl` (`table`, required): Array of effect tables; each has `type` (string) and optional `p1`, `p2`, `p3` (number) fields.
 
 #### Example
 
@@ -1944,14 +2027,16 @@ do
 end
 ```
 
-### `lurek.audio.queueSource(qsource_id: integer, sd: LSoundData)`
+### lurek.audio.queueSource
+
+`lurek.audio.queueSource(qsource_id: integer, sd: LSoundData)`
 
 Queues a decoded audio chunk for playback on a queueable source.
 
 **Parameters**
 
-- `qsource_id` (`integer`, required) - Queueable source handle returned by `newQueueableSource`.
-- `sd` (`LSoundData`, required) - Sound data chunk to enqueue for playback.
+- `qsource_id` (`integer`, required): Queueable source handle returned by `newQueueableSource`.
+- `sd` (`LSoundData`, required): Sound data chunk to enqueue for playback.
 
 #### Example
 
@@ -1970,13 +2055,15 @@ do
 end
 ```
 
-### `lurek.audio.release(source: LSource|integer) -> boolean`
+### lurek.audio.release
+
+`lurek.audio.release(source: LSource|integer) -> boolean`
 
 Releases an audio source, freeing its memory and stopping playback.
 
 **Parameters**
 
-- `source` (`LSource|integer`, required) - Audio source or numeric source ID to release.
+- `source` (`LSource|integer`, required): Audio source or numeric source ID to release.
 
 **Returns**: `boolean` - True if the source was successfully released.
 
@@ -1993,14 +2080,16 @@ do
 end
 ```
 
-### `lurek.audio.remove_effect(bus_name: string, effect_id: integer) -> boolean`
+### lurek.audio.remove_effect
+
+`lurek.audio.remove_effect(bus_name: string, effect_id: integer) -> boolean`
 
 Removes an effect from a named audio bus by effect ID.
 
 **Parameters**
 
-- `bus_name` (`string`, required) - Name of the audio bus.
-- `effect_id` (`integer`, required) - Effect ID returned by add_effect.
+- `bus_name` (`string`, required): Name of the audio bus.
+- `effect_id` (`integer`, required): Effect ID returned by add_effect.
 
 **Returns**: `boolean` - True if the effect was successfully removed.
 
@@ -2020,13 +2109,15 @@ do
 end
 ```
 
-### `lurek.audio.resume(source: LSource|integer)`
+### lurek.audio.resume
+
+`lurek.audio.resume(source: LSource|integer)`
 
 Resumes playback of a paused source.
 
 **Parameters**
 
-- `source` (`LSource|integer`, required) - Audio source or numeric source ID.
+- `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
 #### Example
 
@@ -2041,7 +2132,9 @@ do
 end
 ```
 
-### `lurek.audio.resumeAll()`
+### lurek.audio.resumeAll
+
+`lurek.audio.resumeAll()`
 
 Resumes all paused audio sources. This function is exposed to Lua scripts.
 
@@ -2064,14 +2157,16 @@ do
 end
 ```
 
-### `lurek.audio.saveWAV(sd_ud: LSoundData, filename: string)`
+### lurek.audio.saveWAV
+
+`lurek.audio.saveWAV(sd_ud: LSoundData, filename: string)`
 
 Encodes the sound data as a WAV file and saves it to the given path (relative to game dir).
 
 **Parameters**
 
-- `sd_ud` (`LSoundData`, required) - The sound data to encode and save.
-- `filename` (`string`, required) - Relative output path for the WAV file.
+- `sd_ud` (`LSoundData`, required): The sound data to encode and save.
+- `filename` (`string`, required): Relative output path for the WAV file.
 
 #### Example
 
@@ -2089,14 +2184,16 @@ do
 end
 ```
 
-### `lurek.audio.seek(source: LSource|integer, pos: number)`
+### lurek.audio.seek
+
+`lurek.audio.seek(source: LSource|integer, pos: number)`
 
 Seeks a source to a specific position in seconds.
 
 **Parameters**
 
-- `source` (`LSource|integer`, required) - Audio source or numeric source ID.
-- `pos` (`number`, required) - Target position in seconds.
+- `source` (`LSource|integer`, required): Audio source or numeric source ID.
+- `pos` (`number`, required): Target position in seconds.
 
 #### Example
 
@@ -2113,14 +2210,16 @@ do
 end
 ```
 
-### `lurek.audio.set_bus_volume(name: string, volume: number)`
+### lurek.audio.set_bus_volume
+
+`lurek.audio.set_bus_volume(name: string, volume: number)`
 
 Sets the volume of a named audio bus.
 
 **Parameters**
 
-- `name` (`string`, required) - Name of the audio bus.
-- `volume` (`number`, required) - Volume level (0.0 = silent, 1.0 = full, >1.0 = boost).
+- `name` (`string`, required): Name of the audio bus.
+- `volume` (`number`, required): Volume level (0.0 = silent, 1.0 = full, >1.0 = boost).
 
 #### Example
 
@@ -2137,16 +2236,18 @@ do
 end
 ```
 
-### `lurek.audio.set_effect_param(bus_name: string, effect_id: integer, param_name: string, value: number) -> boolean`
+### lurek.audio.set_effect_param
+
+`lurek.audio.set_effect_param(bus_name: string, effect_id: integer, param_name: string, value: number) -> boolean`
 
 Sets a parameter value on an effect attached to a named audio bus.
 
 **Parameters**
 
-- `bus_name` (`string`, required) - Name of the audio bus.
-- `effect_id` (`integer`, required) - Effect ID returned by add_effect.
-- `param_name` (`string`, required) - Name of the effect parameter to set.
-- `value` (`number`, required) - New value for the parameter.
+- `bus_name` (`string`, required): Name of the audio bus.
+- `effect_id` (`integer`, required): Effect ID returned by add_effect.
+- `param_name` (`string`, required): Name of the effect parameter to set.
+- `value` (`number`, required): New value for the parameter.
 
 **Returns**: `boolean` - True if the parameter was set successfully.
 
@@ -2167,13 +2268,15 @@ do
 end
 ```
 
-### `lurek.audio.setDistanceModel(model: string)`
+### lurek.audio.setDistanceModel
+
+`lurek.audio.setDistanceModel(model: string)`
 
 Sets the distance attenuation model for spatial audio.
 
 **Parameters**
 
-- `model` (`string`, required) - Model name (e.g. "inverse", "linear", "exponent", "none").
+- `model` (`string`, required): Model name (e.g. "inverse", "linear", "exponent", "none").
 
 #### Example
 
@@ -2189,13 +2292,15 @@ do
 end
 ```
 
-### `lurek.audio.setDopplerScale(scale: number)`
+### lurek.audio.setDopplerScale
+
+`lurek.audio.setDopplerScale(scale: number)`
 
 Sets the global Doppler effect intensity multiplier.
 
 **Parameters**
 
-- `scale` (`number`, required) - Doppler scale (0 = disabled, 1.0 = realistic).
+- `scale` (`number`, required): Doppler scale (0 = disabled, 1.0 = realistic).
 
 #### Example
 
@@ -2211,14 +2316,16 @@ do
 end
 ```
 
-### `lurek.audio.setHighpass(source: LSource|integer, cutoff_hz: integer)`
+### lurek.audio.setHighpass
+
+`lurek.audio.setHighpass(source: LSource|integer, cutoff_hz: integer)`
 
 Applies a highpass filter to a source, attenuating low frequencies.
 
 **Parameters**
 
-- `source` (`LSource|integer`, required) - Audio source or numeric source ID.
-- `cutoff_hz` (`integer`, required) - Cutoff frequency in Hertz.
+- `source` (`LSource|integer`, required): Audio source or numeric source ID.
+- `cutoff_hz` (`integer`, required): Cutoff frequency in Hertz.
 
 #### Example
 
@@ -2234,15 +2341,17 @@ do
 end
 ```
 
-### `lurek.audio.setListener(x: number, y: number, [z]: number)`
+### lurek.audio.setListener
+
+`lurek.audio.setListener(x: number, y: number, [z]: number)`
 
 Sets the 3D listener position for spatial audio (Z defaults to 0 for 2D games).
 
 **Parameters**
 
-- `x` (`number`, required) - Listener X position.
-- `y` (`number`, required) - Listener Y position.
-- `z` (`number`, optional) - Listener Z position (defaults to 0).
+- `x` (`number`, required): Listener X position.
+- `y` (`number`, required): Listener Y position.
+- `z` (`number`, optional): Listener Z position (defaults to 0).
 
 #### Example
 
@@ -2257,14 +2366,16 @@ do
 end
 ```
 
-### `lurek.audio.setListener2D(x: number, y: number)`
+### lurek.audio.setListener2D
+
+`lurek.audio.setListener2D(x: number, y: number)`
 
 Sets the 2D listener position for spatial audio calculations.
 
 **Parameters**
 
-- `x` (`number`, required) - Listener X position in world units.
-- `y` (`number`, required) - Listener Y position in world units.
+- `x` (`number`, required): Listener X position in world units.
+- `y` (`number`, required): Listener Y position in world units.
 
 #### Example
 
@@ -2281,14 +2392,16 @@ do
 end
 ```
 
-### `lurek.audio.setLooping(source: LSource|integer, looping: boolean)`
+### lurek.audio.setLooping
+
+`lurek.audio.setLooping(source: LSource|integer, looping: boolean)`
 
 Enables or disables looping for a source.
 
 **Parameters**
 
-- `source` (`LSource|integer`, required) - Audio source or numeric source ID.
-- `looping` (`boolean`, required) - True to loop, false to play once.
+- `source` (`LSource|integer`, required): Audio source or numeric source ID.
+- `looping` (`boolean`, required): True to loop, false to play once.
 
 #### Example
 
@@ -2303,14 +2416,16 @@ do
 end
 ```
 
-### `lurek.audio.setLowpass(source: LSource|integer, cutoff_hz: integer)`
+### lurek.audio.setLowpass
+
+`lurek.audio.setLowpass(source: LSource|integer, cutoff_hz: integer)`
 
 Applies a lowpass filter to a source, attenuating high frequencies.
 
 **Parameters**
 
-- `source` (`LSource|integer`, required) - Audio source or numeric source ID.
-- `cutoff_hz` (`integer`, required) - Cutoff frequency in Hertz.
+- `source` (`LSource|integer`, required): Audio source or numeric source ID.
+- `cutoff_hz` (`integer`, required): Cutoff frequency in Hertz.
 
 #### Example
 
@@ -2326,13 +2441,15 @@ do
 end
 ```
 
-### `lurek.audio.setMasterVolume(vol: number)`
+### lurek.audio.setMasterVolume
+
+`lurek.audio.setMasterVolume(vol: number)`
 
 Sets the global master volume affecting all audio output.
 
 **Parameters**
 
-- `vol` (`number`, required) - Master volume multiplier (0.0 = silent, 1.0 = normal).
+- `vol` (`number`, required): Master volume multiplier (0.0 = silent, 1.0 = normal).
 
 #### Example
 
@@ -2349,13 +2466,15 @@ do
 end
 ```
 
-### `lurek.audio.setMeter(level: number)`
+### lurek.audio.setMeter
+
+`lurek.audio.setMeter(level: number)`
 
 Sets the master peak level for metering purposes.
 
 **Parameters**
 
-- `level` (`number`, required) - Peak level clamped to 0.0-1.0.
+- `level` (`number`, required): Peak level clamped to 0.0-1.0.
 
 #### Example
 
@@ -2371,13 +2490,15 @@ do
 end
 ```
 
-### `lurek.audio.setMidiSoundFont(path: string)`
+### lurek.audio.setMidiSoundFont
+
+`lurek.audio.setMidiSoundFont(path: string)`
 
 Sets the SoundFont file used for MIDI synthesis.
 
 **Parameters**
 
-- `path` (`string`, required) - Relative path to the .sf2 SoundFont file.
+- `path` (`string`, required): Relative path to the .sf2 SoundFont file.
 
 #### Example
 
@@ -2393,19 +2514,21 @@ do
 end
 ```
 
-### `lurek.audio.setOrientation(source: LSource|integer, fx: number, fy: number, fz: number, ux: number, uy: number, uz: number)`
+### lurek.audio.setOrientation
+
+`lurek.audio.setOrientation(source: LSource|integer, fx: number, fy: number, fz: number, ux: number, uy: number, uz: number)`
 
 Sets the orientation of a source using forward and up vectors.
 
 **Parameters**
 
-- `source` (`LSource|integer`, required) - Audio source or numeric source ID.
-- `fx` (`number`, required) - Forward vector X.
-- `fy` (`number`, required) - Forward vector Y.
-- `fz` (`number`, required) - Forward vector Z.
-- `ux` (`number`, required) - Up vector X.
-- `uy` (`number`, required) - Up vector Y.
-- `uz` (`number`, required) - Up vector Z.
+- `source` (`LSource|integer`, required): Audio source or numeric source ID.
+- `fx` (`number`, required): Forward vector X.
+- `fy` (`number`, required): Forward vector Y.
+- `fz` (`number`, required): Forward vector Z.
+- `ux` (`number`, required): Up vector X.
+- `uy` (`number`, required): Up vector Y.
+- `uz` (`number`, required): Up vector Z.
 
 #### Example
 
@@ -2425,14 +2548,16 @@ do
 end
 ```
 
-### `lurek.audio.setPan(source: LSource|integer, pan: number)`
+### lurek.audio.setPan
+
+`lurek.audio.setPan(source: LSource|integer, pan: number)`
 
 Sets the stereo panning of a source.
 
 **Parameters**
 
-- `source` (`LSource|integer`, required) - Audio source or numeric source ID.
-- `pan` (`number`, required) - Pan from -1.0 (left) to 1.0 (right), 0.0 is center.
+- `source` (`LSource|integer`, required): Audio source or numeric source ID.
+- `pan` (`number`, required): Pan from -1.0 (left) to 1.0 (right), 0.0 is center.
 
 #### Example
 
@@ -2448,14 +2573,16 @@ do
 end
 ```
 
-### `lurek.audio.setPitch(source: LSource|integer, pitch: number)`
+### lurek.audio.setPitch
+
+`lurek.audio.setPitch(source: LSource|integer, pitch: number)`
 
 Sets the pitch multiplier of a source, affecting playback speed and tone.
 
 **Parameters**
 
-- `source` (`LSource|integer`, required) - Audio source or numeric source ID.
-- `pitch` (`number`, required) - Pitch multiplier (1.0 = normal, 2.0 = octave up).
+- `source` (`LSource|integer`, required): Audio source or numeric source ID.
+- `pitch` (`number`, required): Pitch multiplier (1.0 = normal, 2.0 = octave up).
 
 #### Example
 
@@ -2471,13 +2598,15 @@ do
 end
 ```
 
-### `lurek.audio.setPlaybackDevice(name: string)`
+### lurek.audio.setPlaybackDevice
+
+`lurek.audio.setPlaybackDevice(name: string)`
 
 Sets the active audio playback device by name.
 
 **Parameters**
 
-- `name` (`string`, required) - Name of the playback device to activate.
+- `name` (`string`, required): Name of the playback device to activate.
 
 #### Example
 
@@ -2494,16 +2623,18 @@ do
 end
 ```
 
-### `lurek.audio.setPosition(source: LSource|integer, x: number, y: number, [z]: number)`
+### lurek.audio.setPosition
+
+`lurek.audio.setPosition(source: LSource|integer, x: number, y: number, [z]: number)`
 
 Sets the 3D position of a source for spatial audio panning and attenuation.
 
 **Parameters**
 
-- `source` (`LSource|integer`, required) - Audio source or numeric source ID.
-- `x` (`number`, required) - X position in world units.
-- `y` (`number`, required) - Y position in world units.
-- `z` (`number`, optional) - Z position (defaults to 0).
+- `source` (`LSource|integer`, required): Audio source or numeric source ID.
+- `x` (`number`, required): X position in world units.
+- `y` (`number`, required): Y position in world units.
+- `z` (`number`, optional): Z position (defaults to 0).
 
 #### Example
 
@@ -2523,15 +2654,17 @@ do
 end
 ```
 
-### `lurek.audio.setRandomPitch(src_ud: LSource, min: number, max: number)`
+### lurek.audio.setRandomPitch
+
+`lurek.audio.setRandomPitch(src_ud: LSource, min: number, max: number)`
 
 Sets a random pitch range for a source; each play picks a random pitch between min and max.
 
 **Parameters**
 
-- `src_ud` (`LSource`, required) - The audio source to configure.
-- `min` (`number`, required) - Minimum pitch multiplier.
-- `max` (`number`, required) - Maximum pitch multiplier.
+- `src_ud` (`LSource`, required): The audio source to configure.
+- `min` (`number`, required): Minimum pitch multiplier.
+- `max` (`number`, required): Maximum pitch multiplier.
 
 #### Example
 
@@ -2551,14 +2684,16 @@ do
 end
 ```
 
-### `lurek.audio.setSourceBus(source: LSource|integer, bus: LBus)`
+### lurek.audio.setSourceBus
+
+`lurek.audio.setSourceBus(source: LSource|integer, bus: LBus)`
 
 Routes a source through a specific audio bus for grouped mixing.
 
 **Parameters**
 
-- `source` (`LSource|integer`, required) - Audio source or numeric source ID.
-- `bus` (`LBus`, required) - The bus to route through.
+- `source` (`LSource|integer`, required): Audio source or numeric source ID.
+- `bus` (`LBus`, required): The bus to route through.
 
 #### Example
 
@@ -2578,14 +2713,16 @@ do
 end
 ```
 
-### `lurek.audio.setStereoWidth(src_ud: LSource, width: number)`
+### lurek.audio.setStereoWidth
+
+`lurek.audio.setStereoWidth(src_ud: LSource, width: number)`
 
 Sets the stereo width of an audio source (0.0 = mono, 1.0 = full stereo).
 
 **Parameters**
 
-- `src_ud` (`LSource`, required) - The audio source to adjust.
-- `width` (`number`, required) - Stereo width factor (0.0 = mono, 1.0 = full stereo).
+- `src_ud` (`LSource`, required): The audio source to adjust.
+- `width` (`number`, required): Stereo width factor (0.0 = mono, 1.0 = full stereo).
 
 #### Example
 
@@ -2605,16 +2742,18 @@ do
 end
 ```
 
-### `lurek.audio.setVelocity(source: LSource|integer, x: number, y: number, [z]: number)`
+### lurek.audio.setVelocity
+
+`lurek.audio.setVelocity(source: LSource|integer, x: number, y: number, [z]: number)`
 
 Sets the velocity of a source for Doppler effect calculations.
 
 **Parameters**
 
-- `source` (`LSource|integer`, required) - Audio source or numeric source ID.
-- `x` (`number`, required) - X velocity component.
-- `y` (`number`, required) - Y velocity component.
-- `z` (`number`, optional) - Z velocity component (defaults to 0).
+- `source` (`LSource|integer`, required): Audio source or numeric source ID.
+- `x` (`number`, required): X velocity component.
+- `y` (`number`, required): Y velocity component.
+- `z` (`number`, optional): Z velocity component (defaults to 0).
 
 #### Example
 
@@ -2634,14 +2773,16 @@ do
 end
 ```
 
-### `lurek.audio.setVolume(source: LSource|integer, vol: number)`
+### lurek.audio.setVolume
+
+`lurek.audio.setVolume(source: LSource|integer, vol: number)`
 
 Sets the volume of a source by handle.
 
 **Parameters**
 
-- `source` (`LSource|integer`, required) - Audio source or numeric source ID.
-- `vol` (`number`, required) - Volume multiplier (0.0 = silent, 1.0 = normal).
+- `source` (`LSource|integer`, required): Audio source or numeric source ID.
+- `vol` (`number`, required): Volume multiplier (0.0 = silent, 1.0 = normal).
 
 #### Example
 
@@ -2656,16 +2797,18 @@ do
 end
 ```
 
-### `lurek.audio.spectrogramToPng(input: string, output: string, width: integer, height: integer)`
+### lurek.audio.spectrogramToPng
+
+`lurek.audio.spectrogramToPng(input: string, output: string, width: integer, height: integer)`
 
 Renders a spectrogram visualization of an audio file and saves it as a PNG image.
 
 **Parameters**
 
-- `input` (`string`, required) - Relative path to the input audio file.
-- `output` (`string`, required) - Relative path for the output PNG file.
-- `width` (`integer`, required) - Image width in pixels.
-- `height` (`integer`, required) - Image height in pixels.
+- `input` (`string`, required): Relative path to the input audio file.
+- `output` (`string`, required): Relative path for the output PNG file.
+- `width` (`integer`, required): Image width in pixels.
+- `height` (`integer`, required): Image height in pixels.
 
 #### Example
 
@@ -2681,13 +2824,15 @@ do
 end
 ```
 
-### `lurek.audio.stop(source: LSource|integer)`
+### lurek.audio.stop
+
+`lurek.audio.stop(source: LSource|integer)`
 
 Stops playback of a source and resets its position to the beginning.
 
 **Parameters**
 
-- `source` (`LSource|integer`, required) - Audio source or numeric source ID.
+- `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
 #### Example
 
@@ -2701,7 +2846,9 @@ do
 end
 ```
 
-### `lurek.audio.stopAll()`
+### lurek.audio.stopAll
+
+`lurek.audio.stopAll()`
 
 Stops all audio sources and resets their positions.
 
@@ -2717,13 +2864,15 @@ do
 end
 ```
 
-### `lurek.audio.stopQueueable(qsource_id: integer)`
+### lurek.audio.stopQueueable
+
+`lurek.audio.stopQueueable(qsource_id: integer)`
 
 Stops playback of a queueable audio source.
 
 **Parameters**
 
-- `qsource_id` (`integer`, required) - Queueable source handle returned by newQueueableSource.
+- `qsource_id` (`integer`, required): Queueable source handle returned by newQueueableSource.
 
 #### Example
 
@@ -2741,13 +2890,15 @@ do
 end
 ```
 
-### `lurek.audio.tell(source: LSource|integer) -> number`
+### lurek.audio.tell
+
+`lurek.audio.tell(source: LSource|integer) -> number`
 
 Returns the current playback position of a source in seconds.
 
 **Parameters**
 
-- `source` (`LSource|integer`, required) - Audio source or numeric source ID.
+- `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
 **Returns**: `number` - Current position in seconds.
 
@@ -2765,16 +2916,18 @@ do
 end
 ```
 
-### `lurek.audio.waveformToPng(input: string, output: string, width: integer, height: integer)`
+### lurek.audio.waveformToPng
+
+`lurek.audio.waveformToPng(input: string, output: string, width: integer, height: integer)`
 
 Renders a waveform visualization of an audio file and saves it as a PNG image.
 
 **Parameters**
 
-- `input` (`string`, required) - Relative path to the input audio file.
-- `output` (`string`, required) - Relative path for the output PNG file.
-- `width` (`integer`, required) - Image width in pixels.
-- `height` (`integer`, required) - Image height in pixels.
+- `input` (`string`, required): Relative path to the input audio file.
+- `output` (`string`, required): Relative path for the output PNG file.
+- `width` (`integer`, required): Image width in pixels.
+- `height` (`integer`, required): Image height in pixels.
 
 #### Example
 
@@ -2791,11 +2944,21 @@ end
 ```
 
 
-## Types and Methods
+[⬆ back to top](#table-of-contents)
 
-### `LBus`
+## 🔷 Module Types
+
+### LBus
 
 Lua-side wrapper around an audio mixing bus for grouped volume and effect control.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side wrapper around an audio mixing bus for grouped volume and effect control.
+---@class LBus
+LBus = {}
+```
 
 #### Example
 
@@ -2817,9 +2980,160 @@ do
 end
 ```
 
-### `LBus:clearDuck()`
+### LDecoder
+
+Lua-side wrapper around a streaming audio decoder for incremental PCM extraction.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side wrapper around a streaming audio decoder for incremental PCM extraction.
+---@class LDecoder
+LDecoder = {}
+```
+
+#### Example
+
+Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+
+```lua
+do
+  function lurek.init()
+    -- Args: file_path, buffer_size (samples per chunk).
+    -- Use decoders for custom streaming or analysis — decodes PCM chunk by chunk.
+    local dec = lurek.audio.newDecoder("music/long_track.ogg", 4096)
+    lurek.log.info("decoder rate=" .. dec:getSampleRate() .. " Hz", "audio")
+  end
+end
+```
+
+### LMidiPlayer
+
+Lua-side wrapper around a MIDI file player with per-channel control and tempo scaling.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side wrapper around a MIDI file player with per-channel control and tempo scaling.
+---@class LMidiPlayer
+LMidiPlayer = {}
+```
+
+#### Example
+
+Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+
+```lua
+do
+  function lurek.init()
+    -- Pass a path to load immediately, or call :load() later.
+    -- MIDI playback requires a SoundFont — see setMidiSoundFont().
+    local mp = lurek.audio.newMidiPlayer("music/song.mid")
+    mp:setLooping(true)
+    mp:play()
+  end
+end
+```
+
+### LSoundData
+
+Represents the Lua-visible LSoundData object exposed by this module.
+
+**Lua API Definition**
+
+```lua
+--- Represents the Lua-visible LSoundData object exposed by this module.
+---@class LSoundData
+LSoundData = {}
+```
+
+#### Example
+
+Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+
+```lua
+do
+  function lurek.init()
+    -- Sawtooth waves are bright and rich in harmonics — good base for synth sounds.
+    local saw = lurek.audio.newSawtoothWave(110.0, 1.0, 44100, 0.5)
+    lurek.log.info("sawtooth duration=" .. saw:getDuration() .. "s", "audio")
+  end
+end
+```
+
+### LSoundPool
+
+Lua-side wrapper around a pre-allocated pool of identical sound voices for rapid fire effects.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side wrapper around a pre-allocated pool of identical sound voices for rapid fire effects.
+---@class LSoundPool
+LSoundPool = {}
+```
+
+#### Example
+
+Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+
+```lua
+do
+  function lurek.init()
+    -- Args: file_path, voice_count.
+    -- A pool pre-allocates N copies of the same sound. Calling pool:play() fires the next
+    -- available voice in round-robin order — perfect for rapid-fire SFX without clone() calls.
+    local foot = lurek.audio.newPool("sfx/footstep.ogg", 8)
+    foot:setVolume(0.7)
+    foot:play()
+  end
+end
+```
+
+### LSource
+
+Lua-side wrapper around a loaded audio source (sound effect or music stream).
+
+**Lua API Definition**
+
+```lua
+--- Lua-side wrapper around a loaded audio source (sound effect or music stream).
+---@class LSource
+LSource = {}
+```
+
+#### Example
+
+Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+
+```lua
+do
+  local src = lurek.audio.newSource("assets/audio/music.ogg", "static")
+  -- clone() creates an independent copy that can play simultaneously.
+  local copy = lurek.audio.clone(src)
+  lurek.log.debug("source cloned", "audio")
+  lurek.audio.release(src)
+  lurek.audio.release(copy)
+end
+```
+
+
+[⬆ back to top](#table-of-contents)
+
+## 🔹 Module Methods
+
+### LBus:clearDuck
+
+`LBus:clearDuck()`
 
 Removes the ducking configuration from this bus.
+
+**Lua API Stub**
+
+```lua
+--- Removes the ducking configuration from this bus.
+function LBus:clearDuck() end
+```
 
 #### Example
 
@@ -2836,11 +3150,21 @@ do
 end
 ```
 
-### `LBus:getName() -> string`
+### LBus:getName
+
+`LBus:getName() -> string`
 
 Returns the name of this audio bus. This method is available to Lua scripts.
 
 **Returns**: `string` - Bus name as registered during creation.
+
+**Lua API Stub**
+
+```lua
+--- Returns the name of this audio bus. This method is available to Lua scripts.
+---@return string Bus name as registered during creation.
+function LBus:getName() end
+```
 
 #### Example
 
@@ -2855,11 +3179,21 @@ do
 end
 ```
 
-### `LBus:getPeak() -> number`
+### LBus:getPeak
+
+`LBus:getPeak() -> number`
 
 Returns the current peak amplitude level of this bus for VU-meter displays.
 
 **Returns**: `number` - Peak level from 0.0 to 1.0.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current peak amplitude level of this bus for VU-meter displays.
+---@return number Peak level from 0.0 to 1.0.
+function LBus:getPeak() end
+```
 
 #### Example
 
@@ -2876,11 +3210,21 @@ do
 end
 ```
 
-### `LBus:getPitch() -> number`
+### LBus:getPitch
+
+`LBus:getPitch() -> number`
 
 Returns the current pitch multiplier of this bus.
 
 **Returns**: `number` - Current pitch multiplier (defaults to 1.0).
+
+**Lua API Stub**
+
+```lua
+--- Returns the current pitch multiplier of this bus.
+---@return number Current pitch multiplier (defaults to 1.0).
+function LBus:getPitch() end
+```
 
 #### Example
 
@@ -2896,11 +3240,21 @@ do
 end
 ```
 
-### `LBus:getVolume() -> number`
+### LBus:getVolume
+
+`LBus:getVolume() -> number`
 
 Returns the current volume multiplier of this bus.
 
 **Returns**: `number` - Volume multiplier (defaults to 1.0).
+
+**Lua API Stub**
+
+```lua
+--- Returns the current volume multiplier of this bus.
+---@return number Volume multiplier (defaults to 1.0).
+function LBus:getVolume() end
+```
 
 #### Example
 
@@ -2916,11 +3270,21 @@ do
 end
 ```
 
-### `LBus:isPaused() -> boolean`
+### LBus:isPaused
+
+`LBus:isPaused() -> boolean`
 
 Returns whether this bus is currently paused.
 
 **Returns**: `boolean` - True if the bus is paused.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this bus is currently paused.
+---@return boolean True if the bus is paused.
+function LBus:isPaused() end
+```
 
 #### Example
 
@@ -2937,9 +3301,18 @@ do
 end
 ```
 
-### `LBus:pause()`
+### LBus:pause
+
+`LBus:pause()`
 
 Pauses all sources routed through this bus.
+
+**Lua API Stub**
+
+```lua
+--- Pauses all sources routed through this bus.
+function LBus:pause() end
+```
 
 #### Example
 
@@ -2954,9 +3327,18 @@ do
 end
 ```
 
-### `LBus:resume()`
+### LBus:resume
+
+`LBus:resume()`
 
 Resumes all sources routed through this bus that were paused.
+
+**Lua API Stub**
+
+```lua
+--- Resumes all sources routed through this bus that were paused.
+function LBus:resume() end
+```
 
 #### Example
 
@@ -2974,14 +3356,25 @@ do
 end
 ```
 
-### `LBus:setDuckTarget(target_name: string, duck_vol: number)`
+### LBus:setDuckTarget
+
+`LBus:setDuckTarget(target_name: string, duck_vol: number)`
 
 Configures ducking so this bus lowers the volume of a target bus when active.
 
 **Parameters**
 
-- `target_name` (`string`, required) - Name of the bus to duck.
-- `duck_vol` (`number`, required) - Volume multiplier applied to the target when ducking (0.0-1.0).
+- `target_name` (`string`, required): Name of the bus to duck.
+- `duck_vol` (`number`, required): Volume multiplier applied to the target when ducking (0.0-1.0).
+
+**Lua API Stub**
+
+```lua
+--- Configures ducking so this bus lowers the volume of a target bus when active.
+---@param target_name string Name of the bus to duck.
+---@param duck_vol number Volume multiplier applied to the target when ducking (0.0-1.0).
+function LBus:setDuckTarget(target_name, duck_vol) end
+```
 
 #### Example
 
@@ -3002,13 +3395,23 @@ do
 end
 ```
 
-### `LBus:setPitch(pitch: number)`
+### LBus:setPitch
+
+`LBus:setPitch(pitch: number)`
 
 Sets the pitch multiplier applied to all sources routed through this bus.
 
 **Parameters**
 
-- `pitch` (`number`, required) - Pitch multiplier (1.0 = normal speed).
+- `pitch` (`number`, required): Pitch multiplier (1.0 = normal speed).
+
+**Lua API Stub**
+
+```lua
+--- Sets the pitch multiplier applied to all sources routed through this bus.
+---@param pitch number Pitch multiplier (1.0 = normal speed).
+function LBus:setPitch(pitch) end
+```
 
 #### Example
 
@@ -3025,13 +3428,23 @@ do
 end
 ```
 
-### `LBus:setVolume(vol: number)`
+### LBus:setVolume
+
+`LBus:setVolume(vol: number)`
 
 Sets the volume multiplier for all sources routed through this bus.
 
 **Parameters**
 
-- `vol` (`number`, required) - Volume multiplier (0.0 = silent, 1.0 = normal).
+- `vol` (`number`, required): Volume multiplier (0.0 = silent, 1.0 = normal).
+
+**Lua API Stub**
+
+```lua
+--- Sets the volume multiplier for all sources routed through this bus.
+---@param vol number Volume multiplier (0.0 = silent, 1.0 = normal).
+function LBus:setVolume(vol) end
+```
 
 #### Example
 
@@ -3046,11 +3459,21 @@ do
 end
 ```
 
-### `LBus:type() -> string`
+### LBus:type
+
+`LBus:type() -> string`
 
 Returns the type name of this object for runtime type-checking.
 
 **Returns**: `string` - Always returns "LBus".
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name of this object for runtime type-checking.
+---@return string Always returns "LBus".
+function LBus:type() end
+```
 
 #### Example
 
@@ -3064,15 +3487,26 @@ do
 end
 ```
 
-### `LBus:typeOf(name: string) -> boolean`
+### LBus:typeOf
+
+`LBus:typeOf(name: string) -> boolean`
 
 Checks whether this object matches the given type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to check (e.g. "LBus", "Bus", or "Object").
+- `name` (`string`, required): Type name to check (e.g. "LBus", "Bus", or "Object").
 
 **Returns**: `boolean` - True if this object matches the given type.
+
+**Lua API Stub**
+
+```lua
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check (e.g. "LBus", "Bus", or "Object").
+---@return boolean True if this object matches the given type.
+function LBus:typeOf(name) end
+```
 
 #### Example
 
@@ -3088,30 +3522,21 @@ do
 end
 ```
 
-### `LDecoder`
+### LDecoder:decode
 
-Lua-side wrapper around a streaming audio decoder for incremental PCM extraction.
-
-#### Example
-
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
-
-```lua
-do
-  function lurek.init()
-    -- Args: file_path, buffer_size (samples per chunk).
-    -- Use decoders for custom streaming or analysis — decodes PCM chunk by chunk.
-    local dec = lurek.audio.newDecoder("music/long_track.ogg", 4096)
-    lurek.log.info("decoder rate=" .. dec:getSampleRate() .. " Hz", "audio")
-  end
-end
-```
-
-### `LDecoder:decode() -> LSoundData`
+`LDecoder:decode() -> LSoundData`
 
 Decodes the next chunk of audio data and returns it as a LSoundData object.
 
 **Returns**: `LSoundData` - Decoded PCM data, or nil if end of stream reached.
+
+**Lua API Stub**
+
+```lua
+--- Decodes the next chunk of audio data and returns it as a LSoundData object.
+---@return LSoundData Decoded PCM data, or nil if end of stream reached.
+function LDecoder:decode() end
+```
 
 #### Example
 
@@ -3130,11 +3555,21 @@ do
 end
 ```
 
-### `LDecoder:getBitDepth() -> integer`
+### LDecoder:getBitDepth
+
+`LDecoder:getBitDepth() -> integer`
 
 Returns the bit depth of the source audio file.
 
 **Returns**: `integer` - Bits per sample (e.g. 16, 24).
+
+**Lua API Stub**
+
+```lua
+--- Returns the bit depth of the source audio file.
+---@return number Bits per sample (e.g. 16, 24).
+function LDecoder:getBitDepth() end
+```
 
 #### Example
 
@@ -3151,11 +3586,21 @@ do
 end
 ```
 
-### `LDecoder:getChannelCount() -> integer`
+### LDecoder:getChannelCount
+
+`LDecoder:getChannelCount() -> integer`
 
 Returns the number of audio channels in the source file.
 
 **Returns**: `integer` - Channel count (1 = mono, 2 = stereo).
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of audio channels in the source file.
+---@return number Channel count (1 = mono, 2 = stereo).
+function LDecoder:getChannelCount() end
+```
 
 #### Example
 
@@ -3172,11 +3617,21 @@ do
 end
 ```
 
-### `LDecoder:getDuration() -> number`
+### LDecoder:getDuration
+
+`LDecoder:getDuration() -> number`
 
 Returns the total duration of the source audio file in seconds.
 
 **Returns**: `number` - Duration in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Returns the total duration of the source audio file in seconds.
+---@return number Duration in seconds.
+function LDecoder:getDuration() end
+```
 
 #### Example
 
@@ -3193,11 +3648,21 @@ do
 end
 ```
 
-### `LDecoder:getSampleRate() -> integer`
+### LDecoder:getSampleRate
+
+`LDecoder:getSampleRate() -> integer`
 
 Returns the sample rate of the source audio file.
 
 **Returns**: `integer` - Sample rate in Hz.
+
+**Lua API Stub**
+
+```lua
+--- Returns the sample rate of the source audio file.
+---@return number Sample rate in Hz.
+function LDecoder:getSampleRate() end
+```
 
 #### Example
 
@@ -3214,11 +3679,21 @@ do
 end
 ```
 
-### `LDecoder:isSeekable() -> boolean`
+### LDecoder:isSeekable
+
+`LDecoder:isSeekable() -> boolean`
 
 Returns whether this decoder supports seeking.
 
 **Returns**: `boolean` - True if seek operations are supported.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this decoder supports seeking.
+---@return boolean True if seek operations are supported.
+function LDecoder:isSeekable() end
+```
 
 #### Example
 
@@ -3235,9 +3710,18 @@ do
 end
 ```
 
-### `LDecoder:release()`
+### LDecoder:release
+
+`LDecoder:release()`
 
 Releases decoder resources (no-op, kept for API symmetry).
+
+**Lua API Stub**
+
+```lua
+--- Releases decoder resources (no-op, kept for API symmetry).
+function LDecoder:release() end
+```
 
 #### Example
 
@@ -3254,9 +3738,18 @@ do
 end
 ```
 
-### `LDecoder:rewind()`
+### LDecoder:rewind
+
+`LDecoder:rewind()`
 
 Rewinds the decoder back to the beginning of the audio stream.
+
+**Lua API Stub**
+
+```lua
+--- Rewinds the decoder back to the beginning of the audio stream.
+function LDecoder:rewind() end
+```
 
 #### Example
 
@@ -3274,13 +3767,23 @@ do
 end
 ```
 
-### `LDecoder:seek(offset: number)`
+### LDecoder:seek
+
+`LDecoder:seek(offset: number)`
 
 Seeks to a specific position in the audio stream.
 
 **Parameters**
 
-- `offset` (`number`, required) - Target position in seconds.
+- `offset` (`number`, required): Target position in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Seeks to a specific position in the audio stream.
+---@param offset number Target position in seconds.
+function LDecoder:seek(offset) end
+```
 
 #### Example
 
@@ -3297,11 +3800,21 @@ do
 end
 ```
 
-### `LDecoder:tell() -> number`
+### LDecoder:tell
+
+`LDecoder:tell() -> number`
 
 Returns the current read position in the audio stream in seconds.
 
 **Returns**: `number` - Current position in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current read position in the audio stream in seconds.
+---@return number Current position in seconds.
+function LDecoder:tell() end
+```
 
 #### Example
 
@@ -3318,11 +3831,21 @@ do
 end
 ```
 
-### `LDecoder:type() -> string`
+### LDecoder:type
+
+`LDecoder:type() -> string`
 
 Returns the type name of this object for runtime type-checking.
 
 **Returns**: `string` - Always returns "LDecoder".
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name of this object for runtime type-checking.
+---@return string Always returns "LDecoder".
+function LDecoder:type() end
+```
 
 #### Example
 
@@ -3335,15 +3858,26 @@ do
 end
 ```
 
-### `LDecoder:typeOf(name: string) -> boolean`
+### LDecoder:typeOf
+
+`LDecoder:typeOf(name: string) -> boolean`
 
 Checks whether this object matches the given type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to check (e.g. "LDecoder" or "Object").
+- `name` (`string`, required): Type name to check (e.g. "LDecoder" or "Object").
 
 **Returns**: `boolean` - True if this object matches the given type.
+
+**Lua API Stub**
+
+```lua
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check (e.g. "LDecoder" or "Object").
+---@return boolean True if this object matches the given type.
+function LDecoder:typeOf(name) end
+```
 
 #### Example
 
@@ -3356,31 +3890,21 @@ do
 end
 ```
 
-### `LMidiPlayer`
+### LMidiPlayer:getBus
 
-Lua-side wrapper around a MIDI file player with per-channel control and tempo scaling.
-
-#### Example
-
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
-
-```lua
-do
-  function lurek.init()
-    -- Pass a path to load immediately, or call :load() later.
-    -- MIDI playback requires a SoundFont — see setMidiSoundFont().
-    local mp = lurek.audio.newMidiPlayer("music/song.mid")
-    mp:setLooping(true)
-    mp:play()
-  end
-end
-```
-
-### `LMidiPlayer:getBus() -> LBus`
+`LMidiPlayer:getBus() -> LBus`
 
 Returns the audio bus this MIDI player is routed through.
 
 **Returns**: `LBus` - The assigned bus, or nil if using direct output.
+
+**Lua API Stub**
+
+```lua
+--- Returns the audio bus this MIDI player is routed through.
+---@return LBus The assigned bus, or nil if using direct output.
+function LMidiPlayer:getBus() end
+```
 
 #### Example
 
@@ -3398,11 +3922,21 @@ do
 end
 ```
 
-### `LMidiPlayer:getChannelCount() -> integer`
+### LMidiPlayer:getChannelCount
+
+`LMidiPlayer:getChannelCount() -> integer`
 
 Returns the number of active MIDI channels in the loaded file.
 
 **Returns**: `integer` - Number of active channels.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of active MIDI channels in the loaded file.
+---@return number Number of active channels.
+function LMidiPlayer:getChannelCount() end
+```
 
 #### Example
 
@@ -3417,15 +3951,26 @@ do
 end
 ```
 
-### `LMidiPlayer:getChannelInstrument(ch: integer) -> integer`
+### LMidiPlayer:getChannelInstrument
+
+`LMidiPlayer:getChannelInstrument(ch: integer) -> integer`
 
 Returns the current GM instrument program for a channel.
 
 **Parameters**
 
-- `ch` (`integer`, required) - Channel number (1-16).
+- `ch` (`integer`, required): Channel number (1-16).
 
 **Returns**: `integer` - GM instrument program number (0-127).
+
+**Lua API Stub**
+
+```lua
+--- Returns the current GM instrument program for a channel.
+---@param ch number Channel number (1-16).
+---@return number GM instrument program number (0-127).
+function LMidiPlayer:getChannelInstrument(ch) end
+```
 
 #### Example
 
@@ -3443,11 +3988,21 @@ do
 end
 ```
 
-### `LMidiPlayer:getChannels() -> integer`
+### LMidiPlayer:getChannels
+
+`LMidiPlayer:getChannels() -> integer`
 
 Returns the number of output audio channels for MIDI synthesis.
 
 **Returns**: `integer` - Channel count (1 = mono, 2 = stereo).
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of output audio channels for MIDI synthesis.
+---@return number Channel count (1 = mono, 2 = stereo).
+function LMidiPlayer:getChannels() end
+```
 
 #### Example
 
@@ -3464,15 +4019,26 @@ do
 end
 ```
 
-### `LMidiPlayer:getChannelVolume(ch: integer) -> number`
+### LMidiPlayer:getChannelVolume
+
+`LMidiPlayer:getChannelVolume(ch: integer) -> number`
 
 Returns the volume of a specific MIDI channel.
 
 **Parameters**
 
-- `ch` (`integer`, required) - Channel number (1-16).
+- `ch` (`integer`, required): Channel number (1-16).
 
 **Returns**: `number` - Channel volume (0.0-1.0).
+
+**Lua API Stub**
+
+```lua
+--- Returns the volume of a specific MIDI channel.
+---@param ch number Channel number (1-16).
+---@return number Channel volume (0.0-1.0).
+function LMidiPlayer:getChannelVolume(ch) end
+```
 
 #### Example
 
@@ -3488,11 +4054,21 @@ do
 end
 ```
 
-### `LMidiPlayer:getDuration() -> number`
+### LMidiPlayer:getDuration
+
+`LMidiPlayer:getDuration() -> number`
 
 Returns the total duration of the loaded MIDI file in seconds.
 
 **Returns**: `number` - Duration in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Returns the total duration of the loaded MIDI file in seconds.
+---@return number Duration in seconds.
+function LMidiPlayer:getDuration() end
+```
 
 #### Example
 
@@ -3507,11 +4083,21 @@ do
 end
 ```
 
-### `LMidiPlayer:getFilePath() -> string`
+### LMidiPlayer:getFilePath
+
+`LMidiPlayer:getFilePath() -> string`
 
 Returns the file path of the currently loaded MIDI file.
 
 **Returns**: `string` - File path string or nil if no file is loaded.
+
+**Lua API Stub**
+
+```lua
+--- Returns the file path of the currently loaded MIDI file.
+---@return string File path string or nil if no file is loaded.
+function LMidiPlayer:getFilePath() end
+```
 
 #### Example
 
@@ -3527,11 +4113,21 @@ do
 end
 ```
 
-### `LMidiPlayer:getNoteCount() -> integer`
+### LMidiPlayer:getNoteCount
+
+`LMidiPlayer:getNoteCount() -> integer`
 
 Returns the total number of note events in the loaded MIDI file.
 
 **Returns**: `integer` - Total note count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the total number of note events in the loaded MIDI file.
+---@return number Total note count.
+function LMidiPlayer:getNoteCount() end
+```
 
 #### Example
 
@@ -3548,11 +4144,21 @@ do
 end
 ```
 
-### `LMidiPlayer:getOriginalTempo() -> number`
+### LMidiPlayer:getOriginalTempo
+
+`LMidiPlayer:getOriginalTempo() -> number`
 
 Returns the original tempo of the MIDI file as authored.
 
 **Returns**: `number` - Original tempo in BPM.
+
+**Lua API Stub**
+
+```lua
+--- Returns the original tempo of the MIDI file as authored.
+---@return number Original tempo in BPM.
+function LMidiPlayer:getOriginalTempo() end
+```
 
 #### Example
 
@@ -3569,11 +4175,21 @@ do
 end
 ```
 
-### `LMidiPlayer:getSampleRate() -> integer`
+### LMidiPlayer:getSampleRate
+
+`LMidiPlayer:getSampleRate() -> integer`
 
 Returns the output sample rate used for MIDI synthesis.
 
 **Returns**: `integer` - Sample rate in Hz (e.g. 44100).
+
+**Lua API Stub**
+
+```lua
+--- Returns the output sample rate used for MIDI synthesis.
+---@return number Sample rate in Hz (e.g. 44100).
+function LMidiPlayer:getSampleRate() end
+```
 
 #### Example
 
@@ -3588,11 +4204,21 @@ do
 end
 ```
 
-### `LMidiPlayer:getSoundFontPath() -> string`
+### LMidiPlayer:getSoundFontPath
+
+`LMidiPlayer:getSoundFontPath() -> string`
 
 Returns the path of the currently set SoundFont (stub, not yet implemented).
 
 **Returns**: `string` - SoundFont path or nil.
+
+**Lua API Stub**
+
+```lua
+--- Returns the path of the currently set SoundFont (stub, not yet implemented).
+---@return string SoundFont path or nil.
+function LMidiPlayer:getSoundFontPath() end
+```
 
 #### Example
 
@@ -3608,11 +4234,21 @@ do
 end
 ```
 
-### `LMidiPlayer:getTempo() -> number`
+### LMidiPlayer:getTempo
+
+`LMidiPlayer:getTempo() -> number`
 
 Returns the current effective tempo in beats per minute.
 
 **Returns**: `number` - Current tempo in BPM.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current effective tempo in beats per minute.
+---@return number Current tempo in BPM.
+function LMidiPlayer:getTempo() end
+```
 
 #### Example
 
@@ -3628,11 +4264,21 @@ do
 end
 ```
 
-### `LMidiPlayer:getTempoScale() -> number`
+### LMidiPlayer:getTempoScale
+
+`LMidiPlayer:getTempoScale() -> number`
 
 Returns the current tempo scale multiplier.
 
 **Returns**: `number` - Tempo scale factor.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current tempo scale multiplier.
+---@return number Tempo scale factor.
+function LMidiPlayer:getTempoScale() end
+```
 
 #### Example
 
@@ -3648,11 +4294,21 @@ do
 end
 ```
 
-### `LMidiPlayer:getTicksPerBeat() -> integer`
+### LMidiPlayer:getTicksPerBeat
+
+`LMidiPlayer:getTicksPerBeat() -> integer`
 
 Returns the MIDI file's resolution in ticks per beat (PPQN).
 
 **Returns**: `integer` - Ticks per quarter note.
+
+**Lua API Stub**
+
+```lua
+--- Returns the MIDI file's resolution in ticks per beat (PPQN).
+---@return number Ticks per quarter note.
+function LMidiPlayer:getTicksPerBeat() end
+```
 
 #### Example
 
@@ -3669,11 +4325,21 @@ do
 end
 ```
 
-### `LMidiPlayer:getTrackCount() -> integer`
+### LMidiPlayer:getTrackCount
+
+`LMidiPlayer:getTrackCount() -> integer`
 
 Returns the number of tracks in the loaded MIDI file.
 
 **Returns**: `integer` - Number of MIDI tracks.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of tracks in the loaded MIDI file.
+---@return number Number of MIDI tracks.
+function LMidiPlayer:getTrackCount() end
+```
 
 #### Example
 
@@ -3688,15 +4354,26 @@ do
 end
 ```
 
-### `LMidiPlayer:getTrackName(idx: integer) -> string`
+### LMidiPlayer:getTrackName
+
+`LMidiPlayer:getTrackName(idx: integer) -> string`
 
 Returns the name of a MIDI track by 1-based index.
 
 **Parameters**
 
-- `idx` (`integer`, required) - Track index (1-based).
+- `idx` (`integer`, required): Track index (1-based).
 
 **Returns**: `string` - Track name or nil if not available.
+
+**Lua API Stub**
+
+```lua
+--- Returns the name of a MIDI track by 1-based index.
+---@param idx number Track index (1-based).
+---@return string Track name or nil if not available.
+function LMidiPlayer:getTrackName(idx) end
+```
 
 #### Example
 
@@ -3714,11 +4391,21 @@ do
 end
 ```
 
-### `LMidiPlayer:getVolume() -> number`
+### LMidiPlayer:getVolume
+
+`LMidiPlayer:getVolume() -> number`
 
 Returns the current master volume of the MIDI player.
 
 **Returns**: `number` - Volume multiplier.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current master volume of the MIDI player.
+---@return number Volume multiplier.
+function LMidiPlayer:getVolume() end
+```
 
 #### Example
 
@@ -3734,15 +4421,26 @@ do
 end
 ```
 
-### `LMidiPlayer:isChannelMuted(ch: integer) -> boolean`
+### LMidiPlayer:isChannelMuted
+
+`LMidiPlayer:isChannelMuted(ch: integer) -> boolean`
 
 Returns whether a specific MIDI channel is muted.
 
 **Parameters**
 
-- `ch` (`integer`, required) - Channel number (1-16).
+- `ch` (`integer`, required): Channel number (1-16).
 
 **Returns**: `boolean` - True if the channel is muted.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether a specific MIDI channel is muted.
+---@param ch number Channel number (1-16).
+---@return boolean True if the channel is muted.
+function LMidiPlayer:isChannelMuted(ch) end
+```
 
 #### Example
 
@@ -3758,11 +4456,21 @@ do
 end
 ```
 
-### `LMidiPlayer:isLoaded() -> boolean`
+### LMidiPlayer:isLoaded
+
+`LMidiPlayer:isLoaded() -> boolean`
 
 Returns whether a MIDI file is currently loaded and ready to play.
 
 **Returns**: `boolean` - True if a MIDI file is loaded.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether a MIDI file is currently loaded and ready to play.
+---@return boolean True if a MIDI file is loaded.
+function LMidiPlayer:isLoaded() end
+```
 
 #### Example
 
@@ -3779,11 +4487,21 @@ do
 end
 ```
 
-### `LMidiPlayer:isLooping() -> boolean`
+### LMidiPlayer:isLooping
+
+`LMidiPlayer:isLooping() -> boolean`
 
 Returns whether MIDI looping is enabled.
 
 **Returns**: `boolean` - True if looping.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether MIDI looping is enabled.
+---@return boolean True if looping.
+function LMidiPlayer:isLooping() end
+```
 
 #### Example
 
@@ -3799,11 +4517,21 @@ do
 end
 ```
 
-### `LMidiPlayer:isPaused() -> boolean`
+### LMidiPlayer:isPaused
+
+`LMidiPlayer:isPaused() -> boolean`
 
 Returns whether the MIDI player is currently paused.
 
 **Returns**: `boolean` - True if paused.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether the MIDI player is currently paused.
+---@return boolean True if paused.
+function LMidiPlayer:isPaused() end
+```
 
 #### Example
 
@@ -3820,11 +4548,21 @@ do
 end
 ```
 
-### `LMidiPlayer:isPlaying() -> boolean`
+### LMidiPlayer:isPlaying
+
+`LMidiPlayer:isPlaying() -> boolean`
 
 Returns whether the MIDI player is currently playing.
 
 **Returns**: `boolean` - True if playing.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether the MIDI player is currently playing.
+---@return boolean True if playing.
+function LMidiPlayer:isPlaying() end
+```
 
 #### Example
 
@@ -3840,15 +4578,26 @@ do
 end
 ```
 
-### `LMidiPlayer:isTrackMuted(idx: integer) -> boolean`
+### LMidiPlayer:isTrackMuted
+
+`LMidiPlayer:isTrackMuted(idx: integer) -> boolean`
 
 Returns whether a specific MIDI track is muted.
 
 **Parameters**
 
-- `idx` (`integer`, required) - Track index (1-based).
+- `idx` (`integer`, required): Track index (1-based).
 
 **Returns**: `boolean` - True if the track is muted.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether a specific MIDI track is muted.
+---@param idx number Track index (1-based).
+---@return boolean True if the track is muted.
+function LMidiPlayer:isTrackMuted(idx) end
+```
 
 #### Example
 
@@ -3864,15 +4613,26 @@ do
 end
 ```
 
-### `LMidiPlayer:load(path: string) -> boolean`
+### LMidiPlayer:load
+
+`LMidiPlayer:load(path: string) -> boolean`
 
 Loads a MIDI file from the given path relative to the game directory.
 
 **Parameters**
 
-- `path` (`string`, required) - Relative path to the .mid file.
+- `path` (`string`, required): Relative path to the .mid file.
 
 **Returns**: `boolean` - True if the file was loaded successfully.
+
+**Lua API Stub**
+
+```lua
+--- Loads a MIDI file from the given path relative to the game directory.
+---@param path string Relative path to the .mid file.
+---@return boolean True if the file was loaded successfully.
+function LMidiPlayer:load(path) end
+```
 
 #### Example
 
@@ -3891,15 +4651,26 @@ do
 end
 ```
 
-### `LMidiPlayer:loadData(data: string) -> boolean`
+### LMidiPlayer:loadData
+
+`LMidiPlayer:loadData(data: string) -> boolean`
 
 Loads MIDI data from a raw byte string in memory.
 
 **Parameters**
 
-- `data` (`string`, required) - Raw MIDI binary data.
+- `data` (`string`, required): Raw MIDI binary data.
 
 **Returns**: `boolean` - True if the data was parsed successfully.
+
+**Lua API Stub**
+
+```lua
+--- Loads MIDI data from a raw byte string in memory.
+---@param data string Raw MIDI binary data.
+---@return boolean True if the data was parsed successfully.
+function LMidiPlayer:loadData(data) end
+```
 
 #### Example
 
@@ -3917,9 +4688,18 @@ do
 end
 ```
 
-### `LMidiPlayer:pause()`
+### LMidiPlayer:pause
+
+`LMidiPlayer:pause()`
 
 Pauses MIDI playback at the current position.
+
+**Lua API Stub**
+
+```lua
+--- Pauses MIDI playback at the current position.
+function LMidiPlayer:pause() end
+```
 
 #### Example
 
@@ -3937,9 +4717,18 @@ do
 end
 ```
 
-### `LMidiPlayer:play()`
+### LMidiPlayer:play
+
+`LMidiPlayer:play()`
 
 Starts MIDI playback from the current position using the audio output stream.
+
+**Lua API Stub**
+
+```lua
+--- Starts MIDI playback from the current position using the audio output stream.
+function LMidiPlayer:play() end
+```
 
 #### Example
 
@@ -3956,13 +4745,23 @@ do
 end
 ```
 
-### `LMidiPlayer:seek(secs: number)`
+### LMidiPlayer:seek
+
+`LMidiPlayer:seek(secs: number)`
 
 Seeks to a specific position in the MIDI file.
 
 **Parameters**
 
-- `secs` (`number`, required) - Target position in seconds.
+- `secs` (`number`, required): Target position in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Seeks to a specific position in the MIDI file.
+---@param secs number Target position in seconds.
+function LMidiPlayer:seek(secs) end
+```
 
 #### Example
 
@@ -3980,13 +4779,23 @@ do
 end
 ```
 
-### `LMidiPlayer:setBus([bus]: LBus)`
+### LMidiPlayer:setBus
+
+`LMidiPlayer:setBus([bus]: LBus)`
 
 Routes this MIDI player's output through the specified audio bus.
 
 **Parameters**
 
-- `bus` (`LBus`, optional) - Bus to route through, or nil for direct output.
+- `bus` (`LBus`, optional): Bus to route through, or nil for direct output.
+
+**Lua API Stub**
+
+```lua
+--- Routes this MIDI player's output through the specified audio bus.
+---@param bus? LBus Bus to route through, or nil for direct output.
+function LMidiPlayer:setBus(bus) end
+```
 
 #### Example
 
@@ -4003,14 +4812,25 @@ do
 end
 ```
 
-### `LMidiPlayer:setChannelInstrument(ch: integer, inst: integer)`
+### LMidiPlayer:setChannelInstrument
+
+`LMidiPlayer:setChannelInstrument(ch: integer, inst: integer)`
 
 Sets the General MIDI instrument program for a channel.
 
 **Parameters**
 
-- `ch` (`integer`, required) - Channel number (1-16).
-- `inst` (`integer`, required) - GM instrument program number (0-127).
+- `ch` (`integer`, required): Channel number (1-16).
+- `inst` (`integer`, required): GM instrument program number (0-127).
+
+**Lua API Stub**
+
+```lua
+--- Sets the General MIDI instrument program for a channel.
+---@param ch number Channel number (1-16).
+---@param inst number GM instrument program number (0-127).
+function LMidiPlayer:setChannelInstrument(ch, inst) end
+```
 
 #### Example
 
@@ -4029,14 +4849,25 @@ do
 end
 ```
 
-### `LMidiPlayer:setChannelMuted(ch: integer, muted: boolean)`
+### LMidiPlayer:setChannelMuted
+
+`LMidiPlayer:setChannelMuted(ch: integer, muted: boolean)`
 
 Mutes or unmutes a specific MIDI channel.
 
 **Parameters**
 
-- `ch` (`integer`, required) - Channel number (1-16).
-- `muted` (`boolean`, required) - True to mute, false to unmute.
+- `ch` (`integer`, required): Channel number (1-16).
+- `muted` (`boolean`, required): True to mute, false to unmute.
+
+**Lua API Stub**
+
+```lua
+--- Mutes or unmutes a specific MIDI channel.
+---@param ch number Channel number (1-16).
+---@param muted boolean True to mute, false to unmute.
+function LMidiPlayer:setChannelMuted(ch, muted) end
+```
 
 #### Example
 
@@ -4053,13 +4884,23 @@ do
 end
 ```
 
-### `LMidiPlayer:setChannels(channels: integer)`
+### LMidiPlayer:setChannels
+
+`LMidiPlayer:setChannels(channels: integer)`
 
 Sets the number of output audio channels for MIDI synthesis.
 
 **Parameters**
 
-- `channels` (`integer`, required) - Channel count (1 = mono, 2 = stereo).
+- `channels` (`integer`, required): Channel count (1 = mono, 2 = stereo).
+
+**Lua API Stub**
+
+```lua
+--- Sets the number of output audio channels for MIDI synthesis.
+---@param channels number Channel count (1 = mono, 2 = stereo).
+function LMidiPlayer:setChannels(channels) end
+```
 
 #### Example
 
@@ -4076,14 +4917,25 @@ do
 end
 ```
 
-### `LMidiPlayer:setChannelVolume(ch: integer, vol: number)`
+### LMidiPlayer:setChannelVolume
+
+`LMidiPlayer:setChannelVolume(ch: integer, vol: number)`
 
 Sets the volume for a specific MIDI channel (1-16).
 
 **Parameters**
 
-- `ch` (`integer`, required) - Channel number (1-16).
-- `vol` (`number`, required) - Volume multiplier (0.0-1.0).
+- `ch` (`integer`, required): Channel number (1-16).
+- `vol` (`number`, required): Volume multiplier (0.0-1.0).
+
+**Lua API Stub**
+
+```lua
+--- Sets the volume for a specific MIDI channel (1-16).
+---@param ch number Channel number (1-16).
+---@param vol number Volume multiplier (0.0-1.0).
+function LMidiPlayer:setChannelVolume(ch, vol) end
+```
 
 #### Example
 
@@ -4100,13 +4952,23 @@ do
 end
 ```
 
-### `LMidiPlayer:setLooping(looping: boolean)`
+### LMidiPlayer:setLooping
+
+`LMidiPlayer:setLooping(looping: boolean)`
 
 Enables or disables looping for MIDI playback.
 
 **Parameters**
 
-- `looping` (`boolean`, required) - True to loop, false to play once.
+- `looping` (`boolean`, required): True to loop, false to play once.
+
+**Lua API Stub**
+
+```lua
+--- Enables or disables looping for MIDI playback.
+---@param looping boolean True to loop, false to play once.
+function LMidiPlayer:setLooping(looping) end
+```
 
 #### Example
 
@@ -4123,13 +4985,23 @@ do
 end
 ```
 
-### `LMidiPlayer:setOnEnd([cb]: function)`
+### LMidiPlayer:setOnEnd
+
+`LMidiPlayer:setOnEnd([cb]: function)`
 
 Registers a callback invoked when MIDI playback finishes (stub, not yet implemented).
 
 **Parameters**
 
-- `cb` (`function`, optional) - Callback function or nil to clear.
+- `cb` (`function`, optional): Callback function or nil to clear.
+
+**Lua API Stub**
+
+```lua
+--- Registers a callback invoked when MIDI playback finishes (stub, not yet implemented).
+---@param cb? function Callback function or nil to clear.
+function LMidiPlayer:setOnEnd(cb) end
+```
 
 #### Example
 
@@ -4148,13 +5020,23 @@ do
 end
 ```
 
-### `LMidiPlayer:setOnNoteOff([cb]: function)`
+### LMidiPlayer:setOnNoteOff
+
+`LMidiPlayer:setOnNoteOff([cb]: function)`
 
 Registers a callback for MIDI note-off events (stub, not yet implemented).
 
 **Parameters**
 
-- `cb` (`function`, optional) - Callback function or nil to clear.
+- `cb` (`function`, optional): Callback function or nil to clear.
+
+**Lua API Stub**
+
+```lua
+--- Registers a callback for MIDI note-off events (stub, not yet implemented).
+---@param cb? function Callback function or nil to clear.
+function LMidiPlayer:setOnNoteOff(cb) end
+```
 
 #### Example
 
@@ -4173,13 +5055,23 @@ do
 end
 ```
 
-### `LMidiPlayer:setOnNoteOn([cb]: function)`
+### LMidiPlayer:setOnNoteOn
+
+`LMidiPlayer:setOnNoteOn([cb]: function)`
 
 Registers a callback for MIDI note-on events (stub, not yet implemented).
 
 **Parameters**
 
-- `cb` (`function`, optional) - Callback function or nil to clear.
+- `cb` (`function`, optional): Callback function or nil to clear.
+
+**Lua API Stub**
+
+```lua
+--- Registers a callback for MIDI note-on events (stub, not yet implemented).
+---@param cb? function Callback function or nil to clear.
+function LMidiPlayer:setOnNoteOn(cb) end
+```
 
 #### Example
 
@@ -4198,13 +5090,23 @@ do
 end
 ```
 
-### `LMidiPlayer:setSampleRate(rate: integer)`
+### LMidiPlayer:setSampleRate
+
+`LMidiPlayer:setSampleRate(rate: integer)`
 
 Sets the output sample rate for MIDI synthesis.
 
 **Parameters**
 
-- `rate` (`integer`, required) - Sample rate in Hz (e.g. 44100, 48000).
+- `rate` (`integer`, required): Sample rate in Hz (e.g. 44100, 48000).
+
+**Lua API Stub**
+
+```lua
+--- Sets the output sample rate for MIDI synthesis.
+---@param rate number Sample rate in Hz (e.g. 44100, 48000).
+function LMidiPlayer:setSampleRate(rate) end
+```
 
 #### Example
 
@@ -4221,13 +5123,23 @@ do
 end
 ```
 
-### `LMidiPlayer:setSoundFont(path: string)`
+### LMidiPlayer:setSoundFont
+
+`LMidiPlayer:setSoundFont(path: string)`
 
 Sets a custom SoundFont file for MIDI synthesis (stub, not yet implemented).
 
 **Parameters**
 
-- `path` (`string`, required) - Relative path to the .sf2 file.
+- `path` (`string`, required): Relative path to the .sf2 file.
+
+**Lua API Stub**
+
+```lua
+--- Sets a custom SoundFont file for MIDI synthesis (stub, not yet implemented).
+---@param path string Relative path to the .sf2 file.
+function LMidiPlayer:setSoundFont(path) end
+```
 
 #### Example
 
@@ -4244,13 +5156,23 @@ do
 end
 ```
 
-### `LMidiPlayer:setTempo(bpm: number)`
+### LMidiPlayer:setTempo
+
+`LMidiPlayer:setTempo(bpm: number)`
 
 Sets the playback tempo in beats per minute.
 
 **Parameters**
 
-- `bpm` (`number`, required) - Desired tempo in BPM.
+- `bpm` (`number`, required): Desired tempo in BPM.
+
+**Lua API Stub**
+
+```lua
+--- Sets the playback tempo in beats per minute.
+---@param bpm number Desired tempo in BPM.
+function LMidiPlayer:setTempo(bpm) end
+```
 
 #### Example
 
@@ -4267,13 +5189,23 @@ do
 end
 ```
 
-### `LMidiPlayer:setTempoScale(scale: number)`
+### LMidiPlayer:setTempoScale
+
+`LMidiPlayer:setTempoScale(scale: number)`
 
 Sets a tempo multiplier relative to the original speed.
 
 **Parameters**
 
-- `scale` (`number`, required) - Tempo scale (1.0 = original, 2.0 = double speed).
+- `scale` (`number`, required): Tempo scale (1.0 = original, 2.0 = double speed).
+
+**Lua API Stub**
+
+```lua
+--- Sets a tempo multiplier relative to the original speed.
+---@param scale number Tempo scale (1.0 = original, 2.0 = double speed).
+function LMidiPlayer:setTempoScale(scale) end
+```
 
 #### Example
 
@@ -4291,14 +5223,25 @@ do
 end
 ```
 
-### `LMidiPlayer:setTrackMuted(idx: integer, muted: boolean)`
+### LMidiPlayer:setTrackMuted
+
+`LMidiPlayer:setTrackMuted(idx: integer, muted: boolean)`
 
 Mutes or unmutes a specific MIDI track.
 
 **Parameters**
 
-- `idx` (`integer`, required) - Track index (1-based).
-- `muted` (`boolean`, required) - True to mute, false to unmute.
+- `idx` (`integer`, required): Track index (1-based).
+- `muted` (`boolean`, required): True to mute, false to unmute.
+
+**Lua API Stub**
+
+```lua
+--- Mutes or unmutes a specific MIDI track.
+---@param idx number Track index (1-based).
+---@param muted boolean True to mute, false to unmute.
+function LMidiPlayer:setTrackMuted(idx, muted) end
+```
 
 #### Example
 
@@ -4315,13 +5258,23 @@ do
 end
 ```
 
-### `LMidiPlayer:setVolume(vol: number)`
+### LMidiPlayer:setVolume
+
+`LMidiPlayer:setVolume(vol: number)`
 
 Sets the master volume for MIDI playback.
 
 **Parameters**
 
-- `vol` (`number`, required) - Volume multiplier (0.0 = silent, 1.0 = normal).
+- `vol` (`number`, required): Volume multiplier (0.0 = silent, 1.0 = normal).
+
+**Lua API Stub**
+
+```lua
+--- Sets the master volume for MIDI playback.
+---@param vol number Volume multiplier (0.0 = silent, 1.0 = normal).
+function LMidiPlayer:setVolume(vol) end
+```
 
 #### Example
 
@@ -4337,13 +5290,23 @@ do
 end
 ```
 
-### `LMidiPlayer:soloChannel(ch: integer)`
+### LMidiPlayer:soloChannel
+
+`LMidiPlayer:soloChannel(ch: integer)`
 
 Solos a specific MIDI channel, muting all others.
 
 **Parameters**
 
-- `ch` (`integer`, required) - Channel number (1-16) to solo.
+- `ch` (`integer`, required): Channel number (1-16) to solo.
+
+**Lua API Stub**
+
+```lua
+--- Solos a specific MIDI channel, muting all others.
+---@param ch number Channel number (1-16) to solo.
+function LMidiPlayer:soloChannel(ch) end
+```
 
 #### Example
 
@@ -4361,9 +5324,18 @@ do
 end
 ```
 
-### `LMidiPlayer:stop()`
+### LMidiPlayer:stop
+
+`LMidiPlayer:stop()`
 
 Stops MIDI playback and resets position to the beginning.
+
+**Lua API Stub**
+
+```lua
+--- Stops MIDI playback and resets position to the beginning.
+function LMidiPlayer:stop() end
+```
 
 #### Example
 
@@ -4381,11 +5353,21 @@ do
 end
 ```
 
-### `LMidiPlayer:tell() -> number`
+### LMidiPlayer:tell
+
+`LMidiPlayer:tell() -> number`
 
 Returns the current playback position of the MIDI player in seconds.
 
 **Returns**: `number` - Current position in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current playback position of the MIDI player in seconds.
+---@return number Current position in seconds.
+function LMidiPlayer:tell() end
+```
 
 #### Example
 
@@ -4401,11 +5383,21 @@ do
 end
 ```
 
-### `LMidiPlayer:type() -> string`
+### LMidiPlayer:type
+
+`LMidiPlayer:type() -> string`
 
 Returns the type name of this object for runtime type-checking.
 
 **Returns**: `string` - Always returns "LMidiPlayer".
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name of this object for runtime type-checking.
+---@return string Always returns "LMidiPlayer".
+function LMidiPlayer:type() end
+```
 
 #### Example
 
@@ -4419,15 +5411,26 @@ do
 end
 ```
 
-### `LMidiPlayer:typeOf(name: string) -> boolean`
+### LMidiPlayer:typeOf
+
+`LMidiPlayer:typeOf(name: string) -> boolean`
 
 Checks whether this object matches the given type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to check (e.g. "LMidiPlayer", "MidiPlayer", or "Object").
+- `name` (`string`, required): Type name to check (e.g. "LMidiPlayer", "MidiPlayer", or "Object").
 
 **Returns**: `boolean` - True if this object matches the given type.
+
+**Lua API Stub**
+
+```lua
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check (e.g. "LMidiPlayer", "MidiPlayer", or "Object").
+---@return boolean True if this object matches the given type.
+function LMidiPlayer:typeOf(name) end
+```
 
 #### Example
 
@@ -4443,9 +5446,18 @@ do
 end
 ```
 
-### `LMidiPlayer:unsoloAll()`
+### LMidiPlayer:unsoloAll
+
+`LMidiPlayer:unsoloAll()`
 
 Removes solo from all channels, restoring normal playback.
+
+**Lua API Stub**
+
+```lua
+--- Removes solo from all channels, restoring normal playback.
+function LMidiPlayer:unsoloAll() end
+```
 
 #### Example
 
@@ -4463,9 +5475,18 @@ do
 end
 ```
 
-### `LMidiPlayer:useDefaultSoundFont()`
+### LMidiPlayer:useDefaultSoundFont
+
+`LMidiPlayer:useDefaultSoundFont()`
 
 Reverts to the built-in default SoundFont (stub, not yet implemented).
+
+**Lua API Stub**
+
+```lua
+--- Reverts to the built-in default SoundFont (stub, not yet implemented).
+function LMidiPlayer:useDefaultSoundFont() end
+```
 
 #### Example
 
@@ -4482,39 +5503,39 @@ do
 end
 ```
 
-### `LSoundData`
+### LSoundData:drawWaveform
 
-Represents the Lua-visible LSoundData object exposed by this module.
-
-#### Example
-
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
-
-```lua
-do
-  function lurek.init()
-    -- Sawtooth waves are bright and rich in harmonics — good base for synth sounds.
-    local saw = lurek.audio.newSawtoothWave(110.0, 1.0, 44100, 0.5)
-    lurek.log.info("sawtooth duration=" .. saw:getDuration() .. "s", "audio")
-  end
-end
-```
-
-### `LSoundData:drawWaveform(target: LImageData, x: integer, y: integer, w: integer, h: integer, r: integer, g: integer, b: integer, a: integer)`
+`LSoundData:drawWaveform(target: LImageData, x: integer, y: integer, w: integer, h: integer, r: integer, g: integer, b: integer, a: integer)`
 
 Draws this sound buffer as a waveform into an image buffer.
 
 **Parameters**
 
-- `target` (`LImageData`, required) - Target image to draw into.
-- `x` (`integer`, required) - Left pixel coordinate.
-- `y` (`integer`, required) - Top pixel coordinate.
-- `w` (`integer`, required) - Waveform width in pixels.
-- `h` (`integer`, required) - Waveform height in pixels.
-- `r` (`integer`, required) - Red channel from 0 to 255.
-- `g` (`integer`, required) - Green channel from 0 to 255.
-- `b` (`integer`, required) - Blue channel from 0 to 255.
-- `a` (`integer`, required) - Alpha channel from 0 to 255.
+- `target` (`LImageData`, required): Target image to draw into.
+- `x` (`integer`, required): Left pixel coordinate.
+- `y` (`integer`, required): Top pixel coordinate.
+- `w` (`integer`, required): Waveform width in pixels.
+- `h` (`integer`, required): Waveform height in pixels.
+- `r` (`integer`, required): Red channel from 0 to 255.
+- `g` (`integer`, required): Green channel from 0 to 255.
+- `b` (`integer`, required): Blue channel from 0 to 255.
+- `a` (`integer`, required): Alpha channel from 0 to 255.
+
+**Lua API Stub**
+
+```lua
+--- Draws this sound buffer as a waveform into an image buffer.
+---@param target LImageData Target image to draw into.
+---@param x number Left pixel coordinate.
+---@param y number Top pixel coordinate.
+---@param w number Waveform width in pixels.
+---@param h number Waveform height in pixels.
+---@param r number Red channel from 0 to 255.
+---@param g number Green channel from 0 to 255.
+---@param b number Blue channel from 0 to 255.
+---@param a number Alpha channel from 0 to 255.
+function LSoundData:drawWaveform(target, x, y, w, h, r, g, b, a) end
+```
 
 #### Example
 
@@ -4532,11 +5553,21 @@ do
 end
 ```
 
-### `LSoundData:getBitDepth() -> integer`
+### LSoundData:getBitDepth
+
+`LSoundData:getBitDepth() -> integer`
 
 Returns the sample bit depth of this sound buffer.
 
 **Returns**: `integer` - Bit depth per sample.
+
+**Lua API Stub**
+
+```lua
+--- Returns the sample bit depth of this sound buffer.
+---@return number Bit depth per sample.
+function LSoundData:getBitDepth() end
+```
 
 #### Example
 
@@ -4549,11 +5580,21 @@ do
 end
 ```
 
-### `LSoundData:getChannelCount() -> integer`
+### LSoundData:getChannelCount
+
+`LSoundData:getChannelCount() -> integer`
 
 Returns the number of audio channels stored in this sound buffer.
 
 **Returns**: `integer` - Channel count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of audio channels stored in this sound buffer.
+---@return number Channel count.
+function LSoundData:getChannelCount() end
+```
 
 #### Example
 
@@ -4566,11 +5607,21 @@ do
 end
 ```
 
-### `LSoundData:getDuration() -> number`
+### LSoundData:getDuration
+
+`LSoundData:getDuration() -> number`
 
 Returns the approximate playback duration of this sound buffer.
 
 **Returns**: `number` - Duration in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Returns the approximate playback duration of this sound buffer.
+---@return number Duration in seconds.
+function LSoundData:getDuration() end
+```
 
 #### Example
 
@@ -4583,15 +5634,26 @@ do
 end
 ```
 
-### `LSoundData:getSample(index: integer) -> number`
+### LSoundData:getSample
+
+`LSoundData:getSample(index: integer) -> number`
 
 Returns the sample value at the given zero-based sample index.
 
 **Parameters**
 
-- `index` (`integer`, required) - Zero-based sample index.
+- `index` (`integer`, required): Zero-based sample index.
 
 **Returns**: `number` - Sample value at the requested index.
+
+**Lua API Stub**
+
+```lua
+--- Returns the sample value at the given zero-based sample index.
+---@param index number Zero-based sample index.
+---@return number Sample value at the requested index.
+function LSoundData:getSample(index) end
+```
 
 #### Example
 
@@ -4607,11 +5669,21 @@ do
 end
 ```
 
-### `LSoundData:getSampleCount() -> integer`
+### LSoundData:getSampleCount
+
+`LSoundData:getSampleCount() -> integer`
 
 Returns the total number of samples stored in this sound buffer.
 
 **Returns**: `integer` - Total sample count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the total number of samples stored in this sound buffer.
+---@return number Total sample count.
+function LSoundData:getSampleCount() end
+```
 
 #### Example
 
@@ -4624,11 +5696,21 @@ do
 end
 ```
 
-### `LSoundData:getSampleRate() -> integer`
+### LSoundData:getSampleRate
+
+`LSoundData:getSampleRate() -> integer`
 
 Returns the playback sample rate of this sound buffer.
 
 **Returns**: `integer` - Sample rate in Hz.
+
+**Lua API Stub**
+
+```lua
+--- Returns the playback sample rate of this sound buffer.
+---@return number Sample rate in Hz.
+function LSoundData:getSampleRate() end
+```
 
 #### Example
 
@@ -4641,14 +5723,25 @@ do
 end
 ```
 
-### `LSoundData:setSample(index: integer, value: number)`
+### LSoundData:setSample
+
+`LSoundData:setSample(index: integer, value: number)`
 
 Overwrites the sample value at the given zero-based sample index.
 
 **Parameters**
 
-- `index` (`integer`, required) - Zero-based sample index.
-- `value` (`number`, required) - New sample value.
+- `index` (`integer`, required): Zero-based sample index.
+- `value` (`number`, required): New sample value.
+
+**Lua API Stub**
+
+```lua
+--- Overwrites the sample value at the given zero-based sample index.
+---@param index number Zero-based sample index.
+---@param value number New sample value.
+function LSoundData:setSample(index, value) end
+```
 
 #### Example
 
@@ -4664,11 +5757,21 @@ do
 end
 ```
 
-### `LSoundData:type() -> string`
+### LSoundData:type
+
+`LSoundData:type() -> string`
 
 Returns the type name of this object for runtime type-checking.
 
 **Returns**: `string` - Always returns "LSoundData".
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name of this object for runtime type-checking.
+---@return string Always returns "LSoundData".
+function LSoundData:type() end
+```
 
 #### Example
 
@@ -4684,15 +5787,26 @@ do
 end
 ```
 
-### `LSoundData:typeOf(name: string) -> boolean`
+### LSoundData:typeOf
+
+`LSoundData:typeOf(name: string) -> boolean`
 
 Checks whether this object matches the given type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to check (e.g. "LSoundData" or "Object").
+- `name` (`string`, required): Type name to check (e.g. "LSoundData" or "Object").
 
 **Returns**: `boolean` - True if this object matches the given type.
+
+**Lua API Stub**
+
+```lua
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check (e.g. "LSoundData" or "Object").
+---@return boolean True if this object matches the given type.
+function LSoundData:typeOf(name) end
+```
 
 #### Example
 
@@ -4708,32 +5822,21 @@ do
 end
 ```
 
-### `LSoundPool`
+### LSoundPool:getVoiceCount
 
-Lua-side wrapper around a pre-allocated pool of identical sound voices for rapid fire effects.
-
-#### Example
-
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
-
-```lua
-do
-  function lurek.init()
-    -- Args: file_path, voice_count.
-    -- A pool pre-allocates N copies of the same sound. Calling pool:play() fires the next
-    -- available voice in round-robin order — perfect for rapid-fire SFX without clone() calls.
-    local foot = lurek.audio.newPool("sfx/footstep.ogg", 8)
-    foot:setVolume(0.7)
-    foot:play()
-  end
-end
-```
-
-### `LSoundPool:getVoiceCount() -> integer`
+`LSoundPool:getVoiceCount() -> integer`
 
 Returns the number of pre-allocated voices in this pool.
 
 **Returns**: `integer` - Voice count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of pre-allocated voices in this pool.
+---@return number Voice count.
+function LSoundPool:getVoiceCount() end
+```
 
 #### Example
 
@@ -4750,11 +5853,21 @@ do
 end
 ```
 
-### `LSoundPool:play() -> integer`
+### LSoundPool:play
+
+`LSoundPool:play() -> integer`
 
 Plays the next available voice from the pool in round-robin order.
 
 **Returns**: `integer` - Numeric source ID of the voice that started playing.
+
+**Lua API Stub**
+
+```lua
+--- Plays the next available voice from the pool in round-robin order.
+---@return number Numeric source ID of the voice that started playing.
+function LSoundPool:play() end
+```
 
 #### Example
 
@@ -4773,9 +5886,18 @@ do
 end
 ```
 
-### `LSoundPool:release()`
+### LSoundPool:release
+
+`LSoundPool:release()`
 
 Releases all voices and frees audio resources held by this pool.
+
+**Lua API Stub**
+
+```lua
+--- Releases all voices and frees audio resources held by this pool.
+function LSoundPool:release() end
+```
 
 #### Example
 
@@ -4790,13 +5912,23 @@ do
 end
 ```
 
-### `LSoundPool:setBus(name: string)`
+### LSoundPool:setBus
+
+`LSoundPool:setBus(name: string)`
 
 Routes all voices in this pool through the named audio bus.
 
 **Parameters**
 
-- `name` (`string`, required) - Name of the target bus.
+- `name` (`string`, required): Name of the target bus.
+
+**Lua API Stub**
+
+```lua
+--- Routes all voices in this pool through the named audio bus.
+---@param name string Name of the target bus.
+function LSoundPool:setBus(name) end
+```
 
 #### Example
 
@@ -4814,13 +5946,23 @@ do
 end
 ```
 
-### `LSoundPool:setVolume(vol: number)`
+### LSoundPool:setVolume
+
+`LSoundPool:setVolume(vol: number)`
 
 Sets the volume for all voices in this pool.
 
 **Parameters**
 
-- `vol` (`number`, required) - Volume multiplier (0.0 = silent, 1.0 = normal).
+- `vol` (`number`, required): Volume multiplier (0.0 = silent, 1.0 = normal).
+
+**Lua API Stub**
+
+```lua
+--- Sets the volume for all voices in this pool.
+---@param vol number Volume multiplier (0.0 = silent, 1.0 = normal).
+function LSoundPool:setVolume(vol) end
+```
 
 #### Example
 
@@ -4837,9 +5979,18 @@ do
 end
 ```
 
-### `LSoundPool:stopAll()`
+### LSoundPool:stopAll
+
+`LSoundPool:stopAll()`
 
 Stops all voices in this sound pool immediately.
+
+**Lua API Stub**
+
+```lua
+--- Stops all voices in this sound pool immediately.
+function LSoundPool:stopAll() end
+```
 
 #### Example
 
@@ -4857,11 +6008,21 @@ do
 end
 ```
 
-### `LSoundPool:type() -> string`
+### LSoundPool:type
+
+`LSoundPool:type() -> string`
 
 Returns the type name of this object for runtime type-checking.
 
 **Returns**: `string` - Always returns "LSoundPool".
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name of this object for runtime type-checking.
+---@return string Always returns "LSoundPool".
+function LSoundPool:type() end
+```
 
 #### Example
 
@@ -4875,15 +6036,26 @@ do
 end
 ```
 
-### `LSoundPool:typeOf(name: string) -> boolean`
+### LSoundPool:typeOf
+
+`LSoundPool:typeOf(name: string) -> boolean`
 
 Checks whether this object matches the given type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to check (e.g. "LSoundPool" or "Object").
+- `name` (`string`, required): Type name to check (e.g. "LSoundPool" or "Object").
 
 **Returns**: `boolean` - True if this object matches the given type.
+
+**Lua API Stub**
+
+```lua
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check (e.g. "LSoundPool" or "Object").
+---@return boolean True if this object matches the given type.
+function LSoundPool:typeOf(name) end
+```
 
 #### Example
 
@@ -4899,28 +6071,18 @@ do
 end
 ```
 
-### `LSource`
+### LSource:clearFilter
 
-Lua-side wrapper around a loaded audio source (sound effect or music stream).
-
-#### Example
-
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
-
-```lua
-do
-  local src = lurek.audio.newSource("assets/audio/music.ogg", "static")
-  -- clone() creates an independent copy that can play simultaneously.
-  local copy = lurek.audio.clone(src)
-  lurek.log.debug("source cloned", "audio")
-  lurek.audio.release(src)
-  lurek.audio.release(copy)
-end
-```
-
-### `LSource:clearFilter()`
+`LSource:clearFilter()`
 
 Removes all frequency filters (lowpass and highpass) from this source.
+
+**Lua API Stub**
+
+```lua
+--- Removes all frequency filters (lowpass and highpass) from this source.
+function LSource:clearFilter() end
+```
 
 #### Example
 
@@ -4939,11 +6101,21 @@ do
 end
 ```
 
-### `LSource:clone() -> LSource`
+### LSource:clone
+
+`LSource:clone() -> LSource`
 
 Creates an independent copy of this source sharing the same audio data.
 
 **Returns**: `LSource` - A new source instance with identical settings.
+
+**Lua API Stub**
+
+```lua
+--- Creates an independent copy of this source sharing the same audio data.
+---@return LSource A new source instance with identical settings.
+function LSource:clone() end
+```
 
 #### Example
 
@@ -4963,13 +6135,23 @@ do
 end
 ```
 
-### `LSource:fadeIn(dur: number)`
+### LSource:fadeIn
+
+`LSource:fadeIn(dur: number)`
 
 Sets the fade-in duration so the source ramps from silence to full volume on play.
 
 **Parameters**
 
-- `dur` (`number`, required) - Fade-in duration in seconds.
+- `dur` (`number`, required): Fade-in duration in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Sets the fade-in duration so the source ramps from silence to full volume on play.
+---@param dur number Fade-in duration in seconds.
+function LSource:fadeIn(dur) end
+```
 
 #### Example
 
@@ -4988,11 +6170,21 @@ do
 end
 ```
 
-### `LSource:getDuration() -> number`
+### LSource:getDuration
+
+`LSource:getDuration() -> number`
 
 Returns the total duration of this audio source in seconds.
 
 **Returns**: `number` - Duration in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Returns the total duration of this audio source in seconds.
+---@return number Duration in seconds.
+function LSource:getDuration() end
+```
 
 #### Example
 
@@ -5008,11 +6200,21 @@ do
 end
 ```
 
-### `LSource:getFadeIn() -> number`
+### LSource:getFadeIn
+
+`LSource:getFadeIn() -> number`
 
 Returns the configured fade-in duration for this source.
 
 **Returns**: `number` - Fade-in duration in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Returns the configured fade-in duration for this source.
+---@return number Fade-in duration in seconds.
+function LSource:getFadeIn() end
+```
 
 #### Example
 
@@ -5030,11 +6232,21 @@ do
 end
 ```
 
-### `LSource:getHighpass() -> integer`
+### LSource:getHighpass
+
+`LSource:getHighpass() -> integer`
 
 Returns the current highpass filter cutoff frequency in Hertz.
 
 **Returns**: `integer` - Cutoff frequency in Hz, or 0 if no highpass is set.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current highpass filter cutoff frequency in Hertz.
+---@return number Cutoff frequency in Hz, or 0 if no highpass is set.
+function LSource:getHighpass() end
+```
 
 #### Example
 
@@ -5052,11 +6264,21 @@ do
 end
 ```
 
-### `LSource:getLowpass() -> integer`
+### LSource:getLowpass
+
+`LSource:getLowpass() -> integer`
 
 Returns the current lowpass filter cutoff frequency in Hertz.
 
 **Returns**: `integer` - Cutoff frequency in Hz, or 0 if no lowpass is set.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current lowpass filter cutoff frequency in Hertz.
+---@return number Cutoff frequency in Hz, or 0 if no lowpass is set.
+function LSource:getLowpass() end
+```
 
 #### Example
 
@@ -5074,11 +6296,21 @@ do
 end
 ```
 
-### `LSource:getPan() -> number`
+### LSource:getPan
+
+`LSource:getPan() -> number`
 
 Returns the current stereo panning position of this source.
 
 **Returns**: `number` - Pan value from -1.0 (left) to 1.0 (right).
+
+**Lua API Stub**
+
+```lua
+--- Returns the current stereo panning position of this source.
+---@return number Pan value from -1.0 (left) to 1.0 (right).
+function LSource:getPan() end
+```
 
 #### Example
 
@@ -5096,11 +6328,21 @@ do
 end
 ```
 
-### `LSource:getPitch() -> number`
+### LSource:getPitch
+
+`LSource:getPitch() -> number`
 
 Returns the current pitch multiplier of this audio source.
 
 **Returns**: `number` - Current pitch multiplier.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current pitch multiplier of this audio source.
+---@return number Current pitch multiplier.
+function LSource:getPitch() end
+```
 
 #### Example
 
@@ -5117,11 +6359,21 @@ do
 end
 ```
 
-### `LSource:getType() -> string`
+### LSource:getType
+
+`LSource:getType() -> string`
 
 Returns whether this source was loaded as static (fully in memory) or streaming.
 
 **Returns**: `string` - Either "static" or "stream".
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this source was loaded as static (fully in memory) or streaming.
+---@return string Either "static" or "stream".
+function LSource:getType() end
+```
 
 #### Example
 
@@ -5139,11 +6391,21 @@ do
 end
 ```
 
-### `LSource:getVolume() -> number`
+### LSource:getVolume
+
+`LSource:getVolume() -> number`
 
 Returns the current volume level of this audio source.
 
 **Returns**: `number` - Current volume multiplier.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current volume level of this audio source.
+---@return number Current volume multiplier.
+function LSource:getVolume() end
+```
 
 #### Example
 
@@ -5160,11 +6422,21 @@ do
 end
 ```
 
-### `LSource:isLooping() -> boolean`
+### LSource:isLooping
+
+`LSource:isLooping() -> boolean`
 
 Returns whether this source is set to loop continuously.
 
 **Returns**: `boolean` - True if looping is enabled.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this source is set to loop continuously.
+---@return boolean True if looping is enabled.
+function LSource:isLooping() end
+```
 
 #### Example
 
@@ -5181,11 +6453,21 @@ do
 end
 ```
 
-### `LSource:isPaused() -> boolean`
+### LSource:isPaused
+
+`LSource:isPaused() -> boolean`
 
 Returns whether this source is currently paused.
 
 **Returns**: `boolean` - True if the source is paused.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this source is currently paused.
+---@return boolean True if the source is paused.
+function LSource:isPaused() end
+```
 
 #### Example
 
@@ -5203,11 +6485,21 @@ do
 end
 ```
 
-### `LSource:isPlaying() -> boolean`
+### LSource:isPlaying
+
+`LSource:isPlaying() -> boolean`
 
 Returns whether this source is currently playing audio.
 
 **Returns**: `boolean` - True if the source is actively playing.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this source is currently playing audio.
+---@return boolean True if the source is actively playing.
+function LSource:isPlaying() end
+```
 
 #### Example
 
@@ -5224,11 +6516,21 @@ do
 end
 ```
 
-### `LSource:isStopped() -> boolean`
+### LSource:isStopped
+
+`LSource:isStopped() -> boolean`
 
 Returns whether this source is currently stopped (not playing or paused).
 
 **Returns**: `boolean` - True if the source is stopped.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this source is currently stopped (not playing or paused).
+---@return boolean True if the source is stopped.
+function LSource:isStopped() end
+```
 
 #### Example
 
@@ -5247,9 +6549,18 @@ do
 end
 ```
 
-### `LSource:pause()`
+### LSource:pause
+
+`LSource:pause()`
 
 Pauses playback at the current position, allowing later resumption.
+
+**Lua API Stub**
+
+```lua
+--- Pauses playback at the current position, allowing later resumption.
+function LSource:pause() end
+```
 
 #### Example
 
@@ -5266,9 +6577,18 @@ do
 end
 ```
 
-### `LSource:play()`
+### LSource:play
+
+`LSource:play()`
 
 Starts playback of this audio source from the current position.
+
+**Lua API Stub**
+
+```lua
+--- Starts playback of this audio source from the current position.
+function LSource:play() end
+```
 
 #### Example
 
@@ -5282,9 +6602,18 @@ do
 end
 ```
 
-### `LSource:resume()`
+### LSource:resume
+
+`LSource:resume()`
 
 Resumes playback from the position where the source was paused.
+
+**Lua API Stub**
+
+```lua
+--- Resumes playback from the position where the source was paused.
+function LSource:resume() end
+```
 
 #### Example
 
@@ -5302,13 +6631,23 @@ do
 end
 ```
 
-### `LSource:seek(pos: number)`
+### LSource:seek
+
+`LSource:seek(pos: number)`
 
 Seeks to a specific position in seconds within this audio source.
 
 **Parameters**
 
-- `pos` (`number`, required) - Target position in seconds.
+- `pos` (`number`, required): Target position in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Seeks to a specific position in seconds within this audio source.
+---@param pos number Target position in seconds.
+function LSource:seek(pos) end
+```
 
 #### Example
 
@@ -5325,13 +6664,23 @@ do
 end
 ```
 
-### `LSource:setHighpass(cutoff_hz: integer)`
+### LSource:setHighpass
+
+`LSource:setHighpass(cutoff_hz: integer)`
 
 Applies a highpass filter that attenuates frequencies below the cutoff.
 
 **Parameters**
 
-- `cutoff_hz` (`integer`, required) - Cutoff frequency in Hertz.
+- `cutoff_hz` (`integer`, required): Cutoff frequency in Hertz.
+
+**Lua API Stub**
+
+```lua
+--- Applies a highpass filter that attenuates frequencies below the cutoff.
+---@param cutoff_hz number Cutoff frequency in Hertz.
+function LSource:setHighpass(cutoff_hz) end
+```
 
 #### Example
 
@@ -5350,13 +6699,23 @@ do
 end
 ```
 
-### `LSource:setLooping(looping: boolean)`
+### LSource:setLooping
+
+`LSource:setLooping(looping: boolean)`
 
 Enables or disables looping so the source restarts automatically after finishing.
 
 **Parameters**
 
-- `looping` (`boolean`, required) - True to loop continuously, false to play once.
+- `looping` (`boolean`, required): True to loop continuously, false to play once.
+
+**Lua API Stub**
+
+```lua
+--- Enables or disables looping so the source restarts automatically after finishing.
+---@param looping boolean True to loop continuously, false to play once.
+function LSource:setLooping(looping) end
+```
 
 #### Example
 
@@ -5373,13 +6732,23 @@ do
 end
 ```
 
-### `LSource:setLowpass(cutoff_hz: integer)`
+### LSource:setLowpass
+
+`LSource:setLowpass(cutoff_hz: integer)`
 
 Applies a lowpass filter that attenuates frequencies above the cutoff.
 
 **Parameters**
 
-- `cutoff_hz` (`integer`, required) - Cutoff frequency in Hertz.
+- `cutoff_hz` (`integer`, required): Cutoff frequency in Hertz.
+
+**Lua API Stub**
+
+```lua
+--- Applies a lowpass filter that attenuates frequencies above the cutoff.
+---@param cutoff_hz number Cutoff frequency in Hertz.
+function LSource:setLowpass(cutoff_hz) end
+```
 
 #### Example
 
@@ -5398,13 +6767,23 @@ do
 end
 ```
 
-### `LSource:setPan(pan: number)`
+### LSource:setPan
+
+`LSource:setPan(pan: number)`
 
 Sets the stereo panning position of this source.
 
 **Parameters**
 
-- `pan` (`number`, required) - Pan value from -1.0 (full left) to 1.0 (full right), 0.0 is center.
+- `pan` (`number`, required): Pan value from -1.0 (full left) to 1.0 (full right), 0.0 is center.
+
+**Lua API Stub**
+
+```lua
+--- Sets the stereo panning position of this source.
+---@param pan number Pan value from -1.0 (full left) to 1.0 (full right), 0.0 is center.
+function LSource:setPan(pan) end
+```
 
 #### Example
 
@@ -5423,13 +6802,23 @@ do
 end
 ```
 
-### `LSource:setPitch(pitch: number)`
+### LSource:setPitch
+
+`LSource:setPitch(pitch: number)`
 
 Sets the playback speed multiplier, affecting both pitch and duration.
 
 **Parameters**
 
-- `pitch` (`number`, required) - Pitch multiplier (1.0 = normal, 2.0 = double speed/octave up).
+- `pitch` (`number`, required): Pitch multiplier (1.0 = normal, 2.0 = double speed/octave up).
+
+**Lua API Stub**
+
+```lua
+--- Sets the playback speed multiplier, affecting both pitch and duration.
+---@param pitch number Pitch multiplier (1.0 = normal, 2.0 = double speed/octave up).
+function LSource:setPitch(pitch) end
+```
 
 #### Example
 
@@ -5446,13 +6835,23 @@ do
 end
 ```
 
-### `LSource:setVolume(vol: number)`
+### LSource:setVolume
+
+`LSource:setVolume(vol: number)`
 
 Sets the volume level of this source where 0.0 is silent and 1.0 is full volume.
 
 **Parameters**
 
-- `vol` (`number`, required) - Volume multiplier (0.0 = silent, 1.0 = normal, >1.0 = amplified).
+- `vol` (`number`, required): Volume multiplier (0.0 = silent, 1.0 = normal, >1.0 = amplified).
+
+**Lua API Stub**
+
+```lua
+--- Sets the volume level of this source where 0.0 is silent and 1.0 is full volume.
+---@param vol number Volume multiplier (0.0 = silent, 1.0 = normal, >1.0 = amplified).
+function LSource:setVolume(vol) end
+```
 
 #### Example
 
@@ -5469,9 +6868,18 @@ do
 end
 ```
 
-### `LSource:stop()`
+### LSource:stop
+
+`LSource:stop()`
 
 Stops playback and resets the source position to the beginning.
+
+**Lua API Stub**
+
+```lua
+--- Stops playback and resets the source position to the beginning.
+function LSource:stop() end
+```
 
 #### Example
 
@@ -5488,11 +6896,21 @@ do
 end
 ```
 
-### `LSource:tell() -> number`
+### LSource:tell
+
+`LSource:tell() -> number`
 
 Returns the current playback position of this source in seconds.
 
 **Returns**: `number` - Current position in seconds from the start.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current playback position of this source in seconds.
+---@return number Current position in seconds from the start.
+function LSource:tell() end
+```
 
 #### Example
 
@@ -5509,11 +6927,21 @@ do
 end
 ```
 
-### `LSource:type() -> string`
+### LSource:type
+
+`LSource:type() -> string`
 
 Returns the type name of this object for runtime type-checking.
 
 **Returns**: `string` - Always returns "LSource".
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name of this object for runtime type-checking.
+---@return string Always returns "LSource".
+function LSource:type() end
+```
 
 #### Example
 
@@ -5526,15 +6954,26 @@ do
 end
 ```
 
-### `LSource:typeOf(name: string) -> boolean`
+### LSource:typeOf
+
+`LSource:typeOf(name: string) -> boolean`
 
 Checks whether this object is of the given type name or a parent type.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to check (e.g. "LSource" or "Object").
+- `name` (`string`, required): Type name to check (e.g. "LSource" or "Object").
 
 **Returns**: `boolean` - True if this object matches the given type.
+
+**Lua API Stub**
+
+```lua
+--- Checks whether this object is of the given type name or a parent type.
+---@param name string Type name to check (e.g. "LSource" or "Object").
+---@return boolean True if this object matches the given type.
+function LSource:typeOf(name) end
+```
 
 #### Example
 
@@ -5548,21 +6987,27 @@ end
 ```
 
 
-## Examples
+[⬆ back to top](#table-of-contents)
+
+## 💡 Examples
 
 - [audio.lua](../blob/main/content/examples/audio.lua) - Sources, mixer, spatial audio
 
-## Reference Games
+[⬆ back to top](#table-of-contents)
+
+## 🎮 Reference Games
 
 No direct references were found in `content/games/**/main.lua`.
 
-## Related Modules
+[⬆ back to top](#table-of-contents)
 
-- Previous: [[app|Module-app]]
-- Next: [[automation|Module-automation]]
-- [[camera|Module-camera]] - 2D camera and viewport types. Pure data; no GPU resources.
-- [[effect|Module-effect]] - Post-processing pipeline: blur, bloom, distortion, color grading, custom WGSL passes.
-- [[image|Module-image]] - CPU-side ImageData (RGBA8 buffer) with blit, resize, fill, region, diff, PNG encode.
-- [[input|Module-input]] - Per-frame keyboard / mouse / gamepad / touch state translated from winit events.
-- [[light|Module-light]] - 2D point-light data model. Pure container; renderer owns all GPU work.
-- [[physics|Module-physics]] - Rigid-body 2D physics on top of rapier2d. Heavy dependency tree.
+## 🔗 Related Modules
+
+- Previous: [app](Module-app)
+- Next: [automation](Module-automation)
+- [camera](Module-camera) - 2D camera and viewport types. Pure data; no GPU resources.
+- [effect](Module-effect) - Post-processing pipeline: blur, bloom, distortion, color grading, custom WGSL passes.
+- [image](Module-image) - CPU-side ImageData (RGBA8 buffer) with blit, resize, fill, region, diff, PNG encode.
+- [input](Module-input) - Per-frame keyboard / mouse / gamepad / touch state translated from winit events.
+- [light](Module-light) - 2D point-light data model. Pure container; renderer owns all GPU work.
+- [physics](Module-physics) - Rigid-body 2D physics on top of rapier2d. Heavy dependency tree.

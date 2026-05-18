@@ -4,114 +4,70 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
-- [Purpose](#purpose)
-- [Summary](#summary)
-- [Minimal Module Example](#minimal-module-example)
-- [Key Types](#key-types)
-- [API Overview](#api-overview)
-- [Examples](#examples)
-- [Reference Games](#reference-games)
-- [Related Modules](#related-modules)
+- [🎯 Purpose](#purpose)
+- [📋 Summary](#summary)
+- [🧩 Key Types](#key-types)
+- [📖 API Overview](#api-overview)
+- [💡 Examples](#examples)
+- [🎮 Reference Games](#reference-games)
+- [🔗 Related Modules](#related-modules)
 
 This page is generated from the current module specs, examples, and Lua API data.
 
 **Module group:** Core Runtime
 **Namespace:** `lurek.runtime`
 
-## Purpose
+## 🎯 Purpose
 
 Foundational shared state, engine config, error types, resource keys, log catalogue. Root of the dep tree.
 
-## Summary
+[⬆ back to top](#table-of-contents)
+
+## 📋 Summary
 
 Foundational shared state, engine configuration, error types, resource keys, and the log message catalog forming the root of the engine dependency graph. `SharedState` is the central mutable container holding all engine subsystem instances — accessed via `RefCell` borrows by binding code. `Config` stores TOML-parsed engine settings (window size, audio device, physics step, asset paths).
 
 `EngineError` is the unified error enum with variants for every failure domain (IO, Lua, GPU, audio, network, physics, parse). `RuntimeMode` distinguishes normal execution from headless test mode. Resource keys (`TextureKey`, `SoundKey`, `FontKey`) provide typed handles for asset lookup. The log message catalog defines structured message codes used by all modules for consistent diagnostic output. Exposed as `lurek.runtime.*`. Core Runtime tier — imported by every module.
 
-## Minimal Module Example
+[⬆ back to top](#table-of-contents)
 
-Module example from [system.lua](../blob/main/content/examples/system.lua):
-
-```lua
--- content/examples/system.lua
--- lurek.runtime and lurek.engine API examples.
--- Run: cargo run -- content/examples/system.lua
-
---@api-stub: lurek.runtime.getOS
--- Returns the name of the host operating system as a string
-do
-  local os_name = lurek.runtime.getOS()
-  -- Use the OS name to pick platform-appropriate keybinds
-  local mod_key = (os_name == "macOS") and "cmd" or "ctrl"
-  lurek.log.info("running on " .. os_name .. " (modifier=" .. mod_key .. ")", "boot")
-end
-
---@api-stub: lurek.runtime.getVersion
--- Returns the semantic version string of the Lurek2D engine
-do
-  local engine_version = lurek.runtime.getVersion()
-  -- Embed the engine version in save file headers to detect incompatibility
-  local save_header = "lurek2d/" .. engine_version
-  lurek.log.info("save header tag: " .. save_header, "save")
-end
-
---@api-stub: lurek.runtime.getProcessorCount
--- Returns the number of logical processors available on the host machine
-do
-  local cores = lurek.runtime.getProcessorCount()
-  -- Reserve one core for the main thread, use the rest for workers
-  local workers = math.max(1, cores - 1)
-  lurek.log.info("spawning " .. workers .. " worker threads (of " .. cores .. ")", "thread")
-end
-
---@api-stub: lurek.runtime.getMemorySize
--- Returns the total physical memory of the host system in megabytes
-do
-  local ram_mb = lurek.runtime.getMemorySize()
-  -- Auto-detect texture quality based on available RAM
-  local quality = (ram_mb >= 8192) and "high" or (ram_mb >= 4096 and "medium" or "low")
-  lurek.log.info("texture quality preset: " .. quality .. " (" .. ram_mb .. " MiB RAM)", "render")
-end
-
---@api-stub: lurek.runtime.openURL
--- Opens a URL in the default system browser (non-headless; do not call in automated tests)
-do
-  local credits_url = "https://lurek2d.example/credits"
-  -- Only http/https/mailto schemes are allowed; returns false on failure
-  -- Verify the function exists without calling it (non-headless operation)
-  assert(type(lurek.runtime.openURL) == "function", "openURL must be a function")
-  lurek.log.info("openURL available for: " .. credits_url, "system")
-```
-
-## Key Types
+## 🧩 Key Types
 
 This module has no separate Lua-visible classes in the generated API data.
 
-## API Overview
+[⬆ back to top](#table-of-contents)
+
+## 📖 API Overview
 
 - Source spec: [docs/specs/runtime.md](../blob/main/docs/specs/runtime.md)
 
 No module functions appear in the generated Lua API data.
 
-## Examples
+[⬆ back to top](#table-of-contents)
+
+## 💡 Examples
 
 - [system.lua](../blob/main/content/examples/system.lua) - API example
 
-## Reference Games
+[⬆ back to top](#table-of-contents)
+
+## 🎮 Reference Games
 
 No direct references were found in `content/games/**/main.lua`.
 
-## Related Modules
+[⬆ back to top](#table-of-contents)
 
-- Previous: [[repl|Module-repl]]
-- Next: [[save|Module-save]]
-- [[event|Module-event]] - Centralised event queue: OS input, window state, custom Lua events, automation injections.
-- [[filesystem|Module-filesystem]] - Sandboxed virtual filesystem (GameFS); blocks path-traversal escape from the game directory.
-- [[network|Module-network]] - Multiplayer stack: ENet, raw TCP, async HTTP, WebSocket. Heavy crate tree.
-- [[repl|Module-repl]] - Release-safe Lua REPL core used by the GUI CLI mode and devtools wrappers; headless also reuses its value-formatting helper.
-- [[thread|Module-thread]] - Background threading with per-thread isolated Lua VMs (B-04: VMs cannot be shared).
-- [[timer|Module-timer]] - Frame-timing (Clock) and deferred / repeating callback scheduling (Scheduler).
+## 🔗 Related Modules
+
+- Previous: [repl](Module-repl)
+- Next: [save](Module-save)
+- [event](Module-event) - Centralised event queue: OS input, window state, custom Lua events, automation injections.
+- [filesystem](Module-filesystem) - Sandboxed virtual filesystem (GameFS); blocks path-traversal escape from the game directory.
+- [network](Module-network) - Multiplayer stack: ENet, raw TCP, async HTTP, WebSocket. Heavy crate tree.
+- [repl](Module-repl) - Release-safe Lua REPL core used by the GUI CLI mode and devtools wrappers; headless also reuses its value-formatting helper.
+- [thread](Module-thread) - Background threading with per-thread isolated Lua VMs (B-04: VMs cannot be shared).
+- [timer](Module-timer) - Frame-timing (Clock) and deferred / repeating callback scheduling (Scheduler).

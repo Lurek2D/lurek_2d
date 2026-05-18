@@ -4,160 +4,111 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
-- [Purpose](#purpose)
-- [Summary](#summary)
-- [Minimal Module Example](#minimal-module-example)
-- [Key Types](#key-types)
-- [API Overview](#api-overview)
-- [Module Functions](#module-functions)
-  - [lurek.network.createLobby(name: string, port: integer, [player_count]: integer, [max_players]: integer) -> table](#lureknetworkcreatelobbyname-string-port-integer-playercount-integer-maxplayers-integer-table)
-  - [lurek.network.createRoom(name: string, host: string, [max_players]: integer) -> table](#lureknetworkcreateroomname-string-host-string-maxplayers-integer-table)
-  - [lurek.network.discoverLobbies([timeout_ms]: integer) -> table](#lureknetworkdiscoverlobbiestimeoutms-integer-table)
-  - [lurek.network.joinRoom(id: string) -> table](#lureknetworkjoinroomid-string-table)
-  - [lurek.network.leaveRoom(id: string) -> table](#lureknetworkleaveroomid-string-table)
-  - [lurek.network.listRooms() -> table](#lureknetworklistrooms-table)
-  - [lurek.network.makePunchProbe(peer_id: string) -> string](#lureknetworkmakepunchprobepeerid-string-string)
-  - [lurek.network.newClient(opts: table) -> LNetworkHost](#lureknetworknewclientopts-table-lnetworkhost)
-  - [lurek.network.newHost(opts: table) -> LNetworkHost](#lureknetworknewhostopts-table-lnetworkhost)
-  - [lurek.network.newRelayTicket(room_id: string, peer_id: string) -> string](#lureknetworknewrelayticketroomid-string-peerid-string-string)
-  - [lurek.network.newRuntime() -> LNetworkRuntime](#lureknetworknewruntime-lnetworkruntime)
-  - [lurek.network.newServer(opts: table) -> LNetworkHost](#lureknetworknewserveropts-table-lnetworkhost)
-  - [lurek.network.pack(value: table) -> string](#lureknetworkpackvalue-table-string)
-  - [lurek.network.parsePunchProbe(payload: string) -> string](#lureknetworkparsepunchprobepayload-string-string)
-  - [lurek.network.parseRelayTicket(token: string) -> table](#lureknetworkparserelaytickettoken-string-table)
-  - [lurek.network.predictLinear(snapshot: table, dt: number) -> table](#lureknetworkpredictlinearsnapshot-table-dt-number-table)
-  - [lurek.network.reconcileSnapshot(pred: table, auth: table, alpha: number) -> table](#lureknetworkreconcilesnapshotpred-table-auth-table-alpha-number-table)
-  - [lurek.network.syncEntity(host_ud: LNetworkHost, entity_id: integer, data_tbl: table, [channel]: integer, [reliable]: boolean)](#lureknetworksyncentityhostud-lnetworkhost-entityid-integer-datatbl-table-channel-integer-reliable-boolean)
-  - [lurek.network.unpack(data: string) -> table](#lureknetworkunpackdata-string-table)
-- [Types and Methods](#types-and-methods)
+- [🎯 Purpose](#purpose)
+- [📋 Summary](#summary)
+- [🧩 Key Types](#key-types)
+- [📖 API Overview](#api-overview)
+- [⚙️ Module Functions](#module-functions)
+  - [lurek.network.createLobby](#lureknetworkcreatelobby)
+  - [lurek.network.createRoom](#lureknetworkcreateroom)
+  - [lurek.network.discoverLobbies](#lureknetworkdiscoverlobbies)
+  - [lurek.network.joinRoom](#lureknetworkjoinroom)
+  - [lurek.network.leaveRoom](#lureknetworkleaveroom)
+  - [lurek.network.listRooms](#lureknetworklistrooms)
+  - [lurek.network.makePunchProbe](#lureknetworkmakepunchprobe)
+  - [lurek.network.newClient](#lureknetworknewclient)
+  - [lurek.network.newHost](#lureknetworknewhost)
+  - [lurek.network.newRelayTicket](#lureknetworknewrelayticket)
+  - [lurek.network.newRuntime](#lureknetworknewruntime)
+  - [lurek.network.newServer](#lureknetworknewserver)
+  - [lurek.network.pack](#lureknetworkpack)
+  - [lurek.network.parsePunchProbe](#lureknetworkparsepunchprobe)
+  - [lurek.network.parseRelayTicket](#lureknetworkparserelayticket)
+  - [lurek.network.predictLinear](#lureknetworkpredictlinear)
+  - [lurek.network.reconcileSnapshot](#lureknetworkreconcilesnapshot)
+  - [lurek.network.syncEntity](#lureknetworksyncentity)
+  - [lurek.network.unpack](#lureknetworkunpack)
+- [🔷 Module Types](#module-types)
   - [LNetworkHost](#lnetworkhost)
-  - [LNetworkHost:broadcast(channel_id: integer, data: string, [reliable]: boolean)](#lnetworkhostbroadcastchannelid-integer-data-string-reliable-boolean)
-  - [LNetworkHost:connect(addr_str: string, [channels]: integer, [data]: integer) -> integer](#lnetworkhostconnectaddrstr-string-channels-integer-data-integer-integer)
-  - [LNetworkHost:destroy()](#lnetworkhostdestroy)
-  - [LNetworkHost:disconnect(peer_id: integer, [data]: integer)](#lnetworkhostdisconnectpeerid-integer-data-integer)
-  - [LNetworkHost:disconnectLater(peer_id: integer, [data]: integer)](#lnetworkhostdisconnectlaterpeerid-integer-data-integer)
-  - [LNetworkHost:disconnectNow(peer_id: integer, [data]: integer)](#lnetworkhostdisconnectnowpeerid-integer-data-integer)
-  - [LNetworkHost:flush()](#lnetworkhostflush)
-  - [LNetworkHost:getAddress() -> string](#lnetworkhostgetaddress-string)
-  - [LNetworkHost:getBandwidthLimit() -> table](#lnetworkhostgetbandwidthlimit-table)
-  - [LNetworkHost:getChannelLimit() -> integer](#lnetworkhostgetchannellimit-integer)
-  - [LNetworkHost:getConnectedPeerCount() -> integer](#lnetworkhostgetconnectedpeercount-integer)
-  - [LNetworkHost:getConnectedPeerIds() -> integer[]](#lnetworkhostgetconnectedpeerids-integer)
-  - [LNetworkHost:getPeerAddress(peer_id: integer) -> string](#lnetworkhostgetpeeraddresspeerid-integer-string)
-  - [LNetworkHost:getPeerLimit() -> integer](#lnetworkhostgetpeerlimit-integer)
-  - [LNetworkHost:getPeerState(peer_id: integer) -> string](#lnetworkhostgetpeerstatepeerid-integer-string)
-  - [LNetworkHost:getPeerStats(peer_id: integer) -> table](#lnetworkhostgetpeerstatspeerid-integer-table)
-  - [LNetworkHost:getRole() -> string](#lnetworkhostgetrole-string)
-  - [LNetworkHost:getRoundTripTime(peer_id: integer) -> number](#lnetworkhostgetroundtriptimepeerid-integer-number)
-  - [LNetworkHost:isClient() -> boolean](#lnetworkhostisclient-boolean)
-  - [LNetworkHost:isDestroyed() -> boolean](#lnetworkhostisdestroyed-boolean)
-  - [LNetworkHost:isServer() -> boolean](#lnetworkhostisserver-boolean)
-  - [LNetworkHost:ping(peer_id: integer)](#lnetworkhostpingpeerid-integer)
-  - [LNetworkHost:resetPeer(peer_id: integer)](#lnetworkhostresetpeerpeerid-integer)
-  - [LNetworkHost:send(peer_id: integer, channel_id: integer, data: string, [reliable]: boolean)](#lnetworkhostsendpeerid-integer-channelid-integer-data-string-reliable-boolean)
-  - [LNetworkHost:service() -> table](#lnetworkhostservice-table)
-  - [LNetworkHost:setBandwidthLimit([incoming]: integer, [outgoing]: integer)](#lnetworkhostsetbandwidthlimitincoming-integer-outgoing-integer)
-  - [LNetworkHost:setChannelLimit(limit: integer)](#lnetworkhostsetchannellimitlimit-integer)
-  - [LNetworkHost:type() -> string](#lnetworkhosttype-string)
-  - [LNetworkHost:typeOf(name: string) -> boolean](#lnetworkhosttypeofname-string-boolean)
   - [LNetworkRuntime](#lnetworkruntime)
-  - [LNetworkRuntime:httpGet(url: string, [headers]: table) -> integer](#lnetworkruntimehttpgeturl-string-headers-table-integer)
-  - [LNetworkRuntime:httpPost(url: string, body: string, [headers]: table) -> integer](#lnetworkruntimehttpposturl-string-body-string-headers-table-integer)
-  - [LNetworkRuntime:httpRequest(opts: table) -> integer](#lnetworkruntimehttprequestopts-table-integer)
-  - [LNetworkRuntime:poll() -> table](#lnetworkruntimepoll-table)
-  - [LNetworkRuntime:shutdown()](#lnetworkruntimeshutdown)
-  - [LNetworkRuntime:tcpClose(id: integer)](#lnetworkruntimetcpcloseid-integer)
-  - [LNetworkRuntime:tcpConnect(addr: string) -> integer](#lnetworkruntimetcpconnectaddr-string-integer)
-  - [LNetworkRuntime:tcpSend(id: integer, data: string)](#lnetworkruntimetcpsendid-integer-data-string)
-  - [LNetworkRuntime:type() -> string](#lnetworkruntimetype-string)
-  - [LNetworkRuntime:typeOf(name: string) -> boolean](#lnetworkruntimetypeofname-string-boolean)
-  - [LNetworkRuntime:wsClose(id: integer)](#lnetworkruntimewscloseid-integer)
-  - [LNetworkRuntime:wsConnect(url: string) -> integer](#lnetworkruntimewsconnecturl-string-integer)
-  - [LNetworkRuntime:wsSend(id: integer, data: string)](#lnetworkruntimewssendid-integer-data-string)
-- [Examples](#examples)
-- [Reference Games](#reference-games)
-- [Related Modules](#related-modules)
+- [🔹 Module Methods](#module-methods)
+  - [LNetworkHost:broadcast](#lnetworkhostbroadcast)
+  - [LNetworkHost:connect](#lnetworkhostconnect)
+  - [LNetworkHost:destroy](#lnetworkhostdestroy)
+  - [LNetworkHost:disconnect](#lnetworkhostdisconnect)
+  - [LNetworkHost:disconnectLater](#lnetworkhostdisconnectlater)
+  - [LNetworkHost:disconnectNow](#lnetworkhostdisconnectnow)
+  - [LNetworkHost:flush](#lnetworkhostflush)
+  - [LNetworkHost:getAddress](#lnetworkhostgetaddress)
+  - [LNetworkHost:getBandwidthLimit](#lnetworkhostgetbandwidthlimit)
+  - [LNetworkHost:getChannelLimit](#lnetworkhostgetchannellimit)
+  - [LNetworkHost:getConnectedPeerCount](#lnetworkhostgetconnectedpeercount)
+  - [LNetworkHost:getConnectedPeerIds](#lnetworkhostgetconnectedpeerids)
+  - [LNetworkHost:getPeerAddress](#lnetworkhostgetpeeraddress)
+  - [LNetworkHost:getPeerLimit](#lnetworkhostgetpeerlimit)
+  - [LNetworkHost:getPeerState](#lnetworkhostgetpeerstate)
+  - [LNetworkHost:getPeerStats](#lnetworkhostgetpeerstats)
+  - [LNetworkHost:getRole](#lnetworkhostgetrole)
+  - [LNetworkHost:getRoundTripTime](#lnetworkhostgetroundtriptime)
+  - [LNetworkHost:isClient](#lnetworkhostisclient)
+  - [LNetworkHost:isDestroyed](#lnetworkhostisdestroyed)
+  - [LNetworkHost:isServer](#lnetworkhostisserver)
+  - [LNetworkHost:ping](#lnetworkhostping)
+  - [LNetworkHost:resetPeer](#lnetworkhostresetpeer)
+  - [LNetworkHost:send](#lnetworkhostsend)
+  - [LNetworkHost:service](#lnetworkhostservice)
+  - [LNetworkHost:setBandwidthLimit](#lnetworkhostsetbandwidthlimit)
+  - [LNetworkHost:setChannelLimit](#lnetworkhostsetchannellimit)
+  - [LNetworkHost:type](#lnetworkhosttype)
+  - [LNetworkHost:typeOf](#lnetworkhosttypeof)
+  - [LNetworkRuntime:httpGet](#lnetworkruntimehttpget)
+  - [LNetworkRuntime:httpPost](#lnetworkruntimehttppost)
+  - [LNetworkRuntime:httpRequest](#lnetworkruntimehttprequest)
+  - [LNetworkRuntime:poll](#lnetworkruntimepoll)
+  - [LNetworkRuntime:shutdown](#lnetworkruntimeshutdown)
+  - [LNetworkRuntime:tcpClose](#lnetworkruntimetcpclose)
+  - [LNetworkRuntime:tcpConnect](#lnetworkruntimetcpconnect)
+  - [LNetworkRuntime:tcpSend](#lnetworkruntimetcpsend)
+  - [LNetworkRuntime:type](#lnetworkruntimetype)
+  - [LNetworkRuntime:typeOf](#lnetworkruntimetypeof)
+  - [LNetworkRuntime:wsClose](#lnetworkruntimewsclose)
+  - [LNetworkRuntime:wsConnect](#lnetworkruntimewsconnect)
+  - [LNetworkRuntime:wsSend](#lnetworkruntimewssend)
+- [💡 Examples](#examples)
+- [🎮 Reference Games](#reference-games)
+- [🔗 Related Modules](#related-modules)
 
 This page is generated from the current module specs, examples, and Lua API data.
 
 **Module group:** Core Runtime
 **Namespace:** `lurek.network`
 
-## Purpose
+## 🎯 Purpose
 
 Multiplayer stack: ENet, raw TCP, async HTTP, WebSocket. Heavy crate tree.
 
-## Summary
+[⬆ back to top](#table-of-contents)
+
+## 📋 Summary
 
 Multiplayer networking stack providing ENet UDP transport, raw TCP sockets, async HTTP client, and WebSocket connections. `NetworkHost` manages connections in server, client, or peer-to-peer roles with reliable/unreliable channel separation. `NetworkEvent` delivers connect, disconnect, receive, and timeout notifications to Lua callbacks.
 
 Entity synchronization replicates state snapshots with delta compression and client-side prediction. Relay tickets enable NAT-punched peer connections via a relay server. HTTP client supports GET/POST/PUT/DELETE with headers, timeouts, and async polling. WebSocket provides persistent bidirectional messaging. Network operations run on a dedicated I/O thread to avoid blocking the game loop. Exposed as `lurek.network.*`. Core Runtime tier — heavy dependency tree, first-wave plugin candidate.
 
-## Minimal Module Example
+[⬆ back to top](#table-of-contents)
 
-Module example from [network.lua](../blob/main/content/examples/network.lua):
-
-```lua
-  -- that should not block your game loop.
-  -- Poll results each frame with rt:poll().
-  local rt = lurek.network.newRuntime()
-  -- Fire-and-forget GET — response will appear in poll() later.
-  rt:httpGet("http://127.0.0.1:9/version")
-  -- Shut down cleanly when the game exits.
-  function lurek.quit() rt:shutdown() end
-end
-
---@api-stub: lurek.network.pack
--- Packs a supported Lua value into a binary network message string
-do
-  -- pack serializes Lua tables, numbers, strings, booleans, and nil into a
-  -- compact binary format suitable for sending over network hosts.
-  -- Supported types: nil, boolean, integer, number, string, table (array or map).
-  -- Nested tables are allowed. Functions, userdata, and threads are NOT supported.
-  local snapshot = { x = 128.5, y = 64.0, hp = 87, weapon = "rifle" }
-  local bytes = lurek.network.pack(snapshot)
-  -- The result is a binary string — send it with host:send() or host:broadcast().
-  lurek.log.debug("packed " .. #bytes .. " bytes", "net")
-end
-
---@api-stub: lurek.network.unpack
--- Unpacks a binary network message string into Lua values
-do
-  -- unpack is the inverse of pack — it restores the original Lua value from bytes.
-  -- Use this on the receiving end when you get data from a "receive" event.
-  local payload = lurek.network.pack({ id = 42, action = "fire" })
-  local msg = lurek.network.unpack(payload)
-  if msg then
-    -- msg is now a table identical to the original.
-    lurek.log.info("received action=" .. msg.action .. " id=" .. msg.id, "net")
-  end
-end
-
---@api-stub: lurek.network.createLobby
--- Broadcasts lobby information and returns it as a table
-do
-  -- createLobby advertises a game session on the local network via UDP broadcast.
-  -- Other players on the same LAN can find it with discoverLobbies().
-  -- Parameters: name, port, current_player_count (default 1), max_players (default 8).
-  -- Returns a lobby info table: { name, port, player_count, max_players, host }.
-  local lobby = lurek.network.createLobby("Tom's Co-op", 5555, 1, 4)
-  lurek.log.info("advertised lobby " .. lobby.name .. " on port " .. lobby.port, "net")
-end
-
---@api-stub: lurek.network.discoverLobbies
--- Discovers broadcast lobbies
-```
-
-## Key Types
+## 🧩 Key Types
 
 - `LNetworkHost` (29 methods) - Lua-side wrapper for a network host.
 - `LNetworkRuntime` (13 methods) - Lua-side wrapper for the background network runtime.
 
-## API Overview
+[⬆ back to top](#table-of-contents)
+
+## 📖 API Overview
 
 - Source spec: [docs/specs/network.md](../blob/main/docs/specs/network.md)
 
@@ -183,18 +134,22 @@ lurek.network.syncEntity(host_ud: LNetworkHost, entity_id: integer, data_tbl: ta
 -- ... 1 more module functions
 ```
 
-## Module Functions
+[⬆ back to top](#table-of-contents)
 
-### `lurek.network.createLobby(name: string, port: integer, [player_count]: integer, [max_players]: integer) -> table`
+## ⚙️ Module Functions
+
+### lurek.network.createLobby
+
+`lurek.network.createLobby(name: string, port: integer, [player_count]: integer, [max_players]: integer) -> table`
 
 Broadcasts lobby information and returns it as a table.
 
 **Parameters**
 
-- `name` (`string`, required) - Lobby name.
-- `port` (`integer`, required) - Lobby port.
-- `player_count` (`integer`, optional) - Optional current player count, defaulting to 1.
-- `max_players` (`integer`, optional) - Optional maximum players, defaulting to 8.
+- `name` (`string`, required): Lobby name.
+- `port` (`integer`, required): Lobby port.
+- `player_count` (`integer`, optional): Optional current player count, defaulting to 1.
+- `max_players` (`integer`, optional): Optional maximum players, defaulting to 8.
 
 **Returns**: `table` - Lobby info table.
 
@@ -213,15 +168,17 @@ do
 end
 ```
 
-### `lurek.network.createRoom(name: string, host: string, [max_players]: integer) -> table`
+### lurek.network.createRoom
+
+`lurek.network.createRoom(name: string, host: string, [max_players]: integer) -> table`
 
 Creates a local room record. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `name` (`string`, required) - Room name.
-- `host` (`string`, required) - Host string.
-- `max_players` (`integer`, optional) - Optional maximum players, defaulting to 8.
+- `name` (`string`, required): Room name.
+- `host` (`string`, required): Host string.
+- `max_players` (`integer`, optional): Optional maximum players, defaulting to 8.
 
 **Returns**: `table` - Room info table.
 
@@ -247,13 +204,15 @@ do
 end
 ```
 
-### `lurek.network.discoverLobbies([timeout_ms]: integer) -> table`
+### lurek.network.discoverLobbies
+
+`lurek.network.discoverLobbies([timeout_ms]: integer) -> table`
 
 Discovers broadcast lobbies. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `timeout_ms` (`integer`, optional) - Optional timeout in milliseconds, defaulting to 500.
+- `timeout_ms` (`integer`, optional): Optional timeout in milliseconds, defaulting to 500.
 
 **Returns**: `table` - Array table of lobby info tables.
 
@@ -275,13 +234,15 @@ do
 end
 ```
 
-### `lurek.network.joinRoom(id: string) -> table`
+### lurek.network.joinRoom
+
+`lurek.network.joinRoom(id: string) -> table`
 
 Joins a room by id when available. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `id` (`string`, required) - Room id.
+- `id` (`string`, required): Room id.
 
 **Returns**: `table` - Room info table, or nil when missing.
 
@@ -302,13 +263,15 @@ do
 end
 ```
 
-### `lurek.network.leaveRoom(id: string) -> table`
+### lurek.network.leaveRoom
+
+`lurek.network.leaveRoom(id: string) -> table`
 
 Leaves a room by id when available. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `id` (`string`, required) - Room id.
+- `id` (`string`, required): Room id.
 
 **Returns**: `table` - Room info table, or nil when missing.
 
@@ -330,7 +293,9 @@ do
 end
 ```
 
-### `lurek.network.listRooms() -> table`
+### lurek.network.listRooms
+
+`lurek.network.listRooms() -> table`
 
 Lists known local room records. This function is exposed to Lua scripts.
 
@@ -349,13 +314,15 @@ do
 end
 ```
 
-### `lurek.network.makePunchProbe(peer_id: string) -> string`
+### lurek.network.makePunchProbe
+
+`lurek.network.makePunchProbe(peer_id: string) -> string`
 
 Creates a relay punch probe payload for a peer id.
 
 **Parameters**
 
-- `peer_id` (`string`, required) - Peer id.
+- `peer_id` (`string`, required): Peer id.
 
 **Returns**: `string` - Probe payload.
 
@@ -373,13 +340,15 @@ do
 end
 ```
 
-### `lurek.network.newClient(opts: table) -> LNetworkHost`
+### lurek.network.newClient
+
+`lurek.network.newClient(opts: table) -> LNetworkHost`
 
 Creates a client host and connects to an address.
 
 **Parameters**
 
-- `opts` (`table`, required) - Options with required `addr`, optional `channels`, and `data`.
+- `opts` (`table`, required): Options with required `addr`, optional `channels`, and `data`.
 
 **Returns**: `LNetworkHost` - New client host handle.
 
@@ -409,13 +378,15 @@ do
 end
 ```
 
-### `lurek.network.newHost(opts: table) -> LNetworkHost`
+### lurek.network.newHost
+
+`lurek.network.newHost(opts: table) -> LNetworkHost`
 
 Creates a network host from an options table.
 
 **Parameters**
 
-- `opts` (`table`, required) - Options with `addr`, optional `maxPeers`/`peers`, `channels`, `inBandwidth`, and `outBandwidth`.
+- `opts` (`table`, required): Options with `addr`, optional `maxPeers`/`peers`, `channels`, `inBandwidth`, and `outBandwidth`.
 
 **Returns**: `LNetworkHost` - New network host handle.
 
@@ -445,14 +416,16 @@ do
 end
 ```
 
-### `lurek.network.newRelayTicket(room_id: string, peer_id: string) -> string`
+### lurek.network.newRelayTicket
+
+`lurek.network.newRelayTicket(room_id: string, peer_id: string) -> string`
 
 Creates an encoded relay ticket. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `room_id` (`string`, required) - Room id.
-- `peer_id` (`string`, required) - Peer id.
+- `room_id` (`string`, required): Room id.
+- `peer_id` (`string`, required): Peer id.
 
 **Returns**: `string` - Encoded relay ticket.
 
@@ -477,7 +450,9 @@ do
 end
 ```
 
-### `lurek.network.newRuntime() -> LNetworkRuntime`
+### lurek.network.newRuntime
+
+`lurek.network.newRuntime() -> LNetworkRuntime`
 
 Creates a background network runtime.
 
@@ -501,13 +476,15 @@ do
 end
 ```
 
-### `lurek.network.newServer(opts: table) -> LNetworkHost`
+### lurek.network.newServer
+
+`lurek.network.newServer(opts: table) -> LNetworkHost`
 
 Creates a server host from an options table.
 
 **Parameters**
 
-- `opts` (`table`, required) - Options with required `port`, optional `maxPeers`/`peers`, and `channels`.
+- `opts` (`table`, required): Options with required `port`, optional `maxPeers`/`peers`, and `channels`.
 
 **Returns**: `LNetworkHost` - New server host handle.
 
@@ -534,13 +511,15 @@ do
 end
 ```
 
-### `lurek.network.pack(value: table) -> string`
+### lurek.network.pack
+
+`lurek.network.pack(value: table) -> string`
 
 Packs a supported Lua value into a binary network message string.
 
 **Parameters**
 
-- `value` (`table`, required) - Lua value to pack (table, number, string, or boolean).
+- `value` (`table`, required): Lua value to pack (table, number, string, or boolean).
 
 **Returns**: `string` - Binary packed message.
 
@@ -561,13 +540,15 @@ do
 end
 ```
 
-### `lurek.network.parsePunchProbe(payload: string) -> string`
+### lurek.network.parsePunchProbe
+
+`lurek.network.parsePunchProbe(payload: string) -> string`
 
 Parses a relay punch probe payload.
 
 **Parameters**
 
-- `payload` (`string`, required) - Probe payload.
+- `payload` (`string`, required): Probe payload.
 
 **Returns**: `string` - Parsed peer id, or nil when invalid.
 
@@ -585,13 +566,15 @@ do
 end
 ```
 
-### `lurek.network.parseRelayTicket(token: string) -> table`
+### lurek.network.parseRelayTicket
+
+`lurek.network.parseRelayTicket(token: string) -> table`
 
 Parses an encoded relay ticket. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `token` (`string`, required) - Encoded relay ticket.
+- `token` (`string`, required): Encoded relay ticket.
 
 **Returns**: `table` - Ticket table, or nil when invalid.
 
@@ -609,14 +592,16 @@ do
 end
 ```
 
-### `lurek.network.predictLinear(snapshot: table, dt: number) -> table`
+### lurek.network.predictLinear
+
+`lurek.network.predictLinear(snapshot: table, dt: number) -> table`
 
 Predicts an entity snapshot forward by linear velocity.
 
 **Parameters**
 
-- `snapshot` (`table`, required) - Snapshot table with `id`, `tick`, `x`, `y`, `vx`, and `vy`.
-- `dt` (`number`, required) - Prediction delta time.
+- `snapshot` (`table`, required): Snapshot table with `id`, `tick`, `x`, `y`, `vx`, and `vy`.
+- `dt` (`number`, required): Prediction delta time.
 
 **Returns**: `table` - Predicted snapshot table.
 
@@ -640,15 +625,17 @@ do
 end
 ```
 
-### `lurek.network.reconcileSnapshot(pred: table, auth: table, alpha: number) -> table`
+### lurek.network.reconcileSnapshot
+
+`lurek.network.reconcileSnapshot(pred: table, auth: table, alpha: number) -> table`
 
 Reconciles a predicted snapshot toward an authoritative snapshot.
 
 **Parameters**
 
-- `pred` (`table`, required) - Predicted snapshot table.
-- `auth` (`table`, required) - Authoritative snapshot table.
-- `alpha` (`number`, required) - Blend factor.
+- `pred` (`table`, required): Predicted snapshot table.
+- `auth` (`table`, required): Authoritative snapshot table.
+- `alpha` (`number`, required): Blend factor.
 
 **Returns**: `table` - Reconciled snapshot table.
 
@@ -670,17 +657,19 @@ do
 end
 ```
 
-### `lurek.network.syncEntity(host_ud: LNetworkHost, entity_id: integer, data_tbl: table, [channel]: integer, [reliable]: boolean)`
+### lurek.network.syncEntity
+
+`lurek.network.syncEntity(host_ud: LNetworkHost, entity_id: integer, data_tbl: table, [channel]: integer, [reliable]: boolean)`
 
 Broadcasts a packed entity sync payload through a network host.
 
 **Parameters**
 
-- `host_ud` (`LNetworkHost`, required) - Network host handle.
-- `entity_id` (`integer`, required) - Entity id.
-- `data_tbl` (`table`, required) - Entity field table.
-- `channel` (`integer`, optional) - Optional channel id, defaulting to 0.
-- `reliable` (`boolean`, optional) - Optional reliable flag, defaulting to false.
+- `host_ud` (`LNetworkHost`, required): Network host handle.
+- `entity_id` (`integer`, required): Entity id.
+- `data_tbl` (`table`, required): Entity field table.
+- `channel` (`integer`, optional): Optional channel id, defaulting to 0.
+- `reliable` (`boolean`, optional): Optional reliable flag, defaulting to false.
 
 #### Example
 
@@ -700,13 +689,15 @@ do
 end
 ```
 
-### `lurek.network.unpack(data: string) -> table`
+### lurek.network.unpack
+
+`lurek.network.unpack(data: string) -> table`
 
 Unpacks a binary network message string into a Lua value.
 
 **Parameters**
 
-- `data` (`string`, required) - Binary packed message.
+- `data` (`string`, required): Binary packed message.
 
 **Returns**: `table` - Unpacked Lua value.
 
@@ -728,11 +719,21 @@ end
 ```
 
 
-## Types and Methods
+[⬆ back to top](#table-of-contents)
 
-### `LNetworkHost`
+## 🔷 Module Types
+
+### LNetworkHost
 
 Lua-side wrapper for a network host.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side wrapper for a network host.
+---@class LNetworkHost
+LNetworkHost = {}
+```
 
 #### Example
 
@@ -760,15 +761,62 @@ do
 end
 ```
 
-### `LNetworkHost:broadcast(channel_id: integer, data: string, [reliable]: boolean)`
+### LNetworkRuntime
+
+Lua-side wrapper for the background network runtime.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side wrapper for the background network runtime.
+---@class LNetworkRuntime
+LNetworkRuntime = {}
+```
+
+#### Example
+
+Exact example from [network.lua](../blob/main/content/examples/network.lua):
+
+```lua
+do
+  -- The NetworkRuntime runs async I/O on a background thread, separate from
+  -- ENet hosts. Use it for HTTP requests, TCP streams, and WebSocket connections
+  -- that should not block your game loop.
+  -- Poll results each frame with rt:poll().
+  local rt = lurek.network.newRuntime()
+  -- Fire-and-forget GET — response will appear in poll() later.
+  rt:httpGet("http://127.0.0.1:9/version")
+  -- Shut down cleanly when the game exits.
+  function lurek.quit() rt:shutdown() end
+end
+```
+
+
+[⬆ back to top](#table-of-contents)
+
+## 🔹 Module Methods
+
+### LNetworkHost:broadcast
+
+`LNetworkHost:broadcast(channel_id: integer, data: string, [reliable]: boolean)`
 
 Broadcasts bytes to all connected peers on a channel.
 
 **Parameters**
 
-- `channel_id` (`integer`, required) - Channel id.
-- `data` (`string`, required) - Binary payload string.
-- `reliable` (`boolean`, optional) - Optional reliable flag, defaulting to true.
+- `channel_id` (`integer`, required): Channel id.
+- `data` (`string`, required): Binary payload string.
+- `reliable` (`boolean`, optional): Optional reliable flag, defaulting to true.
+
+**Lua API Stub**
+
+```lua
+--- Broadcasts bytes to all connected peers on a channel.
+---@param channel_id number Channel id.
+---@param data string Binary payload string.
+---@param reliable? boolean Optional reliable flag, defaulting to true.
+function LNetworkHost:broadcast(channel_id, data, reliable) end
+```
 
 #### Example
 
@@ -786,17 +834,30 @@ do
 end
 ```
 
-### `LNetworkHost:connect(addr_str: string, [channels]: integer, [data]: integer) -> integer`
+### LNetworkHost:connect
+
+`LNetworkHost:connect(addr_str: string, [channels]: integer, [data]: integer) -> integer`
 
 Connects to a remote address. This method is available to Lua scripts.
 
 **Parameters**
 
-- `addr_str` (`string`, required) - Remote socket address.
-- `channels` (`integer`, optional) - Optional channel count, defaulting to 1.
-- `data` (`integer`, optional) - Optional connection data, defaulting to 0.
+- `addr_str` (`string`, required): Remote socket address.
+- `channels` (`integer`, optional): Optional channel count, defaulting to 1.
+- `data` (`integer`, optional): Optional connection data, defaulting to 0.
 
 **Returns**: `integer` - Peer id.
+
+**Lua API Stub**
+
+```lua
+--- Connects to a remote address. This method is available to Lua scripts.
+---@param addr_str string Remote socket address.
+---@param channels? number Optional channel count, defaulting to 1.
+---@param data? number Optional connection data, defaulting to 0.
+---@return number Peer id.
+function LNetworkHost:connect(addr_str, channels, data) end
+```
 
 #### Example
 
@@ -817,9 +878,18 @@ do
 end
 ```
 
-### `LNetworkHost:destroy()`
+### LNetworkHost:destroy
+
+`LNetworkHost:destroy()`
 
 Destroys the network host and releases resources.
+
+**Lua API Stub**
+
+```lua
+--- Destroys the network host and releases resources.
+function LNetworkHost:destroy() end
+```
 
 #### Example
 
@@ -836,14 +906,25 @@ do
 end
 ```
 
-### `LNetworkHost:disconnect(peer_id: integer, [data]: integer)`
+### LNetworkHost:disconnect
+
+`LNetworkHost:disconnect(peer_id: integer, [data]: integer)`
 
 Requests a graceful peer disconnect.
 
 **Parameters**
 
-- `peer_id` (`integer`, required) - Peer id.
-- `data` (`integer`, optional) - Optional disconnect data.
+- `peer_id` (`integer`, required): Peer id.
+- `data` (`integer`, optional): Optional disconnect data.
+
+**Lua API Stub**
+
+```lua
+--- Requests a graceful peer disconnect.
+---@param peer_id number Peer id.
+---@param data? number Optional disconnect data.
+function LNetworkHost:disconnect(peer_id, data) end
+```
 
 #### Example
 
@@ -861,14 +942,25 @@ do
 end
 ```
 
-### `LNetworkHost:disconnectLater(peer_id: integer, [data]: integer)`
+### LNetworkHost:disconnectLater
+
+`LNetworkHost:disconnectLater(peer_id: integer, [data]: integer)`
 
 Schedules a peer disconnect after pending packets.
 
 **Parameters**
 
-- `peer_id` (`integer`, required) - Peer id.
-- `data` (`integer`, optional) - Optional disconnect data.
+- `peer_id` (`integer`, required): Peer id.
+- `data` (`integer`, optional): Optional disconnect data.
+
+**Lua API Stub**
+
+```lua
+--- Schedules a peer disconnect after pending packets.
+---@param peer_id number Peer id.
+---@param data? number Optional disconnect data.
+function LNetworkHost:disconnectLater(peer_id, data) end
+```
 
 #### Example
 
@@ -886,14 +978,25 @@ do
 end
 ```
 
-### `LNetworkHost:disconnectNow(peer_id: integer, [data]: integer)`
+### LNetworkHost:disconnectNow
+
+`LNetworkHost:disconnectNow(peer_id: integer, [data]: integer)`
 
 Disconnects a peer immediately. This method is available to Lua scripts.
 
 **Parameters**
 
-- `peer_id` (`integer`, required) - Peer id.
-- `data` (`integer`, optional) - Optional disconnect data.
+- `peer_id` (`integer`, required): Peer id.
+- `data` (`integer`, optional): Optional disconnect data.
+
+**Lua API Stub**
+
+```lua
+--- Disconnects a peer immediately. This method is available to Lua scripts.
+---@param peer_id number Peer id.
+---@param data? number Optional disconnect data.
+function LNetworkHost:disconnectNow(peer_id, data) end
+```
 
 #### Example
 
@@ -909,9 +1012,18 @@ do
 end
 ```
 
-### `LNetworkHost:flush()`
+### LNetworkHost:flush
+
+`LNetworkHost:flush()`
 
 Flushes queued outgoing network packets.
+
+**Lua API Stub**
+
+```lua
+--- Flushes queued outgoing network packets.
+function LNetworkHost:flush() end
+```
 
 #### Example
 
@@ -928,11 +1040,21 @@ do
 end
 ```
 
-### `LNetworkHost:getAddress() -> string`
+### LNetworkHost:getAddress
+
+`LNetworkHost:getAddress() -> string`
 
 Returns local host socket address.
 
 **Returns**: `string` - Local socket address.
+
+**Lua API Stub**
+
+```lua
+--- Returns local host socket address.
+---@return string Local socket address.
+function LNetworkHost:getAddress() end
+```
 
 #### Example
 
@@ -948,11 +1070,21 @@ do
 end
 ```
 
-### `LNetworkHost:getBandwidthLimit() -> table`
+### LNetworkHost:getBandwidthLimit
+
+`LNetworkHost:getBandwidthLimit() -> table`
 
 Returns incoming and outgoing bandwidth limits.
 
 **Returns**: `table` - Table with `incoming` and `outgoing` fields.
+
+**Lua API Stub**
+
+```lua
+--- Returns incoming and outgoing bandwidth limits.
+---@return LNetworkHostGetBandwidthLimitResult Table with `incoming` and `outgoing` fields.
+function LNetworkHost:getBandwidthLimit() end
+```
 
 #### Example
 
@@ -971,11 +1103,21 @@ do
 end
 ```
 
-### `LNetworkHost:getChannelLimit() -> integer`
+### LNetworkHost:getChannelLimit
+
+`LNetworkHost:getChannelLimit() -> integer`
 
 Returns configured channel limit.
 
 **Returns**: `integer` - Channel limit.
+
+**Lua API Stub**
+
+```lua
+--- Returns configured channel limit.
+---@return number Channel limit.
+function LNetworkHost:getChannelLimit() end
+```
 
 #### Example
 
@@ -991,11 +1133,21 @@ do
 end
 ```
 
-### `LNetworkHost:getConnectedPeerCount() -> integer`
+### LNetworkHost:getConnectedPeerCount
+
+`LNetworkHost:getConnectedPeerCount() -> integer`
 
 Returns the number of currently connected peers.
 
 **Returns**: `integer` - Connected peer count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of currently connected peers.
+---@return number Connected peer count.
+function LNetworkHost:getConnectedPeerCount() end
+```
 
 #### Example
 
@@ -1011,11 +1163,21 @@ do
 end
 ```
 
-### `LNetworkHost:getConnectedPeerIds() -> integer[]`
+### LNetworkHost:getConnectedPeerIds
+
+`LNetworkHost:getConnectedPeerIds() -> integer[]`
 
 Returns an array of ids for all connected peers.
 
 **Returns**: `integer[]` - Array table of peer ids.
+
+**Lua API Stub**
+
+```lua
+--- Returns an array of ids for all connected peers.
+---@return number[] Array table of peer ids.
+function LNetworkHost:getConnectedPeerIds() end
+```
 
 #### Example
 
@@ -1032,15 +1194,26 @@ do
 end
 ```
 
-### `LNetworkHost:getPeerAddress(peer_id: integer) -> string`
+### LNetworkHost:getPeerAddress
+
+`LNetworkHost:getPeerAddress(peer_id: integer) -> string`
 
 Returns peer socket address when available.
 
 **Parameters**
 
-- `peer_id` (`integer`, required) - Peer id.
+- `peer_id` (`integer`, required): Peer id.
 
 **Returns**: `string` - Peer address, or nil when unavailable.
+
+**Lua API Stub**
+
+```lua
+--- Returns peer socket address when available.
+---@param peer_id number Peer id.
+---@return string Peer address, or nil when unavailable.
+function LNetworkHost:getPeerAddress(peer_id) end
+```
 
 #### Example
 
@@ -1056,11 +1229,21 @@ do
 end
 ```
 
-### `LNetworkHost:getPeerLimit() -> integer`
+### LNetworkHost:getPeerLimit
+
+`LNetworkHost:getPeerLimit() -> integer`
 
 Returns configured peer limit. This method is available to Lua scripts.
 
 **Returns**: `integer` - Peer limit.
+
+**Lua API Stub**
+
+```lua
+--- Returns configured peer limit. This method is available to Lua scripts.
+---@return number Peer limit.
+function LNetworkHost:getPeerLimit() end
+```
 
 #### Example
 
@@ -1075,15 +1258,26 @@ do
 end
 ```
 
-### `LNetworkHost:getPeerState(peer_id: integer) -> string`
+### LNetworkHost:getPeerState
+
+`LNetworkHost:getPeerState(peer_id: integer) -> string`
 
 Returns peer connection state. This method is available to Lua scripts.
 
 **Parameters**
 
-- `peer_id` (`integer`, required) - Peer id.
+- `peer_id` (`integer`, required): Peer id.
 
 **Returns**: `string` - Peer state string.
+
+**Lua API Stub**
+
+```lua
+--- Returns peer connection state. This method is available to Lua scripts.
+---@param peer_id number Peer id.
+---@return string Peer state string.
+function LNetworkHost:getPeerState(peer_id) end
+```
 
 #### Example
 
@@ -1103,15 +1297,26 @@ do
 end
 ```
 
-### `LNetworkHost:getPeerStats(peer_id: integer) -> table`
+### LNetworkHost:getPeerStats
+
+`LNetworkHost:getPeerStats(peer_id: integer) -> table`
 
 Returns statistics for a peer. This method is available to Lua scripts.
 
 **Parameters**
 
-- `peer_id` (`integer`, required) - Peer id.
+- `peer_id` (`integer`, required): Peer id.
 
 **Returns**: `table` - Peer statistics table.
+
+**Lua API Stub**
+
+```lua
+--- Returns statistics for a peer. This method is available to Lua scripts.
+---@param peer_id number Peer id.
+---@return LNetworkHostGetPeerStatsResult Peer statistics table.
+function LNetworkHost:getPeerStats(peer_id) end
+```
 
 #### Example
 
@@ -1131,11 +1336,21 @@ do
 end
 ```
 
-### `LNetworkHost:getRole() -> string`
+### LNetworkHost:getRole
+
+`LNetworkHost:getRole() -> string`
 
 Returns host role string. This method is available to Lua scripts.
 
 **Returns**: `string` - Role string.
+
+**Lua API Stub**
+
+```lua
+--- Returns host role string. This method is available to Lua scripts.
+---@return string Role string.
+function LNetworkHost:getRole() end
+```
 
 #### Example
 
@@ -1151,15 +1366,26 @@ do
 end
 ```
 
-### `LNetworkHost:getRoundTripTime(peer_id: integer) -> number`
+### LNetworkHost:getRoundTripTime
+
+`LNetworkHost:getRoundTripTime(peer_id: integer) -> number`
 
 Returns peer round trip time in milliseconds.
 
 **Parameters**
 
-- `peer_id` (`integer`, required) - Peer id.
+- `peer_id` (`integer`, required): Peer id.
 
 **Returns**: `number` - Round trip time in milliseconds.
+
+**Lua API Stub**
+
+```lua
+--- Returns peer round trip time in milliseconds.
+---@param peer_id number Peer id.
+---@return number Round trip time in milliseconds.
+function LNetworkHost:getRoundTripTime(peer_id) end
+```
 
 #### Example
 
@@ -1177,11 +1403,21 @@ do
 end
 ```
 
-### `LNetworkHost:isClient() -> boolean`
+### LNetworkHost:isClient
+
+`LNetworkHost:isClient() -> boolean`
 
 Returns whether this host has client role.
 
 **Returns**: `boolean` - True when role is client.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this host has client role.
+---@return boolean True when role is client.
+function LNetworkHost:isClient() end
+```
 
 #### Example
 
@@ -1197,11 +1433,21 @@ do
 end
 ```
 
-### `LNetworkHost:isDestroyed() -> boolean`
+### LNetworkHost:isDestroyed
+
+`LNetworkHost:isDestroyed() -> boolean`
 
 Returns whether the network host is destroyed.
 
 **Returns**: `boolean` - True when destroyed.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether the network host is destroyed.
+---@return boolean True when destroyed.
+function LNetworkHost:isDestroyed() end
+```
 
 #### Example
 
@@ -1217,11 +1463,21 @@ do
 end
 ```
 
-### `LNetworkHost:isServer() -> boolean`
+### LNetworkHost:isServer
+
+`LNetworkHost:isServer() -> boolean`
 
 Returns whether this host has server role.
 
 **Returns**: `boolean` - True when role is server.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this host has server role.
+---@return boolean True when role is server.
+function LNetworkHost:isServer() end
+```
 
 #### Example
 
@@ -1238,13 +1494,23 @@ do
 end
 ```
 
-### `LNetworkHost:ping(peer_id: integer)`
+### LNetworkHost:ping
+
+`LNetworkHost:ping(peer_id: integer)`
 
 Sends a ping to a peer. This method is available to Lua scripts.
 
 **Parameters**
 
-- `peer_id` (`integer`, required) - Peer id.
+- `peer_id` (`integer`, required): Peer id.
+
+**Lua API Stub**
+
+```lua
+--- Sends a ping to a peer. This method is available to Lua scripts.
+---@param peer_id number Peer id.
+function LNetworkHost:ping(peer_id) end
+```
 
 #### Example
 
@@ -1261,13 +1527,23 @@ do
 end
 ```
 
-### `LNetworkHost:resetPeer(peer_id: integer)`
+### LNetworkHost:resetPeer
+
+`LNetworkHost:resetPeer(peer_id: integer)`
 
 Resets a peer connection. This method is available to Lua scripts.
 
 **Parameters**
 
-- `peer_id` (`integer`, required) - Peer id.
+- `peer_id` (`integer`, required): Peer id.
+
+**Lua API Stub**
+
+```lua
+--- Resets a peer connection. This method is available to Lua scripts.
+---@param peer_id number Peer id.
+function LNetworkHost:resetPeer(peer_id) end
+```
 
 #### Example
 
@@ -1285,16 +1561,29 @@ do
 end
 ```
 
-### `LNetworkHost:send(peer_id: integer, channel_id: integer, data: string, [reliable]: boolean)`
+### LNetworkHost:send
+
+`LNetworkHost:send(peer_id: integer, channel_id: integer, data: string, [reliable]: boolean)`
 
 Sends bytes to a peer on a channel. This method is available to Lua scripts.
 
 **Parameters**
 
-- `peer_id` (`integer`, required) - Peer id.
-- `channel_id` (`integer`, required) - Channel id.
-- `data` (`string`, required) - Binary payload string.
-- `reliable` (`boolean`, optional) - Optional reliable flag, defaulting to true.
+- `peer_id` (`integer`, required): Peer id.
+- `channel_id` (`integer`, required): Channel id.
+- `data` (`string`, required): Binary payload string.
+- `reliable` (`boolean`, optional): Optional reliable flag, defaulting to true.
+
+**Lua API Stub**
+
+```lua
+--- Sends bytes to a peer on a channel. This method is available to Lua scripts.
+---@param peer_id number Peer id.
+---@param channel_id number Channel id.
+---@param data string Binary payload string.
+---@param reliable? boolean Optional reliable flag, defaulting to true.
+function LNetworkHost:send(peer_id, channel_id, data, reliable) end
+```
 
 #### Example
 
@@ -1312,11 +1601,21 @@ do
 end
 ```
 
-### `LNetworkHost:service() -> table`
+### LNetworkHost:service
+
+`LNetworkHost:service() -> table`
 
 Polls the host for one network event.
 
 **Returns**: `table` - Event table, or nil when no event is available.
+
+**Lua API Stub**
+
+```lua
+--- Polls the host for one network event.
+---@return LNetworkHostServiceResult Event table, or nil when no event is available.
+function LNetworkHost:service() end
+```
 
 #### Example
 
@@ -1347,7 +1646,6 @@ do
     end
   end
 end
-
 --@api-stub: LNetworkHost:flush
 -- Sends all queued outgoing packets on this host immediately without waiting for service.
 do
@@ -1358,7 +1656,6 @@ do
   host:broadcast(0, lurek.network.pack({ event = "round_end" }), true)
   host:flush()
 end
-
 --@api-stub: LNetworkHost:resetPeer
 -- Forcibly resets a peer connection by id without sending a graceful disconnect message.
 do
@@ -1370,16 +1667,30 @@ do
   host:resetPeer(cheater_peer_id)
   lurek.log.warn("force-reset peer " .. cheater_peer_id, "net")
 end
+--@api-stub: LNetworkHost:ping
+-- Sends a ping packet to a peer to trigger a round-trip time measurement.
+do
 ```
 
-### `LNetworkHost:setBandwidthLimit([incoming]: integer, [outgoing]: integer)`
+### LNetworkHost:setBandwidthLimit
+
+`LNetworkHost:setBandwidthLimit([incoming]: integer, [outgoing]: integer)`
 
 Sets incoming and outgoing bandwidth limits.
 
 **Parameters**
 
-- `incoming` (`integer`, optional) - Optional incoming bandwidth limit.
-- `outgoing` (`integer`, optional) - Optional outgoing bandwidth limit.
+- `incoming` (`integer`, optional): Optional incoming bandwidth limit.
+- `outgoing` (`integer`, optional): Optional outgoing bandwidth limit.
+
+**Lua API Stub**
+
+```lua
+--- Sets incoming and outgoing bandwidth limits.
+---@param incoming? number Optional incoming bandwidth limit.
+---@param outgoing? number Optional outgoing bandwidth limit.
+function LNetworkHost:setBandwidthLimit(incoming, outgoing) end
+```
 
 #### Example
 
@@ -1396,13 +1707,23 @@ do
 end
 ```
 
-### `LNetworkHost:setChannelLimit(limit: integer)`
+### LNetworkHost:setChannelLimit
+
+`LNetworkHost:setChannelLimit(limit: integer)`
 
 Sets channel limit. This method is available to Lua scripts.
 
 **Parameters**
 
-- `limit` (`integer`, required) - Channel limit.
+- `limit` (`integer`, required): Channel limit.
+
+**Lua API Stub**
+
+```lua
+--- Sets channel limit. This method is available to Lua scripts.
+---@param limit number Channel limit.
+function LNetworkHost:setChannelLimit(limit) end
+```
 
 #### Example
 
@@ -1419,11 +1740,21 @@ do
 end
 ```
 
-### `LNetworkHost:type() -> string`
+### LNetworkHost:type
+
+`LNetworkHost:type() -> string`
 
 Returns the Lua-visible type name for this network host handle.
 
 **Returns**: `string` - The string `LNetworkHost`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this network host handle.
+---@return string The string `LNetworkHost`.
+function LNetworkHost:type() end
+```
 
 #### Example
 
@@ -1436,15 +1767,26 @@ do
 end
 ```
 
-### `LNetworkHost:typeOf(name: string) -> boolean`
+### LNetworkHost:typeOf
+
+`LNetworkHost:typeOf(name: string) -> boolean`
 
 Returns whether this network host handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `LNetworkHost` and `Object`.
+- `name` (`string`, required): Type name to compare against `LNetworkHost` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this network host handle matches a supported type name.
+---@param name string Type name to compare against `LNetworkHost` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LNetworkHost:typeOf(name) end
+```
 
 #### Example
 
@@ -1457,38 +1799,28 @@ do
 end
 ```
 
-### `LNetworkRuntime`
+### LNetworkRuntime:httpGet
 
-Lua-side wrapper for the background network runtime.
-
-#### Example
-
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
-
-```lua
-do
-  -- The NetworkRuntime runs async I/O on a background thread, separate from
-  -- ENet hosts. Use it for HTTP requests, TCP streams, and WebSocket connections
-  -- that should not block your game loop.
-  -- Poll results each frame with rt:poll().
-  local rt = lurek.network.newRuntime()
-  -- Fire-and-forget GET — response will appear in poll() later.
-  rt:httpGet("http://127.0.0.1:9/version")
-  -- Shut down cleanly when the game exits.
-  function lurek.quit() rt:shutdown() end
-end
-```
-
-### `LNetworkRuntime:httpGet(url: string, [headers]: table) -> integer`
+`LNetworkRuntime:httpGet(url: string, [headers]: table) -> integer`
 
 Starts an HTTP GET request. This method is available to Lua scripts.
 
 **Parameters**
 
-- `url` (`string`, required) - Request URL.
-- `headers` (`table`, optional) - Optional headers table.
+- `url` (`string`, required): Request URL.
+- `headers` (`table`, optional): Optional headers table.
 
 **Returns**: `integer` - Request id.
+
+**Lua API Stub**
+
+```lua
+--- Starts an HTTP GET request. This method is available to Lua scripts.
+---@param url string Request URL.
+---@param headers? table Optional headers table.
+---@return number Request id.
+function LNetworkRuntime:httpGet(url, headers) end
+```
 
 #### Example
 
@@ -1505,17 +1837,30 @@ do
 end
 ```
 
-### `LNetworkRuntime:httpPost(url: string, body: string, [headers]: table) -> integer`
+### LNetworkRuntime:httpPost
+
+`LNetworkRuntime:httpPost(url: string, body: string, [headers]: table) -> integer`
 
 Starts an HTTP POST request. This method is available to Lua scripts.
 
 **Parameters**
 
-- `url` (`string`, required) - Request URL.
-- `body` (`string`, required) - Request body.
-- `headers` (`table`, optional) - Optional headers table.
+- `url` (`string`, required): Request URL.
+- `body` (`string`, required): Request body.
+- `headers` (`table`, optional): Optional headers table.
 
 **Returns**: `integer` - Request id.
+
+**Lua API Stub**
+
+```lua
+--- Starts an HTTP POST request. This method is available to Lua scripts.
+---@param url string Request URL.
+---@param body string Request body.
+---@param headers? table Optional headers table.
+---@return number Request id.
+function LNetworkRuntime:httpPost(url, body, headers) end
+```
 
 #### Example
 
@@ -1536,15 +1881,26 @@ do
 end
 ```
 
-### `LNetworkRuntime:httpRequest(opts: table) -> integer`
+### LNetworkRuntime:httpRequest
+
+`LNetworkRuntime:httpRequest(opts: table) -> integer`
 
 Starts an HTTP request from an options table and returns its request id.
 
 **Parameters**
 
-- `opts` (`table`, required) - Options table with `url`, optional `method`, `headers`, `body`, and `timeout`.
+- `opts` (`table`, required): Options table with `url`, optional `method`, `headers`, `body`, and `timeout`.
 
 **Returns**: `integer` - Request id.
+
+**Lua API Stub**
+
+```lua
+--- Starts an HTTP request from an options table and returns its request id.
+---@param opts table Options table with `url`, optional `method`, `headers`, `body`, and `timeout`.
+---@return number Request id.
+function LNetworkRuntime:httpRequest(opts) end
+```
 
 #### Example
 
@@ -1571,11 +1927,21 @@ do
 end
 ```
 
-### `LNetworkRuntime:poll() -> table`
+### LNetworkRuntime:poll
+
+`LNetworkRuntime:poll() -> table`
 
 Polls runtime responses for HTTP, TCP, and WebSocket operations.
 
 **Returns**: `table` - Array table of response/event tables.
+
+**Lua API Stub**
+
+```lua
+--- Polls runtime responses for HTTP, TCP, and WebSocket operations.
+---@return LNetworkRuntimePollResult Array table of response/event tables.
+function LNetworkRuntime:poll() end
+```
 
 #### Example
 
@@ -1602,7 +1968,6 @@ do
     end
   end
 end
-
 --@api-stub: LNetworkRuntime:shutdown
 -- Shuts down the network runtime and cancels all pending async network operations.
 do
@@ -1613,7 +1978,6 @@ do
     rt:shutdown()
   end
 end
-
 --@api-stub: LNetworkHost:broadcast
 -- Sends a packet to all currently connected peers on a channel with optional reliability.
 do
@@ -1625,16 +1989,27 @@ do
   host:broadcast(0, lurek.network.pack({ event = "round_start", map = "arena" }), true)
   lurek.log.info("broadcast sent to all peers", "network")
 end
-
 --@api-stub: LNetworkHost:connect
 -- Initiates a connection from this client host to a remote server address string.
 do
   -- connect() can be called on any host (not just clients) to initiate a
+  -- connection to a remote address. Returns the peer_id assigned to this connection.
+  -- Parameters: address_string, channels (default 1), connect_data (default 0).
+  -- The connect_data value is delivered to the remote in the "connect" event.
 ```
 
-### `LNetworkRuntime:shutdown()`
+### LNetworkRuntime:shutdown
+
+`LNetworkRuntime:shutdown()`
 
 Shuts down the network runtime and cancels pending requests.
+
+**Lua API Stub**
+
+```lua
+--- Shuts down the network runtime and cancels pending requests.
+function LNetworkRuntime:shutdown() end
+```
 
 #### Example
 
@@ -1651,13 +2026,23 @@ do
 end
 ```
 
-### `LNetworkRuntime:tcpClose(id: integer)`
+### LNetworkRuntime:tcpClose
+
+`LNetworkRuntime:tcpClose(id: integer)`
 
 Closes a TCP connection. This method is available to Lua scripts.
 
 **Parameters**
 
-- `id` (`integer`, required) - Connection id.
+- `id` (`integer`, required): Connection id.
+
+**Lua API Stub**
+
+```lua
+--- Closes a TCP connection. This method is available to Lua scripts.
+---@param id number Connection id.
+function LNetworkRuntime:tcpClose(id) end
+```
 
 #### Example
 
@@ -1673,15 +2058,26 @@ do
 end
 ```
 
-### `LNetworkRuntime:tcpConnect(addr: string) -> integer`
+### LNetworkRuntime:tcpConnect
+
+`LNetworkRuntime:tcpConnect(addr: string) -> integer`
 
 Opens a TCP connection. This method is available to Lua scripts.
 
 **Parameters**
 
-- `addr` (`string`, required) - Remote address.
+- `addr` (`string`, required): Remote address.
 
 **Returns**: `integer` - Connection id.
+
+**Lua API Stub**
+
+```lua
+--- Opens a TCP connection. This method is available to Lua scripts.
+---@param addr string Remote address.
+---@return number Connection id.
+function LNetworkRuntime:tcpConnect(addr) end
+```
 
 #### Example
 
@@ -1698,14 +2094,25 @@ do
 end
 ```
 
-### `LNetworkRuntime:tcpSend(id: integer, data: string)`
+### LNetworkRuntime:tcpSend
+
+`LNetworkRuntime:tcpSend(id: integer, data: string)`
 
 Sends bytes over a TCP connection. This method is available to Lua scripts.
 
 **Parameters**
 
-- `id` (`integer`, required) - Connection id.
-- `data` (`string`, required) - Binary payload string.
+- `id` (`integer`, required): Connection id.
+- `data` (`string`, required): Binary payload string.
+
+**Lua API Stub**
+
+```lua
+--- Sends bytes over a TCP connection. This method is available to Lua scripts.
+---@param id number Connection id.
+---@param data string Binary payload string.
+function LNetworkRuntime:tcpSend(id, data) end
+```
 
 #### Example
 
@@ -1721,11 +2128,21 @@ do
 end
 ```
 
-### `LNetworkRuntime:type() -> string`
+### LNetworkRuntime:type
+
+`LNetworkRuntime:type() -> string`
 
 Returns the Lua-visible type name for this network runtime handle.
 
 **Returns**: `string` - The string `LNetworkRuntime`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this network runtime handle.
+---@return string The string `LNetworkRuntime`.
+function LNetworkRuntime:type() end
+```
 
 #### Example
 
@@ -1740,15 +2157,26 @@ do
 end
 ```
 
-### `LNetworkRuntime:typeOf(name: string) -> boolean`
+### LNetworkRuntime:typeOf
+
+`LNetworkRuntime:typeOf(name: string) -> boolean`
 
 Returns whether this network runtime handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `LNetworkRuntime` and `Object`.
+- `name` (`string`, required): Type name to compare against `LNetworkRuntime` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this network runtime handle matches a supported type name.
+---@param name string Type name to compare against `LNetworkRuntime` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LNetworkRuntime:typeOf(name) end
+```
 
 #### Example
 
@@ -1763,13 +2191,23 @@ do
 end
 ```
 
-### `LNetworkRuntime:wsClose(id: integer)`
+### LNetworkRuntime:wsClose
+
+`LNetworkRuntime:wsClose(id: integer)`
 
 Closes a WebSocket connection. This method is available to Lua scripts.
 
 **Parameters**
 
-- `id` (`integer`, required) - Connection id.
+- `id` (`integer`, required): Connection id.
+
+**Lua API Stub**
+
+```lua
+--- Closes a WebSocket connection. This method is available to Lua scripts.
+---@param id number Connection id.
+function LNetworkRuntime:wsClose(id) end
+```
 
 #### Example
 
@@ -1784,15 +2222,26 @@ do
 end
 ```
 
-### `LNetworkRuntime:wsConnect(url: string) -> integer`
+### LNetworkRuntime:wsConnect
+
+`LNetworkRuntime:wsConnect(url: string) -> integer`
 
 Opens a WebSocket connection. This method is available to Lua scripts.
 
 **Parameters**
 
-- `url` (`string`, required) - WebSocket URL.
+- `url` (`string`, required): WebSocket URL.
 
 **Returns**: `integer` - Connection id.
+
+**Lua API Stub**
+
+```lua
+--- Opens a WebSocket connection. This method is available to Lua scripts.
+---@param url string WebSocket URL.
+---@return number Connection id.
+function LNetworkRuntime:wsConnect(url) end
+```
 
 #### Example
 
@@ -1810,14 +2259,25 @@ do
 end
 ```
 
-### `LNetworkRuntime:wsSend(id: integer, data: string)`
+### LNetworkRuntime:wsSend
+
+`LNetworkRuntime:wsSend(id: integer, data: string)`
 
 Sends text over a WebSocket connection.
 
 **Parameters**
 
-- `id` (`integer`, required) - Connection id.
-- `data` (`string`, required) - Text payload.
+- `id` (`integer`, required): Connection id.
+- `data` (`string`, required): Text payload.
+
+**Lua API Stub**
+
+```lua
+--- Sends text over a WebSocket connection.
+---@param id number Connection id.
+---@param data string Text payload.
+function LNetworkRuntime:wsSend(id, data) end
+```
 
 #### Example
 
@@ -1834,21 +2294,27 @@ end
 ```
 
 
-## Examples
+[⬆ back to top](#table-of-contents)
+
+## 💡 Examples
 
 - [network.lua](../blob/main/content/examples/network.lua) - TCP/UDP sockets
 
-## Reference Games
+[⬆ back to top](#table-of-contents)
+
+## 🎮 Reference Games
 
 No direct references were found in `content/games/**/main.lua`.
 
-## Related Modules
+[⬆ back to top](#table-of-contents)
 
-- Previous: [[mods|Module-mods]]
-- Next: [[parallax|Module-parallax]]
-- [[event|Module-event]] - Centralised event queue: OS input, window state, custom Lua events, automation injections.
-- [[filesystem|Module-filesystem]] - Sandboxed virtual filesystem (GameFS); blocks path-traversal escape from the game directory.
-- [[repl|Module-repl]] - Release-safe Lua REPL core used by the GUI CLI mode and devtools wrappers; headless also reuses its value-formatting helper.
-- [[runtime|Module-runtime]] - Foundational shared state, engine config, error types, resource keys, log catalogue. Root of the dep tree.
-- [[thread|Module-thread]] - Background threading with per-thread isolated Lua VMs (B-04: VMs cannot be shared).
-- [[timer|Module-timer]] - Frame-timing (Clock) and deferred / repeating callback scheduling (Scheduler).
+## 🔗 Related Modules
+
+- Previous: [mods](Module-mods)
+- Next: [parallax](Module-parallax)
+- [event](Module-event) - Centralised event queue: OS input, window state, custom Lua events, automation injections.
+- [filesystem](Module-filesystem) - Sandboxed virtual filesystem (GameFS); blocks path-traversal escape from the game directory.
+- [repl](Module-repl) - Release-safe Lua REPL core used by the GUI CLI mode and devtools wrappers; headless also reuses its value-formatting helper.
+- [runtime](Module-runtime) - Foundational shared state, engine config, error types, resource keys, log catalogue. Root of the dep tree.
+- [thread](Module-thread) - Background threading with per-thread isolated Lua VMs (B-04: VMs cannot be shared).
+- [timer](Module-timer) - Frame-timing (Clock) and deferred / repeating callback scheduling (Scheduler).

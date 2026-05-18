@@ -4,159 +4,110 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
-- [Purpose](#purpose)
-- [Summary](#summary)
-- [Minimal Module Example](#minimal-module-example)
-- [Key Types](#key-types)
-- [API Overview](#api-overview)
-- [Module Functions](#module-functions)
-  - [lurek.html.isDefaultPrevented() -> boolean](#lurekhtmlisdefaultprevented-boolean)
-  - [lurek.html.loadDocument(path: string, [opts]: table) -> LHtmlDocument](#lurekhtmlloaddocumentpath-string-opts-table-lhtmldocument)
-  - [lurek.html.newDocument([source]: string, [opts]: table) -> LHtmlDocument](#lurekhtmlnewdocumentsource-string-opts-table-lhtmldocument)
-  - [lurek.html.preventDefault()](#lurekhtmlpreventdefault)
-  - [lurek.html.stopPropagation()](#lurekhtmlstoppropagation)
-  - [lurek.html.supports(feature: string) -> boolean](#lurekhtmlsupportsfeature-string-boolean)
-- [Types and Methods](#types-and-methods)
+- [🎯 Purpose](#purpose)
+- [📋 Summary](#summary)
+- [🧩 Key Types](#key-types)
+- [📖 API Overview](#api-overview)
+- [⚙️ Module Functions](#module-functions)
+  - [lurek.html.isDefaultPrevented](#lurekhtmlisdefaultprevented)
+  - [lurek.html.loadDocument](#lurekhtmlloaddocument)
+  - [lurek.html.newDocument](#lurekhtmlnewdocument)
+  - [lurek.html.preventDefault](#lurekhtmlpreventdefault)
+  - [lurek.html.stopPropagation](#lurekhtmlstoppropagation)
+  - [lurek.html.supports](#lurekhtmlsupports)
+- [🔷 Module Types](#module-types)
   - [LHtmlDocument](#lhtmldocument)
-  - [LHtmlDocument:addCss(css: string)](#lhtmldocumentaddcsscss-string)
-  - [LHtmlDocument:clearCss()](#lhtmldocumentclearcss)
-  - [LHtmlDocument:draw([x]: number, [y]: number)](#lhtmldocumentdrawx-number-y-number)
-  - [LHtmlDocument:getElementById(id: string) -> LuaValue](#lhtmldocumentgetelementbyidid-string-luavalue)
-  - [LHtmlDocument:getHtml() -> string](#lhtmldocumentgethtml-string)
-  - [LHtmlDocument:getRoot() -> LHtmlElement](#lhtmldocumentgetroot-lhtmlelement)
-  - [LHtmlDocument:getViewport() -> number](#lhtmldocumentgetviewport-number)
-  - [LHtmlDocument:isDirty() -> boolean](#lhtmldocumentisdirty-boolean)
-  - [LHtmlDocument:keypressed(key: string) -> boolean](#lhtmldocumentkeypressedkey-string-boolean)
-  - [LHtmlDocument:mousemoved(x: number, y: number) -> boolean](#lhtmldocumentmousemovedx-number-y-number-boolean)
-  - [LHtmlDocument:mousepressed(x: number, y: number, [button]: integer) -> boolean](#lhtmldocumentmousepressedx-number-y-number-button-integer-boolean)
-  - [LHtmlDocument:mousereleased(x: number, y: number, [button]: integer) -> boolean](#lhtmldocumentmousereleasedx-number-y-number-button-integer-boolean)
-  - [LHtmlDocument:off(handle: integer)](#lhtmldocumentoffhandle-integer)
-  - [LHtmlDocument:on(event: string, func: function) -> integer](#lhtmldocumentonevent-string-func-function-integer)
-  - [LHtmlDocument:query(selector: string) -> LuaValue](#lhtmldocumentqueryselector-string-luavalue)
-  - [LHtmlDocument:queryAll(selector: string) -> LHtmlElement[]](#lhtmldocumentqueryallselector-string-lhtmlelement)
-  - [LHtmlDocument:relayout()](#lhtmldocumentrelayout)
-  - [LHtmlDocument:render([x]: number, [y]: number)](#lhtmldocumentrenderx-number-y-number)
-  - [LHtmlDocument:setCss(css: string)](#lhtmldocumentsetcsscss-string)
-  - [LHtmlDocument:setHtml(html: string)](#lhtmldocumentsethtmlhtml-string)
-  - [LHtmlDocument:setViewport(w: number, h: number)](#lhtmldocumentsetviewportw-number-h-number)
-  - [LHtmlDocument:textinput(text: string) -> boolean](#lhtmldocumenttextinputtext-string-boolean)
-  - [LHtmlDocument:type() -> string](#lhtmldocumenttype-string)
-  - [LHtmlDocument:typeOf(name: string) -> boolean](#lhtmldocumenttypeofname-string-boolean)
-  - [LHtmlDocument:update(dt: number)](#lhtmldocumentupdatedt-number)
-  - [LHtmlDocument:wheelmoved(dx: number, dy: number) -> boolean](#lhtmldocumentwheelmoveddx-number-dy-number-boolean)
   - [LHtmlElement](#lhtmlelement)
-  - [LHtmlElement:addClass(name: string)](#lhtmlelementaddclassname-string)
-  - [LHtmlElement:appendHtml(html: string)](#lhtmlelementappendhtmlhtml-string)
-  - [LHtmlElement:blur()](#lhtmlelementblur)
-  - [LHtmlElement:focus()](#lhtmlelementfocus)
-  - [LHtmlElement:getAttribute(name: string) -> LuaValue](#lhtmlelementgetattributename-string-luavalue)
-  - [LHtmlElement:getDocument() -> LHtmlDocument](#lhtmlelementgetdocument-lhtmldocument)
-  - [LHtmlElement:getHtml() -> string](#lhtmlelementgethtml-string)
-  - [LHtmlElement:getId() -> LuaValue](#lhtmlelementgetid-luavalue)
-  - [LHtmlElement:getRect() -> number](#lhtmlelementgetrect-number)
-  - [LHtmlElement:getStyle(name: string) -> LuaValue](#lhtmlelementgetstylename-string-luavalue)
-  - [LHtmlElement:getTagName() -> string](#lhtmlelementgettagname-string)
-  - [LHtmlElement:getText() -> string](#lhtmlelementgettext-string)
-  - [LHtmlElement:hasClass(name: string) -> boolean](#lhtmlelementhasclassname-string-boolean)
-  - [LHtmlElement:off(handle: integer)](#lhtmlelementoffhandle-integer)
-  - [LHtmlElement:on(event: string, func: function) -> integer](#lhtmlelementonevent-string-func-function-integer)
-  - [LHtmlElement:query(selector: string) -> LuaValue](#lhtmlelementqueryselector-string-luavalue)
-  - [LHtmlElement:queryAll(selector: string) -> LHtmlElement[]](#lhtmlelementqueryallselector-string-lhtmlelement)
-  - [LHtmlElement:remove()](#lhtmlelementremove)
-  - [LHtmlElement:removeAttribute(name: string)](#lhtmlelementremoveattributename-string)
-  - [LHtmlElement:removeClass(name: string)](#lhtmlelementremoveclassname-string)
-  - [LHtmlElement:setAttribute(name: string, [value]: string)](#lhtmlelementsetattributename-string-value-string)
-  - [LHtmlElement:setHtml(html: string)](#lhtmlelementsethtmlhtml-string)
-  - [LHtmlElement:setId([id]: string)](#lhtmlelementsetidid-string)
-  - [LHtmlElement:setStyle(name: string, [value]: string)](#lhtmlelementsetstylename-string-value-string)
-  - [LHtmlElement:setText(text: string)](#lhtmlelementsettexttext-string)
-  - [LHtmlElement:toggleClass(name: string, [force]: boolean) -> boolean](#lhtmlelementtoggleclassname-string-force-boolean-boolean)
-  - [LHtmlElement:type() -> string](#lhtmlelementtype-string)
-  - [LHtmlElement:typeOf(name: string) -> boolean](#lhtmlelementtypeofname-string-boolean)
-- [Examples](#examples)
-- [Reference Games](#reference-games)
-- [Related Modules](#related-modules)
+- [🔹 Module Methods](#module-methods)
+  - [LHtmlDocument:addCss](#lhtmldocumentaddcss)
+  - [LHtmlDocument:clearCss](#lhtmldocumentclearcss)
+  - [LHtmlDocument:draw](#lhtmldocumentdraw)
+  - [LHtmlDocument:getElementById](#lhtmldocumentgetelementbyid)
+  - [LHtmlDocument:getHtml](#lhtmldocumentgethtml)
+  - [LHtmlDocument:getRoot](#lhtmldocumentgetroot)
+  - [LHtmlDocument:getViewport](#lhtmldocumentgetviewport)
+  - [LHtmlDocument:isDirty](#lhtmldocumentisdirty)
+  - [LHtmlDocument:keypressed](#lhtmldocumentkeypressed)
+  - [LHtmlDocument:mousemoved](#lhtmldocumentmousemoved)
+  - [LHtmlDocument:mousepressed](#lhtmldocumentmousepressed)
+  - [LHtmlDocument:mousereleased](#lhtmldocumentmousereleased)
+  - [LHtmlDocument:off](#lhtmldocumentoff)
+  - [LHtmlDocument:on](#lhtmldocumenton)
+  - [LHtmlDocument:query](#lhtmldocumentquery)
+  - [LHtmlDocument:queryAll](#lhtmldocumentqueryall)
+  - [LHtmlDocument:relayout](#lhtmldocumentrelayout)
+  - [LHtmlDocument:render](#lhtmldocumentrender)
+  - [LHtmlDocument:setCss](#lhtmldocumentsetcss)
+  - [LHtmlDocument:setHtml](#lhtmldocumentsethtml)
+  - [LHtmlDocument:setViewport](#lhtmldocumentsetviewport)
+  - [LHtmlDocument:textinput](#lhtmldocumenttextinput)
+  - [LHtmlDocument:type](#lhtmldocumenttype)
+  - [LHtmlDocument:typeOf](#lhtmldocumenttypeof)
+  - [LHtmlDocument:update](#lhtmldocumentupdate)
+  - [LHtmlDocument:wheelmoved](#lhtmldocumentwheelmoved)
+  - [LHtmlElement:addClass](#lhtmlelementaddclass)
+  - [LHtmlElement:appendHtml](#lhtmlelementappendhtml)
+  - [LHtmlElement:blur](#lhtmlelementblur)
+  - [LHtmlElement:focus](#lhtmlelementfocus)
+  - [LHtmlElement:getAttribute](#lhtmlelementgetattribute)
+  - [LHtmlElement:getDocument](#lhtmlelementgetdocument)
+  - [LHtmlElement:getHtml](#lhtmlelementgethtml)
+  - [LHtmlElement:getId](#lhtmlelementgetid)
+  - [LHtmlElement:getRect](#lhtmlelementgetrect)
+  - [LHtmlElement:getStyle](#lhtmlelementgetstyle)
+  - [LHtmlElement:getTagName](#lhtmlelementgettagname)
+  - [LHtmlElement:getText](#lhtmlelementgettext)
+  - [LHtmlElement:hasClass](#lhtmlelementhasclass)
+  - [LHtmlElement:off](#lhtmlelementoff)
+  - [LHtmlElement:on](#lhtmlelementon)
+  - [LHtmlElement:query](#lhtmlelementquery)
+  - [LHtmlElement:queryAll](#lhtmlelementqueryall)
+  - [LHtmlElement:remove](#lhtmlelementremove)
+  - [LHtmlElement:removeAttribute](#lhtmlelementremoveattribute)
+  - [LHtmlElement:removeClass](#lhtmlelementremoveclass)
+  - [LHtmlElement:setAttribute](#lhtmlelementsetattribute)
+  - [LHtmlElement:setHtml](#lhtmlelementsethtml)
+  - [LHtmlElement:setId](#lhtmlelementsetid)
+  - [LHtmlElement:setStyle](#lhtmlelementsetstyle)
+  - [LHtmlElement:setText](#lhtmlelementsettext)
+  - [LHtmlElement:toggleClass](#lhtmlelementtoggleclass)
+  - [LHtmlElement:type](#lhtmlelementtype)
+  - [LHtmlElement:typeOf](#lhtmlelementtypeof)
+- [💡 Examples](#examples)
+- [🎮 Reference Games](#reference-games)
+- [🔗 Related Modules](#related-modules)
 
 This page is generated from the current module specs, examples, and Lua API data.
 
 **Module group:** Edge/Integration
 **Namespace:** `lurek.html`
 
-## Purpose
+## 🎯 Purpose
 
 HTML/CSS document engine for building game UIs using familiar web markup.
 
-## Summary
+[⬆ back to top](#table-of-contents)
+
+## 📋 Summary
 
 HTML/CSS document engine for building game UIs using familiar web markup. Parses HTML into a DOM tree of `HtmlElement` nodes, applies CSS rules via selector matching (tag, class, id, attribute, pseudo-class, combinators), and computes box-model layout with flexbox support. The layout engine produces `HtmlDrawCommand` entries — renderer-agnostic draw instructions for rectangles, text, borders, images, and clipping regions.
 
 CSS color parsing covers hex, rgb(), rgba(), hsl(), hsla(), and named keywords. Text rendering supports wrapping, alignment, and multi-line overflow. Interactive elements handle click, hover, focus, and keyboard events with Lua callback binding. Style properties include margin, padding, border, background, font, opacity, transform, and transition. Exposed as `lurek.html.*`.
 
-## Minimal Module Example
+[⬆ back to top](#table-of-contents)
 
-Module example from [html.lua](../blob/main/content/examples/html.lua):
-
-```lua
--- content/examples/html.lua
--- lurek.html API examples: HTML/CSS documents for game UI (HUDs, menus, dialogs, inventories).
--- Run: cargo run -- content/examples/html.lua
-
---@api-stub: lurek.html.newDocument
--- Creates an HTML document from optional source and layout/style options
-do
-  -- newDocument is the primary way to create a UI overlay.
-  -- Pass HTML source as the first argument and an options table with css, width, height.
-  -- The document starts dirty (needs layout) until you call update() or relayout().
-  local hud = lurek.html.newDocument([[
-<body>
-  <div id="score" class="hud-item">Score: 0</div>
-  <div id="lives" class="hud-item">&#9825; &#9825; &#9825;</div>
-  <div id="ammo" class="hud-item">Ammo: 30/90</div>
-</body>
-]], {
-    -- Inline CSS defines the visual style for all elements in this document.
-    css = [[
-      body { margin: 0; padding: 8px; }
-      .hud-item {
-        color: white;
-        font-size: 22px;
-        padding: 4px 12px;
-        margin-bottom: 4px;
-        background: rgba(0,0,0,0.5);
-      }
-    ]],
-    -- Viewport dimensions control the layout space. Match your game window size.
-    width = 800,
-    height = 600,
-  })
-
-  -- After creation, the document is dirty until the first update or relayout.
-  lurek.log.info("newDocument created, dirty=" .. tostring(hud:isDirty()), "html")
-
-  -- You can also create a minimal empty document and populate it later:
-  local empty = lurek.html.newDocument()
-  empty:setHtml("<body><p>Populated later</p></body>")
-  lurek.log.info("empty doc populated", "html")
-end
-
---@api-stub: lurek.html.loadDocument
--- Loads an HTML document from GameFS and optionally loads CSS from options or companion file
-do
-  -- loadDocument reads an .html file from GameFS (the content/ folder tree).
-  -- If a companion .css file exists at the same path, it loads automatically.
-  -- You can also pass opts.css or opts.cssPath to override.
-```
-
-## Key Types
+## 🧩 Key Types
 
 - `LHtmlDocument` (26 methods) - Lua-side HTML document handle with DOM state, callbacks, and render command access.
 - `LHtmlElement` (28 methods) - Lua-side DOM element handle with stale-generation detection.
 
-## API Overview
+[⬆ back to top](#table-of-contents)
+
+## 📖 API Overview
 
 - Source spec: [docs/specs/html.md](../blob/main/docs/specs/html.md)
 
@@ -169,9 +120,13 @@ lurek.html.stopPropagation() -- Stops event propagation to remaining listeners.
 lurek.html.supports(feature: string) -> boolean -- Returns whether the HTML engine supports a named feature.
 ```
 
-## Module Functions
+[⬆ back to top](#table-of-contents)
 
-### `lurek.html.isDefaultPrevented() -> boolean`
+## ⚙️ Module Functions
+
+### lurek.html.isDefaultPrevented
+
+`lurek.html.isDefaultPrevented() -> boolean`
 
 Returns whether the default action was prevented.
 
@@ -196,14 +151,16 @@ do
 end
 ```
 
-### `lurek.html.loadDocument(path: string, [opts]: table) -> LHtmlDocument`
+### lurek.html.loadDocument
+
+`lurek.html.loadDocument(path: string, [opts]: table) -> LHtmlDocument`
 
 Loads an HTML document from GameFS and optionally loads CSS from options or companion file.
 
 **Parameters**
 
-- `path` (`string`, required) - GameFS path to the HTML file.
-- `opts` (`table`, optional) - Table with `css`, `cssPath`, `width`, and `height` fields.
+- `path` (`string`, required): GameFS path to the HTML file.
+- `opts` (`table`, optional): Table with `css`, `cssPath`, `width`, and `height` fields.
 
 **Returns**: `LHtmlDocument` - Loaded HTML document handle.
 
@@ -231,14 +188,16 @@ do
 end
 ```
 
-### `lurek.html.newDocument([source]: string, [opts]: table) -> LHtmlDocument`
+### lurek.html.newDocument
+
+`lurek.html.newDocument([source]: string, [opts]: table) -> LHtmlDocument`
 
 Creates an HTML document from optional source and layout/style options.
 
 **Parameters**
 
-- `source` (`string`, optional) - HTML source, defaulting to an empty document.
-- `opts` (`table`, optional) - Table with `css`, `cssPath`, `width`, and `height` fields.
+- `source` (`string`, optional): HTML source, defaulting to an empty document.
+- `opts` (`table`, optional): Table with `css`, `cssPath`, `width`, and `height` fields.
 
 **Returns**: `LHtmlDocument` - New HTML document handle.
 
@@ -284,7 +243,9 @@ do
 end
 ```
 
-### `lurek.html.preventDefault()`
+### lurek.html.preventDefault
+
+`lurek.html.preventDefault()`
 
 Marks the event as having its default action prevented.
 
@@ -309,7 +270,9 @@ do
 end
 ```
 
-### `lurek.html.stopPropagation()`
+### lurek.html.stopPropagation
+
+`lurek.html.stopPropagation()`
 
 Stops event propagation to remaining listeners.
 
@@ -347,13 +310,15 @@ do
 end
 ```
 
-### `lurek.html.supports(feature: string) -> boolean`
+### lurek.html.supports
+
+`lurek.html.supports(feature: string) -> boolean`
 
 Returns whether the HTML engine supports a named feature.
 
 **Parameters**
 
-- `feature` (`string`, required) - Feature name to query.
+- `feature` (`string`, required): Feature name to query.
 
 **Returns**: `boolean` - True when the feature is supported.
 
@@ -374,11 +339,21 @@ end
 ```
 
 
-## Types and Methods
+[⬆ back to top](#table-of-contents)
 
-### `LHtmlDocument`
+## 🔷 Module Types
+
+### LHtmlDocument
 
 Lua-side HTML document handle with DOM state, callbacks, and render command access.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side HTML document handle with DOM state, callbacks, and render command access.
+---@class LHtmlDocument
+LHtmlDocument = {}
+```
 
 #### Example
 
@@ -404,13 +379,62 @@ do
 end
 ```
 
-### `LHtmlDocument:addCss(css: string)`
+### LHtmlElement
+
+Lua-side DOM element handle with stale-generation detection.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side DOM element handle with stale-generation detection.
+---@class LHtmlElement
+LHtmlElement = {}
+```
+
+#### Example
+
+Exact example from [html.lua](../blob/main/content/examples/html.lua):
+
+```lua
+do
+  -- getRoot() returns the top-level element (usually <body>).
+  -- From the root you can traverse the full DOM tree using query/queryAll.
+  local doc = lurek.html.newDocument([[
+<body>
+  <header>Game Title</header>
+  <main>Content</main>
+  <footer>v1.0</footer>
+</body>
+]])
+  local root = doc:getRoot()
+  if root then
+    lurek.log.info("root tag: " .. root:getTagName(), "html")
+  end
+end
+```
+
+
+[⬆ back to top](#table-of-contents)
+
+## 🔹 Module Methods
+
+### LHtmlDocument:addCss
+
+`LHtmlDocument:addCss(css: string)`
 
 Appends CSS source text to the document stylesheet.
 
 **Parameters**
 
-- `css` (`string`, required) - CSS source text to append.
+- `css` (`string`, required): CSS source text to append.
+
+**Lua API Stub**
+
+```lua
+--- Appends CSS source text to the document stylesheet.
+---@param css string CSS source text to append.
+function LHtmlDocument:addCss(css) end
+```
 
 #### Example
 
@@ -439,9 +463,18 @@ do
 end
 ```
 
-### `LHtmlDocument:clearCss()`
+### LHtmlDocument:clearCss
+
+`LHtmlDocument:clearCss()`
 
 Clears all CSS source text from the document.
+
+**Lua API Stub**
+
+```lua
+--- Clears all CSS source text from the document.
+function LHtmlDocument:clearCss() end
+```
 
 #### Example
 
@@ -461,14 +494,25 @@ do
 end
 ```
 
-### `LHtmlDocument:draw([x]: number, [y]: number)`
+### LHtmlDocument:draw
+
+`LHtmlDocument:draw([x]: number, [y]: number)`
 
 Queues render commands for this document at an optional offset.
 
 **Parameters**
 
-- `x` (`number`, optional) - X offset, defaulting to 0.
-- `y` (`number`, optional) - Y offset, defaulting to 0.
+- `x` (`number`, optional): X offset, defaulting to 0.
+- `y` (`number`, optional): Y offset, defaulting to 0.
+
+**Lua API Stub**
+
+```lua
+--- Queues render commands for this document at an optional offset.
+---@param x? number X offset, defaulting to 0.
+---@param y? number Y offset, defaulting to 0.
+function LHtmlDocument:draw(x, y) end
+```
 
 #### Example
 
@@ -491,15 +535,26 @@ do
 end
 ```
 
-### `LHtmlDocument:getElementById(id: string) -> LuaValue`
+### LHtmlDocument:getElementById
+
+`LHtmlDocument:getElementById(id: string) -> LuaValue`
 
 Looks up the first element with a matching id attribute.
 
 **Parameters**
 
-- `id` (`string`, required) - Element id attribute.
+- `id` (`string`, required): Element id attribute.
 
 **Returns**: `LuaValue` - `LHtmlElement` handle, or nil when no element matches.
+
+**Lua API Stub**
+
+```lua
+--- Looks up the first element with a matching id attribute.
+---@param id string Element id attribute.
+---@return LuaValue `LHtmlElement` handle, or nil when no element matches.
+function LHtmlDocument:getElementById(id) end
+```
 
 #### Example
 
@@ -532,11 +587,21 @@ do
 end
 ```
 
-### `LHtmlDocument:getHtml() -> string`
+### LHtmlDocument:getHtml
+
+`LHtmlDocument:getHtml() -> string`
 
 Returns the current document markup string.
 
 **Returns**: `string` - Current HTML markup.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current document markup string.
+---@return string Current HTML markup.
+function LHtmlDocument:getHtml() end
+```
 
 #### Example
 
@@ -551,11 +616,21 @@ do
 end
 ```
 
-### `LHtmlDocument:getRoot() -> LHtmlElement`
+### LHtmlDocument:getRoot
+
+`LHtmlDocument:getRoot() -> LHtmlElement`
 
 Returns the root DOM element handle.
 
 **Returns**: `LHtmlElement` - Root element handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns the root DOM element handle.
+---@return LHtmlElement Root element handle.
+function LHtmlDocument:getRoot() end
+```
 
 #### Example
 
@@ -579,11 +654,22 @@ do
 end
 ```
 
-### `LHtmlDocument:getViewport() -> number`
+### LHtmlDocument:getViewport
+
+`LHtmlDocument:getViewport() -> number`
 
 Returns the document layout viewport size.
 
 **Returns**: `number` - Viewport width in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns the document layout viewport size.
+---@return number a Viewport width in pixels.
+---@return number b Viewport height in pixels.
+function LHtmlDocument:getViewport() end
+```
 
 #### Example
 
@@ -598,11 +684,21 @@ do
 end
 ```
 
-### `LHtmlDocument:isDirty() -> boolean`
+### LHtmlDocument:isDirty
+
+`LHtmlDocument:isDirty() -> boolean`
 
 Returns whether the document layout is dirty.
 
 **Returns**: `boolean` - True when a relayout is needed.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether the document layout is dirty.
+---@return boolean True when a relayout is needed.
+function LHtmlDocument:isDirty() end
+```
 
 #### Example
 
@@ -627,15 +723,26 @@ do
 end
 ```
 
-### `LHtmlDocument:keypressed(key: string) -> boolean`
+### LHtmlDocument:keypressed
+
+`LHtmlDocument:keypressed(key: string) -> boolean`
 
 Forwards a key press to the focused document element and dispatches `keydown`.
 
 **Parameters**
 
-- `key` (`string`, required) - Key name.
+- `key` (`string`, required): Key name.
 
 **Returns**: `boolean` - True when the event was consumed or default was prevented.
+
+**Lua API Stub**
+
+```lua
+--- Forwards a key press to the focused document element and dispatches `keydown`.
+---@param key string Key name.
+---@return boolean True when the event was consumed or default was prevented.
+function LHtmlDocument:keypressed(key) end
+```
 
 #### Example
 
@@ -660,16 +767,28 @@ do
 end
 ```
 
-### `LHtmlDocument:mousemoved(x: number, y: number) -> boolean`
+### LHtmlDocument:mousemoved
+
+`LHtmlDocument:mousemoved(x: number, y: number) -> boolean`
 
 Forwards mouse movement to the document.
 
 **Parameters**
 
-- `x` (`number`, required) - Mouse x coordinate.
-- `y` (`number`, required) - Mouse y coordinate.
+- `x` (`number`, required): Mouse x coordinate.
+- `y` (`number`, required): Mouse y coordinate.
 
 **Returns**: `boolean` - True when an element handled the move.
+
+**Lua API Stub**
+
+```lua
+--- Forwards mouse movement to the document.
+---@param x number Mouse x coordinate.
+---@param y number Mouse y coordinate.
+---@return boolean True when an element handled the move.
+function LHtmlDocument:mousemoved(x, y) end
+```
 
 #### Example
 
@@ -691,17 +810,30 @@ do
 end
 ```
 
-### `LHtmlDocument:mousepressed(x: number, y: number, [button]: integer) -> boolean`
+### LHtmlDocument:mousepressed
+
+`LHtmlDocument:mousepressed(x: number, y: number, [button]: integer) -> boolean`
 
 Forwards a mouse press to the document and dispatches a click event when an element is hit.
 
 **Parameters**
 
-- `x` (`number`, required) - Mouse x coordinate.
-- `y` (`number`, required) - Mouse y coordinate.
-- `button` (`integer`, optional) - Mouse button, defaulting to 1.
+- `x` (`number`, required): Mouse x coordinate.
+- `y` (`number`, required): Mouse y coordinate.
+- `button` (`integer`, optional): Mouse button, defaulting to 1.
 
 **Returns**: `boolean` - True when the event was consumed or default was prevented.
+
+**Lua API Stub**
+
+```lua
+--- Forwards a mouse press to the document and dispatches a click event when an element is hit.
+---@param x number Mouse x coordinate.
+---@param y number Mouse y coordinate.
+---@param button? number Mouse button, defaulting to 1.
+---@return boolean True when the event was consumed or default was prevented.
+function LHtmlDocument:mousepressed(x, y, button) end
+```
 
 #### Example
 
@@ -729,17 +861,30 @@ do
 end
 ```
 
-### `LHtmlDocument:mousereleased(x: number, y: number, [button]: integer) -> boolean`
+### LHtmlDocument:mousereleased
+
+`LHtmlDocument:mousereleased(x: number, y: number, [button]: integer) -> boolean`
 
 Forwards a mouse release to the document.
 
 **Parameters**
 
-- `x` (`number`, required) - Mouse x coordinate.
-- `y` (`number`, required) - Mouse y coordinate.
-- `button` (`integer`, optional) - Mouse button, defaulting to 1.
+- `x` (`number`, required): Mouse x coordinate.
+- `y` (`number`, required): Mouse y coordinate.
+- `button` (`integer`, optional): Mouse button, defaulting to 1.
 
 **Returns**: `boolean` - True when an element handled the release.
+
+**Lua API Stub**
+
+```lua
+--- Forwards a mouse release to the document.
+---@param x number Mouse x coordinate.
+---@param y number Mouse y coordinate.
+---@param button? number Mouse button, defaulting to 1.
+---@return boolean True when an element handled the release.
+function LHtmlDocument:mousereleased(x, y, button) end
+```
 
 #### Example
 
@@ -756,13 +901,23 @@ do
 end
 ```
 
-### `LHtmlDocument:off(handle: integer)`
+### LHtmlDocument:off
+
+`LHtmlDocument:off(handle: integer)`
 
 Removes a document-level event listener by handle.
 
 **Parameters**
 
-- `handle` (`integer`, required) - Listener handle returned by `on`.
+- `handle` (`integer`, required): Listener handle returned by `on`.
+
+**Lua API Stub**
+
+```lua
+--- Removes a document-level event listener by handle.
+---@param handle number Listener handle returned by `on`.
+function LHtmlDocument:off(handle) end
+```
 
 #### Example
 
@@ -777,16 +932,28 @@ do
 end
 ```
 
-### `LHtmlDocument:on(event: string, func: function) -> integer`
+### LHtmlDocument:on
+
+`LHtmlDocument:on(event: string, func: function) -> integer`
 
 Registers a document-level event listener.
 
 **Parameters**
 
-- `event` (`string`, required) - Event name to listen for.
-- `func` (`function`, required) - Lua callback receiving an event table.
+- `event` (`string`, required): Event name to listen for.
+- `func` (`function`, required): Lua callback receiving an event table.
 
 **Returns**: `integer` - Listener handle used by `off`.
+
+**Lua API Stub**
+
+```lua
+--- Registers a document-level event listener.
+---@param event string Event name to listen for.
+---@param func function Lua callback receiving an event table.
+---@return number Listener handle used by `off`.
+function LHtmlDocument:on(event, func) end
+```
 
 #### Example
 
@@ -802,15 +969,26 @@ do
 end
 ```
 
-### `LHtmlDocument:query(selector: string) -> LuaValue`
+### LHtmlDocument:query
+
+`LHtmlDocument:query(selector: string) -> LuaValue`
 
 Looks up the first element matching a selector.
 
 **Parameters**
 
-- `selector` (`string`, required) - Selector supported by the HTML engine.
+- `selector` (`string`, required): Selector supported by the HTML engine.
 
 **Returns**: `LuaValue` - `LHtmlElement` handle, or nil when no element matches.
+
+**Lua API Stub**
+
+```lua
+--- Looks up the first element matching a selector.
+---@param selector string Selector supported by the HTML engine.
+---@return LuaValue `LHtmlElement` handle, or nil when no element matches.
+function LHtmlDocument:query(selector) end
+```
 
 #### Example
 
@@ -825,15 +1003,26 @@ do
 end
 ```
 
-### `LHtmlDocument:queryAll(selector: string) -> LHtmlElement[]`
+### LHtmlDocument:queryAll
+
+`LHtmlDocument:queryAll(selector: string) -> LHtmlElement[]`
 
 Returns all elements matching a selector.
 
 **Parameters**
 
-- `selector` (`string`, required) - Selector supported by the HTML engine.
+- `selector` (`string`, required): Selector supported by the HTML engine.
 
 **Returns**: `LHtmlElement[]` - `LHtmlElement` handles.
+
+**Lua API Stub**
+
+```lua
+--- Returns all elements matching a selector.
+---@param selector string Selector supported by the HTML engine.
+---@return LHtmlElement[] `LHtmlElement` handles.
+function LHtmlDocument:queryAll(selector) end
+```
 
 #### Example
 
@@ -848,9 +1037,18 @@ do
 end
 ```
 
-### `LHtmlDocument:relayout()`
+### LHtmlDocument:relayout
+
+`LHtmlDocument:relayout()`
 
 Rebuilds document layout immediately.
+
+**Lua API Stub**
+
+```lua
+--- Rebuilds document layout immediately.
+function LHtmlDocument:relayout() end
+```
 
 #### Example
 
@@ -876,14 +1074,25 @@ do
 end
 ```
 
-### `LHtmlDocument:render([x]: number, [y]: number)`
+### LHtmlDocument:render
+
+`LHtmlDocument:render([x]: number, [y]: number)`
 
 Queues render commands for this document at an optional offset.
 
 **Parameters**
 
-- `x` (`number`, optional) - X offset, defaulting to 0.
-- `y` (`number`, optional) - Y offset, defaulting to 0.
+- `x` (`number`, optional): X offset, defaulting to 0.
+- `y` (`number`, optional): Y offset, defaulting to 0.
+
+**Lua API Stub**
+
+```lua
+--- Queues render commands for this document at an optional offset.
+---@param x? number X offset, defaulting to 0.
+---@param y? number Y offset, defaulting to 0.
+function LHtmlDocument:render(x, y) end
+```
 
 #### Example
 
@@ -900,13 +1109,23 @@ do
 end
 ```
 
-### `LHtmlDocument:setCss(css: string)`
+### LHtmlDocument:setCss
+
+`LHtmlDocument:setCss(css: string)`
 
 Replaces the document stylesheet text.
 
 **Parameters**
 
-- `css` (`string`, required) - CSS source text.
+- `css` (`string`, required): CSS source text.
+
+**Lua API Stub**
+
+```lua
+--- Replaces the document stylesheet text.
+---@param css string CSS source text.
+function LHtmlDocument:setCss(css) end
+```
 
 #### Example
 
@@ -934,13 +1153,23 @@ do
 end
 ```
 
-### `LHtmlDocument:setHtml(html: string)`
+### LHtmlDocument:setHtml
+
+`LHtmlDocument:setHtml(html: string)`
 
 Replaces the document markup and invalidates existing element handles.
 
 **Parameters**
 
-- `html` (`string`, required) - New HTML markup.
+- `html` (`string`, required): New HTML markup.
+
+**Lua API Stub**
+
+```lua
+--- Replaces the document markup and invalidates existing element handles.
+---@param html string New HTML markup.
+function LHtmlDocument:setHtml(html) end
+```
 
 #### Example
 
@@ -954,14 +1183,25 @@ do
 end
 ```
 
-### `LHtmlDocument:setViewport(w: number, h: number)`
+### LHtmlDocument:setViewport
+
+`LHtmlDocument:setViewport(w: number, h: number)`
 
 Sets the document layout viewport size.
 
 **Parameters**
 
-- `w` (`number`, required) - Viewport width in pixels.
-- `h` (`number`, required) - Viewport height in pixels.
+- `w` (`number`, required): Viewport width in pixels.
+- `h` (`number`, required): Viewport height in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Sets the document layout viewport size.
+---@param w number Viewport width in pixels.
+---@param h number Viewport height in pixels.
+function LHtmlDocument:setViewport(w, h) end
+```
 
 #### Example
 
@@ -981,15 +1221,26 @@ do
 end
 ```
 
-### `LHtmlDocument:textinput(text: string) -> boolean`
+### LHtmlDocument:textinput
+
+`LHtmlDocument:textinput(text: string) -> boolean`
 
 Forwards text input to the focused document element and dispatches `input`.
 
 **Parameters**
 
-- `text` (`string`, required) - Input text.
+- `text` (`string`, required): Input text.
 
 **Returns**: `boolean` - True when the event was consumed or default was prevented.
+
+**Lua API Stub**
+
+```lua
+--- Forwards text input to the focused document element and dispatches `input`.
+---@param text string Input text.
+---@return boolean True when the event was consumed or default was prevented.
+function LHtmlDocument:textinput(text) end
+```
 
 #### Example
 
@@ -1017,11 +1268,21 @@ do
 end
 ```
 
-### `LHtmlDocument:type() -> string`
+### LHtmlDocument:type
+
+`LHtmlDocument:type() -> string`
 
 Returns the Lua-visible type name for this HTML document handle.
 
 **Returns**: `string` - The string `LHtmlDocument`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this HTML document handle.
+---@return string The string `LHtmlDocument`.
+function LHtmlDocument:type() end
+```
 
 #### Example
 
@@ -1034,15 +1295,26 @@ do
 end
 ```
 
-### `LHtmlDocument:typeOf(name: string) -> boolean`
+### LHtmlDocument:typeOf
+
+`LHtmlDocument:typeOf(name: string) -> boolean`
 
 Returns whether this document handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `LHtmlDocument` and `Object`.
+- `name` (`string`, required): Type name to compare against `LHtmlDocument` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this document handle matches a supported type name.
+---@param name string Type name to compare against `LHtmlDocument` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LHtmlDocument:typeOf(name) end
+```
 
 #### Example
 
@@ -1055,13 +1327,23 @@ do
 end
 ```
 
-### `LHtmlDocument:update(dt: number)`
+### LHtmlDocument:update
+
+`LHtmlDocument:update(dt: number)`
 
 Advances document timers and animated state.
 
 **Parameters**
 
-- `dt` (`number`, required) - Delta time in seconds.
+- `dt` (`number`, required): Delta time in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Advances document timers and animated state.
+---@param dt number Delta time in seconds.
+function LHtmlDocument:update(dt) end
+```
 
 #### Example
 
@@ -1083,16 +1365,28 @@ do
 end
 ```
 
-### `LHtmlDocument:wheelmoved(dx: number, dy: number) -> boolean`
+### LHtmlDocument:wheelmoved
+
+`LHtmlDocument:wheelmoved(dx: number, dy: number) -> boolean`
 
 Forwards mouse wheel movement to the document.
 
 **Parameters**
 
-- `dx` (`number`, required) - Horizontal wheel delta.
-- `dy` (`number`, required) - Vertical wheel delta.
+- `dx` (`number`, required): Horizontal wheel delta.
+- `dy` (`number`, required): Vertical wheel delta.
 
 **Returns**: `boolean` - True when an element handled the wheel event.
+
+**Lua API Stub**
+
+```lua
+--- Forwards mouse wheel movement to the document.
+---@param dx number Horizontal wheel delta.
+---@param dy number Vertical wheel delta.
+---@return boolean True when an element handled the wheel event.
+function LHtmlDocument:wheelmoved(dx, dy) end
+```
 
 #### Example
 
@@ -1116,39 +1410,23 @@ do
 end
 ```
 
-### `LHtmlElement`
+### LHtmlElement:addClass
 
-Lua-side DOM element handle with stale-generation detection.
-
-#### Example
-
-Exact example from [html.lua](../blob/main/content/examples/html.lua):
-
-```lua
-do
-  -- getRoot() returns the top-level element (usually <body>).
-  -- From the root you can traverse the full DOM tree using query/queryAll.
-  local doc = lurek.html.newDocument([[
-<body>
-  <header>Game Title</header>
-  <main>Content</main>
-  <footer>v1.0</footer>
-</body>
-]])
-  local root = doc:getRoot()
-  if root then
-    lurek.log.info("root tag: " .. root:getTagName(), "html")
-  end
-end
-```
-
-### `LHtmlElement:addClass(name: string)`
+`LHtmlElement:addClass(name: string)`
 
 Adds a CSS class to this element's class list.
 
 **Parameters**
 
-- `name` (`string`, required) - Class name to add.
+- `name` (`string`, required): Class name to add.
+
+**Lua API Stub**
+
+```lua
+--- Adds a CSS class to this element's class list.
+---@param name string Class name to add.
+function LHtmlElement:addClass(name) end
+```
 
 #### Example
 
@@ -1171,13 +1449,23 @@ do
 end
 ```
 
-### `LHtmlElement:appendHtml(html: string)`
+### LHtmlElement:appendHtml
+
+`LHtmlElement:appendHtml(html: string)`
 
 Appends HTML source to this element's inner HTML.
 
 **Parameters**
 
-- `html` (`string`, required) - HTML source to append.
+- `html` (`string`, required): HTML source to append.
+
+**Lua API Stub**
+
+```lua
+--- Appends HTML source to this element's inner HTML.
+---@param html string HTML source to append.
+function LHtmlElement:appendHtml(html) end
+```
 
 #### Example
 
@@ -1202,9 +1490,18 @@ do
 end
 ```
 
-### `LHtmlElement:blur()`
+### LHtmlElement:blur
+
+`LHtmlElement:blur()`
 
 Removes keyboard focus from this element when it is focused.
+
+**Lua API Stub**
+
+```lua
+--- Removes keyboard focus from this element when it is focused.
+function LHtmlElement:blur() end
+```
 
 #### Example
 
@@ -1228,9 +1525,18 @@ do
 end
 ```
 
-### `LHtmlElement:focus()`
+### LHtmlElement:focus
+
+`LHtmlElement:focus()`
 
 Gives keyboard focus to this element.
+
+**Lua API Stub**
+
+```lua
+--- Gives keyboard focus to this element.
+function LHtmlElement:focus() end
+```
 
 #### Example
 
@@ -1255,15 +1561,26 @@ do
 end
 ```
 
-### `LHtmlElement:getAttribute(name: string) -> LuaValue`
+### LHtmlElement:getAttribute
+
+`LHtmlElement:getAttribute(name: string) -> LuaValue`
 
 Returns an attribute value from this element.
 
 **Parameters**
 
-- `name` (`string`, required) - Attribute name.
+- `name` (`string`, required): Attribute name.
 
 **Returns**: `LuaValue` - Attribute string, or nil when absent.
+
+**Lua API Stub**
+
+```lua
+--- Returns an attribute value from this element.
+---@param name string Attribute name.
+---@return LuaValue Attribute string, or nil when absent.
+function LHtmlElement:getAttribute(name) end
+```
 
 #### Example
 
@@ -1290,11 +1607,21 @@ do
 end
 ```
 
-### `LHtmlElement:getDocument() -> LHtmlDocument`
+### LHtmlElement:getDocument
+
+`LHtmlElement:getDocument() -> LHtmlDocument`
 
 Returns the document handle that owns this element.
 
 **Returns**: `LHtmlDocument` - Owning document handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns the document handle that owns this element.
+---@return LHtmlDocument Owning document handle.
+function LHtmlElement:getDocument() end
+```
 
 #### Example
 
@@ -1318,11 +1645,21 @@ do
 end
 ```
 
-### `LHtmlElement:getHtml() -> string`
+### LHtmlElement:getHtml
+
+`LHtmlElement:getHtml() -> string`
 
 Returns this element's inner HTML.
 
 **Returns**: `string` - Element inner HTML, or an empty string when unavailable.
+
+**Lua API Stub**
+
+```lua
+--- Returns this element's inner HTML.
+---@return string Element inner HTML, or an empty string when unavailable.
+function LHtmlElement:getHtml() end
+```
 
 #### Example
 
@@ -1349,11 +1686,21 @@ do
 end
 ```
 
-### `LHtmlElement:getId() -> LuaValue`
+### LHtmlElement:getId
+
+`LHtmlElement:getId() -> LuaValue`
 
 Returns this element's id attribute.
 
 **Returns**: `LuaValue` - Id string, or nil when no id attribute exists.
+
+**Lua API Stub**
+
+```lua
+--- Returns this element's id attribute.
+---@return LuaValue Id string, or nil when no id attribute exists.
+function LHtmlElement:getId() end
+```
 
 #### Example
 
@@ -1371,11 +1718,24 @@ do
 end
 ```
 
-### `LHtmlElement:getRect() -> number`
+### LHtmlElement:getRect
+
+`LHtmlElement:getRect() -> number`
 
 Returns this element's layout rectangle after relayout if needed.
 
 **Returns**: `number` - X coordinate.
+
+**Lua API Stub**
+
+```lua
+--- Returns this element's layout rectangle after relayout if needed.
+---@return number a X coordinate.
+---@return number b Y coordinate.
+---@return number c Width.
+---@return number d Height.
+function LHtmlElement:getRect() end
+```
 
 #### Example
 
@@ -1404,15 +1764,26 @@ do
 end
 ```
 
-### `LHtmlElement:getStyle(name: string) -> LuaValue`
+### LHtmlElement:getStyle
+
+`LHtmlElement:getStyle(name: string) -> LuaValue`
 
 Returns an inline or computed style value for this element.
 
 **Parameters**
 
-- `name` (`string`, required) - CSS property name.
+- `name` (`string`, required): CSS property name.
 
 **Returns**: `LuaValue` - Style value string, or nil when missing.
+
+**Lua API Stub**
+
+```lua
+--- Returns an inline or computed style value for this element.
+---@param name string CSS property name.
+---@return LuaValue Style value string, or nil when missing.
+function LHtmlElement:getStyle(name) end
+```
 
 #### Example
 
@@ -1435,11 +1806,21 @@ do
 end
 ```
 
-### `LHtmlElement:getTagName() -> string`
+### LHtmlElement:getTagName
+
+`LHtmlElement:getTagName() -> string`
 
 Returns this element's HTML tag name.
 
 **Returns**: `string` - Tag name, or an empty string for missing elements.
+
+**Lua API Stub**
+
+```lua
+--- Returns this element's HTML tag name.
+---@return string Tag name, or an empty string for missing elements.
+function LHtmlElement:getTagName() end
+```
 
 #### Example
 
@@ -1463,11 +1844,21 @@ do
 end
 ```
 
-### `LHtmlElement:getText() -> string`
+### LHtmlElement:getText
+
+`LHtmlElement:getText() -> string`
 
 Returns this element's text content.
 
 **Returns**: `string` - Text content, or an empty string when none exists.
+
+**Lua API Stub**
+
+```lua
+--- Returns this element's text content.
+---@return string Text content, or an empty string when none exists.
+function LHtmlElement:getText() end
+```
 
 #### Example
 
@@ -1489,15 +1880,26 @@ do
 end
 ```
 
-### `LHtmlElement:hasClass(name: string) -> boolean`
+### LHtmlElement:hasClass
+
+`LHtmlElement:hasClass(name: string) -> boolean`
 
 Returns whether this element has a CSS class.
 
 **Parameters**
 
-- `name` (`string`, required) - Class name to check.
+- `name` (`string`, required): Class name to check.
 
 **Returns**: `boolean` - True when the class is present.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this element has a CSS class.
+---@param name string Class name to check.
+---@return boolean True when the class is present.
+function LHtmlElement:hasClass(name) end
+```
 
 #### Example
 
@@ -1522,13 +1924,23 @@ do
 end
 ```
 
-### `LHtmlElement:off(handle: integer)`
+### LHtmlElement:off
+
+`LHtmlElement:off(handle: integer)`
 
 Removes an element-level event listener by handle.
 
 **Parameters**
 
-- `handle` (`integer`, required) - Listener handle returned by `on`.
+- `handle` (`integer`, required): Listener handle returned by `on`.
+
+**Lua API Stub**
+
+```lua
+--- Removes an element-level event listener by handle.
+---@param handle number Listener handle returned by `on`.
+function LHtmlElement:off(handle) end
+```
 
 #### Example
 
@@ -1555,16 +1967,28 @@ do
 end
 ```
 
-### `LHtmlElement:on(event: string, func: function) -> integer`
+### LHtmlElement:on
+
+`LHtmlElement:on(event: string, func: function) -> integer`
 
 Registers an element-level event listener.
 
 **Parameters**
 
-- `event` (`string`, required) - Event name to listen for.
-- `func` (`function`, required) - Lua callback receiving an event table.
+- `event` (`string`, required): Event name to listen for.
+- `func` (`function`, required): Lua callback receiving an event table.
 
 **Returns**: `integer` - Listener handle used by `off`.
+
+**Lua API Stub**
+
+```lua
+--- Registers an element-level event listener.
+---@param event string Event name to listen for.
+---@param func function Lua callback receiving an event table.
+---@return number Listener handle used by `off`.
+function LHtmlElement:on(event, func) end
+```
 
 #### Example
 
@@ -1596,15 +2020,26 @@ do
 end
 ```
 
-### `LHtmlElement:query(selector: string) -> LuaValue`
+### LHtmlElement:query
+
+`LHtmlElement:query(selector: string) -> LuaValue`
 
 Looks up the first descendant element matching a selector.
 
 **Parameters**
 
-- `selector` (`string`, required) - Selector supported by the HTML engine.
+- `selector` (`string`, required): Selector supported by the HTML engine.
 
 **Returns**: `LuaValue` - `LHtmlElement` handle, or nil when no descendant matches.
+
+**Lua API Stub**
+
+```lua
+--- Looks up the first descendant element matching a selector.
+---@param selector string Selector supported by the HTML engine.
+---@return LuaValue `LHtmlElement` handle, or nil when no descendant matches.
+function LHtmlElement:query(selector) end
+```
 
 #### Example
 
@@ -1634,15 +2069,26 @@ do
 end
 ```
 
-### `LHtmlElement:queryAll(selector: string) -> LHtmlElement[]`
+### LHtmlElement:queryAll
+
+`LHtmlElement:queryAll(selector: string) -> LHtmlElement[]`
 
 Returns all descendant elements matching a selector.
 
 **Parameters**
 
-- `selector` (`string`, required) - Selector supported by the HTML engine.
+- `selector` (`string`, required): Selector supported by the HTML engine.
 
 **Returns**: `LHtmlElement[]` - `LHtmlElement` handles.
+
+**Lua API Stub**
+
+```lua
+--- Returns all descendant elements matching a selector.
+---@param selector string Selector supported by the HTML engine.
+---@return LHtmlElement[] `LHtmlElement` handles.
+function LHtmlElement:queryAll(selector) end
+```
 
 #### Example
 
@@ -1670,9 +2116,18 @@ do
 end
 ```
 
-### `LHtmlElement:remove()`
+### LHtmlElement:remove
+
+`LHtmlElement:remove()`
 
 Removes this element from the document.
+
+**Lua API Stub**
+
+```lua
+--- Removes this element from the document.
+function LHtmlElement:remove() end
+```
 
 #### Example
 
@@ -1701,13 +2156,23 @@ do
 end
 ```
 
-### `LHtmlElement:removeAttribute(name: string)`
+### LHtmlElement:removeAttribute
+
+`LHtmlElement:removeAttribute(name: string)`
 
 Removes an attribute from this element.
 
 **Parameters**
 
-- `name` (`string`, required) - Attribute name to remove.
+- `name` (`string`, required): Attribute name to remove.
+
+**Lua API Stub**
+
+```lua
+--- Removes an attribute from this element.
+---@param name string Attribute name to remove.
+function LHtmlElement:removeAttribute(name) end
+```
 
 #### Example
 
@@ -1730,13 +2195,23 @@ do
 end
 ```
 
-### `LHtmlElement:removeClass(name: string)`
+### LHtmlElement:removeClass
+
+`LHtmlElement:removeClass(name: string)`
 
 Removes a CSS class from this element.
 
 **Parameters**
 
-- `name` (`string`, required) - Class name to remove.
+- `name` (`string`, required): Class name to remove.
+
+**Lua API Stub**
+
+```lua
+--- Removes a CSS class from this element.
+---@param name string Class name to remove.
+function LHtmlElement:removeClass(name) end
+```
 
 #### Example
 
@@ -1758,14 +2233,25 @@ do
 end
 ```
 
-### `LHtmlElement:setAttribute(name: string, [value]: string)`
+### LHtmlElement:setAttribute
+
+`LHtmlElement:setAttribute(name: string, [value]: string)`
 
 Sets or clears an attribute on this element.
 
 **Parameters**
 
-- `name` (`string`, required) - Attribute name.
-- `value` (`string`, optional) - Attribute value, or nil to remove the attribute.
+- `name` (`string`, required): Attribute name.
+- `value` (`string`, optional): Attribute value, or nil to remove the attribute.
+
+**Lua API Stub**
+
+```lua
+--- Sets or clears an attribute on this element.
+---@param name string Attribute name.
+---@param value? string Attribute value, or nil to remove the attribute.
+function LHtmlElement:setAttribute(name, value) end
+```
 
 #### Example
 
@@ -1790,13 +2276,23 @@ do
 end
 ```
 
-### `LHtmlElement:setHtml(html: string)`
+### LHtmlElement:setHtml
+
+`LHtmlElement:setHtml(html: string)`
 
 Replaces this element's inner HTML and may invalidate descendant element handles.
 
 **Parameters**
 
-- `html` (`string`, required) - New inner HTML source.
+- `html` (`string`, required): New inner HTML source.
+
+**Lua API Stub**
+
+```lua
+--- Replaces this element's inner HTML and may invalidate descendant element handles.
+---@param html string New inner HTML source.
+function LHtmlElement:setHtml(html) end
+```
 
 #### Example
 
@@ -1824,13 +2320,23 @@ do
 end
 ```
 
-### `LHtmlElement:setId([id]: string)`
+### LHtmlElement:setId
+
+`LHtmlElement:setId([id]: string)`
 
 Sets or clears this element's id attribute.
 
 **Parameters**
 
-- `id` (`string`, optional) - Id attribute value, or nil to clear.
+- `id` (`string`, optional): Id attribute value, or nil to clear.
+
+**Lua API Stub**
+
+```lua
+--- Sets or clears this element's id attribute.
+---@param id? string Id attribute value, or nil to clear.
+function LHtmlElement:setId(id) end
+```
 
 #### Example
 
@@ -1851,14 +2357,25 @@ do
 end
 ```
 
-### `LHtmlElement:setStyle(name: string, [value]: string)`
+### LHtmlElement:setStyle
+
+`LHtmlElement:setStyle(name: string, [value]: string)`
 
 Sets or clears a style property on this element.
 
 **Parameters**
 
-- `name` (`string`, required) - CSS property name.
-- `value` (`string`, optional) - CSS value, or nil to clear the property.
+- `name` (`string`, required): CSS property name.
+- `value` (`string`, optional): CSS value, or nil to clear the property.
+
+**Lua API Stub**
+
+```lua
+--- Sets or clears a style property on this element.
+---@param name string CSS property name.
+---@param value? string CSS value, or nil to clear the property.
+function LHtmlElement:setStyle(name, value) end
+```
 
 #### Example
 
@@ -1885,13 +2402,23 @@ do
 end
 ```
 
-### `LHtmlElement:setText(text: string)`
+### LHtmlElement:setText
+
+`LHtmlElement:setText(text: string)`
 
 Replaces this element's text content.
 
 **Parameters**
 
-- `text` (`string`, required) - New text content.
+- `text` (`string`, required): New text content.
+
+**Lua API Stub**
+
+```lua
+--- Replaces this element's text content.
+---@param text string New text content.
+function LHtmlElement:setText(text) end
+```
 
 #### Example
 
@@ -1922,16 +2449,28 @@ do
 end
 ```
 
-### `LHtmlElement:toggleClass(name: string, [force]: boolean) -> boolean`
+### LHtmlElement:toggleClass
+
+`LHtmlElement:toggleClass(name: string, [force]: boolean) -> boolean`
 
 Toggles a CSS class on this element, optionally forcing the final state.
 
 **Parameters**
 
-- `name` (`string`, required) - Class name to toggle.
-- `force` (`boolean`, optional) - Forced state.
+- `name` (`string`, required): Class name to toggle.
+- `force` (`boolean`, optional): Forced state.
 
 **Returns**: `boolean` - Final class presence, or false when the element is unavailable.
+
+**Lua API Stub**
+
+```lua
+--- Toggles a CSS class on this element, optionally forcing the final state.
+---@param name string Class name to toggle.
+---@param force? boolean Forced state.
+---@return boolean Final class presence, or false when the element is unavailable.
+function LHtmlElement:toggleClass(name, force) end
+```
 
 #### Example
 
@@ -1958,11 +2497,21 @@ do
 end
 ```
 
-### `LHtmlElement:type() -> string`
+### LHtmlElement:type
+
+`LHtmlElement:type() -> string`
 
 Returns the Lua-visible type name for this HTML element handle.
 
 **Returns**: `string` - The string `LHtmlElement`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this HTML element handle.
+---@return string The string `LHtmlElement`.
+function LHtmlElement:type() end
+```
 
 #### Example
 
@@ -1980,15 +2529,26 @@ do
 end
 ```
 
-### `LHtmlElement:typeOf(name: string) -> boolean`
+### LHtmlElement:typeOf
+
+`LHtmlElement:typeOf(name: string) -> boolean`
 
 Returns whether this element handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `LHtmlElement` and `Object`.
+- `name` (`string`, required): Type name to compare against `LHtmlElement` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this element handle matches a supported type name.
+---@param name string Type name to compare against `LHtmlElement` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LHtmlElement:typeOf(name) end
+```
 
 #### Example
 
@@ -2009,11 +2569,15 @@ end
 ```
 
 
-## Examples
+[⬆ back to top](#table-of-contents)
+
+## 💡 Examples
 
 - [html.lua](../blob/main/content/examples/html.lua) - API example
 
-## Reference Games
+[⬆ back to top](#table-of-contents)
+
+## 🎮 Reference Games
 
 - [html-dialog](../tree/main/content/games/showcase/html-dialog) (showcase)
 - [html-hud](../tree/main/content/games/showcase/html-hud) (showcase)
@@ -2022,8 +2586,10 @@ end
 - [html-scoreboard](../tree/main/content/games/showcase/html-scoreboard) (showcase)
 - [html-settings](../tree/main/content/games/showcase/html-settings) (showcase)
 
-## Related Modules
+[⬆ back to top](#table-of-contents)
 
-- Previous: [[graph|Module-graph]]
-- Next: [[i18n|Module-i18n]]
+## 🔗 Related Modules
+
+- Previous: [graph](Module-graph)
+- Next: [i18n](Module-i18n)
 No related modules were detected in the same group.

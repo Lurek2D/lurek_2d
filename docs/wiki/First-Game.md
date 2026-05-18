@@ -4,7 +4,7 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
@@ -37,5 +37,5 @@ end
 
 ## Next Steps
 
-- [[Project Structure|Project-Structure]]
-- [[input|Module-input]], [[render|Module-render]], [[audio|Module-audio]]
+- [Project Structure](Project-Structure)
+- [input](Module-input), [render](Module-render), [audio](Module-audio)

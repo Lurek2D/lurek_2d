@@ -4,125 +4,76 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
-- [Purpose](#purpose)
-- [Summary](#summary)
-- [Minimal Module Example](#minimal-module-example)
-- [Key Types](#key-types)
-- [API Overview](#api-overview)
-- [Module Functions](#module-functions)
-  - [lurek.save.newSaveManager() -> LSaveManager](#lureksavenewsavemanager-lsavemanager)
-- [Types and Methods](#types-and-methods)
+- [🎯 Purpose](#purpose)
+- [📋 Summary](#summary)
+- [🧩 Key Types](#key-types)
+- [📖 API Overview](#api-overview)
+- [⚙️ Module Functions](#module-functions)
+  - [lurek.save.newSaveManager](#lureksavenewsavemanager)
+- [🔷 Module Types](#module-types)
   - [LSaveManager](#lsavemanager)
-  - [LSaveManager:addMigration(fromVersion: integer, func: function)](#lsavemanageraddmigrationfromversion-integer-func-function)
-  - [LSaveManager:collect() -> table](#lsavemanagercollect-table)
-  - [LSaveManager:delete(slot: string)](#lsavemanagerdeleteslot-string)
-  - [LSaveManager:disableAutoSave()](#lsavemanagerdisableautosave)
-  - [LSaveManager:enableAutoSave(interval: number, slot: string)](#lsavemanagerenableautosaveinterval-number-slot-string)
-  - [LSaveManager:exists(slot: string) -> boolean](#lsavemanagerexistsslot-string-boolean)
-  - [LSaveManager:getSchemaVersion() -> integer](#lsavemanagergetschemaversion-integer)
-  - [LSaveManager:getSlotInfo(slot: string) -> table](#lsavemanagergetslotinfoslot-string-table)
-  - [LSaveManager:getSlots() -> table](#lsavemanagergetslots-table)
-  - [LSaveManager:getSummary() -> string](#lsavemanagergetsummary-string)
-  - [LSaveManager:isCompressed() -> boolean](#lsavemanageriscompressed-boolean)
-  - [LSaveManager:isDirty() -> boolean](#lsavemanagerisdirty-boolean)
-  - [LSaveManager:load(slot: string) -> boolean](#lsavemanagerloadslot-string-boolean)
-  - [LSaveManager:markDirty()](#lsavemanagermarkdirty)
-  - [LSaveManager:onAfterLoad([func]: function)](#lsavemanageronafterloadfunc-function)
-  - [LSaveManager:onBeforeSave([func]: function)](#lsavemanageronbeforesavefunc-function)
-  - [LSaveManager:register(name: string, collectFn: function, restoreFn: function)](#lsavemanagerregistername-string-collectfn-function-restorefn-function)
-  - [LSaveManager:reset()](#lsavemanagerreset)
-  - [LSaveManager:restore(data: table)](#lsavemanagerrestoredata-table)
-  - [LSaveManager:save(slot: string)](#lsavemanagersaveslot-string)
-  - [LSaveManager:setCompress(enabled: boolean)](#lsavemanagersetcompressenabled-boolean)
-  - [LSaveManager:setSchemaVersion(version: integer)](#lsavemanagersetschemaversionversion-integer)
-  - [LSaveManager:setSummary(summary: string)](#lsavemanagersetsummarysummary-string)
-  - [LSaveManager:type() -> string](#lsavemanagertype-string)
-  - [LSaveManager:typeOf(name: string) -> boolean](#lsavemanagertypeofname-string-boolean)
-  - [LSaveManager:unregister(name: string)](#lsavemanagerunregistername-string)
-  - [LSaveManager:update(dt: number) -> boolean](#lsavemanagerupdatedt-number-boolean)
-- [Examples](#examples)
-- [Reference Games](#reference-games)
-- [Related Modules](#related-modules)
+- [🔹 Module Methods](#module-methods)
+  - [LSaveManager:addMigration](#lsavemanageraddmigration)
+  - [LSaveManager:collect](#lsavemanagercollect)
+  - [LSaveManager:delete](#lsavemanagerdelete)
+  - [LSaveManager:disableAutoSave](#lsavemanagerdisableautosave)
+  - [LSaveManager:enableAutoSave](#lsavemanagerenableautosave)
+  - [LSaveManager:exists](#lsavemanagerexists)
+  - [LSaveManager:getSchemaVersion](#lsavemanagergetschemaversion)
+  - [LSaveManager:getSlotInfo](#lsavemanagergetslotinfo)
+  - [LSaveManager:getSlots](#lsavemanagergetslots)
+  - [LSaveManager:getSummary](#lsavemanagergetsummary)
+  - [LSaveManager:isCompressed](#lsavemanageriscompressed)
+  - [LSaveManager:isDirty](#lsavemanagerisdirty)
+  - [LSaveManager:load](#lsavemanagerload)
+  - [LSaveManager:markDirty](#lsavemanagermarkdirty)
+  - [LSaveManager:onAfterLoad](#lsavemanageronafterload)
+  - [LSaveManager:onBeforeSave](#lsavemanageronbeforesave)
+  - [LSaveManager:register](#lsavemanagerregister)
+  - [LSaveManager:reset](#lsavemanagerreset)
+  - [LSaveManager:restore](#lsavemanagerrestore)
+  - [LSaveManager:save](#lsavemanagersave)
+  - [LSaveManager:setCompress](#lsavemanagersetcompress)
+  - [LSaveManager:setSchemaVersion](#lsavemanagersetschemaversion)
+  - [LSaveManager:setSummary](#lsavemanagersetsummary)
+  - [LSaveManager:type](#lsavemanagertype)
+  - [LSaveManager:typeOf](#lsavemanagertypeof)
+  - [LSaveManager:unregister](#lsavemanagerunregister)
+  - [LSaveManager:update](#lsavemanagerupdate)
+- [💡 Examples](#examples)
+- [🎮 Reference Games](#reference-games)
+- [🔗 Related Modules](#related-modules)
 
 This page is generated from the current module specs, examples, and Lua API data.
 
 **Module group:** Feature Systems
 **Namespace:** `lurek.save`
 
-## Purpose
+## 🎯 Purpose
 
 Save / load lifecycle: schema versioning, migrations, auto-save. Bytes belong to serial.
 
-## Summary
+[⬆ back to top](#table-of-contents)
+
+## 📋 Summary
 
 Slot-based persistent save system with compression, rotation, dirty tracking, auto-save scheduling, and schema-versioned migrations. `SaveManager` coordinates named data sections — each section registers a collector function (gathers current state as a Lua table) and a restorer function (applies loaded state). Dirty tracking skips writes when state has not changed.
 
 Serialization converts Lua tables to a `SaveValue` tree, then emits Lua-literal text compressed with LZ4 + Base64. Slot files are numbered with configurable rotation depth and backup copies. Schema versioning stamps each save with a version number; registered migration functions upgrade old saves to the current schema on load. Summary metadata (timestamp, playtime, thumbnail) enables save-slot UI display without full deserialization. Exposed as `lurek.save.*`. Feature Systems tier.
 
-## Minimal Module Example
+[⬆ back to top](#table-of-contents)
 
-Module example from [save.lua](../blob/main/content/examples/save.lua):
-
-```lua
--- content/examples/save.lua
--- lurek.save API examples: persistent game state management with SaveManager.
--- Run: cargo run -- content/examples/save.lua
-
---@api-stub: lurek.save.newSaveManager
--- Create a new SaveManager for managing persistent game saves
-do
-  -- newSaveManager() returns a fresh manager with no registered sections.
-  -- You typically create one per game and keep it in a local or module variable.
-  local mgr = lurek.save.newSaveManager()
-  mgr:setSchemaVersion(1)
-  mgr:register("player",
-    function() return { hp = 100, x = 32, y = 64, name = "Hero" } end,
-    function(data)
-      -- This restorer runs when loading a save; apply data back to game state
-      lurek.log.info("restored player: " .. data.name .. " hp=" .. data.hp, "save")
-    end)
-end
-
---@api-stub: LSaveManager:register
--- Register a named data section with collector and restorer function pair
-do
-  -- register(name, collectFn, restoreFn) links a key to save/load behavior.
-  -- collectFn: called during save to gather current state into a table.
-  -- restoreFn: called during load to apply saved data back into your game.
-  local mgr = lurek.save.newSaveManager()
-
-  -- Register player position and stats
-  local player = { x = 200, y = 300, hp = 80, gold = 1500 }
-  mgr:register("player_state",
-    function()
-      return { x = player.x, y = player.y, hp = player.hp, gold = player.gold }
-    end,
-    function(data)
-      player.x = data.x
-      player.y = data.y
-      player.hp = data.hp
-      player.gold = data.gold
-      lurek.log.info("player restored at (" .. data.x .. "," .. data.y .. ")", "save")
-    end)
-
-  -- Register world state separately for clean separation
-  mgr:register("world",
-    function() return { day = 7, weather = "rain" } end,
-    function(data)
-      lurek.log.info("world day " .. data.day .. ", weather: " .. data.weather, "save")
-    end)
-end
-```
-
-## Key Types
+## 🧩 Key Types
 
 - `LSaveManager` (27 methods) - Manages persistent game state: registering data collectors/restorers, serializing to named.
 
-## API Overview
+[⬆ back to top](#table-of-contents)
+
+## 📖 API Overview
 
 - Source spec: [docs/specs/save.md](../blob/main/docs/specs/save.md)
 
@@ -130,9 +81,13 @@ end
 lurek.save.newSaveManager() -> LSaveManager -- Create a new SaveManager instance for managing persistent game saves.
 ```
 
-## Module Functions
+[⬆ back to top](#table-of-contents)
 
-### `lurek.save.newSaveManager() -> LSaveManager`
+## ⚙️ Module Functions
+
+### lurek.save.newSaveManager
+
+`lurek.save.newSaveManager() -> LSaveManager`
 
 Create a new SaveManager instance for managing persistent game saves.
 
@@ -158,11 +113,21 @@ end
 ```
 
 
-## Types and Methods
+[⬆ back to top](#table-of-contents)
 
-### `LSaveManager`
+## 🔷 Module Types
+
+### LSaveManager
 
 Manages persistent game state: registering data collectors/restorers, serializing to named.
+
+**Lua API Definition**
+
+```lua
+--- Manages persistent game state: registering data collectors/restorers, serializing to named.
+---@class LSaveManager
+LSaveManager = {}
+```
 
 #### Example
 
@@ -183,14 +148,30 @@ do
 end
 ```
 
-### `LSaveManager:addMigration(fromVersion: integer, func: function)`
+
+[⬆ back to top](#table-of-contents)
+
+## 🔹 Module Methods
+
+### LSaveManager:addMigration
+
+`LSaveManager:addMigration(fromVersion: integer, func: function)`
 
 Register a migration function that transforms save data from one schema version to the next.
 
 **Parameters**
 
-- `fromVersion` (`integer`, required) - The schema version this migration upgrades FROM (it produces fromVersion+1).
-- `func` (`function`, required) - Receives the full save data table and must return the transformed table.
+- `fromVersion` (`integer`, required): The schema version this migration upgrades FROM (it produces fromVersion+1).
+- `func` (`function`, required): Receives the full save data table and must return the transformed table.
+
+**Lua API Stub**
+
+```lua
+--- Register a migration function that transforms save data from one schema version to the next.
+---@param fromVersion number The schema version this migration upgrades FROM (it produces fromVersion+1).
+---@param func function Receives the full save data table and must return the transformed table.
+function LSaveManager:addMigration(fromVersion, func) end
+```
 
 #### Example
 
@@ -225,11 +206,21 @@ do
 end
 ```
 
-### `LSaveManager:collect() -> table`
+### LSaveManager:collect
+
+`LSaveManager:collect() -> table`
 
 Invoke all registered collectors and return the assembled save-data table without writing to disk.
 
 **Returns**: `table` - The full save-data table including __schema_version, __timestamp, and __summary metadata.
+
+**Lua API Stub**
+
+```lua
+--- Invoke all registered collectors and return the assembled save-data table without writing to disk.
+---@return table The full save-data table including __schema_version, __timestamp, and __summary metadata.
+function LSaveManager:collect() end
+```
 
 #### Example
 
@@ -255,13 +246,24 @@ do
 end
 ```
 
-### `LSaveManager:delete(slot: string)`
+### LSaveManager:delete
+
+`LSaveManager:delete(slot: string)`
 
 Permanently delete a save slot file from disk. This action cannot be undone.
 
 **Parameters**
 
-- `slot` (`string`, required) - Slot name to delete (e.g. "slot1").
+- `slot` (`string`, required): Slot name to delete (e.g. "slot1").
+
+**Lua API Stub**
+
+```lua
+--- Permanently delete a save slot file from disk. This action cannot be undone.
+---@param slot string Slot name to delete (e.g. "slot1").
+---@return nil No return value.
+function LSaveManager:delete(slot) end
+```
 
 #### Example
 
@@ -283,9 +285,18 @@ do
 end
 ```
 
-### `LSaveManager:disableAutoSave()`
+### LSaveManager:disableAutoSave
+
+`LSaveManager:disableAutoSave()`
 
 Disable the periodic auto-save timer. Manual saves via save() still work.
+
+**Lua API Stub**
+
+```lua
+--- Disable the periodic auto-save timer. Manual saves via save() still work.
+function LSaveManager:disableAutoSave() end
+```
 
 #### Example
 
@@ -304,14 +315,25 @@ do
 end
 ```
 
-### `LSaveManager:enableAutoSave(interval: number, slot: string)`
+### LSaveManager:enableAutoSave
+
+`LSaveManager:enableAutoSave(interval: number, slot: string)`
 
 Enable periodic auto-saving: when the dirty flag is set, the system writes to the target slot every interval seconds.
 
 **Parameters**
 
-- `interval` (`number`, required) - Time in seconds between auto-save checks (e.g. 30.0 for every 30 seconds).
-- `slot` (`string`, required) - The slot name to auto-save into (e.g. "autosave").
+- `interval` (`number`, required): Time in seconds between auto-save checks (e.g. 30.0 for every 30 seconds).
+- `slot` (`string`, required): The slot name to auto-save into (e.g. "autosave").
+
+**Lua API Stub**
+
+```lua
+--- Enable periodic auto-saving: when the dirty flag is set, the system writes to the target slot every interval seconds.
+---@param interval number Time in seconds between auto-save checks (e.g. 30.0 for every 30 seconds).
+---@param slot string The slot name to auto-save into (e.g. "autosave").
+function LSaveManager:enableAutoSave(interval, slot) end
+```
 
 #### Example
 
@@ -333,15 +355,26 @@ do
 end
 ```
 
-### `LSaveManager:exists(slot: string) -> boolean`
+### LSaveManager:exists
+
+`LSaveManager:exists(slot: string) -> boolean`
 
 Check whether a save slot file exists on disk without reading its contents.
 
 **Parameters**
 
-- `slot` (`string`, required) - Slot name to check.
+- `slot` (`string`, required): Slot name to check.
 
 **Returns**: `boolean` - True if the slot file is present.
+
+**Lua API Stub**
+
+```lua
+--- Check whether a save slot file exists on disk without reading its contents.
+---@param slot string Slot name to check.
+---@return boolean True if the slot file is present.
+function LSaveManager:exists(slot) end
+```
 
 #### Example
 
@@ -361,11 +394,21 @@ do
 end
 ```
 
-### `LSaveManager:getSchemaVersion() -> integer`
+### LSaveManager:getSchemaVersion
+
+`LSaveManager:getSchemaVersion() -> integer`
 
 Return the current schema version number set for this save manager.
 
 **Returns**: `integer` - The active schema version.
+
+**Lua API Stub**
+
+```lua
+--- Return the current schema version number set for this save manager.
+---@return number The active schema version.
+function LSaveManager:getSchemaVersion() end
+```
 
 #### Example
 
@@ -383,15 +426,26 @@ do
 end
 ```
 
-### `LSaveManager:getSlotInfo(slot: string) -> table`
+### LSaveManager:getSlotInfo
+
+`LSaveManager:getSlotInfo(slot: string) -> table`
 
 Read metadata for a single save slot without loading its full game state.
 
 **Parameters**
 
-- `slot` (`string`, required) - Slot name to inspect.
+- `slot` (`string`, required): Slot name to inspect.
 
 **Returns**: `table` - Info table with fields: slot, version, timestamp, summary, or nil if not found.
+
+**Lua API Stub**
+
+```lua
+--- Read metadata for a single save slot without loading its full game state.
+---@param slot string Slot name to inspect.
+---@return LSaveManagerGetSlotInfoResult Info table with fields: slot, version, timestamp, summary, or nil if not found.
+function LSaveManager:getSlotInfo(slot) end
+```
 
 #### Example
 
@@ -413,11 +467,21 @@ do
 end
 ```
 
-### `LSaveManager:getSlots() -> table`
+### LSaveManager:getSlots
+
+`LSaveManager:getSlots() -> table`
 
 List all save slots found on disk with their metadata (version, timestamp, summary).
 
 **Returns**: `table` - Array of info tables, each with fields: slot, version, timestamp, summary.
+
+**Lua API Stub**
+
+```lua
+--- List all save slots found on disk with their metadata (version, timestamp, summary).
+---@return LSaveManagerGetSlotsResult Array of info tables, each with fields: slot, version, timestamp, summary.
+function LSaveManager:getSlots() end
+```
 
 #### Example
 
@@ -442,11 +506,21 @@ do
 end
 ```
 
-### `LSaveManager:getSummary() -> string`
+### LSaveManager:getSummary
+
+`LSaveManager:getSummary() -> string`
 
 Get the current summary string that will be embedded in the next save.
 
 **Returns**: `string` - The summary text, or an empty string if none was set.
+
+**Lua API Stub**
+
+```lua
+--- Get the current summary string that will be embedded in the next save.
+---@return string The summary text, or an empty string if none was set.
+function LSaveManager:getSummary() end
+```
 
 #### Example
 
@@ -462,11 +536,21 @@ do
 end
 ```
 
-### `LSaveManager:isCompressed() -> boolean`
+### LSaveManager:isCompressed
+
+`LSaveManager:isCompressed() -> boolean`
 
 Check whether save compression is currently enabled.
 
 **Returns**: `boolean` - True if future saves will be LZ4-compressed.
+
+**Lua API Stub**
+
+```lua
+--- Check whether save compression is currently enabled.
+---@return boolean True if future saves will be LZ4-compressed.
+function LSaveManager:isCompressed() end
+```
 
 #### Example
 
@@ -485,11 +569,21 @@ do
 end
 ```
 
-### `LSaveManager:isDirty() -> boolean`
+### LSaveManager:isDirty
+
+`LSaveManager:isDirty() -> boolean`
 
 Check whether unsaved changes exist since the last save or load.
 
 **Returns**: `boolean` - True if game state has been modified and not yet persisted.
+
+**Lua API Stub**
+
+```lua
+--- Check whether unsaved changes exist since the last save or load.
+---@return boolean True if game state has been modified and not yet persisted.
+function LSaveManager:isDirty() end
+```
 
 #### Example
 
@@ -509,15 +603,27 @@ do
 end
 ```
 
-### `LSaveManager:load(slot: string) -> boolean`
+### LSaveManager:load
+
+`LSaveManager:load(slot: string) -> boolean`
 
 Load game state from a named slot file. Decompresses if needed, applies migrations, calls restorers, then fires onAfterLoad.
 
 **Parameters**
 
-- `slot` (`string`, required) - Slot name to load (e.g. "slot1").
+- `slot` (`string`, required): Slot name to load (e.g. "slot1").
 
 **Returns**: `boolean` - True if the load succeeded, false on error.
+
+**Lua API Stub**
+
+```lua
+--- Load game state from a named slot file. Decompresses if needed, applies migrations, calls restorers, then fires onAfterLoad.
+---@param slot string Slot name to load (e.g. "slot1").
+---@return boolean a True if the load succeeded, false on error.
+---@return string b Error message if the load failed, nil on success.
+function LSaveManager:load(slot) end
+```
 
 #### Example
 
@@ -542,9 +648,18 @@ do
 end
 ```
 
-### `LSaveManager:markDirty()`
+### LSaveManager:markDirty
+
+`LSaveManager:markDirty()`
 
 Mark the save state as dirty, indicating unsaved changes exist.
+
+**Lua API Stub**
+
+```lua
+--- Mark the save state as dirty, indicating unsaved changes exist.
+function LSaveManager:markDirty() end
+```
 
 #### Example
 
@@ -567,13 +682,23 @@ do
 end
 ```
 
-### `LSaveManager:onAfterLoad([func]: function)`
+### LSaveManager:onAfterLoad
+
+`LSaveManager:onAfterLoad([func]: function)`
 
 Set a hook function called immediately after a save file is successfully loaded and all restorers have run.
 
 **Parameters**
 
-- `func` (`function`, optional) - Callback receiving the slot name as its argument, or nil to clear.
+- `func` (`function`, optional): Callback receiving the slot name as its argument, or nil to clear.
+
+**Lua API Stub**
+
+```lua
+--- Set a hook function called immediately after a save file is successfully loaded and all restorers have run.
+---@param func? function Callback receiving the slot name as its argument, or nil to clear.
+function LSaveManager:onAfterLoad(func) end
+```
 
 #### Example
 
@@ -592,13 +717,23 @@ do
 end
 ```
 
-### `LSaveManager:onBeforeSave([func]: function)`
+### LSaveManager:onBeforeSave
+
+`LSaveManager:onBeforeSave([func]: function)`
 
 Set a hook function called immediately before each save operation begins.
 
 **Parameters**
 
-- `func` (`function`, optional) - Callback receiving the slot name as its argument, or nil to clear.
+- `func` (`function`, optional): Callback receiving the slot name as its argument, or nil to clear.
+
+**Lua API Stub**
+
+```lua
+--- Set a hook function called immediately before each save operation begins.
+---@param func? function Callback receiving the slot name as its argument, or nil to clear.
+function LSaveManager:onBeforeSave(func) end
+```
 
 #### Example
 
@@ -618,15 +753,27 @@ do
 end
 ```
 
-### `LSaveManager:register(name: string, collectFn: function, restoreFn: function)`
+### LSaveManager:register
+
+`LSaveManager:register(name: string, collectFn: function, restoreFn: function)`
 
 Register a named data section with a collector and restorer function pair.
 
 **Parameters**
 
-- `name` (`string`, required) - Unique section name identifying this chunk of save data (e.g. "player", "inventory").
-- `collectFn` (`function`, required) - Called with no arguments during save; must return the data to persist for this section.
-- `restoreFn` (`function`, required) - Called with the saved value during load; responsible for applying it back to game state.
+- `name` (`string`, required): Unique section name identifying this chunk of save data (e.g. "player", "inventory").
+- `collectFn` (`function`, required): Called with no arguments during save; must return the data to persist for this section.
+- `restoreFn` (`function`, required): Called with the saved value during load; responsible for applying it back to game state.
+
+**Lua API Stub**
+
+```lua
+--- Register a named data section with a collector and restorer function pair.
+---@param name string Unique section name identifying this chunk of save data (e.g. "player", "inventory").
+---@param collectFn function Called with no arguments during save; must return the data to persist for this section.
+---@param restoreFn function Called with the saved value during load; responsible for applying it back to game state.
+function LSaveManager:register(name, collectFn, restoreFn) end
+```
 
 #### Example
 
@@ -662,9 +809,18 @@ do
 end
 ```
 
-### `LSaveManager:reset()`
+### LSaveManager:reset
+
+`LSaveManager:reset()`
 
 Completely reset the save manager: unregister all sections, clear migrations, hooks, compression, and dirty state.
+
+**Lua API Stub**
+
+```lua
+--- Completely reset the save manager: unregister all sections, clear migrations, hooks, compression, and dirty state.
+function LSaveManager:reset() end
+```
 
 #### Example
 
@@ -686,13 +842,23 @@ do
 end
 ```
 
-### `LSaveManager:restore(data: table)`
+### LSaveManager:restore
+
+`LSaveManager:restore(data: table)`
 
 Apply a previously collected save-data table back into game state by invoking all registered restorers.
 
 **Parameters**
 
-- `data` (`table`, required) - A save-data table (as produced by collect or loaded from disk).
+- `data` (`table`, required): A save-data table (as produced by collect or loaded from disk).
+
+**Lua API Stub**
+
+```lua
+--- Apply a previously collected save-data table back into game state by invoking all registered restorers.
+---@param data table A save-data table (as produced by collect or loaded from disk).
+function LSaveManager:restore(data) end
+```
 
 #### Example
 
@@ -719,13 +885,23 @@ do
 end
 ```
 
-### `LSaveManager:save(slot: string)`
+### LSaveManager:save
+
+`LSaveManager:save(slot: string)`
 
 Persist all registered data sections to the named slot file on disk.
 
 **Parameters**
 
-- `slot` (`string`, required) - Slot name (e.g. "slot1", "quicksave"). The file is stored as save/slot_<name>.sav.
+- `slot` (`string`, required): Slot name (e.g. "slot1", "quicksave"). The file is stored as save/slot_<name>.sav.
+
+**Lua API Stub**
+
+```lua
+--- Persist all registered data sections to the named slot file on disk.
+---@param slot string Slot name (e.g. "slot1", "quicksave"). The file is stored as save/slot_<name>.sav.
+function LSaveManager:save(slot) end
+```
 
 #### Example
 
@@ -747,13 +923,23 @@ do
 end
 ```
 
-### `LSaveManager:setCompress(enabled: boolean)`
+### LSaveManager:setCompress
+
+`LSaveManager:setCompress(enabled: boolean)`
 
 Enable or disable LZ4 compression for save files. Compressed saves are smaller on disk.
 
 **Parameters**
 
-- `enabled` (`boolean`, required) - True to compress future saves, false to write plain text.
+- `enabled` (`boolean`, required): True to compress future saves, false to write plain text.
+
+**Lua API Stub**
+
+```lua
+--- Enable or disable LZ4 compression for save files. Compressed saves are smaller on disk.
+---@param enabled boolean True to compress future saves, false to write plain text.
+function LSaveManager:setCompress(enabled) end
+```
 
 #### Example
 
@@ -769,13 +955,23 @@ do
 end
 ```
 
-### `LSaveManager:setSchemaVersion(version: integer)`
+### LSaveManager:setSchemaVersion
+
+`LSaveManager:setSchemaVersion(version: integer)`
 
 Set the current schema version number for saves produced by this game build.
 
 **Parameters**
 
-- `version` (`integer`, required) - Integer schema version (must increase with each breaking data format change).
+- `version` (`integer`, required): Integer schema version (must increase with each breaking data format change).
+
+**Lua API Stub**
+
+```lua
+--- Set the current schema version number for saves produced by this game build.
+---@param version number Integer schema version (must increase with each breaking data format change).
+function LSaveManager:setSchemaVersion(version) end
+```
 
 #### Example
 
@@ -791,13 +987,23 @@ do
 end
 ```
 
-### `LSaveManager:setSummary(summary: string)`
+### LSaveManager:setSummary
+
+`LSaveManager:setSummary(summary: string)`
 
 Set a human-readable summary string stored alongside save metadata (e.g. "Level 5 – Forest").
 
 **Parameters**
 
-- `summary` (`string`, required) - Short description of the current game progress.
+- `summary` (`string`, required): Short description of the current game progress.
+
+**Lua API Stub**
+
+```lua
+--- Set a human-readable summary string stored alongside save metadata (e.g. "Level 5 – Forest").
+---@param summary string Short description of the current game progress.
+function LSaveManager:setSummary(summary) end
+```
 
 #### Example
 
@@ -817,11 +1023,21 @@ do
 end
 ```
 
-### `LSaveManager:type() -> string`
+### LSaveManager:type
+
+`LSaveManager:type() -> string`
 
 Return the type name string for this userdata object.
 
 **Returns**: `string` - Always "LSaveManager".
+
+**Lua API Stub**
+
+```lua
+--- Return the type name string for this userdata object.
+---@return string Always "LSaveManager".
+function LSaveManager:type() end
+```
 
 #### Example
 
@@ -836,15 +1052,26 @@ do
 end
 ```
 
-### `LSaveManager:typeOf(name: string) -> boolean`
+### LSaveManager:typeOf
+
+`LSaveManager:typeOf(name: string) -> boolean`
 
 Check whether this object matches a given type name. Supports "LSaveManager" and "Object".
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to test against.
+- `name` (`string`, required): Type name to test against.
 
 **Returns**: `boolean` - True if the object matches the given type name.
+
+**Lua API Stub**
+
+```lua
+--- Check whether this object matches a given type name. Supports "LSaveManager" and "Object".
+---@param name string Type name to test against.
+---@return boolean True if the object matches the given type name.
+function LSaveManager:typeOf(name) end
+```
 
 #### Example
 
@@ -861,13 +1088,23 @@ do
 end
 ```
 
-### `LSaveManager:unregister(name: string)`
+### LSaveManager:unregister
+
+`LSaveManager:unregister(name: string)`
 
 Remove a previously registered data section by name, cleaning up its collector and restorer callbacks.
 
 **Parameters**
 
-- `name` (`string`, required) - The section name to unregister.
+- `name` (`string`, required): The section name to unregister.
+
+**Lua API Stub**
+
+```lua
+--- Remove a previously registered data section by name, cleaning up its collector and restorer callbacks.
+---@param name string The section name to unregister.
+function LSaveManager:unregister(name) end
+```
 
 #### Example
 
@@ -888,15 +1125,26 @@ do
 end
 ```
 
-### `LSaveManager:update(dt: number) -> boolean`
+### LSaveManager:update
+
+`LSaveManager:update(dt: number) -> boolean`
 
 Advance the auto-save timer by dt seconds. Call this once per frame from your game loop.
 
 **Parameters**
 
-- `dt` (`number`, required) - Delta time in seconds since the last frame.
+- `dt` (`number`, required): Delta time in seconds since the last frame.
 
 **Returns**: `boolean` - True if an auto-save was triggered during this update.
+
+**Lua API Stub**
+
+```lua
+--- Advance the auto-save timer by dt seconds. Call this once per frame from your game loop.
+---@param dt number Delta time in seconds since the last frame.
+---@return boolean True if an auto-save was triggered during this update.
+function LSaveManager:update(dt) end
+```
 
 #### Example
 
@@ -921,21 +1169,27 @@ end
 ```
 
 
-## Examples
+[⬆ back to top](#table-of-contents)
+
+## 💡 Examples
 
 - [save.lua](../blob/main/content/examples/save.lua) - Save/load game state
 
-## Reference Games
+[⬆ back to top](#table-of-contents)
+
+## 🎮 Reference Games
 
 No direct references were found in `content/games/**/main.lua`.
 
-## Related Modules
+[⬆ back to top](#table-of-contents)
 
-- Previous: [[runtime|Module-runtime]]
-- Next: [[scene|Module-scene]]
-- [[ai|Module-ai]] - Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU.
-- [[animation|Module-animation]] - Sprite animation: source-rect changes over time. Imports only math; headless-testable.
-- [[automation|Module-automation]] - Automated input simulation for headless tests, QA replay, recorded sessions.
-- [[ecs|Module-ecs]] - Entity-Component-System: identity / data / behaviour separation for runtime composition.
-- [[i18n|Module-i18n]] - Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*).
-- [[minimap|Module-minimap]] - Grid-based minimap data model: fog of war, tracked objects, pings, viewport overlay.
+## 🔗 Related Modules
+
+- Previous: [runtime](Module-runtime)
+- Next: [scene](Module-scene)
+- [ai](Module-ai) - Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU.
+- [animation](Module-animation) - Sprite animation: source-rect changes over time. Imports only math; headless-testable.
+- [automation](Module-automation) - Automated input simulation for headless tests, QA replay, recorded sessions.
+- [ecs](Module-ecs) - Entity-Component-System: identity / data / behaviour separation for runtime composition.
+- [i18n](Module-i18n) - Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*).
+- [minimap](Module-minimap) - Grid-based minimap data model: fog of war, tracked objects, pings, viewport overlay.

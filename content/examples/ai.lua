@@ -2,458 +2,687 @@
 -- Demonstrates every lurek.ai.* function with realistic game AI usage patterns.
 -- Run: cargo run -- content/examples/ai.lua
 --@api-stub: lurek.ai.newWorld
--- Creates an isolated AI world for agents, blackboards, and custom decision callbacks
+-- Creates an isolated AI world for agents, blackboards, and custom decision callbacks.
 do
-  -- Use an AI world to manage all NPCs in a level. Each world is independent,
-  -- so you can pause dungeon AI while overworld agents keep running.
-  -- Scenario: open-world RPG with separate AI worlds per region.
+  -- Use one AI world per simulation scope, such as one dungeon floor or town map.
+  -- Agents are looked up by stable string names, so save IDs and squad IDs can
+  -- refer to the same NPC without storing the full Lua handle everywhere.
   local world = lurek.ai.newWorld()
-  world:addAgent("guard_01")
-  -- Call world:update(dt) every frame to tick all registered agents.
-  function lurek.process(dt) world:update(dt) end
+  local guard = world:addAgent("guard_01")
+  guard:setPosition(128, 96)
+  guard:setVelocity(0, 0)
+  guard:setDecisionModel("custom")
+  guard:setCustomModel(function(agent, blackboard, dt)
+    blackboard:setNumber("last_dt", dt)
+    blackboard:setString("state", "watching_gate")
+    agent:setPriority(10)
+  end)
+
+  local found_guard = world:getAgent("guard_01")
+  if found_guard then
+    local pos_x, pos_y = found_guard:getPosition()
+    local global_facts = world:getGlobalBlackboard()
+    global_facts:setString("region", "north_gate")
+    lurek.log.info("agent at " .. tostring(pos_x) .. ", " .. tostring(pos_y), "ai")
+  end
+
+  -- Drive the world from the game update loop in a real project.
+  world:update(1 / 60)
+  local agent_count = world:getAgentCount()
+  lurek.log.info("AI agents: " .. tostring(agent_count), "ai")
 end
 --@api-stub: lurek.ai.newBlackboard
--- Creates an empty AI blackboard for typed local facts
+-- Creates an empty AI blackboard for typed local facts.
 do
-  -- Blackboards are key-value stores for AI knowledge. Agents read/write facts
-  -- here so decision logic stays decoupled from game state.
-  -- Scenario: stealth game guard shares "alert_level" across patrol group.
-  local bb = lurek.ai.newBlackboard()
-  bb:setNumber("alert_level", 0.3)
-  bb:setBool("player_seen", false)
+  -- Blackboards keep AI facts typed at the boundary: numbers, booleans, and
+  -- strings are read with defaults so missing keys do not break decision code.
+  local blackboard = lurek.ai.newBlackboard()
+  blackboard:setNumber("alert_level", 0.3)
+  blackboard:setBool("player_seen", false)
+  blackboard:setString("last_sound", "footstep")
+
+  local alert_level = blackboard:getNumber("alert_level", 0)
+  local player_seen = blackboard:getBool("player_seen", false)
+  local last_sound = blackboard:getString("last_sound", "none")
+  if blackboard:has("last_sound") then
+    lurek.log.info(last_sound .. " alert=" .. tostring(alert_level), "ai")
+  end
+
+  local key_count = blackboard:getSize()
+  local keys = blackboard:getKeys()
+  lurek.log.info("blackboard keys=" .. tostring(key_count) .. ", first=" .. tostring(keys[1]), "ai")
+  blackboard:remove("last_sound")
+  blackboard:clear()
 end
 --@api-stub: lurek.ai.newStateMachine
--- Creates an empty finite state machine with Lua-backed states and transitions
+-- Creates an empty finite state machine with Lua-backed states and transitions.
 do
-  -- FSMs are ideal for NPCs with clear, discrete behavior phases.
-  -- Each state has onEnter/onUpdate/onExit callbacks for clean transitions.
-  -- Scenario: guard patrol AI — idle → patrol → alert → chase → attack.
+  -- FSMs are useful when an NPC has a small set of named phases. Register the
+  -- states first, then use transitions or forceState to move between phases.
   local fsm = lurek.ai.newStateMachine()
-  fsm:addState("patrol", { onEnter = function() lurek.log.info("patrolling", "ai") end })
-  fsm:addState("chase", {})
+  fsm:addState("patrol", {
+    onEnter = function() lurek.log.info("guard starts patrol", "ai") end,
+    onExit = function() lurek.log.info("guard leaves patrol", "ai") end,
+  })
+  fsm:addState("chase", {
+    onEnter = function() lurek.log.info("guard starts chase", "ai") end,
+  })
+  fsm:addTransition("patrol", "chase", function() return true end, 5)
   fsm:setInitialState("patrol")
+  local current_state = fsm:getCurrentState() or "none"
+  lurek.log.info("fsm state=" .. current_state, "ai")
+  fsm:forceState("chase")
+  local seconds_in_state = fsm:getTimeInState()
+  lurek.log.info("fsm timer=" .. tostring(seconds_in_state), "ai")
 end
 --@api-stub: lurek.ai.newBehaviorTree
--- Creates an empty behavior tree that can receive a root node
+-- Creates an empty behavior tree that can receive a root node.
 do
-  -- Behavior trees compose complex AI from simple reusable nodes.
-  -- Set a root node, then call bt:tick(dt) each frame to evaluate.
-  -- Scenario: boss phase transitions — check HP, pick attack pattern, execute.
-  local bt = lurek.ai.newBehaviorTree()
+  -- The exposed tree object stores a root node and reports debug state. Build
+  -- the node graph with LBTNode methods, then assign the root with setRoot.
+  local behavior_tree = lurek.ai.newBehaviorTree()
   local root = lurek.ai.newSequence()
   root:addChild(lurek.ai.newAction(function() return "success" end))
-  bt:setRoot(root)
+  behavior_tree:setRoot(root)
+  local debug_state = behavior_tree:getDebugState()
+  lurek.log.info(
+    "bt nodes=" .. tostring(debug_state.node_count) .. ", status=" .. behavior_tree:getLastStatus(),
+    "ai"
+  )
 end
 --@api-stub: lurek.ai.newSelector
--- Creates a behavior tree selector node with no children
+-- Creates a behavior tree selector node with no children.
 do
-  -- A selector tries each child until one succeeds (OR logic).
-  -- Use it for fallback behaviors: try attack, else flee, else idle.
-  -- Scenario: enemy AI picks first viable action from priority list.
-  local sel = lurek.ai.newSelector()
-  sel:addChild(lurek.ai.newCondition(function() return false end))
-  sel:addChild(lurek.ai.newAction(function() return "success" end))
+  -- A selector models fallback priority. Child handles are moved into the
+  -- parent, so create fresh nodes for each composite branch.
+  local selector = lurek.ai.newSelector()
+  selector:addChild(lurek.ai.newCondition(function() return false end))
+  selector:addChild(lurek.ai.newAction(function() return "success" end))
+  local child_count = selector:getChildCount()
+  local node_type = selector:getNodeType()
+  selector:reset()
+  lurek.log.info(node_type .. " children=" .. tostring(child_count), "ai")
 end
 --@api-stub: lurek.ai.newSequence
--- Creates a behavior tree sequence node with no children
+-- Creates a behavior tree sequence node with no children.
 do
-  -- A sequence runs children in order, stopping on first failure (AND logic).
-  -- Use it for multi-step tasks: check condition → move → attack.
-  -- Scenario: melee NPC must be in range AND have stamina before swinging.
-  local seq = lurek.ai.newSequence()
-  seq:addChild(lurek.ai.newCondition(function() return true end))
-  seq:addChild(lurek.ai.newAction(function() return "success" end))
+  -- A sequence is useful for ordered requirements: pass every condition, then
+  -- run the action. Any failing child stops the sequence.
+  local sequence = lurek.ai.newSequence()
+  sequence:addChild(lurek.ai.newCondition(function() return true end))
+  sequence:addChild(lurek.ai.newAction(function() return "success" end))
+  local behavior_tree = lurek.ai.newBehaviorTree()
+  behavior_tree:setRoot(sequence)
+  local debug_state = behavior_tree:getDebugState()
+  lurek.log.info("sequence node count=" .. tostring(debug_state.node_count), "ai")
 end
 --@api-stub: lurek.ai.newParallel
--- Creates a behavior tree parallel node with optional success and failure policies
+-- Creates a behavior tree parallel node with optional success and failure policies.
 do
-  -- Parallel nodes tick all children simultaneously each frame.
-  -- Policies: "require_all" = all must succeed; "require_one" = one failure aborts.
-  -- Scenario: NPC walks AND talks — both actions run concurrently.
-  local par = lurek.ai.newParallel("require_all", "require_one")
-  par:addChild(lurek.ai.newAction(function() return "success" end))
-  par:addChild(lurek.ai.newAction(function() return "running" end))
+  -- Policy strings are camelCase in the engine: requireAll or requireOne.
+  -- Unknown policy names fall back to requireOne, so spell them exactly.
+  local parallel = lurek.ai.newParallel("requireAll", "requireOne")
+  parallel:addChild(lurek.ai.newAction(function() return "success" end))
+  parallel:addChild(lurek.ai.newAction(function() return "running" end))
+  parallel:setSuccessPolicy("requireAll")
+  parallel:setFailurePolicy("requireOne")
+  lurek.log.info("parallel children=" .. tostring(parallel:getChildCount()), "ai")
 end
 --@api-stub: lurek.ai.newInverter
--- Creates a behavior tree inverter decorator with an empty sequence child
+-- Creates a behavior tree inverter decorator with an empty sequence child.
 do
-  -- Inverter flips child result: success→failure, failure→success.
-  -- Useful for negating conditions without writing inverse logic.
-  -- Scenario: "NOT player_visible" check reuses the same visibility condition.
-  local inv = lurek.ai.newInverter()
-  inv:setChild(lurek.ai.newCondition(function() return false end))
-  local bt = lurek.ai.newBehaviorTree(); bt:setRoot(inv)
+  -- Inverter flips success and failure while leaving running unchanged. Use it
+  -- to express "not visible" without making a second condition function.
+  local inverter = lurek.ai.newInverter()
+  inverter:setChild(lurek.ai.newCondition(function() return false end))
+  local behavior_tree = lurek.ai.newBehaviorTree()
+  behavior_tree:setRoot(inverter)
+  lurek.log.info("inverter root status=" .. behavior_tree:getLastStatus(), "ai")
 end
 --@api-stub: lurek.ai.newRepeater
--- Creates a behavior tree repeater decorator with an optional repeat count
+-- Creates a behavior tree repeater decorator with an optional repeat count.
 do
-  -- Repeater re-runs its child N times (or infinitely if count is nil).
-  -- The count parameter controls how many iterations before returning success.
-  -- Scenario: fire 3 arrows in burst — repeat the "shoot" action 3 times.
-  local rep = lurek.ai.newRepeater(3)
-  rep:setChild(lurek.ai.newAction(function() return "success" end))
-  local bt = lurek.ai.newBehaviorTree(); bt:setRoot(rep)
+  -- The count is stored on the node. A count of zero is the engine's indefinite
+  -- repeat mode; use a positive count for bounded actions.
+  local repeater = lurek.ai.newRepeater(3)
+  repeater:setChild(lurek.ai.newAction(function() return "success" end))
+  repeater:setCount(3)
+  local repeat_count = repeater:getCount()
+  local behavior_tree = lurek.ai.newBehaviorTree()
+  behavior_tree:setRoot(repeater)
+  lurek.log.info("repeat count=" .. tostring(repeat_count), "ai")
 end
 --@api-stub: lurek.ai.newSucceeder
--- Creates a behavior tree succeeder decorator with an empty sequence child
+-- Creates a behavior tree succeeder decorator with an empty sequence child.
 do
-  -- Succeeder always returns success regardless of child result.
-  -- Use it for optional actions that should never abort a sequence.
-  -- Scenario: "try to taunt" in a sequence — even if taunt fails, continue.
-  local suc = lurek.ai.newSucceeder()
-  suc:setChild(lurek.ai.newAction(function() return "failure" end))
-  local bt = lurek.ai.newBehaviorTree(); bt:setRoot(suc)
+  -- Succeeder is a decorator for optional work. It lets a larger sequence keep
+  -- moving even when the child action reports failure.
+  local succeeder = lurek.ai.newSucceeder()
+  succeeder:setChild(lurek.ai.newAction(function() return "failure" end))
+  local behavior_tree = lurek.ai.newBehaviorTree()
+  behavior_tree:setRoot(succeeder)
+  lurek.log.info("succeeder type=" .. succeeder:getNodeType(), "ai")
 end
 --@api-stub: lurek.ai.newAction
--- Creates a behavior tree action leaf backed by a Lua callback
+-- Creates a behavior tree action leaf backed by a Lua callback.
 do
-  -- Action nodes do the actual work. The callback receives dt and must
-  -- return "success", "failure", or "running" (for multi-frame actions).
-  -- Scenario: "move_to_cover" returns "running" until the NPC arrives.
-  local act = lurek.ai.newAction(function(dt)
+  -- Action callbacks return one of the behavior-tree status strings. Unknown
+  -- strings are parsed by the engine as running.
+  local action = lurek.ai.newAction(function()
+    local reached_cover = true
+    if reached_cover then
       return "success"
+    end
+    return "running"
   end)
+  lurek.log.info("action node type=" .. action:getNodeType(), "ai")
 end
 --@api-stub: lurek.ai.newCondition
--- Creates a behavior tree condition leaf backed by a Lua callback
+-- Creates a behavior tree condition leaf backed by a Lua callback.
 do
-  -- Condition nodes test a predicate — return true for success, false for failure.
-  -- They never return "running"; use them as guards before action nodes.
-  -- Scenario: check "is HP below 30%?" before triggering heal behavior.
-  local hp_low = lurek.ai.newCondition(function() return true end)
-  local seq = lurek.ai.newSequence()
-  seq:addChild(hp_low)
+  -- Conditions return a boolean. True becomes success, false becomes failure,
+  -- which makes conditions a good fit for cheap gate checks.
+  local hit_points = 24
+  local hit_points_low = lurek.ai.newCondition(function() return hit_points < 30 end)
+  local sequence = lurek.ai.newSequence()
+  sequence:addChild(hit_points_low)
+  sequence:addChild(lurek.ai.newAction(function() return "success" end))
+  lurek.log.info("condition tree children=" .. tostring(sequence:getChildCount()), "ai")
 end
 --@api-stub: lurek.ai.newSteeringManager
--- Creates an empty steering manager with support for built-in and custom behaviors
+-- Creates an empty steering manager with support for built-in and custom behaviors.
 do
-  -- Steering combines movement behaviors (seek, flee, wander) into one force.
-  -- Weight parameter (last arg) controls how much each behavior contributes.
-  -- Scenario: zombie wanders randomly but seeks the player when nearby.
-  local sm = lurek.ai.newSteeringManager()
-  sm:addSeek(400, 300, 1.0)
-  sm:addWander(20, 40, 5, 0.3)
+  -- Steering combines behaviors into a single force. Weights let a designer
+  -- make goal seeking stronger than noise from wander, flee, or flocking.
+  local steering = lurek.ai.newSteeringManager()
+  steering:addSeek(400, 300, 1.0)
+  steering:addWander(20, 40, 5, 0.3)
+  steering:setCombineMode("weighted")
+  local force_x, force_y = steering:calculate(120, 80, 0, 0, 140, 240, 1 / 60)
+  local last_x, last_y = steering:getLastSteering()
+  lurek.log.info(
+    "steering=" .. tostring(force_x) .. "," .. tostring(force_y) .. " last=" .. tostring(last_x) .. "," .. tostring(last_y),
+    "ai"
+  )
 end
 --@api-stub: LSteeringManager:setPath
 -- Sets the path of this steering manager.
 do
-  -- Assigns a waypoint path for the steering manager to follow.
-  -- Parameters: path, lookahead distance, weight. Larger lookahead = smoother curves.
-  -- Scenario: RTS unit follows A* path with smooth cornering.
-  local grid = lurek.pathfind.newPathGrid(10, 10, 32)
-  local path = grid:findPath(1, 1, 10, 10)
-  local sm = lurek.ai.newSteeringManager()
-  if path then
-    sm:setPath(path, 12.0, 1.0)
-    if sm:hasPath() then
-      local fx, fy = sm:calculate(0, 0, 0, 0, 120, 240, 1 / 60)
-      lurek.log.info("path force: " .. tostring(fx) .. ", " .. tostring(fy), "ai")
-    end
+  -- setPath expects an array table of waypoints with numeric x and y fields.
+  -- reach_radius controls how close the agent must get before advancing.
+  local path = {
+    { x = 16, y = 16 },
+    { x = 96, y = 32 },
+    { x = 160, y = 96 },
+  }
+  local steering = lurek.ai.newSteeringManager()
+  steering:setPath(path, 12.0, 1.0)
+  if steering:hasPath() then
+    local force_x, force_y = steering:calculate(0, 0, 0, 0, 120, 240, 1 / 60)
+    lurek.log.info("path force: " .. tostring(force_x) .. ", " .. tostring(force_y), "ai")
   end
 end
 --@api-stub: LSteeringManager:getPathProgress
 -- Returns the path progress of this steering manager.
 do
-  -- Returns current waypoint index and total count — track how far along the path.
-  -- Use this to trigger events at waypoints (e.g., stop at checkpoint 3).
-  -- Scenario: courier NPC delivers packages at specific path milestones.
-  local sm = lurek.ai.newSteeringManager()
-  sm:setPath({ { x = 16, y = 16 }, { x = 48, y = 16 } })
-  local idx, total = sm:getPathProgress()
-  lurek.log.info("path progress " .. tostring(idx) .. "/" .. tostring(total), "ai")
-  sm:clearPath()
+  -- Progress is reported as one-based current waypoint index and total count.
+  -- A UI can display this as a patrol checkpoint meter.
+  local steering = lurek.ai.newSteeringManager()
+  steering:setPath({ { x = 16, y = 16 }, { x = 48, y = 16 } }, 8, 1)
+  local waypoint_index, waypoint_total = steering:getPathProgress()
+  lurek.log.info("path progress " .. tostring(waypoint_index) .. "/" .. tostring(waypoint_total), "ai")
+  steering:clearPath()
 end
 --@api-stub: lurek.ai.newQLearner
--- Creates a Q-learner with fixed state and action counts
+-- Creates a Q-learner with fixed state and action counts.
 do
-  -- Q-learning trains NPC behavior through reward signals over time.
-  -- Parameters: state_count, action_count. Learning rate controls adaptation speed.
-  -- Scenario: enemy learns which attack patterns work against the player.
-  local ql = lurek.ai.newQLearner(16, 4)
-  ql:setLearningRate(0.1)
-  ql:setExplorationRate(0.2)
+  -- State and action indexes are one-based in Lua. Store rewards after each
+  -- transition, then choose future actions through the exploration policy.
+  local learner = lurek.ai.newQLearner(16, 4)
+  learner:setLearningRate(0.1)
+  learner:setDiscountFactor(0.95)
+  learner:setExplorationRate(0.2)
+  learner:setExplorationDecay(0.99)
+  local chosen_action = learner:chooseAction(1)
+  learner:learn(1, chosen_action, 1.0, 2)
+  local best_action = learner:bestAction(1)
+  local q_value = learner:getQValue(1, best_action)
+  learner:endEpisode()
+  local saved_state = learner:serialize()
+  lurek.log.info("q=" .. tostring(q_value) .. " saved=" .. tostring(#saved_state), "ai")
 end
 --@api-stub: lurek.ai.newUtilityAI
--- Creates an empty utility AI action scorer
+-- Creates an empty utility AI action scorer.
 do
-  -- Utility AI scores all possible actions and picks the highest-value one.
-  -- Each action has a scoring function (returns 0..1) and a weight multiplier.
-  -- Scenario: survival NPC weighs eat vs sleep vs flee based on current needs.
-  local uai = lurek.ai.newUtilityAI()
-  uai:addAction("flee", function() return 0.8 end, 1.0)
-  uai:addAction("attack", function() return 0.4 end, 1.0)
+  -- Utility AI compares actions by score. Add considerations when one action
+  -- needs multiple inputs, such as danger, hunger, distance, or ammo.
+  local utility = lurek.ai.newUtilityAI()
+  local danger = 0.8
+  local stamina = 0.5
+  utility:addAction("flee", function() return danger end, 1.0)
+  utility:addAction("attack", function() return 0.4 end, 1.0)
+  utility:addConsideration("attack", "stamina", function() return stamina end, "linear", 1, 0, 0, 0.5)
+  local selected_action = utility:evaluate() or "none"
+  lurek.log.info(
+    "utility action=" .. tostring(selected_action) .. ", count=" .. tostring(utility:getActionCount()),
+    "ai"
+  )
 end
 --@api-stub: lurek.ai.newDialogueAI
--- Creates an empty dialogue selector for weighted topics and branches
+-- Creates an empty dialogue selector for weighted topics and branches.
 do
-  -- DialogueAI picks conversation topics based on game state and utility scores.
-  -- Topics can require FSM state or BT status as prerequisites.
-  -- Scenario: tavern NPC shifts from smalltalk to quest hints when trust is high.
-  local d = lurek.ai.newDialogueAI()
-  local t = d:type()
-  local _is_dialogue = d:typeOf("DialogueAI")
-  lurek.log.info("dialogue type: " .. tostring(t), "ai")
-  d:addTopic("smalltalk", 0.2, nil, nil, "smalltalk_score")
-  d:addTopic("combat", 0.2, "combat", "success", "combat_score")
-  d:addBranch("combat", "taunt", 0.3, "combat", nil, "taunt_score")
-  d:addBranch("combat", "threat", 0.2, "combat", nil, "threat_score")
-  d:setFSMState("combat")
-  d:setBTStatus("success")
-  d:setUtilityScore("smalltalk_score", 0.1)
-  d:setUtilityScore("combat_score", 0.9)
-  d:setUtilityScore("taunt_score", 0.6)
-  d:setUtilityScore("threat_score", 0.4)
+  -- Dialogue topics can be weighted by utility keys and gated by the current
+  -- FSM state or behavior-tree status.
+  local dialogue = lurek.ai.newDialogueAI()
+  local dialogue_type = dialogue:type()
+  local is_dialogue = dialogue:typeOf("DialogueAI")
+  lurek.log.info("dialogue type: " .. tostring(dialogue_type) .. ", ok=" .. tostring(is_dialogue), "ai")
+  dialogue:addTopic("smalltalk", 0.2, nil, nil, "smalltalk_score")
+  dialogue:addTopic("combat", 0.2, "combat", "success", "combat_score")
+  dialogue:addBranch("combat", "taunt", 0.3, "combat", nil, "taunt_score")
+  dialogue:addBranch("combat", "threat", 0.2, "combat", nil, "threat_score")
+  dialogue:setFSMState("combat")
+  dialogue:setBTStatus("success")
+  dialogue:setUtilityScore("smalltalk_score", 0.1)
+  dialogue:setUtilityScore("combat_score", 0.9)
+  dialogue:setUtilityScore("taunt_score", 0.6)
+  dialogue:setUtilityScore("threat_score", 0.4)
 
-  local topic = d:selectTopic()
+  local topic = dialogue:selectTopic()
   if topic then
-    local branch = d:selectBranch(topic)
+    local branch = dialogue:selectBranch(topic)
     lurek.log.info("dialogue: " .. tostring(topic) .. "/" .. tostring(branch), "ai")
   end
-  local topic_count = d:getTopicCount()
+  local topic_count = dialogue:getTopicCount()
   lurek.log.info("dialogue topics: " .. tostring(topic_count), "ai")
-  d:clearUtilityScores()
+  dialogue:clearUtilityScores()
 end
 --@api-stub: lurek.ai.newGOAPPlanner
--- Creates an empty GOAP planner for boolean world-state planning
+-- Creates an empty GOAP planner for boolean world-state planning.
 do
-  -- GOAP finds action sequences to reach a goal from the current world state.
-  -- Actions have preconditions, effects, and cost — the planner picks cheapest path.
-  -- Scenario: squad coordination — plan "get_ammo → reload → suppress" automatically.
+  -- GOAP builds a list of action names from boolean world-state facts. Define
+  -- preconditions, effects, and the desired goal state before calling plan.
   local planner = lurek.ai.newGOAPPlanner()
+  planner:addAction("find_food", 1.0, function() lurek.log.info("finding food", "ai") end)
+  planner:setPrecondition("find_food", "has_food", false)
+  planner:setEffect("find_food", "has_food", true)
   planner:addAction("eat", 1.0, function() lurek.log.info("eating", "ai") end)
+  planner:setPrecondition("eat", "has_food", true)
+  planner:setEffect("eat", "hungry", false)
   planner:addGoal("not_hungry", 1.0)
+  planner:setGoalState("not_hungry", "hungry", false)
+  planner:setMaxIterations(128)
+  local plan = planner:plan({ hungry = true, has_food = false }, 8)
+  lurek.log.info("goap steps=" .. tostring(#plan) .. ", actions=" .. tostring(planner:getActionCount()), "ai")
 end
 --@api-stub: lurek.ai.newInfluenceMap
--- Creates a grid influence map with the supplied cell dimensions and world cell size
+-- Creates a grid influence map with the supplied cell dimensions and world cell size.
 do
-  -- Influence maps let AI reason about spatial control (threat zones, territory).
-  -- Parameters: grid_w, grid_h, cell_size. Layers separate concerns (threat vs resources).
-  -- Scenario: RTS units avoid high-threat cells and prefer resource-rich areas.
-  local infl = lurek.ai.newInfluenceMap(64, 64, 16)
-  infl:addLayer("threat")
-  infl:stampInfluence("threat", 320, 240, 80, 1.0, 1.0)
+  -- Influence maps store named layers over grid cells. Use world coordinates
+  -- for radial stamps and one-based cell coordinates for direct cell reads.
+  local influence = lurek.ai.newInfluenceMap(64, 64, 16)
+  influence:addLayer("threat")
+  influence:addLayer("resources")
+  influence:stampInfluence("threat", 320, 240, 80, 1.0, 1.0)
+  influence:setInfluence("resources", 10, 12, 0.75)
+  influence:propagate("threat", 0.4)
+  influence:decay("threat", 0.95)
+  local threat_value = influence:getInfluence("threat", 20, 15)
+  local max_x, max_y = influence:getMaxPosition("resources")
+  local samples = influence:queryRect("threat", 256, 192, 128, 128)
+  lurek.log.info(
+    "influence=" .. tostring(threat_value) .. " max=" .. tostring(max_x) .. "," .. tostring(max_y) .. " query=" .. tostring(samples),
+    "ai"
+  )
 end
 --@api-stub: lurek.ai.newSquad
--- Creates an empty named squad
+-- Creates an empty named squad.
 do
-  -- Squads group agents for coordinated tactics (flanking, covering fire).
-  -- Formation type and spacing control how members position relative to the leader.
-  -- Scenario: tactical shooter — 4-man squad holds wedge formation while advancing.
+  -- Squads group named agents or game objects for formation logic. Store the
+  -- leader by name, then ask each member for its formation target.
   local squad = lurek.ai.newSquad("alpha")
   squad:addMember("guard_01")
+  squad:addMember("guard_02")
+  squad:setLeader("guard_01")
   squad:setFormation("wedge", 32)
+  local target_x, target_y = squad:getFormationPosition(2, 200, 120)
+  local members = squad:getMembers()
+  local squad_blackboard = squad:getBlackboard()
+  squad_blackboard:setString("order", "hold_position")
+  lurek.log.info(
+    squad:getName() .. " leader=" .. tostring(squad:getLeader()) .. " members=" .. tostring(#members) .. " pos=" .. tostring(target_x) .. "," .. tostring(target_y),
+    "ai"
+  )
 end
 --@api-stub: lurek.ai.newCommandQueue
--- Creates an empty command queue for callback-backed AI commands
+-- Creates an empty command queue for callback-backed AI commands.
 do
-  -- Command queues serialize AI actions so they execute one-at-a-time in order.
-  -- Each command has a name, callback, and optional params table for context.
-  -- Scenario: boss fight — queue "roar", "charge", "slam" as sequential phases.
-  local q = lurek.ai.newCommandQueue()
-  q:enqueue("move", function() end, { targetX = 200, targetY = 100 })
-  q:enqueue("attack", function() end, { priority = 5 })
+  -- Queues store command kind, callback, target, priority, and interrupt flag.
+  -- Game code can inspect the current target and decide which callback to run.
+  local queue = lurek.ai.newCommandQueue()
+  queue:enqueue("move", function() lurek.log.info("move command", "ai") end, {
+    targetX = 200,
+    targetY = 100,
+    priority = 1,
+    interruptible = true,
+  })
+  queue:pushFront("dodge", function() lurek.log.info("dodge command", "ai") end, {
+    targetX = 160,
+    targetY = 90,
+    priority = 10,
+    interruptible = false,
+  })
+  local target_x, target_y = queue:getCurrentTarget()
+  lurek.log.info("commands=" .. tostring(queue:getCount()) .. " target=" .. tostring(target_x) .. "," .. tostring(target_y), "ai")
+  queue:replace("recover", function() end, { priority = 2 })
+  queue:clear()
+  local empty = queue:isEmpty()
+  lurek.log.info("queue empty=" .. tostring(empty), "ai")
 end
 --@api-stub: lurek.ai.newTraitProfile
--- Creates an empty trait profile with modifier support
+-- Creates an empty trait profile with modifier support.
 do
-  -- Trait profiles store personality values (0..1) that influence AI decisions.
-  -- Modifiers can temporarily shift traits (e.g., rage buff increases aggression).
-  -- Scenario: cowardly goblin flees at 50% HP; brave knight fights to the end.
+  -- Traits are named numeric personality or tuning values. Modifiers let a
+  -- temporary event change an effective value without changing the base value.
   local traits = lurek.ai.newTraitProfile()
   traits:set("aggression", 0.7)
   traits:set("courage", 0.4)
+  traits:addModifier("aggression", 0.2, 2.0, "combat_shout")
+  traits:update(1 / 60)
+  local base_aggression = traits:getBase("aggression")
+  local effective_aggression = traits:get("aggression")
+  local archetype = traits:archetype() or "unclassified"
+  lurek.log.info(
+    "traits=" .. tostring(traits:traitCount()) .. " base=" .. tostring(base_aggression) .. " effective=" .. tostring(effective_aggression) .. " archetype=" .. archetype,
+    "ai"
+  )
+  traits:removeModifiers("combat_shout")
 end
 --@api-stub: lurek.ai.newStimulusWorld
--- Creates an empty stimulus world for visual and auditory stimulus records
+-- Creates an empty stimulus world for visual and auditory stimulus records.
 do
-  -- Stimulus world tracks sensory events (sounds, sights) that agents can perceive.
-  -- Auditory params: x, y, loudness, radius, decay_rate, tag. Stimuli fade over time.
-  -- Scenario: stealth game — footsteps create auditory stimuli that alert guards.
-  local sw = lurek.ai.newStimulusWorld()
-  sw:addAuditory(100, 200, 1.0, 150, 0.5, "footstep")
-  function lurek.process(dt) sw:update(dt) end
+  -- Stimuli are records that sensory AI can query or mirror into blackboards.
+  -- Visual stimuli persist until removed; auditory stimuli decay during update.
+  local stimuli = lurek.ai.newStimulusWorld()
+  local sight_id = stimuli:addVisual(320, 240, 1.0, 120, "player_seen")
+  local sound_id = stimuli:addAuditory(100, 200, 0.8, 150, 0.5, "footstep")
+  stimuli:update(1 / 60)
+  lurek.log.info("stimuli=" .. tostring(stimuli:count()), "ai")
+  stimuli:remove(sight_id)
+  stimuli:remove(sound_id)
+  stimuli:clear()
 end
 --@api-stub: lurek.ai.newContextSteering
--- Creates a context steering model with the requested directional slot count
+-- Creates a context steering model with the requested directional slot count.
 do
-  -- Context steering uses directional slots to blend seek/avoid into one smooth heading.
-  -- More slots = finer direction resolution but slightly higher cost. 8-16 is typical.
-  -- Scenario: crowd of zombies navigating around obstacles toward the player.
-  local cs = lurek.ai.newContextSteering(16)
-  cs:addSeekTarget(500, 300, 1.0)
-  cs:addAvoidPoint(250, 200, 64, 1.0)
+  -- Context steering evaluates directional slots and returns a chosen direction.
+  -- Use more slots for smoother direction choice; zero would select the default.
+  local steering = lurek.ai.newContextSteering(16)
+  steering:addSeekTarget(500, 300, 1.0)
+  steering:addAvoidPoint(250, 200, 64, 1.0)
+  steering:addAvoidBounds(0, 0, 800, 600, 24, 0.5)
+  steering:addWander(0.2, 0.15)
+  local dir_x, dir_y = steering:evaluate(220, 180, 0, 0)
+  lurek.log.info("context dir=" .. tostring(dir_x) .. "," .. tostring(dir_y) .. " slots=" .. tostring(steering:slotCount()), "ai")
+  steering:clearBehaviors()
 end
 --@api-stub: lurek.ai.newNeedSystem
--- Creates an empty need system for decaying named needs
+-- Creates an empty need system for decaying named needs.
 do
-  -- Need system models Sims-style drives that decay over time and drive behavior.
-  -- Parameters per need: name, decay_rate, threshold, weight. Highest urgency wins.
-  -- Scenario: survival game NPC eats when hunger > threshold, sleeps when energy low.
+  -- Needs accumulate urgency through update, then game logic can satisfy the
+  -- chosen need after an action completes.
   local needs = lurek.ai.newNeedSystem()
   needs:addNeed("hunger", 0.05, 0.6, 1.5)
-  function lurek.process(dt) needs:update(dt) end
+  needs:addNeed("rest", 0.02, 0.4, 1.0)
+  needs:update(10.0)
+  local urgent_need = needs:mostUrgent() or "none"
+  local hunger_value = needs:valueOf("hunger")
+  needs:satisfy("hunger", 0.25)
+  lurek.log.info("need=" .. urgent_need .. " hunger=" .. tostring(hunger_value), "ai")
 end
 --@api-stub: lurek.ai.newAIDirector
--- Creates an AI director for tension, phase, and pacing factor calculations
+-- Creates an AI director for tension, phase, and pacing factor calculations.
 do
-  -- AI Director manages game pacing by tracking tension and spawning enemies accordingly.
-  -- Tension 0..1 ramps up during combat, decays during rest — like Left 4 Dead's director.
-  -- Scenario: horde game — director spawns harder waves when tension drops too low.
-  local dir = lurek.ai.newAIDirector()
-  dir:setTension(0.4)
-  function lurek.process(dt) dir:update(dt) end
+  -- The director turns tension into spawn, loot, and ambience factors that a
+  -- game can sample while building encounters.
+  local director = lurek.ai.newAIDirector()
+  director:setTension(0.4)
+  director:pushEvent(0.2)
+  director:update(1 / 60)
+  local phase = director:phase()
+  local spawn_factor = director:spawnRateFactor()
+  local loot_factor = director:lootFactor()
+  local ambience = director:ambientIntensity()
+  lurek.log.info("phase=" .. phase .. " spawn=" .. tostring(spawn_factor) .. " loot=" .. tostring(loot_factor) .. " amb=" .. tostring(ambience), "ai")
+  director:reset()
 end
 --@api-stub: lurek.ai.newHTNDomain
--- Creates an empty hierarchical task network domain
+-- Creates an empty hierarchical task network domain.
 do
-  -- HTN decomposes high-level goals into ordered primitive tasks via methods.
-  -- Primitives have preconditions, effects, and deletions on world state.
-  -- Scenario: "defeat_enemy" decomposes into "approach → aim → fire → confirm_kill".
-  local d = lurek.ai.newHTNDomain()
-  d:addPrimitive("attack", { "has_weapon" }, { "enemy_dead" }, {})
+  -- HTN domains decompose compound tasks into primitive task names. State facts
+  -- are numeric in the Lua binding, so use 1.0 for present facts.
+  local domain = lurek.ai.newHTNDomain()
+  domain:addPrimitive("approach", { "enemy_visible" }, { "in_range" }, {})
+  domain:addPrimitive("attack", { "has_weapon", "in_range" }, { "enemy_defeated" }, {})
+  domain:addCompound("defeat_enemy", {
+    { name = "armed_attack", preconditions = { "has_weapon" }, sub_tasks = { "approach", "attack" } },
+  })
+  local plan = domain:plan("defeat_enemy", { enemy_visible = 1.0, has_weapon = 1.0 })
+  local plan_count = plan and #plan or 0
+  lurek.log.info("htn tasks=" .. tostring(domain:taskCount()) .. " plan=" .. tostring(plan_count), "ai")
 end
 --@api-stub: lurek.ai.newMCTSEngine
--- Creates a Monte Carlo tree search engine with deterministic configuration
+-- Creates a Monte Carlo tree search engine with deterministic configuration.
 do
-  -- MCTS simulates random playouts to find strong moves in large decision spaces.
-  -- Parameters: iterations, exploration_c, max_depth, seed. More iterations = stronger play.
-  -- Scenario: board game AI (chess, Go) or turn-based tactical combat decision making.
+  -- MCTS asks Lua for actions, successor states, and a score. Keep callbacks
+  -- deterministic when using a fixed seed so tests and replays are repeatable.
   local mcts = lurek.ai.newMCTSEngine(200, 1.41, 32, 12345)
-  local actions = function(s) return { 1, 2, 3 } end
-  local apply = function(s, a) return s + a end
-  local eval = function(s) return s % 7 end
+  local get_actions = function(state) return { 1, 2, 3 } end
+  local apply_action = function(state, action) return state + action end
+  local evaluate_state = function(state) return state % 7 end
+  local selected_action = mcts:search(0, get_actions, apply_action, evaluate_state)
+  lurek.log.info("mcts action=" .. tostring(selected_action), "ai")
 end
 --@api-stub: lurek.ai.newEmotionModel
--- Creates an empty emotion model for named decaying emotion values
+-- Creates an empty emotion model for named decaying emotion values.
 do
-  -- Emotion model tracks named feelings that rise from events and decay over time.
-  -- Parameters per emotion: name, initial_value, decay_rate, max_value.
-  -- Scenario: NPC's fear builds when attacked, causing flee behavior at high levels.
-  local em = lurek.ai.newEmotionModel()
-  em:add("fear", 0.0, 0.1, 0.2)
-  em:add("anger", 0.0, 0.05, 0.15)
+  -- Emotions have a resting value, decay rate, and active threshold. Trigger
+  -- events raise values; update moves them back toward rest.
+  local emotions = lurek.ai.newEmotionModel()
+  emotions:add("fear", 0.0, 0.1, 0.2)
+  emotions:add("anger", 0.0, 0.05, 0.15)
+  emotions:trigger("fear", 0.7)
+  emotions:update(1 / 60)
+  local dominant = emotions:dominant() or "none"
+  local fear_value = emotions:get("fear")
+  local fear_active = emotions:isActive("fear")
+  lurek.log.info("emotion=" .. dominant .. " fear=" .. tostring(fear_value) .. " active=" .. tostring(fear_active), "ai")
+  emotions:reset()
 end
 --@api-stub: lurek.ai.newORCASolver
--- Creates an ORCA avoidance solver with the supplied prediction horizon
+-- Creates an ORCA avoidance solver with the supplied prediction horizon.
 do
-  -- ORCA computes collision-free velocities for crowds without explicit pathfinding.
-  -- Prediction horizon (seconds) controls how far ahead agents anticipate collisions.
-  -- Scenario: 200 villagers navigating a market square without overlapping each other.
+  -- ORCA stores its own crowd agents by zero-based index. Set preferred
+  -- velocities, compute, then read safe velocities back into movement code.
   local orca = lurek.ai.newORCASolver(2.0)
-  local idx = orca:addAgent(100, 100, 16, 80)
-  orca:setPreferredVelocity(idx, 50, 0)
+  local first_agent = orca:addAgent(100, 100, 16, 80)
+  local second_agent = orca:addAgent(140, 100, 16, 80)
+  orca:setPreferredVelocity(first_agent, 50, 0)
+  orca:setPreferredVelocity(second_agent, -50, 0)
+  orca:setPosition(second_agent, 136, 100)
+  orca:compute(1 / 60)
+  local safe_x, safe_y = orca:getSafeVelocity(first_agent)
+  lurek.log.info("orca agents=" .. tostring(orca:agentCount()) .. " safe=" .. tostring(safe_x) .. "," .. tostring(safe_y), "ai")
 end
 --@api-stub: lurek.ai.newNeuralNet
--- Creates an empty feed-forward neural network
+-- Creates an empty feed-forward neural network.
 do
-  -- Feed-forward neural net maps inputs to outputs through weighted layers.
-  -- addLayer(inputs, outputs, activation) — "relu", "sigmoid", "softmax" supported.
-  -- Scenario: NPC learns to dodge projectiles from sensor inputs (distances, angles).
-  local nn = lurek.ai.newNeuralNet()
-  nn:addLayer(4, 8, "relu")
-  nn:addLayer(8, 2, "softmax")
+  -- Add layers before running a forward pass. Weights are flat arrays in engine
+  -- layer order, which is useful for genetic algorithms or save data.
+  local network = lurek.ai.newNeuralNet()
+  network:addLayer(4, 8, "relu")
+  network:addLayer(8, 2, "softmax")
+  local weights = network:getWeights()
+  local weights_ok = network:setWeights(weights)
+  local output = network:forward({ 0.2, 0.6, 0.1, 1.0 })
+  lurek.log.info(
+    "net layers=" .. tostring(network:layerCount()) .. " params=" .. tostring(network:paramCount()) .. " ok=" .. tostring(weights_ok) .. " out=" .. tostring(output[1] or 0),
+    "ai"
+  )
 end
 --@api-stub: lurek.ai.newGeneticAlgorithm
--- Creates a genetic algorithm population with fixed chromosome length
+-- Creates a genetic algorithm population with fixed chromosome length.
 do
-  -- GA evolves a population of solutions by selection, crossover, and mutation.
-  -- Parameters: population_size, chromosome_length, seed. Set fitness per individual.
-  -- Scenario: evolving enemy stat distributions that challenge the player optimally.
-  local ga = lurek.ai.newGeneticAlgorithm(50, 16, 42)
-  ga:setFitness(1, 0.7)
-  function lurek.process(dt) ga:evolve() end
+  -- Genetic algorithms use zero-based chromosome indexes in Lua. Set fitness
+  -- values for evaluated candidates before calling evolve.
+  local genetic = lurek.ai.newGeneticAlgorithm(12, 6, 42)
+  genetic:setFitness(0, 0.7)
+  genetic:setFitness(1, 0.4)
+  local genes = genetic:getGenes(0)
+  local best_before = genetic:bestGenes()
+  genetic:evolve()
+  lurek.log.info("ga pop=" .. tostring(genetic:popSize()) .. " gen=" .. tostring(genetic:generation()) .. " genes=" .. tostring(#genes) .. " best=" .. tostring(#best_before), "ai")
 end
 --@api-stub: lurek.ai.newBandit
--- Creates a multi-armed bandit with a named selection strategy
+-- Creates a multi-armed bandit with a named selection strategy.
 do
-  -- Multi-armed bandit balances exploration vs exploitation across N choices.
-  -- Strategies: "ucb1", "epsilon_greedy", "softmax". Epsilon controls random exploration.
-  -- Scenario: dynamic difficulty — pick which enemy type to spawn based on player deaths.
-  local b = lurek.ai.newBandit(4, "ucb1", 0.1, 99)
-  local arm = b:select()
-  b:update(arm, 1.0)
+  -- The bandit returns zero-based arm indexes. Use ucb1, thompson, or any
+  -- other string for the epsilon-greedy fallback configured by epsilon.
+  local bandit = lurek.ai.newBandit(4, "ucb1", 0.1, 99)
+  local selected_arm = bandit:select()
+  bandit:update(selected_arm, 1.0)
+  local best_arm = bandit:bestArm()
+  lurek.log.info("bandit arms=" .. tostring(bandit:armCount()) .. " best=" .. tostring(best_arm) .. " pulls=" .. tostring(bandit:totalPulls()), "ai")
 end
 --@api-stub: lurek.ai.newNeuroevolution
--- Creates a neuroevolution population from a layer specification table
+-- Creates a neuroevolution population from a layer specification table.
 do
-  -- Neuroevolution combines neural nets with genetic algorithms — no backprop needed.
-  -- Layer spec defines network topology; population_size and seed control evolution.
-  -- Scenario: evolving flocking creatures whose brains improve across generations.
+  -- Neuroevolution turns chromosomes into neural nets. Give each chromosome a
+  -- fitness score from gameplay, then evolve the next population.
   local layers = { { inputs = 4, outputs = 8, activation = "relu" }, { inputs = 8, outputs = 2, activation = "softmax" } }
-  local ne = lurek.ai.newNeuroevolution(layers, 30, 1)
-  function lurek.process(dt) ne:evolve() end
+  local evolution = lurek.ai.newNeuroevolution(layers, 10, 1)
+  evolution:setFitness(0, 0.9)
+  local network = evolution:chromosomeToNet(0)
+  if network then
+    local output = network:forward({ 0.1, 0.2, 0.3, 0.4 })
+    lurek.log.info("ne output=" .. tostring(output[1] or 0), "ai")
+  end
+  evolution:evolve()
+  lurek.log.info("ne pop=" .. tostring(evolution:popSize()) .. " gen=" .. tostring(evolution:generation()) .. " best=" .. tostring(evolution:bestFitness()), "ai")
 end
 --@api-stub: lurek.ai.newStrategyAI
--- Creates a strategy AI that reevaluates goals on a fixed interval
+-- Creates a strategy AI that reevaluates goals on a fixed interval.
 do
-  -- Strategy AI periodically re-ranks goals and picks the best one to pursue.
-  -- Interval (seconds) controls how often the AI reconsiders — lower = more reactive.
-  -- Scenario: RTS faction AI switches between "expand", "defend", "attack" every 2s.
-  local s = lurek.ai.newStrategyAI(2.0)
-  s:addGoal("expand")
-  s:addGoal("defend")
+  -- Strategy AI scores named goals with a Lua callback. Use forceEvaluate for
+  -- immediate decisions and update for interval-based reevaluation.
+  local strategy = lurek.ai.newStrategyAI(2.0)
+  strategy:addGoal("expand")
+  strategy:addGoal("defend")
+  strategy:addTag("early_game")
+  local scorer = function(goal)
+    if goal == "defend" then return 0.8 end
+    return 0.5
+  end
+  strategy:forceEvaluate(scorer)
+  strategy:update(2.0, scorer)
+  local active_goal = strategy:activeGoal() or "none"
+  lurek.log.info("strategy=" .. active_goal .. " next=" .. tostring(strategy:timeUntilNext()), "ai")
+  strategy:removeTag("early_game")
 end
 --@api-stub: lurek.ai.newAILod
--- Creates a default AI level-of-detail tier selector
+-- Creates a default AI level-of-detail tier selector.
 do
-  -- AI LOD reduces update frequency for distant or off-screen agents to save CPU.
-  -- shouldUpdate(tier, distance) returns true only when the agent's budget allows.
-  -- Scenario: 500 NPCs in open world — only nearby ones get full AI updates each frame.
+  -- AI LOD maps distance from a reference point to a zero-based update tier.
+  -- The frame counter lets distant tiers update less often.
   local lod = lurek.ai.newAILod()
-  if lod:shouldUpdate(1, 60) then lurek.log.debug("tier 1 update", "ai") end
+  local tier = lod:tierFor(400, 260, 320, 240)
+  local tier_name = lod:tierName(tier) or "unknown"
+  if lod:shouldUpdate(tier, 60) then
+    lurek.log.debug("lod tier " .. tostring(tier) .. " " .. tier_name .. " of " .. tostring(lod:tierCount()), "ai")
+  end
 end
 --@api-stub: LAIWorld:getAgent
 -- Returns the agent of this ai world.
 do
+  -- getAgent returns nil when the name is missing, so guard the result before
+  -- calling LAgent methods.
   local world = lurek.ai.newWorld()
-  world:addAgent("guard_01")
-  local a = world:getAgent("guard_01")
-  if a then a:addTag("alive") end
+  local guard = world:addAgent("guard_01")
+  guard:addTag("patrol")
+  local found_guard = world:getAgent("guard_01")
+  local missing_guard = world:getAgent("guard_99")
+  if found_guard then
+    found_guard:addTag("alive")
+    lurek.log.info("found=" .. found_guard:getName() .. " missing=" .. tostring(missing_guard), "ai")
+  end
 end
 --@api-stub: LAIWorld:removeAgent
 -- Removes a agent from this ai world.
 do
+  -- removeAgent takes an existing LAgent handle. Other handles with the same
+  -- name become harmless stale references that return default values.
   local world = lurek.ai.newWorld()
-  local tmp = world:addAgent("temp")
-  world:removeAgent(tmp)
+  local temporary_agent = world:addAgent("temp")
+  local before_count = world:getAgentCount()
+  world:removeAgent(temporary_agent)
+  local after_count = world:getAgentCount()
+  lurek.log.info("removed agent count " .. tostring(before_count) .. " -> " .. tostring(after_count), "ai")
 end
 --@api-stub: LAIWorld:getAgentCount
 -- Returns the number of agent items in this ai world.
 do
+  -- Agent count is useful for debug overlays and spawn-budget assertions.
   local world = lurek.ai.newWorld()
-  world:addAgent("a"); world:addAgent("b")
-  lurek.log.info("agents=" .. world:getAgentCount(), "ai")
+  world:addAgent("patrol_a")
+  world:addAgent("patrol_b")
+  local agent_count = world:getAgentCount()
+  lurek.log.info("agents=" .. tostring(agent_count), "ai")
 end
 --@api-stub: LAIWorld:getGlobalBlackboard
--- Returns the global blackboard of this ai world.
+-- Returns a blackboard snapshot containing this AI world's shared facts.
 do
-  -- The global blackboard is shared state visible to ALL agents in the world.
-  -- Use it for world-level facts: alarm status, time of day, player position.
-  -- Scenario: one guard spots the player → sets "alarm" on global BB → all guards react.
+  -- Use the global blackboard handle for world-level facts such as alert state,
+  -- patrol shift, or last known player region.
   local world = lurek.ai.newWorld()
-  local bb = world:getGlobalBlackboard()
-  bb:setNumber("alarm", 0.0)
+  local global_blackboard = world:getGlobalBlackboard()
+  global_blackboard:setNumber("alarm", 0.0)
+  global_blackboard:setString("region", "north_gate")
+  local region = global_blackboard:getString("region", "unknown")
+  lurek.log.info("global region=" .. region, "ai")
 end
---@api-stub: LStrategyAI:update
--- Advances this ai world by the given delta time.
+--@api-stub: LAIWorld:update
+-- Advances this AI world by the given delta time.
+do
+  -- update also invokes custom model callbacks installed on agents. Use the
+  -- callback to mirror decisions into the agent's blackboard.
+  local world = lurek.ai.newWorld()
+  local scout = world:addAgent("npc")
+  scout:setCustomModel(function(agent, blackboard, dt)
+    blackboard:setNumber("last_update", dt)
+    agent:setVelocity(12, 0)
+  end)
+  world:update(1 / 60)
+  local velocity_x, velocity_y = scout:getVelocity()
+  lurek.log.info("world update velocity=" .. tostring(velocity_x) .. "," .. tostring(velocity_y), "ai")
+end
+--@api-stub: LAIWorld:type
+-- Returns the Lua-visible type name string for this AI world handle.
 do
   local world = lurek.ai.newWorld()
-  world:addAgent("npc")
-  function lurek.process(dt) world:update(dt) end
+  local type_name = world:type()
+  if type_name == "LAIWorld" then
+    lurek.log.debug("got world handle", "ai")
+  end
 end
---@api-stub: LAILod:type
--- Returns the Lua-visible type name string for this ai world handle.
+--@api-stub: LAIWorld:typeOf
+-- Returns true if this AI world handle matches the given type name string.
 do
   local world = lurek.ai.newWorld()
-  if world:type() == "AIWorld" then lurek.log.debug("got world", "ai") end
+  local is_ai_world = world:typeOf("AIWorld")
+  local is_object = world:typeOf("Object")
+  lurek.log.debug("world typeOf AIWorld=" .. tostring(is_ai_world) .. " Object=" .. tostring(is_object), "ai")
 end
---@api-stub: LAILod:typeOf
--- Returns true if this ai world handle matches the given type name string.
-do
-  local world = lurek.ai.newWorld()
-  if world:typeOf("Object") then lurek.log.debug("inherits Object", "ai") end
-end
---@api-stub: LSquad:getName
+--@api-stub: LAgent:getName
 -- Returns the name of this agent.
 do
   local world = lurek.ai.newWorld()
@@ -461,28 +690,36 @@ do
   local name = agent:getName()
   lurek.log.debug("agent=" .. name, "ai")
 end
---@api-stub: LORCASolver:setPosition
+--@api-stub: LAgent:setPosition
 -- Sets the position of this agent.
 do
   local world = lurek.ai.newWorld()
   local agent = world:addAgent("scout_01")
   agent:setPosition(320, 240)
+  local position_x, position_y = agent:getPosition()
+  lurek.log.debug("set pos=" .. tostring(position_x) .. "," .. tostring(position_y), "ai")
 end
 --@api-stub: LAgent:getPosition
 -- Returns the position of this agent.
 do
+  -- Removed agents return the origin, so getPosition is safe for stale handles
+  -- during cleanup or deferred debug drawing.
   local world = lurek.ai.newWorld()
   local agent = world:addAgent("scout_01")
   agent:setPosition(50, 75)
-  local x, y = agent:getPosition()
-  lurek.log.debug("pos=" .. x .. "," .. y, "ai")
+  local position_x, position_y = agent:getPosition()
+  lurek.log.debug("pos=" .. tostring(position_x) .. "," .. tostring(position_y), "ai")
 end
 --@api-stub: LAgent:setVelocity
 -- Sets the velocity of this agent.
 do
+  -- Velocity is stored in world units per second. Pair this with a steering
+  -- force or movement integrator in the game update loop.
   local world = lurek.ai.newWorld()
   local agent = world:addAgent("scout_01")
   agent:setVelocity(40, 0)
+  local velocity_x = agent:getVelocity()
+  lurek.log.debug("velocity x=" .. tostring(velocity_x), "ai")
 end
 --@api-stub: LAgent:getVelocity
 -- Returns the velocity of this agent.
@@ -490,8 +727,11 @@ do
   local world = lurek.ai.newWorld()
   local agent = world:addAgent("scout_01")
   agent:setVelocity(40, 30)
-  local vx, vy = agent:getVelocity()
-  if vx*vx + vy*vy > 100 then lurek.log.debug("moving", "ai") end
+  local velocity_x, velocity_y = agent:getVelocity()
+  local speed_sq = velocity_x * velocity_x + velocity_y * velocity_y
+  if speed_sq > 100 then
+    lurek.log.debug("moving", "ai")
+  end
 end
 --@api-stub: LAgent:setMaxSpeed
 -- Sets the max speed of this agent.
@@ -499,36 +739,43 @@ do
   local world = lurek.ai.newWorld()
   local agent = world:addAgent("scout_01")
   agent:setMaxSpeed(150)
+  lurek.log.debug("max speed set=" .. tostring(agent:getMaxSpeed()), "ai")
 end
 --@api-stub: LAgent:getMaxSpeed
 -- Returns the max speed of this agent.
 do
   local world = lurek.ai.newWorld()
   local agent = world:addAgent("scout_01")
-  local cap = agent:getMaxSpeed()
-  agent:setVelocity(cap, 0)
+  local speed_cap = agent:getMaxSpeed()
+  agent:setVelocity(speed_cap, 0)
+  lurek.log.debug("speed cap=" .. tostring(speed_cap), "ai")
 end
 --@api-stub: LAgent:setMaxForce
 -- Sets the max force of this agent.
 do
+  -- Max force limits how sharply steering can change velocity.
   local world = lurek.ai.newWorld()
   local agent = world:addAgent("scout_01")
   agent:setMaxForce(300)
+  lurek.log.debug("force cap set=" .. tostring(agent:getMaxForce()), "ai")
 end
 --@api-stub: LAgent:getMaxForce
 -- Returns the max force of this agent.
 do
   local world = lurek.ai.newWorld()
   local agent = world:addAgent("scout_01")
-  local f = agent:getMaxForce()
-  lurek.log.debug("max force=" .. f, "ai")
+  local max_force = agent:getMaxForce()
+  lurek.log.debug("max force=" .. tostring(max_force), "ai")
 end
 --@api-stub: LAgent:setPriority
 -- Sets the priority of this agent.
 do
+  -- Priority is a game-side scheduling hint. Higher-priority agents can be
+  -- updated first or kept at higher AI LOD by script code.
   local world = lurek.ai.newWorld()
   local agent = world:addAgent("scout_01")
   agent:setPriority(10)
+  lurek.log.debug("priority set=" .. tostring(agent:getPriority()), "ai")
 end
 --@api-stub: LAgent:getPriority
 -- Returns the priority of this agent.
@@ -536,2287 +783,2666 @@ do
   local world = lurek.ai.newWorld()
   local agent = world:addAgent("scout_01")
   agent:setPriority(5)
-  if agent:getPriority() > 0 then lurek.log.debug("prio agent", "ai") end
+  local priority = agent:getPriority()
+  if priority > 0 then
+    lurek.log.debug("priority agent=" .. tostring(priority), "ai")
+  end
 end
 --@api-stub: LAgent:setDecisionModel
 -- Sets the decision model of this agent.
 do
+  -- Recognized built-in model names include fsm, bt, and utility. Unknown
+  -- names are ignored by the binding.
   local world = lurek.ai.newWorld()
   local agent = world:addAgent("scout_01")
   agent:setDecisionModel("bt")
+  lurek.log.debug("decision model=" .. agent:getDecisionModel(), "ai")
 end
 --@api-stub: LAgent:getDecisionModel
 -- Returns the decision model of this agent.
 do
   local world = lurek.ai.newWorld()
   local agent = world:addAgent("scout_01")
-  if agent:getDecisionModel() == "fsm" then lurek.log.debug("uses fsm", "ai") end
+  local default_model = agent:getDecisionModel()
+  agent:setDecisionModel("utility")
+  local selected_model = agent:getDecisionModel()
+  lurek.log.debug("model " .. default_model .. " -> " .. selected_model, "ai")
 end
---@api-stub: LStrategyAI:addTag
+--@api-stub: LAgent:addTag
 -- Adds a tag to this agent.
 do
   local world = lurek.ai.newWorld()
   local agent = world:addAgent("scout_01")
   agent:addTag("alive")
   agent:addTag("scout")
+  lurek.log.debug("has scout=" .. tostring(agent:hasTag("scout")), "ai")
 end
---@api-stub: LStrategyAI:removeTag
+--@api-stub: LAgent:removeTag
 -- Removes a tag from this agent.
 do
   local world = lurek.ai.newWorld()
   local agent = world:addAgent("scout_01")
   agent:addTag("burning")
   agent:removeTag("burning")
+  lurek.log.debug("burning=" .. tostring(agent:hasTag("burning")), "ai")
 end
 --@api-stub: LAgent:hasTag
 -- Returns true if this agent has a tag.
 do
+  -- Tags are simple string flags for filters such as boss, civilian, flying,
+  -- or quest_target.
   local world = lurek.ai.newWorld()
   local agent = world:addAgent("scout_01")
   agent:addTag("boss")
-  if agent:hasTag("boss") then lurek.log.info("boss alert", "ai") end
+  if agent:hasTag("boss") then
+    lurek.log.info("boss alert", "ai")
+  end
 end
---@api-stub: LSquad:getBlackboard
--- Returns the blackboard of this agent.
+--@api-stub: LAgent:getBlackboard
+-- Returns a blackboard snapshot for this agent.
 do
-  -- Per-agent blackboard stores private state only this agent reads/writes.
-  -- Use for HP, target_id, last_known_position — data other agents shouldn't see.
-  -- Scenario: guard tracks "last_heard_sound_pos" independently from other guards.
+  -- The returned handle is initialized from the agent's local blackboard values.
+  -- Use it for inspection or local calculations without reaching into Rust state.
   local world = lurek.ai.newWorld()
   local agent = world:addAgent("scout_01")
-  local bb = agent:getBlackboard()
-  bb:setNumber("hp", 100)
+  local blackboard = agent:getBlackboard()
+  blackboard:setNumber("hp", 100)
+  local hit_points = blackboard:getNumber("hp", 0)
+  lurek.log.debug("agent blackboard hp=" .. tostring(hit_points), "ai")
 end
---@api-stub: LAILod:type
+--@api-stub: LAgent:type
 -- Returns the Lua-visible type name string for this agent handle.
 do
   local world = lurek.ai.newWorld()
   local agent = world:addAgent("scout_01")
-  if agent:type() == "Agent" then lurek.log.debug("ok", "ai") end
+  if agent:type() == "LAgent" then
+    lurek.log.debug("agent type ok", "ai")
+  end
 end
---@api-stub: LAILod:typeOf
+--@api-stub: LAgent:typeOf
 -- Returns true if this agent handle matches the given type name string.
 do
   local world = lurek.ai.newWorld()
   local agent = world:addAgent("scout_01")
-  if agent:typeOf("Object") then lurek.log.debug("inherits Object", "ai") end
+  local is_agent = agent:typeOf("Agent")
+  local is_object = agent:typeOf("Object")
+  lurek.log.debug("agent typeOf Agent=" .. tostring(is_agent) .. " Object=" .. tostring(is_object), "ai")
 end
 --@api-stub: LAIBlackboard:setNumber
 -- Sets the number of this blackboard.
 do
-  -- Blackboards are typed key-value stores shared between AI subsystems.
-  -- Use setNumber for numeric state: HP, distances, cooldown timers, threat scores.
-  -- Scenario: guard stores alert_level (0-1); FSM transitions to "investigate" at 0.5.
-  local bb = lurek.ai.newBlackboard()
-  bb:setNumber("hp", 100)
-  bb:setNumber("alert_level", 0.6)
+  -- Numeric facts work well for health, distance, cooldowns, or threat scores.
+  local blackboard = lurek.ai.newBlackboard()
+  blackboard:setNumber("hp", 100)
+  blackboard:setNumber("alert_level", 0.6)
+  local alert_level = blackboard:getNumber("alert_level", 0)
+  lurek.log.debug("alert=" .. tostring(alert_level), "ai")
 end
 --@api-stub: LAIBlackboard:setBool
 -- Sets the bool of this blackboard.
 do
-  local bb = lurek.ai.newBlackboard()
-  bb:setBool("player_seen", true)
-  bb:setBool("door_open", false)
+  -- Boolean facts are good for gates: player_seen, door_open, or has_weapon.
+  local blackboard = lurek.ai.newBlackboard()
+  blackboard:setBool("player_seen", true)
+  blackboard:setBool("door_open", false)
+  local player_seen = blackboard:getBool("player_seen", false)
+  lurek.log.debug("player_seen=" .. tostring(player_seen), "ai")
 end
 --@api-stub: LAIBlackboard:setString
 -- Sets the string of this blackboard.
 do
-  local bb = lurek.ai.newBlackboard()
-  bb:setString("target_id", "player_01")
-  bb:setString("last_state", "patrol")
+  -- String facts usually hold stable IDs or named state labels.
+  local blackboard = lurek.ai.newBlackboard()
+  blackboard:setString("target_id", "player_01")
+  blackboard:setString("last_state", "patrol")
+  local target_id = blackboard:getString("target_id", "none")
+  lurek.log.debug("target=" .. target_id, "ai")
 end
---@api-stub: LTraitProfile:has
--- Returns true if this blackboard has a .
+--@api-stub: LAIBlackboard:has
+-- Returns true if this blackboard has an entry for the key.
 do
-  local bb = lurek.ai.newBlackboard()
-  bb:setBool("alive", true)
-  if bb:has("alive") then lurek.log.debug("entry exists", "ai") end
+  local blackboard = lurek.ai.newBlackboard()
+  blackboard:setBool("alive", true)
+  if blackboard:has("alive") then
+    lurek.log.debug("entry exists", "ai")
+  end
 end
---@api-stub: LStimulusWorld:remove
--- Removes a  from this blackboard.
+--@api-stub: LAIBlackboard:remove
+-- Removes one key from this blackboard.
 do
-  local bb = lurek.ai.newBlackboard()
-  bb:setNumber("temp", 1)
-  bb:remove("temp")
+  local blackboard = lurek.ai.newBlackboard()
+  blackboard:setNumber("temp", 1)
+  blackboard:remove("temp")
+  lurek.log.debug("temp exists=" .. tostring(blackboard:has("temp")), "ai")
 end
---@api-stub: LStimulusWorld:clear
+--@api-stub: LAIBlackboard:clear
 -- Clears all items from this blackboard.
 do
-  -- Wipes all entries — use when an agent respawns or changes role entirely.
-  -- Scenario: enemy dies and respawns → clear blackboard so stale target data is gone.
-  local bb = lurek.ai.newBlackboard()
-  bb:setBool("dirty", true)
-  bb:clear()
+  -- Clear removes all entries, useful when reusing a blackboard for a new role.
+  local blackboard = lurek.ai.newBlackboard()
+  blackboard:setBool("dirty", true)
+  blackboard:setString("target", "player_01")
+  blackboard:clear()
+  lurek.log.debug("blackboard size=" .. tostring(blackboard:getSize()), "ai")
 end
 --@api-stub: LAIBlackboard:getKeys
 -- Returns the keys of this blackboard.
 do
-  -- Returns all stored key names as an array — useful for serialization or debug display.
-  -- Scenario: save system iterates keys to persist agent memory between levels.
-  local bb = lurek.ai.newBlackboard()
-  bb:setNumber("hp", 100); bb:setBool("alive", true)
-  for _, k in ipairs(bb:getKeys()) do lurek.log.debug("key=" .. k, "ai") end
+  -- getKeys returns an array-style table of stored key names.
+  local blackboard = lurek.ai.newBlackboard()
+  blackboard:setNumber("hp", 100)
+  blackboard:setBool("alive", true)
+  for _, key in ipairs(blackboard:getKeys()) do
+    lurek.log.debug("key=" .. key, "ai")
+  end
 end
 --@api-stub: LAIBlackboard:getSize
 -- Returns the size of this blackboard.
 do
-  local bb = lurek.ai.newBlackboard()
-  bb:setNumber("hp", 100)
-  lurek.log.debug("entries=" .. bb:getSize(), "ai")
+  local blackboard = lurek.ai.newBlackboard()
+  blackboard:setNumber("hp", 100)
+  blackboard:setString("target", "player_01")
+  lurek.log.debug("entries=" .. tostring(blackboard:getSize()), "ai")
 end
---@api-stub: LAILod:type
+--@api-stub: LAIBlackboard:type
 -- Returns the Lua-visible type name string for this blackboard handle.
 do
-  local bb = lurek.ai.newBlackboard()
-  if bb:type() == "Blackboard" then lurek.log.debug("got bb", "ai") end
+  local blackboard = lurek.ai.newBlackboard()
+  if blackboard:type() == "LAIBlackboard" then
+    lurek.log.debug("got blackboard", "ai")
+  end
 end
---@api-stub: LAILod:typeOf
+--@api-stub: LAIBlackboard:typeOf
 -- Returns true if this blackboard handle matches the given type name string.
 do
-  local bb = lurek.ai.newBlackboard()
-  if bb:typeOf("Object") then lurek.log.debug("ok", "ai") end
+  local blackboard = lurek.ai.newBlackboard()
+  local is_blackboard = blackboard:typeOf("Blackboard")
+  local is_object = blackboard:typeOf("Object")
+  lurek.log.debug("blackboard typeOf Blackboard=" .. tostring(is_blackboard) .. " Object=" .. tostring(is_object), "ai")
 end
 --@api-stub: LStateMachine:addState
 -- Adds a state to this state machine.
 do
-  -- Each state can have onEnter, onUpdate, onExit callbacks.
-  -- Use onEnter to reset timers/animations; onUpdate for per-frame logic (e.g. path follow).
-  -- Scenario: an enemy patrols waypoints, then switches to chase when it sees the player.
-  local fsm = lurek.ai.newStateMachine()
-  fsm:addState("patrol", { onEnter = function() lurek.log.info("patrol", "ai") end })
-  fsm:addState("chase", { onUpdate = function(dt) end })
+  -- State tables can carry lifecycle callbacks for systems that drive the FSM.
+  -- Add all state names before assigning initial state or transitions.
+  local machine = lurek.ai.newStateMachine()
+  machine:addState("patrol", { onEnter = function() lurek.log.info("patrol", "ai") end })
+  machine:addState("chase", { onUpdate = function(dt) lurek.log.debug("dt=" .. tostring(dt), "ai") end })
+  machine:addTransition("patrol", "chase", function() return true end, 1)
 end
 --@api-stub: LStateMachine:setInitialState
 -- Sets the initial state of this state machine.
 do
-  local fsm = lurek.ai.newStateMachine()
-  fsm:addState("idle", {})
-  fsm:setInitialState("idle")
+  local machine = lurek.ai.newStateMachine()
+  machine:addState("idle", {})
+  machine:setInitialState("idle")
+  lurek.log.debug("initial=" .. tostring(machine:getCurrentState()), "ai")
 end
 --@api-stub: LStateMachine:getCurrentState
 -- Returns the current state of this state machine.
 do
   -- Query the active state to drive animations, sound, or UI indicators.
-  -- Scenario: HUD shows "ALERT" icon when guard is in "chase" state.
-  local fsm = lurek.ai.newStateMachine()
-  fsm:addState("patrol", {}); fsm:setInitialState("patrol")
-  local s = fsm:getCurrentState()
-  if s then lurek.log.debug("state=" .. s, "ai") end
+  local machine = lurek.ai.newStateMachine()
+  machine:addState("patrol", {})
+  machine:setInitialState("patrol")
+  local current_state = machine:getCurrentState()
+  if current_state then
+    lurek.log.debug("state=" .. current_state, "ai")
+  end
 end
 --@api-stub: LStateMachine:forceState
 -- Performs the force state operation on this state machine.
 do
-  -- Bypasses transitions — use for interrupts like stun, death, or cutscene override.
-  -- Calls onExit of old state and onEnter of new state immediately.
-  -- Scenario: player lands a critical hit → force enemy into "stunned" regardless of current state.
-  local fsm = lurek.ai.newStateMachine()
-  fsm:addState("stunned", {}); fsm:setInitialState("stunned")
-  fsm:forceState("stunned")
+  -- forceState switches the stored current state and resets time-in-state.
+  local machine = lurek.ai.newStateMachine()
+  machine:addState("idle", {})
+  machine:addState("stunned", {})
+  machine:setInitialState("idle")
+  machine:forceState("stunned")
+  lurek.log.debug("forced=" .. tostring(machine:getCurrentState()), "ai")
 end
 --@api-stub: LStateMachine:getTimeInState
 -- Returns the time in state of this state machine.
 do
-  -- Elapsed seconds since entering the current state (resets on transition).
-  -- Useful for timeout transitions: "if idle for 5s, switch to wander".
-  -- Scenario: shopkeeper returns to counter after standing idle too long.
-  local fsm = lurek.ai.newStateMachine()
-  fsm:addState("idle", {}); fsm:setInitialState("idle")
-  if fsm:getTimeInState() > 5.0 then fsm:forceState("idle") end
+  -- Time starts at zero and resets when forceState changes state.
+  local machine = lurek.ai.newStateMachine()
+  machine:addState("idle", {})
+  machine:setInitialState("idle")
+  local elapsed = machine:getTimeInState()
+  if elapsed > 5.0 then
+    machine:forceState("idle")
+  end
 end
---@api-stub: LAILod:type
+--@api-stub: LStateMachine:type
 -- Returns the Lua-visible type name string for this state machine handle.
 do
-  local fsm = lurek.ai.newStateMachine()
-  if fsm:type() == "StateMachine" then lurek.log.debug("ok", "ai") end
+  local machine = lurek.ai.newStateMachine()
+  if machine:type() == "LStateMachine" then
+    lurek.log.debug("state machine type ok", "ai")
+  end
 end
---@api-stub: LAILod:typeOf
+--@api-stub: LStateMachine:typeOf
 -- Returns true if this state machine handle matches the given type name string.
 do
-  local fsm = lurek.ai.newStateMachine()
-  if fsm:typeOf("Object") then lurek.log.debug("ok", "ai") end
+  local machine = lurek.ai.newStateMachine()
+  local is_state_machine = machine:typeOf("StateMachine")
+  local is_object = machine:typeOf("Object")
+  lurek.log.debug("state machine typeOf StateMachine=" .. tostring(is_state_machine) .. " Object=" .. tostring(is_object), "ai")
 end
 --@api-stub: LBehaviorTree:setRoot
 -- Sets the root of this behavior tree.
 do
-  -- The root node is the entry point ticked every frame. Typically a Selector or Sequence.
-  -- Build the tree bottom-up: create leaf nodes first, compose into branches, then setRoot.
-  -- Scenario: root Selector tries "attack" branch first, falls back to "patrol" branch.
-  local bt = lurek.ai.newBehaviorTree()
+  -- Build the node graph bottom-up, then move the root node into the tree.
+  -- The debug state confirms the tree shape after setRoot consumes the node.
+  local behavior_tree = lurek.ai.newBehaviorTree()
   local root = lurek.ai.newSelector()
   root:addChild(lurek.ai.newAction(function() return "success" end))
-  bt:setRoot(root)
+  root:addChild(lurek.ai.newAction(function() return "running" end))
+  behavior_tree:setRoot(root)
+  local debug_state = behavior_tree:getDebugState()
+  lurek.log.debug("bt root nodes=" .. tostring(debug_state.node_count), "ai")
 end
 --@api-stub: LBehaviorTree:getLastStatus
 -- Returns the last status of this behavior tree.
 do
-  -- Returns "success", "failure", or "running" from the last tick.
-  -- Use to detect when a behavior completes and trigger follow-up logic.
-  -- Scenario: if last tick returned "failure", play a confused animation.
-  local bt = lurek.ai.newBehaviorTree()
+  -- Last status is stored on the tree as a string: success, failure, or running.
+  -- A newly created tree starts at success until engine-side evaluation changes it.
+  local behavior_tree = lurek.ai.newBehaviorTree()
   local root = lurek.ai.newSequence()
   root:addChild(lurek.ai.newAction(function() return "success" end))
-  bt:setRoot(root)
-  local s = bt:getLastStatus()
-  lurek.log.debug("bt status=" .. s, "ai")
+  behavior_tree:setRoot(root)
+  local status = behavior_tree:getLastStatus()
+  lurek.log.debug("bt status=" .. status, "ai")
 end
 --@api-stub: LBehaviorTree:getDebugState
 -- Returns the debug state of this behavior tree.
 do
-  -- Returns a table with node_count, last_status, and active path for dev tools.
-  -- Useful for drawing a BT visualizer overlay or logging which branch is active.
-  -- Scenario: debug HUD shows "attack→aim→fire" path highlighted in green.
-  local bt = lurek.ai.newBehaviorTree()
+  -- Debug state contains node_count and last_status. This is enough for simple
+  -- overlays that show whether a tree was built and what status it last held.
+  local behavior_tree = lurek.ai.newBehaviorTree()
   local root = lurek.ai.newSequence()
   root:addChild(lurek.ai.newAction(function() return "success" end))
-  bt:setRoot(root)
-  local dbg = bt:getDebugState()
-  lurek.log.debug("nodes=" .. dbg.node_count .. " status=" .. dbg.last_status, "ai")
+  root:addChild(lurek.ai.newCondition(function() return true end))
+  behavior_tree:setRoot(root)
+  local debug_state = behavior_tree:getDebugState()
+  lurek.log.debug("nodes=" .. tostring(debug_state.node_count) .. " status=" .. debug_state.last_status, "ai")
 end
---@api-stub: LAILod:type
+--@api-stub: LBehaviorTree:type
 -- Returns the Lua-visible type name string for this behavior tree handle.
 do
-  local bt = lurek.ai.newBehaviorTree()
-  if bt:type() == "BehaviorTree" then lurek.log.debug("ok", "ai") end
+  local behavior_tree = lurek.ai.newBehaviorTree()
+  if behavior_tree:type() == "LBehaviorTree" then
+    lurek.log.debug("behavior tree type ok", "ai")
+  end
 end
---@api-stub: LAILod:typeOf
+--@api-stub: LBehaviorTree:typeOf
 -- Returns true if this behavior tree handle matches the given type name string.
 do
-  local bt = lurek.ai.newBehaviorTree()
-  if bt:typeOf("Object") then lurek.log.debug("ok", "ai") end
+  local behavior_tree = lurek.ai.newBehaviorTree()
+  local is_behavior_tree = behavior_tree:typeOf("BehaviorTree")
+  local is_object = behavior_tree:typeOf("Object")
+  lurek.log.debug("bt typeOf BehaviorTree=" .. tostring(is_behavior_tree) .. " Object=" .. tostring(is_object), "ai")
 end
 --@api-stub: LBTNode:addChild
 -- Adds a child to this bt node.
 do
-  -- Sequence runs children left-to-right; stops on first failure (AND logic).
-  -- Selector tries children left-to-right; stops on first success (OR logic).
-  -- Scenario: Sequence["has_ammo?", "aim", "fire"] — skips aim+fire if no ammo.
-  local seq = lurek.ai.newSequence()
-  seq:addChild(lurek.ai.newCondition(function() return true end))
-  seq:addChild(lurek.ai.newAction(function() return "success" end))
+  -- addChild is valid for selector, sequence, and parallel nodes only.
+  local sequence = lurek.ai.newSequence()
+  sequence:addChild(lurek.ai.newCondition(function() return true end))
+  sequence:addChild(lurek.ai.newAction(function() return "success" end))
+  lurek.log.debug("sequence children=" .. tostring(sequence:getChildCount()), "ai")
 end
 --@api-stub: LBTNode:getChildCount
 -- Returns the number of child items in this bt node.
 do
-  local seq = lurek.ai.newSequence()
-  seq:addChild(lurek.ai.newAction(function() return "success" end))
-  lurek.log.debug("children=" .. seq:getChildCount(), "ai")
+  local selector = lurek.ai.newSelector()
+  selector:addChild(lurek.ai.newAction(function() return "failure" end))
+  selector:addChild(lurek.ai.newAction(function() return "success" end))
+  lurek.log.debug("selector children=" .. tostring(selector:getChildCount()), "ai")
 end
---@api-stub: LBandit:reset
+--@api-stub: LBTNode:reset
 -- Resets this bt node to its default state.
 do
   -- Clears running state and iteration counters for this node and its subtree.
-  -- Call when re-entering a branch after an interrupt or state machine transition.
-  -- Scenario: player breaks line-of-sight → reset the chase subtree so it re-evaluates cleanly.
-  local rep = lurek.ai.newRepeater(3)
-  rep:setChild(lurek.ai.newAction(function() return "success" end))
-  rep:reset()
+  local repeater = lurek.ai.newRepeater(3)
+  repeater:setChild(lurek.ai.newAction(function() return "success" end))
+  repeater:reset()
+  lurek.log.debug("reset repeater count=" .. tostring(repeater:getCount()), "ai")
 end
 --@api-stub: LBTNode:setChild
 -- Sets the child of this bt node.
 do
-  local inv = lurek.ai.newInverter()
-  inv:setChild(lurek.ai.newCondition(function() return false end))
-  local bt = lurek.ai.newBehaviorTree(); bt:setRoot(inv)
+  -- setChild is for decorators such as inverter, repeater, and succeeder.
+  local inverter = lurek.ai.newInverter()
+  inverter:setChild(lurek.ai.newCondition(function() return false end))
+  local behavior_tree = lurek.ai.newBehaviorTree()
+  behavior_tree:setRoot(inverter)
 end
 --@api-stub: LBTNode:setCount
 -- Sets the count of this bt node.
 do
-  local rep = lurek.ai.newRepeater(0)
-  rep:setCount(5)
-  rep:setChild(lurek.ai.newAction(function() return "success" end))
+  local repeater = lurek.ai.newRepeater(0)
+  repeater:setCount(5)
+  repeater:setChild(lurek.ai.newAction(function() return "success" end))
+  lurek.log.debug("repeat target=" .. tostring(repeater:getCount()), "ai")
 end
---@api-stub: LCommandQueue:getCount
+--@api-stub: LBTNode:getCount
 -- Returns the total count of items held by this bt node.
 do
-  local rep = lurek.ai.newRepeater(7)
-  if rep:getCount() == 7 then lurek.log.debug("count ok", "ai") end
+  local repeater = lurek.ai.newRepeater(7)
+  if repeater:getCount() == 7 then
+    lurek.log.debug("count ok", "ai")
+  end
 end
 --@api-stub: LBTNode:setSuccessPolicy
 -- Sets the success policy of this bt node.
 do
-  local par = lurek.ai.newParallel("require_one", "require_one")
-  par:setSuccessPolicy("require_all")
-  par:addChild(lurek.ai.newAction(function() return "success" end))
+  -- Parallel policy names are requireOne and requireAll.
+  local parallel = lurek.ai.newParallel("requireOne", "requireOne")
+  parallel:setSuccessPolicy("requireAll")
+  parallel:addChild(lurek.ai.newAction(function() return "success" end))
+  parallel:addChild(lurek.ai.newAction(function() return "running" end))
 end
 --@api-stub: LBTNode:setFailurePolicy
 -- Sets the failure policy of this bt node.
 do
-  local par = lurek.ai.newParallel("require_one", "require_one")
-  par:setFailurePolicy("require_all")
-  par:addChild(lurek.ai.newAction(function() return "running" end))
+  -- Failure policy uses the same requireOne or requireAll strings.
+  local parallel = lurek.ai.newParallel("requireOne", "requireOne")
+  parallel:setFailurePolicy("requireAll")
+  parallel:addChild(lurek.ai.newAction(function() return "running" end))
 end
 --@api-stub: LBTNode:getNodeType
 -- Returns the node type of this bt node.
 do
-  local seq = lurek.ai.newSequence()
-  if seq:getNodeType() == "sequence" then lurek.log.debug("seq ok", "ai") end
+  local sequence = lurek.ai.newSequence()
+  if sequence:getNodeType() == "sequence" then
+    lurek.log.debug("sequence node ok", "ai")
+  end
 end
---@api-stub: LAILod:type
+--@api-stub: LBTNode:type
 -- Returns the Lua-visible type name string for this bt node handle.
 do
-  local seq = lurek.ai.newSequence()
-  if seq:type() == "BTNode" then lurek.log.debug("ok", "ai") end
+  local sequence = lurek.ai.newSequence()
+  if sequence:type() == "LBTNode" then
+    lurek.log.debug("bt node type ok", "ai")
+  end
 end
---@api-stub: LAILod:typeOf
+--@api-stub: LBTNode:typeOf
 -- Returns true if this bt node handle matches the given type name string.
 do
-  local sel = lurek.ai.newSelector()
-  if sel:typeOf("Object") then lurek.log.debug("ok", "ai") end
+  local selector = lurek.ai.newSelector()
+  local is_node = selector:typeOf("BTNode")
+  local is_object = selector:typeOf("Object")
+  lurek.log.debug("node typeOf BTNode=" .. tostring(is_node) .. " Object=" .. tostring(is_object), "ai")
 end
 --@api-stub: LSteeringManager:getBehaviorCount
 -- Returns the number of behavior items in this steering manager.
 do
-  local sm = lurek.ai.newSteeringManager()
-  sm:addSeek(400, 300, 1.0)
-  sm:addWander(20, 40, 5, 0.3)
-  lurek.log.debug("behaviours=" .. sm:getBehaviorCount(), "ai")
+  local steering = lurek.ai.newSteeringManager()
+  steering:addSeek(400, 300, 1.0)
+  steering:addWander(20, 40, 5, 0.3)
+  lurek.log.debug("behaviors=" .. tostring(steering:getBehaviorCount()), "ai")
 end
 --@api-stub: LSteeringManager:setCombineMode
 -- Sets the combine mode of this steering manager.
 do
-  -- "weighted_sum" blends all forces; "priority" uses highest-weight behavior only.
-  -- Priority avoids jittery blending when behaviors conflict (e.g. seek vs flee).
-  -- Scenario: fleeing from danger overrides seek-to-waypoint via priority mode.
-  local sm = lurek.ai.newSteeringManager()
-  sm:addSeek(400, 300, 1.0)
-  sm:setCombineMode("priority")
+  -- Combine modes are weighted and priority. Unknown strings fall back to weighted.
+  local steering = lurek.ai.newSteeringManager()
+  steering:addSeek(400, 300, 1.0)
+  steering:setCombineMode("priority")
+  lurek.log.debug("combine=" .. steering:getCombineMode(), "ai")
 end
 --@api-stub: LSteeringManager:getCombineMode
 -- Returns the combine mode of this steering manager.
 do
-  local sm = lurek.ai.newSteeringManager()
-  sm:addSeek(400, 300, 1.0)
-  if sm:getCombineMode() == "weighted_sum" then lurek.log.debug("blend mode", "ai") end
+  local steering = lurek.ai.newSteeringManager()
+  steering:addSeek(400, 300, 1.0)
+  if steering:getCombineMode() == "weighted" then
+    lurek.log.debug("weighted blend mode", "ai")
+  end
 end
 --@api-stub: LSteeringManager:getLastSteering
 -- Returns the last steering of this steering manager.
 do
-  -- Returns the (fx, fy) force vector computed on the last calculate() call.
-  -- Apply this as velocity or acceleration to your entity's position each frame.
-  -- Scenario: multiply by dt and add to NPC position for smooth movement toward a target.
-  local sm = lurek.ai.newSteeringManager()
-  sm:addSeek(400, 300, 1.0)
-  local fx, fy = sm:getLastSteering()
-  if fx ~= 0 or fy ~= 0 then lurek.log.debug("steering active", "ai") end
+  -- Last steering is the force vector from the most recent calculate call.
+  local steering = lurek.ai.newSteeringManager()
+  steering:addSeek(400, 300, 1.0)
+  steering:calculate(100, 80, 0, 0, 120, 200, 1 / 60)
+  local force_x, force_y = steering:getLastSteering()
+  if force_x ~= 0 or force_y ~= 0 then
+    lurek.log.debug("steering active", "ai")
+  end
 end
---@api-stub: LAILod:type
+--@api-stub: LSteeringManager:type
 -- Returns the Lua-visible type name string for this steering manager handle.
 do
-  local sm = lurek.ai.newSteeringManager()
-  sm:addSeek(400, 300, 1.0)
-  if sm:type() == "SteeringManager" then lurek.log.debug("ok", "ai") end
+  local steering = lurek.ai.newSteeringManager()
+  steering:addSeek(400, 300, 1.0)
+  if steering:type() == "LSteeringManager" then
+    lurek.log.debug("steering type ok", "ai")
+  end
 end
---@api-stub: LAILod:typeOf
+--@api-stub: LSteeringManager:typeOf
 -- Returns true if this steering manager handle matches the given type name string.
 do
-  local sm = lurek.ai.newSteeringManager()
-  sm:addSeek(400, 300, 1.0)
-  if sm:typeOf("Object") then lurek.log.debug("ok", "ai") end
+  local steering = lurek.ai.newSteeringManager()
+  steering:addSeek(400, 300, 1.0)
+  local is_steering = steering:typeOf("SteeringManager")
+  local is_object = steering:typeOf("Object")
+  lurek.log.debug("steering typeOf SteeringManager=" .. tostring(is_steering) .. " Object=" .. tostring(is_object), "ai")
 end
 --@api-stub: LSteeringManager:setSpatialHashCellSize
 -- Sets the spatial hash cell size of this steering manager.
 do
-  local sm = lurek.ai.newSteeringManager()
-  sm:addSeek(400, 300, 1.0)
-  sm:enableSpatialHash(true)
-  sm:setSpatialHashCellSize(64)
+  -- Cell size is measured in world units and is used by neighbor queries.
+  local steering = lurek.ai.newSteeringManager()
+  steering:addFlock(96, 1.5, 1.0, 1.0, 0.8)
+  steering:enableSpatialHash(true)
+  steering:setSpatialHashCellSize(64)
 end
 --@api-stub: LSteeringManager:enableSpatialHash
 -- Performs the enable spatial hash operation on this steering manager.
 do
-  -- Spatial hashing accelerates neighbor queries for separation/cohesion behaviors.
-  -- Enable when you have many agents (50+) to avoid O(n^2) distance checks.
-  -- Scenario: 200 fish in a school — spatial hash keeps flocking at 60 FPS.
-  local sm = lurek.ai.newSteeringManager()
-  sm:addSeek(400, 300, 1.0)
-  sm:enableSpatialHash(true)
+  -- Spatial hashing can speed neighbor-heavy behaviors such as flocking.
+  local steering = lurek.ai.newSteeringManager()
+  steering:addFlock(96, 1.5, 1.0, 1.0, 0.8)
+  steering:enableSpatialHash(true)
+  local force_x, force_y = steering:calculate(100, 80, 0, 0, 140, 240, 1 / 60)
+  lurek.log.debug("hash steering=" .. tostring(force_x) .. "," .. tostring(force_y), "ai")
 end
 --@api-stub: LQLearner:chooseAction
 -- Performs the choose action operation on this q learner.
 do
-  -- Epsilon-greedy: picks the best-known action most of the time, random otherwise.
-  -- The exploration rate controls how often it tries new actions vs exploiting known good ones.
-  -- Scenario: grid-world NPC learns optimal patrol route by trial and error over episodes.
-  local ql = lurek.ai.newQLearner(8, 4)
-  local action = ql:chooseAction(1)
-  lurek.log.debug("action=" .. action, "ai")
+  -- chooseAction uses one-based state indexes and the learner's exploration rate.
+  local learner = lurek.ai.newQLearner(8, 4)
+  learner:setExplorationRate(0.1)
+  local action = learner:chooseAction(1)
+  lurek.log.debug("chosen action=" .. tostring(action), "ai")
 end
 --@api-stub: LQLearner:bestAction
 -- Performs the best action operation on this q learner.
 do
-  local ql = lurek.ai.newQLearner(8, 4)
-  local action = ql:bestAction(1)
-  if action >= 1 then lurek.log.debug("greedy=" .. action, "ai") end
+  -- bestAction ignores exploration and returns the highest known action.
+  local learner = lurek.ai.newQLearner(8, 4)
+  learner:setQValue(1, 3, 2.5)
+  local action = learner:bestAction(1)
+  if action >= 1 then
+    lurek.log.debug("greedy=" .. tostring(action), "ai")
+  end
 end
 --@api-stub: LQLearner:getQValue
 -- Returns the q value of this q learner.
 do
-  -- Q(state, action) estimates the expected cumulative reward for taking action in state.
-  -- Higher Q = better long-term outcome. Updated incrementally via the learn() call.
-  -- Scenario: inspect Q-values to visualize which directions the NPC prefers in each cell.
-  local ql = lurek.ai.newQLearner(8, 4)
-  ql:learn(1, 2, 1.0, 3)
-  local q = ql:getQValue(1, 2)
-  lurek.log.debug("Q(1,2)=" .. q, "ai")
+  -- Q(state, action) estimates expected future reward for one transition choice.
+  local learner = lurek.ai.newQLearner(8, 4)
+  learner:learn(1, 2, 1.0, 3)
+  local q_value = learner:getQValue(1, 2)
+  lurek.log.debug("Q(1,2)=" .. tostring(q_value), "ai")
 end
 --@api-stub: LQLearner:endEpisode
 -- Performs the end episode operation on this q learner.
 do
-  local ql = lurek.ai.newQLearner(8, 4)
-  ql:learn(1, 1, 0.5, 2)
-  ql:endEpisode()
+  -- End an episode after a terminal state, reward reset, or training rollout.
+  local learner = lurek.ai.newQLearner(8, 4)
+  learner:learn(1, 1, 0.5, 2)
+  learner:endEpisode()
+  lurek.log.debug("episodes=" .. tostring(learner:getEpisodeCount()), "ai")
 end
 --@api-stub: LQLearner:getEpisodeCount
 -- Returns the number of episode items in this q learner.
 do
-  local ql = lurek.ai.newQLearner(8, 4)
-  ql:endEpisode()
-  lurek.log.debug("episodes=" .. ql:getEpisodeCount(), "ai")
+  local learner = lurek.ai.newQLearner(8, 4)
+  learner:endEpisode()
+  learner:endEpisode()
+  lurek.log.debug("episodes=" .. tostring(learner:getEpisodeCount()), "ai")
 end
 --@api-stub: LQLearner:getStateCount
 -- Returns the number of state items in this q learner.
 do
-  local ql = lurek.ai.newQLearner(8, 4)
-  lurek.log.debug("states=" .. ql:getStateCount(), "ai")
+  local learner = lurek.ai.newQLearner(8, 4)
+  lurek.log.debug("states=" .. tostring(learner:getStateCount()), "ai")
 end
---@api-stub: LGOAPPlanner:getActionCount
+--@api-stub: LQLearner:getActionCount
 -- Returns the number of action items in this q learner.
 do
-  local ql = lurek.ai.newQLearner(8, 4)
-  for a = 1, ql:getActionCount() do lurek.log.debug("a=" .. a, "ai") end
+  local learner = lurek.ai.newQLearner(8, 4)
+  for action_index = 1, learner:getActionCount() do
+    lurek.log.debug("action slot=" .. tostring(action_index), "ai")
+  end
 end
 --@api-stub: LQLearner:setLearningRate
 -- Sets the learning rate of this q learner.
 do
-  local ql = lurek.ai.newQLearner(8, 4)
-  ql:setLearningRate(0.05)
+  local learner = lurek.ai.newQLearner(8, 4)
+  learner:setLearningRate(0.05)
+  lurek.log.debug("alpha set=" .. tostring(learner:getLearningRate()), "ai")
 end
 --@api-stub: LQLearner:getLearningRate
 -- Returns the learning rate of this q learner.
 do
-  local ql = lurek.ai.newQLearner(8, 4)
-  lurek.log.debug("alpha=" .. ql:getLearningRate(), "ai")
+  local learner = lurek.ai.newQLearner(8, 4)
+  lurek.log.debug("alpha=" .. tostring(learner:getLearningRate()), "ai")
 end
 --@api-stub: LQLearner:setDiscountFactor
 -- Sets the discount factor of this q learner.
 do
-  local ql = lurek.ai.newQLearner(8, 4)
-  ql:setDiscountFactor(0.95)
+  local learner = lurek.ai.newQLearner(8, 4)
+  learner:setDiscountFactor(0.95)
+  lurek.log.debug("gamma set=" .. tostring(learner:getDiscountFactor()), "ai")
 end
 --@api-stub: LQLearner:getDiscountFactor
 -- Returns the discount factor of this q learner.
 do
-  local ql = lurek.ai.newQLearner(8, 4)
-  lurek.log.debug("gamma=" .. ql:getDiscountFactor(), "ai")
+  local learner = lurek.ai.newQLearner(8, 4)
+  lurek.log.debug("gamma=" .. tostring(learner:getDiscountFactor()), "ai")
 end
 --@api-stub: LQLearner:setExplorationRate
 -- Sets the exploration rate of this q learner.
 do
-  local ql = lurek.ai.newQLearner(8, 4)
-  ql:setExplorationRate(0.1)
+  local learner = lurek.ai.newQLearner(8, 4)
+  learner:setExplorationRate(0.1)
+  lurek.log.debug("epsilon set=" .. tostring(learner:getExplorationRate()), "ai")
 end
 --@api-stub: LQLearner:getExplorationRate
 -- Returns the exploration rate of this q learner.
 do
-  local ql = lurek.ai.newQLearner(8, 4)
-  if ql:getExplorationRate() < 0.05 then lurek.log.info("exploit phase", "ai") end
+  local learner = lurek.ai.newQLearner(8, 4)
+  learner:setExplorationRate(0.02)
+  if learner:getExplorationRate() < 0.05 then
+    lurek.log.info("exploit phase", "ai")
+  end
 end
 --@api-stub: LQLearner:setExplorationDecay
 -- Sets the exploration decay of this q learner.
 do
-  local ql = lurek.ai.newQLearner(8, 4)
-  ql:setExplorationDecay(0.995)
+  local learner = lurek.ai.newQLearner(8, 4)
+  learner:setExplorationDecay(0.995)
+  lurek.log.debug("decay set=" .. tostring(learner:getExplorationDecay()), "ai")
 end
 --@api-stub: LQLearner:getExplorationDecay
 -- Returns the exploration decay of this q learner.
 do
-  local ql = lurek.ai.newQLearner(8, 4)
-  lurek.log.debug("decay=" .. ql:getExplorationDecay(), "ai")
+  local learner = lurek.ai.newQLearner(8, 4)
+  lurek.log.debug("decay=" .. tostring(learner:getExplorationDecay()), "ai")
 end
 --@api-stub: LQLearner:serialize
 -- Performs the serialize operation on this q learner.
 do
-  local ql = lurek.ai.newQLearner(8, 4)
-  ql:learn(1, 1, 1.0, 2)
-  local json = ql:serialize()
-  lurek.log.info("saved " .. #json .. " bytes", "ai")
+  local learner = lurek.ai.newQLearner(8, 4)
+  learner:learn(1, 1, 1.0, 2)
+  local json = learner:serialize()
+  lurek.log.info("saved " .. tostring(#json) .. " bytes", "ai")
 end
 --@api-stub: LQLearner:deserialize
 -- Performs the deserialize operation on this q learner.
 do
-  local ql = lurek.ai.newQLearner(8, 4)
-  local saved = ql:serialize()
-  ql:deserialize(saved)
+  -- Deserialize is useful when restoring trained Q-values from save data.
+  local learner = lurek.ai.newQLearner(8, 4)
+  learner:learn(1, 1, 1.0, 2)
+  local saved = learner:serialize()
+  local restored = lurek.ai.newQLearner(8, 4)
+  restored:deserialize(saved)
+  lurek.log.debug("restored q=" .. tostring(restored:getQValue(1, 1)), "ai")
 end
---@api-stub: LAILod:type
+--@api-stub: LQLearner:type
 -- Returns the Lua-visible type name string for this q learner handle.
 do
-  local ql = lurek.ai.newQLearner(8, 4)
-  if ql:type() == "QLearner" then lurek.log.debug("ok", "ai") end
+  local learner = lurek.ai.newQLearner(8, 4)
+  if learner:type() == "LQLearner" then
+    lurek.log.debug("q learner type ok", "ai")
+  end
 end
---@api-stub: LAILod:typeOf
+--@api-stub: LQLearner:typeOf
 -- Returns true if this q learner handle matches the given type name string.
 do
-  local ql = lurek.ai.newQLearner(8, 4)
-  if ql:typeOf("Object") then lurek.log.debug("ok", "ai") end
+  local learner = lurek.ai.newQLearner(8, 4)
+  local is_learner = learner:typeOf("QLearner")
+  local is_object = learner:typeOf("Object")
+  lurek.log.debug("q typeOf QLearner=" .. tostring(is_learner) .. " Object=" .. tostring(is_object), "ai")
 end
---@api-stub: LContextSteering:evaluate
+--@api-stub: LUtilityAI:evaluate
 -- Performs the evaluate operation on this utility ai.
 do
-  -- Scores all registered actions and picks the highest. Scores are 0.0-1.0 floats.
-  -- Unlike FSM/BT, utility AI adapts smoothly — no explicit transitions to author.
-  -- Scenario: NPC with low HP scores "flee" at 0.9, "attack" at 0.2 → flees automatically.
-  local uai = lurek.ai.newUtilityAI()
-  uai:addAction("flee", function() return 0.8 end)
-  uai:addAction("attack", function() return 0.4 end)
-  local choice = uai:evaluate()
-  if choice then lurek.log.info("chose " .. choice, "ai") end
+  -- Scores all registered actions and returns the highest-scoring action name.
+  local utility = lurek.ai.newUtilityAI()
+  utility:addAction("flee", function() return 0.8 end, 1.0)
+  utility:addAction("attack", function() return 0.4 end, 1.0)
+  local choice = utility:evaluate()
+  if choice then
+    lurek.log.info("chose " .. choice, "ai")
+  end
 end
---@api-stub: LGOAPPlanner:getActionCount
+--@api-stub: LUtilityAI:getActionCount
 -- Returns the number of action items in this utility ai.
 do
-  local uai = lurek.ai.newUtilityAI()
-  uai:addAction("flee", function() return 0.8 end)
-  uai:addAction("attack", function() return 0.4 end)
-  lurek.log.debug("actions=" .. uai:getActionCount(), "ai")
+  local utility = lurek.ai.newUtilityAI()
+  utility:addAction("flee", function() return 0.8 end, 1.0)
+  utility:addAction("attack", function() return 0.4 end, 1.0)
+  lurek.log.debug("utility actions=" .. tostring(utility:getActionCount()), "ai")
 end
 --@api-stub: LUtilityAI:getLastAction
 -- Returns the last action of this utility ai.
 do
-  local uai = lurek.ai.newUtilityAI()
-  uai:addAction("flee", function() return 0.8 end)
-  uai:addAction("attack", function() return 0.4 end)
-  uai:evaluate()
-  local last = uai:getLastAction()
-  if last then lurek.log.debug("last=" .. last, "ai") end
+  local utility = lurek.ai.newUtilityAI()
+  utility:addAction("flee", function() return 0.8 end, 1.0)
+  utility:addAction("attack", function() return 0.4 end, 1.0)
+  utility:evaluate()
+  local last_action = utility:getLastAction()
+  if last_action then
+    lurek.log.debug("last=" .. last_action, "ai")
+  end
 end
---@api-stub: LAILod:type
+--@api-stub: LUtilityAI:type
 -- Returns the Lua-visible type name string for this utility ai handle.
 do
-  local uai = lurek.ai.newUtilityAI()
-  uai:addAction("flee", function() return 0.8 end)
-  uai:addAction("attack", function() return 0.4 end)
-  if uai:type() == "UtilityAI" then lurek.log.debug("ok", "ai") end
+  local utility = lurek.ai.newUtilityAI()
+  if utility:type() == "LUtilityAI" then
+    lurek.log.debug("utility type ok", "ai")
+  end
 end
---@api-stub: LAILod:typeOf
+--@api-stub: LUtilityAI:typeOf
 -- Returns true if this utility ai handle matches the given type name string.
 do
-  local uai = lurek.ai.newUtilityAI()
-  uai:addAction("flee", function() return 0.8 end)
-  uai:addAction("attack", function() return 0.4 end)
-  if uai:typeOf("Object") then lurek.log.debug("ok", "ai") end
+  local utility = lurek.ai.newUtilityAI()
+  local is_utility = utility:typeOf("UtilityAI")
+  local is_object = utility:typeOf("Object")
+  lurek.log.debug("utility typeOf UtilityAI=" .. tostring(is_utility) .. " Object=" .. tostring(is_object), "ai")
 end
 --@api-stub: LGOAPPlanner:getActionCount
 -- Returns the number of action items in this goap planner.
 do
-  local p = lurek.ai.newGOAPPlanner()
-  p:addAction("eat", 1.0, function() end)
-  p:addGoal("not_hungry", 1.0)
-  lurek.log.debug("actions=" .. p:getActionCount(), "ai")
+  local planner = lurek.ai.newGOAPPlanner()
+  planner:addAction("eat", 1.0, function() end)
+  planner:addGoal("not_hungry", 1.0)
+  lurek.log.debug("goap actions=" .. tostring(planner:getActionCount()), "ai")
 end
 --@api-stub: LGOAPPlanner:getGoalCount
 -- Returns the number of goal items in this goap planner.
 do
-  local p = lurek.ai.newGOAPPlanner()
-  p:addAction("eat", 1.0, function() end)
-  p:addGoal("not_hungry", 1.0)
-  if p:getGoalCount() == 0 then lurek.log.warn("no goals", "ai") end
+  local planner = lurek.ai.newGOAPPlanner()
+  planner:addAction("eat", 1.0, function() end)
+  planner:addGoal("not_hungry", 1.0)
+  lurek.log.debug("goap goals=" .. tostring(planner:getGoalCount()), "ai")
 end
 --@api-stub: LGOAPPlanner:getMaxIterations
 -- Returns the max iterations of this goap planner.
 do
-  local p = lurek.ai.newGOAPPlanner()
-  p:addAction("eat", 1.0, function() end)
-  p:addGoal("not_hungry", 1.0)
-  lurek.log.debug("max iters=" .. p:getMaxIterations(), "ai")
+  local planner = lurek.ai.newGOAPPlanner()
+  lurek.log.debug("max iters=" .. tostring(planner:getMaxIterations()), "ai")
 end
 --@api-stub: LGOAPPlanner:setMaxIterations
 -- Sets the max iterations of this goap planner.
 do
-  local p = lurek.ai.newGOAPPlanner()
-  p:addAction("eat", 1.0, function() end)
-  p:addGoal("not_hungry", 1.0)
-  p:setMaxIterations(500)
+  local planner = lurek.ai.newGOAPPlanner()
+  planner:setMaxIterations(500)
+  lurek.log.debug("max iters set=" .. tostring(planner:getMaxIterations()), "ai")
 end
---@api-stub: LAILod:type
+--@api-stub: LGOAPPlanner:type
 -- Returns the Lua-visible type name string for this goap planner handle.
 do
-  local p = lurek.ai.newGOAPPlanner()
-  p:addAction("eat", 1.0, function() end)
-  p:addGoal("not_hungry", 1.0)
-  if p:type() == "GOAPPlanner" then lurek.log.debug("ok", "ai") end
+  local planner = lurek.ai.newGOAPPlanner()
+  if planner:type() == "LGOAPPlanner" then
+    lurek.log.debug("goap type ok", "ai")
+  end
 end
---@api-stub: LAILod:typeOf
+--@api-stub: LGOAPPlanner:typeOf
 -- Returns true if this goap planner handle matches the given type name string.
 do
-  local p = lurek.ai.newGOAPPlanner()
-  p:addAction("eat", 1.0, function() end)
-  p:addGoal("not_hungry", 1.0)
-  if p:typeOf("Object") then lurek.log.debug("ok", "ai") end
+  local planner = lurek.ai.newGOAPPlanner()
+  local is_goap = planner:typeOf("GOAPPlanner")
+  local is_object = planner:typeOf("Object")
+  lurek.log.debug("goap typeOf GOAPPlanner=" .. tostring(is_goap) .. " Object=" .. tostring(is_object), "ai")
 end
 --@api-stub: LInfluenceMap:hasLayer
 -- Returns true if this influence map has a layer.
 do
-  local im = lurek.ai.newInfluenceMap(32, 32, 16)
-  im:addLayer("threat")
-  if im:hasLayer("threat") then lurek.log.debug("layer ok", "ai") end
+  local influence = lurek.ai.newInfluenceMap(32, 32, 16)
+  influence:addLayer("threat")
+  if influence:hasLayer("threat") then
+    lurek.log.debug("layer ok", "ai")
+  end
 end
 --@api-stub: LInfluenceMap:decay
 -- Performs the decay operation on this influence map.
 do
-  -- Multiplies every cell by the decay factor each frame, fading old influence over time.
-  -- Without decay, stamps accumulate forever and the map becomes useless.
-  -- Scenario: gunshot stamps threat=1.0; after 2 seconds it fades to ~0.5, so guards lose interest.
-  local im = lurek.ai.newInfluenceMap(32, 32, 16)
-  im:addLayer("threat")
-  im:stampInfluence("threat", 100, 100, 64, 1.0, 1.0)
-  function lurek.process(dt) im:decay("threat", 0.97) end
+  -- Multiplies every cell by the decay factor, fading old influence over time.
+  local influence = lurek.ai.newInfluenceMap(32, 32, 16)
+  influence:addLayer("threat")
+  influence:stampInfluence("threat", 100, 100, 64, 1.0, 1.0)
+  influence:decay("threat", 0.97)
+  lurek.log.debug("decayed threat=" .. tostring(influence:getInfluence("threat", 7, 7)), "ai")
 end
 --@api-stub: LInfluenceMap:clearLayer
 -- Clears all layer items from this influence map.
 do
-  local im = lurek.ai.newInfluenceMap(32, 32, 16)
-  im:addLayer("threat")
-  im:stampInfluence("threat", 100, 100, 64, 1.0, 1.0)
-  im:clearLayer("threat")
+  local influence = lurek.ai.newInfluenceMap(32, 32, 16)
+  influence:addLayer("threat")
+  influence:stampInfluence("threat", 100, 100, 64, 1.0, 1.0)
+  influence:clearLayer("threat")
+  lurek.log.debug("cleared threat=" .. tostring(influence:getInfluence("threat", 7, 7)), "ai")
 end
 --@api-stub: LInfluenceMap:clearAll
 -- Clears all all items from this influence map.
 do
-  local im = lurek.ai.newInfluenceMap(32, 32, 16)
-  im:addLayer("threat")
-  im:clearAll()
+  local influence = lurek.ai.newInfluenceMap(32, 32, 16)
+  influence:addLayer("threat")
+  influence:addLayer("resources")
+  influence:setInfluence("resources", 5, 5, 1.0)
+  influence:clearAll()
+  lurek.log.debug("all cleared=" .. tostring(influence:getInfluence("resources", 5, 5)), "ai")
 end
 --@api-stub: LInfluenceMap:getMaxPosition
 -- Returns the max position of this influence map.
 do
-  -- Returns the (x, y) world position of the cell with the highest influence value.
-  -- Use to find the most dangerous/attractive spot on the map for decision-making.
-  -- Scenario: AI commander sends reinforcements toward the highest-threat cell.
-  local im = lurek.ai.newInfluenceMap(32, 32, 16)
-  im:addLayer("threat")
-  im:stampInfluence("threat", 200, 100, 32, 1.0, 1.0)
-  local mx, my = im:getMaxPosition("threat")
-  lurek.log.debug("hot=" .. mx .. "," .. my, "ai")
+  -- Returns one-based cell coordinates of the highest-value cell on a layer.
+  local influence = lurek.ai.newInfluenceMap(32, 32, 16)
+  influence:addLayer("threat")
+  influence:setInfluence("threat", 12, 8, 1.0)
+  local max_x, max_y = influence:getMaxPosition("threat")
+  lurek.log.debug("hot=" .. tostring(max_x) .. "," .. tostring(max_y), "ai")
 end
 --@api-stub: LInfluenceMap:getMinPosition
 -- Returns the min position of this influence map.
 do
-  local im = lurek.ai.newInfluenceMap(32, 32, 16)
-  im:addLayer("threat")
-  im:stampInfluence("threat", 200, 100, 32, 1.0, 1.0)
-  local sx, sy = im:getMinPosition("threat")
-  lurek.log.debug("safe=" .. sx .. "," .. sy, "ai")
+  local influence = lurek.ai.newInfluenceMap(32, 32, 16)
+  influence:addLayer("threat")
+  influence:setInfluence("threat", 4, 3, -1.0)
+  local min_x, min_y = influence:getMinPosition("threat")
+  lurek.log.debug("safe=" .. tostring(min_x) .. "," .. tostring(min_y), "ai")
 end
 --@api-stub: LInfluenceMap:getWidth
 -- Returns the width of this influence map.
 do
-  local im = lurek.ai.newInfluenceMap(32, 32, 16)
-  im:addLayer("threat")
-  lurek.log.debug("w=" .. im:getWidth(), "ai")
+  local influence = lurek.ai.newInfluenceMap(32, 32, 16)
+  influence:addLayer("threat")
+  lurek.log.debug("width=" .. tostring(influence:getWidth()), "ai")
 end
 --@api-stub: LInfluenceMap:getHeight
 -- Returns the height of this influence map.
 do
-  local im = lurek.ai.newInfluenceMap(32, 32, 16)
-  im:addLayer("threat")
-  lurek.log.debug("h=" .. im:getHeight(), "ai")
+  local influence = lurek.ai.newInfluenceMap(32, 32, 16)
+  influence:addLayer("threat")
+  lurek.log.debug("height=" .. tostring(influence:getHeight()), "ai")
 end
 --@api-stub: LInfluenceMap:getCellSize
 -- Returns the cell size of this influence map.
 do
-  local im = lurek.ai.newInfluenceMap(32, 32, 16)
-  im:addLayer("threat")
-  lurek.log.debug("cell=" .. im:getCellSize(), "ai")
+  -- Cell size converts between world units and one-based grid cells.
+  local influence = lurek.ai.newInfluenceMap(32, 32, 16)
+  influence:addLayer("threat")
+  lurek.log.debug("cell=" .. tostring(influence:getCellSize()), "ai")
 end
---@api-stub: LAILod:type
+--@api-stub: LInfluenceMap:type
 -- Returns the Lua-visible type name string for this influence map handle.
 do
-  local im = lurek.ai.newInfluenceMap(32, 32, 16)
-  im:addLayer("threat")
-  if im:type() == "InfluenceMap" then lurek.log.debug("ok", "ai") end
+  local influence = lurek.ai.newInfluenceMap(32, 32, 16)
+  influence:addLayer("threat")
+  if influence:type() == "LInfluenceMap" then
+    lurek.log.debug("influence type ok", "ai")
+  end
 end
---@api-stub: LAILod:typeOf
+--@api-stub: LInfluenceMap:typeOf
 -- Returns true if this influence map handle matches the given type name string.
 do
-  local im = lurek.ai.newInfluenceMap(32, 32, 16)
-  im:addLayer("threat")
-  if im:typeOf("Object") then lurek.log.debug("ok", "ai") end
+  local influence = lurek.ai.newInfluenceMap(32, 32, 16)
+  influence:addLayer("threat")
+  local is_influence = influence:typeOf("InfluenceMap")
+  local is_object = influence:typeOf("Object")
+  lurek.log.debug("influence typeOf InfluenceMap=" .. tostring(is_influence) .. " Object=" .. tostring(is_object), "ai")
 end
 --@api-stub: LSquad:getName
 -- Returns the name of this squad.
 do
-  local sq = lurek.ai.newSquad("alpha")
-  sq:addMember("guard_01")
-  lurek.log.debug("squad=" .. sq:getName(), "ai")
+  local squad = lurek.ai.newSquad("alpha")
+  squad:addMember("guard_01")
+  lurek.log.debug("squad=" .. squad:getName(), "ai")
 end
 --@api-stub: LSquad:addMember
 -- Adds a member to this squad.
 do
-  local sq = lurek.ai.newSquad("alpha")
-  sq:addMember("guard_01")
-  sq:addMember("guard_02")
-  sq:addMember("scout_03")
+  local squad = lurek.ai.newSquad("alpha")
+  squad:addMember("guard_01")
+  squad:addMember("guard_02")
+  squad:addMember("scout_03")
+  lurek.log.debug("members=" .. tostring(squad:getMemberCount()), "ai")
 end
 --@api-stub: LSquad:removeMember
 -- Removes a member from this squad.
 do
-  local sq = lurek.ai.newSquad("alpha")
-  sq:addMember("guard_01")
-  sq:addMember("doomed")
-  sq:removeMember("doomed")
+  local squad = lurek.ai.newSquad("alpha")
+  squad:addMember("guard_01")
+  squad:addMember("temporary")
+  squad:removeMember("temporary")
+  lurek.log.debug("remaining=" .. tostring(squad:getMemberCount()), "ai")
 end
 --@api-stub: LSquad:getMemberCount
 -- Returns the number of member items in this squad.
 do
-  local sq = lurek.ai.newSquad("alpha")
-  sq:addMember("guard_01")
-  if sq:getMemberCount() == 0 then lurek.log.warn("squad wiped", "ai") end
+  local squad = lurek.ai.newSquad("alpha")
+  squad:addMember("guard_01")
+  squad:addMember("guard_02")
+  lurek.log.debug("member count=" .. tostring(squad:getMemberCount()), "ai")
 end
 --@api-stub: LSquad:getMembers
 -- Returns the members of this squad.
 do
-  local sq = lurek.ai.newSquad("alpha")
-  sq:addMember("guard_01")
-  sq:addMember("guard_02")
-  for _, m in ipairs(sq:getMembers()) do lurek.log.debug("m=" .. m, "ai") end
+  local squad = lurek.ai.newSquad("alpha")
+  squad:addMember("guard_01")
+  squad:addMember("guard_02")
+  for _, member_name in ipairs(squad:getMembers()) do
+    lurek.log.debug("member=" .. member_name, "ai")
+  end
 end
 --@api-stub: LSquad:setLeader
 -- Sets the leader of this squad.
 do
-  local sq = lurek.ai.newSquad("alpha")
-  sq:addMember("guard_01")
-  sq:setLeader("guard_01")
+  local squad = lurek.ai.newSquad("alpha")
+  squad:addMember("guard_01")
+  squad:setLeader("guard_01")
+  lurek.log.debug("leader set=" .. tostring(squad:getLeader()), "ai")
 end
 --@api-stub: LSquad:getLeader
 -- Returns the leader of this squad.
 do
-  local sq = lurek.ai.newSquad("alpha")
-  sq:addMember("guard_01")
-  sq:setLeader("guard_01")
-  local l = sq:getLeader()
-  if l then lurek.log.debug("leader=" .. l, "ai") end
+  local squad = lurek.ai.newSquad("alpha")
+  squad:addMember("guard_01")
+  squad:setLeader("guard_01")
+  local leader = squad:getLeader()
+  if leader then
+    lurek.log.debug("leader=" .. leader, "ai")
+  end
 end
 --@api-stub: LSquad:getFormation
 -- Returns the formation of this squad.
 do
-  local sq = lurek.ai.newSquad("alpha")
-  sq:addMember("guard_01")
-  sq:setFormation("wedge", 32)
-  if sq:getFormation() == "wedge" then lurek.log.debug("v formation", "ai") end
+  local squad = lurek.ai.newSquad("alpha")
+  squad:addMember("guard_01")
+  squad:setFormation("wedge", 32)
+  if squad:getFormation() == "wedge" then
+    lurek.log.debug("wedge formation", "ai")
+  end
 end
 --@api-stub: LSquad:getFormationSpacing
 -- Returns the formation spacing of this squad.
 do
-  local sq = lurek.ai.newSquad("alpha")
-  sq:addMember("guard_01")
-  sq:setFormation("line", 48)
-  lurek.log.debug("spacing=" .. sq:getFormationSpacing(), "ai")
+  local squad = lurek.ai.newSquad("alpha")
+  squad:addMember("guard_01")
+  squad:setFormation("line", 48)
+  lurek.log.debug("spacing=" .. tostring(squad:getFormationSpacing()), "ai")
 end
 --@api-stub: LSquad:getBlackboard
 -- Returns the blackboard of this squad.
 do
-  local sq = lurek.ai.newSquad("alpha")
-  sq:addMember("guard_01")
-  local bb = sq:getBlackboard()
-  bb:setString("objective", "capture_point_a")
+  -- Like other AI blackboard accessors, this returns a handle initialized from
+  -- the squad's current shared facts.
+  local squad = lurek.ai.newSquad("alpha")
+  squad:addMember("guard_01")
+  local blackboard = squad:getBlackboard()
+  blackboard:setString("objective", "capture_point_a")
+  lurek.log.debug("objective=" .. blackboard:getString("objective", "none"), "ai")
 end
---@api-stub: LAILod:type
+--@api-stub: LSquad:type
 -- Returns the Lua-visible type name string for this squad handle.
 do
-  local sq = lurek.ai.newSquad("alpha")
-  sq:addMember("guard_01")
-  if sq:type() == "Squad" then lurek.log.debug("ok", "ai") end
+  local squad = lurek.ai.newSquad("alpha")
+  squad:addMember("guard_01")
+  if squad:type() == "LSquad" then
+    lurek.log.debug("squad type ok", "ai")
+  end
 end
---@api-stub: LAILod:typeOf
+--@api-stub: LSquad:typeOf
 -- Returns true if this squad handle matches the given type name string.
 do
-  local sq = lurek.ai.newSquad("alpha")
-  sq:addMember("guard_01")
-  if sq:typeOf("Object") then lurek.log.debug("ok", "ai") end
+  local squad = lurek.ai.newSquad("alpha")
+  squad:addMember("guard_01")
+  local is_squad = squad:typeOf("Squad")
+  local is_object = squad:typeOf("Object")
+  lurek.log.debug("squad typeOf Squad=" .. tostring(is_squad) .. " Object=" .. tostring(is_object), "ai")
 end
 --@api-stub: LCommandQueue:cancelCurrent
 -- Performs the cancel current operation on this command queue.
 do
-  local cq = lurek.ai.newCommandQueue()
-  cq:enqueue("move", function() end, { targetX = 200, targetY = 100 })
-  if cq:cancelCurrent() then lurek.log.debug("cancelled", "ai") end
+  local queue = lurek.ai.newCommandQueue()
+  queue:enqueue("move", function() end, { targetX = 200, targetY = 100 })
+  local cancelled = queue:cancelCurrent()
+  lurek.log.debug("cancelled=" .. tostring(cancelled), "ai")
 end
---@api-stub: LStimulusWorld:clear
+--@api-stub: LCommandQueue:clear
 -- Clears all items from this command queue.
 do
-  local cq = lurek.ai.newCommandQueue()
-  cq:enqueue("move", function() end, { targetX = 200, targetY = 100 })
-  cq:enqueue("attack", function() end)
-  cq:clear()
+  local queue = lurek.ai.newCommandQueue()
+  queue:enqueue("move", function() end, { targetX = 200, targetY = 100 })
+  queue:enqueue("attack", function() end)
+  queue:clear()
+  lurek.log.debug("queue empty=" .. tostring(queue:isEmpty()), "ai")
 end
 --@api-stub: LCommandQueue:getCount
 -- Returns the total count of items held by this command queue.
 do
-  local cq = lurek.ai.newCommandQueue()
-  cq:enqueue("move", function() end, { targetX = 200, targetY = 100 })
-  lurek.log.debug("queue=" .. cq:getCount(), "ai")
+  local queue = lurek.ai.newCommandQueue()
+  queue:enqueue("move", function() end, { targetX = 200, targetY = 100 })
+  queue:enqueue("attack", function() end, { priority = 5 })
+  lurek.log.debug("queue=" .. tostring(queue:getCount()), "ai")
 end
 --@api-stub: LCommandQueue:isEmpty
 -- Returns true if this command queue contains no items.
 do
-  local cq = lurek.ai.newCommandQueue()
-  cq:enqueue("move", function() end, { targetX = 200, targetY = 100 })
-  cq:clear()
-  if cq:isEmpty() then lurek.log.debug("idle", "ai") end
+  local queue = lurek.ai.newCommandQueue()
+  queue:enqueue("move", function() end, { targetX = 200, targetY = 100 })
+  queue:clear()
+  if queue:isEmpty() then
+    lurek.log.debug("command queue idle", "ai")
+  end
 end
 --@api-stub: LCommandQueue:getCurrentType
 -- Returns the current type of this command queue.
 do
-  local cq = lurek.ai.newCommandQueue()
-  cq:enqueue("move", function() end, { targetX = 200, targetY = 100 })
-  local kind = cq:getCurrentType()
-  if kind then lurek.log.debug("doing " .. kind, "ai") end
+  local queue = lurek.ai.newCommandQueue()
+  queue:enqueue("move", function() end, { targetX = 200, targetY = 100 })
+  local kind = queue:getCurrentType() or "none"
+  lurek.log.debug("current command=" .. kind, "ai")
 end
 --@api-stub: LCommandQueue:getCurrentTarget
 -- Returns the current target of this command queue.
 do
-  local cq = lurek.ai.newCommandQueue()
-  cq:enqueue("move", function() end, { targetX = 200, targetY = 100 })
-  local tx, ty = cq:getCurrentTarget()
-  lurek.log.debug("target=" .. tx .. "," .. ty, "ai")
+  local queue = lurek.ai.newCommandQueue()
+  queue:enqueue("move", function() end, { targetX = 200, targetY = 100 })
+  local target_x, target_y = queue:getCurrentTarget()
+  lurek.log.debug("target=" .. tostring(target_x) .. "," .. tostring(target_y), "ai")
 end
---@api-stub: LAILod:type
+--@api-stub: LCommandQueue:type
 -- Returns the Lua-visible type name string for this command queue handle.
 do
-  local cq = lurek.ai.newCommandQueue()
-  cq:enqueue("move", function() end, { targetX = 200, targetY = 100 })
-  if cq:type() == "CommandQueue" then lurek.log.debug("ok", "ai") end
+  local queue = lurek.ai.newCommandQueue()
+  queue:enqueue("move", function() end, { targetX = 200, targetY = 100 })
+  if queue:type() == "LCommandQueue" then
+    lurek.log.debug("command queue type ok", "ai")
+  end
 end
---@api-stub: LAILod:typeOf
+--@api-stub: LCommandQueue:typeOf
 -- Returns true if this command queue handle matches the given type name string.
 do
-  local cq = lurek.ai.newCommandQueue()
-  cq:enqueue("move", function() end, { targetX = 200, targetY = 100 })
-  if cq:typeOf("Object") then lurek.log.debug("ok", "ai") end
+  local queue = lurek.ai.newCommandQueue()
+  queue:enqueue("move", function() end, { targetX = 200, targetY = 100 })
+  local is_queue = queue:typeOf("CommandQueue")
+  local is_object = queue:typeOf("Object")
+  lurek.log.debug("queue typeOf CommandQueue=" .. tostring(is_queue) .. " Object=" .. tostring(is_object), "ai")
 end
 --@api-stub: LTraitProfile:set
 -- Sets the  of this trait profile.
 do
-  local tp = lurek.ai.newTraitProfile()
-  tp:set("aggression", 0.7)
-  tp:set("courage", 0.5)
+  -- Trait names are free-form strings, and values are numeric tuning inputs.
+  local traits = lurek.ai.newTraitProfile()
+  traits:set("aggression", 0.7)
+  traits:set("courage", 0.5)
+  lurek.log.debug("traits=" .. tostring(traits:traitCount()), "ai")
 end
---@api-stub: LEmotionModel:get
+--@api-stub: LTraitProfile:get
 -- Returns the  of this trait profile.
 do
-  local tp = lurek.ai.newTraitProfile()
-  tp:set("aggression", 0.7)
-  local v = tp:get("aggression")
-  if v > 0.6 then lurek.log.debug("aggressive", "ai") end
+  local traits = lurek.ai.newTraitProfile()
+  traits:set("aggression", 0.7)
+  traits:addModifier("aggression", 0.2, 5.0, "alert")
+  local aggression = traits:get("aggression")
+  if aggression > 0.6 then
+    lurek.log.debug("aggressive", "ai")
+  end
 end
 --@api-stub: LTraitProfile:getBase
 -- Returns the base of this trait profile.
 do
-  local tp = lurek.ai.newTraitProfile()
-  tp:set("aggression", 0.7)
-  local base = tp:getBase("aggression")
-  lurek.log.debug("base=" .. base, "ai")
+  local traits = lurek.ai.newTraitProfile()
+  traits:set("aggression", 0.7)
+  traits:addModifier("aggression", 0.2, 5.0, "alert")
+  local base = traits:getBase("aggression")
+  lurek.log.debug("base=" .. tostring(base), "ai")
 end
 --@api-stub: LTraitProfile:removeModifiers
 -- Removes a modifiers from this trait profile.
 do
-  local tp = lurek.ai.newTraitProfile()
-  tp:set("aggression", 0.7)
-  tp:addModifier("aggression", 0.2, 10.0, "rage_potion")
-  tp:removeModifiers("rage_potion")
+  local traits = lurek.ai.newTraitProfile()
+  traits:set("aggression", 0.7)
+  traits:addModifier("aggression", 0.2, 10.0, "rage_potion")
+  traits:removeModifiers("rage_potion")
+  lurek.log.debug("aggression=" .. tostring(traits:get("aggression")), "ai")
 end
---@api-stub: LStrategyAI:update
+--@api-stub: LTraitProfile:update
 -- Advances this trait profile by the given delta time.
 do
-  local tp = lurek.ai.newTraitProfile()
-  tp:set("aggression", 0.7)
-  tp:addModifier("aggression", 0.2, 5.0, "buff")
-  function lurek.process(dt) tp:update(dt) end
+  -- update advances temporary modifier timers and expires finished modifiers.
+  local traits = lurek.ai.newTraitProfile()
+  traits:set("aggression", 0.7)
+  traits:addModifier("aggression", 0.2, 0.5, "buff")
+  traits:update(1.0)
+  lurek.log.debug("after update=" .. tostring(traits:get("aggression")), "ai")
 end
 --@api-stub: LTraitProfile:has
 -- Returns true if this trait profile has a .
 do
-  local tp = lurek.ai.newTraitProfile()
-  tp:set("aggression", 0.7)
-  if tp:has("aggression") then lurek.log.debug("trait set", "ai") end
+  local traits = lurek.ai.newTraitProfile()
+  traits:set("aggression", 0.7)
+  if traits:has("aggression") then
+    lurek.log.debug("trait set", "ai")
+  end
 end
 --@api-stub: LTraitProfile:traitCount
 -- Performs the trait count operation on this trait profile.
 do
-  local tp = lurek.ai.newTraitProfile()
-  tp:set("aggression", 0.7)
-  lurek.log.debug("traits=" .. tp:traitCount(), "ai")
+  local traits = lurek.ai.newTraitProfile()
+  traits:set("aggression", 0.7)
+  traits:set("courage", 0.5)
+  lurek.log.debug("traits=" .. tostring(traits:traitCount()), "ai")
 end
 --@api-stub: LTraitProfile:archetype
 -- Performs the archetype operation on this trait profile.
 do
-  local tp = lurek.ai.newTraitProfile()
-  tp:set("aggression", 0.7)
-  local arch = tp:archetype()
-  if arch then lurek.log.info("archetype=" .. arch, "ai") end
+  local traits = lurek.ai.newTraitProfile()
+  traits:set("aggression", 0.7)
+  traits:set("courage", 0.5)
+  local archetype = traits:archetype() or "none"
+  lurek.log.info("archetype=" .. archetype, "ai")
 end
 --@api-stub: LStimulusWorld:remove
 -- Removes a  from this stimulus world.
 do
-  local sw = lurek.ai.newStimulusWorld()
-  local id = sw:addAuditory(100, 200, 1.0, 150, 0.5, "footstep")
-  if sw:remove(id) then lurek.log.debug("removed " .. id, "ai") end
+  local stimuli = lurek.ai.newStimulusWorld()
+  local stimulus_id = stimuli:addAuditory(100, 200, 1.0, 150, 0.5, "footstep")
+  if stimuli:remove(stimulus_id) then
+    lurek.log.debug("removed " .. tostring(stimulus_id), "ai")
+  end
 end
---@api-stub: LStrategyAI:update
+--@api-stub: LStimulusWorld:update
 -- Advances this stimulus world by the given delta time.
 do
-  local sw = lurek.ai.newStimulusWorld()
-  local id = sw:addAuditory(100, 200, 1.0, 150, 0.5, "footstep")
-  function lurek.process(dt) sw:update(dt) end
+  local stimuli = lurek.ai.newStimulusWorld()
+  stimuli:addAuditory(100, 200, 1.0, 150, 0.5, "footstep")
+  stimuli:update(1 / 60)
+  lurek.log.debug("stimuli=" .. tostring(stimuli:count()), "ai")
 end
 --@api-stub: LStimulusWorld:clear
 -- Clears all items from this stimulus world.
 do
-  local sw = lurek.ai.newStimulusWorld()
-  local id = sw:addAuditory(100, 200, 1.0, 150, 0.5, "footstep")
-  sw:clear()
+  local stimuli = lurek.ai.newStimulusWorld()
+  stimuli:addAuditory(100, 200, 1.0, 150, 0.5, "footstep")
+  stimuli:addVisual(120, 210, 0.6, 80, "spark")
+  stimuli:clear()
+  lurek.log.debug("stimuli cleared=" .. tostring(stimuli:count()), "ai")
 end
 --@api-stub: LContextSteering:addWander
 -- Adds a wander to this context steering.
 do
-  local cs = lurek.ai.newContextSteering(16)
-  cs:addSeekTarget(500, 300, 1.0)
-  cs:addWander(0.5, 0.3)
+  local steering = lurek.ai.newContextSteering(16)
+  steering:addSeekTarget(500, 300, 1.0)
+  steering:addWander(0.5, 0.3)
+  local dir_x, dir_y = steering:evaluate(0, 0, 0, 0)
+  lurek.log.debug("wander dir=" .. tostring(dir_x) .. "," .. tostring(dir_y), "ai")
 end
 --@api-stub: LContextSteering:addAvoidBounds
 -- Adds a avoid bounds to this context steering.
 do
-  local cs = lurek.ai.newContextSteering(16)
-  cs:addSeekTarget(500, 300, 1.0)
-  cs:addAvoidBounds(0, 0, 1280, 720, 32, 1.0)
+  local steering = lurek.ai.newContextSteering(16)
+  steering:addSeekTarget(500, 300, 1.0)
+  steering:addAvoidBounds(0, 0, 1280, 720, 32, 1.0)
+  steering:evaluate(16, 16, 0, 0)
 end
 --@api-stub: LContextSteering:clearBehaviors
 -- Clears all behaviors items from this context steering.
 do
-  local cs = lurek.ai.newContextSteering(16)
-  cs:addSeekTarget(500, 300, 1.0)
-  cs:clearBehaviors()
+  local steering = lurek.ai.newContextSteering(16)
+  steering:addSeekTarget(500, 300, 1.0)
+  steering:clearBehaviors()
+  local dir_x, dir_y = steering:evaluate(0, 0, 0, 0)
+  lurek.log.debug("cleared dir=" .. tostring(dir_x) .. "," .. tostring(dir_y), "ai")
 end
 --@api-stub: LContextSteering:chosenMagnitude
 -- Performs the chosen magnitude operation on this context steering.
 do
-  local cs = lurek.ai.newContextSteering(16)
-  cs:addSeekTarget(500, 300, 1.0)
-  cs:evaluate(0, 0, 0, 0)
-  lurek.log.debug("mag=" .. cs:chosenMagnitude(), "ai")
+  local steering = lurek.ai.newContextSteering(16)
+  steering:addSeekTarget(500, 300, 1.0)
+  steering:evaluate(0, 0, 0, 0)
+  lurek.log.debug("mag=" .. tostring(steering:chosenMagnitude()), "ai")
 end
 --@api-stub: LContextSteering:slotCount
 -- Performs the slot count operation on this context steering.
 do
-  local cs = lurek.ai.newContextSteering(16)
-  cs:addSeekTarget(500, 300, 1.0)
-  lurek.log.debug("slots=" .. cs:slotCount(), "ai")
+  local steering = lurek.ai.newContextSteering(16)
+  steering:addSeekTarget(500, 300, 1.0)
+  lurek.log.debug("slots=" .. tostring(steering:slotCount()), "ai")
 end
 --@api-stub: LNeedSystem:addNeed
 -- Adds a need to this need system.
 do
-  local ns = lurek.ai.newNeedSystem()
-  ns:addNeed("hunger", 0.05, 0.6, 1.5)
-  ns:addNeed("thirst", 0.08, 0.5, 2.0)
+  -- Need values decay over time and become urgent near their threshold.
+  local needs = lurek.ai.newNeedSystem()
+  needs:addNeed("hunger", 0.05, 0.6, 1.5)
+  needs:addNeed("thirst", 0.08, 0.5, 2.0)
+  lurek.log.debug("hunger=" .. tostring(needs:valueOf("hunger")), "ai")
 end
---@api-stub: LStrategyAI:update
+--@api-stub: LNeedSystem:update
 -- Advances this need system by the given delta time.
 do
-  local ns = lurek.ai.newNeedSystem()
-  ns:addNeed("hunger", 0.05, 0.6, 1.5)
-  function lurek.process(dt) ns:update(dt) end
+  local needs = lurek.ai.newNeedSystem()
+  needs:addNeed("hunger", 0.05, 0.6, 1.5)
+  needs:update(10.0)
+  lurek.log.debug("hunger after update=" .. tostring(needs:valueOf("hunger")), "ai")
 end
 --@api-stub: LNeedSystem:mostUrgent
 -- Performs the most urgent operation on this need system.
 do
-  local ns = lurek.ai.newNeedSystem()
-  ns:addNeed("hunger", 0.05, 0.6, 1.5)
-  local n = ns:mostUrgent()
-  if n then lurek.log.debug("urgent: " .. n, "ai") end
+  local needs = lurek.ai.newNeedSystem()
+  needs:addNeed("hunger", 0.05, 0.6, 1.5)
+  needs:update(20.0)
+  local urgent_need = needs:mostUrgent() or "none"
+  lurek.log.debug("urgent=" .. urgent_need, "ai")
 end
 --@api-stub: LNeedSystem:satisfy
 -- Performs the satisfy operation on this need system.
 do
-  local ns = lurek.ai.newNeedSystem()
-  ns:addNeed("hunger", 0.05, 0.6, 1.5)
-  ns:satisfy("hunger", 0.4)
+  local needs = lurek.ai.newNeedSystem()
+  needs:addNeed("hunger", 0.05, 0.6, 1.5)
+  needs:update(20.0)
+  needs:satisfy("hunger", 0.4)
+  lurek.log.debug("hunger satisfied=" .. tostring(needs:valueOf("hunger")), "ai")
 end
 --@api-stub: LNeedSystem:valueOf
 -- Performs the value of operation on this need system.
 do
-  local ns = lurek.ai.newNeedSystem()
-  ns:addNeed("hunger", 0.05, 0.6, 1.5)
-  if ns:valueOf("hunger") > 0.8 then lurek.log.warn("starving", "ai") end
+  local needs = lurek.ai.newNeedSystem()
+  needs:addNeed("hunger", 0.05, 0.6, 1.5)
+  needs:update(20.0)
+  local hunger = needs:valueOf("hunger")
+  if hunger > 0.8 then
+    lurek.log.warn("urgent hunger", "ai")
+  end
 end
 --@api-stub: LAIDirector:pushEvent
 -- Performs the push event operation on this ai director.
 do
-  local dir = lurek.ai.newAIDirector()
-  dir:pushEvent(0.7)
+  local director = lurek.ai.newAIDirector()
+  director:pushEvent(0.7)
+  lurek.log.debug("tension after event=" .. tostring(director:tension()), "ai")
 end
---@api-stub: LStrategyAI:update
+--@api-stub: LAIDirector:update
 -- Advances this ai director by the given delta time.
 do
-  local dir = lurek.ai.newAIDirector()
-  function lurek.process(dt) dir:update(dt) end
+  local director = lurek.ai.newAIDirector()
+  director:pushEvent(0.5)
+  director:update(1 / 60)
+  lurek.log.debug("director phase=" .. director:phase(), "ai")
 end
 --@api-stub: LAIDirector:tension
 -- Performs the tension operation on this ai director.
 do
-  local dir = lurek.ai.newAIDirector()
-  dir:pushEvent(0.5)
-  lurek.log.debug("tension=" .. dir:tension(), "ai")
+  local director = lurek.ai.newAIDirector()
+  director:pushEvent(0.5)
+  lurek.log.debug("tension=" .. tostring(director:tension()), "ai")
 end
 --@api-stub: LAIDirector:phase
 -- Performs the phase operation on this ai director.
 do
-  local dir = lurek.ai.newAIDirector()
-  if dir:phase() == "peak" then lurek.log.info("intense moment", "ai") end
+  local director = lurek.ai.newAIDirector()
+  director:setTension(0.9)
+  director:update(1 / 60)
+  lurek.log.info("director phase=" .. director:phase(), "ai")
 end
 --@api-stub: LAIDirector:spawnRateFactor
 -- Performs the spawn rate factor operation on this ai director.
 do
-  local dir = lurek.ai.newAIDirector()
-  local mult = dir:spawnRateFactor()
-  lurek.log.debug("spawn x" .. mult, "ai")
+  local director = lurek.ai.newAIDirector()
+  director:setTension(0.8)
+  local multiplier = director:spawnRateFactor()
+  lurek.log.debug("spawn x" .. tostring(multiplier), "ai")
 end
 --@api-stub: LAIDirector:lootFactor
 -- Performs the loot factor operation on this ai director.
 do
-  local dir = lurek.ai.newAIDirector()
-  lurek.log.debug("loot x" .. dir:lootFactor(), "ai")
+  local director = lurek.ai.newAIDirector()
+  director:setTension(0.3)
+  lurek.log.debug("loot x" .. tostring(director:lootFactor()), "ai")
 end
 --@api-stub: LAIDirector:ambientIntensity
 -- Performs the ambient intensity operation on this ai director.
 do
-  local dir = lurek.ai.newAIDirector()
-  local amb = dir:ambientIntensity()
-  if amb > 0.5 then lurek.log.debug("loud ambience", "ai") end
+  local director = lurek.ai.newAIDirector()
+  director:setTension(0.6)
+  local ambience = director:ambientIntensity()
+  if ambience > 0.5 then
+    lurek.log.debug("loud ambience", "ai")
+  end
 end
 --@api-stub: LAIDirector:setTension
 -- Sets the tension of this ai director.
 do
-  local dir = lurek.ai.newAIDirector()
-  dir:setTension(0.9)
+  local director = lurek.ai.newAIDirector()
+  director:setTension(0.9)
+  lurek.log.debug("set tension=" .. tostring(director:tension()), "ai")
 end
---@api-stub: LBandit:reset
+--@api-stub: LAIDirector:reset
 -- Resets this ai director to its default state.
 do
-  local dir = lurek.ai.newAIDirector()
-  dir:reset()
+  local director = lurek.ai.newAIDirector()
+  director:setTension(0.9)
+  director:reset()
+  lurek.log.debug("reset tension=" .. tostring(director:tension()), "ai")
 end
 --@api-stub: LHTNDomain:addPrimitive
 -- Adds a primitive to this htn domain.
 do
-  local d = lurek.ai.newHTNDomain()
-  d:addPrimitive("attack", { "has_weapon", "in_range" }, { "enemy_dead" }, { "in_range" })
+  local domain = lurek.ai.newHTNDomain()
+  domain:addPrimitive("attack", { "has_weapon", "in_range" }, { "enemy_dead" }, { "in_range" })
+  lurek.log.debug("htn tasks=" .. tostring(domain:taskCount()), "ai")
 end
 --@api-stub: LHTNDomain:taskCount
 -- Performs the task count operation on this htn domain.
 do
-  local d = lurek.ai.newHTNDomain()
-  d:addPrimitive("rest", {}, { "rested" }, {})
-  lurek.log.debug("tasks=" .. d:taskCount(), "ai")
+  local domain = lurek.ai.newHTNDomain()
+  domain:addPrimitive("rest", {}, { "rested" }, {})
+  domain:addPrimitive("eat", { "has_food" }, { "fed" }, { "hungry" })
+  lurek.log.debug("tasks=" .. tostring(domain:taskCount()), "ai")
 end
 --@api-stub: LEmotionModel:trigger
 -- Performs the trigger operation on this emotion model.
 do
-  local em = lurek.ai.newEmotionModel()
-  em:add("fear", 0.0, 0.1, 0.2)
-  em:trigger("fear", 0.5)
+  local emotions = lurek.ai.newEmotionModel()
+  emotions:add("fear", 0.0, 0.1, 0.2)
+  emotions:trigger("fear", 0.5)
+  lurek.log.debug("fear=" .. tostring(emotions:get("fear")), "ai")
 end
 --@api-stub: LEmotionModel:get
 -- Returns the  of this emotion model.
 do
-  local em = lurek.ai.newEmotionModel()
-  em:add("fear", 0.0, 0.1, 0.2)
-  em:trigger("fear", 0.4)
-  if em:get("fear") > 0.3 then lurek.log.debug("scared", "ai") end
+  local emotions = lurek.ai.newEmotionModel()
+  emotions:add("fear", 0.0, 0.1, 0.2)
+  emotions:trigger("fear", 0.4)
+  if emotions:get("fear") > 0.3 then
+    lurek.log.debug("fear active", "ai")
+  end
 end
 --@api-stub: LEmotionModel:dominant
 -- Performs the dominant operation on this emotion model.
 do
-  local em = lurek.ai.newEmotionModel()
-  em:add("fear", 0.0, 0.1, 0.2)
-  em:trigger("fear", 0.6)
-  local d = em:dominant()
-  if d then lurek.log.info("feeling " .. d, "ai") end
+  local emotions = lurek.ai.newEmotionModel()
+  emotions:add("fear", 0.0, 0.1, 0.2)
+  emotions:add("anger", 0.0, 0.05, 0.2)
+  emotions:trigger("fear", 0.6)
+  emotions:trigger("anger", 0.3)
+  local dominant = emotions:dominant()
+  if dominant then
+    lurek.log.info("feeling " .. dominant, "ai")
+  end
 end
 --@api-stub: LEmotionModel:isActive
 -- Returns true if this emotion model is currently active.
 do
-  local em = lurek.ai.newEmotionModel()
-  em:add("fear", 0.0, 0.1, 0.2)
-  em:trigger("fear", 0.5)
-  if em:isActive("fear") then lurek.log.debug("show fear face", "ai") end
+  local emotions = lurek.ai.newEmotionModel()
+  emotions:add("fear", 0.0, 0.1, 0.2)
+  emotions:trigger("fear", 0.5)
+  if emotions:isActive("fear") then
+    lurek.log.debug("show fear face", "ai")
+  end
 end
---@api-stub: LStrategyAI:update
+--@api-stub: LEmotionModel:update
 -- Advances this emotion model by the given delta time.
 do
-  local em = lurek.ai.newEmotionModel()
-  em:add("fear", 0.0, 0.1, 0.2)
-  function lurek.process(dt) em:update(dt) end
+  local emotions = lurek.ai.newEmotionModel()
+  emotions:add("fear", 0.0, 0.1, 0.2)
+  emotions:trigger("fear", 0.5)
+  emotions:update(1.0)
+  lurek.log.debug("fear after update=" .. tostring(emotions:get("fear")), "ai")
 end
---@api-stub: LBandit:reset
+--@api-stub: LEmotionModel:reset
 -- Resets this emotion model to its default state.
 do
-  local em = lurek.ai.newEmotionModel()
-  em:add("fear", 0.0, 0.1, 0.2)
-  em:reset()
+  local emotions = lurek.ai.newEmotionModel()
+  emotions:add("fear", 0.0, 0.1, 0.2)
+  emotions:trigger("fear", 0.5)
+  emotions:reset()
+  lurek.log.debug("fear reset=" .. tostring(emotions:get("fear")), "ai")
 end
 --@api-stub: LORCASolver:setPosition
 -- Sets the position of this orca solver.
 do
   local orca = lurek.ai.newORCASolver(2.0)
-  local idx = orca:addAgent(100, 100, 16, 80)
-  orca:setPosition(idx, 120, 100)
+  local agent_index = orca:addAgent(100, 100, 16, 80)
+  orca:setPosition(agent_index, 120, 100)
+  orca:compute(1 / 60)
+  local safe_x, safe_y = orca:getSafeVelocity(agent_index)
+  lurek.log.debug("orca safe after move=" .. tostring(safe_x) .. "," .. tostring(safe_y), "ai")
 end
 --@api-stub: LORCASolver:compute
 -- Performs the compute operation on this orca solver.
 do
   local orca = lurek.ai.newORCASolver(2.0)
-  local idx = orca:addAgent(100, 100, 16, 80)
-  function lurek.process(dt) orca:compute(dt) end
+  local agent_index = orca:addAgent(100, 100, 16, 80)
+  orca:setPreferredVelocity(agent_index, 40, 0)
+  orca:compute(1 / 60)
 end
 --@api-stub: LORCASolver:getSafeVelocity
 -- Returns the safe velocity of this orca solver.
 do
   local orca = lurek.ai.newORCASolver(2.0)
-  local idx = orca:addAgent(100, 100, 16, 80)
+  local agent_index = orca:addAgent(100, 100, 16, 80)
+  orca:setPreferredVelocity(agent_index, 40, 0)
   orca:compute(0.016)
-  local vx, vy = orca:getSafeVelocity(idx)
-  lurek.log.debug("safe v=" .. vx .. "," .. vy, "ai")
+  local velocity_x, velocity_y = orca:getSafeVelocity(agent_index)
+  lurek.log.debug("safe v=" .. tostring(velocity_x) .. "," .. tostring(velocity_y), "ai")
 end
 --@api-stub: LORCASolver:agentCount
 -- Performs the agent count operation on this orca solver.
 do
   local orca = lurek.ai.newORCASolver(2.0)
-  local idx = orca:addAgent(100, 100, 16, 80)
-  lurek.log.debug("agents=" .. orca:agentCount(), "ai")
+  orca:addAgent(100, 100, 16, 80)
+  orca:addAgent(140, 100, 16, 80)
+  lurek.log.debug("agents=" .. tostring(orca:agentCount()), "ai")
 end
 --@api-stub: LNeuralNet:forward
 -- Performs the forward operation on this neural net.
 do
-  local nn = lurek.ai.newNeuralNet()
-  nn:addLayer(4, 8, "relu")
-  nn:addLayer(8, 2, "softmax")
-  local out = nn:forward({ 0.1, 0.2, 0.3, 0.4 })
-  lurek.log.debug("y=" .. out[1] .. "," .. out[2], "ai")
+  local network = lurek.ai.newNeuralNet()
+  network:addLayer(4, 8, "relu")
+  network:addLayer(8, 2, "softmax")
+  local output = network:forward({ 0.1, 0.2, 0.3, 0.4 })
+  lurek.log.debug("y=" .. tostring(output[1]) .. "," .. tostring(output[2]), "ai")
 end
 --@api-stub: LNeuralNet:setWeights
 -- Sets the weights of this neural net.
 do
-  local nn = lurek.ai.newNeuralNet()
-  nn:addLayer(4, 8, "relu")
-  nn:addLayer(8, 2, "softmax")
-  local count = nn:paramCount()
-  local zeros = {}; for i = 1, count do zeros[i] = 0.01 end
-  nn:setWeights(zeros)
+  local network = lurek.ai.newNeuralNet()
+  network:addLayer(4, 8, "relu")
+  network:addLayer(8, 2, "softmax")
+  local param_count = network:paramCount()
+  local weights = {}
+  for weight_index = 1, param_count do
+    weights[weight_index] = 0.01
+  end
+  local ok = network:setWeights(weights)
+  lurek.log.debug("weights ok=" .. tostring(ok), "ai")
 end
 --@api-stub: LNeuralNet:getWeights
 -- Returns the weights of this neural net.
 do
-  local nn = lurek.ai.newNeuralNet()
-  nn:addLayer(4, 8, "relu")
-  nn:addLayer(8, 2, "softmax")
-  local w = nn:getWeights()
-  lurek.log.debug("weights=" .. #w, "ai")
+  local network = lurek.ai.newNeuralNet()
+  network:addLayer(4, 8, "relu")
+  network:addLayer(8, 2, "softmax")
+  local weights = network:getWeights()
+  lurek.log.debug("weights=" .. tostring(#weights), "ai")
 end
 --@api-stub: LNeuralNet:paramCount
 -- Performs the param count operation on this neural net.
 do
-  local nn = lurek.ai.newNeuralNet()
-  nn:addLayer(4, 8, "relu")
-  nn:addLayer(8, 2, "softmax")
-  lurek.log.debug("params=" .. nn:paramCount(), "ai")
+  local network = lurek.ai.newNeuralNet()
+  network:addLayer(4, 8, "relu")
+  network:addLayer(8, 2, "softmax")
+  lurek.log.debug("params=" .. tostring(network:paramCount()), "ai")
 end
 --@api-stub: LNeuralNet:layerCount
 -- Performs the layer count operation on this neural net.
 do
-  local nn = lurek.ai.newNeuralNet()
-  nn:addLayer(4, 8, "relu")
-  nn:addLayer(8, 2, "softmax")
-  lurek.log.debug("layers=" .. nn:layerCount(), "ai")
+  local network = lurek.ai.newNeuralNet()
+  network:addLayer(4, 8, "relu")
+  network:addLayer(8, 2, "softmax")
+  lurek.log.debug("layers=" .. tostring(network:layerCount()), "ai")
 end
---@api-stub: LNeuroevolution:evolve
+--@api-stub: LGeneticAlgorithm:evolve
 -- Performs the evolve operation on this genetic algorithm.
 do
-  local ga = lurek.ai.newGeneticAlgorithm(20, 8, 42)
-  for i = 1, ga:popSize() do ga:setFitness(i - 1, 0.5) end
-  ga:evolve()
+  local genetic = lurek.ai.newGeneticAlgorithm(20, 8, 42)
+  for chromosome_index = 0, genetic:popSize() - 1 do
+    genetic:setFitness(chromosome_index, 0.5)
+  end
+  genetic:evolve()
+  lurek.log.debug("generation=" .. tostring(genetic:generation()), "ai")
 end
---@api-stub: LNeuroevolution:generation
+--@api-stub: LGeneticAlgorithm:generation
 -- Performs the generation operation on this genetic algorithm.
 do
-  local ga = lurek.ai.newGeneticAlgorithm(20, 8, 42)
-  if ga:generation() >= 100 then lurek.log.info("done", "ai") end
+  local genetic = lurek.ai.newGeneticAlgorithm(20, 8, 42)
+  lurek.log.debug("generation=" .. tostring(genetic:generation()), "ai")
 end
---@api-stub: LNeuroevolution:popSize
+--@api-stub: LGeneticAlgorithm:popSize
 -- Performs the pop size operation on this genetic algorithm.
 do
-  local ga = lurek.ai.newGeneticAlgorithm(20, 8, 42)
-  lurek.log.debug("pop=" .. ga:popSize(), "ai")
+  local genetic = lurek.ai.newGeneticAlgorithm(20, 8, 42)
+  lurek.log.debug("pop=" .. tostring(genetic:popSize()), "ai")
 end
---@api-stub: LNeuroevolution:setFitness
+--@api-stub: LGeneticAlgorithm:setFitness
 -- Sets the fitness of this genetic algorithm.
 do
-  local ga = lurek.ai.newGeneticAlgorithm(20, 8, 42)
-  for i = 0, ga:popSize() - 1 do ga:setFitness(i, math.random()) end
+  local genetic = lurek.ai.newGeneticAlgorithm(20, 8, 42)
+  for chromosome_index = 0, genetic:popSize() - 1 do
+    genetic:setFitness(chromosome_index, 0.25 + chromosome_index * 0.01)
+  end
 end
 --@api-stub: LGeneticAlgorithm:getGenes
 -- Returns the genes of this genetic algorithm.
 do
-  local ga = lurek.ai.newGeneticAlgorithm(20, 8, 42)
-  local genes = ga:getGenes(0)
-  lurek.log.debug("g0=" .. genes[1], "ai")
+  local genetic = lurek.ai.newGeneticAlgorithm(20, 8, 42)
+  local genes = genetic:getGenes(0)
+  lurek.log.debug("first gene=" .. tostring(genes[1]), "ai")
 end
 --@api-stub: LGeneticAlgorithm:bestGenes
 -- Performs the best genes operation on this genetic algorithm.
 do
-  local ga = lurek.ai.newGeneticAlgorithm(20, 8, 42)
-  ga:setFitness(0, 1.0)
-  local best = ga:bestGenes()
-  lurek.log.debug("best[1]=" .. best[1], "ai")
+  local genetic = lurek.ai.newGeneticAlgorithm(20, 8, 42)
+  genetic:setFitness(0, 1.0)
+  local best = genetic:bestGenes()
+  lurek.log.debug("best[1]=" .. tostring(best[1]), "ai")
 end
 --@api-stub: LBandit:select
 -- Performs the select operation on this bandit.
 do
-  local b = lurek.ai.newBandit(4, "ucb1", 0.1, 99)
-  local arm = b:select()
-  lurek.log.debug("arm=" .. arm, "ai")
+  local bandit = lurek.ai.newBandit(4, "ucb1", 0.1, 99)
+  local arm = bandit:select()
+  lurek.log.debug("arm=" .. tostring(arm), "ai")
 end
---@api-stub: LStrategyAI:update
+--@api-stub: LBandit:update
 -- Advances this bandit by the given delta time.
 do
-  local b = lurek.ai.newBandit(4, "ucb1", 0.1, 99)
-  local arm = b:select()
-  b:update(arm, 1.0)
+  local bandit = lurek.ai.newBandit(4, "ucb1", 0.1, 99)
+  local arm = bandit:select()
+  bandit:update(arm, 1.0)
+  lurek.log.debug("pulls=" .. tostring(bandit:totalPulls()), "ai")
 end
 --@api-stub: LBandit:bestArm
--- Performs the best arm operation on this bandit.
+-- Returns the zero-based arm index with the strongest current reward estimate.
 do
-  local b = lurek.ai.newBandit(4, "ucb1", 0.1, 99)
-  b:update(0, 0.7); b:update(1, 0.3)
-  lurek.log.debug("best arm=" .. b:bestArm(), "ai")
+  local bandit = lurek.ai.newBandit(4, "ucb1", 0.1, 99)
+  bandit:update(0, 0.7)
+  bandit:update(1, 0.3)
+  bandit:update(2, 0.9)
+
+  local best_arm = bandit:bestArm()
+  lurek.log.debug("best reward arm=" .. tostring(best_arm), "ai")
 end
 --@api-stub: LBandit:reset
--- Resets this bandit to its default state.
+-- Clears all recorded pulls and reward estimates for this bandit.
 do
-  local b = lurek.ai.newBandit(4, "ucb1", 0.1, 99)
-  b:reset()
+  local bandit = lurek.ai.newBandit(4, "ucb1", 0.1, 99)
+  bandit:update(0, 0.4)
+  bandit:update(1, 0.8)
+  lurek.log.debug("before reset pulls=" .. tostring(bandit:totalPulls()), "ai")
+
+  bandit:reset()
+  lurek.log.debug("after reset pulls=" .. tostring(bandit:totalPulls()), "ai")
 end
 --@api-stub: LBandit:armCount
--- Performs the arm count operation on this bandit.
+-- Returns how many zero-based choices the bandit can select from.
 do
-  local b = lurek.ai.newBandit(4, "ucb1", 0.1, 99)
-  lurek.log.debug("arms=" .. b:armCount(), "ai")
+  local bandit = lurek.ai.newBandit(4, "epsilon_greedy", 0.2, 42)
+  for arm = 0, bandit:armCount() - 1 do
+    bandit:update(arm, arm * 0.25)
+  end
+  lurek.log.debug("bandit arms=" .. tostring(bandit:armCount()), "ai")
 end
 --@api-stub: LBandit:totalPulls
--- Performs the total pulls operation on this bandit.
+-- Reports the total number of arm selections recorded by this bandit.
 do
-  local b = lurek.ai.newBandit(4, "ucb1", 0.1, 99)
-  b:select(); b:select()
-  lurek.log.debug("pulls=" .. b:totalPulls(), "ai")
+  local bandit = lurek.ai.newBandit(3, "ucb1", 0.1, 99)
+  for _ = 1, 5 do
+    local arm = bandit:select()
+    bandit:update(arm, arm == 2 and 1.0 or 0.25)
+  end
+  lurek.log.debug("recorded pulls=" .. tostring(bandit:totalPulls()), "ai")
 end
 --@api-stub: LNeuroevolution:evolve
--- Performs the evolve operation on this neuroevolution.
+-- Advances the population by one generation after fitness values are assigned.
 do
   local layers = { { inputs = 2, outputs = 4, activation = "relu" }, { inputs = 4, outputs = 1, activation = "tanh" } }
-  local ne = lurek.ai.newNeuroevolution(layers, 10, 1)
-  for i = 0, ne:popSize() - 1 do ne:setFitness(i, 0.5) end
-  ne:evolve()
+  local evolution = lurek.ai.newNeuroevolution(layers, 10, 1)
+  for index = 0, evolution:popSize() - 1 do
+    evolution:setFitness(index, 1.0 - index * 0.05)
+  end
+
+  evolution:evolve()
+  lurek.log.debug("generation=" .. tostring(evolution:generation()), "ai")
 end
 --@api-stub: LNeuroevolution:setFitness
--- Sets the fitness of this neuroevolution.
+-- Stores the score for one zero-based chromosome before the next evolve call.
 do
   local layers = { { inputs = 2, outputs = 4, activation = "relu" }, { inputs = 4, outputs = 1, activation = "tanh" } }
-  local ne = lurek.ai.newNeuroevolution(layers, 10, 1)
-  ne:setFitness(0, 0.85)
+  local evolution = lurek.ai.newNeuroevolution(layers, 10, 1)
+  evolution:setFitness(0, 0.85)
+  evolution:setFitness(1, 0.35)
+  lurek.log.debug("best fitness=" .. tostring(evolution:bestFitness()), "ai")
 end
 --@api-stub: LNeuroevolution:chromosomeToNet
--- Performs the chromosome to net operation on this neuroevolution.
+-- Converts a valid chromosome index into an LNeuralNet handle.
 do
   local layers = { { inputs = 2, outputs = 4, activation = "relu" }, { inputs = 4, outputs = 1, activation = "tanh" } }
-  local ne = lurek.ai.newNeuroevolution(layers, 10, 1)
-  local net = ne:chromosomeToNet(0)
-  if net then lurek.log.debug("net layers=" .. net:layerCount(), "ai") end
+  local evolution = lurek.ai.newNeuroevolution(layers, 10, 1)
+  local network = evolution:chromosomeToNet(0)
+  if network then
+    local output = network:forward({ 0.25, 0.75 })
+    lurek.log.debug("chromosome net output=" .. tostring(output[1]), "ai")
+  end
 end
 --@api-stub: LNeuroevolution:bestNetwork
--- Performs the best network operation on this neuroevolution.
+-- Returns an LNeuralNet built from the current best chromosome, when one exists.
 do
   local layers = { { inputs = 2, outputs = 4, activation = "relu" }, { inputs = 4, outputs = 1, activation = "tanh" } }
-  local ne = lurek.ai.newNeuroevolution(layers, 10, 1)
-  ne:setFitness(0, 1.0)
-  local best = ne:bestNetwork()
-  if best then lurek.log.debug("ok", "ai") end
+  local evolution = lurek.ai.newNeuroevolution(layers, 10, 1)
+  evolution:setFitness(0, 1.0)
+  evolution:setFitness(1, 0.2)
+  local best = evolution:bestNetwork()
+  if best then
+    lurek.log.debug("best network layers=" .. tostring(best:layerCount()), "ai")
+  end
 end
 --@api-stub: LNeuroevolution:bestFitness
--- Performs the best fitness operation on this neuroevolution.
+-- Reads the highest chromosome fitness currently recorded in the population.
 do
   local layers = { { inputs = 2, outputs = 4, activation = "relu" }, { inputs = 4, outputs = 1, activation = "tanh" } }
-  local ne = lurek.ai.newNeuroevolution(layers, 10, 1)
-  ne:setFitness(0, 0.7)
-  lurek.log.debug("best=" .. ne:bestFitness(), "ai")
+  local evolution = lurek.ai.newNeuroevolution(layers, 10, 1)
+  evolution:setFitness(0, 0.7)
+  evolution:setFitness(3, 0.95)
+  lurek.log.debug("best fitness=" .. tostring(evolution:bestFitness()), "ai")
 end
 --@api-stub: LNeuroevolution:popSize
--- Performs the pop size operation on this neuroevolution.
+-- Returns the number of chromosomes maintained by this neuroevolution run.
 do
   local layers = { { inputs = 2, outputs = 4, activation = "relu" }, { inputs = 4, outputs = 1, activation = "tanh" } }
-  local ne = lurek.ai.newNeuroevolution(layers, 10, 1)
-  lurek.log.debug("pop=" .. ne:popSize(), "ai")
+  local evolution = lurek.ai.newNeuroevolution(layers, 10, 1)
+  for index = 0, evolution:popSize() - 1 do
+    evolution:setFitness(index, index / evolution:popSize())
+  end
+  lurek.log.debug("population size=" .. tostring(evolution:popSize()), "ai")
 end
 --@api-stub: LNeuroevolution:generation
--- Performs the generation operation on this neuroevolution.
+-- Returns the current generation count, which increases after evolve.
 do
   local layers = { { inputs = 2, outputs = 4, activation = "relu" }, { inputs = 4, outputs = 1, activation = "tanh" } }
-  local ne = lurek.ai.newNeuroevolution(layers, 10, 1)
-  if ne:generation() >= 50 then lurek.log.info("converged", "ai") end
+  local evolution = lurek.ai.newNeuroevolution(layers, 10, 1)
+  local before = evolution:generation()
+  evolution:setFitness(0, 1.0)
+  evolution:evolve()
+  lurek.log.debug("generation " .. tostring(before) .. " -> " .. tostring(evolution:generation()), "ai")
 end
 --@api-stub: LStrategyAI:addGoal
--- Adds a goal to this strategy ai.
+-- Registers a named strategic option that scorer callbacks can rank.
 do
-  local s = lurek.ai.newStrategyAI(2.0)
-  s:addGoal("expand")
-  s:addGoal("defend")
+  local strategy = lurek.ai.newStrategyAI(2.0)
+  strategy:addGoal("expand")
+  strategy:addGoal("defend")
+  strategy:forceEvaluate(function(goal)
+    return goal == "defend" and 0.9 or 0.4
+  end)
+  lurek.log.debug("active goal=" .. tostring(strategy:activeGoal()), "ai")
 end
 --@api-stub: LStrategyAI:addTag
--- Adds a tag to this strategy ai.
+-- Adds one context tag to the strategy model for systems that track eligibility state.
 do
-  local s = lurek.ai.newStrategyAI(2.0)
-  s:addTag("early_game")
+  local strategy = lurek.ai.newStrategyAI(2.0)
+  strategy:addTag("early_game")
+  strategy:addGoal("scout")
+  strategy:forceEvaluate(function(goal)
+    return goal == "scout" and 0.75 or 0.0
+  end)
+  lurek.log.debug("tagged strategy goal=" .. tostring(strategy:activeGoal()), "ai")
 end
 --@api-stub: LStrategyAI:removeTag
--- Removes a tag from this strategy ai.
+-- Removes a context tag from the strategy model when the world state changes.
 do
-  local s = lurek.ai.newStrategyAI(2.0)
-  s:addTag("scout_phase")
-  s:removeTag("scout_phase")
+  local strategy = lurek.ai.newStrategyAI(2.0)
+  strategy:addTag("scout_phase")
+  strategy:removeTag("scout_phase")
+  strategy:addGoal("hold_position")
+  strategy:forceEvaluate(function(goal)
+    return goal == "hold_position" and 0.6 or 0.0
+  end)
+  lurek.log.debug("strategy after tag removal=" .. tostring(strategy:activeGoal()), "ai")
 end
 --@api-stub: LStrategyAI:update
--- Advances this strategy ai by the given delta time.
+-- Advances the internal timer and evaluates goals after the configured interval elapses.
 do
-  local s = lurek.ai.newStrategyAI(2.0)
-  s:addGoal("expand")
-  function lurek.process(dt) s:update(dt, function(goal) return 0.5 end) end
+  local strategy = lurek.ai.newStrategyAI(1.0)
+  strategy:addGoal("expand")
+  strategy:addGoal("fortify")
+  strategy:update(0.5, function(goal)
+    return goal == "expand" and 0.5 or 0.7
+  end)
+  strategy:update(0.6, function(goal)
+    return goal == "expand" and 0.5 or 0.7
+  end)
+  lurek.log.debug("strategy update picked=" .. tostring(strategy:activeGoal()), "ai")
 end
 --@api-stub: LStrategyAI:forceEvaluate
--- Performs the force evaluate operation on this strategy ai.
+-- Immediately evaluates all registered goals without waiting for the timer interval.
 do
-  local s = lurek.ai.newStrategyAI(2.0)
-  s:addGoal("retreat")
-  s:forceEvaluate(function(goal) return goal == "retreat" and 1.0 or 0.0 end)
+  local strategy = lurek.ai.newStrategyAI(2.0)
+  strategy:addGoal("retreat")
+  strategy:addGoal("push")
+  strategy:forceEvaluate(function(goal)
+    return goal == "retreat" and 1.0 or 0.0
+  end)
+  lurek.log.info("forced goal=" .. tostring(strategy:activeGoal()), "ai")
 end
 --@api-stub: LStrategyAI:activeGoal
--- Performs the active goal operation on this strategy ai.
+-- Returns the currently selected strategic goal, or nil before evaluation.
 do
-  local s = lurek.ai.newStrategyAI(2.0)
-  s:addGoal("hold"); s:forceEvaluate(function(g) return 1.0 end)
-  local g = s:activeGoal()
-  if g then lurek.log.info("strategy=" .. g, "ai") end
+  local strategy = lurek.ai.newStrategyAI(2.0)
+  strategy:addGoal("hold")
+  strategy:addGoal("advance")
+  strategy:forceEvaluate(function(goal)
+    return goal == "advance" and 0.8 or 0.3
+  end)
+  local active_goal = strategy:activeGoal()
+  if active_goal then
+    lurek.log.info("active strategy=" .. active_goal, "ai")
+  end
 end
 --@api-stub: LStrategyAI:timeUntilNext
--- Performs the time until next operation on this strategy ai.
+-- Returns the seconds remaining before the next interval-based evaluation.
 do
-  local s = lurek.ai.newStrategyAI(2.0)
-  lurek.log.debug("next eval in " .. s:timeUntilNext(), "ai")
+  local strategy = lurek.ai.newStrategyAI(2.0)
+  strategy:addGoal("economy")
+  strategy:update(0.75, function(goal)
+    return goal == "economy" and 1.0 or 0.0
+  end)
+  lurek.log.debug("next eval in " .. tostring(strategy:timeUntilNext()), "ai")
 end
 --@api-stub: LAILod:shouldUpdate
--- Performs the should update operation on this ai lod.
+-- Checks whether agents in a zero-based LOD tier should run on a frame counter.
 do
   local lod = lurek.ai.newAILod()
-  if lod:shouldUpdate(1, 60) then lurek.log.debug("tier 1 tick", "ai") end
+  local tier = lod:tierFor(650, 0, 0, 0)
+  for frame = 60, 64 do
+    if lod:shouldUpdate(tier, frame) then
+      lurek.log.debug("tier " .. tostring(tier) .. " updates on frame " .. tostring(frame), "ai")
+    end
+  end
 end
 --@api-stub: LAILod:tierCount
--- Performs the tier count operation on this ai lod.
+-- Returns how many distance tiers are configured in the default AI LOD table.
 do
   local lod = lurek.ai.newAILod()
-  lurek.log.debug("tiers=" .. lod:tierCount(), "ai")
+  for tier = 0, lod:tierCount() - 1 do
+    lurek.log.debug("lod tier index=" .. tostring(tier), "ai")
+  end
+  lurek.log.debug("lod tier count=" .. tostring(lod:tierCount()), "ai")
 end
 --@api-stub: LAILod:tierName
--- Performs the tier name operation on this ai lod.
+-- Returns the display name for a zero-based AI LOD tier when the tier exists.
 do
   local lod = lurek.ai.newAILod()
-  local n = lod:tierName(0)
-  if n then lurek.log.debug("tier 0=" .. n, "ai") end
+  for tier = 0, lod:tierCount() - 1 do
+    local name = lod:tierName(tier)
+    if name then
+      lurek.log.debug("lod tier " .. tostring(tier) .. " is " .. name, "ai")
+    end
+  end
 end
 --@api-stub: LAgent:setCustomModel
--- Sets the custom model of this agent.
+-- Installs a Lua decision callback that runs when the owning AI world updates.
 do
   local world = lurek.ai.newWorld()
   local agent = world:addAgent("custom_agent")
   agent:setCustomModel(function(ag, bb, dt)
-    -- Read from blackboard and steer accordingly
-    local dist = bb:getNumber("target_dist", 999)
-    if dist < 50 then
+    local target_dist = bb:getNumber("target_dist", 999)
+    if target_dist < 50 then
       ag:setVelocity(0, 0)
+    else
+      ag:setVelocity(20 * dt, 0)
     end
   end)
   world:update(0.016)
-  lurek.log.debug("custom model: " .. agent:getDecisionModel(), "ai")
+  local vx, vy = agent:getVelocity()
+  lurek.log.debug("custom model=" .. agent:getDecisionModel() .. " velocity=" .. tostring(vx) .. "," .. tostring(vy), "ai")
 end
 --@api-stub: lurek.ai.newGuard
 -- Creates a guard decorator that runs a predicate before ticking its child
 do
-  local action = lurek.ai.newAction(function(ag, bb, dt) return "success" end)
+  local action = lurek.ai.newAction(function(ag, bb, dt)
+    return dt >= 0 and "success" or "failure"
+  end)
   local guard = lurek.ai.newGuard(
-    function(ag, bb) return bb:getNumber("health", 1.0) > 0.0 end,
+    function(ag, bb)
+      return bb:getNumber("health", 1.0) > 0.0
+    end,
     action
   )
   lurek.log.debug("guard type=" .. guard:getNodeType(), "ai")
   lurek.log.debug("guard children=" .. guard:getChildCount(), "ai")
 end
 --@api-stub: LUtilityAI:addConsideration
--- Adds a consideration to this utility ai.
+-- Adds an extra scorer and response curve to an existing utility action.
 do
-  local ua = lurek.ai.newUtilityAI()
-  ua:addAction("patrol", function() return 0.4 end, 1.0)
-  ua:addConsideration(
+  local utility = lurek.ai.newUtilityAI()
+  utility:addAction("patrol", function()
+    return 0.4
+  end, 1.0)
+  utility:addConsideration(
     "patrol",
     "health_curve",
-    function() return 0.8 end,
-    "quadratic"
+    function()
+      return 0.8
+    end,
+    "linear",
+    1.0,
+    0.0,
+    0.0,
+    0.5
   )
-  lurek.log.debug("considerations registered without error", "ai")
+  lurek.log.debug("utility winner=" .. tostring(utility:evaluate()), "ai")
 end
 --@api-stub: LSteeringManager:addCustomBehavior
--- Adds a custom behavior to this steering manager.
+-- Adds a weighted Lua callback that returns a steering force.
 do
-  local sm = lurek.ai.newSteeringManager()
-  sm:addCustomBehavior(function(ag, dt)
-    return 100, 0   -- constant rightward force
+  local steering = lurek.ai.newSteeringManager()
+  steering:addCustomBehavior(function(ag, dt)
+    return 100 * dt, 0
   end, 1.0)
-  lurek.log.debug("custom behaviors=" .. sm:getBehaviorCount(), "ai")
+  lurek.log.debug("custom behaviors=" .. tostring(steering:getBehaviorCount()), "ai")
 end
 --@api-stub: LSteeringManager:applyCustomSteering
--- Applies custom steering to this steering manager.
+-- Runs all enabled custom steering callbacks and combines their weighted forces.
 do
   local world = lurek.ai.newWorld()
   local agent = world:addAgent("steered")
-  local sm = lurek.ai.newSteeringManager()
-  sm:addCustomBehavior(function(ag, dt)
-    return 50, 25
+  agent:setPosition(10, 20)
+
+  local steering = lurek.ai.newSteeringManager()
+  steering:addCustomBehavior(function(ag, dt)
+    local x, y = ag:getPosition()
+    return (50 - x) * dt, (25 - y) * dt
   end, 1.0)
-  -- applyCustomSteering passes the agent userdata to each callback
-  local fx, fy = sm:applyCustomSteering(agent, 0.016)
-  lurek.log.debug("custom force=" .. fx .. "," .. fy, "ai")
+  local fx, fy = steering:applyCustomSteering(agent, 0.016)
+  lurek.log.debug("custom force=" .. tostring(fx) .. "," .. tostring(fy), "ai")
 end
 --@api-stub: LEmotionModel:add
--- Adds a  to this emotion model.
+-- Registers an emotion with its resting value, decay rate, and active threshold.
 do
-  local em = lurek.ai.newEmotionModel()
-  em:add("fear", 0.0, 0.08, 1.0)
-  em:add("anger", 0.0, 0.06, 1.0)
-  lurek.log.info("emotions registered", "ai")
+  local emotions = lurek.ai.newEmotionModel()
+  emotions:add("fear", 0.0, 0.08, 1.0)
+  emotions:add("anger", 0.0, 0.06, 1.0)
+  emotions:trigger("fear", 1.25)
+  lurek.log.info("dominant emotion=" .. tostring(emotions:dominant()), "ai")
 end
 --@api-stub: LGOAPPlanner:addAction
--- Adds a action to this goap planner.
+-- Registers a GOAP action with an optional cost and callback for game execution.
 do
   local planner = lurek.ai.newGOAPPlanner()
-  planner:addAction("pickupKey", 2.0, function() lurek.log.info("pickup key", "ai") end)
-  planner:addAction("unlockDoor", 1.0, function() lurek.log.info("unlock door", "ai") end)
-  planner:addGoal("door_open", 1.0)
+  planner:addAction("pickup_key", 2.0, function()
+    lurek.log.info("picked up key", "ai")
+  end)
+  planner:setEffect("pickup_key", "has_key", true)
+  planner:addAction("unlock_door", 1.0, function()
+    lurek.log.info("door unlocked", "ai")
+  end)
+  planner:setPrecondition("unlock_door", "has_key", true)
+  planner:setEffect("unlock_door", "door_open", true)
+  lurek.log.debug("goap actions=" .. tostring(planner:getActionCount()), "ai")
 end
---@api-stub: LGOAPPlanner:addAction
--- Adds a action to this utility ai.
+--@api-stub: LUtilityAI:addAction
+-- Registers a utility action scored by a Lua callback.
 do
-  local uai = lurek.ai.newUtilityAI()
-  uai:addAction("heal", function() return 0.9 end)
-  uai:addAction("attack", function() return 0.4 end)
-  local best = uai:evaluate()
+  local utility = lurek.ai.newUtilityAI()
+  utility:addAction("heal", function()
+    return 0.9
+  end, 1.0)
+  utility:addAction("attack", function()
+    return 0.4
+  end, 1.0)
+  local best = utility:evaluate()
   lurek.log.info("best action: " .. (best or "none"), "ai")
 end
 --@api-stub: LORCASolver:addAgent
--- Adds a agent to this ai world.
+-- Adds an ORCA avoidance agent and returns its zero-based solver index.
 do
-  local world = lurek.ai.newWorld()
-  world:addAgent("guard_01")
-  world:addAgent("guard_02")
-  lurek.log.info("agents: " .. world:getAgentCount(), "ai")
+  local orca = lurek.ai.newORCASolver(2.0)
+  local first = orca:addAgent(0, 0, 12, 80)
+  local second = orca:addAgent(24, 0, 12, 80)
+  orca:setPreferredVelocity(first, 50, 0)
+  orca:setPreferredVelocity(second, -50, 0)
+  lurek.log.info("orca agents=" .. tostring(orca:agentCount()), "ai")
 end
 --@api-stub: LSteeringManager:addArrive
--- Adds a arrive to this steering manager.
+-- Adds an arrive behavior that slows down near the target point.
 do
-  local sm = lurek.ai.newSteeringManager()
-  sm:addArrive(400, 300, 1.0)
-  local fx, fy = sm:calculate(200, 200, 0, 0, 100, 50, 1 / 60)
-  lurek.log.info("arrive: " .. fx .. "," .. fy, "ai")
+  local steering = lurek.ai.newSteeringManager()
+  steering:addArrive(400, 300, 80, 1.0)
+  local fx, fy = steering:calculate(200, 200, 0, 0, 100, 50, 1 / 60)
+  lurek.log.info("arrive force=" .. tostring(fx) .. "," .. tostring(fy), "ai")
 end
 --@api-stub: LStimulusWorld:addAuditory
--- Adds a auditory to this stimulus world.
+-- Adds a decaying sound stimulus and returns its identifier.
 do
-  local sw = lurek.ai.newStimulusWorld()
-  sw:addAuditory(200, 150, 1.2, 100, 0.8, "footstep")
-  lurek.log.info("stimuli: " .. sw:count(), "ai")
+  local stimuli = lurek.ai.newStimulusWorld()
+  local id = stimuli:addAuditory(200, 150, 1.2, 100, 0.8, "footstep")
+  stimuli:update(0.25)
+  lurek.log.info("auditory stimulus " .. tostring(id) .. " count=" .. tostring(stimuli:count()), "ai")
 end
 --@api-stub: LContextSteering:addAvoidPoint
--- Adds a avoid point to this context steering.
+-- Adds point avoidance to a slot-based context steering model.
 do
-  local cs = lurek.ai.newContextSteering(16)
-  cs:addAvoidPoint(300, 200, 64, 1.5)
-  cs:addAvoidPoint(100, 350, 48, 1.0)
-  local fx, fy = cs:evaluate(150, 150, 0, 0)
-  lurek.log.info("context steer: " .. fx .. "," .. fy, "ai")
+  local context = lurek.ai.newContextSteering(16)
+  context:addSeekTarget(500, 300, 1.0)
+  context:addAvoidPoint(300, 200, 64, 1.5)
+  context:addAvoidPoint(100, 350, 48, 1.0)
+  local fx, fy = context:evaluate(150, 150, 0, 0)
+  lurek.log.info("context steer=" .. tostring(fx) .. "," .. tostring(fy), "ai")
 end
 --@api-stub: LHTNDomain:addCompound
--- Adds a compound to this htn domain.
+-- Adds a compound task whose methods decompose into primitive task names.
 do
-  local d = lurek.ai.newHTNDomain()
-  d:addPrimitive("attack", {"has_weapon"}, {"enemy_dead"}, {})
-  d:addCompound("defeat_enemy", {{"has_weapon"}, {"use_weapon"}})
-  lurek.log.info("htn tasks: " .. d:taskCount(), "ai")
+  local domain = lurek.ai.newHTNDomain()
+  domain:addPrimitive("draw_weapon", {}, { "armed" }, {})
+  domain:addPrimitive("strike", { "armed" }, { "enemy_down" }, {})
+  domain:addCompound("defeat_enemy", {
+    { name = "armed_attack", preconditions = {}, sub_tasks = { "draw_weapon", "strike" } }
+  })
+  lurek.log.info("htn tasks=" .. tostring(domain:taskCount()), "ai")
 end
 --@api-stub: LSteeringManager:addEvade
--- Adds a evade to this steering manager.
+-- Adds an evade behavior that moves away from a named threat agent.
 do
-  local sm = lurek.ai.newSteeringManager()
-  sm:addEvade("player", 1.0)
-  local fx, fy = sm:calculate(200, 200, 0, 0, 100, 50, 1 / 60)
-  lurek.log.info("evade: " .. fx .. "," .. fy, "ai")
+  local steering = lurek.ai.newSteeringManager()
+  steering:addEvade("player", 1.0)
+  local fx, fy = steering:calculate(200, 200, 0, 0, 100, 50, 1 / 60)
+  lurek.log.info("evade force=" .. tostring(fx) .. "," .. tostring(fy), "ai")
 end
 --@api-stub: LSteeringManager:addFlee
--- Adds a flee to this steering manager.
+-- Adds a flee behavior that pushes away from a threat point inside a panic radius.
 do
-  local sm = lurek.ai.newSteeringManager()
-  sm:addFlee(400, 300, 1.0)
-  local fx, fy = sm:calculate(200, 200, 0, 0, 100, 50, 1 / 60)
-  lurek.log.info("flee: " .. fx .. "," .. fy, "ai")
+  local steering = lurek.ai.newSteeringManager()
+  steering:addFlee(400, 300, 250, 1.0)
+  local fx, fy = steering:calculate(250, 240, 0, 0, 100, 50, 1 / 60)
+  lurek.log.info("flee force=" .. tostring(fx) .. "," .. tostring(fy), "ai")
 end
 --@api-stub: LSteeringManager:addFlock
--- Adds a flock to this steering manager.
+-- Adds flocking weights for separation, alignment, and cohesion.
 do
-  local sm = lurek.ai.newSteeringManager()
-  sm:addFlock(80, 1.0, 0.8, 0.6)
-  local fx, fy = sm:calculate(200, 200, 10, 0, 100, 50, 1 / 60)
-  lurek.log.info("flock: " .. fx .. "," .. fy, "ai")
+  local steering = lurek.ai.newSteeringManager()
+  steering:addFlock(80, 1.0, 0.8, 0.6, 1.0)
+  local fx, fy = steering:calculate(200, 200, 10, 0, 100, 50, 1 / 60)
+  lurek.log.info("flock force=" .. tostring(fx) .. "," .. tostring(fy), "ai")
 end
---@api-stub: LStrategyAI:addGoal
--- Adds a goal to this goap planner.
+--@api-stub: LGOAPPlanner:addGoal
+-- Registers a named GOAP goal and its priority weight.
 do
   local planner = lurek.ai.newGOAPPlanner()
-  planner:addAction("rest", 1.0, function() end)
+  planner:addAction("rest", 1.0, function()
+    lurek.log.debug("rest action", "ai")
+  end)
   planner:addGoal("is_rested", 1.0)
   planner:addGoal("is_safe", 2.0)
-  lurek.log.info("goal count: " .. planner:getGoalCount(), "ai")
+  lurek.log.info("goap goal count=" .. tostring(planner:getGoalCount()), "ai")
 end
 --@api-stub: LNeuralNet:addLayer
--- Adds a layer to this influence map.
+-- Adds a feed-forward neural network layer with a named activation function.
 do
-  local im = lurek.ai.newInfluenceMap(32, 32, 16)
-  im:addLayer("threat")
-  im:addLayer("resource")
-  lurek.log.info("has threat layer: " .. tostring(im:hasLayer("threat")), "ai")
+  local network = lurek.ai.newNeuralNet()
+  network:addLayer(2, 3, "relu")
+  network:addLayer(3, 1, "sigmoid")
+  local output = network:forward({ 0.25, 0.75 })
+  lurek.log.info("network output=" .. tostring(output[1]), "ai")
 end
 --@api-stub: LTraitProfile:addModifier
--- Adds a modifier to this trait profile.
+-- Adds a temporary modifier to a base trait value.
 do
   local traits = lurek.ai.newTraitProfile()
   traits:set("courage", 0.5)
   traits:addModifier("courage", -0.3, 5.0, "fear_potion")
-  lurek.log.info("effective courage: " .. traits:get("courage"), "ai")
+  lurek.log.info("effective courage=" .. tostring(traits:get("courage")), "ai")
 end
 --@api-stub: LSteeringManager:addPursue
--- Adds a pursue to this steering manager.
+-- Adds a pursue behavior that chases a named target agent.
 do
-  local sm = lurek.ai.newSteeringManager()
-  sm:addPursue("player", 1.0)
-  local fx, fy = sm:calculate(200, 200, 0, 0, 100, 50, 1 / 60)
-  lurek.log.info("pursue: " .. fx .. "," .. fy, "ai")
+  local steering = lurek.ai.newSteeringManager()
+  steering:addPursue("player", 1.0)
+  local fx, fy = steering:calculate(200, 200, 0, 0, 100, 50, 1 / 60)
+  lurek.log.info("pursue force=" .. tostring(fx) .. "," .. tostring(fy), "ai")
 end
 --@api-stub: LSteeringManager:addSeek
--- Adds a seek to this steering manager.
+-- Adds a seek behavior that pulls the agent toward a target point.
 do
-  local sm = lurek.ai.newSteeringManager()
-  sm:addSeek(500, 400, 1.0)
-  local fx, fy = sm:calculate(100, 100, 0, 0, 150, 50, 1 / 60)
-  lurek.log.info("seek force: " .. fx .. "," .. fy, "ai")
+  local steering = lurek.ai.newSteeringManager()
+  steering:addSeek(500, 400, 1.0)
+  local fx, fy = steering:calculate(100, 100, 0, 0, 150, 50, 1 / 60)
+  lurek.log.info("seek force=" .. tostring(fx) .. "," .. tostring(fy), "ai")
 end
 --@api-stub: LContextSteering:addSeekTarget
--- Adds a seek target to this context steering.
+-- Adds target attraction to a context steering slot model.
 do
-  local cs = lurek.ai.newContextSteering(16)
-  cs:addSeekTarget(500, 300, 1.0)
-  cs:addSeekTarget(400, 400, 0.6)
-  local fx, fy = cs:evaluate(200, 200, 0, 0)
-  lurek.log.info("context direction: " .. fx .. "," .. fy, "ai")
+  local context = lurek.ai.newContextSteering(16)
+  context:addSeekTarget(500, 300, 1.0)
+  context:addSeekTarget(400, 400, 0.6)
+  local fx, fy = context:evaluate(200, 200, 0, 0)
+  lurek.log.info("context direction=" .. tostring(fx) .. "," .. tostring(fy), "ai")
 end
 --@api-stub: LStateMachine:addTransition
--- Adds a transition to this state machine.
+-- Adds a guarded transition between two named state-machine states.
 do
   local fsm = lurek.ai.newStateMachine()
-  fsm:addState("patrol", {})
-  fsm:addState("alert", {})
-  fsm:addTransition("patrol", "alert", function() return true end)
+  fsm:addState("patrol", { onEnter = function() lurek.log.debug("enter patrol", "ai") end })
+  fsm:addState("alert", { onEnter = function() lurek.log.debug("enter alert", "ai") end })
+  fsm:addTransition("patrol", "alert", function()
+    return true
+  end, 10)
   fsm:setInitialState("patrol")
   lurek.log.info("state: " .. (fsm:getCurrentState() or "nil"), "ai")
 end
 --@api-stub: LStimulusWorld:addVisual
--- Adds a visual to this stimulus world.
+-- Adds a visual stimulus and returns its identifier.
 do
-  local sw = lurek.ai.newStimulusWorld()
-  sw:addVisual(300, 200, 1.0, 200, "player")
-  sw:addAuditory(300, 200, 1.0, 80, 0.5, "footstep")
-  lurek.log.info("stimuli count: " .. sw:count(), "ai")
+  local stimuli = lurek.ai.newStimulusWorld()
+  local visual_id = stimuli:addVisual(300, 200, 1.0, 200, "player")
+  stimuli:addAuditory(300, 200, 1.0, 80, 0.5, "footstep")
+  lurek.log.info("visual stimulus " .. tostring(visual_id) .. " count=" .. tostring(stimuli:count()), "ai")
 end
 --@api-stub: LContextSteering:addWander
--- Adds a wander to this steering manager.
+-- Adds wander noise to context steering before evaluating the selected slot.
 do
-  local sm = lurek.ai.newSteeringManager()
-  sm:addWander(25, 50, 8, 0.4)
-  local fx, fy = sm:calculate(200, 200, 0, 0, 100, 50, 1 / 60)
-  lurek.log.info("wander: " .. fx .. "," .. fy, "ai")
+  local context = lurek.ai.newContextSteering(16)
+  context:addSeekTarget(500, 300, 0.6)
+  context:addWander(8, 0.4)
+  local fx, fy = context:evaluate(200, 200, 0, 0)
+  lurek.log.info("context wander=" .. tostring(fx) .. "," .. tostring(fy), "ai")
 end
 --@api-stub: LInfluenceMap:blend
--- Performs the blend operation on this influence map.
+-- Blends two influence layers into a destination layer with independent weights.
 do
-  local im = lurek.ai.newInfluenceMap(32, 32, 16)
-  im:addLayer("threat")
-  im:addLayer("resource")
-  im:stampInfluence("threat", 256, 256, 64, 1.0, 1.0)
-  im:blend("threat", 0.5, "resource", 0.5, "resource")
-  lurek.log.info("blend complete", "ai")
+  local map = lurek.ai.newInfluenceMap(32, 32, 16)
+  map:addLayer("threat")
+  map:addLayer("resource")
+  map:addLayer("priority")
+  map:stampInfluence("threat", 256, 256, 64, 1.0, 1.0)
+  map:stampInfluence("resource", 192, 192, 64, 0.6, 1.0)
+  map:blend("threat", 0.7, "resource", 0.3, "priority")
+  lurek.log.info("priority influence=" .. tostring(map:getInfluence("priority", 16, 16)), "ai")
 end
 --@api-stub: LSteeringManager:calculate
--- Performs the calculate operation on this steering manager.
+-- Calculates the combined steering force from the configured behaviors.
 do
-  local sm = lurek.ai.newSteeringManager()
-  sm:addSeek(400, 300, 1.0)
-  local fx, fy = sm:calculate(100, 100, 0, 0, 120, 50, 1 / 60)
-  lurek.log.info("steering force: " .. fx .. "," .. fy, "ai")
+  local steering = lurek.ai.newSteeringManager()
+  steering:addSeek(400, 300, 1.0)
+  steering:addArrive(400, 300, 80, 0.5)
+  local fx, fy = steering:calculate(100, 100, 0, 0, 120, 50, 1 / 60)
+  lurek.log.info("steering force=" .. tostring(fx) .. "," .. tostring(fy), "ai")
 end
 --@api-stub: LStimulusWorld:count
--- Returns the total count of items held by this stimulus world.
+-- Returns the number of active visual and auditory stimuli.
 do
-  local sw = lurek.ai.newStimulusWorld()
-  sw:addAuditory(200, 100, 1.0, 80, 0.8, "gunshot")
-  local n = sw:count()
-  lurek.log.info("active stimuli: " .. n, "ai")
+  local stimuli = lurek.ai.newStimulusWorld()
+  local sound_id = stimuli:addAuditory(200, 100, 1.0, 80, 0.8, "alert")
+  stimuli:addVisual(240, 120, 0.6, 120, "movement")
+  local count = stimuli:count()
+  lurek.log.info("active stimuli=" .. tostring(count) .. " first=" .. tostring(sound_id), "ai")
 end
 --@api-stub: LCommandQueue:enqueue
--- Performs the enqueue operation on this command queue.
+-- Appends callback-backed commands with optional target and priority fields.
 do
-  local q = lurek.ai.newCommandQueue()
-  q:enqueue("move", function() end, {x=300, y=200})
-  q:enqueue("attack", function() end, {targetId="enemy_01"})
-  lurek.log.info("queue count: " .. q:getCount(), "ai")
+  local queue = lurek.ai.newCommandQueue()
+  queue:enqueue("move", function()
+    lurek.log.debug("move command", "ai")
+  end, { targetX = 300, targetY = 200, priority = 1 })
+  queue:enqueue("attack", function()
+    lurek.log.debug("attack command", "ai")
+  end, { targetX = 480, targetY = 220, priority = 2, interruptible = false })
+  lurek.log.info("queue count=" .. tostring(queue:getCount()), "ai")
 end
 --@api-stub: LContextSteering:evaluate
--- Performs the evaluate operation on this context steering.
+-- Evaluates all context steering influences and returns the chosen direction.
 do
-  local cs = lurek.ai.newContextSteering(16)
-  cs:addSeekTarget(500, 300, 1.0)
-  cs:addAvoidPoint(350, 250, 50, 1.0)
-  local fx, fy = cs:evaluate(200, 200, 0, 0)
-  lurek.log.info("evaluated: " .. fx .. "," .. fy, "ai")
+  local context = lurek.ai.newContextSteering(16)
+  context:addSeekTarget(500, 300, 1.0)
+  context:addAvoidPoint(350, 250, 50, 1.0)
+  local dx, dy = context:evaluate(200, 200, 0, 0)
+  lurek.log.info("context direction=" .. tostring(dx) .. "," .. tostring(dy), "ai")
+  lurek.log.debug("chosen magnitude=" .. tostring(context:chosenMagnitude()), "ai")
 end
 --@api-stub: LAIBlackboard:getBool
--- Returns the bool of this blackboard.
+-- Reads a boolean fact, using the fallback when the key is missing or not boolean.
 do
-  local bb = lurek.ai.newBlackboard()
-  bb:setBool("player_spotted", true)
-  local spotted = bb:getBool("player_spotted")
+  local blackboard = lurek.ai.newBlackboard()
+  blackboard:setBool("player_spotted", true)
+  local spotted = blackboard:getBool("player_spotted", false)
+  local can_attack = blackboard:getBool("can_attack", false)
   lurek.log.info("player spotted: " .. tostring(spotted), "ai")
+  lurek.log.debug("can attack: " .. tostring(can_attack), "ai")
 end
 --@api-stub: LSquad:getFormationPosition
--- Returns the formation position of this squad.
+-- Calculates a one-based member slot position around the leader.
 do
   local squad = lurek.ai.newSquad("alpha")
   squad:addMember("guard_01")
+  squad:addMember("guard_02")
   squad:setFormation("wedge", 32)
-  local px, py = squad:getFormationPosition(1, 400, 300)
-  lurek.log.info("slot: " .. px .. "," .. py, "ai")
+  local first_x, first_y = squad:getFormationPosition(1, 400, 300)
+  local second_x, second_y = squad:getFormationPosition(2, 400, 300)
+  lurek.log.info("slot 1=" .. tostring(first_x) .. "," .. tostring(first_y), "ai")
+  lurek.log.debug("slot 2=" .. tostring(second_x) .. "," .. tostring(second_y), "ai")
 end
 --@api-stub: LInfluenceMap:getInfluence
--- Returns the influence of this influence map.
+-- Reads one named-layer cell using one-based cell coordinates.
 do
-  local im = lurek.ai.newInfluenceMap(32, 32, 16)
-  im:addLayer("threat")
-  im:stampInfluence("threat", 256, 256, 64, 1.0, 0.9)
-  local v = im:getInfluence("threat", 16, 16)
-  lurek.log.info("influence at centre: " .. v, "ai")
+  local map = lurek.ai.newInfluenceMap(32, 32, 16)
+  map:addLayer("threat")
+  map:stampInfluence("threat", 256, 256, 64, 1.0, 0.9)
+  local value = map:getInfluence("threat", 16, 16)
+  lurek.log.info("threat influence=" .. tostring(value), "ai")
 end
 --@api-stub: LAIBlackboard:getNumber
--- Returns the number of this blackboard.
+-- Reads a numeric fact, using the fallback when the key is missing or not numeric.
 do
-  local bb = lurek.ai.newBlackboard()
-  bb:setNumber("threat_level", 0.75)
-  local t = bb:getNumber("threat_level")
-  lurek.log.info("threat: " .. t, "ai")
+  local blackboard = lurek.ai.newBlackboard()
+  blackboard:setNumber("threat_level", 0.75)
+  local threat = blackboard:getNumber("threat_level", 0.0)
+  local courage = blackboard:getNumber("courage", 0.5)
+  lurek.log.info("threat=" .. tostring(threat) .. " courage=" .. tostring(courage), "ai")
 end
 --@api-stub: LAIBlackboard:getString
--- Returns the string of this blackboard.
+-- Reads a string fact, using the fallback when the key is missing or not a string.
 do
-  local bb = lurek.ai.newBlackboard()
-  bb:setString("last_enemy", "goblin_03")
-  local name = bb:getString("last_enemy")
-  lurek.log.info("last enemy: " .. name, "ai")
+  local blackboard = lurek.ai.newBlackboard()
+  blackboard:setString("last_target", "raider_03")
+  local name = blackboard:getString("last_target", "none")
+  local fallback = blackboard:getString("route", "patrol")
+  lurek.log.info("last target=" .. name .. " route=" .. fallback, "ai")
 end
 --@api-stub: LQLearner:learn
--- Performs the learn operation on this q learner.
+-- Applies one Q-learning update using one-based state and action indices.
 do
-  local ql = lurek.ai.newQLearner(8, 4)
-  ql:setLearningRate(0.1)
-  ql:learn(2, 1, 1.0, 3)
-  local qv = ql:getQValue(2, 1)
-  lurek.log.info("Q(2,1)=" .. qv, "ai")
+  local learner = lurek.ai.newQLearner(8, 4)
+  learner:setLearningRate(0.1)
+  learner:setDiscountFactor(0.9)
+  learner:learn(2, 1, 1.0, 3)
+  local q_value = learner:getQValue(2, 1)
+  lurek.log.info("Q(2,1)=" .. tostring(q_value), "ai")
 end
---@api-stub: LHTNDomain:plan
--- Performs the plan operation on this goap planner.
+--@api-stub: LGOAPPlanner:plan
+-- Builds a GOAP action list from a boolean world-state table.
 do
   local planner = lurek.ai.newGOAPPlanner()
-  planner:addAction("eat", 1.0, function() end)
+  planner:addAction("eat", 1.0, function()
+    lurek.log.debug("eat action", "ai")
+  end)
+  planner:setPrecondition("eat", "has_food", true)
+  planner:setEffect("eat", "not_hungry", true)
   planner:addGoal("not_hungry", 1.0)
-  local actions = planner:plan({hungry=true})
-  lurek.log.info("plan length: " .. (actions and #actions or 0), "ai")
+  planner:setGoalState("not_hungry", "not_hungry", true)
+  local actions = planner:plan({ hungry = true, has_food = true }, 5)
+  lurek.log.info("goap plan length=" .. tostring(actions and #actions or 0), "ai")
 end
 --@api-stub: LHTNDomain:plan
--- Performs the plan operation on this htn domain.
+-- Decomposes a root compound task into primitive HTN task names.
 do
-  local d = lurek.ai.newHTNDomain()
-  d:addPrimitive("move", {}, {}, {})
-  d:addCompound("patrol", {{"move"}})
-  local plan = d:plan("patrol", {})
-  lurek.log.info("htn plan steps: " .. (plan and #plan or 0), "ai")
+  local domain = lurek.ai.newHTNDomain()
+  domain:addPrimitive("move", {}, { "at_waypoint" }, {})
+  domain:addPrimitive("scan", { "at_waypoint" }, { "area_checked" }, {})
+  domain:addCompound("patrol", {
+    { name = "simple_patrol", preconditions = {}, sub_tasks = { "move", "scan" } }
+  })
+  local plan = domain:plan("patrol", {})
+  lurek.log.info("htn plan steps=" .. tostring(plan and #plan or 0), "ai")
 end
 --@api-stub: LInfluenceMap:propagate
--- Performs the propagate operation on this influence map.
+-- Spreads values across neighboring cells on a named influence layer.
 do
-  local im = lurek.ai.newInfluenceMap(32, 32, 16)
-  im:addLayer("threat")
-  im:stampInfluence("threat", 256, 256, 48, 1.0, 0.8)
-  im:propagate("threat", 0.85)
-  lurek.log.info("propagation done", "ai")
+  local map = lurek.ai.newInfluenceMap(32, 32, 16)
+  map:addLayer("threat")
+  map:stampInfluence("threat", 256, 256, 48, 1.0, 0.8)
+  map:propagate("threat", 0.85)
+  lurek.log.info("propagated threat=" .. tostring(map:getInfluence("threat", 16, 16)), "ai")
 end
 --@api-stub: LCommandQueue:pushFront
--- Performs the push front operation on this command queue.
+-- Inserts a command before the current front of the queue.
 do
-  local q = lurek.ai.newCommandQueue()
-  q:enqueue("patrol", function() end, {})
-  q:pushFront("flee", function() end, {threatX=300, threatY=200})
-  lurek.log.info("front command: " .. q:getCurrentType(), "ai")
+  local queue = lurek.ai.newCommandQueue()
+  queue:enqueue("patrol", function()
+    lurek.log.debug("patrol command", "ai")
+  end, { targetX = 100, targetY = 120 })
+  queue:pushFront("flee", function()
+    lurek.log.debug("flee command", "ai")
+  end, { targetX = 300, targetY = 200, priority = 10 })
+  lurek.log.info("front command=" .. tostring(queue:getCurrentType()), "ai")
 end
 --@api-stub: LInfluenceMap:queryRect
--- Performs the query rect operation on this influence map.
+-- Queries influence samples inside a world-space rectangle.
 do
-  local im = lurek.ai.newInfluenceMap(32, 32, 16)
-  im:addLayer("resource")
-  im:setInfluence("resource", 10, 10, 1.0)
-  local total = im:queryRect("resource", 100, 100, 300, 300)
-  lurek.log.info("influence sum: " .. total, "ai")
+  local map = lurek.ai.newInfluenceMap(32, 32, 16)
+  map:addLayer("resource")
+  map:setInfluence("resource", 10, 10, 1.0)
+  map:setInfluence("resource", 11, 10, 0.5)
+  local samples = map:queryRect("resource", 100, 100, 300, 300)
+  lurek.log.info("query samples=" .. tostring(samples), "ai")
 end
 --@api-stub: LCommandQueue:replace
--- Performs the replace operation on this command queue.
+-- Replaces every queued command with a single new command.
 do
-  local q = lurek.ai.newCommandQueue()
-  q:enqueue("move", function() end, {x=200, y=100})
-  q:replace("attack", function() end, {targetId="bandit_01"})
-  lurek.log.info("replaced: " .. q:getCurrentType(), "ai")
+  local queue = lurek.ai.newCommandQueue()
+  queue:enqueue("move", function()
+    lurek.log.debug("move command", "ai")
+  end, { targetX = 200, targetY = 100 })
+  queue:replace("attack", function()
+    lurek.log.debug("attack command", "ai")
+  end, { targetX = 450, targetY = 180, priority = 5 })
+  lurek.log.info("replaced command=" .. tostring(queue:getCurrentType()), "ai")
 end
 --@api-stub: LMCTSEngine:search
--- Performs the search operation on this mcts engine.
+-- Runs Monte Carlo tree search with Lua callbacks for actions, transitions, and scoring.
 do
   local mcts = lurek.ai.newMCTSEngine(100, 1.41, 16, 42)
-  local actions = function(s) return {1, 2, 3} end
-  local apply   = function(s, a) return s + a end
-  local eval    = function(s) return s % 5 end
+  local actions = function(state)
+    return state < 6 and { 1, 2, 3 } or {}
+  end
+  local apply = function(state, action)
+    return state + action
+  end
+  local eval = function(state)
+    return state % 5
+  end
   local best = mcts:search(0, actions, apply, eval)
-  lurek.log.info("best action: " .. best, "ai")
+  lurek.log.info("best action=" .. tostring(best), "ai")
 end
 --@api-stub: LGOAPPlanner:setEffect
--- Sets the effect of this goap planner.
+-- Stores a boolean world-state effect for an existing GOAP action.
 do
   local planner = lurek.ai.newGOAPPlanner()
-  planner:addAction("openDoor", 1.0, function() end)
-  planner:setEffect("openDoor", "door_locked", false)
+  planner:addAction("open_door", 1.0, function()
+    lurek.log.debug("open door", "ai")
+  end)
+  planner:setEffect("open_door", "door_locked", false)
+  planner:setEffect("open_door", "door_open", true)
   lurek.log.info("effect registered", "ai")
 end
 --@api-stub: LSquad:setFormation
--- Sets the formation of this squad.
+-- Sets the squad formation type and optional member spacing.
 do
   local squad = lurek.ai.newSquad("bravo")
   squad:addMember("soldier_01")
   squad:addMember("soldier_02")
   squad:setFormation("wedge", 40)
-  lurek.log.info("formation: " .. squad:getFormation(), "ai")
+  local x, y = squad:getFormationPosition(2, 300, 200)
+  lurek.log.info("formation=" .. squad:getFormation() .. " slot=" .. tostring(x) .. "," .. tostring(y), "ai")
 end
 --@api-stub: LGOAPPlanner:setGoalState
--- Sets the goal state of this goap planner.
+-- Adds a desired boolean world-state key to an existing GOAP goal.
 do
   local planner = lurek.ai.newGOAPPlanner()
-  planner:addGoal("enemy_dead", 1.0)
-  planner:setGoalState("enemy_dead", "is_dead", true)
+  planner:addGoal("target_disabled", 1.0)
+  planner:setGoalState("target_disabled", "is_disabled", true)
+  planner:setGoalState("target_disabled", "is_safe", true)
   lurek.log.info("goal state set", "ai")
 end
 --@api-stub: LInfluenceMap:setInfluence
--- Sets the influence of this influence map.
+-- Writes a value to one named-layer cell using one-based cell coordinates.
 do
-  local im = lurek.ai.newInfluenceMap(32, 32, 16)
-  im:addLayer("hazard")
-  im:setInfluence("hazard", 8, 8, 1.0)
-  lurek.log.info("cell 8,8 hazard: " .. im:getInfluence("hazard", 8, 8), "ai")
+  local map = lurek.ai.newInfluenceMap(32, 32, 16)
+  map:addLayer("hazard")
+  map:setInfluence("hazard", 8, 8, 1.0)
+  map:setInfluence("hazard", 9, 8, 0.5)
+  lurek.log.info("hazard cell=" .. tostring(map:getInfluence("hazard", 8, 8)), "ai")
 end
 --@api-stub: LGOAPPlanner:setPrecondition
--- Sets the precondition of this goap planner.
+-- Stores a boolean requirement for an existing GOAP action.
 do
   local planner = lurek.ai.newGOAPPlanner()
-  planner:addAction("shoot", 1.0, function() end)
+  planner:addAction("shoot", 1.0, function()
+    lurek.log.debug("shoot action", "ai")
+  end)
   planner:setPrecondition("shoot", "has_ammo", true)
+  planner:setPrecondition("shoot", "has_line_of_sight", true)
   lurek.log.info("precondition set", "ai")
 end
 --@api-stub: LORCASolver:setPreferredVelocity
--- Sets the preferred velocity of this orca solver.
+-- Sets the desired velocity for a zero-based ORCA agent before computing avoidance.
 do
   local orca = lurek.ai.newORCASolver(2.0)
   local idx = orca:addAgent(100, 100, 14, 80)
   orca:setPreferredVelocity(idx, 60, 0)
   orca:compute(1 / 60)
   local vx, vy = orca:getSafeVelocity(idx)
-  lurek.log.info("safe vel: " .. vx .. "," .. vy, "ai")
+  lurek.log.info("safe velocity=" .. tostring(vx) .. "," .. tostring(vy), "ai")
 end
 --@api-stub: LQLearner:setQValue
--- Sets the q value of this q learner.
+-- Stores a Q value with one-based state and action indices.
 do
-  local ql = lurek.ai.newQLearner(8, 4)
-  ql:setQValue(0, 2, 0.85)
-  local v = ql:getQValue(0, 2)
-  lurek.log.info("Q(0,2)=" .. v, "ai")
+  local learner = lurek.ai.newQLearner(8, 4)
+  learner:setQValue(1, 2, 0.85)
+  learner:setQValue(2, 1, 0.25)
+  local value = learner:getQValue(1, 2)
+  lurek.log.info("Q(1,2)=" .. tostring(value), "ai")
 end
 --@api-stub: LInfluenceMap:stampInfluence
--- Performs the stamp influence operation on this influence map.
+-- Applies a radial world-space influence stamp to a named layer.
 do
-  local im = lurek.ai.newInfluenceMap(32, 32, 16)
-  im:addLayer("threat")
-  im:stampInfluence("threat", 256, 256, 96, 1.0, 0.75)
-  lurek.log.info("stamped threat blob", "ai")
+  local map = lurek.ai.newInfluenceMap(32, 32, 16)
+  map:addLayer("threat")
+  map:stampInfluence("threat", 256, 256, 96, 1.0, 0.75)
+  local max_x, max_y = map:getMaxPosition("threat")
+  lurek.log.info("threat peak=" .. tostring(max_x) .. "," .. tostring(max_y), "ai")
 end
 --@api-stub: LAILod:tierFor
--- Performs the tier for operation on this ai lod.
+-- Assigns a zero-based LOD tier from agent and reference positions.
 do
   local lod = lurek.ai.newAILod()
-  local tier = lod:tierFor(350, 0, 0, 0)
-  lurek.log.info("lod tier at 350: " .. tier, "ai")
+  local near_tier = lod:tierFor(350, 0, 0, 0)
+  local far_tier = lod:tierFor(1200, 0, 0, 0)
+  lurek.log.info("lod tiers=" .. tostring(near_tier) .. "," .. tostring(far_tier), "ai")
 end
 --@api-stub: LORCASolver:addAgent
--- Adds a agent to this orca solver.
+-- Adds an ORCA agent and uses the returned zero-based index for later calls.
 do
   local solver = lurek.ai.newORCASolver(2.0)
-  solver:addAgent(200, 300, 50, 100)
+  local idx = solver:addAgent(200, 300, 50, 100)
+  solver:setPreferredVelocity(idx, 25, 0)
   solver:compute(1 / 60)
-  lurek.log.info("ORCA agent added", "ai")
+  local vx, vy = solver:getSafeVelocity(idx)
+  lurek.log.info("ORCA agent " .. tostring(idx) .. " safe=" .. tostring(vx) .. "," .. tostring(vy), "ai")
 end
 --@api-stub: LNeuralNet:addLayer
--- Adds a layer to this neural net.
+-- Adds layers to an empty neural net before running a forward pass.
 do
   local net = lurek.ai.newNeuralNet()
   net:addLayer(2, 4, "relu")
-  net:addLayer(4, 1, "relu")
-  local out = net:forward({0.25, 0.75})
-  lurek.log.info("forward count: " .. #out, "ai")
+  net:addLayer(4, 1, "linear")
+  local out = net:forward({ 0.25, 0.75 })
+  lurek.log.info("forward count=" .. tostring(#out), "ai")
 end
 --@api-stub: LAIBlackboard:setNumber
 -- Stores a numeric fact under the given blackboard key
 do
-  local bb = lurek.ai.newBlackboard()
-  bb:setNumber("health", 100)
-  bb:setNumber("aggro_timer", 3.5)
-  lurek.log.info("health=" .. bb:getNumber("health", 0), "ai")
+  local blackboard = lurek.ai.newBlackboard()
+  blackboard:setNumber("health", 100)
+  blackboard:setNumber("aggro_timer", 3.5)
+  lurek.log.info("health=" .. tostring(blackboard:getNumber("health", 0)), "ai")
 end
 --@api-stub: LAIBlackboard:getNumber
 -- Returns a numeric blackboard fact or the provided fallback when the key is missing or not numeric
 do
-  local bb = lurek.ai.newBlackboard()
-  bb:setNumber("speed", 5.0)
-  local v = bb:getNumber("speed", 0.0)
-  local missing = bb:getNumber("nonexistent", -1.0)
-  lurek.log.info("speed=" .. v .. " missing=" .. missing, "ai")
+  local blackboard = lurek.ai.newBlackboard()
+  blackboard:setNumber("speed", 5.0)
+  local speed = blackboard:getNumber("speed", 0.0)
+  local missing = blackboard:getNumber("nonexistent", -1.0)
+  lurek.log.info("speed=" .. tostring(speed) .. " missing=" .. tostring(missing), "ai")
 end
 --@api-stub: LAIBlackboard:setBool
 -- Stores a boolean fact under the given blackboard key
 do
-  local bb = lurek.ai.newBlackboard()
-  bb:setBool("is_alerted", true)
-  bb:setBool("can_attack", false)
-  lurek.log.info("alerted=" .. tostring(bb:getBool("is_alerted", false)), "ai")
+  local blackboard = lurek.ai.newBlackboard()
+  blackboard:setBool("is_alerted", true)
+  blackboard:setBool("can_attack", false)
+  lurek.log.info("alerted=" .. tostring(blackboard:getBool("is_alerted", false)), "ai")
 end
 --@api-stub: LAIBlackboard:getBool
 -- Returns a boolean blackboard fact or the provided fallback when the key is missing or not boolean
 do
-  local bb = lurek.ai.newBlackboard()
-  bb:setBool("player_visible", true)
-  lurek.log.info("visible=" .. tostring(bb:getBool("player_visible", false)), "ai")
-  lurek.log.info("default=" .. tostring(bb:getBool("unknown_key", false)), "ai")
+  local blackboard = lurek.ai.newBlackboard()
+  blackboard:setBool("player_visible", true)
+  lurek.log.info("visible=" .. tostring(blackboard:getBool("player_visible", false)), "ai")
+  lurek.log.info("default=" .. tostring(blackboard:getBool("unknown_key", false)), "ai")
 end
 --@api-stub: LAIBlackboard:setString
 -- Stores a string fact under the given blackboard key
 do
-  local bb = lurek.ai.newBlackboard()
-  bb:setString("state", "patrol")
-  bb:setString("target_id", "player_1")
-  lurek.log.info("state=" .. bb:getString("state", "idle"), "ai")
+  local blackboard = lurek.ai.newBlackboard()
+  blackboard:setString("state", "patrol")
+  blackboard:setString("target_id", "player_1")
+  lurek.log.info("state=" .. blackboard:getString("state", "idle"), "ai")
 end
 --@api-stub: LAIBlackboard:getString
 -- Returns a string blackboard fact or the provided fallback when the key is missing or not a string
 do
-  local bb = lurek.ai.newBlackboard()
-  bb:setString("last_command", "patrol_waypoint_3")
-  local cmd = bb:getString("last_command", "idle")
-  lurek.log.info("last_command=" .. cmd, "ai")
+  local blackboard = lurek.ai.newBlackboard()
+  blackboard:setString("last_command", "patrol_waypoint_3")
+  local command = blackboard:getString("last_command", "idle")
+  local fallback = blackboard:getString("missing_command", "hold")
+  lurek.log.info("last_command=" .. command .. " fallback=" .. fallback, "ai")
 end
---@api-stub: LTraitProfile:has
+--@api-stub: LAIBlackboard:has
 -- Returns whether the blackboard contains any entry for the given key
 do
-  local bb = lurek.ai.newBlackboard()
-  bb:setNumber("ammo", 12)
-  lurek.log.info("has ammo: " .. tostring(bb:has("ammo")), "ai")
-  lurek.log.info("has mana: " .. tostring(bb:has("mana")), "ai")
+  local blackboard = lurek.ai.newBlackboard()
+  blackboard:setNumber("ammo", 12)
+  blackboard:setBool("alerted", true)
+  lurek.log.info("has ammo=" .. tostring(blackboard:has("ammo")), "ai")
+  lurek.log.info("has route=" .. tostring(blackboard:has("route")), "ai")
 end
---@api-stub: LStimulusWorld:remove
+--@api-stub: LAIBlackboard:remove
 -- Removes the given key from the blackboard if it exists
 do
-  local bb = lurek.ai.newBlackboard()
-  bb:setString("target", "goblin_5")
-  lurek.log.info("before remove: " .. tostring(bb:has("target")), "ai")
-  bb:remove("target")
-  lurek.log.info("after remove: " .. tostring(bb:has("target")), "ai")
+  local blackboard = lurek.ai.newBlackboard()
+  blackboard:setString("target", "raider_5")
+  lurek.log.info("before remove=" .. tostring(blackboard:has("target")), "ai")
+  blackboard:remove("target")
+  lurek.log.info("after remove=" .. tostring(blackboard:has("target")), "ai")
 end
---@api-stub: LStimulusWorld:clear
+--@api-stub: LAIBlackboard:clear
 -- Removes every local entry from this blackboard
 do
-  local bb = lurek.ai.newBlackboard()
-  bb:setNumber("hp", 80)
-  bb:setBool("alerted", true)
-  lurek.log.info("size before clear=" .. bb:getSize(), "ai")
-  bb:clear()
-  lurek.log.info("size after clear=" .. bb:getSize(), "ai")
+  local blackboard = lurek.ai.newBlackboard()
+  blackboard:setNumber("hp", 80)
+  blackboard:setBool("alerted", true)
+  lurek.log.info("size before clear=" .. tostring(blackboard:getSize()), "ai")
+  blackboard:clear()
+  lurek.log.info("size after clear=" .. tostring(blackboard:getSize()), "ai")
 end
 --@api-stub: LAIBlackboard:getKeys
 -- Returns every local blackboard key in an array-style Lua table
 do
-  local bb = lurek.ai.newBlackboard()
-  bb:setNumber("energy", 50)
-  bb:setBool("charging", false)
-  bb:setString("phase", "attack")
-  local keys = bb:getKeys()
-  lurek.log.info("key count=" .. #keys, "ai")
+  local blackboard = lurek.ai.newBlackboard()
+  blackboard:setNumber("energy", 50)
+  blackboard:setBool("charging", false)
+  blackboard:setString("phase", "attack")
+  local keys = blackboard:getKeys()
+  lurek.log.info("key count=" .. tostring(#keys), "ai")
 end
 --@api-stub: LAIBlackboard:getSize
 -- Returns the number of entries currently stored in this blackboard
 do
-  local bb = lurek.ai.newBlackboard()
-  bb:setNumber("x", 10)
-  bb:setNumber("y", 20)
-  lurek.log.info("size=" .. bb:getSize(), "ai")
+  local blackboard = lurek.ai.newBlackboard()
+  blackboard:setNumber("x", 10)
+  blackboard:setNumber("y", 20)
+  blackboard:setString("label", "waypoint")
+  lurek.log.info("blackboard size=" .. tostring(blackboard:getSize()), "ai")
 end
---@api-stub: LAILod:type
+--@api-stub: LAIBlackboard:type
 -- Returns the Lua-visible type name for this blackboard handle
 do
-  local a_i_blackboard_obj = lurek.ai.newBlackboard()
-  local t = a_i_blackboard_obj:type()
-  lurek.log.info("LAIBlackboard:type = " .. t, "ai")
+  local blackboard = lurek.ai.newBlackboard()
+  local type_name = blackboard:type()
+  lurek.log.info("LAIBlackboard:type = " .. type_name, "ai")
 end
---@api-stub: LAILod:typeOf
+--@api-stub: LAIBlackboard:typeOf
 -- Returns whether this blackboard handle matches a supported type name
 do
-  local a_i_blackboard_obj = lurek.ai.newBlackboard()
-  lurek.log.info("is LAIBlackboard: " .. tostring(a_i_blackboard_obj:typeOf("LAIBlackboard")), "ai")
-  lurek.log.info("is wrong: " .. tostring(a_i_blackboard_obj:typeOf("Unknown")), "ai")
+  local blackboard = lurek.ai.newBlackboard()
+  lurek.log.info("is LAIBlackboard=" .. tostring(blackboard:typeOf("LAIBlackboard")), "ai")
+  lurek.log.info("is Object=" .. tostring(blackboard:typeOf("Object")), "ai")
 end
---@api-stub: LAILod:type
+--@api-stub: LAIDirector:type
 -- Returns the Lua-visible type name for this AI director handle
 do
-  local a_i_director_obj = lurek.ai.newAIDirector()
-  local t = a_i_director_obj:type()
-  lurek.log.info("LAIDirector:type = " .. t, "ai")
+  local director = lurek.ai.newAIDirector()
+  director:setTension(0.6)
+  local type_name = director:type()
+  lurek.log.info("LAIDirector:type = " .. type_name, "ai")
 end
---@api-stub: LAILod:typeOf
+--@api-stub: LAIDirector:typeOf
 -- Returns whether this AI director handle matches a supported type name
 do
-  local a_i_director_obj = lurek.ai.newAIDirector()
-  lurek.log.info("is LAIDirector: " .. tostring(a_i_director_obj:typeOf("LAIDirector")), "ai")
-  lurek.log.info("is wrong: " .. tostring(a_i_director_obj:typeOf("Unknown")), "ai")
+  local director = lurek.ai.newAIDirector()
+  lurek.log.info("is LAIDirector=" .. tostring(director:typeOf("LAIDirector")), "ai")
+  lurek.log.info("is Object=" .. tostring(director:typeOf("Object")), "ai")
 end
 --@api-stub: LAILod:type
 -- Returns the Lua-visible type name for this AI LOD handle
 do
-  local a_i_lod_obj = lurek.ai.newAILod()
-  local t = a_i_lod_obj:type()
-  lurek.log.info("LAILod:type = " .. t, "ai")
+  local lod = lurek.ai.newAILod()
+  local type_name = lod:type()
+  lurek.log.info("LAILod:type = " .. type_name, "ai")
 end
 --@api-stub: LAILod:typeOf
 -- Returns whether this AI LOD handle matches a supported type name
 do
-  local a_i_lod_obj = lurek.ai.newAILod()
-  lurek.log.info("is LAILod: " .. tostring(a_i_lod_obj:typeOf("LAILod")), "ai")
-  lurek.log.info("is wrong: " .. tostring(a_i_lod_obj:typeOf("Unknown")), "ai")
+  local lod = lurek.ai.newAILod()
+  lurek.log.info("is LAILod=" .. tostring(lod:typeOf("LAILod")), "ai")
+  lurek.log.info("is Object=" .. tostring(lod:typeOf("Object")), "ai")
 end
---@api-stub: LAILod:type
+--@api-stub: LBandit:type
 -- Returns the Lua-visible type name for this bandit handle
 do
-  local bandit_obj = lurek.ai.newBandit(4, "epsilon-greedy", 0.1, 42)
-  local t = bandit_obj:type()
-  lurek.log.info("LBandit:type = " .. t, "ai")
+  local bandit = lurek.ai.newBandit(4, "ucb1", 0.1, 42)
+  bandit:update(0, 0.5)
+  local type_name = bandit:type()
+  lurek.log.info("LBandit:type = " .. type_name, "ai")
 end
---@api-stub: LAILod:typeOf
+--@api-stub: LBandit:typeOf
 -- Returns whether this bandit handle matches a supported type name
 do
-  local bandit_obj = lurek.ai.newBandit(4, "epsilon-greedy", 0.1, 42)
-  lurek.log.info("is LBandit: " .. tostring(bandit_obj:typeOf("LBandit")), "ai")
-  lurek.log.info("is wrong: " .. tostring(bandit_obj:typeOf("Unknown")), "ai")
+  local bandit = lurek.ai.newBandit(4, "ucb1", 0.1, 42)
+  lurek.log.info("is LBandit=" .. tostring(bandit:typeOf("LBandit")), "ai")
+  lurek.log.info("is Object=" .. tostring(bandit:typeOf("Object")), "ai")
 end
---@api-stub: LAILod:type
+--@api-stub: LContextSteering:type
 -- Returns the Lua-visible type name for this context steering handle
 do
-  local context_steering_obj = lurek.ai.newContextSteering(8)
-  local t = context_steering_obj:type()
-  lurek.log.info("LContextSteering:type = " .. t, "ai")
+  local context = lurek.ai.newContextSteering(8)
+  context:addSeekTarget(10, 0, 1.0)
+  local type_name = context:type()
+  lurek.log.info("LContextSteering:type = " .. type_name, "ai")
 end
---@api-stub: LAILod:typeOf
+--@api-stub: LContextSteering:typeOf
 -- Returns whether this context steering handle matches a supported type name
 do
-  local context_steering_obj = lurek.ai.newContextSteering(8)
-  lurek.log.info("is LContextSteering: " .. tostring(context_steering_obj:typeOf("LContextSteering")), "ai")
-  lurek.log.info("is wrong: " .. tostring(context_steering_obj:typeOf("Unknown")), "ai")
+  local context = lurek.ai.newContextSteering(8)
+  lurek.log.info("is LContextSteering=" .. tostring(context:typeOf("LContextSteering")), "ai")
+  lurek.log.info("is Object=" .. tostring(context:typeOf("Object")), "ai")
 end
---@api-stub: LAILod:type
+--@api-stub: LEmotionModel:type
 -- Returns the Lua-visible type name for this emotion model handle
 do
-  local emotion_model_obj = lurek.ai.newEmotionModel()
-  local t = emotion_model_obj:type()
-  lurek.log.info("LEmotionModel:type = " .. t, "ai")
+  local emotions = lurek.ai.newEmotionModel()
+  emotions:add("focus", 0.0, 0.05, 0.4)
+  local type_name = emotions:type()
+  lurek.log.info("LEmotionModel:type = " .. type_name, "ai")
 end
---@api-stub: LAILod:typeOf
+--@api-stub: LEmotionModel:typeOf
 -- Returns whether this emotion model handle matches a supported type name
 do
-  local emotion_model_obj = lurek.ai.newEmotionModel()
-  lurek.log.info("is LEmotionModel: " .. tostring(emotion_model_obj:typeOf("LEmotionModel")), "ai")
-  lurek.log.info("is wrong: " .. tostring(emotion_model_obj:typeOf("Unknown")), "ai")
+  local emotions = lurek.ai.newEmotionModel()
+  lurek.log.info("is LEmotionModel=" .. tostring(emotions:typeOf("LEmotionModel")), "ai")
+  lurek.log.info("is Object=" .. tostring(emotions:typeOf("Object")), "ai")
 end
---@api-stub: LAILod:type
+--@api-stub: LGeneticAlgorithm:type
 -- Returns the Lua-visible type name for this genetic algorithm handle
 do
-  local genetic_algorithm_obj = lurek.ai.newGeneticAlgorithm(20, 8, 42)
-  local t = genetic_algorithm_obj:type()
-  lurek.log.info("LGeneticAlgorithm:type = " .. t, "ai")
+  local genetic = lurek.ai.newGeneticAlgorithm(20, 8, 42)
+  genetic:setFitness(0, 0.75)
+  local type_name = genetic:type()
+  lurek.log.info("LGeneticAlgorithm:type = " .. type_name, "ai")
 end
---@api-stub: LAILod:typeOf
+--@api-stub: LGeneticAlgorithm:typeOf
 -- Returns whether this genetic algorithm handle matches a supported type name
 do
-  local genetic_algorithm_obj = lurek.ai.newGeneticAlgorithm(20, 8, 42)
-  lurek.log.info("is LGeneticAlgorithm: " .. tostring(genetic_algorithm_obj:typeOf("LGeneticAlgorithm")), "ai")
-  lurek.log.info("is wrong: " .. tostring(genetic_algorithm_obj:typeOf("Unknown")), "ai")
+  local genetic = lurek.ai.newGeneticAlgorithm(20, 8, 42)
+  lurek.log.info("is LGeneticAlgorithm=" .. tostring(genetic:typeOf("LGeneticAlgorithm")), "ai")
+  lurek.log.info("is Object=" .. tostring(genetic:typeOf("Object")), "ai")
 end
---@api-stub: LAILod:type
+--@api-stub: LHTNDomain:type
 -- Returns the Lua-visible type name for this HTN domain handle
 do
-  local h_t_n_domain_obj = lurek.ai.newHTNDomain()
-  local t = h_t_n_domain_obj:type()
-  lurek.log.info("LHTNDomain:type = " .. t, "ai")
+  local domain = lurek.ai.newHTNDomain()
+  domain:addPrimitive("wait", {}, {}, {})
+  local type_name = domain:type()
+  lurek.log.info("LHTNDomain:type = " .. type_name, "ai")
 end
---@api-stub: LAILod:typeOf
+--@api-stub: LHTNDomain:typeOf
 -- Returns whether this HTN domain handle matches a supported type name
 do
-  local h_t_n_domain_obj = lurek.ai.newHTNDomain()
-  lurek.log.info("is LHTNDomain: " .. tostring(h_t_n_domain_obj:typeOf("LHTNDomain")), "ai")
-  lurek.log.info("is wrong: " .. tostring(h_t_n_domain_obj:typeOf("Unknown")), "ai")
+  local domain = lurek.ai.newHTNDomain()
+  lurek.log.info("is LHTNDomain=" .. tostring(domain:typeOf("LHTNDomain")), "ai")
+  lurek.log.info("is Object=" .. tostring(domain:typeOf("Object")), "ai")
 end
---@api-stub: LAILod:type
+--@api-stub: LMCTSEngine:type
 -- Returns the Lua-visible type name for this MCTS engine handle
 do
-  local m_c_t_s_engine_obj = lurek.ai.newMCTSEngine(100, 1.41, 5, 42)
-  local t = m_c_t_s_engine_obj:type()
-  lurek.log.info("LMCTSEngine:type = " .. t, "ai")
+  local mcts = lurek.ai.newMCTSEngine(100, 1.41, 5, 42)
+  local type_name = mcts:type()
+  lurek.log.info("LMCTSEngine:type = " .. type_name, "ai")
 end
---@api-stub: LAILod:typeOf
+--@api-stub: LMCTSEngine:typeOf
 -- Returns whether this MCTS engine handle matches a supported type name
 do
-  local m_c_t_s_engine_obj = lurek.ai.newMCTSEngine(100, 1.41, 5, 42)
-  lurek.log.info("is LMCTSEngine: " .. tostring(m_c_t_s_engine_obj:typeOf("LMCTSEngine")), "ai")
-  lurek.log.info("is wrong: " .. tostring(m_c_t_s_engine_obj:typeOf("Unknown")), "ai")
+  local mcts = lurek.ai.newMCTSEngine(100, 1.41, 5, 42)
+  lurek.log.info("is LMCTSEngine=" .. tostring(mcts:typeOf("LMCTSEngine")), "ai")
+  lurek.log.info("is Object=" .. tostring(mcts:typeOf("Object")), "ai")
 end
---@api-stub: LAILod:type
+--@api-stub: LNeedSystem:type
 -- Returns the Lua-visible type name for this need system handle
 do
-  local need_system_obj = lurek.ai.newNeedSystem()
-  local t = need_system_obj:type()
-  lurek.log.info("LNeedSystem:type = " .. t, "ai")
+  local needs = lurek.ai.newNeedSystem()
+  needs:addNeed("hunger", 0.05, 0.7, 1.0)
+  local type_name = needs:type()
+  lurek.log.info("LNeedSystem:type = " .. type_name, "ai")
 end
---@api-stub: LAILod:typeOf
+--@api-stub: LNeedSystem:typeOf
 -- Returns whether this need system handle matches a supported type name
 do
-  local need_system_obj = lurek.ai.newNeedSystem()
-  lurek.log.info("is LNeedSystem: " .. tostring(need_system_obj:typeOf("LNeedSystem")), "ai")
-  lurek.log.info("is wrong: " .. tostring(need_system_obj:typeOf("Unknown")), "ai")
+  local needs = lurek.ai.newNeedSystem()
+  lurek.log.info("is LNeedSystem=" .. tostring(needs:typeOf("LNeedSystem")), "ai")
+  lurek.log.info("is Object=" .. tostring(needs:typeOf("Object")), "ai")
 end
---@api-stub: LAILod:type
+--@api-stub: LNeuralNet:type
 -- Returns the Lua-visible type name for this neural network handle
 do
-  local neural_net_obj = lurek.ai.newNeuralNet()
-  local t = neural_net_obj:type()
-  lurek.log.info("LNeuralNet:type = " .. t, "ai")
+  local network = lurek.ai.newNeuralNet()
+  network:addLayer(2, 1, "linear")
+  local type_name = network:type()
+  lurek.log.info("LNeuralNet:type = " .. type_name, "ai")
 end
---@api-stub: LAILod:typeOf
+--@api-stub: LNeuralNet:typeOf
 -- Returns whether this neural network handle matches a supported type name
 do
-  local neural_net_obj = lurek.ai.newNeuralNet()
-  lurek.log.info("is LNeuralNet: " .. tostring(neural_net_obj:typeOf("LNeuralNet")), "ai")
-  lurek.log.info("is wrong: " .. tostring(neural_net_obj:typeOf("Unknown")), "ai")
+  local network = lurek.ai.newNeuralNet()
+  lurek.log.info("is LNeuralNet=" .. tostring(network:typeOf("LNeuralNet")), "ai")
+  lurek.log.info("is Object=" .. tostring(network:typeOf("Object")), "ai")
 end
---@api-stub: LAILod:type
+--@api-stub: LNeuroevolution:type
 -- Returns the Lua-visible type name for this neuroevolution handle
 do
-  local ne_layers = { {inputs=4, outputs=8, activation="relu"}, {inputs=8, outputs=4, activation="softmax"} }
-  local ok_ne, neuroevolution_obj = pcall(lurek.ai.newNeuroevolution, ne_layers, 20, 42)
-  local t = (ok_ne and neuroevolution_obj) and neuroevolution_obj:type() or "LNeuroevolution"
-  lurek.log.info("LNeuroevolution:type = " .. t, "ai")
+  local layers = { { inputs = 4, outputs = 8, activation = "relu" }, { inputs = 8, outputs = 4, activation = "softmax" } }
+  local evolution = lurek.ai.newNeuroevolution(layers, 20, 42)
+  local type_name = evolution:type()
+  lurek.log.info("LNeuroevolution:type = " .. type_name, "ai")
 end
---@api-stub: LAILod:typeOf
+--@api-stub: LNeuroevolution:typeOf
 -- Returns whether this neuroevolution handle matches a supported type name
 do
-  local ne_layers = { {inputs=4, outputs=8, activation="relu"}, {inputs=8, outputs=4, activation="softmax"} }
-  local ok_ne, neuroevolution_obj = pcall(lurek.ai.newNeuroevolution, ne_layers, 20, 42)
-  lurek.log.info("is LNeuroevolution: " .. tostring((ok_ne and neuroevolution_obj) and neuroevolution_obj:typeOf("LNeuroevolution") or false), "ai")
-  lurek.log.info("is wrong: " .. tostring((ok_ne and neuroevolution_obj) and neuroevolution_obj:typeOf("Unknown") or false), "ai")
+  local layers = { { inputs = 4, outputs = 8, activation = "relu" }, { inputs = 8, outputs = 4, activation = "softmax" } }
+  local evolution = lurek.ai.newNeuroevolution(layers, 20, 42)
+  lurek.log.info("is LNeuroevolution=" .. tostring(evolution:typeOf("LNeuroevolution")), "ai")
+  lurek.log.info("is Object=" .. tostring(evolution:typeOf("Object")), "ai")
 end
---@api-stub: LAILod:type
+--@api-stub: LORCASolver:type
 -- Returns the Lua-visible type name for this ORCA solver handle
 do
-  local o_r_c_a_solver_obj = lurek.ai.newORCASolver(0.5)
-  local t = o_r_c_a_solver_obj:type()
-  lurek.log.info("LORCASolver:type = " .. t, "ai")
+  local solver = lurek.ai.newORCASolver(0.5)
+  solver:addAgent(0, 0, 10, 60)
+  local type_name = solver:type()
+  lurek.log.info("LORCASolver:type = " .. type_name, "ai")
 end
---@api-stub: LAILod:typeOf
+--@api-stub: LORCASolver:typeOf
 -- Returns whether this ORCA solver handle matches a supported type name
 do
-  local o_r_c_a_solver_obj = lurek.ai.newORCASolver(0.5)
-  lurek.log.info("is LORCASolver: " .. tostring(o_r_c_a_solver_obj:typeOf("LORCASolver")), "ai")
-  lurek.log.info("is wrong: " .. tostring(o_r_c_a_solver_obj:typeOf("Unknown")), "ai")
+  local solver = lurek.ai.newORCASolver(0.5)
+  lurek.log.info("is LORCASolver=" .. tostring(solver:typeOf("LORCASolver")), "ai")
+  lurek.log.info("is Object=" .. tostring(solver:typeOf("Object")), "ai")
 end
---@api-stub: LAILod:type
+--@api-stub: LStimulusWorld:type
 -- Returns the Lua-visible type name for this stimulus world handle
 do
-  local stimulus_world_obj = lurek.ai.newStimulusWorld()
-  local t = stimulus_world_obj:type()
-  lurek.log.info("LStimulusWorld:type = " .. t, "ai")
+  local stimuli = lurek.ai.newStimulusWorld()
+  stimuli:addVisual(10, 20, 1.0, 80, "movement")
+  local type_name = stimuli:type()
+  lurek.log.info("LStimulusWorld:type = " .. type_name, "ai")
 end
---@api-stub: LAILod:typeOf
+--@api-stub: LStimulusWorld:typeOf
 -- Returns whether this stimulus world handle matches a supported type name
 do
-  local stimulus_world_obj = lurek.ai.newStimulusWorld()
-  lurek.log.info("is LStimulusWorld: " .. tostring(stimulus_world_obj:typeOf("LStimulusWorld")), "ai")
-  lurek.log.info("is wrong: " .. tostring(stimulus_world_obj:typeOf("Unknown")), "ai")
+  local stimuli = lurek.ai.newStimulusWorld()
+  lurek.log.info("is LStimulusWorld=" .. tostring(stimuli:typeOf("LStimulusWorld")), "ai")
+  lurek.log.info("is Object=" .. tostring(stimuli:typeOf("Object")), "ai")
 end
---@api-stub: LAILod:type
+--@api-stub: LStrategyAI:type
 -- Returns the Lua-visible type name for this strategy AI handle
 do
-  local strategy_a_i_obj = lurek.ai.newStrategyAI(0.25)
-  local t = strategy_a_i_obj:type()
-  lurek.log.info("LStrategyAI:type = " .. t, "ai")
+  local strategy = lurek.ai.newStrategyAI(0.25)
+  strategy:addGoal("patrol")
+  local type_name = strategy:type()
+  lurek.log.info("LStrategyAI:type = " .. type_name, "ai")
 end
---@api-stub: LAILod:typeOf
+--@api-stub: LStrategyAI:typeOf
 -- Returns whether this strategy AI handle matches a supported type name
 do
-  local strategy_a_i_obj = lurek.ai.newStrategyAI(0.25)
-  lurek.log.info("is LStrategyAI: " .. tostring(strategy_a_i_obj:typeOf("LStrategyAI")), "ai")
-  lurek.log.info("is wrong: " .. tostring(strategy_a_i_obj:typeOf("Unknown")), "ai")
+  local strategy = lurek.ai.newStrategyAI(0.25)
+  lurek.log.info("is LStrategyAI=" .. tostring(strategy:typeOf("LStrategyAI")), "ai")
+  lurek.log.info("is Object=" .. tostring(strategy:typeOf("Object")), "ai")
 end
---@api-stub: LAILod:type
+--@api-stub: LTraitProfile:type
 -- Returns the Lua-visible type name for this trait profile handle
 do
-  local trait_profile_obj = lurek.ai.newTraitProfile()
-  local t = trait_profile_obj:type()
-  lurek.log.info("LTraitProfile:type = " .. t, "ai")
+  local traits = lurek.ai.newTraitProfile()
+  traits:set("courage", 0.5)
+  local type_name = traits:type()
+  lurek.log.info("LTraitProfile:type = " .. type_name, "ai")
 end
---@api-stub: LAILod:typeOf
+--@api-stub: LTraitProfile:typeOf
 -- Returns whether this trait profile handle matches a supported type name
 do
-  local trait_profile_obj = lurek.ai.newTraitProfile()
-  lurek.log.info("is LTraitProfile: " .. tostring(trait_profile_obj:typeOf("LTraitProfile")), "ai")
-  lurek.log.info("is wrong: " .. tostring(trait_profile_obj:typeOf("Unknown")), "ai")
+  local traits = lurek.ai.newTraitProfile()
+  lurek.log.info("is LTraitProfile=" .. tostring(traits:typeOf("LTraitProfile")), "ai")
+  lurek.log.info("is Object=" .. tostring(traits:typeOf("Object")), "ai")
 end
 --@api-stub: LBTNode:addChild
--- Adds a child node to a parent node id in this behavior tree and returns the new node id.
+-- Adds child nodes to a composite selector, sequence, or parallel node.
 do
-  -- BehaviorTree nodes are created with lurek.ai.newSequence/newSelector/newAction/etc.
-  -- then linked via node:addChild(). This is LBTNode:addChild, not a bt method.
   local seq = lurek.ai.newSequence()
   local check_hp = lurek.ai.newCondition(function() return true end)
   local attack = lurek.ai.newAction(function() return "success" end)
-  seq:addChild(check_hp)   -- add condition as first child
-  seq:addChild(attack)     -- add action as second child
+  seq:addChild(check_hp)
+  seq:addChild(attack)
   local bt = lurek.ai.newBehaviorTree()
   bt:setRoot(seq)
-  lurek.log.debug("BT built: seq with " .. seq:getChildCount() .. " children", "ai")
+  lurek.log.debug("sequence children=" .. tostring(seq:getChildCount()), "ai")
 end
---@api-stub: LBehaviorTree:addInverter
--- Adds an inverter decorator node under a parent node and returns the new node id.
+--@api-stub: lurek.ai.newInverter
+-- Creates an inverter decorator node and attaches a single child with setChild.
 do
-  -- newInverter() wraps a child node and flips success ↔ failure.
-  -- Use setChild() on the inverter (decorator pattern), not addChild.
   local action = lurek.ai.newAction(function() return "failure" end)
-  local inv = lurek.ai.newInverter()
-  inv:setChild(action)     -- inverter turns failure → success
+  local inverter = lurek.ai.newInverter()
+  inverter:setChild(action)
   local bt = lurek.ai.newBehaviorTree()
-  bt:setRoot(inv)
-  lurek.log.debug("BT with inverter, childCount=" .. inv:getChildCount(), "ai")
+  bt:setRoot(inverter)
+  lurek.log.debug("inverter node type=" .. inverter:getNodeType(), "ai")
 end
---@api-stub: LBehaviorTree:addLeaf
--- Adds a named leaf action node under a parent node and returns the new node id.
+--@api-stub: lurek.ai.newAction
+-- Creates an action leaf callback that returns a behavior-tree status string.
 do
-  -- Leaf nodes are created with lurek.ai.newAction(fn) or lurek.ai.newCondition(fn).
-  -- newAction executes a callback each tick and returns "success"/"failure"/"running".
   local leaf = lurek.ai.newAction(function()
-    -- Leaf logic: e.g., move toward target, play animation, etc.
     return "success"
   end)
   local bt = lurek.ai.newBehaviorTree()
   bt:setRoot(leaf)
-  lurek.log.debug("BT with action leaf ready", "ai")
+  lurek.log.debug("action node type=" .. leaf:getNodeType(), "ai")
 end
---@api-stub: LBehaviorTree:addParallel
--- Adds a parallel composite node under a parent node and returns the new node id.
+--@api-stub: lurek.ai.newParallel
+-- Creates a parallel composite with explicit success and failure policies.
 do
-  -- newParallel() runs ALL children simultaneously each tick.
-  -- Both succeed, both fail, or one runs independently of the other.
-  local par = lurek.ai.newParallel()
+  local par = lurek.ai.newParallel("requireAll", "requireOne")
   local patrol = lurek.ai.newAction(function() return "running" end)
-  local scan   = lurek.ai.newAction(function() return "running" end)
+  local scan = lurek.ai.newAction(function() return "success" end)
   par:addChild(patrol)
   par:addChild(scan)
   local bt = lurek.ai.newBehaviorTree()
   bt:setRoot(par)
-  lurek.log.debug("BT with parallel, children=" .. par:getChildCount(), "ai")
+  lurek.log.debug("parallel children=" .. tostring(par:getChildCount()), "ai")
 end
---@api-stub: LBehaviorTree:addRepeat
--- Adds a repeat decorator node that runs its child N times under a parent and returns the node id.
+--@api-stub: lurek.ai.newRepeater
+-- Creates a repeater decorator with an optional repeat count.
 do
-  -- newRepeater(count) repeats its child N times before reporting success.
-  -- Use setChild() for decorator nodes (single child).
   local action = lurek.ai.newAction(function() return "success" end)
-  local rep = lurek.ai.newRepeater(3)
-  rep:setChild(action)
+  local repeater = lurek.ai.newRepeater(3)
+  repeater:setChild(action)
   local bt = lurek.ai.newBehaviorTree()
-  bt:setRoot(rep)
-  lurek.log.debug("BT with repeater(3), count=" .. rep:getCount(), "ai")
+  bt:setRoot(repeater)
+  lurek.log.debug("repeater count=" .. tostring(repeater:getCount()), "ai")
 end
---@api-stub: LBehaviorTree:addSelector
--- Adds a selector composite node under a parent node and returns the new node id.
+--@api-stub: lurek.ai.newSelector
+-- Creates a selector composite that tries children until one succeeds.
 do
-  -- newSelector() tries children left-to-right; succeeds on the first success.
-  -- Use for "try this, if it fails try that" AI fallback logic.
-  local sel = lurek.ai.newSelector()
-  local preferred = lurek.ai.newAction(function() return "failure" end)  -- fails → try next
-  local fallback  = lurek.ai.newAction(function() return "success" end)  -- succeeds
-  sel:addChild(preferred)
-  sel:addChild(fallback)
+  local selector = lurek.ai.newSelector()
+  local preferred = lurek.ai.newAction(function() return "failure" end)
+  local fallback = lurek.ai.newAction(function() return "success" end)
+  selector:addChild(preferred)
+  selector:addChild(fallback)
   local bt = lurek.ai.newBehaviorTree()
-  bt:setRoot(sel)
-  lurek.log.debug("BT with selector, children=" .. sel:getChildCount(), "ai")
+  bt:setRoot(selector)
+  lurek.log.debug("selector children=" .. tostring(selector:getChildCount()), "ai")
 end
---@api-stub: LBehaviorTree:addSequence
--- Adds a sequence composite node under a parent node and returns the new node id.
+--@api-stub: lurek.ai.newSequence
+-- Creates a sequence composite that runs children in order.
 do
-  -- newSequence() runs children in order; stops and fails on first failure.
-  -- Use for "do A, then B, then C" chains that abort early on failure.
   local seq = lurek.ai.newSequence()
   local step1 = lurek.ai.newAction(function() return "success" end)
   local step2 = lurek.ai.newAction(function() return "success" end)
@@ -2824,300 +3450,303 @@ do
   seq:addChild(step2)
   local bt = lurek.ai.newBehaviorTree()
   bt:setRoot(seq)
-  lurek.log.debug("BT with sequence, children=" .. seq:getChildCount(), "ai")
+  lurek.log.debug("sequence children=" .. tostring(seq:getChildCount()), "ai")
 end
 --@api-stub: LInfluenceMap:clearAll
--- Removes all nodes from this behavior tree and resets it to an empty state.
+-- Clears every value from every influence-map layer.
 do
-  -- LuaBehaviorTree has no clearAll(); to reset, create a new BT
-  -- or call node:reset() on individual nodes to clear execution state.
-  local bt = lurek.ai.newBehaviorTree()
-  local seq = lurek.ai.newSequence()
-  bt:setRoot(seq)
-  -- "clear" by creating a fresh tree and discarding the old reference
-  bt = lurek.ai.newBehaviorTree()
-  seq:reset()  -- clear node execution state
-  lurek.log.debug("BT node state cleared via reset()", "ai")
+  local map = lurek.ai.newInfluenceMap(16, 16, 32)
+  map:addLayer("danger")
+  map:addLayer("resource")
+  map:setInfluence("danger", 4, 4, 1.0)
+  map:setInfluence("resource", 5, 5, 0.8)
+  map:clearAll()
+  lurek.log.debug("danger after clear=" .. tostring(map:getInfluence("danger", 4, 4)), "ai")
 end
---@api-stub: LBehaviorTree:nodeCount
--- Returns the total number of nodes currently in this behavior tree.
+--@api-stub: LBTNode:getChildCount
+-- Returns the direct child count for composite behavior-tree nodes.
 do
-  -- LuaBehaviorTree has no nodeCount(). Use getChildCount() on composite nodes
-  -- to count direct children. Full subtree counting is done manually in Lua.
   local seq = lurek.ai.newSequence()
   seq:addChild(lurek.ai.newAction(function() return "success" end))
   seq:addChild(lurek.ai.newAction(function() return "success" end))
-  lurek.log.debug("seq childCount=" .. seq:getChildCount(), "ai")
+  lurek.log.debug("seq childCount=" .. tostring(seq:getChildCount()), "ai")
 end
---@api-stub: LBehaviorTree:resetState
--- Resets the execution state of all nodes in this behavior tree to idle.
+--@api-stub: LBTNode:reset
+-- Resets one behavior-tree node's runtime state.
 do
-  -- Call node:reset() on each node that needs execution state cleared.
-  -- Composite nodes (sequence, selector, parallel) all support reset().
   local seq = lurek.ai.newSequence()
   local action = lurek.ai.newAction(function() return "running" end)
   seq:addChild(action)
-  seq:reset()    -- clear tick state; next tick starts from the beginning
+  seq:reset()
   action:reset()
   local bt = lurek.ai.newBehaviorTree()
   bt:setRoot(seq)
   lurek.log.debug("node execution state reset", "ai")
 end
---@api-stub: LBehaviorTree:setLeaf
--- Replaces the action name of an existing leaf node by id in this behavior tree.
+--@api-stub: LBTNode:setChild
+-- Replaces the single child on a decorator node such as an inverter or repeater.
 do
-  -- LuaBehaviorTree has no setLeaf(). To "replace" a leaf, create a new action
-  -- node and swap it using the parent node's setChild().
-  local old_action = lurek.ai.newAction(function() return "success" end)
-  local new_action = lurek.ai.newAction(function() return "running" end)
-  local inv = lurek.ai.newInverter()
-  inv:setChild(old_action)
-  inv:setChild(new_action)  -- replace old with new
+  local first_action = lurek.ai.newAction(function() return "success" end)
+  local replacement = lurek.ai.newAction(function() return "running" end)
+  local inverter = lurek.ai.newInverter()
+  inverter:setChild(first_action)
+  inverter:setChild(replacement)
   local bt = lurek.ai.newBehaviorTree()
-  bt:setRoot(inv)
+  bt:setRoot(inverter)
   lurek.log.debug("leaf swapped via setChild()", "ai")
 end
---@api-stub: LBehaviorTree:tick
--- Runs one tick of this behavior tree with a blackboard table and returns the root status.
+--@api-stub: LBehaviorTree:getDebugState
+-- Reads behavior-tree debug fields after the root has been assigned.
 do
-  -- LuaBehaviorTree has no tick(). The tree is driven by the AI world's update loop.
-  -- Set the root node and let the engine tick it each frame via world:update().
-  -- getLastStatus() and getDebugState() read results after the engine ticks.
   local seq = lurek.ai.newSequence()
   seq:addChild(lurek.ai.newAction(function() return "success" end))
   local bt = lurek.ai.newBehaviorTree()
   bt:setRoot(seq)
-  -- After engine ticks this bt: bt:getLastStatus() and bt:getDebugState()
-  lurek.log.debug("BT ready; engine drives ticks via world:update()", "ai")
+  local debug_state = bt:getDebugState()
+  lurek.log.debug("BT nodes=" .. tostring(debug_state.node_count) .. " status=" .. tostring(debug_state.last_status), "ai")
 end
 --@api-stub: LDialogueAI:addBranch
 -- Adds a response branch with a label and condition to a topic in this dialogue AI.
 do
-  local d = lurek.ai.newDialogueAI()
-  d:addTopic("greet")
-  -- addBranch(topic_id, branch_id, weight?, fsm_state?, bt_status?, utility_key?)
-  d:addBranch("greet", "friendly", 1.0)
+  local dialogue = lurek.ai.newDialogueAI()
+  dialogue:setFSMState("idle")
+  dialogue:setUtilityScore("rapport", 0.8)
+  dialogue:addTopic("greet", 1.0, "idle", nil, "rapport")
+  local added = dialogue:addBranch("greet", "friendly", 1.0, "idle", nil, "rapport")
+  lurek.log.debug("branch added=" .. tostring(added), "ai")
 end
 --@api-stub: LDialogueAI:addTopic
 -- Adds a named dialogue topic to this dialogue AI for later selection.
 do
-  local d = lurek.ai.newDialogueAI()
-  d:addTopic("greet")
+  local dialogue = lurek.ai.newDialogueAI()
+  dialogue:addTopic("greet", 1.0, nil, nil, "rapport")
+  dialogue:setUtilityScore("rapport", 0.7)
+  lurek.log.debug("topics=" .. tostring(dialogue:getTopicCount()), "ai")
 end
 --@api-stub: LDialogueAI:clearUtilityScores
 -- Resets all utility scores in this dialogue AI to zero.
 do
-  local d = lurek.ai.newDialogueAI()
-  d:setUtilityScore("greet", 1.0)
-  d:clearUtilityScores()
+  local dialogue = lurek.ai.newDialogueAI()
+  dialogue:addTopic("greet", 1.0, nil, nil, "rapport")
+  dialogue:setUtilityScore("rapport", 1.0)
+  dialogue:clearUtilityScores()
+  lurek.log.debug("topic after clear=" .. tostring(dialogue:selectTopic()), "ai")
 end
 --@api-stub: LDialogueAI:getTopicCount
 -- Returns the number of topics currently registered in this dialogue AI.
 do
-  local d = lurek.ai.newDialogueAI()
-  d:addTopic("greet")
-  lurek.log.debug("topics=" .. d:getTopicCount(), "ai")
+  local dialogue = lurek.ai.newDialogueAI()
+  dialogue:addTopic("greet", 1.0)
+  dialogue:addTopic("trade", 0.5)
+  lurek.log.debug("topics=" .. tostring(dialogue:getTopicCount()), "ai")
 end
 --@api-stub: LDialogueAI:selectBranch
 -- Selects the highest-scoring active branch for a topic and returns its label.
 do
-  local d = lurek.ai.newDialogueAI()
-  d:addTopic("greet")
-  d:addBranch("greet", "friendly", 1.0)
-  local branch = d:selectBranch("greet")
+  local dialogue = lurek.ai.newDialogueAI()
+  dialogue:addTopic("greet", 1.0)
+  dialogue:addBranch("greet", "friendly", 1.0)
+  dialogue:addBranch("greet", "brief", 0.5)
+  local branch = dialogue:selectBranch("greet")
   lurek.log.debug("branch=" .. tostring(branch), "ai")
 end
 --@api-stub: LDialogueAI:selectTopic
 -- Returns the topic with the highest utility score that passes its condition.
 do
-  local d = lurek.ai.newDialogueAI()
-  d:addTopic("greet")
-  d:setUtilityScore("greet", 0.9)
-  local topic = d:selectTopic()
+  local dialogue = lurek.ai.newDialogueAI()
+  dialogue:addTopic("greet", 1.0, nil, nil, "rapport")
+  dialogue:addTopic("trade", 0.5)
+  dialogue:setUtilityScore("rapport", 0.9)
+  local topic = dialogue:selectTopic()
   lurek.log.debug("topic=" .. tostring(topic), "ai")
 end
 --@api-stub: LDialogueAI:setBTStatus
 -- Sets the behavior tree status used as context for dialogue condition evaluation.
 do
-  local d = lurek.ai.newDialogueAI()
-  d:setBTStatus("running")
+  local dialogue = lurek.ai.newDialogueAI()
+  dialogue:setBTStatus("running")
+  dialogue:addTopic("while_running", 1.0, nil, "running", nil)
+  lurek.log.debug("bt topic=" .. tostring(dialogue:selectTopic()), "ai")
 end
 --@api-stub: LDialogueAI:setFSMState
 -- Sets the FSM state name used as context for dialogue condition evaluation.
 do
-  local d = lurek.ai.newDialogueAI()
-  d:setFSMState("combat")
+  local dialogue = lurek.ai.newDialogueAI()
+  dialogue:setFSMState("combat")
+  dialogue:addTopic("combat_bark", 1.0, "combat", nil, nil)
+  lurek.log.debug("fsm topic=" .. tostring(dialogue:selectTopic()), "ai")
 end
 --@api-stub: LDialogueAI:setUtilityScore
 -- Sets the utility score for a named topic in this dialogue AI.
 do
-  local d = lurek.ai.newDialogueAI()
-  d:addTopic("greet")
-  d:setUtilityScore("greet", 0.8)
+  local dialogue = lurek.ai.newDialogueAI()
+  dialogue:addTopic("greet", 1.0, nil, nil, "rapport")
+  dialogue:setUtilityScore("rapport", 0.8)
+  lurek.log.debug("utility topic=" .. tostring(dialogue:selectTopic()), "ai")
 end
---@api-stub: LAILod:type
+--@api-stub: LDialogueAI:type
 -- Returns the Lua-visible type name string for this dialogue AI handle.
 do
-  local d = lurek.ai.newDialogueAI()
-  lurek.log.info(d:type(), "ai")
+  local dialogue = lurek.ai.newDialogueAI()
+  dialogue:addTopic("greet", 1.0)
+  lurek.log.info(dialogue:type(), "ai")
 end
---@api-stub: LAILod:typeOf
+--@api-stub: LDialogueAI:typeOf
 -- Returns true if this dialogue AI handle matches the given type name string.
 do
-  local d = lurek.ai.newDialogueAI()
-  lurek.log.info(tostring(d:typeOf("LDialogueAI")), "ai")
+  local dialogue = lurek.ai.newDialogueAI()
+  lurek.log.info("is DialogueAI=" .. tostring(dialogue:typeOf("DialogueAI")), "ai")
+  lurek.log.info("is Object=" .. tostring(dialogue:typeOf("Object")), "ai")
 end
 --@api-stub: LSteeringManager:clearPath
 -- Clears the current movement path from this steering manager.
 do
-  local sm = lurek.ai.newSteeringManager()
-  sm:clearPath()
+  local steering = lurek.ai.newSteeringManager()
+  steering:setPath({ { x = 0, y = 0 }, { x = 100, y = 0 } }, 12, 1.0)
+  lurek.log.debug("has path before clear=" .. tostring(steering:hasPath()), "ai")
+  steering:clearPath()
+  lurek.log.debug("has path after clear=" .. tostring(steering:hasPath()), "ai")
 end
 --@api-stub: LSteeringManager:getPathProgress
--- Returns the current path progress as a fraction from 0.0 to 1.0.
+-- Returns the current one-based waypoint index and total waypoint count.
 do
-  local sm = lurek.ai.newSteeringManager()
-  local prog = sm:getPathProgress()
-  lurek.log.debug("progress=" .. prog, "ai")
+  local steering = lurek.ai.newSteeringManager()
+  steering:setPath({ { x = 0, y = 0 }, { x = 50, y = 0 }, { x = 100, y = 0 } }, 10, 1.0)
+  local current, total = steering:getPathProgress()
+  lurek.log.debug("path progress=" .. tostring(current) .. "/" .. tostring(total), "ai")
 end
 --@api-stub: LSteeringManager:hasPath
 -- Returns true if this steering manager currently has a path to follow.
 do
-  local sm = lurek.ai.newSteeringManager()
-  lurek.log.debug("has path=" .. tostring(sm:hasPath()), "ai")
+  local steering = lurek.ai.newSteeringManager()
+  lurek.log.debug("initial path=" .. tostring(steering:hasPath()), "ai")
+  steering:setPath({ { x = 0, y = 0 }, { x = 32, y = 32 } }, 8, 1.0)
+  lurek.log.debug("configured path=" .. tostring(steering:hasPath()), "ai")
 end
 --@api-stub: LSteeringManager:setPath
 -- Sets the waypoint path for this steering manager to follow.
 do
-  local sm = lurek.ai.newSteeringManager()
-  sm:setPath({{x=0,y=0},{x=100,y=0},{x=100,y=100}})
+  local steering = lurek.ai.newSteeringManager()
+  steering:setPath({ { x = 0, y = 0 }, { x = 100, y = 0 }, { x = 100, y = 100 } }, 12, 1.0)
+  local fx, fy = steering:calculate(0, 0, 0, 0, 120, 40, 1 / 60)
+  lurek.log.debug("path force=" .. tostring(fx) .. "," .. tostring(fy), "ai")
 end
-print("content/examples/ai.lua")
 --@api-stub: LAIDirector:update
 -- Advances director tension decay and phase evaluation.
 do
-  -- Call update(dt) each frame to decay tension and re-evaluate the current phase.
-  -- Scenario: horde-mode director ticks tension down between waves.
-  local dir = lurek.ai.newAIDirector()
-  dir:setTension(0.8)
-  dir:update(0.5)
-  lurek.log.info("tension after decay: " .. dir:tension(), "ai")
+  local director = lurek.ai.newAIDirector()
+  director:setTension(0.8)
+  director:update(0.5)
+  lurek.log.info("tension after decay=" .. tostring(director:tension()), "ai")
+  lurek.log.debug("director phase=" .. tostring(director:phase()), "ai")
 end
 --@api-stub: LAIDirector:reset
 -- Resets director tension and phase state to defaults.
 do
-  -- Reset after a level transition or when the player enters a safe zone.
-  -- Scenario: player reaches a checkpoint — reset director for the next area.
-  local dir = lurek.ai.newAIDirector()
-  dir:setTension(0.9)
-  dir:reset()
-  lurek.log.info("tension after reset: " .. dir:tension(), "ai")
+  local director = lurek.ai.newAIDirector()
+  director:setTension(0.9)
+  director:reset()
+  lurek.log.info("tension after reset=" .. tostring(director:tension()), "ai")
 end
 --@api-stub: LAIWorld:addAgent
 -- Creates a named agent in this world and returns a handle that can edit its movement and decision state.
 do
-  -- Register NPCs in the AI world so they can perceive and be perceived by others.
-  -- Scenario: spawn a patrol guard at level start.
   local world = lurek.ai.newWorld()
   local guard = world:addAgent("patrol_guard")
   guard:setPosition(200, 150)
-  lurek.log.info("spawned agent: " .. guard:getName(), "ai")
+  guard:setDecisionModel("fsm")
+  lurek.log.info("spawned agent=" .. guard:getName() .. " count=" .. tostring(world:getAgentCount()), "ai")
 end
 --@api-stub: LAIWorld:update
 -- Advances the world simulation and invokes custom decision callbacks for agents that use a custom model.
 do
-  -- Tick the world each frame to update all agent decision models.
-  -- Scenario: dungeon level with 3 guards running FSM-based AI.
   local world = lurek.ai.newWorld()
-  world:addAgent("sentry_a")
+  local sentry = world:addAgent("sentry_a")
+  sentry:setCustomModel(function(agent, blackboard, dt)
+    agent:setVelocity(10 * dt, 0)
+  end)
   world:addAgent("sentry_b")
   world:update(0.016)
-  lurek.log.info("world ticked, agents: " .. world:getAgentCount(), "ai")
+  local vx, vy = sentry:getVelocity()
+  lurek.log.info("world ticked agents=" .. tostring(world:getAgentCount()) .. " sentry_v=" .. tostring(vx) .. "," .. tostring(vy), "ai")
 end
 --@api-stub: LAIWorld:type
 -- Returns the Lua-visible type name for this AI world handle.
 do
   local world = lurek.ai.newWorld()
-  lurek.log.info("world type: " .. world:type(), "ai")
+  world:addAgent("type_probe")
+  lurek.log.info("world type=" .. world:type(), "ai")
 end
 --@api-stub: LAIWorld:typeOf
 -- Returns whether this AI world handle matches a supported type name.
 do
   local world = lurek.ai.newWorld()
-  lurek.log.info("is AIWorld: " .. tostring(world:typeOf("AIWorld")), "ai")
+  lurek.log.info("is AIWorld=" .. tostring(world:typeOf("AIWorld")), "ai")
+  lurek.log.info("is Object=" .. tostring(world:typeOf("Object")), "ai")
 end
 --@api-stub: LAgent:getName
 -- Returns this agent's stable world name.
 do
-  -- Use getName() to identify agents for logging or UI labels.
-  -- Scenario: display NPC name above their head in the game.
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("merchant_01")
-  lurek.log.info("agent name: " .. npc:getName(), "ai")
+  npc:addTag("vendor")
+  lurek.log.info("agent name=" .. npc:getName(), "ai")
 end
 --@api-stub: LAgent:setPosition
 -- Sets this agent's world position when the agent still exists in its world.
 do
-  -- Teleport or reposition an agent during gameplay.
-  -- Scenario: guard returns to post after losing sight of the player.
   local world = lurek.ai.newWorld()
   local guard = world:addAgent("gate_guard")
   guard:setPosition(400, 300)
   local x, y = guard:getPosition()
-  lurek.log.info("guard at: " .. x .. "," .. y, "ai")
+  lurek.log.info("guard at=" .. tostring(x) .. "," .. tostring(y), "ai")
 end
 --@api-stub: LAgent:addTag
 -- Adds a tag string to this agent when the agent still exists in its world.
 do
-  -- Tags classify agents for query filtering (e.g., "hostile", "civilian").
-  -- Scenario: mark a freshly-aggro'd NPC as hostile.
   local world = lurek.ai.newWorld()
   local npc = world:addAgent("villager")
   npc:addTag("civilian")
   npc:addTag("quest_giver")
-  lurek.log.info("tagged villager as civilian + quest_giver", "ai")
+  lurek.log.info("has quest tag=" .. tostring(npc:hasTag("quest_giver")), "ai")
 end
 --@api-stub: LAgent:removeTag
 -- Removes a tag string from this agent when the agent still exists in its world.
 do
-  -- Remove a tag when status changes (e.g., enemy becomes friendly).
-  -- Scenario: charmed enemy loses "hostile" tag.
   local world = lurek.ai.newWorld()
-  local enemy = world:addAgent("goblin")
+  local enemy = world:addAgent("raider")
   enemy:addTag("hostile")
   enemy:removeTag("hostile")
-  lurek.log.info("goblin no longer hostile: " .. tostring(enemy:hasTag("hostile")), "ai")
+  lurek.log.info("raider hostile=" .. tostring(enemy:hasTag("hostile")), "ai")
 end
 --@api-stub: LAgent:getBlackboard
 -- Returns a blackboard snapshot for this agent or an empty blackboard when the agent has been removed.
 do
-  -- Each agent has its own private blackboard for local AI state.
-  -- Scenario: store this guard's current patrol waypoint index.
   local world = lurek.ai.newWorld()
   local guard = world:addAgent("wall_guard")
-  local bb = guard:getBlackboard()
-  bb:setNumber("waypoint_idx", 0)
-  lurek.log.info("bb size: " .. bb:getSize(), "ai")
+  local blackboard = guard:getBlackboard()
+  blackboard:setNumber("waypoint_idx", 0)
+  lurek.log.info("blackboard snapshot size=" .. tostring(blackboard:getSize()), "ai")
 end
 --@api-stub: LAgent:type
 -- Returns the Lua-visible type name for this agent handle.
 do
   local world = lurek.ai.newWorld()
   local agent = world:addAgent("test_agent")
-  lurek.log.info("agent type: " .. agent:type(), "ai")
+  agent:setPriority(3)
+  lurek.log.info("agent type=" .. agent:type(), "ai")
 end
 --@api-stub: LAgent:typeOf
 -- Returns whether this agent handle matches a supported type name.
 do
   local world = lurek.ai.newWorld()
   local agent = world:addAgent("test_agent")
-  lurek.log.info("is Agent: " .. tostring(agent:typeOf("Agent")), "ai")
+  lurek.log.info("is Agent=" .. tostring(agent:typeOf("Agent")), "ai")
+  lurek.log.info("is Object=" .. tostring(agent:typeOf("Object")), "ai")
 end
 --@api-stub: LBTNode:reset
 -- Resets this behavior tree node's runtime state.
 do
-  -- Clear running/success state so the node re-evaluates from scratch.
-  -- Scenario: player breaks line-of-sight; reset the chase sequence.
   local seq = lurek.ai.newSequence()
   seq:addChild(lurek.ai.newAction(function() return "running" end))
   seq:reset()
@@ -3126,548 +3755,583 @@ end
 --@api-stub: LBTNode:getCount
 -- Returns the repeat count for repeater nodes or zero for other node kinds.
 do
-  -- Check how many iterations a repeater will perform.
-  -- Scenario: verify burst-fire repeater is set to 3 shots.
-  local rep = lurek.ai.newRepeater(3)
-  lurek.log.info("repeater count: " .. rep:getCount(), "ai")
+  local repeater = lurek.ai.newRepeater(3)
+  repeater:setCount(5)
+  lurek.log.info("repeater count=" .. tostring(repeater:getCount()), "ai")
 end
 --@api-stub: LBTNode:type
 -- Returns the Lua-visible type name for this behavior tree node handle.
 do
   local action = lurek.ai.newAction(function() return "success" end)
-  lurek.log.info("node type: " .. action:type(), "ai")
+  lurek.log.info("node type=" .. action:type(), "ai")
 end
 --@api-stub: LBTNode:typeOf
 -- Returns whether this behavior tree node handle matches a supported type name.
 do
-  local sel = lurek.ai.newSelector()
-  lurek.log.info("is BTNode: " .. tostring(sel:typeOf("BTNode")), "ai")
+  local selector = lurek.ai.newSelector()
+  lurek.log.info("is BTNode=" .. tostring(selector:typeOf("BTNode")), "ai")
+  lurek.log.info("is Object=" .. tostring(selector:typeOf("Object")), "ai")
 end
 --@api-stub: LBandit:update
 -- Updates one arm with a received reward.
 do
-  -- Feed reward signal back to the bandit after observing the outcome.
-  -- Scenario: player died to enemy type 2 — update arm 2 with reward 1.0.
-  local b = lurek.ai.newBandit(4, "ucb1", 0.1, 99)
-  local arm = b:select()
-  b:update(arm, 0.8)
-  lurek.log.info("updated arm " .. arm .. " with reward 0.8", "ai")
+  local bandit = lurek.ai.newBandit(4, "ucb1", 0.1, 99)
+  local arm = bandit:select()
+  bandit:update(arm, 0.8)
+  lurek.log.info("updated arm " .. tostring(arm) .. " pulls=" .. tostring(bandit:totalPulls()), "ai")
 end
 --@api-stub: LBehaviorTree:type
 -- Returns the Lua-visible type name for this behavior tree handle.
 do
   local bt = lurek.ai.newBehaviorTree()
-  lurek.log.info("bt type: " .. bt:type(), "ai")
+  bt:setRoot(lurek.ai.newSequence())
+  lurek.log.info("bt type=" .. bt:type(), "ai")
 end
 --@api-stub: LBehaviorTree:typeOf
 -- Returns whether this behavior tree handle matches a supported type name.
 do
   local bt = lurek.ai.newBehaviorTree()
-  lurek.log.info("is BehaviorTree: " .. tostring(bt:typeOf("BehaviorTree")), "ai")
+  lurek.log.info("is BehaviorTree=" .. tostring(bt:typeOf("BehaviorTree")), "ai")
+  lurek.log.info("is Object=" .. tostring(bt:typeOf("Object")), "ai")
 end
 --@api-stub: LCommandQueue:clear
 -- Removes every queued command. This method is available to Lua scripts.
 do
-  -- Wipe the queue when an NPC is interrupted or stunned.
-  -- Scenario: boss gets staggered — cancel all queued attack phases.
-  local cq = lurek.ai.newCommandQueue()
-  cq:enqueue("slam", function() end, {})
-  cq:enqueue("roar", function() end, {})
-  cq:clear()
-  lurek.log.info("queue cleared, empty: " .. tostring(cq:isEmpty()), "ai")
+  local queue = lurek.ai.newCommandQueue()
+  queue:enqueue("slam", function() end, { targetX = 0, targetY = 0 })
+  queue:enqueue("roar", function() end, { targetX = 40, targetY = 0 })
+  queue:clear()
+  lurek.log.info("queue cleared empty=" .. tostring(queue:isEmpty()), "ai")
 end
 --@api-stub: LCommandQueue:type
 -- Returns the Lua-visible type name for this command queue handle.
 do
-  local cq = lurek.ai.newCommandQueue()
-  lurek.log.info("cq type: " .. cq:type(), "ai")
+  local queue = lurek.ai.newCommandQueue()
+  queue:enqueue("wait", function() end, { targetX = 0, targetY = 0 })
+  lurek.log.info("queue type=" .. queue:type(), "ai")
 end
 --@api-stub: LCommandQueue:typeOf
 -- Returns whether this command queue handle matches a supported type name.
 do
-  local cq = lurek.ai.newCommandQueue()
-  lurek.log.info("is CommandQueue: " .. tostring(cq:typeOf("CommandQueue")), "ai")
+  local queue = lurek.ai.newCommandQueue()
+  lurek.log.info("is CommandQueue=" .. tostring(queue:typeOf("CommandQueue")), "ai")
+  lurek.log.info("is Object=" .. tostring(queue:typeOf("Object")), "ai")
 end
 --@api-stub: LEmotionModel:update
 -- Advances emotion decay over elapsed time.
 do
-  -- Decay emotions each frame so fear/anger fade after the threat passes.
-  -- Scenario: NPC calms down 2 seconds after the player leaves sight.
-  local em = lurek.ai.newEmotionModel()
-  em:add("fear", 0.0, 0.1, 1.0)
-  em:trigger("fear", 0.8)
-  em:update(1.0)
-  lurek.log.info("fear after 1s decay: " .. em:get("fear"), "ai")
+  local emotions = lurek.ai.newEmotionModel()
+  emotions:add("fear", 0.0, 0.1, 0.5)
+  emotions:trigger("fear", 0.8)
+  emotions:update(1.0)
+  lurek.log.info("fear after decay=" .. tostring(emotions:get("fear")), "ai")
 end
 --@api-stub: LEmotionModel:reset
 -- Resets all emotions toward their default state.
 do
-  -- Clear all emotion state when an NPC respawns or role changes.
-  -- Scenario: guard dies and respawns — emotions start fresh.
-  local em = lurek.ai.newEmotionModel()
-  em:add("anger", 0.0, 0.05, 1.0)
-  em:trigger("anger", 0.9)
-  em:reset()
-  lurek.log.info("anger after reset: " .. em:get("anger"), "ai")
+  local emotions = lurek.ai.newEmotionModel()
+  emotions:add("anger", 0.0, 0.05, 0.5)
+  emotions:trigger("anger", 0.9)
+  emotions:reset()
+  lurek.log.info("anger after reset=" .. tostring(emotions:get("anger")), "ai")
 end
 --@api-stub: LGOAPPlanner:addGoal
 -- Adds a GOAP goal with an optional priority weight.
 do
-  -- Define what the NPC wants to achieve. Higher priority = preferred goal.
-  -- Scenario: survival NPC prioritizes "stay_alive" over "gather_food".
   local planner = lurek.ai.newGOAPPlanner()
-  planner:addAction("eat", 1.0, function() end)
+  planner:addAction("eat", 1.0, function()
+    lurek.log.debug("eat action", "ai")
+  end)
+  planner:setEffect("eat", "not_hungry", true)
   planner:addGoal("not_hungry", 2.0)
   planner:addGoal("is_rested", 1.0)
-  lurek.log.info("goals: " .. planner:getGoalCount(), "ai")
+  planner:setGoalState("not_hungry", "not_hungry", true)
+  lurek.log.info("goals=" .. tostring(planner:getGoalCount()), "ai")
 end
 --@api-stub: LGOAPPlanner:plan
 -- Builds a plan from the supplied boolean world state and returns action names in execution order.
 do
-  -- Run the planner with current world state to get an ordered action sequence.
-  -- Scenario: NPC checks what actions lead to "enemy_dead" from current state.
   local planner = lurek.ai.newGOAPPlanner()
-  planner:addAction("get_weapon", 1.0, function() end)
-  planner:addAction("attack", 2.0, function() end)
-  planner:addGoal("enemy_dead", 1.0)
-  local plan = planner:plan({ has_weapon = false, enemy_dead = false })
-  lurek.log.info("plan steps: " .. (plan and #plan or 0), "ai")
+  planner:addAction("get_weapon", 1.0, function()
+    lurek.log.debug("get weapon", "ai")
+  end)
+  planner:setPrecondition("get_weapon", "has_weapon", false)
+  planner:setEffect("get_weapon", "has_weapon", true)
+  planner:addAction("attack", 2.0, function()
+    lurek.log.debug("attack", "ai")
+  end)
+  planner:setPrecondition("attack", "has_weapon", true)
+  planner:setEffect("attack", "target_disabled", true)
+  planner:addGoal("target_disabled", 1.0)
+  planner:setGoalState("target_disabled", "target_disabled", true)
+  local plan = planner:plan({ has_weapon = false, target_disabled = false }, 6)
+  lurek.log.info("plan steps=" .. tostring(plan and #plan or 0), "ai")
 end
 --@api-stub: LGOAPPlanner:type
 -- Returns the Lua-visible type name for this GOAP planner handle.
 do
   local planner = lurek.ai.newGOAPPlanner()
-  lurek.log.info("planner type: " .. planner:type(), "ai")
+  planner:addGoal("probe", 1.0)
+  lurek.log.info("planner type=" .. planner:type(), "ai")
 end
 --@api-stub: LGOAPPlanner:typeOf
 -- Returns whether this GOAP planner handle matches a supported type name.
 do
   local planner = lurek.ai.newGOAPPlanner()
-  lurek.log.info("is GOAPPlanner: " .. tostring(planner:typeOf("GOAPPlanner")), "ai")
+  lurek.log.info("is GOAPPlanner=" .. tostring(planner:typeOf("GOAPPlanner")), "ai")
+  lurek.log.info("is Object=" .. tostring(planner:typeOf("Object")), "ai")
 end
 --@api-stub: LGeneticAlgorithm:evolve
 -- Advances the genetic algorithm by one generation.
 do
-  -- Run one generation of selection, crossover, and mutation.
-  -- Scenario: evolve enemy stat distributions to challenge the player.
   local ga = lurek.ai.newGeneticAlgorithm(20, 8, 42)
-  for i = 0, ga:popSize() - 1 do ga:setFitness(i, math.random()) end
+  for i = 0, ga:popSize() - 1 do
+    ga:setFitness(i, (i + 1) / ga:popSize())
+  end
   ga:evolve()
-  lurek.log.info("generation after evolve: " .. ga:generation(), "ai")
+  lurek.log.info("generation after evolve=" .. tostring(ga:generation()), "ai")
 end
 --@api-stub: LGeneticAlgorithm:generation
 -- Returns the current generation index.
 do
-  -- Track how many generations have passed for convergence checks.
-  -- Scenario: stop evolving after 100 generations.
   local ga = lurek.ai.newGeneticAlgorithm(10, 4, 7)
-  lurek.log.info("initial generation: " .. ga:generation(), "ai")
+  ga:setFitness(0, 1.0)
+  lurek.log.info("initial generation=" .. tostring(ga:generation()), "ai")
 end
 --@api-stub: LGeneticAlgorithm:popSize
 -- Returns the population size. This method is available to Lua scripts.
 do
-  -- Know the population size for iterating fitness assignments.
   local ga = lurek.ai.newGeneticAlgorithm(30, 8, 42)
-  lurek.log.info("population: " .. ga:popSize(), "ai")
+  for i = 0, ga:popSize() - 1 do
+    ga:setFitness(i, i / ga:popSize())
+  end
+  lurek.log.info("population=" .. tostring(ga:popSize()), "ai")
 end
 --@api-stub: LGeneticAlgorithm:setFitness
 -- Sets the fitness value for a chromosome by zero-based index.
 do
-  -- Assign fitness scores before calling evolve() to guide selection.
-  -- Scenario: score each chromosome by how well it performed in simulation.
   local ga = lurek.ai.newGeneticAlgorithm(10, 4, 42)
   ga:setFitness(0, 0.95)
   ga:setFitness(1, 0.3)
-  lurek.log.info("fitness assigned to chromosomes 0 and 1", "ai")
+  lurek.log.info("best chromosome genes=" .. tostring(#ga:bestGenes()), "ai")
 end
 --@api-stub: LInfluenceMap:addLayer
 -- Adds an influence layer with the given name if it does not already exist.
 do
-  -- Create separate layers for different concerns (threat, resources, territory).
-  -- Scenario: RTS map with threat and resource layers for AI decision-making.
-  local im = lurek.ai.newInfluenceMap(32, 32, 16)
-  im:addLayer("threat")
-  im:addLayer("resources")
-  lurek.log.info("has threat: " .. tostring(im:hasLayer("threat")), "ai")
+  local map = lurek.ai.newInfluenceMap(32, 32, 16)
+  map:addLayer("threat")
+  map:addLayer("resources")
+  map:setInfluence("threat", 4, 4, 0.7)
+  lurek.log.info("has threat=" .. tostring(map:hasLayer("threat")), "ai")
 end
 --@api-stub: LInfluenceMap:type
 -- Returns the Lua-visible type name for this influence map handle.
 do
-  local im = lurek.ai.newInfluenceMap(16, 16, 32)
-  lurek.log.info("im type: " .. im:type(), "ai")
+  local map = lurek.ai.newInfluenceMap(16, 16, 32)
+  map:addLayer("probe")
+  lurek.log.info("influence map type=" .. map:type(), "ai")
 end
 --@api-stub: LInfluenceMap:typeOf
 -- Returns whether this influence map handle matches a supported type name.
 do
-  local im = lurek.ai.newInfluenceMap(16, 16, 32)
-  lurek.log.info("is InfluenceMap: " .. tostring(im:typeOf("InfluenceMap")), "ai")
+  local map = lurek.ai.newInfluenceMap(16, 16, 32)
+  lurek.log.info("is InfluenceMap=" .. tostring(map:typeOf("InfluenceMap")), "ai")
+  lurek.log.info("is Object=" .. tostring(map:typeOf("Object")), "ai")
 end
 --@api-stub: LNeedSystem:update
 -- Advances need decay over elapsed time.
 do
-  -- Tick needs each frame so hunger/thirst/energy increase toward threshold.
-  -- Scenario: survival NPC's hunger rises until it triggers the eat behavior.
-  local ns = lurek.ai.newNeedSystem()
-  ns:addNeed("hunger", 0.1, 0.7, 1.5)
-  ns:update(2.0)
-  lurek.log.info("hunger after 2s: " .. ns:valueOf("hunger"), "ai")
+  local needs = lurek.ai.newNeedSystem()
+  needs:addNeed("hunger", 0.1, 0.7, 1.5)
+  needs:update(2.0)
+  lurek.log.info("hunger after update=" .. tostring(needs:valueOf("hunger")), "ai")
 end
 --@api-stub: LQLearner:getActionCount
 -- Returns the number of actions represented by this learner.
 do
-  -- Check how many possible actions the Q-learner can choose from.
-  local ql = lurek.ai.newQLearner(8, 4)
-  lurek.log.info("actions: " .. ql:getActionCount(), "ai")
+  local learner = lurek.ai.newQLearner(8, 4)
+  learner:setQValue(1, 1, 0.2)
+  lurek.log.info("actions=" .. tostring(learner:getActionCount()), "ai")
 end
 --@api-stub: LQLearner:type
 -- Returns the Lua-visible type name for this Q-learner handle.
 do
-  local ql = lurek.ai.newQLearner(4, 2)
-  lurek.log.info("ql type: " .. ql:type(), "ai")
+  local learner = lurek.ai.newQLearner(4, 2)
+  learner:setLearningRate(0.2)
+  lurek.log.info("learner type=" .. learner:type(), "ai")
 end
 --@api-stub: LQLearner:typeOf
 -- Returns whether this Q-learner handle matches a supported type name.
 do
-  local ql = lurek.ai.newQLearner(4, 2)
-  lurek.log.info("is QLearner: " .. tostring(ql:typeOf("QLearner")), "ai")
+  local learner = lurek.ai.newQLearner(4, 2)
+  lurek.log.info("is QLearner=" .. tostring(learner:typeOf("QLearner")), "ai")
+  lurek.log.info("is Object=" .. tostring(learner:typeOf("Object")), "ai")
 end
 --@api-stub: LSquad:type
 -- Returns the Lua-visible type name for this squad handle.
 do
-  local sq = lurek.ai.newSquad("bravo")
-  lurek.log.info("squad type: " .. sq:type(), "ai")
+  local squad = lurek.ai.newSquad("bravo")
+  squad:addMember("guard_01")
+  lurek.log.info("squad type=" .. squad:type(), "ai")
 end
 --@api-stub: LSquad:typeOf
 -- Returns whether this squad handle matches a supported type name.
 do
-  local sq = lurek.ai.newSquad("bravo")
-  lurek.log.info("is Squad: " .. tostring(sq:typeOf("Squad")), "ai")
+  local squad = lurek.ai.newSquad("bravo")
+  lurek.log.info("is Squad=" .. tostring(squad:typeOf("Squad")), "ai")
+  lurek.log.info("is Object=" .. tostring(squad:typeOf("Object")), "ai")
 end
 --@api-stub: LStateMachine:type
 -- Returns the Lua-visible type name for this state machine handle.
 do
   local fsm = lurek.ai.newStateMachine()
-  lurek.log.info("fsm type: " .. fsm:type(), "ai")
+  fsm:addState("idle", {})
+  lurek.log.info("fsm type=" .. fsm:type(), "ai")
 end
 --@api-stub: LStateMachine:typeOf
 -- Returns whether this state machine handle matches a supported type name.
 do
   local fsm = lurek.ai.newStateMachine()
-  lurek.log.info("is StateMachine: " .. tostring(fsm:typeOf("StateMachine")), "ai")
+  lurek.log.info("is StateMachine=" .. tostring(fsm:typeOf("StateMachine")), "ai")
+  lurek.log.info("is Object=" .. tostring(fsm:typeOf("Object")), "ai")
 end
 --@api-stub: LSteeringManager:addWander
 -- Adds a wander behavior that produces jittered exploratory movement.
 do
-  -- Wander makes NPCs roam aimlessly. Good for idle creatures or ambient wildlife.
-  -- Scenario: deer wanders the forest when no threat is nearby.
-  local sm = lurek.ai.newSteeringManager()
-  sm:addWander(20, 40, 5, 0.4)
-  lurek.log.info("wander added, behaviors: " .. sm:getBehaviorCount(), "ai")
+  local steering = lurek.ai.newSteeringManager()
+  steering:addWander(20, 40, 5, 0.4)
+  local fx, fy = steering:calculate(100, 100, 0, 0, 80, 30, 1 / 60)
+  lurek.log.info("wander force=" .. tostring(fx) .. "," .. tostring(fy), "ai")
 end
 --@api-stub: LSteeringManager:type
 -- Returns the Lua-visible type name for this steering manager handle.
 do
-  local sm = lurek.ai.newSteeringManager()
-  lurek.log.info("sm type: " .. sm:type(), "ai")
+  local steering = lurek.ai.newSteeringManager()
+  steering:addSeek(10, 20, 1.0)
+  lurek.log.info("steering type=" .. steering:type(), "ai")
 end
 --@api-stub: LSteeringManager:typeOf
 -- Returns whether this steering manager handle matches a supported type name.
 do
-  local sm = lurek.ai.newSteeringManager()
-  lurek.log.info("is SteeringManager: " .. tostring(sm:typeOf("SteeringManager")), "ai")
+  local steering = lurek.ai.newSteeringManager()
+  lurek.log.info("is SteeringManager=" .. tostring(steering:typeOf("SteeringManager")), "ai")
+  lurek.log.info("is Object=" .. tostring(steering:typeOf("Object")), "ai")
 end
 --@api-stub: LStimulusWorld:update
 -- Advances stimulus decay and lifetime state.
 do
-  -- Tick the stimulus world so old stimuli fade and expire.
-  -- Scenario: gunshot sound fades over 3 seconds so guards forget after a while.
-  local sw = lurek.ai.newStimulusWorld()
-  sw:addAuditory(100, 200, 1.0, 150, 0.5, "gunshot")
-  sw:update(1.0)
-  lurek.log.info("stimuli after 1s: " .. sw:count(), "ai")
+  local stimuli = lurek.ai.newStimulusWorld()
+  local id = stimuli:addAuditory(100, 200, 1.0, 150, 0.5, "alert")
+  stimuli:update(1.0)
+  lurek.log.info("stimuli after update=" .. tostring(stimuli:count()) .. " first=" .. tostring(id), "ai")
 end
 --@api-stub: LTraitProfile:get
 -- Returns the current value of a named trait including active modifiers.
 do
-  -- Read the effective trait value (base + modifiers) for decision-making.
-  -- Scenario: check if NPC's effective courage is high enough to engage.
-  local tp = lurek.ai.newTraitProfile()
-  tp:set("courage", 0.5)
-  tp:addModifier("courage", 0.3, 10.0, "battle_cry")
-  lurek.log.info("effective courage: " .. tp:get("courage"), "ai")
+  local traits = lurek.ai.newTraitProfile()
+  traits:set("courage", 0.5)
+  traits:addModifier("courage", 0.3, 10.0, "battle_cry")
+  lurek.log.info("effective courage=" .. tostring(traits:get("courage")), "ai")
 end
 --@api-stub: LTraitProfile:update
 -- Advances modifier timers and removes expired modifiers.
 do
-  -- Tick trait profile so temporary modifiers expire naturally.
-  -- Scenario: rage buff (5s duration) wears off after enough time passes.
-  local tp = lurek.ai.newTraitProfile()
-  tp:set("aggression", 0.4)
-  tp:addModifier("aggression", 0.5, 2.0, "rage")
-  tp:update(3.0)
-  lurek.log.info("aggression after buff expires: " .. tp:get("aggression"), "ai")
+  local traits = lurek.ai.newTraitProfile()
+  traits:set("aggression", 0.4)
+  traits:addModifier("aggression", 0.5, 2.0, "rage")
+  traits:update(3.0)
+  lurek.log.info("aggression after update=" .. tostring(traits:get("aggression")), "ai")
 end
 --@api-stub: LUtilityAI:addAction
 -- Adds an action scored by a Lua callback and optional momentum weight.
 do
-  -- Register possible actions with scoring functions for utility-based selection.
-  -- Scenario: NPC can patrol, eat, or sleep — each scored by current needs.
-  local uai = lurek.ai.newUtilityAI()
-  uai:addAction("patrol", function() return 0.3 end, 1.0)
-  uai:addAction("eat", function() return 0.7 end, 1.0)
-  uai:addAction("sleep", function() return 0.5 end, 1.0)
-  lurek.log.info("utility actions: " .. uai:getActionCount(), "ai")
+  local utility = lurek.ai.newUtilityAI()
+  utility:addAction("patrol", function() return 0.3 end, 1.0)
+  utility:addAction("eat", function() return 0.7 end, 1.0)
+  utility:addAction("sleep", function() return 0.5 end, 1.0)
+  lurek.log.info("utility actions=" .. tostring(utility:getActionCount()), "ai")
 end
 --@api-stub: LUtilityAI:evaluate
 -- Evaluates all actions and returns the winning action name when one is available.
 do
-  -- Score all actions and pick the highest — the core utility AI loop.
-  -- Scenario: NPC decides between flee and fight based on current HP.
-  local uai = lurek.ai.newUtilityAI()
-  uai:addAction("fight", function() return 0.4 end)
-  uai:addAction("flee", function() return 0.9 end)
-  local choice = uai:evaluate()
-  lurek.log.info("utility chose: " .. (choice or "none"), "ai")
+  local utility = lurek.ai.newUtilityAI()
+  utility:addAction("fight", function() return 0.4 end, 1.0)
+  utility:addAction("fallback", function() return 0.9 end, 1.0)
+  local choice = utility:evaluate()
+  lurek.log.info("utility chose=" .. (choice or "none"), "ai")
 end
 --@api-stub: LUtilityAI:getActionCount
 -- Returns the number of actions registered in this utility AI.
 do
-  local uai = lurek.ai.newUtilityAI()
-  uai:addAction("a", function() return 0.1 end)
-  uai:addAction("b", function() return 0.2 end)
-  lurek.log.info("action count: " .. uai:getActionCount(), "ai")
+  local utility = lurek.ai.newUtilityAI()
+  utility:addAction("scan", function() return 0.1 end, 1.0)
+  utility:addAction("move", function() return 0.2 end, 1.0)
+  lurek.log.info("action count=" .. tostring(utility:getActionCount()), "ai")
 end
 --@api-stub: LUtilityAI:type
 -- Returns the Lua-visible type name for this utility AI handle.
 do
-  local uai = lurek.ai.newUtilityAI()
-  lurek.log.info("uai type: " .. uai:type(), "ai")
+  local utility = lurek.ai.newUtilityAI()
+  utility:addAction("idle", function() return 0.1 end, 1.0)
+  lurek.log.info("utility type=" .. utility:type(), "ai")
 end
 --@api-stub: LUtilityAI:typeOf
 -- Returns whether this utility AI handle matches a supported type name.
 do
-  local uai = lurek.ai.newUtilityAI()
-  lurek.log.info("is UtilityAI: " .. tostring(uai:typeOf("UtilityAI")), "ai")
+  local utility = lurek.ai.newUtilityAI()
+  lurek.log.info("is UtilityAI=" .. tostring(utility:typeOf("UtilityAI")), "ai")
+  lurek.log.info("is Object=" .. tostring(utility:typeOf("Object")), "ai")
 end
 --@api-stub: LAIBlackboard:has
 -- Returns whether the blackboard contains any entry for the given key.
 do
-  local bb = lurek.ai.newBlackboard()
-  bb:setNumber("score", 42)
-  local found = bb:has("score")
-  lurek.log.debug("has 'score': " .. tostring(found), "ai") -- true
-  local missing = bb:has("no_such_key")
-  lurek.log.debug("has 'no_such_key': " .. tostring(missing), "ai") -- false
+  local blackboard = lurek.ai.newBlackboard()
+  blackboard:setNumber("score", 42)
+  blackboard:setBool("ready", true)
+  local found = blackboard:has("score")
+  local missing = blackboard:has("no_such_key")
+  lurek.log.debug("has score=" .. tostring(found) .. " missing=" .. tostring(missing), "ai")
 end
 --@api-stub: LAIBlackboard:remove
 -- Removes the given key from the blackboard if it exists.
 do
-  local bb = lurek.ai.newBlackboard()
-  bb:setNumber("hp", 100)
-  bb:setNumber("mp", 50)
-  bb:remove("hp")
-  lurek.log.debug("after remove, has 'hp': " .. tostring(bb:has("hp")), "ai") -- false
-  lurek.log.debug("mp still present: " .. tostring(bb:has("mp")), "ai") -- true
+  local blackboard = lurek.ai.newBlackboard()
+  blackboard:setNumber("hp", 100)
+  blackboard:setNumber("mp", 50)
+  blackboard:remove("hp")
+  lurek.log.debug("has hp=" .. tostring(blackboard:has("hp")) .. " has mp=" .. tostring(blackboard:has("mp")), "ai")
 end
 --@api-stub: LAIBlackboard:clear
 -- Removes every local entry from this blackboard.
 do
-  local bb = lurek.ai.newBlackboard()
-  bb:setNumber("gold", 500)
-  bb:setString("name", "hero")
-  -- Wipe all entries.
-  bb:clear()
-  lurek.log.debug("after clear, has 'gold': " .. tostring(bb:has("gold")), "ai") -- false
+  local blackboard = lurek.ai.newBlackboard()
+  blackboard:setNumber("gold", 500)
+  blackboard:setString("name", "hero")
+  blackboard:clear()
+  lurek.log.debug("after clear size=" .. tostring(blackboard:getSize()), "ai")
 end
 --@api-stub: LAIBlackboard:type
 -- Returns the Lua-visible type name for this blackboard handle.
 do
-  local obj = lurek.ai.newBlackboard()
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LAIBlackboard"
+  local blackboard = lurek.ai.newBlackboard()
+  blackboard:setString("role", "scout")
+  lurek.log.debug("blackboard type=" .. blackboard:type(), "ai")
 end
 --@api-stub: LAIBlackboard:typeOf
 -- Returns whether this blackboard handle matches a supported type name.
 do
-  local obj = lurek.ai.newBlackboard()
-  lurek.log.debug("typeOf LAIBlackboard: " .. tostring(obj:typeOf("LAIBlackboard")), "example") -- true
+  local blackboard = lurek.ai.newBlackboard()
+  lurek.log.debug("is LAIBlackboard=" .. tostring(blackboard:typeOf("LAIBlackboard")), "ai")
+  lurek.log.debug("is Object=" .. tostring(blackboard:typeOf("Object")), "ai")
 end
 --@api-stub: LAIDirector:type
 -- Returns the Lua-visible type name for this AI director handle.
 do
-  local obj = lurek.ai.newBehaviorTree()
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LBehaviorTree"
+  local director = lurek.ai.newAIDirector()
+  director:setTension(0.4)
+  lurek.log.debug("director type=" .. director:type(), "ai")
 end
 --@api-stub: LAIDirector:typeOf
 -- Returns whether this AI director handle matches a supported type name.
 do
-  local obj = lurek.ai.newBehaviorTree()
-  lurek.log.debug("typeOf LBehaviorTree: " .. tostring(obj:typeOf("LBehaviorTree")), "example") -- true
+  local director = lurek.ai.newAIDirector()
+  lurek.log.debug("is LAIDirector=" .. tostring(director:typeOf("LAIDirector")), "ai")
+  lurek.log.debug("is Object=" .. tostring(director:typeOf("Object")), "ai")
 end
 --@api-stub: LBandit:type
 -- Returns the Lua-visible type name for this bandit handle.
 do
-  local obj = lurek.ai.newBandit(4, 'ucb1', 0.1, 99)
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LBandit"
+  local bandit = lurek.ai.newBandit(4, "ucb1", 0.1, 99)
+  bandit:update(0, 0.2)
+  lurek.log.debug("bandit type=" .. bandit:type(), "ai")
 end
 --@api-stub: LBandit:typeOf
 -- Returns whether this bandit handle matches a supported type name.
 do
-  local obj = lurek.ai.newBandit(4, 'ucb1', 0.1, 99)
-  lurek.log.debug("typeOf LBandit: " .. tostring(obj:typeOf("LBandit")), "example") -- true
+  local bandit = lurek.ai.newBandit(4, "ucb1", 0.1, 99)
+  lurek.log.debug("is LBandit=" .. tostring(bandit:typeOf("LBandit")), "ai")
+  lurek.log.debug("is Object=" .. tostring(bandit:typeOf("Object")), "ai")
 end
 --@api-stub: LContextSteering:type
 -- Returns the Lua-visible type name for this context steering handle.
 do
-  local obj = lurek.ai.newContextSteering(16)
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LContextSteering"
+  local context = lurek.ai.newContextSteering(16)
+  context:addSeekTarget(20, 0, 1.0)
+  lurek.log.debug("context type=" .. context:type(), "ai")
 end
 --@api-stub: LContextSteering:typeOf
 -- Returns whether this context steering handle matches a supported type name.
 do
-  local obj = lurek.ai.newContextSteering(16)
-  lurek.log.debug("typeOf LContextSteering: " .. tostring(obj:typeOf("LContextSteering")), "example") -- true
+  local context = lurek.ai.newContextSteering(16)
+  lurek.log.debug("is LContextSteering=" .. tostring(context:typeOf("LContextSteering")), "ai")
+  lurek.log.debug("is Object=" .. tostring(context:typeOf("Object")), "ai")
 end
 --@api-stub: LDialogueAI:type
 -- Returns the Lua-visible type name for this dialogue AI handle.
 do
-  local obj = lurek.ai.newDialogueAI()
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LDialogueAI"
+  local dialogue = lurek.ai.newDialogueAI()
+  dialogue:addTopic("greet", 1.0)
+  lurek.log.debug("dialogue type=" .. dialogue:type(), "ai")
 end
 --@api-stub: LDialogueAI:typeOf
 -- Returns whether this dialogue AI handle matches a supported type name.
 do
-  local obj = lurek.ai.newDialogueAI()
-  lurek.log.debug("typeOf LDialogueAI: " .. tostring(obj:typeOf("LDialogueAI")), "example") -- true
+  local dialogue = lurek.ai.newDialogueAI()
+  lurek.log.debug("is DialogueAI=" .. tostring(dialogue:typeOf("DialogueAI")), "ai")
+  lurek.log.debug("is Object=" .. tostring(dialogue:typeOf("Object")), "ai")
 end
 --@api-stub: LEmotionModel:type
 -- Returns the Lua-visible type name for this emotion model handle.
 do
-  local obj = lurek.ai.newEmotionModel()
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LEmotionModel"
+  local emotions = lurek.ai.newEmotionModel()
+  emotions:add("focus", 0.0, 0.05, 0.3)
+  lurek.log.debug("emotion type=" .. emotions:type(), "ai")
 end
 --@api-stub: LEmotionModel:typeOf
 -- Returns whether this emotion model handle matches a supported type name.
 do
-  local obj = lurek.ai.newEmotionModel()
-  lurek.log.debug("typeOf LEmotionModel: " .. tostring(obj:typeOf("LEmotionModel")), "example") -- true
+  local emotions = lurek.ai.newEmotionModel()
+  lurek.log.debug("is LEmotionModel=" .. tostring(emotions:typeOf("LEmotionModel")), "ai")
+  lurek.log.debug("is Object=" .. tostring(emotions:typeOf("Object")), "ai")
 end
 --@api-stub: LGeneticAlgorithm:type
 -- Returns the Lua-visible type name for this genetic algorithm handle.
 do
-  local obj = lurek.ai.newGeneticAlgorithm(50, 16, 42)
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LGeneticAlgorithm"
+  local genetic = lurek.ai.newGeneticAlgorithm(50, 16, 42)
+  genetic:setFitness(0, 1.0)
+  lurek.log.debug("genetic type=" .. genetic:type(), "ai")
 end
 --@api-stub: LGeneticAlgorithm:typeOf
 -- Returns whether this genetic algorithm handle matches a supported type name.
 do
-  local obj = lurek.ai.newGeneticAlgorithm(50, 16, 42)
-  lurek.log.debug("typeOf LGeneticAlgorithm: " .. tostring(obj:typeOf("LGeneticAlgorithm")), "example") -- true
+  local genetic = lurek.ai.newGeneticAlgorithm(50, 16, 42)
+  lurek.log.debug("is LGeneticAlgorithm=" .. tostring(genetic:typeOf("LGeneticAlgorithm")), "ai")
+  lurek.log.debug("is Object=" .. tostring(genetic:typeOf("Object")), "ai")
 end
 --@api-stub: LHTNDomain:type
 -- Returns the Lua-visible type name for this HTN domain handle.
 do
-  local obj = lurek.ai.newHTNDomain()
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LHTNDomain"
+  local domain = lurek.ai.newHTNDomain()
+  domain:addPrimitive("wait", {}, {}, {})
+  lurek.log.debug("htn type=" .. domain:type(), "ai")
 end
 --@api-stub: LHTNDomain:typeOf
 -- Returns whether this HTN domain handle matches a supported type name.
 do
-  local obj = lurek.ai.newHTNDomain()
-  lurek.log.debug("typeOf LHTNDomain: " .. tostring(obj:typeOf("LHTNDomain")), "example") -- true
+  local domain = lurek.ai.newHTNDomain()
+  lurek.log.debug("is LHTNDomain=" .. tostring(domain:typeOf("LHTNDomain")), "ai")
+  lurek.log.debug("is Object=" .. tostring(domain:typeOf("Object")), "ai")
 end
 --@api-stub: LMCTSEngine:type
 -- Returns the Lua-visible type name for this MCTS engine handle.
 do
-  local obj = lurek.ai.newMCTSEngine(200, 1.41, 32, 12345)
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LMCTSEngine"
+  local mcts = lurek.ai.newMCTSEngine(200, 1.41, 32, 12345)
+  lurek.log.debug("mcts type=" .. mcts:type(), "ai")
 end
 --@api-stub: LMCTSEngine:typeOf
 -- Returns whether this MCTS engine handle matches a supported type name.
 do
-  local obj = lurek.ai.newMCTSEngine(200, 1.41, 32, 12345)
-  lurek.log.debug("typeOf LMCTSEngine: " .. tostring(obj:typeOf("LMCTSEngine")), "example") -- true
+  local mcts = lurek.ai.newMCTSEngine(200, 1.41, 32, 12345)
+  lurek.log.debug("is LMCTSEngine=" .. tostring(mcts:typeOf("LMCTSEngine")), "ai")
+  lurek.log.debug("is Object=" .. tostring(mcts:typeOf("Object")), "ai")
 end
 --@api-stub: LNeedSystem:type
 -- Returns the Lua-visible type name for this need system handle.
 do
-  local obj = lurek.ai.newNeedSystem()
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LNeedSystem"
+  local needs = lurek.ai.newNeedSystem()
+  needs:addNeed("hunger", 0.1, 0.7, 1.2)
+  lurek.log.debug("need system type=" .. needs:type(), "ai")
 end
 --@api-stub: LNeedSystem:typeOf
 -- Returns whether this need system handle matches a supported type name.
 do
-  local obj = lurek.ai.newNeedSystem()
-  lurek.log.debug("typeOf LNeedSystem: " .. tostring(obj:typeOf("LNeedSystem")), "example") -- true
+  local needs = lurek.ai.newNeedSystem()
+  lurek.log.debug("is LNeedSystem=" .. tostring(needs:typeOf("LNeedSystem")), "ai")
+  lurek.log.debug("is Object=" .. tostring(needs:typeOf("Object")), "ai")
 end
 --@api-stub: LNeuralNet:type
 -- Returns the Lua-visible type name for this neural network handle.
 do
-  local obj = lurek.ai.newNeuralNet()
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LNeuralNet"
+  local network = lurek.ai.newNeuralNet()
+  network:addLayer(2, 1, "linear")
+  lurek.log.debug("network type=" .. network:type(), "ai")
 end
 --@api-stub: LNeuralNet:typeOf
 -- Returns whether this neural network handle matches a supported type name.
 do
-  local obj = lurek.ai.newNeuralNet()
-  lurek.log.debug("typeOf LNeuralNet: " .. tostring(obj:typeOf("LNeuralNet")), "example") -- true
+  local network = lurek.ai.newNeuralNet()
+  lurek.log.debug("is LNeuralNet=" .. tostring(network:typeOf("LNeuralNet")), "ai")
+  lurek.log.debug("is Object=" .. tostring(network:typeOf("Object")), "ai")
 end
 --@api-stub: LNeuroevolution:type
 -- Returns the Lua-visible type name for this neuroevolution handle.
 do
-  local obj = lurek.ai.newNeuroevolution({{inputs=2,outputs=4},{inputs=4,outputs=1}}, 30, 1)
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LNeuroevolution"
+  local layers = { { inputs = 2, outputs = 4, activation = "relu" }, { inputs = 4, outputs = 1, activation = "linear" } }
+  local evolution = lurek.ai.newNeuroevolution(layers, 30, 1)
+  lurek.log.debug("neuroevolution type=" .. evolution:type(), "ai")
 end
 --@api-stub: LNeuroevolution:typeOf
 -- Returns whether this neuroevolution handle matches a supported type name.
 do
-  local obj = lurek.ai.newNeuroevolution({{inputs=2,outputs=4},{inputs=4,outputs=1}}, 30, 1)
-  lurek.log.debug("typeOf LNeuroevolution: " .. tostring(obj:typeOf("LNeuroevolution")), "example") -- true
+  local layers = { { inputs = 2, outputs = 4, activation = "relu" }, { inputs = 4, outputs = 1, activation = "linear" } }
+  local evolution = lurek.ai.newNeuroevolution(layers, 30, 1)
+  lurek.log.debug("is LNeuroevolution=" .. tostring(evolution:typeOf("LNeuroevolution")), "ai")
+  lurek.log.debug("is Object=" .. tostring(evolution:typeOf("Object")), "ai")
 end
 --@api-stub: LORCASolver:type
 -- Returns the Lua-visible type name for this ORCA solver handle.
 do
-  local obj = lurek.ai.newORCASolver(2.0)
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LORCASolver"
+  local solver = lurek.ai.newORCASolver(2.0)
+  solver:addAgent(0, 0, 8, 60)
+  lurek.log.debug("orca type=" .. solver:type(), "ai")
 end
 --@api-stub: LORCASolver:typeOf
 -- Returns whether this ORCA solver handle matches a supported type name.
 do
-  local obj = lurek.ai.newORCASolver(2.0)
-  lurek.log.debug("typeOf LORCASolver: " .. tostring(obj:typeOf("LORCASolver")), "example") -- true
+  local solver = lurek.ai.newORCASolver(2.0)
+  lurek.log.debug("is LORCASolver=" .. tostring(solver:typeOf("LORCASolver")), "ai")
+  lurek.log.debug("is Object=" .. tostring(solver:typeOf("Object")), "ai")
 end
 --@api-stub: LStimulusWorld:type
 -- Returns the Lua-visible type name for this stimulus world handle.
 do
-  local obj = lurek.ai.newStimulusWorld()
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LStimulusWorld"
+  local stimuli = lurek.ai.newStimulusWorld()
+  stimuli:addVisual(12, 24, 1.0, 90, "movement")
+  lurek.log.debug("stimulus type=" .. stimuli:type(), "ai")
 end
 --@api-stub: LStimulusWorld:typeOf
 -- Returns whether this stimulus world handle matches a supported type name.
 do
-  local obj = lurek.ai.newStimulusWorld()
-  lurek.log.debug("typeOf LStimulusWorld: " .. tostring(obj:typeOf("LStimulusWorld")), "example") -- true
+  local stimuli = lurek.ai.newStimulusWorld()
+  stimuli:addAuditory(0, 0, 1.0, 64, 0.5, "alert")
+  lurek.log.debug("is LStimulusWorld=" .. tostring(stimuli:typeOf("LStimulusWorld")), "ai")
+  lurek.log.debug("is Object=" .. tostring(stimuli:typeOf("Object")), "ai")
 end
 --@api-stub: LStrategyAI:type
 -- Returns the Lua-visible type name for this strategy AI handle.
 do
-  local obj = lurek.ai.newStrategyAI(2.0)
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LStrategyAI"
+  local strategy = lurek.ai.newStrategyAI(2.0)
+  strategy:addGoal("patrol")
+  lurek.log.debug("strategy type=" .. strategy:type(), "ai")
 end
 --@api-stub: LStrategyAI:typeOf
 -- Returns whether this strategy AI handle matches a supported type name.
 do
-  local obj = lurek.ai.newStrategyAI(2.0)
-  lurek.log.debug("typeOf LStrategyAI: " .. tostring(obj:typeOf("LStrategyAI")), "example") -- true
+  local strategy = lurek.ai.newStrategyAI(2.0)
+  lurek.log.debug("is LStrategyAI=" .. tostring(strategy:typeOf("LStrategyAI")), "ai")
+  lurek.log.debug("is Object=" .. tostring(strategy:typeOf("Object")), "ai")
 end
 --@api-stub: LTraitProfile:type
 -- Returns the Lua-visible type name for this trait profile handle.
 do
-  local obj = lurek.ai.newTraitProfile()
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LTraitProfile"
+  local traits = lurek.ai.newTraitProfile()
+  traits:set("focus", 0.6)
+  lurek.log.debug("trait profile type=" .. traits:type(), "ai")
 end
 --@api-stub: LTraitProfile:typeOf
 -- Returns whether this trait profile handle matches a supported type name.
 do
-  local obj = lurek.ai.newTraitProfile()
-  lurek.log.debug("typeOf LTraitProfile: " .. tostring(obj:typeOf("LTraitProfile")), "example") -- true
+  local traits = lurek.ai.newTraitProfile()
+  lurek.log.debug("is LTraitProfile=" .. tostring(traits:typeOf("LTraitProfile")), "ai")
+  lurek.log.debug("is Object=" .. tostring(traits:typeOf("Object")), "ai")
 end

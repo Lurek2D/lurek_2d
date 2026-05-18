@@ -72,7 +72,7 @@ do
     lurek.log.info("no event within timeout, continuing idle loop", "tool")
   end
 end
---@api-stub: LSignal:clear
+--@api-stub: lurek.event.clear
 -- Removes all pending events from the shared queue
 do
   -- Clear stale input events when transitioning between scenes
@@ -345,11 +345,3 @@ do
   lurek.log.info("typeOf Signal=" .. tostring(sig:typeOf("Signal")) .. " Object=" .. tostring(sig:typeOf("Object")), "diag")
 end
 print("content/examples/event.lua")
---@api-stub: lurek.event.clear
--- Removes all listeners for a named event, or all events if no name given.
-do
-  -- Create a signal to verify clear behaviour.
-  local sig = lurek.event.newSignal()
-  lurek.event.clear()
-  lurek.log.debug("event cleared; sig ok: " .. tostring(sig ~= nil), "example")
-end

@@ -4,7 +4,7 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
@@ -22,10 +22,10 @@ This page leads from an empty game folder to the rest of the wiki.
 
 ## First Pages
 
-- [[First Game|First-Game]]
-- [[Callbacks]]
-- [[Modules]]
-- [[Examples]]
+- [First Game](First-Game)
+- [Callbacks](Callbacks)
+- [Modules](Modules)
+- [Examples](Examples)
 
 ## Run An Example
 

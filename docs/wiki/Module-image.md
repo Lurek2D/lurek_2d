@@ -4,199 +4,148 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
-- [Purpose](#purpose)
-- [Summary](#summary)
-- [Minimal Module Example](#minimal-module-example)
-- [Key Types](#key-types)
-- [API Overview](#api-overview)
-- [Module Functions](#module-functions)
-  - [lurek.image.fromScreen() -> LImageData|nil](#lurekimagefromscreen-limagedatanil)
-  - [lurek.image.isCompressed(filename: string) -> boolean](#lurekimageiscompressedfilename-string-boolean)
-  - [lurek.image.loadImage(filename: string) -> LImageData](#lurekimageloadimagefilename-string-limagedata)
-  - [lurek.image.loadLayered(filename: string) -> LLayeredImage](#lurekimageloadlayeredfilename-string-llayeredimage)
-  - [lurek.image.newCompressedData(filename: string) -> LCompressedImageData](#lurekimagenewcompresseddatafilename-string-lcompressedimagedata)
-  - [lurek.image.newImageData(width_or_filename: integer|string, [height]: integer) -> LImageData](#lurekimagenewimagedatawidthorfilename-integerstring-height-integer-limagedata)
-  - [lurek.image.newImageDataFromBytes(w: integer, h: integer, bytes: string) -> LImageData](#lurekimagenewimagedatafrombytesw-integer-h-integer-bytes-string-limagedata)
-  - [lurek.image.newLayeredImage(width: integer, height: integer) -> LLayeredImage](#lurekimagenewlayeredimagewidth-integer-height-integer-llayeredimage)
-  - [lurek.image.newPaletteLut() -> LPaletteLUT](#lurekimagenewpalettelut-lpalettelut)
-  - [lurek.image.newProvinceGrid(filename: string) -> LProvinceGrid](#lurekimagenewprovincegridfilename-string-lprovincegrid)
-  - [lurek.image.saveImage(img_ud: LImageData, filename: string)](#lurekimagesaveimageimgud-limagedata-filename-string)
-  - [lurek.image.savePNG(img_ud: LImageData, filename: string)](#lurekimagesavepngimgud-limagedata-filename-string)
-- [Types and Methods](#types-and-methods)
+- [🎯 Purpose](#purpose)
+- [📋 Summary](#summary)
+- [🧩 Key Types](#key-types)
+- [📖 API Overview](#api-overview)
+- [⚙️ Module Functions](#module-functions)
+  - [lurek.image.fromScreen](#lurekimagefromscreen)
+  - [lurek.image.isCompressed](#lurekimageiscompressed)
+  - [lurek.image.loadImage](#lurekimageloadimage)
+  - [lurek.image.loadLayered](#lurekimageloadlayered)
+  - [lurek.image.newCompressedData](#lurekimagenewcompresseddata)
+  - [lurek.image.newImageData](#lurekimagenewimagedata)
+  - [lurek.image.newImageDataFromBytes](#lurekimagenewimagedatafrombytes)
+  - [lurek.image.newLayeredImage](#lurekimagenewlayeredimage)
+  - [lurek.image.newPaletteLut](#lurekimagenewpalettelut)
+  - [lurek.image.newProvinceGrid](#lurekimagenewprovincegrid)
+  - [lurek.image.saveImage](#lurekimagesaveimage)
+  - [lurek.image.savePNG](#lurekimagesavepng)
+- [🔷 Module Types](#module-types)
   - [LCompressedImageData](#lcompressedimagedata)
-  - [LCompressedImageData:getDimensions() -> integer](#lcompressedimagedatagetdimensions-integer)
-  - [LCompressedImageData:getFormat() -> string](#lcompressedimagedatagetformat-string)
-  - [LCompressedImageData:getHeight() -> integer](#lcompressedimagedatagetheight-integer)
-  - [LCompressedImageData:getMipmapCount() -> integer](#lcompressedimagedatagetmipmapcount-integer)
-  - [LCompressedImageData:getWidth() -> integer](#lcompressedimagedatagetwidth-integer)
-  - [LCompressedImageData:type() -> string](#lcompressedimagedatatype-string)
-  - [LCompressedImageData:typeOf(name: string) -> boolean](#lcompressedimagedatatypeofname-string-boolean)
   - [LImageData](#limagedata)
-  - [LImageData:alphaMask(factor: number)](#limagedataalphamaskfactor-number)
-  - [LImageData:applyPaletteLut(lut_ud: LPaletteLUT)](#limagedataapplypalettelutlutud-lpalettelut)
-  - [LImageData:blit(src_ud: LImageData, dst_x: integer, dst_y: integer)](#limagedatablitsrcud-limagedata-dstx-integer-dsty-integer)
-  - [LImageData:blur(radius: integer) -> LImageData](#limagedatablurradius-integer-limagedata)
-  - [LImageData:brightness(factor: number)](#limagedatabrightnessfactor-number)
-  - [LImageData:contrast(factor: number)](#limagedatacontrastfactor-number)
-  - [LImageData:convolve(kernel_t: table, ksize: integer) -> LImageData](#limagedataconvolvekernelt-table-ksize-integer-limagedata)
-  - [LImageData:crop(x: integer, y: integer, w: integer, h: integer) -> LImageData](#limagedatacropx-integer-y-integer-w-integer-h-integer-limagedata)
-  - [LImageData:diff(other_ud: LImageData) -> number](#limagedatadiffotherud-limagedata-number)
-  - [LImageData:drawCircle(cx: integer, cy: integer, radius: integer, r: integer, g: integer, b: integer, a: integer)](#limagedatadrawcirclecx-integer-cy-integer-radius-integer-r-integer-g-integer-b-integer-a-integer)
-  - [LImageData:drawLine(x0: integer, y0: integer, x1: integer, y1: integer, r: integer, g: integer, b: integer, a: integer)](#limagedatadrawlinex0-integer-y0-integer-x1-integer-y1-integer-r-integer-g-integer-b-integer-a-integer)
-  - [LImageData:drawNineSlice(src_ud: LImageData, src_x: integer, src_y: integer, src_w: integer, src_h: integer, dst_x: integer, dst_y: integer, dst_w: integer, dst_h: integer, inset_left: integer, inset_right: integer, inset_top: integer, inset_bottom: integer)](#limagedatadrawnineslicesrcud-limagedata-srcx-integer-srcy-integer-srcw-integer-srch-integer-dstx-integer-dsty-integer-dstw-integer-dsth-integer-insetleft-integer-insetright-integer-insettop-integer-insetbottom-integer)
-  - [LImageData:drawRect(x: integer, y: integer, w: integer, h: integer, r: integer, g: integer, b: integer, a: integer)](#limagedatadrawrectx-integer-y-integer-w-integer-h-integer-r-integer-g-integer-b-integer-a-integer)
-  - [LImageData:encode(format: string) -> string](#limagedataencodeformat-string-string)
-  - [LImageData:fill(r: integer, g: integer, b: integer, a: integer)](#limagedatafillr-integer-g-integer-b-integer-a-integer)
-  - [LImageData:flipHorizontal()](#limagedatafliphorizontal)
-  - [LImageData:flipVertical()](#limagedataflipvertical)
-  - [LImageData:gamma(gamma: number)](#limagedatagammagamma-number)
-  - [LImageData:getDimensions() -> integer](#limagedatagetdimensions-integer)
-  - [LImageData:getHeight() -> integer](#limagedatagetheight-integer)
-  - [LImageData:getPixel(x: integer, y: integer) -> integer](#limagedatagetpixelx-integer-y-integer-integer)
-  - [LImageData:getRawBytes() -> string](#limagedatagetrawbytes-string)
-  - [LImageData:getRegion(x: integer, y: integer, w: integer, h: integer) -> LImageData|nil](#limagedatagetregionx-integer-y-integer-w-integer-h-integer-limagedatanil)
-  - [LImageData:getString() -> string](#limagedatagetstring-string)
-  - [LImageData:getWidth() -> integer](#limagedatagetwidth-integer)
-  - [LImageData:grayscale()](#limagedatagrayscale)
-  - [LImageData:invert()](#limagedatainvert)
-  - [LImageData:mapPixel(func: function)](#limagedatamappixelfunc-function)
-  - [LImageData:mapPixels(func: function)](#limagedatamappixelsfunc-function)
-  - [LImageData:noise(amount: integer)](#limagedatanoiseamount-integer)
-  - [LImageData:paste(src_ud: LImageData, dx: integer, dy: integer)](#limagedatapastesrcud-limagedata-dx-integer-dy-integer)
-  - [LImageData:posterize(levels: integer)](#limagedataposterizelevels-integer)
-  - [LImageData:resize(width: integer, height: integer, filter: string) -> LImageData|nil](#limagedataresizewidth-integer-height-integer-filter-string-limagedatanil)
-  - [LImageData:resizeNearest(new_w: integer, new_h: integer) -> LImageData](#limagedataresizenearestneww-integer-newh-integer-limagedata)
-  - [LImageData:rotate90cw() -> LImageData](#limagedatarotate90cw-limagedata)
-  - [LImageData:saturation(factor: number)](#limagedatasaturationfactor-number)
-  - [LImageData:sepia()](#limagedatasepia)
-  - [LImageData:setPixel(x: integer, y: integer, r: integer, g: integer, b: integer, a: integer)](#limagedatasetpixelx-integer-y-integer-r-integer-g-integer-b-integer-a-integer)
-  - [LImageData:setRawData(bytes: string)](#limagedatasetrawdatabytes-string)
-  - [LImageData:sharpen() -> LImageData](#limagedatasharpen-limagedata)
-  - [LImageData:threshold(value: integer)](#limagedatathresholdvalue-integer)
-  - [LImageData:tint(tr: integer, tg: integer, tb: integer, factor: number)](#limagedatatinttr-integer-tg-integer-tb-integer-factor-number)
-  - [LImageData:type() -> string](#limagedatatype-string)
-  - [LImageData:typeOf(name: string) -> boolean](#limagedatatypeofname-string-boolean)
   - [LLayeredImage](#llayeredimage)
-  - [LLayeredImage:addLayer([name]: string) -> integer](#llayeredimageaddlayername-string-integer)
-  - [LLayeredImage:getHeight() -> integer](#llayeredimagegetheight-integer)
-  - [LLayeredImage:getLayer(index: integer) -> LImageData](#llayeredimagegetlayerindex-integer-limagedata)
-  - [LLayeredImage:getName(index: integer) -> string](#llayeredimagegetnameindex-integer-string)
-  - [LLayeredImage:getOpacity(index: integer) -> number](#llayeredimagegetopacityindex-integer-number)
-  - [LLayeredImage:getWidth() -> integer](#llayeredimagegetwidth-integer)
-  - [LLayeredImage:isVisible(index: integer) -> boolean](#llayeredimageisvisibleindex-integer-boolean)
-  - [LLayeredImage:layerCount() -> integer](#llayeredimagelayercount-integer)
-  - [LLayeredImage:merge() -> LImageData](#llayeredimagemerge-limagedata)
-  - [LLayeredImage:moveLayer(from_idx: integer, to_idx: integer) -> boolean](#llayeredimagemovelayerfromidx-integer-toidx-integer-boolean)
-  - [LLayeredImage:removeLayer(index: integer) -> boolean](#llayeredimageremovelayerindex-integer-boolean)
-  - [LLayeredImage:save(path: string)](#llayeredimagesavepath-string)
-  - [LLayeredImage:setLayer(index: integer, img: LImageData) -> boolean](#llayeredimagesetlayerindex-integer-img-limagedata-boolean)
-  - [LLayeredImage:setName(index: integer, name: string) -> boolean](#llayeredimagesetnameindex-integer-name-string-boolean)
-  - [LLayeredImage:setOpacity(index: integer, opacity: number) -> boolean](#llayeredimagesetopacityindex-integer-opacity-number-boolean)
-  - [LLayeredImage:setVisible(index: integer, visible: boolean) -> boolean](#llayeredimagesetvisibleindex-integer-visible-boolean-boolean)
-  - [LLayeredImage:swapLayers(a: integer, b: integer) -> boolean](#llayeredimageswaplayersa-integer-b-integer-boolean)
-  - [LLayeredImage:type() -> string](#llayeredimagetype-string)
-  - [LLayeredImage:typeOf(name: string) -> boolean](#llayeredimagetypeofname-string-boolean)
   - [LPaletteLUT](#lpalettelut)
-  - [LPaletteLUT:clear()](#lpalettelutclear)
-  - [LPaletteLUT:cycle(offset: integer)](#lpalettelutcycleoffset-integer)
-  - [LPaletteLUT:getColorCount() -> integer](#lpalettelutgetcolorcount-integer)
-  - [LPaletteLUT:setColor(fr: integer, fg: integer, fb: integer, fa: integer, tr: integer, tg: integer, tb: integer, ta: integer)](#lpalettelutsetcolorfr-integer-fg-integer-fb-integer-fa-integer-tr-integer-tg-integer-tb-integer-ta-integer)
-  - [LPaletteLUT:type() -> string](#lpaletteluttype-string)
-  - [LPaletteLUT:typeOf(name: string) -> boolean](#lpaletteluttypeofname-string-boolean)
   - [LProvinceGrid](#lprovincegrid)
-  - [LProvinceGrid:adjacencies() -> table](#lprovincegridadjacencies-table)
-  - [LProvinceGrid:borderSegments() -> table](#lprovincegridbordersegments-table)
-  - [LProvinceGrid:deserializeShapeData(bytes: string) -> LuaValue](#lprovincegriddeserializeshapedatabytes-string-luavalue)
-  - [LProvinceGrid:drawShapes([x]: number, [y]: number, [w]: number, [h]: number) -> integer](#lprovincegriddrawshapesx-number-y-number-w-number-h-number-integer)
-  - [LProvinceGrid:getAt(x: integer, y: integer) -> integer](#lprovincegridgetatx-integer-y-integer-integer)
-  - [LProvinceGrid:getHeight() -> integer](#lprovincegridgetheight-integer)
-  - [LProvinceGrid:getPolygons() -> table](#lprovincegridgetpolygons-table)
-  - [LProvinceGrid:getPolygonsSimplified() -> table](#lprovincegridgetpolygonssimplified-table)
-  - [LProvinceGrid:getWidth() -> integer](#lprovincegridgetwidth-integer)
-  - [LProvinceGrid:provinceCount() -> integer](#lprovincegridprovincecount-integer)
-  - [LProvinceGrid:provinceSpans() -> table](#lprovincegridprovincespans-table)
-  - [LProvinceGrid:serializeShapeData() -> string](#lprovincegridserializeshapedata-string)
-  - [LProvinceGrid:type() -> string](#lprovincegridtype-string)
-  - [LProvinceGrid:typeOf(name: string) -> boolean](#lprovincegridtypeofname-string-boolean)
-- [Examples](#examples)
-- [Reference Games](#reference-games)
-- [Related Modules](#related-modules)
+- [🔹 Module Methods](#module-methods)
+  - [LCompressedImageData:getDimensions](#lcompressedimagedatagetdimensions)
+  - [LCompressedImageData:getFormat](#lcompressedimagedatagetformat)
+  - [LCompressedImageData:getHeight](#lcompressedimagedatagetheight)
+  - [LCompressedImageData:getMipmapCount](#lcompressedimagedatagetmipmapcount)
+  - [LCompressedImageData:getWidth](#lcompressedimagedatagetwidth)
+  - [LCompressedImageData:type](#lcompressedimagedatatype)
+  - [LCompressedImageData:typeOf](#lcompressedimagedatatypeof)
+  - [LImageData:alphaMask](#limagedataalphamask)
+  - [LImageData:applyPaletteLut](#limagedataapplypalettelut)
+  - [LImageData:blit](#limagedatablit)
+  - [LImageData:blur](#limagedatablur)
+  - [LImageData:brightness](#limagedatabrightness)
+  - [LImageData:contrast](#limagedatacontrast)
+  - [LImageData:convolve](#limagedataconvolve)
+  - [LImageData:crop](#limagedatacrop)
+  - [LImageData:diff](#limagedatadiff)
+  - [LImageData:drawCircle](#limagedatadrawcircle)
+  - [LImageData:drawLine](#limagedatadrawline)
+  - [LImageData:drawNineSlice](#limagedatadrawnineslice)
+  - [LImageData:drawRect](#limagedatadrawrect)
+  - [LImageData:encode](#limagedataencode)
+  - [LImageData:fill](#limagedatafill)
+  - [LImageData:flipHorizontal](#limagedatafliphorizontal)
+  - [LImageData:flipVertical](#limagedataflipvertical)
+  - [LImageData:gamma](#limagedatagamma)
+  - [LImageData:getDimensions](#limagedatagetdimensions)
+  - [LImageData:getHeight](#limagedatagetheight)
+  - [LImageData:getPixel](#limagedatagetpixel)
+  - [LImageData:getRawBytes](#limagedatagetrawbytes)
+  - [LImageData:getRegion](#limagedatagetregion)
+  - [LImageData:getString](#limagedatagetstring)
+  - [LImageData:getWidth](#limagedatagetwidth)
+  - [LImageData:grayscale](#limagedatagrayscale)
+  - [LImageData:invert](#limagedatainvert)
+  - [LImageData:mapPixel](#limagedatamappixel)
+  - [LImageData:mapPixels](#limagedatamappixels)
+  - [LImageData:noise](#limagedatanoise)
+  - [LImageData:paste](#limagedatapaste)
+  - [LImageData:posterize](#limagedataposterize)
+  - [LImageData:resize](#limagedataresize)
+  - [LImageData:resizeNearest](#limagedataresizenearest)
+  - [LImageData:rotate90cw](#limagedatarotate90cw)
+  - [LImageData:saturation](#limagedatasaturation)
+  - [LImageData:sepia](#limagedatasepia)
+  - [LImageData:setPixel](#limagedatasetpixel)
+  - [LImageData:setRawData](#limagedatasetrawdata)
+  - [LImageData:sharpen](#limagedatasharpen)
+  - [LImageData:threshold](#limagedatathreshold)
+  - [LImageData:tint](#limagedatatint)
+  - [LImageData:type](#limagedatatype)
+  - [LImageData:typeOf](#limagedatatypeof)
+  - [LLayeredImage:addLayer](#llayeredimageaddlayer)
+  - [LLayeredImage:getHeight](#llayeredimagegetheight)
+  - [LLayeredImage:getLayer](#llayeredimagegetlayer)
+  - [LLayeredImage:getName](#llayeredimagegetname)
+  - [LLayeredImage:getOpacity](#llayeredimagegetopacity)
+  - [LLayeredImage:getWidth](#llayeredimagegetwidth)
+  - [LLayeredImage:isVisible](#llayeredimageisvisible)
+  - [LLayeredImage:layerCount](#llayeredimagelayercount)
+  - [LLayeredImage:merge](#llayeredimagemerge)
+  - [LLayeredImage:moveLayer](#llayeredimagemovelayer)
+  - [LLayeredImage:removeLayer](#llayeredimageremovelayer)
+  - [LLayeredImage:save](#llayeredimagesave)
+  - [LLayeredImage:setLayer](#llayeredimagesetlayer)
+  - [LLayeredImage:setName](#llayeredimagesetname)
+  - [LLayeredImage:setOpacity](#llayeredimagesetopacity)
+  - [LLayeredImage:setVisible](#llayeredimagesetvisible)
+  - [LLayeredImage:swapLayers](#llayeredimageswaplayers)
+  - [LLayeredImage:type](#llayeredimagetype)
+  - [LLayeredImage:typeOf](#llayeredimagetypeof)
+  - [LPaletteLUT:clear](#lpalettelutclear)
+  - [LPaletteLUT:cycle](#lpalettelutcycle)
+  - [LPaletteLUT:getColorCount](#lpalettelutgetcolorcount)
+  - [LPaletteLUT:setColor](#lpalettelutsetcolor)
+  - [LPaletteLUT:type](#lpaletteluttype)
+  - [LPaletteLUT:typeOf](#lpaletteluttypeof)
+  - [LProvinceGrid:adjacencies](#lprovincegridadjacencies)
+  - [LProvinceGrid:borderSegments](#lprovincegridbordersegments)
+  - [LProvinceGrid:deserializeShapeData](#lprovincegriddeserializeshapedata)
+  - [LProvinceGrid:drawShapes](#lprovincegriddrawshapes)
+  - [LProvinceGrid:getAt](#lprovincegridgetat)
+  - [LProvinceGrid:getHeight](#lprovincegridgetheight)
+  - [LProvinceGrid:getPolygons](#lprovincegridgetpolygons)
+  - [LProvinceGrid:getPolygonsSimplified](#lprovincegridgetpolygonssimplified)
+  - [LProvinceGrid:getWidth](#lprovincegridgetwidth)
+  - [LProvinceGrid:provinceCount](#lprovincegridprovincecount)
+  - [LProvinceGrid:provinceSpans](#lprovincegridprovincespans)
+  - [LProvinceGrid:serializeShapeData](#lprovincegridserializeshapedata)
+  - [LProvinceGrid:type](#lprovincegridtype)
+  - [LProvinceGrid:typeOf](#lprovincegridtypeof)
+- [💡 Examples](#examples)
+- [🎮 Reference Games](#reference-games)
+- [🔗 Related Modules](#related-modules)
 
 This page is generated from the current module specs, examples, and Lua API data.
 
 **Module group:** Platform Services
 **Namespace:** `lurek.image`
 
-## Purpose
+## 🎯 Purpose
 
 CPU-side ImageData (RGBA8 buffer) with blit, resize, fill, region, diff, PNG encode.
 
-## Summary
+[⬆ back to top](#table-of-contents)
+
+## 📋 Summary
 
 CPU-side pixel buffer operations for loading, manipulating, and exporting RGBA8 image data. `ImageData` is the core type — a width/height/pixel-data triple with blit, fill, crop, resize (nearest/bilinear), flip, rotate, clear, gradient, and region operations. `LayeredImage` stacks multiple `ImageData` layers with blend modes (normal, multiply, screen, overlay, add).
 
 Province grid detection segments pixel regions into numbered provinces via flood-fill with configurable color keys. `TextureAtlas` packs multiple images into a single texture with bin-packing. DDS decoding handles BC1–BC7 compressed textures. Palette-based LUT color remapping enables retro effects. Effects include blur, sharpen, edge detect, desaturate, and threshold. Exposed as `lurek.image.*`. Platform Services tier.
 
-## Minimal Module Example
+[⬆ back to top](#table-of-contents)
 
-Module example from [image.lua](../blob/main/content/examples/image.lua):
-
-```lua
--- =============================================================================
--- Module-level constructors
--- =============================================================================
-
---@api-stub: lurek.image.newImageData
--- Creates empty image data from dimensions or decodes image data from a GameFS filename
-do
-  -- Create a blank 64x64 canvas (all pixels start as transparent black).
-  -- Use this when you need a CPU-side image for procedural generation or compositing.
-  local hero = lurek.image.newImageData(64, 64)
-
-  -- You can also create from file: lurek.image.newImageData("assets/textures/hero.png")
-  -- The engine decodes PNG/BMP/TGA from GameFS and returns an LImageData handle.
-  local scratch = lurek.image.newImageData(64, 64)
-  scratch:fill(0, 0, 0, 0) -- clear to transparent for use as an overlay buffer
-  lurek.log.info("loaded hero " .. hero:getWidth() .. "x" .. hero:getHeight(), "image")
-end
-
---@api-stub: lurek.image.newImageDataFromBytes
--- Creates image data from raw RGBA bytes and explicit dimensions
-do
-  -- Build an image directly from raw RGBA8 bytes. Each pixel is 4 bytes: R, G, B, A.
-  -- Useful when receiving pixel data from network, procedural generators, or compute shaders.
-  -- Total byte count must equal width * height * 4.
-  local width, height = 4, 4
-  local pixels = string.rep(string.char(0, 128, 255, 255), width * height) -- solid sky blue
-  local img = lurek.image.newImageDataFromBytes(width, height, pixels)
-  lurek.log.info("fromBytes " .. img:getWidth() .. "x" .. img:getHeight(), "image")
-end
-
---@api-stub: lurek.image.newCompressedData
--- Loads DDS compressed image data from GameFS
-do
-  -- DDS textures stay compressed on the GPU (BC1/BC3/BC7), saving VRAM.
-  -- Use for large terrain textures, tilesets, and backgrounds.
-  -- Returns LCompressedImageData with mipmap info for trilinear filtering.
-  local ok_cd, cd = pcall(lurek.image.newCompressedData, "assets/terrain_bc1.dds")
-  if not ok_cd then return end
-  local mips = (cd and cd:getMipmapCount() or 0)
-  lurek.log.info("dds " .. (cd and cd:getFormat() or "unknown") .. " mips=" .. mips, "image")
-end
-
---@api-stub: lurek.image.isCompressed
--- Returns whether a GameFS image file begins with DDS compressed image magic bytes
-do
-  -- Check before loading: pick the right loader path (compressed vs raw decode).
-  -- Avoids error handling when you support both DDS and PNG assets.
-  local path = "assets/terrain_bc1.dds"
-```
-
-## Key Types
+## 🧩 Key Types
 
 - `LCompressedImageData` (7 methods) - Lua-side handle for compressed DDS image metadata and mipmap data.
 - `LImageData` (44 methods) - Provides Lua methods for reading, editing, filtering, drawing, and encoding image data.
@@ -204,7 +153,9 @@ do
 - `LPaletteLUT` (6 methods) - Lua-side handle for palette color remapping.
 - `LProvinceGrid` (14 methods) - Lua-side handle for a province id grid decoded from an image.
 
-## API Overview
+[⬆ back to top](#table-of-contents)
+
+## 📖 API Overview
 
 - Source spec: [docs/specs/image.md](../blob/main/docs/specs/image.md)
 
@@ -223,9 +174,13 @@ lurek.image.saveImage(img_ud: LImageData, filename: string) -- Saves an image da
 lurek.image.savePNG(img_ud: LImageData, filename: string) -- Encodes image data as PNG and writes it under the current game directory.
 ```
 
-## Module Functions
+[⬆ back to top](#table-of-contents)
 
-### `lurek.image.fromScreen() -> LImageData|nil`
+## ⚙️ Module Functions
+
+### lurek.image.fromScreen
+
+`lurek.image.fromScreen() -> LImageData|nil`
 
 Returns a completed screen capture image or requests one for a future call.
 
@@ -251,13 +206,15 @@ do
 end
 ```
 
-### `lurek.image.isCompressed(filename: string) -> boolean`
+### lurek.image.isCompressed
+
+`lurek.image.isCompressed(filename: string) -> boolean`
 
 Returns whether a GameFS image file begins with DDS compressed image magic bytes.
 
 **Parameters**
 
-- `filename` (`string`, required) - GameFS path to inspect.
+- `filename` (`string`, required): GameFS path to inspect.
 
 **Returns**: `boolean` - True when the file appears to be DDS compressed data.
 
@@ -281,13 +238,15 @@ do
 end
 ```
 
-### `lurek.image.loadImage(filename: string) -> LImageData`
+### lurek.image.loadImage
+
+`lurek.image.loadImage(filename: string) -> LImageData`
 
 Loads and decodes image data from GameFS.
 
 **Parameters**
 
-- `filename` (`string`, required) - GameFS path to an encoded image.
+- `filename` (`string`, required): GameFS path to an encoded image.
 
 **Returns**: `LImageData` - Loaded image data handle.
 
@@ -305,13 +264,15 @@ do
 end
 ```
 
-### `lurek.image.loadLayered(filename: string) -> LLayeredImage`
+### lurek.image.loadLayered
+
+`lurek.image.loadLayered(filename: string) -> LLayeredImage`
 
 Loads a serialized layered image stack from GameFS.
 
 **Parameters**
 
-- `filename` (`string`, required) - GameFS path to the layered image file.
+- `filename` (`string`, required): GameFS path to the layered image file.
 
 **Returns**: `LLayeredImage` - Loaded layered image handle.
 
@@ -330,13 +291,15 @@ do
 end
 ```
 
-### `lurek.image.newCompressedData(filename: string) -> LCompressedImageData`
+### lurek.image.newCompressedData
+
+`lurek.image.newCompressedData(filename: string) -> LCompressedImageData`
 
 Loads DDS compressed image data from GameFS.
 
 **Parameters**
 
-- `filename` (`string`, required) - GameFS path to a DDS file.
+- `filename` (`string`, required): GameFS path to a DDS file.
 
 **Returns**: `LCompressedImageData` - New compressed image data handle.
 
@@ -356,14 +319,16 @@ do
 end
 ```
 
-### `lurek.image.newImageData(width_or_filename: integer|string, [height]: integer) -> LImageData`
+### lurek.image.newImageData
+
+`lurek.image.newImageData(width_or_filename: integer|string, [height]: integer) -> LImageData`
 
 Creates empty image data from dimensions or decodes image data from a GameFS filename.
 
 **Parameters**
 
-- `width_or_filename` (`integer|string`, required) - Width in pixels for a blank canvas, or a GameFS filename string to load from disk.
-- `height` (`integer`, optional) - Height in pixels; required when the first argument is a width integer. Omit when loading from filename.
+- `width_or_filename` (`integer|string`, required): Width in pixels for a blank canvas, or a GameFS filename string to load from disk.
+- `height` (`integer`, optional): Height in pixels; required when the first argument is a width integer. Omit when loading from filename.
 
 **Returns**: `LImageData` - New image data handle.
 
@@ -385,15 +350,17 @@ do
 end
 ```
 
-### `lurek.image.newImageDataFromBytes(w: integer, h: integer, bytes: string) -> LImageData`
+### lurek.image.newImageDataFromBytes
+
+`lurek.image.newImageDataFromBytes(w: integer, h: integer, bytes: string) -> LImageData`
 
 Creates image data from raw RGBA bytes and explicit dimensions.
 
 **Parameters**
 
-- `w` (`integer`, required) - Width in pixels.
-- `h` (`integer`, required) - Height in pixels.
-- `bytes` (`string`, required) - Raw RGBA byte string.
+- `w` (`integer`, required): Width in pixels.
+- `h` (`integer`, required): Height in pixels.
+- `bytes` (`string`, required): Raw RGBA byte string.
 
 **Returns**: `LImageData` - New image data handle.
 
@@ -413,14 +380,16 @@ do
 end
 ```
 
-### `lurek.image.newLayeredImage(width: integer, height: integer) -> LLayeredImage`
+### lurek.image.newLayeredImage
+
+`lurek.image.newLayeredImage(width: integer, height: integer) -> LLayeredImage`
 
 Creates a layered image stack with one or more blank layers.
 
 **Parameters**
 
-- `width` (`integer`, required) - Width in pixels.
-- `height` (`integer`, required) - Height in pixels.
+- `width` (`integer`, required): Width in pixels.
+- `height` (`integer`, required): Height in pixels.
 
 **Returns**: `LLayeredImage` - New layered image handle.
 
@@ -439,7 +408,9 @@ do
 end
 ```
 
-### `lurek.image.newPaletteLut() -> LPaletteLUT`
+### lurek.image.newPaletteLut
+
+`lurek.image.newPaletteLut() -> LPaletteLUT`
 
 Creates an empty palette lookup table.
 
@@ -459,13 +430,15 @@ do
 end
 ```
 
-### `lurek.image.newProvinceGrid(filename: string) -> LProvinceGrid`
+### lurek.image.newProvinceGrid
+
+`lurek.image.newProvinceGrid(filename: string) -> LProvinceGrid`
 
 Loads a province id grid from an image file under the current game directory.
 
 **Parameters**
 
-- `filename` (`string`, required) - Province map image filename relative to game directory.
+- `filename` (`string`, required): Province map image filename relative to game directory.
 
 **Returns**: `LProvinceGrid` - New province grid handle.
 
@@ -485,14 +458,16 @@ do
 end
 ```
 
-### `lurek.image.saveImage(img_ud: LImageData, filename: string)`
+### lurek.image.saveImage
+
+`lurek.image.saveImage(img_ud: LImageData, filename: string)`
 
 Saves an image data object to a path under the current game directory.
 
 **Parameters**
 
-- `img_ud` (`LImageData`, required) - Image data handle to save.
-- `filename` (`string`, required) - Output filename relative to game directory.
+- `img_ud` (`LImageData`, required): Image data handle to save.
+- `filename` (`string`, required): Output filename relative to game directory.
 
 #### Example
 
@@ -508,14 +483,16 @@ do
 end
 ```
 
-### `lurek.image.savePNG(img_ud: LImageData, filename: string)`
+### lurek.image.savePNG
+
+`lurek.image.savePNG(img_ud: LImageData, filename: string)`
 
 Encodes image data as PNG and writes it under the current game directory.
 
 **Parameters**
 
-- `img_ud` (`LImageData`, required) - Image data handle to encode.
-- `filename` (`string`, required) - Output filename relative to game directory.
+- `img_ud` (`LImageData`, required): Image data handle to encode.
+- `filename` (`string`, required): Output filename relative to game directory.
 
 #### Example
 
@@ -533,11 +510,21 @@ end
 ```
 
 
-## Types and Methods
+[⬆ back to top](#table-of-contents)
 
-### `LCompressedImageData`
+## 🔷 Module Types
+
+### LCompressedImageData
 
 Lua-side handle for compressed DDS image metadata and mipmap data.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side handle for compressed DDS image metadata and mipmap data.
+---@class LCompressedImageData
+LCompressedImageData = {}
+```
 
 #### Example
 
@@ -555,152 +542,17 @@ do
 end
 ```
 
-### `LCompressedImageData:getDimensions() -> integer`
-
-Returns compressed image dimensions.
-
-**Returns**: `integer` - Width in pixels.
-
-#### Example
-
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
-
-```lua
-do
-  -- Get both dimensions in one call for aspect ratio calculation.
-  local ok, cd = pcall(lurek.image.newCompressedData, "assets/terrain_bc1.dds")
-  if ok and cd then
-    local w, h = cd:getDimensions()
-    lurek.log.info("compressed " .. w .. "x" .. h, "image")
-  end
-end
-```
-
-### `LCompressedImageData:getFormat() -> string`
-
-Returns the compressed image format name.
-
-**Returns**: `string` - Format name.
-
-#### Example
-
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
-
-```lua
-do
-  -- Format string identifies the compression: "BC1", "BC3", "BC7", etc.
-  -- BC1 = no alpha (smallest), BC3 = full alpha, BC7 = best quality.
-  local ok_cd, cd = pcall(lurek.image.newCompressedData, "assets/terrain_bc1.dds")
-  if not ok_cd then return end
-  local fmt = (cd and cd:getFormat() or "unknown")
-  lurek.log.info("dds format=" .. fmt, "image")
-end
-```
-
-### `LCompressedImageData:getHeight() -> integer`
-
-Returns compressed image height. This method is available to Lua scripts.
-
-**Returns**: `integer` - Height in pixels.
-
-#### Example
-
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
-
-```lua
-do
-  -- Verify the DDS texture is square before uploading to a cube map slot.
-  local ok, cd = pcall(lurek.image.newCompressedData, "assets/terrain_bc1.dds")
-  if ok and cd then
-    lurek.log.info("compressed height=" .. cd:getHeight(), "image")
-  end
-end
-```
-
-### `LCompressedImageData:getMipmapCount() -> integer`
-
-Returns the number of mipmap levels in this compressed image.
-
-**Returns**: `integer` - Mipmap level count.
-
-#### Example
-
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
-
-```lua
-do
-  -- Mipmaps are pre-computed smaller versions for trilinear filtering.
-  -- More mipmaps = smoother rendering at far distances.
-  local ok_cd, cd = pcall(lurek.image.newCompressedData, "assets/terrain_bc1.dds")
-  if not ok_cd then return end
-  local mips = (cd and cd:getMipmapCount() or 0)
-  if mips > 1 then
-    lurek.log.info("trilinear ready, mips=" .. mips, "image")
-  end
-end
-```
-
-### `LCompressedImageData:getWidth() -> integer`
-
-Returns compressed image width. This method is available to Lua scripts.
-
-**Returns**: `integer` - Width in pixels.
-
-#### Example
-
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
-
-```lua
-do
-  -- Read the base mipmap width to compute texture atlas coordinates.
-  local ok, cd = pcall(lurek.image.newCompressedData, "assets/terrain_bc1.dds")
-  if ok and cd then
-    lurek.log.info("compressed width=" .. cd:getWidth(), "image")
-  end
-end
-```
-
-### `LCompressedImageData:type() -> string`
-
-Returns the Lua-visible type name for this compressed image handle.
-
-**Returns**: `string` - The string `LCompressedImageData`.
-
-#### Example
-
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
-
-```lua
-do
-  local obj = lurek.image.newCompressedData('assets/textures/logo.png')
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LCompressedImageData"
-end
-```
-
-### `LCompressedImageData:typeOf(name: string) -> boolean`
-
-Returns whether this compressed image handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to compare against `LCompressedImageData` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-#### Example
-
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
-
-```lua
-do
-  local obj = lurek.image.newCompressedData('assets/textures/logo.png')
-  lurek.log.debug("typeOf LCompressedImageData: " .. tostring(obj:typeOf("LCompressedImageData")), "example") -- true
-end
-```
-
-### `LImageData`
+### LImageData
 
 Provides Lua methods for reading, editing, filtering, drawing, and encoding image data.
+
+**Lua API Definition**
+
+```lua
+--- Raw pixel buffer for CPU-side image manipulation before uploading to a GPU texture.
+---@class LImageData
+LImageData = {}
+```
 
 #### Example
 
@@ -722,13 +574,324 @@ do
 end
 ```
 
-### `LImageData:alphaMask(factor: number)`
+### LLayeredImage
+
+Lua-side handle for multiple image layers with visibility, opacity, and ordering.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side handle for multiple image layers with visibility, opacity, and ordering.
+---@class LLayeredImage
+LLayeredImage = {}
+```
+
+#### Example
+
+Exact example from [image.lua](../blob/main/content/examples/image.lua):
+
+```lua
+do
+  -- Reopen a previously saved layered document (painting tool, map editor, etc.)
+  pcall(function()
+    local doc = lurek.image.loadLayered("save/painting.limg")
+    local count = doc:layerCount()
+    lurek.log.info("painting reopened with " .. count .. " layers", "image")
+  end)
+end
+```
+
+### LPaletteLUT
+
+Lua-side handle for palette color remapping.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side handle for palette color remapping.
+---@class LPaletteLUT
+LPaletteLUT = {}
+```
+
+#### Example
+
+Exact example from [image.lua](../blob/main/content/examples/image.lua):
+
+```lua
+do
+  -- Palette LUTs remap pixel colors without per-pixel callback overhead.
+  -- Perfect for team recoloring, damage flash effects, or seasonal palette swaps.
+  local lut = lurek.image.newPaletteLut()
+  local before = lut:getColorCount()
+  lurek.log.info("new lut entries=" .. before, "image")
+end
+```
+
+### LProvinceGrid
+
+Lua-side handle for a province id grid decoded from an image.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side handle for a province id grid decoded from an image.
+---@class LProvinceGrid
+LProvinceGrid = {}
+```
+
+#### Example
+
+Exact example from [image.lua](../blob/main/content/examples/image.lua):
+
+```lua
+do
+  -- Province maps use color-coded images where each unique color = one province.
+  -- The engine decodes the image and assigns integer IDs for fast lookup.
+  -- Used in strategy games for territory selection, pathfinding, and borders.
+  local ok_grid, grid = pcall(lurek.image.newProvinceGrid, "assets/world_provinces.png")
+  if not ok_grid then return end
+  local count = (grid and grid:provinceCount() or 0)
+  lurek.log.info("loaded " .. count .. " provinces", "map")
+end
+```
+
+
+[⬆ back to top](#table-of-contents)
+
+## 🔹 Module Methods
+
+### LCompressedImageData:getDimensions
+
+`LCompressedImageData:getDimensions() -> integer`
+
+Returns compressed image dimensions.
+
+**Returns**: `integer` - Width in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns compressed image dimensions.
+---@return number a Width in pixels.
+---@return number b Height in pixels.
+function LCompressedImageData:getDimensions() end
+```
+
+#### Example
+
+Exact example from [image.lua](../blob/main/content/examples/image.lua):
+
+```lua
+do
+  -- Get both dimensions in one call for aspect ratio calculation.
+  local ok, cd = pcall(lurek.image.newCompressedData, "assets/terrain_bc1.dds")
+  if ok and cd then
+    local w, h = cd:getDimensions()
+    lurek.log.info("compressed " .. w .. "x" .. h, "image")
+  end
+end
+```
+
+### LCompressedImageData:getFormat
+
+`LCompressedImageData:getFormat() -> string`
+
+Returns the compressed image format name.
+
+**Returns**: `string` - Format name.
+
+**Lua API Stub**
+
+```lua
+--- Returns the compressed image format name.
+---@return string Format name.
+function LCompressedImageData:getFormat() end
+```
+
+#### Example
+
+Exact example from [image.lua](../blob/main/content/examples/image.lua):
+
+```lua
+do
+  -- Format string identifies the compression: "BC1", "BC3", "BC7", etc.
+  -- BC1 = no alpha (smallest), BC3 = full alpha, BC7 = best quality.
+  local ok_cd, cd = pcall(lurek.image.newCompressedData, "assets/terrain_bc1.dds")
+  if not ok_cd then return end
+  local fmt = (cd and cd:getFormat() or "unknown")
+  lurek.log.info("dds format=" .. fmt, "image")
+end
+```
+
+### LCompressedImageData:getHeight
+
+`LCompressedImageData:getHeight() -> integer`
+
+Returns compressed image height. This method is available to Lua scripts.
+
+**Returns**: `integer` - Height in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns compressed image height. This method is available to Lua scripts.
+---@return number Height in pixels.
+function LCompressedImageData:getHeight() end
+```
+
+#### Example
+
+Exact example from [image.lua](../blob/main/content/examples/image.lua):
+
+```lua
+do
+  -- Verify the DDS texture is square before uploading to a cube map slot.
+  local ok, cd = pcall(lurek.image.newCompressedData, "assets/terrain_bc1.dds")
+  if ok and cd then
+    lurek.log.info("compressed height=" .. cd:getHeight(), "image")
+  end
+end
+```
+
+### LCompressedImageData:getMipmapCount
+
+`LCompressedImageData:getMipmapCount() -> integer`
+
+Returns the number of mipmap levels in this compressed image.
+
+**Returns**: `integer` - Mipmap level count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of mipmap levels in this compressed image.
+---@return number Mipmap level count.
+function LCompressedImageData:getMipmapCount() end
+```
+
+#### Example
+
+Exact example from [image.lua](../blob/main/content/examples/image.lua):
+
+```lua
+do
+  -- Mipmaps are pre-computed smaller versions for trilinear filtering.
+  -- More mipmaps = smoother rendering at far distances.
+  local ok_cd, cd = pcall(lurek.image.newCompressedData, "assets/terrain_bc1.dds")
+  if not ok_cd then return end
+  local mips = (cd and cd:getMipmapCount() or 0)
+  if mips > 1 then
+    lurek.log.info("trilinear ready, mips=" .. mips, "image")
+  end
+end
+```
+
+### LCompressedImageData:getWidth
+
+`LCompressedImageData:getWidth() -> integer`
+
+Returns compressed image width. This method is available to Lua scripts.
+
+**Returns**: `integer` - Width in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns compressed image width. This method is available to Lua scripts.
+---@return number Width in pixels.
+function LCompressedImageData:getWidth() end
+```
+
+#### Example
+
+Exact example from [image.lua](../blob/main/content/examples/image.lua):
+
+```lua
+do
+  -- Read the base mipmap width to compute texture atlas coordinates.
+  local ok, cd = pcall(lurek.image.newCompressedData, "assets/terrain_bc1.dds")
+  if ok and cd then
+    lurek.log.info("compressed width=" .. cd:getWidth(), "image")
+  end
+end
+```
+
+### LCompressedImageData:type
+
+`LCompressedImageData:type() -> string`
+
+Returns the Lua-visible type name for this compressed image handle.
+
+**Returns**: `string` - The string `LCompressedImageData`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this compressed image handle.
+---@return string The string `LCompressedImageData`.
+function LCompressedImageData:type() end
+```
+
+#### Example
+
+Exact example from [image.lua](../blob/main/content/examples/image.lua):
+
+```lua
+do
+  local obj = lurek.image.newCompressedData('assets/textures/logo.png')
+  lurek.log.debug("type: " .. obj:type(), "example") -- "LCompressedImageData"
+end
+```
+
+### LCompressedImageData:typeOf
+
+`LCompressedImageData:typeOf(name: string) -> boolean`
+
+Returns whether this compressed image handle matches a supported type name.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to compare against `LCompressedImageData` and `Object`.
+
+**Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this compressed image handle matches a supported type name.
+---@param name string Type name to compare against `LCompressedImageData` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LCompressedImageData:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [image.lua](../blob/main/content/examples/image.lua):
+
+```lua
+do
+  local obj = lurek.image.newCompressedData('assets/textures/logo.png')
+  lurek.log.debug("typeOf LCompressedImageData: " .. tostring(obj:typeOf("LCompressedImageData")), "example") -- true
+end
+```
+
+### LImageData:alphaMask
+
+`LImageData:alphaMask(factor: number)`
 
 Multiplies this image alpha channel by a factor in place.
 
 **Parameters**
 
-- `factor` (`number`, required) - Alpha multiplier.
+- `factor` (`number`, required): Alpha multiplier.
+
+**Lua API Stub**
+
+```lua
+--- Multiplies this image alpha channel by a factor in place.
+---@param factor number Alpha multiplier.
+function LImageData:alphaMask(factor) end
+```
 
 #### Example
 
@@ -742,13 +905,23 @@ do
 end
 ```
 
-### `LImageData:applyPaletteLut(lut_ud: LPaletteLUT)`
+### LImageData:applyPaletteLut
+
+`LImageData:applyPaletteLut(lut_ud: LPaletteLUT)`
 
 Applies a palette lookup table to this image in place.
 
 **Parameters**
 
-- `lut_ud` (`LPaletteLUT`, required) - Palette lookup table handle.
+- `lut_ud` (`LPaletteLUT`, required): Palette lookup table handle.
+
+**Lua API Stub**
+
+```lua
+--- Applies a palette lookup table to this image in place.
+---@param lut_ud LPaletteLUT Palette lookup table handle.
+function LImageData:applyPaletteLut(lut_ud) end
+```
 
 #### Example
 
@@ -763,15 +936,27 @@ do
 end
 ```
 
-### `LImageData:blit(src_ud: LImageData, dst_x: integer, dst_y: integer)`
+### LImageData:blit
+
+`LImageData:blit(src_ud: LImageData, dst_x: integer, dst_y: integer)`
 
 Copies a source image into this image at a destination coordinate.
 
 **Parameters**
 
-- `src_ud` (`LImageData`, required) - Source image data handle.
-- `dst_x` (`integer`, required) - Destination x coordinate.
-- `dst_y` (`integer`, required) - Destination y coordinate.
+- `src_ud` (`LImageData`, required): Source image data handle.
+- `dst_x` (`integer`, required): Destination x coordinate.
+- `dst_y` (`integer`, required): Destination y coordinate.
+
+**Lua API Stub**
+
+```lua
+--- Copies pixel data from another ImageData onto this one at the specified position.
+---@param source LImageData The source image data to copy from.
+---@param dstX number Destination X offset in pixels.
+---@param dstY number Destination Y offset in pixels.
+function LImageData:blit(source, dstX, dstY) end
+```
 
 #### Example
 
@@ -789,15 +974,26 @@ do
 end
 ```
 
-### `LImageData:blur(radius: integer) -> LImageData`
+### LImageData:blur
+
+`LImageData:blur(radius: integer) -> LImageData`
 
 Returns a blurred copy of this image.
 
 **Parameters**
 
-- `radius` (`integer`, required) - Blur radius.
+- `radius` (`integer`, required): Blur radius.
 
 **Returns**: `LImageData` - Blurred image data handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns a blurred copy of this image.
+---@param radius number Blur radius.
+---@return LImageData Blurred image data handle.
+function LImageData:blur(radius) end
+```
 
 #### Example
 
@@ -811,13 +1007,23 @@ do
 end
 ```
 
-### `LImageData:brightness(factor: number)`
+### LImageData:brightness
+
+`LImageData:brightness(factor: number)`
 
 Applies a brightness factor to this image in place.
 
 **Parameters**
 
-- `factor` (`number`, required) - Brightness multiplier or adjustment factor.
+- `factor` (`number`, required): Brightness multiplier or adjustment factor.
+
+**Lua API Stub**
+
+```lua
+--- Applies a brightness factor to this image in place.
+---@param factor number Brightness multiplier or adjustment factor.
+function LImageData:brightness(factor) end
+```
 
 #### Example
 
@@ -831,13 +1037,23 @@ do
 end
 ```
 
-### `LImageData:contrast(factor: number)`
+### LImageData:contrast
+
+`LImageData:contrast(factor: number)`
 
 Applies a contrast factor to this image in place.
 
 **Parameters**
 
-- `factor` (`number`, required) - Contrast factor.
+- `factor` (`number`, required): Contrast factor.
+
+**Lua API Stub**
+
+```lua
+--- Applies a contrast factor to this image in place.
+---@param factor number Contrast factor.
+function LImageData:contrast(factor) end
+```
 
 #### Example
 
@@ -851,16 +1067,28 @@ do
 end
 ```
 
-### `LImageData:convolve(kernel_t: table, ksize: integer) -> LImageData`
+### LImageData:convolve
+
+`LImageData:convolve(kernel_t: table, ksize: integer) -> LImageData`
 
 Applies a convolution kernel and returns the filtered image.
 
 **Parameters**
 
-- `kernel_t` (`table`, required) - Array table of numeric kernel weights.
-- `ksize` (`integer`, required) - Kernel width and height.
+- `kernel_t` (`table`, required): Array table of numeric kernel weights.
+- `ksize` (`integer`, required): Kernel width and height.
 
 **Returns**: `LImageData` - Convolved image data handle.
+
+**Lua API Stub**
+
+```lua
+--- Applies a convolution kernel and returns the filtered image.
+---@param kernel_t table Array table of numeric kernel weights.
+---@param ksize number Kernel width and height.
+---@return LImageData Convolved image data handle.
+function LImageData:convolve(kernel_t, ksize) end
+```
 
 #### Example
 
@@ -875,18 +1103,32 @@ do
 end
 ```
 
-### `LImageData:crop(x: integer, y: integer, w: integer, h: integer) -> LImageData`
+### LImageData:crop
+
+`LImageData:crop(x: integer, y: integer, w: integer, h: integer) -> LImageData`
 
 Returns a cropped image region. This method is available to Lua scripts.
 
 **Parameters**
 
-- `x` (`integer`, required) - Source x coordinate.
-- `y` (`integer`, required) - Source y coordinate.
-- `w` (`integer`, required) - Crop width.
-- `h` (`integer`, required) - Crop height.
+- `x` (`integer`, required): Source x coordinate.
+- `y` (`integer`, required): Source y coordinate.
+- `w` (`integer`, required): Crop width.
+- `h` (`integer`, required): Crop height.
 
 **Returns**: `LImageData` - Cropped image data handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns a cropped image region. This method is available to Lua scripts.
+---@param x number Source x coordinate.
+---@param y number Source y coordinate.
+---@param w number Crop width.
+---@param h number Crop height.
+---@return LImageData Cropped image data handle.
+function LImageData:crop(x, y, w, h) end
+```
 
 #### Example
 
@@ -901,15 +1143,26 @@ do
 end
 ```
 
-### `LImageData:diff(other_ud: LImageData) -> number`
+### LImageData:diff
+
+`LImageData:diff(other_ud: LImageData) -> number`
 
 Computes a difference metric against another image.
 
 **Parameters**
 
-- `other_ud` (`LImageData`, required) - Image data handle to compare with this image.
+- `other_ud` (`LImageData`, required): Image data handle to compare with this image.
 
 **Returns**: `number` - Difference score.
+
+**Lua API Stub**
+
+```lua
+--- Computes a numeric difference score between this image and another of the same size.
+---@param other LImageData The image data to compare against.
+---@return number Sum of per-pixel absolute color differences (0 = identical).
+function LImageData:diff(other) end
+```
 
 #### Example
 
@@ -928,19 +1181,35 @@ do
 end
 ```
 
-### `LImageData:drawCircle(cx: integer, cy: integer, radius: integer, r: integer, g: integer, b: integer, a: integer)`
+### LImageData:drawCircle
+
+`LImageData:drawCircle(cx: integer, cy: integer, radius: integer, r: integer, g: integer, b: integer, a: integer)`
 
 Draws a filled circle into this image.
 
 **Parameters**
 
-- `cx` (`integer`, required) - Circle center x coordinate.
-- `cy` (`integer`, required) - Circle center y coordinate.
-- `radius` (`integer`, required) - Circle radius.
-- `r` (`integer`, required) - Red channel.
-- `g` (`integer`, required) - Green channel.
-- `b` (`integer`, required) - Blue channel.
-- `a` (`integer`, required) - Alpha channel.
+- `cx` (`integer`, required): Circle center x coordinate.
+- `cy` (`integer`, required): Circle center y coordinate.
+- `radius` (`integer`, required): Circle radius.
+- `r` (`integer`, required): Red channel.
+- `g` (`integer`, required): Green channel.
+- `b` (`integer`, required): Blue channel.
+- `a` (`integer`, required): Alpha channel.
+
+**Lua API Stub**
+
+```lua
+--- Draws a filled circle into this image.
+---@param cx number Circle center x coordinate.
+---@param cy number Circle center y coordinate.
+---@param radius number Circle radius.
+---@param r number Red channel.
+---@param g number Green channel.
+---@param b number Blue channel.
+---@param a number Alpha channel.
+function LImageData:drawCircle(cx, cy, radius, r, g, b, a) end
+```
 
 #### Example
 
@@ -954,20 +1223,37 @@ do
 end
 ```
 
-### `LImageData:drawLine(x0: integer, y0: integer, x1: integer, y1: integer, r: integer, g: integer, b: integer, a: integer)`
+### LImageData:drawLine
+
+`LImageData:drawLine(x0: integer, y0: integer, x1: integer, y1: integer, r: integer, g: integer, b: integer, a: integer)`
 
 Draws a line into this image. This method is available to Lua scripts.
 
 **Parameters**
 
-- `x0` (`integer`, required) - Start x coordinate.
-- `y0` (`integer`, required) - Start y coordinate.
-- `x1` (`integer`, required) - End x coordinate.
-- `y1` (`integer`, required) - End y coordinate.
-- `r` (`integer`, required) - Red channel.
-- `g` (`integer`, required) - Green channel.
-- `b` (`integer`, required) - Blue channel.
-- `a` (`integer`, required) - Alpha channel.
+- `x0` (`integer`, required): Start x coordinate.
+- `y0` (`integer`, required): Start y coordinate.
+- `x1` (`integer`, required): End x coordinate.
+- `y1` (`integer`, required): End y coordinate.
+- `r` (`integer`, required): Red channel.
+- `g` (`integer`, required): Green channel.
+- `b` (`integer`, required): Blue channel.
+- `a` (`integer`, required): Alpha channel.
+
+**Lua API Stub**
+
+```lua
+--- Draws a line into this image. This method is available to Lua scripts.
+---@param x0 number Start x coordinate.
+---@param y0 number Start y coordinate.
+---@param x1 number End x coordinate.
+---@param y1 number End y coordinate.
+---@param r number Red channel.
+---@param g number Green channel.
+---@param b number Blue channel.
+---@param a number Alpha channel.
+function LImageData:drawLine(x0, y0, x1, y1, r, g, b, a) end
+```
 
 #### Example
 
@@ -981,25 +1267,47 @@ do
 end
 ```
 
-### `LImageData:drawNineSlice(src_ud: LImageData, src_x: integer, src_y: integer, src_w: integer, src_h: integer, dst_x: integer, dst_y: integer, dst_w: integer, dst_h: integer, inset_left: integer, inset_right: integer, inset_top: integer, inset_bottom: integer)`
+### LImageData:drawNineSlice
+
+`LImageData:drawNineSlice(src_ud: LImageData, src_x: integer, src_y: integer, src_w: integer, src_h: integer, dst_x: integer, dst_y: integer, dst_w: integer, dst_h: integer, inset_left: integer, inset_right: integer, inset_top: integer, inset_bottom: integer)`
 
 Draws a nine-slice region from a source image into this image.
 
 **Parameters**
 
-- `src_ud` (`LImageData`, required) - Source image data handle.
-- `src_x` (`integer`, required) - Source region x coordinate.
-- `src_y` (`integer`, required) - Source region y coordinate.
-- `src_w` (`integer`, required) - Source region width.
-- `src_h` (`integer`, required) - Source region height.
-- `dst_x` (`integer`, required) - Destination x coordinate.
-- `dst_y` (`integer`, required) - Destination y coordinate.
-- `dst_w` (`integer`, required) - Destination width.
-- `dst_h` (`integer`, required) - Destination height.
-- `inset_left` (`integer`, required) - Left inset width.
-- `inset_right` (`integer`, required) - Right inset width.
-- `inset_top` (`integer`, required) - Top inset height.
-- `inset_bottom` (`integer`, required) - Bottom inset height.
+- `src_ud` (`LImageData`, required): Source image data handle.
+- `src_x` (`integer`, required): Source region x coordinate.
+- `src_y` (`integer`, required): Source region y coordinate.
+- `src_w` (`integer`, required): Source region width.
+- `src_h` (`integer`, required): Source region height.
+- `dst_x` (`integer`, required): Destination x coordinate.
+- `dst_y` (`integer`, required): Destination y coordinate.
+- `dst_w` (`integer`, required): Destination width.
+- `dst_h` (`integer`, required): Destination height.
+- `inset_left` (`integer`, required): Left inset width.
+- `inset_right` (`integer`, required): Right inset width.
+- `inset_top` (`integer`, required): Top inset height.
+- `inset_bottom` (`integer`, required): Bottom inset height.
+
+**Lua API Stub**
+
+```lua
+--- Draws a nine-slice region from a source image into this image.
+---@param src_ud LImageData Source image data handle.
+---@param src_x number Source region x coordinate.
+---@param src_y number Source region y coordinate.
+---@param src_w number Source region width.
+---@param src_h number Source region height.
+---@param dst_x number Destination x coordinate.
+---@param dst_y number Destination y coordinate.
+---@param dst_w number Destination width.
+---@param dst_h number Destination height.
+---@param inset_left number Left inset width.
+---@param inset_right number Right inset width.
+---@param inset_top number Top inset height.
+---@param inset_bottom number Bottom inset height.
+function LImageData:drawNineSlice(src_ud, src_x, src_y, src_w, src_h, dst_x, dst_y, dst_w, dst_h, inset_left, inset_right, inset_top, inset_bottom) end
+```
 
 #### Example
 
@@ -1021,20 +1329,37 @@ do
 end
 ```
 
-### `LImageData:drawRect(x: integer, y: integer, w: integer, h: integer, r: integer, g: integer, b: integer, a: integer)`
+### LImageData:drawRect
+
+`LImageData:drawRect(x: integer, y: integer, w: integer, h: integer, r: integer, g: integer, b: integer, a: integer)`
 
 Draws a filled rectangle into this image.
 
 **Parameters**
 
-- `x` (`integer`, required) - Rectangle x coordinate.
-- `y` (`integer`, required) - Rectangle y coordinate.
-- `w` (`integer`, required) - Rectangle width.
-- `h` (`integer`, required) - Rectangle height.
-- `r` (`integer`, required) - Red channel.
-- `g` (`integer`, required) - Green channel.
-- `b` (`integer`, required) - Blue channel.
-- `a` (`integer`, required) - Alpha channel.
+- `x` (`integer`, required): Rectangle x coordinate.
+- `y` (`integer`, required): Rectangle y coordinate.
+- `w` (`integer`, required): Rectangle width.
+- `h` (`integer`, required): Rectangle height.
+- `r` (`integer`, required): Red channel.
+- `g` (`integer`, required): Green channel.
+- `b` (`integer`, required): Blue channel.
+- `a` (`integer`, required): Alpha channel.
+
+**Lua API Stub**
+
+```lua
+--- Draws a filled rectangle into this image.
+---@param x number Rectangle x coordinate.
+---@param y number Rectangle y coordinate.
+---@param w number Rectangle width.
+---@param h number Rectangle height.
+---@param r number Red channel.
+---@param g number Green channel.
+---@param b number Blue channel.
+---@param a number Alpha channel.
+function LImageData:drawRect(x, y, w, h, r, g, b, a) end
+```
 
 #### Example
 
@@ -1048,15 +1373,26 @@ do
 end
 ```
 
-### `LImageData:encode(format: string) -> string`
+### LImageData:encode
+
+`LImageData:encode(format: string) -> string`
 
 Encodes image data in a supported format.
 
 **Parameters**
 
-- `format` (`string`, required) - Format name; currently `png`.
+- `format` (`string`, required): Format name; currently `png`.
 
 **Returns**: `string` - Encoded image bytes.
+
+**Lua API Stub**
+
+```lua
+--- Encodes image data in a supported format.
+---@param format string Format name; currently `png`.
+---@return string Encoded image bytes.
+function LImageData:encode(format) end
+```
 
 #### Example
 
@@ -1071,16 +1407,29 @@ do
 end
 ```
 
-### `LImageData:fill(r: integer, g: integer, b: integer, a: integer)`
+### LImageData:fill
+
+`LImageData:fill(r: integer, g: integer, b: integer, a: integer)`
 
 Fills the whole image with one RGBA color.
 
 **Parameters**
 
-- `r` (`integer`, required) - Red channel.
-- `g` (`integer`, required) - Green channel.
-- `b` (`integer`, required) - Blue channel.
-- `a` (`integer`, required) - Alpha channel.
+- `r` (`integer`, required): Red channel.
+- `g` (`integer`, required): Green channel.
+- `b` (`integer`, required): Blue channel.
+- `a` (`integer`, required): Alpha channel.
+
+**Lua API Stub**
+
+```lua
+--- Fills the whole image with one RGBA color.
+---@param r number Red channel.
+---@param g number Green channel.
+---@param b number Blue channel.
+---@param a number Alpha channel.
+function LImageData:fill(r, g, b, a) end
+```
 
 #### Example
 
@@ -1094,9 +1443,18 @@ do
 end
 ```
 
-### `LImageData:flipHorizontal()`
+### LImageData:flipHorizontal
+
+`LImageData:flipHorizontal()`
 
 Flips this image horizontally in place.
+
+**Lua API Stub**
+
+```lua
+--- Flips this image horizontally in place.
+function LImageData:flipHorizontal() end
+```
 
 #### Example
 
@@ -1110,9 +1468,18 @@ do
 end
 ```
 
-### `LImageData:flipVertical()`
+### LImageData:flipVertical
+
+`LImageData:flipVertical()`
 
 Flips this image vertically in place.
+
+**Lua API Stub**
+
+```lua
+--- Flips this image vertically in place.
+function LImageData:flipVertical() end
+```
 
 #### Example
 
@@ -1126,13 +1493,23 @@ do
 end
 ```
 
-### `LImageData:gamma(gamma: number)`
+### LImageData:gamma
+
+`LImageData:gamma(gamma: number)`
 
 Applies gamma correction to this image in place.
 
 **Parameters**
 
-- `gamma` (`number`, required) - Gamma value.
+- `gamma` (`number`, required): Gamma value.
+
+**Lua API Stub**
+
+```lua
+--- Applies gamma correction to this image in place.
+---@param gamma number Gamma value.
+function LImageData:gamma(gamma) end
+```
 
 #### Example
 
@@ -1146,11 +1523,22 @@ do
 end
 ```
 
-### `LImageData:getDimensions() -> integer`
+### LImageData:getDimensions
+
+`LImageData:getDimensions() -> integer`
 
 Returns image dimensions. This method is available to Lua scripts.
 
 **Returns**: `integer` - Width in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns image dimensions. This method is available to Lua scripts.
+---@return number a Width in pixels.
+---@return number b Height in pixels.
+function LImageData:getDimensions() end
+```
 
 #### Example
 
@@ -1164,11 +1552,21 @@ do
 end
 ```
 
-### `LImageData:getHeight() -> integer`
+### LImageData:getHeight
+
+`LImageData:getHeight() -> integer`
 
 Returns image height. This method is available to Lua scripts.
 
 **Returns**: `integer` - Height in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns the height of this image data in pixels.
+---@return number Height in pixels.
+function LImageData:getHeight() end
+```
 
 #### Example
 
@@ -1182,16 +1580,31 @@ do
 end
 ```
 
-### `LImageData:getPixel(x: integer, y: integer) -> integer`
+### LImageData:getPixel
+
+`LImageData:getPixel(x: integer, y: integer) -> integer`
 
 Returns RGBA channels at a pixel coordinate.
 
 **Parameters**
 
-- `x` (`integer`, required) - X coordinate.
-- `y` (`integer`, required) - Y coordinate.
+- `x` (`integer`, required): X coordinate.
+- `y` (`integer`, required): Y coordinate.
 
 **Returns**: `integer` - Red channel.
+
+**Lua API Stub**
+
+```lua
+--- Returns RGBA channels at a pixel coordinate.
+---@param x number X coordinate.
+---@param y number Y coordinate.
+---@return number a Red channel.
+---@return number b Green channel.
+---@return number c Blue channel.
+---@return number d Alpha channel.
+function LImageData:getPixel(x, y) end
+```
 
 #### Example
 
@@ -1205,11 +1618,21 @@ do
 end
 ```
 
-### `LImageData:getRawBytes() -> string`
+### LImageData:getRawBytes
+
+`LImageData:getRawBytes() -> string`
 
 Returns raw image bytes as a Lua string.
 
 **Returns**: `string` - Raw image byte string.
+
+**Lua API Stub**
+
+```lua
+--- Returns raw image bytes as a Lua string.
+---@return string Raw image byte string.
+function LImageData:getRawBytes() end
+```
 
 #### Example
 
@@ -1225,18 +1648,32 @@ do
 end
 ```
 
-### `LImageData:getRegion(x: integer, y: integer, w: integer, h: integer) -> LImageData|nil`
+### LImageData:getRegion
+
+`LImageData:getRegion(x: integer, y: integer, w: integer, h: integer) -> LImageData|nil`
 
 Returns an image region when the requested rectangle is inside bounds.
 
 **Parameters**
 
-- `x` (`integer`, required) - Region x coordinate.
-- `y` (`integer`, required) - Region y coordinate.
-- `w` (`integer`, required) - Region width.
-- `h` (`integer`, required) - Region height.
+- `x` (`integer`, required): Region x coordinate.
+- `y` (`integer`, required): Region y coordinate.
+- `w` (`integer`, required): Region width.
+- `h` (`integer`, required): Region height.
 
 **Returns**: `LImageData|nil` - `LImageData` handle, or nil when the region is out of bounds.
+
+**Lua API Stub**
+
+```lua
+--- Extracts a rectangular sub-region as a new ImageData.
+---@param x number Top-left X coordinate of the region.
+---@param y number Top-left Y coordinate of the region.
+---@param w number Width of the region in pixels.
+---@param h number Height of the region in pixels.
+---@return LImageData A new ImageData for the region, or nil if out of bounds.
+function LImageData:getRegion(x, y, w, h) end
+```
 
 #### Example
 
@@ -1256,11 +1693,21 @@ do
 end
 ```
 
-### `LImageData:getString() -> string`
+### LImageData:getString
+
+`LImageData:getString() -> string`
 
 Returns raw image bytes as a Lua string.
 
 **Returns**: `string` - Raw image byte string.
+
+**Lua API Stub**
+
+```lua
+--- Returns raw image bytes as a Lua string.
+---@return string Raw image byte string.
+function LImageData:getString() end
+```
 
 #### Example
 
@@ -1277,11 +1724,21 @@ do
 end
 ```
 
-### `LImageData:getWidth() -> integer`
+### LImageData:getWidth
+
+`LImageData:getWidth() -> integer`
 
 Returns image width. This method is available to Lua scripts.
 
 **Returns**: `integer` - Width in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns the width of this image data in pixels.
+---@return number Width in pixels.
+function LImageData:getWidth() end
+```
 
 #### Example
 
@@ -1295,9 +1752,18 @@ do
 end
 ```
 
-### `LImageData:grayscale()`
+### LImageData:grayscale
+
+`LImageData:grayscale()`
 
 Converts this image to grayscale in place.
+
+**Lua API Stub**
+
+```lua
+--- Converts this image to grayscale in place.
+function LImageData:grayscale() end
+```
 
 #### Example
 
@@ -1311,9 +1777,18 @@ do
 end
 ```
 
-### `LImageData:invert()`
+### LImageData:invert
+
+`LImageData:invert()`
 
 Inverts image color channels in place.
+
+**Lua API Stub**
+
+```lua
+--- Inverts image color channels in place.
+function LImageData:invert() end
+```
 
 #### Example
 
@@ -1327,13 +1802,23 @@ do
 end
 ```
 
-### `LImageData:mapPixel(func: function)`
+### LImageData:mapPixel
+
+`LImageData:mapPixel(func: function)`
 
 Applies a Lua callback to every pixel and replaces each pixel with returned RGBA values.
 
 **Parameters**
 
-- `func` (`function`, required) - Callback receiving `(x, y, r, g, b, a)` and returning replacement channels.
+- `func` (`function`, required): Callback receiving `(x, y, r, g, b, a)` and returning replacement channels.
+
+**Lua API Stub**
+
+```lua
+--- Applies a Lua callback to every pixel and replaces each pixel with returned RGBA values.
+---@param func function Callback receiving `(x, y, r, g, b, a)` and returning replacement channels.
+function LImageData:mapPixel(func) end
+```
 
 #### Example
 
@@ -1350,13 +1835,23 @@ do
 end
 ```
 
-### `LImageData:mapPixels(func: function)`
+### LImageData:mapPixels
+
+`LImageData:mapPixels(func: function)`
 
 Applies a Lua callback to every pixel and replaces each pixel with returned RGBA values.
 
 **Parameters**
 
-- `func` (`function`, required) - Callback receiving `(x, y, r, g, b, a)` and returning replacement channels.
+- `func` (`function`, required): Callback receiving `(x, y, r, g, b, a)` and returning replacement channels.
+
+**Lua API Stub**
+
+```lua
+--- Iterates over every pixel and replaces its color with the return value of the callback.
+---@param callback function Called as callback(x, y, r, g, b, a) → (r, g, b, a) for each pixel.
+function LImageData:mapPixels(callback) end
+```
 
 #### Example
 
@@ -1376,13 +1871,23 @@ do
 end
 ```
 
-### `LImageData:noise(amount: integer)`
+### LImageData:noise
+
+`LImageData:noise(amount: integer)`
 
 Adds noise to this image in place. This method is available to Lua scripts.
 
 **Parameters**
 
-- `amount` (`integer`, required) - Noise amount.
+- `amount` (`integer`, required): Noise amount.
+
+**Lua API Stub**
+
+```lua
+--- Adds noise to this image in place. This method is available to Lua scripts.
+---@param amount number Noise amount.
+function LImageData:noise(amount) end
+```
 
 #### Example
 
@@ -1397,15 +1902,27 @@ do
 end
 ```
 
-### `LImageData:paste(src_ud: LImageData, dx: integer, dy: integer)`
+### LImageData:paste
+
+`LImageData:paste(src_ud: LImageData, dx: integer, dy: integer)`
 
 Pastes a source image into this image at unsigned destination coordinates.
 
 **Parameters**
 
-- `src_ud` (`LImageData`, required) - Source image data handle.
-- `dx` (`integer`, required) - Destination x coordinate.
-- `dy` (`integer`, required) - Destination y coordinate.
+- `src_ud` (`LImageData`, required): Source image data handle.
+- `dx` (`integer`, required): Destination x coordinate.
+- `dy` (`integer`, required): Destination y coordinate.
+
+**Lua API Stub**
+
+```lua
+--- Pastes a source image into this image at unsigned destination coordinates.
+---@param src_ud LImageData Source image data handle.
+---@param dx number Destination x coordinate.
+---@param dy number Destination y coordinate.
+function LImageData:paste(src_ud, dx, dy) end
+```
 
 #### Example
 
@@ -1420,13 +1937,23 @@ do
 end
 ```
 
-### `LImageData:posterize(levels: integer)`
+### LImageData:posterize
+
+`LImageData:posterize(levels: integer)`
 
 Reduces image colors to a fixed number of levels in place.
 
 **Parameters**
 
-- `levels` (`integer`, required) - Number of posterization levels.
+- `levels` (`integer`, required): Number of posterization levels.
+
+**Lua API Stub**
+
+```lua
+--- Reduces image colors to a fixed number of levels in place.
+---@param levels number Number of posterization levels.
+function LImageData:posterize(levels) end
+```
 
 #### Example
 
@@ -1440,17 +1967,29 @@ do
 end
 ```
 
-### `LImageData:resize(width: integer, height: integer, filter: string) -> LImageData|nil`
+### LImageData:resize
+
+`LImageData:resize(width: integer, height: integer, filter: string) -> LImageData|nil`
 
 Returns a resized image using an optional named filter.
 
 **Parameters**
 
-- `width` (`integer`, required) - Output width.
-- `height` (`integer`, required) - Output height.
-- `filter` (`string`, required) - Optional filter name, defaulting to `bilinear`.
+- `width` (`integer`, required): Output width.
+- `height` (`integer`, required): Output height.
+- `filter` (`string`, required): Optional filter name, defaulting to `bilinear`.
 
 **Returns**: `LImageData|nil` - Resized `LImageData` handle, or nil when resizing fails.
+
+**Lua API Stub**
+
+```lua
+--- Creates a new ImageData resized to the given dimensions using bilinear sampling.
+---@param w number Target width in pixels.
+---@param h number Target height in pixels.
+---@return LImageData A new resized ImageData, or nil if the operation failed.
+function LImageData:resize(w, h) end
+```
 
 #### Example
 
@@ -1468,16 +2007,28 @@ do
 end
 ```
 
-### `LImageData:resizeNearest(new_w: integer, new_h: integer) -> LImageData`
+### LImageData:resizeNearest
+
+`LImageData:resizeNearest(new_w: integer, new_h: integer) -> LImageData`
 
 Returns a resized image using nearest-neighbor sampling.
 
 **Parameters**
 
-- `new_w` (`integer`, required) - Output width.
-- `new_h` (`integer`, required) - Output height.
+- `new_w` (`integer`, required): Output width.
+- `new_h` (`integer`, required): Output height.
 
 **Returns**: `LImageData` - Resized image data handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns a resized image using nearest-neighbor sampling.
+---@param new_w number Output width.
+---@param new_h number Output height.
+---@return LImageData Resized image data handle.
+function LImageData:resizeNearest(new_w, new_h) end
+```
 
 #### Example
 
@@ -1491,11 +2042,21 @@ do
 end
 ```
 
-### `LImageData:rotate90cw() -> LImageData`
+### LImageData:rotate90cw
+
+`LImageData:rotate90cw() -> LImageData`
 
 Returns a new image rotated ninety degrees clockwise.
 
 **Returns**: `LImageData` - Rotated image data handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns a new image rotated ninety degrees clockwise.
+---@return LImageData Rotated image data handle.
+function LImageData:rotate90cw() end
+```
 
 #### Example
 
@@ -1509,13 +2070,23 @@ do
 end
 ```
 
-### `LImageData:saturation(factor: number)`
+### LImageData:saturation
+
+`LImageData:saturation(factor: number)`
 
 Applies a saturation factor to this image in place.
 
 **Parameters**
 
-- `factor` (`number`, required) - Saturation factor.
+- `factor` (`number`, required): Saturation factor.
+
+**Lua API Stub**
+
+```lua
+--- Applies a saturation factor to this image in place.
+---@param factor number Saturation factor.
+function LImageData:saturation(factor) end
+```
 
 #### Example
 
@@ -1529,9 +2100,18 @@ do
 end
 ```
 
-### `LImageData:sepia()`
+### LImageData:sepia
+
+`LImageData:sepia()`
 
 Applies a sepia filter to this image in place.
+
+**Lua API Stub**
+
+```lua
+--- Applies a sepia filter to this image in place.
+function LImageData:sepia() end
+```
 
 #### Example
 
@@ -1545,18 +2125,33 @@ do
 end
 ```
 
-### `LImageData:setPixel(x: integer, y: integer, r: integer, g: integer, b: integer, a: integer)`
+### LImageData:setPixel
+
+`LImageData:setPixel(x: integer, y: integer, r: integer, g: integer, b: integer, a: integer)`
 
 Sets RGBA channels at a pixel coordinate.
 
 **Parameters**
 
-- `x` (`integer`, required) - X coordinate.
-- `y` (`integer`, required) - Y coordinate.
-- `r` (`integer`, required) - Red channel.
-- `g` (`integer`, required) - Green channel.
-- `b` (`integer`, required) - Blue channel.
-- `a` (`integer`, required) - Alpha channel.
+- `x` (`integer`, required): X coordinate.
+- `y` (`integer`, required): Y coordinate.
+- `r` (`integer`, required): Red channel.
+- `g` (`integer`, required): Green channel.
+- `b` (`integer`, required): Blue channel.
+- `a` (`integer`, required): Alpha channel.
+
+**Lua API Stub**
+
+```lua
+--- Sets RGBA channels at a pixel coordinate.
+---@param x number X coordinate.
+---@param y number Y coordinate.
+---@param r number Red channel.
+---@param g number Green channel.
+---@param b number Blue channel.
+---@param a number Alpha channel.
+function LImageData:setPixel(x, y, r, g, b, a) end
+```
 
 #### Example
 
@@ -1571,13 +2166,23 @@ do
 end
 ```
 
-### `LImageData:setRawData(bytes: string)`
+### LImageData:setRawData
+
+`LImageData:setRawData(bytes: string)`
 
 Replaces the image byte buffer with raw bytes.
 
 **Parameters**
 
-- `bytes` (`string`, required) - Raw byte string matching the image storage size.
+- `bytes` (`string`, required): Raw byte string matching the image storage size.
+
+**Lua API Stub**
+
+```lua
+--- Replaces the image byte buffer with raw bytes.
+---@param bytes string Raw byte string matching the image storage size.
+function LImageData:setRawData(bytes) end
+```
 
 #### Example
 
@@ -1593,11 +2198,21 @@ do
 end
 ```
 
-### `LImageData:sharpen() -> LImageData`
+### LImageData:sharpen
+
+`LImageData:sharpen() -> LImageData`
 
 Returns a sharpened copy of this image.
 
 **Returns**: `LImageData` - Sharpened image data handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns a sharpened copy of this image.
+---@return LImageData Sharpened image data handle.
+function LImageData:sharpen() end
+```
 
 #### Example
 
@@ -1611,13 +2226,23 @@ do
 end
 ```
 
-### `LImageData:threshold(value: integer)`
+### LImageData:threshold
+
+`LImageData:threshold(value: integer)`
 
 Applies a threshold filter to this image in place.
 
 **Parameters**
 
-- `value` (`integer`, required) - Threshold channel value.
+- `value` (`integer`, required): Threshold channel value.
+
+**Lua API Stub**
+
+```lua
+--- Applies a threshold filter to this image in place.
+---@param value number Threshold channel value.
+function LImageData:threshold(value) end
+```
 
 #### Example
 
@@ -1631,16 +2256,29 @@ do
 end
 ```
 
-### `LImageData:tint(tr: integer, tg: integer, tb: integer, factor: number)`
+### LImageData:tint
+
+`LImageData:tint(tr: integer, tg: integer, tb: integer, factor: number)`
 
 Blends this image toward a tint color in place.
 
 **Parameters**
 
-- `tr` (`integer`, required) - Tint red channel.
-- `tg` (`integer`, required) - Tint green channel.
-- `tb` (`integer`, required) - Tint blue channel.
-- `factor` (`number`, required) - Tint blend factor.
+- `tr` (`integer`, required): Tint red channel.
+- `tg` (`integer`, required): Tint green channel.
+- `tb` (`integer`, required): Tint blue channel.
+- `factor` (`number`, required): Tint blend factor.
+
+**Lua API Stub**
+
+```lua
+--- Blends this image toward a tint color in place.
+---@param tr number Tint red channel.
+---@param tg number Tint green channel.
+---@param tb number Tint blue channel.
+---@param factor number Tint blend factor.
+function LImageData:tint(tr, tg, tb, factor) end
+```
 
 #### Example
 
@@ -1654,11 +2292,21 @@ do
 end
 ```
 
-### `LImageData:type() -> string`
+### LImageData:type
+
+`LImageData:type() -> string`
 
 Returns the Lua-visible type name for this image data handle.
 
 **Returns**: `string` - The string `LImageData`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name of this object.
+---@return string Always "LImageData".
+function LImageData:type() end
+```
 
 #### Example
 
@@ -1672,15 +2320,26 @@ do
 end
 ```
 
-### `LImageData:typeOf(name: string) -> boolean`
+### LImageData:typeOf
+
+`LImageData:typeOf(name: string) -> boolean`
 
 Returns whether this image data handle matches the `LImageData` type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `LImageData` or `Object`.
+- `name` (`string`, required): Type name to compare against `LImageData` or `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches.
+
+**Lua API Stub**
+
+```lua
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check ("ImageData" or "Object").
+---@return boolean True if the name matches.
+function LImageData:typeOf(name) end
+```
 
 #### Example
 
@@ -1696,34 +2355,26 @@ do
 end
 ```
 
-### `LLayeredImage`
+### LLayeredImage:addLayer
 
-Lua-side handle for multiple image layers with visibility, opacity, and ordering.
-
-#### Example
-
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
-
-```lua
-do
-  -- Reopen a previously saved layered document (painting tool, map editor, etc.)
-  pcall(function()
-    local doc = lurek.image.loadLayered("save/painting.limg")
-    local count = doc:layerCount()
-    lurek.log.info("painting reopened with " .. count .. " layers", "image")
-  end)
-end
-```
-
-### `LLayeredImage:addLayer([name]: string) -> integer`
+`LLayeredImage:addLayer([name]: string) -> integer`
 
 Adds a blank layer with an optional name.
 
 **Parameters**
 
-- `name` (`string`, optional) - Optional layer name.
+- `name` (`string`, optional): Optional layer name.
 
 **Returns**: `integer` - One-based index of the new layer.
+
+**Lua API Stub**
+
+```lua
+--- Adds a blank layer with an optional name.
+---@param name? string Optional layer name.
+---@return number One-based index of the new layer.
+function LLayeredImage:addLayer(name) end
+```
 
 #### Example
 
@@ -1738,11 +2389,21 @@ do
 end
 ```
 
-### `LLayeredImage:getHeight() -> integer`
+### LLayeredImage:getHeight
+
+`LLayeredImage:getHeight() -> integer`
 
 Returns the layered image height. This method is available to Lua scripts.
 
 **Returns**: `integer` - Height in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns the layered image height. This method is available to Lua scripts.
+---@return number Height in pixels.
+function LLayeredImage:getHeight() end
+```
 
 #### Example
 
@@ -1755,15 +2416,26 @@ do
 end
 ```
 
-### `LLayeredImage:getLayer(index: integer) -> LImageData`
+### LLayeredImage:getLayer
+
+`LLayeredImage:getLayer(index: integer) -> LImageData`
 
 Returns image data for a layer by one-based index.
 
 **Parameters**
 
-- `index` (`integer`, required) - One-based layer index.
+- `index` (`integer`, required): One-based layer index.
 
 **Returns**: `LImageData` - Layer image data handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns image data for a layer by one-based index.
+---@param index number One-based layer index.
+---@return LImageData Layer image data handle.
+function LLayeredImage:getLayer(index) end
+```
 
 #### Example
 
@@ -1778,15 +2450,26 @@ do
 end
 ```
 
-### `LLayeredImage:getName(index: integer) -> string`
+### LLayeredImage:getName
+
+`LLayeredImage:getName(index: integer) -> string`
 
 Returns a layer name by one-based index.
 
 **Parameters**
 
-- `index` (`integer`, required) - One-based layer index.
+- `index` (`integer`, required): One-based layer index.
 
 **Returns**: `string` - Layer name.
+
+**Lua API Stub**
+
+```lua
+--- Returns a layer name by one-based index.
+---@param index number One-based layer index.
+---@return string Layer name.
+function LLayeredImage:getName(index) end
+```
 
 #### Example
 
@@ -1801,15 +2484,26 @@ do
 end
 ```
 
-### `LLayeredImage:getOpacity(index: integer) -> number`
+### LLayeredImage:getOpacity
+
+`LLayeredImage:getOpacity(index: integer) -> number`
 
 Returns a layer opacity by one-based index.
 
 **Parameters**
 
-- `index` (`integer`, required) - One-based layer index.
+- `index` (`integer`, required): One-based layer index.
 
 **Returns**: `number` - Layer opacity.
+
+**Lua API Stub**
+
+```lua
+--- Returns a layer opacity by one-based index.
+---@param index number One-based layer index.
+---@return number Layer opacity.
+function LLayeredImage:getOpacity(index) end
+```
 
 #### Example
 
@@ -1824,11 +2518,21 @@ do
 end
 ```
 
-### `LLayeredImage:getWidth() -> integer`
+### LLayeredImage:getWidth
+
+`LLayeredImage:getWidth() -> integer`
 
 Returns the layered image width. This method is available to Lua scripts.
 
 **Returns**: `integer` - Width in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns the layered image width. This method is available to Lua scripts.
+---@return number Width in pixels.
+function LLayeredImage:getWidth() end
+```
 
 #### Example
 
@@ -1841,15 +2545,26 @@ do
 end
 ```
 
-### `LLayeredImage:isVisible(index: integer) -> boolean`
+### LLayeredImage:isVisible
+
+`LLayeredImage:isVisible(index: integer) -> boolean`
 
 Returns layer visibility by one-based index.
 
 **Parameters**
 
-- `index` (`integer`, required) - One-based layer index.
+- `index` (`integer`, required): One-based layer index.
 
 **Returns**: `boolean` - True when the layer is visible.
+
+**Lua API Stub**
+
+```lua
+--- Returns layer visibility by one-based index.
+---@param index number One-based layer index.
+---@return boolean True when the layer is visible.
+function LLayeredImage:isVisible(index) end
+```
 
 #### Example
 
@@ -1865,11 +2580,21 @@ do
 end
 ```
 
-### `LLayeredImage:layerCount() -> integer`
+### LLayeredImage:layerCount
+
+`LLayeredImage:layerCount() -> integer`
 
 Returns the number of layers in the stack.
 
 **Returns**: `integer` - Layer count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of layers in the stack.
+---@return number Layer count.
+function LLayeredImage:layerCount() end
+```
 
 #### Example
 
@@ -1884,11 +2609,21 @@ do
 end
 ```
 
-### `LLayeredImage:merge() -> LImageData`
+### LLayeredImage:merge
+
+`LLayeredImage:merge() -> LImageData`
 
 Merges visible layers into a single image data object.
 
 **Returns**: `LImageData` - Merged image data handle.
+
+**Lua API Stub**
+
+```lua
+--- Merges visible layers into a single image data object.
+---@return LImageData Merged image data handle.
+function LLayeredImage:merge() end
+```
 
 #### Example
 
@@ -1903,16 +2638,28 @@ do
 end
 ```
 
-### `LLayeredImage:moveLayer(from_idx: integer, to_idx: integer) -> boolean`
+### LLayeredImage:moveLayer
+
+`LLayeredImage:moveLayer(from_idx: integer, to_idx: integer) -> boolean`
 
 Moves a layer from one one-based index to another.
 
 **Parameters**
 
-- `from_idx` (`integer`, required) - Source one-based layer index.
-- `to_idx` (`integer`, required) - Destination one-based layer index.
+- `from_idx` (`integer`, required): Source one-based layer index.
+- `to_idx` (`integer`, required): Destination one-based layer index.
 
 **Returns**: `boolean` - True when the move succeeds.
+
+**Lua API Stub**
+
+```lua
+--- Moves a layer from one one-based index to another.
+---@param from_idx number Source one-based layer index.
+---@param to_idx number Destination one-based layer index.
+---@return boolean True when the move succeeds.
+function LLayeredImage:moveLayer(from_idx, to_idx) end
+```
 
 #### Example
 
@@ -1928,15 +2675,26 @@ do
 end
 ```
 
-### `LLayeredImage:removeLayer(index: integer) -> boolean`
+### LLayeredImage:removeLayer
+
+`LLayeredImage:removeLayer(index: integer) -> boolean`
 
 Removes a layer by one-based index.
 
 **Parameters**
 
-- `index` (`integer`, required) - One-based layer index.
+- `index` (`integer`, required): One-based layer index.
 
 **Returns**: `boolean` - True when a layer was removed.
+
+**Lua API Stub**
+
+```lua
+--- Removes a layer by one-based index.
+---@param index number One-based layer index.
+---@return boolean True when a layer was removed.
+function LLayeredImage:removeLayer(index) end
+```
 
 #### Example
 
@@ -1951,13 +2709,23 @@ do
 end
 ```
 
-### `LLayeredImage:save(path: string)`
+### LLayeredImage:save
+
+`LLayeredImage:save(path: string)`
 
 Saves the layered image stack to a file.
 
 **Parameters**
 
-- `path` (`string`, required) - Output path.
+- `path` (`string`, required): Output path.
+
+**Lua API Stub**
+
+```lua
+--- Saves the layered image stack to a file.
+---@param path string Output path.
+function LLayeredImage:save(path) end
+```
 
 #### Example
 
@@ -1971,16 +2739,28 @@ do
 end
 ```
 
-### `LLayeredImage:setLayer(index: integer, img: LImageData) -> boolean`
+### LLayeredImage:setLayer
+
+`LLayeredImage:setLayer(index: integer, img: LImageData) -> boolean`
 
 Replaces a layer's image data by one-based index.
 
 **Parameters**
 
-- `index` (`integer`, required) - One-based layer index.
-- `img` (`LImageData`, required) - Image data assigned to the layer.
+- `index` (`integer`, required): One-based layer index.
+- `img` (`LImageData`, required): Image data assigned to the layer.
 
 **Returns**: `boolean` - True when the layer was replaced.
+
+**Lua API Stub**
+
+```lua
+--- Replaces a layer's image data by one-based index.
+---@param index number One-based layer index.
+---@param img LImageData Image data assigned to the layer.
+---@return boolean True when the layer was replaced.
+function LLayeredImage:setLayer(index, img) end
+```
 
 #### Example
 
@@ -1997,16 +2777,28 @@ do
 end
 ```
 
-### `LLayeredImage:setName(index: integer, name: string) -> boolean`
+### LLayeredImage:setName
+
+`LLayeredImage:setName(index: integer, name: string) -> boolean`
 
 Sets a layer name by one-based index.
 
 **Parameters**
 
-- `index` (`integer`, required) - One-based layer index.
-- `name` (`string`, required) - New layer name.
+- `index` (`integer`, required): One-based layer index.
+- `name` (`string`, required): New layer name.
 
 **Returns**: `boolean` - True when the layer exists.
+
+**Lua API Stub**
+
+```lua
+--- Sets a layer name by one-based index.
+---@param index number One-based layer index.
+---@param name string New layer name.
+---@return boolean True when the layer exists.
+function LLayeredImage:setName(index, name) end
+```
 
 #### Example
 
@@ -2020,16 +2812,28 @@ do
 end
 ```
 
-### `LLayeredImage:setOpacity(index: integer, opacity: number) -> boolean`
+### LLayeredImage:setOpacity
+
+`LLayeredImage:setOpacity(index: integer, opacity: number) -> boolean`
 
 Sets a layer opacity by one-based index.
 
 **Parameters**
 
-- `index` (`integer`, required) - One-based layer index.
-- `opacity` (`number`, required) - New layer opacity.
+- `index` (`integer`, required): One-based layer index.
+- `opacity` (`number`, required): New layer opacity.
 
 **Returns**: `boolean` - True when the layer exists.
+
+**Lua API Stub**
+
+```lua
+--- Sets a layer opacity by one-based index.
+---@param index number One-based layer index.
+---@param opacity number New layer opacity.
+---@return boolean True when the layer exists.
+function LLayeredImage:setOpacity(index, opacity) end
+```
 
 #### Example
 
@@ -2043,16 +2847,28 @@ do
 end
 ```
 
-### `LLayeredImage:setVisible(index: integer, visible: boolean) -> boolean`
+### LLayeredImage:setVisible
+
+`LLayeredImage:setVisible(index: integer, visible: boolean) -> boolean`
 
 Sets layer visibility by one-based index.
 
 **Parameters**
 
-- `index` (`integer`, required) - One-based layer index.
-- `visible` (`boolean`, required) - New visibility flag.
+- `index` (`integer`, required): One-based layer index.
+- `visible` (`boolean`, required): New visibility flag.
 
 **Returns**: `boolean` - True when the layer exists.
+
+**Lua API Stub**
+
+```lua
+--- Sets layer visibility by one-based index.
+---@param index number One-based layer index.
+---@param visible boolean New visibility flag.
+---@return boolean True when the layer exists.
+function LLayeredImage:setVisible(index, visible) end
+```
 
 #### Example
 
@@ -2066,16 +2882,28 @@ do
 end
 ```
 
-### `LLayeredImage:swapLayers(a: integer, b: integer) -> boolean`
+### LLayeredImage:swapLayers
+
+`LLayeredImage:swapLayers(a: integer, b: integer) -> boolean`
 
 Swaps two layers by one-based indices.
 
 **Parameters**
 
-- `a` (`integer`, required) - First one-based layer index.
-- `b` (`integer`, required) - Second one-based layer index.
+- `a` (`integer`, required): First one-based layer index.
+- `b` (`integer`, required): Second one-based layer index.
 
 **Returns**: `boolean` - True when both layers exist.
+
+**Lua API Stub**
+
+```lua
+--- Swaps two layers by one-based indices.
+---@param a number First one-based layer index.
+---@param b number Second one-based layer index.
+---@return boolean True when both layers exist.
+function LLayeredImage:swapLayers(a, b) end
+```
 
 #### Example
 
@@ -2090,11 +2918,21 @@ do
 end
 ```
 
-### `LLayeredImage:type() -> string`
+### LLayeredImage:type
+
+`LLayeredImage:type() -> string`
 
 Returns the Lua-visible type name for this layered image handle.
 
 **Returns**: `string` - The string `LLayeredImage`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this layered image handle.
+---@return string The string `LLayeredImage`.
+function LLayeredImage:type() end
+```
 
 #### Example
 
@@ -2107,15 +2945,26 @@ do
 end
 ```
 
-### `LLayeredImage:typeOf(name: string) -> boolean`
+### LLayeredImage:typeOf
+
+`LLayeredImage:typeOf(name: string) -> boolean`
 
 Returns whether this layered image handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `LLayeredImage` and `Object`.
+- `name` (`string`, required): Type name to compare against `LLayeredImage` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this layered image handle matches a supported type name.
+---@param name string Type name to compare against `LLayeredImage` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LLayeredImage:typeOf(name) end
+```
 
 #### Example
 
@@ -2128,27 +2977,18 @@ do
 end
 ```
 
-### `LPaletteLUT`
+### LPaletteLUT:clear
 
-Lua-side handle for palette color remapping.
-
-#### Example
-
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
-
-```lua
-do
-  -- Palette LUTs remap pixel colors without per-pixel callback overhead.
-  -- Perfect for team recoloring, damage flash effects, or seasonal palette swaps.
-  local lut = lurek.image.newPaletteLut()
-  local before = lut:getColorCount()
-  lurek.log.info("new lut entries=" .. before, "image")
-end
-```
-
-### `LPaletteLUT:clear()`
+`LPaletteLUT:clear()`
 
 Removes every color mapping from this palette lookup table.
+
+**Lua API Stub**
+
+```lua
+--- Removes every color mapping from this palette lookup table.
+function LPaletteLUT:clear() end
+```
 
 #### Example
 
@@ -2164,13 +3004,23 @@ do
 end
 ```
 
-### `LPaletteLUT:cycle(offset: integer)`
+### LPaletteLUT:cycle
+
+`LPaletteLUT:cycle(offset: integer)`
 
 Cycles palette mappings by an offset.
 
 **Parameters**
 
-- `offset` (`integer`, required) - Mapping offset.
+- `offset` (`integer`, required): Mapping offset.
+
+**Lua API Stub**
+
+```lua
+--- Cycles palette mappings by an offset.
+---@param offset number Mapping offset.
+function LPaletteLUT:cycle(offset) end
+```
 
 #### Example
 
@@ -2187,11 +3037,21 @@ do
 end
 ```
 
-### `LPaletteLUT:getColorCount() -> integer`
+### LPaletteLUT:getColorCount
+
+`LPaletteLUT:getColorCount() -> integer`
 
 Returns the number of color mappings in this palette lookup table.
 
 **Returns**: `integer` - Color mapping count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of color mappings in this palette lookup table.
+---@return number Color mapping count.
+function LPaletteLUT:getColorCount() end
+```
 
 #### Example
 
@@ -2208,20 +3068,37 @@ do
 end
 ```
 
-### `LPaletteLUT:setColor(fr: integer, fg: integer, fb: integer, fa: integer, tr: integer, tg: integer, tb: integer, ta: integer)`
+### LPaletteLUT:setColor
+
+`LPaletteLUT:setColor(fr: integer, fg: integer, fb: integer, fa: integer, tr: integer, tg: integer, tb: integer, ta: integer)`
 
 Adds a color mapping from source RGBA channels to destination RGBA channels.
 
 **Parameters**
 
-- `fr` (`integer`, required) - Source red channel.
-- `fg` (`integer`, required) - Source green channel.
-- `fb` (`integer`, required) - Source blue channel.
-- `fa` (`integer`, required) - Source alpha channel.
-- `tr` (`integer`, required) - Destination red channel.
-- `tg` (`integer`, required) - Destination green channel.
-- `tb` (`integer`, required) - Destination blue channel.
-- `ta` (`integer`, required) - Destination alpha channel.
+- `fr` (`integer`, required): Source red channel.
+- `fg` (`integer`, required): Source green channel.
+- `fb` (`integer`, required): Source blue channel.
+- `fa` (`integer`, required): Source alpha channel.
+- `tr` (`integer`, required): Destination red channel.
+- `tg` (`integer`, required): Destination green channel.
+- `tb` (`integer`, required): Destination blue channel.
+- `ta` (`integer`, required): Destination alpha channel.
+
+**Lua API Stub**
+
+```lua
+--- Adds a color mapping from source RGBA channels to destination RGBA channels.
+---@param fr number Source red channel.
+---@param fg number Source green channel.
+---@param fb number Source blue channel.
+---@param fa number Source alpha channel.
+---@param tr number Destination red channel.
+---@param tg number Destination green channel.
+---@param tb number Destination blue channel.
+---@param ta number Destination alpha channel.
+function LPaletteLUT:setColor(fr, fg, fb, fa, tr, tg, tb, ta) end
+```
 
 #### Example
 
@@ -2238,11 +3115,21 @@ do
 end
 ```
 
-### `LPaletteLUT:type() -> string`
+### LPaletteLUT:type
+
+`LPaletteLUT:type() -> string`
 
 Returns the Lua-visible type name for this palette lookup table handle.
 
 **Returns**: `string` - The string `LPaletteLUT`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this palette lookup table handle.
+---@return string The string `LPaletteLUT`.
+function LPaletteLUT:type() end
+```
 
 #### Example
 
@@ -2258,15 +3145,26 @@ do
 end
 ```
 
-### `LPaletteLUT:typeOf(name: string) -> boolean`
+### LPaletteLUT:typeOf
+
+`LPaletteLUT:typeOf(name: string) -> boolean`
 
 Returns whether this palette lookup table handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `LPaletteLUT` and `Object`.
+- `name` (`string`, required): Type name to compare against `LPaletteLUT` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this palette lookup table handle matches a supported type name.
+---@param name string Type name to compare against `LPaletteLUT` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LPaletteLUT:typeOf(name) end
+```
 
 #### Example
 
@@ -2282,31 +3180,21 @@ do
 end
 ```
 
-### `LProvinceGrid`
+### LProvinceGrid:adjacencies
 
-Lua-side handle for a province id grid decoded from an image.
-
-#### Example
-
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
-
-```lua
-do
-  -- Province maps use color-coded images where each unique color = one province.
-  -- The engine decodes the image and assigns integer IDs for fast lookup.
-  -- Used in strategy games for territory selection, pathfinding, and borders.
-  local ok_grid, grid = pcall(lurek.image.newProvinceGrid, "assets/world_provinces.png")
-  if not ok_grid then return end
-  local count = (grid and grid:provinceCount() or 0)
-  lurek.log.info("loaded " .. count .. " provinces", "map")
-end
-```
-
-### `LProvinceGrid:adjacencies() -> table`
+`LProvinceGrid:adjacencies() -> table`
 
 Returns province adjacency records and shared border pixel counts.
 
 **Returns**: `table` - Array table with `province_a`, `province_b`, and `border_pixels` fields.
+
+**Lua API Stub**
+
+```lua
+--- Returns province adjacency records and shared border pixel counts.
+---@return LProvinceGridAdjacenciesResult Array table with `province_a`, `province_b`, and `border_pixels` fields.
+function LProvinceGrid:adjacencies() end
+```
 
 #### Example
 
@@ -2323,11 +3211,21 @@ do
 end
 ```
 
-### `LProvinceGrid:borderSegments() -> table`
+### LProvinceGrid:borderSegments
+
+`LProvinceGrid:borderSegments() -> table`
 
 Returns border line segments between neighboring provinces.
 
 **Returns**: `table` - Array table with province ids and segment coordinates.
+
+**Lua API Stub**
+
+```lua
+--- Returns border line segments between neighboring provinces.
+---@return LProvinceGridBorderSegmentsResult Array table with province ids and segment coordinates.
+function LProvinceGrid:borderSegments() end
+```
 
 #### Example
 
@@ -2344,15 +3242,26 @@ do
 end
 ```
 
-### `LProvinceGrid:deserializeShapeData(bytes: string) -> LuaValue`
+### LProvinceGrid:deserializeShapeData
+
+`LProvinceGrid:deserializeShapeData(bytes: string) -> LuaValue`
 
 Decodes serialized province shape data into span and segment tables.
 
 **Parameters**
 
-- `bytes` (`string`, required) - Serialized shape data bytes.
+- `bytes` (`string`, required): Serialized shape data bytes.
 
 **Returns**: `LuaValue` - Table with `spans` and `segments`, or nil when decoding fails.
+
+**Lua API Stub**
+
+```lua
+--- Decodes serialized province shape data into span and segment tables.
+---@param bytes string Serialized shape data bytes.
+---@return LuaValue Table with `spans` and `segments`, or nil when decoding fails.
+function LProvinceGrid:deserializeShapeData(bytes) end
+```
 
 #### Example
 
@@ -2372,18 +3281,32 @@ do
 end
 ```
 
-### `LProvinceGrid:drawShapes([x]: number, [y]: number, [w]: number, [h]: number) -> integer`
+### LProvinceGrid:drawShapes
+
+`LProvinceGrid:drawShapes([x]: number, [y]: number, [w]: number, [h]: number) -> integer`
 
 Queues filled polygon draw commands for province shapes, optionally culled to a viewport rect.
 
 **Parameters**
 
-- `x` (`number`, optional) - Viewport left edge (required if providing a viewport).
-- `y` (`number`, optional) - Viewport top edge (required if providing a viewport).
-- `w` (`number`, optional) - Viewport width (required if providing a viewport).
-- `h` (`number`, optional) - Viewport height (required if providing a viewport).
+- `x` (`number`, optional): Viewport left edge (required if providing a viewport).
+- `y` (`number`, optional): Viewport top edge (required if providing a viewport).
+- `w` (`number`, optional): Viewport width (required if providing a viewport).
+- `h` (`number`, optional): Viewport height (required if providing a viewport).
 
 **Returns**: `integer` - Number of polygons emitted to the render command queue.
+
+**Lua API Stub**
+
+```lua
+--- Queues filled polygon draw commands for province shapes, optionally culled to a viewport rect.
+---@param x? number Viewport left edge (required if providing a viewport).
+---@param y? number Viewport top edge (required if providing a viewport).
+---@param w? number Viewport width (required if providing a viewport).
+---@param h? number Viewport height (required if providing a viewport).
+---@return number Number of polygons emitted to the render command queue.
+function LProvinceGrid:drawShapes(x, y, w, h) end
+```
 
 #### Example
 
@@ -2402,16 +3325,28 @@ do
 end
 ```
 
-### `LProvinceGrid:getAt(x: integer, y: integer) -> integer`
+### LProvinceGrid:getAt
+
+`LProvinceGrid:getAt(x: integer, y: integer) -> integer`
 
 Returns the province id stored at grid coordinates.
 
 **Parameters**
 
-- `x` (`integer`, required) - X coordinate.
-- `y` (`integer`, required) - Y coordinate.
+- `x` (`integer`, required): X coordinate.
+- `y` (`integer`, required): Y coordinate.
 
 **Returns**: `integer` - Province id at the pixel.
+
+**Lua API Stub**
+
+```lua
+--- Returns the province id stored at grid coordinates.
+---@param x number X coordinate.
+---@param y number Y coordinate.
+---@return number Province id at the pixel.
+function LProvinceGrid:getAt(x, y) end
+```
 
 #### Example
 
@@ -2430,11 +3365,21 @@ do
 end
 ```
 
-### `LProvinceGrid:getHeight() -> integer`
+### LProvinceGrid:getHeight
+
+`LProvinceGrid:getHeight() -> integer`
 
 Returns the province grid height. This method is available to Lua scripts.
 
 **Returns**: `integer` - Grid height in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns the province grid height. This method is available to Lua scripts.
+---@return number Grid height in pixels.
+function LProvinceGrid:getHeight() end
+```
 
 #### Example
 
@@ -2450,11 +3395,21 @@ do
 end
 ```
 
-### `LProvinceGrid:getPolygons() -> table`
+### LProvinceGrid:getPolygons
+
+`LProvinceGrid:getPolygons() -> table`
 
 Returns polygon rings for every province.
 
 **Returns**: `table` - Array table of province polygon records with `province_id` and `rings` fields.
+
+**Lua API Stub**
+
+```lua
+--- Returns polygon rings for every province.
+---@return LProvinceGridGetPolygonsResult Array table of province polygon records with `province_id` and `rings` fields.
+function LProvinceGrid:getPolygons() end
+```
 
 #### Example
 
@@ -2475,11 +3430,21 @@ do
 end
 ```
 
-### `LProvinceGrid:getPolygonsSimplified() -> table`
+### LProvinceGrid:getPolygonsSimplified
+
+`LProvinceGrid:getPolygonsSimplified() -> table`
 
 Returns simplified polygon rings for every province.
 
 **Returns**: `table` - Array table of simplified province polygon records with `province_id` and `rings` fields.
+
+**Lua API Stub**
+
+```lua
+--- Returns simplified polygon rings for every province.
+---@return LProvinceGridGetPolygonsSimplifiedResult Array table of simplified province polygon records with `province_id` and `rings` fields.
+function LProvinceGrid:getPolygonsSimplified() end
+```
 
 #### Example
 
@@ -2500,11 +3465,21 @@ do
 end
 ```
 
-### `LProvinceGrid:getWidth() -> integer`
+### LProvinceGrid:getWidth
+
+`LProvinceGrid:getWidth() -> integer`
 
 Returns the province grid width. This method is available to Lua scripts.
 
 **Returns**: `integer` - Grid width in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns the province grid width. This method is available to Lua scripts.
+---@return number Grid width in pixels.
+function LProvinceGrid:getWidth() end
+```
 
 #### Example
 
@@ -2520,11 +3495,21 @@ do
 end
 ```
 
-### `LProvinceGrid:provinceCount() -> integer`
+### LProvinceGrid:provinceCount
+
+`LProvinceGrid:provinceCount() -> integer`
 
 Returns the number of distinct provinces in the grid.
 
 **Returns**: `integer` - Province count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of distinct provinces in the grid.
+---@return number Province count.
+function LProvinceGrid:provinceCount() end
+```
 
 #### Example
 
@@ -2542,11 +3527,21 @@ do
 end
 ```
 
-### `LProvinceGrid:provinceSpans() -> table`
+### LProvinceGrid:provinceSpans
+
+`LProvinceGrid:provinceSpans() -> table`
 
 Returns horizontal province spans by row.
 
 **Returns**: `table` - Array table with `province_id`, `y`, `x0`, and `x1` fields.
+
+**Lua API Stub**
+
+```lua
+--- Returns horizontal province spans by row.
+---@return LProvinceGridProvinceSpansResult Array table with `province_id`, `y`, `x0`, and `x1` fields.
+function LProvinceGrid:provinceSpans() end
+```
 
 #### Example
 
@@ -2563,11 +3558,21 @@ do
 end
 ```
 
-### `LProvinceGrid:serializeShapeData() -> string`
+### LProvinceGrid:serializeShapeData
+
+`LProvinceGrid:serializeShapeData() -> string`
 
 Serializes province span and border shape data into a binary Lua string.
 
 **Returns**: `string` - Serialized shape data bytes.
+
+**Lua API Stub**
+
+```lua
+--- Serializes province span and border shape data into a binary Lua string.
+---@return string Serialized shape data bytes.
+function LProvinceGrid:serializeShapeData() end
+```
 
 #### Example
 
@@ -2584,11 +3589,21 @@ do
 end
 ```
 
-### `LProvinceGrid:type() -> string`
+### LProvinceGrid:type
+
+`LProvinceGrid:type() -> string`
 
 Returns the Lua-visible type name for this province grid handle.
 
 **Returns**: `string` - The string `LProvinceGrid`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this province grid handle.
+---@return string The string `LProvinceGrid`.
+function LProvinceGrid:type() end
+```
 
 #### Example
 
@@ -2601,15 +3616,26 @@ do
 end
 ```
 
-### `LProvinceGrid:typeOf(name: string) -> boolean`
+### LProvinceGrid:typeOf
+
+`LProvinceGrid:typeOf(name: string) -> boolean`
 
 Returns whether this province grid handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `LProvinceGrid` and `Object`.
+- `name` (`string`, required): Type name to compare against `LProvinceGrid` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this province grid handle matches a supported type name.
+---@param name string Type name to compare against `LProvinceGrid` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LProvinceGrid:typeOf(name) end
+```
 
 #### Example
 
@@ -2623,21 +3649,27 @@ end
 ```
 
 
-## Examples
+[⬆ back to top](#table-of-contents)
+
+## 💡 Examples
 
 - [image.lua](../blob/main/content/examples/image.lua) - Pixel data creation and manipulation
 
-## Reference Games
+[⬆ back to top](#table-of-contents)
+
+## 🎮 Reference Games
 
 - [sprites](../tree/main/content/games/showcase/sprites) (showcase)
 
-## Related Modules
+[⬆ back to top](#table-of-contents)
 
-- Previous: [[i18n|Module-i18n]]
-- Next: [[input|Module-input]]
-- [[audio|Module-audio]] - Sound loading and playback wrapping rodio; Mixer / Bus instances live in SharedState.
-- [[camera|Module-camera]] - 2D camera and viewport types. Pure data; no GPU resources.
-- [[effect|Module-effect]] - Post-processing pipeline: blur, bloom, distortion, color grading, custom WGSL passes.
-- [[input|Module-input]] - Per-frame keyboard / mouse / gamepad / touch state translated from winit events.
-- [[light|Module-light]] - 2D point-light data model. Pure container; renderer owns all GPU work.
-- [[physics|Module-physics]] - Rigid-body 2D physics on top of rapier2d. Heavy dependency tree.
+## 🔗 Related Modules
+
+- Previous: [i18n](Module-i18n)
+- Next: [input](Module-input)
+- [audio](Module-audio) - Sound loading and playback wrapping rodio; Mixer / Bus instances live in SharedState.
+- [camera](Module-camera) - 2D camera and viewport types. Pure data; no GPU resources.
+- [effect](Module-effect) - Post-processing pipeline: blur, bloom, distortion, color grading, custom WGSL passes.
+- [input](Module-input) - Per-frame keyboard / mouse / gamepad / touch state translated from winit events.
+- [light](Module-light) - 2D point-light data model. Pure container; renderer owns all GPU work.
+- [physics](Module-physics) - Rigid-body 2D physics on top of rapier2d. Heavy dependency tree.

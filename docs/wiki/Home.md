@@ -4,7 +4,7 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
@@ -25,16 +25,16 @@ Lurek2D is a single-binary 2D runtime for games written in Lua. This wiki is gen
 
 ## Short Path
 
-1. [[Getting Started|Getting-Started]] - orientation and first commands.
-2. [[First Game|First-Game]] - minimal game script.
-3. [[Modules]] - choose the right `lurek.*` namespace.
-4. [[API]] - detailed functions, methods, types, and examples.
+1. [Getting Started](Getting-Started) - orientation and first commands.
+2. [First Game](First-Game) - minimal game script.
+3. [Modules](Modules) - choose the right `lurek.*` namespace.
+4. [API](API) - detailed functions, methods, types, and examples.
 
 ## Wiki Map
 
-- [[Callbacks]] - functions the engine calls in a game script.
-- [[Runtime Model|Runtime-Model]] - startup and frame order.
-- [[Examples]] - files from `content/examples/`.
-- [[Reference Games|Reference-Games]] - games from `content/games/`.
-- [[Lunasome]] - reusable Lua libraries over the runtime.
-- [[Glossary]] - common runtime and API terms.
+- [Callbacks](Callbacks) - functions the engine calls in a game script.
+- [Runtime Model](Runtime-Model) - startup and frame order.
+- [Examples](Examples) - files from `content/examples/`.
+- [Reference Games](Reference-Games) - games from `content/games/`.
+- [Lunasome](Lunasome) - reusable Lua libraries over the runtime.
+- [Glossary](Glossary) - common runtime and API terms.

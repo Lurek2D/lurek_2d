@@ -4,171 +4,120 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
-- [Purpose](#purpose)
-- [Summary](#summary)
-- [Minimal Module Example](#minimal-module-example)
-- [Key Types](#key-types)
-- [API Overview](#api-overview)
-- [Module Functions](#module-functions)
-  - [lurek.raycaster.distanceShade(distance: number, maxDistance: number) -> number](#lurekraycasterdistanceshadedistance-number-maxdistance-number-number)
-  - [lurek.raycaster.new(w: integer, h: integer) -> LRaycaster](#lurekraycasterneww-integer-h-integer-lraycaster)
-  - [lurek.raycaster.newDoorManager() -> LDoorManager](#lurekraycasternewdoormanager-ldoormanager)
-  - [lurek.raycaster.newHeightMap(w: integer, h: integer) -> LHeightMap](#lurekraycasternewheightmapw-integer-h-integer-lheightmap)
-  - [lurek.raycaster.newMap(w: integer, h: integer) -> LRaycaster](#lurekraycasternewmapw-integer-h-integer-lraycaster)
-  - [lurek.raycaster.newPointLight(x: number, y: number, r: number, g: number, b: number, radius: number, intensity: number) -> LPointLight](#lurekraycasternewpointlightx-number-y-number-r-number-g-number-b-number-radius-number-intensity-number-lpointlight)
-  - [lurek.raycaster.newSpriteManager() -> LSpriteManager](#lurekraycasternewspritemanager-lspritemanager)
-  - [lurek.raycaster.projectColumn(distance: number, fov: number, screenHeight: number) -> number](#lurekraycasterprojectcolumndistance-number-fov-number-screenheight-number-number)
-- [Types and Methods](#types-and-methods)
+- [🎯 Purpose](#purpose)
+- [📋 Summary](#summary)
+- [🧩 Key Types](#key-types)
+- [📖 API Overview](#api-overview)
+- [⚙️ Module Functions](#module-functions)
+  - [lurek.raycaster.distanceShade](#lurekraycasterdistanceshade)
+  - [lurek.raycaster.new](#lurekraycasternew)
+  - [lurek.raycaster.newDoorManager](#lurekraycasternewdoormanager)
+  - [lurek.raycaster.newHeightMap](#lurekraycasternewheightmap)
+  - [lurek.raycaster.newMap](#lurekraycasternewmap)
+  - [lurek.raycaster.newPointLight](#lurekraycasternewpointlight)
+  - [lurek.raycaster.newSpriteManager](#lurekraycasternewspritemanager)
+  - [lurek.raycaster.projectColumn](#lurekraycasterprojectcolumn)
+- [🔷 Module Types](#module-types)
   - [LDoorManager](#ldoormanager)
-  - [LDoorManager:addDoor(x: integer, y: integer, direction: string, speed: number) -> integer](#ldoormanageradddoorx-integer-y-integer-direction-string-speed-number-integer)
-  - [LDoorManager:closeDoor(index: integer)](#ldoormanagerclosedoorindex-integer)
-  - [LDoorManager:count() -> integer](#ldoormanagercount-integer)
-  - [LDoorManager:getDoor(index: integer) -> table](#ldoormanagergetdoorindex-integer-table)
-  - [LDoorManager:openDoor(index: integer)](#ldoormanageropendoorindex-integer)
-  - [LDoorManager:type() -> string](#ldoormanagertype-string)
-  - [LDoorManager:typeOf(name: string) -> boolean](#ldoormanagertypeofname-string-boolean)
-  - [LDoorManager:update(dt: number)](#ldoormanagerupdatedt-number)
   - [LHeightMap](#lheightmap)
-  - [LHeightMap:ceilingAt(x: integer, y: integer) -> number](#lheightmapceilingatx-integer-y-integer-number)
-  - [LHeightMap:floorAt(x: integer, y: integer) -> number](#lheightmapflooratx-integer-y-integer-number)
-  - [LHeightMap:setCeiling(x: integer, y: integer, h: number)](#lheightmapsetceilingx-integer-y-integer-h-number)
-  - [LHeightMap:setFloor(x: integer, y: integer, h: number)](#lheightmapsetfloorx-integer-y-integer-h-number)
-  - [LHeightMap:type() -> string](#lheightmaptype-string)
-  - [LHeightMap:typeOf(name: string) -> boolean](#lheightmaptypeofname-string-boolean)
   - [LPointLight](#lpointlight)
-  - [LPointLight:color() -> number](#lpointlightcolor-number)
-  - [LPointLight:intensity() -> number](#lpointlightintensity-number)
-  - [LPointLight:radius() -> number](#lpointlightradius-number)
-  - [LPointLight:set(x: number, y: number, r: number, g: number, b: number, radius: number, intensity: number)](#lpointlightsetx-number-y-number-r-number-g-number-b-number-radius-number-intensity-number)
-  - [LPointLight:type() -> string](#lpointlighttype-string)
-  - [LPointLight:typeOf(name: string) -> boolean](#lpointlighttypeofname-string-boolean)
-  - [LPointLight:x() -> number](#lpointlightx-number)
-  - [LPointLight:y() -> number](#lpointlighty-number)
   - [LRaycaster](#lraycaster)
-  - [LRaycaster:buildMinimapWindow(centerX: number, centerY: number, radius: integer, ambient: number, [lights]: table) -> table](#lraycasterbuildminimapwindowcenterx-number-centery-number-radius-integer-ambient-number-lights-table-table)
-  - [LRaycaster:buildScene(params: table, [lights]: table, [sprites]: table, [wallTextures]: table) -> integer](#lraycasterbuildsceneparams-table-lights-table-sprites-table-walltextures-table-integer)
-  - [LRaycaster:buildSceneWithModels(params: table, [lights]: table, [sprites]: table, [wallTextures]: table, [models]: table) -> integer](#lraycasterbuildscenewithmodelsparams-table-lights-table-sprites-table-walltextures-table-models-table-integer)
-  - [LRaycaster:castFloorRow(camX: number, camY: number, dirX: number, dirY: number, planeX: number, planeY: number, row: integer) -> table](#lraycastercastfloorrowcamx-number-camy-number-dirx-number-diry-number-planex-number-planey-number-row-integer-table)
-  - [LRaycaster:castRay(ox: number, oy: number, angle: number, maxDist: number) -> table](#lraycastercastrayox-number-oy-number-angle-number-maxdist-number-table)
-  - [LRaycaster:castRayMulti(ox: number, oy: number, angle: number, maxDist: number, [maxHits]: integer) -> table](#lraycastercastraymultiox-number-oy-number-angle-number-maxdist-number-maxhits-integer-table)
-  - [LRaycaster:castRays(ox: number, oy: number, angle: number, fov: number, count: integer, maxDist: number) -> table](#lraycastercastraysox-number-oy-number-angle-number-fov-number-count-integer-maxdist-number-table)
-  - [LRaycaster:castRaysFlat(ox: number, oy: number, angle: number, fov: number, count: integer, maxDist: number) -> number[]](#lraycastercastraysflatox-number-oy-number-angle-number-fov-number-count-integer-maxdist-number-number)
-  - [LRaycaster:computeTileLight(x: integer, y: integer, ambient: number, [lights]: table) -> number](#lraycastercomputetilelightx-integer-y-integer-ambient-number-lights-table-number)
-  - [LRaycaster:drawCameraSweep(x: number, y: number, fov: number, maxDist: number, numFrames: integer, fw: integer, fh: integer) -> LImageData](#lraycasterdrawcamerasweepx-number-y-number-fov-number-maxdist-number-numframes-integer-fw-integer-fh-integer-limagedata)
-  - [LRaycaster:drawDepthMap(px: number, py: number, angle: number, fov: number, numRays: integer, w: integer, h: integer, maxDist: number) -> LImageData](#lraycasterdrawdepthmappx-number-py-number-angle-number-fov-number-numrays-integer-w-integer-h-integer-maxdist-number-limagedata)
-  - [LRaycaster:drawLineOfSight(ax: number, ay: number, bx: number, by: number, scale: integer) -> LImageData](#lraycasterdrawlineofsightax-number-ay-number-bx-number-by-number-scale-integer-limagedata)
-  - [LRaycaster:drawTopDown(px: number, py: number, angle: number, scale: integer) -> LImageData](#lraycasterdrawtopdownpx-number-py-number-angle-number-scale-integer-limagedata)
-  - [LRaycaster:drawView(px: number, py: number, angle: number, fov: number, w: integer, h: integer, maxDist: number) -> LImageData](#lraycasterdrawviewpx-number-py-number-angle-number-fov-number-w-integer-h-integer-maxdist-number-limagedata)
-  - [LRaycaster:getCeilingTextureCell(x: integer, y: integer) -> integer](#lraycastergetceilingtexturecellx-integer-y-integer-integer)
-  - [LRaycaster:getCell(x: integer, y: integer) -> integer](#lraycastergetcellx-integer-y-integer-integer)
-  - [LRaycaster:getFloorTextureCell(x: integer, y: integer) -> integer](#lraycastergetfloortexturecellx-integer-y-integer-integer)
-  - [LRaycaster:getLoweredFloorCell(x: integer, y: integer) -> table](#lraycastergetloweredfloorcellx-integer-y-integer-table)
-  - [LRaycaster:getWallAlpha(tileType: integer) -> number](#lraycastergetwallalphatiletype-integer-number)
-  - [LRaycaster:gridMove(px: number, py: number, dir: integer, action: string, step: number) -> number](#lraycastergridmovepx-number-py-number-dir-integer-action-string-step-number-number)
-  - [LRaycaster:height() -> integer](#lraycasterheight-integer)
-  - [LRaycaster:isBlocked(x: integer, y: integer) -> boolean](#lraycasterisblockedx-integer-y-integer-boolean)
-  - [LRaycaster:isWalkBlocked(x: integer, y: integer) -> boolean](#lraycasteriswalkblockedx-integer-y-integer-boolean)
-  - [LRaycaster:lineOfSight(x1: number, y1: number, x2: number, y2: number) -> boolean](#lraycasterlineofsightx1-number-y1-number-x2-number-y2-number-boolean)
-  - [LRaycaster:projectSprite(sx: number, sy: number, px: number, py: number, pa: number, fov: number, screenW: number) -> table](#lraycasterprojectspritesx-number-sy-number-px-number-py-number-pa-number-fov-number-screenw-number-table)
-  - [LRaycaster:revealCellsFromRays(ox: number, oy: number, angle: number, fov: number, count: integer, maxDist: number, [step]: number) -> table](#lraycasterrevealcellsfromraysox-number-oy-number-angle-number-fov-number-count-integer-maxdist-number-step-number-table)
-  - [LRaycaster:setCeilingTextureCell(x: integer, y: integer, [texture]: LImage)](#lraycastersetceilingtexturecellx-integer-y-integer-texture-limage)
-  - [LRaycaster:setCell(x: integer, y: integer, val: integer)](#lraycastersetcellx-integer-y-integer-val-integer)
-  - [LRaycaster:setCells(cells: table)](#lraycastersetcellscells-table)
-  - [LRaycaster:setFloorTextureCell(x: integer, y: integer, [texture]: LImage)](#lraycastersetfloortexturecellx-integer-y-integer-texture-limage)
-  - [LRaycaster:setLoweredFloorCell(x: integer, y: integer, [opts]: table)](#lraycastersetloweredfloorcellx-integer-y-integer-opts-table)
-  - [LRaycaster:setWallAlpha(tileType: integer, alpha: number)](#lraycastersetwallalphatiletype-integer-alpha-number)
-  - [LRaycaster:tryMove(px: number, py: number, dx: number, dy: number) -> number](#lraycastertrymovepx-number-py-number-dx-number-dy-number-number)
-  - [LRaycaster:type() -> string](#lraycastertype-string)
-  - [LRaycaster:typeOf(name: string) -> boolean](#lraycastertypeofname-string-boolean)
-  - [LRaycaster:width() -> integer](#lraycasterwidth-integer)
   - [LSpriteManager](#lspritemanager)
-  - [LSpriteManager:add(x: number, y: number, texture: string, [scale]: number) -> integer](#lspritemanageraddx-number-y-number-texture-string-scale-number-integer)
-  - [LSpriteManager:clear()](#lspritemanagerclear)
-  - [LSpriteManager:remove(id: integer)](#lspritemanagerremoveid-integer)
-  - [LSpriteManager:setPosition(id: integer, x: number, y: number)](#lspritemanagersetpositionid-integer-x-number-y-number)
-  - [LSpriteManager:setVisible(id: integer, visible: boolean)](#lspritemanagersetvisibleid-integer-visible-boolean)
-  - [LSpriteManager:sortAndProject(camX: number, camY: number, camAngle: number) -> integer[]](#lspritemanagersortandprojectcamx-number-camy-number-camangle-number-integer)
-  - [LSpriteManager:type() -> string](#lspritemanagertype-string)
-  - [LSpriteManager:typeOf(name: string) -> boolean](#lspritemanagertypeofname-string-boolean)
-- [Examples](#examples)
-- [Reference Games](#reference-games)
-- [Related Modules](#related-modules)
+- [🔹 Module Methods](#module-methods)
+  - [LDoorManager:addDoor](#ldoormanageradddoor)
+  - [LDoorManager:closeDoor](#ldoormanagerclosedoor)
+  - [LDoorManager:count](#ldoormanagercount)
+  - [LDoorManager:getDoor](#ldoormanagergetdoor)
+  - [LDoorManager:openDoor](#ldoormanageropendoor)
+  - [LDoorManager:type](#ldoormanagertype)
+  - [LDoorManager:typeOf](#ldoormanagertypeof)
+  - [LDoorManager:update](#ldoormanagerupdate)
+  - [LHeightMap:ceilingAt](#lheightmapceilingat)
+  - [LHeightMap:floorAt](#lheightmapfloorat)
+  - [LHeightMap:setCeiling](#lheightmapsetceiling)
+  - [LHeightMap:setFloor](#lheightmapsetfloor)
+  - [LHeightMap:type](#lheightmaptype)
+  - [LHeightMap:typeOf](#lheightmaptypeof)
+  - [LPointLight:color](#lpointlightcolor)
+  - [LPointLight:intensity](#lpointlightintensity)
+  - [LPointLight:radius](#lpointlightradius)
+  - [LPointLight:set](#lpointlightset)
+  - [LPointLight:type](#lpointlighttype)
+  - [LPointLight:typeOf](#lpointlighttypeof)
+  - [LPointLight:x](#lpointlightx)
+  - [LPointLight:y](#lpointlighty)
+  - [LRaycaster:buildMinimapWindow](#lraycasterbuildminimapwindow)
+  - [LRaycaster:buildScene](#lraycasterbuildscene)
+  - [LRaycaster:buildSceneWithModels](#lraycasterbuildscenewithmodels)
+  - [LRaycaster:castFloorRow](#lraycastercastfloorrow)
+  - [LRaycaster:castRay](#lraycastercastray)
+  - [LRaycaster:castRayMulti](#lraycastercastraymulti)
+  - [LRaycaster:castRays](#lraycastercastrays)
+  - [LRaycaster:castRaysFlat](#lraycastercastraysflat)
+  - [LRaycaster:computeTileLight](#lraycastercomputetilelight)
+  - [LRaycaster:drawCameraSweep](#lraycasterdrawcamerasweep)
+  - [LRaycaster:drawDepthMap](#lraycasterdrawdepthmap)
+  - [LRaycaster:drawLineOfSight](#lraycasterdrawlineofsight)
+  - [LRaycaster:drawTopDown](#lraycasterdrawtopdown)
+  - [LRaycaster:drawView](#lraycasterdrawview)
+  - [LRaycaster:getCeilingTextureCell](#lraycastergetceilingtexturecell)
+  - [LRaycaster:getCell](#lraycastergetcell)
+  - [LRaycaster:getFloorTextureCell](#lraycastergetfloortexturecell)
+  - [LRaycaster:getLoweredFloorCell](#lraycastergetloweredfloorcell)
+  - [LRaycaster:getWallAlpha](#lraycastergetwallalpha)
+  - [LRaycaster:gridMove](#lraycastergridmove)
+  - [LRaycaster:height](#lraycasterheight)
+  - [LRaycaster:isBlocked](#lraycasterisblocked)
+  - [LRaycaster:isWalkBlocked](#lraycasteriswalkblocked)
+  - [LRaycaster:lineOfSight](#lraycasterlineofsight)
+  - [LRaycaster:projectSprite](#lraycasterprojectsprite)
+  - [LRaycaster:revealCellsFromRays](#lraycasterrevealcellsfromrays)
+  - [LRaycaster:setCeilingTextureCell](#lraycastersetceilingtexturecell)
+  - [LRaycaster:setCell](#lraycastersetcell)
+  - [LRaycaster:setCells](#lraycastersetcells)
+  - [LRaycaster:setFloorTextureCell](#lraycastersetfloortexturecell)
+  - [LRaycaster:setLoweredFloorCell](#lraycastersetloweredfloorcell)
+  - [LRaycaster:setWallAlpha](#lraycastersetwallalpha)
+  - [LRaycaster:tryMove](#lraycastertrymove)
+  - [LRaycaster:type](#lraycastertype)
+  - [LRaycaster:typeOf](#lraycastertypeof)
+  - [LRaycaster:width](#lraycasterwidth)
+  - [LSpriteManager:add](#lspritemanageradd)
+  - [LSpriteManager:clear](#lspritemanagerclear)
+  - [LSpriteManager:remove](#lspritemanagerremove)
+  - [LSpriteManager:setPosition](#lspritemanagersetposition)
+  - [LSpriteManager:setVisible](#lspritemanagersetvisible)
+  - [LSpriteManager:sortAndProject](#lspritemanagersortandproject)
+  - [LSpriteManager:type](#lspritemanagertype)
+  - [LSpriteManager:typeOf](#lspritemanagertypeof)
+- [💡 Examples](#examples)
+- [🎮 Reference Games](#reference-games)
+- [🔗 Related Modules](#related-modules)
 
 This page is generated from the current module specs, examples, and Lua API data.
 
 **Module group:** Feature Systems
 **Namespace:** `lurek.raycaster`
 
-## Purpose
+## 🎯 Purpose
 
 Wolfenstein-style 2D grid raycaster: textured walls, billboard sprites, doors, lighting.
 
-## Summary
+[⬆ back to top](#table-of-contents)
+
+## 📋 Summary
 
 Wolfenstein-style 2D grid raycaster projecting textured walls, floors, ceilings, and billboard sprites from a first-person camera. `Raycaster2D` owns a tile grid where each cell has wall textures (per-face: N/S/E/W), floor/ceiling textures, door state, and height modifiers. DDA traversal casts rays per screen column to find wall hits, then projects wall strip height using the perspective formula.
 
 Floor and ceiling rendering uses perspective-correct per-pixel texture mapping with per-tile lighting and UV calculation. Doors interpolate open/close state for animated sliding. Heightmap support enables variable floor/ceiling heights and lowered pits. Billboard sprites sort by depth and clip against the wall depth buffer. Lighting applies distance attenuation, ambient, and per-cell light levels. The scene builder produces a `RaycasterScene` of draw commands consumed by the renderer. Exposed as `lurek.raycaster.*`. Feature Systems tier — first-wave plugin candidate.
 
-## Minimal Module Example
+[⬆ back to top](#table-of-contents)
 
-Module example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
-
-```lua
-do
-  local doors = lurek.raycaster.newDoorManager()
-  doors:addDoor(3, 3, "horizontal", 2.0)
-
-  -- Call update once per frame in lurek.process to animate all doors.
-  -- dt is seconds since last frame — doors slide at their configured speed.
-  function lurek.process(dt)
-    doors:update(dt)
-  end
-end
-
---@api-stub: LDoorManager:getDoor
--- Returns a table describing the door at the given index
-do
-  local doors = lurek.raycaster.newDoorManager()
-  local idx = doors:addDoor(5, 7, "horizontal", 2.0)
-
-  -- getDoor returns: { x, y, openAmount (0.0..1.0), state ("closed"|"opening"|"open"|"closing") }
-  -- Use openAmount to check if the player can pass through
-  local d = doors:getDoor(idx)
-  if d and d.openAmount > 0.9 then
-    lurek.log.info("door " .. d.x .. "," .. d.y .. " passable (state=" .. d.state .. ")", "doors")
-  end
-end
-
---@api-stub: LDoorManager:count
--- Returns the total number of registered doors
-do
-  local doors = lurek.raycaster.newDoorManager()
-  doors:addDoor(2, 2, "horizontal", 2.0)
-  doors:addDoor(8, 5, "vertical", 2.0)
-
-  -- Useful for iterating all doors (indices 0 to count-1)
-  lurek.log.info("level has " .. doors:count() .. " doors", "doors")
-end
-
---@api-stub: LSpriteManager:type
--- Returns the Lua-visible type name string for this door manager handle
-do
-  local doors = lurek.raycaster.newDoorManager()
-  -- Returns "LDoorManager" — useful for runtime type checks in generic code
-  if doors:type() == "LDoorManager" then
-    lurek.log.debug("door manager OK", "raycaster")
-  end
-end
-
---@api-stub: LSpriteManager:typeOf
--- Returns true if this door manager handle matches the given type name string
-```
-
-## Key Types
+## 🧩 Key Types
 
 - `LDoorManager` (8 methods) - Lua-visible door manager that controls sliding doors within a raycaster map.
 - `LHeightMap` (6 methods) - Lua-visible height map that stores per-cell floor and ceiling offsets for variable-height raycaster levels.
@@ -176,7 +125,9 @@ end
 - `LRaycaster` (36 methods) - Lua-visible raycaster map that holds cell data, per-cell textures, and provides raycasting,.
 - `LSpriteManager` (8 methods) - Lua-visible sprite manager that tracks world-space billboard sprites for sorting and projection.
 
-## API Overview
+[⬆ back to top](#table-of-contents)
+
+## 📖 API Overview
 
 - Source spec: [docs/specs/raycaster.md](../blob/main/docs/specs/raycaster.md)
 
@@ -191,16 +142,20 @@ lurek.raycaster.newSpriteManager() -> LSpriteManager -- Creates a new sprite man
 lurek.raycaster.projectColumn(distance: number, fov: number, screenHeight: number) -> number -- Computes the projected wall-column height for a given distance, FOV, and screen height.
 ```
 
-## Module Functions
+[⬆ back to top](#table-of-contents)
 
-### `lurek.raycaster.distanceShade(distance: number, maxDistance: number) -> number`
+## ⚙️ Module Functions
+
+### lurek.raycaster.distanceShade
+
+`lurek.raycaster.distanceShade(distance: number, maxDistance: number) -> number`
 
 Returns a brightness multiplier (0.0..1.0) based on distance for fog/darkness falloff.
 
 **Parameters**
 
-- `distance` (`number`, required) - Distance to shade.
-- `maxDistance` (`number`, required) - Distance at which shade reaches zero.
+- `distance` (`number`, required): Distance to shade.
+- `maxDistance` (`number`, required): Distance at which shade reaches zero.
 
 **Returns**: `number` - Shade factor (1.0 at distance 0, approaching 0.0 at maxDistance).
 
@@ -226,14 +181,16 @@ do
 end
 ```
 
-### `lurek.raycaster.new(w: integer, h: integer) -> LRaycaster`
+### lurek.raycaster.new
+
+`lurek.raycaster.new(w: integer, h: integer) -> LRaycaster`
 
 Creates a new raycaster map with the given grid dimensions.
 
 **Parameters**
 
-- `w` (`integer`, required) - Map width in cells.
-- `h` (`integer`, required) - Map height in cells.
+- `w` (`integer`, required): Map width in cells.
+- `h` (`integer`, required): Map height in cells.
 
 **Returns**: `LRaycaster` - A new raycaster map instance.
 
@@ -255,7 +212,9 @@ do
 end
 ```
 
-### `lurek.raycaster.newDoorManager() -> LDoorManager`
+### lurek.raycaster.newDoorManager
+
+`lurek.raycaster.newDoorManager() -> LDoorManager`
 
 Creates a new door manager for tracking and animating sliding doors.
 
@@ -278,14 +237,16 @@ do
 end
 ```
 
-### `lurek.raycaster.newHeightMap(w: integer, h: integer) -> LHeightMap`
+### lurek.raycaster.newHeightMap
+
+`lurek.raycaster.newHeightMap(w: integer, h: integer) -> LHeightMap`
 
 Creates a new height map for variable floor/ceiling heights across the grid.
 
 **Parameters**
 
-- `w` (`integer`, required) - Width in cells.
-- `h` (`integer`, required) - Height in cells.
+- `w` (`integer`, required): Width in cells.
+- `h` (`integer`, required): Height in cells.
 
 **Returns**: `LHeightMap` - A new height map initialized to zero.
 
@@ -308,14 +269,16 @@ do
 end
 ```
 
-### `lurek.raycaster.newMap(w: integer, h: integer) -> LRaycaster`
+### lurek.raycaster.newMap
+
+`lurek.raycaster.newMap(w: integer, h: integer) -> LRaycaster`
 
 Creates a new raycaster map (alias for `new`).
 
 **Parameters**
 
-- `w` (`integer`, required) - Map width in cells.
-- `h` (`integer`, required) - Map height in cells.
+- `w` (`integer`, required): Map width in cells.
+- `h` (`integer`, required): Map height in cells.
 
 **Returns**: `LRaycaster` - A new raycaster map instance.
 
@@ -336,19 +299,21 @@ do
 end
 ```
 
-### `lurek.raycaster.newPointLight(x: number, y: number, r: number, g: number, b: number, radius: number, intensity: number) -> LPointLight`
+### lurek.raycaster.newPointLight
+
+`lurek.raycaster.newPointLight(x: number, y: number, r: number, g: number, b: number, radius: number, intensity: number) -> LPointLight`
 
 Creates a new point light with position, color, radius, and intensity.
 
 **Parameters**
 
-- `x` (`number`, required) - World X position.
-- `y` (`number`, required) - World Y position.
-- `r` (`number`, required) - Red channel (0.0..1.0).
-- `g` (`number`, required) - Green channel (0.0..1.0).
-- `b` (`number`, required) - Blue channel (0.0..1.0).
-- `radius` (`number`, required) - Light falloff radius in world units.
-- `intensity` (`number`, required) - Brightness multiplier.
+- `x` (`number`, required): World X position.
+- `y` (`number`, required): World Y position.
+- `r` (`number`, required): Red channel (0.0..1.0).
+- `g` (`number`, required): Green channel (0.0..1.0).
+- `b` (`number`, required): Blue channel (0.0..1.0).
+- `radius` (`number`, required): Light falloff radius in world units.
+- `intensity` (`number`, required): Brightness multiplier.
 
 **Returns**: `LPointLight` - A new point light instance.
 
@@ -373,7 +338,9 @@ do
 end
 ```
 
-### `lurek.raycaster.newSpriteManager() -> LSpriteManager`
+### lurek.raycaster.newSpriteManager
+
+`lurek.raycaster.newSpriteManager() -> LSpriteManager`
 
 Creates a new sprite manager for tracking and projecting billboard sprites.
 
@@ -396,15 +363,17 @@ do
 end
 ```
 
-### `lurek.raycaster.projectColumn(distance: number, fov: number, screenHeight: number) -> number`
+### lurek.raycaster.projectColumn
+
+`lurek.raycaster.projectColumn(distance: number, fov: number, screenHeight: number) -> number`
 
 Computes the projected wall-column height for a given distance, FOV, and screen height.
 
 **Parameters**
 
-- `distance` (`number`, required) - Perpendicular distance to the wall.
-- `fov` (`number`, required) - Field of view in radians.
-- `screenHeight` (`number`, required) - Screen height in pixels.
+- `distance` (`number`, required): Perpendicular distance to the wall.
+- `fov` (`number`, required): Field of view in radians.
+- `screenHeight` (`number`, required): Screen height in pixels.
 
 **Returns**: `number` - Projected column height in pixels.
 
@@ -431,11 +400,21 @@ end
 ```
 
 
-## Types and Methods
+[⬆ back to top](#table-of-contents)
 
-### `LDoorManager`
+## 🔷 Module Types
+
+### LDoorManager
 
 Lua-visible door manager that controls sliding doors within a raycaster map.
+
+**Lua API Definition**
+
+```lua
+--- Lua-visible door manager that controls sliding doors within a raycaster map.
+---@class LDoorManager
+LDoorManager = {}
+```
 
 #### Example
 
@@ -454,198 +433,17 @@ do
 end
 ```
 
-### `LDoorManager:addDoor(x: integer, y: integer, direction: string, speed: number) -> integer`
-
-Registers a new sliding door at the given grid cell.
-
-**Parameters**
-
-- `x` (`integer`, required) - Grid column of the door cell.
-- `y` (`integer`, required) - Grid row of the door cell.
-- `direction` (`string`, required) - Slide axis: "horizontal" or "vertical".
-- `speed` (`number`, required) - How fast the door opens/closes (units per second).
-
-**Returns**: `integer` - Zero-based index of the newly added door.
-
-#### Example
-
-Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
-
-```lua
-do
-  local dm = lurek.raycaster.newDoorManager()
-
-  -- addDoor returns the zero-based index of the new door.
-  -- Use this index for openDoor/closeDoor/getDoor calls.
-  local did = dm:addDoor(5, 7, "horizontal", 1.0)
-  lurek.log.info("door id: " .. did, "raycaster")
-end
-```
-
-### `LDoorManager:closeDoor(index: integer)`
-
-Begins closing the door at the given index. The door animates over time via `update()`.
-
-**Parameters**
-
-- `index` (`integer`, required) - Zero-based index of the door to close.
-
-#### Example
-
-Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
-
-```lua
-do
-  local doors = lurek.raycaster.newDoorManager()
-  local idx = doors:addDoor(12, 4, "vertical", 1.5)
-
-  -- Doors can be triggered to close after a timer or when the player moves away
-  doors:openDoor(idx)
-  doors:closeDoor(idx)  -- immediately reverses direction
-end
-```
-
-### `LDoorManager:count() -> integer`
-
-Returns the total number of registered doors.
-
-**Returns**: `integer` - Door count.
-
-#### Example
-
-Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
-
-```lua
-do
-  local doors = lurek.raycaster.newDoorManager()
-  doors:addDoor(2, 2, "horizontal", 2.0)
-  doors:addDoor(8, 5, "vertical", 2.0)
-
-  -- Useful for iterating all doors (indices 0 to count-1)
-  lurek.log.info("level has " .. doors:count() .. " doors", "doors")
-end
-```
-
-### `LDoorManager:getDoor(index: integer) -> table`
-
-Returns a table describing the door at the given index, or nil if index is out of range.
-
-**Parameters**
-
-- `index` (`integer`, required) - Zero-based index of the door to query.
-
-**Returns**: `table` - Door info table, or nil if not found.
-
-#### Example
-
-Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
-
-```lua
-do
-  local doors = lurek.raycaster.newDoorManager()
-  local idx = doors:addDoor(5, 7, "horizontal", 2.0)
-
-  -- getDoor returns: { x, y, openAmount (0.0..1.0), state ("closed"|"opening"|"open"|"closing") }
-  -- Use openAmount to check if the player can pass through
-  local d = doors:getDoor(idx)
-  if d and d.openAmount > 0.9 then
-    lurek.log.info("door " .. d.x .. "," .. d.y .. " passable (state=" .. d.state .. ")", "doors")
-  end
-end
-```
-
-### `LDoorManager:openDoor(index: integer)`
-
-Begins opening the door at the given index. The door animates over time via `update()`.
-
-**Parameters**
-
-- `index` (`integer`, required) - Zero-based index of the door to open.
-
-#### Example
-
-Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
-
-```lua
-do
-  local doors = lurek.raycaster.newDoorManager()
-  local idx = doors:addDoor(5, 7, "horizontal", 2.0)
-
-  -- openDoor starts the animation — call update(dt) each frame to advance it.
-  -- The door slides from closed (0.0) to fully open (1.0) at the configured speed.
-  doors:openDoor(idx)
-end
-```
-
-### `LDoorManager:type() -> string`
-
-Returns the type name of this object.
-
-**Returns**: `string` - Always "LDoorManager".
-
-#### Example
-
-Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
-
-```lua
-do
-  -- type() returns the engine type string for this door manager handle.
-  local doors = lurek.raycaster.newDoorManager()
-  lurek.log.info("door mgr type: " .. doors:type(), "raycaster")
-end
-```
-
-### `LDoorManager:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to check.
-
-**Returns**: `boolean` - True if the name matches this userdata type.
-
-#### Example
-
-Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
-
-```lua
-do
-  -- typeOf checks handle identity for polymorphic dispatch.
-  local doors = lurek.raycaster.newDoorManager()
-  local is_door = doors:typeOf("LDoorManager")
-  lurek.log.info("is LDoorManager=" .. tostring(is_door), "raycaster")
-end
-```
-
-### `LDoorManager:update(dt: number)`
-
-Advances all door animations by the given delta time. Call once per frame.
-
-**Parameters**
-
-- `dt` (`number`, required) - Delta time in seconds since last frame.
-
-#### Example
-
-Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
-
-```lua
-do
-  local doors = lurek.raycaster.newDoorManager()
-  doors:addDoor(3, 3, "horizontal", 2.0)
-
-  -- Call update once per frame in lurek.process to animate all doors.
-  -- dt is seconds since last frame — doors slide at their configured speed.
-  function lurek.process(dt)
-    doors:update(dt)
-  end
-end
-```
-
-### `LHeightMap`
+### LHeightMap
 
 Lua-visible height map that stores per-cell floor and ceiling offsets for variable-height raycaster levels.
+
+**Lua API Definition**
+
+```lua
+--- Lua-visible height map that stores per-cell floor and ceiling offsets for variable-height raycaster levels.
+---@class LHeightMap
+LHeightMap = {}
+```
 
 #### Example
 
@@ -666,153 +464,17 @@ do
 end
 ```
 
-### `LHeightMap:ceilingAt(x: integer, y: integer) -> number`
-
-Returns the ceiling height offset at a given grid cell.
-
-**Parameters**
-
-- `x` (`integer`, required) - Grid column.
-- `y` (`integer`, required) - Grid row.
-
-**Returns**: `number` - Ceiling height offset at that cell.
-
-#### Example
-
-Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
-
-```lua
-do
-  local hm = lurek.raycaster.newHeightMap(16, 12)
-
-  -- Compute available headroom at a cell to check if tall entities can pass
-  local headroom = hm:ceilingAt(3, 4) - hm:floorAt(3, 4)
-  lurek.log.debug("cell headroom=" .. headroom, "raycaster")
-end
-```
-
-### `LHeightMap:floorAt(x: integer, y: integer) -> number`
-
-Returns the floor height offset at a given grid cell.
-
-**Parameters**
-
-- `x` (`integer`, required) - Grid column.
-- `y` (`integer`, required) - Grid row.
-
-**Returns**: `number` - Floor height offset at that cell.
-
-#### Example
-
-Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
-
-```lua
-do
-  local hm = lurek.raycaster.newHeightMap(16, 12)
-  hm:setFloor(5, 5, -0.4)
-
-  -- Query the floor to detect pits for gameplay (damage zones, water, etc.)
-  local h = hm:floorAt(5, 5)
-  if h < 0 then
-    lurek.log.debug("pit depth " .. -h, "raycaster")
-  end
-end
-```
-
-### `LHeightMap:setCeiling(x: integer, y: integer, h: number)`
-
-Sets the ceiling height offset at a specific grid cell.
-
-**Parameters**
-
-- `x` (`integer`, required) - Grid column.
-- `y` (`integer`, required) - Grid row.
-- `h` (`number`, required) - Ceiling height offset (0.0 = default ceiling level).
-
-#### Example
-
-Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
-
-```lua
-do
-  local hm = lurek.raycaster.newHeightMap(16, 12)
-
-  -- Create a low-ceiling corridor along row 0.
-  -- Lower values = ceiling comes down, making the space feel cramped.
-  for x = 0, 15 do hm:setCeiling(x, 0, 0.6) end
-end
-```
-
-### `LHeightMap:setFloor(x: integer, y: integer, h: number)`
-
-Sets the floor height offset at a specific grid cell.
-
-**Parameters**
-
-- `x` (`integer`, required) - Grid column.
-- `y` (`integer`, required) - Grid row.
-- `h` (`number`, required) - Floor height offset (0.0 = default floor level).
-
-#### Example
-
-Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
-
-```lua
-do
-  local hm = lurek.raycaster.newHeightMap(16, 12)
-
-  -- Create a trench: lower the floor across several cells.
-  -- Negative offset = floor drops below default level (a pit).
-  for x = 4, 7 do hm:setFloor(x, 6, -0.5) end
-  -- Gradual ramp: half-depth at the edge
-  hm:setFloor(8, 6, -0.25)
-end
-```
-
-### `LHeightMap:type() -> string`
-
-Returns the type name of this object.
-
-**Returns**: `string` - Always "LHeightMap".
-
-#### Example
-
-Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
-
-```lua
-do
-  -- type() returns the engine type string for this height map handle.
-  local hm = lurek.raycaster.newHeightMap(16, 12)
-  lurek.log.info("heightmap type: " .. hm:type(), "raycaster")
-end
-```
-
-### `LHeightMap:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to check.
-
-**Returns**: `boolean` - True if the name matches this userdata type.
-
-#### Example
-
-Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
-
-```lua
-do
-  -- typeOf checks handle identity for polymorphic dispatch.
-  local hm = lurek.raycaster.newHeightMap(16, 12)
-  local is_hm = hm:typeOf("LHeightMap")
-  lurek.log.info("is LHeightMap=" .. tostring(is_hm), "raycaster")
-end
-```
-
-### `LPointLight`
+### LPointLight
 
 Lua-visible point light that illuminates nearby raycaster tiles and sprites with colored light and falloff.
+
+**Lua API Definition**
+
+```lua
+--- Lua-visible point light that illuminates nearby raycaster tiles and sprites with colored light and falloff.
+---@class LPointLight
+LPointLight = {}
+```
 
 #### Example
 
@@ -835,11 +497,575 @@ do
 end
 ```
 
-### `LPointLight:color() -> number`
+### LRaycaster
+
+Lua-visible raycaster map that holds cell data, per-cell textures, and provides raycasting,.
+
+**Lua API Definition**
+
+```lua
+--- Lua-visible raycaster map that holds cell data, per-cell textures, and provides raycasting,.
+---@class LRaycaster
+LRaycaster = {}
+```
+
+#### Example
+
+Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
+
+```lua
+do
+  -- Create a 16x12 grid map. Each cell holds an integer:
+  -- 0 = empty (walkable), 1+ = wall type (blocks rays and movement).
+  local rc = lurek.raycaster.new(16, 12)
+
+  -- Place a single wall tile at column 3, row 4 with wall type 1
+  rc:setCell(3, 4, 1)
+
+  -- The map dimensions are fixed at creation time
+  lurek.log.info("grid " .. rc:width() .. "x" .. rc:height(), "raycaster")
+end
+```
+
+### LSpriteManager
+
+Lua-visible sprite manager that tracks world-space billboard sprites for sorting and projection.
+
+**Lua API Definition**
+
+```lua
+--- Lua-visible sprite manager that tracks world-space billboard sprites for sorting and projection.
+---@class LSpriteManager
+LSpriteManager = {}
+```
+
+#### Example
+
+Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
+
+```lua
+do
+  -- SpriteManager tracks world-space billboard sprites (enemies, items, props).
+  -- Sprites always face the camera and can be sorted by distance for correct draw order.
+  local sprites = lurek.raycaster.newSpriteManager()
+
+  -- Add sprites with: x, y, texture_name, scale
+  -- These exist in world space and are projected to screen during rendering
+  sprites:add(6.5, 4.5, "enemy_zombie", 1.0)   -- full-size enemy
+  sprites:add(10.0, 8.0, "barrel", 0.75)        -- smaller prop barrel
+end
+```
+
+
+[⬆ back to top](#table-of-contents)
+
+## 🔹 Module Methods
+
+### LDoorManager:addDoor
+
+`LDoorManager:addDoor(x: integer, y: integer, direction: string, speed: number) -> integer`
+
+Registers a new sliding door at the given grid cell.
+
+**Parameters**
+
+- `x` (`integer`, required): Grid column of the door cell.
+- `y` (`integer`, required): Grid row of the door cell.
+- `direction` (`string`, required): Slide axis: "horizontal" or "vertical".
+- `speed` (`number`, required): How fast the door opens/closes (units per second).
+
+**Returns**: `integer` - Zero-based index of the newly added door.
+
+**Lua API Stub**
+
+```lua
+--- Registers a new sliding door at the given grid cell.
+---@param x number Grid column of the door cell.
+---@param y number Grid row of the door cell.
+---@param direction string Slide axis: "horizontal" or "vertical".
+---@param speed number How fast the door opens/closes (units per second).
+---@return number Zero-based index of the newly added door.
+function LDoorManager:addDoor(x, y, direction, speed) end
+```
+
+#### Example
+
+Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
+
+```lua
+do
+  local dm = lurek.raycaster.newDoorManager()
+
+  -- addDoor returns the zero-based index of the new door.
+  -- Use this index for openDoor/closeDoor/getDoor calls.
+  local did = dm:addDoor(5, 7, "horizontal", 1.0)
+  lurek.log.info("door id: " .. did, "raycaster")
+end
+```
+
+### LDoorManager:closeDoor
+
+`LDoorManager:closeDoor(index: integer)`
+
+Begins closing the door at the given index. The door animates over time via `update()`.
+
+**Parameters**
+
+- `index` (`integer`, required): Zero-based index of the door to close.
+
+**Lua API Stub**
+
+```lua
+--- Begins closing the door at the given index. The door animates over time via `update()`.
+---@param index number Zero-based index of the door to close.
+function LDoorManager:closeDoor(index) end
+```
+
+#### Example
+
+Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
+
+```lua
+do
+  local doors = lurek.raycaster.newDoorManager()
+  local idx = doors:addDoor(12, 4, "vertical", 1.5)
+
+  -- Doors can be triggered to close after a timer or when the player moves away
+  doors:openDoor(idx)
+  doors:closeDoor(idx)  -- immediately reverses direction
+end
+```
+
+### LDoorManager:count
+
+`LDoorManager:count() -> integer`
+
+Returns the total number of registered doors.
+
+**Returns**: `integer` - Door count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the total number of registered doors.
+---@return number Door count.
+function LDoorManager:count() end
+```
+
+#### Example
+
+Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
+
+```lua
+do
+  local doors = lurek.raycaster.newDoorManager()
+  doors:addDoor(2, 2, "horizontal", 2.0)
+  doors:addDoor(8, 5, "vertical", 2.0)
+
+  -- Useful for iterating all doors (indices 0 to count-1)
+  lurek.log.info("level has " .. doors:count() .. " doors", "doors")
+end
+```
+
+### LDoorManager:getDoor
+
+`LDoorManager:getDoor(index: integer) -> table`
+
+Returns a table describing the door at the given index, or nil if index is out of range.
+
+**Parameters**
+
+- `index` (`integer`, required): Zero-based index of the door to query.
+
+**Returns**: `table` - Door info table, or nil if not found.
+
+**Lua API Stub**
+
+```lua
+--- Returns a table describing the door at the given index, or nil if index is out of range.
+---@param index number Zero-based index of the door to query.
+---@return LDoorManagerGetDoorResult Door info table, or nil if not found.
+function LDoorManager:getDoor(index) end
+```
+
+#### Example
+
+Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
+
+```lua
+do
+  local doors = lurek.raycaster.newDoorManager()
+  local idx = doors:addDoor(5, 7, "horizontal", 2.0)
+
+  -- getDoor returns: { x, y, openAmount (0.0..1.0), state ("closed"|"opening"|"open"|"closing") }
+  -- Use openAmount to check if the player can pass through
+  local d = doors:getDoor(idx)
+  if d and d.openAmount > 0.9 then
+    lurek.log.info("door " .. d.x .. "," .. d.y .. " passable (state=" .. d.state .. ")", "doors")
+  end
+end
+```
+
+### LDoorManager:openDoor
+
+`LDoorManager:openDoor(index: integer)`
+
+Begins opening the door at the given index. The door animates over time via `update()`.
+
+**Parameters**
+
+- `index` (`integer`, required): Zero-based index of the door to open.
+
+**Lua API Stub**
+
+```lua
+--- Begins opening the door at the given index. The door animates over time via `update()`.
+---@param index number Zero-based index of the door to open.
+function LDoorManager:openDoor(index) end
+```
+
+#### Example
+
+Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
+
+```lua
+do
+  local doors = lurek.raycaster.newDoorManager()
+  local idx = doors:addDoor(5, 7, "horizontal", 2.0)
+
+  -- openDoor starts the animation — call update(dt) each frame to advance it.
+  -- The door slides from closed (0.0) to fully open (1.0) at the configured speed.
+  doors:openDoor(idx)
+end
+```
+
+### LDoorManager:type
+
+`LDoorManager:type() -> string`
+
+Returns the type name of this object.
+
+**Returns**: `string` - Always "LDoorManager".
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name of this object.
+---@return string Always "LDoorManager".
+function LDoorManager:type() end
+```
+
+#### Example
+
+Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
+
+```lua
+do
+  -- type() returns the engine type string for this door manager handle.
+  local doors = lurek.raycaster.newDoorManager()
+  lurek.log.info("door mgr type: " .. doors:type(), "raycaster")
+end
+```
+
+### LDoorManager:typeOf
+
+`LDoorManager:typeOf(name: string) -> boolean`
+
+Checks whether this object matches the given type name.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to check.
+
+**Returns**: `boolean` - True if the name matches this userdata type.
+
+**Lua API Stub**
+
+```lua
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check.
+---@return boolean True if the name matches this userdata type.
+function LDoorManager:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
+
+```lua
+do
+  -- typeOf checks handle identity for polymorphic dispatch.
+  local doors = lurek.raycaster.newDoorManager()
+  local is_door = doors:typeOf("LDoorManager")
+  lurek.log.info("is LDoorManager=" .. tostring(is_door), "raycaster")
+end
+```
+
+### LDoorManager:update
+
+`LDoorManager:update(dt: number)`
+
+Advances all door animations by the given delta time. Call once per frame.
+
+**Parameters**
+
+- `dt` (`number`, required): Delta time in seconds since last frame.
+
+**Lua API Stub**
+
+```lua
+--- Advances all door animations by the given delta time. Call once per frame.
+---@param dt number Delta time in seconds since last frame.
+function LDoorManager:update(dt) end
+```
+
+#### Example
+
+Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
+
+```lua
+do
+  local doors = lurek.raycaster.newDoorManager()
+  doors:addDoor(3, 3, "horizontal", 2.0)
+
+  -- Call update once per frame in lurek.process to animate all doors.
+  -- dt is seconds since last frame — doors slide at their configured speed.
+  function lurek.process(dt)
+    doors:update(dt)
+  end
+end
+```
+
+### LHeightMap:ceilingAt
+
+`LHeightMap:ceilingAt(x: integer, y: integer) -> number`
+
+Returns the ceiling height offset at a given grid cell.
+
+**Parameters**
+
+- `x` (`integer`, required): Grid column.
+- `y` (`integer`, required): Grid row.
+
+**Returns**: `number` - Ceiling height offset at that cell.
+
+**Lua API Stub**
+
+```lua
+--- Returns the ceiling height offset at a given grid cell.
+---@param x number Grid column.
+---@param y number Grid row.
+---@return number Ceiling height offset at that cell.
+function LHeightMap:ceilingAt(x, y) end
+```
+
+#### Example
+
+Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
+
+```lua
+do
+  local hm = lurek.raycaster.newHeightMap(16, 12)
+
+  -- Compute available headroom at a cell to check if tall entities can pass
+  local headroom = hm:ceilingAt(3, 4) - hm:floorAt(3, 4)
+  lurek.log.debug("cell headroom=" .. headroom, "raycaster")
+end
+```
+
+### LHeightMap:floorAt
+
+`LHeightMap:floorAt(x: integer, y: integer) -> number`
+
+Returns the floor height offset at a given grid cell.
+
+**Parameters**
+
+- `x` (`integer`, required): Grid column.
+- `y` (`integer`, required): Grid row.
+
+**Returns**: `number` - Floor height offset at that cell.
+
+**Lua API Stub**
+
+```lua
+--- Returns the floor height offset at a given grid cell.
+---@param x number Grid column.
+---@param y number Grid row.
+---@return number Floor height offset at that cell.
+function LHeightMap:floorAt(x, y) end
+```
+
+#### Example
+
+Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
+
+```lua
+do
+  local hm = lurek.raycaster.newHeightMap(16, 12)
+  hm:setFloor(5, 5, -0.4)
+
+  -- Query the floor to detect pits for gameplay (damage zones, water, etc.)
+  local h = hm:floorAt(5, 5)
+  if h < 0 then
+    lurek.log.debug("pit depth " .. -h, "raycaster")
+  end
+end
+```
+
+### LHeightMap:setCeiling
+
+`LHeightMap:setCeiling(x: integer, y: integer, h: number)`
+
+Sets the ceiling height offset at a specific grid cell.
+
+**Parameters**
+
+- `x` (`integer`, required): Grid column.
+- `y` (`integer`, required): Grid row.
+- `h` (`number`, required): Ceiling height offset (0.0 = default ceiling level).
+
+**Lua API Stub**
+
+```lua
+--- Sets the ceiling height offset at a specific grid cell.
+---@param x number Grid column.
+---@param y number Grid row.
+---@param h number Ceiling height offset (0.0 = default ceiling level).
+function LHeightMap:setCeiling(x, y, h) end
+```
+
+#### Example
+
+Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
+
+```lua
+do
+  local hm = lurek.raycaster.newHeightMap(16, 12)
+
+  -- Create a low-ceiling corridor along row 0.
+  -- Lower values = ceiling comes down, making the space feel cramped.
+  for x = 0, 15 do hm:setCeiling(x, 0, 0.6) end
+end
+```
+
+### LHeightMap:setFloor
+
+`LHeightMap:setFloor(x: integer, y: integer, h: number)`
+
+Sets the floor height offset at a specific grid cell.
+
+**Parameters**
+
+- `x` (`integer`, required): Grid column.
+- `y` (`integer`, required): Grid row.
+- `h` (`number`, required): Floor height offset (0.0 = default floor level).
+
+**Lua API Stub**
+
+```lua
+--- Sets the floor height offset at a specific grid cell.
+---@param x number Grid column.
+---@param y number Grid row.
+---@param h number Floor height offset (0.0 = default floor level).
+function LHeightMap:setFloor(x, y, h) end
+```
+
+#### Example
+
+Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
+
+```lua
+do
+  local hm = lurek.raycaster.newHeightMap(16, 12)
+
+  -- Create a trench: lower the floor across several cells.
+  -- Negative offset = floor drops below default level (a pit).
+  for x = 4, 7 do hm:setFloor(x, 6, -0.5) end
+  -- Gradual ramp: half-depth at the edge
+  hm:setFloor(8, 6, -0.25)
+end
+```
+
+### LHeightMap:type
+
+`LHeightMap:type() -> string`
+
+Returns the type name of this object.
+
+**Returns**: `string` - Always "LHeightMap".
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name of this object.
+---@return string Always "LHeightMap".
+function LHeightMap:type() end
+```
+
+#### Example
+
+Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
+
+```lua
+do
+  -- type() returns the engine type string for this height map handle.
+  local hm = lurek.raycaster.newHeightMap(16, 12)
+  lurek.log.info("heightmap type: " .. hm:type(), "raycaster")
+end
+```
+
+### LHeightMap:typeOf
+
+`LHeightMap:typeOf(name: string) -> boolean`
+
+Checks whether this object matches the given type name.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to check.
+
+**Returns**: `boolean` - True if the name matches this userdata type.
+
+**Lua API Stub**
+
+```lua
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check.
+---@return boolean True if the name matches this userdata type.
+function LHeightMap:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
+
+```lua
+do
+  -- typeOf checks handle identity for polymorphic dispatch.
+  local hm = lurek.raycaster.newHeightMap(16, 12)
+  local is_hm = hm:typeOf("LHeightMap")
+  lurek.log.info("is LHeightMap=" .. tostring(is_hm), "raycaster")
+end
+```
+
+### LPointLight:color
+
+`LPointLight:color() -> number`
 
 Returns the RGB color components of this light.
 
 **Returns**: `number` - Red channel (0.0..1.0).
+
+**Lua API Stub**
+
+```lua
+--- Returns the RGB color components of this light.
+---@return number a Red channel (0.0..1.0).
+---@return number b Green channel (0.0..1.0).
+---@return number c Blue channel (0.0..1.0).
+function LPointLight:color() end
+```
 
 #### Example
 
@@ -856,11 +1082,21 @@ do
 end
 ```
 
-### `LPointLight:intensity() -> number`
+### LPointLight:intensity
+
+`LPointLight:intensity() -> number`
 
 Returns the brightness multiplier of this light.
 
 **Returns**: `number` - Intensity.
+
+**Lua API Stub**
+
+```lua
+--- Returns the brightness multiplier of this light.
+---@return number Intensity.
+function LPointLight:intensity() end
+```
 
 #### Example
 
@@ -878,11 +1114,21 @@ do
 end
 ```
 
-### `LPointLight:radius() -> number`
+### LPointLight:radius
+
+`LPointLight:radius() -> number`
 
 Returns the light's falloff radius in world units.
 
 **Returns**: `number` - Radius.
+
+**Lua API Stub**
+
+```lua
+--- Returns the light's falloff radius in world units.
+---@return number Radius.
+function LPointLight:radius() end
+```
 
 #### Example
 
@@ -899,19 +1145,35 @@ do
 end
 ```
 
-### `LPointLight:set(x: number, y: number, r: number, g: number, b: number, radius: number, intensity: number)`
+### LPointLight:set
+
+`LPointLight:set(x: number, y: number, r: number, g: number, b: number, radius: number, intensity: number)`
 
 Overwrites all properties of this point light in a single call.
 
 **Parameters**
 
-- `x` (`number`, required) - New X world position.
-- `y` (`number`, required) - New Y world position.
-- `r` (`number`, required) - Red color channel (0.0..1.0).
-- `g` (`number`, required) - Green color channel (0.0..1.0).
-- `b` (`number`, required) - Blue color channel (0.0..1.0).
-- `radius` (`number`, required) - Falloff radius in world units.
-- `intensity` (`number`, required) - Brightness multiplier.
+- `x` (`number`, required): New X world position.
+- `y` (`number`, required): New Y world position.
+- `r` (`number`, required): Red color channel (0.0..1.0).
+- `g` (`number`, required): Green color channel (0.0..1.0).
+- `b` (`number`, required): Blue color channel (0.0..1.0).
+- `radius` (`number`, required): Falloff radius in world units.
+- `intensity` (`number`, required): Brightness multiplier.
+
+**Lua API Stub**
+
+```lua
+--- Overwrites all properties of this point light in a single call.
+---@param x number New X world position.
+---@param y number New Y world position.
+---@param r number Red color channel (0.0..1.0).
+---@param g number Green color channel (0.0..1.0).
+---@param b number Blue color channel (0.0..1.0).
+---@param radius number Falloff radius in world units.
+---@param intensity number Brightness multiplier.
+function LPointLight:set(x, y, r, g, b, radius, intensity) end
+```
 
 #### Example
 
@@ -933,11 +1195,21 @@ do
 end
 ```
 
-### `LPointLight:type() -> string`
+### LPointLight:type
+
+`LPointLight:type() -> string`
 
 Returns the type name of this object ("LPointLight").
 
 **Returns**: `string` - Type name string.
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name of this object ("LPointLight").
+---@return string Type name string.
+function LPointLight:type() end
+```
 
 #### Example
 
@@ -951,15 +1223,26 @@ do
 end
 ```
 
-### `LPointLight:typeOf(name: string) -> boolean`
+### LPointLight:typeOf
+
+`LPointLight:typeOf(name: string) -> boolean`
 
 Checks whether this object matches the given type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to test against.
+- `name` (`string`, required): Type name to test against.
 
 **Returns**: `boolean` - True if this object is of the given type.
+
+**Lua API Stub**
+
+```lua
+--- Checks whether this object matches the given type name.
+---@param name string Type name to test against.
+---@return boolean True if this object is of the given type.
+function LPointLight:typeOf(name) end
+```
 
 #### Example
 
@@ -974,11 +1257,21 @@ do
 end
 ```
 
-### `LPointLight:x() -> number`
+### LPointLight:x
+
+`LPointLight:x() -> number`
 
 Returns the X world position of this light.
 
 **Returns**: `number` - X coordinate.
+
+**Lua API Stub**
+
+```lua
+--- Returns the X world position of this light.
+---@return number X coordinate.
+function LPointLight:x() end
+```
 
 #### Example
 
@@ -996,11 +1289,21 @@ do
 end
 ```
 
-### `LPointLight:y() -> number`
+### LPointLight:y
+
+`LPointLight:y() -> number`
 
 Returns the Y world position of this light.
 
 **Returns**: `number` - Y coordinate.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Y world position of this light.
+---@return number Y coordinate.
+function LPointLight:y() end
+```
 
 #### Example
 
@@ -1016,41 +1319,34 @@ do
 end
 ```
 
-### `LRaycaster`
+### LRaycaster:buildMinimapWindow
 
-Lua-visible raycaster map that holds cell data, per-cell textures, and provides raycasting,.
-
-#### Example
-
-Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
-
-```lua
-do
-  -- Create a 16x12 grid map. Each cell holds an integer:
-  -- 0 = empty (walkable), 1+ = wall type (blocks rays and movement).
-  local rc = lurek.raycaster.new(16, 12)
-
-  -- Place a single wall tile at column 3, row 4 with wall type 1
-  rc:setCell(3, 4, 1)
-
-  -- The map dimensions are fixed at creation time
-  lurek.log.info("grid " .. rc:width() .. "x" .. rc:height(), "raycaster")
-end
-```
-
-### `LRaycaster:buildMinimapWindow(centerX: number, centerY: number, radius: integer, ambient: number, [lights]: table) -> table`
+`LRaycaster:buildMinimapWindow(centerX: number, centerY: number, radius: integer, ambient: number, [lights]: table) -> table`
 
 Generates a grid of minimap tile samples around a center point with lighting info.
 
 **Parameters**
 
-- `centerX` (`number`, required) - Center X in world coordinates.
-- `centerY` (`number`, required) - Center Y in world coordinates.
-- `radius` (`integer`, required) - Tile radius around the center to sample.
-- `ambient` (`number`, required) - Ambient light level (0.0..1.0).
-- `lights` (`table`, optional) - Array of point-light tables.
+- `centerX` (`number`, required): Center X in world coordinates.
+- `centerY` (`number`, required): Center Y in world coordinates.
+- `radius` (`integer`, required): Tile radius around the center to sample.
+- `ambient` (`number`, required): Ambient light level (0.0..1.0).
+- `lights` (`table`, optional): Array of point-light tables.
 
 **Returns**: `table` - Array of {x, y, blocked, visible, r, g, b, luma} tables.
+
+**Lua API Stub**
+
+```lua
+--- Generates a grid of minimap tile samples around a center point with lighting info.
+---@param centerX number Center X in world coordinates.
+---@param centerY number Center Y in world coordinates.
+---@param radius number Tile radius around the center to sample.
+---@param ambient number Ambient light level (0.0..1.0).
+---@param lights? table Array of point-light tables.
+---@return LRaycasterBuildMinimapWindowResult Array of {x, y, blocked, visible, r, g, b, luma} tables.
+function LRaycaster:buildMinimapWindow(centerX, centerY, radius, ambient, lights) end
+```
 
 #### Example
 
@@ -1076,18 +1372,32 @@ do
 end
 ```
 
-### `LRaycaster:buildScene(params: table, [lights]: table, [sprites]: table, [wallTextures]: table) -> integer`
+### LRaycaster:buildScene
+
+`LRaycaster:buildScene(params: table, [lights]: table, [sprites]: table, [wallTextures]: table) -> integer`
 
 Builds a complete textured raycaster scene for GPU rendering. Stores the output internally.
 
 **Parameters**
 
-- `params` (`table`, required) - Scene params {px, py, angle, fov, rays, max_dist, screen_w, screen_h, ambient?, shade_dist?, floor_r/g/b?, ceiling_r/g/b?, camera_height?, horizon_offset?}.
-- `lights` (`table`, optional) - Array of point-light tables {x, y, radius, r?, g?, b?, intensity?}.
-- `sprites` (`table`, optional) - Array of sprite tables {x, y, texture, size?}.
-- `wallTextures` (`table`, optional) - Map of cell_value -> texture for wall surfaces.
+- `params` (`table`, required): Scene params {px, py, angle, fov, rays, max_dist, screen_w, screen_h, ambient?, shade_dist?, floor_r/g/b?, ceiling_r/g/b?, camera_height?, horizon_offset?}.
+- `lights` (`table`, optional): Array of point-light tables {x, y, radius, r?, g?, b?, intensity?}.
+- `sprites` (`table`, optional): Array of sprite tables {x, y, texture, size?}.
+- `wallTextures` (`table`, optional): Map of cell_value -> texture for wall surfaces.
 
 **Returns**: `integer` - Total number of quads in the built scene.
+
+**Lua API Stub**
+
+```lua
+--- Builds a complete textured raycaster scene for GPU rendering. Stores the output internally.
+---@param params table Scene params {px, py, angle, fov, rays, max_dist, screen_w, screen_h, ambient?, shade_dist?, floor_r/g/b?, ceiling_r/g/b?, camera_height?, horizon_offset?}.
+---@param lights? table Array of point-light tables {x, y, radius, r?, g?, b?, intensity?}.
+---@param sprites? table Array of sprite tables {x, y, texture, size?}.
+---@param wallTextures? table Map of cell_value -> texture for wall surfaces.
+---@return number Total number of quads in the built scene.
+function LRaycaster:buildScene(params, lights, sprites, wallTextures) end
+```
 
 #### Example
 
@@ -1127,19 +1437,34 @@ do
 end
 ```
 
-### `LRaycaster:buildSceneWithModels(params: table, [lights]: table, [sprites]: table, [wallTextures]: table, [models]: table) -> integer`
+### LRaycaster:buildSceneWithModels
+
+`LRaycaster:buildSceneWithModels(params: table, [lights]: table, [sprites]: table, [wallTextures]: table, [models]: table) -> integer`
 
 Builds a textured raycaster scene with additional 3D .obj model instances projected into the view.
 
 **Parameters**
 
-- `params` (`table`, required) - Scene params (same as buildScene).
-- `lights` (`table`, optional) - Array of point-light tables.
-- `sprites` (`table`, optional) - Array of sprite tables.
-- `wallTextures` (`table`, optional) - Map of cell_value -> texture.
-- `models` (`table`, optional) - Array of model instance tables {model, x, y, rotation?, scale?}.
+- `params` (`table`, required): Scene params (same as buildScene).
+- `lights` (`table`, optional): Array of point-light tables.
+- `sprites` (`table`, optional): Array of sprite tables.
+- `wallTextures` (`table`, optional): Map of cell_value -> texture.
+- `models` (`table`, optional): Array of model instance tables {model, x, y, rotation?, scale?}.
 
 **Returns**: `integer` - Total number of quads in the built scene.
+
+**Lua API Stub**
+
+```lua
+--- Builds a textured raycaster scene with additional 3D .obj model instances projected into the view.
+---@param params table Scene params (same as buildScene).
+---@param lights? table Array of point-light tables.
+---@param sprites? table Array of sprite tables.
+---@param wallTextures? table Map of cell_value -> texture.
+---@param models? table Array of model instance tables {model, x, y, rotation?, scale?}.
+---@return number Total number of quads in the built scene.
+function LRaycaster:buildSceneWithModels(params, lights, sprites, wallTextures, models) end
+```
 
 #### Example
 
@@ -1162,21 +1487,38 @@ do
 end
 ```
 
-### `LRaycaster:castFloorRow(camX: number, camY: number, dirX: number, dirY: number, planeX: number, planeY: number, row: integer) -> table`
+### LRaycaster:castFloorRow
+
+`LRaycaster:castFloorRow(camX: number, camY: number, dirX: number, dirY: number, planeX: number, planeY: number, row: integer) -> table`
 
 Computes floor/ceiling texture UV coordinates for a single scanline row.
 
 **Parameters**
 
-- `camX` (`number`, required) - Camera X position.
-- `camY` (`number`, required) - Camera Y position.
-- `dirX` (`number`, required) - Camera forward direction X.
-- `dirY` (`number`, required) - Camera forward direction Y.
-- `planeX` (`number`, required) - Camera plane X (half-width of FOV).
-- `planeY` (`number`, required) - Camera plane Y (half-width of FOV).
-- `row` (`integer`, required) - Scanline row offset from screen center.
+- `camX` (`number`, required): Camera X position.
+- `camY` (`number`, required): Camera Y position.
+- `dirX` (`number`, required): Camera forward direction X.
+- `dirY` (`number`, required): Camera forward direction Y.
+- `planeX` (`number`, required): Camera plane X (half-width of FOV).
+- `planeY` (`number`, required): Camera plane Y (half-width of FOV).
+- `row` (`integer`, required): Scanline row offset from screen center.
 
 **Returns**: `table` - Array of {u, v} tables for each pixel in the row.
+
+**Lua API Stub**
+
+```lua
+--- Computes floor/ceiling texture UV coordinates for a single scanline row.
+---@param camX number Camera X position.
+---@param camY number Camera Y position.
+---@param dirX number Camera forward direction X.
+---@param dirY number Camera forward direction Y.
+---@param planeX number Camera plane X (half-width of FOV).
+---@param planeY number Camera plane Y (half-width of FOV).
+---@param row number Scanline row offset from screen center.
+---@return LRaycasterCastFloorRowResult Array of {u, v} tables for each pixel in the row.
+function LRaycaster:castFloorRow(camX, camY, dirX, dirY, planeX, planeY, row) end
+```
 
 #### Example
 
@@ -1199,18 +1541,32 @@ do
 end
 ```
 
-### `LRaycaster:castRay(ox: number, oy: number, angle: number, maxDist: number) -> table`
+### LRaycaster:castRay
+
+`LRaycaster:castRay(ox: number, oy: number, angle: number, maxDist: number) -> table`
 
 Casts a single ray from (ox,oy) at the given angle and returns hit info or nil.
 
 **Parameters**
 
-- `ox` (`number`, required) - Ray origin X.
-- `oy` (`number`, required) - Ray origin Y.
-- `angle` (`number`, required) - Ray direction in radians.
-- `maxDist` (`number`, required) - Maximum cast distance.
+- `ox` (`number`, required): Ray origin X.
+- `oy` (`number`, required): Ray origin Y.
+- `angle` (`number`, required): Ray direction in radians.
+- `maxDist` (`number`, required): Maximum cast distance.
 
 **Returns**: `table` - Hit table {distance, raw_distance, cell_value, alpha, side, tex_u, hit_x, hit_y, hit} or nil.
+
+**Lua API Stub**
+
+```lua
+--- Casts a single ray from (ox,oy) at the given angle and returns hit info or nil.
+---@param ox number Ray origin X.
+---@param oy number Ray origin Y.
+---@param angle number Ray direction in radians.
+---@param maxDist number Maximum cast distance.
+---@return LRaycasterCastRayResult Hit table {distance, raw_distance, cell_value, alpha, side, tex_u, hit_x, hit_y, hit} or nil.
+function LRaycaster:castRay(ox, oy, angle, maxDist) end
+```
 
 #### Example
 
@@ -1237,19 +1593,34 @@ do
 end
 ```
 
-### `LRaycaster:castRayMulti(ox: number, oy: number, angle: number, maxDist: number, [maxHits]: integer) -> table`
+### LRaycaster:castRayMulti
+
+`LRaycaster:castRayMulti(ox: number, oy: number, angle: number, maxDist: number, [maxHits]: integer) -> table`
 
 Casts a single ray that passes through transparent walls, returning multiple hits.
 
 **Parameters**
 
-- `ox` (`number`, required) - Ray origin X.
-- `oy` (`number`, required) - Ray origin Y.
-- `angle` (`number`, required) - Ray direction in radians.
-- `maxDist` (`number`, required) - Maximum cast distance.
-- `maxHits` (`integer`, optional) - Maximum number of hits to collect (default 4, max 8).
+- `ox` (`number`, required): Ray origin X.
+- `oy` (`number`, required): Ray origin Y.
+- `angle` (`number`, required): Ray direction in radians.
+- `maxDist` (`number`, required): Maximum cast distance.
+- `maxHits` (`integer`, optional): Maximum number of hits to collect (default 4, max 8).
 
 **Returns**: `table` - Array of hit tables in distance order.
+
+**Lua API Stub**
+
+```lua
+--- Casts a single ray that passes through transparent walls, returning multiple hits.
+---@param ox number Ray origin X.
+---@param oy number Ray origin Y.
+---@param angle number Ray direction in radians.
+---@param maxDist number Maximum cast distance.
+---@param maxHits? number Maximum number of hits to collect (default 4, max 8).
+---@return LRaycasterCastRayMultiResult Array of hit tables in distance order.
+function LRaycaster:castRayMulti(ox, oy, angle, maxDist, maxHits) end
+```
 
 #### Example
 
@@ -1270,20 +1641,36 @@ do
 end
 ```
 
-### `LRaycaster:castRays(ox: number, oy: number, angle: number, fov: number, count: integer, maxDist: number) -> table`
+### LRaycaster:castRays
+
+`LRaycaster:castRays(ox: number, oy: number, angle: number, fov: number, count: integer, maxDist: number) -> table`
 
 Casts multiple rays across a field of view and returns an array of hit tables.
 
 **Parameters**
 
-- `ox` (`number`, required) - Ray origin X.
-- `oy` (`number`, required) - Ray origin Y.
-- `angle` (`number`, required) - Center angle in radians.
-- `fov` (`number`, required) - Field of view in radians.
-- `count` (`integer`, required) - Number of rays to cast.
-- `maxDist` (`number`, required) - Maximum cast distance per ray.
+- `ox` (`number`, required): Ray origin X.
+- `oy` (`number`, required): Ray origin Y.
+- `angle` (`number`, required): Center angle in radians.
+- `fov` (`number`, required): Field of view in radians.
+- `count` (`integer`, required): Number of rays to cast.
+- `maxDist` (`number`, required): Maximum cast distance per ray.
 
 **Returns**: `table` - Array of hit tables (same fields as castRay).
+
+**Lua API Stub**
+
+```lua
+--- Casts multiple rays across a field of view and returns an array of hit tables.
+---@param ox number Ray origin X.
+---@param oy number Ray origin Y.
+---@param angle number Center angle in radians.
+---@param fov number Field of view in radians.
+---@param count number Number of rays to cast.
+---@param maxDist number Maximum cast distance per ray.
+---@return LRaycasterCastRaysResult Array of hit tables (same fields as castRay).
+function LRaycaster:castRays(ox, oy, angle, fov, count, maxDist) end
+```
 
 #### Example
 
@@ -1302,20 +1689,36 @@ do
 end
 ```
 
-### `LRaycaster:castRaysFlat(ox: number, oy: number, angle: number, fov: number, count: integer, maxDist: number) -> number[]`
+### LRaycaster:castRaysFlat
+
+`LRaycaster:castRaysFlat(ox: number, oy: number, angle: number, fov: number, count: integer, maxDist: number) -> number[]`
 
 Casts multiple rays and returns only the corrected distances as a flat array.
 
 **Parameters**
 
-- `ox` (`number`, required) - Ray origin X.
-- `oy` (`number`, required) - Ray origin Y.
-- `angle` (`number`, required) - Center angle in radians.
-- `fov` (`number`, required) - Field of view in radians.
-- `count` (`integer`, required) - Number of rays to cast.
-- `maxDist` (`number`, required) - Maximum cast distance per ray.
+- `ox` (`number`, required): Ray origin X.
+- `oy` (`number`, required): Ray origin Y.
+- `angle` (`number`, required): Center angle in radians.
+- `fov` (`number`, required): Field of view in radians.
+- `count` (`integer`, required): Number of rays to cast.
+- `maxDist` (`number`, required): Maximum cast distance per ray.
 
 **Returns**: `number[]` - Flat array of corrected distance values.
+
+**Lua API Stub**
+
+```lua
+--- Casts multiple rays and returns only the corrected distances as a flat array.
+---@param ox number Ray origin X.
+---@param oy number Ray origin Y.
+---@param angle number Center angle in radians.
+---@param fov number Field of view in radians.
+---@param count number Number of rays to cast.
+---@param maxDist number Maximum cast distance per ray.
+---@return number[] Flat array of corrected distance values.
+function LRaycaster:castRaysFlat(ox, oy, angle, fov, count, maxDist) end
+```
 
 #### Example
 
@@ -1333,18 +1736,35 @@ do
 end
 ```
 
-### `LRaycaster:computeTileLight(x: integer, y: integer, ambient: number, [lights]: table) -> number`
+### LRaycaster:computeTileLight
+
+`LRaycaster:computeTileLight(x: integer, y: integer, ambient: number, [lights]: table) -> number`
 
 Computes the combined lighting color at a tile from ambient and point lights, accounting for walls.
 
 **Parameters**
 
-- `x` (`integer`, required) - Tile grid column.
-- `y` (`integer`, required) - Tile grid row.
-- `ambient` (`number`, required) - Base ambient light level (0.0..1.0).
-- `lights` (`table`, optional) - Array of point-light tables {x, y, radius, r?, g?, b?, intensity?}.
+- `x` (`integer`, required): Tile grid column.
+- `y` (`integer`, required): Tile grid row.
+- `ambient` (`number`, required): Base ambient light level (0.0..1.0).
+- `lights` (`table`, optional): Array of point-light tables {x, y, radius, r?, g?, b?, intensity?}.
 
 **Returns**: `number` - Red light channel.
+
+**Lua API Stub**
+
+```lua
+--- Computes the combined lighting color at a tile from ambient and point lights, accounting for walls.
+---@param x number Tile grid column.
+---@param y number Tile grid row.
+---@param ambient number Base ambient light level (0.0..1.0).
+---@param lights? table Array of point-light tables {x, y, radius, r?, g?, b?, intensity?}.
+---@return number a Red light channel.
+---@return number b Green light channel.
+---@return number c Blue light channel.
+---@return number d Average luminance.
+function LRaycaster:computeTileLight(x, y, ambient, lights) end
+```
 
 #### Example
 
@@ -1363,21 +1783,38 @@ do
 end
 ```
 
-### `LRaycaster:drawCameraSweep(x: number, y: number, fov: number, maxDist: number, numFrames: integer, fw: integer, fh: integer) -> LImageData`
+### LRaycaster:drawCameraSweep
+
+`LRaycaster:drawCameraSweep(x: number, y: number, fov: number, maxDist: number, numFrames: integer, fw: integer, fh: integer) -> LImageData`
 
 Renders multiple frames of a rotating camera sweep as a single combined image.
 
 **Parameters**
 
-- `x` (`number`, required) - Camera X position.
-- `y` (`number`, required) - Camera Y position.
-- `fov` (`number`, required) - Field of view in radians.
-- `maxDist` (`number`, required) - Maximum render distance.
-- `numFrames` (`integer`, required) - Number of rotation steps.
-- `fw` (`integer`, required) - Frame width in pixels.
-- `fh` (`integer`, required) - Frame height in pixels.
+- `x` (`number`, required): Camera X position.
+- `y` (`number`, required): Camera Y position.
+- `fov` (`number`, required): Field of view in radians.
+- `maxDist` (`number`, required): Maximum render distance.
+- `numFrames` (`integer`, required): Number of rotation steps.
+- `fw` (`integer`, required): Frame width in pixels.
+- `fh` (`integer`, required): Frame height in pixels.
 
 **Returns**: `LImageData` - Raw image data for all frames.
+
+**Lua API Stub**
+
+```lua
+--- Renders multiple frames of a rotating camera sweep as a single combined image.
+---@param x number Camera X position.
+---@param y number Camera Y position.
+---@param fov number Field of view in radians.
+---@param maxDist number Maximum render distance.
+---@param numFrames number Number of rotation steps.
+---@param fw number Frame width in pixels.
+---@param fh number Frame height in pixels.
+---@return LImageData Raw image data for all frames.
+function LRaycaster:drawCameraSweep(x, y, fov, maxDist, numFrames, fw, fh) end
+```
 
 #### Example
 
@@ -1402,22 +1839,40 @@ do
 end
 ```
 
-### `LRaycaster:drawDepthMap(px: number, py: number, angle: number, fov: number, numRays: integer, w: integer, h: integer, maxDist: number) -> LImageData`
+### LRaycaster:drawDepthMap
+
+`LRaycaster:drawDepthMap(px: number, py: number, angle: number, fov: number, numRays: integer, w: integer, h: integer, maxDist: number) -> LImageData`
 
 Renders a grayscale depth map showing distance-to-wall for each column.
 
 **Parameters**
 
-- `px` (`number`, required) - Player X position.
-- `py` (`number`, required) - Player Y position.
-- `angle` (`number`, required) - Player facing angle in radians.
-- `fov` (`number`, required) - Field of view in radians.
-- `numRays` (`integer`, required) - Number of rays (columns) to cast.
-- `w` (`integer`, required) - Output image width in pixels.
-- `h` (`integer`, required) - Output image height in pixels.
-- `maxDist` (`number`, required) - Maximum render distance.
+- `px` (`number`, required): Player X position.
+- `py` (`number`, required): Player Y position.
+- `angle` (`number`, required): Player facing angle in radians.
+- `fov` (`number`, required): Field of view in radians.
+- `numRays` (`integer`, required): Number of rays (columns) to cast.
+- `w` (`integer`, required): Output image width in pixels.
+- `h` (`integer`, required): Output image height in pixels.
+- `maxDist` (`number`, required): Maximum render distance.
 
 **Returns**: `LImageData` - Raw depth-map image data.
+
+**Lua API Stub**
+
+```lua
+--- Renders a grayscale depth map showing distance-to-wall for each column.
+---@param px number Player X position.
+---@param py number Player Y position.
+---@param angle number Player facing angle in radians.
+---@param fov number Field of view in radians.
+---@param numRays number Number of rays (columns) to cast.
+---@param w number Output image width in pixels.
+---@param h number Output image height in pixels.
+---@param maxDist number Maximum render distance.
+---@return LImageData Raw depth-map image data.
+function LRaycaster:drawDepthMap(px, py, angle, fov, numRays, w, h, maxDist) end
+```
 
 #### Example
 
@@ -1436,19 +1891,34 @@ do
 end
 ```
 
-### `LRaycaster:drawLineOfSight(ax: number, ay: number, bx: number, by: number, scale: integer) -> LImageData`
+### LRaycaster:drawLineOfSight
+
+`LRaycaster:drawLineOfSight(ax: number, ay: number, bx: number, by: number, scale: integer) -> LImageData`
 
 Renders a debug image showing the line-of-sight ray between two world points.
 
 **Parameters**
 
-- `ax` (`number`, required) - Start X.
-- `ay` (`number`, required) - Start Y.
-- `bx` (`number`, required) - End X.
-- `by` (`number`, required) - End Y.
-- `scale` (`integer`, required) - Pixels per grid cell.
+- `ax` (`number`, required): Start X.
+- `ay` (`number`, required): Start Y.
+- `bx` (`number`, required): End X.
+- `by` (`number`, required): End Y.
+- `scale` (`integer`, required): Pixels per grid cell.
 
 **Returns**: `LImageData` - Raw image data for this view.
+
+**Lua API Stub**
+
+```lua
+--- Renders a debug image showing the line-of-sight ray between two world points.
+---@param ax number Start X.
+---@param ay number Start Y.
+---@param bx number End X.
+---@param by number End Y.
+---@param scale number Pixels per grid cell.
+---@return LImageData Raw image data for this view.
+function LRaycaster:drawLineOfSight(ax, ay, bx, by, scale) end
+```
 
 #### Example
 
@@ -1466,18 +1936,32 @@ do
 end
 ```
 
-### `LRaycaster:drawTopDown(px: number, py: number, angle: number, scale: integer) -> LImageData`
+### LRaycaster:drawTopDown
+
+`LRaycaster:drawTopDown(px: number, py: number, angle: number, scale: integer) -> LImageData`
 
 Renders a top-down debug view of the map with the player's position and direction.
 
 **Parameters**
 
-- `px` (`number`, required) - Player X position.
-- `py` (`number`, required) - Player Y position.
-- `angle` (`number`, required) - Player facing angle in radians.
-- `scale` (`integer`, required) - Pixels per grid cell.
+- `px` (`number`, required): Player X position.
+- `py` (`number`, required): Player Y position.
+- `angle` (`number`, required): Player facing angle in radians.
+- `scale` (`integer`, required): Pixels per grid cell.
 
 **Returns**: `LImageData` - Raw image data.
+
+**Lua API Stub**
+
+```lua
+--- Renders a top-down debug view of the map with the player's position and direction.
+---@param px number Player X position.
+---@param py number Player Y position.
+---@param angle number Player facing angle in radians.
+---@param scale number Pixels per grid cell.
+---@return LImageData Raw image data.
+function LRaycaster:drawTopDown(px, py, angle, scale) end
+```
 
 #### Example
 
@@ -1495,21 +1979,38 @@ do
 end
 ```
 
-### `LRaycaster:drawView(px: number, py: number, angle: number, fov: number, w: integer, h: integer, maxDist: number) -> LImageData`
+### LRaycaster:drawView
+
+`LRaycaster:drawView(px: number, py: number, angle: number, fov: number, w: integer, h: integer, maxDist: number) -> LImageData`
 
 Renders a first-person raycaster view to a raw image buffer (no textures, flat-shaded).
 
 **Parameters**
 
-- `px` (`number`, required) - Player X position.
-- `py` (`number`, required) - Player Y position.
-- `angle` (`number`, required) - Player facing angle in radians.
-- `fov` (`number`, required) - Field of view in radians.
-- `w` (`integer`, required) - Output image width in pixels.
-- `h` (`integer`, required) - Output image height in pixels.
-- `maxDist` (`number`, required) - Maximum render distance.
+- `px` (`number`, required): Player X position.
+- `py` (`number`, required): Player Y position.
+- `angle` (`number`, required): Player facing angle in radians.
+- `fov` (`number`, required): Field of view in radians.
+- `w` (`integer`, required): Output image width in pixels.
+- `h` (`integer`, required): Output image height in pixels.
+- `maxDist` (`number`, required): Maximum render distance.
 
 **Returns**: `LImageData` - Raw image data.
+
+**Lua API Stub**
+
+```lua
+--- Renders a first-person raycaster view to a raw image buffer (no textures, flat-shaded).
+---@param px number Player X position.
+---@param py number Player Y position.
+---@param angle number Player facing angle in radians.
+---@param fov number Field of view in radians.
+---@param w number Output image width in pixels.
+---@param h number Output image height in pixels.
+---@param maxDist number Maximum render distance.
+---@return LImageData Raw image data.
+function LRaycaster:drawView(px, py, angle, fov, w, h, maxDist) end
+```
 
 #### Example
 
@@ -1528,16 +2029,28 @@ do
 end
 ```
 
-### `LRaycaster:getCeilingTextureCell(x: integer, y: integer) -> integer`
+### LRaycaster:getCeilingTextureCell
+
+`LRaycaster:getCeilingTextureCell(x: integer, y: integer) -> integer`
 
 Returns the raw texture id assigned to this ceiling cell, or nil if none.
 
 **Parameters**
 
-- `x` (`integer`, required) - Grid column.
-- `y` (`integer`, required) - Grid row.
+- `x` (`integer`, required): Grid column.
+- `y` (`integer`, required): Grid row.
 
 **Returns**: `integer` - Raw texture id or nil.
+
+**Lua API Stub**
+
+```lua
+--- Returns the raw texture id assigned to this ceiling cell, or nil if none.
+---@param x number Grid column.
+---@param y number Grid row.
+---@return number Raw texture id or nil.
+function LRaycaster:getCeilingTextureCell(x, y) end
+```
 
 #### Example
 
@@ -1555,16 +2068,28 @@ do
 end
 ```
 
-### `LRaycaster:getCell(x: integer, y: integer) -> integer`
+### LRaycaster:getCell
+
+`LRaycaster:getCell(x: integer, y: integer) -> integer`
 
 Returns the wall type value at a grid cell.
 
 **Parameters**
 
-- `x` (`integer`, required) - Grid column.
-- `y` (`integer`, required) - Grid row.
+- `x` (`integer`, required): Grid column.
+- `y` (`integer`, required): Grid row.
 
 **Returns**: `integer` - Cell value (0 = empty, 1+ = wall type).
+
+**Lua API Stub**
+
+```lua
+--- Returns the wall type value at a grid cell.
+---@param x number Grid column.
+---@param y number Grid row.
+---@return number Cell value (0 = empty, 1+ = wall type).
+function LRaycaster:getCell(x, y) end
+```
 
 #### Example
 
@@ -1582,16 +2107,28 @@ do
 end
 ```
 
-### `LRaycaster:getFloorTextureCell(x: integer, y: integer) -> integer`
+### LRaycaster:getFloorTextureCell
+
+`LRaycaster:getFloorTextureCell(x: integer, y: integer) -> integer`
 
 Returns the raw texture id assigned to this floor cell, or nil if none.
 
 **Parameters**
 
-- `x` (`integer`, required) - Grid column.
-- `y` (`integer`, required) - Grid row.
+- `x` (`integer`, required): Grid column.
+- `y` (`integer`, required): Grid row.
 
 **Returns**: `integer` - Raw texture id or nil.
+
+**Lua API Stub**
+
+```lua
+--- Returns the raw texture id assigned to this floor cell, or nil if none.
+---@param x number Grid column.
+---@param y number Grid row.
+---@return number Raw texture id or nil.
+function LRaycaster:getFloorTextureCell(x, y) end
+```
 
 #### Example
 
@@ -1609,16 +2146,28 @@ do
 end
 ```
 
-### `LRaycaster:getLoweredFloorCell(x: integer, y: integer) -> table`
+### LRaycaster:getLoweredFloorCell
+
+`LRaycaster:getLoweredFloorCell(x: integer, y: integer) -> table`
 
 Returns the lowered floor configuration at a cell, or nil if the cell is normal.
 
 **Parameters**
 
-- `x` (`integer`, required) - Grid column.
-- `y` (`integer`, required) - Grid row.
+- `x` (`integer`, required): Grid column.
+- `y` (`integer`, required): Grid row.
 
 **Returns**: `table` - Table {texture, depth, r, g, b, blocked} or nil.
+
+**Lua API Stub**
+
+```lua
+--- Returns the lowered floor configuration at a cell, or nil if the cell is normal.
+---@param x number Grid column.
+---@param y number Grid row.
+---@return LRaycasterGetLoweredFloorCellResult Table {texture, depth, r, g, b, blocked} or nil.
+function LRaycaster:getLoweredFloorCell(x, y) end
+```
 
 #### Example
 
@@ -1638,15 +2187,26 @@ do
 end
 ```
 
-### `LRaycaster:getWallAlpha(tileType: integer) -> number`
+### LRaycaster:getWallAlpha
+
+`LRaycaster:getWallAlpha(tileType: integer) -> number`
 
 Returns the current transparency value for a wall tile type.
 
 **Parameters**
 
-- `tileType` (`integer`, required) - The cell value to query.
+- `tileType` (`integer`, required): The cell value to query.
 
 **Returns**: `number` - Alpha value (0.0..1.0).
+
+**Lua API Stub**
+
+```lua
+--- Returns the current transparency value for a wall tile type.
+---@param tileType number The cell value to query.
+---@return number Alpha value (0.0..1.0).
+function LRaycaster:getWallAlpha(tileType) end
+```
 
 #### Example
 
@@ -1663,19 +2223,36 @@ do
 end
 ```
 
-### `LRaycaster:gridMove(px: number, py: number, dir: integer, action: string, step: number) -> number`
+### LRaycaster:gridMove
+
+`LRaycaster:gridMove(px: number, py: number, dir: integer, action: string, step: number) -> number`
 
 Performs a discrete grid-step movement in one of 4 cardinal directions with collision.
 
 **Parameters**
 
-- `px` (`number`, required) - Current X position.
-- `py` (`number`, required) - Current Y position.
-- `dir` (`integer`, required) - Facing direction 1..4 (1=N, 2=E, 3=S, 4=W).
-- `action` (`string`, required) - Movement action: "forward", "back", "left", or "right".
-- `step` (`number`, required) - Step distance in world units (typically 1.0).
+- `px` (`number`, required): Current X position.
+- `py` (`number`, required): Current Y position.
+- `dir` (`integer`, required): Facing direction 1..4 (1=N, 2=E, 3=S, 4=W).
+- `action` (`string`, required): Movement action: "forward", "back", "left", or "right".
+- `step` (`number`, required): Step distance in world units (typically 1.0).
 
 **Returns**: `number` - Final X position.
+
+**Lua API Stub**
+
+```lua
+--- Performs a discrete grid-step movement in one of 4 cardinal directions with collision.
+---@param px number Current X position.
+---@param py number Current Y position.
+---@param dir number Facing direction 1..4 (1=N, 2=E, 3=S, 4=W).
+---@param action string Movement action: "forward", "back", "left", or "right".
+---@param step number Step distance in world units (typically 1.0).
+---@return number a Final X position.
+---@return number b Final Y position.
+---@return boolean c Whether the move succeeded.
+function LRaycaster:gridMove(px, py, dir, action, step) end
+```
 
 #### Example
 
@@ -1694,11 +2271,21 @@ do
 end
 ```
 
-### `LRaycaster:height() -> integer`
+### LRaycaster:height
+
+`LRaycaster:height() -> integer`
 
 Returns the map height in grid cells.
 
 **Returns**: `integer` - Map height.
+
+**Lua API Stub**
+
+```lua
+--- Returns the map height in grid cells.
+---@return number Map height.
+function LRaycaster:height() end
+```
 
 #### Example
 
@@ -1713,16 +2300,28 @@ do
 end
 ```
 
-### `LRaycaster:isBlocked(x: integer, y: integer) -> boolean`
+### LRaycaster:isBlocked
+
+`LRaycaster:isBlocked(x: integer, y: integer) -> boolean`
 
 Returns true if the grid cell is a solid wall (non-zero value).
 
 **Parameters**
 
-- `x` (`integer`, required) - Grid column.
-- `y` (`integer`, required) - Grid row.
+- `x` (`integer`, required): Grid column.
+- `y` (`integer`, required): Grid row.
 
 **Returns**: `boolean` - True if cell blocks movement and rays.
+
+**Lua API Stub**
+
+```lua
+--- Returns true if the grid cell is a solid wall (non-zero value).
+---@param x number Grid column.
+---@param y number Grid row.
+---@return boolean True if cell blocks movement and rays.
+function LRaycaster:isBlocked(x, y) end
+```
 
 #### Example
 
@@ -1740,16 +2339,28 @@ do
 end
 ```
 
-### `LRaycaster:isWalkBlocked(x: integer, y: integer) -> boolean`
+### LRaycaster:isWalkBlocked
+
+`LRaycaster:isWalkBlocked(x: integer, y: integer) -> boolean`
 
 Returns true if the cell blocks walking (solid wall OR blocked lowered-floor cell).
 
 **Parameters**
 
-- `x` (`integer`, required) - Grid column.
-- `y` (`integer`, required) - Grid row.
+- `x` (`integer`, required): Grid column.
+- `y` (`integer`, required): Grid row.
 
 **Returns**: `boolean` - True if the cell cannot be walked through.
+
+**Lua API Stub**
+
+```lua
+--- Returns true if the cell blocks walking (solid wall OR blocked lowered-floor cell).
+---@param x number Grid column.
+---@param y number Grid row.
+---@return boolean True if the cell cannot be walked through.
+function LRaycaster:isWalkBlocked(x, y) end
+```
 
 #### Example
 
@@ -1766,18 +2377,32 @@ do
 end
 ```
 
-### `LRaycaster:lineOfSight(x1: number, y1: number, x2: number, y2: number) -> boolean`
+### LRaycaster:lineOfSight
+
+`LRaycaster:lineOfSight(x1: number, y1: number, x2: number, y2: number) -> boolean`
 
 Tests whether there is a clear line of sight between two world points (no walls in between).
 
 **Parameters**
 
-- `x1` (`number`, required) - Start X.
-- `y1` (`number`, required) - Start Y.
-- `x2` (`number`, required) - End X.
-- `y2` (`number`, required) - End Y.
+- `x1` (`number`, required): Start X.
+- `y1` (`number`, required): Start Y.
+- `x2` (`number`, required): End X.
+- `y2` (`number`, required): End Y.
 
 **Returns**: `boolean` - True if the path is unobstructed.
+
+**Lua API Stub**
+
+```lua
+--- Tests whether there is a clear line of sight between two world points (no walls in between).
+---@param x1 number Start X.
+---@param y1 number Start Y.
+---@param x2 number End X.
+---@param y2 number End Y.
+---@return boolean True if the path is unobstructed.
+function LRaycaster:lineOfSight(x1, y1, x2, y2) end
+```
 
 #### Example
 
@@ -1794,21 +2419,38 @@ do
 end
 ```
 
-### `LRaycaster:projectSprite(sx: number, sy: number, px: number, py: number, pa: number, fov: number, screenW: number) -> table`
+### LRaycaster:projectSprite
+
+`LRaycaster:projectSprite(sx: number, sy: number, px: number, py: number, pa: number, fov: number, screenW: number) -> table`
 
 Projects a world-space sprite to screen coordinates for billboard rendering.
 
 **Parameters**
 
-- `sx` (`number`, required) - Sprite world X.
-- `sy` (`number`, required) - Sprite world Y.
-- `px` (`number`, required) - Player X position.
-- `py` (`number`, required) - Player Y position.
-- `pa` (`number`, required) - Player angle in radians.
-- `fov` (`number`, required) - Field of view in radians.
-- `screenW` (`number`, required) - Screen width in pixels.
+- `sx` (`number`, required): Sprite world X.
+- `sy` (`number`, required): Sprite world Y.
+- `px` (`number`, required): Player X position.
+- `py` (`number`, required): Player Y position.
+- `pa` (`number`, required): Player angle in radians.
+- `fov` (`number`, required): Field of view in radians.
+- `screenW` (`number`, required): Screen width in pixels.
 
 **Returns**: `table` - Projection info {screen_x, scale, distance, visible}.
+
+**Lua API Stub**
+
+```lua
+--- Projects a world-space sprite to screen coordinates for billboard rendering.
+---@param sx number Sprite world X.
+---@param sy number Sprite world Y.
+---@param px number Player X position.
+---@param py number Player Y position.
+---@param pa number Player angle in radians.
+---@param fov number Field of view in radians.
+---@param screenW number Screen width in pixels.
+---@return LRaycasterProjectSpriteResult Projection info {screen_x, scale, distance, visible}.
+function LRaycaster:projectSprite(sx, sy, px, py, pa, fov, screenW) end
+```
 
 #### Example
 
@@ -1836,21 +2478,38 @@ do
 end
 ```
 
-### `LRaycaster:revealCellsFromRays(ox: number, oy: number, angle: number, fov: number, count: integer, maxDist: number, [step]: number) -> table`
+### LRaycaster:revealCellsFromRays
+
+`LRaycaster:revealCellsFromRays(ox: number, oy: number, angle: number, fov: number, count: integer, maxDist: number, [step]: number) -> table`
 
 Casts rays across the FOV and returns a list of grid cells that are visible (for fog-of-war).
 
 **Parameters**
 
-- `ox` (`number`, required) - Ray origin X.
-- `oy` (`number`, required) - Ray origin Y.
-- `angle` (`number`, required) - Center angle in radians.
-- `fov` (`number`, required) - Field of view in radians.
-- `count` (`integer`, required) - Number of rays.
-- `maxDist` (`number`, required) - Maximum ray distance.
-- `step` (`number`, optional) - Walk step along each ray (default 0.2).
+- `ox` (`number`, required): Ray origin X.
+- `oy` (`number`, required): Ray origin Y.
+- `angle` (`number`, required): Center angle in radians.
+- `fov` (`number`, required): Field of view in radians.
+- `count` (`integer`, required): Number of rays.
+- `maxDist` (`number`, required): Maximum ray distance.
+- `step` (`number`, optional): Walk step along each ray (default 0.2).
 
 **Returns**: `table` - Array of {x, y} tables representing revealed grid cells.
+
+**Lua API Stub**
+
+```lua
+--- Casts rays across the FOV and returns a list of grid cells that are visible (for fog-of-war).
+---@param ox number Ray origin X.
+---@param oy number Ray origin Y.
+---@param angle number Center angle in radians.
+---@param fov number Field of view in radians.
+---@param count number Number of rays.
+---@param maxDist number Maximum ray distance.
+---@param step? number Walk step along each ray (default 0.2).
+---@return LRaycasterRevealCellsFromRaysResult Array of {x, y} tables representing revealed grid cells.
+function LRaycaster:revealCellsFromRays(ox, oy, angle, fov, count, maxDist, step) end
+```
 
 #### Example
 
@@ -1878,15 +2537,27 @@ do
 end
 ```
 
-### `LRaycaster:setCeilingTextureCell(x: integer, y: integer, [texture]: LImage)`
+### LRaycaster:setCeilingTextureCell
+
+`LRaycaster:setCeilingTextureCell(x: integer, y: integer, [texture]: LImage)`
 
 Assigns a per-cell ceiling texture override. Pass nil to remove the override.
 
 **Parameters**
 
-- `x` (`integer`, required) - Grid column.
-- `y` (`integer`, required) - Grid row.
-- `texture` (`LImage`, optional) - Texture image, integer id, or nil to clear.
+- `x` (`integer`, required): Grid column.
+- `y` (`integer`, required): Grid row.
+- `texture` (`LImage`, optional): Texture image, integer id, or nil to clear.
+
+**Lua API Stub**
+
+```lua
+--- Assigns a per-cell ceiling texture override. Pass nil to remove the override.
+---@param x number Grid column.
+---@param y number Grid row.
+---@param texture? LImage Texture image, integer id, or nil to clear.
+function LRaycaster:setCeilingTextureCell(x, y, texture) end
+```
 
 #### Example
 
@@ -1905,15 +2576,27 @@ do
 end
 ```
 
-### `LRaycaster:setCell(x: integer, y: integer, val: integer)`
+### LRaycaster:setCell
+
+`LRaycaster:setCell(x: integer, y: integer, val: integer)`
 
 Sets the wall type value at a grid cell. Non-zero values are solid walls.
 
 **Parameters**
 
-- `x` (`integer`, required) - Grid column.
-- `y` (`integer`, required) - Grid row.
-- `val` (`integer`, required) - Wall type (0 = empty, 1+ = wall texture index).
+- `x` (`integer`, required): Grid column.
+- `y` (`integer`, required): Grid row.
+- `val` (`integer`, required): Wall type (0 = empty, 1+ = wall texture index).
+
+**Lua API Stub**
+
+```lua
+--- Sets the wall type value at a grid cell. Non-zero values are solid walls.
+---@param x number Grid column.
+---@param y number Grid row.
+---@param val number Wall type (0 = empty, 1+ = wall texture index).
+function LRaycaster:setCell(x, y, val) end
+```
 
 #### Example
 
@@ -1930,13 +2613,23 @@ do
 end
 ```
 
-### `LRaycaster:setCells(cells: table)`
+### LRaycaster:setCells
+
+`LRaycaster:setCells(cells: table)`
 
 Replaces the entire map grid with a flat array of cell values (row-major order).
 
 **Parameters**
 
-- `cells` (`table`, required) - Flat array of numbers with width*height elements.
+- `cells` (`table`, required): Flat array of numbers with width*height elements.
+
+**Lua API Stub**
+
+```lua
+--- Replaces the entire map grid with a flat array of cell values (row-major order).
+---@param cells table Flat array of numbers with width*height elements.
+function LRaycaster:setCells(cells) end
+```
 
 #### Example
 
@@ -1957,15 +2650,27 @@ do
 end
 ```
 
-### `LRaycaster:setFloorTextureCell(x: integer, y: integer, [texture]: LImage)`
+### LRaycaster:setFloorTextureCell
+
+`LRaycaster:setFloorTextureCell(x: integer, y: integer, [texture]: LImage)`
 
 Assigns a per-cell floor texture override. Pass nil to remove the override.
 
 **Parameters**
 
-- `x` (`integer`, required) - Grid column.
-- `y` (`integer`, required) - Grid row.
-- `texture` (`LImage`, optional) - Texture image, integer id, or nil to clear.
+- `x` (`integer`, required): Grid column.
+- `y` (`integer`, required): Grid row.
+- `texture` (`LImage`, optional): Texture image, integer id, or nil to clear.
+
+**Lua API Stub**
+
+```lua
+--- Assigns a per-cell floor texture override. Pass nil to remove the override.
+---@param x number Grid column.
+---@param y number Grid row.
+---@param texture? LImage Texture image, integer id, or nil to clear.
+function LRaycaster:setFloorTextureCell(x, y, texture) end
+```
 
 #### Example
 
@@ -1985,15 +2690,27 @@ do
 end
 ```
 
-### `LRaycaster:setLoweredFloorCell(x: integer, y: integer, [opts]: table)`
+### LRaycaster:setLoweredFloorCell
+
+`LRaycaster:setLoweredFloorCell(x: integer, y: integer, [opts]: table)`
 
 Marks a cell as a lowered floor (pit) with its own texture, depth, tint, and blocking flag.
 
 **Parameters**
 
-- `x` (`integer`, required) - Grid column.
-- `y` (`integer`, required) - Grid row.
-- `opts` (`table`, optional) - Options table {texture, depth?, r?, g?, b?, blocked?} or nil to clear.
+- `x` (`integer`, required): Grid column.
+- `y` (`integer`, required): Grid row.
+- `opts` (`table`, optional): Options table {texture, depth?, r?, g?, b?, blocked?} or nil to clear.
+
+**Lua API Stub**
+
+```lua
+--- Marks a cell as a lowered floor (pit) with its own texture, depth, tint, and blocking flag.
+---@param x number Grid column.
+---@param y number Grid row.
+---@param opts? table Options table {texture, depth?, r?, g?, b?, blocked?} or nil to clear.
+function LRaycaster:setLoweredFloorCell(x, y, opts) end
+```
 
 #### Example
 
@@ -2020,14 +2737,25 @@ do
 end
 ```
 
-### `LRaycaster:setWallAlpha(tileType: integer, alpha: number)`
+### LRaycaster:setWallAlpha
+
+`LRaycaster:setWallAlpha(tileType: integer, alpha: number)`
 
 Sets the transparency for a specific wall tile type, enabling see-through walls.
 
 **Parameters**
 
-- `tileType` (`integer`, required) - The cell value (1..255) whose alpha to change.
-- `alpha` (`number`, required) - Opacity (0.0 = fully transparent, 1.0 = fully opaque).
+- `tileType` (`integer`, required): The cell value (1..255) whose alpha to change.
+- `alpha` (`number`, required): Opacity (0.0 = fully transparent, 1.0 = fully opaque).
+
+**Lua API Stub**
+
+```lua
+--- Sets the transparency for a specific wall tile type, enabling see-through walls.
+---@param tileType number The cell value (1..255) whose alpha to change.
+---@param alpha number Opacity (0.0 = fully transparent, 1.0 = fully opaque).
+function LRaycaster:setWallAlpha(tileType, alpha) end
+```
 
 #### Example
 
@@ -2045,18 +2773,34 @@ do
 end
 ```
 
-### `LRaycaster:tryMove(px: number, py: number, dx: number, dy: number) -> number`
+### LRaycaster:tryMove
+
+`LRaycaster:tryMove(px: number, py: number, dx: number, dy: number) -> number`
 
 Attempts to move from (px,py) by (dx,dy) with wall-slide collision. Returns the final position.
 
 **Parameters**
 
-- `px` (`number`, required) - Current X position in world space.
-- `py` (`number`, required) - Current Y position in world space.
-- `dx` (`number`, required) - Desired X movement delta.
-- `dy` (`number`, required) - Desired Y movement delta.
+- `px` (`number`, required): Current X position in world space.
+- `py` (`number`, required): Current Y position in world space.
+- `dx` (`number`, required): Desired X movement delta.
+- `dy` (`number`, required): Desired Y movement delta.
 
 **Returns**: `number` - Final X position.
+
+**Lua API Stub**
+
+```lua
+--- Attempts to move from (px,py) by (dx,dy) with wall-slide collision. Returns the final position.
+---@param px number Current X position in world space.
+---@param py number Current Y position in world space.
+---@param dx number Desired X movement delta.
+---@param dy number Desired Y movement delta.
+---@return number a Final X position.
+---@return number b Final Y position.
+---@return boolean c Whether any movement occurred.
+function LRaycaster:tryMove(px, py, dx, dy) end
+```
 
 #### Example
 
@@ -2076,11 +2820,21 @@ do
 end
 ```
 
-### `LRaycaster:type() -> string`
+### LRaycaster:type
+
+`LRaycaster:type() -> string`
 
 Returns the type name of this object ("LRaycaster").
 
 **Returns**: `string` - Type name string.
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name of this object ("LRaycaster").
+---@return string Type name string.
+function LRaycaster:type() end
+```
 
 #### Example
 
@@ -2093,15 +2847,26 @@ do
 end
 ```
 
-### `LRaycaster:typeOf(name: string) -> boolean`
+### LRaycaster:typeOf
+
+`LRaycaster:typeOf(name: string) -> boolean`
 
 Checks whether this object matches the given type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to test against.
+- `name` (`string`, required): Type name to test against.
 
 **Returns**: `boolean` - True if this object is of the given type.
+
+**Lua API Stub**
+
+```lua
+--- Checks whether this object matches the given type name.
+---@param name string Type name to test against.
+---@return boolean True if this object is of the given type.
+function LRaycaster:typeOf(name) end
+```
 
 #### Example
 
@@ -2114,11 +2879,21 @@ do
 end
 ```
 
-### `LRaycaster:width() -> integer`
+### LRaycaster:width
+
+`LRaycaster:width() -> integer`
 
 Returns the map width in grid cells.
 
 **Returns**: `integer` - Map width.
+
+**Lua API Stub**
+
+```lua
+--- Returns the map width in grid cells.
+---@return number Map width.
+function LRaycaster:width() end
+```
 
 #### Example
 
@@ -2133,39 +2908,32 @@ do
 end
 ```
 
-### `LSpriteManager`
+### LSpriteManager:add
 
-Lua-visible sprite manager that tracks world-space billboard sprites for sorting and projection.
-
-#### Example
-
-Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
-
-```lua
-do
-  -- SpriteManager tracks world-space billboard sprites (enemies, items, props).
-  -- Sprites always face the camera and can be sorted by distance for correct draw order.
-  local sprites = lurek.raycaster.newSpriteManager()
-
-  -- Add sprites with: x, y, texture_name, scale
-  -- These exist in world space and are projected to screen during rendering
-  sprites:add(6.5, 4.5, "enemy_zombie", 1.0)   -- full-size enemy
-  sprites:add(10.0, 8.0, "barrel", 0.75)        -- smaller prop barrel
-end
-```
-
-### `LSpriteManager:add(x: number, y: number, texture: string, [scale]: number) -> integer`
+`LSpriteManager:add(x: number, y: number, texture: string, [scale]: number) -> integer`
 
 Adds a new sprite to the manager at a world position with a texture name and optional scale.
 
 **Parameters**
 
-- `x` (`number`, required) - World X position.
-- `y` (`number`, required) - World Y position.
-- `texture` (`string`, required) - Texture asset name.
-- `scale` (`number`, optional) - Sprite size multiplier (default 1.0).
+- `x` (`number`, required): World X position.
+- `y` (`number`, required): World Y position.
+- `texture` (`string`, required): Texture asset name.
+- `scale` (`number`, optional): Sprite size multiplier (default 1.0).
 
 **Returns**: `integer` - Unique sprite id for later manipulation.
+
+**Lua API Stub**
+
+```lua
+--- Adds a new sprite to the manager at a world position with a texture name and optional scale.
+---@param x number World X position.
+---@param y number World Y position.
+---@param texture string Texture asset name.
+---@param scale? number Sprite size multiplier (default 1.0).
+---@return number Unique sprite id for later manipulation.
+function LSpriteManager:add(x, y, texture, scale) end
+```
 
 #### Example
 
@@ -2182,9 +2950,18 @@ do
 end
 ```
 
-### `LSpriteManager:clear()`
+### LSpriteManager:clear
+
+`LSpriteManager:clear()`
 
 Removes all sprites from the manager.
+
+**Lua API Stub**
+
+```lua
+--- Removes all sprites from the manager.
+function LSpriteManager:clear() end
+```
 
 #### Example
 
@@ -2201,13 +2978,23 @@ do
 end
 ```
 
-### `LSpriteManager:remove(id: integer)`
+### LSpriteManager:remove
+
+`LSpriteManager:remove(id: integer)`
 
 Removes a sprite by its id. This method is available to Lua scripts.
 
 **Parameters**
 
-- `id` (`integer`, required) - Sprite id returned by add().
+- `id` (`integer`, required): Sprite id returned by add().
+
+**Lua API Stub**
+
+```lua
+--- Removes a sprite by its id. This method is available to Lua scripts.
+---@param id number Sprite id returned by add().
+function LSpriteManager:remove(id) end
+```
 
 #### Example
 
@@ -2223,15 +3010,27 @@ do
 end
 ```
 
-### `LSpriteManager:setPosition(id: integer, x: number, y: number)`
+### LSpriteManager:setPosition
+
+`LSpriteManager:setPosition(id: integer, x: number, y: number)`
 
 Updates the world position of an existing sprite.
 
 **Parameters**
 
-- `id` (`integer`, required) - Sprite id.
-- `x` (`number`, required) - New world X.
-- `y` (`number`, required) - New world Y.
+- `id` (`integer`, required): Sprite id.
+- `x` (`number`, required): New world X.
+- `y` (`number`, required): New world Y.
+
+**Lua API Stub**
+
+```lua
+--- Updates the world position of an existing sprite.
+---@param id number Sprite id.
+---@param x number New world X.
+---@param y number New world Y.
+function LSpriteManager:setPosition(id, x, y) end
+```
 
 #### Example
 
@@ -2249,14 +3048,25 @@ do
 end
 ```
 
-### `LSpriteManager:setVisible(id: integer, visible: boolean)`
+### LSpriteManager:setVisible
+
+`LSpriteManager:setVisible(id: integer, visible: boolean)`
 
 Shows or hides a sprite without removing it.
 
 **Parameters**
 
-- `id` (`integer`, required) - Sprite id.
-- `visible` (`boolean`, required) - Whether the sprite should be rendered.
+- `id` (`integer`, required): Sprite id.
+- `visible` (`boolean`, required): Whether the sprite should be rendered.
+
+**Lua API Stub**
+
+```lua
+--- Shows or hides a sprite without removing it.
+---@param id number Sprite id.
+---@param visible boolean Whether the sprite should be rendered.
+function LSpriteManager:setVisible(id, visible) end
+```
 
 #### Example
 
@@ -2273,17 +3083,30 @@ do
 end
 ```
 
-### `LSpriteManager:sortAndProject(camX: number, camY: number, camAngle: number) -> integer[]`
+### LSpriteManager:sortAndProject
+
+`LSpriteManager:sortAndProject(camX: number, camY: number, camAngle: number) -> integer[]`
 
 Sorts all visible sprites by distance from the camera and returns projection data.
 
 **Parameters**
 
-- `camX` (`number`, required) - Camera X position.
-- `camY` (`number`, required) - Camera Y position.
-- `camAngle` (`number`, required) - Camera facing angle (unused, reserved).
+- `camX` (`number`, required): Camera X position.
+- `camY` (`number`, required): Camera Y position.
+- `camAngle` (`number`, required): Camera facing angle (unused, reserved).
 
 **Returns**: `integer[]` - Array of {id, x, y, texture, scale, distance} sorted back-to-front.
+
+**Lua API Stub**
+
+```lua
+--- Sorts all visible sprites by distance from the camera and returns projection data.
+---@param camX number Camera X position.
+---@param camY number Camera Y position.
+---@param camAngle number Camera facing angle (unused, reserved).
+---@return number[] Array of {id, x, y, texture, scale, distance} sorted back-to-front.
+function LSpriteManager:sortAndProject(camX, camY, camAngle) end
+```
 
 #### Example
 
@@ -2303,11 +3126,21 @@ do
 end
 ```
 
-### `LSpriteManager:type() -> string`
+### LSpriteManager:type
+
+`LSpriteManager:type() -> string`
 
 Returns the type name of this object ("LSpriteManager").
 
 **Returns**: `string` - Type name string.
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name of this object ("LSpriteManager").
+---@return string Type name string.
+function LSpriteManager:type() end
+```
 
 #### Example
 
@@ -2321,15 +3154,26 @@ do
 end
 ```
 
-### `LSpriteManager:typeOf(name: string) -> boolean`
+### LSpriteManager:typeOf
+
+`LSpriteManager:typeOf(name: string) -> boolean`
 
 Checks whether this object matches the given type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to test against.
+- `name` (`string`, required): Type name to test against.
 
 **Returns**: `boolean` - True if this object is of the given type.
+
+**Lua API Stub**
+
+```lua
+--- Checks whether this object matches the given type name.
+---@param name string Type name to test against.
+---@return boolean True if this object is of the given type.
+function LSpriteManager:typeOf(name) end
+```
 
 #### Example
 
@@ -2346,22 +3190,28 @@ end
 ```
 
 
-## Examples
+[⬆ back to top](#table-of-contents)
+
+## 💡 Examples
 
 - [raycaster.lua](../blob/main/content/examples/raycaster.lua) - Textured-quad 2.5D raycasting
 
-## Reference Games
+[⬆ back to top](#table-of-contents)
+
+## 🎮 Reference Games
 
 - [dungeon_crawler](../tree/main/content/games/retro/dungeon_crawler) (retro)
 - [dungeon_eye](../tree/main/content/games/rpg/dungeon_eye) (rpg)
 
-## Related Modules
+[⬆ back to top](#table-of-contents)
 
-- Previous: [[province|Module-province]]
-- Next: [[render|Module-render]]
-- [[ai|Module-ai]] - Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU.
-- [[animation|Module-animation]] - Sprite animation: source-rect changes over time. Imports only math; headless-testable.
-- [[automation|Module-automation]] - Automated input simulation for headless tests, QA replay, recorded sessions.
-- [[ecs|Module-ecs]] - Entity-Component-System: identity / data / behaviour separation for runtime composition.
-- [[i18n|Module-i18n]] - Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*).
-- [[minimap|Module-minimap]] - Grid-based minimap data model: fog of war, tracked objects, pings, viewport overlay.
+## 🔗 Related Modules
+
+- Previous: [province](Module-province)
+- Next: [render](Module-render)
+- [ai](Module-ai) - Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU.
+- [animation](Module-animation) - Sprite animation: source-rect changes over time. Imports only math; headless-testable.
+- [automation](Module-automation) - Automated input simulation for headless tests, QA replay, recorded sessions.
+- [ecs](Module-ecs) - Entity-Component-System: identity / data / behaviour separation for runtime composition.
+- [i18n](Module-i18n) - Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*).
+- [minimap](Module-minimap) - Grid-based minimap data model: fog of war, tracked objects, pings, viewport overlay.

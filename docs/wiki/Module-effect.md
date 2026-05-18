@@ -4,258 +4,207 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
-- [Purpose](#purpose)
-- [Summary](#summary)
-- [Minimal Module Example](#minimal-module-example)
-- [Key Types](#key-types)
-- [API Overview](#api-overview)
-- [Module Functions](#module-functions)
-  - [lurek.effect.getEffectTypes() -> string[]](#lurekeffectgeteffecttypes-string)
-  - [lurek.effect.getShaderErrorDisplay() -> boolean](#lurekeffectgetshadererrordisplay-boolean)
-  - [lurek.effect.newCustomEffect(shader_id: integer) -> LPostFxEffect](#lurekeffectnewcustomeffectshaderid-integer-lpostfxeffect)
-  - [lurek.effect.newEffect(type_name: string) -> LPostFxEffect](#lurekeffectneweffecttypename-string-lpostfxeffect)
-  - [lurek.effect.newImageEffect([spec]: LuaValue, [params]: table) -> LImageEffect](#lurekeffectnewimageeffectspec-luavalue-params-table-limageeffect)
-  - [lurek.effect.newOverlay([w]: integer, [h]: integer) -> LOverlay](#lurekeffectnewoverlayw-integer-h-integer-loverlay)
-  - [lurek.effect.newPass(shader_id: integer) -> LPostFxEffect](#lurekeffectnewpassshaderid-integer-lpostfxeffect)
-  - [lurek.effect.newPresetStack(name: string, [w]: integer, [h]: integer) -> LPostFxStack](#lurekeffectnewpresetstackname-string-w-integer-h-integer-lpostfxstack)
-  - [lurek.effect.newStack([w]: integer, [h]: integer) -> LPostFxStack](#lurekeffectnewstackw-integer-h-integer-lpostfxstack)
-  - [lurek.effect.newTransition([kind]: string, [duration]: number, [color_tbl]: table) -> LScreenTransition](#lurekeffectnewtransitionkind-string-duration-number-colortbl-table-lscreentransition)
-  - [lurek.effect.setShaderErrorDisplay(enabled: boolean)](#lurekeffectsetshadererrordisplayenabled-boolean)
-- [Types and Methods](#types-and-methods)
+- [🎯 Purpose](#purpose)
+- [📋 Summary](#summary)
+- [🧩 Key Types](#key-types)
+- [📖 API Overview](#api-overview)
+- [⚙️ Module Functions](#module-functions)
+  - [lurek.effect.getEffectTypes](#lurekeffectgeteffecttypes)
+  - [lurek.effect.getShaderErrorDisplay](#lurekeffectgetshadererrordisplay)
+  - [lurek.effect.newCustomEffect](#lurekeffectnewcustomeffect)
+  - [lurek.effect.newEffect](#lurekeffectneweffect)
+  - [lurek.effect.newImageEffect](#lurekeffectnewimageeffect)
+  - [lurek.effect.newOverlay](#lurekeffectnewoverlay)
+  - [lurek.effect.newPass](#lurekeffectnewpass)
+  - [lurek.effect.newPresetStack](#lurekeffectnewpresetstack)
+  - [lurek.effect.newStack](#lurekeffectnewstack)
+  - [lurek.effect.newTransition](#lurekeffectnewtransition)
+  - [lurek.effect.setShaderErrorDisplay](#lurekeffectsetshadererrordisplay)
+- [🔷 Module Types](#module-types)
   - [LImageEffect](#limageeffect)
-  - [LImageEffect:addEffect(name: string) -> LPostFxEffect](#limageeffectaddeffectname-string-lpostfxeffect)
-  - [LImageEffect:clear()](#limageeffectclear)
-  - [LImageEffect:clearEffects()](#limageeffectcleareffects)
-  - [LImageEffect:clone() -> LImageEffect](#limageeffectclone-limageeffect)
-  - [LImageEffect:effectCount() -> integer](#limageeffecteffectcount-integer)
-  - [LImageEffect:getEffect(key: string) -> LuaValue](#limageeffectgeteffectkey-string-luavalue)
-  - [LImageEffect:getEffectCount() -> integer](#limageeffectgeteffectcount-integer)
-  - [LImageEffect:removeByIndex(idx: integer) -> boolean](#limageeffectremovebyindexidx-integer-boolean)
-  - [LImageEffect:removeByName(name: string) -> boolean](#limageeffectremovebynamename-string-boolean)
-  - [LImageEffect:removeEffect(key: string) -> boolean](#limageeffectremoveeffectkey-string-boolean)
-  - [LImageEffect:save() -> boolean](#limageeffectsave-boolean)
-  - [LImageEffect:type() -> string](#limageeffecttype-string)
-  - [LImageEffect:typeOf(name: string) -> boolean](#limageeffecttypeofname-string-boolean)
   - [LOverlay](#loverlay)
-  - [LOverlay:clear()](#loverlayclear)
-  - [LOverlay:drawToImage(w: integer, h: integer) -> Image](#loverlaydrawtoimagew-integer-h-integer-image)
-  - [LOverlay:fade(r: number, g: number, b: number, [a]: number, [dur]: number)](#loverlayfader-number-g-number-b-number-a-number-dur-number)
-  - [LOverlay:flash(r: number, g: number, b: number, [a]: number, [dur]: number)](#loverlayflashr-number-g-number-b-number-a-number-dur-number)
-  - [LOverlay:getAmbientColor() -> number](#loverlaygetambientcolor-number)
-  - [LOverlay:getCloudCount() -> integer](#loverlaygetcloudcount-integer)
-  - [LOverlay:getCloudOpacity() -> number](#loverlaygetcloudopacity-number)
-  - [LOverlay:getCloudScale() -> number](#loverlaygetcloudscale-number)
-  - [LOverlay:getCloudSpeed() -> number](#loverlaygetcloudspeed-number)
-  - [LOverlay:getDimensions() -> integer](#loverlaygetdimensions-integer)
-  - [LOverlay:getFilmGrainIntensity() -> number](#loverlaygetfilmgrainintensity-number)
-  - [LOverlay:getFlashAlpha() -> number](#loverlaygetflashalpha-number)
-  - [LOverlay:getFogColor() -> number](#loverlaygetfogcolor-number)
-  - [LOverlay:getFogDensity() -> number](#loverlaygetfogdensity-number)
-  - [LOverlay:getHeatHazeIntensity() -> number](#loverlaygetheathazeintensity-number)
-  - [LOverlay:getHeight() -> integer](#loverlaygetheight-integer)
-  - [LOverlay:getLightningAlpha() -> number](#loverlaygetlightningalpha-number)
-  - [LOverlay:getLightningColor() -> number](#loverlaygetlightningcolor-number)
-  - [LOverlay:getShakeOffset() -> number](#loverlaygetshakeoffset-number)
-  - [LOverlay:getTimeOfDay() -> number](#loverlaygettimeofday-number)
-  - [LOverlay:getVignetteStrength() -> number](#loverlaygetvignettestrength-number)
-  - [LOverlay:getWater() -> table](#loverlaygetwater-table)
-  - [LOverlay:getWeather() -> string](#loverlaygetweather-string)
-  - [LOverlay:getWeatherIntensity() -> number](#loverlaygetweatherintensity-number)
-  - [LOverlay:getWidth() -> integer](#loverlaygetwidth-integer)
-  - [LOverlay:getWindDirection() -> number](#loverlaygetwinddirection-number)
-  - [LOverlay:getWindSpeed() -> number](#loverlaygetwindspeed-number)
-  - [LOverlay:isActive() -> boolean](#loverlayisactive-boolean)
-  - [LOverlay:isAmbientEnabled() -> boolean](#loverlayisambientenabled-boolean)
-  - [LOverlay:isCloudShadowsEnabled() -> boolean](#loverlayiscloudshadowsenabled-boolean)
-  - [LOverlay:isFading() -> boolean](#loverlayisfading-boolean)
-  - [LOverlay:isFilmGrainEnabled() -> boolean](#loverlayisfilmgrainenabled-boolean)
-  - [LOverlay:isFlashing() -> boolean](#loverlayisflashing-boolean)
-  - [LOverlay:isFogEnabled() -> boolean](#loverlayisfogenabled-boolean)
-  - [LOverlay:isHeatHazeEnabled() -> boolean](#loverlayisheathazeenabled-boolean)
-  - [LOverlay:isShaking() -> boolean](#loverlayisshaking-boolean)
-  - [LOverlay:isVignetteEnabled() -> boolean](#loverlayisvignetteenabled-boolean)
-  - [LOverlay:isWeatherEnabled() -> boolean](#loverlayisweatherenabled-boolean)
-  - [LOverlay:pullAmbientFromLight()](#loverlaypullambientfromlight)
-  - [LOverlay:pushAmbientToLight()](#loverlaypushambienttolight)
-  - [LOverlay:render()](#loverlayrender)
-  - [LOverlay:resize(w: integer, h: integer)](#loverlayresizew-integer-h-integer)
-  - [LOverlay:setAmbientColor(r: number, g: number, b: number, [a]: number)](#loverlaysetambientcolorr-number-g-number-b-number-a-number)
-  - [LOverlay:setAmbientEnabled(v: boolean)](#loverlaysetambientenabledv-boolean)
-  - [LOverlay:setCloudCount(v: integer)](#loverlaysetcloudcountv-integer)
-  - [LOverlay:setCloudOpacity(v: number)](#loverlaysetcloudopacityv-number)
-  - [LOverlay:setCloudScale(v: number)](#loverlaysetcloudscalev-number)
-  - [LOverlay:setCloudShadows(v: boolean)](#loverlaysetcloudshadowsv-boolean)
-  - [LOverlay:setCloudSpeed(v: number)](#loverlaysetcloudspeedv-number)
-  - [LOverlay:setCustomShader([name]: string)](#loverlaysetcustomshadername-string)
-  - [LOverlay:setFilmGrainEnabled(v: boolean)](#loverlaysetfilmgrainenabledv-boolean)
-  - [LOverlay:setFilmGrainIntensity(v: number)](#loverlaysetfilmgrainintensityv-number)
-  - [LOverlay:setFogColor(r: number, g: number, b: number, [a]: number)](#loverlaysetfogcolorr-number-g-number-b-number-a-number)
-  - [LOverlay:setFogDensity(v: number)](#loverlaysetfogdensityv-number)
-  - [LOverlay:setFogEnabled(v: boolean)](#loverlaysetfogenabledv-boolean)
-  - [LOverlay:setHeatHazeEnabled(v: boolean)](#loverlaysetheathazeenabledv-boolean)
-  - [LOverlay:setHeatHazeIntensity(v: number)](#loverlaysetheathazeintensityv-number)
-  - [LOverlay:setLightningColor(r: number, g: number, b: number, [a]: number)](#loverlaysetlightningcolorr-number-g-number-b-number-a-number)
-  - [LOverlay:setTimeOfDay(v: number)](#loverlaysettimeofdayv-number)
-  - [LOverlay:setVignetteEnabled(v: boolean)](#loverlaysetvignetteenabledv-boolean)
-  - [LOverlay:setVignetteStrength(v: number)](#loverlaysetvignettestrengthv-number)
-  - [LOverlay:setWater(amplitude: number, frequency: number, speed: number)](#loverlaysetwateramplitude-number-frequency-number-speed-number)
-  - [LOverlay:setWaterTint(r: number, g: number, b: number, strength: number)](#loverlaysetwatertintr-number-g-number-b-number-strength-number)
-  - [LOverlay:setWeather(name: string)](#loverlaysetweathername-string)
-  - [LOverlay:setWeatherEnabled(v: boolean)](#loverlaysetweatherenabledv-boolean)
-  - [LOverlay:setWeatherIntensity(v: number)](#loverlaysetweatherintensityv-number)
-  - [LOverlay:setWindDirection(v: number)](#loverlaysetwinddirectionv-number)
-  - [LOverlay:setWindSpeed(v: number)](#loverlaysetwindspeedv-number)
-  - [LOverlay:shake(intensity: number, [dur]: number)](#loverlayshakeintensity-number-dur-number)
-  - [LOverlay:syncAmbientWithLight(mode: string)](#loverlaysyncambientwithlightmode-string)
-  - [LOverlay:triggerFade(r: number, g: number, b: number, target_alpha: number, duration: number)](#loverlaytriggerfader-number-g-number-b-number-targetalpha-number-duration-number)
-  - [LOverlay:triggerFlash(r: number, g: number, b: number, a: number, duration: number)](#loverlaytriggerflashr-number-g-number-b-number-a-number-duration-number)
-  - [LOverlay:triggerLightning()](#loverlaytriggerlightning)
-  - [LOverlay:triggerShake(intensity: number, duration: number)](#loverlaytriggershakeintensity-number-duration-number)
-  - [LOverlay:type() -> string](#loverlaytype-string)
-  - [LOverlay:typeOf(name: string) -> boolean](#loverlaytypeofname-string-boolean)
-  - [LOverlay:update(dt: number)](#loverlayupdatedt-number)
   - [LPostFxEffect](#lpostfxeffect)
-  - [LPostFxEffect:disableAutoUniforms()](#lpostfxeffectdisableautouniforms)
-  - [LPostFxEffect:enableAutoUniforms()](#lpostfxeffectenableautouniforms)
-  - [LPostFxEffect:getEffectType() -> string](#lpostfxeffectgeteffecttype-string)
-  - [LPostFxEffect:getParameter(name: string, [default]: number) -> number](#lpostfxeffectgetparametername-string-default-number-number)
-  - [LPostFxEffect:getParameterNames() -> string[]](#lpostfxeffectgetparameternames-string)
-  - [LPostFxEffect:getType() -> string](#lpostfxeffectgettype-string)
-  - [LPostFxEffect:getTypeName() -> string](#lpostfxeffectgettypename-string)
-  - [LPostFxEffect:hasParameter(name: string) -> boolean](#lpostfxeffecthasparametername-string-boolean)
-  - [LPostFxEffect:isAutoUniforms() -> boolean](#lpostfxeffectisautouniforms-boolean)
-  - [LPostFxEffect:isBuiltIn() -> boolean](#lpostfxeffectisbuiltin-boolean)
-  - [LPostFxEffect:isEnabled() -> boolean](#lpostfxeffectisenabled-boolean)
-  - [LPostFxEffect:setBrightness(v: number)](#lpostfxeffectsetbrightnessv-number)
-  - [LPostFxEffect:setContrast(v: number)](#lpostfxeffectsetcontrastv-number)
-  - [LPostFxEffect:setEnabled(enabled: boolean)](#lpostfxeffectsetenabledenabled-boolean)
-  - [LPostFxEffect:setIntensity(v: number)](#lpostfxeffectsetintensityv-number)
-  - [LPostFxEffect:setOffset(v: number)](#lpostfxeffectsetoffsetv-number)
-  - [LPostFxEffect:setParameter(name: string, value: number)](#lpostfxeffectsetparametername-string-value-number)
-  - [LPostFxEffect:setRadius(v: number)](#lpostfxeffectsetradiusv-number)
-  - [LPostFxEffect:setSaturation(v: number)](#lpostfxeffectsetsaturationv-number)
-  - [LPostFxEffect:setScanlineStrength(v: number)](#lpostfxeffectsetscanlinestrengthv-number)
-  - [LPostFxEffect:setStrength(v: number)](#lpostfxeffectsetstrengthv-number)
-  - [LPostFxEffect:setThreshold(v: number)](#lpostfxeffectsetthresholdv-number)
-  - [LPostFxEffect:type() -> string](#lpostfxeffecttype-string)
-  - [LPostFxEffect:typeOf(name: string) -> boolean](#lpostfxeffecttypeofname-string-boolean)
   - [LPostFxStack](#lpostfxstack)
-  - [LPostFxStack:add(effect_ud: LPostFxEffect)](#lpostfxstackaddeffectud-lpostfxeffect)
-  - [LPostFxStack:apply()](#lpostfxstackapply)
-  - [LPostFxStack:beginCapture()](#lpostfxstackbegincapture)
-  - [LPostFxStack:clear()](#lpostfxstackclear)
-  - [LPostFxStack:clearFeedback()](#lpostfxstackclearfeedback)
-  - [LPostFxStack:dedup() -> integer](#lpostfxstackdedup-integer)
-  - [LPostFxStack:endCapture()](#lpostfxstackendcapture)
-  - [LPostFxStack:getDimensions() -> integer](#lpostfxstackgetdimensions-integer)
-  - [LPostFxStack:getEffect(index: integer) -> LuaValue](#lpostfxstackgeteffectindex-integer-luavalue)
-  - [LPostFxStack:getEffectCount() -> integer](#lpostfxstackgeteffectcount-integer)
-  - [LPostFxStack:getEnabledEffects() -> LPostFxEffect[]](#lpostfxstackgetenabledeffects-lpostfxeffect)
-  - [LPostFxStack:getFeedback() -> number](#lpostfxstackgetfeedback-number)
-  - [LPostFxStack:getHeight() -> integer](#lpostfxstackgetheight-integer)
-  - [LPostFxStack:getWidth() -> integer](#lpostfxstackgetwidth-integer)
-  - [LPostFxStack:insert(position: integer, effect_ud: LPostFxEffect)](#lpostfxstackinsertposition-integer-effectud-lpostfxeffect)
-  - [LPostFxStack:isCapturing() -> boolean](#lpostfxstackiscapturing-boolean)
-  - [LPostFxStack:isEmpty() -> boolean](#lpostfxstackisempty-boolean)
-  - [LPostFxStack:isEnabled(position: integer) -> boolean](#lpostfxstackisenabledposition-integer-boolean)
-  - [LPostFxStack:len() -> integer](#lpostfxstacklen-integer)
-  - [LPostFxStack:remove(effect_ud: LPostFxEffect) -> boolean](#lpostfxstackremoveeffectud-lpostfxeffect-boolean)
-  - [LPostFxStack:resize(w: integer, h: integer)](#lpostfxstackresizew-integer-h-integer)
-  - [LPostFxStack:setEnabled(position: integer, enabled: boolean)](#lpostfxstacksetenabledposition-integer-enabled-boolean)
-  - [LPostFxStack:setFeedback(factor: number)](#lpostfxstacksetfeedbackfactor-number)
-  - [LPostFxStack:type() -> string](#lpostfxstacktype-string)
-  - [LPostFxStack:typeOf(name: string) -> boolean](#lpostfxstacktypeofname-string-boolean)
   - [LScreenTransition](#lscreentransition)
-  - [LScreenTransition:color() -> number](#lscreentransitioncolor-number)
-  - [LScreenTransition:isActive() -> boolean](#lscreentransitionisactive-boolean)
-  - [LScreenTransition:isDone() -> boolean](#lscreentransitionisdone-boolean)
-  - [LScreenTransition:kind() -> string](#lscreentransitionkind-string)
-  - [LScreenTransition:play()](#lscreentransitionplay)
-  - [LScreenTransition:progress() -> number](#lscreentransitionprogress-number)
-  - [LScreenTransition:reverse()](#lscreentransitionreverse)
-  - [LScreenTransition:setColor(color: table)](#lscreentransitionsetcolorcolor-table)
-  - [LScreenTransition:type() -> string](#lscreentransitiontype-string)
-  - [LScreenTransition:typeOf(name: string) -> boolean](#lscreentransitiontypeofname-string-boolean)
-  - [LScreenTransition:update(dt: number) -> boolean](#lscreentransitionupdatedt-number-boolean)
-- [Examples](#examples)
-- [Reference Games](#reference-games)
-- [Related Modules](#related-modules)
+- [🔹 Module Methods](#module-methods)
+  - [LImageEffect:addEffect](#limageeffectaddeffect)
+  - [LImageEffect:clear](#limageeffectclear)
+  - [LImageEffect:clearEffects](#limageeffectcleareffects)
+  - [LImageEffect:clone](#limageeffectclone)
+  - [LImageEffect:effectCount](#limageeffecteffectcount)
+  - [LImageEffect:getEffect](#limageeffectgeteffect)
+  - [LImageEffect:getEffectCount](#limageeffectgeteffectcount)
+  - [LImageEffect:removeByIndex](#limageeffectremovebyindex)
+  - [LImageEffect:removeByName](#limageeffectremovebyname)
+  - [LImageEffect:removeEffect](#limageeffectremoveeffect)
+  - [LImageEffect:save](#limageeffectsave)
+  - [LImageEffect:type](#limageeffecttype)
+  - [LImageEffect:typeOf](#limageeffecttypeof)
+  - [LOverlay:clear](#loverlayclear)
+  - [LOverlay:drawToImage](#loverlaydrawtoimage)
+  - [LOverlay:fade](#loverlayfade)
+  - [LOverlay:flash](#loverlayflash)
+  - [LOverlay:getAmbientColor](#loverlaygetambientcolor)
+  - [LOverlay:getCloudCount](#loverlaygetcloudcount)
+  - [LOverlay:getCloudOpacity](#loverlaygetcloudopacity)
+  - [LOverlay:getCloudScale](#loverlaygetcloudscale)
+  - [LOverlay:getCloudSpeed](#loverlaygetcloudspeed)
+  - [LOverlay:getDimensions](#loverlaygetdimensions)
+  - [LOverlay:getFilmGrainIntensity](#loverlaygetfilmgrainintensity)
+  - [LOverlay:getFlashAlpha](#loverlaygetflashalpha)
+  - [LOverlay:getFogColor](#loverlaygetfogcolor)
+  - [LOverlay:getFogDensity](#loverlaygetfogdensity)
+  - [LOverlay:getHeatHazeIntensity](#loverlaygetheathazeintensity)
+  - [LOverlay:getHeight](#loverlaygetheight)
+  - [LOverlay:getLightningAlpha](#loverlaygetlightningalpha)
+  - [LOverlay:getLightningColor](#loverlaygetlightningcolor)
+  - [LOverlay:getShakeOffset](#loverlaygetshakeoffset)
+  - [LOverlay:getTimeOfDay](#loverlaygettimeofday)
+  - [LOverlay:getVignetteStrength](#loverlaygetvignettestrength)
+  - [LOverlay:getWater](#loverlaygetwater)
+  - [LOverlay:getWeather](#loverlaygetweather)
+  - [LOverlay:getWeatherIntensity](#loverlaygetweatherintensity)
+  - [LOverlay:getWidth](#loverlaygetwidth)
+  - [LOverlay:getWindDirection](#loverlaygetwinddirection)
+  - [LOverlay:getWindSpeed](#loverlaygetwindspeed)
+  - [LOverlay:isActive](#loverlayisactive)
+  - [LOverlay:isAmbientEnabled](#loverlayisambientenabled)
+  - [LOverlay:isCloudShadowsEnabled](#loverlayiscloudshadowsenabled)
+  - [LOverlay:isFading](#loverlayisfading)
+  - [LOverlay:isFilmGrainEnabled](#loverlayisfilmgrainenabled)
+  - [LOverlay:isFlashing](#loverlayisflashing)
+  - [LOverlay:isFogEnabled](#loverlayisfogenabled)
+  - [LOverlay:isHeatHazeEnabled](#loverlayisheathazeenabled)
+  - [LOverlay:isShaking](#loverlayisshaking)
+  - [LOverlay:isVignetteEnabled](#loverlayisvignetteenabled)
+  - [LOverlay:isWeatherEnabled](#loverlayisweatherenabled)
+  - [LOverlay:pullAmbientFromLight](#loverlaypullambientfromlight)
+  - [LOverlay:pushAmbientToLight](#loverlaypushambienttolight)
+  - [LOverlay:render](#loverlayrender)
+  - [LOverlay:resize](#loverlayresize)
+  - [LOverlay:setAmbientColor](#loverlaysetambientcolor)
+  - [LOverlay:setAmbientEnabled](#loverlaysetambientenabled)
+  - [LOverlay:setCloudCount](#loverlaysetcloudcount)
+  - [LOverlay:setCloudOpacity](#loverlaysetcloudopacity)
+  - [LOverlay:setCloudScale](#loverlaysetcloudscale)
+  - [LOverlay:setCloudShadows](#loverlaysetcloudshadows)
+  - [LOverlay:setCloudSpeed](#loverlaysetcloudspeed)
+  - [LOverlay:setCustomShader](#loverlaysetcustomshader)
+  - [LOverlay:setFilmGrainEnabled](#loverlaysetfilmgrainenabled)
+  - [LOverlay:setFilmGrainIntensity](#loverlaysetfilmgrainintensity)
+  - [LOverlay:setFogColor](#loverlaysetfogcolor)
+  - [LOverlay:setFogDensity](#loverlaysetfogdensity)
+  - [LOverlay:setFogEnabled](#loverlaysetfogenabled)
+  - [LOverlay:setHeatHazeEnabled](#loverlaysetheathazeenabled)
+  - [LOverlay:setHeatHazeIntensity](#loverlaysetheathazeintensity)
+  - [LOverlay:setLightningColor](#loverlaysetlightningcolor)
+  - [LOverlay:setTimeOfDay](#loverlaysettimeofday)
+  - [LOverlay:setVignetteEnabled](#loverlaysetvignetteenabled)
+  - [LOverlay:setVignetteStrength](#loverlaysetvignettestrength)
+  - [LOverlay:setWater](#loverlaysetwater)
+  - [LOverlay:setWaterTint](#loverlaysetwatertint)
+  - [LOverlay:setWeather](#loverlaysetweather)
+  - [LOverlay:setWeatherEnabled](#loverlaysetweatherenabled)
+  - [LOverlay:setWeatherIntensity](#loverlaysetweatherintensity)
+  - [LOverlay:setWindDirection](#loverlaysetwinddirection)
+  - [LOverlay:setWindSpeed](#loverlaysetwindspeed)
+  - [LOverlay:shake](#loverlayshake)
+  - [LOverlay:syncAmbientWithLight](#loverlaysyncambientwithlight)
+  - [LOverlay:triggerFade](#loverlaytriggerfade)
+  - [LOverlay:triggerFlash](#loverlaytriggerflash)
+  - [LOverlay:triggerLightning](#loverlaytriggerlightning)
+  - [LOverlay:triggerShake](#loverlaytriggershake)
+  - [LOverlay:type](#loverlaytype)
+  - [LOverlay:typeOf](#loverlaytypeof)
+  - [LOverlay:update](#loverlayupdate)
+  - [LPostFxEffect:disableAutoUniforms](#lpostfxeffectdisableautouniforms)
+  - [LPostFxEffect:enableAutoUniforms](#lpostfxeffectenableautouniforms)
+  - [LPostFxEffect:getEffectType](#lpostfxeffectgeteffecttype)
+  - [LPostFxEffect:getParameter](#lpostfxeffectgetparameter)
+  - [LPostFxEffect:getParameterNames](#lpostfxeffectgetparameternames)
+  - [LPostFxEffect:getType](#lpostfxeffectgettype)
+  - [LPostFxEffect:getTypeName](#lpostfxeffectgettypename)
+  - [LPostFxEffect:hasParameter](#lpostfxeffecthasparameter)
+  - [LPostFxEffect:isAutoUniforms](#lpostfxeffectisautouniforms)
+  - [LPostFxEffect:isBuiltIn](#lpostfxeffectisbuiltin)
+  - [LPostFxEffect:isEnabled](#lpostfxeffectisenabled)
+  - [LPostFxEffect:setBrightness](#lpostfxeffectsetbrightness)
+  - [LPostFxEffect:setContrast](#lpostfxeffectsetcontrast)
+  - [LPostFxEffect:setEnabled](#lpostfxeffectsetenabled)
+  - [LPostFxEffect:setIntensity](#lpostfxeffectsetintensity)
+  - [LPostFxEffect:setOffset](#lpostfxeffectsetoffset)
+  - [LPostFxEffect:setParameter](#lpostfxeffectsetparameter)
+  - [LPostFxEffect:setRadius](#lpostfxeffectsetradius)
+  - [LPostFxEffect:setSaturation](#lpostfxeffectsetsaturation)
+  - [LPostFxEffect:setScanlineStrength](#lpostfxeffectsetscanlinestrength)
+  - [LPostFxEffect:setStrength](#lpostfxeffectsetstrength)
+  - [LPostFxEffect:setThreshold](#lpostfxeffectsetthreshold)
+  - [LPostFxEffect:type](#lpostfxeffecttype)
+  - [LPostFxEffect:typeOf](#lpostfxeffecttypeof)
+  - [LPostFxStack:add](#lpostfxstackadd)
+  - [LPostFxStack:apply](#lpostfxstackapply)
+  - [LPostFxStack:beginCapture](#lpostfxstackbegincapture)
+  - [LPostFxStack:clear](#lpostfxstackclear)
+  - [LPostFxStack:clearFeedback](#lpostfxstackclearfeedback)
+  - [LPostFxStack:dedup](#lpostfxstackdedup)
+  - [LPostFxStack:endCapture](#lpostfxstackendcapture)
+  - [LPostFxStack:getDimensions](#lpostfxstackgetdimensions)
+  - [LPostFxStack:getEffect](#lpostfxstackgeteffect)
+  - [LPostFxStack:getEffectCount](#lpostfxstackgeteffectcount)
+  - [LPostFxStack:getEnabledEffects](#lpostfxstackgetenabledeffects)
+  - [LPostFxStack:getFeedback](#lpostfxstackgetfeedback)
+  - [LPostFxStack:getHeight](#lpostfxstackgetheight)
+  - [LPostFxStack:getWidth](#lpostfxstackgetwidth)
+  - [LPostFxStack:insert](#lpostfxstackinsert)
+  - [LPostFxStack:isCapturing](#lpostfxstackiscapturing)
+  - [LPostFxStack:isEmpty](#lpostfxstackisempty)
+  - [LPostFxStack:isEnabled](#lpostfxstackisenabled)
+  - [LPostFxStack:len](#lpostfxstacklen)
+  - [LPostFxStack:remove](#lpostfxstackremove)
+  - [LPostFxStack:resize](#lpostfxstackresize)
+  - [LPostFxStack:setEnabled](#lpostfxstacksetenabled)
+  - [LPostFxStack:setFeedback](#lpostfxstacksetfeedback)
+  - [LPostFxStack:type](#lpostfxstacktype)
+  - [LPostFxStack:typeOf](#lpostfxstacktypeof)
+  - [LScreenTransition:color](#lscreentransitioncolor)
+  - [LScreenTransition:isActive](#lscreentransitionisactive)
+  - [LScreenTransition:isDone](#lscreentransitionisdone)
+  - [LScreenTransition:kind](#lscreentransitionkind)
+  - [LScreenTransition:play](#lscreentransitionplay)
+  - [LScreenTransition:progress](#lscreentransitionprogress)
+  - [LScreenTransition:reverse](#lscreentransitionreverse)
+  - [LScreenTransition:setColor](#lscreentransitionsetcolor)
+  - [LScreenTransition:type](#lscreentransitiontype)
+  - [LScreenTransition:typeOf](#lscreentransitiontypeof)
+  - [LScreenTransition:update](#lscreentransitionupdate)
+- [💡 Examples](#examples)
+- [🎮 Reference Games](#reference-games)
+- [🔗 Related Modules](#related-modules)
 
 This page is generated from the current module specs, examples, and Lua API data.
 
 **Module group:** Platform Services
 **Namespace:** `lurek.effect`
 
-## Purpose
+## 🎯 Purpose
 
 Post-processing pipeline: blur, bloom, distortion, color grading, custom WGSL passes.
 
-## Summary
+[⬆ back to top](#table-of-contents)
+
+## 📋 Summary
 
 Post-processing and screen effect pipeline operating on rendered frames. `PostFxStack` manages an ordered list of `PostFxEffect` instances that process the frame buffer sequentially — effects include blur (Gaussian, box, radial), bloom (threshold + blur + additive blend), color grading (LUT-based), lens distortion, vignette, chromatic aberration, scanlines, CRT curvature, film grain, and pixelation.
 
 `ImageEffect` provides CPU-side per-pixel operations for cases where GPU post-processing is not needed. `Overlay` manages ambient lighting state, weather particle overlays (rain, snow, fog, dust), and screen-space flash/fade/shake. `WaterOverlay` adds animated water surface distortion. Transition effects (fade, wipe, dissolve, pixelate) bridge scene changes. Each effect is configured via Lua tables and controlled through `lurek.effect.*`.
 
-## Minimal Module Example
+[⬆ back to top](#table-of-contents)
 
-Module example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-  -- Preset stacks bundle multiple effects under a single name for common looks.
-  -- "retro_tv" might include CRT scanlines, chromatic aberration, and vignette.
-  -- Pass explicit dimensions when your game renders at a fixed internal resolution.
-  local crt = lurek.effect.newPresetStack("retro_tv", 1280, 720)
-
-  -- Typical draw loop: capture all scene drawing, then apply the full chain.
-  function lurek.draw()
-    crt:beginCapture()
-    -- All lurek.render calls here are captured into the effect framebuffer.
-    crt:endCapture()
-    crt:apply()  -- Renders the processed result to the screen.
-  end
-end
-
---@api-stub: lurek.effect.newPass
--- Creates a custom post-processing pass from an existing shader id
-do
-  -- newPass() is an alias for newCustomEffect() — both create a custom
-  -- shader-based effect. Use whichever name reads better in your code.
-  local shader_id = 3  -- a shader for edge-detection outlines
-  local edge_pass = lurek.effect.newPass(shader_id)
-
-  -- Set shader parameters that control the edge detection sensitivity.
-  edge_pass:setParameter("threshold", 0.2)
-  edge_pass:setParameter("line_width", 1.5)
-
-  lurek.log.debug("pass enabled=" .. tostring(edge_pass:isEnabled()), "fx")
-end
-
---@api-stub: lurek.effect.getEffectTypes
--- Returns all built-in post-processing effect type names
-do
-  -- Use this to discover available built-in effects at runtime.
-  -- Useful for debug menus, effect browsers, or validation.
-  -- Built-in types include: bloom, blur, crt, godrays, vignette,
-  -- colourgrade, chromatic, pixelate, sepia, grayscale, invert,
-  -- scanlines, edge_detect, hue_shift, noise, depth_of_field,
-  -- motion_blur, palette_swap, color_lut, water_distort, sharpen,
-  -- dither, outline.
-  local types = lurek.effect.getEffectTypes()
-  for i, name in ipairs(types) do
-    lurek.log.info("[" .. i .. "] " .. name, "fx-types")
-  end
-end
-
---@api-stub: lurek.effect.newImageEffect
--- Creates an image effect chain from no arguments, a type name and optional parameters, or a chain table
-do
-```
-
-## Key Types
+## 🧩 Key Types
 
 - `LImageEffect` (13 methods) - Lua-side handle for an image effect chain detached from live post-effect capture.
 - `LOverlay` (77 methods) - Lua-side handle for screen overlay, ambient, weather, and transition visual state.
@@ -263,7 +212,9 @@ do
 - `LPostFxStack` (25 methods) - Lua-side handle for an ordered post-processing stack.
 - `LScreenTransition` (11 methods) - Lua-side handle for a timed screen transition effect.
 
-## API Overview
+[⬆ back to top](#table-of-contents)
+
+## 📖 API Overview
 
 - Source spec: [docs/specs/effect.md](../blob/main/docs/specs/effect.md)
 
@@ -281,9 +232,13 @@ lurek.effect.newTransition([kind]: string, [duration]: number, [color_tbl]: tabl
 lurek.effect.setShaderErrorDisplay(enabled: boolean) -- Enables or disables renderer shader error display overlays.
 ```
 
-## Module Functions
+[⬆ back to top](#table-of-contents)
 
-### `lurek.effect.getEffectTypes() -> string[]`
+## ⚙️ Module Functions
+
+### lurek.effect.getEffectTypes
+
+`lurek.effect.getEffectTypes() -> string[]`
 
 Returns all built-in post-processing effect type names.
 
@@ -309,7 +264,9 @@ do
 end
 ```
 
-### `lurek.effect.getShaderErrorDisplay() -> boolean`
+### lurek.effect.getShaderErrorDisplay
+
+`lurek.effect.getShaderErrorDisplay() -> boolean`
 
 Returns whether renderer shader error display overlays are enabled.
 
@@ -328,13 +285,15 @@ do
 end
 ```
 
-### `lurek.effect.newCustomEffect(shader_id: integer) -> LPostFxEffect`
+### lurek.effect.newCustomEffect
+
+`lurek.effect.newCustomEffect(shader_id: integer) -> LPostFxEffect`
 
 Creates a custom post-processing effect that references an existing shader id.
 
 **Parameters**
 
-- `shader_id` (`integer`, required) - Renderer shader identifier used for the custom effect.
+- `shader_id` (`integer`, required): Renderer shader identifier used for the custom effect.
 
 **Returns**: `LPostFxEffect` - New custom post-processing effect handle.
 
@@ -362,13 +321,15 @@ do
 end
 ```
 
-### `lurek.effect.newEffect(type_name: string) -> LPostFxEffect`
+### lurek.effect.newEffect
+
+`lurek.effect.newEffect(type_name: string) -> LPostFxEffect`
 
 Creates a built-in post-processing effect by type name.
 
 **Parameters**
 
-- `type_name` (`string`, required) - Built-in effect type name such as `blur`, `bloom`, or `crt`.
+- `type_name` (`string`, required): Built-in effect type name such as `blur`, `bloom`, or `crt`.
 
 **Returns**: `LPostFxEffect` - New post-processing effect handle.
 
@@ -395,14 +356,16 @@ do
 end
 ```
 
-### `lurek.effect.newImageEffect([spec]: LuaValue, [params]: table) -> LImageEffect`
+### lurek.effect.newImageEffect
+
+`lurek.effect.newImageEffect([spec]: LuaValue, [params]: table) -> LImageEffect`
 
 Creates an image effect chain from no arguments, a type name and optional parameters, or a chain table.
 
 **Parameters**
 
-- `spec` (`LuaValue`, optional) - Optional effect type string, or an array table of effect entries, or nil for an empty chain.
-- `params` (`table`, optional) - Optional parameter table used when `spec` is an effect type string.
+- `spec` (`LuaValue`, optional): Optional effect type string, or an array table of effect entries, or nil for an empty chain.
+- `params` (`table`, optional): Optional parameter table used when `spec` is an effect type string.
 
 **Returns**: `LImageEffect` - New image effect chain handle.
 
@@ -430,14 +393,16 @@ do
 end
 ```
 
-### `lurek.effect.newOverlay([w]: integer, [h]: integer) -> LOverlay`
+### lurek.effect.newOverlay
+
+`lurek.effect.newOverlay([w]: integer, [h]: integer) -> LOverlay`
 
 Creates an overlay controller for screen effects using optional dimensions.
 
 **Parameters**
 
-- `w` (`integer`, optional) - Overlay width in pixels, defaulting to 800.
-- `h` (`integer`, optional) - Overlay height in pixels, defaulting to 600.
+- `w` (`integer`, optional): Overlay width in pixels, defaulting to 800.
+- `h` (`integer`, optional): Overlay height in pixels, defaulting to 600.
 
 **Returns**: `LOverlay` - New overlay handle.
 
@@ -465,13 +430,15 @@ do
 end
 ```
 
-### `lurek.effect.newPass(shader_id: integer) -> LPostFxEffect`
+### lurek.effect.newPass
+
+`lurek.effect.newPass(shader_id: integer) -> LPostFxEffect`
 
 Creates a custom post-processing pass from an existing shader id.
 
 **Parameters**
 
-- `shader_id` (`integer`, required) - Renderer shader identifier used for the pass.
+- `shader_id` (`integer`, required): Renderer shader identifier used for the pass.
 
 **Returns**: `LPostFxEffect` - New custom post-processing effect handle.
 
@@ -494,15 +461,17 @@ do
 end
 ```
 
-### `lurek.effect.newPresetStack(name: string, [w]: integer, [h]: integer) -> LPostFxStack`
+### lurek.effect.newPresetStack
+
+`lurek.effect.newPresetStack(name: string, [w]: integer, [h]: integer) -> LPostFxStack`
 
 Creates a named preset post-processing stack with optional dimensions.
 
 **Parameters**
 
-- `name` (`string`, required) - Preset stack name.
-- `w` (`integer`, optional) - Stack width in pixels, defaulting to window width.
-- `h` (`integer`, optional) - Stack height in pixels, defaulting to window height.
+- `name` (`string`, required): Preset stack name.
+- `w` (`integer`, optional): Stack width in pixels, defaulting to window width.
+- `h` (`integer`, optional): Stack height in pixels, defaulting to window height.
 
 **Returns**: `LPostFxStack` - New preset post-processing stack handle.
 
@@ -527,14 +496,16 @@ do
 end
 ```
 
-### `lurek.effect.newStack([w]: integer, [h]: integer) -> LPostFxStack`
+### lurek.effect.newStack
+
+`lurek.effect.newStack([w]: integer, [h]: integer) -> LPostFxStack`
 
 Creates a post-processing stack using optional dimensions or the current window size.
 
 **Parameters**
 
-- `w` (`integer`, optional) - Stack width in pixels, defaulting to window width.
-- `h` (`integer`, optional) - Stack height in pixels, defaulting to window height.
+- `w` (`integer`, optional): Stack width in pixels, defaulting to window width.
+- `h` (`integer`, optional): Stack height in pixels, defaulting to window height.
 
 **Returns**: `LPostFxStack` - New post-processing stack handle.
 
@@ -558,15 +529,17 @@ do
 end
 ```
 
-### `lurek.effect.newTransition([kind]: string, [duration]: number, [color_tbl]: table) -> LScreenTransition`
+### lurek.effect.newTransition
+
+`lurek.effect.newTransition([kind]: string, [duration]: number, [color_tbl]: table) -> LScreenTransition`
 
 Creates a timed screen transition with optional kind, duration, and color.
 
 **Parameters**
 
-- `kind` (`string`, optional) - Transition kind name, defaulting to `fade`.
-- `duration` (`number`, optional) - Duration in seconds, defaulting to 1.0.
-- `color_tbl` (`table`, optional) - Numeric RGBA table using indices 1 through 4.
+- `kind` (`string`, optional): Transition kind name, defaulting to `fade`.
+- `duration` (`number`, optional): Duration in seconds, defaulting to 1.0.
+- `color_tbl` (`table`, optional): Numeric RGBA table using indices 1 through 4.
 
 **Returns**: `LScreenTransition` - New screen transition handle.
 
@@ -594,13 +567,15 @@ do
 end
 ```
 
-### `lurek.effect.setShaderErrorDisplay(enabled: boolean)`
+### lurek.effect.setShaderErrorDisplay
+
+`lurek.effect.setShaderErrorDisplay(enabled: boolean)`
 
 Enables or disables renderer shader error display overlays.
 
 **Parameters**
 
-- `enabled` (`boolean`, required) - New shader error display flag.
+- `enabled` (`boolean`, required): New shader error display flag.
 
 #### Example
 
@@ -618,11 +593,21 @@ end
 ```
 
 
-## Types and Methods
+[⬆ back to top](#table-of-contents)
 
-### `LImageEffect`
+## 🔷 Module Types
+
+### LImageEffect
 
 Lua-side handle for an image effect chain detached from live post-effect capture.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side handle for an image effect chain detached from live post-effect capture.
+---@class LImageEffect
+LImageEffect = {}
+```
 
 #### Example
 
@@ -648,286 +633,17 @@ do
 end
 ```
 
-### `LImageEffect:addEffect(name: string) -> LPostFxEffect`
-
-Appends a built-in post-effect by type name to this image effect chain.
-
-**Parameters**
-
-- `name` (`string`, required) - Built-in effect type name.
-
-**Returns**: `LPostFxEffect` - Handle for the effect added to the chain.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- addEffect() appends a built-in effect by type name and returns its handle.
-  -- Use the handle to configure parameters. This pattern lets you build
-  -- image processing chains incrementally (e.g. thumbnail generation).
-  local chain = lurek.effect.newImageEffect()
-  local blur = chain:addEffect("blur")
-  blur:setRadius(2.5)
-  lurek.log.info("chain size=" .. chain:effectCount(), "fx")
-end
-```
-
-### `LImageEffect:clear()`
-
-Removes every effect from this image effect chain.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Reset a chain before rebuilding it with a different look.
-  local chain = lurek.effect.newImageEffect({{ type = "blur" }, { type = "vignette" }})
-  chain:clear()
-  lurek.log.debug("chain cleared, count=" .. chain:effectCount(), "fx")
-end
-```
-
-### `LImageEffect:clearEffects()`
-
-Removes every effect from this image effect chain.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- clearEffects() empties the chain. The handle remains valid and
-  -- you can add new effects afterward for a completely different look.
-  local chain = lurek.effect.newImageEffect({{ type = "bloom" }})
-  chain:clearEffects()
-  assert(chain:effectCount() == 0, "chain should be empty")
-end
-```
-
-### `LImageEffect:clone() -> LImageEffect`
-
-Creates a new image effect chain with cloned effect entries.
-
-**Returns**: `LImageEffect` - New image effect handle with the same effect chain.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- clone() duplicates the chain with all effects and their parameters.
-  -- Use to create variants from a base look (e.g. "day" vs "night"
-  -- versions of the same filter with different brightness/saturation).
-  local base = lurek.effect.newImageEffect({{ type = "vignette", strength = 0.4 }})
-  local night = base:clone()
-  night:addEffect("colourgrade"):setBrightness(-0.1)
-end
-```
-
-### `LImageEffect:effectCount() -> integer`
-
-Returns the number of effects in this image effect chain.
-
-**Returns**: `integer` - Effect count.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- effectCount() and getEffectCount() are equivalent.
-  -- Use to check if a chain has any work to do before applying it.
-  local chain = lurek.effect.newImageEffect({{ type = "blur" }, { type = "vignette" }})
-  if chain:effectCount() > 0 then
-    lurek.log.info("image chain has " .. chain:effectCount() .. " passes", "fx")
-  end
-end
-```
-
-### `LImageEffect:getEffect(key: string) -> LuaValue`
-
-Looks up an image effect by one-based index or effect type name.
-
-**Parameters**
-
-- `key` (`string`, required) - Effect name string or one-based integer index.
-
-**Returns**: `LuaValue` - `LPostFxEffect` handle, or nil when no matching effect exists.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- getEffect() accepts a 1-based integer index or a type name string.
-  -- Returns nil if not found. Use to modify effects after chain creation.
-  local chain = lurek.effect.newImageEffect({{ type = "vignette" }})
-  local vig = chain:getEffect("vignette")
-  if vig then vig:setStrength(0.5) end
-end
-```
-
-### `LImageEffect:getEffectCount() -> integer`
-
-Returns the number of effects in this image effect chain.
-
-**Returns**: `integer` - Effect count.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  local chain = lurek.effect.newImageEffect({{ type = "sepia" }})
-  lurek.log.debug("count=" .. chain:getEffectCount(), "fx")
-end
-```
-
-### `LImageEffect:removeByIndex(idx: integer) -> boolean`
-
-Removes an image effect by zero-based internal index.
-
-**Parameters**
-
-- `idx` (`integer`, required) - Zero-based effect index.
-
-**Returns**: `boolean` - True when an effect was removed.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- removeByIndex() uses 0-based indexing (internal engine convention).
-  -- This is different from removeEffect() which uses 1-based Lua indexing.
-  -- Returns true if the index was valid and an effect was removed.
-  local chain = lurek.effect.newImageEffect({{ type = "blur" }, { type = "crt" }})
-  local removed = chain:removeByIndex(0)  -- removes "blur" (first slot)
-  lurek.log.debug("by-index removed=" .. tostring(removed), "fx")
-end
-```
-
-### `LImageEffect:removeByName(name: string) -> boolean`
-
-Removes the first image effect with a matching effect type name.
-
-**Parameters**
-
-- `name` (`string`, required) - Effect type name to remove.
-
-**Returns**: `boolean` - True when an effect was removed.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- removeByName() finds and removes the first effect matching the name.
-  -- Use when you know the type but not the index.
-  local chain = lurek.effect.newImageEffect({{ type = "vignette" }, { type = "sepia" }})
-  chain:removeByName("vignette")
-  lurek.log.debug("after by-name remove count=" .. chain:effectCount(), "fx")
-end
-```
-
-### `LImageEffect:removeEffect(key: string) -> boolean`
-
-Removes an image effect by one-based index or effect type name.
-
-**Parameters**
-
-- `key` (`string`, required) - Effect name string or one-based integer index.
-
-**Returns**: `boolean` - True when an effect was removed.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- removeEffect() accepts a 1-based index or type name.
-  -- Returns true if an effect was removed. Use for dynamic chains
-  -- where effects are toggled based on user settings.
-  local chain = lurek.effect.newImageEffect({{ type = "blur" }, { type = "vignette" }})
-  local removed = chain:removeEffect("blur")
-  lurek.log.debug("blur removed=" .. tostring(removed) .. " count=" .. chain:effectCount(), "fx")
-end
-```
-
-### `LImageEffect:save() -> boolean`
-
-Reports success for the current image effect save placeholder.
-
-**Returns**: `boolean` - Always true.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- save() is a placeholder that always returns true.
-  -- Future use: persist the chain configuration to disk.
-  local chain = lurek.effect.newImageEffect({{ type = "bloom" }})
-  if chain:save() then
-    lurek.log.debug("image chain save() acknowledged", "fx")
-  end
-end
-```
-
-### `LImageEffect:type() -> string`
-
-Returns the Lua-visible type name for this image effect handle.
-
-**Returns**: `string` - The string `LImageEffect`.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  local chain = lurek.effect.newImageEffect()
-  lurek.log.info("ImageEffect:type = " .. chain:type(), "fx")
-end
-```
-
-### `LImageEffect:typeOf(name: string) -> boolean`
-
-Returns whether this image effect handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to compare against `ImageEffect` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  local chain = lurek.effect.newImageEffect()
-  lurek.log.info("is Object: " .. tostring(chain:typeOf("Object")), "fx")
-end
-```
-
-### `LOverlay`
+### LOverlay
 
 Lua-side handle for screen overlay, ambient, weather, and transition visual state.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side handle for screen overlay, ambient, weather, and transition visual state.
+---@class LOverlay
+LOverlay = {}
+```
 
 #### Example
 
@@ -953,1652 +669,17 @@ do
 end
 ```
 
-### `LOverlay:clear()`
-
-Clears active overlay effects and resets transient state.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- clear() cancels all in-progress effects (flash, fade, shake) and
-  -- resets transient state. Persistent settings (weather type) remain.
-  -- Use when teleporting the player to avoid carrying over old effects.
-  local overlay = lurek.effect.newOverlay()
-  overlay:flash(1, 1, 1, 1, 0.5)
-  overlay:clear()
-  assert(not overlay:isFlashing(), "flash should be cancelled")
-end
-```
-
-### `LOverlay:drawToImage(w: integer, h: integer) -> Image`
-
-Renders overlay state into an image object of the requested size.
-
-**Parameters**
-
-- `w` (`integer`, required) - Target image width in pixels.
-- `h` (`integer`, required) - Target image height in pixels.
-
-**Returns**: `Image` - Image containing the overlay draw state.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- drawToImage() captures the overlay into a reusable Image at the given size.
-  -- Use for thumbnails, minimaps, or capturing the overlay state for later.
-  local overlay = lurek.effect.newOverlay()
-  overlay:flash(1, 1, 1, 1, 1.0)
-  local img = overlay:drawToImage(640, 360)
-  lurek.log.info("overlay snapshot taken", "fx")
-end
-```
-
-### `LOverlay:fade(r: number, g: number, b: number, [a]: number, [dur]: number)`
-
-Starts a fade overlay with optional alpha and duration.
-
-**Parameters**
-
-- `r` (`number`, required) - Red channel.
-- `g` (`number`, required) - Green channel.
-- `b` (`number`, required) - Blue channel.
-- `a` (`number`, optional) - Target alpha, defaulting to 1.0.
-- `dur` (`number`, optional) - Duration in seconds, defaulting to 1.0.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- fade(r, g, b, alpha, duration): fades the screen toward the given color.
-  -- Alpha is the target opacity (1.0 = fully opaque fade).
-  -- Duration is how long the fade takes in seconds.
-  -- Use for scene transitions, death screens, or cinematic moments.
-  local overlay = lurek.effect.newOverlay(800, 600)
-  overlay:fade(0, 0, 0, 1.0, 1.0)  -- 1-second fade to black
-  lurek.log.info("fade started", "effect")
-end
-```
-
-### `LOverlay:flash(r: number, g: number, b: number, [a]: number, [dur]: number)`
-
-Starts a short flash overlay with optional alpha and duration.
-
-**Parameters**
-
-- `r` (`number`, required) - Red channel.
-- `g` (`number`, required) - Green channel.
-- `b` (`number`, required) - Blue channel.
-- `a` (`number`, optional) - Alpha channel, defaulting to 1.0.
-- `dur` (`number`, optional) - Duration in seconds, defaulting to 0.2.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- flash(r, g, b, alpha, duration): brief full-screen color burst.
-  -- Default duration is 0.2s. Use for damage feedback, pickups, or impacts.
-  -- White flash = healing/power-up, red = damage, cyan = shield hit.
-  local overlay = lurek.effect.newOverlay(800, 600)
-  overlay:flash(0.15, 1, 1, 1, 1)  -- cyan flash for shield hit
-  lurek.log.info("flash triggered", "effect")
-end
-```
-
-### `LOverlay:getAmbientColor() -> number`
-
-Returns overlay ambient RGBA color.
-
-**Returns**: `number` - Red channel.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Returns r, g, b, a. The ambient color is either computed from
-  -- time-of-day or set manually via setAmbientColor().
-  local overlay = lurek.effect.newOverlay()
-  overlay:setAmbientEnabled(true)
-  local r, g, b, a = overlay:getAmbientColor()
-  lurek.log.info(string.format("ambient %.2f %.2f %.2f a=%.2f", r, g, b, a), "fx")
-end
-```
-
-### `LOverlay:getCloudCount() -> integer`
-
-Returns the overlay cloud shadow count.
-
-**Returns**: `integer` - Cloud shadow count.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  local overlay = lurek.effect.newOverlay()
-  overlay:setCloudCount(6)
-  lurek.log.debug("clouds=" .. overlay:getCloudCount(), "fx")
-end
-```
-
-### `LOverlay:getCloudOpacity() -> number`
-
-Returns cloud shadow opacity. This method is available to Lua scripts.
-
-**Returns**: `number` - Cloud opacity value.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  local overlay = lurek.effect.newOverlay()
-  overlay:setCloudOpacity(0.4)
-  if overlay:getCloudOpacity() > 0.3 then
-    lurek.log.info("overcast skies", "weather")
-  end
-end
-```
-
-### `LOverlay:getCloudScale() -> number`
-
-Returns cloud shadow scale. This method is available to Lua scripts.
-
-**Returns**: `number` - Cloud scale value.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  local overlay = lurek.effect.newOverlay()
-  overlay:setCloudScale(0.8)
-  lurek.log.debug("cloud scale=" .. overlay:getCloudScale(), "fx")
-end
-```
-
-### `LOverlay:getCloudSpeed() -> number`
-
-Returns cloud shadow movement speed.
-
-**Returns**: `number` - Cloud speed value.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  local overlay = lurek.effect.newOverlay()
-  overlay:setCloudSpeed(25.0)
-  lurek.log.debug("cloud px/s=" .. overlay:getCloudSpeed(), "fx")
-end
-```
-
-### `LOverlay:getDimensions() -> integer`
-
-Returns the overlay dimensions. This method is available to Lua scripts.
-
-**Returns**: `integer` - Overlay width in pixels.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Returns width, height. Useful to pass to drawToImage() or verify
-  -- the overlay matches your game's render resolution.
-  local overlay = lurek.effect.newOverlay()
-  local w, h = overlay:getDimensions()
-  lurek.log.info("overlay = " .. w .. "x" .. h, "fx")
-end
-```
-
-### `LOverlay:getFilmGrainIntensity() -> number`
-
-Returns overlay film grain intensity.
-
-**Returns**: `number` - Current film grain intensity.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  local overlay = lurek.effect.newOverlay()
-  overlay:setFilmGrainIntensity(0.3)
-  lurek.log.debug("grain i=" .. overlay:getFilmGrainIntensity(), "fx")
-end
-```
-
-### `LOverlay:getFlashAlpha() -> number`
-
-Returns the current flash alpha. This method is available to Lua scripts.
-
-**Returns**: `number` - Flash alpha value.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Flash alpha decays from the starting value toward zero over duration.
-  -- Read this to sync other effects (e.g. sound volume) with the flash.
-  local overlay = lurek.effect.newOverlay()
-  overlay:flash(1, 1, 1, 1, 0.3)
-  function lurek.process(dt)
-    overlay:update(dt)
-    if overlay:getFlashAlpha() > 0.5 then lurek.log.debug("flash peak", "fx") end
-  end
-end
-```
-
-### `LOverlay:getFogColor() -> number`
-
-Returns overlay fog RGBA color. This method is available to Lua scripts.
-
-**Returns**: `number` - Red channel.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Default fog is usually white/gray. Set color to match your scene:
-  -- green for swamp, blue for underwater, red for volcanic.
-  local overlay = lurek.effect.newOverlay()
-  overlay:setFogEnabled(true)
-  local r, g, b = overlay:getFogColor()
-  lurek.log.info(string.format("fog rgb %.2f %.2f %.2f", r, g, b), "fx")
-end
-```
-
-### `LOverlay:getFogDensity() -> number`
-
-Returns overlay fog density. This method is available to Lua scripts.
-
-**Returns**: `number` - Current fog density.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  local overlay = lurek.effect.newOverlay()
-  overlay:setFogDensity(0.3)
-  lurek.log.debug("fog density=" .. overlay:getFogDensity(), "fx")
-end
-```
-
-### `LOverlay:getHeatHazeIntensity() -> number`
-
-Returns overlay heat haze intensity.
-
-**Returns**: `number` - Current heat haze intensity.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  local overlay = lurek.effect.newOverlay()
-  overlay:setHeatHazeIntensity(0.6)
-  lurek.log.debug("heat haze i=" .. overlay:getHeatHazeIntensity(), "fx")
-end
-```
-
-### `LOverlay:getHeight() -> integer`
-
-Returns the overlay height. This method is available to Lua scripts.
-
-**Returns**: `integer` - Overlay height in pixels.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  local overlay = lurek.effect.newOverlay(1024, 768)
-  lurek.log.debug("overlay h=" .. overlay:getHeight(), "fx")
-end
-```
-
-### `LOverlay:getLightningAlpha() -> number`
-
-Returns the current lightning alpha.
-
-**Returns**: `number` - Lightning alpha value.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Lightning alpha spikes to 1.0 on trigger then decays rapidly.
-  -- Use to flash environment lights in sync with the overlay.
-  local overlay = lurek.effect.newOverlay()
-  overlay:triggerLightning()
-  function lurek.process(dt)
-    overlay:update(dt)
-    local a = overlay:getLightningAlpha()
-    if a > 0.0 then lurek.log.debug("lightning a=" .. a, "fx") end
-  end
-end
-```
-
-### `LOverlay:getLightningColor() -> number`
-
-Returns overlay lightning RGBA color.
-
-**Returns**: `number` - Red channel.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Default lightning is bright white. Customize for colored lightning
-  -- in fantasy settings (purple magic, green poison).
-  local overlay = lurek.effect.newOverlay()
-  local r, g, b, a = overlay:getLightningColor()
-  lurek.log.info(string.format("lightning rgba %.2f %.2f %.2f %.2f", r, g, b, a), "fx")
-end
-```
-
-### `LOverlay:getShakeOffset() -> number`
-
-Returns the current screen shake offset.
-
-**Returns**: `number` - Current x offset.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- getShakeOffset() returns the current x,y pixel displacement.
-  -- Apply this to your camera position to create the shake effect.
-  -- The offset decays to zero over the shake duration.
-  local overlay = lurek.effect.newOverlay()
-  overlay:shake(8.0, 0.4)  -- intensity 8px, duration 0.4s
-  function lurek.draw()
-    local ox, oy = overlay:getShakeOffset()
-    -- Use: lurek.render.push(); lurek.render.translate(ox, oy); draw scene; pop()
-    lurek.log.debug("shake ox=" .. ox .. " oy=" .. oy, "shake")
-  end
-end
-```
-
-### `LOverlay:getTimeOfDay() -> number`
-
-Returns the overlay time-of-day value.
-
-**Returns**: `number` - Current time-of-day value.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Use to drive gameplay logic (e.g. spawn nighttime enemies).
-  local overlay = lurek.effect.newOverlay()
-  overlay:setTimeOfDay(18.0)
-  if overlay:getTimeOfDay() > 18.0 then
-    lurek.log.info("dusk - enable street lamps", "world")
-  end
-end
-```
-
-### `LOverlay:getVignetteStrength() -> number`
-
-Returns overlay vignette strength.
-
-**Returns**: `number` - Current vignette strength.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  local overlay = lurek.effect.newOverlay()
-  overlay:setVignetteStrength(0.5)
-  lurek.log.debug("vignette s=" .. overlay:getVignetteStrength(), "fx")
-end
-```
-
-### `LOverlay:getWater() -> table`
-
-Returns a table describing the current water effect settings.
-
-**Returns**: `table` - Water state table with enabled, wave, tint, depth, and time fields.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Returns a table with fields: enabled, amplitude, frequency, speed,
-  -- tint (sub-table), depth, and time.
-  local overlay = lurek.effect.newOverlay()
-  local w = overlay:getWater()
-  lurek.log.info("water enabled=" .. tostring(w.enabled) .. " amp=" .. w.amplitude, "fx")
-end
-```
-
-### `LOverlay:getWeather() -> string`
-
-Returns the overlay weather type name.
-
-**Returns**: `string` - Current weather type name.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  local overlay = lurek.effect.newOverlay()
-  overlay:setWeather("rain")
-  lurek.log.info("current weather: " .. overlay:getWeather(), "weather")
-end
-```
-
-### `LOverlay:getWeatherIntensity() -> number`
-
-Returns weather intensity for the current weather type.
-
-**Returns**: `number` - Weather intensity value.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  local overlay = lurek.effect.newOverlay()
-  overlay:setWeatherIntensity(0.5)
-  lurek.log.debug("weather i=" .. overlay:getWeatherIntensity(), "weather")
-end
-```
-
-### `LOverlay:getWidth() -> integer`
-
-Returns the overlay width. This method is available to Lua scripts.
-
-**Returns**: `integer` - Overlay width in pixels.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  local overlay = lurek.effect.newOverlay(1024, 768)
-  lurek.log.debug("overlay w=" .. overlay:getWidth(), "fx")
-end
-```
-
-### `LOverlay:getWindDirection() -> number`
-
-Returns the overlay weather wind direction.
-
-**Returns**: `number` - Wind direction value.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  local overlay = lurek.effect.newOverlay()
-  overlay:setWindDirection(math.pi)
-  lurek.log.debug("wind dir rad=" .. overlay:getWindDirection(), "weather")
-end
-```
-
-### `LOverlay:getWindSpeed() -> number`
-
-Returns the overlay weather wind speed.
-
-**Returns**: `number` - Wind speed value.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  local overlay = lurek.effect.newOverlay()
-  overlay:setWindSpeed(80.0)
-  lurek.log.debug("wind=" .. overlay:getWindSpeed(), "weather")
-end
-```
-
-### `LOverlay:isActive() -> boolean`
-
-Returns whether any overlay effect is currently active.
-
-**Returns**: `boolean` - True when overlay state should render.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Skip render call when nothing is visible to save draw overhead.
-  local overlay = lurek.effect.newOverlay()
-  overlay:flash(1, 1, 1, 1, 0.2)
-  if overlay:isActive() then
-    lurek.log.debug("overlay has active effects", "fx")
-  end
-end
-```
-
-### `LOverlay:isAmbientEnabled() -> boolean`
-
-Returns whether overlay ambient color rendering is enabled.
-
-**Returns**: `boolean` - True when ambient rendering is enabled.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  local overlay = lurek.effect.newOverlay()
-  if overlay:isAmbientEnabled() then
-    lurek.log.debug("ambient layer is live", "fx")
-  end
-end
-```
-
-### `LOverlay:isCloudShadowsEnabled() -> boolean`
-
-Returns whether overlay cloud shadow rendering is enabled.
-
-**Returns**: `boolean` - True when cloud shadow rendering is enabled.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  local overlay = lurek.effect.newOverlay()
-  if overlay:isCloudShadowsEnabled() then
-    overlay:setCloudOpacity(0.4)
-  end
-end
-```
-
-### `LOverlay:isFading() -> boolean`
-
-Returns whether the fade overlay is active.
-
-**Returns**: `boolean` - True while fade is active.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Use isFading() to wait for fade-out before switching scenes.
-  local overlay = lurek.effect.newOverlay()
-  overlay:fade(0, 0, 0, 1, 0.6)  -- fade to black over 0.6s
-  function lurek.process(dt)
-    overlay:update(dt)
-    if not overlay:isFading() then lurek.log.debug("fade done", "fx") end
-  end
-end
-```
-
-### `LOverlay:isFilmGrainEnabled() -> boolean`
-
-Returns whether overlay film grain rendering is enabled.
-
-**Returns**: `boolean` - True when film grain rendering is enabled.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  local overlay = lurek.effect.newOverlay()
-  if overlay:isFilmGrainEnabled() then
-    lurek.log.debug("grain layer is live", "fx")
-  end
-end
-```
-
-### `LOverlay:isFlashing() -> boolean`
-
-Returns whether the flash overlay is active.
-
-**Returns**: `boolean` - True while the flash is active.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Use isFlashing() to suppress input or skip other visual effects
-  -- while a flash is in progress (e.g. damage feedback).
-  local overlay = lurek.effect.newOverlay()
-  overlay:flash(1, 0, 0, 1, 0.2)  -- red damage flash
-  if overlay:isFlashing() then
-    lurek.log.debug("ignoring input during damage flash", "input")
-  end
-end
-```
-
-### `LOverlay:isFogEnabled() -> boolean`
-
-Returns whether overlay fog rendering is enabled.
-
-**Returns**: `boolean` - True when fog rendering is enabled.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  local overlay = lurek.effect.newOverlay()
-  if not overlay:isFogEnabled() then
-    overlay:setFogEnabled(true)
-  end
-end
-```
-
-### `LOverlay:isHeatHazeEnabled() -> boolean`
-
-Returns whether overlay heat haze rendering is enabled.
-
-**Returns**: `boolean` - True when heat haze rendering is enabled.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  local overlay = lurek.effect.newOverlay()
-  if overlay:isHeatHazeEnabled() then
-    lurek.log.debug("heat haze on", "fx")
-  end
-end
-```
-
-### `LOverlay:isShaking() -> boolean`
-
-Returns whether the screen shake effect is active.
-
-**Returns**: `boolean` - True while screen shake is active.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  local overlay = lurek.effect.newOverlay()
-  overlay:shake(6.0, 0.25)
-  if overlay:isShaking() then
-    lurek.log.debug("camera shaking", "fx")
-  end
-end
-```
-
-### `LOverlay:isVignetteEnabled() -> boolean`
-
-Returns whether overlay vignette rendering is enabled.
-
-**Returns**: `boolean` - True when vignette rendering is enabled.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  local overlay = lurek.effect.newOverlay()
-  if overlay:isVignetteEnabled() then
-    overlay:setVignetteStrength(0.7)
-  end
-end
-```
-
-### `LOverlay:isWeatherEnabled() -> boolean`
-
-Returns whether overlay weather rendering is enabled.
-
-**Returns**: `boolean` - True when weather rendering is enabled.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  local overlay = lurek.effect.newOverlay()
-  if overlay:isWeatherEnabled() then
-    lurek.log.debug("weather active = " .. overlay:getWeather(), "weather")
-  end
-end
-```
-
-### `LOverlay:pullAmbientFromLight()`
-
-Copies ambient color from the shared light world into this overlay.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- pullAmbientFromLight() reads the current light system ambient color
-  -- and applies it to this overlay. Use when the light system is the
-  -- source of truth and the overlay should mirror it.
-  local overlay = lurek.effect.newOverlay()
-  overlay:pullAmbientFromLight()
-end
-```
-
-### `LOverlay:pushAmbientToLight()`
-
-Copies this overlay ambient color into the shared light world.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- pushAmbientToLight() writes the overlay's ambient color into the
-  -- shared light world. Use when the overlay (e.g. time-of-day) drives
-  -- the lighting and point lights should blend with overlay ambient.
-  local overlay = lurek.effect.newOverlay()
-  overlay:pushAmbientToLight()
-end
-```
-
-### `LOverlay:render()`
-
-Queues renderer commands for the overlay's current visual state.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Call render() in your draw callback to display overlay effects.
-  -- Typically called AFTER scene drawing and AFTER post-fx apply.
-  local overlay = lurek.effect.newOverlay()
-  function lurek.draw_ui()
-    overlay:render()
-  end
-end
-```
-
-### `LOverlay:resize(w: integer, h: integer)`
-
-Resizes the overlay target dimensions.
-
-**Parameters**
-
-- `w` (`integer`, required) - New width in pixels.
-- `h` (`integer`, required) - New height in pixels.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Call resize() when the window or render target changes size.
-  -- The overlay adapts its internal buffers to the new dimensions.
-  local overlay = lurek.effect.newOverlay(800, 600)
-  overlay:resize(1920, 1080)
-  lurek.log.info("overlay resized to " .. overlay:getWidth() .. "x" .. overlay:getHeight(), "fx")
-end
-```
-
-### `LOverlay:setAmbientColor(r: number, g: number, b: number, [a]: number)`
-
-Sets the overlay ambient color from RGBA channels.
-
-**Parameters**
-
-- `r` (`number`, required) - Red channel.
-- `g` (`number`, required) - Green channel.
-- `b` (`number`, required) - Blue channel.
-- `a` (`number`, optional) - Alpha channel, defaulting to 1.0.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Manually set ambient color instead of using time-of-day auto-calculation.
-  -- Use for indoor scenes where time-of-day does not apply.
-  local overlay = lurek.effect.newOverlay(800, 600)
-  overlay:setAmbientEnabled(true)
-  overlay:setAmbientColor(0.1, 0.1, 0.3, 0.6)  -- blue-ish night indoor
-  lurek.log.info("ambient colour set", "effect")
-end
-```
-
-### `LOverlay:setAmbientEnabled(v: boolean)`
-
-Enables or disables overlay ambient color rendering.
-
-**Parameters**
-
-- `v` (`boolean`, required) - New ambient enabled flag.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Ambient color tints the entire scene (like time-of-day lighting).
-  -- Enable it, then set the time or color manually.
-  local overlay = lurek.effect.newOverlay()
-  overlay:setAmbientEnabled(true)
-  overlay:setTimeOfDay(20.0)  -- evening warm tint
-end
-```
-
-### `LOverlay:setCloudCount(v: integer)`
-
-Sets the overlay cloud shadow count.
-
-**Parameters**
-
-- `v` (`integer`, required) - Cloud shadow count.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- More clouds = more shadow patches. 4-8 for light cover, 12+ for overcast.
-  local overlay = lurek.effect.newOverlay()
-  overlay:setCloudShadows(true)
-  overlay:setCloudCount(12)
-end
-```
-
-### `LOverlay:setCloudOpacity(v: number)`
-
-Sets cloud shadow opacity. This method is available to Lua scripts.
-
-**Parameters**
-
-- `v` (`number`, required) - Cloud opacity value.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Opacity 0.0-1.0: how dark the shadows are.
-  -- 0.2-0.4 for subtle realism, 0.7+ for dramatic overcast.
-  local overlay = lurek.effect.newOverlay()
-  overlay:setCloudShadows(true)
-  overlay:setCloudOpacity(0.35)
-end
-```
-
-### `LOverlay:setCloudScale(v: number)`
-
-Sets cloud shadow scale. This method is available to Lua scripts.
-
-**Parameters**
-
-- `v` (`number`, required) - Cloud scale value.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Scale multiplier for shadow size. 1.0 = default, 2.0 = double size.
-  -- Larger clouds feel higher altitude; smaller feel lower, more detailed.
-  local overlay = lurek.effect.newOverlay()
-  overlay:setCloudShadows(true)
-  overlay:setCloudScale(1.5)
-end
-```
-
-### `LOverlay:setCloudShadows(v: boolean)`
-
-Enables or disables overlay cloud shadow rendering.
-
-**Parameters**
-
-- `v` (`boolean`, required) - New cloud shadow enabled flag.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Cloud shadows cast moving dark patches across the scene.
-  -- Great for open-world top-down games to add life to the environment.
-  local overlay = lurek.effect.newOverlay()
-  overlay:setCloudShadows(true)
-  overlay:setCloudCount(8)
-end
-```
-
-### `LOverlay:setCloudSpeed(v: number)`
-
-Sets cloud shadow movement speed. This method is available to Lua scripts.
-
-**Parameters**
-
-- `v` (`number`, required) - Cloud speed value.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Speed in pixels/second. Higher = windier day, faster shadow movement.
-  local overlay = lurek.effect.newOverlay()
-  overlay:setCloudShadows(true)
-  overlay:setCloudSpeed(40.0)
-end
-```
-
-### `LOverlay:setCustomShader([name]: string)`
-
-Sets or clears the custom overlay shader name.
-
-**Parameters**
-
-- `name` (`string`, optional) - Optional shader name; nil clears the custom shader.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Override the default overlay rendering with a custom WGSL shader.
-  -- Pass nil to revert to the default overlay shader.
-  -- The shader receives overlay uniforms (time, weather state, etc).
-  local overlay = lurek.effect.newOverlay()
-  overlay:setCustomShader("shaders/post_grade.wgsl")
-  -- overlay:setCustomShader(nil)  -- revert to default later
-end
-```
-
-### `LOverlay:setFilmGrainEnabled(v: boolean)`
-
-Enables or disables overlay film grain rendering.
-
-**Parameters**
-
-- `v` (`boolean`, required) - New film grain enabled flag.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Film grain adds animated noise over the image. Use for horror games,
-  -- retro VHS looks, or subtle texture on flat-shaded art.
-  local overlay = lurek.effect.newOverlay()
-  overlay:setFilmGrainEnabled(true)
-  overlay:setFilmGrainIntensity(0.25)
-end
-```
-
-### `LOverlay:setFilmGrainIntensity(v: number)`
-
-Sets overlay film grain intensity.
-
-**Parameters**
-
-- `v` (`number`, required) - Film grain intensity value.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Intensity 0.0-1.0. Subtle (0.1-0.2) adds texture without distraction.
-  -- Heavy (0.5+) for deliberate stylistic effect.
-  local overlay = lurek.effect.newOverlay()
-  overlay:setFilmGrainEnabled(true)
-  overlay:setFilmGrainIntensity(0.18)
-end
-```
-
-### `LOverlay:setFogColor(r: number, g: number, b: number, [a]: number)`
-
-Sets the overlay fog color from RGBA channels.
-
-**Parameters**
-
-- `r` (`number`, required) - Red channel.
-- `g` (`number`, required) - Green channel.
-- `b` (`number`, required) - Blue channel.
-- `a` (`number`, optional) - Alpha channel, defaulting to 1.0.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Set fog color to match your environment. Alpha is optional (defaults 1.0).
-  -- Gray-blue for mountains, green-yellow for swamps, brown for dust storms.
-  local overlay = lurek.effect.newOverlay(800, 600)
-  overlay:setFogEnabled(true)
-  overlay:setFogColor(0.6, 0.6, 0.7)  -- cool gray mountain fog
-  lurek.log.info("fog colour set", "effect")
-end
-```
-
-### `LOverlay:setFogDensity(v: number)`
-
-Sets overlay fog density. This method is available to Lua scripts.
-
-**Parameters**
-
-- `v` (`number`, required) - Fog density value.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Density 0.0-1.0: higher = thicker fog, less scene visibility.
-  -- Animate this for rolling fog effects.
-  local overlay = lurek.effect.newOverlay()
-  overlay:setFogEnabled(true)
-  local target = 0.6
-  overlay:setFogDensity(target)
-end
-```
-
-### `LOverlay:setFogEnabled(v: boolean)`
-
-Enables or disables overlay fog rendering.
-
-**Parameters**
-
-- `v` (`boolean`, required) - New fog enabled flag.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Fog renders a colored overlay that simulates distance fog or mist.
-  -- Combine with density and color for atmospheric depth.
-  local overlay = lurek.effect.newOverlay()
-  overlay:setFogEnabled(true)
-  overlay:setFogDensity(0.4)
-end
-```
-
-### `LOverlay:setHeatHazeEnabled(v: boolean)`
-
-Enables or disables overlay heat haze rendering.
-
-**Parameters**
-
-- `v` (`boolean`, required) - New heat haze enabled flag.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Heat haze simulates air distortion above hot surfaces.
-  -- Great for desert scenes, furnaces, or fire.
-  local overlay = lurek.effect.newOverlay()
-  overlay:setHeatHazeEnabled(true)
-  overlay:setHeatHazeIntensity(0.5)
-end
-```
-
-### `LOverlay:setHeatHazeIntensity(v: number)`
-
-Sets overlay heat haze intensity. This method is available to Lua scripts.
-
-**Parameters**
-
-- `v` (`number`, required) - Heat haze intensity value.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Intensity 0.0-1.0. Derive from game temperature for realism.
-  -- Example: haze appears above 30C, full intensity at 50C.
-  local overlay = lurek.effect.newOverlay()
-  overlay:setHeatHazeEnabled(true)
-  local temp_c = 42
-  overlay:setHeatHazeIntensity(math.min(1.0, math.max(0.0, (temp_c - 30) / 20)))
-end
-```
-
-### `LOverlay:setLightningColor(r: number, g: number, b: number, [a]: number)`
-
-Sets overlay lightning RGBA color.
-
-**Parameters**
-
-- `r` (`number`, required) - Red channel.
-- `g` (`number`, required) - Green channel.
-- `b` (`number`, required) - Blue channel.
-- `a` (`number`, optional) - Alpha channel, defaulting to 1.0.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Default is bright white. Set to purple for arcane storms,
-  -- green for toxic environments, etc.
-  local overlay = lurek.effect.newOverlay(800, 600)
-  overlay:setLightningColor(0.9, 0.95, 1.0)  -- slightly blue-white
-  lurek.log.info("lightning colour set", "effect")
-end
-```
-
-### `LOverlay:setTimeOfDay(v: number)`
-
-Sets the overlay time-of-day value used by ambient effects.
-
-**Parameters**
-
-- `v` (`number`, required) - Time-of-day value stored on the overlay ambient state.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Time-of-day is a float (0-24 hours) that drives the ambient color
-  -- curve: dawn warm, midday bright, dusk orange, night blue.
-  local overlay = lurek.effect.newOverlay()
-  overlay:setAmbientEnabled(true)
-  overlay:setTimeOfDay(7.5)  -- early morning
-end
-```
-
-### `LOverlay:setVignetteEnabled(v: boolean)`
-
-Enables or disables overlay vignette rendering.
-
-**Parameters**
-
-- `v` (`boolean`, required) - New vignette enabled flag.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Overlay vignette darkens screen edges independently of post-fx.
-  -- Use when you want vignette without a full post-processing stack.
-  local overlay = lurek.effect.newOverlay()
-  overlay:setVignetteEnabled(true)
-  overlay:setVignetteStrength(0.55)
-end
-```
-
-### `LOverlay:setVignetteStrength(v: number)`
-
-Sets overlay vignette strength. This method is available to Lua scripts.
-
-**Parameters**
-
-- `v` (`number`, required) - Vignette strength value.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Strength 0.0-1.0: 0 = no effect, 1.0 = maximum edge darkening.
-  -- Increase when the player is low on health for a tunnel-vision feel.
-  local overlay = lurek.effect.newOverlay()
-  overlay:setVignetteEnabled(true)
-  overlay:setVignetteStrength(0.45)
-end
-```
-
-### `LOverlay:setWater(amplitude: number, frequency: number, speed: number)`
-
-Enables water distortion and sets wave amplitude, frequency, and speed.
-
-**Parameters**
-
-- `amplitude` (`number`, required) - Water wave amplitude.
-- `frequency` (`number`, required) - Water wave frequency.
-- `speed` (`number`, required) - Water animation speed.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- setWater(amplitude, frequency, speed): enables underwater distortion.
-  -- amplitude = wave height in UV space (0.01-0.05 typical)
-  -- frequency = number of wave cycles (8-20 typical)
-  -- speed = animation speed multiplier
-  local overlay = lurek.effect.newOverlay(800, 600)
-  overlay:setWater(0.02, 12.0, 1.5)
-  lurek.log.info("water effect set", "effect")
-end
-```
-
-### `LOverlay:setWaterTint(r: number, g: number, b: number, strength: number)`
-
-Sets the water tint color and strength.
-
-**Parameters**
-
-- `r` (`number`, required) - Red channel.
-- `g` (`number`, required) - Green channel.
-- `b` (`number`, required) - Blue channel.
-- `strength` (`number`, required) - Tint strength.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- setWaterTint(r, g, b, strength): adds a color wash over the water effect.
-  -- strength 0.0-1.0 controls how much the tint affects the final image.
-  -- Blue-green for ocean, dark green for swamp, clear for shallow streams.
-  local overlay = lurek.effect.newOverlay(800, 600)
-  overlay:setWater(0.02, 12.0, 1.5)
-  overlay:setWaterTint(0.2, 0.6, 0.8, 0.5)  -- ocean blue tint
-  lurek.log.info("water tint set", "effect")
-end
-```
-
-### `LOverlay:setWeather(name: string)`
-
-Sets the overlay weather type by name.
-
-**Parameters**
-
-- `name` (`string`, required) - Weather type name recognized by the engine.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Available weather types depend on the engine; common ones:
-  -- "rain", "snow", "ash", "leaves", "dust", "none".
-  -- Combine with wind and intensity for the full effect.
-  local overlay = lurek.effect.newOverlay()
-  overlay:setWeather("snow")
-  overlay:setWeatherEnabled(true)
-  overlay:setWeatherIntensity(0.7)
-end
-```
-
-### `LOverlay:setWeatherEnabled(v: boolean)`
-
-Enables or disables overlay weather rendering.
-
-**Parameters**
-
-- `v` (`boolean`, required) - New weather enabled flag.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Weather must be both named (setWeather) AND enabled to render.
-  -- This lets you pre-configure weather without showing it yet.
-  local overlay = lurek.effect.newOverlay()
-  overlay:setWeather("rain")
-  overlay:setWeatherEnabled(true)
-end
-```
-
-### `LOverlay:setWeatherIntensity(v: number)`
-
-Sets weather intensity for the current weather type.
-
-**Parameters**
-
-- `v` (`number`, required) - Weather intensity value.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Intensity 0.0-1.0: controls particle density/speed.
-  -- 0.3 = light drizzle, 0.7 = steady rain, 1.0 = downpour.
-  local overlay = lurek.effect.newOverlay()
-  overlay:setWeather("rain")
-  overlay:setWeatherIntensity(0.85)
-end
-```
-
-### `LOverlay:setWindDirection(v: number)`
-
-Sets the overlay weather wind direction.
-
-**Parameters**
-
-- `v` (`number`, required) - Wind direction value.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Wind direction in radians affects weather particle drift angle.
-  -- 0 = right, pi/2 = down, pi = left, 3pi/2 = up.
-  -- Combine with wind speed for believable weather.
-  local overlay = lurek.effect.newOverlay()
-  overlay:setWindDirection(math.pi / 4)  -- diagonal down-right
-  overlay:setWindSpeed(60.0)
-end
-```
-
-### `LOverlay:setWindSpeed(v: number)`
-
-Sets the overlay weather wind speed.
-
-**Parameters**
-
-- `v` (`number`, required) - Wind speed value.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Wind speed in pixels/second. Affects weather particles and clouds.
-  -- 20-40 = gentle breeze, 80-120 = strong wind, 200+ = storm.
-  local overlay = lurek.effect.newOverlay()
-  overlay:setWindSpeed(120.0)
-  overlay:setCloudSpeed(60.0)  -- clouds move slower than rain
-end
-```
-
-### `LOverlay:shake(intensity: number, [dur]: number)`
-
-Starts a screen shake with optional duration.
-
-**Parameters**
-
-- `intensity` (`number`, required) - Shake intensity.
-- `dur` (`number`, optional) - Duration in seconds, defaulting to 0.5.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- shake(intensity, duration): intensity = max pixel offset, duration in seconds.
-  -- Omit duration to use the default (0.5s).
-  -- Apply getShakeOffset() to camera translation each frame.
-  local overlay = lurek.effect.newOverlay()
-  overlay:shake(12.0, 0.35)  -- heavy explosion impact
-  function lurek.process(dt) overlay:update(dt) end
-end
-```
-
-### `LOverlay:syncAmbientWithLight(mode: string)`
-
-Resolves overlay and light ambient colors using a named mode and writes both stores.
-
-**Parameters**
-
-- `mode` (`string`, required) - One of `light`, `overlay`, `avg`, `max`, or `min`.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- syncAmbientWithLight(mode) merges overlay and light ambient colors.
-  -- Modes: "light" (use light's value), "overlay" (use overlay's value),
-  -- "avg" (average both), "max" (take brighter), "min" (take darker).
-  -- After sync, both stores contain the resolved color.
-  local overlay = lurek.effect.newOverlay()
-  overlay:syncAmbientWithLight("avg")
-end
-```
-
-### `LOverlay:triggerFade(r: number, g: number, b: number, target_alpha: number, duration: number)`
-
-Starts a fade overlay toward a target alpha.
-
-**Parameters**
-
-- `r` (`number`, required) - Red channel.
-- `g` (`number`, required) - Green channel.
-- `b` (`number`, required) - Blue channel.
-- `target_alpha` (`number`, required) - Target alpha value.
-- `duration` (`number`, required) - Fade duration in seconds.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- triggerFade(r, g, b, target_alpha, duration): explicit version of fade().
-  -- Use when you need precise control over start vs target alpha.
-  local overlay = lurek.effect.newOverlay(800, 600)
-  overlay:triggerFade(0, 0, 0, 1.0, 1.5)  -- 1.5s fade to full black
-  lurek.log.info("fade out triggered", "effect")
-end
-```
-
-### `LOverlay:triggerFlash(r: number, g: number, b: number, a: number, duration: number)`
-
-Starts a screen flash with explicit RGBA color and duration.
-
-**Parameters**
-
-- `r` (`number`, required) - Red channel.
-- `g` (`number`, required) - Green channel.
-- `b` (`number`, required) - Blue channel.
-- `a` (`number`, required) - Alpha channel.
-- `duration` (`number`, required) - Flash duration in seconds.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- triggerFlash(r, g, b, a, duration): explicit version of flash().
-  -- Use when you want full control over all parameters.
-  local overlay = lurek.effect.newOverlay(800, 600)
-  overlay:triggerFlash(1.0, 0.0, 0.0, 0.8, 0.12)  -- brief red damage flash
-  lurek.log.info("flash triggered", "effect")
-end
-```
-
-### `LOverlay:triggerLightning()`
-
-Starts a lightning flash using the overlay lightning state.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- triggerLightning() creates a sudden bright flash that decays over time.
-  -- The flash color is controlled by setLightningColor().
-  -- Use during storm weather for dramatic atmosphere.
-  local overlay = lurek.effect.newOverlay()
-  overlay:triggerLightning()
-  lurek.log.info("lightning fired alpha=" .. overlay:getLightningAlpha(), "weather")
-end
-```
-
-### `LOverlay:triggerShake(intensity: number, duration: number)`
-
-Starts a screen shake effect. This method is available to Lua scripts.
-
-**Parameters**
-
-- `intensity` (`number`, required) - Shake intensity.
-- `duration` (`number`, required) - Shake duration in seconds.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- triggerShake(intensity, duration): explicit version of shake().
-  -- intensity = max pixel displacement, duration in seconds.
-  -- Use for explosions, heavy landings, or boss attacks.
-  local overlay = lurek.effect.newOverlay(800, 600)
-  overlay:triggerShake(8.0, 0.4)
-  lurek.log.info("shake triggered", "effect")
-end
-```
-
-### `LOverlay:type() -> string`
-
-Returns the Lua-visible type name for this overlay handle.
-
-**Returns**: `string` - The string `LOverlay`.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  local overlay = lurek.effect.newOverlay()
-  lurek.log.info("Overlay:type = " .. overlay:type(), "fx")
-end
-```
-
-### `LOverlay:typeOf(name: string) -> boolean`
-
-Returns whether this overlay handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to compare against `Overlay` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  local overlay = lurek.effect.newOverlay()
-  lurek.log.info("is Object: " .. tostring(overlay:typeOf("Object")), "fx")
-end
-```
-
-### `LOverlay:update(dt: number)`
-
-Advances overlay timers and animated effect state.
-
-**Parameters**
-
-- `dt` (`number`, required) - Delta time in seconds.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Call every frame to animate weather, shake decay, and flash fade.
-  local overlay = lurek.effect.newOverlay()
-  overlay:shake(4.0, 0.3)
-  function lurek.process(dt)
-    overlay:update(dt)
-  end
-end
-```
-
-### `LPostFxEffect`
+### LPostFxEffect
 
 Lua-side handle for a single post-processing effect instance.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side handle for a single post-processing effect instance.
+---@class LPostFxEffect
+LPostFxEffect = {}
+```
 
 #### Example
 
@@ -2624,529 +705,17 @@ do
 end
 ```
 
-### `LPostFxEffect:disableAutoUniforms()`
-
-Disables automatic time and resolution uniforms for this effect.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Disable if you need full control over all 4 parameter slots (p[0]-p[3]).
-  -- When disabled, p[3] is free for your own shader parameters.
-  local fx = lurek.effect.newCustomEffect(0)
-  fx:enableAutoUniforms()
-  fx:disableAutoUniforms()
-  lurek.log.debug("auto_uniforms=" .. tostring(fx:isAutoUniforms()), "fx")
-end
-```
-
-### `LPostFxEffect:enableAutoUniforms()`
-
-Enables automatic time and resolution uniforms for this effect.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- When enabled, the engine automatically writes time, frame count,
-  -- and resolution into PostFxParams.p[3] every frame:
-  --   p[3].x = elapsed time (seconds)
-  --   p[3].y = frame count (f32)
-  --   p[3].z = render target width (pixels)
-  --   p[3].w = render target height (pixels)
-  -- This saves you from manually setting these common uniforms.
-  local fx = lurek.effect.newCustomEffect(0)
-  fx:enableAutoUniforms()
-  lurek.log.debug("enableAutoUniforms called", "fx")
-end
-```
-
-### `LPostFxEffect:getEffectType() -> string`
-
-Returns the renderer effect type name.
-
-**Returns**: `string` - Effect type name used by the renderer.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- getEffectType() returns the renderer-level type name.
-  -- For built-in effects this matches getTypeName().
-  local eff = lurek.effect.newEffect("sepia")
-  local kind = eff:getEffectType()
-  lurek.log.info("kind=" .. kind, "fx")
-end
-```
-
-### `LPostFxEffect:getParameter(name: string, [default]: number) -> number`
-
-Reads a numeric shader parameter and falls back to a default value when missing.
-
-**Parameters**
-
-- `name` (`string`, required) - Parameter name to read.
-- `default` (`number`, optional) - Default value returned when the parameter is absent.
-
-**Returns**: `number` - Stored parameter value or the supplied default.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- getParameter(name, default): returns the stored value or the default.
-  -- Use to read back current settings for UI display or serialization.
-  local stack = lurek.effect.newStack(800, 600)
-  stack:add(lurek.effect.newEffect("bloom"))
-  local effect = assert(stack:getEffect(1))
-  local intensity = effect:getParameter("intensity")
-  lurek.log.info("bloom intensity: " .. tostring(intensity), "effect")
-end
-```
-
-### `LPostFxEffect:getParameterNames() -> string[]`
-
-Returns the parameter names stored on this effect.
-
-**Returns**: `string[]` - Parameter name strings.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Enumerate all tunable parameters for an effect.
-  -- Use this to build dynamic UI sliders or dump effect state.
-  local eff = lurek.effect.newEffect("colourgrade")
-  for _, name in ipairs(eff:getParameterNames()) do
-    lurek.log.info("colourgrade param: " .. name, "fx-edit")
-  end
-end
-```
-
-### `LPostFxEffect:getType() -> string`
-
-Returns the renderer effect type name.
-
-**Returns**: `string` - Effect type name used by the renderer.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- getType() is equivalent to getEffectType() — use whichever reads
-  -- better in your code.
-  local eff = lurek.effect.newEffect("invert")
-  if eff:getType() == "invert" then
-    lurek.log.debug("invert pass detected", "fx")
-  end
-end
-```
-
-### `LPostFxEffect:getTypeName() -> string`
-
-Returns the built-in or custom effect type name.
-
-**Returns**: `string` - Effect type name used by the renderer.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- getTypeName() returns the effect type string (e.g. "bloom", "crt").
-  -- Use this for serialization, debug display, or dynamic effect menus.
-  local eff = lurek.effect.newEffect("crt")
-  local name = eff:getTypeName()
-  lurek.log.info("active fx: " .. name, "fx")
-end
-```
-
-### `LPostFxEffect:hasParameter(name: string) -> boolean`
-
-Returns whether a shader parameter exists on this effect.
-
-**Parameters**
-
-- `name` (`string`, required) - Parameter name to check.
-
-**Returns**: `boolean` - True when the parameter is present.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Check before setting to avoid silent no-ops or catch typos.
-  -- Useful when building generic effect editors or loading presets
-  -- where parameter names come from user data.
-  local eff = lurek.effect.newEffect("crt")
-  if eff:hasParameter("scanline_strength") then
-    eff:setParameter("scanline_strength", 0.7)
-  end
-end
-```
-
-### `LPostFxEffect:isAutoUniforms() -> boolean`
-
-Returns whether automatic uniforms are enabled for this effect.
-
-**Returns**: `boolean` - True when automatic uniforms are enabled.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  local fx = lurek.effect.newCustomEffect(0)
-  fx:enableAutoUniforms()
-  lurek.log.debug("isAutoUniforms=" .. tostring(fx:isAutoUniforms()), "fx")
-end
-```
-
-### `LPostFxEffect:isBuiltIn() -> boolean`
-
-Returns whether this effect uses one of the engine built-in effect types.
-
-**Returns**: `boolean` - True for built-in effects, false for custom shader effects.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Built-in effects can be recreated from just their type name.
-  -- Custom shader effects need additional data (the shader source).
-  -- Use this to decide how to serialize an effect chain to a save file.
-  local eff = lurek.effect.newEffect("vignette")
-  if eff:isBuiltIn() then
-    lurek.log.info("safe to serialise '" .. eff:getTypeName() .. "' by name", "fx")
-  end
-end
-```
-
-### `LPostFxEffect:isEnabled() -> boolean`
-
-Returns whether this effect is enabled on its owning effect object.
-
-**Returns**: `boolean` - Current enabled flag stored on the effect.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Check before applying expensive effects in a quality-options menu.
-  local bloom = lurek.effect.newEffect("bloom")
-  bloom:setEnabled(false)
-  lurek.log.debug("bloom enabled=" .. tostring(bloom:isEnabled()), "fx")
-end
-```
-
-### `LPostFxEffect:setBrightness(v: number)`
-
-Sets the `brightness` shader parameter.
-
-**Parameters**
-
-- `v` (`number`, required) - Brightness value passed to the effect shader.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Brightness is an additive shift applied to all pixels.
-  -- Range roughly -0.5 to +0.5. Negative = darker, positive = lighter.
-  -- Use with colourgrade for day/night transitions or flash effects.
-  local grade = lurek.effect.newEffect("colourgrade")
-  grade:setBrightness(0.05)
-end
-```
-
-### `LPostFxEffect:setContrast(v: number)`
-
-Sets the `contrast` shader parameter.
-
-**Parameters**
-
-- `v` (`number`, required) - Contrast value passed to the effect shader.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Contrast multiplier: 1.0 = normal, <1.0 = washed out, >1.0 = punchy.
-  -- Good for making pixel art pop (1.1-1.2) or creating dream sequences (<0.9).
-  local grade = lurek.effect.newEffect("colourgrade")
-  grade:setContrast(1.15)
-end
-```
-
-### `LPostFxEffect:setEnabled(enabled: boolean)`
-
-Enables or disables this effect. This method is available to Lua scripts.
-
-**Parameters**
-
-- `enabled` (`boolean`, required) - New enabled flag.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Toggle effects from a settings screen without removing them.
-  local crt = lurek.effect.newEffect("crt")
-  crt:setEnabled(false)
-  lurek.log.debug("crt disabled for performance", "fx")
-end
-```
-
-### `LPostFxEffect:setIntensity(v: number)`
-
-Sets the `intensity` shader parameter.
-
-**Parameters**
-
-- `v` (`number`, required) - Intensity value passed to the effect shader.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Intensity is a multiplier for the effect strength.
-  -- For godrays: higher values produce stronger light shafts.
-  -- Typical range 0.0-3.0; values above 1.0 amplify the effect.
-  local godrays = lurek.effect.newEffect("godrays")
-  godrays:setIntensity(1.4)
-end
-```
-
-### `LPostFxEffect:setOffset(v: number)`
-
-Sets the `offset` shader parameter.
-
-**Parameters**
-
-- `v` (`number`, required) - Offset value passed to the effect shader.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Chromatic aberration splits color channels by an offset in pixels.
-  -- Small values (1-3) add subtle realism; large values (5+) give a
-  -- glitch/VHS look. Great combined with screen shake on impact.
-  local chroma = lurek.effect.newEffect("chromatic")
-  chroma:setOffset(2.0)
-end
-```
-
-### `LPostFxEffect:setParameter(name: string, value: number)`
-
-Sets a numeric shader parameter by name.
-
-**Parameters**
-
-- `name` (`string`, required) - Parameter name expected by the effect shader.
-- `value` (`number`, required) - Numeric parameter value.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- setParameter() is the generic way to set any shader uniform.
-  -- Built-in effects expose named parameters like "threshold", "intensity",
-  -- "radius", "strength", etc. Custom shaders can use any name.
-  -- Parameters map to the PostFxParams uniform buffer in the shader.
-  local bloom = lurek.effect.newEffect("bloom")
-  bloom:setParameter("threshold", 0.5)
-  bloom:setParameter("intensity", 1.2)
-  lurek.log.debug("bloom configured", "fx")
-end
-```
-
-### `LPostFxEffect:setRadius(v: number)`
-
-Sets the `radius` shader parameter.
-
-**Parameters**
-
-- `v` (`number`, required) - Radius value passed to the effect shader.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Radius controls the spread area of the effect in pixels.
-  -- For blur: larger radius = stronger blur but higher GPU cost.
-  -- Keep moderate (1-8) for real-time; use larger for static images.
-  local blur = lurek.effect.newEffect("blur")
-  blur:setRadius(4.0)
-end
-```
-
-### `LPostFxEffect:setSaturation(v: number)`
-
-Sets the `saturation` shader parameter.
-
-**Parameters**
-
-- `v` (`number`, required) - Saturation value passed to the effect shader.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Saturation multiplier: 1.0 = normal, 0.0 = grayscale, >1.0 = vivid.
-  -- Desaturate during flashback scenes or when the player is injured.
-  local grade = lurek.effect.newEffect("colourgrade")
-  grade:setSaturation(0.7)  -- slightly desaturated for a moody atmosphere
-end
-```
-
-### `LPostFxEffect:setScanlineStrength(v: number)`
-
-Sets the `scanline_strength` shader parameter.
-
-**Parameters**
-
-- `v` (`number`, required) - Scanline strength value passed to the effect shader.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- CRT scanlines simulate old TV displays. Strength 0.0-1.0 controls
-  -- how visible the horizontal lines are. Combine with setIntensity()
-  -- for the overall CRT phosphor glow.
-  local crt = lurek.effect.newEffect("crt")
-  crt:setScanlineStrength(0.35)
-  crt:setIntensity(1.0)
-end
-```
-
-### `LPostFxEffect:setStrength(v: number)`
-
-Sets the `strength` shader parameter.
-
-**Parameters**
-
-- `v` (`number`, required) - Strength value passed to the effect shader.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Strength is a 0.0-1.0 normalized intensity for effects that use it.
-  -- For vignette: 0.0 = no darkening, 1.0 = maximum edge darkening.
-  -- Clamp user input to [0,1] to prevent visual artifacts.
-  local vig = lurek.effect.newEffect("vignette")
-  local from_slider = 0.6
-  vig:setStrength(math.max(0.0, math.min(1.0, from_slider)))
-end
-```
-
-### `LPostFxEffect:setThreshold(v: number)`
-
-Sets the `threshold` shader parameter.
-
-**Parameters**
-
-- `v` (`number`, required) - Threshold value passed to the effect shader.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Threshold controls which pixels pass through to the effect.
-  -- For bloom: only pixels brighter than threshold will glow.
-  -- Range 0.0-1.0; lower = more glow, higher = only brightest spots.
-  local bloom = lurek.effect.newEffect("bloom")
-  bloom:setThreshold(0.75)
-  lurek.log.debug("bloom threshold set", "fx")
-end
-```
-
-### `LPostFxEffect:type() -> string`
-
-Returns the Lua-visible type name for this post-processing effect handle.
-
-**Returns**: `string` - The string `LPostFxEffect`.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  local eff = lurek.effect.newEffect("bloom")
-  lurek.log.info("PostFxEffect:type = " .. eff:type(), "fx")
-end
-```
-
-### `LPostFxEffect:typeOf(name: string) -> boolean`
-
-Returns whether this effect handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to compare against `PostFxEffect` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  local eff = lurek.effect.newEffect("bloom")
-  lurek.log.info("is Object: " .. tostring(eff:typeOf("Object")), "fx")
-end
-```
-
-### `LPostFxStack`
+### LPostFxStack
 
 Lua-side handle for an ordered post-processing stack.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side handle for an ordered post-processing stack.
+---@class LPostFxStack
+LPostFxStack = {}
+```
 
 #### Example
 
@@ -3169,553 +738,17 @@ do
 end
 ```
 
-### `LPostFxStack:add(effect_ud: LPostFxEffect)`
-
-Appends an effect to the end of this stack.
-
-**Parameters**
-
-- `effect_ud` (`LPostFxEffect`, required) - Effect handle to append.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- add() appends an effect at the end of the pipeline.
-  -- Order matters: effects process left-to-right. Put blur before bloom
-  -- for soft glow; put bloom before blur for spread highlights.
-  local stack = lurek.effect.newStack()
-  stack:add(lurek.effect.newEffect("bloom"))
-  stack:add(lurek.effect.newEffect("vignette"))
-  lurek.log.info("stack size=" .. stack:getEffectCount(), "fx")
-end
-```
-
-### `LPostFxStack:apply()`
-
-Queues this stack's enabled post-effect passes for renderer application.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- apply() runs the full post-processing pipeline on the captured frame.
-  -- Call this AFTER endCapture(). The processed result is drawn to screen.
-  -- Draw UI elements AFTER apply() so they are not affected by effects.
-  local stack = lurek.effect.newStack()
-  stack:add(lurek.effect.newEffect("bloom"))
-  function lurek.draw()
-    stack:beginCapture(); stack:endCapture()
-    stack:apply()
-    -- Draw HUD/UI here — not affected by bloom.
-  end
-end
-```
-
-### `LPostFxStack:beginCapture()`
-
-Starts post-effect capture and queues a renderer begin-capture command.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- beginCapture() redirects all subsequent draw calls into the stack's
-  -- internal framebuffer. Everything drawn between begin/end will have
-  -- the stack's effects applied when apply() is called.
-  local stack = lurek.effect.newStack()
-  stack:add(lurek.effect.newEffect("bloom"))
-  function lurek.draw()
-    stack:beginCapture()
-    -- All scene rendering (sprites, tilemaps, particles) goes here.
-    stack:endCapture(); stack:apply()
-  end
-end
-```
-
-### `LPostFxStack:clear()`
-
-Removes all effects and pass state from this stack.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Wipe the pipeline for a new scene with different visual needs.
-  local stack = lurek.effect.newStack()
-  stack:add(lurek.effect.newEffect("crt"))
-  stack:clear()
-  lurek.log.debug("stack cleared, count=" .. stack:getEffectCount(), "fx")
-end
-```
-
-### `LPostFxStack:clearFeedback()`
-
-Resets the stack feedback blend factor to zero.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- clearFeedback() immediately stops the trail effect.
-  -- Call when exiting a dream sequence to snap back to clean rendering.
-  local stack = lurek.effect.newStack()
-  stack:setFeedback(0.6)
-  stack:clearFeedback()
-  lurek.log.debug("feedback cleared=" .. stack:getFeedback(), "fx")
-end
-```
-
-### `LPostFxStack:dedup() -> integer`
-
-Removes duplicate effect handles while preserving first occurrences.
-
-**Returns**: `integer` - Number of duplicate effects removed.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- dedup() removes duplicate references while preserving first occurrences.
-  -- This can happen if code accidentally adds the same handle twice.
-  -- Returns the number of duplicates removed.
-  local stack = lurek.effect.newStack()
-  local bloom = lurek.effect.newEffect("bloom")
-  stack:add(bloom); stack:add(bloom)
-  local removed = stack:dedup()
-  lurek.log.info("dedup removed " .. tostring(removed) .. " duplicate slot(s)", "fx")
-end
-```
-
-### `LPostFxStack:endCapture()`
-
-Ends post-effect capture and queues a renderer end-capture command.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- endCapture() finalizes the captured framebuffer content.
-  -- After this call, apply() processes the captured image through
-  -- each enabled effect in order and outputs the result.
-  local stack = lurek.effect.newStack()
-  function lurek.draw()
-    stack:beginCapture()
-    -- Scene draws happen between begin and end.
-    stack:endCapture()
-    stack:apply()
-  end
-end
-```
-
-### `LPostFxStack:getDimensions() -> integer`
-
-Returns the stack render dimensions.
-
-**Returns**: `integer` - Stack width in pixels.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Get both width and height in one call.
-  local stack = lurek.effect.newStack(1920, 1080)
-  local w, h = stack:getDimensions()
-  lurek.log.info("stack " .. w .. "x" .. h, "fx")
-end
-```
-
-### `LPostFxStack:getEffect(index: integer) -> LuaValue`
-
-Returns the effect handle at a one-based position.
-
-**Parameters**
-
-- `index` (`integer`, required) - One-based stack position.
-
-**Returns**: `LuaValue` - `LPostFxEffect` handle, or nil when the index is out of range.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Retrieve an effect by slot to modify its parameters at runtime.
-  local stack = lurek.effect.newStack()
-  stack:add(lurek.effect.newEffect("bloom"))
-  local eff = stack:getEffect(1)
-  if eff then eff:setIntensity(1.5) end
-end
-```
-
-### `LPostFxStack:getEffectCount() -> integer`
-
-Returns the number of effect handles in this stack.
-
-**Returns**: `integer` - Effect count.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Monitor stack size to prevent unbounded growth.
-  local stack = lurek.effect.newStack()
-  stack:add(lurek.effect.newEffect("bloom"))
-  stack:add(lurek.effect.newEffect("vignette"))
-  lurek.log.info("stack count=" .. stack:getEffectCount(), "fx")
-end
-```
-
-### `LPostFxStack:getEnabledEffects() -> LPostFxEffect[]`
-
-Returns effect handles whose stack passes are enabled.
-
-**Returns**: `LPostFxEffect[]` - Enabled `LPostFxEffect` handles.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Returns only effects whose passes are currently enabled.
-  -- Useful for debug HUDs showing active effects or for
-  -- performance monitoring (count active passes).
-  local stack = lurek.effect.newStack()
-  stack:add(lurek.effect.newEffect("bloom"))
-  for _, eff in ipairs(stack:getEnabledEffects()) do
-    lurek.log.debug("enabled: " .. eff:getTypeName(), "fx")
-  end
-end
-```
-
-### `LPostFxStack:getFeedback() -> number`
-
-Returns the current stack feedback blend factor.
-
-**Returns**: `number` - Feedback blend factor in the range 0.0 through 1.0.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Values are clamped to [0.0, 1.0] internally.
-  -- Use to display the current feedback level in a debug HUD.
-  local stack = lurek.effect.newStack()
-  stack:setFeedback(2.0)  -- will be clamped to 1.0
-  lurek.log.info("clamped feedback=" .. stack:getFeedback(), "fx")
-end
-```
-
-### `LPostFxStack:getHeight() -> integer`
-
-Returns the stack render height. This method is available to Lua scripts.
-
-**Returns**: `integer` - Stack height in pixels.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  local stack = lurek.effect.newStack(1280, 720)
-  lurek.log.info("stack height=" .. stack:getHeight(), "fx")
-end
-```
-
-### `LPostFxStack:getWidth() -> integer`
-
-Returns the stack render width. This method is available to Lua scripts.
-
-**Returns**: `integer` - Stack width in pixels.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  local stack = lurek.effect.newStack(1280, 720)
-  lurek.log.info("stack width=" .. stack:getWidth(), "fx")
-end
-```
-
-### `LPostFxStack:insert(position: integer, effect_ud: LPostFxEffect)`
-
-Inserts an effect at a one-based stack position.
-
-**Parameters**
-
-- `position` (`integer`, required) - One-based insertion position, clamped to the stack length.
-- `effect_ud` (`LPostFxEffect`, required) - Effect handle to insert.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- insert(position, effect): inserts at the given slot, shifting others down.
-  -- Use to add an effect before an existing one (e.g. vignette before CRT
-  -- to darken edges before the CRT scanline pass).
-  local stack = lurek.effect.newStack(800, 600)
-  stack:add(lurek.effect.newEffect("crt"))
-  stack:insert(1, lurek.effect.newEffect("vignette"))  -- vignette now processes first
-  lurek.log.info("stack count: " .. stack:getEffectCount(), "effect")
-end
-```
-
-### `LPostFxStack:isCapturing() -> boolean`
-
-Returns whether this stack is currently capturing draw commands.
-
-**Returns**: `boolean` - True when capture mode is active.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- isCapturing() returns true between beginCapture() and endCapture().
-  -- Use for assertions or to guard against nested captures.
-  local stack = lurek.effect.newStack()
-  function lurek.draw()
-    stack:beginCapture()
-    assert(stack:isCapturing(), "post-fx capture should be active here")
-    -- Draw scene content here — it goes into the effect framebuffer.
-    stack:endCapture(); stack:apply()
-  end
-end
-```
-
-### `LPostFxStack:isEmpty() -> boolean`
-
-Returns whether this stack has no effects.
-
-**Returns**: `boolean` - True when the stack has zero effects.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Check isEmpty() before beginCapture() to skip the capture overhead
-  -- when no effects are configured (e.g. "no effects" quality setting).
-  local stack = lurek.effect.newStack()
-  if stack:isEmpty() then
-    lurek.log.debug("post-fx pipeline empty - skipping capture", "fx")
-  end
-end
-```
-
-### `LPostFxStack:isEnabled(position: integer) -> boolean`
-
-Returns whether the effect pass at a one-based position is enabled.
-
-**Parameters**
-
-- `position` (`integer`, required) - One-based stack position.
-
-**Returns**: `boolean` - True when the pass is enabled; false for out-of-range positions.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Check if a specific slot (1-based position) is enabled.
-  -- Disabled slots are skipped during apply() without removing them.
-  local stack = lurek.effect.newStack()
-  stack:add(lurek.effect.newEffect("bloom"))
-  if stack:isEnabled(1) then
-    lurek.log.debug("slot 1 active", "fx")
-  end
-end
-```
-
-### `LPostFxStack:len() -> integer`
-
-Returns the number of effect handles in this stack.
-
-**Returns**: `integer` - Effect count.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- len() is equivalent to getEffectCount(). Use whichever
-  -- reads more naturally in your code.
-  local stack = lurek.effect.newStack()
-  stack:add(lurek.effect.newEffect("bloom"))
-  lurek.log.debug("stack len=" .. stack:len(), "fx")
-end
-```
-
-### `LPostFxStack:remove(effect_ud: LPostFxEffect) -> boolean`
-
-Removes the first matching effect handle from this stack.
-
-**Parameters**
-
-- `effect_ud` (`LPostFxEffect`, required) - Effect handle to remove.
-
-**Returns**: `boolean` - True when the effect was found and removed.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- remove() takes the effect handle and removes the first match.
-  -- Returns true if found. Use this for dynamic pipelines where
-  -- effects are added/removed based on gameplay (e.g. losing CRT
-  -- when the player "fixes" the TV in a puzzle game).
-  local stack = lurek.effect.newStack()
-  local crt = lurek.effect.newEffect("crt")
-  stack:add(crt)
-  local removed = stack:remove(crt)
-  lurek.log.debug("crt removed=" .. tostring(removed), "fx")
-end
-```
-
-### `LPostFxStack:resize(w: integer, h: integer)`
-
-Resizes the post-processing stack render target dimensions.
-
-**Parameters**
-
-- `w` (`integer`, required) - New width in pixels.
-- `h` (`integer`, required) - New height in pixels.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Recreate render targets when the window size changes.
-  local stack = lurek.effect.newStack(800, 600)
-  stack:resize(1920, 1080)
-  lurek.log.info("stack resized to " .. stack:getWidth() .. "x" .. stack:getHeight(), "fx")
-end
-```
-
-### `LPostFxStack:setEnabled(position: integer, enabled: boolean)`
-
-Enables or disables the effect pass at a one-based stack position.
-
-**Parameters**
-
-- `position` (`integer`, required) - One-based stack position.
-- `enabled` (`boolean`, required) - New enabled flag for the pass.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- setEnabled(position, flag): toggle individual slots without removing.
-  -- Use for quality settings: disable expensive effects on low-end hardware.
-  local stack = lurek.effect.newStack(800, 600)
-  stack:add(lurek.effect.newEffect("bloom"))
-  stack:setEnabled(1, false)  -- disable bloom at slot 1
-  lurek.log.info("stack enabled: " .. tostring(stack:isEnabled(1)), "effect")
-end
-```
-
-### `LPostFxStack:setFeedback(factor: number)`
-
-Sets the stack feedback blend factor and clamps it to 0.0 through 1.0.
-
-**Parameters**
-
-- `factor` (`number`, required) - Feedback blend factor.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  -- Feedback blends the previous frame's output into the current frame.
-  -- Values 0.0-1.0: 0.0 = no trail, 0.85 = strong ghosting/motion trail.
-  -- Use for dream sequences, time-slow effects, or ghostly trails.
-  local stack = lurek.effect.newStack()
-  stack:setFeedback(0.85)
-  lurek.log.info("feedback=" .. stack:getFeedback(), "fx")
-end
-```
-
-### `LPostFxStack:type() -> string`
-
-Returns the Lua-visible type name for this post-processing stack handle.
-
-**Returns**: `string` - The string `LPostFxStack`.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  local stack = lurek.effect.newStack()
-  lurek.log.info("PostFxStack:type = " .. stack:type(), "fx")
-end
-```
-
-### `LPostFxStack:typeOf(name: string) -> boolean`
-
-Returns whether this stack handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to compare against `PostFxStack` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-#### Example
-
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
-
-```lua
-do
-  local stack = lurek.effect.newStack()
-  lurek.log.info("is Object: " .. tostring(stack:typeOf("Object")), "fx")
-end
-```
-
-### `LScreenTransition`
+### LScreenTransition
 
 Lua-side handle for a timed screen transition effect.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side handle for a timed screen transition effect.
+---@class LScreenTransition
+LScreenTransition = {}
+```
 
 #### Example
 
@@ -3741,11 +774,4455 @@ do
 end
 ```
 
-### `LScreenTransition:color() -> number`
+
+[⬆ back to top](#table-of-contents)
+
+## 🔹 Module Methods
+
+### LImageEffect:addEffect
+
+`LImageEffect:addEffect(name: string) -> LPostFxEffect`
+
+Appends a built-in post-effect by type name to this image effect chain.
+
+**Parameters**
+
+- `name` (`string`, required): Built-in effect type name.
+
+**Returns**: `LPostFxEffect` - Handle for the effect added to the chain.
+
+**Lua API Stub**
+
+```lua
+--- Appends a built-in post-effect by type name to this image effect chain.
+---@param name string Built-in effect type name.
+---@return LPostFxEffect Handle for the effect added to the chain.
+function LImageEffect:addEffect(name) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- addEffect() appends a built-in effect by type name and returns its handle.
+  -- Use the handle to configure parameters. This pattern lets you build
+  -- image processing chains incrementally (e.g. thumbnail generation).
+  local chain = lurek.effect.newImageEffect()
+  local blur = chain:addEffect("blur")
+  blur:setRadius(2.5)
+  lurek.log.info("chain size=" .. chain:effectCount(), "fx")
+end
+```
+
+### LImageEffect:clear
+
+`LImageEffect:clear()`
+
+Removes every effect from this image effect chain.
+
+**Lua API Stub**
+
+```lua
+--- Removes every effect from this image effect chain.
+function LImageEffect:clear() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Reset a chain before rebuilding it with a different look.
+  local chain = lurek.effect.newImageEffect({{ type = "blur" }, { type = "vignette" }})
+  chain:clear()
+  lurek.log.debug("chain cleared, count=" .. chain:effectCount(), "fx")
+end
+```
+
+### LImageEffect:clearEffects
+
+`LImageEffect:clearEffects()`
+
+Removes every effect from this image effect chain.
+
+**Lua API Stub**
+
+```lua
+--- Removes every effect from this image effect chain.
+function LImageEffect:clearEffects() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- clearEffects() empties the chain. The handle remains valid and
+  -- you can add new effects afterward for a completely different look.
+  local chain = lurek.effect.newImageEffect({{ type = "bloom" }})
+  chain:clearEffects()
+  assert(chain:effectCount() == 0, "chain should be empty")
+end
+```
+
+### LImageEffect:clone
+
+`LImageEffect:clone() -> LImageEffect`
+
+Creates a new image effect chain with cloned effect entries.
+
+**Returns**: `LImageEffect` - New image effect handle with the same effect chain.
+
+**Lua API Stub**
+
+```lua
+--- Creates a new image effect chain with cloned effect entries.
+---@return LImageEffect New image effect handle with the same effect chain.
+function LImageEffect:clone() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- clone() duplicates the chain with all effects and their parameters.
+  -- Use to create variants from a base look (e.g. "day" vs "night"
+  -- versions of the same filter with different brightness/saturation).
+  local base = lurek.effect.newImageEffect({{ type = "vignette", strength = 0.4 }})
+  local night = base:clone()
+  night:addEffect("colourgrade"):setBrightness(-0.1)
+end
+```
+
+### LImageEffect:effectCount
+
+`LImageEffect:effectCount() -> integer`
+
+Returns the number of effects in this image effect chain.
+
+**Returns**: `integer` - Effect count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of effects in this image effect chain.
+---@return number Effect count.
+function LImageEffect:effectCount() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- effectCount() and getEffectCount() are equivalent.
+  -- Use to check if a chain has any work to do before applying it.
+  local chain = lurek.effect.newImageEffect({{ type = "blur" }, { type = "vignette" }})
+  if chain:effectCount() > 0 then
+    lurek.log.info("image chain has " .. chain:effectCount() .. " passes", "fx")
+  end
+end
+```
+
+### LImageEffect:getEffect
+
+`LImageEffect:getEffect(key: string) -> LuaValue`
+
+Looks up an image effect by one-based index or effect type name.
+
+**Parameters**
+
+- `key` (`string`, required): Effect name string or one-based integer index.
+
+**Returns**: `LuaValue` - `LPostFxEffect` handle, or nil when no matching effect exists.
+
+**Lua API Stub**
+
+```lua
+--- Looks up an image effect by one-based index or effect type name.
+---@param key string Effect name string or one-based integer index.
+---@return LuaValue `LPostFxEffect` handle, or nil when no matching effect exists.
+function LImageEffect:getEffect(key) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- getEffect() accepts a 1-based integer index or a type name string.
+  -- Returns nil if not found. Use to modify effects after chain creation.
+  local chain = lurek.effect.newImageEffect({{ type = "vignette" }})
+  local vig = chain:getEffect("vignette")
+  if vig then vig:setStrength(0.5) end
+end
+```
+
+### LImageEffect:getEffectCount
+
+`LImageEffect:getEffectCount() -> integer`
+
+Returns the number of effects in this image effect chain.
+
+**Returns**: `integer` - Effect count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of effects in this image effect chain.
+---@return number Effect count.
+function LImageEffect:getEffectCount() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  local chain = lurek.effect.newImageEffect({{ type = "sepia" }})
+  lurek.log.debug("count=" .. chain:getEffectCount(), "fx")
+end
+```
+
+### LImageEffect:removeByIndex
+
+`LImageEffect:removeByIndex(idx: integer) -> boolean`
+
+Removes an image effect by zero-based internal index.
+
+**Parameters**
+
+- `idx` (`integer`, required): Zero-based effect index.
+
+**Returns**: `boolean` - True when an effect was removed.
+
+**Lua API Stub**
+
+```lua
+--- Removes an image effect by zero-based internal index.
+---@param idx number Zero-based effect index.
+---@return boolean True when an effect was removed.
+function LImageEffect:removeByIndex(idx) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- removeByIndex() uses 0-based indexing (internal engine convention).
+  -- This is different from removeEffect() which uses 1-based Lua indexing.
+  -- Returns true if the index was valid and an effect was removed.
+  local chain = lurek.effect.newImageEffect({{ type = "blur" }, { type = "crt" }})
+  local removed = chain:removeByIndex(0)  -- removes "blur" (first slot)
+  lurek.log.debug("by-index removed=" .. tostring(removed), "fx")
+end
+```
+
+### LImageEffect:removeByName
+
+`LImageEffect:removeByName(name: string) -> boolean`
+
+Removes the first image effect with a matching effect type name.
+
+**Parameters**
+
+- `name` (`string`, required): Effect type name to remove.
+
+**Returns**: `boolean` - True when an effect was removed.
+
+**Lua API Stub**
+
+```lua
+--- Removes the first image effect with a matching effect type name.
+---@param name string Effect type name to remove.
+---@return boolean True when an effect was removed.
+function LImageEffect:removeByName(name) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- removeByName() finds and removes the first effect matching the name.
+  -- Use when you know the type but not the index.
+  local chain = lurek.effect.newImageEffect({{ type = "vignette" }, { type = "sepia" }})
+  chain:removeByName("vignette")
+  lurek.log.debug("after by-name remove count=" .. chain:effectCount(), "fx")
+end
+```
+
+### LImageEffect:removeEffect
+
+`LImageEffect:removeEffect(key: string) -> boolean`
+
+Removes an image effect by one-based index or effect type name.
+
+**Parameters**
+
+- `key` (`string`, required): Effect name string or one-based integer index.
+
+**Returns**: `boolean` - True when an effect was removed.
+
+**Lua API Stub**
+
+```lua
+--- Removes an image effect by one-based index or effect type name.
+---@param key string Effect name string or one-based integer index.
+---@return boolean True when an effect was removed.
+function LImageEffect:removeEffect(key) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- removeEffect() accepts a 1-based index or type name.
+  -- Returns true if an effect was removed. Use for dynamic chains
+  -- where effects are toggled based on user settings.
+  local chain = lurek.effect.newImageEffect({{ type = "blur" }, { type = "vignette" }})
+  local removed = chain:removeEffect("blur")
+  lurek.log.debug("blur removed=" .. tostring(removed) .. " count=" .. chain:effectCount(), "fx")
+end
+```
+
+### LImageEffect:save
+
+`LImageEffect:save() -> boolean`
+
+Reports success for the current image effect save placeholder.
+
+**Returns**: `boolean` - Always true.
+
+**Lua API Stub**
+
+```lua
+--- Reports success for the current image effect save placeholder.
+---@return boolean Always true.
+function LImageEffect:save() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- save() is a placeholder that always returns true.
+  -- Future use: persist the chain configuration to disk.
+  local chain = lurek.effect.newImageEffect({{ type = "bloom" }})
+  if chain:save() then
+    lurek.log.debug("image chain save() acknowledged", "fx")
+  end
+end
+```
+
+### LImageEffect:type
+
+`LImageEffect:type() -> string`
+
+Returns the Lua-visible type name for this image effect handle.
+
+**Returns**: `string` - The string `LImageEffect`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this image effect handle.
+---@return string The string `LImageEffect`.
+function LImageEffect:type() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  local chain = lurek.effect.newImageEffect()
+  lurek.log.info("ImageEffect:type = " .. chain:type(), "fx")
+end
+```
+
+### LImageEffect:typeOf
+
+`LImageEffect:typeOf(name: string) -> boolean`
+
+Returns whether this image effect handle matches a supported type name.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to compare against `ImageEffect` and `Object`.
+
+**Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this image effect handle matches a supported type name.
+---@param name string Type name to compare against `ImageEffect` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LImageEffect:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  local chain = lurek.effect.newImageEffect()
+  lurek.log.info("is Object: " .. tostring(chain:typeOf("Object")), "fx")
+end
+```
+
+### LOverlay:clear
+
+`LOverlay:clear()`
+
+Clears active overlay effects and resets transient state.
+
+**Lua API Stub**
+
+```lua
+--- Clears active overlay effects and resets transient state.
+function LOverlay:clear() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- clear() cancels all in-progress effects (flash, fade, shake) and
+  -- resets transient state. Persistent settings (weather type) remain.
+  -- Use when teleporting the player to avoid carrying over old effects.
+  local overlay = lurek.effect.newOverlay()
+  overlay:flash(1, 1, 1, 1, 0.5)
+  overlay:clear()
+  assert(not overlay:isFlashing(), "flash should be cancelled")
+end
+```
+
+### LOverlay:drawToImage
+
+`LOverlay:drawToImage(w: integer, h: integer) -> Image`
+
+Renders overlay state into an image object of the requested size.
+
+**Parameters**
+
+- `w` (`integer`, required): Target image width in pixels.
+- `h` (`integer`, required): Target image height in pixels.
+
+**Returns**: `Image` - Image containing the overlay draw state.
+
+**Lua API Stub**
+
+```lua
+--- Renders overlay state into an image object of the requested size.
+---@param w number Target image width in pixels.
+---@param h number Target image height in pixels.
+---@return Image Image containing the overlay draw state.
+function LOverlay:drawToImage(w, h) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- drawToImage() captures the overlay into a reusable Image at the given size.
+  -- Use for thumbnails, minimaps, or capturing the overlay state for later.
+  local overlay = lurek.effect.newOverlay()
+  overlay:flash(1, 1, 1, 1, 1.0)
+  local img = overlay:drawToImage(640, 360)
+  lurek.log.info("overlay snapshot taken", "fx")
+end
+```
+
+### LOverlay:fade
+
+`LOverlay:fade(r: number, g: number, b: number, [a]: number, [dur]: number)`
+
+Starts a fade overlay with optional alpha and duration.
+
+**Parameters**
+
+- `r` (`number`, required): Red channel.
+- `g` (`number`, required): Green channel.
+- `b` (`number`, required): Blue channel.
+- `a` (`number`, optional): Target alpha, defaulting to 1.0.
+- `dur` (`number`, optional): Duration in seconds, defaulting to 1.0.
+
+**Lua API Stub**
+
+```lua
+--- Starts a fade overlay with optional alpha and duration.
+---@param r number Red channel.
+---@param g number Green channel.
+---@param b number Blue channel.
+---@param a? number Target alpha, defaulting to 1.0.
+---@param dur? number Duration in seconds, defaulting to 1.0.
+function LOverlay:fade(r, g, b, a, dur) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- fade(r, g, b, alpha, duration): fades the screen toward the given color.
+  -- Alpha is the target opacity (1.0 = fully opaque fade).
+  -- Duration is how long the fade takes in seconds.
+  -- Use for scene transitions, death screens, or cinematic moments.
+  local overlay = lurek.effect.newOverlay(800, 600)
+  overlay:fade(0, 0, 0, 1.0, 1.0)  -- 1-second fade to black
+  lurek.log.info("fade started", "effect")
+end
+```
+
+### LOverlay:flash
+
+`LOverlay:flash(r: number, g: number, b: number, [a]: number, [dur]: number)`
+
+Starts a short flash overlay with optional alpha and duration.
+
+**Parameters**
+
+- `r` (`number`, required): Red channel.
+- `g` (`number`, required): Green channel.
+- `b` (`number`, required): Blue channel.
+- `a` (`number`, optional): Alpha channel, defaulting to 1.0.
+- `dur` (`number`, optional): Duration in seconds, defaulting to 0.2.
+
+**Lua API Stub**
+
+```lua
+--- Starts a short flash overlay with optional alpha and duration.
+---@param r number Red channel.
+---@param g number Green channel.
+---@param b number Blue channel.
+---@param a? number Alpha channel, defaulting to 1.0.
+---@param dur? number Duration in seconds, defaulting to 0.2.
+function LOverlay:flash(r, g, b, a, dur) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- flash(r, g, b, alpha, duration): brief full-screen color burst.
+  -- Default duration is 0.2s. Use for damage feedback, pickups, or impacts.
+  -- White flash = healing/power-up, red = damage, cyan = shield hit.
+  local overlay = lurek.effect.newOverlay(800, 600)
+  overlay:flash(0.15, 1, 1, 1, 1)  -- cyan flash for shield hit
+  lurek.log.info("flash triggered", "effect")
+end
+```
+
+### LOverlay:getAmbientColor
+
+`LOverlay:getAmbientColor() -> number`
+
+Returns overlay ambient RGBA color.
+
+**Returns**: `number` - Red channel.
+
+**Lua API Stub**
+
+```lua
+--- Returns overlay ambient RGBA color.
+---@return number a Red channel.
+---@return number b Green channel.
+---@return number c Blue channel.
+---@return number d Alpha channel.
+function LOverlay:getAmbientColor() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Returns r, g, b, a. The ambient color is either computed from
+  -- time-of-day or set manually via setAmbientColor().
+  local overlay = lurek.effect.newOverlay()
+  overlay:setAmbientEnabled(true)
+  local r, g, b, a = overlay:getAmbientColor()
+  lurek.log.info(string.format("ambient %.2f %.2f %.2f a=%.2f", r, g, b, a), "fx")
+end
+```
+
+### LOverlay:getCloudCount
+
+`LOverlay:getCloudCount() -> integer`
+
+Returns the overlay cloud shadow count.
+
+**Returns**: `integer` - Cloud shadow count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the overlay cloud shadow count.
+---@return number Cloud shadow count.
+function LOverlay:getCloudCount() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  local overlay = lurek.effect.newOverlay()
+  overlay:setCloudCount(6)
+  lurek.log.debug("clouds=" .. overlay:getCloudCount(), "fx")
+end
+```
+
+### LOverlay:getCloudOpacity
+
+`LOverlay:getCloudOpacity() -> number`
+
+Returns cloud shadow opacity. This method is available to Lua scripts.
+
+**Returns**: `number` - Cloud opacity value.
+
+**Lua API Stub**
+
+```lua
+--- Returns cloud shadow opacity. This method is available to Lua scripts.
+---@return number Cloud opacity value.
+function LOverlay:getCloudOpacity() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  local overlay = lurek.effect.newOverlay()
+  overlay:setCloudOpacity(0.4)
+  if overlay:getCloudOpacity() > 0.3 then
+    lurek.log.info("overcast skies", "weather")
+  end
+end
+```
+
+### LOverlay:getCloudScale
+
+`LOverlay:getCloudScale() -> number`
+
+Returns cloud shadow scale. This method is available to Lua scripts.
+
+**Returns**: `number` - Cloud scale value.
+
+**Lua API Stub**
+
+```lua
+--- Returns cloud shadow scale. This method is available to Lua scripts.
+---@return number Cloud scale value.
+function LOverlay:getCloudScale() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  local overlay = lurek.effect.newOverlay()
+  overlay:setCloudScale(0.8)
+  lurek.log.debug("cloud scale=" .. overlay:getCloudScale(), "fx")
+end
+```
+
+### LOverlay:getCloudSpeed
+
+`LOverlay:getCloudSpeed() -> number`
+
+Returns cloud shadow movement speed.
+
+**Returns**: `number` - Cloud speed value.
+
+**Lua API Stub**
+
+```lua
+--- Returns cloud shadow movement speed.
+---@return number Cloud speed value.
+function LOverlay:getCloudSpeed() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  local overlay = lurek.effect.newOverlay()
+  overlay:setCloudSpeed(25.0)
+  lurek.log.debug("cloud px/s=" .. overlay:getCloudSpeed(), "fx")
+end
+```
+
+### LOverlay:getDimensions
+
+`LOverlay:getDimensions() -> integer`
+
+Returns the overlay dimensions. This method is available to Lua scripts.
+
+**Returns**: `integer` - Overlay width in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns the overlay dimensions. This method is available to Lua scripts.
+---@return number a Overlay width in pixels.
+---@return number b Overlay height in pixels.
+function LOverlay:getDimensions() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Returns width, height. Useful to pass to drawToImage() or verify
+  -- the overlay matches your game's render resolution.
+  local overlay = lurek.effect.newOverlay()
+  local w, h = overlay:getDimensions()
+  lurek.log.info("overlay = " .. w .. "x" .. h, "fx")
+end
+```
+
+### LOverlay:getFilmGrainIntensity
+
+`LOverlay:getFilmGrainIntensity() -> number`
+
+Returns overlay film grain intensity.
+
+**Returns**: `number` - Current film grain intensity.
+
+**Lua API Stub**
+
+```lua
+--- Returns overlay film grain intensity.
+---@return number Current film grain intensity.
+function LOverlay:getFilmGrainIntensity() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  local overlay = lurek.effect.newOverlay()
+  overlay:setFilmGrainIntensity(0.3)
+  lurek.log.debug("grain i=" .. overlay:getFilmGrainIntensity(), "fx")
+end
+```
+
+### LOverlay:getFlashAlpha
+
+`LOverlay:getFlashAlpha() -> number`
+
+Returns the current flash alpha. This method is available to Lua scripts.
+
+**Returns**: `number` - Flash alpha value.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current flash alpha. This method is available to Lua scripts.
+---@return number Flash alpha value.
+function LOverlay:getFlashAlpha() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Flash alpha decays from the starting value toward zero over duration.
+  -- Read this to sync other effects (e.g. sound volume) with the flash.
+  local overlay = lurek.effect.newOverlay()
+  overlay:flash(1, 1, 1, 1, 0.3)
+  function lurek.process(dt)
+    overlay:update(dt)
+    if overlay:getFlashAlpha() > 0.5 then lurek.log.debug("flash peak", "fx") end
+  end
+end
+```
+
+### LOverlay:getFogColor
+
+`LOverlay:getFogColor() -> number`
+
+Returns overlay fog RGBA color. This method is available to Lua scripts.
+
+**Returns**: `number` - Red channel.
+
+**Lua API Stub**
+
+```lua
+--- Returns overlay fog RGBA color. This method is available to Lua scripts.
+---@return number a Red channel.
+---@return number b Green channel.
+---@return number c Blue channel.
+---@return number d Alpha channel.
+function LOverlay:getFogColor() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Default fog is usually white/gray. Set color to match your scene:
+  -- green for swamp, blue for underwater, red for volcanic.
+  local overlay = lurek.effect.newOverlay()
+  overlay:setFogEnabled(true)
+  local r, g, b = overlay:getFogColor()
+  lurek.log.info(string.format("fog rgb %.2f %.2f %.2f", r, g, b), "fx")
+end
+```
+
+### LOverlay:getFogDensity
+
+`LOverlay:getFogDensity() -> number`
+
+Returns overlay fog density. This method is available to Lua scripts.
+
+**Returns**: `number` - Current fog density.
+
+**Lua API Stub**
+
+```lua
+--- Returns overlay fog density. This method is available to Lua scripts.
+---@return number Current fog density.
+function LOverlay:getFogDensity() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  local overlay = lurek.effect.newOverlay()
+  overlay:setFogDensity(0.3)
+  lurek.log.debug("fog density=" .. overlay:getFogDensity(), "fx")
+end
+```
+
+### LOverlay:getHeatHazeIntensity
+
+`LOverlay:getHeatHazeIntensity() -> number`
+
+Returns overlay heat haze intensity.
+
+**Returns**: `number` - Current heat haze intensity.
+
+**Lua API Stub**
+
+```lua
+--- Returns overlay heat haze intensity.
+---@return number Current heat haze intensity.
+function LOverlay:getHeatHazeIntensity() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  local overlay = lurek.effect.newOverlay()
+  overlay:setHeatHazeIntensity(0.6)
+  lurek.log.debug("heat haze i=" .. overlay:getHeatHazeIntensity(), "fx")
+end
+```
+
+### LOverlay:getHeight
+
+`LOverlay:getHeight() -> integer`
+
+Returns the overlay height. This method is available to Lua scripts.
+
+**Returns**: `integer` - Overlay height in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns the overlay height. This method is available to Lua scripts.
+---@return number Overlay height in pixels.
+function LOverlay:getHeight() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  local overlay = lurek.effect.newOverlay(1024, 768)
+  lurek.log.debug("overlay h=" .. overlay:getHeight(), "fx")
+end
+```
+
+### LOverlay:getLightningAlpha
+
+`LOverlay:getLightningAlpha() -> number`
+
+Returns the current lightning alpha.
+
+**Returns**: `number` - Lightning alpha value.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current lightning alpha.
+---@return number Lightning alpha value.
+function LOverlay:getLightningAlpha() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Lightning alpha spikes to 1.0 on trigger then decays rapidly.
+  -- Use to flash environment lights in sync with the overlay.
+  local overlay = lurek.effect.newOverlay()
+  overlay:triggerLightning()
+  function lurek.process(dt)
+    overlay:update(dt)
+    local a = overlay:getLightningAlpha()
+    if a > 0.0 then lurek.log.debug("lightning a=" .. a, "fx") end
+  end
+end
+```
+
+### LOverlay:getLightningColor
+
+`LOverlay:getLightningColor() -> number`
+
+Returns overlay lightning RGBA color.
+
+**Returns**: `number` - Red channel.
+
+**Lua API Stub**
+
+```lua
+--- Returns overlay lightning RGBA color.
+---@return number a Red channel.
+---@return number b Green channel.
+---@return number c Blue channel.
+---@return number d Alpha channel.
+function LOverlay:getLightningColor() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Default lightning is bright white. Customize for colored lightning
+  -- in fantasy settings (purple magic, green poison).
+  local overlay = lurek.effect.newOverlay()
+  local r, g, b, a = overlay:getLightningColor()
+  lurek.log.info(string.format("lightning rgba %.2f %.2f %.2f %.2f", r, g, b, a), "fx")
+end
+```
+
+### LOverlay:getShakeOffset
+
+`LOverlay:getShakeOffset() -> number`
+
+Returns the current screen shake offset.
+
+**Returns**: `number` - Current x offset.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current screen shake offset.
+---@return number a Current x offset.
+---@return number b Current y offset.
+function LOverlay:getShakeOffset() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- getShakeOffset() returns the current x,y pixel displacement.
+  -- Apply this to your camera position to create the shake effect.
+  -- The offset decays to zero over the shake duration.
+  local overlay = lurek.effect.newOverlay()
+  overlay:shake(8.0, 0.4)  -- intensity 8px, duration 0.4s
+  function lurek.draw()
+    local ox, oy = overlay:getShakeOffset()
+    -- Use: lurek.render.push(); lurek.render.translate(ox, oy); draw scene; pop()
+    lurek.log.debug("shake ox=" .. ox .. " oy=" .. oy, "shake")
+  end
+end
+```
+
+### LOverlay:getTimeOfDay
+
+`LOverlay:getTimeOfDay() -> number`
+
+Returns the overlay time-of-day value.
+
+**Returns**: `number` - Current time-of-day value.
+
+**Lua API Stub**
+
+```lua
+--- Returns the overlay time-of-day value.
+---@return number Current time-of-day value.
+function LOverlay:getTimeOfDay() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Use to drive gameplay logic (e.g. spawn nighttime enemies).
+  local overlay = lurek.effect.newOverlay()
+  overlay:setTimeOfDay(18.0)
+  if overlay:getTimeOfDay() > 18.0 then
+    lurek.log.info("dusk - enable street lamps", "world")
+  end
+end
+```
+
+### LOverlay:getVignetteStrength
+
+`LOverlay:getVignetteStrength() -> number`
+
+Returns overlay vignette strength.
+
+**Returns**: `number` - Current vignette strength.
+
+**Lua API Stub**
+
+```lua
+--- Returns overlay vignette strength.
+---@return number Current vignette strength.
+function LOverlay:getVignetteStrength() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  local overlay = lurek.effect.newOverlay()
+  overlay:setVignetteStrength(0.5)
+  lurek.log.debug("vignette s=" .. overlay:getVignetteStrength(), "fx")
+end
+```
+
+### LOverlay:getWater
+
+`LOverlay:getWater() -> table`
+
+Returns a table describing the current water effect settings.
+
+**Returns**: `table` - Water state table with enabled, wave, tint, depth, and time fields.
+
+**Lua API Stub**
+
+```lua
+--- Returns a table describing the current water effect settings.
+---@return LOverlayGetWaterResult Water state table with enabled, wave, tint, depth, and time fields.
+function LOverlay:getWater() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Returns a table with fields: enabled, amplitude, frequency, speed,
+  -- tint (sub-table), depth, and time.
+  local overlay = lurek.effect.newOverlay()
+  local w = overlay:getWater()
+  lurek.log.info("water enabled=" .. tostring(w.enabled) .. " amp=" .. w.amplitude, "fx")
+end
+```
+
+### LOverlay:getWeather
+
+`LOverlay:getWeather() -> string`
+
+Returns the overlay weather type name.
+
+**Returns**: `string` - Current weather type name.
+
+**Lua API Stub**
+
+```lua
+--- Returns the overlay weather type name.
+---@return string Current weather type name.
+function LOverlay:getWeather() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  local overlay = lurek.effect.newOverlay()
+  overlay:setWeather("rain")
+  lurek.log.info("current weather: " .. overlay:getWeather(), "weather")
+end
+```
+
+### LOverlay:getWeatherIntensity
+
+`LOverlay:getWeatherIntensity() -> number`
+
+Returns weather intensity for the current weather type.
+
+**Returns**: `number` - Weather intensity value.
+
+**Lua API Stub**
+
+```lua
+--- Returns weather intensity for the current weather type.
+---@return number Weather intensity value.
+function LOverlay:getWeatherIntensity() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  local overlay = lurek.effect.newOverlay()
+  overlay:setWeatherIntensity(0.5)
+  lurek.log.debug("weather i=" .. overlay:getWeatherIntensity(), "weather")
+end
+```
+
+### LOverlay:getWidth
+
+`LOverlay:getWidth() -> integer`
+
+Returns the overlay width. This method is available to Lua scripts.
+
+**Returns**: `integer` - Overlay width in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns the overlay width. This method is available to Lua scripts.
+---@return number Overlay width in pixels.
+function LOverlay:getWidth() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  local overlay = lurek.effect.newOverlay(1024, 768)
+  lurek.log.debug("overlay w=" .. overlay:getWidth(), "fx")
+end
+```
+
+### LOverlay:getWindDirection
+
+`LOverlay:getWindDirection() -> number`
+
+Returns the overlay weather wind direction.
+
+**Returns**: `number` - Wind direction value.
+
+**Lua API Stub**
+
+```lua
+--- Returns the overlay weather wind direction.
+---@return number Wind direction value.
+function LOverlay:getWindDirection() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  local overlay = lurek.effect.newOverlay()
+  overlay:setWindDirection(math.pi)
+  lurek.log.debug("wind dir rad=" .. overlay:getWindDirection(), "weather")
+end
+```
+
+### LOverlay:getWindSpeed
+
+`LOverlay:getWindSpeed() -> number`
+
+Returns the overlay weather wind speed.
+
+**Returns**: `number` - Wind speed value.
+
+**Lua API Stub**
+
+```lua
+--- Returns the overlay weather wind speed.
+---@return number Wind speed value.
+function LOverlay:getWindSpeed() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  local overlay = lurek.effect.newOverlay()
+  overlay:setWindSpeed(80.0)
+  lurek.log.debug("wind=" .. overlay:getWindSpeed(), "weather")
+end
+```
+
+### LOverlay:isActive
+
+`LOverlay:isActive() -> boolean`
+
+Returns whether any overlay effect is currently active.
+
+**Returns**: `boolean` - True when overlay state should render.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether any overlay effect is currently active.
+---@return boolean True when overlay state should render.
+function LOverlay:isActive() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Skip render call when nothing is visible to save draw overhead.
+  local overlay = lurek.effect.newOverlay()
+  overlay:flash(1, 1, 1, 1, 0.2)
+  if overlay:isActive() then
+    lurek.log.debug("overlay has active effects", "fx")
+  end
+end
+```
+
+### LOverlay:isAmbientEnabled
+
+`LOverlay:isAmbientEnabled() -> boolean`
+
+Returns whether overlay ambient color rendering is enabled.
+
+**Returns**: `boolean` - True when ambient rendering is enabled.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether overlay ambient color rendering is enabled.
+---@return boolean True when ambient rendering is enabled.
+function LOverlay:isAmbientEnabled() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  local overlay = lurek.effect.newOverlay()
+  if overlay:isAmbientEnabled() then
+    lurek.log.debug("ambient layer is live", "fx")
+  end
+end
+```
+
+### LOverlay:isCloudShadowsEnabled
+
+`LOverlay:isCloudShadowsEnabled() -> boolean`
+
+Returns whether overlay cloud shadow rendering is enabled.
+
+**Returns**: `boolean` - True when cloud shadow rendering is enabled.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether overlay cloud shadow rendering is enabled.
+---@return boolean True when cloud shadow rendering is enabled.
+function LOverlay:isCloudShadowsEnabled() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  local overlay = lurek.effect.newOverlay()
+  if overlay:isCloudShadowsEnabled() then
+    overlay:setCloudOpacity(0.4)
+  end
+end
+```
+
+### LOverlay:isFading
+
+`LOverlay:isFading() -> boolean`
+
+Returns whether the fade overlay is active.
+
+**Returns**: `boolean` - True while fade is active.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether the fade overlay is active.
+---@return boolean True while fade is active.
+function LOverlay:isFading() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Use isFading() to wait for fade-out before switching scenes.
+  local overlay = lurek.effect.newOverlay()
+  overlay:fade(0, 0, 0, 1, 0.6)  -- fade to black over 0.6s
+  function lurek.process(dt)
+    overlay:update(dt)
+    if not overlay:isFading() then lurek.log.debug("fade done", "fx") end
+  end
+end
+```
+
+### LOverlay:isFilmGrainEnabled
+
+`LOverlay:isFilmGrainEnabled() -> boolean`
+
+Returns whether overlay film grain rendering is enabled.
+
+**Returns**: `boolean` - True when film grain rendering is enabled.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether overlay film grain rendering is enabled.
+---@return boolean True when film grain rendering is enabled.
+function LOverlay:isFilmGrainEnabled() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  local overlay = lurek.effect.newOverlay()
+  if overlay:isFilmGrainEnabled() then
+    lurek.log.debug("grain layer is live", "fx")
+  end
+end
+```
+
+### LOverlay:isFlashing
+
+`LOverlay:isFlashing() -> boolean`
+
+Returns whether the flash overlay is active.
+
+**Returns**: `boolean` - True while the flash is active.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether the flash overlay is active.
+---@return boolean True while the flash is active.
+function LOverlay:isFlashing() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Use isFlashing() to suppress input or skip other visual effects
+  -- while a flash is in progress (e.g. damage feedback).
+  local overlay = lurek.effect.newOverlay()
+  overlay:flash(1, 0, 0, 1, 0.2)  -- red damage flash
+  if overlay:isFlashing() then
+    lurek.log.debug("ignoring input during damage flash", "input")
+  end
+end
+```
+
+### LOverlay:isFogEnabled
+
+`LOverlay:isFogEnabled() -> boolean`
+
+Returns whether overlay fog rendering is enabled.
+
+**Returns**: `boolean` - True when fog rendering is enabled.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether overlay fog rendering is enabled.
+---@return boolean True when fog rendering is enabled.
+function LOverlay:isFogEnabled() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  local overlay = lurek.effect.newOverlay()
+  if not overlay:isFogEnabled() then
+    overlay:setFogEnabled(true)
+  end
+end
+```
+
+### LOverlay:isHeatHazeEnabled
+
+`LOverlay:isHeatHazeEnabled() -> boolean`
+
+Returns whether overlay heat haze rendering is enabled.
+
+**Returns**: `boolean` - True when heat haze rendering is enabled.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether overlay heat haze rendering is enabled.
+---@return boolean True when heat haze rendering is enabled.
+function LOverlay:isHeatHazeEnabled() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  local overlay = lurek.effect.newOverlay()
+  if overlay:isHeatHazeEnabled() then
+    lurek.log.debug("heat haze on", "fx")
+  end
+end
+```
+
+### LOverlay:isShaking
+
+`LOverlay:isShaking() -> boolean`
+
+Returns whether the screen shake effect is active.
+
+**Returns**: `boolean` - True while screen shake is active.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether the screen shake effect is active.
+---@return boolean True while screen shake is active.
+function LOverlay:isShaking() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  local overlay = lurek.effect.newOverlay()
+  overlay:shake(6.0, 0.25)
+  if overlay:isShaking() then
+    lurek.log.debug("camera shaking", "fx")
+  end
+end
+```
+
+### LOverlay:isVignetteEnabled
+
+`LOverlay:isVignetteEnabled() -> boolean`
+
+Returns whether overlay vignette rendering is enabled.
+
+**Returns**: `boolean` - True when vignette rendering is enabled.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether overlay vignette rendering is enabled.
+---@return boolean True when vignette rendering is enabled.
+function LOverlay:isVignetteEnabled() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  local overlay = lurek.effect.newOverlay()
+  if overlay:isVignetteEnabled() then
+    overlay:setVignetteStrength(0.7)
+  end
+end
+```
+
+### LOverlay:isWeatherEnabled
+
+`LOverlay:isWeatherEnabled() -> boolean`
+
+Returns whether overlay weather rendering is enabled.
+
+**Returns**: `boolean` - True when weather rendering is enabled.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether overlay weather rendering is enabled.
+---@return boolean True when weather rendering is enabled.
+function LOverlay:isWeatherEnabled() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  local overlay = lurek.effect.newOverlay()
+  if overlay:isWeatherEnabled() then
+    lurek.log.debug("weather active = " .. overlay:getWeather(), "weather")
+  end
+end
+```
+
+### LOverlay:pullAmbientFromLight
+
+`LOverlay:pullAmbientFromLight()`
+
+Copies ambient color from the shared light world into this overlay.
+
+**Lua API Stub**
+
+```lua
+--- Copies ambient color from the shared light world into this overlay.
+function LOverlay:pullAmbientFromLight() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- pullAmbientFromLight() reads the current light system ambient color
+  -- and applies it to this overlay. Use when the light system is the
+  -- source of truth and the overlay should mirror it.
+  local overlay = lurek.effect.newOverlay()
+  overlay:pullAmbientFromLight()
+end
+```
+
+### LOverlay:pushAmbientToLight
+
+`LOverlay:pushAmbientToLight()`
+
+Copies this overlay ambient color into the shared light world.
+
+**Lua API Stub**
+
+```lua
+--- Copies this overlay ambient color into the shared light world.
+function LOverlay:pushAmbientToLight() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- pushAmbientToLight() writes the overlay's ambient color into the
+  -- shared light world. Use when the overlay (e.g. time-of-day) drives
+  -- the lighting and point lights should blend with overlay ambient.
+  local overlay = lurek.effect.newOverlay()
+  overlay:pushAmbientToLight()
+end
+```
+
+### LOverlay:render
+
+`LOverlay:render()`
+
+Queues renderer commands for the overlay's current visual state.
+
+**Lua API Stub**
+
+```lua
+--- Queues renderer commands for the overlay's current visual state.
+function LOverlay:render() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Call render() in your draw callback to display overlay effects.
+  -- Typically called AFTER scene drawing and AFTER post-fx apply.
+  local overlay = lurek.effect.newOverlay()
+  function lurek.draw_ui()
+    overlay:render()
+  end
+end
+```
+
+### LOverlay:resize
+
+`LOverlay:resize(w: integer, h: integer)`
+
+Resizes the overlay target dimensions.
+
+**Parameters**
+
+- `w` (`integer`, required): New width in pixels.
+- `h` (`integer`, required): New height in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Resizes the overlay target dimensions.
+---@param w number New width in pixels.
+---@param h number New height in pixels.
+function LOverlay:resize(w, h) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Call resize() when the window or render target changes size.
+  -- The overlay adapts its internal buffers to the new dimensions.
+  local overlay = lurek.effect.newOverlay(800, 600)
+  overlay:resize(1920, 1080)
+  lurek.log.info("overlay resized to " .. overlay:getWidth() .. "x" .. overlay:getHeight(), "fx")
+end
+```
+
+### LOverlay:setAmbientColor
+
+`LOverlay:setAmbientColor(r: number, g: number, b: number, [a]: number)`
+
+Sets the overlay ambient color from RGBA channels.
+
+**Parameters**
+
+- `r` (`number`, required): Red channel.
+- `g` (`number`, required): Green channel.
+- `b` (`number`, required): Blue channel.
+- `a` (`number`, optional): Alpha channel, defaulting to 1.0.
+
+**Lua API Stub**
+
+```lua
+--- Sets the overlay ambient color from RGBA channels.
+---@param r number Red channel.
+---@param g number Green channel.
+---@param b number Blue channel.
+---@param a? number Alpha channel, defaulting to 1.0.
+function LOverlay:setAmbientColor(r, g, b, a) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Manually set ambient color instead of using time-of-day auto-calculation.
+  -- Use for indoor scenes where time-of-day does not apply.
+  local overlay = lurek.effect.newOverlay(800, 600)
+  overlay:setAmbientEnabled(true)
+  overlay:setAmbientColor(0.1, 0.1, 0.3, 0.6)  -- blue-ish night indoor
+  lurek.log.info("ambient colour set", "effect")
+end
+```
+
+### LOverlay:setAmbientEnabled
+
+`LOverlay:setAmbientEnabled(v: boolean)`
+
+Enables or disables overlay ambient color rendering.
+
+**Parameters**
+
+- `v` (`boolean`, required): New ambient enabled flag.
+
+**Lua API Stub**
+
+```lua
+--- Enables or disables overlay ambient color rendering.
+---@param v boolean New ambient enabled flag.
+function LOverlay:setAmbientEnabled(v) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Ambient color tints the entire scene (like time-of-day lighting).
+  -- Enable it, then set the time or color manually.
+  local overlay = lurek.effect.newOverlay()
+  overlay:setAmbientEnabled(true)
+  overlay:setTimeOfDay(20.0)  -- evening warm tint
+end
+```
+
+### LOverlay:setCloudCount
+
+`LOverlay:setCloudCount(v: integer)`
+
+Sets the overlay cloud shadow count.
+
+**Parameters**
+
+- `v` (`integer`, required): Cloud shadow count.
+
+**Lua API Stub**
+
+```lua
+--- Sets the overlay cloud shadow count.
+---@param v number Cloud shadow count.
+function LOverlay:setCloudCount(v) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- More clouds = more shadow patches. 4-8 for light cover, 12+ for overcast.
+  local overlay = lurek.effect.newOverlay()
+  overlay:setCloudShadows(true)
+  overlay:setCloudCount(12)
+end
+```
+
+### LOverlay:setCloudOpacity
+
+`LOverlay:setCloudOpacity(v: number)`
+
+Sets cloud shadow opacity. This method is available to Lua scripts.
+
+**Parameters**
+
+- `v` (`number`, required): Cloud opacity value.
+
+**Lua API Stub**
+
+```lua
+--- Sets cloud shadow opacity. This method is available to Lua scripts.
+---@param v number Cloud opacity value.
+function LOverlay:setCloudOpacity(v) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Opacity 0.0-1.0: how dark the shadows are.
+  -- 0.2-0.4 for subtle realism, 0.7+ for dramatic overcast.
+  local overlay = lurek.effect.newOverlay()
+  overlay:setCloudShadows(true)
+  overlay:setCloudOpacity(0.35)
+end
+```
+
+### LOverlay:setCloudScale
+
+`LOverlay:setCloudScale(v: number)`
+
+Sets cloud shadow scale. This method is available to Lua scripts.
+
+**Parameters**
+
+- `v` (`number`, required): Cloud scale value.
+
+**Lua API Stub**
+
+```lua
+--- Sets cloud shadow scale. This method is available to Lua scripts.
+---@param v number Cloud scale value.
+function LOverlay:setCloudScale(v) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Scale multiplier for shadow size. 1.0 = default, 2.0 = double size.
+  -- Larger clouds feel higher altitude; smaller feel lower, more detailed.
+  local overlay = lurek.effect.newOverlay()
+  overlay:setCloudShadows(true)
+  overlay:setCloudScale(1.5)
+end
+```
+
+### LOverlay:setCloudShadows
+
+`LOverlay:setCloudShadows(v: boolean)`
+
+Enables or disables overlay cloud shadow rendering.
+
+**Parameters**
+
+- `v` (`boolean`, required): New cloud shadow enabled flag.
+
+**Lua API Stub**
+
+```lua
+--- Enables or disables overlay cloud shadow rendering.
+---@param v boolean New cloud shadow enabled flag.
+function LOverlay:setCloudShadows(v) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Cloud shadows cast moving dark patches across the scene.
+  -- Great for open-world top-down games to add life to the environment.
+  local overlay = lurek.effect.newOverlay()
+  overlay:setCloudShadows(true)
+  overlay:setCloudCount(8)
+end
+```
+
+### LOverlay:setCloudSpeed
+
+`LOverlay:setCloudSpeed(v: number)`
+
+Sets cloud shadow movement speed. This method is available to Lua scripts.
+
+**Parameters**
+
+- `v` (`number`, required): Cloud speed value.
+
+**Lua API Stub**
+
+```lua
+--- Sets cloud shadow movement speed. This method is available to Lua scripts.
+---@param v number Cloud speed value.
+function LOverlay:setCloudSpeed(v) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Speed in pixels/second. Higher = windier day, faster shadow movement.
+  local overlay = lurek.effect.newOverlay()
+  overlay:setCloudShadows(true)
+  overlay:setCloudSpeed(40.0)
+end
+```
+
+### LOverlay:setCustomShader
+
+`LOverlay:setCustomShader([name]: string)`
+
+Sets or clears the custom overlay shader name.
+
+**Parameters**
+
+- `name` (`string`, optional): Optional shader name; nil clears the custom shader.
+
+**Lua API Stub**
+
+```lua
+--- Sets or clears the custom overlay shader name.
+---@param name? string Optional shader name; nil clears the custom shader.
+function LOverlay:setCustomShader(name) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Override the default overlay rendering with a custom WGSL shader.
+  -- Pass nil to revert to the default overlay shader.
+  -- The shader receives overlay uniforms (time, weather state, etc).
+  local overlay = lurek.effect.newOverlay()
+  overlay:setCustomShader("shaders/post_grade.wgsl")
+  -- overlay:setCustomShader(nil)  -- revert to default later
+end
+```
+
+### LOverlay:setFilmGrainEnabled
+
+`LOverlay:setFilmGrainEnabled(v: boolean)`
+
+Enables or disables overlay film grain rendering.
+
+**Parameters**
+
+- `v` (`boolean`, required): New film grain enabled flag.
+
+**Lua API Stub**
+
+```lua
+--- Enables or disables overlay film grain rendering.
+---@param v boolean New film grain enabled flag.
+function LOverlay:setFilmGrainEnabled(v) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Film grain adds animated noise over the image. Use for horror games,
+  -- retro VHS looks, or subtle texture on flat-shaded art.
+  local overlay = lurek.effect.newOverlay()
+  overlay:setFilmGrainEnabled(true)
+  overlay:setFilmGrainIntensity(0.25)
+end
+```
+
+### LOverlay:setFilmGrainIntensity
+
+`LOverlay:setFilmGrainIntensity(v: number)`
+
+Sets overlay film grain intensity.
+
+**Parameters**
+
+- `v` (`number`, required): Film grain intensity value.
+
+**Lua API Stub**
+
+```lua
+--- Sets overlay film grain intensity.
+---@param v number Film grain intensity value.
+function LOverlay:setFilmGrainIntensity(v) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Intensity 0.0-1.0. Subtle (0.1-0.2) adds texture without distraction.
+  -- Heavy (0.5+) for deliberate stylistic effect.
+  local overlay = lurek.effect.newOverlay()
+  overlay:setFilmGrainEnabled(true)
+  overlay:setFilmGrainIntensity(0.18)
+end
+```
+
+### LOverlay:setFogColor
+
+`LOverlay:setFogColor(r: number, g: number, b: number, [a]: number)`
+
+Sets the overlay fog color from RGBA channels.
+
+**Parameters**
+
+- `r` (`number`, required): Red channel.
+- `g` (`number`, required): Green channel.
+- `b` (`number`, required): Blue channel.
+- `a` (`number`, optional): Alpha channel, defaulting to 1.0.
+
+**Lua API Stub**
+
+```lua
+--- Sets the overlay fog color from RGBA channels.
+---@param r number Red channel.
+---@param g number Green channel.
+---@param b number Blue channel.
+---@param a? number Alpha channel, defaulting to 1.0.
+function LOverlay:setFogColor(r, g, b, a) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Set fog color to match your environment. Alpha is optional (defaults 1.0).
+  -- Gray-blue for mountains, green-yellow for swamps, brown for dust storms.
+  local overlay = lurek.effect.newOverlay(800, 600)
+  overlay:setFogEnabled(true)
+  overlay:setFogColor(0.6, 0.6, 0.7)  -- cool gray mountain fog
+  lurek.log.info("fog colour set", "effect")
+end
+```
+
+### LOverlay:setFogDensity
+
+`LOverlay:setFogDensity(v: number)`
+
+Sets overlay fog density. This method is available to Lua scripts.
+
+**Parameters**
+
+- `v` (`number`, required): Fog density value.
+
+**Lua API Stub**
+
+```lua
+--- Sets overlay fog density. This method is available to Lua scripts.
+---@param v number Fog density value.
+function LOverlay:setFogDensity(v) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Density 0.0-1.0: higher = thicker fog, less scene visibility.
+  -- Animate this for rolling fog effects.
+  local overlay = lurek.effect.newOverlay()
+  overlay:setFogEnabled(true)
+  local target = 0.6
+  overlay:setFogDensity(target)
+end
+```
+
+### LOverlay:setFogEnabled
+
+`LOverlay:setFogEnabled(v: boolean)`
+
+Enables or disables overlay fog rendering.
+
+**Parameters**
+
+- `v` (`boolean`, required): New fog enabled flag.
+
+**Lua API Stub**
+
+```lua
+--- Enables or disables overlay fog rendering.
+---@param v boolean New fog enabled flag.
+function LOverlay:setFogEnabled(v) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Fog renders a colored overlay that simulates distance fog or mist.
+  -- Combine with density and color for atmospheric depth.
+  local overlay = lurek.effect.newOverlay()
+  overlay:setFogEnabled(true)
+  overlay:setFogDensity(0.4)
+end
+```
+
+### LOverlay:setHeatHazeEnabled
+
+`LOverlay:setHeatHazeEnabled(v: boolean)`
+
+Enables or disables overlay heat haze rendering.
+
+**Parameters**
+
+- `v` (`boolean`, required): New heat haze enabled flag.
+
+**Lua API Stub**
+
+```lua
+--- Enables or disables overlay heat haze rendering.
+---@param v boolean New heat haze enabled flag.
+function LOverlay:setHeatHazeEnabled(v) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Heat haze simulates air distortion above hot surfaces.
+  -- Great for desert scenes, furnaces, or fire.
+  local overlay = lurek.effect.newOverlay()
+  overlay:setHeatHazeEnabled(true)
+  overlay:setHeatHazeIntensity(0.5)
+end
+```
+
+### LOverlay:setHeatHazeIntensity
+
+`LOverlay:setHeatHazeIntensity(v: number)`
+
+Sets overlay heat haze intensity. This method is available to Lua scripts.
+
+**Parameters**
+
+- `v` (`number`, required): Heat haze intensity value.
+
+**Lua API Stub**
+
+```lua
+--- Sets overlay heat haze intensity. This method is available to Lua scripts.
+---@param v number Heat haze intensity value.
+function LOverlay:setHeatHazeIntensity(v) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Intensity 0.0-1.0. Derive from game temperature for realism.
+  -- Example: haze appears above 30C, full intensity at 50C.
+  local overlay = lurek.effect.newOverlay()
+  overlay:setHeatHazeEnabled(true)
+  local temp_c = 42
+  overlay:setHeatHazeIntensity(math.min(1.0, math.max(0.0, (temp_c - 30) / 20)))
+end
+```
+
+### LOverlay:setLightningColor
+
+`LOverlay:setLightningColor(r: number, g: number, b: number, [a]: number)`
+
+Sets overlay lightning RGBA color.
+
+**Parameters**
+
+- `r` (`number`, required): Red channel.
+- `g` (`number`, required): Green channel.
+- `b` (`number`, required): Blue channel.
+- `a` (`number`, optional): Alpha channel, defaulting to 1.0.
+
+**Lua API Stub**
+
+```lua
+--- Sets overlay lightning RGBA color.
+---@param r number Red channel.
+---@param g number Green channel.
+---@param b number Blue channel.
+---@param a? number Alpha channel, defaulting to 1.0.
+function LOverlay:setLightningColor(r, g, b, a) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Default is bright white. Set to purple for arcane storms,
+  -- green for toxic environments, etc.
+  local overlay = lurek.effect.newOverlay(800, 600)
+  overlay:setLightningColor(0.9, 0.95, 1.0)  -- slightly blue-white
+  lurek.log.info("lightning colour set", "effect")
+end
+```
+
+### LOverlay:setTimeOfDay
+
+`LOverlay:setTimeOfDay(v: number)`
+
+Sets the overlay time-of-day value used by ambient effects.
+
+**Parameters**
+
+- `v` (`number`, required): Time-of-day value stored on the overlay ambient state.
+
+**Lua API Stub**
+
+```lua
+--- Sets the overlay time-of-day value used by ambient effects.
+---@param v number Time-of-day value stored on the overlay ambient state.
+function LOverlay:setTimeOfDay(v) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Time-of-day is a float (0-24 hours) that drives the ambient color
+  -- curve: dawn warm, midday bright, dusk orange, night blue.
+  local overlay = lurek.effect.newOverlay()
+  overlay:setAmbientEnabled(true)
+  overlay:setTimeOfDay(7.5)  -- early morning
+end
+```
+
+### LOverlay:setVignetteEnabled
+
+`LOverlay:setVignetteEnabled(v: boolean)`
+
+Enables or disables overlay vignette rendering.
+
+**Parameters**
+
+- `v` (`boolean`, required): New vignette enabled flag.
+
+**Lua API Stub**
+
+```lua
+--- Enables or disables overlay vignette rendering.
+---@param v boolean New vignette enabled flag.
+function LOverlay:setVignetteEnabled(v) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Overlay vignette darkens screen edges independently of post-fx.
+  -- Use when you want vignette without a full post-processing stack.
+  local overlay = lurek.effect.newOverlay()
+  overlay:setVignetteEnabled(true)
+  overlay:setVignetteStrength(0.55)
+end
+```
+
+### LOverlay:setVignetteStrength
+
+`LOverlay:setVignetteStrength(v: number)`
+
+Sets overlay vignette strength. This method is available to Lua scripts.
+
+**Parameters**
+
+- `v` (`number`, required): Vignette strength value.
+
+**Lua API Stub**
+
+```lua
+--- Sets overlay vignette strength. This method is available to Lua scripts.
+---@param v number Vignette strength value.
+function LOverlay:setVignetteStrength(v) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Strength 0.0-1.0: 0 = no effect, 1.0 = maximum edge darkening.
+  -- Increase when the player is low on health for a tunnel-vision feel.
+  local overlay = lurek.effect.newOverlay()
+  overlay:setVignetteEnabled(true)
+  overlay:setVignetteStrength(0.45)
+end
+```
+
+### LOverlay:setWater
+
+`LOverlay:setWater(amplitude: number, frequency: number, speed: number)`
+
+Enables water distortion and sets wave amplitude, frequency, and speed.
+
+**Parameters**
+
+- `amplitude` (`number`, required): Water wave amplitude.
+- `frequency` (`number`, required): Water wave frequency.
+- `speed` (`number`, required): Water animation speed.
+
+**Lua API Stub**
+
+```lua
+--- Enables water distortion and sets wave amplitude, frequency, and speed.
+---@param amplitude number Water wave amplitude.
+---@param frequency number Water wave frequency.
+---@param speed number Water animation speed.
+function LOverlay:setWater(amplitude, frequency, speed) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- setWater(amplitude, frequency, speed): enables underwater distortion.
+  -- amplitude = wave height in UV space (0.01-0.05 typical)
+  -- frequency = number of wave cycles (8-20 typical)
+  -- speed = animation speed multiplier
+  local overlay = lurek.effect.newOverlay(800, 600)
+  overlay:setWater(0.02, 12.0, 1.5)
+  lurek.log.info("water effect set", "effect")
+end
+```
+
+### LOverlay:setWaterTint
+
+`LOverlay:setWaterTint(r: number, g: number, b: number, strength: number)`
+
+Sets the water tint color and strength.
+
+**Parameters**
+
+- `r` (`number`, required): Red channel.
+- `g` (`number`, required): Green channel.
+- `b` (`number`, required): Blue channel.
+- `strength` (`number`, required): Tint strength.
+
+**Lua API Stub**
+
+```lua
+--- Sets the water tint color and strength.
+---@param r number Red channel.
+---@param g number Green channel.
+---@param b number Blue channel.
+---@param strength number Tint strength.
+function LOverlay:setWaterTint(r, g, b, strength) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- setWaterTint(r, g, b, strength): adds a color wash over the water effect.
+  -- strength 0.0-1.0 controls how much the tint affects the final image.
+  -- Blue-green for ocean, dark green for swamp, clear for shallow streams.
+  local overlay = lurek.effect.newOverlay(800, 600)
+  overlay:setWater(0.02, 12.0, 1.5)
+  overlay:setWaterTint(0.2, 0.6, 0.8, 0.5)  -- ocean blue tint
+  lurek.log.info("water tint set", "effect")
+end
+```
+
+### LOverlay:setWeather
+
+`LOverlay:setWeather(name: string)`
+
+Sets the overlay weather type by name.
+
+**Parameters**
+
+- `name` (`string`, required): Weather type name recognized by the engine.
+
+**Lua API Stub**
+
+```lua
+--- Sets the overlay weather type by name.
+---@param name string Weather type name recognized by the engine.
+function LOverlay:setWeather(name) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Available weather types depend on the engine; common ones:
+  -- "rain", "snow", "ash", "leaves", "dust", "none".
+  -- Combine with wind and intensity for the full effect.
+  local overlay = lurek.effect.newOverlay()
+  overlay:setWeather("snow")
+  overlay:setWeatherEnabled(true)
+  overlay:setWeatherIntensity(0.7)
+end
+```
+
+### LOverlay:setWeatherEnabled
+
+`LOverlay:setWeatherEnabled(v: boolean)`
+
+Enables or disables overlay weather rendering.
+
+**Parameters**
+
+- `v` (`boolean`, required): New weather enabled flag.
+
+**Lua API Stub**
+
+```lua
+--- Enables or disables overlay weather rendering.
+---@param v boolean New weather enabled flag.
+function LOverlay:setWeatherEnabled(v) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Weather must be both named (setWeather) AND enabled to render.
+  -- This lets you pre-configure weather without showing it yet.
+  local overlay = lurek.effect.newOverlay()
+  overlay:setWeather("rain")
+  overlay:setWeatherEnabled(true)
+end
+```
+
+### LOverlay:setWeatherIntensity
+
+`LOverlay:setWeatherIntensity(v: number)`
+
+Sets weather intensity for the current weather type.
+
+**Parameters**
+
+- `v` (`number`, required): Weather intensity value.
+
+**Lua API Stub**
+
+```lua
+--- Sets weather intensity for the current weather type.
+---@param v number Weather intensity value.
+function LOverlay:setWeatherIntensity(v) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Intensity 0.0-1.0: controls particle density/speed.
+  -- 0.3 = light drizzle, 0.7 = steady rain, 1.0 = downpour.
+  local overlay = lurek.effect.newOverlay()
+  overlay:setWeather("rain")
+  overlay:setWeatherIntensity(0.85)
+end
+```
+
+### LOverlay:setWindDirection
+
+`LOverlay:setWindDirection(v: number)`
+
+Sets the overlay weather wind direction.
+
+**Parameters**
+
+- `v` (`number`, required): Wind direction value.
+
+**Lua API Stub**
+
+```lua
+--- Sets the overlay weather wind direction.
+---@param v number Wind direction value.
+function LOverlay:setWindDirection(v) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Wind direction in radians affects weather particle drift angle.
+  -- 0 = right, pi/2 = down, pi = left, 3pi/2 = up.
+  -- Combine with wind speed for believable weather.
+  local overlay = lurek.effect.newOverlay()
+  overlay:setWindDirection(math.pi / 4)  -- diagonal down-right
+  overlay:setWindSpeed(60.0)
+end
+```
+
+### LOverlay:setWindSpeed
+
+`LOverlay:setWindSpeed(v: number)`
+
+Sets the overlay weather wind speed.
+
+**Parameters**
+
+- `v` (`number`, required): Wind speed value.
+
+**Lua API Stub**
+
+```lua
+--- Sets the overlay weather wind speed.
+---@param v number Wind speed value.
+function LOverlay:setWindSpeed(v) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Wind speed in pixels/second. Affects weather particles and clouds.
+  -- 20-40 = gentle breeze, 80-120 = strong wind, 200+ = storm.
+  local overlay = lurek.effect.newOverlay()
+  overlay:setWindSpeed(120.0)
+  overlay:setCloudSpeed(60.0)  -- clouds move slower than rain
+end
+```
+
+### LOverlay:shake
+
+`LOverlay:shake(intensity: number, [dur]: number)`
+
+Starts a screen shake with optional duration.
+
+**Parameters**
+
+- `intensity` (`number`, required): Shake intensity.
+- `dur` (`number`, optional): Duration in seconds, defaulting to 0.5.
+
+**Lua API Stub**
+
+```lua
+--- Starts a screen shake with optional duration.
+---@param intensity number Shake intensity.
+---@param dur? number Duration in seconds, defaulting to 0.5.
+function LOverlay:shake(intensity, dur) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- shake(intensity, duration): intensity = max pixel offset, duration in seconds.
+  -- Omit duration to use the default (0.5s).
+  -- Apply getShakeOffset() to camera translation each frame.
+  local overlay = lurek.effect.newOverlay()
+  overlay:shake(12.0, 0.35)  -- heavy explosion impact
+  function lurek.process(dt) overlay:update(dt) end
+end
+```
+
+### LOverlay:syncAmbientWithLight
+
+`LOverlay:syncAmbientWithLight(mode: string)`
+
+Resolves overlay and light ambient colors using a named mode and writes both stores.
+
+**Parameters**
+
+- `mode` (`string`, required): One of `light`, `overlay`, `avg`, `max`, or `min`.
+
+**Lua API Stub**
+
+```lua
+--- Resolves overlay and light ambient colors using a named mode and writes both stores.
+---@param mode string One of `light`, `overlay`, `avg`, `max`, or `min`.
+function LOverlay:syncAmbientWithLight(mode) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- syncAmbientWithLight(mode) merges overlay and light ambient colors.
+  -- Modes: "light" (use light's value), "overlay" (use overlay's value),
+  -- "avg" (average both), "max" (take brighter), "min" (take darker).
+  -- After sync, both stores contain the resolved color.
+  local overlay = lurek.effect.newOverlay()
+  overlay:syncAmbientWithLight("avg")
+end
+```
+
+### LOverlay:triggerFade
+
+`LOverlay:triggerFade(r: number, g: number, b: number, target_alpha: number, duration: number)`
+
+Starts a fade overlay toward a target alpha.
+
+**Parameters**
+
+- `r` (`number`, required): Red channel.
+- `g` (`number`, required): Green channel.
+- `b` (`number`, required): Blue channel.
+- `target_alpha` (`number`, required): Target alpha value.
+- `duration` (`number`, required): Fade duration in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Starts a fade overlay toward a target alpha.
+---@param r number Red channel.
+---@param g number Green channel.
+---@param b number Blue channel.
+---@param target_alpha number Target alpha value.
+---@param duration number Fade duration in seconds.
+function LOverlay:triggerFade(r, g, b, target_alpha, duration) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- triggerFade(r, g, b, target_alpha, duration): explicit version of fade().
+  -- Use when you need precise control over start vs target alpha.
+  local overlay = lurek.effect.newOverlay(800, 600)
+  overlay:triggerFade(0, 0, 0, 1.0, 1.5)  -- 1.5s fade to full black
+  lurek.log.info("fade out triggered", "effect")
+end
+```
+
+### LOverlay:triggerFlash
+
+`LOverlay:triggerFlash(r: number, g: number, b: number, a: number, duration: number)`
+
+Starts a screen flash with explicit RGBA color and duration.
+
+**Parameters**
+
+- `r` (`number`, required): Red channel.
+- `g` (`number`, required): Green channel.
+- `b` (`number`, required): Blue channel.
+- `a` (`number`, required): Alpha channel.
+- `duration` (`number`, required): Flash duration in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Starts a screen flash with explicit RGBA color and duration.
+---@param r number Red channel.
+---@param g number Green channel.
+---@param b number Blue channel.
+---@param a number Alpha channel.
+---@param duration number Flash duration in seconds.
+function LOverlay:triggerFlash(r, g, b, a, duration) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- triggerFlash(r, g, b, a, duration): explicit version of flash().
+  -- Use when you want full control over all parameters.
+  local overlay = lurek.effect.newOverlay(800, 600)
+  overlay:triggerFlash(1.0, 0.0, 0.0, 0.8, 0.12)  -- brief red damage flash
+  lurek.log.info("flash triggered", "effect")
+end
+```
+
+### LOverlay:triggerLightning
+
+`LOverlay:triggerLightning()`
+
+Starts a lightning flash using the overlay lightning state.
+
+**Lua API Stub**
+
+```lua
+--- Starts a lightning flash using the overlay lightning state.
+function LOverlay:triggerLightning() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- triggerLightning() creates a sudden bright flash that decays over time.
+  -- The flash color is controlled by setLightningColor().
+  -- Use during storm weather for dramatic atmosphere.
+  local overlay = lurek.effect.newOverlay()
+  overlay:triggerLightning()
+  lurek.log.info("lightning fired alpha=" .. overlay:getLightningAlpha(), "weather")
+end
+```
+
+### LOverlay:triggerShake
+
+`LOverlay:triggerShake(intensity: number, duration: number)`
+
+Starts a screen shake effect. This method is available to Lua scripts.
+
+**Parameters**
+
+- `intensity` (`number`, required): Shake intensity.
+- `duration` (`number`, required): Shake duration in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Starts a screen shake effect. This method is available to Lua scripts.
+---@param intensity number Shake intensity.
+---@param duration number Shake duration in seconds.
+function LOverlay:triggerShake(intensity, duration) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- triggerShake(intensity, duration): explicit version of shake().
+  -- intensity = max pixel displacement, duration in seconds.
+  -- Use for explosions, heavy landings, or boss attacks.
+  local overlay = lurek.effect.newOverlay(800, 600)
+  overlay:triggerShake(8.0, 0.4)
+  lurek.log.info("shake triggered", "effect")
+end
+```
+
+### LOverlay:type
+
+`LOverlay:type() -> string`
+
+Returns the Lua-visible type name for this overlay handle.
+
+**Returns**: `string` - The string `LOverlay`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this overlay handle.
+---@return string The string `LOverlay`.
+function LOverlay:type() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  local overlay = lurek.effect.newOverlay()
+  lurek.log.info("Overlay:type = " .. overlay:type(), "fx")
+end
+```
+
+### LOverlay:typeOf
+
+`LOverlay:typeOf(name: string) -> boolean`
+
+Returns whether this overlay handle matches a supported type name.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to compare against `Overlay` and `Object`.
+
+**Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this overlay handle matches a supported type name.
+---@param name string Type name to compare against `Overlay` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LOverlay:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  local overlay = lurek.effect.newOverlay()
+  lurek.log.info("is Object: " .. tostring(overlay:typeOf("Object")), "fx")
+end
+```
+
+### LOverlay:update
+
+`LOverlay:update(dt: number)`
+
+Advances overlay timers and animated effect state.
+
+**Parameters**
+
+- `dt` (`number`, required): Delta time in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Advances overlay timers and animated effect state.
+---@param dt number Delta time in seconds.
+function LOverlay:update(dt) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Call every frame to animate weather, shake decay, and flash fade.
+  local overlay = lurek.effect.newOverlay()
+  overlay:shake(4.0, 0.3)
+  function lurek.process(dt)
+    overlay:update(dt)
+  end
+end
+```
+
+### LPostFxEffect:disableAutoUniforms
+
+`LPostFxEffect:disableAutoUniforms()`
+
+Disables automatic time and resolution uniforms for this effect.
+
+**Lua API Stub**
+
+```lua
+--- Disables automatic time and resolution uniforms for this effect.
+function LPostFxEffect:disableAutoUniforms() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Disable if you need full control over all 4 parameter slots (p[0]-p[3]).
+  -- When disabled, p[3] is free for your own shader parameters.
+  local fx = lurek.effect.newCustomEffect(0)
+  fx:enableAutoUniforms()
+  fx:disableAutoUniforms()
+  lurek.log.debug("auto_uniforms=" .. tostring(fx:isAutoUniforms()), "fx")
+end
+```
+
+### LPostFxEffect:enableAutoUniforms
+
+`LPostFxEffect:enableAutoUniforms()`
+
+Enables automatic time and resolution uniforms for this effect.
+
+**Lua API Stub**
+
+```lua
+--- Enables automatic time and resolution uniforms for this effect.
+function LPostFxEffect:enableAutoUniforms() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- When enabled, the engine automatically writes time, frame count,
+  -- and resolution into PostFxParams.p[3] every frame:
+  --   p[3].x = elapsed time (seconds)
+  --   p[3].y = frame count (f32)
+  --   p[3].z = render target width (pixels)
+  --   p[3].w = render target height (pixels)
+  -- This saves you from manually setting these common uniforms.
+  local fx = lurek.effect.newCustomEffect(0)
+  fx:enableAutoUniforms()
+  lurek.log.debug("enableAutoUniforms called", "fx")
+end
+```
+
+### LPostFxEffect:getEffectType
+
+`LPostFxEffect:getEffectType() -> string`
+
+Returns the renderer effect type name.
+
+**Returns**: `string` - Effect type name used by the renderer.
+
+**Lua API Stub**
+
+```lua
+--- Returns the renderer effect type name.
+---@return string Effect type name used by the renderer.
+function LPostFxEffect:getEffectType() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- getEffectType() returns the renderer-level type name.
+  -- For built-in effects this matches getTypeName().
+  local eff = lurek.effect.newEffect("sepia")
+  local kind = eff:getEffectType()
+  lurek.log.info("kind=" .. kind, "fx")
+end
+```
+
+### LPostFxEffect:getParameter
+
+`LPostFxEffect:getParameter(name: string, [default]: number) -> number`
+
+Reads a numeric shader parameter and falls back to a default value when missing.
+
+**Parameters**
+
+- `name` (`string`, required): Parameter name to read.
+- `default` (`number`, optional): Default value returned when the parameter is absent.
+
+**Returns**: `number` - Stored parameter value or the supplied default.
+
+**Lua API Stub**
+
+```lua
+--- Reads a numeric shader parameter and falls back to a default value when missing.
+---@param name string Parameter name to read.
+---@param default? number Default value returned when the parameter is absent.
+---@return number Stored parameter value or the supplied default.
+function LPostFxEffect:getParameter(name, default) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- getParameter(name, default): returns the stored value or the default.
+  -- Use to read back current settings for UI display or serialization.
+  local stack = lurek.effect.newStack(800, 600)
+  stack:add(lurek.effect.newEffect("bloom"))
+  local effect = assert(stack:getEffect(1))
+  local intensity = effect:getParameter("intensity")
+  lurek.log.info("bloom intensity: " .. tostring(intensity), "effect")
+end
+```
+
+### LPostFxEffect:getParameterNames
+
+`LPostFxEffect:getParameterNames() -> string[]`
+
+Returns the parameter names stored on this effect.
+
+**Returns**: `string[]` - Parameter name strings.
+
+**Lua API Stub**
+
+```lua
+--- Returns the parameter names stored on this effect.
+---@return string[] Parameter name strings.
+function LPostFxEffect:getParameterNames() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Enumerate all tunable parameters for an effect.
+  -- Use this to build dynamic UI sliders or dump effect state.
+  local eff = lurek.effect.newEffect("colourgrade")
+  for _, name in ipairs(eff:getParameterNames()) do
+    lurek.log.info("colourgrade param: " .. name, "fx-edit")
+  end
+end
+```
+
+### LPostFxEffect:getType
+
+`LPostFxEffect:getType() -> string`
+
+Returns the renderer effect type name.
+
+**Returns**: `string` - Effect type name used by the renderer.
+
+**Lua API Stub**
+
+```lua
+--- Returns the renderer effect type name.
+---@return string Effect type name used by the renderer.
+function LPostFxEffect:getType() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- getType() is equivalent to getEffectType() — use whichever reads
+  -- better in your code.
+  local eff = lurek.effect.newEffect("invert")
+  if eff:getType() == "invert" then
+    lurek.log.debug("invert pass detected", "fx")
+  end
+end
+```
+
+### LPostFxEffect:getTypeName
+
+`LPostFxEffect:getTypeName() -> string`
+
+Returns the built-in or custom effect type name.
+
+**Returns**: `string` - Effect type name used by the renderer.
+
+**Lua API Stub**
+
+```lua
+--- Returns the built-in or custom effect type name.
+---@return string Effect type name used by the renderer.
+function LPostFxEffect:getTypeName() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- getTypeName() returns the effect type string (e.g. "bloom", "crt").
+  -- Use this for serialization, debug display, or dynamic effect menus.
+  local eff = lurek.effect.newEffect("crt")
+  local name = eff:getTypeName()
+  lurek.log.info("active fx: " .. name, "fx")
+end
+```
+
+### LPostFxEffect:hasParameter
+
+`LPostFxEffect:hasParameter(name: string) -> boolean`
+
+Returns whether a shader parameter exists on this effect.
+
+**Parameters**
+
+- `name` (`string`, required): Parameter name to check.
+
+**Returns**: `boolean` - True when the parameter is present.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether a shader parameter exists on this effect.
+---@param name string Parameter name to check.
+---@return boolean True when the parameter is present.
+function LPostFxEffect:hasParameter(name) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Check before setting to avoid silent no-ops or catch typos.
+  -- Useful when building generic effect editors or loading presets
+  -- where parameter names come from user data.
+  local eff = lurek.effect.newEffect("crt")
+  if eff:hasParameter("scanline_strength") then
+    eff:setParameter("scanline_strength", 0.7)
+  end
+end
+```
+
+### LPostFxEffect:isAutoUniforms
+
+`LPostFxEffect:isAutoUniforms() -> boolean`
+
+Returns whether automatic uniforms are enabled for this effect.
+
+**Returns**: `boolean` - True when automatic uniforms are enabled.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether automatic uniforms are enabled for this effect.
+---@return boolean True when automatic uniforms are enabled.
+function LPostFxEffect:isAutoUniforms() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  local fx = lurek.effect.newCustomEffect(0)
+  fx:enableAutoUniforms()
+  lurek.log.debug("isAutoUniforms=" .. tostring(fx:isAutoUniforms()), "fx")
+end
+```
+
+### LPostFxEffect:isBuiltIn
+
+`LPostFxEffect:isBuiltIn() -> boolean`
+
+Returns whether this effect uses one of the engine built-in effect types.
+
+**Returns**: `boolean` - True for built-in effects, false for custom shader effects.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this effect uses one of the engine built-in effect types.
+---@return boolean True for built-in effects, false for custom shader effects.
+function LPostFxEffect:isBuiltIn() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Built-in effects can be recreated from just their type name.
+  -- Custom shader effects need additional data (the shader source).
+  -- Use this to decide how to serialize an effect chain to a save file.
+  local eff = lurek.effect.newEffect("vignette")
+  if eff:isBuiltIn() then
+    lurek.log.info("safe to serialise '" .. eff:getTypeName() .. "' by name", "fx")
+  end
+end
+```
+
+### LPostFxEffect:isEnabled
+
+`LPostFxEffect:isEnabled() -> boolean`
+
+Returns whether this effect is enabled on its owning effect object.
+
+**Returns**: `boolean` - Current enabled flag stored on the effect.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this effect is enabled on its owning effect object.
+---@return boolean Current enabled flag stored on the effect.
+function LPostFxEffect:isEnabled() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Check before applying expensive effects in a quality-options menu.
+  local bloom = lurek.effect.newEffect("bloom")
+  bloom:setEnabled(false)
+  lurek.log.debug("bloom enabled=" .. tostring(bloom:isEnabled()), "fx")
+end
+```
+
+### LPostFxEffect:setBrightness
+
+`LPostFxEffect:setBrightness(v: number)`
+
+Sets the `brightness` shader parameter.
+
+**Parameters**
+
+- `v` (`number`, required): Brightness value passed to the effect shader.
+
+**Lua API Stub**
+
+```lua
+--- Sets the `brightness` shader parameter.
+---@param v number Brightness value passed to the effect shader.
+function LPostFxEffect:setBrightness(v) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Brightness is an additive shift applied to all pixels.
+  -- Range roughly -0.5 to +0.5. Negative = darker, positive = lighter.
+  -- Use with colourgrade for day/night transitions or flash effects.
+  local grade = lurek.effect.newEffect("colourgrade")
+  grade:setBrightness(0.05)
+end
+```
+
+### LPostFxEffect:setContrast
+
+`LPostFxEffect:setContrast(v: number)`
+
+Sets the `contrast` shader parameter.
+
+**Parameters**
+
+- `v` (`number`, required): Contrast value passed to the effect shader.
+
+**Lua API Stub**
+
+```lua
+--- Sets the `contrast` shader parameter.
+---@param v number Contrast value passed to the effect shader.
+function LPostFxEffect:setContrast(v) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Contrast multiplier: 1.0 = normal, <1.0 = washed out, >1.0 = punchy.
+  -- Good for making pixel art pop (1.1-1.2) or creating dream sequences (<0.9).
+  local grade = lurek.effect.newEffect("colourgrade")
+  grade:setContrast(1.15)
+end
+```
+
+### LPostFxEffect:setEnabled
+
+`LPostFxEffect:setEnabled(enabled: boolean)`
+
+Enables or disables this effect. This method is available to Lua scripts.
+
+**Parameters**
+
+- `enabled` (`boolean`, required): New enabled flag.
+
+**Lua API Stub**
+
+```lua
+--- Enables or disables this effect. This method is available to Lua scripts.
+---@param enabled boolean New enabled flag.
+function LPostFxEffect:setEnabled(enabled) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Toggle effects from a settings screen without removing them.
+  local crt = lurek.effect.newEffect("crt")
+  crt:setEnabled(false)
+  lurek.log.debug("crt disabled for performance", "fx")
+end
+```
+
+### LPostFxEffect:setIntensity
+
+`LPostFxEffect:setIntensity(v: number)`
+
+Sets the `intensity` shader parameter.
+
+**Parameters**
+
+- `v` (`number`, required): Intensity value passed to the effect shader.
+
+**Lua API Stub**
+
+```lua
+--- Sets the `intensity` shader parameter.
+---@param v number Intensity value passed to the effect shader.
+function LPostFxEffect:setIntensity(v) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Intensity is a multiplier for the effect strength.
+  -- For godrays: higher values produce stronger light shafts.
+  -- Typical range 0.0-3.0; values above 1.0 amplify the effect.
+  local godrays = lurek.effect.newEffect("godrays")
+  godrays:setIntensity(1.4)
+end
+```
+
+### LPostFxEffect:setOffset
+
+`LPostFxEffect:setOffset(v: number)`
+
+Sets the `offset` shader parameter.
+
+**Parameters**
+
+- `v` (`number`, required): Offset value passed to the effect shader.
+
+**Lua API Stub**
+
+```lua
+--- Sets the `offset` shader parameter.
+---@param v number Offset value passed to the effect shader.
+function LPostFxEffect:setOffset(v) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Chromatic aberration splits color channels by an offset in pixels.
+  -- Small values (1-3) add subtle realism; large values (5+) give a
+  -- glitch/VHS look. Great combined with screen shake on impact.
+  local chroma = lurek.effect.newEffect("chromatic")
+  chroma:setOffset(2.0)
+end
+```
+
+### LPostFxEffect:setParameter
+
+`LPostFxEffect:setParameter(name: string, value: number)`
+
+Sets a numeric shader parameter by name.
+
+**Parameters**
+
+- `name` (`string`, required): Parameter name expected by the effect shader.
+- `value` (`number`, required): Numeric parameter value.
+
+**Lua API Stub**
+
+```lua
+--- Sets a numeric shader parameter by name.
+---@param name string Parameter name expected by the effect shader.
+---@param value number Numeric parameter value.
+function LPostFxEffect:setParameter(name, value) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- setParameter() is the generic way to set any shader uniform.
+  -- Built-in effects expose named parameters like "threshold", "intensity",
+  -- "radius", "strength", etc. Custom shaders can use any name.
+  -- Parameters map to the PostFxParams uniform buffer in the shader.
+  local bloom = lurek.effect.newEffect("bloom")
+  bloom:setParameter("threshold", 0.5)
+  bloom:setParameter("intensity", 1.2)
+  lurek.log.debug("bloom configured", "fx")
+end
+```
+
+### LPostFxEffect:setRadius
+
+`LPostFxEffect:setRadius(v: number)`
+
+Sets the `radius` shader parameter.
+
+**Parameters**
+
+- `v` (`number`, required): Radius value passed to the effect shader.
+
+**Lua API Stub**
+
+```lua
+--- Sets the `radius` shader parameter.
+---@param v number Radius value passed to the effect shader.
+function LPostFxEffect:setRadius(v) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Radius controls the spread area of the effect in pixels.
+  -- For blur: larger radius = stronger blur but higher GPU cost.
+  -- Keep moderate (1-8) for real-time; use larger for static images.
+  local blur = lurek.effect.newEffect("blur")
+  blur:setRadius(4.0)
+end
+```
+
+### LPostFxEffect:setSaturation
+
+`LPostFxEffect:setSaturation(v: number)`
+
+Sets the `saturation` shader parameter.
+
+**Parameters**
+
+- `v` (`number`, required): Saturation value passed to the effect shader.
+
+**Lua API Stub**
+
+```lua
+--- Sets the `saturation` shader parameter.
+---@param v number Saturation value passed to the effect shader.
+function LPostFxEffect:setSaturation(v) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Saturation multiplier: 1.0 = normal, 0.0 = grayscale, >1.0 = vivid.
+  -- Desaturate during flashback scenes or when the player is injured.
+  local grade = lurek.effect.newEffect("colourgrade")
+  grade:setSaturation(0.7)  -- slightly desaturated for a moody atmosphere
+end
+```
+
+### LPostFxEffect:setScanlineStrength
+
+`LPostFxEffect:setScanlineStrength(v: number)`
+
+Sets the `scanline_strength` shader parameter.
+
+**Parameters**
+
+- `v` (`number`, required): Scanline strength value passed to the effect shader.
+
+**Lua API Stub**
+
+```lua
+--- Sets the `scanline_strength` shader parameter.
+---@param v number Scanline strength value passed to the effect shader.
+function LPostFxEffect:setScanlineStrength(v) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- CRT scanlines simulate old TV displays. Strength 0.0-1.0 controls
+  -- how visible the horizontal lines are. Combine with setIntensity()
+  -- for the overall CRT phosphor glow.
+  local crt = lurek.effect.newEffect("crt")
+  crt:setScanlineStrength(0.35)
+  crt:setIntensity(1.0)
+end
+```
+
+### LPostFxEffect:setStrength
+
+`LPostFxEffect:setStrength(v: number)`
+
+Sets the `strength` shader parameter.
+
+**Parameters**
+
+- `v` (`number`, required): Strength value passed to the effect shader.
+
+**Lua API Stub**
+
+```lua
+--- Sets the `strength` shader parameter.
+---@param v number Strength value passed to the effect shader.
+function LPostFxEffect:setStrength(v) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Strength is a 0.0-1.0 normalized intensity for effects that use it.
+  -- For vignette: 0.0 = no darkening, 1.0 = maximum edge darkening.
+  -- Clamp user input to [0,1] to prevent visual artifacts.
+  local vig = lurek.effect.newEffect("vignette")
+  local from_slider = 0.6
+  vig:setStrength(math.max(0.0, math.min(1.0, from_slider)))
+end
+```
+
+### LPostFxEffect:setThreshold
+
+`LPostFxEffect:setThreshold(v: number)`
+
+Sets the `threshold` shader parameter.
+
+**Parameters**
+
+- `v` (`number`, required): Threshold value passed to the effect shader.
+
+**Lua API Stub**
+
+```lua
+--- Sets the `threshold` shader parameter.
+---@param v number Threshold value passed to the effect shader.
+function LPostFxEffect:setThreshold(v) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Threshold controls which pixels pass through to the effect.
+  -- For bloom: only pixels brighter than threshold will glow.
+  -- Range 0.0-1.0; lower = more glow, higher = only brightest spots.
+  local bloom = lurek.effect.newEffect("bloom")
+  bloom:setThreshold(0.75)
+  lurek.log.debug("bloom threshold set", "fx")
+end
+```
+
+### LPostFxEffect:type
+
+`LPostFxEffect:type() -> string`
+
+Returns the Lua-visible type name for this post-processing effect handle.
+
+**Returns**: `string` - The string `LPostFxEffect`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this post-processing effect handle.
+---@return string The string `LPostFxEffect`.
+function LPostFxEffect:type() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  local eff = lurek.effect.newEffect("bloom")
+  lurek.log.info("PostFxEffect:type = " .. eff:type(), "fx")
+end
+```
+
+### LPostFxEffect:typeOf
+
+`LPostFxEffect:typeOf(name: string) -> boolean`
+
+Returns whether this effect handle matches a supported type name.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to compare against `PostFxEffect` and `Object`.
+
+**Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this effect handle matches a supported type name.
+---@param name string Type name to compare against `PostFxEffect` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LPostFxEffect:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  local eff = lurek.effect.newEffect("bloom")
+  lurek.log.info("is Object: " .. tostring(eff:typeOf("Object")), "fx")
+end
+```
+
+### LPostFxStack:add
+
+`LPostFxStack:add(effect_ud: LPostFxEffect)`
+
+Appends an effect to the end of this stack.
+
+**Parameters**
+
+- `effect_ud` (`LPostFxEffect`, required): Effect handle to append.
+
+**Lua API Stub**
+
+```lua
+--- Appends an effect to the end of this stack.
+---@param effect_ud LPostFxEffect Effect handle to append.
+function LPostFxStack:add(effect_ud) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- add() appends an effect at the end of the pipeline.
+  -- Order matters: effects process left-to-right. Put blur before bloom
+  -- for soft glow; put bloom before blur for spread highlights.
+  local stack = lurek.effect.newStack()
+  stack:add(lurek.effect.newEffect("bloom"))
+  stack:add(lurek.effect.newEffect("vignette"))
+  lurek.log.info("stack size=" .. stack:getEffectCount(), "fx")
+end
+```
+
+### LPostFxStack:apply
+
+`LPostFxStack:apply()`
+
+Queues this stack's enabled post-effect passes for renderer application.
+
+**Lua API Stub**
+
+```lua
+--- Queues this stack's enabled post-effect passes for renderer application.
+function LPostFxStack:apply() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- apply() runs the full post-processing pipeline on the captured frame.
+  -- Call this AFTER endCapture(). The processed result is drawn to screen.
+  -- Draw UI elements AFTER apply() so they are not affected by effects.
+  local stack = lurek.effect.newStack()
+  stack:add(lurek.effect.newEffect("bloom"))
+  function lurek.draw()
+    stack:beginCapture(); stack:endCapture()
+    stack:apply()
+    -- Draw HUD/UI here — not affected by bloom.
+  end
+end
+```
+
+### LPostFxStack:beginCapture
+
+`LPostFxStack:beginCapture()`
+
+Starts post-effect capture and queues a renderer begin-capture command.
+
+**Lua API Stub**
+
+```lua
+--- Starts post-effect capture and queues a renderer begin-capture command.
+function LPostFxStack:beginCapture() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- beginCapture() redirects all subsequent draw calls into the stack's
+  -- internal framebuffer. Everything drawn between begin/end will have
+  -- the stack's effects applied when apply() is called.
+  local stack = lurek.effect.newStack()
+  stack:add(lurek.effect.newEffect("bloom"))
+  function lurek.draw()
+    stack:beginCapture()
+    -- All scene rendering (sprites, tilemaps, particles) goes here.
+    stack:endCapture(); stack:apply()
+  end
+end
+```
+
+### LPostFxStack:clear
+
+`LPostFxStack:clear()`
+
+Removes all effects and pass state from this stack.
+
+**Lua API Stub**
+
+```lua
+--- Removes all effects and pass state from this stack.
+function LPostFxStack:clear() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Wipe the pipeline for a new scene with different visual needs.
+  local stack = lurek.effect.newStack()
+  stack:add(lurek.effect.newEffect("crt"))
+  stack:clear()
+  lurek.log.debug("stack cleared, count=" .. stack:getEffectCount(), "fx")
+end
+```
+
+### LPostFxStack:clearFeedback
+
+`LPostFxStack:clearFeedback()`
+
+Resets the stack feedback blend factor to zero.
+
+**Lua API Stub**
+
+```lua
+--- Resets the stack feedback blend factor to zero.
+function LPostFxStack:clearFeedback() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- clearFeedback() immediately stops the trail effect.
+  -- Call when exiting a dream sequence to snap back to clean rendering.
+  local stack = lurek.effect.newStack()
+  stack:setFeedback(0.6)
+  stack:clearFeedback()
+  lurek.log.debug("feedback cleared=" .. stack:getFeedback(), "fx")
+end
+```
+
+### LPostFxStack:dedup
+
+`LPostFxStack:dedup() -> integer`
+
+Removes duplicate effect handles while preserving first occurrences.
+
+**Returns**: `integer` - Number of duplicate effects removed.
+
+**Lua API Stub**
+
+```lua
+--- Removes duplicate effect handles while preserving first occurrences.
+---@return number Number of duplicate effects removed.
+function LPostFxStack:dedup() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- dedup() removes duplicate references while preserving first occurrences.
+  -- This can happen if code accidentally adds the same handle twice.
+  -- Returns the number of duplicates removed.
+  local stack = lurek.effect.newStack()
+  local bloom = lurek.effect.newEffect("bloom")
+  stack:add(bloom); stack:add(bloom)
+  local removed = stack:dedup()
+  lurek.log.info("dedup removed " .. tostring(removed) .. " duplicate slot(s)", "fx")
+end
+```
+
+### LPostFxStack:endCapture
+
+`LPostFxStack:endCapture()`
+
+Ends post-effect capture and queues a renderer end-capture command.
+
+**Lua API Stub**
+
+```lua
+--- Ends post-effect capture and queues a renderer end-capture command.
+function LPostFxStack:endCapture() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- endCapture() finalizes the captured framebuffer content.
+  -- After this call, apply() processes the captured image through
+  -- each enabled effect in order and outputs the result.
+  local stack = lurek.effect.newStack()
+  function lurek.draw()
+    stack:beginCapture()
+    -- Scene draws happen between begin and end.
+    stack:endCapture()
+    stack:apply()
+  end
+end
+```
+
+### LPostFxStack:getDimensions
+
+`LPostFxStack:getDimensions() -> integer`
+
+Returns the stack render dimensions.
+
+**Returns**: `integer` - Stack width in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns the stack render dimensions.
+---@return number a Stack width in pixels.
+---@return number b Stack height in pixels.
+function LPostFxStack:getDimensions() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Get both width and height in one call.
+  local stack = lurek.effect.newStack(1920, 1080)
+  local w, h = stack:getDimensions()
+  lurek.log.info("stack " .. w .. "x" .. h, "fx")
+end
+```
+
+### LPostFxStack:getEffect
+
+`LPostFxStack:getEffect(index: integer) -> LuaValue`
+
+Returns the effect handle at a one-based position.
+
+**Parameters**
+
+- `index` (`integer`, required): One-based stack position.
+
+**Returns**: `LuaValue` - `LPostFxEffect` handle, or nil when the index is out of range.
+
+**Lua API Stub**
+
+```lua
+--- Returns the effect handle at a one-based position.
+---@param index number One-based stack position.
+---@return LuaValue `LPostFxEffect` handle, or nil when the index is out of range.
+function LPostFxStack:getEffect(index) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Retrieve an effect by slot to modify its parameters at runtime.
+  local stack = lurek.effect.newStack()
+  stack:add(lurek.effect.newEffect("bloom"))
+  local eff = stack:getEffect(1)
+  if eff then eff:setIntensity(1.5) end
+end
+```
+
+### LPostFxStack:getEffectCount
+
+`LPostFxStack:getEffectCount() -> integer`
+
+Returns the number of effect handles in this stack.
+
+**Returns**: `integer` - Effect count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of effect handles in this stack.
+---@return number Effect count.
+function LPostFxStack:getEffectCount() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Monitor stack size to prevent unbounded growth.
+  local stack = lurek.effect.newStack()
+  stack:add(lurek.effect.newEffect("bloom"))
+  stack:add(lurek.effect.newEffect("vignette"))
+  lurek.log.info("stack count=" .. stack:getEffectCount(), "fx")
+end
+```
+
+### LPostFxStack:getEnabledEffects
+
+`LPostFxStack:getEnabledEffects() -> LPostFxEffect[]`
+
+Returns effect handles whose stack passes are enabled.
+
+**Returns**: `LPostFxEffect[]` - Enabled `LPostFxEffect` handles.
+
+**Lua API Stub**
+
+```lua
+--- Returns effect handles whose stack passes are enabled.
+---@return LPostFxEffect[] Enabled `LPostFxEffect` handles.
+function LPostFxStack:getEnabledEffects() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Returns only effects whose passes are currently enabled.
+  -- Useful for debug HUDs showing active effects or for
+  -- performance monitoring (count active passes).
+  local stack = lurek.effect.newStack()
+  stack:add(lurek.effect.newEffect("bloom"))
+  for _, eff in ipairs(stack:getEnabledEffects()) do
+    lurek.log.debug("enabled: " .. eff:getTypeName(), "fx")
+  end
+end
+```
+
+### LPostFxStack:getFeedback
+
+`LPostFxStack:getFeedback() -> number`
+
+Returns the current stack feedback blend factor.
+
+**Returns**: `number` - Feedback blend factor in the range 0.0 through 1.0.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current stack feedback blend factor.
+---@return number Feedback blend factor in the range 0.0 through 1.0.
+function LPostFxStack:getFeedback() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Values are clamped to [0.0, 1.0] internally.
+  -- Use to display the current feedback level in a debug HUD.
+  local stack = lurek.effect.newStack()
+  stack:setFeedback(2.0)  -- will be clamped to 1.0
+  lurek.log.info("clamped feedback=" .. stack:getFeedback(), "fx")
+end
+```
+
+### LPostFxStack:getHeight
+
+`LPostFxStack:getHeight() -> integer`
+
+Returns the stack render height. This method is available to Lua scripts.
+
+**Returns**: `integer` - Stack height in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns the stack render height. This method is available to Lua scripts.
+---@return number Stack height in pixels.
+function LPostFxStack:getHeight() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  local stack = lurek.effect.newStack(1280, 720)
+  lurek.log.info("stack height=" .. stack:getHeight(), "fx")
+end
+```
+
+### LPostFxStack:getWidth
+
+`LPostFxStack:getWidth() -> integer`
+
+Returns the stack render width. This method is available to Lua scripts.
+
+**Returns**: `integer` - Stack width in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Returns the stack render width. This method is available to Lua scripts.
+---@return number Stack width in pixels.
+function LPostFxStack:getWidth() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  local stack = lurek.effect.newStack(1280, 720)
+  lurek.log.info("stack width=" .. stack:getWidth(), "fx")
+end
+```
+
+### LPostFxStack:insert
+
+`LPostFxStack:insert(position: integer, effect_ud: LPostFxEffect)`
+
+Inserts an effect at a one-based stack position.
+
+**Parameters**
+
+- `position` (`integer`, required): One-based insertion position, clamped to the stack length.
+- `effect_ud` (`LPostFxEffect`, required): Effect handle to insert.
+
+**Lua API Stub**
+
+```lua
+--- Inserts an effect at a one-based stack position.
+---@param position number One-based insertion position, clamped to the stack length.
+---@param effect_ud LPostFxEffect Effect handle to insert.
+function LPostFxStack:insert(position, effect_ud) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- insert(position, effect): inserts at the given slot, shifting others down.
+  -- Use to add an effect before an existing one (e.g. vignette before CRT
+  -- to darken edges before the CRT scanline pass).
+  local stack = lurek.effect.newStack(800, 600)
+  stack:add(lurek.effect.newEffect("crt"))
+  stack:insert(1, lurek.effect.newEffect("vignette"))  -- vignette now processes first
+  lurek.log.info("stack count: " .. stack:getEffectCount(), "effect")
+end
+```
+
+### LPostFxStack:isCapturing
+
+`LPostFxStack:isCapturing() -> boolean`
+
+Returns whether this stack is currently capturing draw commands.
+
+**Returns**: `boolean` - True when capture mode is active.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this stack is currently capturing draw commands.
+---@return boolean True when capture mode is active.
+function LPostFxStack:isCapturing() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- isCapturing() returns true between beginCapture() and endCapture().
+  -- Use for assertions or to guard against nested captures.
+  local stack = lurek.effect.newStack()
+  function lurek.draw()
+    stack:beginCapture()
+    assert(stack:isCapturing(), "post-fx capture should be active here")
+    -- Draw scene content here — it goes into the effect framebuffer.
+    stack:endCapture(); stack:apply()
+  end
+end
+```
+
+### LPostFxStack:isEmpty
+
+`LPostFxStack:isEmpty() -> boolean`
+
+Returns whether this stack has no effects.
+
+**Returns**: `boolean` - True when the stack has zero effects.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this stack has no effects.
+---@return boolean True when the stack has zero effects.
+function LPostFxStack:isEmpty() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Check isEmpty() before beginCapture() to skip the capture overhead
+  -- when no effects are configured (e.g. "no effects" quality setting).
+  local stack = lurek.effect.newStack()
+  if stack:isEmpty() then
+    lurek.log.debug("post-fx pipeline empty - skipping capture", "fx")
+  end
+end
+```
+
+### LPostFxStack:isEnabled
+
+`LPostFxStack:isEnabled(position: integer) -> boolean`
+
+Returns whether the effect pass at a one-based position is enabled.
+
+**Parameters**
+
+- `position` (`integer`, required): One-based stack position.
+
+**Returns**: `boolean` - True when the pass is enabled; false for out-of-range positions.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether the effect pass at a one-based position is enabled.
+---@param position number One-based stack position.
+---@return boolean True when the pass is enabled; false for out-of-range positions.
+function LPostFxStack:isEnabled(position) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Check if a specific slot (1-based position) is enabled.
+  -- Disabled slots are skipped during apply() without removing them.
+  local stack = lurek.effect.newStack()
+  stack:add(lurek.effect.newEffect("bloom"))
+  if stack:isEnabled(1) then
+    lurek.log.debug("slot 1 active", "fx")
+  end
+end
+```
+
+### LPostFxStack:len
+
+`LPostFxStack:len() -> integer`
+
+Returns the number of effect handles in this stack.
+
+**Returns**: `integer` - Effect count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of effect handles in this stack.
+---@return number Effect count.
+function LPostFxStack:len() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- len() is equivalent to getEffectCount(). Use whichever
+  -- reads more naturally in your code.
+  local stack = lurek.effect.newStack()
+  stack:add(lurek.effect.newEffect("bloom"))
+  lurek.log.debug("stack len=" .. stack:len(), "fx")
+end
+```
+
+### LPostFxStack:remove
+
+`LPostFxStack:remove(effect_ud: LPostFxEffect) -> boolean`
+
+Removes the first matching effect handle from this stack.
+
+**Parameters**
+
+- `effect_ud` (`LPostFxEffect`, required): Effect handle to remove.
+
+**Returns**: `boolean` - True when the effect was found and removed.
+
+**Lua API Stub**
+
+```lua
+--- Removes the first matching effect handle from this stack.
+---@param effect_ud LPostFxEffect Effect handle to remove.
+---@return boolean True when the effect was found and removed.
+function LPostFxStack:remove(effect_ud) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- remove() takes the effect handle and removes the first match.
+  -- Returns true if found. Use this for dynamic pipelines where
+  -- effects are added/removed based on gameplay (e.g. losing CRT
+  -- when the player "fixes" the TV in a puzzle game).
+  local stack = lurek.effect.newStack()
+  local crt = lurek.effect.newEffect("crt")
+  stack:add(crt)
+  local removed = stack:remove(crt)
+  lurek.log.debug("crt removed=" .. tostring(removed), "fx")
+end
+```
+
+### LPostFxStack:resize
+
+`LPostFxStack:resize(w: integer, h: integer)`
+
+Resizes the post-processing stack render target dimensions.
+
+**Parameters**
+
+- `w` (`integer`, required): New width in pixels.
+- `h` (`integer`, required): New height in pixels.
+
+**Lua API Stub**
+
+```lua
+--- Resizes the post-processing stack render target dimensions.
+---@param w number New width in pixels.
+---@param h number New height in pixels.
+function LPostFxStack:resize(w, h) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Recreate render targets when the window size changes.
+  local stack = lurek.effect.newStack(800, 600)
+  stack:resize(1920, 1080)
+  lurek.log.info("stack resized to " .. stack:getWidth() .. "x" .. stack:getHeight(), "fx")
+end
+```
+
+### LPostFxStack:setEnabled
+
+`LPostFxStack:setEnabled(position: integer, enabled: boolean)`
+
+Enables or disables the effect pass at a one-based stack position.
+
+**Parameters**
+
+- `position` (`integer`, required): One-based stack position.
+- `enabled` (`boolean`, required): New enabled flag for the pass.
+
+**Lua API Stub**
+
+```lua
+--- Enables or disables the effect pass at a one-based stack position.
+---@param position number One-based stack position.
+---@param enabled boolean New enabled flag for the pass.
+function LPostFxStack:setEnabled(position, enabled) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- setEnabled(position, flag): toggle individual slots without removing.
+  -- Use for quality settings: disable expensive effects on low-end hardware.
+  local stack = lurek.effect.newStack(800, 600)
+  stack:add(lurek.effect.newEffect("bloom"))
+  stack:setEnabled(1, false)  -- disable bloom at slot 1
+  lurek.log.info("stack enabled: " .. tostring(stack:isEnabled(1)), "effect")
+end
+```
+
+### LPostFxStack:setFeedback
+
+`LPostFxStack:setFeedback(factor: number)`
+
+Sets the stack feedback blend factor and clamps it to 0.0 through 1.0.
+
+**Parameters**
+
+- `factor` (`number`, required): Feedback blend factor.
+
+**Lua API Stub**
+
+```lua
+--- Sets the stack feedback blend factor and clamps it to 0.0 through 1.0.
+---@param factor number Feedback blend factor.
+function LPostFxStack:setFeedback(factor) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  -- Feedback blends the previous frame's output into the current frame.
+  -- Values 0.0-1.0: 0.0 = no trail, 0.85 = strong ghosting/motion trail.
+  -- Use for dream sequences, time-slow effects, or ghostly trails.
+  local stack = lurek.effect.newStack()
+  stack:setFeedback(0.85)
+  lurek.log.info("feedback=" .. stack:getFeedback(), "fx")
+end
+```
+
+### LPostFxStack:type
+
+`LPostFxStack:type() -> string`
+
+Returns the Lua-visible type name for this post-processing stack handle.
+
+**Returns**: `string` - The string `LPostFxStack`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this post-processing stack handle.
+---@return string The string `LPostFxStack`.
+function LPostFxStack:type() end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  local stack = lurek.effect.newStack()
+  lurek.log.info("PostFxStack:type = " .. stack:type(), "fx")
+end
+```
+
+### LPostFxStack:typeOf
+
+`LPostFxStack:typeOf(name: string) -> boolean`
+
+Returns whether this stack handle matches a supported type name.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to compare against `PostFxStack` and `Object`.
+
+**Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this stack handle matches a supported type name.
+---@param name string Type name to compare against `PostFxStack` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LPostFxStack:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+
+```lua
+do
+  local stack = lurek.effect.newStack()
+  lurek.log.info("is Object: " .. tostring(stack:typeOf("Object")), "fx")
+end
+```
+
+### LScreenTransition:color
+
+`LScreenTransition:color() -> number`
 
 Returns the transition RGBA color.
 
 **Returns**: `number` - Red channel.
+
+**Lua API Stub**
+
+```lua
+--- Returns the transition RGBA color.
+---@return number a Red channel.
+---@return number b Green channel.
+---@return number c Blue channel.
+---@return number d Alpha channel.
+function LScreenTransition:color() end
+```
 
 #### Example
 
@@ -3759,11 +5236,21 @@ do
 end
 ```
 
-### `LScreenTransition:isActive() -> boolean`
+### LScreenTransition:isActive
+
+`LScreenTransition:isActive() -> boolean`
 
 Returns whether the transition is currently active.
 
 **Returns**: `boolean` - True when the transition is active.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether the transition is currently active.
+---@return boolean True when the transition is active.
+function LScreenTransition:isActive() end
+```
 
 #### Example
 
@@ -3778,11 +5265,21 @@ do
 end
 ```
 
-### `LScreenTransition:isDone() -> boolean`
+### LScreenTransition:isDone
+
+`LScreenTransition:isDone() -> boolean`
 
 Returns whether the transition has finished.
 
 **Returns**: `boolean` - True when the transition is complete.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether the transition has finished.
+---@return boolean True when the transition is complete.
+function LScreenTransition:isDone() end
+```
 
 #### Example
 
@@ -3799,11 +5296,21 @@ do
 end
 ```
 
-### `LScreenTransition:kind() -> string`
+### LScreenTransition:kind
+
+`LScreenTransition:kind() -> string`
 
 Returns the transition kind name. This method is available to Lua scripts.
 
 **Returns**: `string` - Transition kind name.
+
+**Lua API Stub**
+
+```lua
+--- Returns the transition kind name. This method is available to Lua scripts.
+---@return string Transition kind name.
+function LScreenTransition:kind() end
+```
 
 #### Example
 
@@ -3816,9 +5323,18 @@ do
 end
 ```
 
-### `LScreenTransition:play()`
+### LScreenTransition:play
+
+`LScreenTransition:play()`
 
 Starts this screen transition forward from its current state.
+
+**Lua API Stub**
+
+```lua
+--- Starts this screen transition forward from its current state.
+function LScreenTransition:play() end
+```
 
 #### Example
 
@@ -3832,11 +5348,21 @@ do
 end
 ```
 
-### `LScreenTransition:progress() -> number`
+### LScreenTransition:progress
+
+`LScreenTransition:progress() -> number`
 
 Returns normalized transition progress.
 
 **Returns**: `number` - Progress value between the transition start and end.
+
+**Lua API Stub**
+
+```lua
+--- Returns normalized transition progress.
+---@return number Progress value between the transition start and end.
+function LScreenTransition:progress() end
+```
 
 #### Example
 
@@ -3851,9 +5377,18 @@ do
 end
 ```
 
-### `LScreenTransition:reverse()`
+### LScreenTransition:reverse
+
+`LScreenTransition:reverse()`
 
 Starts this screen transition in reverse from its current state.
+
+**Lua API Stub**
+
+```lua
+--- Starts this screen transition in reverse from its current state.
+function LScreenTransition:reverse() end
+```
 
 #### Example
 
@@ -3867,13 +5402,23 @@ do
 end
 ```
 
-### `LScreenTransition:setColor(color: table)`
+### LScreenTransition:setColor
+
+`LScreenTransition:setColor(color: table)`
 
 Sets the transition RGBA color from a numeric array table.
 
 **Parameters**
 
-- `color` (`table`, required) - Numeric color table using indices 1 through 4.
+- `color` (`table`, required): Numeric color table using indices 1 through 4.
+
+**Lua API Stub**
+
+```lua
+--- Sets the transition RGBA color from a numeric array table.
+---@param color table Numeric color table using indices 1 through 4.
+function LScreenTransition:setColor(color) end
+```
 
 #### Example
 
@@ -3888,11 +5433,21 @@ do
 end
 ```
 
-### `LScreenTransition:type() -> string`
+### LScreenTransition:type
+
+`LScreenTransition:type() -> string`
 
 Returns the Lua-visible type name for this transition handle.
 
 **Returns**: `string` - The string `LScreenTransition`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this transition handle.
+---@return string The string `LScreenTransition`.
+function LScreenTransition:type() end
+```
 
 #### Example
 
@@ -3906,15 +5461,26 @@ do
 end
 ```
 
-### `LScreenTransition:typeOf(name: string) -> boolean`
+### LScreenTransition:typeOf
+
+`LScreenTransition:typeOf(name: string) -> boolean`
 
 Returns whether this transition handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `ScreenTransition` and `Object`.
+- `name` (`string`, required): Type name to compare against `ScreenTransition` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this transition handle matches a supported type name.
+---@param name string Type name to compare against `ScreenTransition` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LScreenTransition:typeOf(name) end
+```
 
 #### Example
 
@@ -3928,15 +5494,26 @@ do
 end
 ```
 
-### `LScreenTransition:update(dt: number) -> boolean`
+### LScreenTransition:update
+
+`LScreenTransition:update(dt: number) -> boolean`
 
 Advances this transition timer and returns whether it remains active.
 
 **Parameters**
 
-- `dt` (`number`, required) - Delta time in seconds.
+- `dt` (`number`, required): Delta time in seconds.
 
 **Returns**: `boolean` - True when the transition is still active after the update.
+
+**Lua API Stub**
+
+```lua
+--- Advances this transition timer and returns whether it remains active.
+---@param dt number Delta time in seconds.
+---@return boolean True when the transition is still active after the update.
+function LScreenTransition:update(dt) end
+```
 
 #### Example
 
@@ -3952,21 +5529,27 @@ end
 ```
 
 
-## Examples
+[⬆ back to top](#table-of-contents)
+
+## 💡 Examples
 
 - [effect.lua](../blob/main/content/examples/effect.lua) - Post-process effect pipeline
 
-## Reference Games
+[⬆ back to top](#table-of-contents)
+
+## 🎮 Reference Games
 
 No direct references were found in `content/games/**/main.lua`.
 
-## Related Modules
+[⬆ back to top](#table-of-contents)
 
-- Previous: [[ecs|Module-ecs]]
-- Next: [[engine|Module-engine]]
-- [[audio|Module-audio]] - Sound loading and playback wrapping rodio; Mixer / Bus instances live in SharedState.
-- [[camera|Module-camera]] - 2D camera and viewport types. Pure data; no GPU resources.
-- [[image|Module-image]] - CPU-side ImageData (RGBA8 buffer) with blit, resize, fill, region, diff, PNG encode.
-- [[input|Module-input]] - Per-frame keyboard / mouse / gamepad / touch state translated from winit events.
-- [[light|Module-light]] - 2D point-light data model. Pure container; renderer owns all GPU work.
-- [[physics|Module-physics]] - Rigid-body 2D physics on top of rapier2d. Heavy dependency tree.
+## 🔗 Related Modules
+
+- Previous: [ecs](Module-ecs)
+- Next: [engine](Module-engine)
+- [audio](Module-audio) - Sound loading and playback wrapping rodio; Mixer / Bus instances live in SharedState.
+- [camera](Module-camera) - 2D camera and viewport types. Pure data; no GPU resources.
+- [image](Module-image) - CPU-side ImageData (RGBA8 buffer) with blit, resize, fill, region, diff, PNG encode.
+- [input](Module-input) - Per-frame keyboard / mouse / gamepad / touch state translated from winit events.
+- [light](Module-light) - 2D point-light data model. Pure container; renderer owns all GPU work.
+- [physics](Module-physics) - Rigid-body 2D physics on top of rapier2d. Heavy dependency tree.

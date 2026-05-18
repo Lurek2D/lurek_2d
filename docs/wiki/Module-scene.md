@@ -4,156 +4,108 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
-- [Purpose](#purpose)
-- [Summary](#summary)
-- [Minimal Module Example](#minimal-module-example)
-- [Key Types](#key-types)
-- [API Overview](#api-overview)
-- [Module Functions](#module-functions)
-  - [lurek.scene.clear()](#lureksceneclear)
-  - [lurek.scene.clearQueuedTransitions()](#lureksceneclearqueuedtransitions)
-  - [lurek.scene.define([def]: table) -> function](#lurekscenedefinedef-table-function)
-  - [lurek.scene.depth() -> number](#lurekscenedepth-number)
-  - [lurek.scene.deserializeScene(snapshot: table)](#lurekscenedeserializescenesnapshot-table)
-  - [lurek.scene.draw()](#lurekscenedraw)
-  - [lurek.scene.transitions.fade([duration]: number) -> table](#lurekscenetransitionsfadeduration-number-table)
-  - [lurek.scene.getActiveScenes() -> table](#lurekscenegetactivescenes-table)
-  - [lurek.scene.getCurrent() -> table|nil](#lurekscenegetcurrent-tablenil)
-  - [lurek.scene.getCurrentLayer() -> number](#lurekscenegetcurrentlayer-number)
-  - [lurek.scene.getData(key: string) -> LuaValue](#lurekscenegetdatakey-string-luavalue)
-  - [lurek.scene.getQueuedTransitionCount() -> number](#lurekscenegetqueuedtransitioncount-number)
-  - [lurek.scene.getRegistered(name: string) -> table|nil](#lurekscenegetregisteredname-string-tablenil)
-  - [lurek.scene.getRegisteredNames() -> string[]](#lurekscenegetregisterednames-string)
-  - [lurek.scene.getStackSize() -> number](#lurekscenegetstacksize-number)
-  - [lurek.scene.getTransitionProgress() -> number](#lurekscenegettransitionprogress-number)
-  - [lurek.scene.getTransitionProgressEased() -> number](#lurekscenegettransitionprogresseased-number)
-  - [lurek.scene.getTransitionTypes() -> string[]](#lurekscenegettransitiontypes-string)
-  - [lurek.scene.hasData(key: string) -> boolean](#lurekscenehasdatakey-string-boolean)
-  - [lurek.scene.hasRegistered(name: string) -> boolean](#lurekscenehasregisteredname-string-boolean)
-  - [lurek.scene.transitions.iris([duration]: number) -> table](#lurekscenetransitionsirisduration-number-table)
-  - [lurek.scene.isEmpty() -> boolean](#lureksceneisempty-boolean)
-  - [lurek.scene.isOverlay() -> boolean](#lureksceneisoverlay-boolean)
-  - [lurek.scene.isPreloaded(name: string) -> boolean](#lureksceneispreloadedname-string-boolean)
-  - [lurek.scene.isTransitioning() -> boolean](#lureksceneistransitioning-boolean)
-  - [lurek.scene.new([def]: table) -> table](#lurekscenenewdef-table-table)
-  - [lurek.scene.newDepthSorter() -> LDepthSorter](#lurekscenenewdepthsorter-ldepthsorter)
-  - [lurek.scene.newScene([def]: table) -> table](#lurekscenenewscenedef-table-table)
-  - [lurek.scene.pop([transition]: string, [duration]: number, [easing]: string)](#lurekscenepoptransition-string-duration-number-easing-string)
-  - [lurek.scene.popTo(name: string) -> boolean](#lurekscenepoptoname-string-boolean)
-  - [lurek.scene.preload(name: string, loader: function)](#lurekscenepreloadname-string-loader-function)
-  - [lurek.scene.process(dt: number)](#lureksceneprocessdt-number)
-  - [lurek.scene.processLate(dt: number)](#lureksceneprocesslatedt-number)
-  - [lurek.scene.processPhysics(dt: number)](#lureksceneprocessphysicsdt-number)
-  - [lurek.scene.push(scene: table, [transition]: string, [duration]: number, [easing]: string, [params]: table)](#lurekscenepushscene-table-transition-string-duration-number-easing-string-params-table)
-  - [lurek.scene.pushOverlay(scene: table, [transition]: string, [duration]: number, [easing]: string, [params]: table)](#lurekscenepushoverlayscene-table-transition-string-duration-number-easing-string-params-table)
-  - [lurek.scene.pushPreloaded(name: string, [transition]: string, [duration]: number, [easing]: string, [params]: table)](#lurekscenepushpreloadedname-string-transition-string-duration-number-easing-string-params-table)
-  - [lurek.scene.queueTransition(transition: string, duration: number, [easing]: string)](#lurekscenequeuetransitiontransition-string-duration-number-easing-string)
-  - [lurek.scene.registerScene(name: string, scene: table)](#lureksceneregisterscenename-string-scene-table)
-  - [lurek.scene.removeData(key: string)](#lureksceneremovedatakey-string)
-  - [lurek.scene.render()](#lurekscenerender)
-  - [lurek.scene.renderUi()](#lurekscenerenderui)
-  - [lurek.scene.serializeScene() -> table](#lureksceneserializescene-table)
-  - [lurek.scene.setCurrentLayer(layer: integer) -> boolean](#lurekscenesetcurrentlayerlayer-integer-boolean)
-  - [lurek.scene.setData(key: string, value: any)](#lurekscenesetdatakey-string-value-any)
-  - [lurek.scene.transitions.slide([direction]: string, [duration]: number) -> table](#lurekscenetransitionsslidedirection-string-duration-number-table)
-  - [lurek.scene.switchTo(scene: table, [transition]: string, [duration]: number, [easing]: string, [params]: table)](#lureksceneswitchtoscene-table-transition-string-duration-number-easing-string-params-table)
-  - [lurek.scene.unregisterScene(name: string)](#lureksceneunregisterscenename-string)
-  - [lurek.scene.update(dt: number)](#lureksceneupdatedt-number)
-  - [lurek.scene.transitions.wipe([duration]: number) -> table](#lurekscenetransitionswipeduration-number-table)
-- [Types and Methods](#types-and-methods)
+- [🎯 Purpose](#purpose)
+- [📋 Summary](#summary)
+- [🧩 Key Types](#key-types)
+- [📖 API Overview](#api-overview)
+- [⚙️ Module Functions](#module-functions)
+  - [lurek.scene.clear](#lureksceneclear)
+  - [lurek.scene.clearQueuedTransitions](#lureksceneclearqueuedtransitions)
+  - [lurek.scene.define](#lurekscenedefine)
+  - [lurek.scene.depth](#lurekscenedepth)
+  - [lurek.scene.deserializeScene](#lurekscenedeserializescene)
+  - [lurek.scene.draw](#lurekscenedraw)
+  - [lurek.scene.transitions.fade](#lurekscenetransitionsfade)
+  - [lurek.scene.getActiveScenes](#lurekscenegetactivescenes)
+  - [lurek.scene.getCurrent](#lurekscenegetcurrent)
+  - [lurek.scene.getCurrentLayer](#lurekscenegetcurrentlayer)
+  - [lurek.scene.getData](#lurekscenegetdata)
+  - [lurek.scene.getQueuedTransitionCount](#lurekscenegetqueuedtransitioncount)
+  - [lurek.scene.getRegistered](#lurekscenegetregistered)
+  - [lurek.scene.getRegisteredNames](#lurekscenegetregisterednames)
+  - [lurek.scene.getStackSize](#lurekscenegetstacksize)
+  - [lurek.scene.getTransitionProgress](#lurekscenegettransitionprogress)
+  - [lurek.scene.getTransitionProgressEased](#lurekscenegettransitionprogresseased)
+  - [lurek.scene.getTransitionTypes](#lurekscenegettransitiontypes)
+  - [lurek.scene.hasData](#lurekscenehasdata)
+  - [lurek.scene.hasRegistered](#lurekscenehasregistered)
+  - [lurek.scene.transitions.iris](#lurekscenetransitionsiris)
+  - [lurek.scene.isEmpty](#lureksceneisempty)
+  - [lurek.scene.isOverlay](#lureksceneisoverlay)
+  - [lurek.scene.isPreloaded](#lureksceneispreloaded)
+  - [lurek.scene.isTransitioning](#lureksceneistransitioning)
+  - [lurek.scene.new](#lurekscenenew)
+  - [lurek.scene.newDepthSorter](#lurekscenenewdepthsorter)
+  - [lurek.scene.newScene](#lurekscenenewscene)
+  - [lurek.scene.pop](#lurekscenepop)
+  - [lurek.scene.popTo](#lurekscenepopto)
+  - [lurek.scene.preload](#lurekscenepreload)
+  - [lurek.scene.process](#lureksceneprocess)
+  - [lurek.scene.processLate](#lureksceneprocesslate)
+  - [lurek.scene.processPhysics](#lureksceneprocessphysics)
+  - [lurek.scene.push](#lurekscenepush)
+  - [lurek.scene.pushOverlay](#lurekscenepushoverlay)
+  - [lurek.scene.pushPreloaded](#lurekscenepushpreloaded)
+  - [lurek.scene.queueTransition](#lurekscenequeuetransition)
+  - [lurek.scene.registerScene](#lureksceneregisterscene)
+  - [lurek.scene.removeData](#lureksceneremovedata)
+  - [lurek.scene.render](#lurekscenerender)
+  - [lurek.scene.renderUi](#lurekscenerenderui)
+  - [lurek.scene.serializeScene](#lureksceneserializescene)
+  - [lurek.scene.setCurrentLayer](#lurekscenesetcurrentlayer)
+  - [lurek.scene.setData](#lurekscenesetdata)
+  - [lurek.scene.transitions.slide](#lurekscenetransitionsslide)
+  - [lurek.scene.switchTo](#lureksceneswitchto)
+  - [lurek.scene.unregisterScene](#lureksceneunregisterscene)
+  - [lurek.scene.update](#lureksceneupdate)
+  - [lurek.scene.transitions.wipe](#lurekscenetransitionswipe)
+- [🔷 Module Types](#module-types)
   - [LDepthSorter](#ldepthsorter)
-  - [LDepthSorter:add(callback: function, depth: number)](#ldepthsorteraddcallback-function-depth-number)
-  - [LDepthSorter:addObject(obj: table)](#ldepthsorteraddobjectobj-table)
-  - [LDepthSorter:clear()](#ldepthsorterclear)
-  - [LDepthSorter:flush()](#ldepthsorterflush)
-  - [LDepthSorter:getCount() -> number](#ldepthsortergetcount-number)
-  - [LDepthSorter:isStable() -> boolean](#ldepthsorterisstable-boolean)
-  - [LDepthSorter:setStable(stable: boolean)](#ldepthsortersetstablestable-boolean)
-  - [LDepthSorter:sort()](#ldepthsortersort)
-  - [LDepthSorter:type() -> string](#ldepthsortertype-string)
-  - [LDepthSorter:typeOf(name: string) -> boolean](#ldepthsortertypeofname-string-boolean)
-- [Examples](#examples)
-- [Reference Games](#reference-games)
-- [Related Modules](#related-modules)
+- [🔹 Module Methods](#module-methods)
+  - [LDepthSorter:add](#ldepthsorteradd)
+  - [LDepthSorter:addObject](#ldepthsorteraddobject)
+  - [LDepthSorter:clear](#ldepthsorterclear)
+  - [LDepthSorter:flush](#ldepthsorterflush)
+  - [LDepthSorter:getCount](#ldepthsortergetcount)
+  - [LDepthSorter:isStable](#ldepthsorterisstable)
+  - [LDepthSorter:setStable](#ldepthsortersetstable)
+  - [LDepthSorter:sort](#ldepthsortersort)
+  - [LDepthSorter:type](#ldepthsortertype)
+  - [LDepthSorter:typeOf](#ldepthsortertypeof)
+- [💡 Examples](#examples)
+- [🎮 Reference Games](#reference-games)
+- [🔗 Related Modules](#related-modules)
 
 This page is generated from the current module specs, examples, and Lua API data.
 
 **Module group:** Feature Systems
 **Namespace:** `lurek.scene`
 
-## Purpose
+## 🎯 Purpose
 
 Named, stackable scenes with transitions for menu / gameplay / pause / cutscene state changes.
 
-## Summary
+[⬆ back to top](#table-of-contents)
+
+## 📋 Summary
 
 Scene stack with push/pop transitions, depth-sorted draw ordering, layered rendering, named registry, and shared data slots. `SceneStack` manages the active scene hierarchy — pushing a new scene pauses the previous one, popping resumes it. Transitions animate between scenes using fade, wipe, dissolve, slide, and pixelate effects with configurable duration and easing.
 
 `DepthSorter` provides adaptive draw-call ordering using unstable sort for small batches, stable sort for medium, radix sort for large (256+ entries with integral depths), and parallel sort for very large (10k+) sets. Overlays render above all scenes for persistent HUD elements. Named scene registry allows direct jump-to-scene by string key. Shared data slots pass state between scenes without globals. Exposed as `lurek.scene.*`. Feature Systems tier.
 
-## Minimal Module Example
+[⬆ back to top](#table-of-contents)
 
-Module example from [scene.lua](../blob/main/content/examples/scene.lua):
-
-```lua
--- Pop the top scene off the stack, returning to the previous scene
-do
-  -- pop() removes the top scene. It receives leave(), the revealed scene receives resume().
-  -- Commonly called when player presses Back or closes a menu.
-  function lurek.process(dt)
-    if lurek.scene.depth() > 1 and not lurek.scene.isTransitioning() then
-      lurek.scene.pop("fade", 0.25, "linear")
-    end
-  end
-end
-
---@api-stub: lurek.scene.switchTo
--- Replace the top scene without changing stack depth (old leaves, new enters)
-do
-  -- switchTo() is ideal for peer-level transitions: level1 -> level2, menu -> gameplay.
-  -- The stack depth stays the same — no scene is added or removed.
-  local next_level = lurek.scene.new({
-    enter = function(self, params)
-      self.score = params and params.score or 0
-      self.level = params and params.level or 1
-    end,
-  })
-  lurek.scene.switchTo(next_level, "wipe", 0.5, "ease_out", { score = 1240, level = 2 })
-end
-
---@api-stub: LDepthSorter:clear
--- Remove ALL scenes from the stack (each receives leave() in order)
-do
-  -- clear() empties the entire stack. Use on shutdown or when returning to title screen.
-  function lurek.quit()
-    lurek.scene.clear()
-    lurek.log.info("scene stack cleared on shutdown", "scene")
-  end
-end
-
---@api-stub: lurek.scene.popTo
--- Pop scenes until the named registered scene is on top
-do
-  -- popTo() unwinds the stack to a specific registered scene.
-  -- Useful for "return to world map" from deeply nested menus.
-  -- Returns false if the named scene is not on the stack.
-  if lurek.scene.hasRegistered("world_map") and lurek.scene.depth() > 1 then
-    local ok = lurek.scene.popTo("world_map")
-    if not ok then
-      lurek.log.warn("world_map not found on stack", "scene")
-    end
-  end
-```
-
-## Key Types
+## 🧩 Key Types
 
 - `LDepthSorter` (10 methods) - Depth sorter exposed to Lua as `LDepthSorter`. Collects draw callbacks or drawable objects with numeric depth values and flushes them in back-to-front order for correct painter's-algorithm rendering. Ideal for sorting sprites, particles, and layered game objects within a single scene.
 
-## API Overview
+[⬆ back to top](#table-of-contents)
+
+## 📖 API Overview
 
 - Source spec: [docs/specs/scene.md](../blob/main/docs/specs/scene.md)
 
@@ -179,9 +131,13 @@ lurek.scene.getTransitionTypes() -> string[] -- Returns a Lua array of all suppo
 -- ... 32 more module functions
 ```
 
-## Module Functions
+[⬆ back to top](#table-of-contents)
 
-### `lurek.scene.clear()`
+## ⚙️ Module Functions
+
+### lurek.scene.clear
+
+`lurek.scene.clear()`
 
 Remove all scenes from the stack. Each removed scene receives its `leave()` callback in stack order. After this call the stack is empty and `isEmpty()` returns true. Useful for returning to a title screen or tearing down the entire scene graph.
 
@@ -196,7 +152,9 @@ do
 end
 ```
 
-### `lurek.scene.clearQueuedTransitions()`
+### lurek.scene.clearQueuedTransitions
+
+`lurek.scene.clearQueuedTransitions()`
 
 Discard all queued transitions without affecting the currently-playing transition (if any). Use this to cancel a planned transition sequence mid-way.
 
@@ -212,13 +170,15 @@ do
 end
 ```
 
-### `lurek.scene.define([def]: table) -> function`
+### lurek.scene.define
+
+`lurek.scene.define([def]: table) -> function`
 
 Create a reusable scene constructor function from a prototype table. Each call to the returned factory produces a fresh instance that inherits methods from the prototype via metatables. Ideal for defining scene "classes" that can be instantiated multiple times.
 
 **Parameters**
 
-- `def` (`table`, optional) - A prototype table with scene lifecycle methods.
+- `def` (`table`, optional): A prototype table with scene lifecycle methods.
 
 **Returns**: `function` - A zero-argument factory function that creates new instances inheriting from `def`.
 
@@ -250,7 +210,9 @@ do
 end
 ```
 
-### `lurek.scene.depth() -> number`
+### lurek.scene.depth
+
+`lurek.scene.depth() -> number`
 
 Alias for `getStackSize`. Returns the total number of scenes currently on the stack.
 
@@ -270,13 +232,15 @@ do
 end
 ```
 
-### `lurek.scene.deserializeScene(snapshot: table)`
+### lurek.scene.deserializeScene
+
+`lurek.scene.deserializeScene(snapshot: table)`
 
 Restore shared scene data from a previously-serialized snapshot table. Only the `data` key-value map is restored; the scene stack itself must be rebuilt manually by pushing or registering scenes. Pair with `serializeScene` for save/load workflows.
 
 **Parameters**
 
-- `snapshot` (`table`, required) - A snapshot table as returned by `serializeScene` (must contain a `data` field).
+- `snapshot` (`table`, required): A snapshot table as returned by `serializeScene` (must contain a `data` field).
 
 #### Example
 
@@ -294,7 +258,9 @@ do
 end
 ```
 
-### `lurek.scene.draw()`
+### lurek.scene.draw
+
+`lurek.scene.draw()`
 
 Call `draw(self)` on every scene in the stack from bottom to top. This is the legacy draw callback — prefer `render` and `renderUi` for world-space and screen-space separation.
 
@@ -311,13 +277,15 @@ do
 end
 ```
 
-### `lurek.scene.transitions.fade([duration]: number) -> table`
+### lurek.scene.transitions.fade
+
+`lurek.scene.transitions.fade([duration]: number) -> table`
 
 Helper sub-table `lurek.scene.transitions` with convenience factory functions that build transition descriptor tables for use with transition-aware APIs.
 
 **Parameters**
 
-- `duration` (`number`, optional) - Total fade duration in seconds. Defaults to 0.5.
+- `duration` (`number`, optional): Total fade duration in seconds. Defaults to 0.5.
 
 **Returns**: `table` - Transition descriptor `{type="fade", duration=...}` for use with scene functions.
 
@@ -334,7 +302,6 @@ do
   local title = lurek.scene.new({ name = "title" })
   lurek.scene.push(title, cfg.type, cfg.duration, "ease_in_out")
 end
-
 --@api-stub: lurek.scene.slide
 -- Transition helper: build a directional slide descriptor table
 do
@@ -343,9 +310,12 @@ do
   local next_page = lurek.scene.new({ name = "page_2" })
   lurek.scene.push(next_page, cfg.type, cfg.duration)
 end
+--@api-stub: lurek.scene.wipe
 ```
 
-### `lurek.scene.getActiveScenes() -> table`
+### lurek.scene.getActiveScenes
+
+`lurek.scene.getActiveScenes() -> table`
 
 Returns a Lua array of all active scene tables ordered by their layer value (lowest layer first). Includes both regular scenes and overlays. Useful for iterating over all scenes for custom processing or debugging.
 
@@ -366,7 +336,9 @@ do
 end
 ```
 
-### `lurek.scene.getCurrent() -> table|nil`
+### lurek.scene.getCurrent
+
+`lurek.scene.getCurrent() -> table|nil`
 
 Returns the scene table currently on top of the stack, or nil if the stack is empty. Use this to inspect or call methods on the active scene directly.
 
@@ -389,7 +361,9 @@ do
 end
 ```
 
-### `lurek.scene.getCurrentLayer() -> number`
+### lurek.scene.getCurrentLayer
+
+`lurek.scene.getCurrentLayer() -> number`
 
 Get the rendering layer of the current top scene. Returns 0 if the stack is empty or if no layer was explicitly set.
 
@@ -406,13 +380,15 @@ do
 end
 ```
 
-### `lurek.scene.getData(key: string) -> LuaValue`
+### lurek.scene.getData
+
+`lurek.scene.getData(key: string) -> LuaValue`
 
 Retrieve a value from the shared data map by key, or nil if the key has not been set. Commonly used in a scene's `enter` callback to read parameters set by the previous scene.
 
 **Parameters**
 
-- `key` (`string`, required) - The data key to look up.
+- `key` (`string`, required): The data key to look up.
 
 **Returns**: `LuaValue` - The stored value, or nil if the key does not exist.
 
@@ -431,7 +407,9 @@ do
 end
 ```
 
-### `lurek.scene.getQueuedTransitionCount() -> number`
+### lurek.scene.getQueuedTransitionCount
+
+`lurek.scene.getQueuedTransitionCount() -> number`
 
 Returns the number of transitions waiting in the queue behind the currently-playing transition.
 
@@ -450,13 +428,15 @@ do
 end
 ```
 
-### `lurek.scene.getRegistered(name: string) -> table|nil`
+### lurek.scene.getRegistered
+
+`lurek.scene.getRegistered(name: string) -> table|nil`
 
 Retrieve a previously registered scene table by its name, or nil if no scene is registered under that name. Does not affect the stack.
 
 **Parameters**
 
-- `name` (`string`, required) - The registered scene name to look up.
+- `name` (`string`, required): The registered scene name to look up.
 
 **Returns**: `table|nil` - The scene table, or nil if not found.
 
@@ -476,7 +456,9 @@ do
 end
 ```
 
-### `lurek.scene.getRegisteredNames() -> string[]`
+### lurek.scene.getRegisteredNames
+
+`lurek.scene.getRegisteredNames() -> string[]`
 
 Returns an array of all currently registered scene name strings. Useful for debugging or building dynamic scene-selection UIs.
 
@@ -495,7 +477,9 @@ do
 end
 ```
 
-### `lurek.scene.getStackSize() -> number`
+### lurek.scene.getStackSize
+
+`lurek.scene.getStackSize() -> number`
 
 Returns the total number of scenes currently on the stack, including overlays. Useful for asserting expected navigation depth or debugging scene flow.
 
@@ -515,7 +499,6 @@ do
     lurek.log.warn("stack depth " .. n .. " — possible leak", "scene")
   end
 end
-
 --@api-stub: lurek.scene.isEmpty
 -- Returns true if the scene stack contains no scenes at all
 do
@@ -525,7 +508,6 @@ do
     lurek.scene.push(boot)
   end
 end
-
 --@api-stub: lurek.scene.getCurrent
 -- Returns the scene table on top of the stack, or nil if empty
 do
@@ -538,7 +520,6 @@ do
     end
   end
 end
-
 --@api-stub: lurek.scene.isOverlay
 -- Returns true if the current top scene was pushed via pushOverlay
 do
@@ -547,16 +528,21 @@ do
     lurek.log.debug("top is overlay; world still ticking beneath", "scene")
   end
 end
-
 --@api-stub: lurek.scene.getActiveScenes
 -- Returns a Lua array of all active scene tables ordered by layer (lowest first)
 do
   -- Iterate all scenes for custom broadcast (e.g. window resize notification).
   for _, s in ipairs(lurek.scene.getActiveScenes()) do
     if s.on_resize then
+      s:on_resize(1280, 720)
+    end
+  end
+end
 ```
 
-### `lurek.scene.getTransitionProgress() -> number`
+### lurek.scene.getTransitionProgress
+
+`lurek.scene.getTransitionProgress() -> number`
 
 Returns the raw linear progress (0.0 to 1.0) of the current transition animation, ignoring easing. Returns 0 when no transition is active. Use `getTransitionProgressEased` for the eased value.
 
@@ -579,7 +565,9 @@ do
 end
 ```
 
-### `lurek.scene.getTransitionProgressEased() -> number`
+### lurek.scene.getTransitionProgressEased
+
+`lurek.scene.getTransitionProgressEased() -> number`
 
 Returns the eased progress (0.0 to 1.0) of the current transition, with the selected easing curve applied. Returns 0 when no transition is active. Use this instead of `getTransitionProgress` when you want smooth, non-linear animation values.
 
@@ -602,7 +590,9 @@ do
 end
 ```
 
-### `lurek.scene.getTransitionTypes() -> string[]`
+### lurek.scene.getTransitionTypes
+
+`lurek.scene.getTransitionTypes() -> string[]`
 
 Returns a Lua array of all supported transition type name strings. Use this to discover available transitions at runtime or build a transition picker UI.
 
@@ -624,13 +614,15 @@ do
 end
 ```
 
-### `lurek.scene.hasData(key: string) -> boolean`
+### lurek.scene.hasData
+
+`lurek.scene.hasData(key: string) -> boolean`
 
 Check whether a key exists in the shared scene data map without retrieving its value.
 
 **Parameters**
 
-- `key` (`string`, required) - The data key to check for.
+- `key` (`string`, required): The data key to check for.
 
 **Returns**: `boolean` - True if a value is stored under this key.
 
@@ -647,13 +639,15 @@ do
 end
 ```
 
-### `lurek.scene.hasRegistered(name: string) -> boolean`
+### lurek.scene.hasRegistered
+
+`lurek.scene.hasRegistered(name: string) -> boolean`
 
 Check whether a scene is registered under the given name.
 
 **Parameters**
 
-- `name` (`string`, required) - The scene name to look up.
+- `name` (`string`, required): The scene name to look up.
 
 **Returns**: `boolean` - True if a scene is registered with that name.
 
@@ -671,13 +665,15 @@ do
 end
 ```
 
-### `lurek.scene.transitions.iris([duration]: number) -> table`
+### lurek.scene.transitions.iris
+
+`lurek.scene.transitions.iris([duration]: number) -> table`
 
 Create an iris (circle) transition descriptor table. A circular aperture opens or closes to reveal the new scene, similar to classic cartoon transitions.
 
 **Parameters**
 
-- `duration` (`number`, optional) - Iris animation duration in seconds. Defaults to 0.6.
+- `duration` (`number`, optional): Iris animation duration in seconds. Defaults to 0.6.
 
 **Returns**: `table` - Transition descriptor `{type="iris", duration=...}` for use with scene functions.
 
@@ -692,7 +688,6 @@ do
   local cfg = lurek.scene.transitions.iris(0.8)
   lurek.scene.switchTo(lurek.scene.new({ name = "game_over" }), cfg.type, cfg.duration, "ease_out")
 end
-
 --@api-stub: lurek.scene.registerScene
 -- Register a scene table under a unique name for later retrieval or navigation
 do
@@ -703,9 +698,12 @@ do
   lurek.scene.registerScene("options", options)
   lurek.scene.registerScene("world_map", lurek.scene.new({ name = "world_map" }))
 end
+--@api-stub: lurek.scene.getRegistered
 ```
 
-### `lurek.scene.isEmpty() -> boolean`
+### lurek.scene.isEmpty
+
+`lurek.scene.isEmpty() -> boolean`
 
 Returns true if the scene stack contains no scenes at all. Useful for guarding against calling `pop` on an empty stack or for detecting when the game should quit.
 
@@ -725,7 +723,9 @@ do
 end
 ```
 
-### `lurek.scene.isOverlay() -> boolean`
+### lurek.scene.isOverlay
+
+`lurek.scene.isOverlay() -> boolean`
 
 Returns true if the current top scene was pushed via `pushOverlay`. Overlay scenes do not pause the scene beneath them, allowing both to update and render simultaneously.
 
@@ -744,13 +744,15 @@ do
 end
 ```
 
-### `lurek.scene.isPreloaded(name: string) -> boolean`
+### lurek.scene.isPreloaded
+
+`lurek.scene.isPreloaded(name: string) -> boolean`
 
 Returns true if the named preload loader has already been executed at least once. Once a loader runs, subsequent `pushPreloaded` calls skip the loader and push the already-registered scene directly.
 
 **Parameters**
 
-- `name` (`string`, required) - The preload name to check.
+- `name` (`string`, required): The preload name to check.
 
 **Returns**: `boolean` - True if the loader has already executed.
 
@@ -767,7 +769,9 @@ do
 end
 ```
 
-### `lurek.scene.isTransitioning() -> boolean`
+### lurek.scene.isTransitioning
+
+`lurek.scene.isTransitioning() -> boolean`
 
 Returns true if a scene transition animation is currently playing. Use this to block input or skip certain logic during transitions.
 
@@ -789,13 +793,15 @@ do
 end
 ```
 
-### `lurek.scene.new([def]: table) -> table`
+### lurek.scene.new
+
+`lurek.scene.new([def]: table) -> table`
 
 Create a new scene instance from an optional prototype table. Sets up metatables so the instance inherits methods from the prototype. Use this for one-off scene creation; use `define` when you need a reusable scene constructor.
 
 **Parameters**
 
-- `def` (`table`, optional) - A prototype table containing scene lifecycle methods (`enter`, `leave`, `update`, `draw`, etc.). If omitted, an empty table is used.
+- `def` (`table`, optional): A prototype table containing scene lifecycle methods (`enter`, `leave`, `update`, `draw`, etc.). If omitted, an empty table is used.
 
 **Returns**: `table` - A new instance table with `def` as its metatable `__index`.
 
@@ -824,7 +830,9 @@ do
 end
 ```
 
-### `lurek.scene.newDepthSorter() -> LDepthSorter`
+### lurek.scene.newDepthSorter
+
+`lurek.scene.newDepthSorter() -> LDepthSorter`
 
 Create a new `LDepthSorter` instance for collecting drawable items and flushing them in depth-sorted (painter's algorithm) order. Allocate one per scene or per rendering pass.
 
@@ -843,13 +851,15 @@ do
 end
 ```
 
-### `lurek.scene.newScene([def]: table) -> table`
+### lurek.scene.newScene
+
+`lurek.scene.newScene([def]: table) -> table`
 
 Alias for `lurek.scene.new`. Creates a new scene instance from an optional prototype table while preserving the older API name still used by tests, examples, and existing game scripts.
 
 **Parameters**
 
-- `def` (`table`, optional) - A prototype table containing scene lifecycle methods (`enter`, `leave`, `update`, `draw`, etc.). If omitted, an empty table is used.
+- `def` (`table`, optional): A prototype table containing scene lifecycle methods (`enter`, `leave`, `update`, `draw`, etc.). If omitted, an empty table is used.
 
 **Returns**: `table` - A new instance table with `def` as its metatable `__index`.
 
@@ -872,15 +882,17 @@ do
 end
 ```
 
-### `lurek.scene.pop([transition]: string, [duration]: number, [easing]: string)`
+### lurek.scene.pop
+
+`lurek.scene.pop([transition]: string, [duration]: number, [easing]: string)`
 
 Pop the top scene off the stack and return to the previous one. The popped scene receives `leave()` and the revealed scene receives `resume()` (unless the popped scene was an overlay, in which case the underlying scene was never paused). Use this for "back" navigation, closing menus, or exiting sub-screens.
 
 **Parameters**
 
-- `transition` (`string`, optional) - Transition type name. Defaults to `"none"` (instant).
-- `duration` (`number`, optional) - Transition animation duration in seconds. Defaults to 0.
-- `easing` (`string`, optional) - Easing curve name. Defaults to `"linear"`.
+- `transition` (`string`, optional): Transition type name. Defaults to `"none"` (instant).
+- `duration` (`number`, optional): Transition animation duration in seconds. Defaults to 0.
+- `easing` (`string`, optional): Easing curve name. Defaults to `"linear"`.
 
 #### Example
 
@@ -898,13 +910,15 @@ do
 end
 ```
 
-### `lurek.scene.popTo(name: string) -> boolean`
+### lurek.scene.popTo
+
+`lurek.scene.popTo(name: string) -> boolean`
 
 Pop scenes off the stack until the named registered scene is on top. Every popped scene receives `leave()` and the target scene receives `resume()`. The target scene must have been previously added via `registerScene`. Returns false if no scene with that name exists on the stack.
 
 **Parameters**
 
-- `name` (`string`, required) - The registered name of the target scene to unwind to.
+- `name` (`string`, required): The registered name of the target scene to unwind to.
 
 **Returns**: `boolean` - True if the named scene was found and is now the active top scene, false if the name was not found.
 
@@ -926,14 +940,16 @@ do
 end
 ```
 
-### `lurek.scene.preload(name: string, loader: function)`
+### lurek.scene.preload
+
+`lurek.scene.preload(name: string, loader: function)`
 
 Register a deferred-loading function for a scene. The loader function is NOT called immediately — it runs the first time `pushPreloaded` is called with this name. Use this to spread scene initialization (asset loading, table setup) across loading screens or lazy-load heavy scenes on demand.
 
 **Parameters**
 
-- `name` (`string`, required) - Name to associate with the loader (must match the name used in `pushPreloaded`).
-- `loader` (`function`, required) - A zero-argument function that creates and registers the scene via `registerScene` when called.
+- `name` (`string`, required): Name to associate with the loader (must match the name used in `pushPreloaded`).
+- `loader` (`function`, required): A zero-argument function that creates and registers the scene via `registerScene` when called.
 
 #### Example
 
@@ -954,13 +970,15 @@ do
 end
 ```
 
-### `lurek.scene.process(dt: number)`
+### lurek.scene.process
+
+`lurek.scene.process(dt: number)`
 
 Call `ready(self)` once on newly-pushed scenes, then call `process(self, dt)` on every active scene ordered by layer (lowest first). Use this for deterministic game-logic ticks at a fixed time step. Scenes pushed as overlays and underlying scenes all receive this callback.
 
 **Parameters**
 
-- `dt` (`number`, required) - Fixed time-step delta in seconds (e.g. 1/60 for 60-tick logic).
+- `dt` (`number`, required): Fixed time-step delta in seconds (e.g. 1/60 for 60-tick logic).
 
 #### Example
 
@@ -980,13 +998,15 @@ do
 end
 ```
 
-### `lurek.scene.processLate(dt: number)`
+### lurek.scene.processLate
+
+`lurek.scene.processLate(dt: number)`
 
 Call `process_late(self, dt)` on every active scene after all other processing. Ideal for camera follow logic, HUD synchronization, deferred cleanup, or any work that depends on the final positions of game objects.
 
 **Parameters**
 
-- `dt` (`number`, required) - Delta time in seconds (same value passed to `process`).
+- `dt` (`number`, required): Delta time in seconds (same value passed to `process`).
 
 #### Example
 
@@ -1002,13 +1022,15 @@ do
 end
 ```
 
-### `lurek.scene.processPhysics(dt: number)`
+### lurek.scene.processPhysics
+
+`lurek.scene.processPhysics(dt: number)`
 
 Call `process_physics(self, dt)` on every active scene ordered by layer. Run this callback after your physics world step so scenes can react to collision results, apply forces, or synchronize sprite positions with physics bodies.
 
 **Parameters**
 
-- `dt` (`number`, required) - Physics time-step delta in seconds.
+- `dt` (`number`, required): Physics time-step delta in seconds.
 
 #### Example
 
@@ -1025,17 +1047,19 @@ do
 end
 ```
 
-### `lurek.scene.push(scene: table, [transition]: string, [duration]: number, [easing]: string, [params]: table)`
+### lurek.scene.push
+
+`lurek.scene.push(scene: table, [transition]: string, [duration]: number, [easing]: string, [params]: table)`
 
 Push a new scene onto the stack, making it the active scene. The previously-active scene receives its `pause()` lifecycle callback and the new scene receives `enter(self, params)`. An optional visual transition (fade, slide, iris, etc.) animates between the two scenes over the specified duration.
 
 **Parameters**
 
-- `scene` (`table`, required) - A scene table with lifecycle methods (`enter`, `leave`, `pause`, `resume`, `update`, `draw`, etc.).
-- `transition` (`string`, optional) - Transition type name: `"fade"`, `"slideleft"`, `"slideright"`, `"slideup"`, `"slidedown"`, `"wipe"`, `"iris"`, `"zoom"`, `"crossfade"`. Defaults to `"none"`.
-- `duration` (`number`, optional) - Transition animation duration in seconds. Defaults to 0 (instant).
-- `easing` (`string`, optional) - Easing curve name (e.g. `"linear"`, `"ease_in"`, `"ease_out"`, `"ease_in_out"`). Defaults to `"linear"`.
-- `params` (`table`, optional) - Arbitrary data forwarded to the new scene's `enter(self, params)` callback for initialization.
+- `scene` (`table`, required): A scene table with lifecycle methods (`enter`, `leave`, `pause`, `resume`, `update`, `draw`, etc.).
+- `transition` (`string`, optional): Transition type name: `"fade"`, `"slideleft"`, `"slideright"`, `"slideup"`, `"slidedown"`, `"wipe"`, `"iris"`, `"zoom"`, `"crossfade"`. Defaults to `"none"`.
+- `duration` (`number`, optional): Transition animation duration in seconds. Defaults to 0 (instant).
+- `easing` (`string`, optional): Easing curve name (e.g. `"linear"`, `"ease_in"`, `"ease_out"`, `"ease_in_out"`). Defaults to `"linear"`.
+- `params` (`table`, optional): Arbitrary data forwarded to the new scene's `enter(self, params)` callback for initialization.
 
 #### Example
 
@@ -1055,17 +1079,19 @@ do
 end
 ```
 
-### `lurek.scene.pushOverlay(scene: table, [transition]: string, [duration]: number, [easing]: string, [params]: table)`
+### lurek.scene.pushOverlay
+
+`lurek.scene.pushOverlay(scene: table, [transition]: string, [duration]: number, [easing]: string, [params]: table)`
 
 Push a scene as a transparent overlay on top of the current scene. Unlike `push`, the underlying scene is NOT paused — it continues to receive `process`, `draw`, and `render` callbacks. Use overlays for pause menus, dialog boxes, inventory screens, or debug panels that should draw on top without stopping gameplay.
 
 **Parameters**
 
-- `scene` (`table`, required) - The overlay scene table.
-- `transition` (`string`, optional) - Transition type name. Defaults to `"none"`.
-- `duration` (`number`, optional) - Transition animation duration in seconds. Defaults to 0.
-- `easing` (`string`, optional) - Easing curve name. Defaults to `"linear"`.
-- `params` (`table`, optional) - Arbitrary data forwarded to the overlay's `enter(self, params)` callback.
+- `scene` (`table`, required): The overlay scene table.
+- `transition` (`string`, optional): Transition type name. Defaults to `"none"`.
+- `duration` (`number`, optional): Transition animation duration in seconds. Defaults to 0.
+- `easing` (`string`, optional): Easing curve name. Defaults to `"linear"`.
+- `params` (`table`, optional): Arbitrary data forwarded to the overlay's `enter(self, params)` callback.
 
 #### Example
 
@@ -1091,17 +1117,19 @@ do
 end
 ```
 
-### `lurek.scene.pushPreloaded(name: string, [transition]: string, [duration]: number, [easing]: string, [params]: table)`
+### lurek.scene.pushPreloaded
+
+`lurek.scene.pushPreloaded(name: string, [transition]: string, [duration]: number, [easing]: string, [params]: table)`
 
 Push a preloaded scene onto the stack by name. If the loader registered via `preload` has not yet run, it executes first to create and register the scene. Then the registered scene is pushed with the specified transition. Combines deferred loading with stack navigation in a single call.
 
 **Parameters**
 
-- `name` (`string`, required) - The preload/registration name (must match a prior `preload` or `registerScene` call).
-- `transition` (`string`, optional) - Transition type name. Defaults to `"none"`.
-- `duration` (`number`, optional) - Transition animation duration in seconds. Defaults to 0.
-- `easing` (`string`, optional) - Easing curve name. Defaults to `"linear"`.
-- `params` (`table`, optional) - Arbitrary data forwarded to the scene's `enter(self, params)` callback.
+- `name` (`string`, required): The preload/registration name (must match a prior `preload` or `registerScene` call).
+- `transition` (`string`, optional): Transition type name. Defaults to `"none"`.
+- `duration` (`number`, optional): Transition animation duration in seconds. Defaults to 0.
+- `easing` (`string`, optional): Easing curve name. Defaults to `"linear"`.
+- `params` (`table`, optional): Arbitrary data forwarded to the scene's `enter(self, params)` callback.
 
 #### Example
 
@@ -1120,15 +1148,17 @@ do
 end
 ```
 
-### `lurek.scene.queueTransition(transition: string, duration: number, [easing]: string)`
+### lurek.scene.queueTransition
+
+`lurek.scene.queueTransition(transition: string, duration: number, [easing]: string)`
 
 Queue a transition to play automatically after the current one finishes. Multiple queued transitions execute in FIFO order, enabling multi-step cinematic sequences (e.g. fade-out then slide-in).
 
 **Parameters**
 
-- `transition` (`string`, required) - Transition type name (e.g. `"fade"`, `"iris"`, `"wipe"`).
-- `duration` (`number`, required) - Duration in seconds.
-- `easing` (`string`, optional) - Easing curve name. Defaults to `"linear"`.
+- `transition` (`string`, required): Transition type name (e.g. `"fade"`, `"iris"`, `"wipe"`).
+- `duration` (`number`, required): Duration in seconds.
+- `easing` (`string`, optional): Easing curve name. Defaults to `"linear"`.
 
 #### Example
 
@@ -1144,14 +1174,16 @@ do
 end
 ```
 
-### `lurek.scene.registerScene(name: string, scene: table)`
+### lurek.scene.registerScene
+
+`lurek.scene.registerScene(name: string, scene: table)`
 
 Register a scene table under a unique name for later retrieval via `getRegistered`, navigation via `popTo`, or deferred push via `pushPreloaded`. Registering does not push the scene onto the stack.
 
 **Parameters**
 
-- `name` (`string`, required) - Unique name to associate with this scene (e.g. `"mainMenu"`, `"gameplay"`).
-- `scene` (`table`, required) - The scene table to register.
+- `name` (`string`, required): Unique name to associate with this scene (e.g. `"mainMenu"`, `"gameplay"`).
+- `scene` (`table`, required): The scene table to register.
 
 #### Example
 
@@ -1168,13 +1200,15 @@ do
 end
 ```
 
-### `lurek.scene.removeData(key: string)`
+### lurek.scene.removeData
+
+`lurek.scene.removeData(key: string)`
 
 Remove a key and its associated value from the shared scene data map. No-op if the key does not exist.
 
 **Parameters**
 
-- `key` (`string`, required) - The data key to remove.
+- `key` (`string`, required): The data key to remove.
 
 #### Example
 
@@ -1188,7 +1222,9 @@ do
 end
 ```
 
-### `lurek.scene.render()`
+### lurek.scene.render
+
+`lurek.scene.render()`
 
 Call `render(self)` on every scene in the stack from bottom to top. This is the preferred world-space rendering callback — draw sprites, tilemaps, particles, and other in-world visuals here. Runs before `renderUi`.
 
@@ -1206,7 +1242,9 @@ do
 end
 ```
 
-### `lurek.scene.renderUi()`
+### lurek.scene.renderUi
+
+`lurek.scene.renderUi()`
 
 Call `render_ui(self)` on every scene in the stack from bottom to top. Use this for screen-space HUD elements, health bars, score displays, menus, and overlays that should draw on top of the world after `render`.
 
@@ -1223,7 +1261,9 @@ do
 end
 ```
 
-### `lurek.scene.serializeScene() -> table`
+### lurek.scene.serializeScene
+
+`lurek.scene.serializeScene() -> table`
 
 Capture the current scene stack state as a serializable snapshot table. The snapshot contains a `stack` array of registered scene names (in stack order) and a `data` map of shared data key-value pairs. Use this for save/load systems to persist the player's navigation state.
 
@@ -1243,13 +1283,15 @@ do
 end
 ```
 
-### `lurek.scene.setCurrentLayer(layer: integer) -> boolean`
+### lurek.scene.setCurrentLayer
+
+`lurek.scene.setCurrentLayer(layer: integer) -> boolean`
 
 Set the rendering layer of the current top scene. Scenes with higher layer values are processed and drawn after lower-layer scenes. Use layers to control draw order when multiple scenes are active (e.g. game world at layer 0, HUD overlay at layer 10).
 
 **Parameters**
 
-- `layer` (`integer`, required) - Integer layer value to assign (higher = drawn later / on top).
+- `layer` (`integer`, required): Integer layer value to assign (higher = drawn later / on top).
 
 **Returns**: `boolean` - True if a scene was on top and the layer was set, false if the stack is empty.
 
@@ -1266,14 +1308,16 @@ do
 end
 ```
 
-### `lurek.scene.setData(key: string, value: any)`
+### lurek.scene.setData
+
+`lurek.scene.setData(key: string, value: any)`
 
 Store an arbitrary Lua value in the scene module's shared data map, keyed by a string name. Scenes can use this to pass information between each other without direct references — for example, passing a selected level index from a menu scene to a gameplay scene.
 
 **Parameters**
 
-- `key` (`string`, required) - The key to store data under (e.g. `"selectedLevel"`, `"playerName"`).
-- `value` (`any`, required) - Value to store under the scene data key.
+- `key` (`string`, required): The key to store data under (e.g. `"selectedLevel"`, `"playerName"`).
+- `value` (`any`, required): Value to store under the scene data key.
 
 #### Example
 
@@ -1289,14 +1333,16 @@ do
 end
 ```
 
-### `lurek.scene.transitions.slide([direction]: string, [duration]: number) -> table`
+### lurek.scene.transitions.slide
+
+`lurek.scene.transitions.slide([direction]: string, [duration]: number) -> table`
 
 Create a directional slide transition descriptor table. The new scene slides in from the specified direction, pushing the old scene out.
 
 **Parameters**
 
-- `direction` (`string`, optional) - Slide direction: `"left"`, `"right"`, `"up"`, or `"down"`. Defaults to `"left"`.
-- `duration` (`number`, optional) - Slide animation duration in seconds. Defaults to 0.4.
+- `direction` (`string`, optional): Slide direction: `"left"`, `"right"`, `"up"`, or `"down"`. Defaults to `"left"`.
+- `duration` (`number`, optional): Slide animation duration in seconds. Defaults to 0.4.
 
 **Returns**: `table` - Transition descriptor `{type="slide...", duration=...}` for use with scene functions.
 
@@ -1312,7 +1358,6 @@ do
   local next_page = lurek.scene.new({ name = "page_2" })
   lurek.scene.push(next_page, cfg.type, cfg.duration)
 end
-
 --@api-stub: lurek.scene.wipe
 -- Transition helper: build a horizontal wipe descriptor table
 do
@@ -1320,21 +1365,24 @@ do
   local cfg = lurek.scene.transitions.wipe(0.6)
   lurek.scene.switchTo(lurek.scene.new({ name = "chapter_2" }), cfg.type, cfg.duration)
 end
-
 --@api-stub: lurek.scene.iris
+-- Transition helper: build a circular iris descriptor table
+do
 ```
 
-### `lurek.scene.switchTo(scene: table, [transition]: string, [duration]: number, [easing]: string, [params]: table)`
+### lurek.scene.switchTo
+
+`lurek.scene.switchTo(scene: table, [transition]: string, [duration]: number, [easing]: string, [params]: table)`
 
 Replace the current top scene with a different one without changing stack depth. The old scene receives `leave()` and the new scene receives `enter(self, params)`. Unlike `push`, no scene is added to the stack — the old scene is removed and the new one takes its slot. Ideal for transitioning between peer-level game states (e.g. level 1 → level 2).
 
 **Parameters**
 
-- `scene` (`table`, required) - The replacement scene table.
-- `transition` (`string`, optional) - Transition type name. Defaults to `"none"`.
-- `duration` (`number`, optional) - Transition animation duration in seconds. Defaults to 0.
-- `easing` (`string`, optional) - Easing curve name. Defaults to `"linear"`.
-- `params` (`table`, optional) - Arbitrary data forwarded to the new scene's `enter(self, params)` callback.
+- `scene` (`table`, required): The replacement scene table.
+- `transition` (`string`, optional): Transition type name. Defaults to `"none"`.
+- `duration` (`number`, optional): Transition animation duration in seconds. Defaults to 0.
+- `easing` (`string`, optional): Easing curve name. Defaults to `"linear"`.
+- `params` (`table`, optional): Arbitrary data forwarded to the new scene's `enter(self, params)` callback.
 
 #### Example
 
@@ -1354,13 +1402,15 @@ do
 end
 ```
 
-### `lurek.scene.unregisterScene(name: string)`
+### lurek.scene.unregisterScene
+
+`lurek.scene.unregisterScene(name: string)`
 
 Remove a scene registration by name. Does not pop the scene if it is currently active on the stack — it only removes the name mapping.
 
 **Parameters**
 
-- `name` (`string`, required) - The registered name to remove.
+- `name` (`string`, required): The registered name to remove.
 
 #### Example
 
@@ -1375,13 +1425,15 @@ do
 end
 ```
 
-### `lurek.scene.update(dt: number)`
+### lurek.scene.update
+
+`lurek.scene.update(dt: number)`
 
 Advance any active transition animation and call `update(self, dt)` on the current top scene. Call this once per frame from your main loop to drive scene logic and transition timing.
 
 **Parameters**
 
-- `dt` (`number`, required) - Delta time in seconds since the last frame (e.g. from `lurek.timer.getDelta()`).
+- `dt` (`number`, required): Delta time in seconds since the last frame (e.g. from `lurek.timer.getDelta()`).
 
 #### Example
 
@@ -1398,13 +1450,15 @@ do
 end
 ```
 
-### `lurek.scene.transitions.wipe([duration]: number) -> table`
+### lurek.scene.transitions.wipe
+
+`lurek.scene.transitions.wipe([duration]: number) -> table`
 
 Create a horizontal wipe transition descriptor table. A wipe bar sweeps across the screen to reveal the new scene.
 
 **Parameters**
 
-- `duration` (`number`, optional) - Wipe animation duration in seconds. Defaults to 0.5.
+- `duration` (`number`, optional): Wipe animation duration in seconds. Defaults to 0.5.
 
 **Returns**: `table` - Transition descriptor `{type="wipe", duration=...}` for use with scene functions.
 
@@ -1419,7 +1473,6 @@ do
   local cfg = lurek.scene.transitions.wipe(0.6)
   lurek.scene.switchTo(lurek.scene.new({ name = "chapter_2" }), cfg.type, cfg.duration)
 end
-
 --@api-stub: lurek.scene.iris
 -- Transition helper: build a circular iris descriptor table
 do
@@ -1427,17 +1480,28 @@ do
   local cfg = lurek.scene.transitions.iris(0.8)
   lurek.scene.switchTo(lurek.scene.new({ name = "game_over" }), cfg.type, cfg.duration, "ease_out")
 end
-
 --@api-stub: lurek.scene.registerScene
 -- Register a scene table under a unique name for later retrieval or navigation
+do
+  -- Registering does NOT push the scene. Use for popTo(), getRegistered(), pushPreloaded().
 ```
 
 
-## Types and Methods
+[⬆ back to top](#table-of-contents)
 
-### `LDepthSorter`
+## 🔷 Module Types
+
+### LDepthSorter
 
 Depth sorter exposed to Lua as `LDepthSorter`. Collects draw callbacks or drawable objects with numeric depth values and flushes them in back-to-front order for correct painter's-algorithm rendering. Ideal for sorting sprites, particles, and layered game objects within a single scene.
+
+**Lua API Definition**
+
+```lua
+--- Depth sorter exposed to Lua as `LDepthSorter`. Collects draw callbacks or drawable objects with numeric depth values and flushes them in back-to-front order for correct painter's-algorithm rendering. Ideal for sorting sprites, particles, and layered game objects within a single scene.
+---@class LDepthSorter
+LDepthSorter = {}
+```
 
 #### Example
 
@@ -1452,14 +1516,30 @@ do
 end
 ```
 
-### `LDepthSorter:add(callback: function, depth: number)`
+
+[⬆ back to top](#table-of-contents)
+
+## 🔹 Module Methods
+
+### LDepthSorter:add
+
+`LDepthSorter:add(callback: function, depth: number)`
 
 Register a draw callback at a given depth value. When `flush` is called, all registered callbacks execute in back-to-front order (lowest depth drawn first, highest depth drawn last / on top). Use this for simple draw calls like sprite rendering where each entity has a depth/z-layer.
 
 **Parameters**
 
-- `callback` (`function`, required) - A zero-argument draw function invoked during flush.
-- `depth` (`number`, required) - Numeric z-depth controlling draw order — lower values are drawn behind higher values.
+- `callback` (`function`, required): A zero-argument draw function invoked during flush.
+- `depth` (`number`, required): Numeric z-depth controlling draw order — lower values are drawn behind higher values.
+
+**Lua API Stub**
+
+```lua
+--- Register a draw callback at a given depth value. When `flush` is called, all registered callbacks execute in back-to-front order (lowest depth drawn first, highest depth drawn last / on top). Use this for simple draw calls like sprite rendering where each entity has a depth/z-layer.
+---@param callback function A zero-argument draw function invoked during flush.
+---@param depth number Numeric z-depth controlling draw order — lower values are drawn behind higher values.
+function LDepthSorter:add(callback, depth) end
+```
 
 #### Example
 
@@ -1477,13 +1557,23 @@ do
 end
 ```
 
-### `LDepthSorter:addObject(obj: table)`
+### LDepthSorter:addObject
+
+`LDepthSorter:addObject(obj: table)`
 
 Register a game object table for depth-sorted rendering. The object must expose a numeric `depth` field and a `drawSorted(self)` method. During `flush`, each object's `drawSorted` is called in depth order, making this ideal for entity-based architectures where objects manage their own drawing.
 
 **Parameters**
 
-- `obj` (`table`, required) - A game object table with a numeric `depth` field and a `drawSorted(self)` method.
+- `obj` (`table`, required): A game object table with a numeric `depth` field and a `drawSorted(self)` method.
+
+**Lua API Stub**
+
+```lua
+--- Register a game object table for depth-sorted rendering. The object must expose a numeric `depth` field and a `drawSorted(self)` method. During `flush`, each object's `drawSorted` is called in depth order, making this ideal for entity-based architectures where objects manage their own drawing.
+---@param obj table A game object table with a numeric `depth` field and a `drawSorted(self)` method.
+function LDepthSorter:addObject(obj) end
+```
 
 #### Example
 
@@ -1512,9 +1602,18 @@ do
 end
 ```
 
-### `LDepthSorter:clear()`
+### LDepthSorter:clear
+
+`LDepthSorter:clear()`
 
 Discard all pending entries without executing any draw callbacks. Use this when a scene is interrupted, reset, or destroyed before its normal `flush` call.
+
+**Lua API Stub**
+
+```lua
+--- Discard all pending entries without executing any draw callbacks. Use this when a scene is interrupted, reset, or destroyed before its normal `flush` call.
+function LDepthSorter:clear() end
+```
 
 #### Example
 
@@ -1531,9 +1630,18 @@ do
 end
 ```
 
-### `LDepthSorter:flush()`
+### LDepthSorter:flush
+
+`LDepthSorter:flush()`
 
 Sort all entries by depth, execute every callback or object's `drawSorted` method in back-to-front order, then clear the sorter for the next frame. This is the standard one-call render path — call it once per frame inside your scene's `draw` or `render` callback.
+
+**Lua API Stub**
+
+```lua
+--- Sort all entries by depth, execute every callback or object's `drawSorted` method in back-to-front order, then clear the sorter for the next frame. This is the standard one-call render path — call it once per frame inside your scene's `draw` or `render` callback.
+function LDepthSorter:flush() end
+```
 
 #### Example
 
@@ -1554,11 +1662,21 @@ do
 end
 ```
 
-### `LDepthSorter:getCount() -> number`
+### LDepthSorter:getCount
+
+`LDepthSorter:getCount() -> number`
 
 Returns the number of draw entries currently queued for the next `flush` call. Useful for debugging or deciding whether to skip an empty render pass.
 
 **Returns**: `number` - Count of pending draw entries.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of draw entries currently queued for the next `flush` call. Useful for debugging or deciding whether to skip an empty render pass.
+---@return number Count of pending draw entries.
+function LDepthSorter:getCount() end
+```
 
 #### Example
 
@@ -1581,11 +1699,21 @@ do
 end
 ```
 
-### `LDepthSorter:isStable() -> boolean`
+### LDepthSorter:isStable
+
+`LDepthSorter:isStable() -> boolean`
 
 Returns whether the sorter uses stable sorting.
 
 **Returns**: `boolean` - True if stable sort is enabled.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether the sorter uses stable sorting.
+---@return boolean True if stable sort is enabled.
+function LDepthSorter:isStable() end
+```
 
 #### Example
 
@@ -1601,13 +1729,23 @@ do
 end
 ```
 
-### `LDepthSorter:setStable(stable: boolean)`
+### LDepthSorter:setStable
+
+`LDepthSorter:setStable(stable: boolean)`
 
 Enable or disable stable sorting. When stable, items sharing the same depth value retain their insertion order, which prevents visual flickering between overlapping sprites at the same layer. Unstable sort is slightly faster but may swap equal-depth items between frames.
 
 **Parameters**
 
-- `stable` (`boolean`, required) - True for stable sort (deterministic order at equal depth), false for unstable (faster but may flicker).
+- `stable` (`boolean`, required): True for stable sort (deterministic order at equal depth), false for unstable (faster but may flicker).
+
+**Lua API Stub**
+
+```lua
+--- Enable or disable stable sorting. When stable, items sharing the same depth value retain their insertion order, which prevents visual flickering between overlapping sprites at the same layer. Unstable sort is slightly faster but may swap equal-depth items between frames.
+---@param stable boolean True for stable sort (deterministic order at equal depth), false for unstable (faster but may flicker).
+function LDepthSorter:setStable(stable) end
+```
 
 #### Example
 
@@ -1626,9 +1764,18 @@ do
 end
 ```
 
-### `LDepthSorter:sort()`
+### LDepthSorter:sort
+
+`LDepthSorter:sort()`
 
 Sort all registered entries by depth without executing any callbacks. Call this only if you need to inspect the sorted order before drawing; `flush` already sorts automatically.
+
+**Lua API Stub**
+
+```lua
+--- Sort all registered entries by depth without executing any callbacks. Call this only if you need to inspect the sorted order before drawing; `flush` already sorts automatically.
+function LDepthSorter:sort() end
+```
 
 #### Example
 
@@ -1646,11 +1793,21 @@ do
 end
 ```
 
-### `LDepthSorter:type() -> string`
+### LDepthSorter:type
+
+`LDepthSorter:type() -> string`
 
 Returns the type name string `"LDepthSorter"`.
 
 **Returns**: `string` - The literal `"LDepthSorter"`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name string `"LDepthSorter"`.
+---@return string The literal `"LDepthSorter"`.
+function LDepthSorter:type() end
+```
 
 #### Example
 
@@ -1663,15 +1820,26 @@ do
 end
 ```
 
-### `LDepthSorter:typeOf(name: string) -> boolean`
+### LDepthSorter:typeOf
+
+`LDepthSorter:typeOf(name: string) -> boolean`
 
 Check whether this object matches a given type name. Accepts `"LDepthSorter"` or `"Object"`.
 
 **Parameters**
 
-- `name` (`string`, required) - The type name to test against.
+- `name` (`string`, required): The type name to test against.
 
 **Returns**: `boolean` - True if the name matches.
+
+**Lua API Stub**
+
+```lua
+--- Check whether this object matches a given type name. Accepts `"LDepthSorter"` or `"Object"`.
+---@param name string The type name to test against.
+---@return boolean True if the name matches.
+function LDepthSorter:typeOf(name) end
+```
 
 #### Example
 
@@ -1688,21 +1856,27 @@ end
 ```
 
 
-## Examples
+[⬆ back to top](#table-of-contents)
+
+## 💡 Examples
 
 - [scene.lua](../blob/main/content/examples/scene.lua) - Scene graph, transitions
 
-## Reference Games
+[⬆ back to top](#table-of-contents)
+
+## 🎮 Reference Games
 
 No direct references were found in `content/games/**/main.lua`.
 
-## Related Modules
+[⬆ back to top](#table-of-contents)
 
-- Previous: [[save|Module-save]]
-- Next: [[serial|Module-serial]]
-- [[ai|Module-ai]] - Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU.
-- [[animation|Module-animation]] - Sprite animation: source-rect changes over time. Imports only math; headless-testable.
-- [[automation|Module-automation]] - Automated input simulation for headless tests, QA replay, recorded sessions.
-- [[ecs|Module-ecs]] - Entity-Component-System: identity / data / behaviour separation for runtime composition.
-- [[i18n|Module-i18n]] - Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*).
-- [[minimap|Module-minimap]] - Grid-based minimap data model: fog of war, tracked objects, pings, viewport overlay.
+## 🔗 Related Modules
+
+- Previous: [save](Module-save)
+- Next: [serial](Module-serial)
+- [ai](Module-ai) - Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU.
+- [animation](Module-animation) - Sprite animation: source-rect changes over time. Imports only math; headless-testable.
+- [automation](Module-automation) - Automated input simulation for headless tests, QA replay, recorded sessions.
+- [ecs](Module-ecs) - Entity-Component-System: identity / data / behaviour separation for runtime composition.
+- [i18n](Module-i18n) - Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*).
+- [minimap](Module-minimap) - Grid-based minimap data model: fog of war, tracked objects, pings, viewport overlay.

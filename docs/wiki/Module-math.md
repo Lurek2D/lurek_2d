@@ -4,355 +4,305 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
-- [Purpose](#purpose)
-- [Summary](#summary)
-- [Minimal Module Example](#minimal-module-example)
-- [Key Types](#key-types)
-- [API Overview](#api-overview)
-- [Module Functions](#module-functions)
-  - [lurek.math.aabbTree() -> LAabbTree](#lurekmathaabbtree-laabbtree)
-  - [lurek.math.abs(x: number) -> number](#lurekmathabsx-number-number)
-  - [lurek.math.acos(x: number) -> number](#lurekmathacosx-number-number)
-  - [lurek.math.angleBetween(x1: number, y1: number, x2: number, y2: number) -> number](#lurekmathanglebetweenx1-number-y1-number-x2-number-y2-number-number)
-  - [lurek.math.applyEasing(name: string, t: number) -> number](#lurekmathapplyeasingname-string-t-number-number)
-  - [lurek.math.asin(x: number) -> number](#lurekmathasinx-number-number)
-  - [lurek.math.atan(y: number, [x]: number) -> number](#lurekmathatany-number-x-number-number)
-  - [lurek.math.atan2(y: number, x: number) -> number](#lurekmathatan2y-number-x-number-number)
-  - [lurek.math.bresenham(x1: integer, y1: integer, x2: integer, y2: integer) -> table](#lurekmathbresenhamx1-integer-y1-integer-x2-integer-y2-integer-table)
-  - [lurek.math.catmullRom(points: table) -> LCatmullRom](#lurekmathcatmullrompoints-table-lcatmullrom)
-  - [lurek.math.ceil(x: number) -> number](#lurekmathceilx-number-number)
-  - [lurek.math.circleContainsPoint(cx: number, cy: number, r: number, px: number, py: number) -> boolean](#lurekmathcirclecontainspointcx-number-cy-number-r-number-px-number-py-number-boolean)
-  - [lurek.math.circleIntersectsCircle(x1: number, y1: number, r1: number, x2: number, y2: number, r2: number) -> boolean](#lurekmathcircleintersectscirclex1-number-y1-number-r1-number-x2-number-y2-number-r2-number-boolean)
-  - [lurek.math.circleIntersectsLine(cx: number, cy: number, r: number, lx1: number, ly1: number, lx2: number, ly2: number) -> boolean](#lurekmathcircleintersectslinecx-number-cy-number-r-number-lx1-number-ly1-number-lx2-number-ly2-number-boolean)
-  - [lurek.math.circleIntersectsSegment(cx: number, cy: number, r: number, sx1: number, sy1: number, sx2: number, sy2: number) -> boolean](#lurekmathcircleintersectssegmentcx-number-cy-number-r-number-sx1-number-sy1-number-sx2-number-sy2-number-boolean)
-  - [lurek.math.clamp(v: number, min: number, max: number) -> number](#lurekmathclampv-number-min-number-max-number-number)
-  - [lurek.math.closestPointOnSegment(px: number, py: number, x1: number, y1: number, x2: number, y2: number) -> number](#lurekmathclosestpointonsegmentpx-number-py-number-x1-number-y1-number-x2-number-y2-number-number)
-  - [lurek.math.convexHull(pts: table) -> number[]](#lurekmathconvexhullpts-table-number)
-  - [lurek.math.cos(x: number) -> number](#lurekmathcosx-number-number)
-  - [lurek.math.deg(rad: number) -> number](#lurekmathdegrad-number-number)
-  - [lurek.math.delaunayTriangulate(pts: table) -> table](#lurekmathdelaunaytriangulatepts-table-table)
-  - [lurek.math.distance(x1: number, y1: number, x2: number, y2: number) -> number](#lurekmathdistancex1-number-y1-number-x2-number-y2-number-number)
-  - [lurek.math.distanceSq(x1: number, y1: number, x2: number, y2: number) -> number](#lurekmathdistancesqx1-number-y1-number-x2-number-y2-number-number)
-  - [lurek.math.exp(x: number) -> number](#lurekmathexpx-number-number)
-  - [lurek.math.fbm(x: number, y: number, [seed]: integer, [octaves]: integer, [lac]: number, [gain]: number) -> number](#lurekmathfbmx-number-y-number-seed-integer-octaves-integer-lac-number-gain-number-number)
-  - [lurek.math.floor(x: number) -> number](#lurekmathfloorx-number-number)
-  - [lurek.math.fmod(x: number, y: number) -> number](#lurekmathfmodx-number-y-number-number)
-  - [lurek.math.fromHex(hex: string) -> number](#lurekmathfromhexhex-string-number)
-  - [lurek.math.gammaToLinear(c: number) -> number](#lurekmathgammatolinearc-number-number)
-  - [lurek.math.hermite(p0x: number, p0y: number, p1x: number, p1y: number, m0x: number, m0y: number, m1x: number, m1y: number) -> LHermite](#lurekmathhermitep0x-number-p0y-number-p1x-number-p1y-number-m0x-number-m0y-number-m1x-number-m1y-number-lhermite)
-  - [lurek.math.hslToRgb(h: number, s: number, l: number) -> number](#lurekmathhsltorgbh-number-s-number-l-number-number)
-  - [lurek.math.inBack(t: number) -> number](#lurekmathinbackt-number-number)
-  - [lurek.math.inBounce(t: number) -> number](#lurekmathinbouncet-number-number)
-  - [lurek.math.inCubic(t: number) -> number](#lurekmathincubict-number-number)
-  - [lurek.math.inElastic(t: number) -> number](#lurekmathinelastict-number-number)
-  - [lurek.math.inExpo(t: number) -> number](#lurekmathinexpot-number-number)
-  - [lurek.math.inOutBack(t: number) -> number](#lurekmathinoutbackt-number-number)
-  - [lurek.math.inOutBounce(t: number) -> number](#lurekmathinoutbouncet-number-number)
-  - [lurek.math.inOutCubic(t: number) -> number](#lurekmathinoutcubict-number-number)
-  - [lurek.math.inOutElastic(t: number) -> number](#lurekmathinoutelastict-number-number)
-  - [lurek.math.inOutExpo(t: number) -> number](#lurekmathinoutexpot-number-number)
-  - [lurek.math.inOutQuad(t: number) -> number](#lurekmathinoutquadt-number-number)
-  - [lurek.math.inOutQuart(t: number) -> number](#lurekmathinoutquartt-number-number)
-  - [lurek.math.inOutSine(t: number) -> number](#lurekmathinoutsinet-number-number)
-  - [lurek.math.inQuad(t: number) -> number](#lurekmathinquadt-number-number)
-  - [lurek.math.inQuart(t: number) -> number](#lurekmathinquartt-number-number)
-  - [lurek.math.inSine(t: number) -> number](#lurekmathinsinet-number-number)
-  - [lurek.math.inverseLerp(a: number, b: number, v: number) -> number](#lurekmathinverselerpa-number-b-number-v-number-number)
-  - [lurek.math.isConvex(pts: table) -> boolean](#lurekmathisconvexpts-table-boolean)
-  - [lurek.math.lerp(a: number, b: number, t: number) -> number](#lurekmathlerpa-number-b-number-t-number-number)
-  - [lurek.math.linear(t: number) -> number](#lurekmathlineart-number-number)
-  - [lurek.math.linearToGamma(c: number) -> number](#lurekmathlineartogammac-number-number)
-  - [lurek.math.lineIntersect(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number) -> number](#lurekmathlineintersectx1-number-y1-number-x2-number-y2-number-x3-number-y3-number-x4-number-y4-number-number)
-  - [lurek.math.log(x: number, [b]: number) -> number](#lurekmathlogx-number-b-number-number)
-  - [lurek.math.max(...: number) -> number](#lurekmathmax-number-number)
-  - [lurek.math.min(...: number) -> number](#lurekmathmin-number-number)
-  - [lurek.math.newBezierCurve(points: table) -> LBezierCurve](#lurekmathnewbeziercurvepoints-table-lbeziercurve)
-  - [lurek.math.newCircle(x: number, y: number, radius: number) -> LCircle](#lurekmathnewcirclex-number-y-number-radius-number-lcircle)
-  - [lurek.math.newNoiseGenerator([seed]: integer) -> LNoiseGenerator](#lurekmathnewnoisegeneratorseed-integer-lnoisegenerator)
-  - [lurek.math.newRandomGenerator([seed]: integer) -> LRandomGenerator](#lurekmathnewrandomgeneratorseed-integer-lrandomgenerator)
-  - [lurek.math.newRectPacker(width: integer, height: integer, [padding]: integer) -> LRectPacker](#lurekmathnewrectpackerwidth-integer-height-integer-padding-integer-lrectpacker)
-  - [lurek.math.newSpatialHash(cell_size: number) -> LSpatialHash](#lurekmathnewspatialhashcellsize-number-lspatialhash)
-  - [lurek.math.newTransform([x]: number, [y]: number, [angle]: number, [sx]: number, [sy]: number, [ox]: number, [oy]: number, [kx]: number, [ky]: number) -> LTransform](#lurekmathnewtransformx-number-y-number-angle-number-sx-number-sy-number-ox-number-oy-number-kx-number-ky-number-ltransform)
-  - [lurek.math.newTween(duration: number, [easing_name]: string) -> LTween](#lurekmathnewtweenduration-number-easingname-string-ltween)
-  - [lurek.math.outBack(t: number) -> number](#lurekmathoutbackt-number-number)
-  - [lurek.math.outBounce(t: number) -> number](#lurekmathoutbouncet-number-number)
-  - [lurek.math.outCubic(t: number) -> number](#lurekmathoutcubict-number-number)
-  - [lurek.math.outElastic(t: number) -> number](#lurekmathoutelastict-number-number)
-  - [lurek.math.outExpo(t: number) -> number](#lurekmathoutexpot-number-number)
-  - [lurek.math.outQuad(t: number) -> number](#lurekmathoutquadt-number-number)
-  - [lurek.math.outQuart(t: number) -> number](#lurekmathoutquartt-number-number)
-  - [lurek.math.outSine(t: number) -> number](#lurekmathoutsinet-number-number)
-  - [lurek.math.perlin2d(x: number, y: number, [seed]: integer) -> number](#lurekmathperlin2dx-number-y-number-seed-integer-number)
-  - [lurek.math.perlin3d(x: number, y: number, z: number, [seed]: integer) -> number](#lurekmathperlin3dx-number-y-number-z-number-seed-integer-number)
-  - [lurek.math.pointInPolygon(pts: table, px: number, py: number) -> boolean](#lurekmathpointinpolygonpts-table-px-number-py-number-boolean)
-  - [lurek.math.polygonArea(pts: table) -> number](#lurekmathpolygonareapts-table-number)
-  - [lurek.math.polygonCentroid(pts: table) -> number](#lurekmathpolygoncentroidpts-table-number)
-  - [lurek.math.polygonClip(pts: table, nx: number, ny: number, d: number) -> number[]](#lurekmathpolygonclippts-table-nx-number-ny-number-d-number-number)
-  - [lurek.math.polygonDifference(a: table, b: table) -> number[]](#lurekmathpolygondifferencea-table-b-table-number)
-  - [lurek.math.polygonIntersection(a: table, b: table) -> number[]](#lurekmathpolygonintersectiona-table-b-table-number)
-  - [lurek.math.polygonUnion(a: table, b: table) -> number[]](#lurekmathpolygonuniona-table-b-table-number)
-  - [lurek.math.pow(x: number, y: number) -> number](#lurekmathpowx-number-y-number-number)
-  - [lurek.math.rad(deg: number) -> number](#lurekmathraddeg-number-number)
-  - [lurek.math.random([a]: number, [b]: number) -> number](#lurekmathrandoma-number-b-number-number)
-  - [lurek.math.randomInt(lo: integer, hi: integer) -> integer](#lurekmathrandomintlo-integer-hi-integer-integer)
-  - [lurek.math.rectFromCenter(cx: number, cy: number, w: number, h: number) -> number](#lurekmathrectfromcentercx-number-cy-number-w-number-h-number-number)
-  - [lurek.math.rectUnion(x1: number, y1: number, w1: number, h1: number, x2: number, y2: number, w2: number, h2: number) -> number](#lurekmathrectunionx1-number-y1-number-w1-number-h1-number-x2-number-y2-number-w2-number-h2-number-number)
-  - [lurek.math.remap(v: number, in_min: number, in_max: number, out_min: number, out_max: number) -> number](#lurekmathremapv-number-inmin-number-inmax-number-outmin-number-outmax-number-number)
-  - [lurek.math.rgbToHsl(r: number, g: number, b: number) -> number](#lurekmathrgbtohslr-number-g-number-b-number-number)
-  - [lurek.math.round(x: number) -> number](#lurekmathroundx-number-number)
-  - [lurek.math.segmentIntersectsSegment(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number) -> boolean](#lurekmathsegmentintersectssegmentx1-number-y1-number-x2-number-y2-number-x3-number-y3-number-x4-number-y4-number-boolean)
-  - [lurek.math.sign(v: number) -> number](#lurekmathsignv-number-number)
-  - [lurek.math.simplex2d(x: number, y: number, [seed]: integer) -> number](#lurekmathsimplex2dx-number-y-number-seed-integer-number)
-  - [lurek.math.simplexNoise(x: number, y: number, [z]: number) -> number](#lurekmathsimplexnoisex-number-y-number-z-number-number)
-  - [lurek.math.sin(x: number) -> number](#lurekmathsinx-number-number)
-  - [lurek.math.smoothstep(edge0: number, edge1: number, x: number) -> number](#lurekmathsmoothstepedge0-number-edge1-number-x-number-number)
-  - [lurek.math.sqrt(x: number) -> number](#lurekmathsqrtx-number-number)
-  - [lurek.math.tan(x: number) -> number](#lurekmathtanx-number-number)
-  - [lurek.math.triangulate(pts: table) -> table](#lurekmathtriangulatepts-table-table)
-  - [lurek.math.vec2(x: number, y: number) -> LVec2](#lurekmathvec2x-number-y-number-lvec2)
-  - [lurek.math.vec3(x: number, y: number, z: number) -> LVec3](#lurekmathvec3x-number-y-number-z-number-lvec3)
-  - [lurek.math.voronoi(points: table) -> table](#lurekmathvoronoipoints-table-table)
-- [Types and Methods](#types-and-methods)
+- [🎯 Purpose](#purpose)
+- [📋 Summary](#summary)
+- [🧩 Key Types](#key-types)
+- [📖 API Overview](#api-overview)
+- [⚙️ Module Functions](#module-functions)
+  - [lurek.math.aabbTree](#lurekmathaabbtree)
+  - [lurek.math.abs](#lurekmathabs)
+  - [lurek.math.acos](#lurekmathacos)
+  - [lurek.math.angleBetween](#lurekmathanglebetween)
+  - [lurek.math.applyEasing](#lurekmathapplyeasing)
+  - [lurek.math.asin](#lurekmathasin)
+  - [lurek.math.atan](#lurekmathatan)
+  - [lurek.math.atan2](#lurekmathatan2)
+  - [lurek.math.bresenham](#lurekmathbresenham)
+  - [lurek.math.catmullRom](#lurekmathcatmullrom)
+  - [lurek.math.ceil](#lurekmathceil)
+  - [lurek.math.circleContainsPoint](#lurekmathcirclecontainspoint)
+  - [lurek.math.circleIntersectsCircle](#lurekmathcircleintersectscircle)
+  - [lurek.math.circleIntersectsLine](#lurekmathcircleintersectsline)
+  - [lurek.math.circleIntersectsSegment](#lurekmathcircleintersectssegment)
+  - [lurek.math.clamp](#lurekmathclamp)
+  - [lurek.math.closestPointOnSegment](#lurekmathclosestpointonsegment)
+  - [lurek.math.convexHull](#lurekmathconvexhull)
+  - [lurek.math.cos](#lurekmathcos)
+  - [lurek.math.deg](#lurekmathdeg)
+  - [lurek.math.delaunayTriangulate](#lurekmathdelaunaytriangulate)
+  - [lurek.math.distance](#lurekmathdistance)
+  - [lurek.math.distanceSq](#lurekmathdistancesq)
+  - [lurek.math.exp](#lurekmathexp)
+  - [lurek.math.fbm](#lurekmathfbm)
+  - [lurek.math.floor](#lurekmathfloor)
+  - [lurek.math.fmod](#lurekmathfmod)
+  - [lurek.math.fromHex](#lurekmathfromhex)
+  - [lurek.math.gammaToLinear](#lurekmathgammatolinear)
+  - [lurek.math.hermite](#lurekmathhermite)
+  - [lurek.math.hslToRgb](#lurekmathhsltorgb)
+  - [lurek.math.inBack](#lurekmathinback)
+  - [lurek.math.inBounce](#lurekmathinbounce)
+  - [lurek.math.inCubic](#lurekmathincubic)
+  - [lurek.math.inElastic](#lurekmathinelastic)
+  - [lurek.math.inExpo](#lurekmathinexpo)
+  - [lurek.math.inOutBack](#lurekmathinoutback)
+  - [lurek.math.inOutBounce](#lurekmathinoutbounce)
+  - [lurek.math.inOutCubic](#lurekmathinoutcubic)
+  - [lurek.math.inOutElastic](#lurekmathinoutelastic)
+  - [lurek.math.inOutExpo](#lurekmathinoutexpo)
+  - [lurek.math.inOutQuad](#lurekmathinoutquad)
+  - [lurek.math.inOutQuart](#lurekmathinoutquart)
+  - [lurek.math.inOutSine](#lurekmathinoutsine)
+  - [lurek.math.inQuad](#lurekmathinquad)
+  - [lurek.math.inQuart](#lurekmathinquart)
+  - [lurek.math.inSine](#lurekmathinsine)
+  - [lurek.math.inverseLerp](#lurekmathinverselerp)
+  - [lurek.math.isConvex](#lurekmathisconvex)
+  - [lurek.math.lerp](#lurekmathlerp)
+  - [lurek.math.linear](#lurekmathlinear)
+  - [lurek.math.linearToGamma](#lurekmathlineartogamma)
+  - [lurek.math.lineIntersect](#lurekmathlineintersect)
+  - [lurek.math.log](#lurekmathlog)
+  - [lurek.math.max](#lurekmathmax)
+  - [lurek.math.min](#lurekmathmin)
+  - [lurek.math.newBezierCurve](#lurekmathnewbeziercurve)
+  - [lurek.math.newCircle](#lurekmathnewcircle)
+  - [lurek.math.newNoiseGenerator](#lurekmathnewnoisegenerator)
+  - [lurek.math.newRandomGenerator](#lurekmathnewrandomgenerator)
+  - [lurek.math.newRectPacker](#lurekmathnewrectpacker)
+  - [lurek.math.newSpatialHash](#lurekmathnewspatialhash)
+  - [lurek.math.newTransform](#lurekmathnewtransform)
+  - [lurek.math.newTween](#lurekmathnewtween)
+  - [lurek.math.outBack](#lurekmathoutback)
+  - [lurek.math.outBounce](#lurekmathoutbounce)
+  - [lurek.math.outCubic](#lurekmathoutcubic)
+  - [lurek.math.outElastic](#lurekmathoutelastic)
+  - [lurek.math.outExpo](#lurekmathoutexpo)
+  - [lurek.math.outQuad](#lurekmathoutquad)
+  - [lurek.math.outQuart](#lurekmathoutquart)
+  - [lurek.math.outSine](#lurekmathoutsine)
+  - [lurek.math.perlin2d](#lurekmathperlin2d)
+  - [lurek.math.perlin3d](#lurekmathperlin3d)
+  - [lurek.math.pointInPolygon](#lurekmathpointinpolygon)
+  - [lurek.math.polygonArea](#lurekmathpolygonarea)
+  - [lurek.math.polygonCentroid](#lurekmathpolygoncentroid)
+  - [lurek.math.polygonClip](#lurekmathpolygonclip)
+  - [lurek.math.polygonDifference](#lurekmathpolygondifference)
+  - [lurek.math.polygonIntersection](#lurekmathpolygonintersection)
+  - [lurek.math.polygonUnion](#lurekmathpolygonunion)
+  - [lurek.math.pow](#lurekmathpow)
+  - [lurek.math.rad](#lurekmathrad)
+  - [lurek.math.random](#lurekmathrandom)
+  - [lurek.math.randomInt](#lurekmathrandomint)
+  - [lurek.math.rectFromCenter](#lurekmathrectfromcenter)
+  - [lurek.math.rectUnion](#lurekmathrectunion)
+  - [lurek.math.remap](#lurekmathremap)
+  - [lurek.math.rgbToHsl](#lurekmathrgbtohsl)
+  - [lurek.math.round](#lurekmathround)
+  - [lurek.math.segmentIntersectsSegment](#lurekmathsegmentintersectssegment)
+  - [lurek.math.sign](#lurekmathsign)
+  - [lurek.math.simplex2d](#lurekmathsimplex2d)
+  - [lurek.math.simplexNoise](#lurekmathsimplexnoise)
+  - [lurek.math.sin](#lurekmathsin)
+  - [lurek.math.smoothstep](#lurekmathsmoothstep)
+  - [lurek.math.sqrt](#lurekmathsqrt)
+  - [lurek.math.tan](#lurekmathtan)
+  - [lurek.math.triangulate](#lurekmathtriangulate)
+  - [lurek.math.vec2](#lurekmathvec2)
+  - [lurek.math.vec3](#lurekmathvec3)
+  - [lurek.math.voronoi](#lurekmathvoronoi)
+- [🔷 Module Types](#module-types)
   - [LAabbTree](#laabbtree)
-  - [LAabbTree:clear()](#laabbtreeclear)
-  - [LAabbTree:contains(id: integer) -> boolean](#laabbtreecontainsid-integer-boolean)
-  - [LAabbTree:insert(id: integer, min_x: number, min_y: number, max_x: number, max_y: number)](#laabbtreeinsertid-integer-minx-number-miny-number-maxx-number-maxy-number)
-  - [LAabbTree:isEmpty() -> boolean](#laabbtreeisempty-boolean)
-  - [LAabbTree:len() -> integer](#laabbtreelen-integer)
-  - [LAabbTree:query(min_x: number, min_y: number, max_x: number, max_y: number) -> integer[]](#laabbtreequeryminx-number-miny-number-maxx-number-maxy-number-integer)
-  - [LAabbTree:queryPoint(x: number, y: number) -> integer[]](#laabbtreequerypointx-number-y-number-integer)
-  - [LAabbTree:remove(id: integer) -> boolean](#laabbtreeremoveid-integer-boolean)
-  - [LAabbTree:type() -> string](#laabbtreetype-string)
-  - [LAabbTree:typeOf(name: string) -> boolean](#laabbtreetypeofname-string-boolean)
-  - [LAabbTree:update(id: integer, min_x: number, min_y: number, max_x: number, max_y: number) -> boolean](#laabbtreeupdateid-integer-minx-number-miny-number-maxx-number-maxy-number-boolean)
   - [LBezierCurve](#lbeziercurve)
-  - [LBezierCurve:evaluate(t: number) -> number](#lbeziercurveevaluatet-number-number)
-  - [LBezierCurve:evaluateAtDistance(distance: number, [samples]: integer) -> number](#lbeziercurveevaluateatdistancedistance-number-samples-integer-number)
-  - [LBezierCurve:getControlPoint(index: integer) -> number](#lbeziercurvegetcontrolpointindex-integer-number)
-  - [LBezierCurve:getControlPointCount() -> integer](#lbeziercurvegetcontrolpointcount-integer)
-  - [LBezierCurve:getDerivative() -> LBezierCurve](#lbeziercurvegetderivative-lbeziercurve)
-  - [LBezierCurve:insertControlPoint(x: number, y: number, [index]: integer)](#lbeziercurveinsertcontrolpointx-number-y-number-index-integer)
-  - [LBezierCurve:length() -> number](#lbeziercurvelength-number)
-  - [LBezierCurve:removeControlPoint(index: integer) -> boolean](#lbeziercurveremovecontrolpointindex-integer-boolean)
-  - [LBezierCurve:render(segments: integer) -> table](#lbeziercurverendersegments-integer-table)
-  - [LBezierCurve:rotate(angle: number, ox: number, oy: number)](#lbeziercurverotateangle-number-ox-number-oy-number)
-  - [LBezierCurve:scale(s: number, ox: number, oy: number)](#lbeziercurvescales-number-ox-number-oy-number)
-  - [LBezierCurve:setControlPoint(index: integer, x: number, y: number) -> boolean](#lbeziercurvesetcontrolpointindex-integer-x-number-y-number-boolean)
-  - [LBezierCurve:translate(dx: number, dy: number)](#lbeziercurvetranslatedx-number-dy-number)
-  - [LBezierCurve:type() -> string](#lbeziercurvetype-string)
-  - [LBezierCurve:typeOf(name: string) -> boolean](#lbeziercurvetypeofname-string-boolean)
   - [LCatmullRom](#lcatmullrom)
-  - [LCatmullRom:addPoint(x: number, y: number)](#lcatmullromaddpointx-number-y-number)
-  - [LCatmullRom:len() -> integer](#lcatmullromlen-integer)
-  - [LCatmullRom:removePoint(idx: integer) -> number](#lcatmullromremovepointidx-integer-number)
-  - [LCatmullRom:sample(t: number) -> number](#lcatmullromsamplet-number-number)
-  - [LCatmullRom:sampleSegment(seg: integer, t: number) -> number](#lcatmullromsamplesegmentseg-integer-t-number-number)
-  - [LCatmullRom:type() -> string](#lcatmullromtype-string)
-  - [LCatmullRom:typeOf(name: string) -> boolean](#lcatmullromtypeofname-string-boolean)
   - [LCircle](#lcircle)
-  - [LCircle:aabb() -> number](#lcircleaabb-number)
-  - [LCircle:area() -> number](#lcirclearea-number)
-  - [LCircle:contains(px: number, py: number) -> boolean](#lcirclecontainspx-number-py-number-boolean)
-  - [LCircle:intersects(other: LCircle) -> boolean](#lcircleintersectsother-lcircle-boolean)
-  - [LCircle:perimeter() -> number](#lcircleperimeter-number)
-  - [LCircle:radius() -> number](#lcircleradius-number)
-  - [LCircle:type() -> string](#lcircletype-string)
-  - [LCircle:typeOf(name: string) -> boolean](#lcircletypeofname-string-boolean)
-  - [LCircle:x() -> number](#lcirclex-number)
-  - [LCircle:y() -> number](#lcircley-number)
   - [LHermite](#lhermite)
-  - [LHermite:sample(t: number) -> number](#lhermitesamplet-number-number)
-  - [LHermite:type() -> string](#lhermitetype-string)
-  - [LHermite:typeOf(name: string) -> boolean](#lhermitetypeofname-string-boolean)
   - [LNoiseGenerator](#lnoisegenerator)
-  - [LNoiseGenerator:fbm(x: number, y: number, [octaves]: integer, [lac]: number, [pers]: number, [kind]: string) -> number](#lnoisegeneratorfbmx-number-y-number-octaves-integer-lac-number-pers-number-kind-string-number)
-  - [LNoiseGenerator:generateMap(w: integer, h: integer, [opts]: table) -> number[]](#lnoisegeneratorgeneratemapw-integer-h-integer-opts-table-number)
-  - [LNoiseGenerator:generateMapCompute(w: integer, h: integer, [opts]: table) -> number[]](#lnoisegeneratorgeneratemapcomputew-integer-h-integer-opts-table-number)
-  - [LNoiseGenerator:getSeed() -> integer](#lnoisegeneratorgetseed-integer)
-  - [LNoiseGenerator:perlin1d(x: number) -> number](#lnoisegeneratorperlin1dx-number-number)
-  - [LNoiseGenerator:perlin2d(x: number, y: number) -> number](#lnoisegeneratorperlin2dx-number-y-number-number)
-  - [LNoiseGenerator:perlin3d(x: number, y: number, z: number) -> number](#lnoisegeneratorperlin3dx-number-y-number-z-number-number)
-  - [LNoiseGenerator:perlin4d(x: number, y: number, z: number, w: number) -> number](#lnoisegeneratorperlin4dx-number-y-number-z-number-w-number-number)
-  - [LNoiseGenerator:ridged(x: number, y: number, [octaves]: integer, [lac]: number, [pers]: number, [kind]: string) -> number](#lnoisegeneratorridgedx-number-y-number-octaves-integer-lac-number-pers-number-kind-string-number)
-  - [LNoiseGenerator:setSeed(seed: integer)](#lnoisegeneratorsetseedseed-integer)
-  - [LNoiseGenerator:simplex1d(x: number) -> number](#lnoisegeneratorsimplex1dx-number-number)
-  - [LNoiseGenerator:simplex2d(x: number, y: number) -> number](#lnoisegeneratorsimplex2dx-number-y-number-number)
-  - [LNoiseGenerator:simplex3d(x: number, y: number, z: number) -> number](#lnoisegeneratorsimplex3dx-number-y-number-z-number-number)
-  - [LNoiseGenerator:turbulence(x: number, y: number, [octaves]: integer, [lac]: number, [pers]: number, [kind]: string) -> number](#lnoisegeneratorturbulencex-number-y-number-octaves-integer-lac-number-pers-number-kind-string-number)
-  - [LNoiseGenerator:type() -> string](#lnoisegeneratortype-string)
-  - [LNoiseGenerator:typeOf(name: string) -> boolean](#lnoisegeneratortypeofname-string-boolean)
-  - [LNoiseGenerator:warpDomain(x: number, y: number, strength: number) -> number](#lnoisegeneratorwarpdomainx-number-y-number-strength-number-number)
-  - [LNoiseGenerator:worley2d(x: number, y: number, [dist_name]: string, [f2]: boolean) -> number](#lnoisegeneratorworley2dx-number-y-number-distname-string-f2-boolean-number)
-  - [LNoiseGenerator:worley3d(x: number, y: number, z: number, [dist_name]: string, [f2]: boolean) -> number](#lnoisegeneratorworley3dx-number-y-number-z-number-distname-string-f2-boolean-number)
   - [LRandomGenerator](#lrandomgenerator)
-  - [LRandomGenerator:getSeed() -> integer](#lrandomgeneratorgetseed-integer)
-  - [LRandomGenerator:getState() -> string](#lrandomgeneratorgetstate-string)
-  - [LRandomGenerator:random() -> number](#lrandomgeneratorrandom-number)
-  - [LRandomGenerator:randomFloat(min: number, max: number) -> number](#lrandomgeneratorrandomfloatmin-number-max-number-number)
-  - [LRandomGenerator:randomInt(min: integer, max: integer) -> integer](#lrandomgeneratorrandomintmin-integer-max-integer-integer)
-  - [LRandomGenerator:randomNormal([stddev]: number, [mean]: number) -> number](#lrandomgeneratorrandomnormalstddev-number-mean-number-number)
-  - [LRandomGenerator:setSeed(seed: integer)](#lrandomgeneratorsetseedseed-integer)
-  - [LRandomGenerator:setState(state: string)](#lrandomgeneratorsetstatestate-string)
-  - [LRandomGenerator:type() -> string](#lrandomgeneratortype-string)
-  - [LRandomGenerator:typeOf(name: string) -> boolean](#lrandomgeneratortypeofname-string-boolean)
   - [LRectPacker](#lrectpacker)
-  - [LRectPacker:clear()](#lrectpackerclear)
-  - [LRectPacker:getPacked() -> table](#lrectpackergetpacked-table)
-  - [LRectPacker:occupancy() -> number](#lrectpackeroccupancy-number)
-  - [LRectPacker:pack(w: integer, h: integer, [id]: string) -> integer](#lrectpackerpackw-integer-h-integer-id-string-integer)
   - [LSpatialHash](#lspatialhash)
-  - [LSpatialHash:clear()](#lspatialhashclear)
-  - [LSpatialHash:getCellSize() -> number](#lspatialhashgetcellsize-number)
-  - [LSpatialHash:getItemCount() -> integer](#lspatialhashgetitemcount-integer)
-  - [LSpatialHash:insert(id: string, x: number, y: number, w: number, h: number)](#lspatialhashinsertid-string-x-number-y-number-w-number-h-number)
-  - [LSpatialHash:queryCircle(cx: number, cy: number, radius: number) -> integer[]](#lspatialhashquerycirclecx-number-cy-number-radius-number-integer)
-  - [LSpatialHash:queryRect(x: number, y: number, w: number, h: number) -> integer[]](#lspatialhashqueryrectx-number-y-number-w-number-h-number-integer)
-  - [LSpatialHash:querySegment(x1: number, y1: number, x2: number, y2: number) -> integer[]](#lspatialhashquerysegmentx1-number-y1-number-x2-number-y2-number-integer)
-  - [LSpatialHash:remove(id: string)](#lspatialhashremoveid-string)
-  - [LSpatialHash:type() -> string](#lspatialhashtype-string)
-  - [LSpatialHash:typeOf(name: string) -> boolean](#lspatialhashtypeofname-string-boolean)
-  - [LSpatialHash:update(id: string, x: number, y: number, w: number, h: number)](#lspatialhashupdateid-string-x-number-y-number-w-number-h-number)
   - [LTransform](#ltransform)
-  - [LTransform:clone() -> LTransform](#ltransformclone-ltransform)
-  - [LTransform:decompose() -> number](#ltransformdecompose-number)
-  - [LTransform:getMatrix() -> number[]](#ltransformgetmatrix-number)
-  - [LTransform:inverse() -> LTransform](#ltransforminverse-ltransform)
-  - [LTransform:inverseTransformPoint(x: number, y: number) -> number](#ltransforminversetransformpointx-number-y-number-number)
-  - [LTransform:reset()](#ltransformreset)
-  - [LTransform:rotate(angle: number)](#ltransformrotateangle-number)
-  - [LTransform:scale(sx: number, [sy]: number)](#ltransformscalesx-number-sy-number)
-  - [LTransform:setTransformation(x: number, y: number, [angle]: number, [sx]: number, [sy]: number, [ox]: number, [oy]: number, [kx]: number, [ky]: number)](#ltransformsettransformationx-number-y-number-angle-number-sx-number-sy-number-ox-number-oy-number-kx-number-ky-number)
-  - [LTransform:shear(kx: number, ky: number)](#ltransformshearkx-number-ky-number)
-  - [LTransform:transformPoint(x: number, y: number) -> number](#ltransformtransformpointx-number-y-number-number)
-  - [LTransform:translate(dx: number, dy: number)](#ltransformtranslatedx-number-dy-number)
-  - [LTransform:type() -> string](#ltransformtype-string)
-  - [LTransform:typeOf(name: string) -> boolean](#ltransformtypeofname-string-boolean)
   - [LTween](#ltween)
-  - [LTween:addValue(start: number, target: number) -> integer](#ltweenaddvaluestart-number-target-number-integer)
-  - [LTween:getAllValues() -> number[]](#ltweengetallvalues-number)
-  - [LTween:getClock() -> number](#ltweengetclock-number)
-  - [LTween:getDuration() -> number](#ltweengetduration-number)
-  - [LTween:getEasingName() -> string](#ltweengeteasingname-string)
-  - [LTween:getTime() -> number](#ltweengettime-number)
-  - [LTween:getValue([index]: integer) -> number](#ltweengetvalueindex-integer-number)
-  - [LTween:getValueCount() -> integer](#ltweengetvaluecount-integer)
-  - [LTween:isComplete() -> boolean](#ltweeniscomplete-boolean)
-  - [LTween:reset()](#ltweenreset)
-  - [LTween:set(t: number)](#ltweensett-number)
-  - [LTween:setTime(t: number)](#ltweensettimet-number)
-  - [LTween:type() -> string](#ltweentype-string)
-  - [LTween:typeOf(name: string) -> boolean](#ltweentypeofname-string-boolean)
-  - [LTween:update(dt: number) -> boolean](#ltweenupdatedt-number-boolean)
   - [LVec2](#lvec2)
-  - [LVec2:angle() -> number](#lvec2angle-number)
-  - [LVec2:cross(other: LVec2) -> number](#lvec2crossother-lvec2-number)
-  - [LVec2:distance(other: LVec2) -> number](#lvec2distanceother-lvec2-number)
-  - [LVec2:dot(other: LVec2) -> number](#lvec2dotother-lvec2-number)
-  - [LVec2:fromAngle(self: LVec2, radians: number) -> LVec2](#lvec2fromangleself-lvec2-radians-number-lvec2)
-  - [LVec2:length() -> number](#lvec2length-number)
-  - [LVec2:lengthSquared() -> number](#lvec2lengthsquared-number)
-  - [LVec2:lerp(other: LVec2, t: number) -> LVec2](#lvec2lerpother-lvec2-t-number-lvec2)
-  - [LVec2:normalize() -> LVec2](#lvec2normalize-lvec2)
-  - [LVec2:normalized() -> LVec2](#lvec2normalized-lvec2)
-  - [LVec2:perpendicular() -> LVec2](#lvec2perpendicular-lvec2)
-  - [LVec2:reflect(normal: LVec2) -> LVec2](#lvec2reflectnormal-lvec2-lvec2)
-  - [LVec2:rotate(angle: number) -> LVec2](#lvec2rotateangle-number-lvec2)
-  - [LVec2:type() -> string](#lvec2type-string)
-  - [LVec2:typeOf(name: string) -> boolean](#lvec2typeofname-string-boolean)
-  - [LVec2:x() -> number](#lvec2x-number)
-  - [LVec2:y() -> number](#lvec2y-number)
   - [LVec3](#lvec3)
-  - [LVec3:add(other: LVec3) -> LVec3](#lvec3addother-lvec3-lvec3)
-  - [LVec3:cross(other: LVec3) -> LVec3](#lvec3crossother-lvec3-lvec3)
-  - [LVec3:distance(other: LVec3) -> number](#lvec3distanceother-lvec3-number)
-  - [LVec3:dot(other: LVec3) -> number](#lvec3dotother-lvec3-number)
-  - [LVec3:length() -> number](#lvec3length-number)
-  - [LVec3:lengthSquared() -> number](#lvec3lengthsquared-number)
-  - [LVec3:lerp(other: LVec3, t: number) -> LVec3](#lvec3lerpother-lvec3-t-number-lvec3)
-  - [LVec3:normalize() -> LVec3](#lvec3normalize-lvec3)
-  - [LVec3:scale(s: number) -> LVec3](#lvec3scales-number-lvec3)
-  - [LVec3:splat(self: LVec3, v: number) -> LVec3](#lvec3splatself-lvec3-v-number-lvec3)
-  - [LVec3:sub(other: LVec3) -> LVec3](#lvec3subother-lvec3-lvec3)
-  - [LVec3:type() -> string](#lvec3type-string)
-  - [LVec3:typeOf(name: string) -> boolean](#lvec3typeofname-string-boolean)
-- [Examples](#examples)
-- [Reference Games](#reference-games)
-- [Related Modules](#related-modules)
+- [🔹 Module Methods](#module-methods)
+  - [LAabbTree:clear](#laabbtreeclear)
+  - [LAabbTree:contains](#laabbtreecontains)
+  - [LAabbTree:insert](#laabbtreeinsert)
+  - [LAabbTree:isEmpty](#laabbtreeisempty)
+  - [LAabbTree:len](#laabbtreelen)
+  - [LAabbTree:query](#laabbtreequery)
+  - [LAabbTree:queryPoint](#laabbtreequerypoint)
+  - [LAabbTree:remove](#laabbtreeremove)
+  - [LAabbTree:type](#laabbtreetype)
+  - [LAabbTree:typeOf](#laabbtreetypeof)
+  - [LAabbTree:update](#laabbtreeupdate)
+  - [LBezierCurve:evaluate](#lbeziercurveevaluate)
+  - [LBezierCurve:evaluateAtDistance](#lbeziercurveevaluateatdistance)
+  - [LBezierCurve:getControlPoint](#lbeziercurvegetcontrolpoint)
+  - [LBezierCurve:getControlPointCount](#lbeziercurvegetcontrolpointcount)
+  - [LBezierCurve:getDerivative](#lbeziercurvegetderivative)
+  - [LBezierCurve:insertControlPoint](#lbeziercurveinsertcontrolpoint)
+  - [LBezierCurve:length](#lbeziercurvelength)
+  - [LBezierCurve:removeControlPoint](#lbeziercurveremovecontrolpoint)
+  - [LBezierCurve:render](#lbeziercurverender)
+  - [LBezierCurve:rotate](#lbeziercurverotate)
+  - [LBezierCurve:scale](#lbeziercurvescale)
+  - [LBezierCurve:setControlPoint](#lbeziercurvesetcontrolpoint)
+  - [LBezierCurve:translate](#lbeziercurvetranslate)
+  - [LBezierCurve:type](#lbeziercurvetype)
+  - [LBezierCurve:typeOf](#lbeziercurvetypeof)
+  - [LCatmullRom:addPoint](#lcatmullromaddpoint)
+  - [LCatmullRom:len](#lcatmullromlen)
+  - [LCatmullRom:removePoint](#lcatmullromremovepoint)
+  - [LCatmullRom:sample](#lcatmullromsample)
+  - [LCatmullRom:sampleSegment](#lcatmullromsamplesegment)
+  - [LCatmullRom:type](#lcatmullromtype)
+  - [LCatmullRom:typeOf](#lcatmullromtypeof)
+  - [LCircle:aabb](#lcircleaabb)
+  - [LCircle:area](#lcirclearea)
+  - [LCircle:contains](#lcirclecontains)
+  - [LCircle:intersects](#lcircleintersects)
+  - [LCircle:perimeter](#lcircleperimeter)
+  - [LCircle:radius](#lcircleradius)
+  - [LCircle:type](#lcircletype)
+  - [LCircle:typeOf](#lcircletypeof)
+  - [LCircle:x](#lcirclex)
+  - [LCircle:y](#lcircley)
+  - [LHermite:sample](#lhermitesample)
+  - [LHermite:type](#lhermitetype)
+  - [LHermite:typeOf](#lhermitetypeof)
+  - [LNoiseGenerator:fbm](#lnoisegeneratorfbm)
+  - [LNoiseGenerator:generateMap](#lnoisegeneratorgeneratemap)
+  - [LNoiseGenerator:generateMapCompute](#lnoisegeneratorgeneratemapcompute)
+  - [LNoiseGenerator:getSeed](#lnoisegeneratorgetseed)
+  - [LNoiseGenerator:perlin1d](#lnoisegeneratorperlin1d)
+  - [LNoiseGenerator:perlin2d](#lnoisegeneratorperlin2d)
+  - [LNoiseGenerator:perlin3d](#lnoisegeneratorperlin3d)
+  - [LNoiseGenerator:perlin4d](#lnoisegeneratorperlin4d)
+  - [LNoiseGenerator:ridged](#lnoisegeneratorridged)
+  - [LNoiseGenerator:setSeed](#lnoisegeneratorsetseed)
+  - [LNoiseGenerator:simplex1d](#lnoisegeneratorsimplex1d)
+  - [LNoiseGenerator:simplex2d](#lnoisegeneratorsimplex2d)
+  - [LNoiseGenerator:simplex3d](#lnoisegeneratorsimplex3d)
+  - [LNoiseGenerator:turbulence](#lnoisegeneratorturbulence)
+  - [LNoiseGenerator:type](#lnoisegeneratortype)
+  - [LNoiseGenerator:typeOf](#lnoisegeneratortypeof)
+  - [LNoiseGenerator:warpDomain](#lnoisegeneratorwarpdomain)
+  - [LNoiseGenerator:worley2d](#lnoisegeneratorworley2d)
+  - [LNoiseGenerator:worley3d](#lnoisegeneratorworley3d)
+  - [LRandomGenerator:getSeed](#lrandomgeneratorgetseed)
+  - [LRandomGenerator:getState](#lrandomgeneratorgetstate)
+  - [LRandomGenerator:random](#lrandomgeneratorrandom)
+  - [LRandomGenerator:randomFloat](#lrandomgeneratorrandomfloat)
+  - [LRandomGenerator:randomInt](#lrandomgeneratorrandomint)
+  - [LRandomGenerator:randomNormal](#lrandomgeneratorrandomnormal)
+  - [LRandomGenerator:setSeed](#lrandomgeneratorsetseed)
+  - [LRandomGenerator:setState](#lrandomgeneratorsetstate)
+  - [LRandomGenerator:type](#lrandomgeneratortype)
+  - [LRandomGenerator:typeOf](#lrandomgeneratortypeof)
+  - [LRectPacker:clear](#lrectpackerclear)
+  - [LRectPacker:getPacked](#lrectpackergetpacked)
+  - [LRectPacker:occupancy](#lrectpackeroccupancy)
+  - [LRectPacker:pack](#lrectpackerpack)
+  - [LSpatialHash:clear](#lspatialhashclear)
+  - [LSpatialHash:getCellSize](#lspatialhashgetcellsize)
+  - [LSpatialHash:getItemCount](#lspatialhashgetitemcount)
+  - [LSpatialHash:insert](#lspatialhashinsert)
+  - [LSpatialHash:queryCircle](#lspatialhashquerycircle)
+  - [LSpatialHash:queryRect](#lspatialhashqueryrect)
+  - [LSpatialHash:querySegment](#lspatialhashquerysegment)
+  - [LSpatialHash:remove](#lspatialhashremove)
+  - [LSpatialHash:type](#lspatialhashtype)
+  - [LSpatialHash:typeOf](#lspatialhashtypeof)
+  - [LSpatialHash:update](#lspatialhashupdate)
+  - [LTransform:clone](#ltransformclone)
+  - [LTransform:decompose](#ltransformdecompose)
+  - [LTransform:getMatrix](#ltransformgetmatrix)
+  - [LTransform:inverse](#ltransforminverse)
+  - [LTransform:inverseTransformPoint](#ltransforminversetransformpoint)
+  - [LTransform:reset](#ltransformreset)
+  - [LTransform:rotate](#ltransformrotate)
+  - [LTransform:scale](#ltransformscale)
+  - [LTransform:setTransformation](#ltransformsettransformation)
+  - [LTransform:shear](#ltransformshear)
+  - [LTransform:transformPoint](#ltransformtransformpoint)
+  - [LTransform:translate](#ltransformtranslate)
+  - [LTransform:type](#ltransformtype)
+  - [LTransform:typeOf](#ltransformtypeof)
+  - [LTween:addValue](#ltweenaddvalue)
+  - [LTween:getAllValues](#ltweengetallvalues)
+  - [LTween:getClock](#ltweengetclock)
+  - [LTween:getDuration](#ltweengetduration)
+  - [LTween:getEasingName](#ltweengeteasingname)
+  - [LTween:getTime](#ltweengettime)
+  - [LTween:getValue](#ltweengetvalue)
+  - [LTween:getValueCount](#ltweengetvaluecount)
+  - [LTween:isComplete](#ltweeniscomplete)
+  - [LTween:reset](#ltweenreset)
+  - [LTween:set](#ltweenset)
+  - [LTween:setTime](#ltweensettime)
+  - [LTween:type](#ltweentype)
+  - [LTween:typeOf](#ltweentypeof)
+  - [LTween:update](#ltweenupdate)
+  - [LVec2:angle](#lvec2angle)
+  - [LVec2:cross](#lvec2cross)
+  - [LVec2:distance](#lvec2distance)
+  - [LVec2:dot](#lvec2dot)
+  - [LVec2:fromAngle](#lvec2fromangle)
+  - [LVec2:length](#lvec2length)
+  - [LVec2:lengthSquared](#lvec2lengthsquared)
+  - [LVec2:lerp](#lvec2lerp)
+  - [LVec2:normalize](#lvec2normalize)
+  - [LVec2:normalized](#lvec2normalized)
+  - [LVec2:perpendicular](#lvec2perpendicular)
+  - [LVec2:reflect](#lvec2reflect)
+  - [LVec2:rotate](#lvec2rotate)
+  - [LVec2:type](#lvec2type)
+  - [LVec2:typeOf](#lvec2typeof)
+  - [LVec2:x](#lvec2x)
+  - [LVec2:y](#lvec2y)
+  - [LVec3:add](#lvec3add)
+  - [LVec3:cross](#lvec3cross)
+  - [LVec3:distance](#lvec3distance)
+  - [LVec3:dot](#lvec3dot)
+  - [LVec3:length](#lvec3length)
+  - [LVec3:lengthSquared](#lvec3lengthsquared)
+  - [LVec3:lerp](#lvec3lerp)
+  - [LVec3:normalize](#lvec3normalize)
+  - [LVec3:scale](#lvec3scale)
+  - [LVec3:splat](#lvec3splat)
+  - [LVec3:sub](#lvec3sub)
+  - [LVec3:type](#lvec3type)
+  - [LVec3:typeOf](#lvec3typeof)
+- [💡 Examples](#examples)
+- [🎮 Reference Games](#reference-games)
+- [🔗 Related Modules](#related-modules)
 
 This page is generated from the current module specs, examples, and Lua API data.
 
 **Module group:** Foundations
 **Namespace:** `lurek.math`
 
-## Purpose
+## 🎯 Purpose
 
 Foundational 2D math, geometry, and color types. Leaf of the engine dependency graph.
 
-## Summary
+[⬆ back to top](#table-of-contents)
+
+## 📋 Summary
 
 Foundational 2D math, geometry, color, and spatial utility types forming the leaf of the engine dependency graph. Core types: `Vec2`/`Vec3` (f32 vectors), `Mat3` (3x3 transform matrix), `Color` (RGBA f32 with named constructors and HSL/HSV conversion), `Rect` (axis-aligned rectangle), `Transform` (position + rotation + scale).
 
 Geometry: line intersection, point-in-polygon, polygon area/centroid, convex hull, circle-circle/circle-rect overlap, ray-segment intersection. Curves: `BezierCurve` (quadratic/cubic), `CatmullRomSpline` (smooth interpolation through control points). Noise: Perlin, Simplex, Worley, FBM with octave stacking. Spatial indexing: `SpatialHash` for O(1) neighbor queries, `QuadTree` for recursive spatial subdivision. Random: `RandomGenerator` with seeded PCG and weighted/shuffled selection. 50+ easing functions. Exposed as `lurek.math.*`. Foundations tier — imported by nearly every module.
 
-## Minimal Module Example
+[⬆ back to top](#table-of-contents)
 
-Module example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-  -- Tweens interpolate values over time with easing.
-  -- Useful for UI animations, camera transitions, health bar changes.
-  local tw = lurek.math.newTween(0.5, "outQuad")
-  -- addValue defines a track: start=0, target=200
-  tw:addValue(0, 200)
-  -- In a real game loop, call tw:update(dt) each frame
-  function lurek.process(dt) tw:update(dt) end
-end
-
---@api-stub: lurek.math.newSpatialHash
--- Creates a spatial hash index with a cell size
-do
-  -- Spatial hashing divides the world into a grid for fast broad-phase queries.
-  -- Cell size should be close to the average entity size for best performance.
-  local hash = lurek.math.newSpatialHash(64)
-  -- Insert entities with id, x, y, width, height
-  hash:insert("player", 100, 100, 32, 32)
-  hash:insert("enemy", 130, 110, 32, 32)
-  -- Query all entities within a circle (center + radius)
-  local hits = hash:queryCircle(110, 110, 50)
-  lurek.log.debug("nearby entities=" .. #hits, "spatial")
-end
-
---@api-stub: lurek.math.newNoiseGenerator
--- Creates a procedural noise generator with an optional seed
-do
-  -- Noise generators produce coherent random values for terrain, clouds, textures.
-  -- The seed makes output deterministic across runs.
-  local terrain = lurek.math.newNoiseGenerator(20260422)
-  -- perlin2d returns smooth noise in roughly [-1..1] range
-  local h = terrain:perlin2d(3.5, 7.25)
-  -- generateMapCompute produces a flat array of noise values (GPU-accelerated)
-  local map = terrain:generateMapCompute(16, 16, {octaves = 3})
-  lurek.log.debug("terrain h=" .. h, "noise")
-  lurek.log.debug("terrain map samples=" .. #map, "noise")
-end
-
---@api-stub: lurek.math.newRectPacker
--- Creates a rectangle packer
-do
-  -- Rectangle packing places sprites into a texture atlas with minimal waste.
-  -- Args: atlas width, atlas height, padding between rects
-  local packer = lurek.math.newRectPacker(256, 256, 2)
-  -- pack(width, height, id) returns top-left position or nil if it does not fit
-  local x, y = packer:pack(64, 64, "hero")
-  lurek.log.info("packed hero at " .. tostring(x) .. "," .. tostring(y), "atlas")
-end
-```
-
-## Key Types
+## 🧩 Key Types
 
 - `LAabbTree` (11 methods) - Lua-side wrapper for an AABB tree spatial index.
 - `LBezierCurve` (15 methods) - Lua-side wrapper for a Bezier curve.
@@ -368,7 +318,9 @@ end
 - `LVec2` (17 methods) - Represents the Lua-visible LVec2 object exposed by this module.
 - `LVec3` (13 methods) - Represents the Lua-visible LVec3 object exposed by this module.
 
-## API Overview
+[⬆ back to top](#table-of-contents)
+
+## 📖 API Overview
 
 - Source spec: [docs/specs/math.md](../blob/main/docs/specs/math.md)
 
@@ -394,9 +346,13 @@ lurek.math.convexHull(pts: table) -> number[] -- Computes the convex hull for a 
 -- ... 84 more module functions
 ```
 
-## Module Functions
+[⬆ back to top](#table-of-contents)
 
-### `lurek.math.aabbTree() -> LAabbTree`
+## ⚙️ Module Functions
+
+### lurek.math.aabbTree
+
+`lurek.math.aabbTree() -> LAabbTree`
 
 Creates an empty AABB tree. This function is exposed to Lua scripts.
 
@@ -416,13 +372,15 @@ do
 end
 ```
 
-### `lurek.math.abs(x: number) -> number`
+### lurek.math.abs
+
+`lurek.math.abs(x: number) -> number`
 
 Returns absolute value. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `x` (`number`, required) - Input value.
+- `x` (`number`, required): Input value.
 
 **Returns**: `number` - Absolute value.
 
@@ -440,13 +398,15 @@ do
 end
 ```
 
-### `lurek.math.acos(x: number) -> number`
+### lurek.math.acos
+
+`lurek.math.acos(x: number) -> number`
 
 Returns arccosine of a value. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `x` (`number`, required) - Input value.
+- `x` (`number`, required): Input value.
 
 **Returns**: `number` - Angle in radians.
 
@@ -462,16 +422,18 @@ do
 end
 ```
 
-### `lurek.math.angleBetween(x1: number, y1: number, x2: number, y2: number) -> number`
+### lurek.math.angleBetween
+
+`lurek.math.angleBetween(x1: number, y1: number, x2: number, y2: number) -> number`
 
 Returns the angle between two points.
 
 **Parameters**
 
-- `x1` (`number`, required) - First point x coordinate.
-- `y1` (`number`, required) - First point y coordinate.
-- `x2` (`number`, required) - Second point x coordinate.
-- `y2` (`number`, required) - Second point y coordinate.
+- `x1` (`number`, required): First point x coordinate.
+- `y1` (`number`, required): First point y coordinate.
+- `x2` (`number`, required): Second point x coordinate.
+- `y2` (`number`, required): Second point y coordinate.
 
 **Returns**: `number` - Angle between points.
 
@@ -488,14 +450,16 @@ do
 end
 ```
 
-### `lurek.math.applyEasing(name: string, t: number) -> number`
+### lurek.math.applyEasing
+
+`lurek.math.applyEasing(name: string, t: number) -> number`
 
 Applies a named easing function to a normalized value.
 
 **Parameters**
 
-- `name` (`string`, required) - Easing function name.
-- `t` (`number`, required) - Normalized input value.
+- `name` (`string`, required): Easing function name.
+- `t` (`number`, required): Normalized input value.
 
 **Returns**: `number` - Eased value.
 
@@ -513,13 +477,15 @@ do
 end
 ```
 
-### `lurek.math.asin(x: number) -> number`
+### lurek.math.asin
+
+`lurek.math.asin(x: number) -> number`
 
 Returns arcsine of a value. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `x` (`number`, required) - Input value.
+- `x` (`number`, required): Input value.
 
 **Returns**: `number` - Angle in radians.
 
@@ -535,14 +501,16 @@ do
 end
 ```
 
-### `lurek.math.atan(y: number, [x]: number) -> number`
+### lurek.math.atan
+
+`lurek.math.atan(y: number, [x]: number) -> number`
 
 Returns arctangent or two-argument arctangent.
 
 **Parameters**
 
-- `y` (`number`, required) - Input value or y coordinate.
-- `x` (`number`, optional) - X coordinate for atan2 behavior.
+- `y` (`number`, required): Input value or y coordinate.
+- `x` (`number`, optional): X coordinate for atan2 behavior.
 
 **Returns**: `number` - Angle in radians.
 
@@ -559,14 +527,16 @@ do
 end
 ```
 
-### `lurek.math.atan2(y: number, x: number) -> number`
+### lurek.math.atan2
+
+`lurek.math.atan2(y: number, x: number) -> number`
 
 Returns two-argument arctangent.
 
 **Parameters**
 
-- `y` (`number`, required) - Y coordinate.
-- `x` (`number`, required) - X coordinate.
+- `y` (`number`, required): Y coordinate.
+- `x` (`number`, required): X coordinate.
 
 **Returns**: `number` - Angle in radians.
 
@@ -584,16 +554,18 @@ do
 end
 ```
 
-### `lurek.math.bresenham(x1: integer, y1: integer, x2: integer, y2: integer) -> table`
+### lurek.math.bresenham
+
+`lurek.math.bresenham(x1: integer, y1: integer, x2: integer, y2: integer) -> table`
 
 Returns integer grid points along a Bresenham line.
 
 **Parameters**
 
-- `x1` (`integer`, required) - Start x coordinate.
-- `y1` (`integer`, required) - Start y coordinate.
-- `x2` (`integer`, required) - End x coordinate.
-- `y2` (`integer`, required) - End y coordinate.
+- `x1` (`integer`, required): Start x coordinate.
+- `y1` (`integer`, required): Start y coordinate.
+- `x2` (`integer`, required): End x coordinate.
+- `y2` (`integer`, required): End y coordinate.
 
 **Returns**: `table` - Array table of `{x, y}` point tables.
 
@@ -610,13 +582,15 @@ do
 end
 ```
 
-### `lurek.math.catmullRom(points: table) -> LCatmullRom`
+### lurek.math.catmullRom
+
+`lurek.math.catmullRom(points: table) -> LCatmullRom`
 
 Creates a Catmull-Rom spline from point tables.
 
 **Parameters**
 
-- `points` (`table`, required) - Array table of points with `x`/`y` fields or numeric indices.
+- `points` (`table`, required): Array table of points with `x`/`y` fields or numeric indices.
 
 **Returns**: `LCatmullRom` - New spline handle.
 
@@ -635,13 +609,15 @@ do
 end
 ```
 
-### `lurek.math.ceil(x: number) -> number`
+### lurek.math.ceil
+
+`lurek.math.ceil(x: number) -> number`
 
 Returns ceiling of a value. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `x` (`number`, required) - Input value.
+- `x` (`number`, required): Input value.
 
 **Returns**: `number` - Ceiling value.
 
@@ -657,17 +633,19 @@ do
 end
 ```
 
-### `lurek.math.circleContainsPoint(cx: number, cy: number, r: number, px: number, py: number) -> boolean`
+### lurek.math.circleContainsPoint
+
+`lurek.math.circleContainsPoint(cx: number, cy: number, r: number, px: number, py: number) -> boolean`
 
 Returns whether a circle contains a point.
 
 **Parameters**
 
-- `cx` (`number`, required) - Circle center x coordinate.
-- `cy` (`number`, required) - Circle center y coordinate.
-- `r` (`number`, required) - Circle radius.
-- `px` (`number`, required) - Point x coordinate.
-- `py` (`number`, required) - Point y coordinate.
+- `cx` (`number`, required): Circle center x coordinate.
+- `cy` (`number`, required): Circle center y coordinate.
+- `r` (`number`, required): Circle radius.
+- `px` (`number`, required): Point x coordinate.
+- `py` (`number`, required): Point y coordinate.
 
 **Returns**: `boolean` - True when the point is inside the circle.
 
@@ -685,18 +663,20 @@ do
 end
 ```
 
-### `lurek.math.circleIntersectsCircle(x1: number, y1: number, r1: number, x2: number, y2: number, r2: number) -> boolean`
+### lurek.math.circleIntersectsCircle
+
+`lurek.math.circleIntersectsCircle(x1: number, y1: number, r1: number, x2: number, y2: number, r2: number) -> boolean`
 
 Returns whether two circles intersect.
 
 **Parameters**
 
-- `x1` (`number`, required) - First circle center x coordinate.
-- `y1` (`number`, required) - First circle center y coordinate.
-- `r1` (`number`, required) - First circle radius.
-- `x2` (`number`, required) - Second circle center x coordinate.
-- `y2` (`number`, required) - Second circle center y coordinate.
-- `r2` (`number`, required) - Second circle radius.
+- `x1` (`number`, required): First circle center x coordinate.
+- `y1` (`number`, required): First circle center y coordinate.
+- `r1` (`number`, required): First circle radius.
+- `x2` (`number`, required): Second circle center x coordinate.
+- `y2` (`number`, required): Second circle center y coordinate.
+- `r2` (`number`, required): Second circle radius.
 
 **Returns**: `boolean` - True when the circles intersect.
 
@@ -714,19 +694,21 @@ do
 end
 ```
 
-### `lurek.math.circleIntersectsLine(cx: number, cy: number, r: number, lx1: number, ly1: number, lx2: number, ly2: number) -> boolean`
+### lurek.math.circleIntersectsLine
+
+`lurek.math.circleIntersectsLine(cx: number, cy: number, r: number, lx1: number, ly1: number, lx2: number, ly2: number) -> boolean`
 
 Returns circle-line intersection state and hit points when present.
 
 **Parameters**
 
-- `cx` (`number`, required) - Circle center x coordinate.
-- `cy` (`number`, required) - Circle center y coordinate.
-- `r` (`number`, required) - Circle radius.
-- `lx1` (`number`, required) - Line start x coordinate.
-- `ly1` (`number`, required) - Line start y coordinate.
-- `lx2` (`number`, required) - Line end x coordinate.
-- `ly2` (`number`, required) - Line end y coordinate.
+- `cx` (`number`, required): Circle center x coordinate.
+- `cy` (`number`, required): Circle center y coordinate.
+- `r` (`number`, required): Circle radius.
+- `lx1` (`number`, required): Line start x coordinate.
+- `ly1` (`number`, required): Line start y coordinate.
+- `lx2` (`number`, required): Line end x coordinate.
+- `ly2` (`number`, required): Line end y coordinate.
 
 **Returns**: `boolean` - True when the line intersects the circle.
 
@@ -745,19 +727,21 @@ do
 end
 ```
 
-### `lurek.math.circleIntersectsSegment(cx: number, cy: number, r: number, sx1: number, sy1: number, sx2: number, sy2: number) -> boolean`
+### lurek.math.circleIntersectsSegment
+
+`lurek.math.circleIntersectsSegment(cx: number, cy: number, r: number, sx1: number, sy1: number, sx2: number, sy2: number) -> boolean`
 
 Returns circle-segment intersection state and hit points when present.
 
 **Parameters**
 
-- `cx` (`number`, required) - Circle center x coordinate.
-- `cy` (`number`, required) - Circle center y coordinate.
-- `r` (`number`, required) - Circle radius.
-- `sx1` (`number`, required) - Segment start x coordinate.
-- `sy1` (`number`, required) - Segment start y coordinate.
-- `sx2` (`number`, required) - Segment end x coordinate.
-- `sy2` (`number`, required) - Segment end y coordinate.
+- `cx` (`number`, required): Circle center x coordinate.
+- `cy` (`number`, required): Circle center y coordinate.
+- `r` (`number`, required): Circle radius.
+- `sx1` (`number`, required): Segment start x coordinate.
+- `sy1` (`number`, required): Segment start y coordinate.
+- `sx2` (`number`, required): Segment end x coordinate.
+- `sy2` (`number`, required): Segment end y coordinate.
 
 **Returns**: `boolean` - True when the segment intersects the circle.
 
@@ -776,15 +760,17 @@ do
 end
 ```
 
-### `lurek.math.clamp(v: number, min: number, max: number) -> number`
+### lurek.math.clamp
+
+`lurek.math.clamp(v: number, min: number, max: number) -> number`
 
 Clamps a value to a range. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `v` (`number`, required) - Input value.
-- `min` (`number`, required) - Minimum value.
-- `max` (`number`, required) - Maximum value.
+- `v` (`number`, required): Input value.
+- `min` (`number`, required): Minimum value.
+- `max` (`number`, required): Maximum value.
 
 **Returns**: `number` - Clamped value.
 
@@ -801,18 +787,20 @@ do
 end
 ```
 
-### `lurek.math.closestPointOnSegment(px: number, py: number, x1: number, y1: number, x2: number, y2: number) -> number`
+### lurek.math.closestPointOnSegment
+
+`lurek.math.closestPointOnSegment(px: number, py: number, x1: number, y1: number, x2: number, y2: number) -> number`
 
 Returns the closest point on a segment to an input point.
 
 **Parameters**
 
-- `px` (`number`, required) - Point x coordinate.
-- `py` (`number`, required) - Point y coordinate.
-- `x1` (`number`, required) - Segment start x coordinate.
-- `y1` (`number`, required) - Segment start y coordinate.
-- `x2` (`number`, required) - Segment end x coordinate.
-- `y2` (`number`, required) - Segment end y coordinate.
+- `px` (`number`, required): Point x coordinate.
+- `py` (`number`, required): Point y coordinate.
+- `x1` (`number`, required): Segment start x coordinate.
+- `y1` (`number`, required): Segment start y coordinate.
+- `x2` (`number`, required): Segment end x coordinate.
+- `y2` (`number`, required): Segment end y coordinate.
 
 **Returns**: `number` - Closest point x coordinate.
 
@@ -829,13 +817,15 @@ do
 end
 ```
 
-### `lurek.math.convexHull(pts: table) -> number[]`
+### lurek.math.convexHull
+
+`lurek.math.convexHull(pts: table) -> number[]`
 
 Computes the convex hull for a flat point table.
 
 **Parameters**
 
-- `pts` (`table`, required) - Flat numeric point table.
+- `pts` (`table`, required): Flat numeric point table.
 
 **Returns**: `number[]` - Flat numeric hull point table (x1,y1,x2,y2,...).
 
@@ -853,13 +843,15 @@ do
 end
 ```
 
-### `lurek.math.cos(x: number) -> number`
+### lurek.math.cos
+
+`lurek.math.cos(x: number) -> number`
 
 Returns cosine of an angle. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `x` (`number`, required) - Angle in radians.
+- `x` (`number`, required): Angle in radians.
 
 **Returns**: `number` - Cosine value.
 
@@ -876,13 +868,15 @@ do
 end
 ```
 
-### `lurek.math.deg(rad: number) -> number`
+### lurek.math.deg
+
+`lurek.math.deg(rad: number) -> number`
 
 Converts radians to degrees. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `rad` (`number`, required) - Angle in radians.
+- `rad` (`number`, required): Angle in radians.
 
 **Returns**: `number` - Angle in degrees.
 
@@ -898,13 +892,15 @@ do
 end
 ```
 
-### `lurek.math.delaunayTriangulate(pts: table) -> table`
+### lurek.math.delaunayTriangulate
+
+`lurek.math.delaunayTriangulate(pts: table) -> table`
 
 Computes Delaunay triangles for a flat point table.
 
 **Parameters**
 
-- `pts` (`table`, required) - Flat numeric point table.
+- `pts` (`table`, required): Flat numeric point table.
 
 **Returns**: `table` - Array of triangle index tables; each entry is `{i1, i2, i3}` (1-based vertex indices).
 
@@ -922,16 +918,18 @@ do
 end
 ```
 
-### `lurek.math.distance(x1: number, y1: number, x2: number, y2: number) -> number`
+### lurek.math.distance
+
+`lurek.math.distance(x1: number, y1: number, x2: number, y2: number) -> number`
 
 Returns Euclidean distance between two points.
 
 **Parameters**
 
-- `x1` (`number`, required) - First point x coordinate.
-- `y1` (`number`, required) - First point y coordinate.
-- `x2` (`number`, required) - Second point x coordinate.
-- `y2` (`number`, required) - Second point y coordinate.
+- `x1` (`number`, required): First point x coordinate.
+- `y1` (`number`, required): First point y coordinate.
+- `x2` (`number`, required): Second point x coordinate.
+- `y2` (`number`, required): Second point y coordinate.
 
 **Returns**: `number` - Distance.
 
@@ -947,16 +945,18 @@ do
 end
 ```
 
-### `lurek.math.distanceSq(x1: number, y1: number, x2: number, y2: number) -> number`
+### lurek.math.distanceSq
+
+`lurek.math.distanceSq(x1: number, y1: number, x2: number, y2: number) -> number`
 
 Returns squared Euclidean distance between two points.
 
 **Parameters**
 
-- `x1` (`number`, required) - First point x coordinate.
-- `y1` (`number`, required) - First point y coordinate.
-- `x2` (`number`, required) - Second point x coordinate.
-- `y2` (`number`, required) - Second point y coordinate.
+- `x1` (`number`, required): First point x coordinate.
+- `y1` (`number`, required): First point y coordinate.
+- `x2` (`number`, required): Second point x coordinate.
+- `y2` (`number`, required): Second point y coordinate.
 
 **Returns**: `number` - Squared distance.
 
@@ -975,13 +975,15 @@ do
 end
 ```
 
-### `lurek.math.exp(x: number) -> number`
+### lurek.math.exp
+
+`lurek.math.exp(x: number) -> number`
 
 Returns exponential of a value. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `x` (`number`, required) - Input value.
+- `x` (`number`, required): Input value.
 
 **Returns**: `number` - Exponential value.
 
@@ -997,18 +999,20 @@ do
 end
 ```
 
-### `lurek.math.fbm(x: number, y: number, [seed]: integer, [octaves]: integer, [lac]: number, [gain]: number) -> number`
+### lurek.math.fbm
+
+`lurek.math.fbm(x: number, y: number, [seed]: integer, [octaves]: integer, [lac]: number, [gain]: number) -> number`
 
 Samples stateless fractal Brownian motion noise.
 
 **Parameters**
 
-- `x` (`number`, required) - X coordinate.
-- `y` (`number`, required) - Y coordinate.
-- `seed` (`integer`, optional) - Seed value (default 0).
-- `octaves` (`integer`, optional) - Octave count (default 4).
-- `lac` (`number`, optional) - Lacunarity (default 2.0).
-- `gain` (`number`, optional) - Gain (default 0.5).
+- `x` (`number`, required): X coordinate.
+- `y` (`number`, required): Y coordinate.
+- `seed` (`integer`, optional): Seed value (default 0).
+- `octaves` (`integer`, optional): Octave count (default 4).
+- `lac` (`number`, optional): Lacunarity (default 2.0).
+- `gain` (`number`, optional): Gain (default 0.5).
 
 **Returns**: `number` - Noise value.
 
@@ -1024,13 +1028,15 @@ do
 end
 ```
 
-### `lurek.math.floor(x: number) -> number`
+### lurek.math.floor
+
+`lurek.math.floor(x: number) -> number`
 
 Returns floor of a value. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `x` (`number`, required) - Input value.
+- `x` (`number`, required): Input value.
 
 **Returns**: `number` - Floored value.
 
@@ -1047,14 +1053,16 @@ do
 end
 ```
 
-### `lurek.math.fmod(x: number, y: number) -> number`
+### lurek.math.fmod
+
+`lurek.math.fmod(x: number, y: number) -> number`
 
 Returns floating-point remainder.
 
 **Parameters**
 
-- `x` (`number`, required) - Dividend.
-- `y` (`number`, required) - Divisor.
+- `x` (`number`, required): Dividend.
+- `y` (`number`, required): Divisor.
 
 **Returns**: `number` - Remainder.
 
@@ -1070,13 +1078,15 @@ do
 end
 ```
 
-### `lurek.math.fromHex(hex: string) -> number`
+### lurek.math.fromHex
+
+`lurek.math.fromHex(hex: string) -> number`
 
 Converts a hex color string to RGBA channels.
 
 **Parameters**
 
-- `hex` (`string`, required) - Hex color string.
+- `hex` (`string`, required): Hex color string.
 
 **Returns**: `number` - Red channel.
 
@@ -1092,13 +1102,15 @@ do
 end
 ```
 
-### `lurek.math.gammaToLinear(c: number) -> number`
+### lurek.math.gammaToLinear
+
+`lurek.math.gammaToLinear(c: number) -> number`
 
 Converts a gamma-space channel to linear space.
 
 **Parameters**
 
-- `c` (`number`, required) - Gamma-space channel value.
+- `c` (`number`, required): Gamma-space channel value.
 
 **Returns**: `number` - Linear-space channel value.
 
@@ -1115,20 +1127,22 @@ do
 end
 ```
 
-### `lurek.math.hermite(p0x: number, p0y: number, p1x: number, p1y: number, m0x: number, m0y: number, m1x: number, m1y: number) -> LHermite`
+### lurek.math.hermite
+
+`lurek.math.hermite(p0x: number, p0y: number, p1x: number, p1y: number, m0x: number, m0y: number, m1x: number, m1y: number) -> LHermite`
 
 Creates a Hermite spline from endpoints and tangents.
 
 **Parameters**
 
-- `p0x` (`number`, required) - Start point x coordinate.
-- `p0y` (`number`, required) - Start point y coordinate.
-- `p1x` (`number`, required) - End point x coordinate.
-- `p1y` (`number`, required) - End point y coordinate.
-- `m0x` (`number`, required) - Start tangent x component.
-- `m0y` (`number`, required) - Start tangent y component.
-- `m1x` (`number`, required) - End tangent x component.
-- `m1y` (`number`, required) - End tangent y component.
+- `p0x` (`number`, required): Start point x coordinate.
+- `p0y` (`number`, required): Start point y coordinate.
+- `p1x` (`number`, required): End point x coordinate.
+- `p1y` (`number`, required): End point y coordinate.
+- `m0x` (`number`, required): Start tangent x component.
+- `m0y` (`number`, required): Start tangent y component.
+- `m1x` (`number`, required): End tangent x component.
+- `m1y` (`number`, required): End tangent y component.
 
 **Returns**: `LHermite` - New Hermite spline handle.
 
@@ -1147,15 +1161,17 @@ do
 end
 ```
 
-### `lurek.math.hslToRgb(h: number, s: number, l: number) -> number`
+### lurek.math.hslToRgb
+
+`lurek.math.hslToRgb(h: number, s: number, l: number) -> number`
 
 Converts HSL color values to RGBA channels.
 
 **Parameters**
 
-- `h` (`number`, required) - Hue value.
-- `s` (`number`, required) - Saturation value.
-- `l` (`number`, required) - Lightness value.
+- `h` (`number`, required): Hue value.
+- `s` (`number`, required): Saturation value.
+- `l` (`number`, required): Lightness value.
 
 **Returns**: `number` - Red channel.
 
@@ -1172,13 +1188,15 @@ do
 end
 ```
 
-### `lurek.math.inBack(t: number) -> number`
+### lurek.math.inBack
+
+`lurek.math.inBack(t: number) -> number`
 
 Applies back ease-in. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `t` (`number`, required) - Normalized input value.
+- `t` (`number`, required): Normalized input value.
 
 **Returns**: `number` - Eased value.
 
@@ -1194,13 +1212,15 @@ do
 end
 ```
 
-### `lurek.math.inBounce(t: number) -> number`
+### lurek.math.inBounce
+
+`lurek.math.inBounce(t: number) -> number`
 
 Applies bounce ease-in. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `t` (`number`, required) - Normalized input value.
+- `t` (`number`, required): Normalized input value.
 
 **Returns**: `number` - Eased value.
 
@@ -1216,13 +1236,15 @@ do
 end
 ```
 
-### `lurek.math.inCubic(t: number) -> number`
+### lurek.math.inCubic
+
+`lurek.math.inCubic(t: number) -> number`
 
 Applies cubic ease-in. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `t` (`number`, required) - Normalized input value.
+- `t` (`number`, required): Normalized input value.
 
 **Returns**: `number` - Eased value.
 
@@ -1240,13 +1262,15 @@ do
 end
 ```
 
-### `lurek.math.inElastic(t: number) -> number`
+### lurek.math.inElastic
+
+`lurek.math.inElastic(t: number) -> number`
 
 Applies elastic ease-in. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `t` (`number`, required) - Normalized input value.
+- `t` (`number`, required): Normalized input value.
 
 **Returns**: `number` - Eased value.
 
@@ -1262,13 +1286,15 @@ do
 end
 ```
 
-### `lurek.math.inExpo(t: number) -> number`
+### lurek.math.inExpo
+
+`lurek.math.inExpo(t: number) -> number`
 
 Applies exponential ease-in. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `t` (`number`, required) - Normalized input value.
+- `t` (`number`, required): Normalized input value.
 
 **Returns**: `number` - Eased value.
 
@@ -1284,13 +1310,15 @@ do
 end
 ```
 
-### `lurek.math.inOutBack(t: number) -> number`
+### lurek.math.inOutBack
+
+`lurek.math.inOutBack(t: number) -> number`
 
 Applies back ease-in-out. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `t` (`number`, required) - Normalized input value.
+- `t` (`number`, required): Normalized input value.
 
 **Returns**: `number` - Eased value.
 
@@ -1306,13 +1334,15 @@ do
 end
 ```
 
-### `lurek.math.inOutBounce(t: number) -> number`
+### lurek.math.inOutBounce
+
+`lurek.math.inOutBounce(t: number) -> number`
 
 Applies bounce ease-in-out. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `t` (`number`, required) - Normalized input value.
+- `t` (`number`, required): Normalized input value.
 
 **Returns**: `number` - Eased value.
 
@@ -1328,13 +1358,15 @@ do
 end
 ```
 
-### `lurek.math.inOutCubic(t: number) -> number`
+### lurek.math.inOutCubic
+
+`lurek.math.inOutCubic(t: number) -> number`
 
 Applies cubic ease-in-out. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `t` (`number`, required) - Normalized input value.
+- `t` (`number`, required): Normalized input value.
 
 **Returns**: `number` - Eased value.
 
@@ -1351,13 +1383,15 @@ do
 end
 ```
 
-### `lurek.math.inOutElastic(t: number) -> number`
+### lurek.math.inOutElastic
+
+`lurek.math.inOutElastic(t: number) -> number`
 
 Applies elastic ease-in-out. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `t` (`number`, required) - Normalized input value.
+- `t` (`number`, required): Normalized input value.
 
 **Returns**: `number` - Eased value.
 
@@ -1373,13 +1407,15 @@ do
 end
 ```
 
-### `lurek.math.inOutExpo(t: number) -> number`
+### lurek.math.inOutExpo
+
+`lurek.math.inOutExpo(t: number) -> number`
 
 Applies exponential ease-in-out.
 
 **Parameters**
 
-- `t` (`number`, required) - Normalized input value.
+- `t` (`number`, required): Normalized input value.
 
 **Returns**: `number` - Eased value.
 
@@ -1395,13 +1431,15 @@ do
 end
 ```
 
-### `lurek.math.inOutQuad(t: number) -> number`
+### lurek.math.inOutQuad
+
+`lurek.math.inOutQuad(t: number) -> number`
 
 Applies quadratic ease-in-out. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `t` (`number`, required) - Normalized input value.
+- `t` (`number`, required): Normalized input value.
 
 **Returns**: `number` - Eased value.
 
@@ -1418,13 +1456,15 @@ do
 end
 ```
 
-### `lurek.math.inOutQuart(t: number) -> number`
+### lurek.math.inOutQuart
+
+`lurek.math.inOutQuart(t: number) -> number`
 
 Applies quartic ease-in-out. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `t` (`number`, required) - Normalized input value.
+- `t` (`number`, required): Normalized input value.
 
 **Returns**: `number` - Eased value.
 
@@ -1440,13 +1480,15 @@ do
 end
 ```
 
-### `lurek.math.inOutSine(t: number) -> number`
+### lurek.math.inOutSine
+
+`lurek.math.inOutSine(t: number) -> number`
 
 Applies sine ease-in-out. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `t` (`number`, required) - Normalized input value.
+- `t` (`number`, required): Normalized input value.
 
 **Returns**: `number` - Eased value.
 
@@ -1462,13 +1504,15 @@ do
 end
 ```
 
-### `lurek.math.inQuad(t: number) -> number`
+### lurek.math.inQuad
+
+`lurek.math.inQuad(t: number) -> number`
 
 Applies quadratic ease-in. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `t` (`number`, required) - Normalized input value.
+- `t` (`number`, required): Normalized input value.
 
 **Returns**: `number` - Eased value.
 
@@ -1486,13 +1530,15 @@ do
 end
 ```
 
-### `lurek.math.inQuart(t: number) -> number`
+### lurek.math.inQuart
+
+`lurek.math.inQuart(t: number) -> number`
 
 Applies quartic ease-in. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `t` (`number`, required) - Normalized input value.
+- `t` (`number`, required): Normalized input value.
 
 **Returns**: `number` - Eased value.
 
@@ -1508,13 +1554,15 @@ do
 end
 ```
 
-### `lurek.math.inSine(t: number) -> number`
+### lurek.math.inSine
+
+`lurek.math.inSine(t: number) -> number`
 
 Applies sine ease-in. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `t` (`number`, required) - Normalized input value.
+- `t` (`number`, required): Normalized input value.
 
 **Returns**: `number` - Eased value.
 
@@ -1530,15 +1578,17 @@ do
 end
 ```
 
-### `lurek.math.inverseLerp(a: number, b: number, v: number) -> number`
+### lurek.math.inverseLerp
+
+`lurek.math.inverseLerp(a: number, b: number, v: number) -> number`
 
 Returns the interpolation factor of a value between two bounds.
 
 **Parameters**
 
-- `a` (`number`, required) - Start value.
-- `b` (`number`, required) - End value.
-- `v` (`number`, required) - Input value.
+- `a` (`number`, required): Start value.
+- `b` (`number`, required): End value.
+- `v` (`number`, required): Input value.
 
 **Returns**: `number` - Interpolation factor.
 
@@ -1555,13 +1605,15 @@ do
 end
 ```
 
-### `lurek.math.isConvex(pts: table) -> boolean`
+### lurek.math.isConvex
+
+`lurek.math.isConvex(pts: table) -> boolean`
 
 Returns whether a flat polygon point table is convex.
 
 **Parameters**
 
-- `pts` (`table`, required) - Flat numeric table `{x1, y1, x2, y2, ...}`.
+- `pts` (`table`, required): Flat numeric table `{x1, y1, x2, y2, ...}`.
 
 **Returns**: `boolean` - True when the polygon is convex.
 
@@ -1580,15 +1632,17 @@ do
 end
 ```
 
-### `lurek.math.lerp(a: number, b: number, t: number) -> number`
+### lurek.math.lerp
+
+`lurek.math.lerp(a: number, b: number, t: number) -> number`
 
 Linearly interpolates between two values.
 
 **Parameters**
 
-- `a` (`number`, required) - Start value.
-- `b` (`number`, required) - End value.
-- `t` (`number`, required) - Interpolation factor.
+- `a` (`number`, required): Start value.
+- `b` (`number`, required): End value.
+- `t` (`number`, required): Interpolation factor.
 
 **Returns**: `number` - Interpolated value.
 
@@ -1604,13 +1658,15 @@ do
 end
 ```
 
-### `lurek.math.linear(t: number) -> number`
+### lurek.math.linear
+
+`lurek.math.linear(t: number) -> number`
 
 Applies linear easing. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `t` (`number`, required) - Normalized input value.
+- `t` (`number`, required): Normalized input value.
 
 **Returns**: `number` - Eased value.
 
@@ -1627,13 +1683,15 @@ do
 end
 ```
 
-### `lurek.math.linearToGamma(c: number) -> number`
+### lurek.math.linearToGamma
+
+`lurek.math.linearToGamma(c: number) -> number`
 
 Converts a linear-space channel to gamma space.
 
 **Parameters**
 
-- `c` (`number`, required) - Linear-space channel value.
+- `c` (`number`, required): Linear-space channel value.
 
 **Returns**: `number` - Gamma-space channel value.
 
@@ -1649,20 +1707,22 @@ do
 end
 ```
 
-### `lurek.math.lineIntersect(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number) -> number`
+### lurek.math.lineIntersect
+
+`lurek.math.lineIntersect(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number) -> number`
 
 Returns intersection point for two infinite lines when present.
 
 **Parameters**
 
-- `x1` (`number`, required) - First line start x coordinate.
-- `y1` (`number`, required) - First line start y coordinate.
-- `x2` (`number`, required) - First line end x coordinate.
-- `y2` (`number`, required) - First line end y coordinate.
-- `x3` (`number`, required) - Second line start x coordinate.
-- `y3` (`number`, required) - Second line start y coordinate.
-- `x4` (`number`, required) - Second line end x coordinate.
-- `y4` (`number`, required) - Second line end y coordinate.
+- `x1` (`number`, required): First line start x coordinate.
+- `y1` (`number`, required): First line start y coordinate.
+- `x2` (`number`, required): First line end x coordinate.
+- `y2` (`number`, required): First line end y coordinate.
+- `x3` (`number`, required): Second line start x coordinate.
+- `y3` (`number`, required): Second line start y coordinate.
+- `x4` (`number`, required): Second line end x coordinate.
+- `y4` (`number`, required): Second line end y coordinate.
 
 **Returns**: `number` - Intersection x coordinate, or nil.
 
@@ -1681,14 +1741,16 @@ do
 end
 ```
 
-### `lurek.math.log(x: number, [b]: number) -> number`
+### lurek.math.log
+
+`lurek.math.log(x: number, [b]: number) -> number`
 
 Returns natural logarithm or logarithm with a supplied base.
 
 **Parameters**
 
-- `x` (`number`, required) - Input value.
-- `b` (`number`, optional) - Logarithm base.
+- `x` (`number`, required): Input value.
+- `b` (`number`, optional): Logarithm base.
 
 **Returns**: `number` - Logarithm value.
 
@@ -1705,13 +1767,15 @@ do
 end
 ```
 
-### `lurek.math.max(...: number) -> number`
+### lurek.math.max
+
+`lurek.math.max(...: number) -> number`
 
 Returns the largest supplied value.
 
 **Parameters**
 
-- `...` (`number`, required) - One or more numeric values.
+- `...` (`number`, required): One or more numeric values.
 
 **Returns**: `number` - Maximum value.
 
@@ -1727,13 +1791,15 @@ do
 end
 ```
 
-### `lurek.math.min(...: number) -> number`
+### lurek.math.min
+
+`lurek.math.min(...: number) -> number`
 
 Returns the smallest supplied value.
 
 **Parameters**
 
-- `...` (`number`, required) - One or more numeric values.
+- `...` (`number`, required): One or more numeric values.
 
 **Returns**: `number` - Minimum value.
 
@@ -1750,13 +1816,15 @@ do
 end
 ```
 
-### `lurek.math.newBezierCurve(points: table) -> LBezierCurve`
+### lurek.math.newBezierCurve
+
+`lurek.math.newBezierCurve(points: table) -> LBezierCurve`
 
 Creates a Bezier curve from a flat point table.
 
 **Parameters**
 
-- `points` (`table`, required) - Flat numeric table `{x1, y1, x2, y2, ...}` with at least two points.
+- `points` (`table`, required): Flat numeric table `{x1, y1, x2, y2, ...}` with at least two points.
 
 **Returns**: `LBezierCurve` - New Bezier curve handle.
 
@@ -1778,15 +1846,17 @@ do
 end
 ```
 
-### `lurek.math.newCircle(x: number, y: number, radius: number) -> LCircle`
+### lurek.math.newCircle
+
+`lurek.math.newCircle(x: number, y: number, radius: number) -> LCircle`
 
 Creates a circle primitive. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `x` (`number`, required) - Center x coordinate.
-- `y` (`number`, required) - Center y coordinate.
-- `radius` (`number`, required) - Circle radius.
+- `x` (`number`, required): Center x coordinate.
+- `y` (`number`, required): Center y coordinate.
+- `radius` (`number`, required): Circle radius.
 
 **Returns**: `LCircle` - New circle handle.
 
@@ -1805,13 +1875,15 @@ do
 end
 ```
 
-### `lurek.math.newNoiseGenerator([seed]: integer) -> LNoiseGenerator`
+### lurek.math.newNoiseGenerator
+
+`lurek.math.newNoiseGenerator([seed]: integer) -> LNoiseGenerator`
 
 Creates a procedural noise generator with an optional seed.
 
 **Parameters**
 
-- `seed` (`integer`, optional) - Seed value (default 0).
+- `seed` (`integer`, optional): Seed value (default 0).
 
 **Returns**: `LNoiseGenerator` - New noise generator handle.
 
@@ -1833,13 +1905,15 @@ do
 end
 ```
 
-### `lurek.math.newRandomGenerator([seed]: integer) -> LRandomGenerator`
+### lurek.math.newRandomGenerator
+
+`lurek.math.newRandomGenerator([seed]: integer) -> LRandomGenerator`
 
 Creates a deterministic random generator with an optional seed.
 
 **Parameters**
 
-- `seed` (`integer`, optional) - Seed value.
+- `seed` (`integer`, optional): Seed value.
 
 **Returns**: `LRandomGenerator` - New random generator handle.
 
@@ -1862,15 +1936,17 @@ do
 end
 ```
 
-### `lurek.math.newRectPacker(width: integer, height: integer, [padding]: integer) -> LRectPacker`
+### lurek.math.newRectPacker
+
+`lurek.math.newRectPacker(width: integer, height: integer, [padding]: integer) -> LRectPacker`
 
 Creates a rectangle packer. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `width` (`integer`, required) - Packer width.
-- `height` (`integer`, required) - Packer height.
-- `padding` (`integer`, optional) - Padding between rectangles (default 0).
+- `width` (`integer`, required): Packer width.
+- `height` (`integer`, required): Packer height.
+- `padding` (`integer`, optional): Padding between rectangles (default 0).
 
 **Returns**: `LRectPacker` - New rectangle packer handle.
 
@@ -1889,13 +1965,15 @@ do
 end
 ```
 
-### `lurek.math.newSpatialHash(cell_size: number) -> LSpatialHash`
+### lurek.math.newSpatialHash
+
+`lurek.math.newSpatialHash(cell_size: number) -> LSpatialHash`
 
 Creates a spatial hash index with a cell size.
 
 **Parameters**
 
-- `cell_size` (`number`, required) - Spatial hash cell size.
+- `cell_size` (`number`, required): Spatial hash cell size.
 
 **Returns**: `LSpatialHash` - New spatial hash handle.
 
@@ -1917,21 +1995,23 @@ do
 end
 ```
 
-### `lurek.math.newTransform([x]: number, [y]: number, [angle]: number, [sx]: number, [sy]: number, [ox]: number, [oy]: number, [kx]: number, [ky]: number) -> LTransform`
+### lurek.math.newTransform
+
+`lurek.math.newTransform([x]: number, [y]: number, [angle]: number, [sx]: number, [sy]: number, [ox]: number, [oy]: number, [kx]: number, [ky]: number) -> LTransform`
 
 Creates a 2D transform. All components are optional; omitting all returns an identity transform.
 
 **Parameters**
 
-- `x` (`number`, optional) - X translation (default 0).
-- `y` (`number`, optional) - Y translation (default 0).
-- `angle` (`number`, optional) - Rotation angle in radians (default 0).
-- `sx` (`number`, optional) - X scale factor (default 1).
-- `sy` (`number`, optional) - Y scale factor (defaults to `sx`).
-- `ox` (`number`, optional) - X origin offset for rotation/scale (default 0).
-- `oy` (`number`, optional) - Y origin offset for rotation/scale (default 0).
-- `kx` (`number`, optional) - X shear factor (default 0).
-- `ky` (`number`, optional) - Y shear factor (default 0).
+- `x` (`number`, optional): X translation (default 0).
+- `y` (`number`, optional): Y translation (default 0).
+- `angle` (`number`, optional): Rotation angle in radians (default 0).
+- `sx` (`number`, optional): X scale factor (default 1).
+- `sy` (`number`, optional): Y scale factor (defaults to `sx`).
+- `ox` (`number`, optional): X origin offset for rotation/scale (default 0).
+- `oy` (`number`, optional): Y origin offset for rotation/scale (default 0).
+- `kx` (`number`, optional): X shear factor (default 0).
+- `ky` (`number`, optional): Y shear factor (default 0).
 
 **Returns**: `LTransform` - New transform handle.
 
@@ -1951,14 +2031,16 @@ do
 end
 ```
 
-### `lurek.math.newTween(duration: number, [easing_name]: string) -> LTween`
+### lurek.math.newTween
+
+`lurek.math.newTween(duration: number, [easing_name]: string) -> LTween`
 
 Creates a tween with a duration and optional easing name.
 
 **Parameters**
 
-- `duration` (`number`, required) - Tween duration in seconds.
-- `easing_name` (`string`, optional) - Easing name (default `linear`).
+- `duration` (`number`, required): Tween duration in seconds.
+- `easing_name` (`string`, optional): Easing name (default `linear`).
 
 **Returns**: `LTween` - New tween handle.
 
@@ -1978,13 +2060,15 @@ do
 end
 ```
 
-### `lurek.math.outBack(t: number) -> number`
+### lurek.math.outBack
+
+`lurek.math.outBack(t: number) -> number`
 
 Applies back ease-out. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `t` (`number`, required) - Normalized input value.
+- `t` (`number`, required): Normalized input value.
 
 **Returns**: `number` - Eased value.
 
@@ -2000,13 +2084,15 @@ do
 end
 ```
 
-### `lurek.math.outBounce(t: number) -> number`
+### lurek.math.outBounce
+
+`lurek.math.outBounce(t: number) -> number`
 
 Applies bounce ease-out. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `t` (`number`, required) - Normalized input value.
+- `t` (`number`, required): Normalized input value.
 
 **Returns**: `number` - Eased value.
 
@@ -2022,13 +2108,15 @@ do
 end
 ```
 
-### `lurek.math.outCubic(t: number) -> number`
+### lurek.math.outCubic
+
+`lurek.math.outCubic(t: number) -> number`
 
 Applies cubic ease-out. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `t` (`number`, required) - Normalized input value.
+- `t` (`number`, required): Normalized input value.
 
 **Returns**: `number` - Eased value.
 
@@ -2044,13 +2132,15 @@ do
 end
 ```
 
-### `lurek.math.outElastic(t: number) -> number`
+### lurek.math.outElastic
+
+`lurek.math.outElastic(t: number) -> number`
 
 Applies elastic ease-out. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `t` (`number`, required) - Normalized input value.
+- `t` (`number`, required): Normalized input value.
 
 **Returns**: `number` - Eased value.
 
@@ -2066,13 +2156,15 @@ do
 end
 ```
 
-### `lurek.math.outExpo(t: number) -> number`
+### lurek.math.outExpo
+
+`lurek.math.outExpo(t: number) -> number`
 
 Applies exponential ease-out. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `t` (`number`, required) - Normalized input value.
+- `t` (`number`, required): Normalized input value.
 
 **Returns**: `number` - Eased value.
 
@@ -2088,13 +2180,15 @@ do
 end
 ```
 
-### `lurek.math.outQuad(t: number) -> number`
+### lurek.math.outQuad
+
+`lurek.math.outQuad(t: number) -> number`
 
 Applies quadratic ease-out. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `t` (`number`, required) - Normalized input value.
+- `t` (`number`, required): Normalized input value.
 
 **Returns**: `number` - Eased value.
 
@@ -2110,13 +2204,15 @@ do
 end
 ```
 
-### `lurek.math.outQuart(t: number) -> number`
+### lurek.math.outQuart
+
+`lurek.math.outQuart(t: number) -> number`
 
 Applies quartic ease-out. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `t` (`number`, required) - Normalized input value.
+- `t` (`number`, required): Normalized input value.
 
 **Returns**: `number` - Eased value.
 
@@ -2132,13 +2228,15 @@ do
 end
 ```
 
-### `lurek.math.outSine(t: number) -> number`
+### lurek.math.outSine
+
+`lurek.math.outSine(t: number) -> number`
 
 Applies sine ease-out. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `t` (`number`, required) - Normalized input value.
+- `t` (`number`, required): Normalized input value.
 
 **Returns**: `number` - Eased value.
 
@@ -2154,15 +2252,17 @@ do
 end
 ```
 
-### `lurek.math.perlin2d(x: number, y: number, [seed]: integer) -> number`
+### lurek.math.perlin2d
+
+`lurek.math.perlin2d(x: number, y: number, [seed]: integer) -> number`
 
 Samples stateless 2D Perlin noise.
 
 **Parameters**
 
-- `x` (`number`, required) - X coordinate.
-- `y` (`number`, required) - Y coordinate.
-- `seed` (`integer`, optional) - Seed value (default 0).
+- `x` (`number`, required): X coordinate.
+- `y` (`number`, required): Y coordinate.
+- `seed` (`integer`, optional): Seed value (default 0).
 
 **Returns**: `number` - Noise value.
 
@@ -2178,16 +2278,18 @@ do
 end
 ```
 
-### `lurek.math.perlin3d(x: number, y: number, z: number, [seed]: integer) -> number`
+### lurek.math.perlin3d
+
+`lurek.math.perlin3d(x: number, y: number, z: number, [seed]: integer) -> number`
 
 Samples stateless 3D Perlin noise.
 
 **Parameters**
 
-- `x` (`number`, required) - X coordinate.
-- `y` (`number`, required) - Y coordinate.
-- `z` (`number`, required) - Z coordinate.
-- `seed` (`integer`, optional) - Seed value (default 0).
+- `x` (`number`, required): X coordinate.
+- `y` (`number`, required): Y coordinate.
+- `z` (`number`, required): Z coordinate.
+- `seed` (`integer`, optional): Seed value (default 0).
 
 **Returns**: `number` - Noise value.
 
@@ -2203,15 +2305,17 @@ do
 end
 ```
 
-### `lurek.math.pointInPolygon(pts: table, px: number, py: number) -> boolean`
+### lurek.math.pointInPolygon
+
+`lurek.math.pointInPolygon(pts: table, px: number, py: number) -> boolean`
 
 Returns whether a point lies inside a polygon.
 
 **Parameters**
 
-- `pts` (`table`, required) - Flat numeric polygon point table.
-- `px` (`number`, required) - Point x coordinate.
-- `py` (`number`, required) - Point y coordinate.
+- `pts` (`table`, required): Flat numeric polygon point table.
+- `px` (`number`, required): Point x coordinate.
+- `py` (`number`, required): Point y coordinate.
 
 **Returns**: `boolean` - True when the point is inside the polygon.
 
@@ -2230,13 +2334,15 @@ do
 end
 ```
 
-### `lurek.math.polygonArea(pts: table) -> number`
+### lurek.math.polygonArea
+
+`lurek.math.polygonArea(pts: table) -> number`
 
 Computes signed area for a flat polygon point table.
 
 **Parameters**
 
-- `pts` (`table`, required) - Flat numeric polygon point table.
+- `pts` (`table`, required): Flat numeric polygon point table.
 
 **Returns**: `number` - Polygon area.
 
@@ -2254,13 +2360,15 @@ do
 end
 ```
 
-### `lurek.math.polygonCentroid(pts: table) -> number`
+### lurek.math.polygonCentroid
+
+`lurek.math.polygonCentroid(pts: table) -> number`
 
 Computes the centroid for a flat polygon point table.
 
 **Parameters**
 
-- `pts` (`table`, required) - Flat numeric polygon point table.
+- `pts` (`table`, required): Flat numeric polygon point table.
 
 **Returns**: `number` - Centroid x coordinate.
 
@@ -2277,16 +2385,18 @@ do
 end
 ```
 
-### `lurek.math.polygonClip(pts: table, nx: number, ny: number, d: number) -> number[]`
+### lurek.math.polygonClip
+
+`lurek.math.polygonClip(pts: table, nx: number, ny: number, d: number) -> number[]`
 
 Clips a flat polygon point table against a plane.
 
 **Parameters**
 
-- `pts` (`table`, required) - Flat numeric polygon point table.
-- `nx` (`number`, required) - Plane normal x component.
-- `ny` (`number`, required) - Plane normal y component.
-- `d` (`number`, required) - Plane distance from origin.
+- `pts` (`table`, required): Flat numeric polygon point table.
+- `nx` (`number`, required): Plane normal x component.
+- `ny` (`number`, required): Plane normal y component.
+- `d` (`number`, required): Plane distance from origin.
 
 **Returns**: `number[]` - Flat numeric clipped polygon point table (x1,y1,x2,y2,...).
 
@@ -2304,14 +2414,16 @@ do
 end
 ```
 
-### `lurek.math.polygonDifference(a: table, b: table) -> number[]`
+### lurek.math.polygonDifference
+
+`lurek.math.polygonDifference(a: table, b: table) -> number[]`
 
 Returns polygon difference points for two polygon tables.
 
 **Parameters**
 
-- `a` (`table`, required) - First polygon table of `{x, y}` points.
-- `b` (`table`, required) - Second polygon table of `{x, y}` points.
+- `a` (`table`, required): First polygon table of `{x, y}` points.
+- `b` (`table`, required): Second polygon table of `{x, y}` points.
 
 **Returns**: `number[]` - Flat array of polygon difference result points (x1,y1,x2,y2,...).
 
@@ -2330,14 +2442,16 @@ do
 end
 ```
 
-### `lurek.math.polygonIntersection(a: table, b: table) -> number[]`
+### lurek.math.polygonIntersection
+
+`lurek.math.polygonIntersection(a: table, b: table) -> number[]`
 
 Returns polygon intersection points for two polygon tables.
 
 **Parameters**
 
-- `a` (`table`, required) - First polygon table of `{x, y}` points.
-- `b` (`table`, required) - Second polygon table of `{x, y}` points.
+- `a` (`table`, required): First polygon table of `{x, y}` points.
+- `b` (`table`, required): Second polygon table of `{x, y}` points.
 
 **Returns**: `number[]` - Flat array of polygon intersection result points (x1,y1,x2,y2,...).
 
@@ -2356,14 +2470,16 @@ do
 end
 ```
 
-### `lurek.math.polygonUnion(a: table, b: table) -> number[]`
+### lurek.math.polygonUnion
+
+`lurek.math.polygonUnion(a: table, b: table) -> number[]`
 
 Returns polygon union points for two polygon tables.
 
 **Parameters**
 
-- `a` (`table`, required) - First polygon table of `{x, y}` points.
-- `b` (`table`, required) - Second polygon table of `{x, y}` points.
+- `a` (`table`, required): First polygon table of `{x, y}` points.
+- `b` (`table`, required): Second polygon table of `{x, y}` points.
 
 **Returns**: `number[]` - Flat array of polygon union result points (x1,y1,x2,y2,...).
 
@@ -2381,14 +2497,16 @@ do
 end
 ```
 
-### `lurek.math.pow(x: number, y: number) -> number`
+### lurek.math.pow
+
+`lurek.math.pow(x: number, y: number) -> number`
 
 Raises a value to a power. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `x` (`number`, required) - Base value.
-- `y` (`number`, required) - Exponent value.
+- `x` (`number`, required): Base value.
+- `y` (`number`, required): Exponent value.
 
 **Returns**: `number` - Power result.
 
@@ -2404,13 +2522,15 @@ do
 end
 ```
 
-### `lurek.math.rad(deg: number) -> number`
+### lurek.math.rad
+
+`lurek.math.rad(deg: number) -> number`
 
 Converts degrees to radians. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `deg` (`number`, required) - Angle in degrees.
+- `deg` (`number`, required): Angle in degrees.
 
 **Returns**: `number` - Angle in radians.
 
@@ -2427,14 +2547,16 @@ do
 end
 ```
 
-### `lurek.math.random([a]: number, [b]: number) -> number`
+### lurek.math.random
+
+`lurek.math.random([a]: number, [b]: number) -> number`
 
 Returns a Lua math random value, optionally scaled to one or two bounds.
 
 **Parameters**
 
-- `a` (`number`, optional) - Upper bound, or lower bound when `b` is given.
-- `b` (`number`, optional) - Upper bound.
+- `a` (`number`, optional): Upper bound, or lower bound when `b` is given.
+- `b` (`number`, optional): Upper bound.
 
 **Returns**: `number` - Random value.
 
@@ -2450,14 +2572,16 @@ do
 end
 ```
 
-### `lurek.math.randomInt(lo: integer, hi: integer) -> integer`
+### lurek.math.randomInt
+
+`lurek.math.randomInt(lo: integer, hi: integer) -> integer`
 
 Returns a Lua math random integer in an inclusive range.
 
 **Parameters**
 
-- `lo` (`integer`, required) - Lower bound.
-- `hi` (`integer`, required) - Upper bound.
+- `lo` (`integer`, required): Lower bound.
+- `hi` (`integer`, required): Upper bound.
 
 **Returns**: `integer` - Random integer.
 
@@ -2472,16 +2596,18 @@ do
 end
 ```
 
-### `lurek.math.rectFromCenter(cx: number, cy: number, w: number, h: number) -> number`
+### lurek.math.rectFromCenter
+
+`lurek.math.rectFromCenter(cx: number, cy: number, w: number, h: number) -> number`
 
 Creates a rectangle tuple from center coordinates and size.
 
 **Parameters**
 
-- `cx` (`number`, required) - Center x coordinate.
-- `cy` (`number`, required) - Center y coordinate.
-- `w` (`number`, required) - Rectangle width.
-- `h` (`number`, required) - Rectangle height.
+- `cx` (`number`, required): Center x coordinate.
+- `cy` (`number`, required): Center y coordinate.
+- `w` (`number`, required): Rectangle width.
+- `h` (`number`, required): Rectangle height.
 
 **Returns**: `number` - Rectangle x coordinate.
 
@@ -2497,20 +2623,22 @@ do
 end
 ```
 
-### `lurek.math.rectUnion(x1: number, y1: number, w1: number, h1: number, x2: number, y2: number, w2: number, h2: number) -> number`
+### lurek.math.rectUnion
+
+`lurek.math.rectUnion(x1: number, y1: number, w1: number, h1: number, x2: number, y2: number, w2: number, h2: number) -> number`
 
 Returns the union rectangle for two rectangles.
 
 **Parameters**
 
-- `x1` (`number`, required) - First rectangle x coordinate.
-- `y1` (`number`, required) - First rectangle y coordinate.
-- `w1` (`number`, required) - First rectangle width.
-- `h1` (`number`, required) - First rectangle height.
-- `x2` (`number`, required) - Second rectangle x coordinate.
-- `y2` (`number`, required) - Second rectangle y coordinate.
-- `w2` (`number`, required) - Second rectangle width.
-- `h2` (`number`, required) - Second rectangle height.
+- `x1` (`number`, required): First rectangle x coordinate.
+- `y1` (`number`, required): First rectangle y coordinate.
+- `w1` (`number`, required): First rectangle width.
+- `h1` (`number`, required): First rectangle height.
+- `x2` (`number`, required): Second rectangle x coordinate.
+- `y2` (`number`, required): Second rectangle y coordinate.
+- `w2` (`number`, required): Second rectangle width.
+- `h2` (`number`, required): Second rectangle height.
 
 **Returns**: `number` - Union x coordinate.
 
@@ -2527,17 +2655,19 @@ do
 end
 ```
 
-### `lurek.math.remap(v: number, in_min: number, in_max: number, out_min: number, out_max: number) -> number`
+### lurek.math.remap
+
+`lurek.math.remap(v: number, in_min: number, in_max: number, out_min: number, out_max: number) -> number`
 
 Remaps a value from one range to another.
 
 **Parameters**
 
-- `v` (`number`, required) - Input value.
-- `in_min` (`number`, required) - Input range minimum.
-- `in_max` (`number`, required) - Input range maximum.
-- `out_min` (`number`, required) - Output range minimum.
-- `out_max` (`number`, required) - Output range maximum.
+- `v` (`number`, required): Input value.
+- `in_min` (`number`, required): Input range minimum.
+- `in_max` (`number`, required): Input range maximum.
+- `out_min` (`number`, required): Output range minimum.
+- `out_max` (`number`, required): Output range maximum.
 
 **Returns**: `number` - Remapped value.
 
@@ -2554,15 +2684,17 @@ do
 end
 ```
 
-### `lurek.math.rgbToHsl(r: number, g: number, b: number) -> number`
+### lurek.math.rgbToHsl
+
+`lurek.math.rgbToHsl(r: number, g: number, b: number) -> number`
 
 Converts RGB channels to HSL values.
 
 **Parameters**
 
-- `r` (`number`, required) - Red channel value.
-- `g` (`number`, required) - Green channel value.
-- `b` (`number`, required) - Blue channel value.
+- `r` (`number`, required): Red channel value.
+- `g` (`number`, required): Green channel value.
+- `b` (`number`, required): Blue channel value.
 
 **Returns**: `number` - Hue.
 
@@ -2578,13 +2710,15 @@ do
 end
 ```
 
-### `lurek.math.round(x: number) -> number`
+### lurek.math.round
+
+`lurek.math.round(x: number) -> number`
 
 Returns rounded value. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `x` (`number`, required) - Input value.
+- `x` (`number`, required): Input value.
 
 **Returns**: `number` - Rounded value.
 
@@ -2600,20 +2734,22 @@ do
 end
 ```
 
-### `lurek.math.segmentIntersectsSegment(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number) -> boolean`
+### lurek.math.segmentIntersectsSegment
+
+`lurek.math.segmentIntersectsSegment(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number) -> boolean`
 
 Returns whether two segments intersect and their intersection point when present.
 
 **Parameters**
 
-- `x1` (`number`, required) - First segment start x coordinate.
-- `y1` (`number`, required) - First segment start y coordinate.
-- `x2` (`number`, required) - First segment end x coordinate.
-- `y2` (`number`, required) - First segment end y coordinate.
-- `x3` (`number`, required) - Second segment start x coordinate.
-- `y3` (`number`, required) - Second segment start y coordinate.
-- `x4` (`number`, required) - Second segment end x coordinate.
-- `y4` (`number`, required) - Second segment end y coordinate.
+- `x1` (`number`, required): First segment start x coordinate.
+- `y1` (`number`, required): First segment start y coordinate.
+- `x2` (`number`, required): First segment end x coordinate.
+- `y2` (`number`, required): First segment end y coordinate.
+- `x3` (`number`, required): Second segment start x coordinate.
+- `y3` (`number`, required): Second segment start y coordinate.
+- `x4` (`number`, required): Second segment end x coordinate.
+- `y4` (`number`, required): Second segment end y coordinate.
 
 **Returns**: `boolean` - True when the segments intersect.
 
@@ -2632,13 +2768,15 @@ do
 end
 ```
 
-### `lurek.math.sign(v: number) -> number`
+### lurek.math.sign
+
+`lurek.math.sign(v: number) -> number`
 
 Returns the sign of a value. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `v` (`number`, required) - Input value.
+- `v` (`number`, required): Input value.
 
 **Returns**: `number` - Sign value.
 
@@ -2655,15 +2793,17 @@ do
 end
 ```
 
-### `lurek.math.simplex2d(x: number, y: number, [seed]: integer) -> number`
+### lurek.math.simplex2d
+
+`lurek.math.simplex2d(x: number, y: number, [seed]: integer) -> number`
 
 Samples stateless 2D simplex noise.
 
 **Parameters**
 
-- `x` (`number`, required) - X coordinate.
-- `y` (`number`, required) - Y coordinate.
-- `seed` (`integer`, optional) - Seed value (default 0).
+- `x` (`number`, required): X coordinate.
+- `y` (`number`, required): Y coordinate.
+- `seed` (`integer`, optional): Seed value (default 0).
 
 **Returns**: `number` - Noise value.
 
@@ -2679,15 +2819,17 @@ do
 end
 ```
 
-### `lurek.math.simplexNoise(x: number, y: number, [z]: number) -> number`
+### lurek.math.simplexNoise
+
+`lurek.math.simplexNoise(x: number, y: number, [z]: number) -> number`
 
 Samples 2D or 3D simplex noise. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `x` (`number`, required) - X coordinate.
-- `y` (`number`, required) - Y coordinate.
-- `z` (`number`, optional) - Z coordinate for 3D noise.
+- `x` (`number`, required): X coordinate.
+- `y` (`number`, required): Y coordinate.
+- `z` (`number`, optional): Z coordinate for 3D noise.
 
 **Returns**: `number` - Noise value.
 
@@ -2704,13 +2846,15 @@ do
 end
 ```
 
-### `lurek.math.sin(x: number) -> number`
+### lurek.math.sin
+
+`lurek.math.sin(x: number) -> number`
 
 Returns sine of an angle. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `x` (`number`, required) - Angle in radians.
+- `x` (`number`, required): Angle in radians.
 
 **Returns**: `number` - Sine value.
 
@@ -2731,15 +2875,17 @@ do
 end
 ```
 
-### `lurek.math.smoothstep(edge0: number, edge1: number, x: number) -> number`
+### lurek.math.smoothstep
+
+`lurek.math.smoothstep(edge0: number, edge1: number, x: number) -> number`
 
 Applies smoothstep interpolation between two edges.
 
 **Parameters**
 
-- `edge0` (`number`, required) - Lower edge.
-- `edge1` (`number`, required) - Upper edge.
-- `x` (`number`, required) - Input value.
+- `edge0` (`number`, required): Lower edge.
+- `edge1` (`number`, required): Upper edge.
+- `x` (`number`, required): Input value.
 
 **Returns**: `number` - Smoothstep value.
 
@@ -2756,13 +2902,15 @@ do
 end
 ```
 
-### `lurek.math.sqrt(x: number) -> number`
+### lurek.math.sqrt
+
+`lurek.math.sqrt(x: number) -> number`
 
 Returns square root of a value. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `x` (`number`, required) - Input value.
+- `x` (`number`, required): Input value.
 
 **Returns**: `number` - Square root.
 
@@ -2778,13 +2926,15 @@ do
 end
 ```
 
-### `lurek.math.tan(x: number) -> number`
+### lurek.math.tan
+
+`lurek.math.tan(x: number) -> number`
 
 Returns tangent of an angle. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `x` (`number`, required) - Angle in radians.
+- `x` (`number`, required): Angle in radians.
 
 **Returns**: `number` - Tangent value.
 
@@ -2800,13 +2950,15 @@ do
 end
 ```
 
-### `lurek.math.triangulate(pts: table) -> table`
+### lurek.math.triangulate
+
+`lurek.math.triangulate(pts: table) -> table`
 
 Triangulates a flat polygon point table.
 
 **Parameters**
 
-- `pts` (`table`, required) - Flat numeric table `{x1, y1, x2, y2, ...}` with at least three points.
+- `pts` (`table`, required): Flat numeric table `{x1, y1, x2, y2, ...}` with at least three points.
 
 **Returns**: `table` - Array table of flat triangle point tables; each entry is `{x1,y1,x2,y2,x3,y3}`.
 
@@ -2824,14 +2976,16 @@ do
 end
 ```
 
-### `lurek.math.vec2(x: number, y: number) -> LVec2`
+### lurek.math.vec2
+
+`lurek.math.vec2(x: number, y: number) -> LVec2`
 
 Creates a 2D vector. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `x` (`number`, required) - X component.
-- `y` (`number`, required) - Y component.
+- `x` (`number`, required): X component.
+- `y` (`number`, required): Y component.
 
 **Returns**: `LVec2` - New vector handle.
 
@@ -2848,15 +3002,17 @@ do
 end
 ```
 
-### `lurek.math.vec3(x: number, y: number, z: number) -> LVec3`
+### lurek.math.vec3
+
+`lurek.math.vec3(x: number, y: number, z: number) -> LVec3`
 
 Creates a 3D vector. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `x` (`number`, required) - X component.
-- `y` (`number`, required) - Y component.
-- `z` (`number`, required) - Z component.
+- `x` (`number`, required): X component.
+- `y` (`number`, required): Y component.
+- `z` (`number`, required): Z component.
 
 **Returns**: `LVec3` - New vector handle.
 
@@ -2874,13 +3030,15 @@ do
 end
 ```
 
-### `lurek.math.voronoi(points: table) -> table`
+### lurek.math.voronoi
+
+`lurek.math.voronoi(points: table) -> table`
 
 Builds Voronoi cells from a polygon-style point table.
 
 **Parameters**
 
-- `points` (`table`, required) - Point table with `x` and `y` fields.
+- `points` (`table`, required): Point table with `x` and `y` fields.
 
 **Returns**: `table` - Array table of cells with `site` and `vertices` fields.
 
@@ -2899,11 +3057,21 @@ end
 ```
 
 
-## Types and Methods
+[⬆ back to top](#table-of-contents)
 
-### `LAabbTree`
+## 🔷 Module Types
+
+### LAabbTree
 
 Lua-side wrapper for an AABB tree spatial index.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side wrapper for an AABB tree spatial index.
+---@class LAabbTree
+LAabbTree = {}
+```
 
 #### Example
 
@@ -2919,265 +3087,17 @@ do
 end
 ```
 
-### `LAabbTree:clear()`
-
-Clears all items from the tree. This method is available to Lua scripts.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- clear() removes everything. Use during scene transitions.
-  local t = lurek.math.aabbTree()
-  t:insert(1, 0, 0, 16, 16)
-  t:clear()
-end
-```
-
-### `LAabbTree:contains(id: integer) -> boolean`
-
-Returns whether the tree contains an id.
-
-**Parameters**
-
-- `id` (`integer`, required) - Item id.
-
-**Returns**: `boolean` - True when the id exists.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- contains(id) checks if a given numeric id is present in the tree.
-  local t = lurek.math.aabbTree()
-  t:insert(42, 0, 0, 16, 16)
-  if t:contains(42) then
-    lurek.log.debug("entry exists", "physics")
-  end
-end
-```
-
-### `LAabbTree:insert(id: integer, min_x: number, min_y: number, max_x: number, max_y: number)`
-
-Inserts an AABB by id. This method is available to Lua scripts.
-
-**Parameters**
-
-- `id` (`integer`, required) - Item id.
-- `min_x` (`number`, required) - Minimum x coordinate.
-- `min_y` (`number`, required) - Minimum y coordinate.
-- `max_x` (`number`, required) - Maximum x coordinate.
-- `max_y` (`number`, required) - Maximum y coordinate.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- insert(id, min_x, min_y, max_x, max_y) adds a bounding box by numeric id.
-  local tree = lurek.math.aabbTree()
-  tree:insert(1, 10, 10, 50, 50)
-  tree:insert(2, 80, 80, 120, 120)
-  lurek.log.info("tree len: " .. tree:len(), "math")
-end
-```
-
-### `LAabbTree:isEmpty() -> boolean`
-
-Returns whether the tree has no items.
-
-**Returns**: `boolean` - True when empty.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- isEmpty() is a convenience check before queries.
-  local t = lurek.math.aabbTree()
-  if t:isEmpty() then
-    lurek.log.debug("tree empty", "physics")
-  end
-end
-```
-
-### `LAabbTree:len() -> integer`
-
-Returns the number of items in the tree.
-
-**Returns**: `integer` - Item count.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- len() returns total number of entries in the tree.
-  local t = lurek.math.aabbTree()
-  t:insert(1, 0, 0, 8, 8)
-  lurek.log.info("aabb tree size=" .. t:len(), "physics")
-end
-```
-
-### `LAabbTree:query(min_x: number, min_y: number, max_x: number, max_y: number) -> integer[]`
-
-Queries ids intersecting an AABB. This method is available to Lua scripts.
-
-**Parameters**
-
-- `min_x` (`number`, required) - Minimum x coordinate.
-- `min_y` (`number`, required) - Minimum y coordinate.
-- `max_x` (`number`, required) - Maximum x coordinate.
-- `max_y` (`number`, required) - Maximum y coordinate.
-
-**Returns**: `integer[]` - Item ids.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- query(min_x, min_y, max_x, max_y) returns all ids overlapping a rectangle.
-  -- Core operation for broad-phase collision detection.
-  local tree = lurek.math.aabbTree()
-  tree:insert(1, 0, 0, 40, 40)
-  tree:insert(2, 60, 60, 100, 100)
-  local hits = tree:query(10, 10, 50, 50)
-  lurek.log.info("hits: " .. #hits, "math")
-end
-```
-
-### `LAabbTree:queryPoint(x: number, y: number) -> integer[]`
-
-Queries ids containing a point. This method is available to Lua scripts.
-
-**Parameters**
-
-- `x` (`number`, required) - Point x coordinate.
-- `y` (`number`, required) - Point y coordinate.
-
-**Returns**: `integer[]` - Item ids.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- queryPoint(x, y) returns all ids whose AABBs contain that point.
-  -- Fast for mouse picking or point-in-entity checks.
-  local t = lurek.math.aabbTree()
-  t:insert(1, 0, 0, 32, 32)
-  local ids = t:queryPoint(10, 10)
-  lurek.log.info("hits=" .. #ids, "physics")
-end
-```
-
-### `LAabbTree:remove(id: integer) -> boolean`
-
-Removes an AABB by id. This method is available to Lua scripts.
-
-**Parameters**
-
-- `id` (`integer`, required) - Item id.
-
-**Returns**: `boolean` - True when the item existed.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- remove(id) deletes an entry. Returns true if the id existed.
-  local t = lurek.math.aabbTree()
-  t:insert(1, 0, 0, 32, 32)
-  local ok = t:remove(1)
-  lurek.log.debug("removed=" .. tostring(ok), "physics")
-end
-```
-
-### `LAabbTree:type() -> string`
-
-Returns the Lua-visible type name for this AABB tree handle.
-
-**Returns**: `string` - The string `LAabbTree`.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  local vec3_obj = lurek.math.vec3(0, 0, 0)
-  local t = vec3_obj:type()
-  lurek.log.info("LVec3:type = " .. t, "math")
-end
-```
-
-### `LAabbTree:typeOf(name: string) -> boolean`
-
-Returns whether this AABB tree handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to compare against `LAabbTree` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  local vec3_obj = lurek.math.vec3(0, 0, 0)
-  lurek.log.info("is LVec3: " .. tostring(vec3_obj:typeOf("LVec3")), "math")
-  lurek.log.info("is wrong: " .. tostring(vec3_obj:typeOf("Unknown")), "math")
-end
-```
-
-### `LAabbTree:update(id: integer, min_x: number, min_y: number, max_x: number, max_y: number) -> boolean`
-
-Updates an AABB by id. This method is available to Lua scripts.
-
-**Parameters**
-
-- `id` (`integer`, required) - Item id.
-- `min_x` (`number`, required) - Minimum x coordinate.
-- `min_y` (`number`, required) - Minimum y coordinate.
-- `max_x` (`number`, required) - Maximum x coordinate.
-- `max_y` (`number`, required) - Maximum y coordinate.
-
-**Returns**: `boolean` - True when the item existed.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- update(id, min_x, min_y, max_x, max_y) repositions an existing entry.
-  -- Returns true if the id existed. Faster than remove+insert for moving objects.
-  local tree = lurek.math.aabbTree()
-  local id = 1
-  tree:insert(id, 100, 100, 132, 132)
-  tree:update(id, 110, 110, 142, 142)
-  lurek.log.info("AABB tree updated", "math")
-end
-```
-
-### `LBezierCurve`
+### LBezierCurve
 
 Lua-side wrapper for a Bezier curve.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side wrapper for a Bezier curve.
+---@class LBezierCurve
+LBezierCurve = {}
+```
 
 #### Example
 
@@ -3197,343 +3117,17 @@ do
 end
 ```
 
-### `LBezierCurve:evaluate(t: number) -> number`
-
-Evaluates this curve at normalized parameter `t`.
-
-**Parameters**
-
-- `t` (`number`, required) - Normalized curve parameter.
-
-**Returns**: `number` - Point x coordinate.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- evaluate(t) samples the curve at normalized parameter t in [0..1].
-  local c = lurek.math.newBezierCurve({0, 0, 100, 200, 300, 200, 400, 0})
-  local x, y = c:evaluate(0.25)
-  lurek.log.debug("eval " .. x .. "," .. y, "spline")
-end
-```
-
-### `LBezierCurve:evaluateAtDistance(distance: number, [samples]: integer) -> number`
-
-Evaluates this curve at an approximate distance along the curve.
-
-**Parameters**
-
-- `distance` (`number`, required) - Distance along the curve.
-- `samples` (`integer`, optional) - Sample count (default 128).
-
-**Returns**: `number` - Point x coordinate.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- evaluateAtDistance(dist, samples) gives a point at an arc-length distance.
-  -- More uniform spacing than evaluate(t) which is parametric, not arc-length.
-  local c = lurek.math.newBezierCurve({0, 0, 100, 200, 300, 200, 400, 0})
-  local x, y = c:evaluateAtDistance(120, 128)
-  lurek.log.debug("eval@dist " .. x .. "," .. y, "spline")
-end
-```
-
-### `LBezierCurve:getControlPoint(index: integer) -> number`
-
-Returns a control point by one-based index.
-
-**Parameters**
-
-- `index` (`integer`, required) - One-based control point index.
-
-**Returns**: `number` - X coordinate, or nil when out of range.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- getControlPoint(index) returns x, y for a 1-based control point.
-  local c = lurek.math.newBezierCurve({0, 0, 100, 200, 300, 200, 400, 0})
-  local x, y = c:getControlPoint(2)
-  lurek.log.debug("cp2=" .. x .. "," .. y, "spline")
-end
-```
-
-### `LBezierCurve:getControlPointCount() -> integer`
-
-Returns the number of control points in this curve.
-
-**Returns**: `integer` - Control point count.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- Useful for iteration or validation before editing control points.
-  local c = lurek.math.newBezierCurve({0, 0, 100, 200, 300, 200, 400, 0})
-  local n = c:getControlPointCount()
-  lurek.log.info("cp count=" .. n, "spline")
-end
-```
-
-### `LBezierCurve:getDerivative() -> LBezierCurve`
-
-Returns the derivative curve for this Bezier curve.
-
-**Returns**: `LBezierCurve` - Derivative curve handle.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- getDerivative() returns a new curve representing the tangent direction.
-  -- Evaluate it to get velocity at any point along the original curve.
-  local c = lurek.math.newBezierCurve({0, 0, 100, 200, 300, 200, 400, 0})
-  local d = c:getDerivative()
-  lurek.log.debug("derivative ready", "spline")
-end
-```
-
-### `LBezierCurve:insertControlPoint(x: number, y: number, [index]: integer)`
-
-Inserts a control point, optionally before a one-based index.
-
-**Parameters**
-
-- `x` (`number`, required) - Point x coordinate.
-- `y` (`number`, required) - Point y coordinate.
-- `index` (`integer`, optional) - One-based insertion index.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- insertControlPoint(x, y, index) inserts before a 1-based index.
-  -- Omit index to append at the end.
-  local bc = lurek.math.newBezierCurve({0,0, 100,50, 200,0})
-  bc:insertControlPoint(100, 25, 0.5)
-  lurek.log.info("ctrl pts: " .. bc:getControlPointCount(), "math")
-end
-```
-
-### `LBezierCurve:length() -> number`
-
-Returns the approximate curve length.
-
-**Returns**: `number` - Curve length.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- length() approximates the arc length of the entire curve.
-  local c = lurek.math.newBezierCurve({0, 0, 100, 200, 300, 200, 400, 0})
-  local len = c:length()
-  lurek.log.info("arc len=" .. len, "spline")
-end
-```
-
-### `LBezierCurve:removeControlPoint(index: integer) -> boolean`
-
-Removes a control point by one-based index.
-
-**Parameters**
-
-- `index` (`integer`, required) - One-based control point index.
-
-**Returns**: `boolean` - True when a control point was removed.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- removeControlPoint(index) removes a 1-based control point.
-  -- Returns true if the point existed.
-  local c = lurek.math.newBezierCurve({0, 0, 100, 200, 300, 200, 400, 0})
-  local ok = c:removeControlPoint(3)
-  lurek.log.debug("removed=" .. tostring(ok), "spline")
-end
-```
-
-### `LBezierCurve:render(segments: integer) -> table`
-
-Returns sampled points along this curve.
-
-**Parameters**
-
-- `segments` (`integer`, required) - Number of curve segments to sample.
-
-**Returns**: `table` - Array table of `{x, y}` point arrays.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- render(segments) returns sampled points as a polyline for drawing.
-  -- More segments = smoother curve but more vertices.
-  local c = lurek.math.newBezierCurve({0, 0, 100, 200, 300, 200, 400, 0})
-  local pts = c:render(32)
-  lurek.log.info("polyline points=" .. #pts, "spline")
-end
-```
-
-### `LBezierCurve:rotate(angle: number, ox: number, oy: number)`
-
-Rotates all control points around an origin.
-
-**Parameters**
-
-- `angle` (`number`, required) - Rotation angle.
-- `ox` (`number`, required) - Origin x coordinate.
-- `oy` (`number`, required) - Origin y coordinate.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- rotate(angle, ox, oy) rotates all control points around an origin.
-  local c = lurek.math.newBezierCurve({0, 0, 100, 200, 300, 200, 400, 0})
-  c:rotate(math.pi / 6, 0, 0)
-  lurek.log.debug("rotated", "spline")
-end
-```
-
-### `LBezierCurve:scale(s: number, ox: number, oy: number)`
-
-Scales all control points around an origin.
-
-**Parameters**
-
-- `s` (`number`, required) - Scale factor.
-- `ox` (`number`, required) - Origin x coordinate.
-- `oy` (`number`, required) - Origin y coordinate.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- scale(factor, ox, oy) scales all control points relative to an origin.
-  local c = lurek.math.newBezierCurve({0, 0, 100, 200, 300, 200, 400, 0})
-  c:scale(2.0, 0, 0)
-  lurek.log.debug("scaled", "spline")
-end
-```
-
-### `LBezierCurve:setControlPoint(index: integer, x: number, y: number) -> boolean`
-
-Sets a control point by one-based index.
-
-**Parameters**
-
-- `index` (`integer`, required) - One-based control point index.
-- `x` (`number`, required) - New x coordinate.
-- `y` (`number`, required) - New y coordinate.
-
-**Returns**: `boolean` - True when the control point exists.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- setControlPoint(index, x, y) modifies an existing control point in place.
-  -- Returns true if the index was valid.
-  local bc = lurek.math.newBezierCurve({0,0, 100,0, 200,0})
-  bc:setControlPoint(2, 100, 80)
-  local cx, cy = bc:getControlPoint(2)
-  lurek.log.info("ctrl pt 2: " .. cx .. "," .. cy, "math")
-end
-```
-
-### `LBezierCurve:translate(dx: number, dy: number)`
-
-Translates all control points. This method is available to Lua scripts.
-
-**Parameters**
-
-- `dx` (`number`, required) - X translation.
-- `dy` (`number`, required) - Y translation.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- translate(dx, dy) moves all control points by the given offset.
-  local c = lurek.math.newBezierCurve({0, 0, 100, 200, 300, 200, 400, 0})
-  c:translate(10, 5)
-  lurek.log.debug("translated", "spline")
-end
-```
-
-### `LBezierCurve:type() -> string`
-
-Returns the Lua-visible type name for this Bezier curve handle.
-
-**Returns**: `string` - The string `LBezierCurve`.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  local obj = lurek.math.newBezierCurve({0,0, 100,0, 100,100, 200,100})
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LBezierCurve"
-end
-```
-
-### `LBezierCurve:typeOf(name: string) -> boolean`
-
-Returns whether this Bezier curve handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to compare against `LBezierCurve` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  local obj = lurek.math.newBezierCurve({0,0, 100,0, 100,100, 200,100})
-  lurek.log.debug("typeOf LBezierCurve: " .. tostring(obj:typeOf("LBezierCurve")), "example") -- true
-end
-```
-
-### `LCatmullRom`
+### LCatmullRom
 
 Lua-side wrapper for a Catmull-Rom spline.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side wrapper for a Catmull-Rom spline.
+---@class LCatmullRom
+LCatmullRom = {}
+```
 
 #### Example
 
@@ -3550,164 +3144,17 @@ do
 end
 ```
 
-### `LCatmullRom:addPoint(x: number, y: number)`
-
-Adds a point to the spline. This method is available to Lua scripts.
-
-**Parameters**
-
-- `x` (`number`, required) - Point x coordinate.
-- `y` (`number`, required) - Point y coordinate.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- addPoint(x, y) appends a new control point, extending the spline.
-  ---@type LCatmullRom
-  local cr = lurek.math.catmullRom({{x=0,y=0},{x=50,y=50},{x=100,y=0},{x=150,y=50}})
-  cr:addPoint(200, 0)
-  lurek.log.debug("after add count=" .. cr:len(), "spline")
-end
-```
-
-### `LCatmullRom:len() -> integer`
-
-Returns the number of points in the spline.
-
-**Returns**: `integer` - Point count.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- Check point count before iterating segments.
-  ---@type LCatmullRom
-  local cr = lurek.math.catmullRom({{x=0,y=0},{x=50,y=50},{x=100,y=0},{x=150,y=50}})
-  lurek.log.info("spline points=" .. cr:len(), "spline")
-end
-```
-
-### `LCatmullRom:removePoint(idx: integer) -> number`
-
-Removes a point by zero-based index and returns its coordinates.
-
-**Parameters**
-
-- `idx` (`integer`, required) - Zero-based point index.
-
-**Returns**: `number` - Removed point x coordinate.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- removePoint(idx) removes a control point by zero-based index.
-  -- Returns the removed point's coordinates.
-  ---@type LCatmullRom
-  local cr = lurek.math.catmullRom({{x=0,y=0},{x=50,y=50},{x=100,y=0},{x=150,y=50}})
-  local rx, ry = cr:removePoint(1)
-  lurek.log.debug("removed " .. rx .. "," .. ry, "spline")
-end
-```
-
-### `LCatmullRom:sample(t: number) -> number`
-
-Samples the spline at normalized parameter `t`.
-
-**Parameters**
-
-- `t` (`number`, required) - Normalized spline parameter.
-
-**Returns**: `number` - Sample x coordinate.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- Evaluate a patrol path at 25% for enemy position.
-  ---@type LCatmullRom
-  local cr = lurek.math.catmullRom({{x=0,y=0},{x=50,y=100},{x=150,y=100},{x=200,y=0}})
-  local x, y = cr:sample(0.25)
-  lurek.log.debug("patrol pos=" .. x .. "," .. y, "spline")
-end
-```
-
-### `LCatmullRom:sampleSegment(seg: integer, t: number) -> number`
-
-Samples one spline segment at local parameter `t`.
-
-**Parameters**
-
-- `seg` (`integer`, required) - Zero-based segment index.
-- `t` (`number`, required) - Segment-local parameter.
-
-**Returns**: `number` - Sample x coordinate.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- sampleSegment(seg, t) samples one specific segment by zero-based index.
-  -- Useful for per-segment animation or drawing.
-  ---@type LCatmullRom
-  local cr = lurek.math.catmullRom({{x=0,y=0},{x=50,y=20},{x=100,y=0},{x=150,y=20}})
-  local x, y = cr:sampleSegment(0, 0.5)
-  lurek.log.debug("seg0 mid " .. x .. "," .. y, "spline")
-end
-```
-
-### `LCatmullRom:type() -> string`
-
-Returns the Lua-visible type name for this spline handle.
-
-**Returns**: `string` - The string `LCatmullRom`.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  local obj = lurek.math.catmullRom({{0,0},{100,50},{200,0}})
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LCatmullRom"
-end
-```
-
-### `LCatmullRom:typeOf(name: string) -> boolean`
-
-Returns whether this spline handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to compare against `LCatmullRom` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  local obj = lurek.math.catmullRom({{0,0},{100,50},{200,0}})
-  lurek.log.debug("typeOf LCatmullRom: " .. tostring(obj:typeOf("LCatmullRom")), "example") -- true
-end
-```
-
-### `LCircle`
+### LCircle
 
 Lua-side wrapper for a circle primitive.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side wrapper for a circle primitive.
+---@class LCircle
+LCircle = {}
+```
 
 #### Example
 
@@ -3724,204 +3171,17 @@ do
 end
 ```
 
-### `LCircle:aabb() -> number`
-
-Returns this circle axis-aligned bounding box.
-
-**Returns**: `number` - Minimum x coordinate.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- aabb() returns the axis-aligned bounding box: min_x, min_y, max_x, max_y.
-  -- Useful for broad-phase collision before precise circle tests.
-  local c = lurek.math.newCircle(50, 30, 10)
-  local x1, y1, x2, y2 = c:aabb()
-  lurek.log.debug("aabb " .. x1 .. "," .. y1 .. " to " .. x2 .. "," .. y2, "geo")
-end
-```
-
-### `LCircle:area() -> number`
-
-Returns this circle area. This method is available to Lua scripts.
-
-**Returns**: `number` - Circle area.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- area() returns pi * r^2
-  local c = lurek.math.newCircle(0, 0, 5)
-  lurek.log.debug("area=" .. c:area(), "geo")
-end
-```
-
-### `LCircle:contains(px: number, py: number) -> boolean`
-
-Returns whether this circle contains a point.
-
-**Parameters**
-
-- `px` (`number`, required) - Point x coordinate.
-- `py` (`number`, required) - Point y coordinate.
-
-**Returns**: `boolean` - True when the point is inside the circle.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- Check if a click is inside a circular button.
-  local btn = lurek.math.newCircle(200, 150, 30)
-  local inside = btn:contains(210, 145)
-  lurek.log.debug("click inside=" .. tostring(inside), "ui")
-end
-```
-
-### `LCircle:intersects(other: LCircle) -> boolean`
-
-Returns whether this circle intersects another circle.
-
-**Parameters**
-
-- `other` (`LCircle`, required) - Other circle handle.
-
-**Returns**: `boolean` - True when the circles intersect.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- intersects(other) tests overlap between two circle objects.
-  local a = lurek.math.newCircle(0, 0, 10)
-  local b = lurek.math.newCircle(15, 0, 10)
-  lurek.log.debug("hit=" .. tostring(a:intersects(b)), "geo")
-end
-```
-
-### `LCircle:perimeter() -> number`
-
-Returns this circle perimeter. This method is available to Lua scripts.
-
-**Returns**: `number` - Circle perimeter.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- perimeter() returns 2 * pi * r (circumference)
-  local c = lurek.math.newCircle(0, 0, 10)
-  lurek.log.debug("perimeter=" .. c:perimeter(), "geo")
-end
-```
-
-### `LCircle:radius() -> number`
-
-Returns this circle radius. This method is available to Lua scripts.
-
-**Returns**: `number` - Radius.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- radius() returns the circle radius.
-  local c = lurek.math.newCircle(0, 0, 12)
-  lurek.log.info("radius=" .. c:radius(), "geo")
-end
-```
-
-### `LCircle:type() -> string`
-
-Returns the Lua-visible type name for this circle handle.
-
-**Returns**: `string` - The string `LCircle`.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  local obj = lurek.math.newCircle(100, 100, 40)
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LCircle"
-end
-```
-
-### `LCircle:typeOf(name: string) -> boolean`
-
-Returns whether this circle handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to compare against `LCircle` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  local obj = lurek.math.newCircle(100, 100, 40)
-  lurek.log.debug("typeOf LCircle: " .. tostring(obj:typeOf("LCircle")), "example") -- true
-end
-```
-
-### `LCircle:x() -> number`
-
-Returns this circle center x coordinate.
-
-**Returns**: `number` - Center x coordinate.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- x() returns the circle center X coordinate.
-  local c = lurek.math.newCircle(72, 18, 5)
-  lurek.log.debug("x=" .. c:x(), "geo")
-end
-```
-
-### `LCircle:y() -> number`
-
-Returns this circle center y coordinate.
-
-**Returns**: `number` - Center y coordinate.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- y() returns the circle center Y coordinate.
-  local c = lurek.math.newCircle(72, 18, 5)
-  lurek.log.debug("y=" .. c:y(), "geo")
-end
-```
-
-### `LHermite`
+### LHermite
 
 Lua-side wrapper for a Hermite spline.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side wrapper for a Hermite spline.
+---@class LHermite
+LHermite = {}
+```
 
 #### Example
 
@@ -3938,71 +3198,17 @@ do
 end
 ```
 
-### `LHermite:sample(t: number) -> number`
-
-Samples the spline at normalized parameter `t`.
-
-**Parameters**
-
-- `t` (`number`, required) - Normalized spline parameter.
-
-**Returns**: `number` - Sample x coordinate.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- Same as CatmullRom:sample — evaluates at normalized t.
-  ---@type LHermite
-  local h = lurek.math.hermite(0, 0, 100, 100, 50, 0, 0, 50)
-  local x, y = h:sample(0.5)
-  lurek.log.debug("hermite mid " .. x .. "," .. y, "spline")
-end
-```
-
-### `LHermite:type() -> string`
-
-Returns the Lua-visible type name for this spline handle.
-
-**Returns**: `string` - The string `LHermite`.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  local obj = lurek.math.hermite(0,0,100,50,0,1,0,1)
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LHermite"
-end
-```
-
-### `LHermite:typeOf(name: string) -> boolean`
-
-Returns whether this spline handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to compare against `LHermite` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  local obj = lurek.math.hermite(0,0,100,50,0,1,0,1)
-  lurek.log.debug("typeOf LHermite: " .. tostring(obj:typeOf("LHermite")), "example") -- true
-end
-```
-
-### `LNoiseGenerator`
+### LNoiseGenerator
 
 Lua-side wrapper for a procedural noise generator.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side wrapper for a procedural noise generator.
+---@class LNoiseGenerator
+LNoiseGenerator = {}
+```
 
 #### Example
 
@@ -4022,479 +3228,17 @@ do
 end
 ```
 
-### `LNoiseGenerator:fbm(x: number, y: number, [octaves]: integer, [lac]: number, [pers]: number, [kind]: string) -> number`
-
-Samples fractal Brownian motion noise.
-
-**Parameters**
-
-- `x` (`number`, required) - X coordinate.
-- `y` (`number`, required) - Y coordinate.
-- `octaves` (`integer`, optional) - Octave count (default 4).
-- `lac` (`number`, optional) - Lacunarity (default 2.0).
-- `pers` (`number`, optional) - Persistence (default 0.5).
-- `kind` (`string`, optional) - Noise kind name (default `"perlin"`).
-
-**Returns**: `number` - Noise value.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- Instance-based FBM: uses the generator's seed internally.
-  -- Args: x, y, octaves, lacunarity, persistence
-  local ng = lurek.math.newNoiseGenerator(42)
-  local v = ng:fbm(0.3, 0.7, 6, 2.0, 0.5)
-  lurek.log.info("fbm noise: " .. v, "math")
-end
-```
-
-### `LNoiseGenerator:generateMap(w: integer, h: integer, [opts]: table) -> number[]`
-
-Generates a noise map and returns it as a flat array table.
-
-**Parameters**
-
-- `w` (`integer`, required) - Map width.
-- `h` (`integer`, required) - Map height.
-- `opts` (`table`, optional) - Generation options including scale, octaves, kind, fractal, offset, and backend.
-
-**Returns**: `number[]` - Noise values.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- generateMap(w, h, opts) returns a flat array of w*h noise values.
-  -- Options: scale, offsetX, offsetY, octaves, kind, fractal, backend.
-  local ng = lurek.math.newNoiseGenerator(99)
-  local map = ng:generateMap(32, 32, { scale = 0.05, offsetX = 0.0, offsetY = 0.0 })
-  lurek.log.info("map size: " .. #map, "math")
-end
-```
-
-### `LNoiseGenerator:generateMapCompute(w: integer, h: integer, [opts]: table) -> number[]`
-
-Generates a noise map through the compute backend and returns it as a flat array table.
-
-**Parameters**
-
-- `w` (`integer`, required) - Map width.
-- `h` (`integer`, required) - Map height.
-- `opts` (`table`, optional) - Generation options including scale, octaves, kind, fractal, and offset.
-
-**Returns**: `number[]` - Noise values.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- generateMapCompute uses the GPU compute backend for faster large maps.
-  -- Same options as generateMap but processed on the GPU.
-  local ng = lurek.math.newNoiseGenerator(101)
-  local map = ng:generateMapCompute(16, 16, { octaves = 3, lacunarity = 2.0, gain = 0.5 })
-  lurek.log.info("compute map size: " .. #map, "math")
-end
-```
-
-### `LNoiseGenerator:getSeed() -> integer`
-
-Returns this noise generator seed.
-
-**Returns**: `integer` - Seed value.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  local n = lurek.math.newNoiseGenerator(2026)
-  lurek.log.info("noise seed=" .. n:getSeed(), "noise")
-end
-```
-
-### `LNoiseGenerator:perlin1d(x: number) -> number`
-
-Samples 1D Perlin noise. This method is available to Lua scripts.
-
-**Parameters**
-
-- `x` (`number`, required) - X coordinate.
-
-**Returns**: `number` - Noise value.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- 1D Perlin noise: smooth random values along a single axis.
-  -- Great for wind gusts, screen shake intensity, or wave heights.
-  local n = lurek.math.newNoiseGenerator(1)
-  local wind = n:perlin1d(0.4)
-  lurek.log.debug("wind=" .. wind, "weather")
-end
-```
-
-### `LNoiseGenerator:perlin2d(x: number, y: number) -> number`
-
-Samples 2D Perlin noise. This method is available to Lua scripts.
-
-**Parameters**
-
-- `x` (`number`, required) - X coordinate.
-- `y` (`number`, required) - Y coordinate.
-
-**Returns**: `number` - Noise value.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- 2D Perlin noise: the classic terrain heightmap generator.
-  -- Coordinates scale affects detail level (smaller = smoother, larger = more detail).
-  local n = lurek.math.newNoiseGenerator(2)
-  local h = n:perlin2d(2.5, 4.5)
-  lurek.log.debug("h=" .. h, "noise")
-end
-```
-
-### `LNoiseGenerator:perlin3d(x: number, y: number, z: number) -> number`
-
-Samples 3D Perlin noise. This method is available to Lua scripts.
-
-**Parameters**
-
-- `x` (`number`, required) - X coordinate.
-- `y` (`number`, required) - Y coordinate.
-- `z` (`number`, required) - Z coordinate.
-
-**Returns**: `number` - Noise value.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- 3D Perlin: use Z as time for animated 2D noise fields.
-  local n = lurek.math.newNoiseGenerator(3)
-  local v = n:perlin3d(1.0, 2.0, 3.0)
-  lurek.log.debug("v=" .. v, "noise")
-end
-```
-
-### `LNoiseGenerator:perlin4d(x: number, y: number, z: number, w: number) -> number`
-
-Samples 4D Perlin noise. This method is available to Lua scripts.
-
-**Parameters**
-
-- `x` (`number`, required) - X coordinate.
-- `y` (`number`, required) - Y coordinate.
-- `z` (`number`, required) - Z coordinate.
-- `w` (`number`, required) - W coordinate.
-
-**Returns**: `number` - Noise value.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- 4D Perlin: useful for seamless tiling textures or animated 3D noise.
-  local n = lurek.math.newNoiseGenerator(4)
-  local v = n:perlin4d(0.1, 0.2, 0.3, 0.4)
-  lurek.log.debug("v4=" .. v, "noise")
-end
-```
-
-### `LNoiseGenerator:ridged(x: number, y: number, [octaves]: integer, [lac]: number, [pers]: number, [kind]: string) -> number`
-
-Samples ridged fractal noise. This method is available to Lua scripts.
-
-**Parameters**
-
-- `x` (`number`, required) - X coordinate.
-- `y` (`number`, required) - Y coordinate.
-- `octaves` (`integer`, optional) - Octave count (default 4).
-- `lac` (`number`, optional) - Lacunarity (default 2.0).
-- `pers` (`number`, optional) - Persistence (default 0.5).
-- `kind` (`string`, optional) - Noise kind name (default `"perlin"`).
-
-**Returns**: `number` - Noise value.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- ridged() produces sharp ridges — good for mountain ranges or vein patterns.
-  -- Args: x, y, octaves, lacunarity, persistence
-  local ng = lurek.math.newNoiseGenerator(7)
-  local v = ng:ridged(0.5, 0.5, 5, 2.0, 0.5)
-  lurek.log.info("ridged: " .. v, "math")
-end
-```
-
-### `LNoiseGenerator:setSeed(seed: integer)`
-
-Sets this noise generator seed. This method is available to Lua scripts.
-
-**Parameters**
-
-- `seed` (`integer`, required) - Seed value.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- Change seed at runtime to generate different worlds from the same code.
-  local n = lurek.math.newNoiseGenerator(0)
-  n:setSeed(99)
-  lurek.log.debug("re-seeded", "noise")
-end
-```
-
-### `LNoiseGenerator:simplex1d(x: number) -> number`
-
-Samples 1D simplex noise. This method is available to Lua scripts.
-
-**Parameters**
-
-- `x` (`number`, required) - X coordinate.
-
-**Returns**: `number` - Noise value.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- 1D simplex noise: fewer artifacts than Perlin, slightly cheaper.
-  local n = lurek.math.newNoiseGenerator(5)
-  local s = n:simplex1d(0.7)
-  lurek.log.debug("s1=" .. s, "noise")
-end
-```
-
-### `LNoiseGenerator:simplex2d(x: number, y: number) -> number`
-
-Samples 2D simplex noise. This method is available to Lua scripts.
-
-**Parameters**
-
-- `x` (`number`, required) - X coordinate.
-- `y` (`number`, required) - Y coordinate.
-
-**Returns**: `number` - Noise value.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- 2D simplex: better isotropy (less grid-aligned artifacts) than Perlin.
-  local n = lurek.math.newNoiseGenerator(6)
-  local s = n:simplex2d(0.4, 0.6)
-  lurek.log.debug("s2=" .. s, "noise")
-end
-```
-
-### `LNoiseGenerator:simplex3d(x: number, y: number, z: number) -> number`
-
-Samples 3D simplex noise. This method is available to Lua scripts.
-
-**Parameters**
-
-- `x` (`number`, required) - X coordinate.
-- `y` (`number`, required) - Y coordinate.
-- `z` (`number`, required) - Z coordinate.
-
-**Returns**: `number` - Noise value.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- 3D simplex: good for volumetric effects or animated 2D patterns.
-  local n = lurek.math.newNoiseGenerator(7)
-  local s = n:simplex3d(0.1, 0.2, 0.3)
-  lurek.log.debug("s3=" .. s, "noise")
-end
-```
-
-### `LNoiseGenerator:turbulence(x: number, y: number, [octaves]: integer, [lac]: number, [pers]: number, [kind]: string) -> number`
-
-Samples turbulence fractal noise.
-
-**Parameters**
-
-- `x` (`number`, required) - X coordinate.
-- `y` (`number`, required) - Y coordinate.
-- `octaves` (`integer`, optional) - Octave count (default 4).
-- `lac` (`number`, optional) - Lacunarity (default 2.0).
-- `pers` (`number`, optional) - Persistence (default 0.5).
-- `kind` (`string`, optional) - Noise kind name (default `"perlin"`).
-
-**Returns**: `number` - Noise value.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- turbulence() takes absolute value of each octave, creating billowy patterns.
-  -- Good for smoke, fire, or cloud textures.
-  local ng = lurek.math.newNoiseGenerator(55)
-  local v = ng:turbulence(0.4, 0.6, 5, 2.0, 0.5)
-  lurek.log.info("turbulence: " .. v, "math")
-end
-```
-
-### `LNoiseGenerator:type() -> string`
-
-Returns the Lua-visible type name for this noise generator handle.
-
-**Returns**: `string` - The string `LNoiseGenerator`.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  local obj = lurek.math.newNoiseGenerator(42)
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LNoiseGenerator"
-end
-```
-
-### `LNoiseGenerator:typeOf(name: string) -> boolean`
-
-Returns whether this noise generator handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to compare against `LNoiseGenerator` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  local obj = lurek.math.newNoiseGenerator(42)
-  lurek.log.debug("typeOf LNoiseGenerator: " .. tostring(obj:typeOf("LNoiseGenerator")), "example") -- true
-end
-```
-
-### `LNoiseGenerator:warpDomain(x: number, y: number, strength: number) -> number`
-
-Samples domain-warped noise coordinates.
-
-**Parameters**
-
-- `x` (`number`, required) - X coordinate.
-- `y` (`number`, required) - Y coordinate.
-- `strength` (`number`, required) - Warp strength.
-
-**Returns**: `number` - Warped noise value.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- warpDomain(x, y, strength) distorts coordinates before noise sampling.
-  -- Creates organic, flowing patterns (marble, lava, organic growth).
-  local ng = lurek.math.newNoiseGenerator(101)
-  local wx, wy = ng:warpDomain(0.3, 0.3, 0.8)
-  wx = wx or 0.0
-  wy = wy or 0.0
-  local v = ng:perlin2d(wx, wy)
-  lurek.log.info("warped: " .. v, "math")
-end
-```
-
-### `LNoiseGenerator:worley2d(x: number, y: number, [dist_name]: string, [f2]: boolean) -> number`
-
-Samples 2D Worley noise. This method is available to Lua scripts.
-
-**Parameters**
-
-- `x` (`number`, required) - X coordinate.
-- `y` (`number`, required) - Y coordinate.
-- `dist_name` (`string`, optional) - Distance type name (default `"euclidean"`).
-- `f2` (`boolean`, optional) - Second-feature flag (default false).
-
-**Returns**: `number` - Noise value.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- worley2d() (cellular noise): produces cell-like patterns.
-  -- Good for stone textures, scales, or cracked earth.
-  local ng = lurek.math.newNoiseGenerator(321)
-  local v = ng:worley2d(0.25, 0.75)
-  lurek.log.info("worley2d: " .. v, "math")
-end
-```
-
-### `LNoiseGenerator:worley3d(x: number, y: number, z: number, [dist_name]: string, [f2]: boolean) -> number`
-
-Samples 3D Worley noise. This method is available to Lua scripts.
-
-**Parameters**
-
-- `x` (`number`, required) - X coordinate.
-- `y` (`number`, required) - Y coordinate.
-- `z` (`number`, required) - Z coordinate.
-- `dist_name` (`string`, optional) - Distance type name (default `"euclidean"`).
-- `f2` (`boolean`, optional) - Second-feature flag (default false).
-
-**Returns**: `number` - Noise value.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- worley3d() extends cellular noise into 3D. Use Z as time for animated cells.
-  local ng = lurek.math.newNoiseGenerator(654)
-  local v = ng:worley3d(0.1, 0.5, 0.9)
-  lurek.log.info("worley3d: " .. v, "math")
-end
-```
-
-### `LRandomGenerator`
+### LRandomGenerator
 
 Lua-side wrapper for a deterministic random generator.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side wrapper for a deterministic random generator.
+---@class LRandomGenerator
+LRandomGenerator = {}
+```
 
 #### Example
 
@@ -4515,223 +3259,17 @@ do
 end
 ```
 
-### `LRandomGenerator:getSeed() -> integer`
-
-Returns this generator seed. This method is available to Lua scripts.
-
-**Returns**: `integer` - Seed value.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- Display the world seed on the pause screen for sharing.
-  local rng = lurek.math.newRandomGenerator(98765)
-  lurek.log.info("world seed=" .. rng:getSeed(), "world")
-end
-```
-
-### `LRandomGenerator:getState() -> string`
-
-Returns this generator serialized state string.
-
-**Returns**: `string` - Generator state.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- getState() serializes the full internal state as a string.
-  -- Use for save-game snapshots of RNG position.
-  local rng = lurek.math.newRandomGenerator(77)
-  local snapshot = rng:getState()
-  lurek.log.debug("state bytes=" .. #snapshot, "rng")
-end
-```
-
-### `LRandomGenerator:random() -> number`
-
-Returns a random floating-point value from the generator.
-
-**Returns**: `number` - Random value.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- random() returns a float in [0..1). Every call advances the generator state.
-  local rng = lurek.math.newRandomGenerator(42)
-  local v = rng:random()
-  lurek.log.debug("u01=" .. v, "rng")
-end
-```
-
-### `LRandomGenerator:randomFloat(min: number, max: number) -> number`
-
-Returns a random floating-point value in a range.
-
-**Parameters**
-
-- `min` (`number`, required) - Minimum value.
-- `max` (`number`, required) - Maximum value.
-
-**Returns**: `number` - Random value in range.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- randomFloat(min, max) returns a float in [min..max].
-  -- Good for random angles, spawn offsets, or color variation.
-  local rng = lurek.math.newRandomGenerator(7)
-  local angle = rng:randomFloat(0, math.pi * 2)
-  lurek.log.debug("angle=" .. angle, "rng")
-end
-```
-
-### `LRandomGenerator:randomInt(min: integer, max: integer) -> integer`
-
-Returns a random integer in a range.
-
-**Parameters**
-
-- `min` (`integer`, required) - Minimum value.
-- `max` (`integer`, required) - Maximum value.
-
-**Returns**: `integer` - Random integer in range.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- randomInt(min, max) returns an integer in [min..max] inclusive.
-  -- Classic d20 roll for tabletop-style games.
-  local rng = lurek.math.newRandomGenerator(99)
-  local roll = rng:randomInt(1, 20)
-  lurek.log.info("d20=" .. roll, "rng")
-end
-```
-
-### `LRandomGenerator:randomNormal([stddev]: number, [mean]: number) -> number`
-
-Returns a normally distributed random value.
-
-**Parameters**
-
-- `stddev` (`number`, optional) - Standard deviation (default 1.0).
-- `mean` (`number`, optional) - Mean value (default 0.0).
-
-**Returns**: `number` - Random normal value.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- randomNormal(stddev, mean) returns a Gaussian-distributed value.
-  -- Good for natural variation: enemy stats, spawn spread, or hit scatter.
-  local rng = lurek.math.newRandomGenerator(12345)
-  local v = rng:randomNormal(0, 1)
-  lurek.log.info("normal sample: " .. v, "math")
-end
-```
-
-### `LRandomGenerator:setSeed(seed: integer)`
-
-Resets this generator to a seed value.
-
-**Parameters**
-
-- `seed` (`integer`, required) - Seed value.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- Reset RNG to replay a procedural level.
-  local rng = lurek.math.newRandomGenerator(0)
-  rng:setSeed(42)
-  lurek.log.debug("reseeded, first roll=" .. rng:randomInt(1, 100), "rng")
-end
-```
-
-### `LRandomGenerator:setState(state: string)`
-
-Restores this generator from a serialized state string.
-
-**Parameters**
-
-- `state` (`string`, required) - Generator state string.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- setState() restores a previously saved state, resuming the exact sequence.
-  local rng = lurek.math.newRandomGenerator(77)
-  local snap = rng:getState()
-  rng:random()  -- advance the state
-  rng:setState(snap)  -- rewind to the snapshot
-  -- Next call will produce the same value as before the advance
-end
-```
-
-### `LRandomGenerator:type() -> string`
-
-Returns the Lua-visible type name for this random generator handle.
-
-**Returns**: `string` - The string `LRandomGenerator`.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  local obj = lurek.math.newRandomGenerator(12345)
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LRandomGenerator"
-end
-```
-
-### `LRandomGenerator:typeOf(name: string) -> boolean`
-
-Returns whether this random generator handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to compare against `LRandomGenerator` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  local obj = lurek.math.newRandomGenerator(12345)
-  lurek.log.debug("typeOf LRandomGenerator: " .. tostring(obj:typeOf("LRandomGenerator")), "example") -- true
-end
-```
-
-### `LRectPacker`
+### LRectPacker
 
 Lua-side wrapper for a rectangle packer.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side wrapper for a rectangle packer.
+---@class LRectPacker
+LRectPacker = {}
+```
 
 #### Example
 
@@ -4748,99 +3286,17 @@ do
 end
 ```
 
-### `LRectPacker:clear()`
-
-Clears packed rectangles from this packer.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- Reset atlas packer between texture atlas pages.
-  local packer = lurek.math.newRectPacker(256, 256, 1)
-  packer:pack(64, 64, "sprite_a")
-  packer:clear()
-  lurek.log.debug("packer cleared for new page", "atlas")
-end
-```
-
-### `LRectPacker:getPacked() -> table`
-
-Returns packed rectangle records.
-
-**Returns**: `table` - Array table with `x`, `y`, `w`, `h`, and optional `id` fields.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- getPacked returns all successfully placed rects with their coordinates
-  local packer = lurek.math.newRectPacker(128, 128, 2)
-  packer:pack(20, 20, "icon_a")
-  packer:pack(30, 18, "icon_b")
-  local packed = packer:getPacked()
-  -- Each entry has x, y, w, h, and optional id fields
-  lurek.log.debug("packed count=" .. #packed, "atlas")
-end
-```
-
-### `LRectPacker:occupancy() -> number`
-
-Returns occupied area ratio. This method is available to Lua scripts.
-
-**Returns**: `number` - Occupancy ratio.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- occupancy() returns the ratio of used space (0..1)
-  -- Useful for deciding when to allocate a new atlas page
-  local packer = lurek.math.newRectPacker(128, 128, 2)
-  packer:pack(32, 32, "slot1")
-  local occ = packer:occupancy()
-  lurek.log.debug("occupancy=" .. occ, "atlas")
-end
-```
-
-### `LRectPacker:pack(w: integer, h: integer, [id]: string) -> integer`
-
-Attempts to pack a rectangle and returns its placement coordinates.
-
-**Parameters**
-
-- `w` (`integer`, required) - Rectangle width.
-- `h` (`integer`, required) - Rectangle height.
-- `id` (`string`, optional) - Rectangle id.
-
-**Returns**: `integer` - X coordinate, or nil when packing fails.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- pack returns nil,nil if the rectangle does not fit in the remaining space
-  local packer = lurek.math.newRectPacker(128, 128, 2)
-  local x, y = packer:pack(32, 24, "btn_ok")
-  if x and y then
-    lurek.log.debug("packed btn_ok at " .. x .. "," .. y, "atlas")
-  else
-    lurek.log.warn("btn_ok did not fit!", "atlas")
-  end
-end
-```
-
-### `LSpatialHash`
+### LSpatialHash
 
 Lua-side wrapper for a spatial hash index.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side wrapper for a spatial hash index.
+---@class LSpatialHash
+LSpatialHash = {}
+```
 
 #### Example
 
@@ -4860,261 +3316,17 @@ do
 end
 ```
 
-### `LSpatialHash:clear()`
-
-Clears all items from the spatial hash.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- Reset spatial index between scenes.
-  local hash = lurek.math.newSpatialHash(64)
-  hash:insert("a", 0, 0, 10, 10)
-  hash:insert("b", 50, 50, 10, 10)
-  hash:clear()
-  lurek.log.debug("spatial hash cleared", "spatial")
-end
-```
-
-### `LSpatialHash:getCellSize() -> number`
-
-Returns the spatial hash cell size.
-
-**Returns**: `number` - Cell size.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- getCellSize() returns the grid cell dimension used for bucketing.
-  local h = lurek.math.newSpatialHash(96)
-  local cs = h:getCellSize()
-  lurek.log.debug("cell=" .. cs, "spatial")
-end
-```
-
-### `LSpatialHash:getItemCount() -> integer`
-
-Returns the number of items in the spatial hash.
-
-**Returns**: `integer` - Item count.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- getItemCount() tells how many items are currently inserted.
-  local h = lurek.math.newSpatialHash(64)
-  h:insert("a", 0, 0, 16, 16)
-  lurek.log.info("items=" .. h:getItemCount(), "spatial")
-end
-```
-
-### `LSpatialHash:insert(id: string, x: number, y: number, w: number, h: number)`
-
-Inserts an item rectangle into the spatial hash.
-
-**Parameters**
-
-- `id` (`string`, required) - Item id.
-- `x` (`number`, required) - Rectangle x coordinate.
-- `y` (`number`, required) - Rectangle y coordinate.
-- `w` (`number`, required) - Rectangle width.
-- `h` (`number`, required) - Rectangle height.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- Register an enemy in the spatial index for broad-phase queries.
-  local hash = lurek.math.newSpatialHash(64)
-  hash:insert("goblin", 200, 150, 24, 24)
-  lurek.log.debug("goblin inserted into spatial hash", "spatial")
-end
-```
-
-### `LSpatialHash:queryCircle(cx: number, cy: number, radius: number) -> integer[]`
-
-Returns ids intersecting a query circle.
-
-**Parameters**
-
-- `cx` (`number`, required) - Circle center x coordinate.
-- `cy` (`number`, required) - Circle center y coordinate.
-- `radius` (`number`, required) - Circle radius.
-
-**Returns**: `integer[]` - Item ids.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- queryCircle(cx, cy, radius) finds all entities within a circular area.
-  -- Good for explosion radius, aggro range, or area-of-effect spells.
-  local sh = lurek.math.newSpatialHash(32)
-  sh:insert("e1", 100, 100, 16, 16)
-  sh:insert("e2", 500, 500, 16, 16)
-  local hits = sh:queryCircle(110, 110, 50)
-  lurek.log.info("circle hits: " .. #hits, "math")
-end
-```
-
-### `LSpatialHash:queryRect(x: number, y: number, w: number, h: number) -> integer[]`
-
-Returns ids intersecting a query rectangle.
-
-**Parameters**
-
-- `x` (`number`, required) - Query x coordinate.
-- `y` (`number`, required) - Query y coordinate.
-- `w` (`number`, required) - Query width.
-- `h` (`number`, required) - Query height.
-
-**Returns**: `integer[]` - Item ids.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- queryRect(x, y, w, h) finds all entities overlapping a rectangular area.
-  local sh = lurek.math.newSpatialHash(64)
-  sh:insert("player", 100, 100, 32, 32)
-  sh:insert("enemy", 128, 100, 32, 32)
-  local hits = sh:queryRect(90, 90, 170, 150)
-  lurek.log.info("rect hits: " .. #hits, "math")
-end
-```
-
-### `LSpatialHash:querySegment(x1: number, y1: number, x2: number, y2: number) -> integer[]`
-
-Returns ids intersecting a query line segment.
-
-**Parameters**
-
-- `x1` (`number`, required) - Segment start x coordinate.
-- `y1` (`number`, required) - Segment start y coordinate.
-- `x2` (`number`, required) - Segment end x coordinate.
-- `y2` (`number`, required) - Segment end y coordinate.
-
-**Returns**: `integer[]` - Item ids.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- querySegment(x1, y1, x2, y2) finds entities along a line segment.
-  -- Perfect for raycasting, bullet traces, or laser beams.
-  local sh = lurek.math.newSpatialHash(64)
-  sh:insert("wall", 200, 100, 240, 300)
-  local hits = sh:querySegment(0, 200, 400, 200)
-  lurek.log.info("segment hits: " .. #hits, "math")
-end
-```
-
-### `LSpatialHash:remove(id: string)`
-
-Removes an item from the spatial hash.
-
-**Parameters**
-
-- `id` (`string`, required) - Item id.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- Remove a defeated enemy from the spatial index.
-  local hash = lurek.math.newSpatialHash(64)
-  hash:insert("enemy_1", 50, 50, 16, 16)
-  hash:remove("enemy_1")
-  lurek.log.debug("enemy removed from spatial hash", "spatial")
-end
-```
-
-### `LSpatialHash:type() -> string`
-
-Returns the Lua-visible type name for this spatial hash handle.
-
-**Returns**: `string` - The string `LSpatialHash`.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  local obj = lurek.math.newSpatialHash(64)
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LSpatialHash"
-end
-```
-
-### `LSpatialHash:typeOf(name: string) -> boolean`
-
-Returns whether this spatial hash handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to compare against `LSpatialHash` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  local obj = lurek.math.newSpatialHash(64)
-  lurek.log.debug("typeOf LSpatialHash: " .. tostring(obj:typeOf("LSpatialHash")), "example") -- true
-end
-```
-
-### `LSpatialHash:update(id: string, x: number, y: number, w: number, h: number)`
-
-Updates an item rectangle in the spatial hash.
-
-**Parameters**
-
-- `id` (`string`, required) - Item id.
-- `x` (`number`, required) - Rectangle x coordinate.
-- `y` (`number`, required) - Rectangle y coordinate.
-- `w` (`number`, required) - Rectangle width.
-- `h` (`number`, required) - Rectangle height.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- Move an entity to a new position in the spatial index.
-  local hash = lurek.math.newSpatialHash(64)
-  hash:insert("player", 100, 100, 32, 32)
-  hash:update("player", 120, 105, 32, 32)
-  lurek.log.debug("player position updated in hash", "spatial")
-end
-```
-
-### `LTransform`
+### LTransform
 
 Lua-side wrapper for a 2D transform matrix.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side wrapper for a 2D transform matrix.
+---@class LTransform
+LTransform = {}
+```
 
 #### Example
 
@@ -5132,314 +3344,17 @@ do
 end
 ```
 
-### `LTransform:clone() -> LTransform`
-
-Returns a copy of this transform. This method is available to Lua scripts.
-
-**Returns**: `LTransform` - Cloned transform handle.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- clone() creates an independent copy. Modifying the clone does not affect the original.
-  local t = lurek.math.newTransform(10, 20)
-  local dup = t:clone()
-  dup:translate(5, 0)
-end
-```
-
-### `LTransform:decompose() -> number`
-
-Decomposes this transform into component values.
-
-**Returns**: `number` - X translation.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- decompose() extracts translation, rotation, and scale from the matrix.
-  -- Returns x, y, angle, scaleX, scaleY.
-  local t = lurek.math.newTransform(100, 50, math.pi / 4, 2, 2)
-  local x, y, angle, sx, sy = t:decompose()
-  lurek.log.info("xform " .. x .. "," .. y .. " a=" .. angle, "xform")
-end
-```
-
-### `LTransform:getMatrix() -> number[]`
-
-Returns this transform matrix as a flat array table.
-
-**Returns**: `number[]` - Flat matrix values in row-major order.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- getMatrix() returns the underlying 3x3 matrix as a flat table.
-  -- Row-major order, useful for custom shader uniforms.
-  local t = lurek.math.newTransform(0, 0, math.pi / 2)
-  local m = t:getMatrix()
-  lurek.log.debug("matrix elems=" .. #m, "xform")
-end
-```
-
-### `LTransform:inverse() -> LTransform`
-
-Returns this transform's inverse.
-
-**Returns**: `LTransform` - Inverse transform handle.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- inverse() returns a new transform that undoes this one.
-  -- Applying both in sequence gives identity.
-  local t = lurek.math.newTransform(10, 20, 0.3)
-  local inv = t:inverse()
-  lurek.log.debug("got inverse", "xform")
-end
-```
-
-### `LTransform:inverseTransformPoint(x: number, y: number) -> number`
-
-Transforms a point by this transform's inverse.
-
-**Parameters**
-
-- `x` (`number`, required) - Input x coordinate.
-- `y` (`number`, required) - Input y coordinate.
-
-**Returns**: `number` - Inverse-transformed x coordinate.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- inverseTransformPoint: converts world-space back to local-space.
-  -- Useful for mouse picking in a rotated/scaled coordinate system.
-  local t = lurek.math.newTransform(50, 50, math.pi / 4)
-  local lx, ly = t:inverseTransformPoint(100, 50)
-  lurek.log.debug("local " .. lx .. "," .. ly, "xform")
-end
-```
-
-### `LTransform:reset()`
-
-Resets this transform to identity.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- Clear a transform before applying fresh camera state.
-  local t = lurek.math.newTransform(50, 50, 1.0, 2, 2)
-  t:reset()
-  local wx, wy = t:transformPoint(10, 10)
-  lurek.log.debug("after reset, 10,10 -> " .. wx .. "," .. wy, "xform")
-end
-```
-
-### `LTransform:rotate(angle: number)`
-
-Applies a rotation to this transform.
-
-**Parameters**
-
-- `angle` (`number`, required) - Rotation angle.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- Rotate a turret sprite to face a target.
-  local t = lurek.math.newTransform(100, 100)
-  t:rotate(math.pi / 3)
-  lurek.log.debug("turret rotated 60deg", "xform")
-end
-```
-
-### `LTransform:scale(sx: number, [sy]: number)`
-
-Applies scale to this transform. This method is available to Lua scripts.
-
-**Parameters**
-
-- `sx` (`number`, required) - X scale.
-- `sy` (`number`, optional) - Y scale (defaults to `sx`).
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- Scale a UI element for a zoom-in effect.
-  local t = lurek.math.newTransform()
-  t:scale(1.5, 1.5)
-  lurek.log.debug("scaled 150%", "xform")
-end
-```
-
-### `LTransform:setTransformation(x: number, y: number, [angle]: number, [sx]: number, [sy]: number, [ox]: number, [oy]: number, [kx]: number, [ky]: number)`
-
-Replaces this transform from position, rotation, scale, origin, and shear components.
-
-**Parameters**
-
-- `x` (`number`, required) - X translation.
-- `y` (`number`, required) - Y translation.
-- `angle` (`number`, optional) - Rotation angle (default 0).
-- `sx` (`number`, optional) - X scale (default 1).
-- `sy` (`number`, optional) - Y scale (defaults to `sx`).
-- `ox` (`number`, optional) - Origin x offset (default 0).
-- `oy` (`number`, optional) - Origin y offset (default 0).
-- `kx` (`number`, optional) - X shear (default 0).
-- `ky` (`number`, optional) - Y shear (default 0).
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- setTransformation replaces all components at once:
-  -- (x, y, angle, sx, sy, ox, oy, kx, ky)
-  -- ox, oy = origin offset for rotation/scale; kx, ky = shear.
-  local t = lurek.math.newTransform()
-  t:setTransformation(100, 200, 0.5, 2.0, 2.0, 16, 16, 0, 0)
-  local x, y = t:transformPoint(0, 0)
-  lurek.log.info("transformed origin: " .. x .. "," .. y, "math")
-end
-```
-
-### `LTransform:shear(kx: number, ky: number)`
-
-Applies shear to this transform. This method is available to Lua scripts.
-
-**Parameters**
-
-- `kx` (`number`, required) - X shear.
-- `ky` (`number`, required) - Y shear.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- shear(kx, ky) applies skew. Useful for italic text or wind effects.
-  local t = lurek.math.newTransform()
-  t:shear(0.2, 0)
-  lurek.log.debug("sheared", "xform")
-end
-```
-
-### `LTransform:transformPoint(x: number, y: number) -> number`
-
-Transforms a point by this transform.
-
-**Parameters**
-
-- `x` (`number`, required) - Input x coordinate.
-- `y` (`number`, required) - Input y coordinate.
-
-**Returns**: `number` - Transformed x coordinate.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- transformPoint(x, y) converts a local-space point to world-space.
-  -- The core operation for sprite hierarchy positioning.
-  local t = lurek.math.newTransform(100, 50, math.pi / 2)
-  local wx, wy = t:transformPoint(10, 0)
-  lurek.log.debug("world " .. wx .. "," .. wy, "xform")
-end
-```
-
-### `LTransform:translate(dx: number, dy: number)`
-
-Applies a translation to this transform.
-
-**Parameters**
-
-- `dx` (`number`, required) - X translation.
-- `dy` (`number`, required) - Y translation.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- Shift a sprite's transform by a velocity vector.
-  local t = lurek.math.newTransform()
-  t:translate(64, -32)
-  local wx, wy = t:transformPoint(0, 0)
-  lurek.log.debug("after translate origin at " .. wx .. "," .. wy, "xform")
-end
-```
-
-### `LTransform:type() -> string`
-
-Returns the Lua-visible type name for this transform handle.
-
-**Returns**: `string` - The string `LTransform`.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  local obj = lurek.math.newTransform()
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LTransform"
-end
-```
-
-### `LTransform:typeOf(name: string) -> boolean`
-
-Returns whether this transform handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to compare against `LTransform` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  local obj = lurek.math.newTransform()
-  lurek.log.debug("typeOf LTransform: " .. tostring(obj:typeOf("LTransform")), "example") -- true
-end
-```
-
-### `LTween`
+### LTween
 
 Lua-side wrapper for numeric tween state.
+
+**Lua API Definition**
+
+```lua
+--- Creates and starts a property tween that smoothly interpolates numeric fields on the target table over the given duration.
+---@class LTween
+LTween = {}
+```
 
 #### Example
 
@@ -5457,16 +3372,3614 @@ do
 end
 ```
 
-### `LTween:addValue(start: number, target: number) -> integer`
+### LVec2
+
+Represents the Lua-visible LVec2 object exposed by this module.
+
+**Lua API Definition**
+
+```lua
+--- Represents the Lua-visible LVec2 object exposed by this module.
+---@class LVec2
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- Vec2 (capital V) is an alias for vec2. Both create the same LVec2 object.
+  local v = lurek.math.Vec2(10, 20)
+  local n = v:normalize()
+  lurek.log.debug("normalised x=" .. n.x, "math")
+end
+```
+
+### LVec3
+
+Represents the Lua-visible LVec3 object exposed by this module.
+
+**Lua API Definition**
+
+```lua
+--- Represents the Lua-visible LVec3 object exposed by this module.
+---@class LVec3
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- Vec3 (capital V) is an alias for vec3.
+  ---@type LVec3
+  local p = lurek.math.Vec3(0, 0, 1)
+  local s = p:scale(5)
+  lurek.log.debug("scaled z=" .. s.z, "math")
+end
+```
+
+
+[⬆ back to top](#table-of-contents)
+
+## 🔹 Module Methods
+
+### LAabbTree:clear
+
+`LAabbTree:clear()`
+
+Clears all items from the tree. This method is available to Lua scripts.
+
+**Lua API Stub**
+
+```lua
+--- Clears all items from the tree. This method is available to Lua scripts.
+function LAabbTree:clear() end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- clear() removes everything. Use during scene transitions.
+  local t = lurek.math.aabbTree()
+  t:insert(1, 0, 0, 16, 16)
+  t:clear()
+end
+```
+
+### LAabbTree:contains
+
+`LAabbTree:contains(id: integer) -> boolean`
+
+Returns whether the tree contains an id.
+
+**Parameters**
+
+- `id` (`integer`, required): Item id.
+
+**Returns**: `boolean` - True when the id exists.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether the tree contains an id.
+---@param id number Item id.
+---@return boolean True when the id exists.
+function LAabbTree:contains(id) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- contains(id) checks if a given numeric id is present in the tree.
+  local t = lurek.math.aabbTree()
+  t:insert(42, 0, 0, 16, 16)
+  if t:contains(42) then
+    lurek.log.debug("entry exists", "physics")
+  end
+end
+```
+
+### LAabbTree:insert
+
+`LAabbTree:insert(id: integer, min_x: number, min_y: number, max_x: number, max_y: number)`
+
+Inserts an AABB by id. This method is available to Lua scripts.
+
+**Parameters**
+
+- `id` (`integer`, required): Item id.
+- `min_x` (`number`, required): Minimum x coordinate.
+- `min_y` (`number`, required): Minimum y coordinate.
+- `max_x` (`number`, required): Maximum x coordinate.
+- `max_y` (`number`, required): Maximum y coordinate.
+
+**Lua API Stub**
+
+```lua
+--- Inserts an AABB by id. This method is available to Lua scripts.
+---@param id number Item id.
+---@param min_x number Minimum x coordinate.
+---@param min_y number Minimum y coordinate.
+---@param max_x number Maximum x coordinate.
+---@param max_y number Maximum y coordinate.
+function LAabbTree:insert(id, min_x, min_y, max_x, max_y) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- insert(id, min_x, min_y, max_x, max_y) adds a bounding box by numeric id.
+  local tree = lurek.math.aabbTree()
+  tree:insert(1, 10, 10, 50, 50)
+  tree:insert(2, 80, 80, 120, 120)
+  lurek.log.info("tree len: " .. tree:len(), "math")
+end
+```
+
+### LAabbTree:isEmpty
+
+`LAabbTree:isEmpty() -> boolean`
+
+Returns whether the tree has no items.
+
+**Returns**: `boolean` - True when empty.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether the tree has no items.
+---@return boolean True when empty.
+function LAabbTree:isEmpty() end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- isEmpty() is a convenience check before queries.
+  local t = lurek.math.aabbTree()
+  if t:isEmpty() then
+    lurek.log.debug("tree empty", "physics")
+  end
+end
+```
+
+### LAabbTree:len
+
+`LAabbTree:len() -> integer`
+
+Returns the number of items in the tree.
+
+**Returns**: `integer` - Item count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of items in the tree.
+---@return number Item count.
+function LAabbTree:len() end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- len() returns total number of entries in the tree.
+  local t = lurek.math.aabbTree()
+  t:insert(1, 0, 0, 8, 8)
+  lurek.log.info("aabb tree size=" .. t:len(), "physics")
+end
+```
+
+### LAabbTree:query
+
+`LAabbTree:query(min_x: number, min_y: number, max_x: number, max_y: number) -> integer[]`
+
+Queries ids intersecting an AABB. This method is available to Lua scripts.
+
+**Parameters**
+
+- `min_x` (`number`, required): Minimum x coordinate.
+- `min_y` (`number`, required): Minimum y coordinate.
+- `max_x` (`number`, required): Maximum x coordinate.
+- `max_y` (`number`, required): Maximum y coordinate.
+
+**Returns**: `integer[]` - Item ids.
+
+**Lua API Stub**
+
+```lua
+--- Queries ids intersecting an AABB. This method is available to Lua scripts.
+---@param min_x number Minimum x coordinate.
+---@param min_y number Minimum y coordinate.
+---@param max_x number Maximum x coordinate.
+---@param max_y number Maximum y coordinate.
+---@return number[] Item ids.
+function LAabbTree:query(min_x, min_y, max_x, max_y) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- query(min_x, min_y, max_x, max_y) returns all ids overlapping a rectangle.
+  -- Core operation for broad-phase collision detection.
+  local tree = lurek.math.aabbTree()
+  tree:insert(1, 0, 0, 40, 40)
+  tree:insert(2, 60, 60, 100, 100)
+  local hits = tree:query(10, 10, 50, 50)
+  lurek.log.info("hits: " .. #hits, "math")
+end
+```
+
+### LAabbTree:queryPoint
+
+`LAabbTree:queryPoint(x: number, y: number) -> integer[]`
+
+Queries ids containing a point. This method is available to Lua scripts.
+
+**Parameters**
+
+- `x` (`number`, required): Point x coordinate.
+- `y` (`number`, required): Point y coordinate.
+
+**Returns**: `integer[]` - Item ids.
+
+**Lua API Stub**
+
+```lua
+--- Queries ids containing a point. This method is available to Lua scripts.
+---@param x number Point x coordinate.
+---@param y number Point y coordinate.
+---@return number[] Item ids.
+function LAabbTree:queryPoint(x, y) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- queryPoint(x, y) returns all ids whose AABBs contain that point.
+  -- Fast for mouse picking or point-in-entity checks.
+  local t = lurek.math.aabbTree()
+  t:insert(1, 0, 0, 32, 32)
+  local ids = t:queryPoint(10, 10)
+  lurek.log.info("hits=" .. #ids, "physics")
+end
+```
+
+### LAabbTree:remove
+
+`LAabbTree:remove(id: integer) -> boolean`
+
+Removes an AABB by id. This method is available to Lua scripts.
+
+**Parameters**
+
+- `id` (`integer`, required): Item id.
+
+**Returns**: `boolean` - True when the item existed.
+
+**Lua API Stub**
+
+```lua
+--- Removes an AABB by id. This method is available to Lua scripts.
+---@param id number Item id.
+---@return boolean True when the item existed.
+function LAabbTree:remove(id) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- remove(id) deletes an entry. Returns true if the id existed.
+  local t = lurek.math.aabbTree()
+  t:insert(1, 0, 0, 32, 32)
+  local ok = t:remove(1)
+  lurek.log.debug("removed=" .. tostring(ok), "physics")
+end
+```
+
+### LAabbTree:type
+
+`LAabbTree:type() -> string`
+
+Returns the Lua-visible type name for this AABB tree handle.
+
+**Returns**: `string` - The string `LAabbTree`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this AABB tree handle.
+---@return string The string `LAabbTree`.
+function LAabbTree:type() end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  local vec3_obj = lurek.math.vec3(0, 0, 0)
+  local t = vec3_obj:type()
+  lurek.log.info("LVec3:type = " .. t, "math")
+end
+```
+
+### LAabbTree:typeOf
+
+`LAabbTree:typeOf(name: string) -> boolean`
+
+Returns whether this AABB tree handle matches a supported type name.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to compare against `LAabbTree` and `Object`.
+
+**Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this AABB tree handle matches a supported type name.
+---@param name string Type name to compare against `LAabbTree` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LAabbTree:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  local vec3_obj = lurek.math.vec3(0, 0, 0)
+  lurek.log.info("is LVec3: " .. tostring(vec3_obj:typeOf("LVec3")), "math")
+  lurek.log.info("is wrong: " .. tostring(vec3_obj:typeOf("Unknown")), "math")
+end
+```
+
+### LAabbTree:update
+
+`LAabbTree:update(id: integer, min_x: number, min_y: number, max_x: number, max_y: number) -> boolean`
+
+Updates an AABB by id. This method is available to Lua scripts.
+
+**Parameters**
+
+- `id` (`integer`, required): Item id.
+- `min_x` (`number`, required): Minimum x coordinate.
+- `min_y` (`number`, required): Minimum y coordinate.
+- `max_x` (`number`, required): Maximum x coordinate.
+- `max_y` (`number`, required): Maximum y coordinate.
+
+**Returns**: `boolean` - True when the item existed.
+
+**Lua API Stub**
+
+```lua
+--- Updates an AABB by id. This method is available to Lua scripts.
+---@param id number Item id.
+---@param min_x number Minimum x coordinate.
+---@param min_y number Minimum y coordinate.
+---@param max_x number Maximum x coordinate.
+---@param max_y number Maximum y coordinate.
+---@return boolean True when the item existed.
+function LAabbTree:update(id, min_x, min_y, max_x, max_y) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- update(id, min_x, min_y, max_x, max_y) repositions an existing entry.
+  -- Returns true if the id existed. Faster than remove+insert for moving objects.
+  local tree = lurek.math.aabbTree()
+  local id = 1
+  tree:insert(id, 100, 100, 132, 132)
+  tree:update(id, 110, 110, 142, 142)
+  lurek.log.info("AABB tree updated", "math")
+end
+```
+
+### LBezierCurve:evaluate
+
+`LBezierCurve:evaluate(t: number) -> number`
+
+Evaluates this curve at normalized parameter `t`.
+
+**Parameters**
+
+- `t` (`number`, required): Normalized curve parameter.
+
+**Returns**: `number` - Point x coordinate.
+
+**Lua API Stub**
+
+```lua
+--- Evaluates this curve at normalized parameter `t`.
+---@param t number Normalized curve parameter.
+---@return number a Point x coordinate.
+---@return number b Point y coordinate.
+function LBezierCurve:evaluate(t) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- evaluate(t) samples the curve at normalized parameter t in [0..1].
+  local c = lurek.math.newBezierCurve({0, 0, 100, 200, 300, 200, 400, 0})
+  local x, y = c:evaluate(0.25)
+  lurek.log.debug("eval " .. x .. "," .. y, "spline")
+end
+```
+
+### LBezierCurve:evaluateAtDistance
+
+`LBezierCurve:evaluateAtDistance(distance: number, [samples]: integer) -> number`
+
+Evaluates this curve at an approximate distance along the curve.
+
+**Parameters**
+
+- `distance` (`number`, required): Distance along the curve.
+- `samples` (`integer`, optional): Sample count (default 128).
+
+**Returns**: `number` - Point x coordinate.
+
+**Lua API Stub**
+
+```lua
+--- Evaluates this curve at an approximate distance along the curve.
+---@param distance number Distance along the curve.
+---@param samples? number Sample count (default 128).
+---@return number a Point x coordinate.
+---@return number b Point y coordinate.
+function LBezierCurve:evaluateAtDistance(distance, samples) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- evaluateAtDistance(dist, samples) gives a point at an arc-length distance.
+  -- More uniform spacing than evaluate(t) which is parametric, not arc-length.
+  local c = lurek.math.newBezierCurve({0, 0, 100, 200, 300, 200, 400, 0})
+  local x, y = c:evaluateAtDistance(120, 128)
+  lurek.log.debug("eval@dist " .. x .. "," .. y, "spline")
+end
+```
+
+### LBezierCurve:getControlPoint
+
+`LBezierCurve:getControlPoint(index: integer) -> number`
+
+Returns a control point by one-based index.
+
+**Parameters**
+
+- `index` (`integer`, required): One-based control point index.
+
+**Returns**: `number` - X coordinate, or nil when out of range.
+
+**Lua API Stub**
+
+```lua
+--- Returns a control point by one-based index.
+---@param index number One-based control point index.
+---@return number a X coordinate, or nil when out of range.
+---@return number b Y coordinate, or nil when out of range.
+function LBezierCurve:getControlPoint(index) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- getControlPoint(index) returns x, y for a 1-based control point.
+  local c = lurek.math.newBezierCurve({0, 0, 100, 200, 300, 200, 400, 0})
+  local x, y = c:getControlPoint(2)
+  lurek.log.debug("cp2=" .. x .. "," .. y, "spline")
+end
+```
+
+### LBezierCurve:getControlPointCount
+
+`LBezierCurve:getControlPointCount() -> integer`
+
+Returns the number of control points in this curve.
+
+**Returns**: `integer` - Control point count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of control points in this curve.
+---@return number Control point count.
+function LBezierCurve:getControlPointCount() end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- Useful for iteration or validation before editing control points.
+  local c = lurek.math.newBezierCurve({0, 0, 100, 200, 300, 200, 400, 0})
+  local n = c:getControlPointCount()
+  lurek.log.info("cp count=" .. n, "spline")
+end
+```
+
+### LBezierCurve:getDerivative
+
+`LBezierCurve:getDerivative() -> LBezierCurve`
+
+Returns the derivative curve for this Bezier curve.
+
+**Returns**: `LBezierCurve` - Derivative curve handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns the derivative curve for this Bezier curve.
+---@return LBezierCurve Derivative curve handle.
+function LBezierCurve:getDerivative() end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- getDerivative() returns a new curve representing the tangent direction.
+  -- Evaluate it to get velocity at any point along the original curve.
+  local c = lurek.math.newBezierCurve({0, 0, 100, 200, 300, 200, 400, 0})
+  local d = c:getDerivative()
+  lurek.log.debug("derivative ready", "spline")
+end
+```
+
+### LBezierCurve:insertControlPoint
+
+`LBezierCurve:insertControlPoint(x: number, y: number, [index]: integer)`
+
+Inserts a control point, optionally before a one-based index.
+
+**Parameters**
+
+- `x` (`number`, required): Point x coordinate.
+- `y` (`number`, required): Point y coordinate.
+- `index` (`integer`, optional): One-based insertion index.
+
+**Lua API Stub**
+
+```lua
+--- Inserts a control point, optionally before a one-based index.
+---@param x number Point x coordinate.
+---@param y number Point y coordinate.
+---@param index? number One-based insertion index.
+function LBezierCurve:insertControlPoint(x, y, index) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- insertControlPoint(x, y, index) inserts before a 1-based index.
+  -- Omit index to append at the end.
+  local bc = lurek.math.newBezierCurve({0,0, 100,50, 200,0})
+  bc:insertControlPoint(100, 25, 0.5)
+  lurek.log.info("ctrl pts: " .. bc:getControlPointCount(), "math")
+end
+```
+
+### LBezierCurve:length
+
+`LBezierCurve:length() -> number`
+
+Returns the approximate curve length.
+
+**Returns**: `number` - Curve length.
+
+**Lua API Stub**
+
+```lua
+--- Returns the approximate curve length.
+---@return number Curve length.
+function LBezierCurve:length() end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- length() approximates the arc length of the entire curve.
+  local c = lurek.math.newBezierCurve({0, 0, 100, 200, 300, 200, 400, 0})
+  local len = c:length()
+  lurek.log.info("arc len=" .. len, "spline")
+end
+```
+
+### LBezierCurve:removeControlPoint
+
+`LBezierCurve:removeControlPoint(index: integer) -> boolean`
+
+Removes a control point by one-based index.
+
+**Parameters**
+
+- `index` (`integer`, required): One-based control point index.
+
+**Returns**: `boolean` - True when a control point was removed.
+
+**Lua API Stub**
+
+```lua
+--- Removes a control point by one-based index.
+---@param index number One-based control point index.
+---@return boolean True when a control point was removed.
+function LBezierCurve:removeControlPoint(index) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- removeControlPoint(index) removes a 1-based control point.
+  -- Returns true if the point existed.
+  local c = lurek.math.newBezierCurve({0, 0, 100, 200, 300, 200, 400, 0})
+  local ok = c:removeControlPoint(3)
+  lurek.log.debug("removed=" .. tostring(ok), "spline")
+end
+```
+
+### LBezierCurve:render
+
+`LBezierCurve:render(segments: integer) -> table`
+
+Returns sampled points along this curve.
+
+**Parameters**
+
+- `segments` (`integer`, required): Number of curve segments to sample.
+
+**Returns**: `table` - Array table of `{x, y}` point arrays.
+
+**Lua API Stub**
+
+```lua
+--- Returns sampled points along this curve.
+---@param segments number Number of curve segments to sample.
+---@return LBezierCurveRenderResult Array table of `{x, y}` point arrays.
+function LBezierCurve:render(segments) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- render(segments) returns sampled points as a polyline for drawing.
+  -- More segments = smoother curve but more vertices.
+  local c = lurek.math.newBezierCurve({0, 0, 100, 200, 300, 200, 400, 0})
+  local pts = c:render(32)
+  lurek.log.info("polyline points=" .. #pts, "spline")
+end
+```
+
+### LBezierCurve:rotate
+
+`LBezierCurve:rotate(angle: number, ox: number, oy: number)`
+
+Rotates all control points around an origin.
+
+**Parameters**
+
+- `angle` (`number`, required): Rotation angle.
+- `ox` (`number`, required): Origin x coordinate.
+- `oy` (`number`, required): Origin y coordinate.
+
+**Lua API Stub**
+
+```lua
+--- Rotates all control points around an origin.
+---@param angle number Rotation angle.
+---@param ox number Origin x coordinate.
+---@param oy number Origin y coordinate.
+function LBezierCurve:rotate(angle, ox, oy) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- rotate(angle, ox, oy) rotates all control points around an origin.
+  local c = lurek.math.newBezierCurve({0, 0, 100, 200, 300, 200, 400, 0})
+  c:rotate(math.pi / 6, 0, 0)
+  lurek.log.debug("rotated", "spline")
+end
+```
+
+### LBezierCurve:scale
+
+`LBezierCurve:scale(s: number, ox: number, oy: number)`
+
+Scales all control points around an origin.
+
+**Parameters**
+
+- `s` (`number`, required): Scale factor.
+- `ox` (`number`, required): Origin x coordinate.
+- `oy` (`number`, required): Origin y coordinate.
+
+**Lua API Stub**
+
+```lua
+--- Scales all control points around an origin.
+---@param s number Scale factor.
+---@param ox number Origin x coordinate.
+---@param oy number Origin y coordinate.
+function LBezierCurve:scale(s, ox, oy) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- scale(factor, ox, oy) scales all control points relative to an origin.
+  local c = lurek.math.newBezierCurve({0, 0, 100, 200, 300, 200, 400, 0})
+  c:scale(2.0, 0, 0)
+  lurek.log.debug("scaled", "spline")
+end
+```
+
+### LBezierCurve:setControlPoint
+
+`LBezierCurve:setControlPoint(index: integer, x: number, y: number) -> boolean`
+
+Sets a control point by one-based index.
+
+**Parameters**
+
+- `index` (`integer`, required): One-based control point index.
+- `x` (`number`, required): New x coordinate.
+- `y` (`number`, required): New y coordinate.
+
+**Returns**: `boolean` - True when the control point exists.
+
+**Lua API Stub**
+
+```lua
+--- Sets a control point by one-based index.
+---@param index number One-based control point index.
+---@param x number New x coordinate.
+---@param y number New y coordinate.
+---@return boolean True when the control point exists.
+function LBezierCurve:setControlPoint(index, x, y) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- setControlPoint(index, x, y) modifies an existing control point in place.
+  -- Returns true if the index was valid.
+  local bc = lurek.math.newBezierCurve({0,0, 100,0, 200,0})
+  bc:setControlPoint(2, 100, 80)
+  local cx, cy = bc:getControlPoint(2)
+  lurek.log.info("ctrl pt 2: " .. cx .. "," .. cy, "math")
+end
+```
+
+### LBezierCurve:translate
+
+`LBezierCurve:translate(dx: number, dy: number)`
+
+Translates all control points. This method is available to Lua scripts.
+
+**Parameters**
+
+- `dx` (`number`, required): X translation.
+- `dy` (`number`, required): Y translation.
+
+**Lua API Stub**
+
+```lua
+--- Translates all control points. This method is available to Lua scripts.
+---@param dx number X translation.
+---@param dy number Y translation.
+function LBezierCurve:translate(dx, dy) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- translate(dx, dy) moves all control points by the given offset.
+  local c = lurek.math.newBezierCurve({0, 0, 100, 200, 300, 200, 400, 0})
+  c:translate(10, 5)
+  lurek.log.debug("translated", "spline")
+end
+```
+
+### LBezierCurve:type
+
+`LBezierCurve:type() -> string`
+
+Returns the Lua-visible type name for this Bezier curve handle.
+
+**Returns**: `string` - The string `LBezierCurve`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this Bezier curve handle.
+---@return string The string `LBezierCurve`.
+function LBezierCurve:type() end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  local obj = lurek.math.newBezierCurve({0,0, 100,0, 100,100, 200,100})
+  lurek.log.debug("type: " .. obj:type(), "example") -- "LBezierCurve"
+end
+```
+
+### LBezierCurve:typeOf
+
+`LBezierCurve:typeOf(name: string) -> boolean`
+
+Returns whether this Bezier curve handle matches a supported type name.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to compare against `LBezierCurve` and `Object`.
+
+**Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this Bezier curve handle matches a supported type name.
+---@param name string Type name to compare against `LBezierCurve` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LBezierCurve:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  local obj = lurek.math.newBezierCurve({0,0, 100,0, 100,100, 200,100})
+  lurek.log.debug("typeOf LBezierCurve: " .. tostring(obj:typeOf("LBezierCurve")), "example") -- true
+end
+```
+
+### LCatmullRom:addPoint
+
+`LCatmullRom:addPoint(x: number, y: number)`
+
+Adds a point to the spline. This method is available to Lua scripts.
+
+**Parameters**
+
+- `x` (`number`, required): Point x coordinate.
+- `y` (`number`, required): Point y coordinate.
+
+**Lua API Stub**
+
+```lua
+--- Adds a point to the spline. This method is available to Lua scripts.
+---@param x number Point x coordinate.
+---@param y number Point y coordinate.
+function LCatmullRom:addPoint(x, y) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- addPoint(x, y) appends a new control point, extending the spline.
+  ---@type LCatmullRom
+  local cr = lurek.math.catmullRom({{x=0,y=0},{x=50,y=50},{x=100,y=0},{x=150,y=50}})
+  cr:addPoint(200, 0)
+  lurek.log.debug("after add count=" .. cr:len(), "spline")
+end
+```
+
+### LCatmullRom:len
+
+`LCatmullRom:len() -> integer`
+
+Returns the number of points in the spline.
+
+**Returns**: `integer` - Point count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of points in the spline.
+---@return number Point count.
+function LCatmullRom:len() end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- Check point count before iterating segments.
+  ---@type LCatmullRom
+  local cr = lurek.math.catmullRom({{x=0,y=0},{x=50,y=50},{x=100,y=0},{x=150,y=50}})
+  lurek.log.info("spline points=" .. cr:len(), "spline")
+end
+```
+
+### LCatmullRom:removePoint
+
+`LCatmullRom:removePoint(idx: integer) -> number`
+
+Removes a point by zero-based index and returns its coordinates.
+
+**Parameters**
+
+- `idx` (`integer`, required): Zero-based point index.
+
+**Returns**: `number` - Removed point x coordinate.
+
+**Lua API Stub**
+
+```lua
+--- Removes a point by zero-based index and returns its coordinates.
+---@param idx number Zero-based point index.
+---@return number a Removed point x coordinate.
+---@return number b Removed point y coordinate.
+function LCatmullRom:removePoint(idx) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- removePoint(idx) removes a control point by zero-based index.
+  -- Returns the removed point's coordinates.
+  ---@type LCatmullRom
+  local cr = lurek.math.catmullRom({{x=0,y=0},{x=50,y=50},{x=100,y=0},{x=150,y=50}})
+  local rx, ry = cr:removePoint(1)
+  lurek.log.debug("removed " .. rx .. "," .. ry, "spline")
+end
+```
+
+### LCatmullRom:sample
+
+`LCatmullRom:sample(t: number) -> number`
+
+Samples the spline at normalized parameter `t`.
+
+**Parameters**
+
+- `t` (`number`, required): Normalized spline parameter.
+
+**Returns**: `number` - Sample x coordinate.
+
+**Lua API Stub**
+
+```lua
+--- Samples the spline at normalized parameter `t`.
+---@param t number Normalized spline parameter.
+---@return number a Sample x coordinate.
+---@return number b Sample y coordinate.
+function LCatmullRom:sample(t) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- Evaluate a patrol path at 25% for enemy position.
+  ---@type LCatmullRom
+  local cr = lurek.math.catmullRom({{x=0,y=0},{x=50,y=100},{x=150,y=100},{x=200,y=0}})
+  local x, y = cr:sample(0.25)
+  lurek.log.debug("patrol pos=" .. x .. "," .. y, "spline")
+end
+```
+
+### LCatmullRom:sampleSegment
+
+`LCatmullRom:sampleSegment(seg: integer, t: number) -> number`
+
+Samples one spline segment at local parameter `t`.
+
+**Parameters**
+
+- `seg` (`integer`, required): Zero-based segment index.
+- `t` (`number`, required): Segment-local parameter.
+
+**Returns**: `number` - Sample x coordinate.
+
+**Lua API Stub**
+
+```lua
+--- Samples one spline segment at local parameter `t`.
+---@param seg number Zero-based segment index.
+---@param t number Segment-local parameter.
+---@return number a Sample x coordinate.
+---@return number b Sample y coordinate.
+function LCatmullRom:sampleSegment(seg, t) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- sampleSegment(seg, t) samples one specific segment by zero-based index.
+  -- Useful for per-segment animation or drawing.
+  ---@type LCatmullRom
+  local cr = lurek.math.catmullRom({{x=0,y=0},{x=50,y=20},{x=100,y=0},{x=150,y=20}})
+  local x, y = cr:sampleSegment(0, 0.5)
+  lurek.log.debug("seg0 mid " .. x .. "," .. y, "spline")
+end
+```
+
+### LCatmullRom:type
+
+`LCatmullRom:type() -> string`
+
+Returns the Lua-visible type name for this spline handle.
+
+**Returns**: `string` - The string `LCatmullRom`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this spline handle.
+---@return string The string `LCatmullRom`.
+function LCatmullRom:type() end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  local obj = lurek.math.catmullRom({{0,0},{100,50},{200,0}})
+  lurek.log.debug("type: " .. obj:type(), "example") -- "LCatmullRom"
+end
+```
+
+### LCatmullRom:typeOf
+
+`LCatmullRom:typeOf(name: string) -> boolean`
+
+Returns whether this spline handle matches a supported type name.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to compare against `LCatmullRom` and `Object`.
+
+**Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this spline handle matches a supported type name.
+---@param name string Type name to compare against `LCatmullRom` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LCatmullRom:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  local obj = lurek.math.catmullRom({{0,0},{100,50},{200,0}})
+  lurek.log.debug("typeOf LCatmullRom: " .. tostring(obj:typeOf("LCatmullRom")), "example") -- true
+end
+```
+
+### LCircle:aabb
+
+`LCircle:aabb() -> number`
+
+Returns this circle axis-aligned bounding box.
+
+**Returns**: `number` - Minimum x coordinate.
+
+**Lua API Stub**
+
+```lua
+--- Returns this circle axis-aligned bounding box.
+---@return number a Minimum x coordinate.
+---@return number b Minimum y coordinate.
+---@return number c Maximum x coordinate.
+---@return number d Maximum y coordinate.
+function LCircle:aabb() end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- aabb() returns the axis-aligned bounding box: min_x, min_y, max_x, max_y.
+  -- Useful for broad-phase collision before precise circle tests.
+  local c = lurek.math.newCircle(50, 30, 10)
+  local x1, y1, x2, y2 = c:aabb()
+  lurek.log.debug("aabb " .. x1 .. "," .. y1 .. " to " .. x2 .. "," .. y2, "geo")
+end
+```
+
+### LCircle:area
+
+`LCircle:area() -> number`
+
+Returns this circle area. This method is available to Lua scripts.
+
+**Returns**: `number` - Circle area.
+
+**Lua API Stub**
+
+```lua
+--- Returns this circle area. This method is available to Lua scripts.
+---@return number Circle area.
+function LCircle:area() end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- area() returns pi * r^2
+  local c = lurek.math.newCircle(0, 0, 5)
+  lurek.log.debug("area=" .. c:area(), "geo")
+end
+```
+
+### LCircle:contains
+
+`LCircle:contains(px: number, py: number) -> boolean`
+
+Returns whether this circle contains a point.
+
+**Parameters**
+
+- `px` (`number`, required): Point x coordinate.
+- `py` (`number`, required): Point y coordinate.
+
+**Returns**: `boolean` - True when the point is inside the circle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this circle contains a point.
+---@param px number Point x coordinate.
+---@param py number Point y coordinate.
+---@return boolean True when the point is inside the circle.
+function LCircle:contains(px, py) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- Check if a click is inside a circular button.
+  local btn = lurek.math.newCircle(200, 150, 30)
+  local inside = btn:contains(210, 145)
+  lurek.log.debug("click inside=" .. tostring(inside), "ui")
+end
+```
+
+### LCircle:intersects
+
+`LCircle:intersects(other: LCircle) -> boolean`
+
+Returns whether this circle intersects another circle.
+
+**Parameters**
+
+- `other` (`LCircle`, required): Other circle handle.
+
+**Returns**: `boolean` - True when the circles intersect.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this circle intersects another circle.
+---@param other LCircle Other circle handle.
+---@return boolean True when the circles intersect.
+function LCircle:intersects(other) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- intersects(other) tests overlap between two circle objects.
+  local a = lurek.math.newCircle(0, 0, 10)
+  local b = lurek.math.newCircle(15, 0, 10)
+  lurek.log.debug("hit=" .. tostring(a:intersects(b)), "geo")
+end
+```
+
+### LCircle:perimeter
+
+`LCircle:perimeter() -> number`
+
+Returns this circle perimeter. This method is available to Lua scripts.
+
+**Returns**: `number` - Circle perimeter.
+
+**Lua API Stub**
+
+```lua
+--- Returns this circle perimeter. This method is available to Lua scripts.
+---@return number Circle perimeter.
+function LCircle:perimeter() end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- perimeter() returns 2 * pi * r (circumference)
+  local c = lurek.math.newCircle(0, 0, 10)
+  lurek.log.debug("perimeter=" .. c:perimeter(), "geo")
+end
+```
+
+### LCircle:radius
+
+`LCircle:radius() -> number`
+
+Returns this circle radius. This method is available to Lua scripts.
+
+**Returns**: `number` - Radius.
+
+**Lua API Stub**
+
+```lua
+--- Returns this circle radius. This method is available to Lua scripts.
+---@return number Radius.
+function LCircle:radius() end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- radius() returns the circle radius.
+  local c = lurek.math.newCircle(0, 0, 12)
+  lurek.log.info("radius=" .. c:radius(), "geo")
+end
+```
+
+### LCircle:type
+
+`LCircle:type() -> string`
+
+Returns the Lua-visible type name for this circle handle.
+
+**Returns**: `string` - The string `LCircle`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this circle handle.
+---@return string The string `LCircle`.
+function LCircle:type() end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  local obj = lurek.math.newCircle(100, 100, 40)
+  lurek.log.debug("type: " .. obj:type(), "example") -- "LCircle"
+end
+```
+
+### LCircle:typeOf
+
+`LCircle:typeOf(name: string) -> boolean`
+
+Returns whether this circle handle matches a supported type name.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to compare against `LCircle` and `Object`.
+
+**Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this circle handle matches a supported type name.
+---@param name string Type name to compare against `LCircle` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LCircle:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  local obj = lurek.math.newCircle(100, 100, 40)
+  lurek.log.debug("typeOf LCircle: " .. tostring(obj:typeOf("LCircle")), "example") -- true
+end
+```
+
+### LCircle:x
+
+`LCircle:x() -> number`
+
+Returns this circle center x coordinate.
+
+**Returns**: `number` - Center x coordinate.
+
+**Lua API Stub**
+
+```lua
+--- Returns this circle center x coordinate.
+---@return number Center x coordinate.
+function LCircle:x() end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- x() returns the circle center X coordinate.
+  local c = lurek.math.newCircle(72, 18, 5)
+  lurek.log.debug("x=" .. c:x(), "geo")
+end
+```
+
+### LCircle:y
+
+`LCircle:y() -> number`
+
+Returns this circle center y coordinate.
+
+**Returns**: `number` - Center y coordinate.
+
+**Lua API Stub**
+
+```lua
+--- Returns this circle center y coordinate.
+---@return number Center y coordinate.
+function LCircle:y() end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- y() returns the circle center Y coordinate.
+  local c = lurek.math.newCircle(72, 18, 5)
+  lurek.log.debug("y=" .. c:y(), "geo")
+end
+```
+
+### LHermite:sample
+
+`LHermite:sample(t: number) -> number`
+
+Samples the spline at normalized parameter `t`.
+
+**Parameters**
+
+- `t` (`number`, required): Normalized spline parameter.
+
+**Returns**: `number` - Sample x coordinate.
+
+**Lua API Stub**
+
+```lua
+--- Samples the spline at normalized parameter `t`.
+---@param t number Normalized spline parameter.
+---@return number a Sample x coordinate.
+---@return number b Sample y coordinate.
+function LHermite:sample(t) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- Same as CatmullRom:sample — evaluates at normalized t.
+  ---@type LHermite
+  local h = lurek.math.hermite(0, 0, 100, 100, 50, 0, 0, 50)
+  local x, y = h:sample(0.5)
+  lurek.log.debug("hermite mid " .. x .. "," .. y, "spline")
+end
+```
+
+### LHermite:type
+
+`LHermite:type() -> string`
+
+Returns the Lua-visible type name for this spline handle.
+
+**Returns**: `string` - The string `LHermite`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this spline handle.
+---@return string The string `LHermite`.
+function LHermite:type() end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  local obj = lurek.math.hermite(0,0,100,50,0,1,0,1)
+  lurek.log.debug("type: " .. obj:type(), "example") -- "LHermite"
+end
+```
+
+### LHermite:typeOf
+
+`LHermite:typeOf(name: string) -> boolean`
+
+Returns whether this spline handle matches a supported type name.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to compare against `LHermite` and `Object`.
+
+**Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this spline handle matches a supported type name.
+---@param name string Type name to compare against `LHermite` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LHermite:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  local obj = lurek.math.hermite(0,0,100,50,0,1,0,1)
+  lurek.log.debug("typeOf LHermite: " .. tostring(obj:typeOf("LHermite")), "example") -- true
+end
+```
+
+### LNoiseGenerator:fbm
+
+`LNoiseGenerator:fbm(x: number, y: number, [octaves]: integer, [lac]: number, [pers]: number, [kind]: string) -> number`
+
+Samples fractal Brownian motion noise.
+
+**Parameters**
+
+- `x` (`number`, required): X coordinate.
+- `y` (`number`, required): Y coordinate.
+- `octaves` (`integer`, optional): Octave count (default 4).
+- `lac` (`number`, optional): Lacunarity (default 2.0).
+- `pers` (`number`, optional): Persistence (default 0.5).
+- `kind` (`string`, optional): Noise kind name (default `"perlin"`).
+
+**Returns**: `number` - Noise value.
+
+**Lua API Stub**
+
+```lua
+--- Samples fractal Brownian motion noise.
+---@param x number X coordinate.
+---@param y number Y coordinate.
+---@param octaves? number Octave count (default 4).
+---@param lac? number Lacunarity (default 2.0).
+---@param pers? number Persistence (default 0.5).
+---@param kind? string Noise kind name (default `"perlin"`).
+---@return number Noise value.
+function LNoiseGenerator:fbm(x, y, octaves, lac, pers, kind) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- Instance-based FBM: uses the generator's seed internally.
+  -- Args: x, y, octaves, lacunarity, persistence
+  local ng = lurek.math.newNoiseGenerator(42)
+  local v = ng:fbm(0.3, 0.7, 6, 2.0, 0.5)
+  lurek.log.info("fbm noise: " .. v, "math")
+end
+```
+
+### LNoiseGenerator:generateMap
+
+`LNoiseGenerator:generateMap(w: integer, h: integer, [opts]: table) -> number[]`
+
+Generates a noise map and returns it as a flat array table.
+
+**Parameters**
+
+- `w` (`integer`, required): Map width.
+- `h` (`integer`, required): Map height.
+- `opts` (`table`, optional): Generation options including scale, octaves, kind, fractal, offset, and backend.
+
+**Returns**: `number[]` - Noise values.
+
+**Lua API Stub**
+
+```lua
+--- Generates a noise map and returns it as a flat array table.
+---@param w number Map width.
+---@param h number Map height.
+---@param opts? table Generation options including scale, octaves, kind, fractal, offset, and backend.
+---@return number[] Noise values.
+function LNoiseGenerator:generateMap(w, h, opts) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- generateMap(w, h, opts) returns a flat array of w*h noise values.
+  -- Options: scale, offsetX, offsetY, octaves, kind, fractal, backend.
+  local ng = lurek.math.newNoiseGenerator(99)
+  local map = ng:generateMap(32, 32, { scale = 0.05, offsetX = 0.0, offsetY = 0.0 })
+  lurek.log.info("map size: " .. #map, "math")
+end
+```
+
+### LNoiseGenerator:generateMapCompute
+
+`LNoiseGenerator:generateMapCompute(w: integer, h: integer, [opts]: table) -> number[]`
+
+Generates a noise map through the compute backend and returns it as a flat array table.
+
+**Parameters**
+
+- `w` (`integer`, required): Map width.
+- `h` (`integer`, required): Map height.
+- `opts` (`table`, optional): Generation options including scale, octaves, kind, fractal, and offset.
+
+**Returns**: `number[]` - Noise values.
+
+**Lua API Stub**
+
+```lua
+--- Generates a noise map through the compute backend and returns it as a flat array table.
+---@param w number Map width.
+---@param h number Map height.
+---@param opts? table Generation options including scale, octaves, kind, fractal, and offset.
+---@return number[] Noise values.
+function LNoiseGenerator:generateMapCompute(w, h, opts) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- generateMapCompute uses the GPU compute backend for faster large maps.
+  -- Same options as generateMap but processed on the GPU.
+  local ng = lurek.math.newNoiseGenerator(101)
+  local map = ng:generateMapCompute(16, 16, { octaves = 3, lacunarity = 2.0, gain = 0.5 })
+  lurek.log.info("compute map size: " .. #map, "math")
+end
+```
+
+### LNoiseGenerator:getSeed
+
+`LNoiseGenerator:getSeed() -> integer`
+
+Returns this noise generator seed.
+
+**Returns**: `integer` - Seed value.
+
+**Lua API Stub**
+
+```lua
+--- Returns this noise generator seed.
+---@return number Seed value.
+function LNoiseGenerator:getSeed() end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  local n = lurek.math.newNoiseGenerator(2026)
+  lurek.log.info("noise seed=" .. n:getSeed(), "noise")
+end
+```
+
+### LNoiseGenerator:perlin1d
+
+`LNoiseGenerator:perlin1d(x: number) -> number`
+
+Samples 1D Perlin noise. This method is available to Lua scripts.
+
+**Parameters**
+
+- `x` (`number`, required): X coordinate.
+
+**Returns**: `number` - Noise value.
+
+**Lua API Stub**
+
+```lua
+--- Samples 1D Perlin noise. This method is available to Lua scripts.
+---@param x number X coordinate.
+---@return number Noise value.
+function LNoiseGenerator:perlin1d(x) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- 1D Perlin noise: smooth random values along a single axis.
+  -- Great for wind gusts, screen shake intensity, or wave heights.
+  local n = lurek.math.newNoiseGenerator(1)
+  local wind = n:perlin1d(0.4)
+  lurek.log.debug("wind=" .. wind, "weather")
+end
+```
+
+### LNoiseGenerator:perlin2d
+
+`LNoiseGenerator:perlin2d(x: number, y: number) -> number`
+
+Samples 2D Perlin noise. This method is available to Lua scripts.
+
+**Parameters**
+
+- `x` (`number`, required): X coordinate.
+- `y` (`number`, required): Y coordinate.
+
+**Returns**: `number` - Noise value.
+
+**Lua API Stub**
+
+```lua
+--- Samples 2D Perlin noise. This method is available to Lua scripts.
+---@param x number X coordinate.
+---@param y number Y coordinate.
+---@return number Noise value.
+function LNoiseGenerator:perlin2d(x, y) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- 2D Perlin noise: the classic terrain heightmap generator.
+  -- Coordinates scale affects detail level (smaller = smoother, larger = more detail).
+  local n = lurek.math.newNoiseGenerator(2)
+  local h = n:perlin2d(2.5, 4.5)
+  lurek.log.debug("h=" .. h, "noise")
+end
+```
+
+### LNoiseGenerator:perlin3d
+
+`LNoiseGenerator:perlin3d(x: number, y: number, z: number) -> number`
+
+Samples 3D Perlin noise. This method is available to Lua scripts.
+
+**Parameters**
+
+- `x` (`number`, required): X coordinate.
+- `y` (`number`, required): Y coordinate.
+- `z` (`number`, required): Z coordinate.
+
+**Returns**: `number` - Noise value.
+
+**Lua API Stub**
+
+```lua
+--- Samples 3D Perlin noise. This method is available to Lua scripts.
+---@param x number X coordinate.
+---@param y number Y coordinate.
+---@param z number Z coordinate.
+---@return number Noise value.
+function LNoiseGenerator:perlin3d(x, y, z) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- 3D Perlin: use Z as time for animated 2D noise fields.
+  local n = lurek.math.newNoiseGenerator(3)
+  local v = n:perlin3d(1.0, 2.0, 3.0)
+  lurek.log.debug("v=" .. v, "noise")
+end
+```
+
+### LNoiseGenerator:perlin4d
+
+`LNoiseGenerator:perlin4d(x: number, y: number, z: number, w: number) -> number`
+
+Samples 4D Perlin noise. This method is available to Lua scripts.
+
+**Parameters**
+
+- `x` (`number`, required): X coordinate.
+- `y` (`number`, required): Y coordinate.
+- `z` (`number`, required): Z coordinate.
+- `w` (`number`, required): W coordinate.
+
+**Returns**: `number` - Noise value.
+
+**Lua API Stub**
+
+```lua
+--- Samples 4D Perlin noise. This method is available to Lua scripts.
+---@param x number X coordinate.
+---@param y number Y coordinate.
+---@param z number Z coordinate.
+---@param w number W coordinate.
+---@return number Noise value.
+function LNoiseGenerator:perlin4d(x, y, z, w) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- 4D Perlin: useful for seamless tiling textures or animated 3D noise.
+  local n = lurek.math.newNoiseGenerator(4)
+  local v = n:perlin4d(0.1, 0.2, 0.3, 0.4)
+  lurek.log.debug("v4=" .. v, "noise")
+end
+```
+
+### LNoiseGenerator:ridged
+
+`LNoiseGenerator:ridged(x: number, y: number, [octaves]: integer, [lac]: number, [pers]: number, [kind]: string) -> number`
+
+Samples ridged fractal noise. This method is available to Lua scripts.
+
+**Parameters**
+
+- `x` (`number`, required): X coordinate.
+- `y` (`number`, required): Y coordinate.
+- `octaves` (`integer`, optional): Octave count (default 4).
+- `lac` (`number`, optional): Lacunarity (default 2.0).
+- `pers` (`number`, optional): Persistence (default 0.5).
+- `kind` (`string`, optional): Noise kind name (default `"perlin"`).
+
+**Returns**: `number` - Noise value.
+
+**Lua API Stub**
+
+```lua
+--- Samples ridged fractal noise. This method is available to Lua scripts.
+---@param x number X coordinate.
+---@param y number Y coordinate.
+---@param octaves? number Octave count (default 4).
+---@param lac? number Lacunarity (default 2.0).
+---@param pers? number Persistence (default 0.5).
+---@param kind? string Noise kind name (default `"perlin"`).
+---@return number Noise value.
+function LNoiseGenerator:ridged(x, y, octaves, lac, pers, kind) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- ridged() produces sharp ridges — good for mountain ranges or vein patterns.
+  -- Args: x, y, octaves, lacunarity, persistence
+  local ng = lurek.math.newNoiseGenerator(7)
+  local v = ng:ridged(0.5, 0.5, 5, 2.0, 0.5)
+  lurek.log.info("ridged: " .. v, "math")
+end
+```
+
+### LNoiseGenerator:setSeed
+
+`LNoiseGenerator:setSeed(seed: integer)`
+
+Sets this noise generator seed. This method is available to Lua scripts.
+
+**Parameters**
+
+- `seed` (`integer`, required): Seed value.
+
+**Lua API Stub**
+
+```lua
+--- Sets this noise generator seed. This method is available to Lua scripts.
+---@param seed number Seed value.
+function LNoiseGenerator:setSeed(seed) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- Change seed at runtime to generate different worlds from the same code.
+  local n = lurek.math.newNoiseGenerator(0)
+  n:setSeed(99)
+  lurek.log.debug("re-seeded", "noise")
+end
+```
+
+### LNoiseGenerator:simplex1d
+
+`LNoiseGenerator:simplex1d(x: number) -> number`
+
+Samples 1D simplex noise. This method is available to Lua scripts.
+
+**Parameters**
+
+- `x` (`number`, required): X coordinate.
+
+**Returns**: `number` - Noise value.
+
+**Lua API Stub**
+
+```lua
+--- Samples 1D simplex noise. This method is available to Lua scripts.
+---@param x number X coordinate.
+---@return number Noise value.
+function LNoiseGenerator:simplex1d(x) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- 1D simplex noise: fewer artifacts than Perlin, slightly cheaper.
+  local n = lurek.math.newNoiseGenerator(5)
+  local s = n:simplex1d(0.7)
+  lurek.log.debug("s1=" .. s, "noise")
+end
+```
+
+### LNoiseGenerator:simplex2d
+
+`LNoiseGenerator:simplex2d(x: number, y: number) -> number`
+
+Samples 2D simplex noise. This method is available to Lua scripts.
+
+**Parameters**
+
+- `x` (`number`, required): X coordinate.
+- `y` (`number`, required): Y coordinate.
+
+**Returns**: `number` - Noise value.
+
+**Lua API Stub**
+
+```lua
+--- Samples 2D simplex noise. This method is available to Lua scripts.
+---@param x number X coordinate.
+---@param y number Y coordinate.
+---@return number Noise value.
+function LNoiseGenerator:simplex2d(x, y) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- 2D simplex: better isotropy (less grid-aligned artifacts) than Perlin.
+  local n = lurek.math.newNoiseGenerator(6)
+  local s = n:simplex2d(0.4, 0.6)
+  lurek.log.debug("s2=" .. s, "noise")
+end
+```
+
+### LNoiseGenerator:simplex3d
+
+`LNoiseGenerator:simplex3d(x: number, y: number, z: number) -> number`
+
+Samples 3D simplex noise. This method is available to Lua scripts.
+
+**Parameters**
+
+- `x` (`number`, required): X coordinate.
+- `y` (`number`, required): Y coordinate.
+- `z` (`number`, required): Z coordinate.
+
+**Returns**: `number` - Noise value.
+
+**Lua API Stub**
+
+```lua
+--- Samples 3D simplex noise. This method is available to Lua scripts.
+---@param x number X coordinate.
+---@param y number Y coordinate.
+---@param z number Z coordinate.
+---@return number Noise value.
+function LNoiseGenerator:simplex3d(x, y, z) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- 3D simplex: good for volumetric effects or animated 2D patterns.
+  local n = lurek.math.newNoiseGenerator(7)
+  local s = n:simplex3d(0.1, 0.2, 0.3)
+  lurek.log.debug("s3=" .. s, "noise")
+end
+```
+
+### LNoiseGenerator:turbulence
+
+`LNoiseGenerator:turbulence(x: number, y: number, [octaves]: integer, [lac]: number, [pers]: number, [kind]: string) -> number`
+
+Samples turbulence fractal noise.
+
+**Parameters**
+
+- `x` (`number`, required): X coordinate.
+- `y` (`number`, required): Y coordinate.
+- `octaves` (`integer`, optional): Octave count (default 4).
+- `lac` (`number`, optional): Lacunarity (default 2.0).
+- `pers` (`number`, optional): Persistence (default 0.5).
+- `kind` (`string`, optional): Noise kind name (default `"perlin"`).
+
+**Returns**: `number` - Noise value.
+
+**Lua API Stub**
+
+```lua
+--- Samples turbulence fractal noise.
+---@param x number X coordinate.
+---@param y number Y coordinate.
+---@param octaves? number Octave count (default 4).
+---@param lac? number Lacunarity (default 2.0).
+---@param pers? number Persistence (default 0.5).
+---@param kind? string Noise kind name (default `"perlin"`).
+---@return number Noise value.
+function LNoiseGenerator:turbulence(x, y, octaves, lac, pers, kind) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- turbulence() takes absolute value of each octave, creating billowy patterns.
+  -- Good for smoke, fire, or cloud textures.
+  local ng = lurek.math.newNoiseGenerator(55)
+  local v = ng:turbulence(0.4, 0.6, 5, 2.0, 0.5)
+  lurek.log.info("turbulence: " .. v, "math")
+end
+```
+
+### LNoiseGenerator:type
+
+`LNoiseGenerator:type() -> string`
+
+Returns the Lua-visible type name for this noise generator handle.
+
+**Returns**: `string` - The string `LNoiseGenerator`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this noise generator handle.
+---@return string The string `LNoiseGenerator`.
+function LNoiseGenerator:type() end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  local obj = lurek.math.newNoiseGenerator(42)
+  lurek.log.debug("type: " .. obj:type(), "example") -- "LNoiseGenerator"
+end
+```
+
+### LNoiseGenerator:typeOf
+
+`LNoiseGenerator:typeOf(name: string) -> boolean`
+
+Returns whether this noise generator handle matches a supported type name.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to compare against `LNoiseGenerator` and `Object`.
+
+**Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this noise generator handle matches a supported type name.
+---@param name string Type name to compare against `LNoiseGenerator` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LNoiseGenerator:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  local obj = lurek.math.newNoiseGenerator(42)
+  lurek.log.debug("typeOf LNoiseGenerator: " .. tostring(obj:typeOf("LNoiseGenerator")), "example") -- true
+end
+```
+
+### LNoiseGenerator:warpDomain
+
+`LNoiseGenerator:warpDomain(x: number, y: number, strength: number) -> number`
+
+Samples domain-warped noise coordinates.
+
+**Parameters**
+
+- `x` (`number`, required): X coordinate.
+- `y` (`number`, required): Y coordinate.
+- `strength` (`number`, required): Warp strength.
+
+**Returns**: `number` - Warped noise value.
+
+**Lua API Stub**
+
+```lua
+--- Samples domain-warped noise coordinates.
+---@param x number X coordinate.
+---@param y number Y coordinate.
+---@param strength number Warp strength.
+---@return number Warped noise value.
+function LNoiseGenerator:warpDomain(x, y, strength) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- warpDomain(x, y, strength) distorts coordinates before noise sampling.
+  -- Creates organic, flowing patterns (marble, lava, organic growth).
+  local ng = lurek.math.newNoiseGenerator(101)
+  local wx, wy = ng:warpDomain(0.3, 0.3, 0.8)
+  wx = wx or 0.0
+  wy = wy or 0.0
+  local v = ng:perlin2d(wx, wy)
+  lurek.log.info("warped: " .. v, "math")
+end
+```
+
+### LNoiseGenerator:worley2d
+
+`LNoiseGenerator:worley2d(x: number, y: number, [dist_name]: string, [f2]: boolean) -> number`
+
+Samples 2D Worley noise. This method is available to Lua scripts.
+
+**Parameters**
+
+- `x` (`number`, required): X coordinate.
+- `y` (`number`, required): Y coordinate.
+- `dist_name` (`string`, optional): Distance type name (default `"euclidean"`).
+- `f2` (`boolean`, optional): Second-feature flag (default false).
+
+**Returns**: `number` - Noise value.
+
+**Lua API Stub**
+
+```lua
+--- Samples 2D Worley noise. This method is available to Lua scripts.
+---@param x number X coordinate.
+---@param y number Y coordinate.
+---@param dist_name? string Distance type name (default `"euclidean"`).
+---@param f2? boolean Second-feature flag (default false).
+---@return number Noise value.
+function LNoiseGenerator:worley2d(x, y, dist_name, f2) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- worley2d() (cellular noise): produces cell-like patterns.
+  -- Good for stone textures, scales, or cracked earth.
+  local ng = lurek.math.newNoiseGenerator(321)
+  local v = ng:worley2d(0.25, 0.75)
+  lurek.log.info("worley2d: " .. v, "math")
+end
+```
+
+### LNoiseGenerator:worley3d
+
+`LNoiseGenerator:worley3d(x: number, y: number, z: number, [dist_name]: string, [f2]: boolean) -> number`
+
+Samples 3D Worley noise. This method is available to Lua scripts.
+
+**Parameters**
+
+- `x` (`number`, required): X coordinate.
+- `y` (`number`, required): Y coordinate.
+- `z` (`number`, required): Z coordinate.
+- `dist_name` (`string`, optional): Distance type name (default `"euclidean"`).
+- `f2` (`boolean`, optional): Second-feature flag (default false).
+
+**Returns**: `number` - Noise value.
+
+**Lua API Stub**
+
+```lua
+--- Samples 3D Worley noise. This method is available to Lua scripts.
+---@param x number X coordinate.
+---@param y number Y coordinate.
+---@param z number Z coordinate.
+---@param dist_name? string Distance type name (default `"euclidean"`).
+---@param f2? boolean Second-feature flag (default false).
+---@return number Noise value.
+function LNoiseGenerator:worley3d(x, y, z, dist_name, f2) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- worley3d() extends cellular noise into 3D. Use Z as time for animated cells.
+  local ng = lurek.math.newNoiseGenerator(654)
+  local v = ng:worley3d(0.1, 0.5, 0.9)
+  lurek.log.info("worley3d: " .. v, "math")
+end
+```
+
+### LRandomGenerator:getSeed
+
+`LRandomGenerator:getSeed() -> integer`
+
+Returns this generator seed. This method is available to Lua scripts.
+
+**Returns**: `integer` - Seed value.
+
+**Lua API Stub**
+
+```lua
+--- Returns this generator seed. This method is available to Lua scripts.
+---@return number Seed value.
+function LRandomGenerator:getSeed() end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- Display the world seed on the pause screen for sharing.
+  local rng = lurek.math.newRandomGenerator(98765)
+  lurek.log.info("world seed=" .. rng:getSeed(), "world")
+end
+```
+
+### LRandomGenerator:getState
+
+`LRandomGenerator:getState() -> string`
+
+Returns this generator serialized state string.
+
+**Returns**: `string` - Generator state.
+
+**Lua API Stub**
+
+```lua
+--- Returns this generator serialized state string.
+---@return string Generator state.
+function LRandomGenerator:getState() end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- getState() serializes the full internal state as a string.
+  -- Use for save-game snapshots of RNG position.
+  local rng = lurek.math.newRandomGenerator(77)
+  local snapshot = rng:getState()
+  lurek.log.debug("state bytes=" .. #snapshot, "rng")
+end
+```
+
+### LRandomGenerator:random
+
+`LRandomGenerator:random() -> number`
+
+Returns a random floating-point value from the generator.
+
+**Returns**: `number` - Random value.
+
+**Lua API Stub**
+
+```lua
+--- Returns a random floating-point value from the generator.
+---@return number Random value.
+function LRandomGenerator:random() end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- random() returns a float in [0..1). Every call advances the generator state.
+  local rng = lurek.math.newRandomGenerator(42)
+  local v = rng:random()
+  lurek.log.debug("u01=" .. v, "rng")
+end
+```
+
+### LRandomGenerator:randomFloat
+
+`LRandomGenerator:randomFloat(min: number, max: number) -> number`
+
+Returns a random floating-point value in a range.
+
+**Parameters**
+
+- `min` (`number`, required): Minimum value.
+- `max` (`number`, required): Maximum value.
+
+**Returns**: `number` - Random value in range.
+
+**Lua API Stub**
+
+```lua
+--- Returns a random floating-point value in a range.
+---@param min number Minimum value.
+---@param max number Maximum value.
+---@return number Random value in range.
+function LRandomGenerator:randomFloat(min, max) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- randomFloat(min, max) returns a float in [min..max].
+  -- Good for random angles, spawn offsets, or color variation.
+  local rng = lurek.math.newRandomGenerator(7)
+  local angle = rng:randomFloat(0, math.pi * 2)
+  lurek.log.debug("angle=" .. angle, "rng")
+end
+```
+
+### LRandomGenerator:randomInt
+
+`LRandomGenerator:randomInt(min: integer, max: integer) -> integer`
+
+Returns a random integer in a range.
+
+**Parameters**
+
+- `min` (`integer`, required): Minimum value.
+- `max` (`integer`, required): Maximum value.
+
+**Returns**: `integer` - Random integer in range.
+
+**Lua API Stub**
+
+```lua
+--- Returns a random integer in a range.
+---@param min number Minimum value.
+---@param max number Maximum value.
+---@return number Random integer in range.
+function LRandomGenerator:randomInt(min, max) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- randomInt(min, max) returns an integer in [min..max] inclusive.
+  -- Classic d20 roll for tabletop-style games.
+  local rng = lurek.math.newRandomGenerator(99)
+  local roll = rng:randomInt(1, 20)
+  lurek.log.info("d20=" .. roll, "rng")
+end
+```
+
+### LRandomGenerator:randomNormal
+
+`LRandomGenerator:randomNormal([stddev]: number, [mean]: number) -> number`
+
+Returns a normally distributed random value.
+
+**Parameters**
+
+- `stddev` (`number`, optional): Standard deviation (default 1.0).
+- `mean` (`number`, optional): Mean value (default 0.0).
+
+**Returns**: `number` - Random normal value.
+
+**Lua API Stub**
+
+```lua
+--- Returns a normally distributed random value.
+---@param stddev? number Standard deviation (default 1.0).
+---@param mean? number Mean value (default 0.0).
+---@return number Random normal value.
+function LRandomGenerator:randomNormal(stddev, mean) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- randomNormal(stddev, mean) returns a Gaussian-distributed value.
+  -- Good for natural variation: enemy stats, spawn spread, or hit scatter.
+  local rng = lurek.math.newRandomGenerator(12345)
+  local v = rng:randomNormal(0, 1)
+  lurek.log.info("normal sample: " .. v, "math")
+end
+```
+
+### LRandomGenerator:setSeed
+
+`LRandomGenerator:setSeed(seed: integer)`
+
+Resets this generator to a seed value.
+
+**Parameters**
+
+- `seed` (`integer`, required): Seed value.
+
+**Lua API Stub**
+
+```lua
+--- Resets this generator to a seed value.
+---@param seed number Seed value.
+function LRandomGenerator:setSeed(seed) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- Reset RNG to replay a procedural level.
+  local rng = lurek.math.newRandomGenerator(0)
+  rng:setSeed(42)
+  lurek.log.debug("reseeded, first roll=" .. rng:randomInt(1, 100), "rng")
+end
+```
+
+### LRandomGenerator:setState
+
+`LRandomGenerator:setState(state: string)`
+
+Restores this generator from a serialized state string.
+
+**Parameters**
+
+- `state` (`string`, required): Generator state string.
+
+**Lua API Stub**
+
+```lua
+--- Restores this generator from a serialized state string.
+---@param state string Generator state string.
+function LRandomGenerator:setState(state) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- setState() restores a previously saved state, resuming the exact sequence.
+  local rng = lurek.math.newRandomGenerator(77)
+  local snap = rng:getState()
+  rng:random()  -- advance the state
+  rng:setState(snap)  -- rewind to the snapshot
+  -- Next call will produce the same value as before the advance
+end
+```
+
+### LRandomGenerator:type
+
+`LRandomGenerator:type() -> string`
+
+Returns the Lua-visible type name for this random generator handle.
+
+**Returns**: `string` - The string `LRandomGenerator`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this random generator handle.
+---@return string The string `LRandomGenerator`.
+function LRandomGenerator:type() end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  local obj = lurek.math.newRandomGenerator(12345)
+  lurek.log.debug("type: " .. obj:type(), "example") -- "LRandomGenerator"
+end
+```
+
+### LRandomGenerator:typeOf
+
+`LRandomGenerator:typeOf(name: string) -> boolean`
+
+Returns whether this random generator handle matches a supported type name.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to compare against `LRandomGenerator` and `Object`.
+
+**Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this random generator handle matches a supported type name.
+---@param name string Type name to compare against `LRandomGenerator` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LRandomGenerator:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  local obj = lurek.math.newRandomGenerator(12345)
+  lurek.log.debug("typeOf LRandomGenerator: " .. tostring(obj:typeOf("LRandomGenerator")), "example") -- true
+end
+```
+
+### LRectPacker:clear
+
+`LRectPacker:clear()`
+
+Clears packed rectangles from this packer.
+
+**Lua API Stub**
+
+```lua
+--- Clears packed rectangles from this packer.
+function LRectPacker:clear() end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- Reset atlas packer between texture atlas pages.
+  local packer = lurek.math.newRectPacker(256, 256, 1)
+  packer:pack(64, 64, "sprite_a")
+  packer:clear()
+  lurek.log.debug("packer cleared for new page", "atlas")
+end
+```
+
+### LRectPacker:getPacked
+
+`LRectPacker:getPacked() -> table`
+
+Returns packed rectangle records.
+
+**Returns**: `table` - Array table with `x`, `y`, `w`, `h`, and optional `id` fields.
+
+**Lua API Stub**
+
+```lua
+--- Returns packed rectangle records.
+---@return LRectPackerGetPackedResult Array table with `x`, `y`, `w`, `h`, and optional `id` fields.
+function LRectPacker:getPacked() end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- getPacked returns all successfully placed rects with their coordinates
+  local packer = lurek.math.newRectPacker(128, 128, 2)
+  packer:pack(20, 20, "icon_a")
+  packer:pack(30, 18, "icon_b")
+  local packed = packer:getPacked()
+  -- Each entry has x, y, w, h, and optional id fields
+  lurek.log.debug("packed count=" .. #packed, "atlas")
+end
+```
+
+### LRectPacker:occupancy
+
+`LRectPacker:occupancy() -> number`
+
+Returns occupied area ratio. This method is available to Lua scripts.
+
+**Returns**: `number` - Occupancy ratio.
+
+**Lua API Stub**
+
+```lua
+--- Returns occupied area ratio. This method is available to Lua scripts.
+---@return number Occupancy ratio.
+function LRectPacker:occupancy() end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- occupancy() returns the ratio of used space (0..1)
+  -- Useful for deciding when to allocate a new atlas page
+  local packer = lurek.math.newRectPacker(128, 128, 2)
+  packer:pack(32, 32, "slot1")
+  local occ = packer:occupancy()
+  lurek.log.debug("occupancy=" .. occ, "atlas")
+end
+```
+
+### LRectPacker:pack
+
+`LRectPacker:pack(w: integer, h: integer, [id]: string) -> integer`
+
+Attempts to pack a rectangle and returns its placement coordinates.
+
+**Parameters**
+
+- `w` (`integer`, required): Rectangle width.
+- `h` (`integer`, required): Rectangle height.
+- `id` (`string`, optional): Rectangle id.
+
+**Returns**: `integer` - X coordinate, or nil when packing fails.
+
+**Lua API Stub**
+
+```lua
+--- Attempts to pack a rectangle and returns its placement coordinates.
+---@param w number Rectangle width.
+---@param h number Rectangle height.
+---@param id? string Rectangle id.
+---@return number a X coordinate, or nil when packing fails.
+---@return number b Y coordinate, or nil when packing fails.
+function LRectPacker:pack(w, h, id) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- pack returns nil,nil if the rectangle does not fit in the remaining space
+  local packer = lurek.math.newRectPacker(128, 128, 2)
+  local x, y = packer:pack(32, 24, "btn_ok")
+  if x and y then
+    lurek.log.debug("packed btn_ok at " .. x .. "," .. y, "atlas")
+  else
+    lurek.log.warn("btn_ok did not fit!", "atlas")
+  end
+end
+```
+
+### LSpatialHash:clear
+
+`LSpatialHash:clear()`
+
+Clears all items from the spatial hash.
+
+**Lua API Stub**
+
+```lua
+--- Clears all items from the spatial hash.
+function LSpatialHash:clear() end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- Reset spatial index between scenes.
+  local hash = lurek.math.newSpatialHash(64)
+  hash:insert("a", 0, 0, 10, 10)
+  hash:insert("b", 50, 50, 10, 10)
+  hash:clear()
+  lurek.log.debug("spatial hash cleared", "spatial")
+end
+```
+
+### LSpatialHash:getCellSize
+
+`LSpatialHash:getCellSize() -> number`
+
+Returns the spatial hash cell size.
+
+**Returns**: `number` - Cell size.
+
+**Lua API Stub**
+
+```lua
+--- Returns the spatial hash cell size.
+---@return number Cell size.
+function LSpatialHash:getCellSize() end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- getCellSize() returns the grid cell dimension used for bucketing.
+  local h = lurek.math.newSpatialHash(96)
+  local cs = h:getCellSize()
+  lurek.log.debug("cell=" .. cs, "spatial")
+end
+```
+
+### LSpatialHash:getItemCount
+
+`LSpatialHash:getItemCount() -> integer`
+
+Returns the number of items in the spatial hash.
+
+**Returns**: `integer` - Item count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of items in the spatial hash.
+---@return number Item count.
+function LSpatialHash:getItemCount() end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- getItemCount() tells how many items are currently inserted.
+  local h = lurek.math.newSpatialHash(64)
+  h:insert("a", 0, 0, 16, 16)
+  lurek.log.info("items=" .. h:getItemCount(), "spatial")
+end
+```
+
+### LSpatialHash:insert
+
+`LSpatialHash:insert(id: string, x: number, y: number, w: number, h: number)`
+
+Inserts an item rectangle into the spatial hash.
+
+**Parameters**
+
+- `id` (`string`, required): Item id.
+- `x` (`number`, required): Rectangle x coordinate.
+- `y` (`number`, required): Rectangle y coordinate.
+- `w` (`number`, required): Rectangle width.
+- `h` (`number`, required): Rectangle height.
+
+**Lua API Stub**
+
+```lua
+--- Inserts an item rectangle into the spatial hash.
+---@param id string Item id.
+---@param x number Rectangle x coordinate.
+---@param y number Rectangle y coordinate.
+---@param w number Rectangle width.
+---@param h number Rectangle height.
+function LSpatialHash:insert(id, x, y, w, h) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- Register an enemy in the spatial index for broad-phase queries.
+  local hash = lurek.math.newSpatialHash(64)
+  hash:insert("goblin", 200, 150, 24, 24)
+  lurek.log.debug("goblin inserted into spatial hash", "spatial")
+end
+```
+
+### LSpatialHash:queryCircle
+
+`LSpatialHash:queryCircle(cx: number, cy: number, radius: number) -> integer[]`
+
+Returns ids intersecting a query circle.
+
+**Parameters**
+
+- `cx` (`number`, required): Circle center x coordinate.
+- `cy` (`number`, required): Circle center y coordinate.
+- `radius` (`number`, required): Circle radius.
+
+**Returns**: `integer[]` - Item ids.
+
+**Lua API Stub**
+
+```lua
+--- Returns ids intersecting a query circle.
+---@param cx number Circle center x coordinate.
+---@param cy number Circle center y coordinate.
+---@param radius number Circle radius.
+---@return number[] Item ids.
+function LSpatialHash:queryCircle(cx, cy, radius) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- queryCircle(cx, cy, radius) finds all entities within a circular area.
+  -- Good for explosion radius, aggro range, or area-of-effect spells.
+  local sh = lurek.math.newSpatialHash(32)
+  sh:insert("e1", 100, 100, 16, 16)
+  sh:insert("e2", 500, 500, 16, 16)
+  local hits = sh:queryCircle(110, 110, 50)
+  lurek.log.info("circle hits: " .. #hits, "math")
+end
+```
+
+### LSpatialHash:queryRect
+
+`LSpatialHash:queryRect(x: number, y: number, w: number, h: number) -> integer[]`
+
+Returns ids intersecting a query rectangle.
+
+**Parameters**
+
+- `x` (`number`, required): Query x coordinate.
+- `y` (`number`, required): Query y coordinate.
+- `w` (`number`, required): Query width.
+- `h` (`number`, required): Query height.
+
+**Returns**: `integer[]` - Item ids.
+
+**Lua API Stub**
+
+```lua
+--- Returns ids intersecting a query rectangle.
+---@param x number Query x coordinate.
+---@param y number Query y coordinate.
+---@param w number Query width.
+---@param h number Query height.
+---@return number[] Item ids.
+function LSpatialHash:queryRect(x, y, w, h) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- queryRect(x, y, w, h) finds all entities overlapping a rectangular area.
+  local sh = lurek.math.newSpatialHash(64)
+  sh:insert("player", 100, 100, 32, 32)
+  sh:insert("enemy", 128, 100, 32, 32)
+  local hits = sh:queryRect(90, 90, 170, 150)
+  lurek.log.info("rect hits: " .. #hits, "math")
+end
+```
+
+### LSpatialHash:querySegment
+
+`LSpatialHash:querySegment(x1: number, y1: number, x2: number, y2: number) -> integer[]`
+
+Returns ids intersecting a query line segment.
+
+**Parameters**
+
+- `x1` (`number`, required): Segment start x coordinate.
+- `y1` (`number`, required): Segment start y coordinate.
+- `x2` (`number`, required): Segment end x coordinate.
+- `y2` (`number`, required): Segment end y coordinate.
+
+**Returns**: `integer[]` - Item ids.
+
+**Lua API Stub**
+
+```lua
+--- Returns ids intersecting a query line segment.
+---@param x1 number Segment start x coordinate.
+---@param y1 number Segment start y coordinate.
+---@param x2 number Segment end x coordinate.
+---@param y2 number Segment end y coordinate.
+---@return number[] Item ids.
+function LSpatialHash:querySegment(x1, y1, x2, y2) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- querySegment(x1, y1, x2, y2) finds entities along a line segment.
+  -- Perfect for raycasting, bullet traces, or laser beams.
+  local sh = lurek.math.newSpatialHash(64)
+  sh:insert("wall", 200, 100, 240, 300)
+  local hits = sh:querySegment(0, 200, 400, 200)
+  lurek.log.info("segment hits: " .. #hits, "math")
+end
+```
+
+### LSpatialHash:remove
+
+`LSpatialHash:remove(id: string)`
+
+Removes an item from the spatial hash.
+
+**Parameters**
+
+- `id` (`string`, required): Item id.
+
+**Lua API Stub**
+
+```lua
+--- Removes an item from the spatial hash.
+---@param id string Item id.
+function LSpatialHash:remove(id) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- Remove a defeated enemy from the spatial index.
+  local hash = lurek.math.newSpatialHash(64)
+  hash:insert("enemy_1", 50, 50, 16, 16)
+  hash:remove("enemy_1")
+  lurek.log.debug("enemy removed from spatial hash", "spatial")
+end
+```
+
+### LSpatialHash:type
+
+`LSpatialHash:type() -> string`
+
+Returns the Lua-visible type name for this spatial hash handle.
+
+**Returns**: `string` - The string `LSpatialHash`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this spatial hash handle.
+---@return string The string `LSpatialHash`.
+function LSpatialHash:type() end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  local obj = lurek.math.newSpatialHash(64)
+  lurek.log.debug("type: " .. obj:type(), "example") -- "LSpatialHash"
+end
+```
+
+### LSpatialHash:typeOf
+
+`LSpatialHash:typeOf(name: string) -> boolean`
+
+Returns whether this spatial hash handle matches a supported type name.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to compare against `LSpatialHash` and `Object`.
+
+**Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this spatial hash handle matches a supported type name.
+---@param name string Type name to compare against `LSpatialHash` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LSpatialHash:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  local obj = lurek.math.newSpatialHash(64)
+  lurek.log.debug("typeOf LSpatialHash: " .. tostring(obj:typeOf("LSpatialHash")), "example") -- true
+end
+```
+
+### LSpatialHash:update
+
+`LSpatialHash:update(id: string, x: number, y: number, w: number, h: number)`
+
+Updates an item rectangle in the spatial hash.
+
+**Parameters**
+
+- `id` (`string`, required): Item id.
+- `x` (`number`, required): Rectangle x coordinate.
+- `y` (`number`, required): Rectangle y coordinate.
+- `w` (`number`, required): Rectangle width.
+- `h` (`number`, required): Rectangle height.
+
+**Lua API Stub**
+
+```lua
+--- Updates an item rectangle in the spatial hash.
+---@param id string Item id.
+---@param x number Rectangle x coordinate.
+---@param y number Rectangle y coordinate.
+---@param w number Rectangle width.
+---@param h number Rectangle height.
+function LSpatialHash:update(id, x, y, w, h) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- Move an entity to a new position in the spatial index.
+  local hash = lurek.math.newSpatialHash(64)
+  hash:insert("player", 100, 100, 32, 32)
+  hash:update("player", 120, 105, 32, 32)
+  lurek.log.debug("player position updated in hash", "spatial")
+end
+```
+
+### LTransform:clone
+
+`LTransform:clone() -> LTransform`
+
+Returns a copy of this transform. This method is available to Lua scripts.
+
+**Returns**: `LTransform` - Cloned transform handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns a copy of this transform. This method is available to Lua scripts.
+---@return LTransform Cloned transform handle.
+function LTransform:clone() end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- clone() creates an independent copy. Modifying the clone does not affect the original.
+  local t = lurek.math.newTransform(10, 20)
+  local dup = t:clone()
+  dup:translate(5, 0)
+end
+```
+
+### LTransform:decompose
+
+`LTransform:decompose() -> number`
+
+Decomposes this transform into component values.
+
+**Returns**: `number` - X translation.
+
+**Lua API Stub**
+
+```lua
+--- Decomposes this transform into component values.
+---@return number a X translation.
+---@return number b Y translation.
+---@return number c Rotation angle in radians.
+---@return number d X scale.
+---@return number e Y scale.
+function LTransform:decompose() end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- decompose() extracts translation, rotation, and scale from the matrix.
+  -- Returns x, y, angle, scaleX, scaleY.
+  local t = lurek.math.newTransform(100, 50, math.pi / 4, 2, 2)
+  local x, y, angle, sx, sy = t:decompose()
+  lurek.log.info("xform " .. x .. "," .. y .. " a=" .. angle, "xform")
+end
+```
+
+### LTransform:getMatrix
+
+`LTransform:getMatrix() -> number[]`
+
+Returns this transform matrix as a flat array table.
+
+**Returns**: `number[]` - Flat matrix values in row-major order.
+
+**Lua API Stub**
+
+```lua
+--- Returns this transform matrix as a flat array table.
+---@return number[] Flat matrix values in row-major order.
+function LTransform:getMatrix() end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- getMatrix() returns the underlying 3x3 matrix as a flat table.
+  -- Row-major order, useful for custom shader uniforms.
+  local t = lurek.math.newTransform(0, 0, math.pi / 2)
+  local m = t:getMatrix()
+  lurek.log.debug("matrix elems=" .. #m, "xform")
+end
+```
+
+### LTransform:inverse
+
+`LTransform:inverse() -> LTransform`
+
+Returns this transform's inverse.
+
+**Returns**: `LTransform` - Inverse transform handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns this transform's inverse.
+---@return LTransform Inverse transform handle.
+function LTransform:inverse() end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- inverse() returns a new transform that undoes this one.
+  -- Applying both in sequence gives identity.
+  local t = lurek.math.newTransform(10, 20, 0.3)
+  local inv = t:inverse()
+  lurek.log.debug("got inverse", "xform")
+end
+```
+
+### LTransform:inverseTransformPoint
+
+`LTransform:inverseTransformPoint(x: number, y: number) -> number`
+
+Transforms a point by this transform's inverse.
+
+**Parameters**
+
+- `x` (`number`, required): Input x coordinate.
+- `y` (`number`, required): Input y coordinate.
+
+**Returns**: `number` - Inverse-transformed x coordinate.
+
+**Lua API Stub**
+
+```lua
+--- Transforms a point by this transform's inverse.
+---@param x number Input x coordinate.
+---@param y number Input y coordinate.
+---@return number a Inverse-transformed x coordinate.
+---@return number b Inverse-transformed y coordinate.
+function LTransform:inverseTransformPoint(x, y) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- inverseTransformPoint: converts world-space back to local-space.
+  -- Useful for mouse picking in a rotated/scaled coordinate system.
+  local t = lurek.math.newTransform(50, 50, math.pi / 4)
+  local lx, ly = t:inverseTransformPoint(100, 50)
+  lurek.log.debug("local " .. lx .. "," .. ly, "xform")
+end
+```
+
+### LTransform:reset
+
+`LTransform:reset()`
+
+Resets this transform to identity.
+
+**Lua API Stub**
+
+```lua
+--- Resets this transform to identity.
+function LTransform:reset() end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- Clear a transform before applying fresh camera state.
+  local t = lurek.math.newTransform(50, 50, 1.0, 2, 2)
+  t:reset()
+  local wx, wy = t:transformPoint(10, 10)
+  lurek.log.debug("after reset, 10,10 -> " .. wx .. "," .. wy, "xform")
+end
+```
+
+### LTransform:rotate
+
+`LTransform:rotate(angle: number)`
+
+Applies a rotation to this transform.
+
+**Parameters**
+
+- `angle` (`number`, required): Rotation angle.
+
+**Lua API Stub**
+
+```lua
+--- Applies a rotation to this transform.
+---@param angle number Rotation angle.
+function LTransform:rotate(angle) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- Rotate a turret sprite to face a target.
+  local t = lurek.math.newTransform(100, 100)
+  t:rotate(math.pi / 3)
+  lurek.log.debug("turret rotated 60deg", "xform")
+end
+```
+
+### LTransform:scale
+
+`LTransform:scale(sx: number, [sy]: number)`
+
+Applies scale to this transform. This method is available to Lua scripts.
+
+**Parameters**
+
+- `sx` (`number`, required): X scale.
+- `sy` (`number`, optional): Y scale (defaults to `sx`).
+
+**Lua API Stub**
+
+```lua
+--- Applies scale to this transform. This method is available to Lua scripts.
+---@param sx number X scale.
+---@param sy? number Y scale (defaults to `sx`).
+function LTransform:scale(sx, sy) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- Scale a UI element for a zoom-in effect.
+  local t = lurek.math.newTransform()
+  t:scale(1.5, 1.5)
+  lurek.log.debug("scaled 150%", "xform")
+end
+```
+
+### LTransform:setTransformation
+
+`LTransform:setTransformation(x: number, y: number, [angle]: number, [sx]: number, [sy]: number, [ox]: number, [oy]: number, [kx]: number, [ky]: number)`
+
+Replaces this transform from position, rotation, scale, origin, and shear components.
+
+**Parameters**
+
+- `x` (`number`, required): X translation.
+- `y` (`number`, required): Y translation.
+- `angle` (`number`, optional): Rotation angle (default 0).
+- `sx` (`number`, optional): X scale (default 1).
+- `sy` (`number`, optional): Y scale (defaults to `sx`).
+- `ox` (`number`, optional): Origin x offset (default 0).
+- `oy` (`number`, optional): Origin y offset (default 0).
+- `kx` (`number`, optional): X shear (default 0).
+- `ky` (`number`, optional): Y shear (default 0).
+
+**Lua API Stub**
+
+```lua
+--- Replaces this transform from position, rotation, scale, origin, and shear components.
+---@param x number X translation.
+---@param y number Y translation.
+---@param angle? number Rotation angle (default 0).
+---@param sx? number X scale (default 1).
+---@param sy? number Y scale (defaults to `sx`).
+---@param ox? number Origin x offset (default 0).
+---@param oy? number Origin y offset (default 0).
+---@param kx? number X shear (default 0).
+---@param ky? number Y shear (default 0).
+function LTransform:setTransformation(x, y, angle, sx, sy, ox, oy, kx, ky) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- setTransformation replaces all components at once:
+  -- (x, y, angle, sx, sy, ox, oy, kx, ky)
+  -- ox, oy = origin offset for rotation/scale; kx, ky = shear.
+  local t = lurek.math.newTransform()
+  t:setTransformation(100, 200, 0.5, 2.0, 2.0, 16, 16, 0, 0)
+  local x, y = t:transformPoint(0, 0)
+  lurek.log.info("transformed origin: " .. x .. "," .. y, "math")
+end
+```
+
+### LTransform:shear
+
+`LTransform:shear(kx: number, ky: number)`
+
+Applies shear to this transform. This method is available to Lua scripts.
+
+**Parameters**
+
+- `kx` (`number`, required): X shear.
+- `ky` (`number`, required): Y shear.
+
+**Lua API Stub**
+
+```lua
+--- Applies shear to this transform. This method is available to Lua scripts.
+---@param kx number X shear.
+---@param ky number Y shear.
+function LTransform:shear(kx, ky) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- shear(kx, ky) applies skew. Useful for italic text or wind effects.
+  local t = lurek.math.newTransform()
+  t:shear(0.2, 0)
+  lurek.log.debug("sheared", "xform")
+end
+```
+
+### LTransform:transformPoint
+
+`LTransform:transformPoint(x: number, y: number) -> number`
+
+Transforms a point by this transform.
+
+**Parameters**
+
+- `x` (`number`, required): Input x coordinate.
+- `y` (`number`, required): Input y coordinate.
+
+**Returns**: `number` - Transformed x coordinate.
+
+**Lua API Stub**
+
+```lua
+--- Transforms a point by this transform.
+---@param x number Input x coordinate.
+---@param y number Input y coordinate.
+---@return number a Transformed x coordinate.
+---@return number b Transformed y coordinate.
+function LTransform:transformPoint(x, y) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- transformPoint(x, y) converts a local-space point to world-space.
+  -- The core operation for sprite hierarchy positioning.
+  local t = lurek.math.newTransform(100, 50, math.pi / 2)
+  local wx, wy = t:transformPoint(10, 0)
+  lurek.log.debug("world " .. wx .. "," .. wy, "xform")
+end
+```
+
+### LTransform:translate
+
+`LTransform:translate(dx: number, dy: number)`
+
+Applies a translation to this transform.
+
+**Parameters**
+
+- `dx` (`number`, required): X translation.
+- `dy` (`number`, required): Y translation.
+
+**Lua API Stub**
+
+```lua
+--- Applies a translation to this transform.
+---@param dx number X translation.
+---@param dy number Y translation.
+function LTransform:translate(dx, dy) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  -- Shift a sprite's transform by a velocity vector.
+  local t = lurek.math.newTransform()
+  t:translate(64, -32)
+  local wx, wy = t:transformPoint(0, 0)
+  lurek.log.debug("after translate origin at " .. wx .. "," .. wy, "xform")
+end
+```
+
+### LTransform:type
+
+`LTransform:type() -> string`
+
+Returns the Lua-visible type name for this transform handle.
+
+**Returns**: `string` - The string `LTransform`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this transform handle.
+---@return string The string `LTransform`.
+function LTransform:type() end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  local obj = lurek.math.newTransform()
+  lurek.log.debug("type: " .. obj:type(), "example") -- "LTransform"
+end
+```
+
+### LTransform:typeOf
+
+`LTransform:typeOf(name: string) -> boolean`
+
+Returns whether this transform handle matches a supported type name.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to compare against `LTransform` and `Object`.
+
+**Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this transform handle matches a supported type name.
+---@param name string Type name to compare against `LTransform` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LTransform:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [math.lua](../blob/main/content/examples/math.lua):
+
+```lua
+do
+  local obj = lurek.math.newTransform()
+  lurek.log.debug("typeOf LTransform: " .. tostring(obj:typeOf("LTransform")), "example") -- true
+end
+```
+
+### LTween:addValue
+
+`LTween:addValue(start: number, target: number) -> integer`
 
 Adds a value track to this tween. This method is available to Lua scripts.
 
 **Parameters**
 
-- `start` (`number`, required) - Start value.
-- `target` (`number`, required) - Target value.
+- `start` (`number`, required): Start value.
+- `target` (`number`, required): Target value.
 
 **Returns**: `integer` - One-based index of the new value track.
+
+**Lua API Stub**
+
+```lua
+--- Adds a value track to this tween. This method is available to Lua scripts.
+---@param start number Start value.
+---@param target number Target value.
+---@return number One-based index of the new value track.
+function LTween:addValue(start, target) end
+```
 
 #### Example
 
@@ -5482,11 +6995,21 @@ do
 end
 ```
 
-### `LTween:getAllValues() -> number[]`
+### LTween:getAllValues
+
+`LTween:getAllValues() -> number[]`
 
 Returns all current tween values. This method is available to Lua scripts.
 
 **Returns**: `number[]` - Numeric tween values.
+
+**Lua API Stub**
+
+```lua
+--- Returns all current tween values. This method is available to Lua scripts.
+---@return number[] Numeric tween values.
+function LTween:getAllValues() end
+```
 
 #### Example
 
@@ -5502,11 +7025,21 @@ do
 end
 ```
 
-### `LTween:getClock() -> number`
+### LTween:getClock
+
+`LTween:getClock() -> number`
 
 Returns this tween clock time. This method is available to Lua scripts.
 
 **Returns**: `number` - Current time in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Returns this tween clock time. This method is available to Lua scripts.
+---@return number Current time in seconds.
+function LTween:getClock() end
+```
 
 #### Example
 
@@ -5521,11 +7054,21 @@ do
 end
 ```
 
-### `LTween:getDuration() -> number`
+### LTween:getDuration
+
+`LTween:getDuration() -> number`
 
 Returns this tween duration. This method is available to Lua scripts.
 
 **Returns**: `number` - Duration in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Returns the total duration of this tween in seconds.
+---@return number Total duration.
+function LTween:getDuration() end
+```
 
 #### Example
 
@@ -5540,11 +7083,21 @@ do
 end
 ```
 
-### `LTween:getEasingName() -> string`
+### LTween:getEasingName
+
+`LTween:getEasingName() -> string`
 
 Returns this tween easing function name.
 
 **Returns**: `string` - Easing function name.
+
+**Lua API Stub**
+
+```lua
+--- Returns this tween easing function name.
+---@return string Easing function name.
+function LTween:getEasingName() end
+```
 
 #### Example
 
@@ -5558,11 +7111,21 @@ do
 end
 ```
 
-### `LTween:getTime() -> number`
+### LTween:getTime
+
+`LTween:getTime() -> number`
 
 Returns this tween clock time. This method is available to Lua scripts.
 
 **Returns**: `number` - Current time in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Returns this tween clock time. This method is available to Lua scripts.
+---@return number Current time in seconds.
+function LTween:getTime() end
+```
 
 #### Example
 
@@ -5577,15 +7140,26 @@ do
 end
 ```
 
-### `LTween:getValue([index]: integer) -> number`
+### LTween:getValue
+
+`LTween:getValue([index]: integer) -> number`
 
 Returns one tween value by one-based index or all values when no index is provided.
 
 **Parameters**
 
-- `index` (`integer`, optional) - One-based value index; omit to return all values as a table.
+- `index` (`integer`, optional): One-based value index; omit to return all values as a table.
 
 **Returns**: `number` - Tween value at the given index, or a table of all values when index is omitted.
+
+**Lua API Stub**
+
+```lua
+--- Returns one tween value by one-based index or all values when no index is provided.
+---@param index? number One-based value index; omit to return all values as a table.
+---@return number Tween value at the given index, or a table of all values when index is omitted.
+function LTween:getValue(index) end
+```
 
 #### Example
 
@@ -5601,11 +7175,21 @@ do
 end
 ```
 
-### `LTween:getValueCount() -> integer`
+### LTween:getValueCount
+
+`LTween:getValueCount() -> integer`
 
 Returns the number of values animated by this tween.
 
 **Returns**: `integer` - Tween value count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of values animated by this tween.
+---@return number Tween value count.
+function LTween:getValueCount() end
+```
 
 #### Example
 
@@ -5620,11 +7204,21 @@ do
 end
 ```
 
-### `LTween:isComplete() -> boolean`
+### LTween:isComplete
+
+`LTween:isComplete() -> boolean`
 
 Returns whether this tween is complete.
 
 **Returns**: `boolean` - True when complete.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this tween is complete.
+---@return boolean True when complete.
+function LTween:isComplete() end
+```
 
 #### Example
 
@@ -5640,9 +7234,18 @@ do
 end
 ```
 
-### `LTween:reset()`
+### LTween:reset
+
+`LTween:reset()`
 
 Resets the tween clock to the beginning.
+
+**Lua API Stub**
+
+```lua
+--- Resets the tween clock to the beginning.
+function LTween:reset() end
+```
 
 #### Example
 
@@ -5657,13 +7260,23 @@ do
 end
 ```
 
-### `LTween:set(t: number)`
+### LTween:set
+
+`LTween:set(t: number)`
 
 Sets this tween clock time. This method is available to Lua scripts.
 
 **Parameters**
 
-- `t` (`number`, required) - New time in seconds.
+- `t` (`number`, required): New time in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Sets this tween clock time. This method is available to Lua scripts.
+---@param t number New time in seconds.
+function LTween:set(t) end
+```
 
 #### Example
 
@@ -5678,13 +7291,23 @@ do
 end
 ```
 
-### `LTween:setTime(t: number)`
+### LTween:setTime
+
+`LTween:setTime(t: number)`
 
 Sets this tween clock time. This method is available to Lua scripts.
 
 **Parameters**
 
-- `t` (`number`, required) - New time in seconds.
+- `t` (`number`, required): New time in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Sets this tween clock time. This method is available to Lua scripts.
+---@param t number New time in seconds.
+function LTween:setTime(t) end
+```
 
 #### Example
 
@@ -5699,11 +7322,21 @@ do
 end
 ```
 
-### `LTween:type() -> string`
+### LTween:type
+
+`LTween:type() -> string`
 
 Returns the Lua-visible type name for this tween handle.
 
 **Returns**: `string` - The string `LTween`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the type name of this object.
+---@return string Always `"LTween"`.
+function LTween:type() end
+```
 
 #### Example
 
@@ -5717,15 +7350,26 @@ do
 end
 ```
 
-### `LTween:typeOf(name: string) -> boolean`
+### LTween:typeOf
+
+`LTween:typeOf(name: string) -> boolean`
 
 Returns whether this tween handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `LTween` and `Object`.
+- `name` (`string`, required): Type name to compare against `LTween` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Checks whether this object matches the given type name.
+---@param name string Type name to check against (`"LTween"` or `"Object"`).
+---@return boolean `true` if the name matches.
+function LTween:typeOf(name) end
+```
 
 #### Example
 
@@ -5739,15 +7383,26 @@ do
 end
 ```
 
-### `LTween:update(dt: number) -> boolean`
+### LTween:update
+
+`LTween:update(dt: number) -> boolean`
 
 Advances the tween clock and returns whether it is complete.
 
 **Parameters**
 
-- `dt` (`number`, required) - Delta time in seconds.
+- `dt` (`number`, required): Delta time in seconds.
 
 **Returns**: `boolean` - True when the tween is complete.
+
+**Lua API Stub**
+
+```lua
+--- Advances the tween clock and returns whether it is complete.
+---@param dt number Delta time in seconds.
+---@return boolean True when the tween is complete.
+function LTween:update(dt) end
+```
 
 #### Example
 
@@ -5763,28 +7418,21 @@ do
 end
 ```
 
-### `LVec2`
+### LVec2:angle
 
-Represents the Lua-visible LVec2 object exposed by this module.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- Vec2 (capital V) is an alias for vec2. Both create the same LVec2 object.
-  local v = lurek.math.Vec2(10, 20)
-  local n = v:normalize()
-  lurek.log.debug("normalised x=" .. n.x, "math")
-end
-```
-
-### `LVec2:angle() -> number`
+`LVec2:angle() -> number`
 
 Returns this vector angle. This method is available to Lua scripts.
 
 **Returns**: `number` - Angle in radians.
+
+**Lua API Stub**
+
+```lua
+--- Returns this vector angle. This method is available to Lua scripts.
+---@return number Angle in radians.
+function LVec2:angle() end
+```
 
 #### Example
 
@@ -5798,15 +7446,26 @@ do
 end
 ```
 
-### `LVec2:cross(other: LVec2) -> number`
+### LVec2:cross
+
+`LVec2:cross(other: LVec2) -> number`
 
 Returns the scalar 2D cross product with another vector.
 
 **Parameters**
 
-- `other` (`LVec2`, required) - Other vector handle.
+- `other` (`LVec2`, required): Other vector handle.
 
 **Returns**: `number` - Cross product.
+
+**Lua API Stub**
+
+```lua
+--- Returns the scalar 2D cross product with another vector.
+---@param other LVec2 Other vector handle.
+---@return number Cross product.
+function LVec2:cross(other) end
+```
 
 #### Example
 
@@ -5821,15 +7480,26 @@ do
 end
 ```
 
-### `LVec2:distance(other: LVec2) -> number`
+### LVec2:distance
+
+`LVec2:distance(other: LVec2) -> number`
 
 Returns distance to another vector.
 
 **Parameters**
 
-- `other` (`LVec2`, required) - Other vector handle.
+- `other` (`LVec2`, required): Other vector handle.
 
 **Returns**: `number` - Distance.
+
+**Lua API Stub**
+
+```lua
+--- Returns distance to another vector.
+---@param other LVec2 Other vector handle.
+---@return number Distance.
+function LVec2:distance(other) end
+```
 
 #### Example
 
@@ -5844,15 +7514,26 @@ do
 end
 ```
 
-### `LVec2:dot(other: LVec2) -> number`
+### LVec2:dot
+
+`LVec2:dot(other: LVec2) -> number`
 
 Returns the dot product with another vector.
 
 **Parameters**
 
-- `other` (`LVec2`, required) - Other vector handle.
+- `other` (`LVec2`, required): Other vector handle.
 
 **Returns**: `number` - Dot product.
+
+**Lua API Stub**
+
+```lua
+--- Returns the dot product with another vector.
+---@param other LVec2 Other vector handle.
+---@return number Dot product.
+function LVec2:dot(other) end
+```
 
 #### Example
 
@@ -5867,16 +7548,27 @@ do
 end
 ```
 
-### `LVec2:fromAngle(self: LVec2, radians: number) -> LVec2`
+### LVec2:fromAngle
+
+`LVec2:fromAngle(self: LVec2, radians: number) -> LVec2`
 
 Creates a unit vector from an angle.
 
 **Parameters**
 
-- `self` (`LVec2`, required) - The vector instance (ignored; static constructor).
-- `radians` (`number`, required) - Angle in radians.
+- `self` (`LVec2`, required): The vector instance (ignored; static constructor).
+- `radians` (`number`, required): Angle in radians.
 
 **Returns**: `LVec2` - New vector handle.
+
+**Lua API Stub**
+
+```lua
+--- Creates a unit vector from an angle.
+---@param radians number Angle in radians.
+---@return LVec2 New vector handle.
+function LVec2:fromAngle(radians) end
+```
 
 #### Example
 
@@ -5892,11 +7584,21 @@ do
 end
 ```
 
-### `LVec2:length() -> number`
+### LVec2:length
+
+`LVec2:length() -> number`
 
 Returns this vector length. This method is available to Lua scripts.
 
 **Returns**: `number` - Vector length.
+
+**Lua API Stub**
+
+```lua
+--- Returns this vector length. This method is available to Lua scripts.
+---@return number Vector length.
+function LVec2:length() end
+```
 
 #### Example
 
@@ -5910,11 +7612,21 @@ do
 end
 ```
 
-### `LVec2:lengthSquared() -> number`
+### LVec2:lengthSquared
+
+`LVec2:lengthSquared() -> number`
 
 Returns this vector squared length.
 
 **Returns**: `number` - Squared vector length.
+
+**Lua API Stub**
+
+```lua
+--- Returns this vector squared length.
+---@return number Squared vector length.
+function LVec2:lengthSquared() end
+```
 
 #### Example
 
@@ -5930,16 +7642,28 @@ do
 end
 ```
 
-### `LVec2:lerp(other: LVec2, t: number) -> LVec2`
+### LVec2:lerp
+
+`LVec2:lerp(other: LVec2, t: number) -> LVec2`
 
 Returns a vector interpolated toward another vector.
 
 **Parameters**
 
-- `other` (`LVec2`, required) - Target vector handle.
-- `t` (`number`, required) - Interpolation factor.
+- `other` (`LVec2`, required): Target vector handle.
+- `t` (`number`, required): Interpolation factor.
 
 **Returns**: `LVec2` - Interpolated vector handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns a vector interpolated toward another vector.
+---@param other LVec2 Target vector handle.
+---@param t number Interpolation factor.
+---@return LVec2 Interpolated vector handle.
+function LVec2:lerp(other, t) end
+```
 
 #### Example
 
@@ -5955,11 +7679,21 @@ do
 end
 ```
 
-### `LVec2:normalize() -> LVec2`
+### LVec2:normalize
+
+`LVec2:normalize() -> LVec2`
 
 Returns a normalized copy of this vector.
 
 **Returns**: `LVec2` - Normalized vector handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns a normalized copy of this vector.
+---@return LVec2 Normalized vector handle.
+function LVec2:normalize() end
+```
 
 #### Example
 
@@ -5974,11 +7708,21 @@ do
 end
 ```
 
-### `LVec2:normalized() -> LVec2`
+### LVec2:normalized
+
+`LVec2:normalized() -> LVec2`
 
 Returns a normalized copy of this vector.
 
 **Returns**: `LVec2` - Normalized vector handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns a normalized copy of this vector.
+---@return LVec2 Normalized vector handle.
+function LVec2:normalized() end
+```
 
 #### Example
 
@@ -5992,11 +7736,21 @@ do
 end
 ```
 
-### `LVec2:perpendicular() -> LVec2`
+### LVec2:perpendicular
+
+`LVec2:perpendicular() -> LVec2`
 
 Returns a perpendicular vector. This method is available to Lua scripts.
 
 **Returns**: `LVec2` - Perpendicular vector handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns a perpendicular vector. This method is available to Lua scripts.
+---@return LVec2 Perpendicular vector handle.
+function LVec2:perpendicular() end
+```
 
 #### Example
 
@@ -6011,15 +7765,26 @@ do
 end
 ```
 
-### `LVec2:reflect(normal: LVec2) -> LVec2`
+### LVec2:reflect
+
+`LVec2:reflect(normal: LVec2) -> LVec2`
 
 Returns this vector reflected around a normal vector.
 
 **Parameters**
 
-- `normal` (`LVec2`, required) - Normal vector handle.
+- `normal` (`LVec2`, required): Normal vector handle.
 
 **Returns**: `LVec2` - Reflected vector handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns this vector reflected around a normal vector.
+---@param normal LVec2 Normal vector handle.
+---@return LVec2 Reflected vector handle.
+function LVec2:reflect(normal) end
+```
 
 #### Example
 
@@ -6036,15 +7801,26 @@ do
 end
 ```
 
-### `LVec2:rotate(angle: number) -> LVec2`
+### LVec2:rotate
+
+`LVec2:rotate(angle: number) -> LVec2`
 
 Returns this vector rotated by an angle.
 
 **Parameters**
 
-- `angle` (`number`, required) - Rotation angle in radians.
+- `angle` (`number`, required): Rotation angle in radians.
 
 **Returns**: `LVec2` - Rotated vector handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns this vector rotated by an angle.
+---@param angle number Rotation angle in radians.
+---@return LVec2 Rotated vector handle.
+function LVec2:rotate(angle) end
+```
 
 #### Example
 
@@ -6059,11 +7835,21 @@ do
 end
 ```
 
-### `LVec2:type() -> string`
+### LVec2:type
+
+`LVec2:type() -> string`
 
 Returns the Lua-visible type name for this vector handle.
 
 **Returns**: `string` - The string `LVec2`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this vector handle.
+---@return string The string `LVec2`.
+function LVec2:type() end
+```
 
 #### Example
 
@@ -6076,15 +7862,26 @@ do
 end
 ```
 
-### `LVec2:typeOf(name: string) -> boolean`
+### LVec2:typeOf
+
+`LVec2:typeOf(name: string) -> boolean`
 
 Returns whether this vector handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `LVec2` and `Object`.
+- `name` (`string`, required): Type name to compare against `LVec2` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this vector handle matches a supported type name.
+---@param name string Type name to compare against `LVec2` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LVec2:typeOf(name) end
+```
 
 #### Example
 
@@ -6097,11 +7894,21 @@ do
 end
 ```
 
-### `LVec2:x() -> number`
+### LVec2:x
+
+`LVec2:x() -> number`
 
 Returns this vector x component. This method is available to Lua scripts.
 
 **Returns**: `number` - X component.
+
+**Lua API Stub**
+
+```lua
+--- Returns this vector x component. This method is available to Lua scripts.
+---@return number X component.
+function LVec2:x() end
+```
 
 #### Example
 
@@ -6115,11 +7922,21 @@ do
 end
 ```
 
-### `LVec2:y() -> number`
+### LVec2:y
+
+`LVec2:y() -> number`
 
 Returns this vector y component. This method is available to Lua scripts.
 
 **Returns**: `number` - Y component.
+
+**Lua API Stub**
+
+```lua
+--- Returns this vector y component. This method is available to Lua scripts.
+---@return number Y component.
+function LVec2:y() end
+```
 
 #### Example
 
@@ -6133,33 +7950,26 @@ do
 end
 ```
 
-### `LVec3`
+### LVec3:add
 
-Represents the Lua-visible LVec3 object exposed by this module.
-
-#### Example
-
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
-
-```lua
-do
-  -- Vec3 (capital V) is an alias for vec3.
-  ---@type LVec3
-  local p = lurek.math.Vec3(0, 0, 1)
-  local s = p:scale(5)
-  lurek.log.debug("scaled z=" .. s.z, "math")
-end
-```
-
-### `LVec3:add(other: LVec3) -> LVec3`
+`LVec3:add(other: LVec3) -> LVec3`
 
 Returns the sum with another vector.
 
 **Parameters**
 
-- `other` (`LVec3`, required) - Other vector handle.
+- `other` (`LVec3`, required): Other vector handle.
 
 **Returns**: `LVec3` - Sum vector handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns the sum with another vector.
+---@param other LVec3 Other vector handle.
+---@return LVec3 Sum vector handle.
+function LVec3:add(other) end
+```
 
 #### Example
 
@@ -6177,15 +7987,26 @@ do
 end
 ```
 
-### `LVec3:cross(other: LVec3) -> LVec3`
+### LVec3:cross
+
+`LVec3:cross(other: LVec3) -> LVec3`
 
 Returns the 3D cross product with another vector.
 
 **Parameters**
 
-- `other` (`LVec3`, required) - Other vector handle.
+- `other` (`LVec3`, required): Other vector handle.
 
 **Returns**: `LVec3` - Cross product vector handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns the 3D cross product with another vector.
+---@param other LVec3 Other vector handle.
+---@return LVec3 Cross product vector handle.
+function LVec3:cross(other) end
+```
 
 #### Example
 
@@ -6204,15 +8025,26 @@ do
 end
 ```
 
-### `LVec3:distance(other: LVec3) -> number`
+### LVec3:distance
+
+`LVec3:distance(other: LVec3) -> number`
 
 Returns distance to another vector.
 
 **Parameters**
 
-- `other` (`LVec3`, required) - Other vector handle.
+- `other` (`LVec3`, required): Other vector handle.
 
 **Returns**: `number` - Distance.
+
+**Lua API Stub**
+
+```lua
+--- Returns distance to another vector.
+---@param other LVec3 Other vector handle.
+---@return number Distance.
+function LVec3:distance(other) end
+```
 
 #### Example
 
@@ -6228,15 +8060,26 @@ do
 end
 ```
 
-### `LVec3:dot(other: LVec3) -> number`
+### LVec3:dot
+
+`LVec3:dot(other: LVec3) -> number`
 
 Returns the dot product with another vector.
 
 **Parameters**
 
-- `other` (`LVec3`, required) - Other vector handle.
+- `other` (`LVec3`, required): Other vector handle.
 
 **Returns**: `number` - Dot product.
+
+**Lua API Stub**
+
+```lua
+--- Returns the dot product with another vector.
+---@param other LVec3 Other vector handle.
+---@return number Dot product.
+function LVec3:dot(other) end
+```
 
 #### Example
 
@@ -6253,11 +8096,21 @@ do
 end
 ```
 
-### `LVec3:length() -> number`
+### LVec3:length
+
+`LVec3:length() -> number`
 
 Returns this vector length. This method is available to Lua scripts.
 
 **Returns**: `number` - Vector length.
+
+**Lua API Stub**
+
+```lua
+--- Returns this vector length. This method is available to Lua scripts.
+---@return number Vector length.
+function LVec3:length() end
+```
 
 #### Example
 
@@ -6272,11 +8125,21 @@ do
 end
 ```
 
-### `LVec3:lengthSquared() -> number`
+### LVec3:lengthSquared
+
+`LVec3:lengthSquared() -> number`
 
 Returns this vector squared length.
 
 **Returns**: `number` - Squared vector length.
+
+**Lua API Stub**
+
+```lua
+--- Returns this vector squared length.
+---@return number Squared vector length.
+function LVec3:lengthSquared() end
+```
 
 #### Example
 
@@ -6290,16 +8153,28 @@ do
 end
 ```
 
-### `LVec3:lerp(other: LVec3, t: number) -> LVec3`
+### LVec3:lerp
+
+`LVec3:lerp(other: LVec3, t: number) -> LVec3`
 
 Returns a vector interpolated toward another vector.
 
 **Parameters**
 
-- `other` (`LVec3`, required) - Target vector handle.
-- `t` (`number`, required) - Interpolation factor.
+- `other` (`LVec3`, required): Target vector handle.
+- `t` (`number`, required): Interpolation factor.
 
 **Returns**: `LVec3` - Interpolated vector handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns a vector interpolated toward another vector.
+---@param other LVec3 Target vector handle.
+---@param t number Interpolation factor.
+---@return LVec3 Interpolated vector handle.
+function LVec3:lerp(other, t) end
+```
 
 #### Example
 
@@ -6317,11 +8192,21 @@ do
 end
 ```
 
-### `LVec3:normalize() -> LVec3`
+### LVec3:normalize
+
+`LVec3:normalize() -> LVec3`
 
 Returns a normalized copy of this vector.
 
 **Returns**: `LVec3` - Normalized vector handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns a normalized copy of this vector.
+---@return LVec3 Normalized vector handle.
+function LVec3:normalize() end
+```
 
 #### Example
 
@@ -6336,15 +8221,26 @@ do
 end
 ```
 
-### `LVec3:scale(s: number) -> LVec3`
+### LVec3:scale
+
+`LVec3:scale(s: number) -> LVec3`
 
 Returns this vector multiplied by a scalar.
 
 **Parameters**
 
-- `s` (`number`, required) - Scale factor.
+- `s` (`number`, required): Scale factor.
 
 **Returns**: `LVec3` - Scaled vector handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns this vector multiplied by a scalar.
+---@param s number Scale factor.
+---@return LVec3 Scaled vector handle.
+function LVec3:scale(s) end
+```
 
 #### Example
 
@@ -6360,16 +8256,27 @@ do
 end
 ```
 
-### `LVec3:splat(self: LVec3, v: number) -> LVec3`
+### LVec3:splat
+
+`LVec3:splat(self: LVec3, v: number) -> LVec3`
 
 Creates a vector with all components set to one value.
 
 **Parameters**
 
-- `self` (`LVec3`, required) - The vector instance (ignored; static constructor).
-- `v` (`number`, required) - Component value.
+- `self` (`LVec3`, required): The vector instance (ignored; static constructor).
+- `v` (`number`, required): Component value.
 
 **Returns**: `LVec3` - New vector handle.
+
+**Lua API Stub**
+
+```lua
+--- Creates a vector with all components set to one value.
+---@param v number Component value.
+---@return LVec3 New vector handle.
+function LVec3:splat(v) end
+```
 
 #### Example
 
@@ -6384,15 +8291,26 @@ do
 end
 ```
 
-### `LVec3:sub(other: LVec3) -> LVec3`
+### LVec3:sub
+
+`LVec3:sub(other: LVec3) -> LVec3`
 
 Returns the difference from another vector.
 
 **Parameters**
 
-- `other` (`LVec3`, required) - Other vector handle.
+- `other` (`LVec3`, required): Other vector handle.
 
 **Returns**: `LVec3` - Difference vector handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns the difference from another vector.
+---@param other LVec3 Other vector handle.
+---@return LVec3 Difference vector handle.
+function LVec3:sub(other) end
+```
 
 #### Example
 
@@ -6410,11 +8328,21 @@ do
 end
 ```
 
-### `LVec3:type() -> string`
+### LVec3:type
+
+`LVec3:type() -> string`
 
 Returns the Lua-visible type name for this vector handle.
 
 **Returns**: `string` - The string `LVec3`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this vector handle.
+---@return string The string `LVec3`.
+function LVec3:type() end
+```
 
 #### Example
 
@@ -6427,15 +8355,26 @@ do
 end
 ```
 
-### `LVec3:typeOf(name: string) -> boolean`
+### LVec3:typeOf
+
+`LVec3:typeOf(name: string) -> boolean`
 
 Returns whether this vector handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `LVec3` and `Object`.
+- `name` (`string`, required): Type name to compare against `LVec3` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this vector handle matches a supported type name.
+---@param name string Type name to compare against `LVec3` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LVec3:typeOf(name) end
+```
 
 #### Example
 
@@ -6449,24 +8388,30 @@ end
 ```
 
 
-## Examples
+[⬆ back to top](#table-of-contents)
+
+## 💡 Examples
 
 - [math.lua](../blob/main/content/examples/math.lua) - Vectors, noise, RNG
 
-## Reference Games
+[⬆ back to top](#table-of-contents)
+
+## 🎮 Reference Games
 
 - [cannon_fodder](../tree/main/content/games/action/cannon_fodder) (action)
 - [star_voyage](../tree/main/content/games/rpg/star_voyage) (rpg)
 - [settlers_rise](../tree/main/content/games/simulation/settlers_rise) (simulation)
 - [worms_artillery](../tree/main/content/games/strategy/worms_artillery) (strategy)
 
-## Related Modules
+[⬆ back to top](#table-of-contents)
 
-- Previous: [[lua_api|Module-lua_api]]
-- Next: [[minimap|Module-minimap]]
-- [[compute|Module-compute]] - Dense N-D numerical array library exposed as lurek.compute.*; CPU-only matrix / signal workloads.
-- [[data|Module-data]] - Binary data toolkit: byte buffers, compression, hashing, encoding, structured pack / unpack.
-- [[dataframe|Module-dataframe]] - In-memory column-major tabular data with lightweight SQL-style queries (lurek.dataframe.*).
-- [[globe|Module-globe]] - XCOM-style Geoscape province sphere: topology, orbit camera, fog-of-war, markers, day/night.
-- [[graph|Module-graph]] - Directed flow-simulation graph: typed items flow through nodes, accumulate, decay, react.
-- [[log|Module-log]] - Lua-accessible logging facade over the Rust log crate, controlled via RUST_LOG.
+## 🔗 Related Modules
+
+- Previous: [lua_api](Module-lua_api)
+- Next: [minimap](Module-minimap)
+- [compute](Module-compute) - Dense N-D numerical array library exposed as lurek.compute.*; CPU-only matrix / signal workloads.
+- [data](Module-data) - Binary data toolkit: byte buffers, compression, hashing, encoding, structured pack / unpack.
+- [dataframe](Module-dataframe) - In-memory column-major tabular data with lightweight SQL-style queries (lurek.dataframe.*).
+- [globe](Module-globe) - XCOM-style Geoscape province sphere: topology, orbit camera, fog-of-war, markers, day/night.
+- [graph](Module-graph) - Directed flow-simulation graph: typed items flow through nodes, accumulate, decay, react.
+- [log](Module-log) - Lua-accessible logging facade over the Rust log crate, controlled via RUST_LOG.

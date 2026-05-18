@@ -4,459 +4,408 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
-- [Purpose](#purpose)
-- [Summary](#summary)
-- [Minimal Module Example](#minimal-module-example)
-- [Key Types](#key-types)
-- [API Overview](#api-overview)
-- [Module Functions](#module-functions)
-  - [lurek.ai.newAction(callback: function) -> LBTNode](#lurekainewactioncallback-function-lbtnode)
-  - [lurek.ai.newAIDirector() -> LAIDirector](#lurekainewaidirector-laidirector)
-  - [lurek.ai.newAILod() -> LAILod](#lurekainewailod-lailod)
-  - [lurek.ai.newBandit(arm_count: integer, strategy: string, epsilon: number, seed: integer) -> LBandit](#lurekainewbanditarmcount-integer-strategy-string-epsilon-number-seed-integer-lbandit)
-  - [lurek.ai.newBehaviorTree() -> LBehaviorTree](#lurekainewbehaviortree-lbehaviortree)
-  - [lurek.ai.newBlackboard() -> LAIBlackboard](#lurekainewblackboard-laiblackboard)
-  - [lurek.ai.newCommandQueue() -> LCommandQueue](#lurekainewcommandqueue-lcommandqueue)
-  - [lurek.ai.newCondition(callback: function) -> LBTNode](#lurekainewconditioncallback-function-lbtnode)
-  - [lurek.ai.newContextSteering(slots: integer) -> LContextSteering](#lurekainewcontextsteeringslots-integer-lcontextsteering)
-  - [lurek.ai.newDialogueAI() -> LDialogueAI](#lurekainewdialogueai-ldialogueai)
-  - [lurek.ai.newEmotionModel() -> LEmotionModel](#lurekainewemotionmodel-lemotionmodel)
-  - [lurek.ai.newGeneticAlgorithm(pop_size: integer, gene_count: integer, seed: integer) -> LGeneticAlgorithm](#lurekainewgeneticalgorithmpopsize-integer-genecount-integer-seed-integer-lgeneticalgorithm)
-  - [lurek.ai.newGOAPPlanner() -> LGOAPPlanner](#lurekainewgoapplanner-lgoapplanner)
-  - [lurek.ai.newGuard(predicate: function, child: LBTNode) -> LBTNode](#lurekainewguardpredicate-function-child-lbtnode-lbtnode)
-  - [lurek.ai.newHTNDomain() -> LHTNDomain](#lurekainewhtndomain-lhtndomain)
-  - [lurek.ai.newInfluenceMap(w: integer, h: integer, cs: number) -> LInfluenceMap](#lurekainewinfluencemapw-integer-h-integer-cs-number-linfluencemap)
-  - [lurek.ai.newInverter() -> LBTNode](#lurekainewinverter-lbtnode)
-  - [lurek.ai.newMCTSEngine(iters: integer, uct_c: number, depth: integer, seed: integer) -> LMCTSEngine](#lurekainewmctsengineiters-integer-uctc-number-depth-integer-seed-integer-lmctsengine)
-  - [lurek.ai.newNeedSystem() -> LNeedSystem](#lurekainewneedsystem-lneedsystem)
-  - [lurek.ai.newNeuralNet() -> LNeuralNet](#lurekainewneuralnet-lneuralnet)
-  - [lurek.ai.newNeuroevolution(layer_spec: table, pop_size: integer, seed: integer) -> LNeuroevolution](#lurekainewneuroevolutionlayerspec-table-popsize-integer-seed-integer-lneuroevolution)
-  - [lurek.ai.newORCASolver(time_horizon: number) -> LORCASolver](#lurekaineworcasolvertimehorizon-number-lorcasolver)
-  - [lurek.ai.newParallel([sp]: string, [fp]: string) -> LBTNode](#lurekainewparallelsp-string-fp-string-lbtnode)
-  - [lurek.ai.newQLearner(sc: integer, ac: integer) -> LQLearner](#lurekainewqlearnersc-integer-ac-integer-lqlearner)
-  - [lurek.ai.newRepeater([count]: integer) -> LBTNode](#lurekainewrepeatercount-integer-lbtnode)
-  - [lurek.ai.newSelector() -> LBTNode](#lurekainewselector-lbtnode)
-  - [lurek.ai.newSequence() -> LBTNode](#lurekainewsequence-lbtnode)
-  - [lurek.ai.newSquad(name: string) -> LSquad](#lurekainewsquadname-string-lsquad)
-  - [lurek.ai.newStateMachine() -> LStateMachine](#lurekainewstatemachine-lstatemachine)
-  - [lurek.ai.newSteeringManager() -> LSteeringManager](#lurekainewsteeringmanager-lsteeringmanager)
-  - [lurek.ai.newStimulusWorld() -> LStimulusWorld](#lurekainewstimulusworld-lstimulusworld)
-  - [lurek.ai.newStrategyAI(update_interval: number) -> LStrategyAI](#lurekainewstrategyaiupdateinterval-number-lstrategyai)
-  - [lurek.ai.newSucceeder() -> LBTNode](#lurekainewsucceeder-lbtnode)
-  - [lurek.ai.newTraitProfile() -> LTraitProfile](#lurekainewtraitprofile-ltraitprofile)
-  - [lurek.ai.newUtilityAI() -> LUtilityAI](#lurekainewutilityai-lutilityai)
-  - [lurek.ai.newWorld() -> LAIWorld](#lurekainewworld-laiworld)
-- [Types and Methods](#types-and-methods)
+- [🎯 Purpose](#purpose)
+- [📋 Summary](#summary)
+- [🧩 Key Types](#key-types)
+- [📖 API Overview](#api-overview)
+- [⚙️ Module Functions](#module-functions)
+  - [lurek.ai.newAction](#lurekainewaction)
+  - [lurek.ai.newAIDirector](#lurekainewaidirector)
+  - [lurek.ai.newAILod](#lurekainewailod)
+  - [lurek.ai.newBandit](#lurekainewbandit)
+  - [lurek.ai.newBehaviorTree](#lurekainewbehaviortree)
+  - [lurek.ai.newBlackboard](#lurekainewblackboard)
+  - [lurek.ai.newCommandQueue](#lurekainewcommandqueue)
+  - [lurek.ai.newCondition](#lurekainewcondition)
+  - [lurek.ai.newContextSteering](#lurekainewcontextsteering)
+  - [lurek.ai.newDialogueAI](#lurekainewdialogueai)
+  - [lurek.ai.newEmotionModel](#lurekainewemotionmodel)
+  - [lurek.ai.newGeneticAlgorithm](#lurekainewgeneticalgorithm)
+  - [lurek.ai.newGOAPPlanner](#lurekainewgoapplanner)
+  - [lurek.ai.newGuard](#lurekainewguard)
+  - [lurek.ai.newHTNDomain](#lurekainewhtndomain)
+  - [lurek.ai.newInfluenceMap](#lurekainewinfluencemap)
+  - [lurek.ai.newInverter](#lurekainewinverter)
+  - [lurek.ai.newMCTSEngine](#lurekainewmctsengine)
+  - [lurek.ai.newNeedSystem](#lurekainewneedsystem)
+  - [lurek.ai.newNeuralNet](#lurekainewneuralnet)
+  - [lurek.ai.newNeuroevolution](#lurekainewneuroevolution)
+  - [lurek.ai.newORCASolver](#lurekaineworcasolver)
+  - [lurek.ai.newParallel](#lurekainewparallel)
+  - [lurek.ai.newQLearner](#lurekainewqlearner)
+  - [lurek.ai.newRepeater](#lurekainewrepeater)
+  - [lurek.ai.newSelector](#lurekainewselector)
+  - [lurek.ai.newSequence](#lurekainewsequence)
+  - [lurek.ai.newSquad](#lurekainewsquad)
+  - [lurek.ai.newStateMachine](#lurekainewstatemachine)
+  - [lurek.ai.newSteeringManager](#lurekainewsteeringmanager)
+  - [lurek.ai.newStimulusWorld](#lurekainewstimulusworld)
+  - [lurek.ai.newStrategyAI](#lurekainewstrategyai)
+  - [lurek.ai.newSucceeder](#lurekainewsucceeder)
+  - [lurek.ai.newTraitProfile](#lurekainewtraitprofile)
+  - [lurek.ai.newUtilityAI](#lurekainewutilityai)
+  - [lurek.ai.newWorld](#lurekainewworld)
+- [🔷 Module Types](#module-types)
   - [LAgent](#lagent)
-  - [LAgent:addTag(tag: string)](#lagentaddtagtag-string)
-  - [LAgent:getBlackboard() -> LAIBlackboard](#lagentgetblackboard-laiblackboard)
-  - [LAgent:getDecisionModel() -> string](#lagentgetdecisionmodel-string)
-  - [LAgent:getMaxForce() -> number](#lagentgetmaxforce-number)
-  - [LAgent:getMaxSpeed() -> number](#lagentgetmaxspeed-number)
-  - [LAgent:getName() -> string](#lagentgetname-string)
-  - [LAgent:getPosition() -> number, number](#lagentgetposition-number-number)
-  - [LAgent:getPriority() -> integer](#lagentgetpriority-integer)
-  - [LAgent:getVelocity() -> number, number](#lagentgetvelocity-number-number)
-  - [LAgent:hasTag(tag: string) -> boolean](#lagenthastagtag-string-boolean)
-  - [LAgent:removeTag(tag: string)](#lagentremovetagtag-string)
-  - [LAgent:setCustomModel(callback: function)](#lagentsetcustommodelcallback-function)
-  - [LAgent:setDecisionModel(model: string)](#lagentsetdecisionmodelmodel-string)
-  - [LAgent:setMaxForce(v: number)](#lagentsetmaxforcev-number)
-  - [LAgent:setMaxSpeed(v: number)](#lagentsetmaxspeedv-number)
-  - [LAgent:setPosition(x: number, y: number)](#lagentsetpositionx-number-y-number)
-  - [LAgent:setPriority(p: integer)](#lagentsetpriorityp-integer)
-  - [LAgent:setVelocity(x: number, y: number)](#lagentsetvelocityx-number-y-number)
-  - [LAgent:type() -> string](#lagenttype-string)
-  - [LAgent:typeOf(name: string) -> boolean](#lagenttypeofname-string-boolean)
   - [LAIBlackboard](#laiblackboard)
-  - [LAIBlackboard:clear()](#laiblackboardclear)
-  - [LAIBlackboard:getBool(key: string, [default]: boolean) -> boolean](#laiblackboardgetboolkey-string-default-boolean-boolean)
-  - [LAIBlackboard:getKeys() -> string[]](#laiblackboardgetkeys-string)
-  - [LAIBlackboard:getNumber(key: string, [default]: number) -> number](#laiblackboardgetnumberkey-string-default-number-number)
-  - [LAIBlackboard:getSize() -> integer](#laiblackboardgetsize-integer)
-  - [LAIBlackboard:getString(key: string, [default]: string) -> string](#laiblackboardgetstringkey-string-default-string-string)
-  - [LAIBlackboard:has(key: string) -> boolean](#laiblackboardhaskey-string-boolean)
-  - [LAIBlackboard:remove(key: string)](#laiblackboardremovekey-string)
-  - [LAIBlackboard:setBool(key: string, value: boolean)](#laiblackboardsetboolkey-string-value-boolean)
-  - [LAIBlackboard:setNumber(key: string, value: number)](#laiblackboardsetnumberkey-string-value-number)
-  - [LAIBlackboard:setString(key: string, value: string)](#laiblackboardsetstringkey-string-value-string)
-  - [LAIBlackboard:type() -> string](#laiblackboardtype-string)
-  - [LAIBlackboard:typeOf(name: string) -> boolean](#laiblackboardtypeofname-string-boolean)
   - [LAIDirector](#laidirector)
-  - [LAIDirector:ambientIntensity() -> number](#laidirectorambientintensity-number)
-  - [LAIDirector:lootFactor() -> number](#laidirectorlootfactor-number)
-  - [LAIDirector:phase() -> string](#laidirectorphase-string)
-  - [LAIDirector:pushEvent(intensity: number)](#laidirectorpusheventintensity-number)
-  - [LAIDirector:reset()](#laidirectorreset)
-  - [LAIDirector:setTension(value: number)](#laidirectorsettensionvalue-number)
-  - [LAIDirector:spawnRateFactor() -> number](#laidirectorspawnratefactor-number)
-  - [LAIDirector:tension() -> number](#laidirectortension-number)
-  - [LAIDirector:type() -> string](#laidirectortype-string)
-  - [LAIDirector:typeOf(name: string) -> boolean](#laidirectortypeofname-string-boolean)
-  - [LAIDirector:update(dt: number)](#laidirectorupdatedt-number)
   - [LAILod](#lailod)
-  - [LAILod:shouldUpdate(tier: integer, frame: integer) -> boolean](#lailodshouldupdatetier-integer-frame-integer-boolean)
-  - [LAILod:tierCount() -> integer](#lailodtiercount-integer)
-  - [LAILod:tierFor(ax: number, ay: number, rx: number, ry: number) -> integer](#lailodtierforax-number-ay-number-rx-number-ry-number-integer)
-  - [LAILod:tierName(tier: integer) -> LuaValue](#lailodtiernametier-integer-luavalue)
-  - [LAILod:type() -> string](#lailodtype-string)
-  - [LAILod:typeOf(name: string) -> boolean](#lailodtypeofname-string-boolean)
   - [LAIWorld](#laiworld)
-  - [LAIWorld:addAgent(name: string) -> LAgent](#laiworldaddagentname-string-lagent)
-  - [LAIWorld:getAgent(name: string) -> LuaValue](#laiworldgetagentname-string-luavalue)
-  - [LAIWorld:getAgentCount() -> integer](#laiworldgetagentcount-integer)
-  - [LAIWorld:getGlobalBlackboard() -> LAIBlackboard](#laiworldgetglobalblackboard-laiblackboard)
-  - [LAIWorld:removeAgent(agent: LAgent)](#laiworldremoveagentagent-lagent)
-  - [LAIWorld:type() -> string](#laiworldtype-string)
-  - [LAIWorld:typeOf(name: string) -> boolean](#laiworldtypeofname-string-boolean)
-  - [LAIWorld:update(dt: number)](#laiworldupdatedt-number)
   - [LBandit](#lbandit)
-  - [LBandit:armCount() -> integer](#lbanditarmcount-integer)
-  - [LBandit:bestArm() -> integer](#lbanditbestarm-integer)
-  - [LBandit:reset()](#lbanditreset)
-  - [LBandit:select() -> integer](#lbanditselect-integer)
-  - [LBandit:totalPulls() -> integer](#lbandittotalpulls-integer)
-  - [LBandit:type() -> string](#lbandittype-string)
-  - [LBandit:typeOf(name: string) -> boolean](#lbandittypeofname-string-boolean)
-  - [LBandit:update(idx: integer, reward: number)](#lbanditupdateidx-integer-reward-number)
   - [LBehaviorTree](#lbehaviortree)
-  - [LBehaviorTree:getDebugState() -> table](#lbehaviortreegetdebugstate-table)
-  - [LBehaviorTree:getLastStatus() -> string](#lbehaviortreegetlaststatus-string)
-  - [LBehaviorTree:setRoot(node: LBTNode)](#lbehaviortreesetrootnode-lbtnode)
-  - [LBehaviorTree:type() -> string](#lbehaviortreetype-string)
-  - [LBehaviorTree:typeOf(name: string) -> boolean](#lbehaviortreetypeofname-string-boolean)
   - [LBTNode](#lbtnode)
-  - [LBTNode:addChild(child: LBTNode)](#lbtnodeaddchildchild-lbtnode)
-  - [LBTNode:getChildCount() -> integer](#lbtnodegetchildcount-integer)
-  - [LBTNode:getCount() -> integer](#lbtnodegetcount-integer)
-  - [LBTNode:getNodeType() -> string](#lbtnodegetnodetype-string)
-  - [LBTNode:reset()](#lbtnodereset)
-  - [LBTNode:setChild(child: LBTNode)](#lbtnodesetchildchild-lbtnode)
-  - [LBTNode:setCount(n: integer)](#lbtnodesetcountn-integer)
-  - [LBTNode:setFailurePolicy(policy: string)](#lbtnodesetfailurepolicypolicy-string)
-  - [LBTNode:setSuccessPolicy(policy: string)](#lbtnodesetsuccesspolicypolicy-string)
-  - [LBTNode:type() -> string](#lbtnodetype-string)
-  - [LBTNode:typeOf(name: string) -> boolean](#lbtnodetypeofname-string-boolean)
   - [LCommandQueue](#lcommandqueue)
-  - [LCommandQueue:cancelCurrent() -> boolean](#lcommandqueuecancelcurrent-boolean)
-  - [LCommandQueue:clear()](#lcommandqueueclear)
-  - [LCommandQueue:enqueue(kind: string, callback: function, [opts]: table)](#lcommandqueueenqueuekind-string-callback-function-opts-table)
-  - [LCommandQueue:getCount() -> integer](#lcommandqueuegetcount-integer)
-  - [LCommandQueue:getCurrentTarget() -> number, number](#lcommandqueuegetcurrenttarget-number-number)
-  - [LCommandQueue:getCurrentType() -> LuaValue](#lcommandqueuegetcurrenttype-luavalue)
-  - [LCommandQueue:isEmpty() -> boolean](#lcommandqueueisempty-boolean)
-  - [LCommandQueue:pushFront(kind: string, callback: function, [opts]: table)](#lcommandqueuepushfrontkind-string-callback-function-opts-table)
-  - [LCommandQueue:replace(kind: string, callback: function, [opts]: table)](#lcommandqueuereplacekind-string-callback-function-opts-table)
-  - [LCommandQueue:type() -> string](#lcommandqueuetype-string)
-  - [LCommandQueue:typeOf(name: string) -> boolean](#lcommandqueuetypeofname-string-boolean)
   - [LContextSteering](#lcontextsteering)
-  - [LContextSteering:addAvoidBounds(min_x: number, min_y: number, max_x: number, max_y: number, margin: number, weight: number)](#lcontextsteeringaddavoidboundsminx-number-miny-number-maxx-number-maxy-number-margin-number-weight-number)
-  - [LContextSteering:addAvoidPoint(x: number, y: number, radius: number, weight: number)](#lcontextsteeringaddavoidpointx-number-y-number-radius-number-weight-number)
-  - [LContextSteering:addSeekTarget(tx: number, ty: number, weight: number)](#lcontextsteeringaddseektargettx-number-ty-number-weight-number)
-  - [LContextSteering:addWander(jitter: number, weight: number)](#lcontextsteeringaddwanderjitter-number-weight-number)
-  - [LContextSteering:chosenMagnitude() -> number](#lcontextsteeringchosenmagnitude-number)
-  - [LContextSteering:clearBehaviors()](#lcontextsteeringclearbehaviors)
-  - [LContextSteering:evaluate(ax: number, ay: number, vx: number, vy: number) -> number, number](#lcontextsteeringevaluateax-number-ay-number-vx-number-vy-number-number-number)
-  - [LContextSteering:slotCount() -> integer](#lcontextsteeringslotcount-integer)
-  - [LContextSteering:type() -> string](#lcontextsteeringtype-string)
-  - [LContextSteering:typeOf(name: string) -> boolean](#lcontextsteeringtypeofname-string-boolean)
   - [LDialogueAI](#ldialogueai)
-  - [LDialogueAI:addBranch(topic_id: string, branch_id: string, [weight]: number, [fsm_state]: string, [bt_status]: string, [utility_key]: string) -> boolean](#ldialogueaiaddbranchtopicid-string-branchid-string-weight-number-fsmstate-string-btstatus-string-utilitykey-string-boolean)
-  - [LDialogueAI:addTopic(id: string, [weight]: number, [fsm_state]: string, [bt_status]: string, [utility_key]: string)](#ldialogueaiaddtopicid-string-weight-number-fsmstate-string-btstatus-string-utilitykey-string)
-  - [LDialogueAI:clearUtilityScores()](#ldialogueaiclearutilityscores)
-  - [LDialogueAI:getTopicCount() -> integer](#ldialogueaigettopiccount-integer)
-  - [LDialogueAI:selectBranch(topic_id: string) -> string](#ldialogueaiselectbranchtopicid-string-string)
-  - [LDialogueAI:selectTopic() -> string](#ldialogueaiselecttopic-string)
-  - [LDialogueAI:setBTStatus([status]: string)](#ldialogueaisetbtstatusstatus-string)
-  - [LDialogueAI:setFSMState([state]: string)](#ldialogueaisetfsmstatestate-string)
-  - [LDialogueAI:setUtilityScore(key: string, score: number)](#ldialogueaisetutilityscorekey-string-score-number)
-  - [LDialogueAI:type() -> string](#ldialogueaitype-string)
-  - [LDialogueAI:typeOf(name: string) -> boolean](#ldialogueaitypeofname-string-boolean)
   - [LEmotionModel](#lemotionmodel)
-  - [LEmotionModel:add(name: string, rest: number, decay: number, min_vis: number)](#lemotionmodeladdname-string-rest-number-decay-number-minvis-number)
-  - [LEmotionModel:dominant() -> LuaValue](#lemotionmodeldominant-luavalue)
-  - [LEmotionModel:get(name: string) -> number](#lemotionmodelgetname-string-number)
-  - [LEmotionModel:isActive(name: string) -> boolean](#lemotionmodelisactivename-string-boolean)
-  - [LEmotionModel:reset()](#lemotionmodelreset)
-  - [LEmotionModel:trigger(name: string, amount: number)](#lemotionmodeltriggername-string-amount-number)
-  - [LEmotionModel:type() -> string](#lemotionmodeltype-string)
-  - [LEmotionModel:typeOf(name: string) -> boolean](#lemotionmodeltypeofname-string-boolean)
-  - [LEmotionModel:update(dt: number)](#lemotionmodelupdatedt-number)
   - [LGeneticAlgorithm](#lgeneticalgorithm)
-  - [LGeneticAlgorithm:bestGenes() -> number[]](#lgeneticalgorithmbestgenes-number)
-  - [LGeneticAlgorithm:evolve()](#lgeneticalgorithmevolve)
-  - [LGeneticAlgorithm:generation() -> integer](#lgeneticalgorithmgeneration-integer)
-  - [LGeneticAlgorithm:getGenes(idx: integer) -> integer[]](#lgeneticalgorithmgetgenesidx-integer-integer)
-  - [LGeneticAlgorithm:popSize() -> integer](#lgeneticalgorithmpopsize-integer)
-  - [LGeneticAlgorithm:setFitness(idx: integer, fitness: number)](#lgeneticalgorithmsetfitnessidx-integer-fitness-number)
-  - [LGeneticAlgorithm:type() -> string](#lgeneticalgorithmtype-string)
-  - [LGeneticAlgorithm:typeOf(name: string) -> boolean](#lgeneticalgorithmtypeofname-string-boolean)
   - [LGOAPPlanner](#lgoapplanner)
-  - [LGOAPPlanner:addAction(name: string, [cost]: number, [callback]: function)](#lgoapplanneraddactionname-string-cost-number-callback-function)
-  - [LGOAPPlanner:addGoal(name: string, [priority]: number)](#lgoapplanneraddgoalname-string-priority-number)
-  - [LGOAPPlanner:getActionCount() -> integer](#lgoapplannergetactioncount-integer)
-  - [LGOAPPlanner:getGoalCount() -> integer](#lgoapplannergetgoalcount-integer)
-  - [LGOAPPlanner:getMaxIterations() -> integer](#lgoapplannergetmaxiterations-integer)
-  - [LGOAPPlanner:plan(world_state_tbl: table, [max_depth]: integer) -> string[]](#lgoapplannerplanworldstatetbl-table-maxdepth-integer-string)
-  - [LGOAPPlanner:setEffect(action_name: string, key: string, value: boolean)](#lgoapplannerseteffectactionname-string-key-string-value-boolean)
-  - [LGOAPPlanner:setGoalState(goal_name: string, key: string, value: boolean)](#lgoapplannersetgoalstategoalname-string-key-string-value-boolean)
-  - [LGOAPPlanner:setMaxIterations(n: integer)](#lgoapplannersetmaxiterationsn-integer)
-  - [LGOAPPlanner:setPrecondition(action_name: string, key: string, value: boolean)](#lgoapplannersetpreconditionactionname-string-key-string-value-boolean)
-  - [LGOAPPlanner:type() -> string](#lgoapplannertype-string)
-  - [LGOAPPlanner:typeOf(name: string) -> boolean](#lgoapplannertypeofname-string-boolean)
   - [LHTNDomain](#lhtndomain)
-  - [LHTNDomain:addCompound(comp_name: string, methods_table: table)](#lhtndomainaddcompoundcompname-string-methodstable-table)
-  - [LHTNDomain:addPrimitive(name: string, preconds: table, effects: table, clears: table)](#lhtndomainaddprimitivename-string-preconds-table-effects-table-clears-table)
-  - [LHTNDomain:plan(root_task: string, state_table: table) -> LuaValue](#lhtndomainplanroottask-string-statetable-table-luavalue)
-  - [LHTNDomain:taskCount() -> integer](#lhtndomaintaskcount-integer)
-  - [LHTNDomain:type() -> string](#lhtndomaintype-string)
-  - [LHTNDomain:typeOf(name: string) -> boolean](#lhtndomaintypeofname-string-boolean)
   - [LInfluenceMap](#linfluencemap)
-  - [LInfluenceMap:addLayer(name: string)](#linfluencemapaddlayername-string)
-  - [LInfluenceMap:blend(layer_a: string, weight_a: number, layer_b: string, weight_b: number, dest: string)](#linfluencemapblendlayera-string-weighta-number-layerb-string-weightb-number-dest-string)
-  - [LInfluenceMap:clearAll()](#linfluencemapclearall)
-  - [LInfluenceMap:clearLayer(layer: string)](#linfluencemapclearlayerlayer-string)
-  - [LInfluenceMap:decay(layer: string, factor: number)](#linfluencemapdecaylayer-string-factor-number)
-  - [LInfluenceMap:getCellSize() -> number](#linfluencemapgetcellsize-number)
-  - [LInfluenceMap:getHeight() -> integer](#linfluencemapgetheight-integer)
-  - [LInfluenceMap:getInfluence(layer: string, x: integer, y: integer) -> number](#linfluencemapgetinfluencelayer-string-x-integer-y-integer-number)
-  - [LInfluenceMap:getMaxPosition(layer: string) -> integer, integer](#linfluencemapgetmaxpositionlayer-string-integer-integer)
-  - [LInfluenceMap:getMinPosition(layer: string) -> integer, integer](#linfluencemapgetminpositionlayer-string-integer-integer)
-  - [LInfluenceMap:getWidth() -> integer](#linfluencemapgetwidth-integer)
-  - [LInfluenceMap:hasLayer(name: string) -> boolean](#linfluencemaphaslayername-string-boolean)
-  - [LInfluenceMap:propagate(layer: string, [momentum]: number)](#linfluencemappropagatelayer-string-momentum-number)
-  - [LInfluenceMap:queryRect(layer: string, wx: number, wy: number, ww: number, wh: number) -> number[]](#linfluencemapqueryrectlayer-string-wx-number-wy-number-ww-number-wh-number-number)
-  - [LInfluenceMap:setInfluence(layer: string, x: integer, y: integer, value: number)](#linfluencemapsetinfluencelayer-string-x-integer-y-integer-value-number)
-  - [LInfluenceMap:stampInfluence(layer: string, wx: number, wy: number, radius: number, value: number, [falloff]: number)](#linfluencemapstampinfluencelayer-string-wx-number-wy-number-radius-number-value-number-falloff-number)
-  - [LInfluenceMap:type() -> string](#linfluencemaptype-string)
-  - [LInfluenceMap:typeOf(name: string) -> boolean](#linfluencemaptypeofname-string-boolean)
   - [LMCTSEngine](#lmctsengine)
-  - [LMCTSEngine:search(root_state: integer, get_actions_fn: function, apply_fn: function, eval_fn: function) -> LuaValue](#lmctsenginesearchrootstate-integer-getactionsfn-function-applyfn-function-evalfn-function-luavalue)
-  - [LMCTSEngine:type() -> string](#lmctsenginetype-string)
-  - [LMCTSEngine:typeOf(name: string) -> boolean](#lmctsenginetypeofname-string-boolean)
   - [LNeedSystem](#lneedsystem)
-  - [LNeedSystem:addNeed(name: string, decay_rate: number, urgency_threshold: number, urgency_factor: number)](#lneedsystemaddneedname-string-decayrate-number-urgencythreshold-number-urgencyfactor-number)
-  - [LNeedSystem:mostUrgent() -> LuaValue](#lneedsystemmosturgent-luavalue)
-  - [LNeedSystem:satisfy(name: string, amount: number)](#lneedsystemsatisfyname-string-amount-number)
-  - [LNeedSystem:type() -> string](#lneedsystemtype-string)
-  - [LNeedSystem:typeOf(name: string) -> boolean](#lneedsystemtypeofname-string-boolean)
-  - [LNeedSystem:update(dt: number)](#lneedsystemupdatedt-number)
-  - [LNeedSystem:valueOf(name: string) -> number](#lneedsystemvalueofname-string-number)
   - [LNeuralNet](#lneuralnet)
-  - [LNeuralNet:addLayer(inputs: integer, outputs: integer, activation: string)](#lneuralnetaddlayerinputs-integer-outputs-integer-activation-string)
-  - [LNeuralNet:forward(input: table) -> number[]](#lneuralnetforwardinput-table-number)
-  - [LNeuralNet:getWeights() -> number[]](#lneuralnetgetweights-number)
-  - [LNeuralNet:layerCount() -> integer](#lneuralnetlayercount-integer)
-  - [LNeuralNet:paramCount() -> integer](#lneuralnetparamcount-integer)
-  - [LNeuralNet:setWeights(weights: table) -> boolean](#lneuralnetsetweightsweights-table-boolean)
-  - [LNeuralNet:type() -> string](#lneuralnettype-string)
-  - [LNeuralNet:typeOf(name: string) -> boolean](#lneuralnettypeofname-string-boolean)
   - [LNeuroevolution](#lneuroevolution)
-  - [LNeuroevolution:bestFitness() -> number](#lneuroevolutionbestfitness-number)
-  - [LNeuroevolution:bestNetwork() -> LuaValue](#lneuroevolutionbestnetwork-luavalue)
-  - [LNeuroevolution:chromosomeToNet(idx: integer) -> LuaValue](#lneuroevolutionchromosometonetidx-integer-luavalue)
-  - [LNeuroevolution:evolve()](#lneuroevolutionevolve)
-  - [LNeuroevolution:generation() -> integer](#lneuroevolutiongeneration-integer)
-  - [LNeuroevolution:popSize() -> integer](#lneuroevolutionpopsize-integer)
-  - [LNeuroevolution:setFitness(idx: integer, fitness: number)](#lneuroevolutionsetfitnessidx-integer-fitness-number)
-  - [LNeuroevolution:type() -> string](#lneuroevolutiontype-string)
-  - [LNeuroevolution:typeOf(name: string) -> boolean](#lneuroevolutiontypeofname-string-boolean)
   - [LORCASolver](#lorcasolver)
-  - [LORCASolver:addAgent(x: number, y: number, radius: number, max_speed: number) -> integer](#lorcasolveraddagentx-number-y-number-radius-number-maxspeed-number-integer)
-  - [LORCASolver:agentCount() -> integer](#lorcasolveragentcount-integer)
-  - [LORCASolver:compute(dt: number)](#lorcasolvercomputedt-number)
-  - [LORCASolver:getSafeVelocity(idx: integer) -> number, number](#lorcasolvergetsafevelocityidx-integer-number-number)
-  - [LORCASolver:setPosition(idx: integer, x: number, y: number)](#lorcasolversetpositionidx-integer-x-number-y-number)
-  - [LORCASolver:setPreferredVelocity(idx: integer, pvx: number, pvy: number)](#lorcasolversetpreferredvelocityidx-integer-pvx-number-pvy-number)
-  - [LORCASolver:type() -> string](#lorcasolvertype-string)
-  - [LORCASolver:typeOf(name: string) -> boolean](#lorcasolvertypeofname-string-boolean)
   - [LQLearner](#lqlearner)
-  - [LQLearner:bestAction(state: integer) -> integer](#lqlearnerbestactionstate-integer-integer)
-  - [LQLearner:chooseAction(state: integer) -> integer](#lqlearnerchooseactionstate-integer-integer)
-  - [LQLearner:deserialize(json: string)](#lqlearnerdeserializejson-string)
-  - [LQLearner:endEpisode()](#lqlearnerendepisode)
-  - [LQLearner:getActionCount() -> integer](#lqlearnergetactioncount-integer)
-  - [LQLearner:getDiscountFactor() -> number](#lqlearnergetdiscountfactor-number)
-  - [LQLearner:getEpisodeCount() -> integer](#lqlearnergetepisodecount-integer)
-  - [LQLearner:getExplorationDecay() -> number](#lqlearnergetexplorationdecay-number)
-  - [LQLearner:getExplorationRate() -> number](#lqlearnergetexplorationrate-number)
-  - [LQLearner:getLearningRate() -> number](#lqlearnergetlearningrate-number)
-  - [LQLearner:getQValue(state: integer, action: integer) -> number](#lqlearnergetqvaluestate-integer-action-integer-number)
-  - [LQLearner:getStateCount() -> integer](#lqlearnergetstatecount-integer)
-  - [LQLearner:learn(state: integer, action: integer, reward: number, next_state: integer)](#lqlearnerlearnstate-integer-action-integer-reward-number-nextstate-integer)
-  - [LQLearner:serialize() -> string](#lqlearnerserialize-string)
-  - [LQLearner:setDiscountFactor(v: number)](#lqlearnersetdiscountfactorv-number)
-  - [LQLearner:setExplorationDecay(v: number)](#lqlearnersetexplorationdecayv-number)
-  - [LQLearner:setExplorationRate(v: number)](#lqlearnersetexplorationratev-number)
-  - [LQLearner:setLearningRate(v: number)](#lqlearnersetlearningratev-number)
-  - [LQLearner:setQValue(state: integer, action: integer, value: number)](#lqlearnersetqvaluestate-integer-action-integer-value-number)
-  - [LQLearner:type() -> string](#lqlearnertype-string)
-  - [LQLearner:typeOf(name: string) -> boolean](#lqlearnertypeofname-string-boolean)
   - [LSquad](#lsquad)
-  - [LSquad:addMember(name: string)](#lsquadaddmembername-string)
-  - [LSquad:getBlackboard() -> LAIBlackboard](#lsquadgetblackboard-laiblackboard)
-  - [LSquad:getFormation() -> string](#lsquadgetformation-string)
-  - [LSquad:getFormationPosition(member_idx: integer, leader_x: number, leader_y: number) -> number, number](#lsquadgetformationpositionmemberidx-integer-leaderx-number-leadery-number-number-number)
-  - [LSquad:getFormationSpacing() -> number](#lsquadgetformationspacing-number)
-  - [LSquad:getLeader() -> LuaValue](#lsquadgetleader-luavalue)
-  - [LSquad:getMemberCount() -> integer](#lsquadgetmembercount-integer)
-  - [LSquad:getMembers() -> string[]](#lsquadgetmembers-string)
-  - [LSquad:getName() -> string](#lsquadgetname-string)
-  - [LSquad:removeMember(name: string)](#lsquadremovemembername-string)
-  - [LSquad:setFormation(ftype: string, [spacing]: number)](#lsquadsetformationftype-string-spacing-number)
-  - [LSquad:setLeader(name: string)](#lsquadsetleadername-string)
-  - [LSquad:type() -> string](#lsquadtype-string)
-  - [LSquad:typeOf(name: string) -> boolean](#lsquadtypeofname-string-boolean)
   - [LStateMachine](#lstatemachine)
-  - [LStateMachine:addState(name: string, opts: table)](#lstatemachineaddstatename-string-opts-table)
-  - [LStateMachine:addTransition(from: string, to: string, [guard]: function, [priority]: integer)](#lstatemachineaddtransitionfrom-string-to-string-guard-function-priority-integer)
-  - [LStateMachine:forceState(name: string)](#lstatemachineforcestatename-string)
-  - [LStateMachine:getCurrentState() -> LuaValue](#lstatemachinegetcurrentstate-luavalue)
-  - [LStateMachine:getTimeInState() -> number](#lstatemachinegettimeinstate-number)
-  - [LStateMachine:setInitialState(name: string)](#lstatemachinesetinitialstatename-string)
-  - [LStateMachine:type() -> string](#lstatemachinetype-string)
-  - [LStateMachine:typeOf(name: string) -> boolean](#lstatemachinetypeofname-string-boolean)
   - [LSteeringManager](#lsteeringmanager)
-  - [LSteeringManager:addArrive(tx: number, ty: number, [slowing]: number, [weight]: number)](#lsteeringmanageraddarrivetx-number-ty-number-slowing-number-weight-number)
-  - [LSteeringManager:addCustomBehavior(func: function, [weight]: number)](#lsteeringmanageraddcustombehaviorfunc-function-weight-number)
-  - [LSteeringManager:addEvade([threat_name]: string, [weight]: number)](#lsteeringmanageraddevadethreatname-string-weight-number)
-  - [LSteeringManager:addFlee(tx: number, ty: number, [panic_dist]: number, [weight]: number)](#lsteeringmanageraddfleetx-number-ty-number-panicdist-number-weight-number)
-  - [LSteeringManager:addFlock([neighbor_radius]: number, [sep_w]: number, [align_w]: number, [coh_w]: number, [weight]: number)](#lsteeringmanageraddflockneighborradius-number-sepw-number-alignw-number-cohw-number-weight-number)
-  - [LSteeringManager:addPursue([target_name]: string, [weight]: number)](#lsteeringmanageraddpursuetargetname-string-weight-number)
-  - [LSteeringManager:addSeek(tx: number, ty: number, [weight]: number)](#lsteeringmanageraddseektx-number-ty-number-weight-number)
-  - [LSteeringManager:addWander([radius]: number, [dist]: number, [jitter]: number, [weight]: number)](#lsteeringmanageraddwanderradius-number-dist-number-jitter-number-weight-number)
-  - [LSteeringManager:applyCustomSteering(agent: LAgent, dt: number) -> number, number](#lsteeringmanagerapplycustomsteeringagent-lagent-dt-number-number-number)
-  - [LSteeringManager:calculate(px: number, py: number, vx: number, vy: number, max_speed: number, max_force: number, dt: number) -> number, number](#lsteeringmanagercalculatepx-number-py-number-vx-number-vy-number-maxspeed-number-maxforce-number-dt-number-number-number)
-  - [LSteeringManager:clearPath()](#lsteeringmanagerclearpath)
-  - [LSteeringManager:enableSpatialHash(enabled: boolean)](#lsteeringmanagerenablespatialhashenabled-boolean)
-  - [LSteeringManager:getBehaviorCount() -> integer](#lsteeringmanagergetbehaviorcount-integer)
-  - [LSteeringManager:getCombineMode() -> string](#lsteeringmanagergetcombinemode-string)
-  - [LSteeringManager:getLastSteering() -> number, number](#lsteeringmanagergetlaststeering-number-number)
-  - [LSteeringManager:getPathProgress() -> integer, integer](#lsteeringmanagergetpathprogress-integer-integer)
-  - [LSteeringManager:hasPath() -> boolean](#lsteeringmanagerhaspath-boolean)
-  - [LSteeringManager:setCombineMode(mode: string)](#lsteeringmanagersetcombinemodemode-string)
-  - [LSteeringManager:setPath(waypoints: table, [reach_radius]: number, [weight]: number)](#lsteeringmanagersetpathwaypoints-table-reachradius-number-weight-number)
-  - [LSteeringManager:setSpatialHashCellSize(size: number)](#lsteeringmanagersetspatialhashcellsizesize-number)
-  - [LSteeringManager:type() -> string](#lsteeringmanagertype-string)
-  - [LSteeringManager:typeOf(name: string) -> boolean](#lsteeringmanagertypeofname-string-boolean)
   - [LStimulusWorld](#lstimulusworld)
-  - [LStimulusWorld:addAuditory(x: number, y: number, intensity: number, radius: number, decay_rate: number, [tag]: string) -> integer](#lstimulusworldaddauditoryx-number-y-number-intensity-number-radius-number-decayrate-number-tag-string-integer)
-  - [LStimulusWorld:addVisual(x: number, y: number, intensity: number, radius: number, [tag]: string) -> integer](#lstimulusworldaddvisualx-number-y-number-intensity-number-radius-number-tag-string-integer)
-  - [LStimulusWorld:clear()](#lstimulusworldclear)
-  - [LStimulusWorld:count() -> integer](#lstimulusworldcount-integer)
-  - [LStimulusWorld:remove(id: integer) -> boolean](#lstimulusworldremoveid-integer-boolean)
-  - [LStimulusWorld:type() -> string](#lstimulusworldtype-string)
-  - [LStimulusWorld:typeOf(name: string) -> boolean](#lstimulusworldtypeofname-string-boolean)
-  - [LStimulusWorld:update(dt: number)](#lstimulusworldupdatedt-number)
   - [LStrategyAI](#lstrategyai)
-  - [LStrategyAI:activeGoal() -> LuaValue](#lstrategyaiactivegoal-luavalue)
-  - [LStrategyAI:addGoal(name: string)](#lstrategyaiaddgoalname-string)
-  - [LStrategyAI:addTag(tag: string)](#lstrategyaiaddtagtag-string)
-  - [LStrategyAI:forceEvaluate(scorer_fn: function)](#lstrategyaiforceevaluatescorerfn-function)
-  - [LStrategyAI:removeTag(tag: string)](#lstrategyairemovetagtag-string)
-  - [LStrategyAI:timeUntilNext() -> number](#lstrategyaitimeuntilnext-number)
-  - [LStrategyAI:type() -> string](#lstrategyaitype-string)
-  - [LStrategyAI:typeOf(name: string) -> boolean](#lstrategyaitypeofname-string-boolean)
-  - [LStrategyAI:update(dt: number, scorer_fn: function)](#lstrategyaiupdatedt-number-scorerfn-function)
   - [LTraitProfile](#ltraitprofile)
-  - [LTraitProfile:addModifier(trait_name: string, delta: number, [duration]: number, source: string)](#ltraitprofileaddmodifiertraitname-string-delta-number-duration-number-source-string)
-  - [LTraitProfile:archetype() -> LuaValue](#ltraitprofilearchetype-luavalue)
-  - [LTraitProfile:get(name: string) -> number](#ltraitprofilegetname-string-number)
-  - [LTraitProfile:getBase(name: string) -> number](#ltraitprofilegetbasename-string-number)
-  - [LTraitProfile:has(name: string) -> boolean](#ltraitprofilehasname-string-boolean)
-  - [LTraitProfile:removeModifiers(source: string)](#ltraitprofileremovemodifierssource-string)
-  - [LTraitProfile:set(name: string, value: number)](#ltraitprofilesetname-string-value-number)
-  - [LTraitProfile:traitCount() -> integer](#ltraitprofiletraitcount-integer)
-  - [LTraitProfile:type() -> string](#ltraitprofiletype-string)
-  - [LTraitProfile:typeOf(name: string) -> boolean](#ltraitprofiletypeofname-string-boolean)
-  - [LTraitProfile:update(dt: number)](#ltraitprofileupdatedt-number)
   - [LUtilityAI](#lutilityai)
-  - [LUtilityAI:addAction(name: string, scorer_fn: function, [weight]: number)](#lutilityaiaddactionname-string-scorerfn-function-weight-number)
-  - [LUtilityAI:addConsideration(action_name: string, name: string, scorer_fn: function, curve_arg: LuaValue, [p1]: number, [p2]: number, [p3]: number, [weight]: number)](#lutilityaiaddconsiderationactionname-string-name-string-scorerfn-function-curvearg-luavalue-p1-number-p2-number-p3-number-weight-number)
-  - [LUtilityAI:evaluate() -> LuaValue](#lutilityaievaluate-luavalue)
-  - [LUtilityAI:getActionCount() -> integer](#lutilityaigetactioncount-integer)
-  - [LUtilityAI:getLastAction() -> LuaValue](#lutilityaigetlastaction-luavalue)
-  - [LUtilityAI:type() -> string](#lutilityaitype-string)
-  - [LUtilityAI:typeOf(name: string) -> boolean](#lutilityaitypeofname-string-boolean)
-- [Examples](#examples)
-- [Reference Games](#reference-games)
-- [Related Modules](#related-modules)
+- [🔹 Module Methods](#module-methods)
+  - [LAgent:addTag](#lagentaddtag)
+  - [LAgent:getBlackboard](#lagentgetblackboard)
+  - [LAgent:getDecisionModel](#lagentgetdecisionmodel)
+  - [LAgent:getMaxForce](#lagentgetmaxforce)
+  - [LAgent:getMaxSpeed](#lagentgetmaxspeed)
+  - [LAgent:getName](#lagentgetname)
+  - [LAgent:getPosition](#lagentgetposition)
+  - [LAgent:getPriority](#lagentgetpriority)
+  - [LAgent:getVelocity](#lagentgetvelocity)
+  - [LAgent:hasTag](#lagenthastag)
+  - [LAgent:removeTag](#lagentremovetag)
+  - [LAgent:setCustomModel](#lagentsetcustommodel)
+  - [LAgent:setDecisionModel](#lagentsetdecisionmodel)
+  - [LAgent:setMaxForce](#lagentsetmaxforce)
+  - [LAgent:setMaxSpeed](#lagentsetmaxspeed)
+  - [LAgent:setPosition](#lagentsetposition)
+  - [LAgent:setPriority](#lagentsetpriority)
+  - [LAgent:setVelocity](#lagentsetvelocity)
+  - [LAgent:type](#lagenttype)
+  - [LAgent:typeOf](#lagenttypeof)
+  - [LAIBlackboard:clear](#laiblackboardclear)
+  - [LAIBlackboard:getBool](#laiblackboardgetbool)
+  - [LAIBlackboard:getKeys](#laiblackboardgetkeys)
+  - [LAIBlackboard:getNumber](#laiblackboardgetnumber)
+  - [LAIBlackboard:getSize](#laiblackboardgetsize)
+  - [LAIBlackboard:getString](#laiblackboardgetstring)
+  - [LAIBlackboard:has](#laiblackboardhas)
+  - [LAIBlackboard:remove](#laiblackboardremove)
+  - [LAIBlackboard:setBool](#laiblackboardsetbool)
+  - [LAIBlackboard:setNumber](#laiblackboardsetnumber)
+  - [LAIBlackboard:setString](#laiblackboardsetstring)
+  - [LAIBlackboard:type](#laiblackboardtype)
+  - [LAIBlackboard:typeOf](#laiblackboardtypeof)
+  - [LAIDirector:ambientIntensity](#laidirectorambientintensity)
+  - [LAIDirector:lootFactor](#laidirectorlootfactor)
+  - [LAIDirector:phase](#laidirectorphase)
+  - [LAIDirector:pushEvent](#laidirectorpushevent)
+  - [LAIDirector:reset](#laidirectorreset)
+  - [LAIDirector:setTension](#laidirectorsettension)
+  - [LAIDirector:spawnRateFactor](#laidirectorspawnratefactor)
+  - [LAIDirector:tension](#laidirectortension)
+  - [LAIDirector:type](#laidirectortype)
+  - [LAIDirector:typeOf](#laidirectortypeof)
+  - [LAIDirector:update](#laidirectorupdate)
+  - [LAILod:shouldUpdate](#lailodshouldupdate)
+  - [LAILod:tierCount](#lailodtiercount)
+  - [LAILod:tierFor](#lailodtierfor)
+  - [LAILod:tierName](#lailodtiername)
+  - [LAILod:type](#lailodtype)
+  - [LAILod:typeOf](#lailodtypeof)
+  - [LAIWorld:addAgent](#laiworldaddagent)
+  - [LAIWorld:getAgent](#laiworldgetagent)
+  - [LAIWorld:getAgentCount](#laiworldgetagentcount)
+  - [LAIWorld:getGlobalBlackboard](#laiworldgetglobalblackboard)
+  - [LAIWorld:removeAgent](#laiworldremoveagent)
+  - [LAIWorld:type](#laiworldtype)
+  - [LAIWorld:typeOf](#laiworldtypeof)
+  - [LAIWorld:update](#laiworldupdate)
+  - [LBandit:armCount](#lbanditarmcount)
+  - [LBandit:bestArm](#lbanditbestarm)
+  - [LBandit:reset](#lbanditreset)
+  - [LBandit:select](#lbanditselect)
+  - [LBandit:totalPulls](#lbandittotalpulls)
+  - [LBandit:type](#lbandittype)
+  - [LBandit:typeOf](#lbandittypeof)
+  - [LBandit:update](#lbanditupdate)
+  - [LBehaviorTree:getDebugState](#lbehaviortreegetdebugstate)
+  - [LBehaviorTree:getLastStatus](#lbehaviortreegetlaststatus)
+  - [LBehaviorTree:setRoot](#lbehaviortreesetroot)
+  - [LBehaviorTree:type](#lbehaviortreetype)
+  - [LBehaviorTree:typeOf](#lbehaviortreetypeof)
+  - [LBTNode:addChild](#lbtnodeaddchild)
+  - [LBTNode:getChildCount](#lbtnodegetchildcount)
+  - [LBTNode:getCount](#lbtnodegetcount)
+  - [LBTNode:getNodeType](#lbtnodegetnodetype)
+  - [LBTNode:reset](#lbtnodereset)
+  - [LBTNode:setChild](#lbtnodesetchild)
+  - [LBTNode:setCount](#lbtnodesetcount)
+  - [LBTNode:setFailurePolicy](#lbtnodesetfailurepolicy)
+  - [LBTNode:setSuccessPolicy](#lbtnodesetsuccesspolicy)
+  - [LBTNode:type](#lbtnodetype)
+  - [LBTNode:typeOf](#lbtnodetypeof)
+  - [LCommandQueue:cancelCurrent](#lcommandqueuecancelcurrent)
+  - [LCommandQueue:clear](#lcommandqueueclear)
+  - [LCommandQueue:enqueue](#lcommandqueueenqueue)
+  - [LCommandQueue:getCount](#lcommandqueuegetcount)
+  - [LCommandQueue:getCurrentTarget](#lcommandqueuegetcurrenttarget)
+  - [LCommandQueue:getCurrentType](#lcommandqueuegetcurrenttype)
+  - [LCommandQueue:isEmpty](#lcommandqueueisempty)
+  - [LCommandQueue:pushFront](#lcommandqueuepushfront)
+  - [LCommandQueue:replace](#lcommandqueuereplace)
+  - [LCommandQueue:type](#lcommandqueuetype)
+  - [LCommandQueue:typeOf](#lcommandqueuetypeof)
+  - [LContextSteering:addAvoidBounds](#lcontextsteeringaddavoidbounds)
+  - [LContextSteering:addAvoidPoint](#lcontextsteeringaddavoidpoint)
+  - [LContextSteering:addSeekTarget](#lcontextsteeringaddseektarget)
+  - [LContextSteering:addWander](#lcontextsteeringaddwander)
+  - [LContextSteering:chosenMagnitude](#lcontextsteeringchosenmagnitude)
+  - [LContextSteering:clearBehaviors](#lcontextsteeringclearbehaviors)
+  - [LContextSteering:evaluate](#lcontextsteeringevaluate)
+  - [LContextSteering:slotCount](#lcontextsteeringslotcount)
+  - [LContextSteering:type](#lcontextsteeringtype)
+  - [LContextSteering:typeOf](#lcontextsteeringtypeof)
+  - [LDialogueAI:addBranch](#ldialogueaiaddbranch)
+  - [LDialogueAI:addTopic](#ldialogueaiaddtopic)
+  - [LDialogueAI:clearUtilityScores](#ldialogueaiclearutilityscores)
+  - [LDialogueAI:getTopicCount](#ldialogueaigettopiccount)
+  - [LDialogueAI:selectBranch](#ldialogueaiselectbranch)
+  - [LDialogueAI:selectTopic](#ldialogueaiselecttopic)
+  - [LDialogueAI:setBTStatus](#ldialogueaisetbtstatus)
+  - [LDialogueAI:setFSMState](#ldialogueaisetfsmstate)
+  - [LDialogueAI:setUtilityScore](#ldialogueaisetutilityscore)
+  - [LDialogueAI:type](#ldialogueaitype)
+  - [LDialogueAI:typeOf](#ldialogueaitypeof)
+  - [LEmotionModel:add](#lemotionmodeladd)
+  - [LEmotionModel:dominant](#lemotionmodeldominant)
+  - [LEmotionModel:get](#lemotionmodelget)
+  - [LEmotionModel:isActive](#lemotionmodelisactive)
+  - [LEmotionModel:reset](#lemotionmodelreset)
+  - [LEmotionModel:trigger](#lemotionmodeltrigger)
+  - [LEmotionModel:type](#lemotionmodeltype)
+  - [LEmotionModel:typeOf](#lemotionmodeltypeof)
+  - [LEmotionModel:update](#lemotionmodelupdate)
+  - [LGeneticAlgorithm:bestGenes](#lgeneticalgorithmbestgenes)
+  - [LGeneticAlgorithm:evolve](#lgeneticalgorithmevolve)
+  - [LGeneticAlgorithm:generation](#lgeneticalgorithmgeneration)
+  - [LGeneticAlgorithm:getGenes](#lgeneticalgorithmgetgenes)
+  - [LGeneticAlgorithm:popSize](#lgeneticalgorithmpopsize)
+  - [LGeneticAlgorithm:setFitness](#lgeneticalgorithmsetfitness)
+  - [LGeneticAlgorithm:type](#lgeneticalgorithmtype)
+  - [LGeneticAlgorithm:typeOf](#lgeneticalgorithmtypeof)
+  - [LGOAPPlanner:addAction](#lgoapplanneraddaction)
+  - [LGOAPPlanner:addGoal](#lgoapplanneraddgoal)
+  - [LGOAPPlanner:getActionCount](#lgoapplannergetactioncount)
+  - [LGOAPPlanner:getGoalCount](#lgoapplannergetgoalcount)
+  - [LGOAPPlanner:getMaxIterations](#lgoapplannergetmaxiterations)
+  - [LGOAPPlanner:plan](#lgoapplannerplan)
+  - [LGOAPPlanner:setEffect](#lgoapplannerseteffect)
+  - [LGOAPPlanner:setGoalState](#lgoapplannersetgoalstate)
+  - [LGOAPPlanner:setMaxIterations](#lgoapplannersetmaxiterations)
+  - [LGOAPPlanner:setPrecondition](#lgoapplannersetprecondition)
+  - [LGOAPPlanner:type](#lgoapplannertype)
+  - [LGOAPPlanner:typeOf](#lgoapplannertypeof)
+  - [LHTNDomain:addCompound](#lhtndomainaddcompound)
+  - [LHTNDomain:addPrimitive](#lhtndomainaddprimitive)
+  - [LHTNDomain:plan](#lhtndomainplan)
+  - [LHTNDomain:taskCount](#lhtndomaintaskcount)
+  - [LHTNDomain:type](#lhtndomaintype)
+  - [LHTNDomain:typeOf](#lhtndomaintypeof)
+  - [LInfluenceMap:addLayer](#linfluencemapaddlayer)
+  - [LInfluenceMap:blend](#linfluencemapblend)
+  - [LInfluenceMap:clearAll](#linfluencemapclearall)
+  - [LInfluenceMap:clearLayer](#linfluencemapclearlayer)
+  - [LInfluenceMap:decay](#linfluencemapdecay)
+  - [LInfluenceMap:getCellSize](#linfluencemapgetcellsize)
+  - [LInfluenceMap:getHeight](#linfluencemapgetheight)
+  - [LInfluenceMap:getInfluence](#linfluencemapgetinfluence)
+  - [LInfluenceMap:getMaxPosition](#linfluencemapgetmaxposition)
+  - [LInfluenceMap:getMinPosition](#linfluencemapgetminposition)
+  - [LInfluenceMap:getWidth](#linfluencemapgetwidth)
+  - [LInfluenceMap:hasLayer](#linfluencemaphaslayer)
+  - [LInfluenceMap:propagate](#linfluencemappropagate)
+  - [LInfluenceMap:queryRect](#linfluencemapqueryrect)
+  - [LInfluenceMap:setInfluence](#linfluencemapsetinfluence)
+  - [LInfluenceMap:stampInfluence](#linfluencemapstampinfluence)
+  - [LInfluenceMap:type](#linfluencemaptype)
+  - [LInfluenceMap:typeOf](#linfluencemaptypeof)
+  - [LMCTSEngine:search](#lmctsenginesearch)
+  - [LMCTSEngine:type](#lmctsenginetype)
+  - [LMCTSEngine:typeOf](#lmctsenginetypeof)
+  - [LNeedSystem:addNeed](#lneedsystemaddneed)
+  - [LNeedSystem:mostUrgent](#lneedsystemmosturgent)
+  - [LNeedSystem:satisfy](#lneedsystemsatisfy)
+  - [LNeedSystem:type](#lneedsystemtype)
+  - [LNeedSystem:typeOf](#lneedsystemtypeof)
+  - [LNeedSystem:update](#lneedsystemupdate)
+  - [LNeedSystem:valueOf](#lneedsystemvalueof)
+  - [LNeuralNet:addLayer](#lneuralnetaddlayer)
+  - [LNeuralNet:forward](#lneuralnetforward)
+  - [LNeuralNet:getWeights](#lneuralnetgetweights)
+  - [LNeuralNet:layerCount](#lneuralnetlayercount)
+  - [LNeuralNet:paramCount](#lneuralnetparamcount)
+  - [LNeuralNet:setWeights](#lneuralnetsetweights)
+  - [LNeuralNet:type](#lneuralnettype)
+  - [LNeuralNet:typeOf](#lneuralnettypeof)
+  - [LNeuroevolution:bestFitness](#lneuroevolutionbestfitness)
+  - [LNeuroevolution:bestNetwork](#lneuroevolutionbestnetwork)
+  - [LNeuroevolution:chromosomeToNet](#lneuroevolutionchromosometonet)
+  - [LNeuroevolution:evolve](#lneuroevolutionevolve)
+  - [LNeuroevolution:generation](#lneuroevolutiongeneration)
+  - [LNeuroevolution:popSize](#lneuroevolutionpopsize)
+  - [LNeuroevolution:setFitness](#lneuroevolutionsetfitness)
+  - [LNeuroevolution:type](#lneuroevolutiontype)
+  - [LNeuroevolution:typeOf](#lneuroevolutiontypeof)
+  - [LORCASolver:addAgent](#lorcasolveraddagent)
+  - [LORCASolver:agentCount](#lorcasolveragentcount)
+  - [LORCASolver:compute](#lorcasolvercompute)
+  - [LORCASolver:getSafeVelocity](#lorcasolvergetsafevelocity)
+  - [LORCASolver:setPosition](#lorcasolversetposition)
+  - [LORCASolver:setPreferredVelocity](#lorcasolversetpreferredvelocity)
+  - [LORCASolver:type](#lorcasolvertype)
+  - [LORCASolver:typeOf](#lorcasolvertypeof)
+  - [LQLearner:bestAction](#lqlearnerbestaction)
+  - [LQLearner:chooseAction](#lqlearnerchooseaction)
+  - [LQLearner:deserialize](#lqlearnerdeserialize)
+  - [LQLearner:endEpisode](#lqlearnerendepisode)
+  - [LQLearner:getActionCount](#lqlearnergetactioncount)
+  - [LQLearner:getDiscountFactor](#lqlearnergetdiscountfactor)
+  - [LQLearner:getEpisodeCount](#lqlearnergetepisodecount)
+  - [LQLearner:getExplorationDecay](#lqlearnergetexplorationdecay)
+  - [LQLearner:getExplorationRate](#lqlearnergetexplorationrate)
+  - [LQLearner:getLearningRate](#lqlearnergetlearningrate)
+  - [LQLearner:getQValue](#lqlearnergetqvalue)
+  - [LQLearner:getStateCount](#lqlearnergetstatecount)
+  - [LQLearner:learn](#lqlearnerlearn)
+  - [LQLearner:serialize](#lqlearnerserialize)
+  - [LQLearner:setDiscountFactor](#lqlearnersetdiscountfactor)
+  - [LQLearner:setExplorationDecay](#lqlearnersetexplorationdecay)
+  - [LQLearner:setExplorationRate](#lqlearnersetexplorationrate)
+  - [LQLearner:setLearningRate](#lqlearnersetlearningrate)
+  - [LQLearner:setQValue](#lqlearnersetqvalue)
+  - [LQLearner:type](#lqlearnertype)
+  - [LQLearner:typeOf](#lqlearnertypeof)
+  - [LSquad:addMember](#lsquadaddmember)
+  - [LSquad:getBlackboard](#lsquadgetblackboard)
+  - [LSquad:getFormation](#lsquadgetformation)
+  - [LSquad:getFormationPosition](#lsquadgetformationposition)
+  - [LSquad:getFormationSpacing](#lsquadgetformationspacing)
+  - [LSquad:getLeader](#lsquadgetleader)
+  - [LSquad:getMemberCount](#lsquadgetmembercount)
+  - [LSquad:getMembers](#lsquadgetmembers)
+  - [LSquad:getName](#lsquadgetname)
+  - [LSquad:removeMember](#lsquadremovemember)
+  - [LSquad:setFormation](#lsquadsetformation)
+  - [LSquad:setLeader](#lsquadsetleader)
+  - [LSquad:type](#lsquadtype)
+  - [LSquad:typeOf](#lsquadtypeof)
+  - [LStateMachine:addState](#lstatemachineaddstate)
+  - [LStateMachine:addTransition](#lstatemachineaddtransition)
+  - [LStateMachine:forceState](#lstatemachineforcestate)
+  - [LStateMachine:getCurrentState](#lstatemachinegetcurrentstate)
+  - [LStateMachine:getTimeInState](#lstatemachinegettimeinstate)
+  - [LStateMachine:setInitialState](#lstatemachinesetinitialstate)
+  - [LStateMachine:type](#lstatemachinetype)
+  - [LStateMachine:typeOf](#lstatemachinetypeof)
+  - [LSteeringManager:addArrive](#lsteeringmanageraddarrive)
+  - [LSteeringManager:addCustomBehavior](#lsteeringmanageraddcustombehavior)
+  - [LSteeringManager:addEvade](#lsteeringmanageraddevade)
+  - [LSteeringManager:addFlee](#lsteeringmanageraddflee)
+  - [LSteeringManager:addFlock](#lsteeringmanageraddflock)
+  - [LSteeringManager:addPursue](#lsteeringmanageraddpursue)
+  - [LSteeringManager:addSeek](#lsteeringmanageraddseek)
+  - [LSteeringManager:addWander](#lsteeringmanageraddwander)
+  - [LSteeringManager:applyCustomSteering](#lsteeringmanagerapplycustomsteering)
+  - [LSteeringManager:calculate](#lsteeringmanagercalculate)
+  - [LSteeringManager:clearPath](#lsteeringmanagerclearpath)
+  - [LSteeringManager:enableSpatialHash](#lsteeringmanagerenablespatialhash)
+  - [LSteeringManager:getBehaviorCount](#lsteeringmanagergetbehaviorcount)
+  - [LSteeringManager:getCombineMode](#lsteeringmanagergetcombinemode)
+  - [LSteeringManager:getLastSteering](#lsteeringmanagergetlaststeering)
+  - [LSteeringManager:getPathProgress](#lsteeringmanagergetpathprogress)
+  - [LSteeringManager:hasPath](#lsteeringmanagerhaspath)
+  - [LSteeringManager:setCombineMode](#lsteeringmanagersetcombinemode)
+  - [LSteeringManager:setPath](#lsteeringmanagersetpath)
+  - [LSteeringManager:setSpatialHashCellSize](#lsteeringmanagersetspatialhashcellsize)
+  - [LSteeringManager:type](#lsteeringmanagertype)
+  - [LSteeringManager:typeOf](#lsteeringmanagertypeof)
+  - [LStimulusWorld:addAuditory](#lstimulusworldaddauditory)
+  - [LStimulusWorld:addVisual](#lstimulusworldaddvisual)
+  - [LStimulusWorld:clear](#lstimulusworldclear)
+  - [LStimulusWorld:count](#lstimulusworldcount)
+  - [LStimulusWorld:remove](#lstimulusworldremove)
+  - [LStimulusWorld:type](#lstimulusworldtype)
+  - [LStimulusWorld:typeOf](#lstimulusworldtypeof)
+  - [LStimulusWorld:update](#lstimulusworldupdate)
+  - [LStrategyAI:activeGoal](#lstrategyaiactivegoal)
+  - [LStrategyAI:addGoal](#lstrategyaiaddgoal)
+  - [LStrategyAI:addTag](#lstrategyaiaddtag)
+  - [LStrategyAI:forceEvaluate](#lstrategyaiforceevaluate)
+  - [LStrategyAI:removeTag](#lstrategyairemovetag)
+  - [LStrategyAI:timeUntilNext](#lstrategyaitimeuntilnext)
+  - [LStrategyAI:type](#lstrategyaitype)
+  - [LStrategyAI:typeOf](#lstrategyaitypeof)
+  - [LStrategyAI:update](#lstrategyaiupdate)
+  - [LTraitProfile:addModifier](#ltraitprofileaddmodifier)
+  - [LTraitProfile:archetype](#ltraitprofilearchetype)
+  - [LTraitProfile:get](#ltraitprofileget)
+  - [LTraitProfile:getBase](#ltraitprofilegetbase)
+  - [LTraitProfile:has](#ltraitprofilehas)
+  - [LTraitProfile:removeModifiers](#ltraitprofileremovemodifiers)
+  - [LTraitProfile:set](#ltraitprofileset)
+  - [LTraitProfile:traitCount](#ltraitprofiletraitcount)
+  - [LTraitProfile:type](#ltraitprofiletype)
+  - [LTraitProfile:typeOf](#ltraitprofiletypeof)
+  - [LTraitProfile:update](#ltraitprofileupdate)
+  - [LUtilityAI:addAction](#lutilityaiaddaction)
+  - [LUtilityAI:addConsideration](#lutilityaiaddconsideration)
+  - [LUtilityAI:evaluate](#lutilityaievaluate)
+  - [LUtilityAI:getActionCount](#lutilityaigetactioncount)
+  - [LUtilityAI:getLastAction](#lutilityaigetlastaction)
+  - [LUtilityAI:type](#lutilityaitype)
+  - [LUtilityAI:typeOf](#lutilityaitypeof)
+- [💡 Examples](#examples)
+- [🎮 Reference Games](#reference-games)
+- [🔗 Related Modules](#related-modules)
 
 This page is generated from the current module specs, examples, and Lua API data.
 
 **Module group:** Feature Systems
 **Namespace:** `lurek.ai`
 
-## Purpose
+## 🎯 Purpose
 
 Game AI toolkit: FSMs, behaviour trees, GOAP, steering, utility AI, blackboards. Pure CPU.
 
-## Summary
+[⬆ back to top](#table-of-contents)
+
+## 📋 Summary
 
 Game AI toolkit providing twelve subsystems for non-player character behavior. Includes finite state machines (`FSM`), behavior trees with parallel/sequence/selector composites, Goal-Oriented Action Planning (`GOAP`), Hierarchical Task Networks (`HTN`), Monte-Carlo Tree Search (`MCTS`), utility-based scoring, Q-learning with epsilon-greedy exploration, context steering for obstacle avoidance, squad coordination, influence maps, need/emotion/trait personality models, and a global `AIDirector` that adjusts difficulty based on player performance metrics.
 
 All subsystems are pure CPU, headless-testable, and exposed through `lurek.ai.*` constructors. Each AI object is independent Lua userdata — no shared world state is required. The `Blackboard` key-value store provides inter-system communication when needed. Sensors feed world observations into agents via a typed `SensorWorld` container. The module has no rendering dependency and sits in the Feature Systems tier importing only `math` and `runtime`.
 
-## Minimal Module Example
+[⬆ back to top](#table-of-contents)
 
-Module example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-  -- Use an AI world to manage all NPCs in a level. Each world is independent,
-  -- so you can pause dungeon AI while overworld agents keep running.
-  -- Scenario: open-world RPG with separate AI worlds per region.
-  local world = lurek.ai.newWorld()
-  world:addAgent("guard_01")
-  -- Call world:update(dt) every frame to tick all registered agents.
-  function lurek.process(dt) world:update(dt) end
-end
-
---@api-stub: lurek.ai.newBlackboard
--- Creates an empty AI blackboard for typed local facts
-do
-  -- Blackboards are key-value stores for AI knowledge. Agents read/write facts
-  -- here so decision logic stays decoupled from game state.
-  -- Scenario: stealth game guard shares "alert_level" across patrol group.
-  local bb = lurek.ai.newBlackboard()
-  bb:setNumber("alert_level", 0.3)
-  bb:setBool("player_seen", false)
-end
-
---@api-stub: lurek.ai.newStateMachine
--- Creates an empty finite state machine with Lua-backed states and transitions
-do
-  -- FSMs are ideal for NPCs with clear, discrete behavior phases.
-  -- Each state has onEnter/onUpdate/onExit callbacks for clean transitions.
-  -- Scenario: guard patrol AI — idle → patrol → alert → chase → attack.
-  local fsm = lurek.ai.newStateMachine()
-  fsm:addState("patrol", { onEnter = function() lurek.log.info("patrolling", "ai") end })
-  fsm:addState("chase", {})
-  fsm:setInitialState("patrol")
-end
-
---@api-stub: lurek.ai.newBehaviorTree
--- Creates an empty behavior tree that can receive a root node
-do
-  -- Behavior trees compose complex AI from simple reusable nodes.
-  -- Set a root node, then call bt:tick(dt) each frame to evaluate.
-  -- Scenario: boss phase transitions — check HP, pick attack pattern, execute.
-  local bt = lurek.ai.newBehaviorTree()
-  local root = lurek.ai.newSequence()
-  root:addChild(lurek.ai.newAction(function() return "success" end))
-  bt:setRoot(root)
-end
-
---@api-stub: lurek.ai.newSelector
--- Creates a behavior tree selector node with no children
-do
-  -- A selector tries each child until one succeeds (OR logic).
-```
-
-## Key Types
+## 🧩 Key Types
 
 - `LAgent` (20 methods) - Lua handle for a named agent stored inside an AI world.
 - `LAIBlackboard` (13 methods) - Lua handle for a typed AI blackboard storing local key-value facts.
@@ -475,7 +424,9 @@ do
 - `LHTNDomain` (6 methods) - Lua handle for a hierarchical task network domain.
 - `LInfluenceMap` (18 methods) - Lua handle for a grid-based influence map with named layers.
 
-## API Overview
+[⬆ back to top](#table-of-contents)
+
+## 📖 API Overview
 
 - Source spec: [docs/specs/ai.md](../blob/main/docs/specs/ai.md)
 
@@ -501,15 +452,19 @@ lurek.ai.newMCTSEngine(iters: integer, uct_c: number, depth: integer, seed: inte
 -- ... 18 more module functions
 ```
 
-## Module Functions
+[⬆ back to top](#table-of-contents)
 
-### `lurek.ai.newAction(callback: function) -> LBTNode`
+## ⚙️ Module Functions
+
+### lurek.ai.newAction
+
+`lurek.ai.newAction(callback: function) -> LBTNode`
 
 Creates a behavior tree action leaf backed by a Lua callback.
 
 **Parameters**
 
-- `callback` (`function`, required) - Callback invoked when the action node ticks.
+- `callback` (`function`, required): Callback invoked when the action node ticks.
 
 **Returns**: `LBTNode` - New action node handle.
 
@@ -528,7 +483,9 @@ do
 end
 ```
 
-### `lurek.ai.newAIDirector() -> LAIDirector`
+### lurek.ai.newAIDirector
+
+`lurek.ai.newAIDirector() -> LAIDirector`
 
 Creates an AI director for tension, phase, and pacing factor calculations.
 
@@ -549,7 +506,9 @@ do
 end
 ```
 
-### `lurek.ai.newAILod() -> LAILod`
+### lurek.ai.newAILod
+
+`lurek.ai.newAILod() -> LAILod`
 
 Creates a default AI level-of-detail tier selector.
 
@@ -569,16 +528,18 @@ do
 end
 ```
 
-### `lurek.ai.newBandit(arm_count: integer, strategy: string, epsilon: number, seed: integer) -> LBandit`
+### lurek.ai.newBandit
+
+`lurek.ai.newBandit(arm_count: integer, strategy: string, epsilon: number, seed: integer) -> LBandit`
 
 Creates a multi-armed bandit with a named selection strategy.
 
 **Parameters**
 
-- `arm_count` (`integer`, required) - Number of selectable arms.
-- `strategy` (`string`, required) - Strategy name such as `ucb1`, `thompson`, or an epsilon-greedy fallback.
-- `epsilon` (`number`, required) - Exploration probability used by epsilon-greedy strategy and clamped to `[0, 1]`.
-- `seed` (`integer`, required) - Random seed used by the bandit.
+- `arm_count` (`integer`, required): Number of selectable arms.
+- `strategy` (`string`, required): Strategy name such as `ucb1`, `thompson`, or an epsilon-greedy fallback.
+- `epsilon` (`number`, required): Exploration probability used by epsilon-greedy strategy and clamped to `[0, 1]`.
+- `seed` (`integer`, required): Random seed used by the bandit.
 
 **Returns**: `LBandit` - New bandit handle.
 
@@ -597,7 +558,9 @@ do
 end
 ```
 
-### `lurek.ai.newBehaviorTree() -> LBehaviorTree`
+### lurek.ai.newBehaviorTree
+
+`lurek.ai.newBehaviorTree() -> LBehaviorTree`
 
 Creates an empty behavior tree that can receive a root node.
 
@@ -619,7 +582,9 @@ do
 end
 ```
 
-### `lurek.ai.newBlackboard() -> LAIBlackboard`
+### lurek.ai.newBlackboard
+
+`lurek.ai.newBlackboard() -> LAIBlackboard`
 
 Creates an empty AI blackboard for typed local facts.
 
@@ -640,7 +605,9 @@ do
 end
 ```
 
-### `lurek.ai.newCommandQueue() -> LCommandQueue`
+### lurek.ai.newCommandQueue
+
+`lurek.ai.newCommandQueue() -> LCommandQueue`
 
 Creates an empty command queue for callback-backed AI commands.
 
@@ -661,13 +628,15 @@ do
 end
 ```
 
-### `lurek.ai.newCondition(callback: function) -> LBTNode`
+### lurek.ai.newCondition
+
+`lurek.ai.newCondition(callback: function) -> LBTNode`
 
 Creates a behavior tree condition leaf backed by a Lua callback.
 
 **Parameters**
 
-- `callback` (`function`, required) - Callback invoked when the condition node ticks.
+- `callback` (`function`, required): Callback invoked when the condition node ticks.
 
 **Returns**: `LBTNode` - New condition node handle.
 
@@ -686,13 +655,15 @@ do
 end
 ```
 
-### `lurek.ai.newContextSteering(slots: integer) -> LContextSteering`
+### lurek.ai.newContextSteering
+
+`lurek.ai.newContextSteering(slots: integer) -> LContextSteering`
 
 Creates a context steering model with the requested directional slot count.
 
 **Parameters**
 
-- `slots` (`integer`, required) - Directional slot count; zero selects the engine default of 16.
+- `slots` (`integer`, required): Directional slot count; zero selects the engine default of 16.
 
 **Returns**: `LContextSteering` - New context steering handle.
 
@@ -711,7 +682,9 @@ do
 end
 ```
 
-### `lurek.ai.newDialogueAI() -> LDialogueAI`
+### lurek.ai.newDialogueAI
+
+`lurek.ai.newDialogueAI() -> LDialogueAI`
 
 Creates an empty dialogue selector for weighted topics and branches.
 
@@ -752,7 +725,9 @@ do
 end
 ```
 
-### `lurek.ai.newEmotionModel() -> LEmotionModel`
+### lurek.ai.newEmotionModel
+
+`lurek.ai.newEmotionModel() -> LEmotionModel`
 
 Creates an empty emotion model for named decaying emotion values.
 
@@ -773,15 +748,17 @@ do
 end
 ```
 
-### `lurek.ai.newGeneticAlgorithm(pop_size: integer, gene_count: integer, seed: integer) -> LGeneticAlgorithm`
+### lurek.ai.newGeneticAlgorithm
+
+`lurek.ai.newGeneticAlgorithm(pop_size: integer, gene_count: integer, seed: integer) -> LGeneticAlgorithm`
 
 Creates a genetic algorithm population with fixed chromosome length.
 
 **Parameters**
 
-- `pop_size` (`integer`, required) - Number of chromosomes in the population.
-- `gene_count` (`integer`, required) - Number of floating-point genes per chromosome.
-- `seed` (`integer`, required) - Random seed used for population initialization and evolution.
+- `pop_size` (`integer`, required): Number of chromosomes in the population.
+- `gene_count` (`integer`, required): Number of floating-point genes per chromosome.
+- `seed` (`integer`, required): Random seed used for population initialization and evolution.
 
 **Returns**: `LGeneticAlgorithm` - New genetic algorithm handle.
 
@@ -800,7 +777,9 @@ do
 end
 ```
 
-### `lurek.ai.newGOAPPlanner() -> LGOAPPlanner`
+### lurek.ai.newGOAPPlanner
+
+`lurek.ai.newGOAPPlanner() -> LGOAPPlanner`
 
 Creates an empty GOAP planner for boolean world-state planning.
 
@@ -821,14 +800,16 @@ do
 end
 ```
 
-### `lurek.ai.newGuard(predicate: function, child: LBTNode) -> LBTNode`
+### lurek.ai.newGuard
+
+`lurek.ai.newGuard(predicate: function, child: LBTNode) -> LBTNode`
 
 Creates a guard decorator that runs a predicate before ticking its child.
 
 **Parameters**
 
-- `predicate` (`function`, required) - Callback that decides whether the child may run.
-- `child` (`LBTNode`, required) - Child node handle consumed by the guard.
+- `predicate` (`function`, required): Callback that decides whether the child may run.
+- `child` (`LBTNode`, required): Child node handle consumed by the guard.
 
 **Returns**: `LBTNode` - New guard node handle.
 
@@ -848,7 +829,9 @@ do
 end
 ```
 
-### `lurek.ai.newHTNDomain() -> LHTNDomain`
+### lurek.ai.newHTNDomain
+
+`lurek.ai.newHTNDomain() -> LHTNDomain`
 
 Creates an empty hierarchical task network domain.
 
@@ -868,15 +851,17 @@ do
 end
 ```
 
-### `lurek.ai.newInfluenceMap(w: integer, h: integer, cs: number) -> LInfluenceMap`
+### lurek.ai.newInfluenceMap
+
+`lurek.ai.newInfluenceMap(w: integer, h: integer, cs: number) -> LInfluenceMap`
 
 Creates a grid influence map with the supplied cell dimensions and world cell size.
 
 **Parameters**
 
-- `w` (`integer`, required) - Map width in cells.
-- `h` (`integer`, required) - Map height in cells.
-- `cs` (`number`, required) - World size of one cell.
+- `w` (`integer`, required): Map width in cells.
+- `h` (`integer`, required): Map height in cells.
+- `cs` (`number`, required): World size of one cell.
 
 **Returns**: `LInfluenceMap` - New influence map handle.
 
@@ -895,7 +880,9 @@ do
 end
 ```
 
-### `lurek.ai.newInverter() -> LBTNode`
+### lurek.ai.newInverter
+
+`lurek.ai.newInverter() -> LBTNode`
 
 Creates a behavior tree inverter decorator with an empty sequence child.
 
@@ -916,16 +903,18 @@ do
 end
 ```
 
-### `lurek.ai.newMCTSEngine(iters: integer, uct_c: number, depth: integer, seed: integer) -> LMCTSEngine`
+### lurek.ai.newMCTSEngine
+
+`lurek.ai.newMCTSEngine(iters: integer, uct_c: number, depth: integer, seed: integer) -> LMCTSEngine`
 
 Creates a Monte Carlo tree search engine with deterministic configuration.
 
 **Parameters**
 
-- `iters` (`integer`, required) - Search iteration count.
-- `uct_c` (`number`, required) - UCT exploration constant.
-- `depth` (`integer`, required) - Rollout depth limit.
-- `seed` (`integer`, required) - Random seed used by the engine.
+- `iters` (`integer`, required): Search iteration count.
+- `uct_c` (`number`, required): UCT exploration constant.
+- `depth` (`integer`, required): Rollout depth limit.
+- `seed` (`integer`, required): Random seed used by the engine.
 
 **Returns**: `LMCTSEngine` - New MCTS engine handle.
 
@@ -945,7 +934,9 @@ do
 end
 ```
 
-### `lurek.ai.newNeedSystem() -> LNeedSystem`
+### lurek.ai.newNeedSystem
+
+`lurek.ai.newNeedSystem() -> LNeedSystem`
 
 Creates an empty need system for decaying named needs.
 
@@ -966,7 +957,9 @@ do
 end
 ```
 
-### `lurek.ai.newNeuralNet() -> LNeuralNet`
+### lurek.ai.newNeuralNet
+
+`lurek.ai.newNeuralNet() -> LNeuralNet`
 
 Creates an empty feed-forward neural network.
 
@@ -987,15 +980,17 @@ do
 end
 ```
 
-### `lurek.ai.newNeuroevolution(layer_spec: table, pop_size: integer, seed: integer) -> LNeuroevolution`
+### lurek.ai.newNeuroevolution
+
+`lurek.ai.newNeuroevolution(layer_spec: table, pop_size: integer, seed: integer) -> LNeuroevolution`
 
 Creates a neuroevolution population from a layer specification table.
 
 **Parameters**
 
-- `layer_spec` (`table`, required) - Array of layer tables with `inputs`, `outputs`, and optional `activation` fields.
-- `pop_size` (`integer`, required) - Number of chromosomes in the population.
-- `seed` (`integer`, required) - Random seed used for population initialization and evolution.
+- `layer_spec` (`table`, required): Array of layer tables with `inputs`, `outputs`, and optional `activation` fields.
+- `pop_size` (`integer`, required): Number of chromosomes in the population.
+- `seed` (`integer`, required): Random seed used for population initialization and evolution.
 
 **Returns**: `LNeuroevolution` - New neuroevolution handle.
 
@@ -1014,13 +1009,15 @@ do
 end
 ```
 
-### `lurek.ai.newORCASolver(time_horizon: number) -> LORCASolver`
+### lurek.ai.newORCASolver
+
+`lurek.ai.newORCASolver(time_horizon: number) -> LORCASolver`
 
 Creates an ORCA avoidance solver with the supplied prediction horizon.
 
 **Parameters**
 
-- `time_horizon` (`number`, required) - Time horizon used when computing collision avoidance velocities.
+- `time_horizon` (`number`, required): Time horizon used when computing collision avoidance velocities.
 
 **Returns**: `LORCASolver` - New ORCA solver handle.
 
@@ -1039,14 +1036,16 @@ do
 end
 ```
 
-### `lurek.ai.newParallel([sp]: string, [fp]: string) -> LBTNode`
+### lurek.ai.newParallel
+
+`lurek.ai.newParallel([sp]: string, [fp]: string) -> LBTNode`
 
 Creates a behavior tree parallel node with optional success and failure policies.
 
 **Parameters**
 
-- `sp` (`string`, optional) - Success policy name; defaults to the engine's require-one policy.
-- `fp` (`string`, optional) - Failure policy name; defaults to the engine's require-one policy.
+- `sp` (`string`, optional): Success policy name; defaults to the engine's require-one policy.
+- `fp` (`string`, optional): Failure policy name; defaults to the engine's require-one policy.
 
 **Returns**: `LBTNode` - New parallel node handle.
 
@@ -1065,14 +1064,16 @@ do
 end
 ```
 
-### `lurek.ai.newQLearner(sc: integer, ac: integer) -> LQLearner`
+### lurek.ai.newQLearner
+
+`lurek.ai.newQLearner(sc: integer, ac: integer) -> LQLearner`
 
 Creates a Q-learner with fixed state and action counts.
 
 **Parameters**
 
-- `sc` (`integer`, required) - Number of discrete states.
-- `ac` (`integer`, required) - Number of discrete actions.
+- `sc` (`integer`, required): Number of discrete states.
+- `ac` (`integer`, required): Number of discrete actions.
 
 **Returns**: `LQLearner` - New Q-learner handle.
 
@@ -1091,13 +1092,15 @@ do
 end
 ```
 
-### `lurek.ai.newRepeater([count]: integer) -> LBTNode`
+### lurek.ai.newRepeater
+
+`lurek.ai.newRepeater([count]: integer) -> LBTNode`
 
 Creates a behavior tree repeater decorator with an optional repeat count.
 
 **Parameters**
 
-- `count` (`integer`, optional) - Repeat count stored on the node; defaults to zero.
+- `count` (`integer`, optional): Repeat count stored on the node; defaults to zero.
 
 **Returns**: `LBTNode` - New repeater node handle.
 
@@ -1116,7 +1119,9 @@ do
 end
 ```
 
-### `lurek.ai.newSelector() -> LBTNode`
+### lurek.ai.newSelector
+
+`lurek.ai.newSelector() -> LBTNode`
 
 Creates a behavior tree selector node with no children.
 
@@ -1137,7 +1142,9 @@ do
 end
 ```
 
-### `lurek.ai.newSequence() -> LBTNode`
+### lurek.ai.newSequence
+
+`lurek.ai.newSequence() -> LBTNode`
 
 Creates a behavior tree sequence node with no children.
 
@@ -1158,13 +1165,15 @@ do
 end
 ```
 
-### `lurek.ai.newSquad(name: string) -> LSquad`
+### lurek.ai.newSquad
+
+`lurek.ai.newSquad(name: string) -> LSquad`
 
 Creates an empty named squad. This function is exposed to Lua scripts.
 
 **Parameters**
 
-- `name` (`string`, required) - Squad name stored on the handle.
+- `name` (`string`, required): Squad name stored on the handle.
 
 **Returns**: `LSquad` - New squad handle.
 
@@ -1183,7 +1192,9 @@ do
 end
 ```
 
-### `lurek.ai.newStateMachine() -> LStateMachine`
+### lurek.ai.newStateMachine
+
+`lurek.ai.newStateMachine() -> LStateMachine`
 
 Creates an empty finite state machine with Lua-backed states and transitions.
 
@@ -1205,7 +1216,9 @@ do
 end
 ```
 
-### `lurek.ai.newSteeringManager() -> LSteeringManager`
+### lurek.ai.newSteeringManager
+
+`lurek.ai.newSteeringManager() -> LSteeringManager`
 
 Creates an empty steering manager with support for built-in and custom behaviors.
 
@@ -1226,7 +1239,9 @@ do
 end
 ```
 
-### `lurek.ai.newStimulusWorld() -> LStimulusWorld`
+### lurek.ai.newStimulusWorld
+
+`lurek.ai.newStimulusWorld() -> LStimulusWorld`
 
 Creates an empty stimulus world for visual and auditory stimulus records.
 
@@ -1247,13 +1262,15 @@ do
 end
 ```
 
-### `lurek.ai.newStrategyAI(update_interval: number) -> LStrategyAI`
+### lurek.ai.newStrategyAI
+
+`lurek.ai.newStrategyAI(update_interval: number) -> LStrategyAI`
 
 Creates a strategy AI that reevaluates goals on a fixed interval.
 
 **Parameters**
 
-- `update_interval` (`number`, required) - Seconds between automatic strategy evaluations.
+- `update_interval` (`number`, required): Seconds between automatic strategy evaluations.
 
 **Returns**: `LStrategyAI` - New strategy AI handle.
 
@@ -1272,7 +1289,9 @@ do
 end
 ```
 
-### `lurek.ai.newSucceeder() -> LBTNode`
+### lurek.ai.newSucceeder
+
+`lurek.ai.newSucceeder() -> LBTNode`
 
 Creates a behavior tree succeeder decorator with an empty sequence child.
 
@@ -1293,7 +1312,9 @@ do
 end
 ```
 
-### `lurek.ai.newTraitProfile() -> LTraitProfile`
+### lurek.ai.newTraitProfile
+
+`lurek.ai.newTraitProfile() -> LTraitProfile`
 
 Creates an empty trait profile with modifier support.
 
@@ -1314,7 +1335,9 @@ do
 end
 ```
 
-### `lurek.ai.newUtilityAI() -> LUtilityAI`
+### lurek.ai.newUtilityAI
+
+`lurek.ai.newUtilityAI() -> LUtilityAI`
 
 Creates an empty utility AI action scorer.
 
@@ -1335,7 +1358,9 @@ do
 end
 ```
 
-### `lurek.ai.newWorld() -> LAIWorld`
+### lurek.ai.newWorld
+
+`lurek.ai.newWorld() -> LAIWorld`
 
 Creates an isolated AI world for agents, blackboards, and custom decision callbacks.
 
@@ -1358,11 +1383,21 @@ end
 ```
 
 
-## Types and Methods
+[⬆ back to top](#table-of-contents)
 
-### `LAgent`
+## 🔷 Module Types
+
+### LAgent
 
 Lua handle for a named agent stored inside an AI world.
+
+**Lua API Definition**
+
+```lua
+--- Lua handle for a named agent stored inside an AI world.
+---@class LAgent
+LAgent = {}
+```
 
 #### Example
 
@@ -1379,431 +1414,17 @@ do
 end
 ```
 
-### `LAgent:addTag(tag: string)`
-
-Adds a tag string to this agent when the agent still exists in its world.
-
-**Parameters**
-
-- `tag` (`string`, required) - Tag name to insert into the agent tag set.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  -- Tags classify agents for query filtering (e.g., "hostile", "civilian").
-  -- Scenario: mark a freshly-aggro'd NPC as hostile.
-  local world = lurek.ai.newWorld()
-  local npc = world:addAgent("villager")
-  npc:addTag("civilian")
-  npc:addTag("quest_giver")
-  lurek.log.info("tagged villager as civilian + quest_giver", "ai")
-end
-```
-
-### `LAgent:getBlackboard() -> LAIBlackboard`
-
-Returns a blackboard snapshot for this agent or an empty blackboard when the agent has been removed.
-
-**Returns**: `LAIBlackboard` - Blackboard handle initialized from the agent's local blackboard values at call time.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  -- Each agent has its own private blackboard for local AI state.
-  -- Scenario: store this guard's current patrol waypoint index.
-  local world = lurek.ai.newWorld()
-  local guard = world:addAgent("wall_guard")
-  local bb = guard:getBlackboard()
-  bb:setNumber("waypoint_idx", 0)
-  lurek.log.info("bb size: " .. bb:getSize(), "ai")
-end
-```
-
-### `LAgent:getDecisionModel() -> string`
-
-Returns this agent's decision model name or the default model name for a missing agent.
-
-**Returns**: `string` - Current decision model name.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local world = lurek.ai.newWorld()
-  local agent = world:addAgent("scout_01")
-  if agent:getDecisionModel() == "fsm" then lurek.log.debug("uses fsm", "ai") end
-end
-```
-
-### `LAgent:getMaxForce() -> number`
-
-Returns this agent's maximum steering force or the default force for a missing agent.
-
-**Returns**: `number` - Maximum steering force value.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local world = lurek.ai.newWorld()
-  local agent = world:addAgent("scout_01")
-  local f = agent:getMaxForce()
-  lurek.log.debug("max force=" .. f, "ai")
-end
-```
-
-### `LAgent:getMaxSpeed() -> number`
-
-Returns this agent's maximum movement speed or the default speed for a missing agent.
-
-**Returns**: `number` - Maximum speed in world units per second.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local world = lurek.ai.newWorld()
-  local agent = world:addAgent("scout_01")
-  local cap = agent:getMaxSpeed()
-  agent:setVelocity(cap, 0)
-end
-```
-
-### `LAgent:getName() -> string`
-
-Returns this agent's stable world name.
-
-**Returns**: `string` - Agent name stored in the handle.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  -- Use getName() to identify agents for logging or UI labels.
-  -- Scenario: display NPC name above their head in the game.
-  local world = lurek.ai.newWorld()
-  local npc = world:addAgent("merchant_01")
-  lurek.log.info("agent name: " .. npc:getName(), "ai")
-end
-```
-
-### `LAgent:getPosition() -> number, number`
-
-Returns this agent's world position or the origin when the agent has been removed.
-
-**Returns**: `number, number` - X and Y position in world units.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local world = lurek.ai.newWorld()
-  local agent = world:addAgent("scout_01")
-  agent:setPosition(50, 75)
-  local x, y = agent:getPosition()
-  lurek.log.debug("pos=" .. x .. "," .. y, "ai")
-end
-```
-
-### `LAgent:getPriority() -> integer`
-
-Returns this agent's integer priority or zero when the agent has been removed.
-
-**Returns**: `integer` - Current priority value.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local world = lurek.ai.newWorld()
-  local agent = world:addAgent("scout_01")
-  agent:setPriority(5)
-  if agent:getPriority() > 0 then lurek.log.debug("prio agent", "ai") end
-end
-```
-
-### `LAgent:getVelocity() -> number, number`
-
-Returns this agent's velocity vector or zero velocity when the agent has been removed.
-
-**Returns**: `number, number` - X and Y velocity in world units per second.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local world = lurek.ai.newWorld()
-  local agent = world:addAgent("scout_01")
-  agent:setVelocity(40, 30)
-  local vx, vy = agent:getVelocity()
-  if vx*vx + vy*vy > 100 then lurek.log.debug("moving", "ai") end
-end
-```
-
-### `LAgent:hasTag(tag: string) -> boolean`
-
-Returns whether this agent currently has the given tag.
-
-**Parameters**
-
-- `tag` (`string`, required) - Tag name to check in the agent tag set.
-
-**Returns**: `boolean` - True when the tag exists on the agent.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local world = lurek.ai.newWorld()
-  local agent = world:addAgent("scout_01")
-  agent:addTag("boss")
-  if agent:hasTag("boss") then lurek.log.info("boss alert", "ai") end
-end
-```
-
-### `LAgent:removeTag(tag: string)`
-
-Removes a tag string from this agent when the agent still exists in its world.
-
-**Parameters**
-
-- `tag` (`string`, required) - Tag name to remove from the agent tag set.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  -- Remove a tag when status changes (e.g., enemy becomes friendly).
-  -- Scenario: charmed enemy loses "hostile" tag.
-  local world = lurek.ai.newWorld()
-  local enemy = world:addAgent("goblin")
-  enemy:addTag("hostile")
-  enemy:removeTag("hostile")
-  lurek.log.info("goblin no longer hostile: " .. tostring(enemy:hasTag("hostile")), "ai")
-end
-```
-
-### `LAgent:setCustomModel(callback: function)`
-
-Installs a Lua callback as this agent's decision model and stores it in the callback registry.
-
-**Parameters**
-
-- `callback` (`function`, required) - Function called during world updates with `(agent, blackboard, dt)` for this agent.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local world = lurek.ai.newWorld()
-  local agent = world:addAgent("custom_agent")
-  agent:setCustomModel(function(ag, bb, dt)
-    -- Read from blackboard and steer accordingly
-    local dist = bb:getNumber("target_dist", 999)
-    if dist < 50 then
-      ag:setVelocity(0, 0)
-    end
-  end)
-  world:update(0.016)
-  lurek.log.debug("custom model: " .. agent:getDecisionModel(), "ai")
-end
-```
-
-### `LAgent:setDecisionModel(model: string)`
-
-Sets this agent's built-in decision model from a string name when the name is recognized.
-
-**Parameters**
-
-- `model` (`string`, required) - Decision model name such as `fsm`, `bt`, `utility`, or another engine-supported model string.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local world = lurek.ai.newWorld()
-  local agent = world:addAgent("scout_01")
-  agent:setDecisionModel("bt")
-end
-```
-
-### `LAgent:setMaxForce(v: number)`
-
-Sets this agent's maximum steering force when the agent still exists in its world.
-
-**Parameters**
-
-- `v` (`number`, required) - Maximum steering force applied during steering calculations.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local world = lurek.ai.newWorld()
-  local agent = world:addAgent("scout_01")
-  agent:setMaxForce(300)
-end
-```
-
-### `LAgent:setMaxSpeed(v: number)`
-
-Sets this agent's maximum movement speed when the agent still exists in its world.
-
-**Parameters**
-
-- `v` (`number`, required) - Maximum speed in world units per second.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local world = lurek.ai.newWorld()
-  local agent = world:addAgent("scout_01")
-  agent:setMaxSpeed(150)
-end
-```
-
-### `LAgent:setPosition(x: number, y: number)`
-
-Sets this agent's world position when the agent still exists in its world.
-
-**Parameters**
-
-- `x` (`number`, required) - New X position in world units.
-- `y` (`number`, required) - New Y position in world units.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  -- Teleport or reposition an agent during gameplay.
-  -- Scenario: guard returns to post after losing sight of the player.
-  local world = lurek.ai.newWorld()
-  local guard = world:addAgent("gate_guard")
-  guard:setPosition(400, 300)
-  local x, y = guard:getPosition()
-  lurek.log.info("guard at: " .. x .. "," .. y, "ai")
-end
-```
-
-### `LAgent:setPriority(p: integer)`
-
-Sets this agent's integer priority when the agent still exists in its world.
-
-**Parameters**
-
-- `p` (`integer`, required) - Priority value used by game-side AI scheduling or ordering logic.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local world = lurek.ai.newWorld()
-  local agent = world:addAgent("scout_01")
-  agent:setPriority(10)
-end
-```
-
-### `LAgent:setVelocity(x: number, y: number)`
-
-Sets this agent's velocity vector when the agent still exists in its world.
-
-**Parameters**
-
-- `x` (`number`, required) - New X velocity in world units per second.
-- `y` (`number`, required) - New Y velocity in world units per second.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local world = lurek.ai.newWorld()
-  local agent = world:addAgent("scout_01")
-  agent:setVelocity(40, 0)
-end
-```
-
-### `LAgent:type() -> string`
-
-Returns the Lua-visible type name for this agent handle.
-
-**Returns**: `string` - The string `LAgent`.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local world = lurek.ai.newWorld()
-  local agent = world:addAgent("test_agent")
-  lurek.log.info("agent type: " .. agent:type(), "ai")
-end
-```
-
-### `LAgent:typeOf(name: string) -> boolean`
-
-Returns whether this agent handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to compare against `Agent` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local world = lurek.ai.newWorld()
-  local agent = world:addAgent("test_agent")
-  lurek.log.info("is Agent: " .. tostring(agent:typeOf("Agent")), "ai")
-end
-```
-
-### `LAIBlackboard`
+### LAIBlackboard
 
 Lua handle for a typed AI blackboard storing local key-value facts.
+
+**Lua API Definition**
+
+```lua
+--- Lua handle for a typed AI blackboard storing local key-value facts.
+---@class LAIBlackboard
+LAIBlackboard = {}
+```
 
 #### Example
 
@@ -1820,293 +1441,17 @@ do
 end
 ```
 
-### `LAIBlackboard:clear()`
-
-Removes every local entry from this blackboard.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local bb = lurek.ai.newBlackboard()
-  bb:setNumber("gold", 500)
-  bb:setString("name", "hero")
-  -- Wipe all entries.
-  bb:clear()
-  lurek.log.debug("after clear, has 'gold': " .. tostring(bb:has("gold")), "ai") -- false
-end
-```
-
-### `LAIBlackboard:getBool(key: string, [default]: boolean) -> boolean`
-
-Returns a boolean blackboard fact or the provided fallback when the key is missing or not boolean.
-
-**Parameters**
-
-- `key` (`string`, required) - Blackboard key to read.
-- `default` (`boolean`, optional) - Fallback value used when the key has no boolean entry; defaults to false.
-
-**Returns**: `boolean` - Stored boolean value or fallback value.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local bb = lurek.ai.newBlackboard()
-  bb:setBool("player_visible", true)
-  lurek.log.info("visible=" .. tostring(bb:getBool("player_visible", false)), "ai")
-  lurek.log.info("default=" .. tostring(bb:getBool("unknown_key", false)), "ai")
-end
-```
-
-### `LAIBlackboard:getKeys() -> string[]`
-
-Returns every local blackboard key in an array-style Lua table.
-
-**Returns**: `string[]` - Array table containing all stored key names as strings.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local bb = lurek.ai.newBlackboard()
-  bb:setNumber("energy", 50)
-  bb:setBool("charging", false)
-  bb:setString("phase", "attack")
-  local keys = bb:getKeys()
-  lurek.log.info("key count=" .. #keys, "ai")
-end
-```
-
-### `LAIBlackboard:getNumber(key: string, [default]: number) -> number`
-
-Returns a numeric blackboard fact or the provided fallback when the key is missing or not numeric.
-
-**Parameters**
-
-- `key` (`string`, required) - Blackboard key to read.
-- `default` (`number`, optional) - Fallback value used when the key has no numeric entry; defaults to zero.
-
-**Returns**: `number` - Stored numeric value or fallback value.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local bb = lurek.ai.newBlackboard()
-  bb:setNumber("speed", 5.0)
-  local v = bb:getNumber("speed", 0.0)
-  local missing = bb:getNumber("nonexistent", -1.0)
-  lurek.log.info("speed=" .. v .. " missing=" .. missing, "ai")
-end
-```
-
-### `LAIBlackboard:getSize() -> integer`
-
-Returns the number of entries currently stored in this blackboard.
-
-**Returns**: `integer` - Current blackboard entry count.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local bb = lurek.ai.newBlackboard()
-  bb:setNumber("x", 10)
-  bb:setNumber("y", 20)
-  lurek.log.info("size=" .. bb:getSize(), "ai")
-end
-```
-
-### `LAIBlackboard:getString(key: string, [default]: string) -> string`
-
-Returns a string blackboard fact or the provided fallback when the key is missing or not a string.
-
-**Parameters**
-
-- `key` (`string`, required) - Blackboard key to read.
-- `default` (`string`, optional) - Fallback value used when the key has no string entry; defaults to an empty string.
-
-**Returns**: `string` - Stored string value or fallback value.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local bb = lurek.ai.newBlackboard()
-  bb:setString("last_command", "patrol_waypoint_3")
-  local cmd = bb:getString("last_command", "idle")
-  lurek.log.info("last_command=" .. cmd, "ai")
-end
-```
-
-### `LAIBlackboard:has(key: string) -> boolean`
-
-Returns whether the blackboard contains any entry for the given key.
-
-**Parameters**
-
-- `key` (`string`, required) - Blackboard key to check.
-
-**Returns**: `boolean` - True when any typed value is stored at the key.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local bb = lurek.ai.newBlackboard()
-  bb:setNumber("score", 42)
-  local found = bb:has("score")
-  lurek.log.debug("has 'score': " .. tostring(found), "ai") -- true
-  local missing = bb:has("no_such_key")
-  lurek.log.debug("has 'no_such_key': " .. tostring(missing), "ai") -- false
-end
-```
-
-### `LAIBlackboard:remove(key: string)`
-
-Removes the given key from the blackboard if it exists.
-
-**Parameters**
-
-- `key` (`string`, required) - Blackboard key to remove.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local bb = lurek.ai.newBlackboard()
-  bb:setNumber("hp", 100)
-  bb:setNumber("mp", 50)
-  bb:remove("hp")
-  lurek.log.debug("after remove, has 'hp': " .. tostring(bb:has("hp")), "ai") -- false
-  lurek.log.debug("mp still present: " .. tostring(bb:has("mp")), "ai") -- true
-end
-```
-
-### `LAIBlackboard:setBool(key: string, value: boolean)`
-
-Stores a boolean fact under the given blackboard key.
-
-**Parameters**
-
-- `key` (`string`, required) - Blackboard key to write.
-- `value` (`boolean`, required) - Boolean value stored for later boolean reads.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local bb = lurek.ai.newBlackboard()
-  bb:setBool("is_alerted", true)
-  bb:setBool("can_attack", false)
-  lurek.log.info("alerted=" .. tostring(bb:getBool("is_alerted", false)), "ai")
-end
-```
-
-### `LAIBlackboard:setNumber(key: string, value: number)`
-
-Stores a numeric fact under the given blackboard key.
-
-**Parameters**
-
-- `key` (`string`, required) - Blackboard key to write.
-- `value` (`number`, required) - Numeric value stored for later numeric reads.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local bb = lurek.ai.newBlackboard()
-  bb:setNumber("health", 100)
-  bb:setNumber("aggro_timer", 3.5)
-  lurek.log.info("health=" .. bb:getNumber("health", 0), "ai")
-end
-```
-
-### `LAIBlackboard:setString(key: string, value: string)`
-
-Stores a string fact under the given blackboard key.
-
-**Parameters**
-
-- `key` (`string`, required) - Blackboard key to write.
-- `value` (`string`, required) - String value stored for later string reads.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local bb = lurek.ai.newBlackboard()
-  bb:setString("state", "patrol")
-  bb:setString("target_id", "player_1")
-  lurek.log.info("state=" .. bb:getString("state", "idle"), "ai")
-end
-```
-
-### `LAIBlackboard:type() -> string`
-
-Returns the Lua-visible type name for this blackboard handle.
-
-**Returns**: `string` - The string `LAIBlackboard`.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local obj = lurek.ai.newBlackboard()
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LAIBlackboard"
-end
-```
-
-### `LAIBlackboard:typeOf(name: string) -> boolean`
-
-Returns whether this blackboard handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to compare against `AIBlackboard`, `Blackboard`, and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local obj = lurek.ai.newBlackboard()
-  lurek.log.debug("typeOf LAIBlackboard: " .. tostring(obj:typeOf("LAIBlackboard")), "example") -- true
-end
-```
-
-### `LAIDirector`
+### LAIDirector
 
 Lua handle for an AI director that tracks encounter tension and pacing factors.
+
+**Lua API Definition**
+
+```lua
+--- Lua handle for an AI director that tracks encounter tension and pacing factors.
+---@class LAIDirector
+LAIDirector = {}
+```
 
 #### Example
 
@@ -2123,215 +1468,17 @@ do
 end
 ```
 
-### `LAIDirector:ambientIntensity() -> number`
-
-Returns the ambient intensity derived from current tension and phase.
-
-**Returns**: `number` - Ambient intensity factor.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local dir = lurek.ai.newAIDirector()
-  local amb = dir:ambientIntensity()
-  if amb > 0.5 then lurek.log.debug("loud ambience", "ai") end
-end
-```
-
-### `LAIDirector:lootFactor() -> number`
-
-Returns the loot multiplier derived from current tension and phase.
-
-**Returns**: `number` - Loot factor.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local dir = lurek.ai.newAIDirector()
-  lurek.log.debug("loot x" .. dir:lootFactor(), "ai")
-end
-```
-
-### `LAIDirector:phase() -> string`
-
-Returns the current director phase name.
-
-**Returns**: `string` - Current pacing phase.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local dir = lurek.ai.newAIDirector()
-  if dir:phase() == "peak" then lurek.log.info("intense moment", "ai") end
-end
-```
-
-### `LAIDirector:pushEvent(intensity: number)`
-
-Adds an event intensity sample to the director tension model.
-
-**Parameters**
-
-- `intensity` (`number`, required) - Event intensity added to current tension.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local dir = lurek.ai.newAIDirector()
-  dir:pushEvent(0.7)
-end
-```
-
-### `LAIDirector:reset()`
-
-Resets director tension and phase state to defaults.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  -- Reset after a level transition or when the player enters a safe zone.
-  -- Scenario: player reaches a checkpoint — reset director for the next area.
-  local dir = lurek.ai.newAIDirector()
-  dir:setTension(0.9)
-  dir:reset()
-  lurek.log.info("tension after reset: " .. dir:tension(), "ai")
-end
-```
-
-### `LAIDirector:setTension(value: number)`
-
-Directly sets the director tension value.
-
-**Parameters**
-
-- `value` (`number`, required) - New tension value.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local dir = lurek.ai.newAIDirector()
-  dir:setTension(0.9)
-end
-```
-
-### `LAIDirector:spawnRateFactor() -> number`
-
-Returns the spawn-rate multiplier derived from current tension and phase.
-
-**Returns**: `number` - Spawn rate factor.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local dir = lurek.ai.newAIDirector()
-  local mult = dir:spawnRateFactor()
-  lurek.log.debug("spawn x" .. mult, "ai")
-end
-```
-
-### `LAIDirector:tension() -> number`
-
-Returns the current director tension value.
-
-**Returns**: `number` - Current tension.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local dir = lurek.ai.newAIDirector()
-  dir:pushEvent(0.5)
-  lurek.log.debug("tension=" .. dir:tension(), "ai")
-end
-```
-
-### `LAIDirector:type() -> string`
-
-Returns the Lua-visible type name for this AI director handle.
-
-**Returns**: `string` - The string `LAIDirector`.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local obj = lurek.ai.newBehaviorTree()
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LBehaviorTree"
-end
-```
-
-### `LAIDirector:typeOf(name: string) -> boolean`
-
-Returns whether this AI director handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to compare against `LAIDirector` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local obj = lurek.ai.newBehaviorTree()
-  lurek.log.debug("typeOf LBehaviorTree: " .. tostring(obj:typeOf("LBehaviorTree")), "example") -- true
-end
-```
-
-### `LAIDirector:update(dt: number)`
-
-Advances director tension decay and phase evaluation.
-
-**Parameters**
-
-- `dt` (`number`, required) - Elapsed time in seconds.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  -- Call update(dt) each frame to decay tension and re-evaluate the current phase.
-  -- Scenario: horde-mode director ticks tension down between waves.
-  local dir = lurek.ai.newAIDirector()
-  dir:setTension(0.8)
-  dir:update(0.5)
-  lurek.log.info("tension after decay: " .. dir:tension(), "ai")
-end
-```
-
-### `LAILod`
+### LAILod
 
 Lua handle for distance-based AI level-of-detail tier selection.
+
+**Lua API Definition**
+
+```lua
+--- Lua handle for distance-based AI level-of-detail tier selection.
+---@class LAILod
+LAILod = {}
+```
 
 #### Example
 
@@ -2347,133 +1494,17 @@ do
 end
 ```
 
-### `LAILod:shouldUpdate(tier: integer, frame: integer) -> boolean`
-
-Returns whether a tier should update on a given frame counter.
-
-**Parameters**
-
-- `tier` (`integer`, required) - Zero-based LOD tier index.
-- `frame` (`integer`, required) - Current frame counter.
-
-**Returns**: `boolean` - True when agents in the tier should update this frame.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local lod = lurek.ai.newAILod()
-  if lod:shouldUpdate(1, 60) then lurek.log.debug("tier 1 tick", "ai") end
-end
-```
-
-### `LAILod:tierCount() -> integer`
-
-Returns the number of configured AI LOD tiers.
-
-**Returns**: `integer` - LOD tier count.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local lod = lurek.ai.newAILod()
-  lurek.log.debug("tiers=" .. lod:tierCount(), "ai")
-end
-```
-
-### `LAILod:tierFor(ax: number, ay: number, rx: number, ry: number) -> integer`
-
-Returns the LOD tier for an agent position relative to a reference position.
-
-**Parameters**
-
-- `ax` (`number`, required) - Agent X position.
-- `ay` (`number`, required) - Agent Y position.
-- `rx` (`number`, required) - Reference X position, usually camera or player position.
-- `ry` (`number`, required) - Reference Y position, usually camera or player position.
-
-**Returns**: `integer` - Zero-based LOD tier index.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local lod = lurek.ai.newAILod()
-  local tier = lod:tierFor(350, 0, 0, 0)
-  lurek.log.info("lod tier at 350: " .. tier, "ai")
-end
-```
-
-### `LAILod:tierName(tier: integer) -> LuaValue`
-
-Returns the name of an AI LOD tier when the index is valid.
-
-**Parameters**
-
-- `tier` (`integer`, required) - Zero-based LOD tier index.
-
-**Returns**: `LuaValue` - Tier name, or nil when the tier index is invalid.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local lod = lurek.ai.newAILod()
-  local n = lod:tierName(0)
-  if n then lurek.log.debug("tier 0=" .. n, "ai") end
-end
-```
-
-### `LAILod:type() -> string`
-
-Returns the Lua-visible type name for this AI LOD handle.
-
-**Returns**: `string` - The string `LAILod`.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local d = lurek.ai.newDialogueAI()
-  lurek.log.info(d:type(), "ai")
-end
-```
-
-### `LAILod:typeOf(name: string) -> boolean`
-
-Returns whether this AI LOD handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to compare against `LAILod` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local d = lurek.ai.newDialogueAI()
-  lurek.log.info(tostring(d:typeOf("LDialogueAI")), "ai")
-end
-```
-
-### `LAIWorld`
+### LAIWorld
 
 Lua handle for an AI world that owns named agents, global blackboard data, and custom callback registrations.
+
+**Lua API Definition**
+
+```lua
+--- Lua handle for an AI world that owns named agents, global blackboard data, and custom callback registrations.
+---@class LAIWorld
+LAIWorld = {}
+```
 
 #### Example
 
@@ -2491,178 +1522,17 @@ do
 end
 ```
 
-### `LAIWorld:addAgent(name: string) -> LAgent`
-
-Creates a named agent in this world and returns a handle that can edit its movement and decision state.
-
-**Parameters**
-
-- `name` (`string`, required) - Unique agent name used by later lookup, tags, custom callbacks, and squad membership references.
-
-**Returns**: `LAgent` - Lua handle for the newly inserted agent.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  -- Register NPCs in the AI world so they can perceive and be perceived by others.
-  -- Scenario: spawn a patrol guard at level start.
-  local world = lurek.ai.newWorld()
-  local guard = world:addAgent("patrol_guard")
-  guard:setPosition(200, 150)
-  lurek.log.info("spawned agent: " .. guard:getName(), "ai")
-end
-```
-
-### `LAIWorld:getAgent(name: string) -> LuaValue`
-
-Returns the named agent handle when it exists in this world.
-
-**Parameters**
-
-- `name` (`string`, required) - Agent name previously passed to `addAgent`.
-
-**Returns**: `LuaValue` - Agent handle when found, or nil when the world has no agent with that name.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local world = lurek.ai.newWorld()
-  world:addAgent("guard_01")
-  local a = world:getAgent("guard_01")
-  if a then a:addTag("alive") end
-end
-```
-
-### `LAIWorld:getAgentCount() -> integer`
-
-Returns the number of agents currently stored in this world.
-
-**Returns**: `integer` - Current agent count.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local world = lurek.ai.newWorld()
-  world:addAgent("a"); world:addAgent("b")
-  lurek.log.info("agents=" .. world:getAgentCount(), "ai")
-end
-```
-
-### `LAIWorld:getGlobalBlackboard() -> LAIBlackboard`
-
-Returns a blackboard snapshot containing the world's shared AI facts.
-
-**Returns**: `LAIBlackboard` - Blackboard handle initialized from the world's global blackboard values at call time.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  -- The global blackboard is shared state visible to ALL agents in the world.
-  -- Use it for world-level facts: alarm status, time of day, player position.
-  -- Scenario: one guard spots the player → sets "alarm" on global BB → all guards react.
-  local world = lurek.ai.newWorld()
-  local bb = world:getGlobalBlackboard()
-  bb:setNumber("alarm", 0.0)
-end
-```
-
-### `LAIWorld:removeAgent(agent: LAgent)`
-
-Removes an agent from this world by using an existing agent handle.
-
-**Parameters**
-
-- `agent` (`LAgent`, required) - Agent handle whose stored name identifies the world entry to remove.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local world = lurek.ai.newWorld()
-  local tmp = world:addAgent("temp")
-  world:removeAgent(tmp)
-end
-```
-
-### `LAIWorld:type() -> string`
-
-Returns the Lua-visible type name for this AI world handle.
-
-**Returns**: `string` - The string `LAIWorld`.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local world = lurek.ai.newWorld()
-  lurek.log.info("world type: " .. world:type(), "ai")
-end
-```
-
-### `LAIWorld:typeOf(name: string) -> boolean`
-
-Returns whether this AI world handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to compare against `AIWorld` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local world = lurek.ai.newWorld()
-  lurek.log.info("is AIWorld: " .. tostring(world:typeOf("AIWorld")), "ai")
-end
-```
-
-### `LAIWorld:update(dt: number)`
-
-Advances the world simulation and invokes custom decision callbacks for agents that use a custom model.
-
-**Parameters**
-
-- `dt` (`number`, required) - Elapsed simulation time in seconds for this update step.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  -- Tick the world each frame to update all agent decision models.
-  -- Scenario: dungeon level with 3 guards running FSM-based AI.
-  local world = lurek.ai.newWorld()
-  world:addAgent("sentry_a")
-  world:addAgent("sentry_b")
-  world:update(0.016)
-  lurek.log.info("world ticked, agents: " .. world:getAgentCount(), "ai")
-end
-```
-
-### `LBandit`
+### LBandit
 
 Lua handle for multi-armed bandit action selection.
+
+**Lua API Definition**
+
+```lua
+--- Lua handle for multi-armed bandit action selection.
+---@class LBandit
+LBandit = {}
+```
 
 #### Example
 
@@ -2679,157 +1549,17 @@ do
 end
 ```
 
-### `LBandit:armCount() -> integer`
-
-Returns the number of arms in this bandit.
-
-**Returns**: `integer` - Arm count.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local b = lurek.ai.newBandit(4, "ucb1", 0.1, 99)
-  lurek.log.debug("arms=" .. b:armCount(), "ai")
-end
-```
-
-### `LBandit:bestArm() -> integer`
-
-Returns the arm with the best current estimate.
-
-**Returns**: `integer` - Zero-based best arm index.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local b = lurek.ai.newBandit(4, "ucb1", 0.1, 99)
-  b:update(0, 0.7); b:update(1, 0.3)
-  lurek.log.debug("best arm=" .. b:bestArm(), "ai")
-end
-```
-
-### `LBandit:reset()`
-
-Resets all bandit arm statistics. This method is available to Lua scripts.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local b = lurek.ai.newBandit(4, "ucb1", 0.1, 99)
-  b:reset()
-end
-```
-
-### `LBandit:select() -> integer`
-
-Selects an arm using the configured bandit strategy.
-
-**Returns**: `integer` - Zero-based selected arm index.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local b = lurek.ai.newBandit(4, "ucb1", 0.1, 99)
-  local arm = b:select()
-  lurek.log.debug("arm=" .. arm, "ai")
-end
-```
-
-### `LBandit:totalPulls() -> integer`
-
-Returns the total number of arm selections recorded by this bandit.
-
-**Returns**: `integer` - Total pull count.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local b = lurek.ai.newBandit(4, "ucb1", 0.1, 99)
-  b:select(); b:select()
-  lurek.log.debug("pulls=" .. b:totalPulls(), "ai")
-end
-```
-
-### `LBandit:type() -> string`
-
-Returns the Lua-visible type name for this bandit handle.
-
-**Returns**: `string` - The string `LBandit`.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local obj = lurek.ai.newBandit(4, 'ucb1', 0.1, 99)
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LBandit"
-end
-```
-
-### `LBandit:typeOf(name: string) -> boolean`
-
-Returns whether this bandit handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to compare against `LBandit` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local obj = lurek.ai.newBandit(4, 'ucb1', 0.1, 99)
-  lurek.log.debug("typeOf LBandit: " .. tostring(obj:typeOf("LBandit")), "example") -- true
-end
-```
-
-### `LBandit:update(idx: integer, reward: number)`
-
-Updates one arm with a received reward.
-
-**Parameters**
-
-- `idx` (`integer`, required) - Zero-based arm index.
-- `reward` (`number`, required) - Reward value assigned to the arm pull.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  -- Feed reward signal back to the bandit after observing the outcome.
-  -- Scenario: player died to enemy type 2 — update arm 2 with reward 1.0.
-  local b = lurek.ai.newBandit(4, "ucb1", 0.1, 99)
-  local arm = b:select()
-  b:update(arm, 0.8)
-  lurek.log.info("updated arm " .. arm .. " with reward 0.8", "ai")
-end
-```
-
-### `LBehaviorTree`
+### LBehaviorTree
 
 Lua handle for a behavior tree root and its most recent execution status.
+
+**Lua API Definition**
+
+```lua
+--- Lua-facing behavior tree for AI decision-making with sequences, selectors, parallels, inverters, repeaters, and leaf actions.
+---@class LBehaviorTree
+LBehaviorTree = {}
+```
 
 #### Example
 
@@ -2876,118 +1606,17 @@ do
 end
 ```
 
-### `LBehaviorTree:getDebugState() -> table`
-
-Returns behavior tree debug counters and status in a Lua table.
-
-**Returns**: `table` - Table containing `node_count` and `last_status` fields.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  -- Returns a table with node_count, last_status, and active path for dev tools.
-  -- Useful for drawing a BT visualizer overlay or logging which branch is active.
-  -- Scenario: debug HUD shows "attack→aim→fire" path highlighted in green.
-  local bt = lurek.ai.newBehaviorTree()
-  local root = lurek.ai.newSequence()
-  root:addChild(lurek.ai.newAction(function() return "success" end))
-  bt:setRoot(root)
-  local dbg = bt:getDebugState()
-  lurek.log.debug("nodes=" .. dbg.node_count .. " status=" .. dbg.last_status, "ai")
-end
-```
-
-### `LBehaviorTree:getLastStatus() -> string`
-
-Returns the last behavior tree status string recorded by the tree.
-
-**Returns**: `string` - Last status such as `success`, `failure`, or `running`.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  -- Returns "success", "failure", or "running" from the last tick.
-  -- Use to detect when a behavior completes and trigger follow-up logic.
-  -- Scenario: if last tick returned "failure", play a confused animation.
-  local bt = lurek.ai.newBehaviorTree()
-  local root = lurek.ai.newSequence()
-  root:addChild(lurek.ai.newAction(function() return "success" end))
-  bt:setRoot(root)
-  local s = bt:getLastStatus()
-  lurek.log.debug("bt status=" .. s, "ai")
-end
-```
-
-### `LBehaviorTree:setRoot(node: LBTNode)`
-
-Sets the behavior tree root by moving a node handle into the tree.
-
-**Parameters**
-
-- `node` (`LBTNode`, required) - Node handle to consume as the new tree root.
-
-#### Example
-
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
-
-```lua
-do
-  -- Must set root before tick() or tree has nothing to evaluate.
-  local bt = lurek.patterns.newBehaviorTree()
-  local node = bt:addLeaf("idle", "idle_leaf")
-  bt:setLeaf("idle", function() return "success" end)
-  local ok = bt:setRoot(node)
-  print("root set=" .. tostring(ok))
-end
-```
-
-### `LBehaviorTree:type() -> string`
-
-Returns the Lua-visible type name for this behavior tree handle.
-
-**Returns**: `string` - The string `LBehaviorTree`.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local bt = lurek.ai.newBehaviorTree()
-  lurek.log.info("bt type: " .. bt:type(), "ai")
-end
-```
-
-### `LBehaviorTree:typeOf(name: string) -> boolean`
-
-Returns whether this behavior tree handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to compare against `BehaviorTree` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local bt = lurek.ai.newBehaviorTree()
-  lurek.log.info("is BehaviorTree: " .. tostring(bt:typeOf("BehaviorTree")), "ai")
-end
-```
-
-### `LBTNode`
+### LBTNode
 
 Lua handle for a behavior tree node that can be assembled into composites and decorators.
+
+**Lua API Definition**
+
+```lua
+--- Lua handle for a behavior tree node that can be assembled into composites and decorators.
+---@class LBTNode
+LBTNode = {}
+```
 
 #### Example
 
@@ -3004,227 +1633,17 @@ do
 end
 ```
 
-### `LBTNode:addChild(child: LBTNode)`
-
-Adds a child node to a composite selector, sequence, or parallel node.
-
-**Parameters**
-
-- `child` (`LBTNode`, required) - Child node handle to move into this composite node.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  -- BehaviorTree nodes are created with lurek.ai.newSequence/newSelector/newAction/etc.
-  -- then linked via node:addChild(). This is LBTNode:addChild, not a bt method.
-  local seq = lurek.ai.newSequence()
-  local check_hp = lurek.ai.newCondition(function() return true end)
-  local attack = lurek.ai.newAction(function() return "success" end)
-  seq:addChild(check_hp)   -- add condition as first child
-  seq:addChild(attack)     -- add action as second child
-  local bt = lurek.ai.newBehaviorTree()
-  bt:setRoot(seq)
-  lurek.log.debug("BT built: seq with " .. seq:getChildCount() .. " children", "ai")
-end
-```
-
-### `LBTNode:getChildCount() -> integer`
-
-Returns the number of children owned by this behavior tree node.
-
-**Returns**: `integer` - Child count for composite nodes, or zero for leaf and decorator nodes without child lists.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local seq = lurek.ai.newSequence()
-  seq:addChild(lurek.ai.newAction(function() return "success" end))
-  lurek.log.debug("children=" .. seq:getChildCount(), "ai")
-end
-```
-
-### `LBTNode:getCount() -> integer`
-
-Returns the repeat count for repeater nodes or zero for other node kinds.
-
-**Returns**: `integer` - Repeater count value.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  -- Check how many iterations a repeater will perform.
-  -- Scenario: verify burst-fire repeater is set to 3 shots.
-  local rep = lurek.ai.newRepeater(3)
-  lurek.log.info("repeater count: " .. rep:getCount(), "ai")
-end
-```
-
-### `LBTNode:getNodeType() -> string`
-
-Returns the behavior tree node kind as a lowercase string.
-
-**Returns**: `string` - Node kind such as `selector`, `sequence`, `parallel`, `action`, or `condition`.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local seq = lurek.ai.newSequence()
-  if seq:getNodeType() == "sequence" then lurek.log.debug("seq ok", "ai") end
-end
-```
-
-### `LBTNode:reset()`
-
-Resets this behavior tree node's runtime state.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  -- Clear running/success state so the node re-evaluates from scratch.
-  -- Scenario: player breaks line-of-sight; reset the chase sequence.
-  local seq = lurek.ai.newSequence()
-  seq:addChild(lurek.ai.newAction(function() return "running" end))
-  seq:reset()
-  lurek.log.info("sequence node state cleared", "ai")
-end
-```
-
-### `LBTNode:setChild(child: LBTNode)`
-
-Sets the single child of a decorator node such as inverter, repeater, or succeeder.
-
-**Parameters**
-
-- `child` (`LBTNode`, required) - Child node handle to move into this decorator node.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local inv = lurek.ai.newInverter()
-  inv:setChild(lurek.ai.newCondition(function() return false end))
-  local bt = lurek.ai.newBehaviorTree(); bt:setRoot(inv)
-end
-```
-
-### `LBTNode:setCount(n: integer)`
-
-Sets the repeat count when this node is a repeater.
-
-**Parameters**
-
-- `n` (`integer`, required) - Number of successful child executions before the repeater stops; zero means engine-defined repeat behavior.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local rep = lurek.ai.newRepeater(0)
-  rep:setCount(5)
-  rep:setChild(lurek.ai.newAction(function() return "success" end))
-end
-```
-
-### `LBTNode:setFailurePolicy(policy: string)`
-
-Sets the failure policy for a parallel node.
-
-**Parameters**
-
-- `policy` (`string`, required) - Parallel failure policy name parsed by the engine.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local par = lurek.ai.newParallel("require_one", "require_one")
-  par:setFailurePolicy("require_all")
-  par:addChild(lurek.ai.newAction(function() return "running" end))
-end
-```
-
-### `LBTNode:setSuccessPolicy(policy: string)`
-
-Sets the success policy for a parallel node.
-
-**Parameters**
-
-- `policy` (`string`, required) - Parallel success policy name parsed by the engine.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local par = lurek.ai.newParallel("require_one", "require_one")
-  par:setSuccessPolicy("require_all")
-  par:addChild(lurek.ai.newAction(function() return "success" end))
-end
-```
-
-### `LBTNode:type() -> string`
-
-Returns the Lua-visible type name for this behavior tree node handle.
-
-**Returns**: `string` - The string `LBTNode`.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local action = lurek.ai.newAction(function() return "success" end)
-  lurek.log.info("node type: " .. action:type(), "ai")
-end
-```
-
-### `LBTNode:typeOf(name: string) -> boolean`
-
-Returns whether this behavior tree node handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to compare against `BTNode` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local sel = lurek.ai.newSelector()
-  lurek.log.info("is BTNode: " .. tostring(sel:typeOf("BTNode")), "ai")
-end
-```
-
-### `LCommandQueue`
+### LCommandQueue
 
 Lua handle for a command queue that stores ordered callback-backed commands.
+
+**Lua API Definition**
+
+```lua
+--- Lua handle for a command queue that stores ordered callback-backed commands.
+---@class LCommandQueue
+LCommandQueue = {}
+```
 
 #### Example
 
@@ -3241,229 +1660,17 @@ do
 end
 ```
 
-### `LCommandQueue:cancelCurrent() -> boolean`
-
-Cancels the currently active command when one exists.
-
-**Returns**: `boolean` - True when a current command was cancelled.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local cq = lurek.ai.newCommandQueue()
-  cq:enqueue("move", function() end, { targetX = 200, targetY = 100 })
-  if cq:cancelCurrent() then lurek.log.debug("cancelled", "ai") end
-end
-```
-
-### `LCommandQueue:clear()`
-
-Removes every queued command. This method is available to Lua scripts.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  -- Wipe the queue when an NPC is interrupted or stunned.
-  -- Scenario: boss gets staggered — cancel all queued attack phases.
-  local cq = lurek.ai.newCommandQueue()
-  cq:enqueue("slam", function() end, {})
-  cq:enqueue("roar", function() end, {})
-  cq:clear()
-  lurek.log.info("queue cleared, empty: " .. tostring(cq:isEmpty()), "ai")
-end
-```
-
-### `LCommandQueue:enqueue(kind: string, callback: function, [opts]: table)`
-
-Adds a command callback to the back of the queue.
-
-**Parameters**
-
-- `kind` (`string`, required) - Command type label stored for inspection.
-- `callback` (`function`, required) - Callback invoked by command execution logic outside this wrapper.
-- `opts` (`table`, optional) - Optional table with `targetX`, `targetY`, `priority`, and `interruptible` fields.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local q = lurek.ai.newCommandQueue()
-  q:enqueue("move", function() end, {x=300, y=200})
-  q:enqueue("attack", function() end, {targetId="enemy_01"})
-  lurek.log.info("queue count: " .. q:getCount(), "ai")
-end
-```
-
-### `LCommandQueue:getCount() -> integer`
-
-Returns the number of commands currently queued.
-
-**Returns**: `integer` - Current queue length.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local cq = lurek.ai.newCommandQueue()
-  cq:enqueue("move", function() end, { targetX = 200, targetY = 100 })
-  lurek.log.debug("queue=" .. cq:getCount(), "ai")
-end
-```
-
-### `LCommandQueue:getCurrentTarget() -> number, number`
-
-Returns the current command target coordinates.
-
-**Returns**: `number, number` - Target X and Y coordinates for the current command, or queue defaults.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local cq = lurek.ai.newCommandQueue()
-  cq:enqueue("move", function() end, { targetX = 200, targetY = 100 })
-  local tx, ty = cq:getCurrentTarget()
-  lurek.log.debug("target=" .. tx .. "," .. ty, "ai")
-end
-```
-
-### `LCommandQueue:getCurrentType() -> LuaValue`
-
-Returns the type label of the current command when one exists.
-
-**Returns**: `LuaValue` - Current command type label, or nil when no command is active.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local cq = lurek.ai.newCommandQueue()
-  cq:enqueue("move", function() end, { targetX = 200, targetY = 100 })
-  local kind = cq:getCurrentType()
-  if kind then lurek.log.debug("doing " .. kind, "ai") end
-end
-```
-
-### `LCommandQueue:isEmpty() -> boolean`
-
-Returns whether the command queue has no commands.
-
-**Returns**: `boolean` - True when the queue is empty.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local cq = lurek.ai.newCommandQueue()
-  cq:enqueue("move", function() end, { targetX = 200, targetY = 100 })
-  cq:clear()
-  if cq:isEmpty() then lurek.log.debug("idle", "ai") end
-end
-```
-
-### `LCommandQueue:pushFront(kind: string, callback: function, [opts]: table)`
-
-Adds a command callback to the front of the queue.
-
-**Parameters**
-
-- `kind` (`string`, required) - Command type label stored for inspection.
-- `callback` (`function`, required) - Callback invoked by command execution logic outside this wrapper.
-- `opts` (`table`, optional) - Optional table with `targetX`, `targetY`, `priority`, and `interruptible` fields.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local q = lurek.ai.newCommandQueue()
-  q:enqueue("patrol", function() end, {})
-  q:pushFront("flee", function() end, {threatX=300, threatY=200})
-  lurek.log.info("front command: " .. q:getCurrentType(), "ai")
-end
-```
-
-### `LCommandQueue:replace(kind: string, callback: function, [opts]: table)`
-
-Replaces the queue contents with one command callback.
-
-**Parameters**
-
-- `kind` (`string`, required) - Command type label stored for inspection.
-- `callback` (`function`, required) - Callback invoked by command execution logic outside this wrapper.
-- `opts` (`table`, optional) - Optional table with `targetX`, `targetY`, `priority`, and `interruptible` fields.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local q = lurek.ai.newCommandQueue()
-  q:enqueue("move", function() end, {x=200, y=100})
-  q:replace("attack", function() end, {targetId="bandit_01"})
-  lurek.log.info("replaced: " .. q:getCurrentType(), "ai")
-end
-```
-
-### `LCommandQueue:type() -> string`
-
-Returns the Lua-visible type name for this command queue handle.
-
-**Returns**: `string` - The string `LCommandQueue`.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local cq = lurek.ai.newCommandQueue()
-  lurek.log.info("cq type: " .. cq:type(), "ai")
-end
-```
-
-### `LCommandQueue:typeOf(name: string) -> boolean`
-
-Returns whether this command queue handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to compare against `CommandQueue` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local cq = lurek.ai.newCommandQueue()
-  lurek.log.info("is CommandQueue: " .. tostring(cq:typeOf("CommandQueue")), "ai")
-end
-```
-
-### `LContextSteering`
+### LContextSteering
 
 Lua handle for slot-based context steering direction selection.
+
+**Lua API Definition**
+
+```lua
+--- Lua handle for slot-based context steering direction selection.
+---@class LContextSteering
+LContextSteering = {}
+```
 
 #### Example
 
@@ -3480,223 +1687,17 @@ do
 end
 ```
 
-### `LContextSteering:addAvoidBounds(min_x: number, min_y: number, max_x: number, max_y: number, margin: number, weight: number)`
-
-Adds rectangular bounds avoidance to context steering.
-
-**Parameters**
-
-- `min_x` (`number`, required) - Minimum X bound.
-- `min_y` (`number`, required) - Minimum Y bound.
-- `max_x` (`number`, required) - Maximum X bound.
-- `max_y` (`number`, required) - Maximum Y bound.
-- `margin` (`number`, required) - Distance from bounds where avoidance begins.
-- `weight` (`number`, required) - Avoidance behavior weight.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local cs = lurek.ai.newContextSteering(16)
-  cs:addSeekTarget(500, 300, 1.0)
-  cs:addAvoidBounds(0, 0, 1280, 720, 32, 1.0)
-end
-```
-
-### `LContextSteering:addAvoidPoint(x: number, y: number, radius: number, weight: number)`
-
-Adds a point avoidance influence to context steering.
-
-**Parameters**
-
-- `x` (`number`, required) - Avoidance point X position.
-- `y` (`number`, required) - Avoidance point Y position.
-- `radius` (`number`, required) - Avoidance radius in world units.
-- `weight` (`number`, required) - Avoidance behavior weight.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local cs = lurek.ai.newContextSteering(16)
-  cs:addAvoidPoint(300, 200, 64, 1.5)
-  cs:addAvoidPoint(100, 350, 48, 1.0)
-  local fx, fy = cs:evaluate(150, 150, 0, 0)
-  lurek.log.info("context steer: " .. fx .. "," .. fy, "ai")
-end
-```
-
-### `LContextSteering:addSeekTarget(tx: number, ty: number, weight: number)`
-
-Adds a context steering target attraction.
-
-**Parameters**
-
-- `tx` (`number`, required) - Target X position in world units.
-- `ty` (`number`, required) - Target Y position in world units.
-- `weight` (`number`, required) - Attraction weight.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local cs = lurek.ai.newContextSteering(16)
-  cs:addSeekTarget(500, 300, 1.0)
-  cs:addSeekTarget(400, 400, 0.6)
-  local fx, fy = cs:evaluate(200, 200, 0, 0)
-  lurek.log.info("context direction: " .. fx .. "," .. fy, "ai")
-end
-```
-
-### `LContextSteering:addWander(jitter: number, weight: number)`
-
-Adds wander noise to context steering.
-
-**Parameters**
-
-- `jitter` (`number`, required) - Random steering jitter strength.
-- `weight` (`number`, required) - Wander behavior weight.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local sm = lurek.ai.newSteeringManager()
-  sm:addWander(25, 50, 8, 0.4)
-  local fx, fy = sm:calculate(200, 200, 0, 0, 100, 50, 1 / 60)
-  lurek.log.info("wander: " .. fx .. "," .. fy, "ai")
-end
-```
-
-### `LContextSteering:chosenMagnitude() -> number`
-
-Returns the magnitude of the last selected context steering slot.
-
-**Returns**: `number` - Last chosen magnitude.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local cs = lurek.ai.newContextSteering(16)
-  cs:addSeekTarget(500, 300, 1.0)
-  cs:evaluate(0, 0, 0, 0)
-  lurek.log.debug("mag=" .. cs:chosenMagnitude(), "ai")
-end
-```
-
-### `LContextSteering:clearBehaviors()`
-
-Removes all context steering behaviors.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local cs = lurek.ai.newContextSteering(16)
-  cs:addSeekTarget(500, 300, 1.0)
-  cs:clearBehaviors()
-end
-```
-
-### `LContextSteering:evaluate(ax: number, ay: number, vx: number, vy: number) -> number, number`
-
-Evaluates context steering and returns the selected movement direction.
-
-**Parameters**
-
-- `ax` (`number`, required) - Agent X position.
-- `ay` (`number`, required) - Agent Y position.
-- `vx` (`number`, required) - Agent X velocity.
-- `vy` (`number`, required) - Agent Y velocity.
-
-**Returns**: `number, number` - Selected X and Y direction.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local cs = lurek.ai.newContextSteering(16)
-  cs:addSeekTarget(500, 300, 1.0)
-  cs:addAvoidPoint(350, 250, 50, 1.0)
-  local fx, fy = cs:evaluate(200, 200, 0, 0)
-  lurek.log.info("evaluated: " .. fx .. "," .. fy, "ai")
-end
-```
-
-### `LContextSteering:slotCount() -> integer`
-
-Returns the number of directional slots used by this context steering model.
-
-**Returns**: `integer` - Direction slot count.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local cs = lurek.ai.newContextSteering(16)
-  cs:addSeekTarget(500, 300, 1.0)
-  lurek.log.debug("slots=" .. cs:slotCount(), "ai")
-end
-```
-
-### `LContextSteering:type() -> string`
-
-Returns the Lua-visible type name for this context steering handle.
-
-**Returns**: `string` - The string `LContextSteering`.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local obj = lurek.ai.newContextSteering(16)
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LContextSteering"
-end
-```
-
-### `LContextSteering:typeOf(name: string) -> boolean`
-
-Returns whether this context steering handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to compare against `LContextSteering` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local obj = lurek.ai.newContextSteering(16)
-  lurek.log.debug("typeOf LContextSteering: " .. tostring(obj:typeOf("LContextSteering")), "example") -- true
-end
-```
-
-### `LDialogueAI`
+### LDialogueAI
 
 Lua handle for topic and branch selection driven by dialogue AI state.
+
+**Lua API Definition**
+
+```lua
+--- Lua handle for topic and branch selection driven by dialogue AI state.
+---@class LDialogueAI
+LDialogueAI = {}
+```
 
 #### Example
 
@@ -3733,235 +1734,17 @@ do
 end
 ```
 
-### `LDialogueAI:addBranch(topic_id: string, branch_id: string, [weight]: number, [fsm_state]: string, [bt_status]: string, [utility_key]: string) -> boolean`
-
-Adds a selectable branch under an existing dialogue topic.
-
-**Parameters**
-
-- `topic_id` (`string`, required) - Topic identifier that receives the branch.
-- `branch_id` (`string`, required) - Unique branch identifier within the topic.
-- `weight` (`number`, optional) - Base branch weight; defaults to 1.0.
-- `fsm_state` (`string`, optional) - Optional FSM state required for this branch.
-- `bt_status` (`string`, optional) - Optional behavior tree status required for this branch.
-- `utility_key` (`string`, optional) - Optional utility score key multiplied into selection.
-
-**Returns**: `boolean` - True when the branch was added to an existing topic.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local d = lurek.ai.newDialogueAI()
-  d:addTopic("greet")
-  -- addBranch(topic_id, branch_id, weight?, fsm_state?, bt_status?, utility_key?)
-  d:addBranch("greet", "friendly", 1.0)
-end
-```
-
-### `LDialogueAI:addTopic(id: string, [weight]: number, [fsm_state]: string, [bt_status]: string, [utility_key]: string)`
-
-Adds a selectable dialogue topic with optional context filters.
-
-**Parameters**
-
-- `id` (`string`, required) - Unique topic identifier.
-- `weight` (`number`, optional) - Base selection weight; defaults to 1.0.
-- `fsm_state` (`string`, optional) - Optional FSM state required for this topic.
-- `bt_status` (`string`, optional) - Optional behavior tree status required for this topic.
-- `utility_key` (`string`, optional) - Optional utility score key multiplied into selection.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local d = lurek.ai.newDialogueAI()
-  d:addTopic("greet")
-end
-```
-
-### `LDialogueAI:clearUtilityScores()`
-
-Removes every stored utility score from this dialogue selector.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local d = lurek.ai.newDialogueAI()
-  d:setUtilityScore("greet", 1.0)
-  d:clearUtilityScores()
-end
-```
-
-### `LDialogueAI:getTopicCount() -> integer`
-
-Returns the number of topics registered in this dialogue selector.
-
-**Returns**: `integer` - Current topic count.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local d = lurek.ai.newDialogueAI()
-  d:addTopic("greet")
-  lurek.log.debug("topics=" .. d:getTopicCount(), "ai")
-end
-```
-
-### `LDialogueAI:selectBranch(topic_id: string) -> string`
-
-Selects the best currently valid branch for the given topic.
-
-**Parameters**
-
-- `topic_id` (`string`, required) - Topic identifier whose branches should be considered.
-
-**Returns**: `string` - Selected branch identifier, or nil when no branch is available.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local d = lurek.ai.newDialogueAI()
-  d:addTopic("greet")
-  d:addBranch("greet", "friendly", 1.0)
-  local branch = d:selectBranch("greet")
-  lurek.log.debug("branch=" .. tostring(branch), "ai")
-end
-```
-
-### `LDialogueAI:selectTopic() -> string`
-
-Selects the best currently valid topic using weights and context filters.
-
-**Returns**: `string` - Selected topic identifier, or nil when no topic is available.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local d = lurek.ai.newDialogueAI()
-  d:addTopic("greet")
-  d:setUtilityScore("greet", 0.9)
-  local topic = d:selectTopic()
-  lurek.log.debug("topic=" .. tostring(topic), "ai")
-end
-```
-
-### `LDialogueAI:setBTStatus([status]: string)`
-
-Sets the behavior-tree status used as dialogue selection context.
-
-**Parameters**
-
-- `status` (`string`, optional) - Current behavior tree status, or nil to clear the status context.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local d = lurek.ai.newDialogueAI()
-  d:setBTStatus("running")
-end
-```
-
-### `LDialogueAI:setFSMState([state]: string)`
-
-Sets the finite-state-machine state used as dialogue selection context.
-
-**Parameters**
-
-- `state` (`string`, optional) - Current FSM state name, or nil to clear the FSM context.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local d = lurek.ai.newDialogueAI()
-  d:setFSMState("combat")
-end
-```
-
-### `LDialogueAI:setUtilityScore(key: string, score: number)`
-
-Stores a utility score used by topics and branches that reference the given key.
-
-**Parameters**
-
-- `key` (`string`, required) - Utility score key.
-- `score` (`number`, required) - Utility score value used during weighted selection.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local d = lurek.ai.newDialogueAI()
-  d:addTopic("greet")
-  d:setUtilityScore("greet", 0.8)
-end
-```
-
-### `LDialogueAI:type() -> string`
-
-Returns the Lua-visible type name for this dialogue AI handle.
-
-**Returns**: `string` - The string `LDialogueAI`.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local obj = lurek.ai.newDialogueAI()
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LDialogueAI"
-end
-```
-
-### `LDialogueAI:typeOf(name: string) -> boolean`
-
-Returns whether this dialogue AI handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required) - Type name to compare against `DialogueAI` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  local obj = lurek.ai.newDialogueAI()
-  lurek.log.debug("typeOf LDialogueAI: " .. tostring(obj:typeOf("LDialogueAI")), "example") -- true
-end
-```
-
-### `LEmotionModel`
+### LEmotionModel
 
 Lua handle for decaying named emotion intensities.
+
+**Lua API Definition**
+
+```lua
+--- Lua handle for decaying named emotion intensities.
+---@class LEmotionModel
+LEmotionModel = {}
+```
 
 #### Example
 
@@ -3978,16 +1761,4039 @@ do
 end
 ```
 
-### `LEmotionModel:add(name: string, rest: number, decay: number, min_vis: number)`
+### LGeneticAlgorithm
+
+Lua handle for a floating-point genetic algorithm population.
+
+**Lua API Definition**
+
+```lua
+--- Lua handle for a floating-point genetic algorithm population.
+---@class LGeneticAlgorithm
+LGeneticAlgorithm = {}
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  -- GA evolves a population of solutions by selection, crossover, and mutation.
+  -- Parameters: population_size, chromosome_length, seed. Set fitness per individual.
+  -- Scenario: evolving enemy stat distributions that challenge the player optimally.
+  local ga = lurek.ai.newGeneticAlgorithm(50, 16, 42)
+  ga:setFitness(1, 0.7)
+  function lurek.process(dt) ga:evolve() end
+end
+```
+
+### LGOAPPlanner
+
+Lua handle for a GOAP planner with boolean preconditions, effects, and goals.
+
+**Lua API Definition**
+
+```lua
+--- Lua handle for a GOAP planner with boolean preconditions, effects, and goals.
+---@class LGOAPPlanner
+LGOAPPlanner = {}
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  -- GOAP finds action sequences to reach a goal from the current world state.
+  -- Actions have preconditions, effects, and cost — the planner picks cheapest path.
+  -- Scenario: squad coordination — plan "get_ammo → reload → suppress" automatically.
+  local planner = lurek.ai.newGOAPPlanner()
+  planner:addAction("eat", 1.0, function() lurek.log.info("eating", "ai") end)
+  planner:addGoal("not_hungry", 1.0)
+end
+```
+
+### LHTNDomain
+
+Lua handle for a hierarchical task network domain.
+
+**Lua API Definition**
+
+```lua
+--- Lua handle for a hierarchical task network domain.
+---@class LHTNDomain
+LHTNDomain = {}
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  -- HTN decomposes high-level goals into ordered primitive tasks via methods.
+  -- Primitives have preconditions, effects, and deletions on world state.
+  -- Scenario: "defeat_enemy" decomposes into "approach → aim → fire → confirm_kill".
+  local d = lurek.ai.newHTNDomain()
+  d:addPrimitive("attack", { "has_weapon" }, { "enemy_dead" }, {})
+end
+```
+
+### LInfluenceMap
+
+Lua handle for a grid-based influence map with named layers.
+
+**Lua API Definition**
+
+```lua
+--- Lua handle for a grid-based influence map with named layers.
+---@class LInfluenceMap
+LInfluenceMap = {}
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  -- Influence maps let AI reason about spatial control (threat zones, territory).
+  -- Parameters: grid_w, grid_h, cell_size. Layers separate concerns (threat vs resources).
+  -- Scenario: RTS units avoid high-threat cells and prefer resource-rich areas.
+  local infl = lurek.ai.newInfluenceMap(64, 64, 16)
+  infl:addLayer("threat")
+  infl:stampInfluence("threat", 320, 240, 80, 1.0, 1.0)
+end
+```
+
+### LMCTSEngine
+
+Lua handle for Monte Carlo tree search over Lua-defined game states and actions.
+
+**Lua API Definition**
+
+```lua
+--- Lua handle for Monte Carlo tree search over Lua-defined game states and actions.
+---@class LMCTSEngine
+LMCTSEngine = {}
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  -- MCTS simulates random playouts to find strong moves in large decision spaces.
+  -- Parameters: iterations, exploration_c, max_depth, seed. More iterations = stronger play.
+  -- Scenario: board game AI (chess, Go) or turn-based tactical combat decision making.
+  local mcts = lurek.ai.newMCTSEngine(200, 1.41, 32, 12345)
+  local actions = function(s) return { 1, 2, 3 } end
+  local apply = function(s, a) return s + a end
+  local eval = function(s) return s % 7 end
+end
+```
+
+### LNeedSystem
+
+Lua handle for decaying needs and urgency selection.
+
+**Lua API Definition**
+
+```lua
+--- Lua handle for decaying needs and urgency selection.
+---@class LNeedSystem
+LNeedSystem = {}
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  -- Need system models Sims-style drives that decay over time and drive behavior.
+  -- Parameters per need: name, decay_rate, threshold, weight. Highest urgency wins.
+  -- Scenario: survival game NPC eats when hunger > threshold, sleeps when energy low.
+  local needs = lurek.ai.newNeedSystem()
+  needs:addNeed("hunger", 0.05, 0.6, 1.5)
+  function lurek.process(dt) needs:update(dt) end
+end
+```
+
+### LNeuralNet
+
+Lua handle for a feed-forward neural network.
+
+**Lua API Definition**
+
+```lua
+--- Lua handle for a feed-forward neural network.
+---@class LNeuralNet
+LNeuralNet = {}
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  -- Feed-forward neural net maps inputs to outputs through weighted layers.
+  -- addLayer(inputs, outputs, activation) — "relu", "sigmoid", "softmax" supported.
+  -- Scenario: NPC learns to dodge projectiles from sensor inputs (distances, angles).
+  local nn = lurek.ai.newNeuralNet()
+  nn:addLayer(4, 8, "relu")
+  nn:addLayer(8, 2, "softmax")
+end
+```
+
+### LNeuroevolution
+
+Lua handle for evolving neural network chromosomes.
+
+**Lua API Definition**
+
+```lua
+--- Lua handle for evolving neural network chromosomes.
+---@class LNeuroevolution
+LNeuroevolution = {}
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  -- Neuroevolution combines neural nets with genetic algorithms — no backprop needed.
+  -- Layer spec defines network topology; population_size and seed control evolution.
+  -- Scenario: evolving flocking creatures whose brains improve across generations.
+  local layers = { { inputs = 4, outputs = 8, activation = "relu" }, { inputs = 8, outputs = 2, activation = "softmax" } }
+  local ne = lurek.ai.newNeuroevolution(layers, 30, 1)
+  function lurek.process(dt) ne:evolve() end
+end
+```
+
+### LORCASolver
+
+Lua handle for reciprocal velocity obstacle avoidance agents.
+
+**Lua API Definition**
+
+```lua
+--- Lua handle for reciprocal velocity obstacle avoidance agents.
+---@class LORCASolver
+LORCASolver = {}
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  -- ORCA computes collision-free velocities for crowds without explicit pathfinding.
+  -- Prediction horizon (seconds) controls how far ahead agents anticipate collisions.
+  -- Scenario: 200 villagers navigating a market square without overlapping each other.
+  local orca = lurek.ai.newORCASolver(2.0)
+  local idx = orca:addAgent(100, 100, 16, 80)
+  orca:setPreferredVelocity(idx, 50, 0)
+end
+```
+
+### LQLearner
+
+Lua handle for a Q-learning table with configurable exploration and learning parameters.
+
+**Lua API Definition**
+
+```lua
+--- Lua handle for a Q-learning table with configurable exploration and learning parameters.
+---@class LQLearner
+LQLearner = {}
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  -- Q-learning trains NPC behavior through reward signals over time.
+  -- Parameters: state_count, action_count. Learning rate controls adaptation speed.
+  -- Scenario: enemy learns which attack patterns work against the player.
+  local ql = lurek.ai.newQLearner(16, 4)
+  ql:setLearningRate(0.1)
+  ql:setExplorationRate(0.2)
+end
+```
+
+### LSquad
+
+Lua handle for a named squad with members, leader, formation, and shared blackboard.
+
+**Lua API Definition**
+
+```lua
+--- Lua handle for a named squad with members, leader, formation, and shared blackboard.
+---@class LSquad
+LSquad = {}
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  -- Squads group agents for coordinated tactics (flanking, covering fire).
+  -- Formation type and spacing control how members position relative to the leader.
+  -- Scenario: tactical shooter — 4-man squad holds wedge formation while advancing.
+  local squad = lurek.ai.newSquad("alpha")
+  squad:addMember("guard_01")
+  squad:setFormation("wedge", 32)
+end
+```
+
+### LStateMachine
+
+Lua handle for a finite state machine with Lua-backed state callbacks and transition guards.
+
+**Lua API Definition**
+
+```lua
+--- Lua handle for a finite state machine with Lua-backed state callbacks and transition guards.
+---@class LStateMachine
+LStateMachine = {}
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  -- FSMs are ideal for NPCs with clear, discrete behavior phases.
+  -- Each state has onEnter/onUpdate/onExit callbacks for clean transitions.
+  -- Scenario: guard patrol AI — idle → patrol → alert → chase → attack.
+  local fsm = lurek.ai.newStateMachine()
+  fsm:addState("patrol", { onEnter = function() lurek.log.info("patrolling", "ai") end })
+  fsm:addState("chase", {})
+  fsm:setInitialState("patrol")
+end
+```
+
+### LSteeringManager
+
+Lua handle for a steering behavior stack that combines movement forces for an agent.
+
+**Lua API Definition**
+
+```lua
+--- Lua handle for a steering behavior stack that combines movement forces for an agent.
+---@class LSteeringManager
+LSteeringManager = {}
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  -- Steering combines movement behaviors (seek, flee, wander) into one force.
+  -- Weight parameter (last arg) controls how much each behavior contributes.
+  -- Scenario: zombie wanders randomly but seeks the player when nearby.
+  local sm = lurek.ai.newSteeringManager()
+  sm:addSeek(400, 300, 1.0)
+  sm:addWander(20, 40, 5, 0.3)
+end
+```
+
+### LStimulusWorld
+
+Lua handle for sensory stimuli tracked in world space.
+
+**Lua API Definition**
+
+```lua
+--- Lua handle for sensory stimuli tracked in world space.
+---@class LStimulusWorld
+LStimulusWorld = {}
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  -- Stimulus world tracks sensory events (sounds, sights) that agents can perceive.
+  -- Auditory params: x, y, loudness, radius, decay_rate, tag. Stimuli fade over time.
+  -- Scenario: stealth game — footsteps create auditory stimuli that alert guards.
+  local sw = lurek.ai.newStimulusWorld()
+  sw:addAuditory(100, 200, 1.0, 150, 0.5, "footstep")
+  function lurek.process(dt) sw:update(dt) end
+end
+```
+
+### LStrategyAI
+
+Lua handle for interval-based strategic goal selection.
+
+**Lua API Definition**
+
+```lua
+--- Lua handle for interval-based strategic goal selection.
+---@class LStrategyAI
+LStrategyAI = {}
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  -- Strategy AI periodically re-ranks goals and picks the best one to pursue.
+  -- Interval (seconds) controls how often the AI reconsiders — lower = more reactive.
+  -- Scenario: RTS faction AI switches between "expand", "defend", "attack" every 2s.
+  local s = lurek.ai.newStrategyAI(2.0)
+  s:addGoal("expand")
+  s:addGoal("defend")
+end
+```
+
+### LTraitProfile
+
+Lua handle for trait values with temporary modifiers and archetype lookup.
+
+**Lua API Definition**
+
+```lua
+--- Lua handle for trait values with temporary modifiers and archetype lookup.
+---@class LTraitProfile
+LTraitProfile = {}
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  -- Trait profiles store personality values (0..1) that influence AI decisions.
+  -- Modifiers can temporarily shift traits (e.g., rage buff increases aggression).
+  -- Scenario: cowardly goblin flees at 50% HP; brave knight fights to the end.
+  local traits = lurek.ai.newTraitProfile()
+  traits:set("aggression", 0.7)
+  traits:set("courage", 0.4)
+end
+```
+
+### LUtilityAI
+
+Lua handle for utility AI action scoring and consideration curves.
+
+**Lua API Definition**
+
+```lua
+--- Lua handle for utility AI action scoring and consideration curves.
+---@class LUtilityAI
+LUtilityAI = {}
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  -- Utility AI scores all possible actions and picks the highest-value one.
+  -- Each action has a scoring function (returns 0..1) and a weight multiplier.
+  -- Scenario: survival NPC weighs eat vs sleep vs flee based on current needs.
+  local uai = lurek.ai.newUtilityAI()
+  uai:addAction("flee", function() return 0.8 end, 1.0)
+  uai:addAction("attack", function() return 0.4 end, 1.0)
+end
+```
+
+
+[⬆ back to top](#table-of-contents)
+
+## 🔹 Module Methods
+
+### LAgent:addTag
+
+`LAgent:addTag(tag: string)`
+
+Adds a tag string to this agent when the agent still exists in its world.
+
+**Parameters**
+
+- `tag` (`string`, required): Tag name to insert into the agent tag set.
+
+**Lua API Stub**
+
+```lua
+--- Adds a tag string to this agent when the agent still exists in its world.
+---@param tag string Tag name to insert into the agent tag set.
+function LAgent:addTag(tag) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  -- Tags classify agents for query filtering (e.g., "hostile", "civilian").
+  -- Scenario: mark a freshly-aggro'd NPC as hostile.
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent("villager")
+  npc:addTag("civilian")
+  npc:addTag("quest_giver")
+  lurek.log.info("tagged villager as civilian + quest_giver", "ai")
+end
+```
+
+### LAgent:getBlackboard
+
+`LAgent:getBlackboard() -> LAIBlackboard`
+
+Returns a blackboard snapshot for this agent or an empty blackboard when the agent has been removed.
+
+**Returns**: `LAIBlackboard` - Blackboard handle initialized from the agent's local blackboard values at call time.
+
+**Lua API Stub**
+
+```lua
+--- Returns a blackboard snapshot for this agent or an empty blackboard when the agent has been removed.
+---@return LAIBlackboard Blackboard handle initialized from the agent's local blackboard values at call time.
+function LAgent:getBlackboard() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  -- Each agent has its own private blackboard for local AI state.
+  -- Scenario: store this guard's current patrol waypoint index.
+  local world = lurek.ai.newWorld()
+  local guard = world:addAgent("wall_guard")
+  local bb = guard:getBlackboard()
+  bb:setNumber("waypoint_idx", 0)
+  lurek.log.info("bb size: " .. bb:getSize(), "ai")
+end
+```
+
+### LAgent:getDecisionModel
+
+`LAgent:getDecisionModel() -> string`
+
+Returns this agent's decision model name or the default model name for a missing agent.
+
+**Returns**: `string` - Current decision model name.
+
+**Lua API Stub**
+
+```lua
+--- Returns this agent's decision model name or the default model name for a missing agent.
+---@return string Current decision model name.
+function LAgent:getDecisionModel() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local agent = world:addAgent("scout_01")
+  if agent:getDecisionModel() == "fsm" then lurek.log.debug("uses fsm", "ai") end
+end
+```
+
+### LAgent:getMaxForce
+
+`LAgent:getMaxForce() -> number`
+
+Returns this agent's maximum steering force or the default force for a missing agent.
+
+**Returns**: `number` - Maximum steering force value.
+
+**Lua API Stub**
+
+```lua
+--- Returns this agent's maximum steering force or the default force for a missing agent.
+---@return number Maximum steering force value.
+function LAgent:getMaxForce() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local agent = world:addAgent("scout_01")
+  local f = agent:getMaxForce()
+  lurek.log.debug("max force=" .. f, "ai")
+end
+```
+
+### LAgent:getMaxSpeed
+
+`LAgent:getMaxSpeed() -> number`
+
+Returns this agent's maximum movement speed or the default speed for a missing agent.
+
+**Returns**: `number` - Maximum speed in world units per second.
+
+**Lua API Stub**
+
+```lua
+--- Returns this agent's maximum movement speed or the default speed for a missing agent.
+---@return number Maximum speed in world units per second.
+function LAgent:getMaxSpeed() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local agent = world:addAgent("scout_01")
+  local cap = agent:getMaxSpeed()
+  agent:setVelocity(cap, 0)
+end
+```
+
+### LAgent:getName
+
+`LAgent:getName() -> string`
+
+Returns this agent's stable world name.
+
+**Returns**: `string` - Agent name stored in the handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns this agent's stable world name.
+---@return string Agent name stored in the handle.
+function LAgent:getName() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  -- Use getName() to identify agents for logging or UI labels.
+  -- Scenario: display NPC name above their head in the game.
+  local world = lurek.ai.newWorld()
+  local npc = world:addAgent("merchant_01")
+  lurek.log.info("agent name: " .. npc:getName(), "ai")
+end
+```
+
+### LAgent:getPosition
+
+`LAgent:getPosition() -> number, number`
+
+Returns this agent's world position or the origin when the agent has been removed.
+
+**Returns**: `number, number` - X and Y position in world units.
+
+**Lua API Stub**
+
+```lua
+--- Returns this agent's world position or the origin when the agent has been removed.
+---@return number a X and Y position in world units.
+---@return number b X and Y position in world units.
+function LAgent:getPosition() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local agent = world:addAgent("scout_01")
+  agent:setPosition(50, 75)
+  local x, y = agent:getPosition()
+  lurek.log.debug("pos=" .. x .. "," .. y, "ai")
+end
+```
+
+### LAgent:getPriority
+
+`LAgent:getPriority() -> integer`
+
+Returns this agent's integer priority or zero when the agent has been removed.
+
+**Returns**: `integer` - Current priority value.
+
+**Lua API Stub**
+
+```lua
+--- Returns this agent's integer priority or zero when the agent has been removed.
+---@return number Current priority value.
+function LAgent:getPriority() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local agent = world:addAgent("scout_01")
+  agent:setPriority(5)
+  if agent:getPriority() > 0 then lurek.log.debug("prio agent", "ai") end
+end
+```
+
+### LAgent:getVelocity
+
+`LAgent:getVelocity() -> number, number`
+
+Returns this agent's velocity vector or zero velocity when the agent has been removed.
+
+**Returns**: `number, number` - X and Y velocity in world units per second.
+
+**Lua API Stub**
+
+```lua
+--- Returns this agent's velocity vector or zero velocity when the agent has been removed.
+---@return number a X and Y velocity in world units per second.
+---@return number b X and Y velocity in world units per second.
+function LAgent:getVelocity() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local agent = world:addAgent("scout_01")
+  agent:setVelocity(40, 30)
+  local vx, vy = agent:getVelocity()
+  if vx*vx + vy*vy > 100 then lurek.log.debug("moving", "ai") end
+end
+```
+
+### LAgent:hasTag
+
+`LAgent:hasTag(tag: string) -> boolean`
+
+Returns whether this agent currently has the given tag.
+
+**Parameters**
+
+- `tag` (`string`, required): Tag name to check in the agent tag set.
+
+**Returns**: `boolean` - True when the tag exists on the agent.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this agent currently has the given tag.
+---@param tag string Tag name to check in the agent tag set.
+---@return boolean True when the tag exists on the agent.
+function LAgent:hasTag(tag) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local agent = world:addAgent("scout_01")
+  agent:addTag("boss")
+  if agent:hasTag("boss") then lurek.log.info("boss alert", "ai") end
+end
+```
+
+### LAgent:removeTag
+
+`LAgent:removeTag(tag: string)`
+
+Removes a tag string from this agent when the agent still exists in its world.
+
+**Parameters**
+
+- `tag` (`string`, required): Tag name to remove from the agent tag set.
+
+**Lua API Stub**
+
+```lua
+--- Removes a tag string from this agent when the agent still exists in its world.
+---@param tag string Tag name to remove from the agent tag set.
+function LAgent:removeTag(tag) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  -- Remove a tag when status changes (e.g., enemy becomes friendly).
+  -- Scenario: charmed enemy loses "hostile" tag.
+  local world = lurek.ai.newWorld()
+  local enemy = world:addAgent("goblin")
+  enemy:addTag("hostile")
+  enemy:removeTag("hostile")
+  lurek.log.info("goblin no longer hostile: " .. tostring(enemy:hasTag("hostile")), "ai")
+end
+```
+
+### LAgent:setCustomModel
+
+`LAgent:setCustomModel(callback: function)`
+
+Installs a Lua callback as this agent's decision model and stores it in the callback registry.
+
+**Parameters**
+
+- `callback` (`function`, required): Function called during world updates with `(agent, blackboard, dt)` for this agent.
+
+**Lua API Stub**
+
+```lua
+--- Installs a Lua callback as this agent's decision model and stores it in the callback registry.
+---@param callback function Function called during world updates with `(agent, blackboard, dt)` for this agent.
+function LAgent:setCustomModel(callback) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local agent = world:addAgent("custom_agent")
+  agent:setCustomModel(function(ag, bb, dt)
+    -- Read from blackboard and steer accordingly
+    local dist = bb:getNumber("target_dist", 999)
+    if dist < 50 then
+      ag:setVelocity(0, 0)
+    end
+  end)
+  world:update(0.016)
+  lurek.log.debug("custom model: " .. agent:getDecisionModel(), "ai")
+end
+```
+
+### LAgent:setDecisionModel
+
+`LAgent:setDecisionModel(model: string)`
+
+Sets this agent's built-in decision model from a string name when the name is recognized.
+
+**Parameters**
+
+- `model` (`string`, required): Decision model name such as `fsm`, `bt`, `utility`, or another engine-supported model string.
+
+**Lua API Stub**
+
+```lua
+--- Sets this agent's built-in decision model from a string name when the name is recognized.
+---@param model string Decision model name such as `fsm`, `bt`, `utility`, or another engine-supported model string.
+function LAgent:setDecisionModel(model) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local agent = world:addAgent("scout_01")
+  agent:setDecisionModel("bt")
+end
+```
+
+### LAgent:setMaxForce
+
+`LAgent:setMaxForce(v: number)`
+
+Sets this agent's maximum steering force when the agent still exists in its world.
+
+**Parameters**
+
+- `v` (`number`, required): Maximum steering force applied during steering calculations.
+
+**Lua API Stub**
+
+```lua
+--- Sets this agent's maximum steering force when the agent still exists in its world.
+---@param v number Maximum steering force applied during steering calculations.
+function LAgent:setMaxForce(v) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local agent = world:addAgent("scout_01")
+  agent:setMaxForce(300)
+end
+```
+
+### LAgent:setMaxSpeed
+
+`LAgent:setMaxSpeed(v: number)`
+
+Sets this agent's maximum movement speed when the agent still exists in its world.
+
+**Parameters**
+
+- `v` (`number`, required): Maximum speed in world units per second.
+
+**Lua API Stub**
+
+```lua
+--- Sets this agent's maximum movement speed when the agent still exists in its world.
+---@param v number Maximum speed in world units per second.
+function LAgent:setMaxSpeed(v) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local agent = world:addAgent("scout_01")
+  agent:setMaxSpeed(150)
+end
+```
+
+### LAgent:setPosition
+
+`LAgent:setPosition(x: number, y: number)`
+
+Sets this agent's world position when the agent still exists in its world.
+
+**Parameters**
+
+- `x` (`number`, required): New X position in world units.
+- `y` (`number`, required): New Y position in world units.
+
+**Lua API Stub**
+
+```lua
+--- Sets this agent's world position when the agent still exists in its world.
+---@param x number New X position in world units.
+---@param y number New Y position in world units.
+function LAgent:setPosition(x, y) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  -- Teleport or reposition an agent during gameplay.
+  -- Scenario: guard returns to post after losing sight of the player.
+  local world = lurek.ai.newWorld()
+  local guard = world:addAgent("gate_guard")
+  guard:setPosition(400, 300)
+  local x, y = guard:getPosition()
+  lurek.log.info("guard at: " .. x .. "," .. y, "ai")
+end
+```
+
+### LAgent:setPriority
+
+`LAgent:setPriority(p: integer)`
+
+Sets this agent's integer priority when the agent still exists in its world.
+
+**Parameters**
+
+- `p` (`integer`, required): Priority value used by game-side AI scheduling or ordering logic.
+
+**Lua API Stub**
+
+```lua
+--- Sets this agent's integer priority when the agent still exists in its world.
+---@param p number Priority value used by game-side AI scheduling or ordering logic.
+function LAgent:setPriority(p) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local agent = world:addAgent("scout_01")
+  agent:setPriority(10)
+end
+```
+
+### LAgent:setVelocity
+
+`LAgent:setVelocity(x: number, y: number)`
+
+Sets this agent's velocity vector when the agent still exists in its world.
+
+**Parameters**
+
+- `x` (`number`, required): New X velocity in world units per second.
+- `y` (`number`, required): New Y velocity in world units per second.
+
+**Lua API Stub**
+
+```lua
+--- Sets this agent's velocity vector when the agent still exists in its world.
+---@param x number New X velocity in world units per second.
+---@param y number New Y velocity in world units per second.
+function LAgent:setVelocity(x, y) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local agent = world:addAgent("scout_01")
+  agent:setVelocity(40, 0)
+end
+```
+
+### LAgent:type
+
+`LAgent:type() -> string`
+
+Returns the Lua-visible type name for this agent handle.
+
+**Returns**: `string` - The string `LAgent`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this agent handle.
+---@return string The string `LAgent`.
+function LAgent:type() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local agent = world:addAgent("test_agent")
+  lurek.log.info("agent type: " .. agent:type(), "ai")
+end
+```
+
+### LAgent:typeOf
+
+`LAgent:typeOf(name: string) -> boolean`
+
+Returns whether this agent handle matches a supported type name.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to compare against `Agent` and `Object`.
+
+**Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this agent handle matches a supported type name.
+---@param name string Type name to compare against `Agent` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LAgent:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local agent = world:addAgent("test_agent")
+  lurek.log.info("is Agent: " .. tostring(agent:typeOf("Agent")), "ai")
+end
+```
+
+### LAIBlackboard:clear
+
+`LAIBlackboard:clear()`
+
+Removes every local entry from this blackboard.
+
+**Lua API Stub**
+
+```lua
+--- Removes every local entry from this blackboard.
+function LAIBlackboard:clear() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local bb = lurek.ai.newBlackboard()
+  bb:setNumber("gold", 500)
+  bb:setString("name", "hero")
+  -- Wipe all entries.
+  bb:clear()
+  lurek.log.debug("after clear, has 'gold': " .. tostring(bb:has("gold")), "ai") -- false
+end
+```
+
+### LAIBlackboard:getBool
+
+`LAIBlackboard:getBool(key: string, [default]: boolean) -> boolean`
+
+Returns a boolean blackboard fact or the provided fallback when the key is missing or not boolean.
+
+**Parameters**
+
+- `key` (`string`, required): Blackboard key to read.
+- `default` (`boolean`, optional): Fallback value used when the key has no boolean entry; defaults to false.
+
+**Returns**: `boolean` - Stored boolean value or fallback value.
+
+**Lua API Stub**
+
+```lua
+--- Returns a boolean blackboard fact or the provided fallback when the key is missing or not boolean.
+---@param key string Blackboard key to read.
+---@param default? boolean Fallback value used when the key has no boolean entry; defaults to false.
+---@return boolean Stored boolean value or fallback value.
+function LAIBlackboard:getBool(key, default) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local bb = lurek.ai.newBlackboard()
+  bb:setBool("player_visible", true)
+  lurek.log.info("visible=" .. tostring(bb:getBool("player_visible", false)), "ai")
+  lurek.log.info("default=" .. tostring(bb:getBool("unknown_key", false)), "ai")
+end
+```
+
+### LAIBlackboard:getKeys
+
+`LAIBlackboard:getKeys() -> string[]`
+
+Returns every local blackboard key in an array-style Lua table.
+
+**Returns**: `string[]` - Array table containing all stored key names as strings.
+
+**Lua API Stub**
+
+```lua
+--- Returns every local blackboard key in an array-style Lua table.
+---@return string[] Array table containing all stored key names as strings.
+function LAIBlackboard:getKeys() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local bb = lurek.ai.newBlackboard()
+  bb:setNumber("energy", 50)
+  bb:setBool("charging", false)
+  bb:setString("phase", "attack")
+  local keys = bb:getKeys()
+  lurek.log.info("key count=" .. #keys, "ai")
+end
+```
+
+### LAIBlackboard:getNumber
+
+`LAIBlackboard:getNumber(key: string, [default]: number) -> number`
+
+Returns a numeric blackboard fact or the provided fallback when the key is missing or not numeric.
+
+**Parameters**
+
+- `key` (`string`, required): Blackboard key to read.
+- `default` (`number`, optional): Fallback value used when the key has no numeric entry; defaults to zero.
+
+**Returns**: `number` - Stored numeric value or fallback value.
+
+**Lua API Stub**
+
+```lua
+--- Returns a numeric blackboard fact or the provided fallback when the key is missing or not numeric.
+---@param key string Blackboard key to read.
+---@param default? number Fallback value used when the key has no numeric entry; defaults to zero.
+---@return number Stored numeric value or fallback value.
+function LAIBlackboard:getNumber(key, default) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local bb = lurek.ai.newBlackboard()
+  bb:setNumber("speed", 5.0)
+  local v = bb:getNumber("speed", 0.0)
+  local missing = bb:getNumber("nonexistent", -1.0)
+  lurek.log.info("speed=" .. v .. " missing=" .. missing, "ai")
+end
+```
+
+### LAIBlackboard:getSize
+
+`LAIBlackboard:getSize() -> integer`
+
+Returns the number of entries currently stored in this blackboard.
+
+**Returns**: `integer` - Current blackboard entry count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of entries currently stored in this blackboard.
+---@return number Current blackboard entry count.
+function LAIBlackboard:getSize() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local bb = lurek.ai.newBlackboard()
+  bb:setNumber("x", 10)
+  bb:setNumber("y", 20)
+  lurek.log.info("size=" .. bb:getSize(), "ai")
+end
+```
+
+### LAIBlackboard:getString
+
+`LAIBlackboard:getString(key: string, [default]: string) -> string`
+
+Returns a string blackboard fact or the provided fallback when the key is missing or not a string.
+
+**Parameters**
+
+- `key` (`string`, required): Blackboard key to read.
+- `default` (`string`, optional): Fallback value used when the key has no string entry; defaults to an empty string.
+
+**Returns**: `string` - Stored string value or fallback value.
+
+**Lua API Stub**
+
+```lua
+--- Returns a string blackboard fact or the provided fallback when the key is missing or not a string.
+---@param key string Blackboard key to read.
+---@param default? string Fallback value used when the key has no string entry; defaults to an empty string.
+---@return string Stored string value or fallback value.
+function LAIBlackboard:getString(key, default) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local bb = lurek.ai.newBlackboard()
+  bb:setString("last_command", "patrol_waypoint_3")
+  local cmd = bb:getString("last_command", "idle")
+  lurek.log.info("last_command=" .. cmd, "ai")
+end
+```
+
+### LAIBlackboard:has
+
+`LAIBlackboard:has(key: string) -> boolean`
+
+Returns whether the blackboard contains any entry for the given key.
+
+**Parameters**
+
+- `key` (`string`, required): Blackboard key to check.
+
+**Returns**: `boolean` - True when any typed value is stored at the key.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether the blackboard contains any entry for the given key.
+---@param key string Blackboard key to check.
+---@return boolean True when any typed value is stored at the key.
+function LAIBlackboard:has(key) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local bb = lurek.ai.newBlackboard()
+  bb:setNumber("score", 42)
+  local found = bb:has("score")
+  lurek.log.debug("has 'score': " .. tostring(found), "ai") -- true
+  local missing = bb:has("no_such_key")
+  lurek.log.debug("has 'no_such_key': " .. tostring(missing), "ai") -- false
+end
+```
+
+### LAIBlackboard:remove
+
+`LAIBlackboard:remove(key: string)`
+
+Removes the given key from the blackboard if it exists.
+
+**Parameters**
+
+- `key` (`string`, required): Blackboard key to remove.
+
+**Lua API Stub**
+
+```lua
+--- Removes the given key from the blackboard if it exists.
+---@param key string Blackboard key to remove.
+function LAIBlackboard:remove(key) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local bb = lurek.ai.newBlackboard()
+  bb:setNumber("hp", 100)
+  bb:setNumber("mp", 50)
+  bb:remove("hp")
+  lurek.log.debug("after remove, has 'hp': " .. tostring(bb:has("hp")), "ai") -- false
+  lurek.log.debug("mp still present: " .. tostring(bb:has("mp")), "ai") -- true
+end
+```
+
+### LAIBlackboard:setBool
+
+`LAIBlackboard:setBool(key: string, value: boolean)`
+
+Stores a boolean fact under the given blackboard key.
+
+**Parameters**
+
+- `key` (`string`, required): Blackboard key to write.
+- `value` (`boolean`, required): Boolean value stored for later boolean reads.
+
+**Lua API Stub**
+
+```lua
+--- Stores a boolean fact under the given blackboard key.
+---@param key string Blackboard key to write.
+---@param value boolean Boolean value stored for later boolean reads.
+function LAIBlackboard:setBool(key, value) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local bb = lurek.ai.newBlackboard()
+  bb:setBool("is_alerted", true)
+  bb:setBool("can_attack", false)
+  lurek.log.info("alerted=" .. tostring(bb:getBool("is_alerted", false)), "ai")
+end
+```
+
+### LAIBlackboard:setNumber
+
+`LAIBlackboard:setNumber(key: string, value: number)`
+
+Stores a numeric fact under the given blackboard key.
+
+**Parameters**
+
+- `key` (`string`, required): Blackboard key to write.
+- `value` (`number`, required): Numeric value stored for later numeric reads.
+
+**Lua API Stub**
+
+```lua
+--- Stores a numeric fact under the given blackboard key.
+---@param key string Blackboard key to write.
+---@param value number Numeric value stored for later numeric reads.
+function LAIBlackboard:setNumber(key, value) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local bb = lurek.ai.newBlackboard()
+  bb:setNumber("health", 100)
+  bb:setNumber("aggro_timer", 3.5)
+  lurek.log.info("health=" .. bb:getNumber("health", 0), "ai")
+end
+```
+
+### LAIBlackboard:setString
+
+`LAIBlackboard:setString(key: string, value: string)`
+
+Stores a string fact under the given blackboard key.
+
+**Parameters**
+
+- `key` (`string`, required): Blackboard key to write.
+- `value` (`string`, required): String value stored for later string reads.
+
+**Lua API Stub**
+
+```lua
+--- Stores a string fact under the given blackboard key.
+---@param key string Blackboard key to write.
+---@param value string String value stored for later string reads.
+function LAIBlackboard:setString(key, value) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local bb = lurek.ai.newBlackboard()
+  bb:setString("state", "patrol")
+  bb:setString("target_id", "player_1")
+  lurek.log.info("state=" .. bb:getString("state", "idle"), "ai")
+end
+```
+
+### LAIBlackboard:type
+
+`LAIBlackboard:type() -> string`
+
+Returns the Lua-visible type name for this blackboard handle.
+
+**Returns**: `string` - The string `LAIBlackboard`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this blackboard handle.
+---@return string The string `LAIBlackboard`.
+function LAIBlackboard:type() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local obj = lurek.ai.newBlackboard()
+  lurek.log.debug("type: " .. obj:type(), "example") -- "LAIBlackboard"
+end
+```
+
+### LAIBlackboard:typeOf
+
+`LAIBlackboard:typeOf(name: string) -> boolean`
+
+Returns whether this blackboard handle matches a supported type name.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to compare against `AIBlackboard`, `Blackboard`, and `Object`.
+
+**Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this blackboard handle matches a supported type name.
+---@param name string Type name to compare against `AIBlackboard`, `Blackboard`, and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LAIBlackboard:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local obj = lurek.ai.newBlackboard()
+  lurek.log.debug("typeOf LAIBlackboard: " .. tostring(obj:typeOf("LAIBlackboard")), "example") -- true
+end
+```
+
+### LAIDirector:ambientIntensity
+
+`LAIDirector:ambientIntensity() -> number`
+
+Returns the ambient intensity derived from current tension and phase.
+
+**Returns**: `number` - Ambient intensity factor.
+
+**Lua API Stub**
+
+```lua
+--- Returns the ambient intensity derived from current tension and phase.
+---@return number Ambient intensity factor.
+function LAIDirector:ambientIntensity() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local dir = lurek.ai.newAIDirector()
+  local amb = dir:ambientIntensity()
+  if amb > 0.5 then lurek.log.debug("loud ambience", "ai") end
+end
+```
+
+### LAIDirector:lootFactor
+
+`LAIDirector:lootFactor() -> number`
+
+Returns the loot multiplier derived from current tension and phase.
+
+**Returns**: `number` - Loot factor.
+
+**Lua API Stub**
+
+```lua
+--- Returns the loot multiplier derived from current tension and phase.
+---@return number Loot factor.
+function LAIDirector:lootFactor() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local dir = lurek.ai.newAIDirector()
+  lurek.log.debug("loot x" .. dir:lootFactor(), "ai")
+end
+```
+
+### LAIDirector:phase
+
+`LAIDirector:phase() -> string`
+
+Returns the current director phase name.
+
+**Returns**: `string` - Current pacing phase.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current director phase name.
+---@return string Current pacing phase.
+function LAIDirector:phase() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local dir = lurek.ai.newAIDirector()
+  if dir:phase() == "peak" then lurek.log.info("intense moment", "ai") end
+end
+```
+
+### LAIDirector:pushEvent
+
+`LAIDirector:pushEvent(intensity: number)`
+
+Adds an event intensity sample to the director tension model.
+
+**Parameters**
+
+- `intensity` (`number`, required): Event intensity added to current tension.
+
+**Lua API Stub**
+
+```lua
+--- Adds an event intensity sample to the director tension model.
+---@param intensity number Event intensity added to current tension.
+function LAIDirector:pushEvent(intensity) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local dir = lurek.ai.newAIDirector()
+  dir:pushEvent(0.7)
+end
+```
+
+### LAIDirector:reset
+
+`LAIDirector:reset()`
+
+Resets director tension and phase state to defaults.
+
+**Lua API Stub**
+
+```lua
+--- Resets director tension and phase state to defaults.
+function LAIDirector:reset() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  -- Reset after a level transition or when the player enters a safe zone.
+  -- Scenario: player reaches a checkpoint — reset director for the next area.
+  local dir = lurek.ai.newAIDirector()
+  dir:setTension(0.9)
+  dir:reset()
+  lurek.log.info("tension after reset: " .. dir:tension(), "ai")
+end
+```
+
+### LAIDirector:setTension
+
+`LAIDirector:setTension(value: number)`
+
+Directly sets the director tension value.
+
+**Parameters**
+
+- `value` (`number`, required): New tension value.
+
+**Lua API Stub**
+
+```lua
+--- Directly sets the director tension value.
+---@param value number New tension value.
+function LAIDirector:setTension(value) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local dir = lurek.ai.newAIDirector()
+  dir:setTension(0.9)
+end
+```
+
+### LAIDirector:spawnRateFactor
+
+`LAIDirector:spawnRateFactor() -> number`
+
+Returns the spawn-rate multiplier derived from current tension and phase.
+
+**Returns**: `number` - Spawn rate factor.
+
+**Lua API Stub**
+
+```lua
+--- Returns the spawn-rate multiplier derived from current tension and phase.
+---@return number Spawn rate factor.
+function LAIDirector:spawnRateFactor() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local dir = lurek.ai.newAIDirector()
+  local mult = dir:spawnRateFactor()
+  lurek.log.debug("spawn x" .. mult, "ai")
+end
+```
+
+### LAIDirector:tension
+
+`LAIDirector:tension() -> number`
+
+Returns the current director tension value.
+
+**Returns**: `number` - Current tension.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current director tension value.
+---@return number Current tension.
+function LAIDirector:tension() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local dir = lurek.ai.newAIDirector()
+  dir:pushEvent(0.5)
+  lurek.log.debug("tension=" .. dir:tension(), "ai")
+end
+```
+
+### LAIDirector:type
+
+`LAIDirector:type() -> string`
+
+Returns the Lua-visible type name for this AI director handle.
+
+**Returns**: `string` - The string `LAIDirector`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this AI director handle.
+---@return string The string `LAIDirector`.
+function LAIDirector:type() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local obj = lurek.ai.newBehaviorTree()
+  lurek.log.debug("type: " .. obj:type(), "example") -- "LBehaviorTree"
+end
+```
+
+### LAIDirector:typeOf
+
+`LAIDirector:typeOf(name: string) -> boolean`
+
+Returns whether this AI director handle matches a supported type name.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to compare against `LAIDirector` and `Object`.
+
+**Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this AI director handle matches a supported type name.
+---@param name string Type name to compare against `LAIDirector` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LAIDirector:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local obj = lurek.ai.newBehaviorTree()
+  lurek.log.debug("typeOf LBehaviorTree: " .. tostring(obj:typeOf("LBehaviorTree")), "example") -- true
+end
+```
+
+### LAIDirector:update
+
+`LAIDirector:update(dt: number)`
+
+Advances director tension decay and phase evaluation.
+
+**Parameters**
+
+- `dt` (`number`, required): Elapsed time in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Advances director tension decay and phase evaluation.
+---@param dt number Elapsed time in seconds.
+function LAIDirector:update(dt) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  -- Call update(dt) each frame to decay tension and re-evaluate the current phase.
+  -- Scenario: horde-mode director ticks tension down between waves.
+  local dir = lurek.ai.newAIDirector()
+  dir:setTension(0.8)
+  dir:update(0.5)
+  lurek.log.info("tension after decay: " .. dir:tension(), "ai")
+end
+```
+
+### LAILod:shouldUpdate
+
+`LAILod:shouldUpdate(tier: integer, frame: integer) -> boolean`
+
+Returns whether a tier should update on a given frame counter.
+
+**Parameters**
+
+- `tier` (`integer`, required): Zero-based LOD tier index.
+- `frame` (`integer`, required): Current frame counter.
+
+**Returns**: `boolean` - True when agents in the tier should update this frame.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether a tier should update on a given frame counter.
+---@param tier number Zero-based LOD tier index.
+---@param frame number Current frame counter.
+---@return boolean True when agents in the tier should update this frame.
+function LAILod:shouldUpdate(tier, frame) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local lod = lurek.ai.newAILod()
+  if lod:shouldUpdate(1, 60) then lurek.log.debug("tier 1 tick", "ai") end
+end
+```
+
+### LAILod:tierCount
+
+`LAILod:tierCount() -> integer`
+
+Returns the number of configured AI LOD tiers.
+
+**Returns**: `integer` - LOD tier count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of configured AI LOD tiers.
+---@return number LOD tier count.
+function LAILod:tierCount() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local lod = lurek.ai.newAILod()
+  lurek.log.debug("tiers=" .. lod:tierCount(), "ai")
+end
+```
+
+### LAILod:tierFor
+
+`LAILod:tierFor(ax: number, ay: number, rx: number, ry: number) -> integer`
+
+Returns the LOD tier for an agent position relative to a reference position.
+
+**Parameters**
+
+- `ax` (`number`, required): Agent X position.
+- `ay` (`number`, required): Agent Y position.
+- `rx` (`number`, required): Reference X position, usually camera or player position.
+- `ry` (`number`, required): Reference Y position, usually camera or player position.
+
+**Returns**: `integer` - Zero-based LOD tier index.
+
+**Lua API Stub**
+
+```lua
+--- Returns the LOD tier for an agent position relative to a reference position.
+---@param ax number Agent X position.
+---@param ay number Agent Y position.
+---@param rx number Reference X position, usually camera or player position.
+---@param ry number Reference Y position, usually camera or player position.
+---@return number Zero-based LOD tier index.
+function LAILod:tierFor(ax, ay, rx, ry) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local lod = lurek.ai.newAILod()
+  local tier = lod:tierFor(350, 0, 0, 0)
+  lurek.log.info("lod tier at 350: " .. tier, "ai")
+end
+```
+
+### LAILod:tierName
+
+`LAILod:tierName(tier: integer) -> LuaValue`
+
+Returns the name of an AI LOD tier when the index is valid.
+
+**Parameters**
+
+- `tier` (`integer`, required): Zero-based LOD tier index.
+
+**Returns**: `LuaValue` - Tier name, or nil when the tier index is invalid.
+
+**Lua API Stub**
+
+```lua
+--- Returns the name of an AI LOD tier when the index is valid.
+---@param tier number Zero-based LOD tier index.
+---@return LuaValue Tier name, or nil when the tier index is invalid.
+function LAILod:tierName(tier) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local lod = lurek.ai.newAILod()
+  local n = lod:tierName(0)
+  if n then lurek.log.debug("tier 0=" .. n, "ai") end
+end
+```
+
+### LAILod:type
+
+`LAILod:type() -> string`
+
+Returns the Lua-visible type name for this AI LOD handle.
+
+**Returns**: `string` - The string `LAILod`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this AI LOD handle.
+---@return string The string `LAILod`.
+function LAILod:type() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local d = lurek.ai.newDialogueAI()
+  lurek.log.info(d:type(), "ai")
+end
+```
+
+### LAILod:typeOf
+
+`LAILod:typeOf(name: string) -> boolean`
+
+Returns whether this AI LOD handle matches a supported type name.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to compare against `LAILod` and `Object`.
+
+**Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this AI LOD handle matches a supported type name.
+---@param name string Type name to compare against `LAILod` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LAILod:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local d = lurek.ai.newDialogueAI()
+  lurek.log.info(tostring(d:typeOf("LDialogueAI")), "ai")
+end
+```
+
+### LAIWorld:addAgent
+
+`LAIWorld:addAgent(name: string) -> LAgent`
+
+Creates a named agent in this world and returns a handle that can edit its movement and decision state.
+
+**Parameters**
+
+- `name` (`string`, required): Unique agent name used by later lookup, tags, custom callbacks, and squad membership references.
+
+**Returns**: `LAgent` - Lua handle for the newly inserted agent.
+
+**Lua API Stub**
+
+```lua
+--- Creates a named agent in this world and returns a handle that can edit its movement and decision state.
+---@param name string Unique agent name used by later lookup, tags, custom callbacks, and squad membership references.
+---@return LAgent Lua handle for the newly inserted agent.
+function LAIWorld:addAgent(name) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  -- Register NPCs in the AI world so they can perceive and be perceived by others.
+  -- Scenario: spawn a patrol guard at level start.
+  local world = lurek.ai.newWorld()
+  local guard = world:addAgent("patrol_guard")
+  guard:setPosition(200, 150)
+  lurek.log.info("spawned agent: " .. guard:getName(), "ai")
+end
+```
+
+### LAIWorld:getAgent
+
+`LAIWorld:getAgent(name: string) -> LuaValue`
+
+Returns the named agent handle when it exists in this world.
+
+**Parameters**
+
+- `name` (`string`, required): Agent name previously passed to `addAgent`.
+
+**Returns**: `LuaValue` - Agent handle when found, or nil when the world has no agent with that name.
+
+**Lua API Stub**
+
+```lua
+--- Returns the named agent handle when it exists in this world.
+---@param name string Agent name previously passed to `addAgent`.
+---@return LuaValue Agent handle when found, or nil when the world has no agent with that name.
+function LAIWorld:getAgent(name) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  world:addAgent("guard_01")
+  local a = world:getAgent("guard_01")
+  if a then a:addTag("alive") end
+end
+```
+
+### LAIWorld:getAgentCount
+
+`LAIWorld:getAgentCount() -> integer`
+
+Returns the number of agents currently stored in this world.
+
+**Returns**: `integer` - Current agent count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of agents currently stored in this world.
+---@return number Current agent count.
+function LAIWorld:getAgentCount() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  world:addAgent("a"); world:addAgent("b")
+  lurek.log.info("agents=" .. world:getAgentCount(), "ai")
+end
+```
+
+### LAIWorld:getGlobalBlackboard
+
+`LAIWorld:getGlobalBlackboard() -> LAIBlackboard`
+
+Returns a blackboard snapshot containing the world's shared AI facts.
+
+**Returns**: `LAIBlackboard` - Blackboard handle initialized from the world's global blackboard values at call time.
+
+**Lua API Stub**
+
+```lua
+--- Returns a blackboard snapshot containing the world's shared AI facts.
+---@return LAIBlackboard Blackboard handle initialized from the world's global blackboard values at call time.
+function LAIWorld:getGlobalBlackboard() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  -- The global blackboard is shared state visible to ALL agents in the world.
+  -- Use it for world-level facts: alarm status, time of day, player position.
+  -- Scenario: one guard spots the player → sets "alarm" on global BB → all guards react.
+  local world = lurek.ai.newWorld()
+  local bb = world:getGlobalBlackboard()
+  bb:setNumber("alarm", 0.0)
+end
+```
+
+### LAIWorld:removeAgent
+
+`LAIWorld:removeAgent(agent: LAgent)`
+
+Removes an agent from this world by using an existing agent handle.
+
+**Parameters**
+
+- `agent` (`LAgent`, required): Agent handle whose stored name identifies the world entry to remove.
+
+**Lua API Stub**
+
+```lua
+--- Removes an agent from this world by using an existing agent handle.
+---@param agent LAgent Agent handle whose stored name identifies the world entry to remove.
+function LAIWorld:removeAgent(agent) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  local tmp = world:addAgent("temp")
+  world:removeAgent(tmp)
+end
+```
+
+### LAIWorld:type
+
+`LAIWorld:type() -> string`
+
+Returns the Lua-visible type name for this AI world handle.
+
+**Returns**: `string` - The string `LAIWorld`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this AI world handle.
+---@return string The string `LAIWorld`.
+function LAIWorld:type() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  lurek.log.info("world type: " .. world:type(), "ai")
+end
+```
+
+### LAIWorld:typeOf
+
+`LAIWorld:typeOf(name: string) -> boolean`
+
+Returns whether this AI world handle matches a supported type name.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to compare against `AIWorld` and `Object`.
+
+**Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this AI world handle matches a supported type name.
+---@param name string Type name to compare against `AIWorld` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LAIWorld:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local world = lurek.ai.newWorld()
+  lurek.log.info("is AIWorld: " .. tostring(world:typeOf("AIWorld")), "ai")
+end
+```
+
+### LAIWorld:update
+
+`LAIWorld:update(dt: number)`
+
+Advances the world simulation and invokes custom decision callbacks for agents that use a custom model.
+
+**Parameters**
+
+- `dt` (`number`, required): Elapsed simulation time in seconds for this update step.
+
+**Lua API Stub**
+
+```lua
+--- Advances the world simulation and invokes custom decision callbacks for agents that use a custom model.
+---@param dt number Elapsed simulation time in seconds for this update step.
+function LAIWorld:update(dt) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  -- Tick the world each frame to update all agent decision models.
+  -- Scenario: dungeon level with 3 guards running FSM-based AI.
+  local world = lurek.ai.newWorld()
+  world:addAgent("sentry_a")
+  world:addAgent("sentry_b")
+  world:update(0.016)
+  lurek.log.info("world ticked, agents: " .. world:getAgentCount(), "ai")
+end
+```
+
+### LBandit:armCount
+
+`LBandit:armCount() -> integer`
+
+Returns the number of arms in this bandit.
+
+**Returns**: `integer` - Arm count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of arms in this bandit.
+---@return number Arm count.
+function LBandit:armCount() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local b = lurek.ai.newBandit(4, "ucb1", 0.1, 99)
+  lurek.log.debug("arms=" .. b:armCount(), "ai")
+end
+```
+
+### LBandit:bestArm
+
+`LBandit:bestArm() -> integer`
+
+Returns the arm with the best current estimate.
+
+**Returns**: `integer` - Zero-based best arm index.
+
+**Lua API Stub**
+
+```lua
+--- Returns the arm with the best current estimate.
+---@return number Zero-based best arm index.
+function LBandit:bestArm() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local b = lurek.ai.newBandit(4, "ucb1", 0.1, 99)
+  b:update(0, 0.7); b:update(1, 0.3)
+  lurek.log.debug("best arm=" .. b:bestArm(), "ai")
+end
+```
+
+### LBandit:reset
+
+`LBandit:reset()`
+
+Resets all bandit arm statistics. This method is available to Lua scripts.
+
+**Lua API Stub**
+
+```lua
+--- Resets all bandit arm statistics. This method is available to Lua scripts.
+function LBandit:reset() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local b = lurek.ai.newBandit(4, "ucb1", 0.1, 99)
+  b:reset()
+end
+```
+
+### LBandit:select
+
+`LBandit:select() -> integer`
+
+Selects an arm using the configured bandit strategy.
+
+**Returns**: `integer` - Zero-based selected arm index.
+
+**Lua API Stub**
+
+```lua
+--- Selects an arm using the configured bandit strategy.
+---@return number Zero-based selected arm index.
+function LBandit:select() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local b = lurek.ai.newBandit(4, "ucb1", 0.1, 99)
+  local arm = b:select()
+  lurek.log.debug("arm=" .. arm, "ai")
+end
+```
+
+### LBandit:totalPulls
+
+`LBandit:totalPulls() -> integer`
+
+Returns the total number of arm selections recorded by this bandit.
+
+**Returns**: `integer` - Total pull count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the total number of arm selections recorded by this bandit.
+---@return number Total pull count.
+function LBandit:totalPulls() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local b = lurek.ai.newBandit(4, "ucb1", 0.1, 99)
+  b:select(); b:select()
+  lurek.log.debug("pulls=" .. b:totalPulls(), "ai")
+end
+```
+
+### LBandit:type
+
+`LBandit:type() -> string`
+
+Returns the Lua-visible type name for this bandit handle.
+
+**Returns**: `string` - The string `LBandit`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this bandit handle.
+---@return string The string `LBandit`.
+function LBandit:type() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local obj = lurek.ai.newBandit(4, 'ucb1', 0.1, 99)
+  lurek.log.debug("type: " .. obj:type(), "example") -- "LBandit"
+end
+```
+
+### LBandit:typeOf
+
+`LBandit:typeOf(name: string) -> boolean`
+
+Returns whether this bandit handle matches a supported type name.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to compare against `LBandit` and `Object`.
+
+**Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this bandit handle matches a supported type name.
+---@param name string Type name to compare against `LBandit` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LBandit:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local obj = lurek.ai.newBandit(4, 'ucb1', 0.1, 99)
+  lurek.log.debug("typeOf LBandit: " .. tostring(obj:typeOf("LBandit")), "example") -- true
+end
+```
+
+### LBandit:update
+
+`LBandit:update(idx: integer, reward: number)`
+
+Updates one arm with a received reward.
+
+**Parameters**
+
+- `idx` (`integer`, required): Zero-based arm index.
+- `reward` (`number`, required): Reward value assigned to the arm pull.
+
+**Lua API Stub**
+
+```lua
+--- Updates one arm with a received reward.
+---@param idx number Zero-based arm index.
+---@param reward number Reward value assigned to the arm pull.
+function LBandit:update(idx, reward) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  -- Feed reward signal back to the bandit after observing the outcome.
+  -- Scenario: player died to enemy type 2 — update arm 2 with reward 1.0.
+  local b = lurek.ai.newBandit(4, "ucb1", 0.1, 99)
+  local arm = b:select()
+  b:update(arm, 0.8)
+  lurek.log.info("updated arm " .. arm .. " with reward 0.8", "ai")
+end
+```
+
+### LBehaviorTree:getDebugState
+
+`LBehaviorTree:getDebugState() -> table`
+
+Returns behavior tree debug counters and status in a Lua table.
+
+**Returns**: `table` - Table containing `node_count` and `last_status` fields.
+
+**Lua API Stub**
+
+```lua
+--- Returns behavior tree debug counters and status in a Lua table.
+---@return LBehaviorTreeGetDebugStateResult Table containing `node_count` and `last_status` fields.
+function LBehaviorTree:getDebugState() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  -- Returns a table with node_count, last_status, and active path for dev tools.
+  -- Useful for drawing a BT visualizer overlay or logging which branch is active.
+  -- Scenario: debug HUD shows "attack→aim→fire" path highlighted in green.
+  local bt = lurek.ai.newBehaviorTree()
+  local root = lurek.ai.newSequence()
+  root:addChild(lurek.ai.newAction(function() return "success" end))
+  bt:setRoot(root)
+  local dbg = bt:getDebugState()
+  lurek.log.debug("nodes=" .. dbg.node_count .. " status=" .. dbg.last_status, "ai")
+end
+```
+
+### LBehaviorTree:getLastStatus
+
+`LBehaviorTree:getLastStatus() -> string`
+
+Returns the last behavior tree status string recorded by the tree.
+
+**Returns**: `string` - Last status such as `success`, `failure`, or `running`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the last behavior tree status string recorded by the tree.
+---@return string Last status such as `success`, `failure`, or `running`.
+function LBehaviorTree:getLastStatus() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  -- Returns "success", "failure", or "running" from the last tick.
+  -- Use to detect when a behavior completes and trigger follow-up logic.
+  -- Scenario: if last tick returned "failure", play a confused animation.
+  local bt = lurek.ai.newBehaviorTree()
+  local root = lurek.ai.newSequence()
+  root:addChild(lurek.ai.newAction(function() return "success" end))
+  bt:setRoot(root)
+  local s = bt:getLastStatus()
+  lurek.log.debug("bt status=" .. s, "ai")
+end
+```
+
+### LBehaviorTree:setRoot
+
+`LBehaviorTree:setRoot(node: LBTNode)`
+
+Sets the behavior tree root by moving a node handle into the tree.
+
+**Parameters**
+
+- `node` (`LBTNode`, required): Node handle to consume as the new tree root.
+
+**Lua API Stub**
+
+```lua
+--- Designate a node as the tree's root. Tick evaluation starts here.
+---@param id number The node ID to set as root.
+---@return boolean True if the node exists.
+function LBehaviorTree:setRoot(id) end
+```
+
+#### Example
+
+Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+
+```lua
+do
+  -- Must set root before tick() or tree has nothing to evaluate.
+  local bt = lurek.patterns.newBehaviorTree()
+  local node = bt:addLeaf("idle", "idle_leaf")
+  bt:setLeaf("idle", function() return "success" end)
+  local ok = bt:setRoot(node)
+  print("root set=" .. tostring(ok))
+end
+```
+
+### LBehaviorTree:type
+
+`LBehaviorTree:type() -> string`
+
+Returns the Lua-visible type name for this behavior tree handle.
+
+**Returns**: `string` - The string `LBehaviorTree`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this behavior tree handle.
+---@return string The string `LBehaviorTree`.
+function LBehaviorTree:type() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local bt = lurek.ai.newBehaviorTree()
+  lurek.log.info("bt type: " .. bt:type(), "ai")
+end
+```
+
+### LBehaviorTree:typeOf
+
+`LBehaviorTree:typeOf(name: string) -> boolean`
+
+Returns whether this behavior tree handle matches a supported type name.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to compare against `BehaviorTree` and `Object`.
+
+**Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this behavior tree handle matches a supported type name.
+---@param name string Type name to compare against `BehaviorTree` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LBehaviorTree:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local bt = lurek.ai.newBehaviorTree()
+  lurek.log.info("is BehaviorTree: " .. tostring(bt:typeOf("BehaviorTree")), "ai")
+end
+```
+
+### LBTNode:addChild
+
+`LBTNode:addChild(child: LBTNode)`
+
+Adds a child node to a composite selector, sequence, or parallel node.
+
+**Parameters**
+
+- `child` (`LBTNode`, required): Child node handle to move into this composite node.
+
+**Lua API Stub**
+
+```lua
+--- Adds a child node to a composite selector, sequence, or parallel node.
+---@param child LBTNode Child node handle to move into this composite node.
+function LBTNode:addChild(child) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  -- BehaviorTree nodes are created with lurek.ai.newSequence/newSelector/newAction/etc.
+  -- then linked via node:addChild(). This is LBTNode:addChild, not a bt method.
+  local seq = lurek.ai.newSequence()
+  local check_hp = lurek.ai.newCondition(function() return true end)
+  local attack = lurek.ai.newAction(function() return "success" end)
+  seq:addChild(check_hp)   -- add condition as first child
+  seq:addChild(attack)     -- add action as second child
+  local bt = lurek.ai.newBehaviorTree()
+  bt:setRoot(seq)
+  lurek.log.debug("BT built: seq with " .. seq:getChildCount() .. " children", "ai")
+end
+```
+
+### LBTNode:getChildCount
+
+`LBTNode:getChildCount() -> integer`
+
+Returns the number of children owned by this behavior tree node.
+
+**Returns**: `integer` - Child count for composite nodes, or zero for leaf and decorator nodes without child lists.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of children owned by this behavior tree node.
+---@return number Child count for composite nodes, or zero for leaf and decorator nodes without child lists.
+function LBTNode:getChildCount() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local seq = lurek.ai.newSequence()
+  seq:addChild(lurek.ai.newAction(function() return "success" end))
+  lurek.log.debug("children=" .. seq:getChildCount(), "ai")
+end
+```
+
+### LBTNode:getCount
+
+`LBTNode:getCount() -> integer`
+
+Returns the repeat count for repeater nodes or zero for other node kinds.
+
+**Returns**: `integer` - Repeater count value.
+
+**Lua API Stub**
+
+```lua
+--- Returns the repeat count for repeater nodes or zero for other node kinds.
+---@return number Repeater count value.
+function LBTNode:getCount() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  -- Check how many iterations a repeater will perform.
+  -- Scenario: verify burst-fire repeater is set to 3 shots.
+  local rep = lurek.ai.newRepeater(3)
+  lurek.log.info("repeater count: " .. rep:getCount(), "ai")
+end
+```
+
+### LBTNode:getNodeType
+
+`LBTNode:getNodeType() -> string`
+
+Returns the behavior tree node kind as a lowercase string.
+
+**Returns**: `string` - Node kind such as `selector`, `sequence`, `parallel`, `action`, or `condition`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the behavior tree node kind as a lowercase string.
+---@return string Node kind such as `selector`, `sequence`, `parallel`, `action`, or `condition`.
+function LBTNode:getNodeType() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local seq = lurek.ai.newSequence()
+  if seq:getNodeType() == "sequence" then lurek.log.debug("seq ok", "ai") end
+end
+```
+
+### LBTNode:reset
+
+`LBTNode:reset()`
+
+Resets this behavior tree node's runtime state.
+
+**Lua API Stub**
+
+```lua
+--- Resets this behavior tree node's runtime state.
+function LBTNode:reset() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  -- Clear running/success state so the node re-evaluates from scratch.
+  -- Scenario: player breaks line-of-sight; reset the chase sequence.
+  local seq = lurek.ai.newSequence()
+  seq:addChild(lurek.ai.newAction(function() return "running" end))
+  seq:reset()
+  lurek.log.info("sequence node state cleared", "ai")
+end
+```
+
+### LBTNode:setChild
+
+`LBTNode:setChild(child: LBTNode)`
+
+Sets the single child of a decorator node such as inverter, repeater, or succeeder.
+
+**Parameters**
+
+- `child` (`LBTNode`, required): Child node handle to move into this decorator node.
+
+**Lua API Stub**
+
+```lua
+--- Sets the single child of a decorator node such as inverter, repeater, or succeeder.
+---@param child LBTNode Child node handle to move into this decorator node.
+function LBTNode:setChild(child) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local inv = lurek.ai.newInverter()
+  inv:setChild(lurek.ai.newCondition(function() return false end))
+  local bt = lurek.ai.newBehaviorTree(); bt:setRoot(inv)
+end
+```
+
+### LBTNode:setCount
+
+`LBTNode:setCount(n: integer)`
+
+Sets the repeat count when this node is a repeater.
+
+**Parameters**
+
+- `n` (`integer`, required): Number of successful child executions before the repeater stops; zero means engine-defined repeat behavior.
+
+**Lua API Stub**
+
+```lua
+--- Sets the repeat count when this node is a repeater.
+---@param n number Number of successful child executions before the repeater stops; zero means engine-defined repeat behavior.
+function LBTNode:setCount(n) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local rep = lurek.ai.newRepeater(0)
+  rep:setCount(5)
+  rep:setChild(lurek.ai.newAction(function() return "success" end))
+end
+```
+
+### LBTNode:setFailurePolicy
+
+`LBTNode:setFailurePolicy(policy: string)`
+
+Sets the failure policy for a parallel node.
+
+**Parameters**
+
+- `policy` (`string`, required): Parallel failure policy name parsed by the engine.
+
+**Lua API Stub**
+
+```lua
+--- Sets the failure policy for a parallel node.
+---@param policy string Parallel failure policy name parsed by the engine.
+function LBTNode:setFailurePolicy(policy) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local par = lurek.ai.newParallel("require_one", "require_one")
+  par:setFailurePolicy("require_all")
+  par:addChild(lurek.ai.newAction(function() return "running" end))
+end
+```
+
+### LBTNode:setSuccessPolicy
+
+`LBTNode:setSuccessPolicy(policy: string)`
+
+Sets the success policy for a parallel node.
+
+**Parameters**
+
+- `policy` (`string`, required): Parallel success policy name parsed by the engine.
+
+**Lua API Stub**
+
+```lua
+--- Sets the success policy for a parallel node.
+---@param policy string Parallel success policy name parsed by the engine.
+function LBTNode:setSuccessPolicy(policy) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local par = lurek.ai.newParallel("require_one", "require_one")
+  par:setSuccessPolicy("require_all")
+  par:addChild(lurek.ai.newAction(function() return "success" end))
+end
+```
+
+### LBTNode:type
+
+`LBTNode:type() -> string`
+
+Returns the Lua-visible type name for this behavior tree node handle.
+
+**Returns**: `string` - The string `LBTNode`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this behavior tree node handle.
+---@return string The string `LBTNode`.
+function LBTNode:type() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local action = lurek.ai.newAction(function() return "success" end)
+  lurek.log.info("node type: " .. action:type(), "ai")
+end
+```
+
+### LBTNode:typeOf
+
+`LBTNode:typeOf(name: string) -> boolean`
+
+Returns whether this behavior tree node handle matches a supported type name.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to compare against `BTNode` and `Object`.
+
+**Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this behavior tree node handle matches a supported type name.
+---@param name string Type name to compare against `BTNode` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LBTNode:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local sel = lurek.ai.newSelector()
+  lurek.log.info("is BTNode: " .. tostring(sel:typeOf("BTNode")), "ai")
+end
+```
+
+### LCommandQueue:cancelCurrent
+
+`LCommandQueue:cancelCurrent() -> boolean`
+
+Cancels the currently active command when one exists.
+
+**Returns**: `boolean` - True when a current command was cancelled.
+
+**Lua API Stub**
+
+```lua
+--- Cancels the currently active command when one exists.
+---@return boolean True when a current command was cancelled.
+function LCommandQueue:cancelCurrent() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local cq = lurek.ai.newCommandQueue()
+  cq:enqueue("move", function() end, { targetX = 200, targetY = 100 })
+  if cq:cancelCurrent() then lurek.log.debug("cancelled", "ai") end
+end
+```
+
+### LCommandQueue:clear
+
+`LCommandQueue:clear()`
+
+Removes every queued command. This method is available to Lua scripts.
+
+**Lua API Stub**
+
+```lua
+--- Removes every queued command. This method is available to Lua scripts.
+function LCommandQueue:clear() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  -- Wipe the queue when an NPC is interrupted or stunned.
+  -- Scenario: boss gets staggered — cancel all queued attack phases.
+  local cq = lurek.ai.newCommandQueue()
+  cq:enqueue("slam", function() end, {})
+  cq:enqueue("roar", function() end, {})
+  cq:clear()
+  lurek.log.info("queue cleared, empty: " .. tostring(cq:isEmpty()), "ai")
+end
+```
+
+### LCommandQueue:enqueue
+
+`LCommandQueue:enqueue(kind: string, callback: function, [opts]: table)`
+
+Adds a command callback to the back of the queue.
+
+**Parameters**
+
+- `kind` (`string`, required): Command type label stored for inspection.
+- `callback` (`function`, required): Callback invoked by command execution logic outside this wrapper.
+- `opts` (`table`, optional): Optional table with `targetX`, `targetY`, `priority`, and `interruptible` fields.
+
+**Lua API Stub**
+
+```lua
+--- Adds a command callback to the back of the queue.
+---@param kind string Command type label stored for inspection.
+---@param callback function Callback invoked by command execution logic outside this wrapper.
+---@param opts? table Optional table with `targetX`, `targetY`, `priority`, and `interruptible` fields.
+function LCommandQueue:enqueue(kind, callback, opts) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local q = lurek.ai.newCommandQueue()
+  q:enqueue("move", function() end, {x=300, y=200})
+  q:enqueue("attack", function() end, {targetId="enemy_01"})
+  lurek.log.info("queue count: " .. q:getCount(), "ai")
+end
+```
+
+### LCommandQueue:getCount
+
+`LCommandQueue:getCount() -> integer`
+
+Returns the number of commands currently queued.
+
+**Returns**: `integer` - Current queue length.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of commands currently queued.
+---@return number Current queue length.
+function LCommandQueue:getCount() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local cq = lurek.ai.newCommandQueue()
+  cq:enqueue("move", function() end, { targetX = 200, targetY = 100 })
+  lurek.log.debug("queue=" .. cq:getCount(), "ai")
+end
+```
+
+### LCommandQueue:getCurrentTarget
+
+`LCommandQueue:getCurrentTarget() -> number, number`
+
+Returns the current command target coordinates.
+
+**Returns**: `number, number` - Target X and Y coordinates for the current command, or queue defaults.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current command target coordinates.
+---@return number a Target X and Y coordinates for the current command, or queue defaults.
+---@return number b Target X and Y coordinates for the current command, or queue defaults.
+function LCommandQueue:getCurrentTarget() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local cq = lurek.ai.newCommandQueue()
+  cq:enqueue("move", function() end, { targetX = 200, targetY = 100 })
+  local tx, ty = cq:getCurrentTarget()
+  lurek.log.debug("target=" .. tx .. "," .. ty, "ai")
+end
+```
+
+### LCommandQueue:getCurrentType
+
+`LCommandQueue:getCurrentType() -> LuaValue`
+
+Returns the type label of the current command when one exists.
+
+**Returns**: `LuaValue` - Current command type label, or nil when no command is active.
+
+**Lua API Stub**
+
+```lua
+--- Returns the type label of the current command when one exists.
+---@return LuaValue Current command type label, or nil when no command is active.
+function LCommandQueue:getCurrentType() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local cq = lurek.ai.newCommandQueue()
+  cq:enqueue("move", function() end, { targetX = 200, targetY = 100 })
+  local kind = cq:getCurrentType()
+  if kind then lurek.log.debug("doing " .. kind, "ai") end
+end
+```
+
+### LCommandQueue:isEmpty
+
+`LCommandQueue:isEmpty() -> boolean`
+
+Returns whether the command queue has no commands.
+
+**Returns**: `boolean` - True when the queue is empty.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether the command queue has no commands.
+---@return boolean True when the queue is empty.
+function LCommandQueue:isEmpty() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local cq = lurek.ai.newCommandQueue()
+  cq:enqueue("move", function() end, { targetX = 200, targetY = 100 })
+  cq:clear()
+  if cq:isEmpty() then lurek.log.debug("idle", "ai") end
+end
+```
+
+### LCommandQueue:pushFront
+
+`LCommandQueue:pushFront(kind: string, callback: function, [opts]: table)`
+
+Adds a command callback to the front of the queue.
+
+**Parameters**
+
+- `kind` (`string`, required): Command type label stored for inspection.
+- `callback` (`function`, required): Callback invoked by command execution logic outside this wrapper.
+- `opts` (`table`, optional): Optional table with `targetX`, `targetY`, `priority`, and `interruptible` fields.
+
+**Lua API Stub**
+
+```lua
+--- Adds a command callback to the front of the queue.
+---@param kind string Command type label stored for inspection.
+---@param callback function Callback invoked by command execution logic outside this wrapper.
+---@param opts? table Optional table with `targetX`, `targetY`, `priority`, and `interruptible` fields.
+function LCommandQueue:pushFront(kind, callback, opts) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local q = lurek.ai.newCommandQueue()
+  q:enqueue("patrol", function() end, {})
+  q:pushFront("flee", function() end, {threatX=300, threatY=200})
+  lurek.log.info("front command: " .. q:getCurrentType(), "ai")
+end
+```
+
+### LCommandQueue:replace
+
+`LCommandQueue:replace(kind: string, callback: function, [opts]: table)`
+
+Replaces the queue contents with one command callback.
+
+**Parameters**
+
+- `kind` (`string`, required): Command type label stored for inspection.
+- `callback` (`function`, required): Callback invoked by command execution logic outside this wrapper.
+- `opts` (`table`, optional): Optional table with `targetX`, `targetY`, `priority`, and `interruptible` fields.
+
+**Lua API Stub**
+
+```lua
+--- Replaces the queue contents with one command callback.
+---@param kind string Command type label stored for inspection.
+---@param callback function Callback invoked by command execution logic outside this wrapper.
+---@param opts? table Optional table with `targetX`, `targetY`, `priority`, and `interruptible` fields.
+function LCommandQueue:replace(kind, callback, opts) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local q = lurek.ai.newCommandQueue()
+  q:enqueue("move", function() end, {x=200, y=100})
+  q:replace("attack", function() end, {targetId="bandit_01"})
+  lurek.log.info("replaced: " .. q:getCurrentType(), "ai")
+end
+```
+
+### LCommandQueue:type
+
+`LCommandQueue:type() -> string`
+
+Returns the Lua-visible type name for this command queue handle.
+
+**Returns**: `string` - The string `LCommandQueue`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this command queue handle.
+---@return string The string `LCommandQueue`.
+function LCommandQueue:type() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local cq = lurek.ai.newCommandQueue()
+  lurek.log.info("cq type: " .. cq:type(), "ai")
+end
+```
+
+### LCommandQueue:typeOf
+
+`LCommandQueue:typeOf(name: string) -> boolean`
+
+Returns whether this command queue handle matches a supported type name.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to compare against `CommandQueue` and `Object`.
+
+**Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this command queue handle matches a supported type name.
+---@param name string Type name to compare against `CommandQueue` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LCommandQueue:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local cq = lurek.ai.newCommandQueue()
+  lurek.log.info("is CommandQueue: " .. tostring(cq:typeOf("CommandQueue")), "ai")
+end
+```
+
+### LContextSteering:addAvoidBounds
+
+`LContextSteering:addAvoidBounds(min_x: number, min_y: number, max_x: number, max_y: number, margin: number, weight: number)`
+
+Adds rectangular bounds avoidance to context steering.
+
+**Parameters**
+
+- `min_x` (`number`, required): Minimum X bound.
+- `min_y` (`number`, required): Minimum Y bound.
+- `max_x` (`number`, required): Maximum X bound.
+- `max_y` (`number`, required): Maximum Y bound.
+- `margin` (`number`, required): Distance from bounds where avoidance begins.
+- `weight` (`number`, required): Avoidance behavior weight.
+
+**Lua API Stub**
+
+```lua
+--- Adds rectangular bounds avoidance to context steering.
+---@param min_x number Minimum X bound.
+---@param min_y number Minimum Y bound.
+---@param max_x number Maximum X bound.
+---@param max_y number Maximum Y bound.
+---@param margin number Distance from bounds where avoidance begins.
+---@param weight number Avoidance behavior weight.
+function LContextSteering:addAvoidBounds(min_x, min_y, max_x, max_y, margin, weight) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local cs = lurek.ai.newContextSteering(16)
+  cs:addSeekTarget(500, 300, 1.0)
+  cs:addAvoidBounds(0, 0, 1280, 720, 32, 1.0)
+end
+```
+
+### LContextSteering:addAvoidPoint
+
+`LContextSteering:addAvoidPoint(x: number, y: number, radius: number, weight: number)`
+
+Adds a point avoidance influence to context steering.
+
+**Parameters**
+
+- `x` (`number`, required): Avoidance point X position.
+- `y` (`number`, required): Avoidance point Y position.
+- `radius` (`number`, required): Avoidance radius in world units.
+- `weight` (`number`, required): Avoidance behavior weight.
+
+**Lua API Stub**
+
+```lua
+--- Adds a point avoidance influence to context steering.
+---@param x number Avoidance point X position.
+---@param y number Avoidance point Y position.
+---@param radius number Avoidance radius in world units.
+---@param weight number Avoidance behavior weight.
+function LContextSteering:addAvoidPoint(x, y, radius, weight) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local cs = lurek.ai.newContextSteering(16)
+  cs:addAvoidPoint(300, 200, 64, 1.5)
+  cs:addAvoidPoint(100, 350, 48, 1.0)
+  local fx, fy = cs:evaluate(150, 150, 0, 0)
+  lurek.log.info("context steer: " .. fx .. "," .. fy, "ai")
+end
+```
+
+### LContextSteering:addSeekTarget
+
+`LContextSteering:addSeekTarget(tx: number, ty: number, weight: number)`
+
+Adds a context steering target attraction.
+
+**Parameters**
+
+- `tx` (`number`, required): Target X position in world units.
+- `ty` (`number`, required): Target Y position in world units.
+- `weight` (`number`, required): Attraction weight.
+
+**Lua API Stub**
+
+```lua
+--- Adds a context steering target attraction.
+---@param tx number Target X position in world units.
+---@param ty number Target Y position in world units.
+---@param weight number Attraction weight.
+function LContextSteering:addSeekTarget(tx, ty, weight) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local cs = lurek.ai.newContextSteering(16)
+  cs:addSeekTarget(500, 300, 1.0)
+  cs:addSeekTarget(400, 400, 0.6)
+  local fx, fy = cs:evaluate(200, 200, 0, 0)
+  lurek.log.info("context direction: " .. fx .. "," .. fy, "ai")
+end
+```
+
+### LContextSteering:addWander
+
+`LContextSteering:addWander(jitter: number, weight: number)`
+
+Adds wander noise to context steering.
+
+**Parameters**
+
+- `jitter` (`number`, required): Random steering jitter strength.
+- `weight` (`number`, required): Wander behavior weight.
+
+**Lua API Stub**
+
+```lua
+--- Adds wander noise to context steering.
+---@param jitter number Random steering jitter strength.
+---@param weight number Wander behavior weight.
+function LContextSteering:addWander(jitter, weight) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local sm = lurek.ai.newSteeringManager()
+  sm:addWander(25, 50, 8, 0.4)
+  local fx, fy = sm:calculate(200, 200, 0, 0, 100, 50, 1 / 60)
+  lurek.log.info("wander: " .. fx .. "," .. fy, "ai")
+end
+```
+
+### LContextSteering:chosenMagnitude
+
+`LContextSteering:chosenMagnitude() -> number`
+
+Returns the magnitude of the last selected context steering slot.
+
+**Returns**: `number` - Last chosen magnitude.
+
+**Lua API Stub**
+
+```lua
+--- Returns the magnitude of the last selected context steering slot.
+---@return number Last chosen magnitude.
+function LContextSteering:chosenMagnitude() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local cs = lurek.ai.newContextSteering(16)
+  cs:addSeekTarget(500, 300, 1.0)
+  cs:evaluate(0, 0, 0, 0)
+  lurek.log.debug("mag=" .. cs:chosenMagnitude(), "ai")
+end
+```
+
+### LContextSteering:clearBehaviors
+
+`LContextSteering:clearBehaviors()`
+
+Removes all context steering behaviors.
+
+**Lua API Stub**
+
+```lua
+--- Removes all context steering behaviors.
+function LContextSteering:clearBehaviors() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local cs = lurek.ai.newContextSteering(16)
+  cs:addSeekTarget(500, 300, 1.0)
+  cs:clearBehaviors()
+end
+```
+
+### LContextSteering:evaluate
+
+`LContextSteering:evaluate(ax: number, ay: number, vx: number, vy: number) -> number, number`
+
+Evaluates context steering and returns the selected movement direction.
+
+**Parameters**
+
+- `ax` (`number`, required): Agent X position.
+- `ay` (`number`, required): Agent Y position.
+- `vx` (`number`, required): Agent X velocity.
+- `vy` (`number`, required): Agent Y velocity.
+
+**Returns**: `number, number` - Selected X and Y direction.
+
+**Lua API Stub**
+
+```lua
+--- Evaluates context steering and returns the selected movement direction.
+---@param ax number Agent X position.
+---@param ay number Agent Y position.
+---@param vx number Agent X velocity.
+---@param vy number Agent Y velocity.
+---@return number a Selected X and Y direction.
+---@return number b Selected X and Y direction.
+function LContextSteering:evaluate(ax, ay, vx, vy) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local cs = lurek.ai.newContextSteering(16)
+  cs:addSeekTarget(500, 300, 1.0)
+  cs:addAvoidPoint(350, 250, 50, 1.0)
+  local fx, fy = cs:evaluate(200, 200, 0, 0)
+  lurek.log.info("evaluated: " .. fx .. "," .. fy, "ai")
+end
+```
+
+### LContextSteering:slotCount
+
+`LContextSteering:slotCount() -> integer`
+
+Returns the number of directional slots used by this context steering model.
+
+**Returns**: `integer` - Direction slot count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of directional slots used by this context steering model.
+---@return number Direction slot count.
+function LContextSteering:slotCount() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local cs = lurek.ai.newContextSteering(16)
+  cs:addSeekTarget(500, 300, 1.0)
+  lurek.log.debug("slots=" .. cs:slotCount(), "ai")
+end
+```
+
+### LContextSteering:type
+
+`LContextSteering:type() -> string`
+
+Returns the Lua-visible type name for this context steering handle.
+
+**Returns**: `string` - The string `LContextSteering`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this context steering handle.
+---@return string The string `LContextSteering`.
+function LContextSteering:type() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local obj = lurek.ai.newContextSteering(16)
+  lurek.log.debug("type: " .. obj:type(), "example") -- "LContextSteering"
+end
+```
+
+### LContextSteering:typeOf
+
+`LContextSteering:typeOf(name: string) -> boolean`
+
+Returns whether this context steering handle matches a supported type name.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to compare against `LContextSteering` and `Object`.
+
+**Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this context steering handle matches a supported type name.
+---@param name string Type name to compare against `LContextSteering` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LContextSteering:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local obj = lurek.ai.newContextSteering(16)
+  lurek.log.debug("typeOf LContextSteering: " .. tostring(obj:typeOf("LContextSteering")), "example") -- true
+end
+```
+
+### LDialogueAI:addBranch
+
+`LDialogueAI:addBranch(topic_id: string, branch_id: string, [weight]: number, [fsm_state]: string, [bt_status]: string, [utility_key]: string) -> boolean`
+
+Adds a selectable branch under an existing dialogue topic.
+
+**Parameters**
+
+- `topic_id` (`string`, required): Topic identifier that receives the branch.
+- `branch_id` (`string`, required): Unique branch identifier within the topic.
+- `weight` (`number`, optional): Base branch weight; defaults to 1.0.
+- `fsm_state` (`string`, optional): Optional FSM state required for this branch.
+- `bt_status` (`string`, optional): Optional behavior tree status required for this branch.
+- `utility_key` (`string`, optional): Optional utility score key multiplied into selection.
+
+**Returns**: `boolean` - True when the branch was added to an existing topic.
+
+**Lua API Stub**
+
+```lua
+--- Adds a selectable branch under an existing dialogue topic.
+---@param topic_id string Topic identifier that receives the branch.
+---@param branch_id string Unique branch identifier within the topic.
+---@param weight? number Base branch weight; defaults to 1.0.
+---@param fsm_state? string Optional FSM state required for this branch.
+---@param bt_status? string Optional behavior tree status required for this branch.
+---@param utility_key? string Optional utility score key multiplied into selection.
+---@return boolean True when the branch was added to an existing topic.
+function LDialogueAI:addBranch(topic_id, branch_id, weight, fsm_state, bt_status, utility_key) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local d = lurek.ai.newDialogueAI()
+  d:addTopic("greet")
+  -- addBranch(topic_id, branch_id, weight?, fsm_state?, bt_status?, utility_key?)
+  d:addBranch("greet", "friendly", 1.0)
+end
+```
+
+### LDialogueAI:addTopic
+
+`LDialogueAI:addTopic(id: string, [weight]: number, [fsm_state]: string, [bt_status]: string, [utility_key]: string)`
+
+Adds a selectable dialogue topic with optional context filters.
+
+**Parameters**
+
+- `id` (`string`, required): Unique topic identifier.
+- `weight` (`number`, optional): Base selection weight; defaults to 1.0.
+- `fsm_state` (`string`, optional): Optional FSM state required for this topic.
+- `bt_status` (`string`, optional): Optional behavior tree status required for this topic.
+- `utility_key` (`string`, optional): Optional utility score key multiplied into selection.
+
+**Lua API Stub**
+
+```lua
+--- Adds a selectable dialogue topic with optional context filters.
+---@param id string Unique topic identifier.
+---@param weight? number Base selection weight; defaults to 1.0.
+---@param fsm_state? string Optional FSM state required for this topic.
+---@param bt_status? string Optional behavior tree status required for this topic.
+---@param utility_key? string Optional utility score key multiplied into selection.
+function LDialogueAI:addTopic(id, weight, fsm_state, bt_status, utility_key) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local d = lurek.ai.newDialogueAI()
+  d:addTopic("greet")
+end
+```
+
+### LDialogueAI:clearUtilityScores
+
+`LDialogueAI:clearUtilityScores()`
+
+Removes every stored utility score from this dialogue selector.
+
+**Lua API Stub**
+
+```lua
+--- Removes every stored utility score from this dialogue selector.
+function LDialogueAI:clearUtilityScores() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local d = lurek.ai.newDialogueAI()
+  d:setUtilityScore("greet", 1.0)
+  d:clearUtilityScores()
+end
+```
+
+### LDialogueAI:getTopicCount
+
+`LDialogueAI:getTopicCount() -> integer`
+
+Returns the number of topics registered in this dialogue selector.
+
+**Returns**: `integer` - Current topic count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of topics registered in this dialogue selector.
+---@return number Current topic count.
+function LDialogueAI:getTopicCount() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local d = lurek.ai.newDialogueAI()
+  d:addTopic("greet")
+  lurek.log.debug("topics=" .. d:getTopicCount(), "ai")
+end
+```
+
+### LDialogueAI:selectBranch
+
+`LDialogueAI:selectBranch(topic_id: string) -> string`
+
+Selects the best currently valid branch for the given topic.
+
+**Parameters**
+
+- `topic_id` (`string`, required): Topic identifier whose branches should be considered.
+
+**Returns**: `string` - Selected branch identifier, or nil when no branch is available.
+
+**Lua API Stub**
+
+```lua
+--- Selects the best currently valid branch for the given topic.
+---@param topic_id string Topic identifier whose branches should be considered.
+---@return string Selected branch identifier, or nil when no branch is available.
+function LDialogueAI:selectBranch(topic_id) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local d = lurek.ai.newDialogueAI()
+  d:addTopic("greet")
+  d:addBranch("greet", "friendly", 1.0)
+  local branch = d:selectBranch("greet")
+  lurek.log.debug("branch=" .. tostring(branch), "ai")
+end
+```
+
+### LDialogueAI:selectTopic
+
+`LDialogueAI:selectTopic() -> string`
+
+Selects the best currently valid topic using weights and context filters.
+
+**Returns**: `string` - Selected topic identifier, or nil when no topic is available.
+
+**Lua API Stub**
+
+```lua
+--- Selects the best currently valid topic using weights and context filters.
+---@return string Selected topic identifier, or nil when no topic is available.
+function LDialogueAI:selectTopic() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local d = lurek.ai.newDialogueAI()
+  d:addTopic("greet")
+  d:setUtilityScore("greet", 0.9)
+  local topic = d:selectTopic()
+  lurek.log.debug("topic=" .. tostring(topic), "ai")
+end
+```
+
+### LDialogueAI:setBTStatus
+
+`LDialogueAI:setBTStatus([status]: string)`
+
+Sets the behavior-tree status used as dialogue selection context.
+
+**Parameters**
+
+- `status` (`string`, optional): Current behavior tree status, or nil to clear the status context.
+
+**Lua API Stub**
+
+```lua
+--- Sets the behavior-tree status used as dialogue selection context.
+---@param status? string Current behavior tree status, or nil to clear the status context.
+function LDialogueAI:setBTStatus(status) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local d = lurek.ai.newDialogueAI()
+  d:setBTStatus("running")
+end
+```
+
+### LDialogueAI:setFSMState
+
+`LDialogueAI:setFSMState([state]: string)`
+
+Sets the finite-state-machine state used as dialogue selection context.
+
+**Parameters**
+
+- `state` (`string`, optional): Current FSM state name, or nil to clear the FSM context.
+
+**Lua API Stub**
+
+```lua
+--- Sets the finite-state-machine state used as dialogue selection context.
+---@param state? string Current FSM state name, or nil to clear the FSM context.
+function LDialogueAI:setFSMState(state) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local d = lurek.ai.newDialogueAI()
+  d:setFSMState("combat")
+end
+```
+
+### LDialogueAI:setUtilityScore
+
+`LDialogueAI:setUtilityScore(key: string, score: number)`
+
+Stores a utility score used by topics and branches that reference the given key.
+
+**Parameters**
+
+- `key` (`string`, required): Utility score key.
+- `score` (`number`, required): Utility score value used during weighted selection.
+
+**Lua API Stub**
+
+```lua
+--- Stores a utility score used by topics and branches that reference the given key.
+---@param key string Utility score key.
+---@param score number Utility score value used during weighted selection.
+function LDialogueAI:setUtilityScore(key, score) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local d = lurek.ai.newDialogueAI()
+  d:addTopic("greet")
+  d:setUtilityScore("greet", 0.8)
+end
+```
+
+### LDialogueAI:type
+
+`LDialogueAI:type() -> string`
+
+Returns the Lua-visible type name for this dialogue AI handle.
+
+**Returns**: `string` - The string `LDialogueAI`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this dialogue AI handle.
+---@return string The string `LDialogueAI`.
+function LDialogueAI:type() end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local obj = lurek.ai.newDialogueAI()
+  lurek.log.debug("type: " .. obj:type(), "example") -- "LDialogueAI"
+end
+```
+
+### LDialogueAI:typeOf
+
+`LDialogueAI:typeOf(name: string) -> boolean`
+
+Returns whether this dialogue AI handle matches a supported type name.
+
+**Parameters**
+
+- `name` (`string`, required): Type name to compare against `DialogueAI` and `Object`.
+
+**Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this dialogue AI handle matches a supported type name.
+---@param name string Type name to compare against `DialogueAI` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LDialogueAI:typeOf(name) end
+```
+
+#### Example
+
+Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
+
+```lua
+do
+  local obj = lurek.ai.newDialogueAI()
+  lurek.log.debug("typeOf LDialogueAI: " .. tostring(obj:typeOf("LDialogueAI")), "example") -- true
+end
+```
+
+### LEmotionModel:add
+
+`LEmotionModel:add(name: string, rest: number, decay: number, min_vis: number)`
 
 Adds an emotion definition with resting value, decay, and visibility threshold.
 
 **Parameters**
 
-- `name` (`string`, required) - Emotion name.
-- `rest` (`number`, required) - Resting emotion value.
-- `decay` (`number`, required) - Decay rate back toward rest.
-- `min_vis` (`number`, required) - Minimum value considered visible or active.
+- `name` (`string`, required): Emotion name.
+- `rest` (`number`, required): Resting emotion value.
+- `decay` (`number`, required): Decay rate back toward rest.
+- `min_vis` (`number`, required): Minimum value considered visible or active.
+
+**Lua API Stub**
+
+```lua
+--- Adds an emotion definition with resting value, decay, and visibility threshold.
+---@param name string Emotion name.
+---@param rest number Resting emotion value.
+---@param decay number Decay rate back toward rest.
+---@param min_vis number Minimum value considered visible or active.
+function LEmotionModel:add(name, rest, decay, min_vis) end
+```
 
 #### Example
 
@@ -4002,11 +5808,21 @@ do
 end
 ```
 
-### `LEmotionModel:dominant() -> LuaValue`
+### LEmotionModel:dominant
+
+`LEmotionModel:dominant() -> LuaValue`
 
 Returns the strongest active emotion name when one is available.
 
 **Returns**: `LuaValue` - Dominant emotion name, or nil when no emotion is active.
+
+**Lua API Stub**
+
+```lua
+--- Returns the strongest active emotion name when one is available.
+---@return LuaValue Dominant emotion name, or nil when no emotion is active.
+function LEmotionModel:dominant() end
+```
 
 #### Example
 
@@ -4022,15 +5838,26 @@ do
 end
 ```
 
-### `LEmotionModel:get(name: string) -> number`
+### LEmotionModel:get
+
+`LEmotionModel:get(name: string) -> number`
 
 Returns the current value of a named emotion.
 
 **Parameters**
 
-- `name` (`string`, required) - Emotion name to read.
+- `name` (`string`, required): Emotion name to read.
 
 **Returns**: `number` - Current emotion value.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current value of a named emotion.
+---@param name string Emotion name to read.
+---@return number Current emotion value.
+function LEmotionModel:get(name) end
+```
 
 #### Example
 
@@ -4045,15 +5872,26 @@ do
 end
 ```
 
-### `LEmotionModel:isActive(name: string) -> boolean`
+### LEmotionModel:isActive
+
+`LEmotionModel:isActive(name: string) -> boolean`
 
 Returns whether a named emotion is currently active.
 
 **Parameters**
 
-- `name` (`string`, required) - Emotion name to check.
+- `name` (`string`, required): Emotion name to check.
 
 **Returns**: `boolean` - True when the emotion is above its active threshold.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether a named emotion is currently active.
+---@param name string Emotion name to check.
+---@return boolean True when the emotion is above its active threshold.
+function LEmotionModel:isActive(name) end
+```
 
 #### Example
 
@@ -4068,9 +5906,18 @@ do
 end
 ```
 
-### `LEmotionModel:reset()`
+### LEmotionModel:reset
+
+`LEmotionModel:reset()`
 
 Resets all emotions toward their default state.
+
+**Lua API Stub**
+
+```lua
+--- Resets all emotions toward their default state.
+function LEmotionModel:reset() end
+```
 
 #### Example
 
@@ -4088,14 +5935,25 @@ do
 end
 ```
 
-### `LEmotionModel:trigger(name: string, amount: number)`
+### LEmotionModel:trigger
+
+`LEmotionModel:trigger(name: string, amount: number)`
 
 Adds an amount to a named emotion. This method is available to Lua scripts.
 
 **Parameters**
 
-- `name` (`string`, required) - Emotion name to trigger.
-- `amount` (`number`, required) - Amount added to the current emotion value.
+- `name` (`string`, required): Emotion name to trigger.
+- `amount` (`number`, required): Amount added to the current emotion value.
+
+**Lua API Stub**
+
+```lua
+--- Adds an amount to a named emotion. This method is available to Lua scripts.
+---@param name string Emotion name to trigger.
+---@param amount number Amount added to the current emotion value.
+function LEmotionModel:trigger(name, amount) end
+```
 
 #### Example
 
@@ -4109,11 +5967,21 @@ do
 end
 ```
 
-### `LEmotionModel:type() -> string`
+### LEmotionModel:type
+
+`LEmotionModel:type() -> string`
 
 Returns the Lua-visible type name for this emotion model handle.
 
 **Returns**: `string` - The string `LEmotionModel`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this emotion model handle.
+---@return string The string `LEmotionModel`.
+function LEmotionModel:type() end
+```
 
 #### Example
 
@@ -4126,15 +5994,26 @@ do
 end
 ```
 
-### `LEmotionModel:typeOf(name: string) -> boolean`
+### LEmotionModel:typeOf
+
+`LEmotionModel:typeOf(name: string) -> boolean`
 
 Returns whether this emotion model handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `LEmotionModel` and `Object`.
+- `name` (`string`, required): Type name to compare against `LEmotionModel` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this emotion model handle matches a supported type name.
+---@param name string Type name to compare against `LEmotionModel` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LEmotionModel:typeOf(name) end
+```
 
 #### Example
 
@@ -4147,13 +6026,23 @@ do
 end
 ```
 
-### `LEmotionModel:update(dt: number)`
+### LEmotionModel:update
+
+`LEmotionModel:update(dt: number)`
 
 Advances emotion decay over elapsed time.
 
 **Parameters**
 
-- `dt` (`number`, required) - Elapsed time in seconds.
+- `dt` (`number`, required): Elapsed time in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Advances emotion decay over elapsed time.
+---@param dt number Elapsed time in seconds.
+function LEmotionModel:update(dt) end
+```
 
 #### Example
 
@@ -4171,30 +6060,21 @@ do
 end
 ```
 
-### `LGeneticAlgorithm`
+### LGeneticAlgorithm:bestGenes
 
-Lua handle for a floating-point genetic algorithm population.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  -- GA evolves a population of solutions by selection, crossover, and mutation.
-  -- Parameters: population_size, chromosome_length, seed. Set fitness per individual.
-  -- Scenario: evolving enemy stat distributions that challenge the player optimally.
-  local ga = lurek.ai.newGeneticAlgorithm(50, 16, 42)
-  ga:setFitness(1, 0.7)
-  function lurek.process(dt) ga:evolve() end
-end
-```
-
-### `LGeneticAlgorithm:bestGenes() -> number[]`
+`LGeneticAlgorithm:bestGenes() -> number[]`
 
 Returns the genes for the best chromosome in the population.
 
 **Returns**: `number[]` - Array of best gene values, or an empty array when the population has no best chromosome.
+
+**Lua API Stub**
+
+```lua
+--- Returns the genes for the best chromosome in the population.
+---@return number[] Array of best gene values, or an empty array when the population has no best chromosome.
+function LGeneticAlgorithm:bestGenes() end
+```
 
 #### Example
 
@@ -4209,9 +6089,18 @@ do
 end
 ```
 
-### `LGeneticAlgorithm:evolve()`
+### LGeneticAlgorithm:evolve
+
+`LGeneticAlgorithm:evolve()`
 
 Advances the genetic algorithm by one generation.
+
+**Lua API Stub**
+
+```lua
+--- Advances the genetic algorithm by one generation.
+function LGeneticAlgorithm:evolve() end
+```
 
 #### Example
 
@@ -4228,11 +6117,21 @@ do
 end
 ```
 
-### `LGeneticAlgorithm:generation() -> integer`
+### LGeneticAlgorithm:generation
+
+`LGeneticAlgorithm:generation() -> integer`
 
 Returns the current generation index.
 
 **Returns**: `integer` - Current generation count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current generation index.
+---@return number Current generation count.
+function LGeneticAlgorithm:generation() end
+```
 
 #### Example
 
@@ -4247,15 +6146,26 @@ do
 end
 ```
 
-### `LGeneticAlgorithm:getGenes(idx: integer) -> integer[]`
+### LGeneticAlgorithm:getGenes
+
+`LGeneticAlgorithm:getGenes(idx: integer) -> integer[]`
 
 Returns the genes for a chromosome by zero-based index.
 
 **Parameters**
 
-- `idx` (`integer`, required) - Zero-based chromosome index.
+- `idx` (`integer`, required): Zero-based chromosome index.
 
 **Returns**: `integer[]` - Gene values, or an empty table for an invalid index.
+
+**Lua API Stub**
+
+```lua
+--- Returns the genes for a chromosome by zero-based index.
+---@param idx number Zero-based chromosome index.
+---@return number[] Gene values, or an empty table for an invalid index.
+function LGeneticAlgorithm:getGenes(idx) end
+```
 
 #### Example
 
@@ -4269,11 +6179,21 @@ do
 end
 ```
 
-### `LGeneticAlgorithm:popSize() -> integer`
+### LGeneticAlgorithm:popSize
+
+`LGeneticAlgorithm:popSize() -> integer`
 
 Returns the population size. This method is available to Lua scripts.
 
 **Returns**: `integer` - Current population size.
+
+**Lua API Stub**
+
+```lua
+--- Returns the population size. This method is available to Lua scripts.
+---@return number Current population size.
+function LGeneticAlgorithm:popSize() end
+```
 
 #### Example
 
@@ -4287,14 +6207,25 @@ do
 end
 ```
 
-### `LGeneticAlgorithm:setFitness(idx: integer, fitness: number)`
+### LGeneticAlgorithm:setFitness
+
+`LGeneticAlgorithm:setFitness(idx: integer, fitness: number)`
 
 Sets the fitness value for a chromosome by zero-based index.
 
 **Parameters**
 
-- `idx` (`integer`, required) - Zero-based chromosome index.
-- `fitness` (`number`, required) - Fitness value used by the next evolution step.
+- `idx` (`integer`, required): Zero-based chromosome index.
+- `fitness` (`number`, required): Fitness value used by the next evolution step.
+
+**Lua API Stub**
+
+```lua
+--- Sets the fitness value for a chromosome by zero-based index.
+---@param idx number Zero-based chromosome index.
+---@param fitness number Fitness value used by the next evolution step.
+function LGeneticAlgorithm:setFitness(idx, fitness) end
+```
 
 #### Example
 
@@ -4311,11 +6242,21 @@ do
 end
 ```
 
-### `LGeneticAlgorithm:type() -> string`
+### LGeneticAlgorithm:type
+
+`LGeneticAlgorithm:type() -> string`
 
 Returns the Lua-visible type name for this genetic algorithm handle.
 
 **Returns**: `string` - The string `LGeneticAlgorithm`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this genetic algorithm handle.
+---@return string The string `LGeneticAlgorithm`.
+function LGeneticAlgorithm:type() end
+```
 
 #### Example
 
@@ -4328,15 +6269,26 @@ do
 end
 ```
 
-### `LGeneticAlgorithm:typeOf(name: string) -> boolean`
+### LGeneticAlgorithm:typeOf
+
+`LGeneticAlgorithm:typeOf(name: string) -> boolean`
 
 Returns whether this genetic algorithm handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `LGeneticAlgorithm` and `Object`.
+- `name` (`string`, required): Type name to compare against `LGeneticAlgorithm` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this genetic algorithm handle matches a supported type name.
+---@param name string Type name to compare against `LGeneticAlgorithm` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LGeneticAlgorithm:typeOf(name) end
+```
 
 #### Example
 
@@ -4349,34 +6301,27 @@ do
 end
 ```
 
-### `LGOAPPlanner`
+### LGOAPPlanner:addAction
 
-Lua handle for a GOAP planner with boolean preconditions, effects, and goals.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  -- GOAP finds action sequences to reach a goal from the current world state.
-  -- Actions have preconditions, effects, and cost — the planner picks cheapest path.
-  -- Scenario: squad coordination — plan "get_ammo → reload → suppress" automatically.
-  local planner = lurek.ai.newGOAPPlanner()
-  planner:addAction("eat", 1.0, function() lurek.log.info("eating", "ai") end)
-  planner:addGoal("not_hungry", 1.0)
-end
-```
-
-### `LGOAPPlanner:addAction(name: string, [cost]: number, [callback]: function)`
+`LGOAPPlanner:addAction(name: string, [cost]: number, [callback]: function)`
 
 Adds a GOAP action with optional cost and completion callback.
 
 **Parameters**
 
-- `name` (`string`, required) - Action name emitted in generated plans.
-- `cost` (`number`, optional) - Planning cost for the action; defaults to 1.0.
-- `callback` (`function`, optional) - Optional callback stored with the action for game-side execution.
+- `name` (`string`, required): Action name emitted in generated plans.
+- `cost` (`number`, optional): Planning cost for the action; defaults to 1.0.
+- `callback` (`function`, optional): Optional callback stored with the action for game-side execution.
+
+**Lua API Stub**
+
+```lua
+--- Adds a GOAP action with optional cost and completion callback.
+---@param name string Action name emitted in generated plans.
+---@param cost? number Planning cost for the action; defaults to 1.0.
+---@param callback? function Optional callback stored with the action for game-side execution.
+function LGOAPPlanner:addAction(name, cost, callback) end
+```
 
 #### Example
 
@@ -4392,14 +6337,25 @@ do
 end
 ```
 
-### `LGOAPPlanner:addGoal(name: string, [priority]: number)`
+### LGOAPPlanner:addGoal
+
+`LGOAPPlanner:addGoal(name: string, [priority]: number)`
 
 Adds a GOAP goal with an optional priority weight.
 
 **Parameters**
 
-- `name` (`string`, required) - Goal name used for planning and debugging.
-- `priority` (`number`, optional) - Goal priority; defaults to 1.0.
+- `name` (`string`, required): Goal name used for planning and debugging.
+- `priority` (`number`, optional): Goal priority; defaults to 1.0.
+
+**Lua API Stub**
+
+```lua
+--- Adds a GOAP goal with an optional priority weight.
+---@param name string Goal name used for planning and debugging.
+---@param priority? number Goal priority; defaults to 1.0.
+function LGOAPPlanner:addGoal(name, priority) end
+```
 
 #### Example
 
@@ -4417,11 +6373,21 @@ do
 end
 ```
 
-### `LGOAPPlanner:getActionCount() -> integer`
+### LGOAPPlanner:getActionCount
+
+`LGOAPPlanner:getActionCount() -> integer`
 
 Returns the number of GOAP actions registered in this planner.
 
 **Returns**: `integer` - Current action count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of GOAP actions registered in this planner.
+---@return number Current action count.
+function LGOAPPlanner:getActionCount() end
+```
 
 #### Example
 
@@ -4436,11 +6402,21 @@ do
 end
 ```
 
-### `LGOAPPlanner:getGoalCount() -> integer`
+### LGOAPPlanner:getGoalCount
+
+`LGOAPPlanner:getGoalCount() -> integer`
 
 Returns the number of GOAP goals registered in this planner.
 
 **Returns**: `integer` - Current goal count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of GOAP goals registered in this planner.
+---@return number Current goal count.
+function LGOAPPlanner:getGoalCount() end
+```
 
 #### Example
 
@@ -4455,11 +6431,21 @@ do
 end
 ```
 
-### `LGOAPPlanner:getMaxIterations() -> integer`
+### LGOAPPlanner:getMaxIterations
+
+`LGOAPPlanner:getMaxIterations() -> integer`
 
 Returns the maximum number of planner iterations allowed during search.
 
 **Returns**: `integer` - Current maximum iteration count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the maximum number of planner iterations allowed during search.
+---@return number Current maximum iteration count.
+function LGOAPPlanner:getMaxIterations() end
+```
 
 #### Example
 
@@ -4474,16 +6460,28 @@ do
 end
 ```
 
-### `LGOAPPlanner:plan(world_state_tbl: table, [max_depth]: integer) -> string[]`
+### LGOAPPlanner:plan
+
+`LGOAPPlanner:plan(world_state_tbl: table, [max_depth]: integer) -> string[]`
 
 Builds a plan from the supplied boolean world state and returns action names in execution order.
 
 **Parameters**
 
-- `world_state_tbl` (`table`, required) - Map table from string world-state keys to boolean values.
-- `max_depth` (`integer`, optional) - Maximum search depth; defaults to 10.
+- `world_state_tbl` (`table`, required): Map table from string world-state keys to boolean values.
+- `max_depth` (`integer`, optional): Maximum search depth; defaults to 10.
 
 **Returns**: `string[]` - Action names selected by the planner.
+
+**Lua API Stub**
+
+```lua
+--- Builds a plan from the supplied boolean world state and returns action names in execution order.
+---@param world_state_tbl table Map table from string world-state keys to boolean values.
+---@param max_depth? number Maximum search depth; defaults to 10.
+---@return string[] Action names selected by the planner.
+function LGOAPPlanner:plan(world_state_tbl, max_depth) end
+```
 
 #### Example
 
@@ -4502,15 +6500,27 @@ do
 end
 ```
 
-### `LGOAPPlanner:setEffect(action_name: string, key: string, value: boolean)`
+### LGOAPPlanner:setEffect
+
+`LGOAPPlanner:setEffect(action_name: string, key: string, value: boolean)`
 
 Sets one boolean effect produced by an existing GOAP action.
 
 **Parameters**
 
-- `action_name` (`string`, required) - Name of the action to update.
-- `key` (`string`, required) - World-state key changed by the action.
-- `value` (`boolean`, required) - Boolean value written by the effect.
+- `action_name` (`string`, required): Name of the action to update.
+- `key` (`string`, required): World-state key changed by the action.
+- `value` (`boolean`, required): Boolean value written by the effect.
+
+**Lua API Stub**
+
+```lua
+--- Sets one boolean effect produced by an existing GOAP action.
+---@param action_name string Name of the action to update.
+---@param key string World-state key changed by the action.
+---@param value boolean Boolean value written by the effect.
+function LGOAPPlanner:setEffect(action_name, key, value) end
+```
 
 #### Example
 
@@ -4525,15 +6535,27 @@ do
 end
 ```
 
-### `LGOAPPlanner:setGoalState(goal_name: string, key: string, value: boolean)`
+### LGOAPPlanner:setGoalState
+
+`LGOAPPlanner:setGoalState(goal_name: string, key: string, value: boolean)`
 
 Sets one desired world-state key for an existing GOAP goal.
 
 **Parameters**
 
-- `goal_name` (`string`, required) - Name of the goal to update.
-- `key` (`string`, required) - World-state key required by the goal.
-- `value` (`boolean`, required) - Desired boolean value for the key.
+- `goal_name` (`string`, required): Name of the goal to update.
+- `key` (`string`, required): World-state key required by the goal.
+- `value` (`boolean`, required): Desired boolean value for the key.
+
+**Lua API Stub**
+
+```lua
+--- Sets one desired world-state key for an existing GOAP goal.
+---@param goal_name string Name of the goal to update.
+---@param key string World-state key required by the goal.
+---@param value boolean Desired boolean value for the key.
+function LGOAPPlanner:setGoalState(goal_name, key, value) end
+```
 
 #### Example
 
@@ -4548,13 +6570,23 @@ do
 end
 ```
 
-### `LGOAPPlanner:setMaxIterations(n: integer)`
+### LGOAPPlanner:setMaxIterations
+
+`LGOAPPlanner:setMaxIterations(n: integer)`
 
 Sets the maximum number of planner iterations allowed during search.
 
 **Parameters**
 
-- `n` (`integer`, required) - Maximum iteration count.
+- `n` (`integer`, required): Maximum iteration count.
+
+**Lua API Stub**
+
+```lua
+--- Sets the maximum number of planner iterations allowed during search.
+---@param n number Maximum iteration count.
+function LGOAPPlanner:setMaxIterations(n) end
+```
 
 #### Example
 
@@ -4569,15 +6601,27 @@ do
 end
 ```
 
-### `LGOAPPlanner:setPrecondition(action_name: string, key: string, value: boolean)`
+### LGOAPPlanner:setPrecondition
+
+`LGOAPPlanner:setPrecondition(action_name: string, key: string, value: boolean)`
 
 Sets one boolean precondition for an existing GOAP action.
 
 **Parameters**
 
-- `action_name` (`string`, required) - Name of the action to update.
-- `key` (`string`, required) - World-state key required by the action.
-- `value` (`boolean`, required) - Required boolean value for the key.
+- `action_name` (`string`, required): Name of the action to update.
+- `key` (`string`, required): World-state key required by the action.
+- `value` (`boolean`, required): Required boolean value for the key.
+
+**Lua API Stub**
+
+```lua
+--- Sets one boolean precondition for an existing GOAP action.
+---@param action_name string Name of the action to update.
+---@param key string World-state key required by the action.
+---@param value boolean Required boolean value for the key.
+function LGOAPPlanner:setPrecondition(action_name, key, value) end
+```
 
 #### Example
 
@@ -4592,11 +6636,21 @@ do
 end
 ```
 
-### `LGOAPPlanner:type() -> string`
+### LGOAPPlanner:type
+
+`LGOAPPlanner:type() -> string`
 
 Returns the Lua-visible type name for this GOAP planner handle.
 
 **Returns**: `string` - The string `LGOAPPlanner`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this GOAP planner handle.
+---@return string The string `LGOAPPlanner`.
+function LGOAPPlanner:type() end
+```
 
 #### Example
 
@@ -4609,15 +6663,26 @@ do
 end
 ```
 
-### `LGOAPPlanner:typeOf(name: string) -> boolean`
+### LGOAPPlanner:typeOf
+
+`LGOAPPlanner:typeOf(name: string) -> boolean`
 
 Returns whether this GOAP planner handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `GOAPPlanner` and `Object`.
+- `name` (`string`, required): Type name to compare against `GOAPPlanner` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this GOAP planner handle matches a supported type name.
+---@param name string Type name to compare against `GOAPPlanner` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LGOAPPlanner:typeOf(name) end
+```
 
 #### Example
 
@@ -4630,32 +6695,25 @@ do
 end
 ```
 
-### `LHTNDomain`
+### LHTNDomain:addCompound
 
-Lua handle for a hierarchical task network domain.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  -- HTN decomposes high-level goals into ordered primitive tasks via methods.
-  -- Primitives have preconditions, effects, and deletions on world state.
-  -- Scenario: "defeat_enemy" decomposes into "approach → aim → fire → confirm_kill".
-  local d = lurek.ai.newHTNDomain()
-  d:addPrimitive("attack", { "has_weapon" }, { "enemy_dead" }, {})
-end
-```
-
-### `LHTNDomain:addCompound(comp_name: string, methods_table: table)`
+`LHTNDomain:addCompound(comp_name: string, methods_table: table)`
 
 Adds a compound HTN task with one or more ordered method definitions.
 
 **Parameters**
 
-- `comp_name` (`string`, required) - Compound task name.
-- `methods_table` (`table`, required) - Array of method tables with `name`, `preconditions`, and `sub_tasks` fields.
+- `comp_name` (`string`, required): Compound task name.
+- `methods_table` (`table`, required): Array of method tables with `name`, `preconditions`, and `sub_tasks` fields.
+
+**Lua API Stub**
+
+```lua
+--- Adds a compound HTN task with one or more ordered method definitions.
+---@param comp_name string Compound task name.
+---@param methods_table table Array of method tables with `name`, `preconditions`, and `sub_tasks` fields.
+function LHTNDomain:addCompound(comp_name, methods_table) end
+```
 
 #### Example
 
@@ -4670,16 +6728,29 @@ do
 end
 ```
 
-### `LHTNDomain:addPrimitive(name: string, preconds: table, effects: table, clears: table)`
+### LHTNDomain:addPrimitive
+
+`LHTNDomain:addPrimitive(name: string, preconds: table, effects: table, clears: table)`
 
 Adds a primitive HTN task with preconditions, effects, and cleared facts.
 
 **Parameters**
 
-- `name` (`string`, required) - Primitive task name.
-- `preconds` (`table`, required) - Array of fact names required before the task can run.
-- `effects` (`table`, required) - Array of fact names added by the task.
-- `clears` (`table`, required) - Array of fact names removed by the task.
+- `name` (`string`, required): Primitive task name.
+- `preconds` (`table`, required): Array of fact names required before the task can run.
+- `effects` (`table`, required): Array of fact names added by the task.
+- `clears` (`table`, required): Array of fact names removed by the task.
+
+**Lua API Stub**
+
+```lua
+--- Adds a primitive HTN task with preconditions, effects, and cleared facts.
+---@param name string Primitive task name.
+---@param preconds table Array of fact names required before the task can run.
+---@param effects table Array of fact names added by the task.
+---@param clears table Array of fact names removed by the task.
+function LHTNDomain:addPrimitive(name, preconds, effects, clears) end
+```
 
 #### Example
 
@@ -4692,16 +6763,28 @@ do
 end
 ```
 
-### `LHTNDomain:plan(root_task: string, state_table: table) -> LuaValue`
+### LHTNDomain:plan
+
+`LHTNDomain:plan(root_task: string, state_table: table) -> LuaValue`
 
 Plans from a root HTN task and numeric world state facts.
 
 **Parameters**
 
-- `root_task` (`string`, required) - Root task name to decompose.
-- `state_table` (`table`, required) - Map table from fact names to numeric values.
+- `root_task` (`string`, required): Root task name to decompose.
+- `state_table` (`table`, required): Map table from fact names to numeric values.
 
 **Returns**: `LuaValue` - Array table of primitive task names, or nil when no plan is found.
+
+**Lua API Stub**
+
+```lua
+--- Plans from a root HTN task and numeric world state facts.
+---@param root_task string Root task name to decompose.
+---@param state_table table Map table from fact names to numeric values.
+---@return LuaValue Array table of primitive task names, or nil when no plan is found.
+function LHTNDomain:plan(root_task, state_table) end
+```
 
 #### Example
 
@@ -4717,11 +6800,21 @@ do
 end
 ```
 
-### `LHTNDomain:taskCount() -> integer`
+### LHTNDomain:taskCount
+
+`LHTNDomain:taskCount() -> integer`
 
 Returns the number of tasks defined in this HTN domain.
 
 **Returns**: `integer` - Current task count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of tasks defined in this HTN domain.
+---@return number Current task count.
+function LHTNDomain:taskCount() end
+```
 
 #### Example
 
@@ -4735,11 +6828,21 @@ do
 end
 ```
 
-### `LHTNDomain:type() -> string`
+### LHTNDomain:type
+
+`LHTNDomain:type() -> string`
 
 Returns the Lua-visible type name for this HTN domain handle.
 
 **Returns**: `string` - The string `LHTNDomain`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this HTN domain handle.
+---@return string The string `LHTNDomain`.
+function LHTNDomain:type() end
+```
 
 #### Example
 
@@ -4752,15 +6855,26 @@ do
 end
 ```
 
-### `LHTNDomain:typeOf(name: string) -> boolean`
+### LHTNDomain:typeOf
+
+`LHTNDomain:typeOf(name: string) -> boolean`
 
 Returns whether this HTN domain handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `LHTNDomain` and `Object`.
+- `name` (`string`, required): Type name to compare against `LHTNDomain` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this HTN domain handle matches a supported type name.
+---@param name string Type name to compare against `LHTNDomain` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LHTNDomain:typeOf(name) end
+```
 
 #### Example
 
@@ -4773,32 +6887,23 @@ do
 end
 ```
 
-### `LInfluenceMap`
+### LInfluenceMap:addLayer
 
-Lua handle for a grid-based influence map with named layers.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  -- Influence maps let AI reason about spatial control (threat zones, territory).
-  -- Parameters: grid_w, grid_h, cell_size. Layers separate concerns (threat vs resources).
-  -- Scenario: RTS units avoid high-threat cells and prefer resource-rich areas.
-  local infl = lurek.ai.newInfluenceMap(64, 64, 16)
-  infl:addLayer("threat")
-  infl:stampInfluence("threat", 320, 240, 80, 1.0, 1.0)
-end
-```
-
-### `LInfluenceMap:addLayer(name: string)`
+`LInfluenceMap:addLayer(name: string)`
 
 Adds an influence layer with the given name if it does not already exist.
 
 **Parameters**
 
-- `name` (`string`, required) - Layer name used by later influence operations.
+- `name` (`string`, required): Layer name used by later influence operations.
+
+**Lua API Stub**
+
+```lua
+--- Adds an influence layer with the given name if it does not already exist.
+---@param name string Layer name used by later influence operations.
+function LInfluenceMap:addLayer(name) end
+```
 
 #### Example
 
@@ -4815,17 +6920,31 @@ do
 end
 ```
 
-### `LInfluenceMap:blend(layer_a: string, weight_a: number, layer_b: string, weight_b: number, dest: string)`
+### LInfluenceMap:blend
+
+`LInfluenceMap:blend(layer_a: string, weight_a: number, layer_b: string, weight_b: number, dest: string)`
 
 Blends two source layers into a destination layer using independent weights.
 
 **Parameters**
 
-- `layer_a` (`string`, required) - First source layer name.
-- `weight_a` (`number`, required) - Weight applied to the first source layer.
-- `layer_b` (`string`, required) - Second source layer name.
-- `weight_b` (`number`, required) - Weight applied to the second source layer.
-- `dest` (`string`, required) - Destination layer name that receives the blended values.
+- `layer_a` (`string`, required): First source layer name.
+- `weight_a` (`number`, required): Weight applied to the first source layer.
+- `layer_b` (`string`, required): Second source layer name.
+- `weight_b` (`number`, required): Weight applied to the second source layer.
+- `dest` (`string`, required): Destination layer name that receives the blended values.
+
+**Lua API Stub**
+
+```lua
+--- Blends two source layers into a destination layer using independent weights.
+---@param layer_a string First source layer name.
+---@param weight_a number Weight applied to the first source layer.
+---@param layer_b string Second source layer name.
+---@param weight_b number Weight applied to the second source layer.
+---@param dest string Destination layer name that receives the blended values.
+function LInfluenceMap:blend(layer_a, weight_a, layer_b, weight_b, dest) end
+```
 
 #### Example
 
@@ -4842,9 +6961,18 @@ do
 end
 ```
 
-### `LInfluenceMap:clearAll()`
+### LInfluenceMap:clearAll
+
+`LInfluenceMap:clearAll()`
 
 Clears every influence value in every layer.
+
+**Lua API Stub**
+
+```lua
+--- Clears every influence value in every layer.
+function LInfluenceMap:clearAll() end
+```
 
 #### Example
 
@@ -4864,13 +6992,23 @@ do
 end
 ```
 
-### `LInfluenceMap:clearLayer(layer: string)`
+### LInfluenceMap:clearLayer
+
+`LInfluenceMap:clearLayer(layer: string)`
 
 Clears every value in a named influence layer.
 
 **Parameters**
 
-- `layer` (`string`, required) - Layer name to clear.
+- `layer` (`string`, required): Layer name to clear.
+
+**Lua API Stub**
+
+```lua
+--- Clears every value in a named influence layer.
+---@param layer string Layer name to clear.
+function LInfluenceMap:clearLayer(layer) end
+```
 
 #### Example
 
@@ -4885,14 +7023,25 @@ do
 end
 ```
 
-### `LInfluenceMap:decay(layer: string, factor: number)`
+### LInfluenceMap:decay
+
+`LInfluenceMap:decay(layer: string, factor: number)`
 
 Multiplies a named layer by a decay factor.
 
 **Parameters**
 
-- `layer` (`string`, required) - Layer name to decay.
-- `factor` (`number`, required) - Decay factor applied to every cell.
+- `layer` (`string`, required): Layer name to decay.
+- `factor` (`number`, required): Decay factor applied to every cell.
+
+**Lua API Stub**
+
+```lua
+--- Multiplies a named layer by a decay factor.
+---@param layer string Layer name to decay.
+---@param factor number Decay factor applied to every cell.
+function LInfluenceMap:decay(layer, factor) end
+```
 
 #### Example
 
@@ -4910,11 +7059,21 @@ do
 end
 ```
 
-### `LInfluenceMap:getCellSize() -> number`
+### LInfluenceMap:getCellSize
+
+`LInfluenceMap:getCellSize() -> number`
 
 Returns the world size represented by each influence map cell.
 
 **Returns**: `number` - Cell size in world units.
+
+**Lua API Stub**
+
+```lua
+--- Returns the world size represented by each influence map cell.
+---@return number Cell size in world units.
+function LInfluenceMap:getCellSize() end
+```
 
 #### Example
 
@@ -4928,11 +7087,21 @@ do
 end
 ```
 
-### `LInfluenceMap:getHeight() -> integer`
+### LInfluenceMap:getHeight
+
+`LInfluenceMap:getHeight() -> integer`
 
 Returns the influence map height in cells.
 
 **Returns**: `integer` - Cell height of the map.
+
+**Lua API Stub**
+
+```lua
+--- Returns the influence map height in cells.
+---@return number Cell height of the map.
+function LInfluenceMap:getHeight() end
+```
 
 #### Example
 
@@ -4946,17 +7115,30 @@ do
 end
 ```
 
-### `LInfluenceMap:getInfluence(layer: string, x: integer, y: integer) -> number`
+### LInfluenceMap:getInfluence
+
+`LInfluenceMap:getInfluence(layer: string, x: integer, y: integer) -> number`
 
 Returns one cell value from a named influence layer using one-based cell coordinates.
 
 **Parameters**
 
-- `layer` (`string`, required) - Layer name to read.
-- `x` (`integer`, required) - One-based cell X coordinate.
-- `y` (`integer`, required) - One-based cell Y coordinate.
+- `layer` (`string`, required): Layer name to read.
+- `x` (`integer`, required): One-based cell X coordinate.
+- `y` (`integer`, required): One-based cell Y coordinate.
 
 **Returns**: `number` - Influence value at the requested cell.
+
+**Lua API Stub**
+
+```lua
+--- Returns one cell value from a named influence layer using one-based cell coordinates.
+---@param layer string Layer name to read.
+---@param x number One-based cell X coordinate.
+---@param y number One-based cell Y coordinate.
+---@return number Influence value at the requested cell.
+function LInfluenceMap:getInfluence(layer, x, y) end
+```
 
 #### Example
 
@@ -4972,15 +7154,27 @@ do
 end
 ```
 
-### `LInfluenceMap:getMaxPosition(layer: string) -> integer, integer`
+### LInfluenceMap:getMaxPosition
+
+`LInfluenceMap:getMaxPosition(layer: string) -> integer, integer`
 
 Returns the cell position with the highest value on a named layer.
 
 **Parameters**
 
-- `layer` (`string`, required) - Layer name to scan.
+- `layer` (`string`, required): Layer name to scan.
 
 **Returns**: `integer, integer` - One-based X and Y cell coordinates of the maximum value.
+
+**Lua API Stub**
+
+```lua
+--- Returns the cell position with the highest value on a named layer.
+---@param layer string Layer name to scan.
+---@return number a One-based X and Y cell coordinates of the maximum value.
+---@return number b One-based X and Y cell coordinates of the maximum value.
+function LInfluenceMap:getMaxPosition(layer) end
+```
 
 #### Example
 
@@ -4999,15 +7193,27 @@ do
 end
 ```
 
-### `LInfluenceMap:getMinPosition(layer: string) -> integer, integer`
+### LInfluenceMap:getMinPosition
+
+`LInfluenceMap:getMinPosition(layer: string) -> integer, integer`
 
 Returns the cell position with the lowest value on a named layer.
 
 **Parameters**
 
-- `layer` (`string`, required) - Layer name to scan.
+- `layer` (`string`, required): Layer name to scan.
 
 **Returns**: `integer, integer` - One-based X and Y cell coordinates of the minimum value.
+
+**Lua API Stub**
+
+```lua
+--- Returns the cell position with the lowest value on a named layer.
+---@param layer string Layer name to scan.
+---@return number a One-based X and Y cell coordinates of the minimum value.
+---@return number b One-based X and Y cell coordinates of the minimum value.
+function LInfluenceMap:getMinPosition(layer) end
+```
 
 #### Example
 
@@ -5023,11 +7229,21 @@ do
 end
 ```
 
-### `LInfluenceMap:getWidth() -> integer`
+### LInfluenceMap:getWidth
+
+`LInfluenceMap:getWidth() -> integer`
 
 Returns the influence map width in cells.
 
 **Returns**: `integer` - Cell width of the map.
+
+**Lua API Stub**
+
+```lua
+--- Returns the influence map width in cells.
+---@return number Cell width of the map.
+function LInfluenceMap:getWidth() end
+```
 
 #### Example
 
@@ -5041,15 +7257,26 @@ do
 end
 ```
 
-### `LInfluenceMap:hasLayer(name: string) -> boolean`
+### LInfluenceMap:hasLayer
+
+`LInfluenceMap:hasLayer(name: string) -> boolean`
 
 Returns whether an influence layer exists.
 
 **Parameters**
 
-- `name` (`string`, required) - Layer name to check.
+- `name` (`string`, required): Layer name to check.
 
 **Returns**: `boolean` - True when the layer exists.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether an influence layer exists.
+---@param name string Layer name to check.
+---@return boolean True when the layer exists.
+function LInfluenceMap:hasLayer(name) end
+```
 
 #### Example
 
@@ -5063,14 +7290,25 @@ do
 end
 ```
 
-### `LInfluenceMap:propagate(layer: string, [momentum]: number)`
+### LInfluenceMap:propagate
+
+`LInfluenceMap:propagate(layer: string, [momentum]: number)`
 
 Propagates influence values across neighboring cells on a named layer.
 
 **Parameters**
 
-- `layer` (`string`, required) - Layer name to propagate.
-- `momentum` (`number`, optional) - Propagation momentum factor; defaults to 0.5.
+- `layer` (`string`, required): Layer name to propagate.
+- `momentum` (`number`, optional): Propagation momentum factor; defaults to 0.5.
+
+**Lua API Stub**
+
+```lua
+--- Propagates influence values across neighboring cells on a named layer.
+---@param layer string Layer name to propagate.
+---@param momentum? number Propagation momentum factor; defaults to 0.5.
+function LInfluenceMap:propagate(layer, momentum) end
+```
 
 #### Example
 
@@ -5086,19 +7324,34 @@ do
 end
 ```
 
-### `LInfluenceMap:queryRect(layer: string, wx: number, wy: number, ww: number, wh: number) -> number[]`
+### LInfluenceMap:queryRect
+
+`LInfluenceMap:queryRect(layer: string, wx: number, wy: number, ww: number, wh: number) -> number[]`
 
 Returns influence values inside a world-space rectangle on a named layer.
 
 **Parameters**
 
-- `layer` (`string`, required) - Layer name to query.
-- `wx` (`number`, required) - Rectangle X coordinate in world units.
-- `wy` (`number`, required) - Rectangle Y coordinate in world units.
-- `ww` (`number`, required) - Rectangle width in world units.
-- `wh` (`number`, required) - Rectangle height in world units.
+- `layer` (`string`, required): Layer name to query.
+- `wx` (`number`, required): Rectangle X coordinate in world units.
+- `wy` (`number`, required): Rectangle Y coordinate in world units.
+- `ww` (`number`, required): Rectangle width in world units.
+- `wh` (`number`, required): Rectangle height in world units.
 
 **Returns**: `number[]` - Array of influence samples from cells inside the rectangle.
+
+**Lua API Stub**
+
+```lua
+--- Returns influence values inside a world-space rectangle on a named layer.
+---@param layer string Layer name to query.
+---@param wx number Rectangle X coordinate in world units.
+---@param wy number Rectangle Y coordinate in world units.
+---@param ww number Rectangle width in world units.
+---@param wh number Rectangle height in world units.
+---@return number[] Array of influence samples from cells inside the rectangle.
+function LInfluenceMap:queryRect(layer, wx, wy, ww, wh) end
+```
 
 #### Example
 
@@ -5114,16 +7367,29 @@ do
 end
 ```
 
-### `LInfluenceMap:setInfluence(layer: string, x: integer, y: integer, value: number)`
+### LInfluenceMap:setInfluence
+
+`LInfluenceMap:setInfluence(layer: string, x: integer, y: integer, value: number)`
 
 Sets one cell value in a named influence layer using one-based cell coordinates.
 
 **Parameters**
 
-- `layer` (`string`, required) - Layer name to modify.
-- `x` (`integer`, required) - One-based cell X coordinate.
-- `y` (`integer`, required) - One-based cell Y coordinate.
-- `value` (`number`, required) - Influence value to store in the cell.
+- `layer` (`string`, required): Layer name to modify.
+- `x` (`integer`, required): One-based cell X coordinate.
+- `y` (`integer`, required): One-based cell Y coordinate.
+- `value` (`number`, required): Influence value to store in the cell.
+
+**Lua API Stub**
+
+```lua
+--- Sets one cell value in a named influence layer using one-based cell coordinates.
+---@param layer string Layer name to modify.
+---@param x number One-based cell X coordinate.
+---@param y number One-based cell Y coordinate.
+---@param value number Influence value to store in the cell.
+function LInfluenceMap:setInfluence(layer, x, y, value) end
+```
 
 #### Example
 
@@ -5138,18 +7404,33 @@ do
 end
 ```
 
-### `LInfluenceMap:stampInfluence(layer: string, wx: number, wy: number, radius: number, value: number, [falloff]: number)`
+### LInfluenceMap:stampInfluence
+
+`LInfluenceMap:stampInfluence(layer: string, wx: number, wy: number, radius: number, value: number, [falloff]: number)`
 
 Applies a radial influence stamp to a named layer in world coordinates.
 
 **Parameters**
 
-- `layer` (`string`, required) - Layer name to modify.
-- `wx` (`number`, required) - World X coordinate of the stamp center.
-- `wy` (`number`, required) - World Y coordinate of the stamp center.
-- `radius` (`number`, required) - Stamp radius in world units.
-- `value` (`number`, required) - Influence value applied at the center.
-- `falloff` (`number`, optional) - Falloff exponent or multiplier; defaults to 1.0.
+- `layer` (`string`, required): Layer name to modify.
+- `wx` (`number`, required): World X coordinate of the stamp center.
+- `wy` (`number`, required): World Y coordinate of the stamp center.
+- `radius` (`number`, required): Stamp radius in world units.
+- `value` (`number`, required): Influence value applied at the center.
+- `falloff` (`number`, optional): Falloff exponent or multiplier; defaults to 1.0.
+
+**Lua API Stub**
+
+```lua
+--- Applies a radial influence stamp to a named layer in world coordinates.
+---@param layer string Layer name to modify.
+---@param wx number World X coordinate of the stamp center.
+---@param wy number World Y coordinate of the stamp center.
+---@param radius number Stamp radius in world units.
+---@param value number Influence value applied at the center.
+---@param falloff? number Falloff exponent or multiplier; defaults to 1.0.
+function LInfluenceMap:stampInfluence(layer, wx, wy, radius, value, falloff) end
+```
 
 #### Example
 
@@ -5164,11 +7445,21 @@ do
 end
 ```
 
-### `LInfluenceMap:type() -> string`
+### LInfluenceMap:type
+
+`LInfluenceMap:type() -> string`
 
 Returns the Lua-visible type name for this influence map handle.
 
 **Returns**: `string` - The string `LInfluenceMap`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this influence map handle.
+---@return string The string `LInfluenceMap`.
+function LInfluenceMap:type() end
+```
 
 #### Example
 
@@ -5181,15 +7472,26 @@ do
 end
 ```
 
-### `LInfluenceMap:typeOf(name: string) -> boolean`
+### LInfluenceMap:typeOf
+
+`LInfluenceMap:typeOf(name: string) -> boolean`
 
 Returns whether this influence map handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `InfluenceMap` and `Object`.
+- `name` (`string`, required): Type name to compare against `InfluenceMap` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this influence map handle matches a supported type name.
+---@param name string Type name to compare against `InfluenceMap` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LInfluenceMap:typeOf(name) end
+```
 
 #### Example
 
@@ -5202,38 +7504,32 @@ do
 end
 ```
 
-### `LMCTSEngine`
+### LMCTSEngine:search
 
-Lua handle for Monte Carlo tree search over Lua-defined game states and actions.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  -- MCTS simulates random playouts to find strong moves in large decision spaces.
-  -- Parameters: iterations, exploration_c, max_depth, seed. More iterations = stronger play.
-  -- Scenario: board game AI (chess, Go) or turn-based tactical combat decision making.
-  local mcts = lurek.ai.newMCTSEngine(200, 1.41, 32, 12345)
-  local actions = function(s) return { 1, 2, 3 } end
-  local apply = function(s, a) return s + a end
-  local eval = function(s) return s % 7 end
-end
-```
-
-### `LMCTSEngine:search(root_state: integer, get_actions_fn: function, apply_fn: function, eval_fn: function) -> LuaValue`
+`LMCTSEngine:search(root_state: integer, get_actions_fn: function, apply_fn: function, eval_fn: function) -> LuaValue`
 
 Runs MCTS from a root state using Lua callbacks for actions, transitions, and evaluation.
 
 **Parameters**
 
-- `root_state` (`integer`, required) - Opaque integer state identifier supplied by game code.
-- `get_actions_fn` (`function`, required) - Function called with a state and returning an array of integer actions.
-- `apply_fn` (`function`, required) - Function called with `(state, action)` and returning the next state integer.
-- `eval_fn` (`function`, required) - Function called with a state and returning a numeric score.
+- `root_state` (`integer`, required): Opaque integer state identifier supplied by game code.
+- `get_actions_fn` (`function`, required): Function called with a state and returning an array of integer actions.
+- `apply_fn` (`function`, required): Function called with `(state, action)` and returning the next state integer.
+- `eval_fn` (`function`, required): Function called with a state and returning a numeric score.
 
 **Returns**: `LuaValue` - Selected action integer, or nil when search cannot choose an action.
+
+**Lua API Stub**
+
+```lua
+--- Runs MCTS from a root state using Lua callbacks for actions, transitions, and evaluation.
+---@param root_state number Opaque integer state identifier supplied by game code.
+---@param get_actions_fn function Function called with a state and returning an array of integer actions.
+---@param apply_fn function Function called with `(state, action)` and returning the next state integer.
+---@param eval_fn function Function called with a state and returning a numeric score.
+---@return LuaValue Selected action integer, or nil when search cannot choose an action.
+function LMCTSEngine:search(root_state, get_actions_fn, apply_fn, eval_fn) end
+```
 
 #### Example
 
@@ -5250,11 +7546,21 @@ do
 end
 ```
 
-### `LMCTSEngine:type() -> string`
+### LMCTSEngine:type
+
+`LMCTSEngine:type() -> string`
 
 Returns the Lua-visible type name for this MCTS engine handle.
 
 **Returns**: `string` - The string `LMCTSEngine`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this MCTS engine handle.
+---@return string The string `LMCTSEngine`.
+function LMCTSEngine:type() end
+```
 
 #### Example
 
@@ -5267,15 +7573,26 @@ do
 end
 ```
 
-### `LMCTSEngine:typeOf(name: string) -> boolean`
+### LMCTSEngine:typeOf
+
+`LMCTSEngine:typeOf(name: string) -> boolean`
 
 Returns whether this MCTS engine handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `LMCTSEngine` and `Object`.
+- `name` (`string`, required): Type name to compare against `LMCTSEngine` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this MCTS engine handle matches a supported type name.
+---@param name string Type name to compare against `LMCTSEngine` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LMCTSEngine:typeOf(name) end
+```
 
 #### Example
 
@@ -5288,35 +7605,29 @@ do
 end
 ```
 
-### `LNeedSystem`
+### LNeedSystem:addNeed
 
-Lua handle for decaying needs and urgency selection.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  -- Need system models Sims-style drives that decay over time and drive behavior.
-  -- Parameters per need: name, decay_rate, threshold, weight. Highest urgency wins.
-  -- Scenario: survival game NPC eats when hunger > threshold, sleeps when energy low.
-  local needs = lurek.ai.newNeedSystem()
-  needs:addNeed("hunger", 0.05, 0.6, 1.5)
-  function lurek.process(dt) needs:update(dt) end
-end
-```
-
-### `LNeedSystem:addNeed(name: string, decay_rate: number, urgency_threshold: number, urgency_factor: number)`
+`LNeedSystem:addNeed(name: string, decay_rate: number, urgency_threshold: number, urgency_factor: number)`
 
 Adds a need with decay and urgency tuning values.
 
 **Parameters**
 
-- `name` (`string`, required) - Need name used by satisfaction and lookup calls.
-- `decay_rate` (`number`, required) - Value decay rate applied during updates.
-- `urgency_threshold` (`number`, required) - Value threshold where the need becomes urgent.
-- `urgency_factor` (`number`, required) - Weight applied to urgent needs.
+- `name` (`string`, required): Need name used by satisfaction and lookup calls.
+- `decay_rate` (`number`, required): Value decay rate applied during updates.
+- `urgency_threshold` (`number`, required): Value threshold where the need becomes urgent.
+- `urgency_factor` (`number`, required): Weight applied to urgent needs.
+
+**Lua API Stub**
+
+```lua
+--- Adds a need with decay and urgency tuning values.
+---@param name string Need name used by satisfaction and lookup calls.
+---@param decay_rate number Value decay rate applied during updates.
+---@param urgency_threshold number Value threshold where the need becomes urgent.
+---@param urgency_factor number Weight applied to urgent needs.
+function LNeedSystem:addNeed(name, decay_rate, urgency_threshold, urgency_factor) end
+```
 
 #### Example
 
@@ -5330,11 +7641,21 @@ do
 end
 ```
 
-### `LNeedSystem:mostUrgent() -> LuaValue`
+### LNeedSystem:mostUrgent
+
+`LNeedSystem:mostUrgent() -> LuaValue`
 
 Returns the name of the most urgent need when any need is active.
 
 **Returns**: `LuaValue` - Need name, or nil when no urgent need is available.
+
+**Lua API Stub**
+
+```lua
+--- Returns the name of the most urgent need when any need is active.
+---@return LuaValue Need name, or nil when no urgent need is available.
+function LNeedSystem:mostUrgent() end
+```
 
 #### Example
 
@@ -5349,14 +7670,25 @@ do
 end
 ```
 
-### `LNeedSystem:satisfy(name: string, amount: number)`
+### LNeedSystem:satisfy
+
+`LNeedSystem:satisfy(name: string, amount: number)`
 
 Reduces or satisfies a named need by the supplied amount.
 
 **Parameters**
 
-- `name` (`string`, required) - Need name to satisfy.
-- `amount` (`number`, required) - Amount applied to the need value.
+- `name` (`string`, required): Need name to satisfy.
+- `amount` (`number`, required): Amount applied to the need value.
+
+**Lua API Stub**
+
+```lua
+--- Reduces or satisfies a named need by the supplied amount.
+---@param name string Need name to satisfy.
+---@param amount number Amount applied to the need value.
+function LNeedSystem:satisfy(name, amount) end
+```
 
 #### Example
 
@@ -5370,11 +7702,21 @@ do
 end
 ```
 
-### `LNeedSystem:type() -> string`
+### LNeedSystem:type
+
+`LNeedSystem:type() -> string`
 
 Returns the Lua-visible type name for this need system handle.
 
 **Returns**: `string` - The string `LNeedSystem`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this need system handle.
+---@return string The string `LNeedSystem`.
+function LNeedSystem:type() end
+```
 
 #### Example
 
@@ -5387,15 +7729,26 @@ do
 end
 ```
 
-### `LNeedSystem:typeOf(name: string) -> boolean`
+### LNeedSystem:typeOf
+
+`LNeedSystem:typeOf(name: string) -> boolean`
 
 Returns whether this need system handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `LNeedSystem` and `Object`.
+- `name` (`string`, required): Type name to compare against `LNeedSystem` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this need system handle matches a supported type name.
+---@param name string Type name to compare against `LNeedSystem` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LNeedSystem:typeOf(name) end
+```
 
 #### Example
 
@@ -5408,13 +7761,23 @@ do
 end
 ```
 
-### `LNeedSystem:update(dt: number)`
+### LNeedSystem:update
+
+`LNeedSystem:update(dt: number)`
 
 Advances need decay over elapsed time.
 
 **Parameters**
 
-- `dt` (`number`, required) - Elapsed time in seconds.
+- `dt` (`number`, required): Elapsed time in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Advances need decay over elapsed time.
+---@param dt number Elapsed time in seconds.
+function LNeedSystem:update(dt) end
+```
 
 #### Example
 
@@ -5431,15 +7794,26 @@ do
 end
 ```
 
-### `LNeedSystem:valueOf(name: string) -> number`
+### LNeedSystem:valueOf
+
+`LNeedSystem:valueOf(name: string) -> number`
 
 Returns the current value of a named need.
 
 **Parameters**
 
-- `name` (`string`, required) - Need name to read.
+- `name` (`string`, required): Need name to read.
 
 **Returns**: `number` - Current need value.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current value of a named need.
+---@param name string Need name to read.
+---@return number Current need value.
+function LNeedSystem:valueOf(name) end
+```
 
 #### Example
 
@@ -5453,34 +7827,27 @@ do
 end
 ```
 
-### `LNeuralNet`
+### LNeuralNet:addLayer
 
-Lua handle for a feed-forward neural network.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  -- Feed-forward neural net maps inputs to outputs through weighted layers.
-  -- addLayer(inputs, outputs, activation) — "relu", "sigmoid", "softmax" supported.
-  -- Scenario: NPC learns to dodge projectiles from sensor inputs (distances, angles).
-  local nn = lurek.ai.newNeuralNet()
-  nn:addLayer(4, 8, "relu")
-  nn:addLayer(8, 2, "softmax")
-end
-```
-
-### `LNeuralNet:addLayer(inputs: integer, outputs: integer, activation: string)`
+`LNeuralNet:addLayer(inputs: integer, outputs: integer, activation: string)`
 
 Adds a neural network layer with an activation function.
 
 **Parameters**
 
-- `inputs` (`integer`, required) - Input count for the layer.
-- `outputs` (`integer`, required) - Output count for the layer.
-- `activation` (`string`, required) - Activation name such as `relu`, `sigmoid`, `tanh`, `linear`, or `softmax`.
+- `inputs` (`integer`, required): Input count for the layer.
+- `outputs` (`integer`, required): Output count for the layer.
+- `activation` (`string`, required): Activation name such as `relu`, `sigmoid`, `tanh`, `linear`, or `softmax`.
+
+**Lua API Stub**
+
+```lua
+--- Adds a neural network layer with an activation function.
+---@param inputs number Input count for the layer.
+---@param outputs number Output count for the layer.
+---@param activation string Activation name such as `relu`, `sigmoid`, `tanh`, `linear`, or `softmax`.
+function LNeuralNet:addLayer(inputs, outputs, activation) end
+```
 
 #### Example
 
@@ -5496,15 +7863,26 @@ do
 end
 ```
 
-### `LNeuralNet:forward(input: table) -> number[]`
+### LNeuralNet:forward
+
+`LNeuralNet:forward(input: table) -> number[]`
 
 Runs a forward pass and returns output values.
 
 **Parameters**
 
-- `input` (`table`, required) - Array of numeric input values.
+- `input` (`table`, required): Array of numeric input values.
 
 **Returns**: `number[]` - Numeric output values.
+
+**Lua API Stub**
+
+```lua
+--- Runs a forward pass and returns output values.
+---@param input table Array of numeric input values.
+---@return number[] Numeric output values.
+function LNeuralNet:forward(input) end
+```
 
 #### Example
 
@@ -5520,11 +7898,21 @@ do
 end
 ```
 
-### `LNeuralNet:getWeights() -> number[]`
+### LNeuralNet:getWeights
+
+`LNeuralNet:getWeights() -> number[]`
 
 Returns the network weights as a flat numeric array.
 
 **Returns**: `number[]` - Numeric weights in engine layer order.
+
+**Lua API Stub**
+
+```lua
+--- Returns the network weights as a flat numeric array.
+---@return number[] Numeric weights in engine layer order.
+function LNeuralNet:getWeights() end
+```
 
 #### Example
 
@@ -5540,11 +7928,21 @@ do
 end
 ```
 
-### `LNeuralNet:layerCount() -> integer`
+### LNeuralNet:layerCount
+
+`LNeuralNet:layerCount() -> integer`
 
 Returns the number of layers in the network.
 
 **Returns**: `integer` - Layer count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of layers in the network.
+---@return number Layer count.
+function LNeuralNet:layerCount() end
+```
 
 #### Example
 
@@ -5559,11 +7957,21 @@ do
 end
 ```
 
-### `LNeuralNet:paramCount() -> integer`
+### LNeuralNet:paramCount
+
+`LNeuralNet:paramCount() -> integer`
 
 Returns the total number of trainable parameters.
 
 **Returns**: `integer` - Parameter count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the total number of trainable parameters.
+---@return number Parameter count.
+function LNeuralNet:paramCount() end
+```
 
 #### Example
 
@@ -5578,15 +7986,26 @@ do
 end
 ```
 
-### `LNeuralNet:setWeights(weights: table) -> boolean`
+### LNeuralNet:setWeights
+
+`LNeuralNet:setWeights(weights: table) -> boolean`
 
 Replaces the network weights from a flat numeric array.
 
 **Parameters**
 
-- `weights` (`table`, required) - Flat array of numeric weights in engine layer order.
+- `weights` (`table`, required): Flat array of numeric weights in engine layer order.
 
 **Returns**: `boolean` - True when the supplied weight slice matches the network shape.
+
+**Lua API Stub**
+
+```lua
+--- Replaces the network weights from a flat numeric array.
+---@param weights table Flat array of numeric weights in engine layer order.
+---@return boolean True when the supplied weight slice matches the network shape.
+function LNeuralNet:setWeights(weights) end
+```
 
 #### Example
 
@@ -5603,11 +8022,21 @@ do
 end
 ```
 
-### `LNeuralNet:type() -> string`
+### LNeuralNet:type
+
+`LNeuralNet:type() -> string`
 
 Returns the Lua-visible type name for this neural network handle.
 
 **Returns**: `string` - The string `LNeuralNet`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this neural network handle.
+---@return string The string `LNeuralNet`.
+function LNeuralNet:type() end
+```
 
 #### Example
 
@@ -5620,15 +8049,26 @@ do
 end
 ```
 
-### `LNeuralNet:typeOf(name: string) -> boolean`
+### LNeuralNet:typeOf
+
+`LNeuralNet:typeOf(name: string) -> boolean`
 
 Returns whether this neural network handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `LNeuralNet` and `Object`.
+- `name` (`string`, required): Type name to compare against `LNeuralNet` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this neural network handle matches a supported type name.
+---@param name string Type name to compare against `LNeuralNet` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LNeuralNet:typeOf(name) end
+```
 
 #### Example
 
@@ -5641,30 +8081,21 @@ do
 end
 ```
 
-### `LNeuroevolution`
+### LNeuroevolution:bestFitness
 
-Lua handle for evolving neural network chromosomes.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  -- Neuroevolution combines neural nets with genetic algorithms — no backprop needed.
-  -- Layer spec defines network topology; population_size and seed control evolution.
-  -- Scenario: evolving flocking creatures whose brains improve across generations.
-  local layers = { { inputs = 4, outputs = 8, activation = "relu" }, { inputs = 8, outputs = 2, activation = "softmax" } }
-  local ne = lurek.ai.newNeuroevolution(layers, 30, 1)
-  function lurek.process(dt) ne:evolve() end
-end
-```
-
-### `LNeuroevolution:bestFitness() -> number`
+`LNeuroevolution:bestFitness() -> number`
 
 Returns the best fitness value in the population.
 
 **Returns**: `number` - Best fitness value.
+
+**Lua API Stub**
+
+```lua
+--- Returns the best fitness value in the population.
+---@return number Best fitness value.
+function LNeuroevolution:bestFitness() end
+```
 
 #### Example
 
@@ -5679,11 +8110,21 @@ do
 end
 ```
 
-### `LNeuroevolution:bestNetwork() -> LuaValue`
+### LNeuroevolution:bestNetwork
+
+`LNeuroevolution:bestNetwork() -> LuaValue`
 
 Converts the best chromosome into a neural network handle when one exists.
 
 **Returns**: `LuaValue` - Neural network handle, or nil when no best chromosome is available.
+
+**Lua API Stub**
+
+```lua
+--- Converts the best chromosome into a neural network handle when one exists.
+---@return LuaValue Neural network handle, or nil when no best chromosome is available.
+function LNeuroevolution:bestNetwork() end
+```
 
 #### Example
 
@@ -5699,15 +8140,26 @@ do
 end
 ```
 
-### `LNeuroevolution:chromosomeToNet(idx: integer) -> LuaValue`
+### LNeuroevolution:chromosomeToNet
+
+`LNeuroevolution:chromosomeToNet(idx: integer) -> LuaValue`
 
 Converts one chromosome into a neural network handle when the index is valid.
 
 **Parameters**
 
-- `idx` (`integer`, required) - Zero-based chromosome index.
+- `idx` (`integer`, required): Zero-based chromosome index.
 
 **Returns**: `LuaValue` - Neural network handle, or nil when the chromosome index is invalid.
+
+**Lua API Stub**
+
+```lua
+--- Converts one chromosome into a neural network handle when the index is valid.
+---@param idx number Zero-based chromosome index.
+---@return LuaValue Neural network handle, or nil when the chromosome index is invalid.
+function LNeuroevolution:chromosomeToNet(idx) end
+```
 
 #### Example
 
@@ -5722,9 +8174,18 @@ do
 end
 ```
 
-### `LNeuroevolution:evolve()`
+### LNeuroevolution:evolve
+
+`LNeuroevolution:evolve()`
 
 Advances the neuroevolution population by one generation.
+
+**Lua API Stub**
+
+```lua
+--- Advances the neuroevolution population by one generation.
+function LNeuroevolution:evolve() end
+```
 
 #### Example
 
@@ -5739,11 +8200,21 @@ do
 end
 ```
 
-### `LNeuroevolution:generation() -> integer`
+### LNeuroevolution:generation
+
+`LNeuroevolution:generation() -> integer`
 
 Returns the current generation index.
 
 **Returns**: `integer` - Current generation count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current generation index.
+---@return number Current generation count.
+function LNeuroevolution:generation() end
+```
 
 #### Example
 
@@ -5757,11 +8228,21 @@ do
 end
 ```
 
-### `LNeuroevolution:popSize() -> integer`
+### LNeuroevolution:popSize
+
+`LNeuroevolution:popSize() -> integer`
 
 Returns the population size. This method is available to Lua scripts.
 
 **Returns**: `integer` - Current population size.
+
+**Lua API Stub**
+
+```lua
+--- Returns the population size. This method is available to Lua scripts.
+---@return number Current population size.
+function LNeuroevolution:popSize() end
+```
 
 #### Example
 
@@ -5775,14 +8256,25 @@ do
 end
 ```
 
-### `LNeuroevolution:setFitness(idx: integer, fitness: number)`
+### LNeuroevolution:setFitness
+
+`LNeuroevolution:setFitness(idx: integer, fitness: number)`
 
 Sets the fitness value for a chromosome by zero-based index.
 
 **Parameters**
 
-- `idx` (`integer`, required) - Zero-based chromosome index.
-- `fitness` (`number`, required) - Fitness value used by the next evolution step.
+- `idx` (`integer`, required): Zero-based chromosome index.
+- `fitness` (`number`, required): Fitness value used by the next evolution step.
+
+**Lua API Stub**
+
+```lua
+--- Sets the fitness value for a chromosome by zero-based index.
+---@param idx number Zero-based chromosome index.
+---@param fitness number Fitness value used by the next evolution step.
+function LNeuroevolution:setFitness(idx, fitness) end
+```
 
 #### Example
 
@@ -5796,11 +8288,21 @@ do
 end
 ```
 
-### `LNeuroevolution:type() -> string`
+### LNeuroevolution:type
+
+`LNeuroevolution:type() -> string`
 
 Returns the Lua-visible type name for this neuroevolution handle.
 
 **Returns**: `string` - The string `LNeuroevolution`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this neuroevolution handle.
+---@return string The string `LNeuroevolution`.
+function LNeuroevolution:type() end
+```
 
 #### Example
 
@@ -5813,15 +8315,26 @@ do
 end
 ```
 
-### `LNeuroevolution:typeOf(name: string) -> boolean`
+### LNeuroevolution:typeOf
+
+`LNeuroevolution:typeOf(name: string) -> boolean`
 
 Returns whether this neuroevolution handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `LNeuroevolution` and `Object`.
+- `name` (`string`, required): Type name to compare against `LNeuroevolution` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this neuroevolution handle matches a supported type name.
+---@param name string Type name to compare against `LNeuroevolution` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LNeuroevolution:typeOf(name) end
+```
 
 #### Example
 
@@ -5834,37 +8347,32 @@ do
 end
 ```
 
-### `LORCASolver`
+### LORCASolver:addAgent
 
-Lua handle for reciprocal velocity obstacle avoidance agents.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  -- ORCA computes collision-free velocities for crowds without explicit pathfinding.
-  -- Prediction horizon (seconds) controls how far ahead agents anticipate collisions.
-  -- Scenario: 200 villagers navigating a market square without overlapping each other.
-  local orca = lurek.ai.newORCASolver(2.0)
-  local idx = orca:addAgent(100, 100, 16, 80)
-  orca:setPreferredVelocity(idx, 50, 0)
-end
-```
-
-### `LORCASolver:addAgent(x: number, y: number, radius: number, max_speed: number) -> integer`
+`LORCASolver:addAgent(x: number, y: number, radius: number, max_speed: number) -> integer`
 
 Adds an ORCA avoidance agent and returns its zero-based solver index.
 
 **Parameters**
 
-- `x` (`number`, required) - Initial X position.
-- `y` (`number`, required) - Initial Y position.
-- `radius` (`number`, required) - Collision radius.
-- `max_speed` (`number`, required) - Maximum preferred speed.
+- `x` (`number`, required): Initial X position.
+- `y` (`number`, required): Initial Y position.
+- `radius` (`number`, required): Collision radius.
+- `max_speed` (`number`, required): Maximum preferred speed.
 
 **Returns**: `integer` - Zero-based ORCA agent index.
+
+**Lua API Stub**
+
+```lua
+--- Adds an ORCA avoidance agent and returns its zero-based solver index.
+---@param x number Initial X position.
+---@param y number Initial Y position.
+---@param radius number Collision radius.
+---@param max_speed number Maximum preferred speed.
+---@return number Zero-based ORCA agent index.
+function LORCASolver:addAgent(x, y, radius, max_speed) end
+```
 
 #### Example
 
@@ -5879,11 +8387,21 @@ do
 end
 ```
 
-### `LORCASolver:agentCount() -> integer`
+### LORCASolver:agentCount
+
+`LORCASolver:agentCount() -> integer`
 
 Returns the number of ORCA agents in this solver.
 
 **Returns**: `integer` - Current ORCA agent count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of ORCA agents in this solver.
+---@return number Current ORCA agent count.
+function LORCASolver:agentCount() end
+```
 
 #### Example
 
@@ -5897,13 +8415,23 @@ do
 end
 ```
 
-### `LORCASolver:compute(dt: number)`
+### LORCASolver:compute
+
+`LORCASolver:compute(dt: number)`
 
 Computes safe velocities for all ORCA agents.
 
 **Parameters**
 
-- `dt` (`number`, required) - Elapsed time in seconds for the avoidance step.
+- `dt` (`number`, required): Elapsed time in seconds for the avoidance step.
+
+**Lua API Stub**
+
+```lua
+--- Computes safe velocities for all ORCA agents.
+---@param dt number Elapsed time in seconds for the avoidance step.
+function LORCASolver:compute(dt) end
+```
 
 #### Example
 
@@ -5917,15 +8445,27 @@ do
 end
 ```
 
-### `LORCASolver:getSafeVelocity(idx: integer) -> number, number`
+### LORCASolver:getSafeVelocity
+
+`LORCASolver:getSafeVelocity(idx: integer) -> number, number`
 
 Returns the computed safe velocity for an ORCA agent.
 
 **Parameters**
 
-- `idx` (`integer`, required) - Zero-based ORCA agent index.
+- `idx` (`integer`, required): Zero-based ORCA agent index.
 
 **Returns**: `number, number` - Safe X and Y velocity, or zero velocity for an invalid index.
+
+**Lua API Stub**
+
+```lua
+--- Returns the computed safe velocity for an ORCA agent.
+---@param idx number Zero-based ORCA agent index.
+---@return number a Safe X and Y velocity, or zero velocity for an invalid index.
+---@return number b Safe X and Y velocity, or zero velocity for an invalid index.
+function LORCASolver:getSafeVelocity(idx) end
+```
 
 #### Example
 
@@ -5941,15 +8481,27 @@ do
 end
 ```
 
-### `LORCASolver:setPosition(idx: integer, x: number, y: number)`
+### LORCASolver:setPosition
+
+`LORCASolver:setPosition(idx: integer, x: number, y: number)`
 
 Sets the position for an ORCA agent by zero-based index.
 
 **Parameters**
 
-- `idx` (`integer`, required) - Zero-based ORCA agent index.
-- `x` (`number`, required) - New X position.
-- `y` (`number`, required) - New Y position.
+- `idx` (`integer`, required): Zero-based ORCA agent index.
+- `x` (`number`, required): New X position.
+- `y` (`number`, required): New Y position.
+
+**Lua API Stub**
+
+```lua
+--- Sets the position for an ORCA agent by zero-based index.
+---@param idx number Zero-based ORCA agent index.
+---@param x number New X position.
+---@param y number New Y position.
+function LORCASolver:setPosition(idx, x, y) end
+```
 
 #### Example
 
@@ -5963,15 +8515,27 @@ do
 end
 ```
 
-### `LORCASolver:setPreferredVelocity(idx: integer, pvx: number, pvy: number)`
+### LORCASolver:setPreferredVelocity
+
+`LORCASolver:setPreferredVelocity(idx: integer, pvx: number, pvy: number)`
 
 Sets the preferred velocity for an ORCA agent by zero-based index.
 
 **Parameters**
 
-- `idx` (`integer`, required) - Zero-based ORCA agent index.
-- `pvx` (`number`, required) - Preferred X velocity.
-- `pvy` (`number`, required) - Preferred Y velocity.
+- `idx` (`integer`, required): Zero-based ORCA agent index.
+- `pvx` (`number`, required): Preferred X velocity.
+- `pvy` (`number`, required): Preferred Y velocity.
+
+**Lua API Stub**
+
+```lua
+--- Sets the preferred velocity for an ORCA agent by zero-based index.
+---@param idx number Zero-based ORCA agent index.
+---@param pvx number Preferred X velocity.
+---@param pvy number Preferred Y velocity.
+function LORCASolver:setPreferredVelocity(idx, pvx, pvy) end
+```
 
 #### Example
 
@@ -5988,11 +8552,21 @@ do
 end
 ```
 
-### `LORCASolver:type() -> string`
+### LORCASolver:type
+
+`LORCASolver:type() -> string`
 
 Returns the Lua-visible type name for this ORCA solver handle.
 
 **Returns**: `string` - The string `LORCASolver`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this ORCA solver handle.
+---@return string The string `LORCASolver`.
+function LORCASolver:type() end
+```
 
 #### Example
 
@@ -6005,15 +8579,26 @@ do
 end
 ```
 
-### `LORCASolver:typeOf(name: string) -> boolean`
+### LORCASolver:typeOf
+
+`LORCASolver:typeOf(name: string) -> boolean`
 
 Returns whether this ORCA solver handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `LORCASolver` and `Object`.
+- `name` (`string`, required): Type name to compare against `LORCASolver` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this ORCA solver handle matches a supported type name.
+---@param name string Type name to compare against `LORCASolver` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LORCASolver:typeOf(name) end
+```
 
 #### Example
 
@@ -6026,34 +8611,26 @@ do
 end
 ```
 
-### `LQLearner`
+### LQLearner:bestAction
 
-Lua handle for a Q-learning table with configurable exploration and learning parameters.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  -- Q-learning trains NPC behavior through reward signals over time.
-  -- Parameters: state_count, action_count. Learning rate controls adaptation speed.
-  -- Scenario: enemy learns which attack patterns work against the player.
-  local ql = lurek.ai.newQLearner(16, 4)
-  ql:setLearningRate(0.1)
-  ql:setExplorationRate(0.2)
-end
-```
-
-### `LQLearner:bestAction(state: integer) -> integer`
+`LQLearner:bestAction(state: integer) -> integer`
 
 Returns the highest-valued action for a one-based state index without exploration.
 
 **Parameters**
 
-- `state` (`integer`, required) - One-based state index.
+- `state` (`integer`, required): One-based state index.
 
 **Returns**: `integer` - One-based best action index.
+
+**Lua API Stub**
+
+```lua
+--- Returns the highest-valued action for a one-based state index without exploration.
+---@param state number One-based state index.
+---@return number One-based best action index.
+function LQLearner:bestAction(state) end
+```
 
 #### Example
 
@@ -6067,15 +8644,26 @@ do
 end
 ```
 
-### `LQLearner:chooseAction(state: integer) -> integer`
+### LQLearner:chooseAction
+
+`LQLearner:chooseAction(state: integer) -> integer`
 
 Chooses an action for a one-based state index using the learner's exploration policy.
 
 **Parameters**
 
-- `state` (`integer`, required) - One-based state index.
+- `state` (`integer`, required): One-based state index.
 
 **Returns**: `integer` - One-based chosen action index.
+
+**Lua API Stub**
+
+```lua
+--- Chooses an action for a one-based state index using the learner's exploration policy.
+---@param state number One-based state index.
+---@return number One-based chosen action index.
+function LQLearner:chooseAction(state) end
+```
 
 #### Example
 
@@ -6092,13 +8680,23 @@ do
 end
 ```
 
-### `LQLearner:deserialize(json: string)`
+### LQLearner:deserialize
+
+`LQLearner:deserialize(json: string)`
 
 Replaces the Q-learner state from a JSON string.
 
 **Parameters**
 
-- `json` (`string`, required) - JSON data previously produced by `serialize`.
+- `json` (`string`, required): JSON data previously produced by `serialize`.
+
+**Lua API Stub**
+
+```lua
+--- Replaces the Q-learner state from a JSON string.
+---@param json string JSON data previously produced by `serialize`.
+function LQLearner:deserialize(json) end
+```
 
 #### Example
 
@@ -6112,9 +8710,18 @@ do
 end
 ```
 
-### `LQLearner:endEpisode()`
+### LQLearner:endEpisode
+
+`LQLearner:endEpisode()`
 
 Ends the current learning episode and applies episode bookkeeping.
+
+**Lua API Stub**
+
+```lua
+--- Ends the current learning episode and applies episode bookkeeping.
+function LQLearner:endEpisode() end
+```
 
 #### Example
 
@@ -6128,11 +8735,21 @@ do
 end
 ```
 
-### `LQLearner:getActionCount() -> integer`
+### LQLearner:getActionCount
+
+`LQLearner:getActionCount() -> integer`
 
 Returns the number of actions represented by this learner.
 
 **Returns**: `integer` - Action count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of actions represented by this learner.
+---@return number Action count.
+function LQLearner:getActionCount() end
+```
 
 #### Example
 
@@ -6146,11 +8763,21 @@ do
 end
 ```
 
-### `LQLearner:getDiscountFactor() -> number`
+### LQLearner:getDiscountFactor
+
+`LQLearner:getDiscountFactor() -> number`
 
 Returns the Q-learning gamma discount factor.
 
 **Returns**: `number` - Current discount factor.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Q-learning gamma discount factor.
+---@return number Current discount factor.
+function LQLearner:getDiscountFactor() end
+```
 
 #### Example
 
@@ -6163,11 +8790,21 @@ do
 end
 ```
 
-### `LQLearner:getEpisodeCount() -> integer`
+### LQLearner:getEpisodeCount
+
+`LQLearner:getEpisodeCount() -> integer`
 
 Returns how many learning episodes have been completed.
 
 **Returns**: `integer` - Completed episode count.
+
+**Lua API Stub**
+
+```lua
+--- Returns how many learning episodes have been completed.
+---@return number Completed episode count.
+function LQLearner:getEpisodeCount() end
+```
 
 #### Example
 
@@ -6181,11 +8818,21 @@ do
 end
 ```
 
-### `LQLearner:getExplorationDecay() -> number`
+### LQLearner:getExplorationDecay
+
+`LQLearner:getExplorationDecay() -> number`
 
 Returns the exploration decay multiplier.
 
 **Returns**: `number` - Current exploration decay multiplier.
+
+**Lua API Stub**
+
+```lua
+--- Returns the exploration decay multiplier.
+---@return number Current exploration decay multiplier.
+function LQLearner:getExplorationDecay() end
+```
 
 #### Example
 
@@ -6198,11 +8845,21 @@ do
 end
 ```
 
-### `LQLearner:getExplorationRate() -> number`
+### LQLearner:getExplorationRate
+
+`LQLearner:getExplorationRate() -> number`
 
 Returns the exploration rate used by action selection.
 
 **Returns**: `number` - Current exploration rate.
+
+**Lua API Stub**
+
+```lua
+--- Returns the exploration rate used by action selection.
+---@return number Current exploration rate.
+function LQLearner:getExplorationRate() end
+```
 
 #### Example
 
@@ -6215,11 +8872,21 @@ do
 end
 ```
 
-### `LQLearner:getLearningRate() -> number`
+### LQLearner:getLearningRate
+
+`LQLearner:getLearningRate() -> number`
 
 Returns the Q-learning alpha learning rate.
 
 **Returns**: `number` - Current learning rate.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Q-learning alpha learning rate.
+---@return number Current learning rate.
+function LQLearner:getLearningRate() end
+```
 
 #### Example
 
@@ -6232,16 +8899,28 @@ do
 end
 ```
 
-### `LQLearner:getQValue(state: integer, action: integer) -> number`
+### LQLearner:getQValue
+
+`LQLearner:getQValue(state: integer, action: integer) -> number`
 
 Returns the stored Q-value for a one-based state and action pair.
 
 **Parameters**
 
-- `state` (`integer`, required) - One-based state index.
-- `action` (`integer`, required) - One-based action index.
+- `state` (`integer`, required): One-based state index.
+- `action` (`integer`, required): One-based action index.
 
 **Returns**: `number` - Current Q-value.
+
+**Lua API Stub**
+
+```lua
+--- Returns the stored Q-value for a one-based state and action pair.
+---@param state number One-based state index.
+---@param action number One-based action index.
+---@return number Current Q-value.
+function LQLearner:getQValue(state, action) end
+```
 
 #### Example
 
@@ -6259,11 +8938,21 @@ do
 end
 ```
 
-### `LQLearner:getStateCount() -> integer`
+### LQLearner:getStateCount
+
+`LQLearner:getStateCount() -> integer`
 
 Returns the number of states represented by this learner.
 
 **Returns**: `integer` - State count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of states represented by this learner.
+---@return number State count.
+function LQLearner:getStateCount() end
+```
 
 #### Example
 
@@ -6276,16 +8965,29 @@ do
 end
 ```
 
-### `LQLearner:learn(state: integer, action: integer, reward: number, next_state: integer)`
+### LQLearner:learn
+
+`LQLearner:learn(state: integer, action: integer, reward: number, next_state: integer)`
 
 Applies one Q-learning update from a transition and reward.
 
 **Parameters**
 
-- `state` (`integer`, required) - One-based previous state index.
-- `action` (`integer`, required) - One-based action index taken in the previous state.
-- `reward` (`number`, required) - Reward received for the transition.
-- `next_state` (`integer`, required) - One-based next state index.
+- `state` (`integer`, required): One-based previous state index.
+- `action` (`integer`, required): One-based action index taken in the previous state.
+- `reward` (`number`, required): Reward received for the transition.
+- `next_state` (`integer`, required): One-based next state index.
+
+**Lua API Stub**
+
+```lua
+--- Applies one Q-learning update from a transition and reward.
+---@param state number One-based previous state index.
+---@param action number One-based action index taken in the previous state.
+---@param reward number Reward received for the transition.
+---@param next_state number One-based next state index.
+function LQLearner:learn(state, action, reward, next_state) end
+```
 
 #### Example
 
@@ -6301,11 +9003,21 @@ do
 end
 ```
 
-### `LQLearner:serialize() -> string`
+### LQLearner:serialize
+
+`LQLearner:serialize() -> string`
 
 Serializes the Q-learner state to a JSON string.
 
 **Returns**: `string` - JSON representation of this learner.
+
+**Lua API Stub**
+
+```lua
+--- Serializes the Q-learner state to a JSON string.
+---@return string JSON representation of this learner.
+function LQLearner:serialize() end
+```
 
 #### Example
 
@@ -6320,13 +9032,23 @@ do
 end
 ```
 
-### `LQLearner:setDiscountFactor(v: number)`
+### LQLearner:setDiscountFactor
+
+`LQLearner:setDiscountFactor(v: number)`
 
 Sets the Q-learning gamma discount factor.
 
 **Parameters**
 
-- `v` (`number`, required) - Discount factor used by future updates.
+- `v` (`number`, required): Discount factor used by future updates.
+
+**Lua API Stub**
+
+```lua
+--- Sets the Q-learning gamma discount factor.
+---@param v number Discount factor used by future updates.
+function LQLearner:setDiscountFactor(v) end
+```
 
 #### Example
 
@@ -6339,13 +9061,23 @@ do
 end
 ```
 
-### `LQLearner:setExplorationDecay(v: number)`
+### LQLearner:setExplorationDecay
+
+`LQLearner:setExplorationDecay(v: number)`
 
 Sets the exploration decay multiplier applied across episodes.
 
 **Parameters**
 
-- `v` (`number`, required) - Exploration decay multiplier.
+- `v` (`number`, required): Exploration decay multiplier.
+
+**Lua API Stub**
+
+```lua
+--- Sets the exploration decay multiplier applied across episodes.
+---@param v number Exploration decay multiplier.
+function LQLearner:setExplorationDecay(v) end
+```
 
 #### Example
 
@@ -6358,13 +9090,23 @@ do
 end
 ```
 
-### `LQLearner:setExplorationRate(v: number)`
+### LQLearner:setExplorationRate
+
+`LQLearner:setExplorationRate(v: number)`
 
 Sets the exploration rate used by action selection.
 
 **Parameters**
 
-- `v` (`number`, required) - Exploration probability for future `chooseAction` calls.
+- `v` (`number`, required): Exploration probability for future `chooseAction` calls.
+
+**Lua API Stub**
+
+```lua
+--- Sets the exploration rate used by action selection.
+---@param v number Exploration probability for future `chooseAction` calls.
+function LQLearner:setExplorationRate(v) end
+```
 
 #### Example
 
@@ -6377,13 +9119,23 @@ do
 end
 ```
 
-### `LQLearner:setLearningRate(v: number)`
+### LQLearner:setLearningRate
+
+`LQLearner:setLearningRate(v: number)`
 
 Sets the Q-learning alpha learning rate.
 
 **Parameters**
 
-- `v` (`number`, required) - Learning rate used by future updates.
+- `v` (`number`, required): Learning rate used by future updates.
+
+**Lua API Stub**
+
+```lua
+--- Sets the Q-learning alpha learning rate.
+---@param v number Learning rate used by future updates.
+function LQLearner:setLearningRate(v) end
+```
 
 #### Example
 
@@ -6396,15 +9148,27 @@ do
 end
 ```
 
-### `LQLearner:setQValue(state: integer, action: integer, value: number)`
+### LQLearner:setQValue
+
+`LQLearner:setQValue(state: integer, action: integer, value: number)`
 
 Sets the stored Q-value for a one-based state and action pair.
 
 **Parameters**
 
-- `state` (`integer`, required) - One-based state index.
-- `action` (`integer`, required) - One-based action index.
-- `value` (`number`, required) - Q-value to store.
+- `state` (`integer`, required): One-based state index.
+- `action` (`integer`, required): One-based action index.
+- `value` (`number`, required): Q-value to store.
+
+**Lua API Stub**
+
+```lua
+--- Sets the stored Q-value for a one-based state and action pair.
+---@param state number One-based state index.
+---@param action number One-based action index.
+---@param value number Q-value to store.
+function LQLearner:setQValue(state, action, value) end
+```
 
 #### Example
 
@@ -6419,11 +9183,21 @@ do
 end
 ```
 
-### `LQLearner:type() -> string`
+### LQLearner:type
+
+`LQLearner:type() -> string`
 
 Returns the Lua-visible type name for this Q-learner handle.
 
 **Returns**: `string` - The string `LQLearner`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this Q-learner handle.
+---@return string The string `LQLearner`.
+function LQLearner:type() end
+```
 
 #### Example
 
@@ -6436,15 +9210,26 @@ do
 end
 ```
 
-### `LQLearner:typeOf(name: string) -> boolean`
+### LQLearner:typeOf
+
+`LQLearner:typeOf(name: string) -> boolean`
 
 Returns whether this Q-learner handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `QLearner` and `Object`.
+- `name` (`string`, required): Type name to compare against `QLearner` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this Q-learner handle matches a supported type name.
+---@param name string Type name to compare against `QLearner` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LQLearner:typeOf(name) end
+```
 
 #### Example
 
@@ -6457,32 +9242,23 @@ do
 end
 ```
 
-### `LSquad`
+### LSquad:addMember
 
-Lua handle for a named squad with members, leader, formation, and shared blackboard.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  -- Squads group agents for coordinated tactics (flanking, covering fire).
-  -- Formation type and spacing control how members position relative to the leader.
-  -- Scenario: tactical shooter — 4-man squad holds wedge formation while advancing.
-  local squad = lurek.ai.newSquad("alpha")
-  squad:addMember("guard_01")
-  squad:setFormation("wedge", 32)
-end
-```
-
-### `LSquad:addMember(name: string)`
+`LSquad:addMember(name: string)`
 
 Adds a member name to the squad member list.
 
 **Parameters**
 
-- `name` (`string`, required) - Agent or game object name to append as a squad member.
+- `name` (`string`, required): Agent or game object name to append as a squad member.
+
+**Lua API Stub**
+
+```lua
+--- Adds a member name to the squad member list.
+---@param name string Agent or game object name to append as a squad member.
+function LSquad:addMember(name) end
+```
 
 #### Example
 
@@ -6497,11 +9273,21 @@ do
 end
 ```
 
-### `LSquad:getBlackboard() -> LAIBlackboard`
+### LSquad:getBlackboard
+
+`LSquad:getBlackboard() -> LAIBlackboard`
 
 Returns a blackboard snapshot for this squad.
 
 **Returns**: `LAIBlackboard` - Blackboard handle initialized from the squad blackboard values at call time.
+
+**Lua API Stub**
+
+```lua
+--- Returns a blackboard snapshot for this squad.
+---@return LAIBlackboard Blackboard handle initialized from the squad blackboard values at call time.
+function LSquad:getBlackboard() end
+```
 
 #### Example
 
@@ -6516,11 +9302,21 @@ do
 end
 ```
 
-### `LSquad:getFormation() -> string`
+### LSquad:getFormation
+
+`LSquad:getFormation() -> string`
 
 Returns the current squad formation type name.
 
 **Returns**: `string` - Formation type name.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current squad formation type name.
+---@return string Formation type name.
+function LSquad:getFormation() end
+```
 
 #### Example
 
@@ -6535,17 +9331,31 @@ do
 end
 ```
 
-### `LSquad:getFormationPosition(member_idx: integer, leader_x: number, leader_y: number) -> number, number`
+### LSquad:getFormationPosition
+
+`LSquad:getFormationPosition(member_idx: integer, leader_x: number, leader_y: number) -> number, number`
 
 Returns a member's target formation position relative to the leader position.
 
 **Parameters**
 
-- `member_idx` (`integer`, required) - One-based member index in the squad.
-- `leader_x` (`number`, required) - Leader X position in world units.
-- `leader_y` (`number`, required) - Leader Y position in world units.
+- `member_idx` (`integer`, required): One-based member index in the squad.
+- `leader_x` (`number`, required): Leader X position in world units.
+- `leader_y` (`number`, required): Leader Y position in world units.
 
 **Returns**: `number, number` - X and Y formation target position.
+
+**Lua API Stub**
+
+```lua
+--- Returns a member's target formation position relative to the leader position.
+---@param member_idx number One-based member index in the squad.
+---@param leader_x number Leader X position in world units.
+---@param leader_y number Leader Y position in world units.
+---@return number a X and Y formation target position.
+---@return number b X and Y formation target position.
+function LSquad:getFormationPosition(member_idx, leader_x, leader_y) end
+```
 
 #### Example
 
@@ -6561,11 +9371,21 @@ do
 end
 ```
 
-### `LSquad:getFormationSpacing() -> number`
+### LSquad:getFormationSpacing
+
+`LSquad:getFormationSpacing() -> number`
 
 Returns the spacing used by squad formation positioning.
 
 **Returns**: `number` - Formation spacing in world units.
+
+**Lua API Stub**
+
+```lua
+--- Returns the spacing used by squad formation positioning.
+---@return number Formation spacing in world units.
+function LSquad:getFormationSpacing() end
+```
 
 #### Example
 
@@ -6580,11 +9400,21 @@ do
 end
 ```
 
-### `LSquad:getLeader() -> LuaValue`
+### LSquad:getLeader
+
+`LSquad:getLeader() -> LuaValue`
 
 Returns the squad leader name when one is assigned.
 
 **Returns**: `LuaValue` - Leader name, or nil when no leader is assigned.
+
+**Lua API Stub**
+
+```lua
+--- Returns the squad leader name when one is assigned.
+---@return LuaValue Leader name, or nil when no leader is assigned.
+function LSquad:getLeader() end
+```
 
 #### Example
 
@@ -6600,11 +9430,21 @@ do
 end
 ```
 
-### `LSquad:getMemberCount() -> integer`
+### LSquad:getMemberCount
+
+`LSquad:getMemberCount() -> integer`
 
 Returns the number of members in this squad.
 
 **Returns**: `integer` - Current member count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of members in this squad.
+---@return number Current member count.
+function LSquad:getMemberCount() end
+```
 
 #### Example
 
@@ -6618,11 +9458,21 @@ do
 end
 ```
 
-### `LSquad:getMembers() -> string[]`
+### LSquad:getMembers
+
+`LSquad:getMembers() -> string[]`
 
 Returns all squad members in an array-style Lua table.
 
 **Returns**: `string[]` - Member names.
+
+**Lua API Stub**
+
+```lua
+--- Returns all squad members in an array-style Lua table.
+---@return string[] Member names.
+function LSquad:getMembers() end
+```
 
 #### Example
 
@@ -6637,11 +9487,21 @@ do
 end
 ```
 
-### `LSquad:getName() -> string`
+### LSquad:getName
+
+`LSquad:getName() -> string`
 
 Returns the squad name. This method is available to Lua scripts.
 
 **Returns**: `string` - Squad name supplied at construction.
+
+**Lua API Stub**
+
+```lua
+--- Returns the squad name. This method is available to Lua scripts.
+---@return string Squad name supplied at construction.
+function LSquad:getName() end
+```
 
 #### Example
 
@@ -6655,13 +9515,23 @@ do
 end
 ```
 
-### `LSquad:removeMember(name: string)`
+### LSquad:removeMember
+
+`LSquad:removeMember(name: string)`
 
 Removes every member entry with the given name.
 
 **Parameters**
 
-- `name` (`string`, required) - Member name to remove.
+- `name` (`string`, required): Member name to remove.
+
+**Lua API Stub**
+
+```lua
+--- Removes every member entry with the given name.
+---@param name string Member name to remove.
+function LSquad:removeMember(name) end
+```
 
 #### Example
 
@@ -6676,14 +9546,25 @@ do
 end
 ```
 
-### `LSquad:setFormation(ftype: string, [spacing]: number)`
+### LSquad:setFormation
+
+`LSquad:setFormation(ftype: string, [spacing]: number)`
 
 Sets the squad formation type and optionally updates spacing.
 
 **Parameters**
 
-- `ftype` (`string`, required) - Formation type name parsed by the engine.
-- `spacing` (`number`, optional) - Optional spacing between formation slots.
+- `ftype` (`string`, required): Formation type name parsed by the engine.
+- `spacing` (`number`, optional): Optional spacing between formation slots.
+
+**Lua API Stub**
+
+```lua
+--- Sets the squad formation type and optionally updates spacing.
+---@param ftype string Formation type name parsed by the engine.
+---@param spacing? number Optional spacing between formation slots.
+function LSquad:setFormation(ftype, spacing) end
+```
 
 #### Example
 
@@ -6699,13 +9580,23 @@ do
 end
 ```
 
-### `LSquad:setLeader(name: string)`
+### LSquad:setLeader
+
+`LSquad:setLeader(name: string)`
 
 Sets the squad leader name. This method is available to Lua scripts.
 
 **Parameters**
 
-- `name` (`string`, required) - Member or agent name to store as leader.
+- `name` (`string`, required): Member or agent name to store as leader.
+
+**Lua API Stub**
+
+```lua
+--- Sets the squad leader name. This method is available to Lua scripts.
+---@param name string Member or agent name to store as leader.
+function LSquad:setLeader(name) end
+```
 
 #### Example
 
@@ -6719,11 +9610,21 @@ do
 end
 ```
 
-### `LSquad:type() -> string`
+### LSquad:type
+
+`LSquad:type() -> string`
 
 Returns the Lua-visible type name for this squad handle.
 
 **Returns**: `string` - The string `LSquad`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this squad handle.
+---@return string The string `LSquad`.
+function LSquad:type() end
+```
 
 #### Example
 
@@ -6736,15 +9637,26 @@ do
 end
 ```
 
-### `LSquad:typeOf(name: string) -> boolean`
+### LSquad:typeOf
+
+`LSquad:typeOf(name: string) -> boolean`
 
 Returns whether this squad handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `Squad` and `Object`.
+- `name` (`string`, required): Type name to compare against `Squad` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this squad handle matches a supported type name.
+---@param name string Type name to compare against `Squad` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LSquad:typeOf(name) end
+```
 
 #### Example
 
@@ -6757,34 +9669,25 @@ do
 end
 ```
 
-### `LStateMachine`
+### LStateMachine:addState
 
-Lua handle for a finite state machine with Lua-backed state callbacks and transition guards.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  -- FSMs are ideal for NPCs with clear, discrete behavior phases.
-  -- Each state has onEnter/onUpdate/onExit callbacks for clean transitions.
-  -- Scenario: guard patrol AI — idle → patrol → alert → chase → attack.
-  local fsm = lurek.ai.newStateMachine()
-  fsm:addState("patrol", { onEnter = function() lurek.log.info("patrolling", "ai") end })
-  fsm:addState("chase", {})
-  fsm:setInitialState("patrol")
-end
-```
-
-### `LStateMachine:addState(name: string, opts: table)`
+`LStateMachine:addState(name: string, opts: table)`
 
 Adds a state with optional Lua lifecycle callbacks.
 
 **Parameters**
 
-- `name` (`string`, required) - State name used by transitions and direct state changes.
-- `opts` (`table`, required) - Optional table with `onEnter`, `onUpdate`, and `onExit` callback functions.
+- `name` (`string`, required): State name used by transitions and direct state changes.
+- `opts` (`table`, required): Optional table with `onEnter`, `onUpdate`, and `onExit` callback functions.
+
+**Lua API Stub**
+
+```lua
+--- Adds a state with optional Lua lifecycle callbacks.
+---@param name string State name used by transitions and direct state changes.
+---@param opts table Optional table with `onEnter`, `onUpdate`, and `onExit` callback functions.
+function LStateMachine:addState(name, opts) end
+```
 
 #### Example
 
@@ -6801,16 +9704,29 @@ do
 end
 ```
 
-### `LStateMachine:addTransition(from: string, to: string, [guard]: function, [priority]: integer)`
+### LStateMachine:addTransition
+
+`LStateMachine:addTransition(from: string, to: string, [guard]: function, [priority]: integer)`
 
 Adds a transition between two states with an optional guard callback and priority.
 
 **Parameters**
 
-- `from` (`string`, required) - Source state name.
-- `to` (`string`, required) - Destination state name.
-- `guard` (`function`, optional) - Optional function that must return true for the transition to run.
-- `priority` (`integer`, optional) - Transition priority used when multiple transitions are available; defaults to zero.
+- `from` (`string`, required): Source state name.
+- `to` (`string`, required): Destination state name.
+- `guard` (`function`, optional): Optional function that must return true for the transition to run.
+- `priority` (`integer`, optional): Transition priority used when multiple transitions are available; defaults to zero.
+
+**Lua API Stub**
+
+```lua
+--- Adds a transition between two states with an optional guard callback and priority.
+---@param from string Source state name.
+---@param to string Destination state name.
+---@param guard? function Optional function that must return true for the transition to run.
+---@param priority? number Transition priority used when multiple transitions are available; defaults to zero.
+function LStateMachine:addTransition(from, to, guard, priority) end
+```
 
 #### Example
 
@@ -6827,13 +9743,23 @@ do
 end
 ```
 
-### `LStateMachine:forceState(name: string)`
+### LStateMachine:forceState
+
+`LStateMachine:forceState(name: string)`
 
 Immediately switches the current state and resets the time spent in state.
 
 **Parameters**
 
-- `name` (`string`, required) - State name to set as current without transition checks.
+- `name` (`string`, required): State name to set as current without transition checks.
+
+**Lua API Stub**
+
+```lua
+--- Immediately switches the current state and resets the time spent in state.
+---@param name string State name to set as current without transition checks.
+function LStateMachine:forceState(name) end
+```
 
 #### Example
 
@@ -6850,11 +9776,21 @@ do
 end
 ```
 
-### `LStateMachine:getCurrentState() -> LuaValue`
+### LStateMachine:getCurrentState
+
+`LStateMachine:getCurrentState() -> LuaValue`
 
 Returns the current state name when the state machine has entered a state.
 
 **Returns**: `LuaValue` - Current state name, or nil before any state is active.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current state name when the state machine has entered a state.
+---@return LuaValue Current state name, or nil before any state is active.
+function LStateMachine:getCurrentState() end
+```
 
 #### Example
 
@@ -6871,11 +9807,21 @@ do
 end
 ```
 
-### `LStateMachine:getTimeInState() -> number`
+### LStateMachine:getTimeInState
+
+`LStateMachine:getTimeInState() -> number`
 
 Returns how long the machine has spent in the current state.
 
 **Returns**: `number` - Elapsed time in seconds since the current state was entered.
+
+**Lua API Stub**
+
+```lua
+--- Returns how long the machine has spent in the current state.
+---@return number Elapsed time in seconds since the current state was entered.
+function LStateMachine:getTimeInState() end
+```
 
 #### Example
 
@@ -6892,13 +9838,23 @@ do
 end
 ```
 
-### `LStateMachine:setInitialState(name: string)`
+### LStateMachine:setInitialState
+
+`LStateMachine:setInitialState(name: string)`
 
 Sets the initial state and also enters it when the machine has no current state yet.
 
 **Parameters**
 
-- `name` (`string`, required) - State name to use as the initial state.
+- `name` (`string`, required): State name to use as the initial state.
+
+**Lua API Stub**
+
+```lua
+--- Sets the initial state and also enters it when the machine has no current state yet.
+---@param name string State name to use as the initial state.
+function LStateMachine:setInitialState(name) end
+```
 
 #### Example
 
@@ -6912,11 +9868,21 @@ do
 end
 ```
 
-### `LStateMachine:type() -> string`
+### LStateMachine:type
+
+`LStateMachine:type() -> string`
 
 Returns the Lua-visible type name for this state machine handle.
 
 **Returns**: `string` - The string `LStateMachine`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this state machine handle.
+---@return string The string `LStateMachine`.
+function LStateMachine:type() end
+```
 
 #### Example
 
@@ -6929,15 +9895,26 @@ do
 end
 ```
 
-### `LStateMachine:typeOf(name: string) -> boolean`
+### LStateMachine:typeOf
+
+`LStateMachine:typeOf(name: string) -> boolean`
 
 Returns whether this state machine handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `StateMachine` and `Object`.
+- `name` (`string`, required): Type name to compare against `StateMachine` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this state machine handle matches a supported type name.
+---@param name string Type name to compare against `StateMachine` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LStateMachine:typeOf(name) end
+```
 
 #### Example
 
@@ -6950,35 +9927,29 @@ do
 end
 ```
 
-### `LSteeringManager`
+### LSteeringManager:addArrive
 
-Lua handle for a steering behavior stack that combines movement forces for an agent.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  -- Steering combines movement behaviors (seek, flee, wander) into one force.
-  -- Weight parameter (last arg) controls how much each behavior contributes.
-  -- Scenario: zombie wanders randomly but seeks the player when nearby.
-  local sm = lurek.ai.newSteeringManager()
-  sm:addSeek(400, 300, 1.0)
-  sm:addWander(20, 40, 5, 0.3)
-end
-```
-
-### `LSteeringManager:addArrive(tx: number, ty: number, [slowing]: number, [weight]: number)`
+`LSteeringManager:addArrive(tx: number, ty: number, [slowing]: number, [weight]: number)`
 
 Adds an arrive behavior that slows the agent as it approaches a target point.
 
 **Parameters**
 
-- `tx` (`number`, required) - Target X position in world units.
-- `ty` (`number`, required) - Target Y position in world units.
-- `slowing` (`number`, optional) - Radius used to reduce speed near the target; defaults to 50.0.
-- `weight` (`number`, optional) - Behavior weight applied during steering combination; defaults to 1.0.
+- `tx` (`number`, required): Target X position in world units.
+- `ty` (`number`, required): Target Y position in world units.
+- `slowing` (`number`, optional): Radius used to reduce speed near the target; defaults to 50.0.
+- `weight` (`number`, optional): Behavior weight applied during steering combination; defaults to 1.0.
+
+**Lua API Stub**
+
+```lua
+--- Adds an arrive behavior that slows the agent as it approaches a target point.
+---@param tx number Target X position in world units.
+---@param ty number Target Y position in world units.
+---@param slowing? number Radius used to reduce speed near the target; defaults to 50.0.
+---@param weight? number Behavior weight applied during steering combination; defaults to 1.0.
+function LSteeringManager:addArrive(tx, ty, slowing, weight) end
+```
 
 #### Example
 
@@ -6993,14 +9964,25 @@ do
 end
 ```
 
-### `LSteeringManager:addCustomBehavior(func: function, [weight]: number)`
+### LSteeringManager:addCustomBehavior
+
+`LSteeringManager:addCustomBehavior(func: function, [weight]: number)`
 
 Adds a custom steering behavior backed by a Lua callback.
 
 **Parameters**
 
-- `func` (`function`, required) - Function called as `(agent, dt)` that returns an X and Y steering force.
-- `weight` (`number`, optional) - Custom behavior weight applied to returned forces; defaults to 1.0.
+- `func` (`function`, required): Function called as `(agent, dt)` that returns an X and Y steering force.
+- `weight` (`number`, optional): Custom behavior weight applied to returned forces; defaults to 1.0.
+
+**Lua API Stub**
+
+```lua
+--- Adds a custom steering behavior backed by a Lua callback.
+---@param func function Function called as `(agent, dt)` that returns an X and Y steering force.
+---@param weight? number Custom behavior weight applied to returned forces; defaults to 1.0.
+function LSteeringManager:addCustomBehavior(func, weight) end
+```
 
 #### Example
 
@@ -7016,14 +9998,25 @@ do
 end
 ```
 
-### `LSteeringManager:addEvade([threat_name]: string, [weight]: number)`
+### LSteeringManager:addEvade
+
+`LSteeringManager:addEvade([threat_name]: string, [weight]: number)`
 
 Adds an evade behavior that moves away from another named agent when a threat name is supplied.
 
 **Parameters**
 
-- `threat_name` (`string`, optional) - Optional name of the agent to evade.
-- `weight` (`number`, optional) - Behavior weight applied during steering combination; defaults to 1.0.
+- `threat_name` (`string`, optional): Optional name of the agent to evade.
+- `weight` (`number`, optional): Behavior weight applied during steering combination; defaults to 1.0.
+
+**Lua API Stub**
+
+```lua
+--- Adds an evade behavior that moves away from another named agent when a threat name is supplied.
+---@param threat_name? string Optional name of the agent to evade.
+---@param weight? number Behavior weight applied during steering combination; defaults to 1.0.
+function LSteeringManager:addEvade(threat_name, weight) end
+```
 
 #### Example
 
@@ -7038,16 +10031,29 @@ do
 end
 ```
 
-### `LSteeringManager:addFlee(tx: number, ty: number, [panic_dist]: number, [weight]: number)`
+### LSteeringManager:addFlee
+
+`LSteeringManager:addFlee(tx: number, ty: number, [panic_dist]: number, [weight]: number)`
 
 Adds a flee behavior that pushes the agent away from a target point inside a panic distance.
 
 **Parameters**
 
-- `tx` (`number`, required) - Threat X position in world units.
-- `ty` (`number`, required) - Threat Y position in world units.
-- `panic_dist` (`number`, optional) - Distance inside which fleeing is active; defaults to 200.0.
-- `weight` (`number`, optional) - Behavior weight applied during steering combination; defaults to 1.0.
+- `tx` (`number`, required): Threat X position in world units.
+- `ty` (`number`, required): Threat Y position in world units.
+- `panic_dist` (`number`, optional): Distance inside which fleeing is active; defaults to 200.0.
+- `weight` (`number`, optional): Behavior weight applied during steering combination; defaults to 1.0.
+
+**Lua API Stub**
+
+```lua
+--- Adds a flee behavior that pushes the agent away from a target point inside a panic distance.
+---@param tx number Threat X position in world units.
+---@param ty number Threat Y position in world units.
+---@param panic_dist? number Distance inside which fleeing is active; defaults to 200.0.
+---@param weight? number Behavior weight applied during steering combination; defaults to 1.0.
+function LSteeringManager:addFlee(tx, ty, panic_dist, weight) end
+```
 
 #### Example
 
@@ -7062,17 +10068,31 @@ do
 end
 ```
 
-### `LSteeringManager:addFlock([neighbor_radius]: number, [sep_w]: number, [align_w]: number, [coh_w]: number, [weight]: number)`
+### LSteeringManager:addFlock
+
+`LSteeringManager:addFlock([neighbor_radius]: number, [sep_w]: number, [align_w]: number, [coh_w]: number, [weight]: number)`
 
 Adds a flocking behavior with separation, alignment, and cohesion weights.
 
 **Parameters**
 
-- `neighbor_radius` (`number`, optional) - Radius used to find flock neighbors; defaults to 100.0.
-- `sep_w` (`number`, optional) - Separation force weight; defaults to 1.5.
-- `align_w` (`number`, optional) - Alignment force weight; defaults to 1.0.
-- `coh_w` (`number`, optional) - Cohesion force weight; defaults to 1.0.
-- `weight` (`number`, optional) - Behavior weight applied during steering combination; defaults to 1.0.
+- `neighbor_radius` (`number`, optional): Radius used to find flock neighbors; defaults to 100.0.
+- `sep_w` (`number`, optional): Separation force weight; defaults to 1.5.
+- `align_w` (`number`, optional): Alignment force weight; defaults to 1.0.
+- `coh_w` (`number`, optional): Cohesion force weight; defaults to 1.0.
+- `weight` (`number`, optional): Behavior weight applied during steering combination; defaults to 1.0.
+
+**Lua API Stub**
+
+```lua
+--- Adds a flocking behavior with separation, alignment, and cohesion weights.
+---@param neighbor_radius? number Radius used to find flock neighbors; defaults to 100.0.
+---@param sep_w? number Separation force weight; defaults to 1.5.
+---@param align_w? number Alignment force weight; defaults to 1.0.
+---@param coh_w? number Cohesion force weight; defaults to 1.0.
+---@param weight? number Behavior weight applied during steering combination; defaults to 1.0.
+function LSteeringManager:addFlock(neighbor_radius, sep_w, align_w, coh_w, weight) end
+```
 
 #### Example
 
@@ -7087,14 +10107,25 @@ do
 end
 ```
 
-### `LSteeringManager:addPursue([target_name]: string, [weight]: number)`
+### LSteeringManager:addPursue
+
+`LSteeringManager:addPursue([target_name]: string, [weight]: number)`
 
 Adds a pursue behavior that chases another named agent when a target name is supplied.
 
 **Parameters**
 
-- `target_name` (`string`, optional) - Optional name of the agent to pursue.
-- `weight` (`number`, optional) - Behavior weight applied during steering combination; defaults to 1.0.
+- `target_name` (`string`, optional): Optional name of the agent to pursue.
+- `weight` (`number`, optional): Behavior weight applied during steering combination; defaults to 1.0.
+
+**Lua API Stub**
+
+```lua
+--- Adds a pursue behavior that chases another named agent when a target name is supplied.
+---@param target_name? string Optional name of the agent to pursue.
+---@param weight? number Behavior weight applied during steering combination; defaults to 1.0.
+function LSteeringManager:addPursue(target_name, weight) end
+```
 
 #### Example
 
@@ -7109,15 +10140,27 @@ do
 end
 ```
 
-### `LSteeringManager:addSeek(tx: number, ty: number, [weight]: number)`
+### LSteeringManager:addSeek
+
+`LSteeringManager:addSeek(tx: number, ty: number, [weight]: number)`
 
 Adds a seek behavior that pulls the agent toward a target point.
 
 **Parameters**
 
-- `tx` (`number`, required) - Target X position in world units.
-- `ty` (`number`, required) - Target Y position in world units.
-- `weight` (`number`, optional) - Behavior weight applied during steering combination; defaults to 1.0.
+- `tx` (`number`, required): Target X position in world units.
+- `ty` (`number`, required): Target Y position in world units.
+- `weight` (`number`, optional): Behavior weight applied during steering combination; defaults to 1.0.
+
+**Lua API Stub**
+
+```lua
+--- Adds a seek behavior that pulls the agent toward a target point.
+---@param tx number Target X position in world units.
+---@param ty number Target Y position in world units.
+---@param weight? number Behavior weight applied during steering combination; defaults to 1.0.
+function LSteeringManager:addSeek(tx, ty, weight) end
+```
 
 #### Example
 
@@ -7132,16 +10175,29 @@ do
 end
 ```
 
-### `LSteeringManager:addWander([radius]: number, [dist]: number, [jitter]: number, [weight]: number)`
+### LSteeringManager:addWander
+
+`LSteeringManager:addWander([radius]: number, [dist]: number, [jitter]: number, [weight]: number)`
 
 Adds a wander behavior that produces jittered exploratory movement.
 
 **Parameters**
 
-- `radius` (`number`, optional) - Wander circle radius; defaults to 20.0.
-- `dist` (`number`, optional) - Wander circle distance in front of the agent; defaults to 40.0.
-- `jitter` (`number`, optional) - Random displacement applied per update; defaults to 5.0.
-- `weight` (`number`, optional) - Behavior weight applied during steering combination; defaults to 1.0.
+- `radius` (`number`, optional): Wander circle radius; defaults to 20.0.
+- `dist` (`number`, optional): Wander circle distance in front of the agent; defaults to 40.0.
+- `jitter` (`number`, optional): Random displacement applied per update; defaults to 5.0.
+- `weight` (`number`, optional): Behavior weight applied during steering combination; defaults to 1.0.
+
+**Lua API Stub**
+
+```lua
+--- Adds a wander behavior that produces jittered exploratory movement.
+---@param radius? number Wander circle radius; defaults to 20.0.
+---@param dist? number Wander circle distance in front of the agent; defaults to 40.0.
+---@param jitter? number Random displacement applied per update; defaults to 5.0.
+---@param weight? number Behavior weight applied during steering combination; defaults to 1.0.
+function LSteeringManager:addWander(radius, dist, jitter, weight) end
+```
 
 #### Example
 
@@ -7157,16 +10213,29 @@ do
 end
 ```
 
-### `LSteeringManager:applyCustomSteering(agent: LAgent, dt: number) -> number, number`
+### LSteeringManager:applyCustomSteering
+
+`LSteeringManager:applyCustomSteering(agent: LAgent, dt: number) -> number, number`
 
 Runs enabled custom steering callbacks for an agent and returns the weighted combined force.
 
 **Parameters**
 
-- `agent` (`LAgent`, required) - Agent handle passed through to every custom steering callback.
-- `dt` (`number`, required) - Elapsed time in seconds passed to every custom steering callback.
+- `agent` (`LAgent`, required): Agent handle passed through to every custom steering callback.
+- `dt` (`number`, required): Elapsed time in seconds passed to every custom steering callback.
 
 **Returns**: `number, number` - Combined custom X and Y steering force.
+
+**Lua API Stub**
+
+```lua
+--- Runs enabled custom steering callbacks for an agent and returns the weighted combined force.
+---@param agent LAgent Agent handle passed through to every custom steering callback.
+---@param dt number Elapsed time in seconds passed to every custom steering callback.
+---@return number a Combined custom X and Y steering force.
+---@return number b Combined custom X and Y steering force.
+function LSteeringManager:applyCustomSteering(agent, dt) end
+```
 
 #### Example
 
@@ -7186,21 +10255,39 @@ do
 end
 ```
 
-### `LSteeringManager:calculate(px: number, py: number, vx: number, vy: number, max_speed: number, max_force: number, dt: number) -> number, number`
+### LSteeringManager:calculate
+
+`LSteeringManager:calculate(px: number, py: number, vx: number, vy: number, max_speed: number, max_force: number, dt: number) -> number, number`
 
 Calculates a steering force for the supplied agent movement state.
 
 **Parameters**
 
-- `px` (`number`, required) - Current agent X position.
-- `py` (`number`, required) - Current agent Y position.
-- `vx` (`number`, required) - Current agent X velocity.
-- `vy` (`number`, required) - Current agent Y velocity.
-- `max_speed` (`number`, required) - Maximum allowed speed used by steering constraints.
-- `max_force` (`number`, required) - Maximum allowed steering force.
-- `dt` (`number`, required) - Elapsed time in seconds for this steering step.
+- `px` (`number`, required): Current agent X position.
+- `py` (`number`, required): Current agent Y position.
+- `vx` (`number`, required): Current agent X velocity.
+- `vy` (`number`, required): Current agent Y velocity.
+- `max_speed` (`number`, required): Maximum allowed speed used by steering constraints.
+- `max_force` (`number`, required): Maximum allowed steering force.
+- `dt` (`number`, required): Elapsed time in seconds for this steering step.
 
 **Returns**: `number, number` - X and Y steering force.
+
+**Lua API Stub**
+
+```lua
+--- Calculates a steering force for the supplied agent movement state.
+---@param px number Current agent X position.
+---@param py number Current agent Y position.
+---@param vx number Current agent X velocity.
+---@param vy number Current agent Y velocity.
+---@param max_speed number Maximum allowed speed used by steering constraints.
+---@param max_force number Maximum allowed steering force.
+---@param dt number Elapsed time in seconds for this steering step.
+---@return number a X and Y steering force.
+---@return number b X and Y steering force.
+function LSteeringManager:calculate(px, py, vx, vy, max_speed, max_force, dt) end
+```
 
 #### Example
 
@@ -7215,9 +10302,18 @@ do
 end
 ```
 
-### `LSteeringManager:clearPath()`
+### LSteeringManager:clearPath
+
+`LSteeringManager:clearPath()`
 
 Clears the active waypoint path behavior.
+
+**Lua API Stub**
+
+```lua
+--- Clears the active waypoint path behavior.
+function LSteeringManager:clearPath() end
+```
 
 #### Example
 
@@ -7230,13 +10326,23 @@ do
 end
 ```
 
-### `LSteeringManager:enableSpatialHash(enabled: boolean)`
+### LSteeringManager:enableSpatialHash
+
+`LSteeringManager:enableSpatialHash(enabled: boolean)`
 
 Enables or disables spatial hash acceleration for neighbor queries.
 
 **Parameters**
 
-- `enabled` (`boolean`, required) - True to use spatial hashing, false to use direct scans.
+- `enabled` (`boolean`, required): True to use spatial hashing, false to use direct scans.
+
+**Lua API Stub**
+
+```lua
+--- Enables or disables spatial hash acceleration for neighbor queries.
+---@param enabled boolean True to use spatial hashing, false to use direct scans.
+function LSteeringManager:enableSpatialHash(enabled) end
+```
 
 #### Example
 
@@ -7253,11 +10359,21 @@ do
 end
 ```
 
-### `LSteeringManager:getBehaviorCount() -> integer`
+### LSteeringManager:getBehaviorCount
+
+`LSteeringManager:getBehaviorCount() -> integer`
 
 Returns the number of steering behaviors configured on this manager.
 
 **Returns**: `integer` - Current steering behavior count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of steering behaviors configured on this manager.
+---@return number Current steering behavior count.
+function LSteeringManager:getBehaviorCount() end
+```
 
 #### Example
 
@@ -7272,11 +10388,21 @@ do
 end
 ```
 
-### `LSteeringManager:getCombineMode() -> string`
+### LSteeringManager:getCombineMode
+
+`LSteeringManager:getCombineMode() -> string`
 
 Returns the current steering force combination mode.
 
 **Returns**: `string` - Combine mode name.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current steering force combination mode.
+---@return string Combine mode name.
+function LSteeringManager:getCombineMode() end
+```
 
 #### Example
 
@@ -7290,11 +10416,22 @@ do
 end
 ```
 
-### `LSteeringManager:getLastSteering() -> number, number`
+### LSteeringManager:getLastSteering
+
+`LSteeringManager:getLastSteering() -> number, number`
 
 Returns the last steering force calculated by this manager.
 
 **Returns**: `number, number` - X and Y force values from the previous calculation.
+
+**Lua API Stub**
+
+```lua
+--- Returns the last steering force calculated by this manager.
+---@return number a X and Y force values from the previous calculation.
+---@return number b X and Y force values from the previous calculation.
+function LSteeringManager:getLastSteering() end
+```
 
 #### Example
 
@@ -7312,11 +10449,22 @@ do
 end
 ```
 
-### `LSteeringManager:getPathProgress() -> integer, integer`
+### LSteeringManager:getPathProgress
+
+`LSteeringManager:getPathProgress() -> integer, integer`
 
 Returns the current one-based waypoint index and total waypoint count.
 
 **Returns**: `integer, integer` - Current waypoint index and total waypoint count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current one-based waypoint index and total waypoint count.
+---@return number a Current waypoint index and total waypoint count.
+---@return number b Current waypoint index and total waypoint count.
+function LSteeringManager:getPathProgress() end
+```
 
 #### Example
 
@@ -7330,11 +10478,21 @@ do
 end
 ```
 
-### `LSteeringManager:hasPath() -> boolean`
+### LSteeringManager:hasPath
+
+`LSteeringManager:hasPath() -> boolean`
 
 Returns whether this manager currently has an active waypoint path.
 
 **Returns**: `boolean` - True when a path is configured and not complete.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this manager currently has an active waypoint path.
+---@return boolean True when a path is configured and not complete.
+function LSteeringManager:hasPath() end
+```
 
 #### Example
 
@@ -7347,13 +10505,23 @@ do
 end
 ```
 
-### `LSteeringManager:setCombineMode(mode: string)`
+### LSteeringManager:setCombineMode
+
+`LSteeringManager:setCombineMode(mode: string)`
 
 Sets how steering behavior forces are combined.
 
 **Parameters**
 
-- `mode` (`string`, required) - Combine mode string parsed by the steering manager.
+- `mode` (`string`, required): Combine mode string parsed by the steering manager.
+
+**Lua API Stub**
+
+```lua
+--- Sets how steering behavior forces are combined.
+---@param mode string Combine mode string parsed by the steering manager.
+function LSteeringManager:setCombineMode(mode) end
+```
 
 #### Example
 
@@ -7370,15 +10538,27 @@ do
 end
 ```
 
-### `LSteeringManager:setPath(waypoints: table, [reach_radius]: number, [weight]: number)`
+### LSteeringManager:setPath
+
+`LSteeringManager:setPath(waypoints: table, [reach_radius]: number, [weight]: number)`
 
 Sets a waypoint path behavior from an array of `{x, y}` tables.
 
 **Parameters**
 
-- `waypoints` (`table`, required) - Array of waypoint tables, each containing numeric `x` and `y` fields.
-- `reach_radius` (`number`, optional) - Distance at which a waypoint is considered reached; defaults to 12.0.
-- `weight` (`number`, optional) - Path following behavior weight; defaults to 1.0.
+- `waypoints` (`table`, required): Array of waypoint tables, each containing numeric `x` and `y` fields.
+- `reach_radius` (`number`, optional): Distance at which a waypoint is considered reached; defaults to 12.0.
+- `weight` (`number`, optional): Path following behavior weight; defaults to 1.0.
+
+**Lua API Stub**
+
+```lua
+--- Sets a waypoint path behavior from an array of `{x, y}` tables.
+---@param waypoints table Array of waypoint tables, each containing numeric `x` and `y` fields.
+---@param reach_radius? number Distance at which a waypoint is considered reached; defaults to 12.0.
+---@param weight? number Path following behavior weight; defaults to 1.0.
+function LSteeringManager:setPath(waypoints, reach_radius, weight) end
+```
 
 #### Example
 
@@ -7391,13 +10571,23 @@ do
 end
 ```
 
-### `LSteeringManager:setSpatialHashCellSize(size: number)`
+### LSteeringManager:setSpatialHashCellSize
+
+`LSteeringManager:setSpatialHashCellSize(size: number)`
 
 Sets the cell size used by the steering manager spatial hash.
 
 **Parameters**
 
-- `size` (`number`, required) - Spatial hash cell size in world units.
+- `size` (`number`, required): Spatial hash cell size in world units.
+
+**Lua API Stub**
+
+```lua
+--- Sets the cell size used by the steering manager spatial hash.
+---@param size number Spatial hash cell size in world units.
+function LSteeringManager:setSpatialHashCellSize(size) end
+```
 
 #### Example
 
@@ -7412,11 +10602,21 @@ do
 end
 ```
 
-### `LSteeringManager:type() -> string`
+### LSteeringManager:type
+
+`LSteeringManager:type() -> string`
 
 Returns the Lua-visible type name for this steering manager handle.
 
 **Returns**: `string` - The string `LSteeringManager`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this steering manager handle.
+---@return string The string `LSteeringManager`.
+function LSteeringManager:type() end
+```
 
 #### Example
 
@@ -7429,15 +10629,26 @@ do
 end
 ```
 
-### `LSteeringManager:typeOf(name: string) -> boolean`
+### LSteeringManager:typeOf
+
+`LSteeringManager:typeOf(name: string) -> boolean`
 
 Returns whether this steering manager handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `SteeringManager` and `Object`.
+- `name` (`string`, required): Type name to compare against `SteeringManager` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this steering manager handle matches a supported type name.
+---@param name string Type name to compare against `SteeringManager` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LSteeringManager:typeOf(name) end
+```
 
 #### Example
 
@@ -7450,39 +10661,36 @@ do
 end
 ```
 
-### `LStimulusWorld`
+### LStimulusWorld:addAuditory
 
-Lua handle for sensory stimuli tracked in world space.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  -- Stimulus world tracks sensory events (sounds, sights) that agents can perceive.
-  -- Auditory params: x, y, loudness, radius, decay_rate, tag. Stimuli fade over time.
-  -- Scenario: stealth game — footsteps create auditory stimuli that alert guards.
-  local sw = lurek.ai.newStimulusWorld()
-  sw:addAuditory(100, 200, 1.0, 150, 0.5, "footstep")
-  function lurek.process(dt) sw:update(dt) end
-end
-```
-
-### `LStimulusWorld:addAuditory(x: number, y: number, intensity: number, radius: number, decay_rate: number, [tag]: string) -> integer`
+`LStimulusWorld:addAuditory(x: number, y: number, intensity: number, radius: number, decay_rate: number, [tag]: string) -> integer`
 
 Adds an auditory stimulus with decay and returns its identifier.
 
 **Parameters**
 
-- `x` (`number`, required) - Stimulus X position in world units.
-- `y` (`number`, required) - Stimulus Y position in world units.
-- `intensity` (`number`, required) - Initial stimulus intensity.
-- `radius` (`number`, required) - Stimulus radius in world units.
-- `decay_rate` (`number`, required) - Intensity decay rate applied during updates.
-- `tag` (`string`, optional) - Optional category tag for game-side filtering.
+- `x` (`number`, required): Stimulus X position in world units.
+- `y` (`number`, required): Stimulus Y position in world units.
+- `intensity` (`number`, required): Initial stimulus intensity.
+- `radius` (`number`, required): Stimulus radius in world units.
+- `decay_rate` (`number`, required): Intensity decay rate applied during updates.
+- `tag` (`string`, optional): Optional category tag for game-side filtering.
 
 **Returns**: `integer` - New stimulus identifier.
+
+**Lua API Stub**
+
+```lua
+--- Adds an auditory stimulus with decay and returns its identifier.
+---@param x number Stimulus X position in world units.
+---@param y number Stimulus Y position in world units.
+---@param intensity number Initial stimulus intensity.
+---@param radius number Stimulus radius in world units.
+---@param decay_rate number Intensity decay rate applied during updates.
+---@param tag? string Optional category tag for game-side filtering.
+---@return number New stimulus identifier.
+function LStimulusWorld:addAuditory(x, y, intensity, radius, decay_rate, tag) end
+```
 
 #### Example
 
@@ -7496,19 +10704,34 @@ do
 end
 ```
 
-### `LStimulusWorld:addVisual(x: number, y: number, intensity: number, radius: number, [tag]: string) -> integer`
+### LStimulusWorld:addVisual
+
+`LStimulusWorld:addVisual(x: number, y: number, intensity: number, radius: number, [tag]: string) -> integer`
 
 Adds a visual stimulus and returns its identifier.
 
 **Parameters**
 
-- `x` (`number`, required) - Stimulus X position in world units.
-- `y` (`number`, required) - Stimulus Y position in world units.
-- `intensity` (`number`, required) - Initial stimulus intensity.
-- `radius` (`number`, required) - Stimulus radius in world units.
-- `tag` (`string`, optional) - Optional category tag for game-side filtering.
+- `x` (`number`, required): Stimulus X position in world units.
+- `y` (`number`, required): Stimulus Y position in world units.
+- `intensity` (`number`, required): Initial stimulus intensity.
+- `radius` (`number`, required): Stimulus radius in world units.
+- `tag` (`string`, optional): Optional category tag for game-side filtering.
 
 **Returns**: `integer` - New stimulus identifier.
+
+**Lua API Stub**
+
+```lua
+--- Adds a visual stimulus and returns its identifier.
+---@param x number Stimulus X position in world units.
+---@param y number Stimulus Y position in world units.
+---@param intensity number Initial stimulus intensity.
+---@param radius number Stimulus radius in world units.
+---@param tag? string Optional category tag for game-side filtering.
+---@return number New stimulus identifier.
+function LStimulusWorld:addVisual(x, y, intensity, radius, tag) end
+```
 
 #### Example
 
@@ -7523,9 +10746,18 @@ do
 end
 ```
 
-### `LStimulusWorld:clear()`
+### LStimulusWorld:clear
+
+`LStimulusWorld:clear()`
 
 Removes every active stimulus. This method is available to Lua scripts.
+
+**Lua API Stub**
+
+```lua
+--- Removes every active stimulus. This method is available to Lua scripts.
+function LStimulusWorld:clear() end
+```
 
 #### Example
 
@@ -7542,11 +10774,21 @@ do
 end
 ```
 
-### `LStimulusWorld:count() -> integer`
+### LStimulusWorld:count
+
+`LStimulusWorld:count() -> integer`
 
 Returns the number of active stimuli.
 
 **Returns**: `integer` - Active stimulus count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of active stimuli.
+---@return number Active stimulus count.
+function LStimulusWorld:count() end
+```
 
 #### Example
 
@@ -7561,15 +10803,26 @@ do
 end
 ```
 
-### `LStimulusWorld:remove(id: integer) -> boolean`
+### LStimulusWorld:remove
+
+`LStimulusWorld:remove(id: integer) -> boolean`
 
 Removes a stimulus by identifier. This method is available to Lua scripts.
 
 **Parameters**
 
-- `id` (`integer`, required) - Stimulus identifier returned by `addVisual` or `addAuditory`.
+- `id` (`integer`, required): Stimulus identifier returned by `addVisual` or `addAuditory`.
 
 **Returns**: `boolean` - True when a stimulus was removed.
+
+**Lua API Stub**
+
+```lua
+--- Removes a stimulus by identifier. This method is available to Lua scripts.
+---@param id number Stimulus identifier returned by `addVisual` or `addAuditory`.
+---@return boolean True when a stimulus was removed.
+function LStimulusWorld:remove(id) end
+```
 
 #### Example
 
@@ -7585,11 +10838,21 @@ do
 end
 ```
 
-### `LStimulusWorld:type() -> string`
+### LStimulusWorld:type
+
+`LStimulusWorld:type() -> string`
 
 Returns the Lua-visible type name for this stimulus world handle.
 
 **Returns**: `string` - The string `LStimulusWorld`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this stimulus world handle.
+---@return string The string `LStimulusWorld`.
+function LStimulusWorld:type() end
+```
 
 #### Example
 
@@ -7602,15 +10865,26 @@ do
 end
 ```
 
-### `LStimulusWorld:typeOf(name: string) -> boolean`
+### LStimulusWorld:typeOf
+
+`LStimulusWorld:typeOf(name: string) -> boolean`
 
 Returns whether this stimulus world handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `LStimulusWorld` and `Object`.
+- `name` (`string`, required): Type name to compare against `LStimulusWorld` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this stimulus world handle matches a supported type name.
+---@param name string Type name to compare against `LStimulusWorld` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LStimulusWorld:typeOf(name) end
+```
 
 #### Example
 
@@ -7623,13 +10897,23 @@ do
 end
 ```
 
-### `LStimulusWorld:update(dt: number)`
+### LStimulusWorld:update
+
+`LStimulusWorld:update(dt: number)`
 
 Advances stimulus decay and lifetime state.
 
 **Parameters**
 
-- `dt` (`number`, required) - Elapsed time in seconds.
+- `dt` (`number`, required): Elapsed time in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Advances stimulus decay and lifetime state.
+---@param dt number Elapsed time in seconds.
+function LStimulusWorld:update(dt) end
+```
 
 #### Example
 
@@ -7646,30 +10930,21 @@ do
 end
 ```
 
-### `LStrategyAI`
+### LStrategyAI:activeGoal
 
-Lua handle for interval-based strategic goal selection.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  -- Strategy AI periodically re-ranks goals and picks the best one to pursue.
-  -- Interval (seconds) controls how often the AI reconsiders — lower = more reactive.
-  -- Scenario: RTS faction AI switches between "expand", "defend", "attack" every 2s.
-  local s = lurek.ai.newStrategyAI(2.0)
-  s:addGoal("expand")
-  s:addGoal("defend")
-end
-```
-
-### `LStrategyAI:activeGoal() -> LuaValue`
+`LStrategyAI:activeGoal() -> LuaValue`
 
 Returns the currently active strategic goal when one is selected.
 
 **Returns**: `LuaValue` - Active goal name, or nil before selection.
+
+**Lua API Stub**
+
+```lua
+--- Returns the currently active strategic goal when one is selected.
+---@return LuaValue Active goal name, or nil before selection.
+function LStrategyAI:activeGoal() end
+```
 
 #### Example
 
@@ -7684,13 +10959,23 @@ do
 end
 ```
 
-### `LStrategyAI:addGoal(name: string)`
+### LStrategyAI:addGoal
+
+`LStrategyAI:addGoal(name: string)`
 
 Adds a named strategic goal. This method is available to Lua scripts.
 
 **Parameters**
 
-- `name` (`string`, required) - Goal name scored by update callbacks.
+- `name` (`string`, required): Goal name scored by update callbacks.
+
+**Lua API Stub**
+
+```lua
+--- Adds a named strategic goal. This method is available to Lua scripts.
+---@param name string Goal name scored by update callbacks.
+function LStrategyAI:addGoal(name) end
+```
 
 #### Example
 
@@ -7706,13 +10991,23 @@ do
 end
 ```
 
-### `LStrategyAI:addTag(tag: string)`
+### LStrategyAI:addTag
+
+`LStrategyAI:addTag(tag: string)`
 
 Adds a context tag to this strategy AI.
 
 **Parameters**
 
-- `tag` (`string`, required) - Tag name to add.
+- `tag` (`string`, required): Tag name to add.
+
+**Lua API Stub**
+
+```lua
+--- Adds a context tag to this strategy AI.
+---@param tag string Tag name to add.
+function LStrategyAI:addTag(tag) end
+```
 
 #### Example
 
@@ -7725,13 +11020,23 @@ do
 end
 ```
 
-### `LStrategyAI:forceEvaluate(scorer_fn: function)`
+### LStrategyAI:forceEvaluate
+
+`LStrategyAI:forceEvaluate(scorer_fn: function)`
 
 Immediately scores all goals and updates the active goal.
 
 **Parameters**
 
-- `scorer_fn` (`function`, required) - Function called with a goal name and returning a numeric score.
+- `scorer_fn` (`function`, required): Function called with a goal name and returning a numeric score.
+
+**Lua API Stub**
+
+```lua
+--- Immediately scores all goals and updates the active goal.
+---@param scorer_fn function Function called with a goal name and returning a numeric score.
+function LStrategyAI:forceEvaluate(scorer_fn) end
+```
 
 #### Example
 
@@ -7745,13 +11050,23 @@ do
 end
 ```
 
-### `LStrategyAI:removeTag(tag: string)`
+### LStrategyAI:removeTag
+
+`LStrategyAI:removeTag(tag: string)`
 
 Removes a context tag from this strategy AI.
 
 **Parameters**
 
-- `tag` (`string`, required) - Tag name to remove.
+- `tag` (`string`, required): Tag name to remove.
+
+**Lua API Stub**
+
+```lua
+--- Removes a context tag from this strategy AI.
+---@param tag string Tag name to remove.
+function LStrategyAI:removeTag(tag) end
+```
 
 #### Example
 
@@ -7765,11 +11080,21 @@ do
 end
 ```
 
-### `LStrategyAI:timeUntilNext() -> number`
+### LStrategyAI:timeUntilNext
+
+`LStrategyAI:timeUntilNext() -> number`
 
 Returns time remaining until the next scheduled strategy evaluation.
 
 **Returns**: `number` - Seconds until the next interval evaluation.
+
+**Lua API Stub**
+
+```lua
+--- Returns time remaining until the next scheduled strategy evaluation.
+---@return number Seconds until the next interval evaluation.
+function LStrategyAI:timeUntilNext() end
+```
 
 #### Example
 
@@ -7782,11 +11107,21 @@ do
 end
 ```
 
-### `LStrategyAI:type() -> string`
+### LStrategyAI:type
+
+`LStrategyAI:type() -> string`
 
 Returns the Lua-visible type name for this strategy AI handle.
 
 **Returns**: `string` - The string `LStrategyAI`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this strategy AI handle.
+---@return string The string `LStrategyAI`.
+function LStrategyAI:type() end
+```
 
 #### Example
 
@@ -7799,15 +11134,26 @@ do
 end
 ```
 
-### `LStrategyAI:typeOf(name: string) -> boolean`
+### LStrategyAI:typeOf
+
+`LStrategyAI:typeOf(name: string) -> boolean`
 
 Returns whether this strategy AI handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `LStrategyAI` and `Object`.
+- `name` (`string`, required): Type name to compare against `LStrategyAI` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this strategy AI handle matches a supported type name.
+---@param name string Type name to compare against `LStrategyAI` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LStrategyAI:typeOf(name) end
+```
 
 #### Example
 
@@ -7820,14 +11166,25 @@ do
 end
 ```
 
-### `LStrategyAI:update(dt: number, scorer_fn: function)`
+### LStrategyAI:update
+
+`LStrategyAI:update(dt: number, scorer_fn: function)`
 
 Advances strategy timing and scores goals when the update interval has elapsed.
 
 **Parameters**
 
-- `dt` (`number`, required) - Elapsed time in seconds.
-- `scorer_fn` (`function`, required) - Function called with a goal name and returning a numeric score.
+- `dt` (`number`, required): Elapsed time in seconds.
+- `scorer_fn` (`function`, required): Function called with a goal name and returning a numeric score.
+
+**Lua API Stub**
+
+```lua
+--- Advances strategy timing and scores goals when the update interval has elapsed.
+---@param dt number Elapsed time in seconds.
+---@param scorer_fn function Function called with a goal name and returning a numeric score.
+function LStrategyAI:update(dt, scorer_fn) end
+```
 
 #### Example
 
@@ -7841,35 +11198,29 @@ do
 end
 ```
 
-### `LTraitProfile`
+### LTraitProfile:addModifier
 
-Lua handle for trait values with temporary modifiers and archetype lookup.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  -- Trait profiles store personality values (0..1) that influence AI decisions.
-  -- Modifiers can temporarily shift traits (e.g., rage buff increases aggression).
-  -- Scenario: cowardly goblin flees at 50% HP; brave knight fights to the end.
-  local traits = lurek.ai.newTraitProfile()
-  traits:set("aggression", 0.7)
-  traits:set("courage", 0.4)
-end
-```
-
-### `LTraitProfile:addModifier(trait_name: string, delta: number, [duration]: number, source: string)`
+`LTraitProfile:addModifier(trait_name: string, delta: number, [duration]: number, source: string)`
 
 Adds a temporary or permanent modifier to a named trait.
 
 **Parameters**
 
-- `trait_name` (`string`, required) - Trait name affected by the modifier.
-- `delta` (`number`, required) - Value added to the trait while the modifier is active.
-- `duration` (`number`, optional) - Modifier lifetime in seconds, or nil for engine-defined permanent duration.
-- `source` (`string`, required) - Source label used to remove related modifiers later.
+- `trait_name` (`string`, required): Trait name affected by the modifier.
+- `delta` (`number`, required): Value added to the trait while the modifier is active.
+- `duration` (`number`, optional): Modifier lifetime in seconds, or nil for engine-defined permanent duration.
+- `source` (`string`, required): Source label used to remove related modifiers later.
+
+**Lua API Stub**
+
+```lua
+--- Adds a temporary or permanent modifier to a named trait.
+---@param trait_name string Trait name affected by the modifier.
+---@param delta number Value added to the trait while the modifier is active.
+---@param duration? number Modifier lifetime in seconds, or nil for engine-defined permanent duration.
+---@param source string Source label used to remove related modifiers later.
+function LTraitProfile:addModifier(trait_name, delta, duration, source) end
+```
 
 #### Example
 
@@ -7884,11 +11235,21 @@ do
 end
 ```
 
-### `LTraitProfile:archetype() -> LuaValue`
+### LTraitProfile:archetype
+
+`LTraitProfile:archetype() -> LuaValue`
 
 Returns the best matching archetype name when the profile can classify one.
 
 **Returns**: `LuaValue` - Archetype name, or nil when no archetype matches.
+
+**Lua API Stub**
+
+```lua
+--- Returns the best matching archetype name when the profile can classify one.
+---@return LuaValue Archetype name, or nil when no archetype matches.
+function LTraitProfile:archetype() end
+```
 
 #### Example
 
@@ -7903,15 +11264,26 @@ do
 end
 ```
 
-### `LTraitProfile:get(name: string) -> number`
+### LTraitProfile:get
+
+`LTraitProfile:get(name: string) -> number`
 
 Returns the current value of a named trait including active modifiers.
 
 **Parameters**
 
-- `name` (`string`, required) - Trait name to read.
+- `name` (`string`, required): Trait name to read.
 
 **Returns**: `number` - Effective trait value.
+
+**Lua API Stub**
+
+```lua
+--- Returns the current value of a named trait including active modifiers.
+---@param name string Trait name to read.
+---@return number Effective trait value.
+function LTraitProfile:get(name) end
+```
 
 #### Example
 
@@ -7928,15 +11300,26 @@ do
 end
 ```
 
-### `LTraitProfile:getBase(name: string) -> number`
+### LTraitProfile:getBase
+
+`LTraitProfile:getBase(name: string) -> number`
 
 Returns the base value of a named trait without temporary modifiers.
 
 **Parameters**
 
-- `name` (`string`, required) - Trait name to read.
+- `name` (`string`, required): Trait name to read.
 
 **Returns**: `number` - Base trait value.
+
+**Lua API Stub**
+
+```lua
+--- Returns the base value of a named trait without temporary modifiers.
+---@param name string Trait name to read.
+---@return number Base trait value.
+function LTraitProfile:getBase(name) end
+```
 
 #### Example
 
@@ -7951,15 +11334,26 @@ do
 end
 ```
 
-### `LTraitProfile:has(name: string) -> boolean`
+### LTraitProfile:has
+
+`LTraitProfile:has(name: string) -> boolean`
 
 Returns whether the profile has a named trait.
 
 **Parameters**
 
-- `name` (`string`, required) - Trait name to check.
+- `name` (`string`, required): Trait name to check.
 
 **Returns**: `boolean` - True when the trait exists.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether the profile has a named trait.
+---@param name string Trait name to check.
+---@return boolean True when the trait exists.
+function LTraitProfile:has(name) end
+```
 
 #### Example
 
@@ -7974,13 +11368,23 @@ do
 end
 ```
 
-### `LTraitProfile:removeModifiers(source: string)`
+### LTraitProfile:removeModifiers
+
+`LTraitProfile:removeModifiers(source: string)`
 
 Removes all trait modifiers that match a source label.
 
 **Parameters**
 
-- `source` (`string`, required) - Source label to remove.
+- `source` (`string`, required): Source label to remove.
+
+**Lua API Stub**
+
+```lua
+--- Removes all trait modifiers that match a source label.
+---@param source string Source label to remove.
+function LTraitProfile:removeModifiers(source) end
+```
 
 #### Example
 
@@ -7995,14 +11399,25 @@ do
 end
 ```
 
-### `LTraitProfile:set(name: string, value: number)`
+### LTraitProfile:set
+
+`LTraitProfile:set(name: string, value: number)`
 
 Sets the base value for a named trait.
 
 **Parameters**
 
-- `name` (`string`, required) - Trait name to create or update.
-- `value` (`number`, required) - Base trait value.
+- `name` (`string`, required): Trait name to create or update.
+- `value` (`number`, required): Base trait value.
+
+**Lua API Stub**
+
+```lua
+--- Sets the base value for a named trait.
+---@param name string Trait name to create or update.
+---@param value number Base trait value.
+function LTraitProfile:set(name, value) end
+```
 
 #### Example
 
@@ -8016,11 +11431,21 @@ do
 end
 ```
 
-### `LTraitProfile:traitCount() -> integer`
+### LTraitProfile:traitCount
+
+`LTraitProfile:traitCount() -> integer`
 
 Returns the number of traits stored in the profile.
 
 **Returns**: `integer` - Current trait count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of traits stored in the profile.
+---@return number Current trait count.
+function LTraitProfile:traitCount() end
+```
 
 #### Example
 
@@ -8034,11 +11459,21 @@ do
 end
 ```
 
-### `LTraitProfile:type() -> string`
+### LTraitProfile:type
+
+`LTraitProfile:type() -> string`
 
 Returns the Lua-visible type name for this trait profile handle.
 
 **Returns**: `string` - The string `LTraitProfile`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this trait profile handle.
+---@return string The string `LTraitProfile`.
+function LTraitProfile:type() end
+```
 
 #### Example
 
@@ -8051,15 +11486,26 @@ do
 end
 ```
 
-### `LTraitProfile:typeOf(name: string) -> boolean`
+### LTraitProfile:typeOf
+
+`LTraitProfile:typeOf(name: string) -> boolean`
 
 Returns whether this trait profile handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `LTraitProfile` and `Object`.
+- `name` (`string`, required): Type name to compare against `LTraitProfile` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this trait profile handle matches a supported type name.
+---@param name string Type name to compare against `LTraitProfile` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LTraitProfile:typeOf(name) end
+```
 
 #### Example
 
@@ -8072,13 +11518,23 @@ do
 end
 ```
 
-### `LTraitProfile:update(dt: number)`
+### LTraitProfile:update
+
+`LTraitProfile:update(dt: number)`
 
 Advances modifier timers and removes expired modifiers.
 
 **Parameters**
 
-- `dt` (`number`, required) - Elapsed time in seconds.
+- `dt` (`number`, required): Elapsed time in seconds.
+
+**Lua API Stub**
+
+```lua
+--- Advances modifier timers and removes expired modifiers.
+---@param dt number Elapsed time in seconds.
+function LTraitProfile:update(dt) end
+```
 
 #### Example
 
@@ -8096,34 +11552,27 @@ do
 end
 ```
 
-### `LUtilityAI`
+### LUtilityAI:addAction
 
-Lua handle for utility AI action scoring and consideration curves.
-
-#### Example
-
-Exact example from [ai.lua](../blob/main/content/examples/ai.lua):
-
-```lua
-do
-  -- Utility AI scores all possible actions and picks the highest-value one.
-  -- Each action has a scoring function (returns 0..1) and a weight multiplier.
-  -- Scenario: survival NPC weighs eat vs sleep vs flee based on current needs.
-  local uai = lurek.ai.newUtilityAI()
-  uai:addAction("flee", function() return 0.8 end, 1.0)
-  uai:addAction("attack", function() return 0.4 end, 1.0)
-end
-```
-
-### `LUtilityAI:addAction(name: string, scorer_fn: function, [weight]: number)`
+`LUtilityAI:addAction(name: string, scorer_fn: function, [weight]: number)`
 
 Adds an action scored by a Lua callback and optional momentum weight.
 
 **Parameters**
 
-- `name` (`string`, required) - Action name returned when this action wins evaluation.
-- `scorer_fn` (`function`, required) - Function called by evaluation to score this action.
-- `weight` (`number`, optional) - Momentum bonus or base weighting value; defaults to 1.0.
+- `name` (`string`, required): Action name returned when this action wins evaluation.
+- `scorer_fn` (`function`, required): Function called by evaluation to score this action.
+- `weight` (`number`, optional): Momentum bonus or base weighting value; defaults to 1.0.
+
+**Lua API Stub**
+
+```lua
+--- Adds an action scored by a Lua callback and optional momentum weight.
+---@param name string Action name returned when this action wins evaluation.
+---@param scorer_fn function Function called by evaluation to score this action.
+---@param weight? number Momentum bonus or base weighting value; defaults to 1.0.
+function LUtilityAI:addAction(name, scorer_fn, weight) end
+```
 
 #### Example
 
@@ -8141,20 +11590,37 @@ do
 end
 ```
 
-### `LUtilityAI:addConsideration(action_name: string, name: string, scorer_fn: function, curve_arg: LuaValue, [p1]: number, [p2]: number, [p3]: number, [weight]: number)`
+### LUtilityAI:addConsideration
+
+`LUtilityAI:addConsideration(action_name: string, name: string, scorer_fn: function, curve_arg: LuaValue, [p1]: number, [p2]: number, [p3]: number, [weight]: number)`
 
 Adds a consideration scorer and response curve to an existing utility action.
 
 **Parameters**
 
-- `action_name` (`string`, required) - Name of the action that receives the consideration.
-- `name` (`string`, required) - Consideration name used for debugging and documentation.
-- `scorer_fn` (`function`, required) - Function that returns the raw consideration score.
-- `curve_arg` (`LuaValue`, required) - Curve name string, custom curve function, or another value to use the linear fallback.
-- `p1` (`number`, optional) - First curve parameter; defaults to 1.0.
-- `p2` (`number`, optional) - Second curve parameter; defaults to 0.0.
-- `p3` (`number`, optional) - Third curve parameter; defaults to 0.0.
-- `weight` (`number`, optional) - Consideration weight; defaults to 1.0.
+- `action_name` (`string`, required): Name of the action that receives the consideration.
+- `name` (`string`, required): Consideration name used for debugging and documentation.
+- `scorer_fn` (`function`, required): Function that returns the raw consideration score.
+- `curve_arg` (`LuaValue`, required): Curve name string, custom curve function, or another value to use the linear fallback.
+- `p1` (`number`, optional): First curve parameter; defaults to 1.0.
+- `p2` (`number`, optional): Second curve parameter; defaults to 0.0.
+- `p3` (`number`, optional): Third curve parameter; defaults to 0.0.
+- `weight` (`number`, optional): Consideration weight; defaults to 1.0.
+
+**Lua API Stub**
+
+```lua
+--- Adds a consideration scorer and response curve to an existing utility action.
+---@param action_name string Name of the action that receives the consideration.
+---@param name string Consideration name used for debugging and documentation.
+---@param scorer_fn function Function that returns the raw consideration score.
+---@param curve_arg LuaValue Curve name string, custom curve function, or another value to use the linear fallback.
+---@param p1? number First curve parameter; defaults to 1.0.
+---@param p2? number Second curve parameter; defaults to 0.0.
+---@param p3? number Third curve parameter; defaults to 0.0.
+---@param weight? number Consideration weight; defaults to 1.0.
+function LUtilityAI:addConsideration(action_name, name, scorer_fn, curve_arg, p1, p2, p3, weight) end
+```
 
 #### Example
 
@@ -8174,11 +11640,21 @@ do
 end
 ```
 
-### `LUtilityAI:evaluate() -> LuaValue`
+### LUtilityAI:evaluate
+
+`LUtilityAI:evaluate() -> LuaValue`
 
 Evaluates all actions and returns the winning action name when one is available.
 
 **Returns**: `LuaValue` - Winning action name, or nil when no action can be selected.
+
+**Lua API Stub**
+
+```lua
+--- Evaluates all actions and returns the winning action name when one is available.
+---@return LuaValue Winning action name, or nil when no action can be selected.
+function LUtilityAI:evaluate() end
+```
 
 #### Example
 
@@ -8196,11 +11672,21 @@ do
 end
 ```
 
-### `LUtilityAI:getActionCount() -> integer`
+### LUtilityAI:getActionCount
+
+`LUtilityAI:getActionCount() -> integer`
 
 Returns the number of actions registered in this utility AI.
 
 **Returns**: `integer` - Current action count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of actions registered in this utility AI.
+---@return number Current action count.
+function LUtilityAI:getActionCount() end
+```
 
 #### Example
 
@@ -8215,11 +11701,21 @@ do
 end
 ```
 
-### `LUtilityAI:getLastAction() -> LuaValue`
+### LUtilityAI:getLastAction
+
+`LUtilityAI:getLastAction() -> LuaValue`
 
 Returns the last winning action name when evaluation has selected one.
 
 **Returns**: `LuaValue` - Last action name, or nil before an action has won.
+
+**Lua API Stub**
+
+```lua
+--- Returns the last winning action name when evaluation has selected one.
+---@return LuaValue Last action name, or nil before an action has won.
+function LUtilityAI:getLastAction() end
+```
 
 #### Example
 
@@ -8236,11 +11732,21 @@ do
 end
 ```
 
-### `LUtilityAI:type() -> string`
+### LUtilityAI:type
+
+`LUtilityAI:type() -> string`
 
 Returns the Lua-visible type name for this utility AI handle.
 
 **Returns**: `string` - The string `LUtilityAI`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this utility AI handle.
+---@return string The string `LUtilityAI`.
+function LUtilityAI:type() end
+```
 
 #### Example
 
@@ -8253,15 +11759,26 @@ do
 end
 ```
 
-### `LUtilityAI:typeOf(name: string) -> boolean`
+### LUtilityAI:typeOf
+
+`LUtilityAI:typeOf(name: string) -> boolean`
 
 Returns whether this utility AI handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `UtilityAI` and `Object`.
+- `name` (`string`, required): Type name to compare against `UtilityAI` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this utility AI handle matches a supported type name.
+---@param name string Type name to compare against `UtilityAI` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LUtilityAI:typeOf(name) end
+```
 
 #### Example
 
@@ -8275,20 +11792,26 @@ end
 ```
 
 
-## Examples
+[⬆ back to top](#table-of-contents)
+
+## 💡 Examples
 
 - [ai.lua](../blob/main/content/examples/ai.lua) - Behaviour trees, FSM, GOAP, steering
 
-## Reference Games
+[⬆ back to top](#table-of-contents)
+
+## 🎮 Reference Games
 
 No direct references were found in `content/games/**/main.lua`.
 
-## Related Modules
+[⬆ back to top](#table-of-contents)
 
-- Next: [[animation|Module-animation]]
-- [[animation|Module-animation]] - Sprite animation: source-rect changes over time. Imports only math; headless-testable.
-- [[automation|Module-automation]] - Automated input simulation for headless tests, QA replay, recorded sessions.
-- [[ecs|Module-ecs]] - Entity-Component-System: identity / data / behaviour separation for runtime composition.
-- [[i18n|Module-i18n]] - Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*).
-- [[minimap|Module-minimap]] - Grid-based minimap data model: fog of war, tracked objects, pings, viewport overlay.
-- [[mods|Module-mods]] - Mod-loading framework: virtual filesystem mounts + sandboxed runtime config.
+## 🔗 Related Modules
+
+- Next: [animation](Module-animation)
+- [animation](Module-animation) - Sprite animation: source-rect changes over time. Imports only math; headless-testable.
+- [automation](Module-automation) - Automated input simulation for headless tests, QA replay, recorded sessions.
+- [ecs](Module-ecs) - Entity-Component-System: identity / data / behaviour separation for runtime composition.
+- [i18n](Module-i18n) - Internationalisation and localisation; user-facing text in locale data files (lurek.i18n.*).
+- [minimap](Module-minimap) - Grid-based minimap data model: fog of war, tracked objects, pings, viewport overlay.
+- [mods](Module-mods) - Mod-loading framework: virtual filesystem mounts + sandboxed runtime config.

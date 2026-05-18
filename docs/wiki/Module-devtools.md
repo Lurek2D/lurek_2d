@@ -4,160 +4,112 @@
 
 ## Navigation
 
-[[Home]] | [[Modules]] | [[API]] | [[Examples]] | [[Reference Games|Reference-Games]] | [[Lunasome]]
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
 
 ## Table of Contents
 
-- [Purpose](#purpose)
-- [Summary](#summary)
-- [Minimal Module Example](#minimal-module-example)
-- [Key Types](#key-types)
-- [API Overview](#api-overview)
-- [Module Functions](#module-functions)
-  - [lurek.devtools.clearLog()](#lurekdevtoolsclearlog)
-  - [lurek.devtools.clearWatches()](#lurekdevtoolsclearwatches)
-  - [lurek.devtools.debug(message: string)](#lurekdevtoolsdebugmessage-string)
-  - [lurek.devtools.error(message: string)](#lurekdevtoolserrormessage-string)
-  - [lurek.devtools.eval(code: string) -> LuaValue](#lurekdevtoolsevalcode-string-luavalue)
-  - [lurek.devtools.exposeWatch(name: string, getter: function, [category]: string) -> integer](#lurekdevtoolsexposewatchname-string-getter-function-category-string-integer)
-  - [lurek.devtools.fatal(message: string)](#lurekdevtoolsfatalmessage-string)
-  - [lurek.devtools.getCallStack([max_depth]: integer) -> any[]](#lurekdevtoolsgetcallstackmaxdepth-integer-any)
-  - [lurek.devtools.getFrameHistory() -> number[]](#lurekdevtoolsgetframehistory-number)
-  - [lurek.devtools.getFrameHistorySize() -> integer](#lurekdevtoolsgetframehistorysize-integer)
-  - [lurek.devtools.getFrameStats() -> table](#lurekdevtoolsgetframestats-table)
-  - [lurek.devtools.getGpuFrameStats() -> table](#lurekdevtoolsgetgpuframestats-table)
-  - [lurek.devtools.getLogConsole() -> boolean](#lurekdevtoolsgetlogconsole-boolean)
-  - [lurek.devtools.getLogFile() -> string](#lurekdevtoolsgetlogfile-string)
-  - [lurek.devtools.getLogHistory([count]: integer) -> table](#lurekdevtoolsgetloghistorycount-integer-table)
-  - [lurek.devtools.getLogLevel() -> string](#lurekdevtoolsgetloglevel-string)
-  - [lurek.devtools.getProfileData([frame]: integer) -> table](#lurekdevtoolsgetprofiledataframe-integer-table)
-  - [lurek.devtools.getProfileFrameCount() -> integer](#lurekdevtoolsgetprofileframecount-integer)
-  - [lurek.devtools.getWatchedPaths() -> string[]](#lurekdevtoolsgetwatchedpaths-string)
-  - [lurek.devtools.getWatches() -> table](#lurekdevtoolsgetwatches-table)
-  - [lurek.devtools.getWatchInterval() -> number](#lurekdevtoolsgetwatchinterval-number)
-  - [lurek.devtools.info(message: string)](#lurekdevtoolsinfomessage-string)
-  - [lurek.devtools.isConsoleOpen() -> boolean](#lurekdevtoolsisconsoleopen-boolean)
-  - [lurek.devtools.isEntityInspectorOpen() -> boolean](#lurekdevtoolsisentityinspectoropen-boolean)
-  - [lurek.devtools.isProfilingEnabled() -> boolean](#lurekdevtoolsisprofilingenabled-boolean)
-  - [lurek.devtools.log(level: string, message: string)](#lurekdevtoolsloglevel-string-message-string)
-  - [lurek.devtools.newFileWatcher(path: string) -> LFileWatcher](#lurekdevtoolsnewfilewatcherpath-string-lfilewatcher)
-  - [lurek.devtools.newRepl([max_history]: integer) -> LReplConsole](#lurekdevtoolsnewreplmaxhistory-integer-lreplconsole)
-  - [lurek.devtools.openConsole() -> boolean](#lurekdevtoolsopenconsole-boolean)
-  - [lurek.devtools.openEntityInspector() -> boolean](#lurekdevtoolsopenentityinspector-boolean)
-  - [lurek.devtools.profileFrame()](#lurekdevtoolsprofileframe)
-  - [lurek.devtools.profilePop([name]: string)](#lurekdevtoolsprofilepopname-string)
-  - [lurek.devtools.profilePush(name: string)](#lurekdevtoolsprofilepushname-string)
-  - [lurek.devtools.profilerReport() -> table](#lurekdevtoolsprofilerreport-table)
-  - [lurek.devtools.recordFrameTime(dt_val: number)](#lurekdevtoolsrecordframetimedtval-number)
-  - [lurek.devtools.recordGpuFrameTime(dt_val: number)](#lurekdevtoolsrecordgpuframetimedtval-number)
-  - [lurek.devtools.removeWatch(id: integer) -> boolean](#lurekdevtoolsremovewatchid-integer-boolean)
-  - [lurek.devtools.resetProfile()](#lurekdevtoolsresetprofile)
-  - [lurek.devtools.scan() -> string[]](#lurekdevtoolsscan-string)
-  - [lurek.devtools.setFrameHistorySize(size: integer)](#lurekdevtoolssetframehistorysizesize-integer)
-  - [lurek.devtools.setLogConsole(enabled: boolean)](#lurekdevtoolssetlogconsoleenabled-boolean)
-  - [lurek.devtools.setLogFile(path: string)](#lurekdevtoolssetlogfilepath-string)
-  - [lurek.devtools.setLogLevel(level: string)](#lurekdevtoolssetloglevellevel-string)
-  - [lurek.devtools.setProfilingEnabled(enabled: boolean)](#lurekdevtoolssetprofilingenabledenabled-boolean)
-  - [lurek.devtools.setWatchInterval(interval: number)](#lurekdevtoolssetwatchintervalinterval-number)
-  - [lurek.devtools.snapshot() -> table](#lurekdevtoolssnapshot-table)
-  - [lurek.devtools.trace(message: string)](#lurekdevtoolstracemessage-string)
-  - [lurek.devtools.unwatch(path: string) -> boolean](#lurekdevtoolsunwatchpath-string-boolean)
-  - [lurek.devtools.warn(message: string)](#lurekdevtoolswarnmessage-string)
-  - [lurek.devtools.watch(path: string) -> boolean](#lurekdevtoolswatchpath-string-boolean)
-- [Types and Methods](#types-and-methods)
+- [🎯 Purpose](#purpose)
+- [📋 Summary](#summary)
+- [🧩 Key Types](#key-types)
+- [📖 API Overview](#api-overview)
+- [⚙️ Module Functions](#module-functions)
+  - [lurek.devtools.clearLog](#lurekdevtoolsclearlog)
+  - [lurek.devtools.clearWatches](#lurekdevtoolsclearwatches)
+  - [lurek.devtools.debug](#lurekdevtoolsdebug)
+  - [lurek.devtools.error](#lurekdevtoolserror)
+  - [lurek.devtools.eval](#lurekdevtoolseval)
+  - [lurek.devtools.exposeWatch](#lurekdevtoolsexposewatch)
+  - [lurek.devtools.fatal](#lurekdevtoolsfatal)
+  - [lurek.devtools.getCallStack](#lurekdevtoolsgetcallstack)
+  - [lurek.devtools.getFrameHistory](#lurekdevtoolsgetframehistory)
+  - [lurek.devtools.getFrameHistorySize](#lurekdevtoolsgetframehistorysize)
+  - [lurek.devtools.getFrameStats](#lurekdevtoolsgetframestats)
+  - [lurek.devtools.getGpuFrameStats](#lurekdevtoolsgetgpuframestats)
+  - [lurek.devtools.getLogConsole](#lurekdevtoolsgetlogconsole)
+  - [lurek.devtools.getLogFile](#lurekdevtoolsgetlogfile)
+  - [lurek.devtools.getLogHistory](#lurekdevtoolsgetloghistory)
+  - [lurek.devtools.getLogLevel](#lurekdevtoolsgetloglevel)
+  - [lurek.devtools.getProfileData](#lurekdevtoolsgetprofiledata)
+  - [lurek.devtools.getProfileFrameCount](#lurekdevtoolsgetprofileframecount)
+  - [lurek.devtools.getWatchedPaths](#lurekdevtoolsgetwatchedpaths)
+  - [lurek.devtools.getWatches](#lurekdevtoolsgetwatches)
+  - [lurek.devtools.getWatchInterval](#lurekdevtoolsgetwatchinterval)
+  - [lurek.devtools.info](#lurekdevtoolsinfo)
+  - [lurek.devtools.isConsoleOpen](#lurekdevtoolsisconsoleopen)
+  - [lurek.devtools.isEntityInspectorOpen](#lurekdevtoolsisentityinspectoropen)
+  - [lurek.devtools.isProfilingEnabled](#lurekdevtoolsisprofilingenabled)
+  - [lurek.devtools.log](#lurekdevtoolslog)
+  - [lurek.devtools.newFileWatcher](#lurekdevtoolsnewfilewatcher)
+  - [lurek.devtools.newRepl](#lurekdevtoolsnewrepl)
+  - [lurek.devtools.openConsole](#lurekdevtoolsopenconsole)
+  - [lurek.devtools.openEntityInspector](#lurekdevtoolsopenentityinspector)
+  - [lurek.devtools.profileFrame](#lurekdevtoolsprofileframe)
+  - [lurek.devtools.profilePop](#lurekdevtoolsprofilepop)
+  - [lurek.devtools.profilePush](#lurekdevtoolsprofilepush)
+  - [lurek.devtools.profilerReport](#lurekdevtoolsprofilerreport)
+  - [lurek.devtools.recordFrameTime](#lurekdevtoolsrecordframetime)
+  - [lurek.devtools.recordGpuFrameTime](#lurekdevtoolsrecordgpuframetime)
+  - [lurek.devtools.removeWatch](#lurekdevtoolsremovewatch)
+  - [lurek.devtools.resetProfile](#lurekdevtoolsresetprofile)
+  - [lurek.devtools.scan](#lurekdevtoolsscan)
+  - [lurek.devtools.setFrameHistorySize](#lurekdevtoolssetframehistorysize)
+  - [lurek.devtools.setLogConsole](#lurekdevtoolssetlogconsole)
+  - [lurek.devtools.setLogFile](#lurekdevtoolssetlogfile)
+  - [lurek.devtools.setLogLevel](#lurekdevtoolssetloglevel)
+  - [lurek.devtools.setProfilingEnabled](#lurekdevtoolssetprofilingenabled)
+  - [lurek.devtools.setWatchInterval](#lurekdevtoolssetwatchinterval)
+  - [lurek.devtools.snapshot](#lurekdevtoolssnapshot)
+  - [lurek.devtools.trace](#lurekdevtoolstrace)
+  - [lurek.devtools.unwatch](#lurekdevtoolsunwatch)
+  - [lurek.devtools.warn](#lurekdevtoolswarn)
+  - [lurek.devtools.watch](#lurekdevtoolswatch)
+- [🔷 Module Types](#module-types)
   - [LFileWatcher](#lfilewatcher)
-  - [LFileWatcher:cancel()](#lfilewatchercancel)
-  - [LFileWatcher:check() -> boolean](#lfilewatchercheck-boolean)
-  - [LFileWatcher:getPath() -> string](#lfilewatchergetpath-string)
-  - [LFileWatcher:onChanged(func: function)](#lfilewatcheronchangedfunc-function)
-  - [LFileWatcher:type() -> string](#lfilewatchertype-string)
-  - [LFileWatcher:typeOf(name: string) -> boolean](#lfilewatchertypeofname-string-boolean)
   - [LReplConsole](#lreplconsole)
-  - [LReplConsole:clear()](#lreplconsoleclear)
-  - [LReplConsole:eval(code: string) -> LuaValue](#lreplconsoleevalcode-string-luavalue)
-  - [LReplConsole:history() -> string[]](#lreplconsolehistory-string)
-  - [LReplConsole:len() -> integer](#lreplconsolelen-integer)
-  - [LReplConsole:type() -> string](#lreplconsoletype-string)
-  - [LReplConsole:typeOf(name: string) -> boolean](#lreplconsoletypeofname-string-boolean)
-- [Examples](#examples)
-- [Reference Games](#reference-games)
-- [Related Modules](#related-modules)
+- [🔹 Module Methods](#module-methods)
+  - [LFileWatcher:cancel](#lfilewatchercancel)
+  - [LFileWatcher:check](#lfilewatchercheck)
+  - [LFileWatcher:getPath](#lfilewatchergetpath)
+  - [LFileWatcher:onChanged](#lfilewatcheronchanged)
+  - [LFileWatcher:type](#lfilewatchertype)
+  - [LFileWatcher:typeOf](#lfilewatchertypeof)
+  - [LReplConsole:clear](#lreplconsoleclear)
+  - [LReplConsole:eval](#lreplconsoleeval)
+  - [LReplConsole:history](#lreplconsolehistory)
+  - [LReplConsole:len](#lreplconsolelen)
+  - [LReplConsole:type](#lreplconsoletype)
+  - [LReplConsole:typeOf](#lreplconsoletypeof)
+- [💡 Examples](#examples)
+- [🎮 Reference Games](#reference-games)
+- [🔗 Related Modules](#related-modules)
 
 This page is generated from the current module specs, examples, and Lua API data.
 
 **Module group:** Edge / Integration
 **Namespace:** `lurek.devtools`
 
-## Purpose
+## 🎯 Purpose
 
 In-process logger, frame profiler, rolling stats, hot-reload file watcher (lurek.devtools.*).
 
-## Summary
+[⬆ back to top](#table-of-contents)
+
+## 📋 Summary
 
 Development-time diagnostic utilities exposed as `lurek.devtools.*` for runtime inspection and profiling. `Logger` provides leveled logging with sink routing (memory, file, callback). `Profiler` measures named code zones with begin/end markers and computes per-zone average/min/max timings. `FrameStats` tracks per-frame CPU time, draw calls, and memory snapshots in a rolling window.
 
 `FileWatcher` monitors directories for changes and fires callbacks on create/modify/delete events — used for hot-reload workflows. `ReplConsole` wraps the REPL session for in-game command execution. `TimeAnchor` provides relative timing for log correlation. All utilities are headless-safe; the module imports only `runtime` and `log`.
 
-## Minimal Module Example
+[⬆ back to top](#table-of-contents)
 
-Module example from [devtools.lua](../blob/main/content/examples/devtools.lua):
-
-```lua
--- Closes the current profiling frame and stores its zone tree for later inspection
-do
-  -- Call once per frame at the end of your game loop.
-  -- The stored frame can be queried later with getProfileData.
-  function lurek.process(dt)
-    lurek.devtools.profilePush("frame")
-    -- ... entire frame logic ...
-    lurek.devtools.profilePop()
-    lurek.devtools.profileFrame()  -- Stores this frame's zone tree.
-  end
-end
-
---@api-stub: lurek.devtools.getProfileFrameCount
--- Returns how many profiling frames are currently stored
-do
-  -- Frames accumulate until resetProfile() is called.
-  -- Use to determine when you have enough data for meaningful statistics.
-  local n = lurek.devtools.getProfileFrameCount()
-  if n >= 60 then
-    lurek.devtools.info("profiler: " .. n .. " frames buffered — ready for analysis")
-  else
-    lurek.devtools.debug("profiler: " .. n .. "/60 frames collected")
-  end
-end
-
---@api-stub: lurek.devtools.getProfileData
--- Returns the profiler zone tree for a retained frame
-do
-  -- Each zone entry has: .name, .time (total seconds), .selfTime (excluding children),
-  -- .startTime (relative offset), and .children (nested zones array).
-  -- Frame index 0 = oldest retained frame.
-  local zones = lurek.devtools.getProfileData(0)
-  for _, z in ipairs(zones) do
-    local ms = z.time * 1000
-    local self_ms = z.selfTime * 1000
-    lurek.devtools.debug(
-      string.format("  %s: %.2fms total, %.2fms self", z.name, ms, self_ms)
-    )
-  end
-end
-
---@api-stub: lurek.devtools.resetProfile
--- Clears profiler state, active zones, and retained profiling frames
-do
-  -- Use when starting a benchmark from a known clean state.
-  lurek.devtools.resetProfile()
-  lurek.devtools.info("profiler reset — starting fresh benchmark")
-```
-
-## Key Types
+## 🧩 Key Types
 
 - `LFileWatcher` (6 methods) - Lua-side file watcher with an optional change callback.
 - `LReplConsole` (6 methods) - Lua-side REPL console handle with bounded history.
 
-## API Overview
+[⬆ back to top](#table-of-contents)
+
+## 📖 API Overview
 
 - Source spec: [docs/specs/devtools.md](../blob/main/docs/specs/devtools.md)
 
@@ -183,9 +135,13 @@ lurek.devtools.getProfileFrameCount() -> integer -- Returns how many profiling f
 -- ... 32 more module functions
 ```
 
-## Module Functions
+[⬆ back to top](#table-of-contents)
 
-### `lurek.devtools.clearLog()`
+## ⚙️ Module Functions
+
+### lurek.devtools.clearLog
+
+`lurek.devtools.clearLog()`
 
 Clears all in-memory devtools log entries.
 
@@ -206,7 +162,9 @@ do
 end
 ```
 
-### `lurek.devtools.clearWatches()`
+### lurek.devtools.clearWatches
+
+`lurek.devtools.clearWatches()`
 
 Removes every path from the module-level file watcher.
 
@@ -225,13 +183,15 @@ do
 end
 ```
 
-### `lurek.devtools.debug(message: string)`
+### lurek.devtools.debug
+
+`lurek.devtools.debug(message: string)`
 
 Adds a debug-level diagnostic message to the devtools log.
 
 **Parameters**
 
-- `message` (`string`, required) - Message text stored in the in-memory log history.
+- `message` (`string`, required): Message text stored in the in-memory log history.
 
 #### Example
 
@@ -247,13 +207,15 @@ do
 end
 ```
 
-### `lurek.devtools.error(message: string)`
+### lurek.devtools.error
+
+`lurek.devtools.error(message: string)`
 
 Adds an error-level diagnostic message to the devtools log.
 
 **Parameters**
 
-- `message` (`string`, required) - Message text stored in the in-memory log history.
+- `message` (`string`, required): Message text stored in the in-memory log history.
 
 #### Example
 
@@ -271,13 +233,15 @@ do
 end
 ```
 
-### `lurek.devtools.eval(code: string) -> LuaValue`
+### lurek.devtools.eval
+
+`lurek.devtools.eval(code: string) -> LuaValue`
 
 Evaluates Lua code in the current state and returns success plus values or failure plus an error message.
 
 **Parameters**
 
-- `code` (`string`, required) - Lua source code evaluated through the current Lua VM.
+- `code` (`string`, required): Lua source code evaluated through the current Lua VM.
 
 **Returns**: `LuaValue` - Multi-return where the first value is a boolean success flag followed by result values or an error string.
 
@@ -293,15 +257,17 @@ do
 end
 ```
 
-### `lurek.devtools.exposeWatch(name: string, getter: function, [category]: string) -> integer`
+### lurek.devtools.exposeWatch
+
+`lurek.devtools.exposeWatch(name: string, getter: function, [category]: string) -> integer`
 
 Registers a watch expression callback for snapshots and watch panels.
 
 **Parameters**
 
-- `name` (`string`, required) - Display name for the watch entry.
-- `getter` (`function`, required) - Callback invoked with no arguments when watch values are collected.
-- `category` (`string`, optional) - Optional category label used by devtools UIs.
+- `name` (`string`, required): Display name for the watch entry.
+- `getter` (`function`, required): Callback invoked with no arguments when watch values are collected.
+- `category` (`string`, optional): Optional category label used by devtools UIs.
 
 **Returns**: `integer` - Numeric watch id that can be passed to `removeWatch`.
 
@@ -324,13 +290,15 @@ do
 end
 ```
 
-### `lurek.devtools.fatal(message: string)`
+### lurek.devtools.fatal
+
+`lurek.devtools.fatal(message: string)`
 
 Adds a fatal-level diagnostic message to the devtools log.
 
 **Parameters**
 
-- `message` (`string`, required) - Message text stored in the in-memory log history.
+- `message` (`string`, required): Message text stored in the in-memory log history.
 
 #### Example
 
@@ -350,13 +318,15 @@ do
 end
 ```
 
-### `lurek.devtools.getCallStack([max_depth]: integer) -> any[]`
+### lurek.devtools.getCallStack
+
+`lurek.devtools.getCallStack([max_depth]: integer) -> any[]`
 
 Returns Lua call stack frames using the Lua debug library.
 
 **Parameters**
 
-- `max_depth` (`integer`, optional) - Optional maximum number of frames to return; defaults to 20 and is capped at 100.
+- `max_depth` (`integer`, optional): Optional maximum number of frames to return; defaults to 20 and is capped at 100.
 
 **Returns**: `any[]` - Array of frame tables; each has source (string), line (integer), name (string), and what (string) fields.
 
@@ -371,17 +341,16 @@ do
   -- Useful for error reporting or building stack traces in-game.
   local function inner_function()
     local frames = lurek.devtools.getCallStack(5)
-    for i, f in ipairs(frames) do
-      lurek.devtools.debug(string.format(
-        "#%d %s:%d in %s (%s)", i, f.source, f.line, f.name, f.what
-      ))
-    end
+    -- Each frame table has: source, line, name, what fields.
+    lurek.devtools.debug(string.format("captured %d call frames", #frames))
   end
   inner_function()
 end
 ```
 
-### `lurek.devtools.getFrameHistory() -> number[]`
+### lurek.devtools.getFrameHistory
+
+`lurek.devtools.getFrameHistory() -> number[]`
 
 Returns retained CPU frame duration samples in insertion order.
 
@@ -408,7 +377,9 @@ do
 end
 ```
 
-### `lurek.devtools.getFrameHistorySize() -> integer`
+### lurek.devtools.getFrameHistorySize
+
+`lurek.devtools.getFrameHistorySize() -> integer`
 
 Returns the current CPU frame history capacity.
 
@@ -427,7 +398,9 @@ do
 end
 ```
 
-### `lurek.devtools.getFrameStats() -> table`
+### lurek.devtools.getFrameStats
+
+`lurek.devtools.getFrameStats() -> table`
 
 Returns aggregate CPU frame timing statistics from recorded samples.
 
@@ -455,7 +428,9 @@ do
 end
 ```
 
-### `lurek.devtools.getGpuFrameStats() -> table`
+### lurek.devtools.getGpuFrameStats
+
+`lurek.devtools.getGpuFrameStats() -> table`
 
 Returns aggregate GPU frame timing statistics from recorded samples.
 
@@ -480,7 +455,9 @@ do
 end
 ```
 
-### `lurek.devtools.getLogConsole() -> boolean`
+### lurek.devtools.getLogConsole
+
+`lurek.devtools.getLogConsole() -> boolean`
 
 Returns whether devtools log entries are mirrored to the console.
 
@@ -499,7 +476,9 @@ do
 end
 ```
 
-### `lurek.devtools.getLogFile() -> string`
+### lurek.devtools.getLogFile
+
+`lurek.devtools.getLogFile() -> string`
 
 Returns the file path currently stored as the devtools log target.
 
@@ -521,13 +500,15 @@ do
 end
 ```
 
-### `lurek.devtools.getLogHistory([count]: integer) -> table`
+### lurek.devtools.getLogHistory
+
+`lurek.devtools.getLogHistory([count]: integer) -> table`
 
 Returns recent devtools log entries as structured tables.
 
 **Parameters**
 
-- `count` (`integer`, optional) - Optional number of newest entries to return; omitted returns the logger default.
+- `count` (`integer`, optional): Optional number of newest entries to return; omitted returns the logger default.
 
 **Returns**: `table` - Array table containing level, timestamp, message, source, line, and optional category fields.
 
@@ -550,7 +531,9 @@ do
 end
 ```
 
-### `lurek.devtools.getLogLevel() -> string`
+### lurek.devtools.getLogLevel
+
+`lurek.devtools.getLogLevel() -> string`
 
 Returns the minimum severity currently used by devtools log output.
 
@@ -572,13 +555,15 @@ do
 end
 ```
 
-### `lurek.devtools.getProfileData([frame]: integer) -> table`
+### lurek.devtools.getProfileData
+
+`lurek.devtools.getProfileData([frame]: integer) -> table`
 
 Returns the profiler zone tree for a retained frame.
 
 **Parameters**
 
-- `frame` (`integer`, optional) - Optional frame index understood by the profiler; omitted reads the newest frame alias used by the backend.
+- `frame` (`integer`, optional): Optional frame index understood by the profiler; omitted reads the newest frame alias used by the backend.
 
 **Returns**: `table` - Array of profiler zones with name, time, selfTime, startTime, and children fields.
 
@@ -602,7 +587,9 @@ do
 end
 ```
 
-### `lurek.devtools.getProfileFrameCount() -> integer`
+### lurek.devtools.getProfileFrameCount
+
+`lurek.devtools.getProfileFrameCount() -> integer`
 
 Returns how many profiling frames are currently stored.
 
@@ -625,7 +612,9 @@ do
 end
 ```
 
-### `lurek.devtools.getWatchedPaths() -> string[]`
+### lurek.devtools.getWatchedPaths
+
+`lurek.devtools.getWatchedPaths() -> string[]`
 
 Returns all paths currently watched by the module-level file watcher.
 
@@ -649,7 +638,9 @@ do
 end
 ```
 
-### `lurek.devtools.getWatches() -> table`
+### lurek.devtools.getWatches
+
+`lurek.devtools.getWatches() -> table`
 
 Evaluates exposed watch callbacks and returns their current values.
 
@@ -675,7 +666,9 @@ do
 end
 ```
 
-### `lurek.devtools.getWatchInterval() -> number`
+### lurek.devtools.getWatchInterval
+
+`lurek.devtools.getWatchInterval() -> number`
 
 Returns the polling interval hint used by devtools watch UIs.
 
@@ -694,13 +687,15 @@ do
 end
 ```
 
-### `lurek.devtools.info(message: string)`
+### lurek.devtools.info
+
+`lurek.devtools.info(message: string)`
 
 Adds an info-level diagnostic message to the devtools log.
 
 **Parameters**
 
-- `message` (`string`, required) - Message text stored in the in-memory log history.
+- `message` (`string`, required): Message text stored in the in-memory log history.
 
 #### Example
 
@@ -716,7 +711,9 @@ do
 end
 ```
 
-### `lurek.devtools.isConsoleOpen() -> boolean`
+### lurek.devtools.isConsoleOpen
+
+`lurek.devtools.isConsoleOpen() -> boolean`
 
 Returns whether the devtools console is marked open.
 
@@ -738,7 +735,9 @@ do
 end
 ```
 
-### `lurek.devtools.isEntityInspectorOpen() -> boolean`
+### lurek.devtools.isEntityInspectorOpen
+
+`lurek.devtools.isEntityInspectorOpen() -> boolean`
 
 Returns whether the devtools entity inspector is marked open.
 
@@ -760,7 +759,9 @@ do
 end
 ```
 
-### `lurek.devtools.isProfilingEnabled() -> boolean`
+### lurek.devtools.isProfilingEnabled
+
+`lurek.devtools.isProfilingEnabled() -> boolean`
 
 Returns whether CPU profiling zone collection is currently enabled.
 
@@ -781,14 +782,16 @@ do
 end
 ```
 
-### `lurek.devtools.log(level: string, message: string)`
+### lurek.devtools.log
+
+`lurek.devtools.log(level: string, message: string)`
 
 Adds a message to the devtools log using an explicit severity level.
 
 **Parameters**
 
-- `level` (`string`, required) - Log level name such as `trace`, `debug`, `info`, `warn`, `error`, or `fatal`.
-- `message` (`string`, required) - Message text stored in the in-memory log history.
+- `level` (`string`, required): Log level name such as `trace`, `debug`, `info`, `warn`, `error`, or `fatal`.
+- `message` (`string`, required): Message text stored in the in-memory log history.
 
 #### Example
 
@@ -811,13 +814,15 @@ do
 end
 ```
 
-### `lurek.devtools.newFileWatcher(path: string) -> LFileWatcher`
+### lurek.devtools.newFileWatcher
+
+`lurek.devtools.newFileWatcher(path: string) -> LFileWatcher`
 
 Creates a dedicated file watcher userdata for one path.
 
 **Parameters**
 
-- `path` (`string`, required) - File or directory path watched by the returned handle.
+- `path` (`string`, required): File or directory path watched by the returned handle.
 
 **Returns**: `LFileWatcher` - File watcher handle with polling and callback methods.
 
@@ -840,13 +845,15 @@ do
 end
 ```
 
-### `lurek.devtools.newRepl([max_history]: integer) -> LReplConsole`
+### lurek.devtools.newRepl
+
+`lurek.devtools.newRepl([max_history]: integer) -> LReplConsole`
 
 Creates a REPL console userdata with bounded command history.
 
 **Parameters**
 
-- `max_history` (`integer`, optional) - Optional maximum number of history entries; defaults to 200.
+- `max_history` (`integer`, optional): Optional maximum number of history entries; defaults to 200.
 
 **Returns**: `LReplConsole` - REPL console handle for eval and history management.
 
@@ -865,7 +872,9 @@ do
 end
 ```
 
-### `lurek.devtools.openConsole() -> boolean`
+### lurek.devtools.openConsole
+
+`lurek.devtools.openConsole() -> boolean`
 
 Marks the devtools console as open for UI state tracking.
 
@@ -884,7 +893,9 @@ do
 end
 ```
 
-### `lurek.devtools.openEntityInspector() -> boolean`
+### lurek.devtools.openEntityInspector
+
+`lurek.devtools.openEntityInspector() -> boolean`
 
 Marks the devtools entity inspector as open for UI state tracking.
 
@@ -903,7 +914,9 @@ do
 end
 ```
 
-### `lurek.devtools.profileFrame()`
+### lurek.devtools.profileFrame
+
+`lurek.devtools.profileFrame()`
 
 Closes the current profiling frame and stores its zone tree for later inspection.
 
@@ -924,13 +937,15 @@ do
 end
 ```
 
-### `lurek.devtools.profilePop([name]: string)`
+### lurek.devtools.profilePop
+
+`lurek.devtools.profilePop([name]: string)`
 
 Ends the current profiling zone on the profiler stack.
 
 **Parameters**
 
-- `name` (`string`, optional) - Optional zone name accepted for API compatibility and ignored by the profiler.
+- `name` (`string`, optional): Optional zone name accepted for API compatibility and ignored by the profiler.
 
 #### Example
 
@@ -952,13 +967,15 @@ do
 end
 ```
 
-### `lurek.devtools.profilePush(name: string)`
+### lurek.devtools.profilePush
+
+`lurek.devtools.profilePush(name: string)`
 
 Starts a named profiling zone on the current profiler stack.
 
 **Parameters**
 
-- `name` (`string`, required) - Profiling zone name shown in reports and snapshots.
+- `name` (`string`, required): Profiling zone name shown in reports and snapshots.
 
 #### Example
 
@@ -986,7 +1003,9 @@ do
 end
 ```
 
-### `lurek.devtools.profilerReport() -> table`
+### lurek.devtools.profilerReport
+
+`lurek.devtools.profilerReport() -> table`
 
 Aggregates retained profiler frames into per-zone timing rows.
 
@@ -1015,13 +1034,15 @@ do
 end
 ```
 
-### `lurek.devtools.recordFrameTime(dt_val: number)`
+### lurek.devtools.recordFrameTime
+
+`lurek.devtools.recordFrameTime(dt_val: number)`
 
 Records one CPU frame duration sample for devtools frame statistics.
 
 **Parameters**
 
-- `dt_val` (`number`, required) - Frame duration in seconds.
+- `dt_val` (`number`, required): Frame duration in seconds.
 
 #### Example
 
@@ -1037,13 +1058,15 @@ do
 end
 ```
 
-### `lurek.devtools.recordGpuFrameTime(dt_val: number)`
+### lurek.devtools.recordGpuFrameTime
+
+`lurek.devtools.recordGpuFrameTime(dt_val: number)`
 
 Records one GPU frame duration sample for devtools frame statistics.
 
 **Parameters**
 
-- `dt_val` (`number`, required) - GPU frame duration in seconds.
+- `dt_val` (`number`, required): GPU frame duration in seconds.
 
 #### Example
 
@@ -1060,13 +1083,15 @@ do
 end
 ```
 
-### `lurek.devtools.removeWatch(id: integer) -> boolean`
+### lurek.devtools.removeWatch
+
+`lurek.devtools.removeWatch(id: integer) -> boolean`
 
 Removes a previously exposed watch expression by id.
 
 **Parameters**
 
-- `id` (`integer`, required) - Watch id returned by `exposeWatch`.
+- `id` (`integer`, required): Watch id returned by `exposeWatch`.
 
 **Returns**: `boolean` - True when a watch entry was removed.
 
@@ -1088,7 +1113,9 @@ do
 end
 ```
 
-### `lurek.devtools.resetProfile()`
+### lurek.devtools.resetProfile
+
+`lurek.devtools.resetProfile()`
 
 Clears profiler state, active zones, and retained profiling frames.
 
@@ -1108,7 +1135,9 @@ do
 end
 ```
 
-### `lurek.devtools.scan() -> string[]`
+### lurek.devtools.scan
+
+`lurek.devtools.scan() -> string[]`
 
 Polls module-level file watches and returns paths that changed since the previous scan.
 
@@ -1134,13 +1163,15 @@ do
 end
 ```
 
-### `lurek.devtools.setFrameHistorySize(size: integer)`
+### lurek.devtools.setFrameHistorySize
+
+`lurek.devtools.setFrameHistorySize(size: integer)`
 
 Sets the maximum number of CPU frame duration samples retained by devtools.
 
 **Parameters**
 
-- `size` (`integer`, required) - Maximum number of frame samples to keep.
+- `size` (`integer`, required): Maximum number of frame samples to keep.
 
 #### Example
 
@@ -1155,13 +1186,15 @@ do
 end
 ```
 
-### `lurek.devtools.setLogConsole(enabled: boolean)`
+### lurek.devtools.setLogConsole
+
+`lurek.devtools.setLogConsole(enabled: boolean)`
 
 Enables or disables mirroring devtools log entries to the console.
 
 **Parameters**
 
-- `enabled` (`boolean`, required) - True to emit future log entries to console output.
+- `enabled` (`boolean`, required): True to emit future log entries to console output.
 
 #### Example
 
@@ -1176,13 +1209,15 @@ do
 end
 ```
 
-### `lurek.devtools.setLogFile(path: string)`
+### lurek.devtools.setLogFile
+
+`lurek.devtools.setLogFile(path: string)`
 
 Sets the file path used by devtools file logging state.
 
 **Parameters**
 
-- `path` (`string`, required) - File path recorded as the active devtools log target.
+- `path` (`string`, required): File path recorded as the active devtools log target.
 
 #### Example
 
@@ -1199,13 +1234,15 @@ do
 end
 ```
 
-### `lurek.devtools.setLogLevel(level: string)`
+### lurek.devtools.setLogLevel
+
+`lurek.devtools.setLogLevel(level: string)`
 
 Sets the minimum severity that remains visible in devtools log output.
 
 **Parameters**
 
-- `level` (`string`, required) - Log level name parsed by the devtools logger; unknown names are ignored.
+- `level` (`string`, required): Log level name parsed by the devtools logger; unknown names are ignored.
 
 #### Example
 
@@ -1224,13 +1261,15 @@ do
 end
 ```
 
-### `lurek.devtools.setProfilingEnabled(enabled: boolean)`
+### lurek.devtools.setProfilingEnabled
+
+`lurek.devtools.setProfilingEnabled(enabled: boolean)`
 
 Enables or disables collection of CPU profiling zones.
 
 **Parameters**
 
-- `enabled` (`boolean`, required) - True to record profiling zones into future profiler frames.
+- `enabled` (`boolean`, required): True to record profiling zones into future profiler frames.
 
 #### Example
 
@@ -1246,13 +1285,15 @@ do
 end
 ```
 
-### `lurek.devtools.setWatchInterval(interval: number)`
+### lurek.devtools.setWatchInterval
+
+`lurek.devtools.setWatchInterval(interval: number)`
 
 Sets the polling interval hint used by devtools watch UIs.
 
 **Parameters**
 
-- `interval` (`number`, required) - Watch interval in seconds, clamped to at least 0.01.
+- `interval` (`number`, required): Watch interval in seconds, clamped to at least 0.01.
 
 #### Example
 
@@ -1267,7 +1308,9 @@ do
 end
 ```
 
-### `lurek.devtools.snapshot() -> table`
+### lurek.devtools.snapshot
+
+`lurek.devtools.snapshot() -> table`
 
 Captures a combined devtools snapshot containing frame stats, watch values, profile data, and recent logs.
 
@@ -1296,13 +1339,15 @@ do
 end
 ```
 
-### `lurek.devtools.trace(message: string)`
+### lurek.devtools.trace
+
+`lurek.devtools.trace(message: string)`
 
 Adds a trace-level diagnostic message to the devtools log.
 
 **Parameters**
 
-- `message` (`string`, required) - Message text stored in the in-memory log history.
+- `message` (`string`, required): Message text stored in the in-memory log history.
 
 #### Example
 
@@ -1317,13 +1362,15 @@ do
 end
 ```
 
-### `lurek.devtools.unwatch(path: string) -> boolean`
+### lurek.devtools.unwatch
+
+`lurek.devtools.unwatch(path: string) -> boolean`
 
 Removes a path from the module-level devtools file watcher.
 
 **Parameters**
 
-- `path` (`string`, required) - Previously watched file or directory path.
+- `path` (`string`, required): Previously watched file or directory path.
 
 **Returns**: `boolean` - True when the path was removed.
 
@@ -1344,13 +1391,15 @@ do
 end
 ```
 
-### `lurek.devtools.warn(message: string)`
+### lurek.devtools.warn
+
+`lurek.devtools.warn(message: string)`
 
 Adds a warning-level diagnostic message to the devtools log.
 
 **Parameters**
 
-- `message` (`string`, required) - Message text stored in the in-memory log history.
+- `message` (`string`, required): Message text stored in the in-memory log history.
 
 #### Example
 
@@ -1365,13 +1414,15 @@ do
 end
 ```
 
-### `lurek.devtools.watch(path: string) -> boolean`
+### lurek.devtools.watch
+
+`lurek.devtools.watch(path: string) -> boolean`
 
 Adds a path to the module-level devtools file watcher.
 
 **Parameters**
 
-- `path` (`string`, required) - File or directory path to poll for changes.
+- `path` (`string`, required): File or directory path to poll for changes.
 
 **Returns**: `boolean` - True when the path was newly added; false when it was already watched.
 
@@ -1393,11 +1444,21 @@ end
 ```
 
 
-## Types and Methods
+[⬆ back to top](#table-of-contents)
 
-### `LFileWatcher`
+## 🔷 Module Types
+
+### LFileWatcher
 
 Lua-side file watcher with an optional change callback.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side file watcher with an optional change callback.
+---@class LFileWatcher
+LFileWatcher = {}
+```
 
 #### Example
 
@@ -1418,9 +1479,50 @@ do
 end
 ```
 
-### `LFileWatcher:cancel()`
+### LReplConsole
+
+Lua-side REPL console handle with bounded history.
+
+**Lua API Definition**
+
+```lua
+--- Lua-side REPL console handle with bounded history.
+---@class LReplConsole
+LReplConsole = {}
+```
+
+#### Example
+
+Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+
+```lua
+do
+  -- The REPL evaluates code in the current Lua VM and stores history.
+  -- max_history limits stored lines (default 200).
+  -- Use for in-game developer consoles.
+  local repl = lurek.devtools.newRepl(100)
+  local result = repl:eval("return math.pi * 2")
+  lurek.devtools.info("repl: pi*2 = " .. tostring(result))
+end
+```
+
+
+[⬆ back to top](#table-of-contents)
+
+## 🔹 Module Methods
+
+### LFileWatcher:cancel
+
+`LFileWatcher:cancel()`
 
 Cancels this watcher and removes its callback.
+
+**Lua API Stub**
+
+```lua
+--- Cancels this watcher and removes its callback.
+function LFileWatcher:cancel() end
+```
 
 #### Example
 
@@ -1438,11 +1540,21 @@ do
 end
 ```
 
-### `LFileWatcher:check() -> boolean`
+### LFileWatcher:check
+
+`LFileWatcher:check() -> boolean`
 
 Polls the watcher and invokes the change callback when a change is found.
 
 **Returns**: `boolean` - True when at least one change was detected.
+
+**Lua API Stub**
+
+```lua
+--- Polls the watcher and invokes the change callback when a change is found.
+---@return boolean True when at least one change was detected.
+function LFileWatcher:check() end
+```
 
 #### Example
 
@@ -1463,11 +1575,21 @@ do
 end
 ```
 
-### `LFileWatcher:getPath() -> string`
+### LFileWatcher:getPath
+
+`LFileWatcher:getPath() -> string`
 
 Returns the watched path. This method is available to Lua scripts.
 
 **Returns**: `string` - Watched path string.
+
+**Lua API Stub**
+
+```lua
+--- Returns the watched path. This method is available to Lua scripts.
+---@return string Watched path string.
+function LFileWatcher:getPath() end
+```
 
 #### Example
 
@@ -1484,13 +1606,23 @@ do
 end
 ```
 
-### `LFileWatcher:onChanged(func: function)`
+### LFileWatcher:onChanged
+
+`LFileWatcher:onChanged(func: function)`
 
 Sets the callback invoked when this watcher observes a change.
 
 **Parameters**
 
-- `func` (`function`, required) - Callback called with no arguments after a change is detected.
+- `func` (`function`, required): Callback called with no arguments after a change is detected.
+
+**Lua API Stub**
+
+```lua
+--- Sets the callback invoked when this watcher observes a change.
+---@param func function Callback called with no arguments after a change is detected.
+function LFileWatcher:onChanged(func) end
+```
 
 #### Example
 
@@ -1509,11 +1641,21 @@ do
 end
 ```
 
-### `LFileWatcher:type() -> string`
+### LFileWatcher:type
+
+`LFileWatcher:type() -> string`
 
 Returns the Lua-visible type name for this file watcher handle.
 
 **Returns**: `string` - The string `LFileWatcher`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this file watcher handle.
+---@return string The string `LFileWatcher`.
+function LFileWatcher:type() end
+```
 
 #### Example
 
@@ -1526,15 +1668,26 @@ do
 end
 ```
 
-### `LFileWatcher:typeOf(name: string) -> boolean`
+### LFileWatcher:typeOf
+
+`LFileWatcher:typeOf(name: string) -> boolean`
 
 Returns whether this file watcher handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `LFileWatcher` and `Object`.
+- `name` (`string`, required): Type name to compare against `LFileWatcher` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this file watcher handle matches a supported type name.
+---@param name string Type name to compare against `LFileWatcher` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LFileWatcher:typeOf(name) end
+```
 
 #### Example
 
@@ -1547,28 +1700,18 @@ do
 end
 ```
 
-### `LReplConsole`
+### LReplConsole:clear
 
-Lua-side REPL console handle with bounded history.
-
-#### Example
-
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
-
-```lua
-do
-  -- The REPL evaluates code in the current Lua VM and stores history.
-  -- max_history limits stored lines (default 200).
-  -- Use for in-game developer consoles.
-  local repl = lurek.devtools.newRepl(100)
-  local result = repl:eval("return math.pi * 2")
-  lurek.devtools.info("repl: pi*2 = " .. tostring(result))
-end
-```
-
-### `LReplConsole:clear()`
+`LReplConsole:clear()`
 
 Clears this REPL console's command history.
+
+**Lua API Stub**
+
+```lua
+--- Clears this REPL console's command history.
+function LReplConsole:clear() end
+```
 
 #### Example
 
@@ -1586,15 +1729,26 @@ do
 end
 ```
 
-### `LReplConsole:eval(code: string) -> LuaValue`
+### LReplConsole:eval
+
+`LReplConsole:eval(code: string) -> LuaValue`
 
 Evaluates Lua code through this REPL console and records it in history.
 
 **Parameters**
 
-- `code` (`string`, required) - Lua source code evaluated in the active Lua VM.
+- `code` (`string`, required): Lua source code evaluated in the active Lua VM.
 
 **Returns**: `LuaValue` - Evaluation result shape produced by the devtools REPL backend.
+
+**Lua API Stub**
+
+```lua
+--- Evaluates Lua code through this REPL console and records it in history.
+---@param code string Lua source code evaluated in the active Lua VM.
+---@return LuaValue Evaluation result shape produced by the devtools REPL backend.
+function LReplConsole:eval(code) end
+```
 
 #### Example
 
@@ -1615,11 +1769,21 @@ do
 end
 ```
 
-### `LReplConsole:history() -> string[]`
+### LReplConsole:history
+
+`LReplConsole:history() -> string[]`
 
 Returns this REPL console's recorded command history.
 
 **Returns**: `string[]` - History entry strings.
+
+**Lua API Stub**
+
+```lua
+--- Returns this REPL console's recorded command history.
+---@return string[] History entry strings.
+function LReplConsole:history() end
+```
 
 #### Example
 
@@ -1641,11 +1805,21 @@ do
 end
 ```
 
-### `LReplConsole:len() -> integer`
+### LReplConsole:len
+
+`LReplConsole:len() -> integer`
 
 Returns the number of entries stored in this REPL console history.
 
 **Returns**: `integer` - History entry count.
+
+**Lua API Stub**
+
+```lua
+--- Returns the number of entries stored in this REPL console history.
+---@return number History entry count.
+function LReplConsole:len() end
+```
 
 #### Example
 
@@ -1662,11 +1836,21 @@ do
 end
 ```
 
-### `LReplConsole:type() -> string`
+### LReplConsole:type
+
+`LReplConsole:type() -> string`
 
 Returns the Lua-visible type name for this REPL console handle.
 
 **Returns**: `string` - The string `LReplConsole`.
+
+**Lua API Stub**
+
+```lua
+--- Returns the Lua-visible type name for this REPL console handle.
+---@return string The string `LReplConsole`.
+function LReplConsole:type() end
+```
 
 #### Example
 
@@ -1680,15 +1864,26 @@ do
 end
 ```
 
-### `LReplConsole:typeOf(name: string) -> boolean`
+### LReplConsole:typeOf
+
+`LReplConsole:typeOf(name: string) -> boolean`
 
 Returns whether this REPL console handle matches a supported type name.
 
 **Parameters**
 
-- `name` (`string`, required) - Type name to compare against `LReplConsole` and `Object`.
+- `name` (`string`, required): Type name to compare against `LReplConsole` and `Object`.
 
 **Returns**: `boolean` - True when the supplied type name matches this handle.
+
+**Lua API Stub**
+
+```lua
+--- Returns whether this REPL console handle matches a supported type name.
+---@param name string Type name to compare against `LReplConsole` and `Object`.
+---@return boolean True when the supplied type name matches this handle.
+function LReplConsole:typeOf(name) end
+```
 
 #### Example
 
@@ -1705,20 +1900,26 @@ end
 ```
 
 
-## Examples
+[⬆ back to top](#table-of-contents)
+
+## 💡 Examples
 
 - [devtools.lua](../blob/main/content/examples/devtools.lua) - In-game console, overlay
 
-## Reference Games
+[⬆ back to top](#table-of-contents)
+
+## 🎮 Reference Games
 
 No direct references were found in `content/games/**/main.lua`.
 
-## Related Modules
+[⬆ back to top](#table-of-contents)
 
-- Previous: [[debugbridge|Module-debugbridge]]
-- Next: [[docs|Module-docs]]
-- [[app|Module-app]] - Application entry-point: winit event loop, wgpu surface / device, Lua VM, frame pacing.
-- [[bin|Module-bin]] - Alternative main()-bearing binaries built alongside the primary lurek2d executable.
-- [[debugbridge|Module-debugbridge]] - TCP debug bridge (127.0.0.1, JSON-over-TCP) for the VS Code extension and MCP server.
-- [[docs|Module-docs]] - In-engine API documentation catalog and lightweight schema validation for structured game data.
-- [[lua_api|Module-lua_api]] - Lua scripting bridge: collects every lurek.* sub-API and seals the sandboxed lurek global.
+## 🔗 Related Modules
+
+- Previous: [debugbridge](Module-debugbridge)
+- Next: [docs](Module-docs)
+- [app](Module-app) - Application entry-point: winit event loop, wgpu surface / device, Lua VM, frame pacing.
+- [bin](Module-bin) - Alternative main()-bearing binaries built alongside the primary lurek2d executable.
+- [debugbridge](Module-debugbridge) - TCP debug bridge (127.0.0.1, JSON-over-TCP) for the VS Code extension and MCP server.
+- [docs](Module-docs) - In-engine API documentation catalog and lightweight schema validation for structured game data.
+- [lua_api](Module-lua_api) - Lua scripting bridge: collects every lurek.* sub-API and seals the sandboxed lurek global.
