@@ -35,7 +35,8 @@ do
     print("layer count = " .. map:getLayerCount())
 end
 
---@api-stub: LTileMap:getLayerName / getLayerCount
+--@api-stub: LTileMap:getLayerName
+--@api-stub: LTileMap:getLayerCount
 -- Querying layer metadata.
 do
     ---@type LTileMap
@@ -48,7 +49,9 @@ do
     end
 end
 
---@api-stub: LTileMap:setTile / getTile / clearTile
+--@api-stub: LTileMap:setTile
+--@api-stub: LTileMap:getTile
+--@api-stub: LTileMap:clearTile
 -- Placing and reading tiles.
 do
     ---@type LTileMap
@@ -116,7 +119,8 @@ do
     print("tile count = " .. ts:getTileCount())
 end
 
---@api-stub: LTileSet:isSolid / setSolid
+--@api-stub: LTileSet:isSolid
+--@api-stub: LTileSet:setSolid
 -- Marking tiles as solid for collision.
 do
     ---@type LTileSet
@@ -142,7 +146,8 @@ do
     print("tile 5: x=" .. q5.x .. " y=" .. q5.y .. " w=" .. q5.width .. " h=" .. q5.height)
 end
 
---@api-stub: LTileSet:setAnimation / getAnimation
+--@api-stub: LTileSet:setAnimation
+--@api-stub: LTileSet:getAnimation
 -- Animated tiles.
 do
     ---@type LTileSet
@@ -162,7 +167,9 @@ do
     print("tile 10 anim = " .. tostring(noAnim))
 end
 
---@api-stub: LTileMap:addTileSet / getTileSet / getTileSetCount
+--@api-stub: LTileMap:addTileSet
+--@api-stub: LTileMap:getTileSet
+--@api-stub: LTileMap:getTileSetCount
 -- Attaching tilesets to a map.
 do
     ---@type LTileMap
@@ -179,7 +186,8 @@ do
     print("tileset 1 first gid = " .. ts1:getFirstGid())
 end
 
---@api-stub: LTileMap:isSolid / rectOverlapsSolid
+--@api-stub: LTileMap:isSolid
+--@api-stub: LTileMap:rectOverlapsSolid
 -- Collision queries.
 do
     ---@type LTileMap
@@ -197,7 +205,9 @@ do
     print("rect overlaps solid = " .. tostring(overlap))
 end
 
---@api-stub: LTileMap:setViewport / getViewport / render
+--@api-stub: LTileMap:setViewport
+--@api-stub: LTileMap:getViewport
+--@api-stub: LTileMap:render
 -- Viewport and rendering.
 do
     ---@type LTileMap
@@ -215,7 +225,8 @@ do
     print("rendered with offset")
 end
 
---@api-stub: LTileMap:worldToTile / tileToWorld
+--@api-stub: LTileMap:worldToTile
+--@api-stub: LTileMap:tileToWorld
 -- Coordinate conversion.
 do
     ---@type LTileMap
@@ -229,7 +240,8 @@ do
     print("world(0,0) -> tile(" .. tx2 .. "," .. ty2 .. ")")
 end
 
---@api-stub: LTileMap:setLayerVisible / getLayerVisible
+--@api-stub: LTileMap:setLayerVisible
+--@api-stub: LTileMap:getLayerVisible
 -- Layer visibility toggle.
 do
     ---@type LTileMap
@@ -242,7 +254,8 @@ do
     map:setLayerVisible(1, true)
 end
 
---@api-stub: LTileMap:setLayerColor / getLayerColor
+--@api-stub: LTileMap:setLayerColor
+--@api-stub: LTileMap:getLayerColor
 -- Layer tinting.
 do
     ---@type LTileMap
@@ -253,7 +266,8 @@ do
     print("layer color = " .. r .. ", " .. g .. ", " .. b .. ", " .. a)
 end
 
---@api-stub: LTileMap:setLayerOffset / getLayerOffset
+--@api-stub: LTileMap:setLayerOffset
+--@api-stub: LTileMap:getLayerOffset
 -- Layer pixel offset.
 do
     ---@type LTileMap
@@ -264,7 +278,8 @@ do
     print("offset = " .. ox .. ", " .. oy)
 end
 
---@api-stub: LTileMap:setLayerParallax / getLayerParallax
+--@api-stub: LTileMap:setLayerParallax
+--@api-stub: LTileMap:getLayerParallax
 -- Layer parallax scrolling factors.
 do
     ---@type LTileMap

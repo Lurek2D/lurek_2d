@@ -1,6 +1,7 @@
 --- Physics Module Part 5: zones, cellular automaton, terrain, body data, sleeping, debug draw, CCD, advanced
 
---@api-stub: LWorld:addZone / LZone basic setup
+--@api-stub: LWorld:addZone
+--@api-stub: LWorld:LZone basic setup
 -- Zones: axis-aligned areas that apply effects to bodies inside.
 do
     ---@type LWorld
@@ -12,7 +13,8 @@ do
     zone:setLayerMask(1)
 end
 
---@api-stub: LZone:setGravityDirectional / setGravityPoint
+--@api-stub: LZone:setGravityDirectional
+--@api-stub: LZone:setGravityPoint
 -- Zone gravity overrides.
 do
     ---@type LWorld
@@ -29,7 +31,8 @@ do
     print("ball in wind zone: " .. x .. ", " .. y)
 end
 
---@api-stub: LZone:setGravityRepulsor / setGravityZero
+--@api-stub: LZone:setGravityRepulsor
+--@api-stub: LZone:setGravityZero
 -- Repulsor and zero-gravity zones.
 do
     ---@type LWorld
@@ -46,7 +49,8 @@ do
     print("ball in zero-g: vel=" .. vx .. "," .. vy)
 end
 
---@api-stub: LZone:setLinearDampingOverride / setAngularDampingOverride
+--@api-stub: LZone:setLinearDampingOverride
+--@api-stub: LZone:setAngularDampingOverride
 -- Zone damping overrides (water, mud).
 do
     ---@type LWorld
@@ -105,7 +109,8 @@ do
     print("zone 1 destroyed")
 end
 
---@api-stub: lurek.physics.newCellular / LCellular basic
+--@api-stub: lurek.physics.newCellular
+--@api-stub: lurek.LCellular basic
 -- Cellular automaton: grid-based simulation (sand, water, fire).
 do
     ---@type LCellular
@@ -118,7 +123,8 @@ do
     print("after step: cell at 32,1 = " .. grid:getCell(32, 1))
 end
 
---@api-stub: LCellular:fillRect / fillCircle
+--@api-stub: LCellular:fillRect
+--@api-stub: LCellular:fillCircle
 -- Cellular bulk fill.
 do
     ---@type LCellular
@@ -131,7 +137,8 @@ do
     print("type-3 cells = " .. count3)
 end
 
---@api-stub: LCellular:stepN / findCells
+--@api-stub: LCellular:stepN
+--@api-stub: LCellular:findCells
 -- Multiple steps and finding specific cells.
 do
     ---@type LCellular
@@ -142,7 +149,9 @@ do
     print("type-1 cells after 10 steps = " .. #positions)
 end
 
---@api-stub: LCellular:toImageData / toBytes / loadFromBytes
+--@api-stub: LCellular:toImageData
+--@api-stub: LCellular:toBytes
+--@api-stub: LCellular:loadFromBytes
 -- Cellular serialization and visualization.
 do
     ---@type LCellular
@@ -156,7 +165,8 @@ do
     print("loaded cell at 16,16 = " .. grid2:getCell(16, 16))
 end
 
---@api-stub: lurek.physics.newTerrain / LTerrain basic
+--@api-stub: lurek.physics.newTerrain
+--@api-stub: lurek.LTerrain basic
 -- Destructible terrain: grid-backed physical terrain with collision bodies.
 do
     ---@type LWorld
@@ -170,7 +180,9 @@ do
     print("dirty = " .. tostring(terrain:isDirty()))
 end
 
---@api-stub: LTerrain:setCell / getCell / fillRect
+--@api-stub: LTerrain:setCell
+--@api-stub: LTerrain:getCell
+--@api-stub: LTerrain:fillRect
 -- Terrain cell manipulation.
 do
     ---@type LWorld
@@ -184,7 +196,9 @@ do
     terrain:flush()
 end
 
---@api-stub: LTerrain:collapseColumns / solidPositions / spawnDebris
+--@api-stub: LTerrain:collapseColumns
+--@api-stub: LTerrain:solidPositions
+--@api-stub: LTerrain:spawnDebris
 -- Terrain advanced operations.
 do
     ---@type LWorld
@@ -200,7 +214,9 @@ do
     print("solid positions = " .. #solids)
 end
 
---@api-stub: LTerrain:toBytes / loadFromBytes / toImageData
+--@api-stub: LTerrain:toBytes
+--@api-stub: LTerrain:loadFromBytes
+--@api-stub: LTerrain:toImageData
 -- Terrain serialization.
 do
     ---@type LWorld
@@ -220,7 +236,9 @@ do
     print("loaded cell 16,16 = " .. tostring(terrain2:getCell(16, 16)))
 end
 
---@api-stub: LWorld:setBodyData / getBodyData / clearBodyData
+--@api-stub: LWorld:setBodyData
+--@api-stub: LWorld:getBodyData
+--@api-stub: LWorld:clearBodyData
 -- Attach arbitrary data to physics bodies.
 do
     ---@type LWorld
@@ -237,7 +255,9 @@ do
     print("after clear = " .. tostring(world:getBodyData(player:getId())))
 end
 
---@api-stub: LWorld:setBodyOneWay / getBodyOneWay / clearBodyOneWay
+--@api-stub: LWorld:setBodyOneWay
+--@api-stub: LWorld:getBodyOneWay
+--@api-stub: LWorld:clearBodyOneWay
 -- One-way platforms: bodies that can only be entered from one direction.
 do
     ---@type LWorld
@@ -254,7 +274,8 @@ do
     print("after clear: " .. tostring(nx))
 end
 
---@api-stub: LWorld:setBodyCCD / getBodyCCD
+--@api-stub: LWorld:setBodyCCD
+--@api-stub: LWorld:getBodyCCD
 -- Continuous collision detection per body (for fast-moving objects).
 do
     ---@type LWorld
@@ -265,7 +286,9 @@ do
     bullet:setVelocity(2000, 0)
 end
 
---@api-stub: LWorld:sleepBody / wakeUpBody / isBodySleeping
+--@api-stub: LWorld:sleepBody
+--@api-stub: LWorld:wakeUpBody
+--@api-stub: LWorld:isBodySleeping
 -- Sleep management via world API.
 do
     ---@type LWorld
@@ -292,7 +315,8 @@ do
     print("debug drawn to image data")
 end
 
---@api-stub: lurek.physics.debugDraw / drawDebugGpu
+--@api-stub: lurek.physics.debugDraw
+--@api-stub: lurek.drawDebugGpu
 -- Global debug draw toggle and GPU debug.
 do
     ---@type LWorld
@@ -305,7 +329,8 @@ do
     lurek.physics.debugDraw(false)
 end
 
---@api-stub: lurek.physics.destroyWorld / LWorld:clear
+--@api-stub: lurek.physics.destroyWorld
+--@api-stub: LWorld:clear
 -- World cleanup.
 do
     ---@type LWorld
@@ -319,7 +344,9 @@ do
     print("world destroyed")
 end
 
---@api-stub: lurek.physics.step / getBody / setBodyVelocity (free functions)
+--@api-stub: lurek.physics.step
+--@api-stub: lurek.getBody
+--@api-stub: lurek.setBodyVelocity (free functions)
 -- Using free-function API (alternative to method calls).
 do
     ---@type LWorld
@@ -352,7 +379,8 @@ do
     end
 end
 
---@api-stub: lurek.physics.isSleepingAllowed / setSleepingAllowed (free function)
+--@api-stub: lurek.physics.isSleepingAllowed
+--@api-stub: lurek.setSleepingAllowed (free function)
 -- Free-function sleep control.
 do
     ---@type LWorld

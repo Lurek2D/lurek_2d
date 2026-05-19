@@ -1,6 +1,8 @@
 --- Particle Module Part 3: advanced — attractors, sub-emitters, trails, physics, custom shapes
 
---@api-stub: LParticleSystem:addAttractor / getAttractorCount / clearAttractors
+--@api-stub: LParticleSystem:addAttractor
+--@api-stub: LParticleSystem:getAttractorCount
+--@api-stub: LParticleSystem:clearAttractors
 -- Particle attractors pull particles toward a point.
 do
     ---@type LParticleSystem
@@ -15,7 +17,9 @@ do
     print("after clear = " .. ps:getAttractorCount())
 end
 
---@api-stub: LParticleSystem:addSubEmitter / addSubSystem / subSystemCount
+--@api-stub: LParticleSystem:addSubEmitter
+--@api-stub: LParticleSystem:addSubSystem
+--@api-stub: LParticleSystem:subSystemCount
 -- Sub-emitters spawn particles on death. Sub-systems are layered emitters.
 do
     ---@type LParticleSystem
@@ -25,7 +29,8 @@ do
     print("sub-systems = " .. ps:subSystemCount() .. " last idx = " .. idx)
 end
 
---@api-stub: LParticleSystem:setEmissionArea / getEmissionArea
+--@api-stub: LParticleSystem:setEmissionArea
+--@api-stub: LParticleSystem:getEmissionArea
 -- Area-based emission shapes.
 do
     ---@type LParticleSystem
@@ -37,7 +42,10 @@ do
     print("area set with angle and dir_rel")
 end
 
---@api-stub: LParticleSystem:setRotation / getRotation / setSpin / getSpin
+--@api-stub: LParticleSystem:setRotation
+--@api-stub: LParticleSystem:getRotation
+--@api-stub: LParticleSystem:setSpin
+--@api-stub: LParticleSystem:getSpin
 -- Rotation and spin.
 do
     ---@type LParticleSystem
@@ -50,7 +58,10 @@ do
     print("spin = " .. smin .. ".." .. smax)
 end
 
---@api-stub: LParticleSystem:setSpinVariation / getSpinVariation / setRelativeRotation / hasRelativeRotation
+--@api-stub: LParticleSystem:setSpinVariation
+--@api-stub: LParticleSystem:getSpinVariation
+--@api-stub: LParticleSystem:setRelativeRotation
+--@api-stub: LParticleSystem:hasRelativeRotation
 -- Spin variation and relative rotation.
 do
     ---@type LParticleSystem
@@ -61,7 +72,8 @@ do
     print("relative rot = " .. tostring(ps:hasRelativeRotation()))
 end
 
---@api-stub: LParticleSystem:setInsertMode / getInsertMode
+--@api-stub: LParticleSystem:setInsertMode
+--@api-stub: LParticleSystem:getInsertMode
 -- Insert mode determines particle draw ordering.
 do
     ---@type LParticleSystem
@@ -72,7 +84,8 @@ do
     print("mode = " .. ps:getInsertMode())
 end
 
---@api-stub: LParticleSystem:setOffset / getOffset
+--@api-stub: LParticleSystem:setOffset
+--@api-stub: LParticleSystem:getOffset
 -- Particle spawn offset.
 do
     ---@type LParticleSystem
@@ -82,7 +95,8 @@ do
     print("offset = " .. ox .. "," .. oy)
 end
 
---@api-stub: LParticleSystem:setShape / getShape
+--@api-stub: LParticleSystem:setShape
+--@api-stub: LParticleSystem:getShape
 -- Particle shape.
 do
     ---@type LParticleSystem
@@ -91,7 +105,8 @@ do
     print("shape = " .. ps:getShape())
 end
 
---@api-stub: LParticleSystem:setFlipbook / getFlipbook
+--@api-stub: LParticleSystem:setFlipbook
+--@api-stub: LParticleSystem:getFlipbook
 -- Flipbook animation on particles.
 do
     ---@type LParticleSystem
@@ -101,7 +116,8 @@ do
     print("flipbook = " .. cols .. "x" .. rows .. " @" .. fps .. "fps")
 end
 
---@api-stub: LParticleSystem:setBounds / clearBounds
+--@api-stub: LParticleSystem:setBounds
+--@api-stub: LParticleSystem:clearBounds
 -- Collision bounds for particles.
 do
     ---@type LParticleSystem
@@ -141,7 +157,8 @@ do
     print("deaths = " .. death_count)
 end
 
---@api-stub: LParticleSystem:drawToImage / toImage
+--@api-stub: LParticleSystem:drawToImage
+--@api-stub: LParticleSystem:toImage
 -- Renders particles to image data.
 do
     ---@type LParticleSystem
@@ -164,7 +181,10 @@ do
     print("lifetime = " .. trail:getLifetime())
 end
 
---@api-stub: LTrail:pushPoint / getPointCount / clear / update
+--@api-stub: LTrail:pushPoint
+--@api-stub: LTrail:getPointCount
+--@api-stub: LTrail:clear
+--@api-stub: LTrail:update
 -- Trail point management.
 do
     ---@type LTrail
@@ -180,7 +200,10 @@ do
     print("after clear = " .. trail:getPointCount())
 end
 
---@api-stub: LTrail:setWidth / getWidth / setLifetime / getLifetime
+--@api-stub: LTrail:setWidth
+--@api-stub: LTrail:getWidth
+--@api-stub: LTrail:setLifetime
+--@api-stub: LTrail:getLifetime
 -- Trail dimensions and lifetime.
 do
     ---@type LTrail
@@ -192,7 +215,9 @@ do
     print("lifetime = " .. trail:getLifetime())
 end
 
---@api-stub: LTrail:setHeadColor / setTailColor / setMinDistance
+--@api-stub: LTrail:setHeadColor
+--@api-stub: LTrail:setTailColor
+--@api-stub: LTrail:setMinDistance
 -- Trail color gradient and spacing.
 do
     ---@type LTrail
@@ -206,7 +231,8 @@ do
     print("trail configured, points = " .. trail:getPointCount())
 end
 
---@api-stub: LTrail:drawToImage / typeOf
+--@api-stub: LTrail:drawToImage
+--@api-stub: LTrail:typeOf
 -- Trail rendering and type check.
 do
     ---@type LTrail

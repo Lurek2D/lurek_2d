@@ -11,7 +11,8 @@ do
     print("slot count = " .. skel:slotCount())
 end
 
---@api-stub: LSkeleton:addBone / addChildBone
+--@api-stub: LSkeleton:addBone
+--@api-stub: LSkeleton:addChildBone
 -- Building a bone hierarchy with opts table.
 do
     ---@type LSkeleton
@@ -59,7 +60,8 @@ do
     print("slot count = " .. skel:slotCount())
 end
 
---@api-stub: LSkeleton:addIKConstraint / setIKTarget
+--@api-stub: LSkeleton:addIKConstraint
+--@api-stub: LSkeleton:setIKTarget
 -- Inverse kinematics setup.
 do
     ---@type LSkeleton
@@ -77,7 +79,10 @@ do
     print("hand world pos = " .. string.format("%.1f, %.1f", result.x, result.y))
 end
 
---@api-stub: LSkeleton:addSkin / setSkin / setSkinMapping / getSkin
+--@api-stub: LSkeleton:addSkin
+--@api-stub: LSkeleton:setSkin
+--@api-stub: LSkeleton:setSkinMapping
+--@api-stub: LSkeleton:getSkin
 -- Skin management for character variants.
 do
     ---@type LSkeleton
@@ -101,7 +106,11 @@ do
     print("current skin = " .. skel:getSkin())
 end
 
---@api-stub: LSkeleton:addAnimation / playAnimation / stopAnimation / updateAnimation / getAnimationTime
+--@api-stub: LSkeleton:addAnimation
+--@api-stub: LSkeleton:playAnimation
+--@api-stub: LSkeleton:stopAnimation
+--@api-stub: LSkeleton:updateAnimation
+--@api-stub: LSkeleton:getAnimationTime
 -- Registering and playing skeleton animations.
 do
     ---@type LSkeleton
@@ -155,7 +164,11 @@ do
     print("blended run at 100% weight")
 end
 
---@api-stub: LSkeleton:findBone / findSlot / setPosition / getBoneWorld / updateWorldTransforms
+--@api-stub: LSkeleton:findBone
+--@api-stub: LSkeleton:findSlot
+--@api-stub: LSkeleton:setPosition
+--@api-stub: LSkeleton:getBoneWorld
+--@api-stub: LSkeleton:updateWorldTransforms
 -- Querying and positioning.
 do
     ---@type LSkeleton
@@ -218,7 +231,8 @@ do
     print("pose at 0.25 type = " .. type(pose))
 end
 
---@api-stub: LSkeletonAnimation:addEventKey / getEvents
+--@api-stub: LSkeletonAnimation:addEventKey
+--@api-stub: LSkeletonAnimation:getEvents
 -- Animation events for sound/effect triggers.
 do
     ---@type LSkeletonAnimation

@@ -86,7 +86,10 @@ do
     print("body with shape: " .. x .. ", " .. y)
 end
 
---@api-stub: LPhysicsShape:setDensity / setFriction / setRestitution / setSensor
+--@api-stub: LPhysicsShape:setDensity
+--@api-stub: LPhysicsShape:setFriction
+--@api-stub: LPhysicsShape:setRestitution
+--@api-stub: LPhysicsShape:setSensor
 -- Shape material properties.
 do
     ---@type LPhysicsShape
@@ -134,7 +137,9 @@ do
     print("polygon fixture = " .. fid)
 end
 
---@api-stub: LWorld:setFixtureFriction / setFixtureRestitution / setFixtureSensor
+--@api-stub: LWorld:setFixtureFriction
+--@api-stub: LWorld:setFixtureRestitution
+--@api-stub: LWorld:setFixtureSensor
 -- Modify fixture properties after creation.
 do
     ---@type LWorld
@@ -158,25 +163,6 @@ do
     world:addFixture(triggerId, "circle", 0, 0, 0, true, 50)
     print("sensor fixture created")
     print("fixtures = " .. world:fixtureCount(triggerId))
-end
-
---@api-stub: LBody:setLayer / getLayer / setMask / getMask
--- Collision layer filtering.
-do
-    ---@type LWorld
-    local world = lurek.physics.newWorld(0, 400)
-    local player = world:newCircleBody(100, 100, 10, "dynamic")
-    local enemy = world:newCircleBody(200, 100, 10, "dynamic")
-    local bullet = world:newCircleBody(150, 50, 4, "dynamic")
-    player:setLayer(1)
-    player:setMask(3)
-    enemy:setLayer(2)
-    enemy:setMask(3)
-    bullet:setLayer(4)
-    bullet:setMask(2)
-    print("player: layer=" .. player:getLayer() .. " mask=" .. player:getMask())
-    print("enemy: layer=" .. enemy:getLayer() .. " mask=" .. enemy:getMask())
-    print("bullet: layer=" .. bullet:getLayer() .. " mask=" .. bullet:getMask())
 end
 
 --@api-stub: LWorld:newPolygonBody
@@ -228,7 +214,8 @@ do
     print("total count = " .. world:getBodyCount())
 end
 
---@api-stub: LWorld:getBodyIds / getBodyType
+--@api-stub: LWorld:getBodyIds
+--@api-stub: LWorld:getBodyType
 -- Iterating all bodies.
 do
     ---@type LWorld
@@ -242,7 +229,9 @@ do
     end
 end
 
---@api-stub: LPhysicsShape:type / typeOf / destroy
+--@api-stub: LPhysicsShape:type
+--@api-stub: LPhysicsShape:typeOf
+--@api-stub: LPhysicsShape:destroy
 -- Shape lifecycle.
 do
     ---@type LPhysicsShape

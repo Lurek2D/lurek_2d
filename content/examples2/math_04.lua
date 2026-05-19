@@ -1,6 +1,7 @@
 --- Math Module Part 5: vectors (LVec2, LVec3) and transforms (LTransform)
 
---@api-stub: lurek.math.vec2 / lurek.math.Vec2
+--@api-stub: lurek.math.vec2
+--@api-stub: lurek.math.Vec2
 -- Creates a 2D vector.
 do
     ---@type LVec2
@@ -8,7 +9,8 @@ do
     print("vec2 = " .. v.x .. "," .. v.y)
 end
 
---@api-stub: LVec2:length / lengthSquared
+--@api-stub: LVec2:length
+--@api-stub: LVec2:lengthSquared
 -- Vector magnitude.
 do
     ---@type LVec2
@@ -17,7 +19,8 @@ do
     print("lengthSq = " .. v:lengthSquared())
 end
 
---@api-stub: LVec2:normalize / normalized
+--@api-stub: LVec2:normalize
+--@api-stub: LVec2:normalized
 -- Unit vector.
 do
     ---@type LVec2
@@ -28,7 +31,8 @@ do
     print("after normalize = " .. v.x .. "," .. v.y)
 end
 
---@api-stub: LVec2:dot / cross
+--@api-stub: LVec2:dot
+--@api-stub: LVec2:cross
 -- Dot product and cross product.
 do
     ---@type LVec2
@@ -106,7 +110,8 @@ do
     print("fromAngle(0) = " .. unit.x .. "," .. unit.y)
 end
 
---@api-stub: lurek.math.vec3 / lurek.math.Vec3
+--@api-stub: lurek.math.vec3
+--@api-stub: lurek.math.Vec3
 -- Creates a 3D vector.
 do
     ---@type LVec3
@@ -114,7 +119,8 @@ do
     print("vec3 = " .. v.x .. "," .. v.y .. "," .. v.z)
 end
 
---@api-stub: LVec3:length / lengthSquared
+--@api-stub: LVec3:length
+--@api-stub: LVec3:lengthSquared
 -- 3D vector magnitude.
 do
     ---@type LVec3
@@ -132,7 +138,8 @@ do
     print("normalized = " .. n.x .. "," .. n.y .. "," .. n.z)
 end
 
---@api-stub: LVec3:dot / cross
+--@api-stub: LVec3:dot
+--@api-stub: LVec3:cross
 -- 3D dot and cross products.
 do
     ---@type LVec3
@@ -144,7 +151,9 @@ do
     print("cross = " .. c.x .. "," .. c.y .. "," .. c.z)
 end
 
---@api-stub: LVec3:add / sub / scale
+--@api-stub: LVec3:add
+--@api-stub: LVec3:sub
+--@api-stub: LVec3:scale
 -- 3D vector arithmetic.
 do
     ---@type LVec3
@@ -159,7 +168,8 @@ do
     print("scale = " .. scaled.x .. "," .. scaled.y .. "," .. scaled.z)
 end
 
---@api-stub: LVec3:distance / lerp
+--@api-stub: LVec3:distance
+--@api-stub: LVec3:lerp
 -- 3D distance and interpolation.
 do
     ---@type LVec3
@@ -189,7 +199,10 @@ do
     print("origin transformed = " .. x .. "," .. y)
 end
 
---@api-stub: LTransform:translate / rotate / scale / shear
+--@api-stub: LTransform:translate
+--@api-stub: LTransform:rotate
+--@api-stub: LTransform:scale
+--@api-stub: LTransform:shear
 -- Incremental transform operations.
 do
     ---@type LTransform
@@ -202,7 +215,8 @@ do
     print("point = " .. x .. "," .. y)
 end
 
---@api-stub: LTransform:transformPoint / inverseTransformPoint
+--@api-stub: LTransform:transformPoint
+--@api-stub: LTransform:inverseTransformPoint
 -- Forward and inverse point mapping.
 do
     ---@type LTransform
@@ -213,7 +227,8 @@ do
     print("inverse = " .. ix .. "," .. iy)
 end
 
---@api-stub: LTransform:clone / inverse
+--@api-stub: LTransform:clone
+--@api-stub: LTransform:inverse
 -- Cloning and inversion.
 do
     ---@type LTransform
@@ -245,7 +260,8 @@ do
     print("matrix elements = " .. #m)
 end
 
---@api-stub: LTransform:reset / setTransformation
+--@api-stub: LTransform:reset
+--@api-stub: LTransform:setTransformation
 -- Resets or completely replaces the transform.
 do
     ---@type LTransform

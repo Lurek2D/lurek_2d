@@ -8,7 +8,10 @@ do
     print("seed = " .. rng:getSeed())
 end
 
---@api-stub: LRandomGenerator:random / randomFloat / randomInt / randomNormal
+--@api-stub: LRandomGenerator:random
+--@api-stub: LRandomGenerator:randomFloat
+--@api-stub: LRandomGenerator:randomInt
+--@api-stub: LRandomGenerator:randomNormal
 -- Random value generators.
 do
     ---@type LRandomGenerator
@@ -20,7 +23,9 @@ do
     print("random=" .. r .. " float=" .. rf .. " int=" .. ri .. " normal=" .. rn)
 end
 
---@api-stub: LRandomGenerator:setSeed / getState / setState
+--@api-stub: LRandomGenerator:setSeed
+--@api-stub: LRandomGenerator:getState
+--@api-stub: LRandomGenerator:setState
 -- Seed and state management.
 do
     ---@type LRandomGenerator
@@ -41,7 +46,10 @@ do
     print("easing = " .. tw:getEasingName())
 end
 
---@api-stub: LTween:addValue / getValue / getAllValues / getValueCount
+--@api-stub: LTween:addValue
+--@api-stub: LTween:getValue
+--@api-stub: LTween:getAllValues
+--@api-stub: LTween:getValueCount
 -- Tweened value channels.
 do
     ---@type LTween
@@ -55,7 +63,9 @@ do
     print("all count = " .. #all)
 end
 
---@api-stub: LTween:update / isComplete / reset
+--@api-stub: LTween:update
+--@api-stub: LTween:isComplete
+--@api-stub: LTween:reset
 -- Tween playback.
 do
     ---@type LTween
@@ -69,7 +79,10 @@ do
     print("after reset clock = " .. tw:getClock())
 end
 
---@api-stub: LTween:set / setTime / getTime / getClock
+--@api-stub: LTween:set
+--@api-stub: LTween:setTime
+--@api-stub: LTween:getTime
+--@api-stub: LTween:getClock
 -- Direct time control.
 do
     ---@type LTween
@@ -92,7 +105,11 @@ do
     print("len = " .. tree:len() .. " empty = " .. tostring(tree:isEmpty()))
 end
 
---@api-stub: LAabbTree:query / queryPoint / contains / remove / update
+--@api-stub: LAabbTree:query
+--@api-stub: LAabbTree:queryPoint
+--@api-stub: LAabbTree:contains
+--@api-stub: LAabbTree:remove
+--@api-stub: LAabbTree:update
 -- Spatial queries and mutation.
 do
     ---@type LAabbTree
@@ -119,7 +136,11 @@ do
     print("cell size = " .. sh:getCellSize() .. " items = " .. sh:getItemCount())
 end
 
---@api-stub: LSpatialHash:queryRect / queryCircle / querySegment / remove / update
+--@api-stub: LSpatialHash:queryRect
+--@api-stub: LSpatialHash:queryCircle
+--@api-stub: LSpatialHash:querySegment
+--@api-stub: LSpatialHash:remove
+--@api-stub: LSpatialHash:update
 -- Spatial hash queries.
 do
     ---@type LSpatialHash
@@ -165,7 +186,9 @@ do
     print("perimeter = " .. c:perimeter())
 end
 
---@api-stub: LCircle:contains / intersects / aabb
+--@api-stub: LCircle:contains
+--@api-stub: LCircle:intersects
+--@api-stub: LCircle:aabb
 -- Circle spatial tests.
 do
     ---@type LCircle
@@ -185,7 +208,8 @@ do
     print("fromHex = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 
---@api-stub: lurek.math.hslToRgb / rgbToHsl
+--@api-stub: lurek.math.hslToRgb
+--@api-stub: lurek.rgbToHsl
 -- HSL ↔ RGB conversion.
 do
     local r, g, b, a = lurek.math.hslToRgb(0.0, 1.0, 0.5)
@@ -194,7 +218,8 @@ do
     print("red → hsl = " .. h .. "," .. s .. "," .. l)
 end
 
---@api-stub: lurek.math.gammaToLinear / linearToGamma
+--@api-stub: lurek.math.gammaToLinear
+--@api-stub: lurek.linearToGamma
 -- Gamma ↔ linear color space conversion.
 do
     local lin = lurek.math.gammaToLinear(0.5)
@@ -211,7 +236,9 @@ do
     print("linear=" .. v1 .. " inOutCubic=" .. v2 .. " outBounce=" .. v3)
 end
 
---@api-stub: lurek.math.inBack / outBack / inOutBack (individual easings)
+--@api-stub: lurek.math.inBack
+--@api-stub: lurek.outBack
+--@api-stub: lurek.inOutBack (individual easings)
 -- Direct easing function calls.
 do
     local a = lurek.math.inBack(0.5)
@@ -220,7 +247,9 @@ do
     print("inBack=" .. a .. " outBack=" .. b .. " inOutBack=" .. c)
 end
 
---@api-stub: lurek.math.inBounce / outBounce / inOutBounce
+--@api-stub: lurek.math.inBounce
+--@api-stub: lurek.outBounce
+--@api-stub: lurek.inOutBounce
 -- Bounce easing functions.
 do
     local a = lurek.math.inBounce(0.7)

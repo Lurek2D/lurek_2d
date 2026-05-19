@@ -79,7 +79,8 @@ do
     print("struct logged")
 end
 
---@api-stub: lurek.log.getLevel / setLevel
+--@api-stub: lurek.log.getLevel
+--@api-stub: lurek.setLevel
 -- Gets and sets the minimum log level filter.
 do
     local prev = lurek.log.getLevel()

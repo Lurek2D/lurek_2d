@@ -18,7 +18,9 @@ do
     print("priority=" .. m:getPriority())
 end
 
---@api-stub: LMod:setEnabled / isEnabled / isLoaded
+--@api-stub: LMod:setEnabled
+--@api-stub: LMod:isEnabled
+--@api-stub: LMod:isLoaded
 -- Enable state and loaded flag.
 do
     ---@type LMod
@@ -29,7 +31,10 @@ do
     print("enabled=" .. tostring(m:isEnabled()))
 end
 
---@api-stub: LMod:setHook / getHook / hasHook / getHookNames
+--@api-stub: LMod:setHook
+--@api-stub: LMod:getHook
+--@api-stub: LMod:hasHook
+--@api-stub: LMod:getHookNames
 -- Registering and querying hooks.
 do
     ---@type LMod
@@ -44,7 +49,8 @@ do
     if fn then fn() end
 end
 
---@api-stub: LMod:setConfig / getConfig
+--@api-stub: LMod:setConfig
+--@api-stub: LMod:getConfig
 -- Storing and retrieving mod config.
 do
     ---@type LMod
@@ -56,7 +62,8 @@ do
     end
 end
 
---@api-stub: LMod:setConfigSchema / getConfigSchema
+--@api-stub: LMod:setConfigSchema
+--@api-stub: LMod:getConfigSchema
 -- Config schema for UI/validation.
 do
     ---@type LMod
@@ -71,7 +78,8 @@ do
     end
 end
 
---@api-stub: LMod:setApiVersion / getApiVersion
+--@api-stub: LMod:setApiVersion
+--@api-stub: LMod:getApiVersion
 -- API version compatibility.
 do
     ---@type LMod
@@ -80,7 +88,8 @@ do
     print("api version = " .. m:getApiVersion())
 end
 
---@api-stub: LMod:setCapabilities / getCapabilities
+--@api-stub: LMod:setCapabilities
+--@api-stub: LMod:getCapabilities
 -- Declaring capabilities.
 do
     ---@type LMod
@@ -121,7 +130,9 @@ do
     print("types = " .. table.concat(types, ", "))
 end
 
---@api-stub: LContentRegistry:register / get / getAll
+--@api-stub: LContentRegistry:register
+--@api-stub: LContentRegistry:get
+--@api-stub: LContentRegistry:getAll
 -- Storing and retrieving content.
 do
     ---@type LContentRegistry

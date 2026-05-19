@@ -1,6 +1,7 @@
 --- Pipeline Module Part 2: step config, async execution, callbacks, sub-pipelines, branching, tags
 
---@api-stub: LPipelineStep:setCallback / setCondition
+--@api-stub: LPipelineStep:setCallback
+--@api-stub: LPipelineStep:setCondition
 -- Step callback and conditions.
 do
     ---@type LPipelineStep
@@ -22,7 +23,10 @@ do
     print("completed = " .. #result2.completed)
 end
 
---@api-stub: LPipelineStep:setRetryCount / getRetryCount / setRetryDelay / getAttempt
+--@api-stub: LPipelineStep:setRetryCount
+--@api-stub: LPipelineStep:getRetryCount
+--@api-stub: LPipelineStep:setRetryDelay
+--@api-stub: LPipelineStep:getAttempt
 -- Retry configuration.
 do
     local attempts = 0
@@ -45,7 +49,8 @@ do
     print("attempt = " .. step:getAttempt())
 end
 
---@api-stub: LPipelineStep:setDelay / getDelay
+--@api-stub: LPipelineStep:setDelay
+--@api-stub: LPipelineStep:getDelay
 -- Step delay.
 do
     ---@type LPipelineStep
@@ -56,7 +61,8 @@ do
     print("delay = " .. step:getDelay())
 end
 
---@api-stub: LPipelineStep:setTimeout / getTimeout
+--@api-stub: LPipelineStep:setTimeout
+--@api-stub: LPipelineStep:getTimeout
 -- Step timeout.
 do
     ---@type LPipelineStep
@@ -67,7 +73,8 @@ do
     print("timeout = " .. step:getTimeout())
 end
 
---@api-stub: LPipelineStep:setOptional / isOptional
+--@api-stub: LPipelineStep:setOptional
+--@api-stub: LPipelineStep:isOptional
 -- Optional steps (don't fail the pipeline).
 do
     ---@type LPipeline
@@ -88,7 +95,9 @@ do
     print("completed = " .. #result.completed)
 end
 
---@api-stub: LPipelineStep:setTag / getTag / LPipeline:getStepsByTag
+--@api-stub: LPipelineStep:setTag
+--@api-stub: LPipelineStep:getTag
+--@api-stub: LPipeline:getStepsByTag
 -- Step tagging and filtering.
 do
     ---@type LPipeline
@@ -109,7 +118,8 @@ do
     print("cpu steps = " .. #cpuSteps)
 end
 
---@api-stub: LPipelineStep:setData / getData
+--@api-stub: LPipelineStep:setData
+--@api-stub: LPipelineStep:getData
 -- Step metadata.
 do
     ---@type LPipelineStep
@@ -120,7 +130,8 @@ do
     print("author = " .. step:getData("author"))
 end
 
---@api-stub: LPipelineStep:setAsync / isAsync
+--@api-stub: LPipelineStep:setAsync
+--@api-stub: LPipelineStep:isAsync
 -- Async step configuration.
 do
     ---@type LPipelineStep
@@ -135,7 +146,8 @@ do
     print("is async = " .. tostring(step:isAsync()))
 end
 
---@api-stub: LPipelineStep:setOnError / getError
+--@api-stub: LPipelineStep:setOnError
+--@api-stub: LPipelineStep:getError
 -- Step error handling.
 do
     local errorMsg = ""
@@ -155,7 +167,8 @@ do
     print("step error = " .. tostring(step:getError()))
 end
 
---@api-stub: LPipelineStep:getStatus / getDuration
+--@api-stub: LPipelineStep:getStatus
+--@api-stub: LPipelineStep:getDuration
 -- Step status and timing.
 do
     ---@type LPipeline
@@ -171,7 +184,10 @@ do
     print("duration = " .. step:getDuration())
 end
 
---@api-stub: LPipeline:runAsync / update / isRunning / isComplete
+--@api-stub: LPipeline:runAsync
+--@api-stub: LPipeline:update
+--@api-stub: LPipeline:isRunning
+--@api-stub: LPipeline:isComplete
 -- Async pipeline execution (coroutine-driven).
 do
     ---@type LPipeline
@@ -214,7 +230,8 @@ do
     print("cancelled = " .. #result.cancelled)
 end
 
---@api-stub: LPipeline:onProgress / onEvent
+--@api-stub: LPipeline:onProgress
+--@api-stub: LPipeline:onEvent
 -- Progress and event callbacks.
 do
     ---@type LPipeline
@@ -233,7 +250,9 @@ do
     print("progress: " .. table.concat(progressLog, ", "))
 end
 
---@api-stub: LPipeline:setOnComplete / setOnStepComplete / setOnStepError
+--@api-stub: LPipeline:setOnComplete
+--@api-stub: LPipeline:setOnStepComplete
+--@api-stub: LPipeline:setOnStepError
 -- Pipeline lifecycle callbacks.
 do
     ---@type LPipeline
@@ -323,7 +342,17 @@ do
     print("parser = " .. pipe:getContext().parser)
 end
 
---@api-stub: LPipelineStep:type / typeOf
+--@api-stub: LPipelineStep:type
+-- Step type checking.
+do
+    ---@type LPipelineStep
+    local step = lurek.pipeline.newStep("typed", function() end)
+    print("type = " .. step:type())
+    print("is LPipelineStep = " .. tostring(step:typeOf("LPipelineStep")))
+    print("is Object = " .. tostring(step:typeOf("Object")))
+end
+
+--@api-stub: LPipelineStep:typeOf
 -- Step type checking.
 do
     ---@type LPipelineStep

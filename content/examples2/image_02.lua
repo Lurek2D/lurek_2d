@@ -135,14 +135,16 @@ do
     print("empty layers = " .. li:layerCount())
 end
 
---@api-stub: LLayeredImage:getWidth / getHeight
+--@api-stub: LLayeredImage:getWidth
+--@api-stub: LLayeredImage:getHeight
 -- Returns dimensions of the layered image.
 do
     local li = lurek.image.newLayeredImage(100, 50)
     print("layered size = " .. li:getWidth() .. "x" .. li:getHeight())
 end
 
---@api-stub: LLayeredImage:type / typeOf
+--@api-stub: LLayeredImage:type
+--@api-stub: LLayeredImage:typeOf
 -- Type identity checks.
 do
     local li = lurek.image.newLayeredImage(8, 8)
@@ -185,7 +187,8 @@ do
     print("color count = " .. lut:getColorCount())
 end
 
---@api-stub: LPaletteLUT:type / typeOf
+--@api-stub: LPaletteLUT:type
+--@api-stub: LPaletteLUT:typeOf
 -- Type checks.
 do
     local lut = lurek.image.newPaletteLut()
@@ -215,7 +218,8 @@ do
     print("mipmaps = " .. cdata:getMipmapCount())
 end
 
---@api-stub: LCompressedImageData:type / typeOf
+--@api-stub: LCompressedImageData:type
+--@api-stub: LCompressedImageData:typeOf
 -- Type identity checks.
 do
     local cdata = lurek.image.newCompressedData("assets/textures/test.dds")
@@ -286,7 +290,8 @@ do
     print("drew " .. count .. " polygons")
 end
 
---@api-stub: LProvinceGrid:serializeShapeData / deserializeShapeData
+--@api-stub: LProvinceGrid:serializeShapeData
+--@api-stub: LProvinceGrid:deserializeShapeData
 -- Serializes and deserializes shape data for caching.
 do
     local grid = lurek.image.newProvinceGrid("assets/textures/provinces.png")
@@ -296,14 +301,16 @@ do
     print("deserialized")
 end
 
---@api-stub: LProvinceGrid:getWidth / getHeight
+--@api-stub: LProvinceGrid:getWidth
+--@api-stub: LProvinceGrid:getHeight
 -- Returns grid dimensions.
 do
     local grid = lurek.image.newProvinceGrid("assets/textures/provinces.png")
     print("grid = " .. grid:getWidth() .. "x" .. grid:getHeight())
 end
 
---@api-stub: LProvinceGrid:type / typeOf
+--@api-stub: LProvinceGrid:type
+--@api-stub: LProvinceGrid:typeOf
 -- Type identity checks.
 do
     local grid = lurek.image.newProvinceGrid("assets/textures/provinces.png")

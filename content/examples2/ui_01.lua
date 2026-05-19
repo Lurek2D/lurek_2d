@@ -20,7 +20,8 @@ do
     print("spacing = " .. col:getSpacing())
 end
 
---@api-stub: LLayout:setDirection / setColumns
+--@api-stub: LLayout:setDirection
+--@api-stub: LLayout:setColumns
 -- Switching to grid layout mode.
 do
     ---@type LLayout
@@ -30,7 +31,8 @@ do
     print("direction = " .. grid:getDirection())
 end
 
---@api-stub: LLayout:setAlign / getAlign
+--@api-stub: LLayout:setAlign
+--@api-stub: LLayout:getAlign
 -- Cross-axis alignment.
 do
     ---@type LLayout
@@ -41,7 +43,8 @@ do
     print("align = " .. layout:getAlign())
 end
 
---@api-stub: LLayout:setJustify / getJustify
+--@api-stub: LLayout:setJustify
+--@api-stub: LLayout:getJustify
 -- Main-axis justification.
 do
     ---@type LLayout
@@ -52,7 +55,8 @@ do
     print("justify = " .. layout:getJustify())
 end
 
---@api-stub: LLayout:setWrap / getWrap
+--@api-stub: LLayout:setWrap
+--@api-stub: LLayout:getWrap
 -- Enabling layout wrapping.
 do
     ---@type LLayout
@@ -62,7 +66,9 @@ do
     print("wrap enabled = " .. tostring(layout:getWrap()))
 end
 
---@api-stub: LUiWidget:addChild / removeChild / getChildCount
+--@api-stub: LUiWidget:addChild
+--@api-stub: LUiWidget:removeChild
+--@api-stub: LUiWidget:getChildCount
 -- Building widget hierarchies.
 do
     ---@type LLayout
@@ -93,7 +99,8 @@ do
     print("child list length = " .. #children)
 end
 
---@api-stub: LUiWidget:setMargin / getMargin
+--@api-stub: LUiWidget:setMargin
+--@api-stub: LUiWidget:getMargin
 -- Setting outer margins.
 do
     ---@type LButton
@@ -107,7 +114,8 @@ do
     print("uniform = " .. top .. " " .. right .. " " .. bottom .. " " .. left)
 end
 
---@api-stub: LUiWidget:setPadding / getPadding
+--@api-stub: LUiWidget:setPadding
+--@api-stub: LUiWidget:getPadding
 -- Setting inner padding.
 do
     ---@type LPanel
@@ -117,7 +125,8 @@ do
     print("padding = " .. top .. " " .. right .. " " .. bottom .. " " .. left)
 end
 
---@api-stub: LUiWidget:setFlexGrow / getFlexGrow
+--@api-stub: LUiWidget:setFlexGrow
+--@api-stub: LUiWidget:getFlexGrow
 -- Flex grow factor for layout children.
 do
     ---@type LLayout
@@ -134,7 +143,8 @@ do
     print("right grow = " .. right:getFlexGrow())
 end
 
---@api-stub: LUiWidget:setFlexShrink / getFlexShrink
+--@api-stub: LUiWidget:setFlexShrink
+--@api-stub: LUiWidget:getFlexShrink
 -- Flex shrink factor.
 do
     ---@type LButton
@@ -145,7 +155,10 @@ do
     print("shrink = " .. btn:getFlexShrink())
 end
 
---@api-stub: LUiWidget:setMinSize / getMinSize / setMaxSize / getMaxSize
+--@api-stub: LUiWidget:setMinSize
+--@api-stub: LUiWidget:getMinSize
+--@api-stub: LUiWidget:setMaxSize
+--@api-stub: LUiWidget:getMaxSize
 -- Size constraints.
 do
     ---@type LPanel
@@ -158,7 +171,9 @@ do
     print("max = " .. maxW .. "x" .. maxH)
 end
 
---@api-stub: LUiWidget:setAnchor / setAnchorCenter / clearAnchor
+--@api-stub: LUiWidget:setAnchor
+--@api-stub: LUiWidget:setAnchorCenter
+--@api-stub: LUiWidget:clearAnchor
 -- Anchoring widgets within parent.
 do
     ---@type LButton
@@ -241,7 +256,8 @@ do
     print("max scroll = " .. mx .. ", " .. my)
 end
 
---@api-stub: LScrollPanel:setScrollSpeed / getScrollSpeed
+--@api-stub: LScrollPanel:setScrollSpeed
+--@api-stub: LScrollPanel:getScrollSpeed
 -- Scroll speed tuning.
 do
     ---@type LScrollPanel

@@ -64,7 +64,9 @@ do
     rt:shutdown()
 end
 
---@api-stub: LNetworkRuntime:tcpConnect / tcpSend / tcpClose
+--@api-stub: LNetworkRuntime:tcpConnect
+--@api-stub: LNetworkRuntime:tcpSend
+--@api-stub: LNetworkRuntime:tcpClose
 -- Raw TCP connections.
 do
     ---@type LNetworkRuntime
@@ -76,7 +78,9 @@ do
     rt:shutdown()
 end
 
---@api-stub: LNetworkRuntime:wsConnect / wsSend / wsClose
+--@api-stub: LNetworkRuntime:wsConnect
+--@api-stub: LNetworkRuntime:wsSend
+--@api-stub: LNetworkRuntime:wsClose
 -- WebSocket connections.
 do
     ---@type LNetworkRuntime
@@ -88,7 +92,10 @@ do
     rt:shutdown()
 end
 
---@api-stub: lurek.network.createRoom / joinRoom / leaveRoom / listRooms
+--@api-stub: lurek.network.createRoom
+--@api-stub: lurek.joinRoom
+--@api-stub: lurek.leaveRoom
+--@api-stub: lurek.listRooms
 -- Room management.
 do
     local room = lurek.network.createRoom("Arena", "player1", 8)
@@ -105,7 +112,8 @@ do
     print("left room")
 end
 
---@api-stub: lurek.network.createLobby / discoverLobbies
+--@api-stub: lurek.network.createLobby
+--@api-stub: lurek.discoverLobbies
 -- Lobby discovery on LAN.
 do
     local lobby = lurek.network.createLobby("My Game", 7777, 1, 4)
@@ -119,7 +127,8 @@ do
     end
 end
 
---@api-stub: lurek.network.pack / unpack
+--@api-stub: lurek.network.pack
+--@api-stub: lurek.unpack
 -- Binary serialization roundtrip.
 do
     local data = {hp = 100, pos = {x = 10.5, y = 20.3}, name = "Hero"}
@@ -140,7 +149,8 @@ do
     server:destroy()
 end
 
---@api-stub: lurek.network.predictLinear / reconcileSnapshot
+--@api-stub: lurek.network.predictLinear
+--@api-stub: lurek.reconcileSnapshot
 -- Client-side prediction and server reconciliation.
 do
     local snapshot = {x = 10, y = 20, vx = 5, vy = 0}
@@ -152,7 +162,8 @@ do
     print("reconciled x = " .. (reconciled --[[@as table]]).x)
 end
 
---@api-stub: lurek.network.newRelayTicket / parseRelayTicket
+--@api-stub: lurek.network.newRelayTicket
+--@api-stub: lurek.parseRelayTicket
 -- Relay ticket tokens.
 do
     local token = lurek.network.newRelayTicket("room_abc", "peer_42")
@@ -163,7 +174,8 @@ do
     end
 end
 
---@api-stub: lurek.network.makePunchProbe / parsePunchProbe
+--@api-stub: lurek.network.makePunchProbe
+--@api-stub: lurek.parsePunchProbe
 -- NAT punch-through probes.
 do
     local probe = lurek.network.makePunchProbe("peer_99")

@@ -1,6 +1,7 @@
 --- REPL Module: interactive Lua evaluation session
 
---@api-stub: lurek.repl.new / basic creation
+--@api-stub: lurek.repl.new
+--@api-stub: lurek.basic creation
 -- Creating a REPL session with default history size.
 do
     ---@type LReplSession
@@ -32,7 +33,8 @@ do
     print("history len = " .. repl:len())
 end
 
---@api-stub: LReplSession:eval / statements and errors
+--@api-stub: LReplSession:eval
+--@api-stub: LReplSession:statements and errors
 -- Evaluating statements and handling errors.
 do
     ---@type LReplSession
@@ -46,7 +48,8 @@ do
     print("all recorded, len = " .. repl:len())
 end
 
---@api-stub: LReplSession:eval / multiple expressions
+--@api-stub: LReplSession:eval
+--@api-stub: LReplSession:multiple expressions
 -- Building up state across evaluations.
 do
     ---@type LReplSession
@@ -75,7 +78,8 @@ do
     end
 end
 
---@api-stub: LReplSession:history / bounded overflow
+--@api-stub: LReplSession:history
+--@api-stub: LReplSession:bounded overflow
 -- History respects max_history limit.
 do
     ---@type LReplSession
@@ -115,7 +119,8 @@ do
     end
 end
 
---@api-stub: LReplSession:complete / empty prefix
+--@api-stub: LReplSession:complete
+--@api-stub: LReplSession:empty prefix
 -- Completing with empty prefix.
 do
     ---@type LReplSession

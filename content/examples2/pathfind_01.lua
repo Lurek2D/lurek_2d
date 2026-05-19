@@ -1,6 +1,7 @@
 --- Pathfinding Module Part 2: navmesh, hex grid, JPS grid
 
---@api-stub: lurek.pathfind.newNavMesh / LNavMesh:addPolygon
+--@api-stub: lurek.pathfind.newNavMesh
+--@api-stub: LNavMesh:addPolygon
 -- Navigation mesh creation and polygon registration.
 do
     ---@type LNavMesh
@@ -47,7 +48,8 @@ do
     end
 end
 
---@api-stub: LNavMesh:type / typeOf
+--@api-stub: LNavMesh:type
+--@api-stub: LNavMesh:typeOf
 -- Type checking.
 do
     ---@type LNavMesh
@@ -56,7 +58,9 @@ do
     print("is LNavMesh = " .. tostring(mesh:typeOf("LNavMesh")))
 end
 
---@api-stub: lurek.pathfind.newHexGrid / LHexGrid:setBlocked / isBlocked
+--@api-stub: lurek.pathfind.newHexGrid
+--@api-stub: LHexGrid:setBlocked
+--@api-stub: LHexGrid:isBlocked
 -- Hex grid creation and blocking.
 do
     ---@type LHexGrid
@@ -143,7 +147,8 @@ do
     end
 end
 
---@api-stub: LHexGrid:type / typeOf
+--@api-stub: LHexGrid:type
+--@api-stub: LHexGrid:typeOf
 -- Type checking.
 do
     ---@type LHexGrid
@@ -152,7 +157,9 @@ do
     print("is LHexGrid = " .. tostring(hex:typeOf("LHexGrid")))
 end
 
---@api-stub: lurek.pathfind.newJpsGrid / LJpsGrid:setBlocked / isBlocked
+--@api-stub: lurek.pathfind.newJpsGrid
+--@api-stub: LJpsGrid:setBlocked
+--@api-stub: LJpsGrid:isBlocked
 -- Jump Point Search grid.
 do
     ---@type LJpsGrid
@@ -183,7 +190,8 @@ do
     end
 end
 
---@api-stub: LJpsGrid:type / typeOf
+--@api-stub: LJpsGrid:type
+--@api-stub: LJpsGrid:typeOf
 -- Type checking.
 do
     ---@type LJpsGrid

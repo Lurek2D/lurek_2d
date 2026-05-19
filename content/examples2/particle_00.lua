@@ -56,7 +56,8 @@ do
     print("from TOML, buffer = " .. ps:getBufferSize())
 end
 
---@api-stub: LParticleSystem:setBufferSize / getBufferSize
+--@api-stub: LParticleSystem:setBufferSize
+--@api-stub: LParticleSystem:getBufferSize
 -- Maximum particle count.
 do
     ---@type LParticleSystem
@@ -65,7 +66,9 @@ do
     print("buffer = " .. ps:getBufferSize())
 end
 
---@api-stub: LParticleSystem:setPosition / getPosition / moveTo
+--@api-stub: LParticleSystem:setPosition
+--@api-stub: LParticleSystem:getPosition
+--@api-stub: LParticleSystem:moveTo
 -- Emitter position.
 do
     ---@type LParticleSystem
@@ -78,7 +81,8 @@ do
     print("moved = " .. mx .. "," .. my)
 end
 
---@api-stub: LParticleSystem:setEmissionRate / getEmissionRate
+--@api-stub: LParticleSystem:setEmissionRate
+--@api-stub: LParticleSystem:getEmissionRate
 -- Emission rate in particles per second.
 do
     ---@type LParticleSystem
@@ -87,7 +91,8 @@ do
     print("rate = " .. ps:getEmissionRate())
 end
 
---@api-stub: LParticleSystem:setParticleLifetime / getParticleLifetime
+--@api-stub: LParticleSystem:setParticleLifetime
+--@api-stub: LParticleSystem:getParticleLifetime
 -- Particle lifetime range.
 do
     ---@type LParticleSystem
@@ -97,7 +102,8 @@ do
     print("lifetime = " .. lmin .. ".." .. lmax)
 end
 
---@api-stub: LParticleSystem:setEmitterLifetime / getEmitterLifetime
+--@api-stub: LParticleSystem:setEmitterLifetime
+--@api-stub: LParticleSystem:getEmitterLifetime
 -- Emitter lifetime (0 = infinite).
 do
     ---@type LParticleSystem
@@ -106,7 +112,8 @@ do
     print("emitter lifetime = " .. ps:getEmitterLifetime())
 end
 
---@api-stub: LParticleSystem:setSpeed / getSpeed
+--@api-stub: LParticleSystem:setSpeed
+--@api-stub: LParticleSystem:getSpeed
 -- Particle speed range.
 do
     ---@type LParticleSystem
@@ -116,7 +123,10 @@ do
     print("speed = " .. smin .. ".." .. smax)
 end
 
---@api-stub: LParticleSystem:setDirection / getDirection / setSpread / getSpread
+--@api-stub: LParticleSystem:setDirection
+--@api-stub: LParticleSystem:getDirection
+--@api-stub: LParticleSystem:setSpread
+--@api-stub: LParticleSystem:getSpread
 -- Emission direction and spread.
 do
     ---@type LParticleSystem
@@ -127,7 +137,8 @@ do
     print("spread = " .. ps:getSpread())
 end
 
---@api-stub: LParticleSystem:setGravity / getGravity
+--@api-stub: LParticleSystem:setGravity
+--@api-stub: LParticleSystem:getGravity
 -- Particle gravity.
 do
     ---@type LParticleSystem
@@ -137,7 +148,10 @@ do
     print("gravity = " .. gx .. "," .. gy)
 end
 
---@api-stub: LParticleSystem:setSizes / getSizes / setSizeVariation / getSizeVariation
+--@api-stub: LParticleSystem:setSizes
+--@api-stub: LParticleSystem:getSizes
+--@api-stub: LParticleSystem:setSizeVariation
+--@api-stub: LParticleSystem:getSizeVariation
 -- Particle size keyframes.
 do
     ---@type LParticleSystem
@@ -149,7 +163,8 @@ do
     print("size var = " .. ps:getSizeVariation())
 end
 
---@api-stub: LParticleSystem:setColors / getColors
+--@api-stub: LParticleSystem:setColors
+--@api-stub: LParticleSystem:getColors
 -- Color keyframes.
 do
     ---@type LParticleSystem

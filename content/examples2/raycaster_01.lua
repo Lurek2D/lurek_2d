@@ -1,6 +1,9 @@
 --- Raycaster Module Part 2: doors, height maps, lights, sprites, floor/ceiling, scene building, minimap
 
---@api-stub: lurek.raycaster.newDoorManager / addDoor / openDoor / closeDoor
+--@api-stub: lurek.raycaster.newDoorManager
+--@api-stub: lurek.addDoor
+--@api-stub: lurek.openDoor
+--@api-stub: lurek.closeDoor
 -- Door management for raycaster maps.
 do
     ---@type LDoorManager
@@ -20,7 +23,8 @@ do
     print("after close: state=" .. d.state)
 end
 
---@api-stub: LDoorManager:getDoor / update cycle
+--@api-stub: LDoorManager:getDoor
+--@api-stub: LDoorManager:update cycle
 -- Full door open/close animation cycle.
 do
     ---@type LDoorManager
@@ -40,7 +44,8 @@ do
     print("after close 1s: open=" .. string.format("%.2f", d.openAmount))
 end
 
---@api-stub: LDoorManager:type / typeOf
+--@api-stub: LDoorManager:type
+--@api-stub: LDoorManager:typeOf
 -- Door manager type.
 do
     ---@type LDoorManager
@@ -49,7 +54,11 @@ do
     print("is LDoorManager = " .. tostring(doors:typeOf("LDoorManager")))
 end
 
---@api-stub: lurek.raycaster.newHeightMap / setFloor / setCeiling / floorAt / ceilingAt
+--@api-stub: lurek.raycaster.newHeightMap
+--@api-stub: lurek.setFloor
+--@api-stub: lurek.setCeiling
+--@api-stub: lurek.floorAt
+--@api-stub: lurek.ceilingAt
 -- Height map for variable floor/ceiling heights.
 do
     ---@type LHeightMap
@@ -80,7 +89,8 @@ do
     print("stair end floor = " .. hm:floorAt(7, 0))
 end
 
---@api-stub: LHeightMap:type / typeOf
+--@api-stub: LHeightMap:type
+--@api-stub: LHeightMap:typeOf
 -- Height map type.
 do
     ---@type LHeightMap
@@ -112,7 +122,8 @@ do
     print("new intensity = " .. light:intensity())
 end
 
---@api-stub: LPointLight:type / typeOf
+--@api-stub: LPointLight:type
+--@api-stub: LPointLight:typeOf
 -- Point light type.
 do
     ---@type LPointLight
@@ -121,7 +132,9 @@ do
     print("is LPointLight = " .. tostring(light:typeOf("LPointLight")))
 end
 
---@api-stub: lurek.raycaster.newSpriteManager / add / remove / setPosition
+--@api-stub: lurek.raycaster.newSpriteManager
+--@api-stub: lurek.add
+--@api-stub: lurek.setPosition
 -- Sprite management for billboard objects in the raycaster.
 do
     ---@type LSpriteManager
@@ -152,7 +165,9 @@ do
     end
 end
 
---@api-stub: LSpriteManager:clear / type / typeOf
+--@api-stub: LSpriteManager:clear
+--@api-stub: LSpriteManager:type
+--@api-stub: LSpriteManager:typeOf
 -- Sprite manager lifecycle.
 do
     ---@type LSpriteManager
@@ -164,7 +179,8 @@ do
     print("is LSpriteManager = " .. tostring(sprites:typeOf("LSpriteManager")))
 end
 
---@api-stub: LRaycaster:setFloorTextureCell / getFloorTextureCell
+--@api-stub: LRaycaster:setFloorTextureCell
+--@api-stub: LRaycaster:getFloorTextureCell
 -- Per-cell floor textures (expects LImage or nil).
 do
     ---@type LRaycaster
@@ -177,7 +193,8 @@ do
     print("floor at 0,0 = " .. tostring(map:getFloorTextureCell(0, 0)))
 end
 
---@api-stub: LRaycaster:setCeilingTextureCell / getCeilingTextureCell
+--@api-stub: LRaycaster:setCeilingTextureCell
+--@api-stub: LRaycaster:getCeilingTextureCell
 -- Per-cell ceiling textures (expects LImage or nil to clear).
 do
     ---@type LRaycaster
@@ -192,7 +209,8 @@ do
     print("cleared ceiling at 2,2 = " .. tostring(map:getCeilingTextureCell(2, 2)))
 end
 
---@api-stub: LRaycaster:setLoweredFloorCell / getLoweredFloorCell
+--@api-stub: LRaycaster:setLoweredFloorCell
+--@api-stub: LRaycaster:getLoweredFloorCell
 -- Lowered floor cells (pits, water).
 do
     ---@type LRaycaster

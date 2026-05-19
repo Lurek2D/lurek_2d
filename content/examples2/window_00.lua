@@ -1,6 +1,7 @@
 -- window_00.lua: Window basics — dimensions, title, position, mode, fullscreen
 
-do --@api-stub: lurek.window.getDimensions
+--@api-stub: lurek.window.getDimensions
+do
     -- query window width and height
     local w, h = lurek.window.getDimensions()
     print("window dimensions:", w, h)
@@ -8,7 +9,8 @@ do --@api-stub: lurek.window.getDimensions
     print("height:", lurek.window.getHeight())
 end
 
-do --@api-stub: lurek.window.getTitle setTitle
+--@api-stub: lurek.window.getTitle setTitle
+do
     -- get and set the window title
     lurek.window.setTitle("My Game - Level 1")
     print("title:", lurek.window.getTitle())
@@ -16,7 +18,8 @@ do --@api-stub: lurek.window.getTitle setTitle
     print("updated title:", lurek.window.getTitle())
 end
 
-do --@api-stub: lurek.window.getPosition setPosition
+--@api-stub: lurek.window.getPosition setPosition
+do
     -- read and set window position on screen
     local x, y = lurek.window.getPosition()
     print("position:", x, y)
@@ -25,7 +28,8 @@ do --@api-stub: lurek.window.getPosition setPosition
     print("new position:", nx, ny)
 end
 
-do --@api-stub: lurek.window.getMode setMode
+--@api-stub: lurek.window.getMode setMode
+do
     -- query and set window mode with flags
     local w, h, flags = lurek.window.getMode()
     print("mode:", w, "x", h)
@@ -36,7 +40,8 @@ do --@api-stub: lurek.window.getMode setMode
     print("new mode:", nw, "x", nh, "vsync:", nflags.vsync)
 end
 
-do --@api-stub: lurek.window.setFullscreen getFullscreen isFullscreen
+--@api-stub: lurek.window.setFullscreen getFullscreen isFullscreen
+do
     -- toggle fullscreen mode
     print("is fullscreen:", lurek.window.isFullscreen())
     print("fullscreen state:", lurek.window.getFullscreen())
@@ -46,7 +51,8 @@ do --@api-stub: lurek.window.setFullscreen getFullscreen isFullscreen
     print("after disable:", lurek.window.isFullscreen())
 end
 
-do --@api-stub: lurek.window.getPixelDimensions getDPIScale
+--@api-stub: lurek.window.getPixelDimensions getDPIScale
+do
     -- physical pixel dimensions and DPI scale
     local pw, ph = lurek.window.getPixelDimensions()
     print("pixel dimensions:", pw, ph)
@@ -54,7 +60,8 @@ do --@api-stub: lurek.window.getPixelDimensions getDPIScale
     print("native DPI scale:", lurek.window.getNativeDPIScale())
 end
 
-do --@api-stub: lurek.window.fromPixels toPixels
+--@api-stub: lurek.window.fromPixels toPixels
+do
     -- convert between logical and pixel units
     local logical = lurek.window.fromPixels(200)
     print("200 pixels in logical:", logical)
@@ -62,7 +69,8 @@ do --@api-stub: lurek.window.fromPixels toPixels
     print("100 logical in pixels:", pixels)
 end
 
-do --@api-stub: lurek.window.windowConfig
+--@api-stub: lurek.window.windowConfig
+do
     -- apply multiple window settings at once
     lurek.window.windowConfig({
         title = "Configured Window",

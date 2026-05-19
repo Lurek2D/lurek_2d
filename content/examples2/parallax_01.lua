@@ -1,6 +1,8 @@
 --- Parallax Module Part 2: autoscroll, motion stretch, effects, sets, rendering
 
---@api-stub: LParallaxLayer:setAutoscroll / getAutoscroll / resetAutoscroll
+--@api-stub: LParallaxLayer:setAutoscroll
+--@api-stub: LParallaxLayer:getAutoscroll
+--@api-stub: LParallaxLayer:resetAutoscroll
 -- Automatic scrolling velocity.
 do
     ---@type LParallaxLayer
@@ -13,7 +15,8 @@ do
     print("autoscroll reset")
 end
 
---@api-stub: LParallaxLayer:setMotionStretch / getMotionStretch
+--@api-stub: LParallaxLayer:setMotionStretch
+--@api-stub: LParallaxLayer:getMotionStretch
 -- Motion stretch settings.
 do
     ---@type LParallaxLayer
@@ -24,7 +27,9 @@ do
     print("strength=" .. strength .. " max=" .. max_scale)
 end
 
---@api-stub: LParallaxLayer:addEffectPass / effectCount / clearEffects
+--@api-stub: LParallaxLayer:addEffectPass
+--@api-stub: LParallaxLayer:effectCount
+--@api-stub: LParallaxLayer:clearEffects
 -- Shader effect passes.
 do
     ---@type LParallaxLayer
@@ -36,7 +41,9 @@ do
     print("after clear = " .. layer:effectCount())
 end
 
---@api-stub: LParallaxLayer:render / renderAuto / update
+--@api-stub: LParallaxLayer:render
+--@api-stub: LParallaxLayer:renderAuto
+--@api-stub: LParallaxLayer:update
 -- Rendering and animation.
 do
     ---@type LParallaxLayer
@@ -57,7 +64,9 @@ do
     print("layers = " .. set:layerCount())
 end
 
---@api-stub: LParallaxSet:addLayer / layerCount / removeLayerAt
+--@api-stub: LParallaxSet:addLayer
+--@api-stub: LParallaxSet:layerCount
+--@api-stub: LParallaxSet:removeLayerAt
 -- Managing layers in a set.
 do
     ---@type LParallaxSet
@@ -76,7 +85,8 @@ do
     print("removed = " .. tostring(removed) .. " layers = " .. set:layerCount())
 end
 
---@api-stub: LParallaxSet:getLayerZAt / sortByZ
+--@api-stub: LParallaxSet:getLayerZAt
+--@api-stub: LParallaxSet:sortByZ
 -- Z-order queries and sorting.
 do
     ---@type LParallaxSet
@@ -93,7 +103,10 @@ do
     print("sorted: z at 1 = " .. set:getLayerZAt(1))
 end
 
---@api-stub: LParallaxSet:setName / getName / setVisible / isVisible
+--@api-stub: LParallaxSet:setName
+--@api-stub: LParallaxSet:getName
+--@api-stub: LParallaxSet:setVisible
+--@api-stub: LParallaxSet:isVisible
 -- Set metadata.
 do
     ---@type LParallaxSet
@@ -106,7 +119,9 @@ do
     print("visible = " .. tostring(set:isVisible()))
 end
 
---@api-stub: LParallaxSet:render / renderAuto / update
+--@api-stub: LParallaxSet:render
+--@api-stub: LParallaxSet:renderAuto
+--@api-stub: LParallaxSet:update
 -- Set-level rendering and update.
 do
     ---@type LParallaxSet

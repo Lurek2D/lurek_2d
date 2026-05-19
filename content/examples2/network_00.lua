@@ -60,7 +60,8 @@ do
     server:destroy()
 end
 
---@api-stub: LNetworkHost:send / broadcast
+--@api-stub: LNetworkHost:send
+--@api-stub: LNetworkHost:broadcast
 -- Sends data to peers.
 do
     ---@type LNetworkHost
@@ -72,7 +73,8 @@ do
     server:destroy()
 end
 
---@api-stub: LNetworkHost:getConnectedPeerCount / getConnectedPeerIds
+--@api-stub: LNetworkHost:getConnectedPeerCount
+--@api-stub: LNetworkHost:getConnectedPeerIds
 -- Queries connected peers.
 do
     ---@type LNetworkHost
@@ -83,7 +85,9 @@ do
     server:destroy()
 end
 
---@api-stub: LNetworkHost:getPeerState / getPeerAddress / getRoundTripTime
+--@api-stub: LNetworkHost:getPeerState
+--@api-stub: LNetworkHost:getPeerAddress
+--@api-stub: LNetworkHost:getRoundTripTime
 -- Peer info queries.
 do
     ---@type LNetworkHost
@@ -111,7 +115,8 @@ do
     server:destroy()
 end
 
---@api-stub: LNetworkHost:setBandwidthLimit / getBandwidthLimit
+--@api-stub: LNetworkHost:setBandwidthLimit
+--@api-stub: LNetworkHost:getBandwidthLimit
 -- Bandwidth configuration.
 do
     ---@type LNetworkHost
@@ -132,7 +137,9 @@ do
     host:destroy()
 end
 
---@api-stub: LNetworkHost:disconnect / disconnectLater / disconnectNow
+--@api-stub: LNetworkHost:disconnect
+--@api-stub: LNetworkHost:disconnectLater
+--@api-stub: LNetworkHost:disconnectNow
 -- Disconnection methods.
 do
     ---@type LNetworkHost
@@ -145,7 +152,9 @@ do
     host:destroy()
 end
 
---@api-stub: LNetworkHost:flush / ping / resetPeer
+--@api-stub: LNetworkHost:flush
+--@api-stub: LNetworkHost:ping
+--@api-stub: LNetworkHost:resetPeer
 -- Utility methods.
 do
     ---@type LNetworkHost

@@ -9,7 +9,9 @@ do
     print("chunk size = " .. cm:getChunkSize())
 end
 
---@api-stub: LChunkMap:setTile / getTile / clearTile
+--@api-stub: LChunkMap:setTile
+--@api-stub: LChunkMap:getTile
+--@api-stub: LChunkMap:clearTile
 -- Placing and reading tiles in a chunk map.
 do
     ---@type LChunkMap
@@ -35,7 +37,9 @@ do
     print("sample (11,11) = " .. cm:getTile(11, 11))
 end
 
---@api-stub: LChunkMap:loadChunk / unloadChunk / getLoadedChunks
+--@api-stub: LChunkMap:loadChunk
+--@api-stub: LChunkMap:unloadChunk
+--@api-stub: LChunkMap:getLoadedChunks
 -- Manual chunk loading and unloading.
 do
     ---@type LChunkMap
@@ -87,7 +91,10 @@ do
     print("level height = " .. iso:getLevelHeight())
 end
 
---@api-stub: LIsoMap:addLevel / getLevelCount / setTilePart / getTilePart
+--@api-stub: LIsoMap:addLevel
+--@api-stub: LIsoMap:getLevelCount
+--@api-stub: LIsoMap:setTilePart
+--@api-stub: LIsoMap:getTilePart
 -- Managing iso map levels and tile parts.
 do
     ---@type LIsoMap
@@ -100,7 +107,9 @@ do
     print("tile part at (1,3,4,part=1) = " .. gid)
 end
 
---@api-stub: LIsoMap:fillLevel / isLevelVisible / setLevelVisible
+--@api-stub: LIsoMap:fillLevel
+--@api-stub: LIsoMap:isLevelVisible
+--@api-stub: LIsoMap:setLevelVisible
 -- Filling and toggling iso levels.
 do
     ---@type LIsoMap
@@ -113,7 +122,9 @@ do
     print("after hide = " .. tostring(iso:isLevelVisible(1)))
 end
 
---@api-stub: LIsoMap:screenToTile / tileToScreen / setOrigin
+--@api-stub: LIsoMap:screenToTile
+--@api-stub: LIsoMap:tileToScreen
+--@api-stub: LIsoMap:setOrigin
 -- Isometric coordinate transforms.
 do
     ---@type LIsoMap
@@ -125,7 +136,8 @@ do
     print("screen -> tile(" .. tx .. ", " .. ty .. ")")
 end
 
---@api-stub: LIsoMap:setPartOrder / getPartOrder
+--@api-stub: LIsoMap:setPartOrder
+--@api-stub: LIsoMap:getPartOrder
 -- Changing the draw order of tile parts.
 do
     ---@type LIsoMap
@@ -146,7 +158,10 @@ do
     print("chunk size = " .. lmr:getChunkSize())
 end
 
---@api-stub: LLargeMapRenderer:setMapData / getMapSize / getTile / setTile
+--@api-stub: LLargeMapRenderer:setMapData
+--@api-stub: LLargeMapRenderer:getMapSize
+--@api-stub: LLargeMapRenderer:getTile
+--@api-stub: LLargeMapRenderer:setTile
 -- Loading tile data into the large-map renderer.
 do
     ---@type LLargeMapRenderer
@@ -163,7 +178,10 @@ do
     print("after set = " .. lmr:getTile(50, 50))
 end
 
---@api-stub: LLargeMapRenderer:setCamera / setViewport / getVisibleChunks / getTotalChunks
+--@api-stub: LLargeMapRenderer:setCamera
+--@api-stub: LLargeMapRenderer:setViewport
+--@api-stub: LLargeMapRenderer:getVisibleChunks
+--@api-stub: LLargeMapRenderer:getTotalChunks
 -- Camera and viewport setup.
 do
     ---@type LLargeMapRenderer
@@ -177,7 +195,9 @@ do
     print("visible chunks = " .. lmr:getVisibleChunks())
 end
 
---@api-stub: LLargeMapRenderer:setLodEnabled / isLodEnabled / setLodThresholds
+--@api-stub: LLargeMapRenderer:setLodEnabled
+--@api-stub: LLargeMapRenderer:isLodEnabled
+--@api-stub: LLargeMapRenderer:setLodThresholds
 -- Level-of-detail configuration.
 do
     ---@type LLargeMapRenderer
@@ -189,7 +209,10 @@ do
     print("LOD thresholds set")
 end
 
---@api-stub: LLargeMapRenderer:invalidateAll / invalidateChunk / setChunkSize / setTilesetColumns
+--@api-stub: LLargeMapRenderer:invalidateAll
+--@api-stub: LLargeMapRenderer:invalidateChunk
+--@api-stub: LLargeMapRenderer:setChunkSize
+--@api-stub: LLargeMapRenderer:setTilesetColumns
 -- Chunk invalidation and configuration.
 do
     ---@type LLargeMapRenderer
@@ -217,7 +240,12 @@ do
     print("height in segments = " .. block:getHeightInSegments())
 end
 
---@api-stub: LMapBlock:setTile / getTile / setName / getName / setWeight / getWeight
+--@api-stub: LMapBlock:setTile
+--@api-stub: LMapBlock:getTile
+--@api-stub: LMapBlock:setName
+--@api-stub: LMapBlock:getName
+--@api-stub: LMapBlock:setWeight
+--@api-stub: LMapBlock:getWeight
 -- Editing map block content and metadata.
 do
     ---@type LMapBlock
@@ -232,7 +260,8 @@ do
     print("tile (1,2,2) = " .. block:getTile(1, 2, 2))
 end
 
---@api-stub: LMapBlock:setSide / getSide
+--@api-stub: LMapBlock:setSide
+--@api-stub: LMapBlock:getSide
 -- Edge matching for procedural generation.
 do
     ---@type LMapBlock
@@ -246,7 +275,8 @@ do
     print("east seg 1 = " .. block:getSide("east", 1))
 end
 
---@api-stub: lurek.tilemap.newMapGroup / LMapGroup
+--@api-stub: lurek.tilemap.newMapGroup
+--@api-stub: lurek.LMapGroup
 -- Creating a map group and adding blocks.
 do
     ---@type LMapGroup
@@ -266,7 +296,8 @@ do
     print("after remove = " .. group:getBlockCount())
 end
 
---@api-stub: lurek.tilemap.newMapScript / LMapScript
+--@api-stub: lurek.tilemap.newMapScript
+--@api-stub: lurek.LMapScript
 -- Creating a map generation script with steps.
 do
     ---@type LMapScript
@@ -278,7 +309,8 @@ do
     print("step count = " .. script:getStepCount())
 end
 
---@api-stub: lurek.tilemap.newMapGen / LMapGen:generate
+--@api-stub: lurek.tilemap.newMapGen
+--@api-stub: LMapGen:generate
 -- Procedural map generation.
 do
     ---@type LMapGroup

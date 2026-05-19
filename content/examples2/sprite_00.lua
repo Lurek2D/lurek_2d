@@ -28,7 +28,8 @@ do
     print("last frame (" .. lastIdx .. "): x=" .. lastFrame.x .. " y=" .. lastFrame.y)
 end
 
---@api-stub: LSpriteSheet:getRow / getColumn
+--@api-stub: LSpriteSheet:getRow
+--@api-stub: LSpriteSheet:getColumn
 -- Accessing entire rows and columns.
 do
     ---@type LSpriteSheet
@@ -47,7 +48,9 @@ do
     end
 end
 
---@api-stub: LSpriteSheet:nameGroup / getGroupFrames / getGroupNames
+--@api-stub: LSpriteSheet:nameGroup
+--@api-stub: LSpriteSheet:getGroupFrames
+--@api-stub: LSpriteSheet:getGroupNames
 -- Named animation groups from frame ranges.
 do
     ---@type LSpriteSheet
@@ -121,7 +124,8 @@ do
     end
 end
 
---@api-stub: LSpriteAtlas:getEntry / getByIndex
+--@api-stub: LSpriteAtlas:getEntry
+--@api-stub: LSpriteAtlas:getByIndex
 -- Looking up atlas entries.
 do
     local atlasJson = lurek.serial.toJson({

@@ -21,7 +21,8 @@ do
     print("count = " .. ch:getCount())
 end
 
---@api-stub: LChannel:push / pop
+--@api-stub: LChannel:push
+--@api-stub: LChannel:pop
 -- Pushing and popping values.
 do
     ---@type LChannel
@@ -65,7 +66,8 @@ do
     print("demand timeout = " .. tostring(empty))
 end
 
---@api-stub: LChannel:supply / tryPush
+--@api-stub: LChannel:supply
+--@api-stub: LChannel:tryPush
 -- Conditional push operations.
 do
     ---@type LChannel
@@ -81,7 +83,8 @@ do
     print("supply when full = " .. tostring(supplied))
 end
 
---@api-stub: LChannel:pushBytes / popBytes
+--@api-stub: LChannel:pushBytes
+--@api-stub: LChannel:popBytes
 -- Binary data transfer via channel.
 do
     ---@type LChannel
@@ -94,7 +97,8 @@ do
     print("data matches = " .. tostring(retrieved == data))
 end
 
---@api-stub: LChannel:pushTable / popTable
+--@api-stub: LChannel:pushTable
+--@api-stub: LChannel:popTable
 -- Structured table transfer.
 do
     ---@type LChannel
@@ -108,7 +112,8 @@ do
     print("popTable items = " .. #result.items)
 end
 
---@api-stub: LChannel:clear / getCount
+--@api-stub: LChannel:clear
+--@api-stub: LChannel:getCount
 -- Clearing the channel.
 do
     ---@type LChannel
@@ -195,7 +200,8 @@ do
     print("pool size = " .. pool:size())
 end
 
---@api-stub: LThreadPool:submit / collect
+--@api-stub: LThreadPool:submit
+--@api-stub: LThreadPool:collect
 -- Submitting work and collecting results.
 do
     ---@type LThreadPool
@@ -216,7 +222,8 @@ do
     print("collected = " .. tostring(results))
 end
 
---@api-stub: LThreadPool:getInputChannel / getOutputChannel
+--@api-stub: LThreadPool:getInputChannel
+--@api-stub: LThreadPool:getOutputChannel
 -- Accessing pool channels directly.
 do
     ---@type LThreadPool
@@ -259,7 +266,9 @@ do
     print("done immediately = " .. tostring(promise:isDone()))
 end
 
---@api-stub: LPromise:result / isDone / getError
+--@api-stub: LPromise:result
+--@api-stub: LPromise:isDone
+--@api-stub: LPromise:getError
 -- Waiting for async result.
 do
     ---@type LPromise

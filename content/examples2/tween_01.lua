@@ -54,7 +54,8 @@ do
     lurek.tween.update(0.5)
 end
 
---@api-stub: LTweenSequence:getProgress / cancel
+--@api-stub: LTweenSequence:getProgress
+--@api-stub: LTweenSequence:cancel
 -- Monitoring and cancelling a sequence.
 do
     local obj = { w = 0 }

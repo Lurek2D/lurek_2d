@@ -1,6 +1,7 @@
 --- Pathfinding Module Part 3: flow fields, AI flow fields, unit pathfinder
 
---@api-stub: lurek.pathfind.newFlowField / LFlowField:calculate
+--@api-stub: lurek.pathfind.newFlowField
+--@api-stub: LFlowField:calculate
 -- Flow field creation and single-target calculation.
 do
     ---@type LNavGrid
@@ -15,7 +16,9 @@ do
     print("calculated = " .. tostring(ff:isCalculated()))
 end
 
---@api-stub: LFlowField:getDirection / getDirectionAngle / getCostToTarget
+--@api-stub: LFlowField:getDirection
+--@api-stub: LFlowField:getDirectionAngle
+--@api-stub: LFlowField:getCostToTarget
 -- Flow field queries.
 do
     ---@type LNavGrid
@@ -32,7 +35,8 @@ do
     print("cost to target from (1,1) = " .. cost)
 end
 
---@api-stub: LFlowField:calculateMulti / getTargets
+--@api-stub: LFlowField:calculateMulti
+--@api-stub: LFlowField:getTargets
 -- Multi-target flow field.
 do
     ---@type LNavGrid
@@ -61,7 +65,8 @@ do
     print("steer velocity = " .. vx .. "," .. vy)
 end
 
---@api-stub: LFlowField:type / typeOf
+--@api-stub: LFlowField:type
+--@api-stub: LFlowField:typeOf
 -- Type checking.
 do
     ---@type LNavGrid
@@ -72,7 +77,9 @@ do
     print("is LFlowField = " .. tostring(ff:typeOf("LFlowField")))
 end
 
---@api-stub: lurek.pathfind.newPathFlowField / LAIFlowField:setGoal / getGoal
+--@api-stub: lurek.pathfind.newPathFlowField
+--@api-stub: LAIFlowField:setGoal
+--@api-stub: LAIFlowField:getGoal
 -- AI flow field from a path grid.
 do
     ---@type LPathGrid
@@ -87,7 +94,8 @@ do
     print("goal = " .. gx .. "," .. gy)
 end
 
---@api-stub: LAIFlowField:getDirection / getDistance
+--@api-stub: LAIFlowField:getDirection
+--@api-stub: LAIFlowField:getDistance
 -- AI flow field direction and distance queries.
 do
     ---@type LPathGrid
@@ -101,7 +109,8 @@ do
     print("distance to goal = " .. dist)
 end
 
---@api-stub: LAIFlowField:type / typeOf
+--@api-stub: LAIFlowField:type
+--@api-stub: LAIFlowField:typeOf
 -- Type checking.
 do
     ---@type LPathGrid
@@ -112,7 +121,8 @@ do
     print("is LAIFlowField = " .. tostring(aiff:typeOf("LAIFlowField")))
 end
 
---@api-stub: lurek.pathfind.newPathfinder / LUnitPathfinder:findPath
+--@api-stub: lurek.pathfind.newPathfinder
+--@api-stub: LUnitPathfinder:findPath
 -- Unit pathfinder creation and basic pathfinding.
 do
     ---@type LNavGrid
@@ -174,7 +184,9 @@ do
     end
 end
 
---@api-stub: LUnitPathfinder:isReachable / lineOfSight / heuristicDistance
+--@api-stub: LUnitPathfinder:isReachable
+--@api-stub: LUnitPathfinder:lineOfSight
+--@api-stub: LUnitPathfinder:heuristicDistance
 -- Reachability and visibility checks.
 do
     ---@type LNavGrid
@@ -205,7 +217,8 @@ do
     print("nearest walkable = " .. nx .. "," .. ny)
 end
 
---@api-stub: LUnitPathfinder:getPathCost / getPathLength
+--@api-stub: LUnitPathfinder:getPathCost
+--@api-stub: LUnitPathfinder:getPathLength
 -- Path cost and length utilities.
 do
     ---@type LNavGrid
@@ -220,7 +233,11 @@ do
     end
 end
 
---@api-stub: LUnitPathfinder:setCacheEnabled / isCacheEnabled / setCacheMaxSize / getCacheSize / clearCache
+--@api-stub: LUnitPathfinder:setCacheEnabled
+--@api-stub: LUnitPathfinder:isCacheEnabled
+--@api-stub: LUnitPathfinder:setCacheMaxSize
+--@api-stub: LUnitPathfinder:getCacheSize
+--@api-stub: LUnitPathfinder:clearCache
 -- Path cache management.
 do
     ---@type LNavGrid
@@ -238,7 +255,8 @@ do
     print("after clear = " .. pf:getCacheSize())
 end
 
---@api-stub: LUnitPathfinder:type / typeOf
+--@api-stub: LUnitPathfinder:type
+--@api-stub: LUnitPathfinder:typeOf
 -- Type checking.
 do
     ---@type LNavGrid
@@ -264,7 +282,8 @@ do
     print("cells count = " .. #result.cells)
 end
 
---@api-stub: lurek.pathfind.getThreadCount / setThreadCount
+--@api-stub: lurek.pathfind.getThreadCount
+--@api-stub: lurek.setThreadCount
 -- Thread count (placeholder API).
 do
     local tc = lurek.pathfind.getThreadCount()

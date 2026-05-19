@@ -9,7 +9,9 @@ do
     print("items = " .. list:getItemCount())
 end
 
---@api-stub: LListBox:addItem / getItem / getItemCount
+--@api-stub: LListBox:addItem
+--@api-stub: LListBox:getItem
+--@api-stub: LListBox:getItemCount
 -- Populating a list box.
 do
     ---@type LListBox
@@ -23,7 +25,8 @@ do
     print("item 3 = " .. list:getItem(3))
 end
 
---@api-stub: LListBox:setSelectedIndex / getSelectedIndex
+--@api-stub: LListBox:setSelectedIndex
+--@api-stub: LListBox:getSelectedIndex
 -- Programmatic selection.
 do
     ---@type LListBox
@@ -37,7 +40,9 @@ do
     print("changed to = " .. list:getSelectedIndex())
 end
 
---@api-stub: LListBox:removeItem / clearItems / setItemHeight
+--@api-stub: LListBox:removeItem
+--@api-stub: LListBox:clearItems
+--@api-stub: LListBox:setItemHeight
 -- List manipulation and styling.
 do
     ---@type LListBox
@@ -73,7 +78,10 @@ do
     print("shortcut = " .. item:getShortcut())
 end
 
---@api-stub: LMenuItem:setText / setOnClick / setChecked / isChecked
+--@api-stub: LMenuItem:setText
+--@api-stub: LMenuItem:setOnClick
+--@api-stub: LMenuItem:setChecked
+--@api-stub: LMenuItem:isChecked
 -- Configuring menu item behavior.
 do
     ---@type LMenuItem
@@ -87,7 +95,8 @@ do
     print("renamed = " .. item:getText())
 end
 
---@api-stub: LMenuItem:addSubItem / getSubItems
+--@api-stub: LMenuItem:addSubItem
+--@api-stub: LMenuItem:getSubItems
 -- Building nested menu hierarchies.
 do
     ---@type LMenuItem
@@ -107,7 +116,9 @@ do
     print("File has " .. #subs .. " sub-items")
 end
 
---@api-stub: LMenuBar:addMenu / getMenuCount / getMenus
+--@api-stub: LMenuBar:addMenu
+--@api-stub: LMenuBar:getMenuCount
+--@api-stub: LMenuBar:getMenus
 -- Assembling a complete menu bar.
 do
     ---@type LMenuBar
@@ -149,7 +160,9 @@ do
     print("tab count = " .. tabs:getTabCount())
 end
 
---@api-stub: LTabBar:addTab / getTab / getTabCount
+--@api-stub: LTabBar:addTab
+--@api-stub: LTabBar:getTab
+--@api-stub: LTabBar:getTabCount
 -- Adding tabs.
 do
     ---@type LTabBar
@@ -163,7 +176,9 @@ do
     print("tab 3 = " .. tabs:getTab(3))
 end
 
---@api-stub: LTabBar:setActiveTab / getActiveTab / removeTab
+--@api-stub: LTabBar:setActiveTab
+--@api-stub: LTabBar:getActiveTab
+--@api-stub: LTabBar:removeTab
 -- Tab selection and removal.
 do
     ---@type LTabBar
@@ -187,7 +202,9 @@ do
     print("sections = " .. acc:getSectionCount())
 end
 
---@api-stub: LAccordion:addSection / getSectionCount / getSectionTitle
+--@api-stub: LAccordion:addSection
+--@api-stub: LAccordion:getSectionCount
+--@api-stub: LAccordion:getSectionTitle
 -- Building accordion sections.
 do
     ---@type LAccordion
@@ -200,7 +217,9 @@ do
     print("section 2 = " .. acc:getSectionTitle(2))
 end
 
---@api-stub: LAccordion:toggleSection / isSectionExpanded / setExclusive
+--@api-stub: LAccordion:toggleSection
+--@api-stub: LAccordion:isSectionExpanded
+--@api-stub: LAccordion:setExclusive
 -- Expanding and collapsing sections.
 do
     ---@type LAccordion

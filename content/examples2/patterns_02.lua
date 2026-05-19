@@ -1,6 +1,10 @@
 --- Patterns Module Part 3: observer, event bus, mediator, debounce, throttle, funnel
 
---@api-stub: lurek.patterns.newObserver / LObserver:set / get / subscribe / unsubscribe
+--@api-stub: lurek.patterns.newObserver
+--@api-stub: LObserver:set
+--@api-stub: LObserver:get
+--@api-stub: LObserver:subscribe
+--@api-stub: LObserver:unsubscribe
 -- Reactive observer with key-value watching.
 do
     ---@type LObserver
@@ -16,7 +20,8 @@ do
     print("hp after unsub = " .. obs:get("hp"))
 end
 
---@api-stub: LObserver:getCount / subscribe with once
+--@api-stub: LObserver:getCount
+--@api-stub: LObserver:subscribe with once
 -- Observer subscription count and one-shot subscriptions.
 do
     ---@type LObserver
@@ -29,7 +34,10 @@ do
     print("after once-fire: subs = " .. obs:getCount())
 end
 
---@api-stub: lurek.patterns.newEventBus / LEventBus:on / emit / off
+--@api-stub: lurek.patterns.newEventBus
+--@api-stub: LEventBus:on
+--@api-stub: LEventBus:emit
+--@api-stub: LEventBus:off
 -- Publish/subscribe event bus.
 do
     ---@type LEventBus
@@ -45,7 +53,10 @@ do
     bus:emit("damage", 10, "ice")
 end
 
---@api-stub: LEventBus:getListenerCount / getEvents / clear / clearAll
+--@api-stub: LEventBus:getListenerCount
+--@api-stub: LEventBus:getEvents
+--@api-stub: LEventBus:clear
+--@api-stub: LEventBus:clearAll
 -- Event bus management.
 do
     ---@type LEventBus
@@ -61,7 +72,10 @@ do
     print("after clearAll: events = " .. #bus:getEvents())
 end
 
---@api-stub: lurek.patterns.newMediator / LMediator:on / send / off
+--@api-stub: lurek.patterns.newMediator
+--@api-stub: LMediator:on
+--@api-stub: LMediator:send
+--@api-stub: LMediator:off
 -- Channel-based message passing.
 do
     ---@type LMediator
@@ -78,7 +92,11 @@ do
     med:send("ui", "ignored", 0)
 end
 
---@api-stub: LMediator:broadcast / channels / handlerCount / removeChannel / clear
+--@api-stub: LMediator:broadcast
+--@api-stub: LMediator:channels
+--@api-stub: LMediator:handlerCount
+--@api-stub: LMediator:removeChannel
+--@api-stub: LMediator:clear
 -- Mediator broadcast and channel management.
 do
     ---@type LMediator
@@ -95,7 +113,10 @@ do
     print("after clear: channels = " .. #med:channels())
 end
 
---@api-stub: lurek.patterns.newDebounce / LDebounce:trigger / update / onFire
+--@api-stub: lurek.patterns.newDebounce
+--@api-stub: LDebounce:trigger
+--@api-stub: LDebounce:update
+--@api-stub: LDebounce:onFire
 -- Debounce delays action until input stops.
 do
     ---@type LDebounce
@@ -112,7 +133,9 @@ do
     print("fire count = " .. db:getFireCount())
 end
 
---@api-stub: LDebounce:cancel / isPending / getFireCount
+--@api-stub: LDebounce:cancel
+--@api-stub: LDebounce:isPending
+--@api-stub: LDebounce:getFireCount
 -- Debounce cancellation.
 do
     ---@type LDebounce
@@ -126,7 +149,10 @@ do
     print("fire count = " .. db:getFireCount())
 end
 
---@api-stub: lurek.patterns.newThrottle / LThrottle:onFire / update / getFireCount
+--@api-stub: lurek.patterns.newThrottle
+--@api-stub: LThrottle:onFire
+--@api-stub: LThrottle:update
+--@api-stub: LThrottle:getFireCount
 -- Throttle limits action frequency.
 do
     ---@type LThrottle
@@ -142,7 +168,9 @@ do
     print("fire count = " .. th:getFireCount())
 end
 
---@api-stub: LThrottle:reset / setEnabled / getProgress
+--@api-stub: LThrottle:reset
+--@api-stub: LThrottle:setEnabled
+--@api-stub: LThrottle:getProgress
 -- Throttle control.
 do
     ---@type LThrottle
@@ -157,7 +185,10 @@ do
     print("disabled progress = " .. th:getProgress())
 end
 
---@api-stub: lurek.patterns.newFunnel / LFunnel:push / update / onFlush
+--@api-stub: lurek.patterns.newFunnel
+--@api-stub: LFunnel:push
+--@api-stub: LFunnel:update
+--@api-stub: LFunnel:onFlush
 -- Batching funnel collects events and flushes together.
 do
     ---@type LFunnel
@@ -176,7 +207,10 @@ do
     print("flush count = " .. funnel:getFlushCount())
 end
 
---@api-stub: LFunnel:flush / discard / pendingCount / getFlushCount
+--@api-stub: LFunnel:flush
+--@api-stub: LFunnel:discard
+--@api-stub: LFunnel:pendingCount
+--@api-stub: LFunnel:getFlushCount
 -- Funnel manual control.
 do
     ---@type LFunnel

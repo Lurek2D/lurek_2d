@@ -1,6 +1,6 @@
 --- Save Module: persistent game state management
 
---@api-stub: lurek.save.newSaveManager / basic creation
+--@api-stub: lurek.save.newSaveManager
 -- Creating a save manager instance.
 do
     ---@type LSaveManager
@@ -9,7 +9,9 @@ do
     print("is LSaveManager = " .. tostring(mgr:typeOf("LSaveManager")))
 end
 
---@api-stub: LSaveManager:register / collect / restore
+--@api-stub: LSaveManager:register
+--@api-stub: LSaveManager:collect
+--@api-stub: LSaveManager:restore
 -- Registering data sections and round-tripping state.
 do
     ---@type LSaveManager
@@ -41,7 +43,10 @@ do
     print("restored items = " .. #inventory)
 end
 
---@api-stub: LSaveManager:save / load / exists / delete
+--@api-stub: LSaveManager:save
+--@api-stub: LSaveManager:load
+--@api-stub: LSaveManager:exists
+--@api-stub: LSaveManager:delete
 -- Saving and loading from named slots.
 do
     ---@type LSaveManager
@@ -68,7 +73,8 @@ do
     print("after delete exists = " .. tostring(mgr:exists("test_slot")))
 end
 
---@api-stub: LSaveManager:getSlots / getSlotInfo
+--@api-stub: LSaveManager:getSlots
+--@api-stub: LSaveManager:getSlotInfo
 -- Listing available save slots.
 do
     ---@type LSaveManager
@@ -93,7 +99,11 @@ do
     mgr:delete("slot2")
 end
 
---@api-stub: LSaveManager:enableAutoSave / disableAutoSave / update / markDirty / isDirty
+--@api-stub: LSaveManager:enableAutoSave
+--@api-stub: LSaveManager:disableAutoSave
+--@api-stub: LSaveManager:update
+--@api-stub: LSaveManager:markDirty
+--@api-stub: LSaveManager:isDirty
 -- Auto-save system.
 do
     ---@type LSaveManager
@@ -118,7 +128,9 @@ do
     mgr:delete("autosave")
 end
 
---@api-stub: LSaveManager:setSchemaVersion / getSchemaVersion / addMigration
+--@api-stub: LSaveManager:setSchemaVersion
+--@api-stub: LSaveManager:getSchemaVersion
+--@api-stub: LSaveManager:addMigration
 -- Schema versioning and migrations.
 do
     ---@type LSaveManager
@@ -140,7 +152,8 @@ do
     print("migrations registered for v1→v2 and v2→v3")
 end
 
---@api-stub: LSaveManager:setSummary / getSummary
+--@api-stub: LSaveManager:setSummary
+--@api-stub: LSaveManager:getSummary
 -- Save slot summaries.
 do
     ---@type LSaveManager
@@ -151,7 +164,8 @@ do
     print("updated summary = " .. mgr:getSummary())
 end
 
---@api-stub: LSaveManager:setCompress / isCompressed
+--@api-stub: LSaveManager:setCompress
+--@api-stub: LSaveManager:isCompressed
 -- Save compression settings.
 do
     ---@type LSaveManager
@@ -163,7 +177,8 @@ do
     print("after disable = " .. tostring(mgr:isCompressed()))
 end
 
---@api-stub: LSaveManager:onBeforeSave / onAfterLoad
+--@api-stub: LSaveManager:onBeforeSave
+--@api-stub: LSaveManager:onAfterLoad
 -- Save/load lifecycle hooks.
 do
     ---@type LSaveManager
@@ -191,7 +206,8 @@ do
     mgr:delete("hook_test")
 end
 
---@api-stub: LSaveManager:unregister / reset
+--@api-stub: LSaveManager:unregister
+--@api-stub: LSaveManager:reset
 -- Cleaning up save manager state.
 do
     ---@type LSaveManager

@@ -10,7 +10,8 @@ do
     print("grid=" .. gw .. "x" .. gh .. " display=" .. dw .. "x" .. dh)
 end
 
---@api-stub: LMinimap:setTerrain / getTerrain
+--@api-stub: LMinimap:setTerrain
+--@api-stub: LMinimap:getTerrain
 -- Sets and reads terrain type for grid cells.
 do
     ---@type LMinimap
@@ -22,7 +23,8 @@ do
     print("terrain(2,1) = " .. mm:getTerrain(2, 1))
 end
 
---@api-stub: LMinimap:setTerrainColor / getTerrainColor
+--@api-stub: LMinimap:setTerrainColor
+--@api-stub: LMinimap:getTerrainColor
 -- Assigns RGBA color to terrain type ids.
 do
     ---@type LMinimap
@@ -45,7 +47,8 @@ do
     print("cell(2,2) = " .. mm:getTerrain(2, 2))
 end
 
---@api-stub: LMinimap:setFogEnabled / isFogEnabled
+--@api-stub: LMinimap:setFogEnabled
+--@api-stub: LMinimap:isFogEnabled
 -- Toggles fog overlay display.
 do
     ---@type LMinimap
@@ -54,7 +57,8 @@ do
     print("fog enabled = " .. tostring(mm:isFogEnabled()))
 end
 
---@api-stub: LMinimap:setFogLevel / getFogLevel
+--@api-stub: LMinimap:setFogLevel
+--@api-stub: LMinimap:getFogLevel
 -- Sets fog density per cell.
 do
     ---@type LMinimap
@@ -66,7 +70,8 @@ do
     print("fog(4,4) = " .. mm:getFogLevel(4, 4))
 end
 
---@api-stub: LMinimap:setFogColor / getFogColor
+--@api-stub: LMinimap:setFogColor
+--@api-stub: LMinimap:getFogColor
 -- Sets the fog overlay color.
 do
     ---@type LMinimap
@@ -101,7 +106,8 @@ do
     print("center fog after reveal = " .. mm:getFogLevel(16, 16))
 end
 
---@api-stub: LMinimap:setColorMode / getColorMode
+--@api-stub: LMinimap:setColorMode
+--@api-stub: LMinimap:getColorMode
 -- Switches between terrain and political color modes.
 do
     ---@type LMinimap
@@ -112,7 +118,11 @@ do
     print("mode = " .. mm:getColorMode())
 end
 
---@api-stub: LMinimap:setLayer / getLayer / getLayerCount / setLayerData / getLayerData
+--@api-stub: LMinimap:setLayer
+--@api-stub: LMinimap:getLayer
+--@api-stub: LMinimap:getLayerCount
+--@api-stub: LMinimap:setLayerData
+--@api-stub: LMinimap:getLayerData
 -- Multi-layer support.
 do
     ---@type LMinimap
@@ -128,7 +138,9 @@ do
     end
 end
 
---@api-stub: LMinimap:setDisplaySize / getDisplayWidth / getDisplayHeight
+--@api-stub: LMinimap:setDisplaySize
+--@api-stub: LMinimap:getDisplayWidth
+--@api-stub: LMinimap:getDisplayHeight
 -- Resizes the minimap display.
 do
     ---@type LMinimap
@@ -137,7 +149,10 @@ do
     print("display = " .. mm:getDisplayWidth() .. "x" .. mm:getDisplayHeight())
 end
 
---@api-stub: LMinimap:setCenter / getCenter / getCenterX / getCenterY
+--@api-stub: LMinimap:setCenter
+--@api-stub: LMinimap:getCenter
+--@api-stub: LMinimap:getCenterX
+--@api-stub: LMinimap:getCenterY
 -- Camera centering.
 do
     ---@type LMinimap
@@ -148,7 +163,8 @@ do
     print("x=" .. mm:getCenterX() .. " y=" .. mm:getCenterY())
 end
 
---@api-stub: LMinimap:setZoom / getZoom
+--@api-stub: LMinimap:setZoom
+--@api-stub: LMinimap:getZoom
 -- Zoom control.
 do
     ---@type LMinimap
@@ -157,7 +173,8 @@ do
     print("zoom = " .. mm:getZoom())
 end
 
---@api-stub: LMinimap:setAntiAlias / isAntiAlias
+--@api-stub: LMinimap:setAntiAlias
+--@api-stub: LMinimap:isAntiAlias
 -- Anti-aliasing toggle.
 do
     ---@type LMinimap
@@ -166,7 +183,9 @@ do
     print("aa = " .. tostring(mm:isAntiAlias()))
 end
 
---@api-stub: LMinimap:getCellCount / getGridWidth / getGridHeight
+--@api-stub: LMinimap:getCellCount
+--@api-stub: LMinimap:getGridWidth
+--@api-stub: LMinimap:getGridHeight
 -- Grid dimension queries.
 do
     ---@type LMinimap
@@ -175,7 +194,8 @@ do
     print("w=" .. mm:getGridWidth() .. " h=" .. mm:getGridHeight())
 end
 
---@api-stub: LMinimap:setTileDescription / getTileDescription
+--@api-stub: LMinimap:setTileDescription
+--@api-stub: LMinimap:getTileDescription
 -- Tile type descriptions.
 do
     ---@type LMinimap

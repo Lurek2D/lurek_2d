@@ -8,7 +8,10 @@ do
     print("seed = " .. ng:getSeed())
 end
 
---@api-stub: LNoiseGenerator:perlin1d / perlin2d / perlin3d / perlin4d
+--@api-stub: LNoiseGenerator:perlin1d
+--@api-stub: LNoiseGenerator:perlin2d
+--@api-stub: LNoiseGenerator:perlin3d
+--@api-stub: LNoiseGenerator:perlin4d
 -- Samples Perlin noise at various dimensions.
 do
     ---@type LNoiseGenerator
@@ -20,7 +23,9 @@ do
     print("perlin1d=" .. v1 .. " 2d=" .. v2 .. " 3d=" .. v3 .. " 4d=" .. v4)
 end
 
---@api-stub: LNoiseGenerator:simplex1d / simplex2d / simplex3d
+--@api-stub: LNoiseGenerator:simplex1d
+--@api-stub: LNoiseGenerator:simplex2d
+--@api-stub: LNoiseGenerator:simplex3d
 -- Samples simplex noise at various dimensions.
 do
     ---@type LNoiseGenerator
@@ -31,7 +36,8 @@ do
     print("simplex1d=" .. s1 .. " 2d=" .. s2 .. " 3d=" .. s3)
 end
 
---@api-stub: LNoiseGenerator:worley2d / worley3d
+--@api-stub: LNoiseGenerator:worley2d
+--@api-stub: LNoiseGenerator:worley3d
 -- Samples Worley (cellular) noise.
 do
     ---@type LNoiseGenerator
@@ -100,7 +106,8 @@ do
     print("compute map size = " .. #map)
 end
 
---@api-stub: LNoiseGenerator:setSeed / getSeed
+--@api-stub: LNoiseGenerator:setSeed
+--@api-stub: LNoiseGenerator:getSeed
 -- Changes the noise seed.
 do
     ---@type LNoiseGenerator

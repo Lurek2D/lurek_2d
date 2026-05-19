@@ -100,7 +100,8 @@ do
     end
 end
 
---@api-stub: LWorld:getBeginContactEvents / getEndContactEvents
+--@api-stub: LWorld:getBeginContactEvents
+--@api-stub: LWorld:getEndContactEvents
 -- Polling contact begin/end events each frame.
 do
     ---@type LWorld
@@ -148,7 +149,8 @@ do
     end
 end
 
---@api-stub: LWorld:setBeginContact / clearBeginContact (callback)
+--@api-stub: LWorld:setBeginContact
+--@api-stub: LWorld:clearBeginContact (callback)
 -- Contact callbacks (alternative to polling).
 do
     ---@type LWorld
@@ -168,7 +170,8 @@ do
     world:clearBeginContact()
 end
 
---@api-stub: LWorld:setEndContact / clearEndContact (callback)
+--@api-stub: LWorld:setEndContact
+--@api-stub: LWorld:clearEndContact (callback)
 -- End contact callback.
 do
     ---@type LWorld

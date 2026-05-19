@@ -1,6 +1,7 @@
 -- ui_05.lua: Visual widgets — progress bar, image widget, nine-patch, badge, spacer, separator
 
-do --@api-stub: lurek.ui.newProgressBar
+--@api-stub: lurek.ui.newProgressBar
+do
     -- create a progress bar and track fill value
     ---@type LProgressBar
     local bar = lurek.ui.newProgressBar(0, 100)
@@ -11,7 +12,8 @@ do --@api-stub: lurek.ui.newProgressBar
     print("progress (normalized):", bar:getProgress())
 end
 
-do --@api-stub: lurek.ui.newProgressBar range
+--@api-stub: lurek.ui.newProgressBar range
+do
     -- change the progress bar range dynamically
     ---@type LProgressBar
     local bar = lurek.ui.newProgressBar(0, 50)
@@ -23,7 +25,8 @@ do --@api-stub: lurek.ui.newProgressBar range
     print("new max:", bar:getMax())
 end
 
-do --@api-stub: lurek.ui.newImageWidget
+--@api-stub: lurek.ui.newImageWidget
+do
     -- create an image widget and configure scale mode and tint
     ---@type LImageWidget
     local img = lurek.ui.newImageWidget()
@@ -34,7 +37,8 @@ do --@api-stub: lurek.ui.newImageWidget
     print("tint:", r, g, b, a)
 end
 
-do --@api-stub: lurek.ui.newImageWidget modes
+--@api-stub: lurek.ui.newImageWidget modes
+do
     -- test different scale modes on image widget
     ---@type LImageWidget
     local img = lurek.ui.newImageWidget()
@@ -47,7 +51,8 @@ do --@api-stub: lurek.ui.newImageWidget modes
     print("blue tint:", r, g, b, a)
 end
 
-do --@api-stub: lurek.ui.newNinePatch
+--@api-stub: lurek.ui.newNinePatch
+do
     -- create a nine-patch widget with border insets
     ---@type LNinePatch
     local np = lurek.ui.newNinePatch()
@@ -59,7 +64,8 @@ do --@api-stub: lurek.ui.newNinePatch
     print("insets:", l, t, r, b)
 end
 
-do --@api-stub: lurek.ui.newNinePatch slices
+--@api-stub: lurek.ui.newNinePatch slices
+do
     -- retrieve computed slices from nine-patch
     ---@type LNinePatch
     local np = lurek.ui.newNinePatch()
@@ -71,7 +77,8 @@ do --@api-stub: lurek.ui.newNinePatch slices
     print("slices retrieved:", slices ~= nil)
 end
 
-do --@api-stub: lurek.ui.newBadge
+--@api-stub: lurek.ui.newBadge
+do
     -- create a notification badge with count
     ---@type LBadge
     local badge = lurek.ui.newBadge(5)
@@ -81,7 +88,8 @@ do --@api-stub: lurek.ui.newBadge
     print("large count display:", badge:getDisplayText())
 end
 
-do --@api-stub: lurek.ui.newSpacer
+--@api-stub: lurek.ui.newSpacer
+do
     -- create a spacer widget for layout padding
     ---@type LSpacer
     local sp = lurek.ui.newSpacer(20, 10)
@@ -90,7 +98,8 @@ do --@api-stub: lurek.ui.newSpacer
     print("spacer size:", w, h)
 end
 
-do --@api-stub: lurek.ui.newSeparator
+--@api-stub: lurek.ui.newSeparator
+do
     -- create horizontal and vertical separators
     ---@type LSeparator
     local sep = lurek.ui.newSeparator(false)
@@ -100,7 +109,8 @@ do --@api-stub: lurek.ui.newSeparator
     print("new thickness:", sep:getThickness())
 end
 
-do --@api-stub: lurek.ui.newSeparator vertical
+--@api-stub: lurek.ui.newSeparator vertical
+do
     -- create a vertical separator and toggle orientation
     ---@type LSeparator
     local sep = lurek.ui.newSeparator(true)

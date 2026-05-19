@@ -1,6 +1,7 @@
 --- Serial Module: JSON, TOML, CSV, INI, MsgPack, XML, format detection, schema validation
 
---@api-stub: lurek.serial.fromJson / toJson
+--@api-stub: lurek.serial.fromJson
+--@api-stub: lurek.toJson
 -- JSON parsing and encoding.
 do
     local jsonStr = '{"name":"warrior","level":12,"alive":true,"items":["sword","shield"]}'
@@ -39,7 +40,8 @@ do
     print("player 2 scores = " .. #decoded.players[2].scores)
 end
 
---@api-stub: lurek.serial.fromToml / toToml
+--@api-stub: lurek.serial.fromToml
+--@api-stub: lurek.toToml
 -- TOML parsing and encoding.
 do
     local tomlStr = [[
@@ -69,7 +71,8 @@ sfx_volume = 1.0
     print("contains [game] = " .. tostring(reEncoded:find("%[game%]") ~= nil))
 end
 
---@api-stub: lurek.serial.fromCsv / toCsv
+--@api-stub: lurek.serial.fromCsv
+--@api-stub: lurek.toCsv
 -- CSV parsing with and without headers.
 do
     local csvWithHeaders = "name,age,city\nAlice,30,Warsaw\nBob,25,Krakow\nCarol,35,Gdansk"
@@ -130,7 +133,8 @@ dash = x
     print("attack key = " .. ini.controls.attack)
 end
 
---@api-stub: lurek.serial.encodeMsgPack / decodeMsgPack
+--@api-stub: lurek.serial.encodeMsgPack
+--@api-stub: lurek.decodeMsgPack
 -- Binary MsgPack serialization round-trip.
 do
     local payload = {
@@ -171,7 +175,8 @@ do
     print("decoded xml type = " .. type(doc))
 end
 
---@api-stub: lurek.serial.encode / decode
+--@api-stub: lurek.serial.encode
+--@api-stub: lurek.decode
 -- Generic encode/decode with format parameter.
 do
     local data = { greeting = "hello", count = 42, active = true }

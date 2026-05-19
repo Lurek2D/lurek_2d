@@ -1,6 +1,8 @@
 --- Render Module Part 4: fonts, stencil, screenshots, text measurement, pixel density
 
---@api-stub: lurek.render.newFont / setFont / getFont
+--@api-stub: lurek.render.newFont
+--@api-stub: lurek.setFont
+--@api-stub: lurek.getFont
 -- Loading and activating fonts.
 do
     ---@type LFont
@@ -27,7 +29,11 @@ do
     lurek.render.print("Big default font", 10, 30)
 end
 
---@api-stub: LFont:getWidth / getHeight / getLineHeight / getAscent / getDescent
+--@api-stub: LFont:getWidth
+--@api-stub: LFont:getHeight
+--@api-stub: LFont:getLineHeight
+--@api-stub: LFont:getAscent
+--@api-stub: LFont:getDescent
 -- Font metrics.
 do
     ---@type LFont
@@ -39,7 +45,8 @@ do
     print("descent = " .. font:getDescent())
 end
 
---@api-stub: LFont:getWrap / setLineHeight
+--@api-stub: LFont:getWrap
+--@api-stub: LFont:setLineHeight
 -- Word wrapping and line height control.
 do
     ---@type LFont
@@ -74,7 +81,9 @@ do
     end
 end
 
---@api-stub: lurek.render.getFontWidth / getFontHeight / getFontLineHeight
+--@api-stub: lurek.render.getFontWidth
+--@api-stub: lurek.getFontHeight
+--@api-stub: lurek.getFontLineHeight
 -- Font helpers that accept font as first parameter.
 do
     ---@type LFont
@@ -87,7 +96,9 @@ do
     print("line height = " .. lh)
 end
 
---@api-stub: lurek.render.getFontAscent / getFontDescent / getFontCellWidth
+--@api-stub: lurek.render.getFontAscent
+--@api-stub: lurek.getFontDescent
+--@api-stub: lurek.getFontCellWidth
 -- Advanced font metrics.
 do
     ---@type LFont
@@ -97,7 +108,8 @@ do
     print("cell width = " .. lurek.render.getFontCellWidth(font))
 end
 
---@api-stub: lurek.render.getFontWrap / setFontLineHeight
+--@api-stub: lurek.render.getFontWrap
+--@api-stub: lurek.setFontLineHeight
 -- Render-level font wrapping and line height.
 do
     ---@type LFont
@@ -108,7 +120,8 @@ do
     print("set line height to 2.0")
 end
 
---@api-stub: lurek.render.stencil / setStencilTest
+--@api-stub: lurek.render.stencil
+--@api-stub: lurek.setStencilTest
 -- Stencil masking for shaped clipping.
 do
     lurek.render.stencil("replace", 1)
@@ -121,7 +134,9 @@ do
     lurek.render.setColor(1, 1, 1, 1)
 end
 
---@api-stub: lurek.render.setStencilMode / getStencilMode / clearStencil
+--@api-stub: lurek.render.setStencilMode
+--@api-stub: lurek.getStencilMode
+--@api-stub: lurek.clearStencil
 -- Stencil mode control.
 do
     lurek.render.setStencilMode("replace", "always", 1)
@@ -132,7 +147,8 @@ do
     lurek.render.setStencilMode("keep", "always", 0)
 end
 
---@api-stub: lurek.render.captureScreenshot / saveScreenshot
+--@api-stub: lurek.render.captureScreenshot
+--@api-stub: lurek.saveScreenshot
 -- Screenshot capture.
 do
     lurek.render.setColor(0.2, 0.4, 0.8, 1)
@@ -175,7 +191,7 @@ do
     lurek.render.setFont(def)
 end
 
---@api-stub: lurek.render.setLineWidth / thick shapes
+--@api-stub: lurek.thick shapes
 -- Drawing shapes with thick line widths.
 do
     lurek.render.setLineWidth(4)
@@ -189,7 +205,7 @@ do
     lurek.render.setColor(1, 1, 1, 1)
 end
 
---@api-stub: lurek.render.drawMany / batch with transforms
+--@api-stub: lurek.batch with transforms
 -- Batch drawing multiple images with different transforms.
 do
     ---@type LImage

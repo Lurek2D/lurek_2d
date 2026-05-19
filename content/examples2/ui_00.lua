@@ -45,7 +45,8 @@ do
     print("visible = " .. tostring(panel:isVisible()))
 end
 
---@api-stub: LUiWidget:setPosition / getPosition
+--@api-stub: LUiWidget:setPosition
+--@api-stub: LUiWidget:getPosition
 -- Widget positioning.
 do
     ---@type LButton
@@ -58,7 +59,8 @@ do
     print("moved to = " .. x .. ", " .. y)
 end
 
---@api-stub: LUiWidget:setSize / getSize
+--@api-stub: LUiWidget:setSize
+--@api-stub: LUiWidget:getSize
 -- Widget sizing.
 do
     ---@type LPanel
@@ -82,7 +84,8 @@ do
     print("rect = " .. x .. "," .. y .. " " .. w .. "x" .. h)
 end
 
---@api-stub: LUiWidget:isVisible / setVisible
+--@api-stub: LUiWidget:isVisible
+--@api-stub: LUiWidget:setVisible
 -- Toggling widget visibility.
 do
     ---@type LLabel
@@ -94,7 +97,8 @@ do
     print("shown = " .. tostring(lbl:isVisible()))
 end
 
---@api-stub: LUiWidget:isEnabled / setEnabled
+--@api-stub: LUiWidget:isEnabled
+--@api-stub: LUiWidget:setEnabled
 -- Enabling and disabling widgets.
 do
     ---@type LButton
@@ -105,7 +109,8 @@ do
     btn:setEnabled(true)
 end
 
---@api-stub: LUiWidget:getAlpha / setAlpha
+--@api-stub: LUiWidget:getAlpha
+--@api-stub: LUiWidget:setAlpha
 -- Widget opacity control.
 do
     ---@type LPanel
@@ -128,7 +133,8 @@ do
     print("fade with hide_on_complete")
 end
 
---@api-stub: LUiWidget:fadeIn / fadeOut
+--@api-stub: LUiWidget:fadeIn
+--@api-stub: LUiWidget:fadeOut
 -- Shorthand fade animations.
 do
     ---@type LLabel
@@ -141,7 +147,9 @@ do
     print("fading out")
 end
 
---@api-stub: LUiWidget:animatePosition / slideIn / slideOut
+--@api-stub: LUiWidget:animatePosition
+--@api-stub: LUiWidget:slideIn
+--@api-stub: LUiWidget:slideOut
 -- Position animations.
 do
     ---@type LPanel
@@ -154,7 +162,10 @@ do
     print("sliding in from right")
 end
 
---@api-stub: LUiWidget:setId / getId / setTooltip / getTooltip
+--@api-stub: LUiWidget:setId
+--@api-stub: LUiWidget:getId
+--@api-stub: LUiWidget:setTooltip
+--@api-stub: LUiWidget:getTooltip
 -- Widget identification and tooltips.
 do
     ---@type LButton
@@ -165,7 +176,8 @@ do
     print("tooltip = " .. btn:getTooltip())
 end
 
---@api-stub: LUiWidget:setZOrder / getZOrder
+--@api-stub: LUiWidget:setZOrder
+--@api-stub: LUiWidget:getZOrder
 -- Draw order control.
 do
     ---@type LPanel
@@ -198,7 +210,8 @@ do
     print("state = " .. state)
 end
 
---@api-stub: lurek.ui.getRoot / getWidgetCount
+--@api-stub: lurek.ui.getRoot
+--@api-stub: lurek.getWidgetCount
 -- Root widget and global counts.
 do
     local root = lurek.ui.getRoot()
@@ -206,7 +219,7 @@ do
     print("widget count = " .. lurek.ui.getWidgetCount())
 end
 
---@api-stub: lurek.ui.update / draw
+--@api-stub: lurek.ui.update
 -- UI update and render cycle.
 do
     lurek.ui.update(1 / 60)

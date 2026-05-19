@@ -1,6 +1,8 @@
 --- Pipeline Module Part 1: creating pipelines, steps, dependencies, running, results
 
---@api-stub: lurek.pipeline.newPipeline / LPipeline:getName / setName
+--@api-stub: lurek.pipeline.newPipeline
+--@api-stub: LPipeline:getName
+--@api-stub: LPipeline:setName
 -- Create a named pipeline.
 do
     ---@type LPipeline
@@ -10,7 +12,8 @@ do
     print("renamed = " .. pipe:getName())
 end
 
---@api-stub: lurek.pipeline.newStep / LPipelineStep:getName
+--@api-stub: lurek.pipeline.newStep
+--@api-stub: LPipelineStep:getName
 -- Create standalone steps.
 do
     ---@type LPipelineStep
@@ -22,7 +25,8 @@ do
     print("status = " .. step:getStatus())
 end
 
---@api-stub: LPipeline:addStep / run (basic)
+--@api-stub: LPipeline:addStep
+--@api-stub: LPipeline:run (basic)
 -- Add steps and run the pipeline synchronously.
 do
     ---@type LPipeline
@@ -41,7 +45,9 @@ do
     print("completed = " .. #result.completed)
 end
 
---@api-stub: LPipelineStep:dependsOn / getDependencies / getDependencyCount
+--@api-stub: LPipelineStep:dependsOn
+--@api-stub: LPipelineStep:getDependencies
+--@api-stub: LPipelineStep:getDependencyCount
 -- Step dependencies.
 do
     ---@type LPipelineStep
@@ -83,7 +89,8 @@ do
     print("final count = " .. ctx.count)
 end
 
---@api-stub: LPipeline:getResult / result fields
+--@api-stub: LPipeline:getResult
+--@api-stub: LPipeline:result fields
 -- Inspecting detailed results.
 do
     ---@type LPipeline
@@ -99,7 +106,9 @@ do
     print("duration = " .. r.totalDuration)
 end
 
---@api-stub: LPipeline:getStepCount / getSteps / getStep
+--@api-stub: LPipeline:getStepCount
+--@api-stub: LPipeline:getSteps
+--@api-stub: LPipeline:getStep
 -- Querying steps.
 do
     ---@type LPipeline
@@ -116,7 +125,8 @@ do
     print("found = " .. found:getName())
 end
 
---@api-stub: LPipeline:removeStep / clear
+--@api-stub: LPipeline:removeStep
+--@api-stub: LPipeline:clear
 -- Removing steps.
 do
     ---@type LPipeline
@@ -193,7 +203,8 @@ do
     end
 end
 
---@api-stub: LPipeline:setErrorMode / getErrorMode
+--@api-stub: LPipeline:setErrorMode
+--@api-stub: LPipeline:getErrorMode
 -- Error modes: abort vs continue.
 do
     ---@type LPipeline
@@ -228,7 +239,8 @@ do
     print(pipe:toAscii())
 end
 
---@api-stub: LPipeline:toTable / fromTable
+--@api-stub: LPipeline:toTable
+--@api-stub: LPipeline:fromTable
 -- Serialize and deserialize pipelines.
 do
     ---@type LPipeline
@@ -267,7 +279,8 @@ do
     print("second run n = " .. ctx2.n)
 end
 
---@api-stub: LPipeline:type / typeOf
+--@api-stub: LPipeline:type
+--@api-stub: LPipeline:typeOf
 -- Type checking.
 do
     ---@type LPipeline

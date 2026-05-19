@@ -1,6 +1,9 @@
 --- Particle Module Part 2: lifecycle, emission, rendering, cloning
 
---@api-stub: LParticleSystem:start / stop / isActive / isStopped
+--@api-stub: LParticleSystem:start
+--@api-stub: LParticleSystem:stop
+--@api-stub: LParticleSystem:isActive
+--@api-stub: LParticleSystem:isStopped
 -- Emission lifecycle.
 do
     ---@type LParticleSystem
@@ -12,7 +15,9 @@ do
     print("after stop: active = " .. tostring(ps:isActive()))
 end
 
---@api-stub: LParticleSystem:pause / resume / isPaused
+--@api-stub: LParticleSystem:pause
+--@api-stub: LParticleSystem:resume
+--@api-stub: LParticleSystem:isPaused
 -- Pausing and resuming.
 do
     ---@type LParticleSystem
@@ -47,7 +52,8 @@ do
     print("warmed up: count = " .. ps:count())
 end
 
---@api-stub: LParticleSystem:update / render
+--@api-stub: LParticleSystem:update
+--@api-stub: LParticleSystem:render
 -- Frame-by-frame update and render.
 do
     ---@type LParticleSystem
@@ -91,7 +97,10 @@ do
     print("clone rate = " .. copy:getEmissionRate())
 end
 
---@api-stub: LParticleSystem:isEmpty / isFull / count / getCount
+--@api-stub: LParticleSystem:isEmpty
+--@api-stub: LParticleSystem:isFull
+--@api-stub: LParticleSystem:count
+--@api-stub: LParticleSystem:getCount
 -- Capacity queries.
 do
     ---@type LParticleSystem
@@ -113,7 +122,8 @@ do
     print("released = " .. tostring(ok))
 end
 
---@api-stub: LParticleSystem:type / typeOf
+--@api-stub: LParticleSystem:type
+--@api-stub: LParticleSystem:typeOf
 -- Type checking.
 do
     ---@type LParticleSystem
@@ -124,7 +134,8 @@ do
     print("is Object = " .. tostring(ps:typeOf("Object")))
 end
 
---@api-stub: LParticleSystem:setLinearAcceleration / getLinearAcceleration
+--@api-stub: LParticleSystem:setLinearAcceleration
+--@api-stub: LParticleSystem:getLinearAcceleration
 -- Linear acceleration.
 do
     ---@type LParticleSystem
@@ -134,7 +145,8 @@ do
     print("accel = " .. xmin .. "," .. ymin .. ".." .. xmax .. "," .. ymax)
 end
 
---@api-stub: LParticleSystem:setLinearDamping / getLinearDamping
+--@api-stub: LParticleSystem:setLinearDamping
+--@api-stub: LParticleSystem:getLinearDamping
 -- Linear damping.
 do
     ---@type LParticleSystem
@@ -144,7 +156,8 @@ do
     print("damping = " .. dmin .. ".." .. dmax)
 end
 
---@api-stub: LParticleSystem:setRadialAcceleration / getRadialAcceleration
+--@api-stub: LParticleSystem:setRadialAcceleration
+--@api-stub: LParticleSystem:getRadialAcceleration
 -- Radial acceleration.
 do
     ---@type LParticleSystem
@@ -154,7 +167,8 @@ do
     print("radial = " .. rmin .. ".." .. rmax)
 end
 
---@api-stub: LParticleSystem:setTangentialAcceleration / getTangentialAcceleration
+--@api-stub: LParticleSystem:setTangentialAcceleration
+--@api-stub: LParticleSystem:getTangentialAcceleration
 -- Tangential acceleration.
 do
     ---@type LParticleSystem

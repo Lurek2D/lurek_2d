@@ -69,7 +69,8 @@ do
     print("mouse at " .. x .. "," .. y)
 end
 
---@api-stub: lurek.input.mouse.getX / getY
+--@api-stub: lurek.input.mouse.getX
+--@api-stub: lurek.getY
 -- Returns individual mouse coordinates.
 do
     local x = lurek.input.mouse.getX()
@@ -239,7 +240,8 @@ do
     print("button 1 = " .. tostring(pressed))
 end
 
---@api-stub: lurek.input.gamepad.wasPressed / wasReleased
+--@api-stub: lurek.input.gamepad.wasPressed
+--@api-stub: lurek.wasReleased
 -- Checks if button was pressed or released this frame.
 do
     local pressed = lurek.input.gamepad.wasPressed(1, 1)
@@ -276,7 +278,8 @@ do
     print("right = " .. tostring(dpad.right))
 end
 
---@api-stub: lurek.input.gamepad.wasConnected / wasDisconnected
+--@api-stub: lurek.input.gamepad.wasConnected
+--@api-stub: lurek.wasDisconnected
 -- Detects connection changes this frame.
 do
     local c = lurek.input.gamepad.wasConnected(1)
@@ -284,7 +287,8 @@ do
     print("connected=" .. tostring(c) .. " disconnected=" .. tostring(d))
 end
 
---@api-stub: lurek.input.gamepad.loadGamepadMappings / saveGamepadMappings
+--@api-stub: lurek.input.gamepad.loadGamepadMappings
+--@api-stub: lurek.saveGamepadMappings
 -- Loads and saves SDL gamepad mappings.
 do
     lurek.input.gamepad.loadGamepadMappings("assets/gamecontrollerdb.txt")
@@ -292,7 +296,8 @@ do
     print("mappings loaded and saved")
 end
 
---@api-stub: lurek.input.gamepad.getBackgroundEvents / setBackgroundEvents
+--@api-stub: lurek.input.gamepad.getBackgroundEvents
+--@api-stub: lurek.setBackgroundEvents
 -- Controls background event processing.
 do
     local was = lurek.input.gamepad.getBackgroundEvents()
@@ -300,7 +305,8 @@ do
     print("bg events was=" .. tostring(was) .. " now=true")
 end
 
---@api-stub: lurek.input.gamepad.getJoystickCount / getJoysticks
+--@api-stub: lurek.input.gamepad.getJoystickCount
+--@api-stub: lurek.getJoysticks
 -- Enumerates joysticks.
 do
     local count = lurek.input.gamepad.getJoystickCount()
@@ -336,7 +342,8 @@ do
     print("pressure = " .. p)
 end
 
---@api-stub: lurek.input.touch.wasPressed / wasReleased
+--@api-stub: lurek.input.touch.wasPressed
+--@api-stub: lurek.wasReleased
 -- Detects touch begin/end this frame.
 do
     local pressed = lurek.input.touch.wasPressed(1)

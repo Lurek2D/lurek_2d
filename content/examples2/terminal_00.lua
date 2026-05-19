@@ -20,7 +20,8 @@ do
     print("small = " .. cols .. "x" .. rows)
 end
 
---@api-stub: LTerminal:set / get
+--@api-stub: LTerminal:set
+--@api-stub: LTerminal:get
 -- Writing and reading individual cells.
 do
     ---@type LTerminal
@@ -57,7 +58,9 @@ do
     print("after clear ch = " .. ch)
 end
 
---@api-stub: LTerminal:getCellSize / setCellSize / resetCellSize
+--@api-stub: LTerminal:getCellSize
+--@api-stub: LTerminal:setCellSize
+--@api-stub: LTerminal:resetCellSize
 -- Adjusting cell pixel dimensions.
 do
     ---@type LTerminal
@@ -85,7 +88,8 @@ do
     print("font 12: cell = " .. w .. "x" .. h)
 end
 
---@api-stub: LTerminal:render / autoResize
+--@api-stub: LTerminal:render
+--@api-stub: LTerminal:autoResize
 -- Rendering the terminal grid.
 do
     ---@type LTerminal
@@ -192,7 +196,10 @@ do
     print("child 1 text = " .. child1:getText())
 end
 
---@api-stub: LTerminal:addWidget / removeWidget / getWidgetCount / clearWidgets
+--@api-stub: LTerminal:addWidget
+--@api-stub: LTerminal:removeWidget
+--@api-stub: LTerminal:getWidgetCount
+--@api-stub: LTerminal:clearWidgets
 -- Attaching widgets to the terminal.
 do
     ---@type LTerminal
@@ -208,7 +215,8 @@ do
     print("after clear = " .. term:getWidgetCount())
 end
 
---@api-stub: LTerminal:setFocus / getFocused
+--@api-stub: LTerminal:setFocus
+--@api-stub: LTerminal:getFocused
 -- Widget focus management.
 do
     ---@type LTerminal
@@ -228,7 +236,9 @@ do
     print("no focus = " .. tostring(focused == nil))
 end
 
---@api-stub: LTerminal:keypressed / textinput / mousepressed
+--@api-stub: LTerminal:keypressed
+--@api-stub: LTerminal:textinput
+--@api-stub: LTerminal:mousepressed
 -- Forwarding input events.
 do
     ---@type LTerminal

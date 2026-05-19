@@ -1,6 +1,10 @@
 --- Patterns Module Part 4: graph, collections (list, map, set, stack, queue, ring, priority queue, weighted random, relationships)
 
---@api-stub: lurek.patterns.newGraph / LPatternGraph:addNode / addEdge / nodeCount / edgeCount
+--@api-stub: lurek.patterns.newGraph
+--@api-stub: LPatternGraph:addNode
+--@api-stub: LPatternGraph:addEdge
+--@api-stub: LPatternGraph:nodeCount
+--@api-stub: LPatternGraph:edgeCount
 -- Directed graph creation.
 do
     ---@type LPatternGraph
@@ -13,7 +17,11 @@ do
     print("nodes = " .. g:nodeCount() .. " edges = " .. g:edgeCount())
 end
 
---@api-stub: LPatternGraph:bfs / dfs / isConnected / neighbors / hasNode
+--@api-stub: LPatternGraph:bfs
+--@api-stub: LPatternGraph:dfs
+--@api-stub: LPatternGraph:isConnected
+--@api-stub: LPatternGraph:neighbors
+--@api-stub: LPatternGraph:hasNode
 -- Graph traversal and queries.
 do
     ---@type LPatternGraph
@@ -35,7 +43,10 @@ do
     print("has n1 = " .. tostring(g:hasNode(n1)))
 end
 
---@api-stub: LPatternGraph:getNodeValue / removeNode / removeEdge / clearAll
+--@api-stub: LPatternGraph:getNodeValue
+--@api-stub: LPatternGraph:removeNode
+--@api-stub: LPatternGraph:removeEdge
+--@api-stub: LPatternGraph:clearAll
 -- Graph modification.
 do
     ---@type LPatternGraph
@@ -53,7 +64,12 @@ do
     print("after clear: nodes = " .. g:nodeCount())
 end
 
---@api-stub: lurek.patterns.newList / LList:add / get / len / remove / indexOf
+--@api-stub: lurek.patterns.newList
+--@api-stub: LList:add
+--@api-stub: LList:get
+--@api-stub: LList:len
+--@api-stub: LList:remove
+--@api-stub: LList:indexOf
 -- Dynamic list.
 do
     ---@type LList
@@ -68,7 +84,16 @@ do
     print("after remove: len = " .. list:len())
 end
 
---@api-stub: LList:push / pop / insert / set / shift / unshift / contains / reverse / toArray / isEmpty
+--@api-stub: LList:push
+--@api-stub: LList:pop
+--@api-stub: LList:insert
+--@api-stub: LList:set
+--@api-stub: LList:shift
+--@api-stub: LList:unshift
+--@api-stub: LList:contains
+--@api-stub: LList:reverse
+--@api-stub: LList:toArray
+--@api-stub: LList:isEmpty
 -- List operations.
 do
     ---@type LList
@@ -91,7 +116,14 @@ do
     print("empty = " .. tostring(list:isEmpty()))
 end
 
---@api-stub: lurek.patterns.newMap / LMap:set / get / has / remove / keys / values / len
+--@api-stub: lurek.patterns.newMap
+--@api-stub: LMap:set
+--@api-stub: LMap:get
+--@api-stub: LMap:has
+--@api-stub: LMap:remove
+--@api-stub: LMap:keys
+--@api-stub: LMap:values
+--@api-stub: LMap:len
 -- String-keyed map.
 do
     ---@type LMap
@@ -107,7 +139,10 @@ do
     print("values = " .. #map:values())
 end
 
---@api-stub: LMap:entries / merge / isEmpty / clear
+--@api-stub: LMap:entries
+--@api-stub: LMap:merge
+--@api-stub: LMap:isEmpty
+--@api-stub: LMap:clear
 -- Map merge and entries.
 do
     ---@type LMap
@@ -127,7 +162,12 @@ do
     print("after clear: empty = " .. tostring(m1:isEmpty()))
 end
 
---@api-stub: lurek.patterns.newSet / LSet:add / has / remove / len / toArray
+--@api-stub: lurek.patterns.newSet
+--@api-stub: LSet:add
+--@api-stub: LSet:has
+--@api-stub: LSet:remove
+--@api-stub: LSet:len
+--@api-stub: LSet:toArray
 -- String set.
 do
     ---@type LSet
@@ -143,7 +183,10 @@ do
     print("array = " .. #arr)
 end
 
---@api-stub: LSet:union / intersection / isEmpty / clear
+--@api-stub: LSet:union
+--@api-stub: LSet:intersection
+--@api-stub: LSet:isEmpty
+--@api-stub: LSet:clear
 -- Set algebra.
 do
     ---@type LSet
@@ -164,7 +207,12 @@ do
     print("empty = " .. tostring(a:isEmpty()))
 end
 
---@api-stub: lurek.patterns.newStack / LStack:push / pop / peek / len / isEmpty
+--@api-stub: lurek.patterns.newStack
+--@api-stub: LStack:push
+--@api-stub: LStack:pop
+--@api-stub: LStack:peek
+--@api-stub: LStack:len
+--@api-stub: LStack:isEmpty
 -- LIFO stack.
 do
     ---@type LStack
@@ -179,7 +227,17 @@ do
     print("empty = " .. tostring(st:isEmpty()))
 end
 
---@api-stub: LStack:pushBottom / popBottom / peekBottom / peekAt / insertAt / removeAt / popMany / moveWithin / isFull / clear / toArray
+--@api-stub: LStack:pushBottom
+--@api-stub: LStack:popBottom
+--@api-stub: LStack:peekBottom
+--@api-stub: LStack:peekAt
+--@api-stub: LStack:insertAt
+--@api-stub: LStack:removeAt
+--@api-stub: LStack:popMany
+--@api-stub: LStack:moveWithin
+--@api-stub: LStack:isFull
+--@api-stub: LStack:clear
+--@api-stub: LStack:toArray
 -- Advanced stack operations.
 do
     ---@type LStack
@@ -205,7 +263,13 @@ do
     print("empty = " .. tostring(st:isEmpty()))
 end
 
---@api-stub: lurek.patterns.newQueue / LQueue:enqueue / dequeue / front / back / len / isEmpty
+--@api-stub: lurek.patterns.newQueue
+--@api-stub: LQueue:enqueue
+--@api-stub: LQueue:dequeue
+--@api-stub: LQueue:front
+--@api-stub: LQueue:back
+--@api-stub: LQueue:len
+--@api-stub: LQueue:isEmpty
 -- FIFO queue.
 do
     ---@type LQueue
@@ -221,7 +285,14 @@ do
     print("empty = " .. tostring(q:isEmpty()))
 end
 
---@api-stub: LQueue:enqueueFront / dequeueBack / insertAt / removeAt / peekAt / isFull / clear / toArray
+--@api-stub: LQueue:enqueueFront
+--@api-stub: LQueue:dequeueBack
+--@api-stub: LQueue:insertAt
+--@api-stub: LQueue:removeAt
+--@api-stub: LQueue:peekAt
+--@api-stub: LQueue:isFull
+--@api-stub: LQueue:clear
+--@api-stub: LQueue:toArray
 -- Advanced queue operations.
 do
     ---@type LQueue
@@ -244,7 +315,13 @@ do
     print("empty = " .. tostring(q:isEmpty()))
 end
 
---@api-stub: lurek.patterns.newPriorityQueue / LPriorityQueue:push / pop / peek / len / isEmpty / clearAll
+--@api-stub: lurek.patterns.newPriorityQueue
+--@api-stub: LPriorityQueue:push
+--@api-stub: LPriorityQueue:pop
+--@api-stub: LPriorityQueue:peek
+--@api-stub: LPriorityQueue:len
+--@api-stub: LPriorityQueue:isEmpty
+--@api-stub: LPriorityQueue:clearAll
 -- Priority queue (highest priority first).
 do
     ---@type LPriorityQueue
@@ -263,7 +340,15 @@ do
     print("after clear: empty = " .. tostring(pq:isEmpty()))
 end
 
---@api-stub: lurek.patterns.newRing / LRing:push / len / latest / isFull / sum / average / toArray / clear
+--@api-stub: lurek.patterns.newRing
+--@api-stub: LRing:push
+--@api-stub: LRing:len
+--@api-stub: LRing:latest
+--@api-stub: LRing:isFull
+--@api-stub: LRing:sum
+--@api-stub: LRing:average
+--@api-stub: LRing:toArray
+--@api-stub: LRing:clear
 -- Ring buffer.
 do
     ---@type LRing
@@ -287,7 +372,12 @@ do
     print("after clear: len = " .. ring:len())
 end
 
---@api-stub: lurek.patterns.newWeightedRandom / LWeightedRandom:add / pick / pickN / len / totalWeight
+--@api-stub: lurek.patterns.newWeightedRandom
+--@api-stub: LWeightedRandom:add
+--@api-stub: LWeightedRandom:pick
+--@api-stub: LWeightedRandom:pickN
+--@api-stub: LWeightedRandom:len
+--@api-stub: LWeightedRandom:totalWeight
 -- Weighted random selection.
 do
     ---@type LWeightedRandom
@@ -303,7 +393,11 @@ do
     print("multi picks = " .. #multi)
 end
 
---@api-stub: LWeightedRandom:remove / setWeight / getRevision / isEmpty / clearAll
+--@api-stub: LWeightedRandom:remove
+--@api-stub: LWeightedRandom:setWeight
+--@api-stub: LWeightedRandom:getRevision
+--@api-stub: LWeightedRandom:isEmpty
+--@api-stub: LWeightedRandom:clearAll
 -- Weighted random management.
 do
     ---@type LWeightedRandom
@@ -319,7 +413,10 @@ do
     print("after clear: empty = " .. tostring(wr:isEmpty()))
 end
 
---@api-stub: lurek.patterns.newRelationshipManager / LRelationshipManager:setValue / getValue / adjustValue
+--@api-stub: lurek.patterns.newRelationshipManager
+--@api-stub: LRelationshipManager:setValue
+--@api-stub: LRelationshipManager:getValue
+--@api-stub: LRelationshipManager:adjustValue
 -- Relationship tracking between entities.
 do
     ---@type LRelationshipManager
@@ -332,7 +429,13 @@ do
     print("adjusted 1→2 = " .. rm:getValue(1, 2))
 end
 
---@api-stub: LRelationshipManager:defineType / setLevel / getLevel / typeNames / pairCount / removePair / removeType
+--@api-stub: LRelationshipManager:defineType
+--@api-stub: LRelationshipManager:setLevel
+--@api-stub: LRelationshipManager:getLevel
+--@api-stub: LRelationshipManager:typeNames
+--@api-stub: LRelationshipManager:pairCount
+--@api-stub: LRelationshipManager:removePair
+--@api-stub: LRelationshipManager:removeType
 -- Named relationship levels.
 do
     ---@type LRelationshipManager

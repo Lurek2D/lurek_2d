@@ -46,7 +46,8 @@ do
     print("estimated avg FPS = " .. math.floor(1 / avg))
 end
 
---@api-stub: lurek.timer.getSmoothedDelta / setSmoothingFactor
+--@api-stub: lurek.timer.getSmoothedDelta
+--@api-stub: lurek.setSmoothingFactor
 -- Exponentially smoothed delta.
 do
     lurek.timer.setSmoothingFactor(0.1)
@@ -57,7 +58,8 @@ do
     print("smoothed delta (alpha=0.5) = " .. sd)
 end
 
---@api-stub: lurek.timer.getPhysicsDelta / setPhysicsDelta
+--@api-stub: lurek.timer.getPhysicsDelta
+--@api-stub: lurek.setPhysicsDelta
 -- Fixed physics timestep configuration.
 do
     local pdt = lurek.timer.getPhysicsDelta()
@@ -67,7 +69,8 @@ do
     lurek.timer.setPhysicsDelta(1 / 60)
 end
 
---@api-stub: lurek.timer.getPhysicsMaxSteps / setPhysicsMaxSteps
+--@api-stub: lurek.timer.getPhysicsMaxSteps
+--@api-stub: lurek.setPhysicsMaxSteps
 -- Physics step limit per frame.
 do
     local max = lurek.timer.getPhysicsMaxSteps()
@@ -93,7 +96,8 @@ do
     print("empty = " .. tostring(sched:isEmpty()))
 end
 
---@api-stub: LScheduler:after / update
+--@api-stub: LScheduler:after
+--@api-stub: LScheduler:update
 -- One-shot delayed callback.
 do
     ---@type LScheduler
@@ -129,7 +133,8 @@ do
     print("final count = " .. count)
 end
 
---@api-stub: LScheduler:afterNamed / cancelNamed
+--@api-stub: LScheduler:afterNamed
+--@api-stub: LScheduler:cancelNamed
 -- Named one-shot for debouncing.
 do
     ---@type LScheduler
@@ -163,7 +168,9 @@ do
     print("resumed")
 end
 
---@api-stub: LScheduler:afterFrames / everyFrames / updateFrames
+--@api-stub: LScheduler:afterFrames
+--@api-stub: LScheduler:everyFrames
+--@api-stub: LScheduler:updateFrames
 -- Frame-based scheduling.
 do
     ---@type LScheduler
@@ -182,7 +189,8 @@ do
     end
 end
 
---@api-stub: LScheduler:cancel / cancelAll
+--@api-stub: LScheduler:cancel
+--@api-stub: LScheduler:cancelAll
 -- Cancelling scheduled events.
 do
     ---@type LScheduler
@@ -199,7 +207,9 @@ do
     print("empty = " .. tostring(sched:isEmpty()))
 end
 
---@api-stub: LScheduler:pause / resume / isPaused
+--@api-stub: LScheduler:pause
+--@api-stub: LScheduler:resume
+--@api-stub: LScheduler:isPaused
 -- Pausing and resuming events.
 do
     ---@type LScheduler
@@ -215,7 +225,10 @@ do
     sched:update(1.0)
 end
 
---@api-stub: LScheduler:getRemaining / getInterval / getRepeatCount / resetEvent
+--@api-stub: LScheduler:getRemaining
+--@api-stub: LScheduler:getInterval
+--@api-stub: LScheduler:getRepeatCount
+--@api-stub: LScheduler:resetEvent
 -- Querying event state.
 do
     ---@type LScheduler
@@ -233,7 +246,9 @@ do
     print("after reset, remaining = " .. remaining)
 end
 
---@api-stub: LScheduler:setInterval / setTimeScale / getTimeScale
+--@api-stub: LScheduler:setInterval
+--@api-stub: LScheduler:setTimeScale
+--@api-stub: LScheduler:getTimeScale
 -- Dynamic interval and time scaling.
 do
     ---@type LScheduler
@@ -263,7 +278,8 @@ do
     sched:update(0.5)
 end
 
---@api-stub: lurek.timer.afterReal / tickRealTimers
+--@api-stub: lurek.timer.afterReal
+--@api-stub: lurek.tickRealTimers
 -- Real-time (unscaled) timer.
 do
     lurek.timer.afterReal(1.0, function()

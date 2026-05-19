@@ -1,6 +1,9 @@
 --- Patterns Module Part 2: FSM, command stack, behavior tree, blackboard
 
---@api-stub: lurek.patterns.newSimpleState / LSimpleState:addState / transitionTo / getCurrent
+--@api-stub: lurek.patterns.newSimpleState
+--@api-stub: LSimpleState:addState
+--@api-stub: LSimpleState:transitionTo
+--@api-stub: LSimpleState:getCurrent
 -- Finite state machine with enter/exit/update callbacks.
 do
     ---@type LSimpleState
@@ -26,7 +29,9 @@ do
     fsm:update(0.016)
 end
 
---@api-stub: LSimpleState:hasState / getStates / clearAll
+--@api-stub: LSimpleState:hasState
+--@api-stub: LSimpleState:getStates
+--@api-stub: LSimpleState:clearAll
 -- State queries and reset.
 do
     ---@type LSimpleState
@@ -41,7 +46,10 @@ do
     print("after clear = " .. #fsm:getStates())
 end
 
---@api-stub: lurek.patterns.newCommandStack / LCommandStack:execute / undo / redo
+--@api-stub: lurek.patterns.newCommandStack
+--@api-stub: LCommandStack:execute
+--@api-stub: LCommandStack:undo
+--@api-stub: LCommandStack:redo
 -- Command stack for undo/redo.
 do
     ---@type LCommandStack
@@ -59,7 +67,11 @@ do
     print("after redo: " .. value)
 end
 
---@api-stub: LCommandStack:canUndo / canRedo / getCurrentName / getHistorySize / clearAll
+--@api-stub: LCommandStack:canUndo
+--@api-stub: LCommandStack:canRedo
+--@api-stub: LCommandStack:getCurrentName
+--@api-stub: LCommandStack:getHistorySize
+--@api-stub: LCommandStack:clearAll
 -- Command stack queries.
 do
     ---@type LCommandStack
@@ -74,7 +86,10 @@ do
     print("after clear = " .. cmds:getHistorySize())
 end
 
---@api-stub: lurek.patterns.newBehaviorTree / LBehaviorTree:addSequence / addSelector / addLeaf
+--@api-stub: lurek.patterns.newBehaviorTree
+--@api-stub: LBehaviorTree:addSequence
+--@api-stub: LBehaviorTree:addSelector
+--@api-stub: LBehaviorTree:addLeaf
 -- Behavior tree node creation.
 do
     ---@type LBehaviorTree
@@ -92,7 +107,9 @@ do
     print("nodes = " .. bt:nodeCount())
 end
 
---@api-stub: LBehaviorTree:setLeaf / tick / resetState
+--@api-stub: LBehaviorTree:setLeaf
+--@api-stub: LBehaviorTree:tick
+--@api-stub: LBehaviorTree:resetState
 -- Behavior tree execution.
 do
     ---@type LBehaviorTree
@@ -120,7 +137,10 @@ do
     print("state reset")
 end
 
---@api-stub: LBehaviorTree:addParallel / addInverter / addRepeat / clearAll
+--@api-stub: LBehaviorTree:addParallel
+--@api-stub: LBehaviorTree:addInverter
+--@api-stub: LBehaviorTree:addRepeat
+--@api-stub: LBehaviorTree:clearAll
 -- Advanced BT nodes.
 do
     ---@type LBehaviorTree
@@ -139,7 +159,11 @@ do
     print("after clear = " .. bt:nodeCount())
 end
 
---@api-stub: lurek.patterns.newBlackboard / LBlackboard:set / get / has / keys
+--@api-stub: lurek.patterns.newBlackboard
+--@api-stub: LBlackboard:set
+--@api-stub: LBlackboard:get
+--@api-stub: LBlackboard:has
+--@api-stub: LBlackboard:keys
 -- Shared key-value blackboard.
 do
     ---@type LBlackboard
@@ -155,7 +179,12 @@ do
     print("keys = " .. #all_keys)
 end
 
---@api-stub: LBlackboard:watch / unwatch / getRevision / snapshot / clear / clearAll
+--@api-stub: LBlackboard:watch
+--@api-stub: LBlackboard:unwatch
+--@api-stub: LBlackboard:getRevision
+--@api-stub: LBlackboard:snapshot
+--@api-stub: LBlackboard:clear
+--@api-stub: LBlackboard:clearAll
 -- Blackboard reactivity and management.
 do
     ---@type LBlackboard

@@ -1,6 +1,7 @@
 --- Tilemap Module Part 2: auto-tiling, collision sweep, tile callbacks, navigation
 
---@api-stub: LTileSet:setAutoTileRule / getAutoTileId
+--@api-stub: LTileSet:setAutoTileRule
+--@api-stub: LTileSet:getAutoTileId
 -- 4-bit auto-tile rules.
 do
     ---@type LTileSet
@@ -16,7 +17,8 @@ do
     print("bitmask 15 -> tile " .. id)
 end
 
---@api-stub: LTileSet:setAutoTileRule8 / getAutoTileId8
+--@api-stub: LTileSet:setAutoTileRule8
+--@api-stub: LTileSet:getAutoTileId8
 -- 8-bit auto-tile rules for smoother transitions.
 do
     ---@type LTileSet
@@ -59,7 +61,8 @@ do
     print("water bitmask 0 -> tile " .. id)
 end
 
---@api-stub: LAutoTileSheet:getBitmaskForTile / getTileForBitmask
+--@api-stub: LAutoTileSheet:getBitmaskForTile
+--@api-stub: LAutoTileSheet:getTileForBitmask
 -- Bitmask <-> tile lookups.
 do
     ---@type LAutoTileSheet
@@ -118,7 +121,8 @@ do
     print("8-bit auto-tile applied")
 end
 
---@api-stub: LTileMap:applyAutoTileAt / applyAutoTile8At
+--@api-stub: LTileMap:applyAutoTileAt
+--@api-stub: LTileMap:applyAutoTile8At
 -- Auto-tiling a single cell without recalculating the whole layer.
 do
     ---@type LTileMap
@@ -156,7 +160,9 @@ do
     print("time = " .. tx .. ", " .. ty)
 end
 
---@api-stub: LTileMap:onTileEnter / onTileExit / onTileStep
+--@api-stub: LTileMap:onTileEnter
+--@api-stub: LTileMap:onTileExit
+--@api-stub: LTileMap:onTileStep
 -- Tile-based event callbacks.
 do
     ---@type LTileMap
@@ -176,7 +182,9 @@ do
     print("3 callbacks registered for gid=5")
 end
 
---@api-stub: LTileMap:checkEntities / fireTileExit / fireTileStep
+--@api-stub: LTileMap:checkEntities
+--@api-stub: LTileMap:fireTileExit
+--@api-stub: LTileMap:fireTileStep
 -- Driving tile callbacks from entity positions.
 do
     ---@type LTileMap
@@ -247,7 +255,8 @@ do
     print("RGB tints applied to 3 tiles")
 end
 
---@api-stub: LTileMap:setOrientation / getOrientation
+--@api-stub: LTileMap:setOrientation
+--@api-stub: LTileMap:getOrientation
 -- Map orientation setting.
 do
     ---@type LTileMap

@@ -1,6 +1,7 @@
 --- Render Module Part 3: images, canvases, quads, sprite batches, draw, drawq, drawMany, nine-slice
 
---@api-stub: lurek.render.newImage / draw
+--@api-stub: lurek.render.newImage
+--@api-stub: lurek.draw
 -- Loading and drawing images.
 do
     ---@type LImage
@@ -13,7 +14,10 @@ do
     lurek.render.draw(img, 200, 10, 0, 2, 2, w / 2, h / 2)
 end
 
---@api-stub: LImage:getId / type / typeOf / release
+--@api-stub: LImage:getId
+--@api-stub: LImage:type
+--@api-stub: LImage:typeOf
+--@api-stub: LImage:release
 -- Image handle inspection and lifecycle.
 do
     ---@type LImage
@@ -39,7 +43,10 @@ do
     print("from data: " .. img:getWidth() .. "x" .. img:getHeight())
 end
 
---@api-stub: lurek.render.newCanvas / setCanvas / getCanvas / draw canvas
+--@api-stub: lurek.render.newCanvas
+--@api-stub: lurek.setCanvas
+--@api-stub: lurek.getCanvas
+--@api-stub: lurek.draw canvas
 -- Off-screen canvas rendering.
 do
     ---@type LCanvas
@@ -58,7 +65,9 @@ do
     lurek.render.draw(canvas, 150, 150, 0, 0.5, 0.5)
 end
 
---@api-stub: LCanvas:type / typeOf / release
+--@api-stub: LCanvas:type
+--@api-stub: LCanvas:typeOf
+--@api-stub: LCanvas:release
 -- Canvas type and lifecycle.
 do
     ---@type LCanvas
@@ -69,7 +78,9 @@ do
     print("released = " .. tostring(released))
 end
 
---@api-stub: lurek.render.getCanvas / getCanvasSize / resetCanvas
+--@api-stub: lurek.render.getCanvas
+--@api-stub: lurek.getCanvasSize
+--@api-stub: lurek.resetCanvas
 -- Canvas query and reset.
 do
     ---@type LCanvas
@@ -84,7 +95,8 @@ do
     print("canvas reset done")
 end
 
---@api-stub: lurek.render.newQuad / drawq
+--@api-stub: lurek.render.newQuad
+--@api-stub: lurek.drawq
 -- Quad-based sub-region drawing for sprite sheets.
 do
     ---@type LImage
@@ -105,7 +117,8 @@ do
     lurek.render.drawq(sheet, q2, 120, 310)
 end
 
---@api-stub: LQuad:type / typeOf
+--@api-stub: LQuad:type
+--@api-stub: LQuad:typeOf
 -- Quad type inspection.
 do
     ---@type LQuad
@@ -114,7 +127,8 @@ do
     print("is LQuad = " .. tostring(q:typeOf("LQuad")))
 end
 
---@api-stub: lurek.render.newSpriteBatch / add / draw batch
+--@api-stub: lurek.render.newSpriteBatch
+--@api-stub: lurek.draw batch
 -- Batched sprite rendering.
 do
     ---@type LImage
@@ -131,7 +145,9 @@ do
     print("after clear = " .. batch:getCount())
 end
 
---@api-stub: LSpriteBatch:type / typeOf / release
+--@api-stub: LSpriteBatch:type
+--@api-stub: LSpriteBatch:typeOf
+--@api-stub: LSpriteBatch:release
 -- Sprite batch lifecycle.
 do
     ---@type LImage
@@ -158,7 +174,8 @@ do
     lurek.render.drawMany(list)
 end
 
---@api-stub: lurek.render.newNineSlice / drawNineSlice
+--@api-stub: lurek.render.newNineSlice
+--@api-stub: lurek.drawNineSlice
 -- 9-slice scalable UI panel rendering.
 do
     ---@type LImage
@@ -175,7 +192,9 @@ do
     print("is LNineSlice = " .. tostring(slice:typeOf("LNineSlice")))
 end
 
---@api-stub: lurek.render.newDrawLayer / queue / flush
+--@api-stub: lurek.render.newDrawLayer
+--@api-stub: lurek.queue
+--@api-stub: lurek.flush
 -- Z-ordered draw callback layers.
 do
     ---@type LDrawLayer
@@ -198,7 +217,9 @@ do
     lurek.render.setColor(1, 1, 1, 1)
 end
 
---@api-stub: LDrawLayer:clear / type / typeOf
+--@api-stub: LDrawLayer:clear
+--@api-stub: LDrawLayer:type
+--@api-stub: LDrawLayer:typeOf
 -- Draw layer lifecycle.
 do
     ---@type LDrawLayer

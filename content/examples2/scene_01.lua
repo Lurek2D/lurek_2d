@@ -1,6 +1,9 @@
 --- Scene Module Part 2: transitions, overlays, preload, depth sorter, serialization
 
---@api-stub: lurek.scene.transitions.fade / slide / iris / wipe
+--@api-stub: lurek.scene.transitions.fade
+--@api-stub: lurek.slide
+--@api-stub: lurek.iris
+--@api-stub: lurek.wipe
 -- Transition descriptor factories.
 do
     local fade = lurek.scene.transitions.fade(0.5)
@@ -62,7 +65,9 @@ do
     lurek.scene.clear()
 end
 
---@api-stub: lurek.scene.queueTransition / clearQueuedTransitions / getQueuedTransitionCount
+--@api-stub: lurek.scene.queueTransition
+--@api-stub: lurek.clearQueuedTransitions
+--@api-stub: lurek.getQueuedTransitionCount
 -- Queuing multiple transitions.
 do
     local s1 = lurek.scene.new({})
@@ -77,7 +82,8 @@ do
     lurek.scene.clear()
 end
 
---@api-stub: lurek.scene.pushOverlay / isOverlay
+--@api-stub: lurek.scene.pushOverlay
+--@api-stub: lurek.isOverlay
 -- Overlay scenes (non-pausing).
 do
     local gameScene = lurek.scene.new({
@@ -111,7 +117,9 @@ do
     lurek.scene.clear()
 end
 
---@api-stub: lurek.scene.preload / pushPreloaded / isPreloaded
+--@api-stub: lurek.scene.preload
+--@api-stub: lurek.pushPreloaded
+--@api-stub: lurek.isPreloaded
 -- Deferred scene loading.
 do
     local loadCount = 0
@@ -146,7 +154,8 @@ do
     lurek.scene.clear()
 end
 
---@api-stub: lurek.scene.serializeScene / deserializeScene
+--@api-stub: lurek.scene.serializeScene
+--@api-stub: lurek.deserializeScene
 -- Saving and restoring scene navigation state.
 do
     local menu = lurek.scene.new({})
@@ -170,7 +179,7 @@ do
     lurek.scene.clear()
 end
 
---@api-stub: lurek.scene.newDepthSorter / add / flush
+--@api-stub: lurek.scene.newDepthSorter
 -- Depth-sorted rendering with callbacks.
 do
     ---@type LDepthSorter
@@ -195,7 +204,11 @@ do
     lurek.render.setColor(1, 1, 1, 1)
 end
 
---@api-stub: LDepthSorter:addObject / sort / clear / setStable / isStable
+--@api-stub: LDepthSorter:addObject
+--@api-stub: LDepthSorter:sort
+--@api-stub: LDepthSorter:clear
+--@api-stub: LDepthSorter:setStable
+--@api-stub: LDepthSorter:isStable
 -- Object-based depth sorting.
 do
     ---@type LDepthSorter
@@ -230,7 +243,8 @@ do
     print("cleared count = " .. sorter:getCount())
 end
 
---@api-stub: lurek.scene.processLate / processPhysics
+--@api-stub: lurek.scene.processLate
+--@api-stub: lurek.processPhysics
 -- Late processing and physics callbacks.
 do
     local lateCount = 0

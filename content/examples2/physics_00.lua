@@ -1,6 +1,8 @@
 --- Physics Module Part 1: world creation, gravity, stepping, body creation, body properties
 
---@api-stub: lurek.physics.newWorld / LWorld:getGravity / setGravity
+--@api-stub: lurek.physics.newWorld
+--@api-stub: LWorld:getGravity
+--@api-stub: LWorld:setGravity
 -- Create a physics world with gravity.
 do
     ---@type LWorld
@@ -12,7 +14,8 @@ do
     print("new gravity = " .. gx .. ", " .. gy)
 end
 
---@api-stub: LWorld:step / stepFixed
+--@api-stub: LWorld:step
+--@api-stub: LWorld:stepFixed
 -- Stepping the simulation.
 do
     ---@type LWorld
@@ -24,7 +27,10 @@ do
     print("fixed step leftover = " .. leftover)
 end
 
---@api-stub: LWorld:setMeter / getMeter / toPhysics / toPixels
+--@api-stub: LWorld:setMeter
+--@api-stub: LWorld:getMeter
+--@api-stub: LWorld:toPhysics
+--@api-stub: LWorld:toPixels
 -- Unit conversion between pixels and physics meters.
 do
     ---@type LWorld
@@ -37,7 +43,8 @@ do
     print("2m = " .. pixels .. "px")
 end
 
---@api-stub: LWorld:setSolverIterations / getSolverIterations
+--@api-stub: LWorld:setSolverIterations
+--@api-stub: LWorld:getSolverIterations
 -- Solver iteration control.
 do
     ---@type LWorld
@@ -46,7 +53,8 @@ do
     print("solver iterations = " .. world:getSolverIterations())
 end
 
---@api-stub: LWorld:newBody / LBody basic properties
+--@api-stub: LWorld:newBody
+--@api-stub: LWorld:LBody basic properties
 -- Creating dynamic bodies and reading position/velocity.
 do
     ---@type LWorld
@@ -71,7 +79,9 @@ do
     print("ball w = " .. ball:getWidth() .. " h = " .. ball:getHeight())
 end
 
---@api-stub: LWorld:newBody static/kinematic/sensor types
+--@api-stub: LWorld:newBody static
+--@api-stub: LWorld:kinematic
+--@api-stub: LWorld:sensor types
 -- Different body types.
 do
     ---@type LWorld
@@ -84,7 +94,9 @@ do
     print("trigger type = " .. trigger:getType())
 end
 
---@api-stub: LBody:setPosition / setVelocity / getVelocity
+--@api-stub: LBody:setPosition
+--@api-stub: LBody:setVelocity
+--@api-stub: LBody:getVelocity
 -- Teleporting and setting velocity.
 do
     ---@type LWorld
@@ -98,7 +110,10 @@ do
     print("pos = " .. x .. ", " .. y)
 end
 
---@api-stub: LBody:setAngle / getAngle / setAngularVelocity / getAngularVelocity
+--@api-stub: LBody:setAngle
+--@api-stub: LBody:getAngle
+--@api-stub: LBody:setAngularVelocity
+--@api-stub: LBody:getAngularVelocity
 -- Rotation.
 do
     ---@type LWorld
@@ -110,7 +125,12 @@ do
     print("angular vel = " .. body:getAngularVelocity())
 end
 
---@api-stub: LBody:getMass / setMass / setFriction / getFriction / setRestitution / getRestitution
+--@api-stub: LBody:getMass
+--@api-stub: LBody:setMass
+--@api-stub: LBody:setFriction
+--@api-stub: LBody:getFriction
+--@api-stub: LBody:setRestitution
+--@api-stub: LBody:getRestitution
 -- Mass and material properties.
 do
     ---@type LWorld
@@ -124,7 +144,10 @@ do
     print("restitution = " .. body:getRestitution())
 end
 
---@api-stub: LBody:setLinearDamping / getLinearDamping / setAngularDamping / getAngularDamping
+--@api-stub: LBody:setLinearDamping
+--@api-stub: LBody:getLinearDamping
+--@api-stub: LBody:setAngularDamping
+--@api-stub: LBody:getAngularDamping
 -- Damping (velocity decay).
 do
     ---@type LWorld
@@ -136,7 +159,8 @@ do
     print("angular damp = " .. body:getAngularDamping())
 end
 
---@api-stub: LBody:setGravityScale / getGravityScale
+--@api-stub: LBody:setGravityScale
+--@api-stub: LBody:getGravityScale
 -- Per-body gravity scale.
 do
     ---@type LWorld
@@ -151,7 +175,11 @@ do
     print("inverted gravity = " .. inverted:getGravityScale())
 end
 
---@api-stub: LBody:applyForce / applyForceAtPoint / applyImpulse / applyAngularImpulse / applyTorque
+--@api-stub: LBody:applyForce
+--@api-stub: LBody:applyForceAtPoint
+--@api-stub: LBody:applyImpulse
+--@api-stub: LBody:applyAngularImpulse
+--@api-stub: LBody:applyTorque
 -- Forces and impulses.
 do
     ---@type LWorld
@@ -168,7 +196,10 @@ do
     print("angular vel = " .. body:getAngularVelocity())
 end
 
---@api-stub: LBody:setBullet / isBullet / setFixedRotation / isFixedRotation
+--@api-stub: LBody:setBullet
+--@api-stub: LBody:isBullet
+--@api-stub: LBody:setFixedRotation
+--@api-stub: LBody:isFixedRotation
 -- CCD and rotation lock.
 do
     ---@type LWorld
@@ -181,7 +212,12 @@ do
     print("fixed rotation = " .. tostring(player:isFixedRotation()))
 end
 
---@api-stub: LBody:setType / getType / setLayer / getLayer / setMask / getMask
+--@api-stub: LBody:setType
+--@api-stub: LBody:getType
+--@api-stub: LBody:setLayer
+--@api-stub: LBody:getLayer
+--@api-stub: LBody:setMask
+--@api-stub: LBody:getMask
 -- Body type changes and collision filtering.
 do
     ---@type LWorld
@@ -195,7 +231,11 @@ do
     print("mask = " .. body:getMask())
 end
 
---@api-stub: LBody:sleep / wakeUp / isSleeping / setSleepingAllowed / isSleepingAllowed
+--@api-stub: LBody:sleep
+--@api-stub: LBody:wakeUp
+--@api-stub: LBody:isSleeping
+--@api-stub: LBody:setSleepingAllowed
+--@api-stub: LBody:isSleepingAllowed
 -- Sleep state management.
 do
     ---@type LWorld
@@ -209,7 +249,8 @@ do
     print("sleeping after wake = " .. tostring(body:isSleeping()))
 end
 
---@api-stub: LBody:destroy / LWorld:getBodyCount
+--@api-stub: LBody:destroy
+--@api-stub: LWorld:getBodyCount
 -- Destroying bodies.
 do
     ---@type LWorld
@@ -224,7 +265,8 @@ do
     print("after destroy = " .. world:getBodyCount())
 end
 
---@api-stub: LBody:type / typeOf
+--@api-stub: LBody:type
+--@api-stub: LBody:typeOf
 -- Type checking.
 do
     ---@type LWorld
@@ -235,7 +277,8 @@ do
     print("is Object = " .. tostring(body:typeOf("Object")))
 end
 
---@api-stub: LWorld:type / typeOf
+--@api-stub: LWorld:type
+--@api-stub: LWorld:typeOf
 -- World type checking.
 do
     ---@type LWorld

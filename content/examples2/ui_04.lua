@@ -1,6 +1,7 @@
 -- ui_04.lua: Dialogs, windows, toolbar, statusbar
 
-do --@api-stub: lurek.ui.newDialog
+--@api-stub: lurek.ui.newDialog
+do
     -- create a modal dialog with title, buttons, and close callback
     ---@type LDialog
     local dlg = lurek.ui.newDialog("Confirm Action")
@@ -16,7 +17,8 @@ do --@api-stub: lurek.ui.newDialog
     print("is open:", dlg:isOpen())
 end
 
-do --@api-stub: lurek.ui.newDialog content
+--@api-stub: lurek.ui.newDialog content
+do
     -- set a panel as dialog content widget
     ---@type LDialog
     local dlg = lurek.ui.newDialog("Settings")
@@ -31,7 +33,8 @@ do --@api-stub: lurek.ui.newDialog content
     print("after close, is open:", dlg:isOpen())
 end
 
-do --@api-stub: lurek.ui.newWindow
+--@api-stub: lurek.ui.newWindow
+do
     -- create a draggable, resizable GUI window
     ---@type LGuiWindow
     local win = lurek.ui.newWindow("Editor")
@@ -47,7 +50,8 @@ do --@api-stub: lurek.ui.newWindow
     print("is closeable:", win:isCloseable())
 end
 
-do --@api-stub: lurek.ui.newWindow title
+--@api-stub: lurek.ui.newWindow title
+do
     -- change window title and toggle properties
     ---@type LGuiWindow
     local win = lurek.ui.newWindow("Inspector")
@@ -61,7 +65,8 @@ do --@api-stub: lurek.ui.newWindow title
     print("closeable after disable:", win:isCloseable())
 end
 
-do --@api-stub: lurek.ui.newToolbar
+--@api-stub: lurek.ui.newToolbar
+do
     -- create a horizontal toolbar with buttons and separators
     ---@type LToolbar
     local tb = lurek.ui.newToolbar("horizontal")
@@ -74,7 +79,8 @@ do --@api-stub: lurek.ui.newToolbar
     print("orientation:", tb:getOrientation())
 end
 
-do --@api-stub: lurek.ui.newToolbar toggle
+--@api-stub: lurek.ui.newToolbar toggle
+do
     -- toggle toolbar buttons and check state
     ---@type LToolbar
     local tb = lurek.ui.newToolbar("vertical")
@@ -89,7 +95,8 @@ do --@api-stub: lurek.ui.newToolbar toggle
     print("bold info - enabled:", info.enabled, "toggled:", info.toggled)
 end
 
-do --@api-stub: lurek.ui.newStatusBar
+--@api-stub: lurek.ui.newStatusBar
+do
     -- create a status bar with multiple sections
     ---@type LStatusBar
     local sb = lurek.ui.newStatusBar()
@@ -101,7 +108,8 @@ do --@api-stub: lurek.ui.newStatusBar
     print("section 2:", sb:getSectionText(2))
 end
 
-do --@api-stub: lurek.ui.newStatusBar update
+--@api-stub: lurek.ui.newStatusBar update
+do
     -- update status bar sections dynamically
     ---@type LStatusBar
     local sb = lurek.ui.newStatusBar()

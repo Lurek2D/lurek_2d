@@ -1,6 +1,8 @@
 --- Pathfinding Module Part 1: grid pathfinding basics (LPathGrid, LNavGrid)
 
---@api-stub: lurek.pathfind.newPathGrid / LPathGrid:setWalkable / isWalkable
+--@api-stub: lurek.pathfind.newPathGrid
+--@api-stub: LPathGrid:setWalkable
+--@api-stub: LPathGrid:isWalkable
 -- Basic cell-size path grid creation and walkability.
 do
     ---@type LPathGrid
@@ -12,7 +14,8 @@ do
     print("(1,1) walkable = " .. tostring(grid:isWalkable(1, 1)))
 end
 
---@api-stub: LPathGrid:setCost / getCost
+--@api-stub: LPathGrid:setCost
+--@api-stub: LPathGrid:getCost
 -- Movement cost per cell.
 do
     ---@type LPathGrid
@@ -60,7 +63,8 @@ do
     end
 end
 
---@api-stub: LPathGrid:type / typeOf
+--@api-stub: LPathGrid:type
+--@api-stub: LPathGrid:typeOf
 -- Type checking.
 do
     ---@type LPathGrid
@@ -70,7 +74,8 @@ do
     print("is Object = " .. tostring(grid:typeOf("Object")))
 end
 
---@api-stub: lurek.pathfind.newNavGrid / LNavGrid dimensions
+--@api-stub: lurek.pathfind.newNavGrid
+--@api-stub: lurek.LNavGrid dimensions
 -- Navigation grid creation with cost-based cells.
 do
     ---@type LNavGrid
@@ -80,7 +85,10 @@ do
     print("width = " .. nav:getWidth() .. " height = " .. nav:getHeight())
 end
 
---@api-stub: LNavGrid:setBlocked / isBlocked / setCost / getCost
+--@api-stub: LNavGrid:setBlocked
+--@api-stub: LNavGrid:isBlocked
+--@api-stub: LNavGrid:setCost
+--@api-stub: LNavGrid:getCost
 -- Blocking and movement cost.
 do
     ---@type LNavGrid
@@ -93,7 +101,9 @@ do
     print("cost at (5,5) = " .. nav:getCost(5, 5))
 end
 
---@api-stub: LNavGrid:isWalkable / fill / fillRect
+--@api-stub: LNavGrid:isWalkable
+--@api-stub: LNavGrid:fill
+--@api-stub: LNavGrid:fillRect
 -- Walkability checks and bulk fill operations.
 do
     ---@type LNavGrid
@@ -105,7 +115,8 @@ do
     print("(7,7) walkable size 3 = " .. tostring(nav:isWalkable(7, 7, 3)))
 end
 
---@api-stub: LNavGrid:setDiagonalMode / getDiagonalMode
+--@api-stub: LNavGrid:setDiagonalMode
+--@api-stub: LNavGrid:getDiagonalMode
 -- Diagonal movement modes.
 do
     ---@type LNavGrid
@@ -118,7 +129,9 @@ do
     print("diag mode = " .. nav:getDiagonalMode())
 end
 
---@api-stub: LNavGrid:setChunkSize / getChunkSize / rebuildAbstract
+--@api-stub: LNavGrid:setChunkSize
+--@api-stub: LNavGrid:getChunkSize
+--@api-stub: LNavGrid:rebuildAbstract
 -- Hierarchical abstract graph for large grids.
 do
     ---@type LNavGrid
@@ -129,7 +142,8 @@ do
     print("abstract graph rebuilt")
 end
 
---@api-stub: LNavGrid:setDirty / clearDirty
+--@api-stub: LNavGrid:setDirty
+--@api-stub: LNavGrid:clearDirty
 -- Incremental dirty regions.
 do
     ---@type LNavGrid
@@ -143,7 +157,8 @@ do
     print("dirty region handled")
 end
 
---@api-stub: LNavGrid:saveToString / loadFromString
+--@api-stub: LNavGrid:saveToString
+--@api-stub: LNavGrid:loadFromString
 -- Serialization.
 do
     ---@type LNavGrid
@@ -159,7 +174,8 @@ do
     print("loaded (3,3) cost = " .. nav2:getCost(3, 3))
 end
 
---@api-stub: LNavGrid:type / typeOf
+--@api-stub: LNavGrid:type
+--@api-stub: LNavGrid:typeOf
 -- Type checking.
 do
     ---@type LNavGrid

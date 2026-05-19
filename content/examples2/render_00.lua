@@ -1,6 +1,7 @@
 --- Render Module Part 1: basic drawing — print, rectangle, circle, line, polygon, points, arc, ellipse, triangle
 
---@api-stub: lurek.render.print / basic text
+--@api-stub: lurek.render.print
+--@api-stub: lurek.basic text
 -- Drawing text to the screen.
 do
     lurek.render.print("Hello, Lurek2D!", 10, 10)
@@ -9,7 +10,8 @@ do
     lurek.render.print("", 0, 0)
 end
 
---@api-stub: lurek.render.printf / word-wrapped text
+--@api-stub: lurek.render.printf
+--@api-stub: lurek.word-wrapped text
 -- Drawing aligned, word-wrapped text.
 do
     lurek.render.printf("Left-aligned paragraph that wraps at 200 pixels width.", 10, 100, 200, "left")
@@ -37,7 +39,8 @@ do
     lurek.render.printRich(spans, 10, 260)
 end
 
---@api-stub: lurek.render.rectangle / filled and outlined
+--@api-stub: lurek.render.rectangle
+--@api-stub: lurek.filled and outlined
 -- Drawing rectangles in fill and line modes.
 do
     lurek.render.setColor(1, 0, 0, 1)
@@ -49,7 +52,8 @@ do
     lurek.render.setColor(1, 1, 1, 1)
 end
 
---@api-stub: lurek.render.rectangle / rounded
+--@api-stub: lurek.render.rectangle
+--@api-stub: lurek.rounded
 -- Drawing rounded rectangles.
 do
     lurek.render.setColor(0.8, 0.2, 0.8, 1)
@@ -59,7 +63,8 @@ do
     lurek.render.setColor(1, 1, 1, 1)
 end
 
---@api-stub: lurek.render.circle / filled and outlined
+--@api-stub: lurek.render.circle
+--@api-stub: lurek.filled and outlined
 -- Drawing circles.
 do
     lurek.render.setColor(1, 0.5, 0, 1)
@@ -71,7 +76,8 @@ do
     lurek.render.setColor(1, 1, 1, 1)
 end
 
---@api-stub: lurek.render.ellipse / filled and outlined
+--@api-stub: lurek.render.ellipse
+--@api-stub: lurek.filled and outlined
 -- Drawing ellipses.
 do
     lurek.render.setColor(0.2, 0.6, 0.9, 1)
@@ -83,7 +89,8 @@ do
     lurek.render.setColor(1, 1, 1, 1)
 end
 
---@api-stub: lurek.render.arc / filled and outlined
+--@api-stub: lurek.render.arc
+--@api-stub: lurek.filled and outlined
 -- Drawing arc segments.
 do
     lurek.render.setColor(1, 0.8, 0, 1)
@@ -95,7 +102,8 @@ do
     lurek.render.setColor(1, 1, 1, 1)
 end
 
---@api-stub: lurek.render.line / two-point and polyline
+--@api-stub: lurek.render.line
+--@api-stub: lurek.two-point and polyline
 -- Drawing lines and polylines.
 do
     lurek.render.setColor(1, 1, 0, 1)
@@ -105,7 +113,8 @@ do
     lurek.render.setColor(1, 1, 1, 1)
 end
 
---@api-stub: lurek.render.polygon / filled and outlined
+--@api-stub: lurek.render.polygon
+--@api-stub: lurek.filled and outlined
 -- Drawing polygons from vertex lists.
 do
     lurek.render.setColor(0.8, 0.1, 0.5, 1)
@@ -114,7 +123,8 @@ do
     lurek.render.polygon("line", 300, 520, 350, 500, 400, 520, 380, 570, 320, 570)
 end
 
---@api-stub: lurek.render.triangle / filled and outlined
+--@api-stub: lurek.render.triangle
+--@api-stub: lurek.filled and outlined
 -- Drawing triangles.
 do
     lurek.render.setColor(0, 0.7, 0.3, 1)
@@ -123,7 +133,8 @@ do
     lurek.render.triangle("line", 560, 570, 610, 500, 660, 570)
 end
 
---@api-stub: lurek.render.points / individual points
+--@api-stub: lurek.render.points
+--@api-stub: lurek.individual points
 -- Drawing points with different sizes.
 do
     lurek.render.setPointSize(4)
@@ -136,7 +147,8 @@ do
     lurek.render.setColor(1, 1, 1, 1)
 end
 
---@api-stub: lurek.render.setLineWidth / getLineWidth
+--@api-stub: lurek.render.setLineWidth
+--@api-stub: lurek.getLineWidth
 -- Controlling line width.
 do
     lurek.render.setLineWidth(1)
@@ -150,7 +162,8 @@ do
     lurek.render.setLineWidth(1)
 end
 
---@api-stub: lurek.render.setPointSize / getPointSize
+--@api-stub: lurek.render.setPointSize
+--@api-stub: lurek.getPointSize
 -- Controlling point size.
 do
     lurek.render.setPointSize(2)
@@ -159,7 +172,8 @@ do
     lurek.render.setPointSize(1)
 end
 
---@api-stub: lurek.render.drawCubicBezier / drawQuadBezier
+--@api-stub: lurek.render.drawCubicBezier
+--@api-stub: lurek.drawQuadBezier
 -- Drawing Bezier curves.
 do
     lurek.render.setColor(1, 0.5, 0, 1)

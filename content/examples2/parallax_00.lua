@@ -31,7 +31,8 @@ do
     print("fog depth = " .. fog:getDepth())
 end
 
---@api-stub: LParallaxLayer:setScrollFactor / getScrollFactor
+--@api-stub: LParallaxLayer:setScrollFactor
+--@api-stub: LParallaxLayer:getScrollFactor
 -- Controls parallax scrolling speed.
 do
     ---@type LParallaxLayer
@@ -41,7 +42,8 @@ do
     print("scroll = " .. sx .. "," .. sy)
 end
 
---@api-stub: LParallaxLayer:setOffset / getOffset
+--@api-stub: LParallaxLayer:setOffset
+--@api-stub: LParallaxLayer:getOffset
 -- Pixel offset for fine positioning.
 do
     ---@type LParallaxLayer
@@ -51,7 +53,8 @@ do
     print("offset = " .. ox .. "," .. oy)
 end
 
---@api-stub: LParallaxLayer:setDepth / getDepth
+--@api-stub: LParallaxLayer:setDepth
+--@api-stub: LParallaxLayer:getDepth
 -- Depth value for sorting and parallax strength.
 do
     ---@type LParallaxLayer
@@ -60,7 +63,8 @@ do
     print("depth = " .. layer:getDepth())
 end
 
---@api-stub: LParallaxLayer:setZ / getZ
+--@api-stub: LParallaxLayer:setZ
+--@api-stub: LParallaxLayer:getZ
 -- Z order for rendering order.
 do
     ---@type LParallaxLayer
@@ -69,7 +73,8 @@ do
     print("z = " .. layer:getZ())
 end
 
---@api-stub: LParallaxLayer:setVisible / isVisible
+--@api-stub: LParallaxLayer:setVisible
+--@api-stub: LParallaxLayer:isVisible
 -- Visibility toggle.
 do
     ---@type LParallaxLayer
@@ -80,7 +85,8 @@ do
     print("visible = " .. tostring(layer:isVisible()))
 end
 
---@api-stub: LParallaxLayer:setOpacity / getOpacity
+--@api-stub: LParallaxLayer:setOpacity
+--@api-stub: LParallaxLayer:getOpacity
 -- Layer opacity (0-1).
 do
     ---@type LParallaxLayer
@@ -89,7 +95,9 @@ do
     print("opacity = " .. layer:getOpacity())
 end
 
---@api-stub: LParallaxLayer:setTiling / getTiling / setTileSize
+--@api-stub: LParallaxLayer:setTiling
+--@api-stub: LParallaxLayer:getTiling
+--@api-stub: LParallaxLayer:setTileSize
 -- Tiling configuration.
 do
     ---@type LParallaxLayer
@@ -117,7 +125,8 @@ do
     print("scaled 2x")
 end
 
---@api-stub: LParallaxLayer:setTint / getTint
+--@api-stub: LParallaxLayer:setTint
+--@api-stub: LParallaxLayer:getTint
 -- Color tinting.
 do
     ---@type LParallaxLayer
@@ -127,7 +136,8 @@ do
     print("tint = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 
---@api-stub: LParallaxLayer:setBlendMode / getBlendMode
+--@api-stub: LParallaxLayer:setBlendMode
+--@api-stub: LParallaxLayer:getBlendMode
 -- Blend mode selection.
 do
     ---@type LParallaxLayer
@@ -138,7 +148,8 @@ do
     print("blend = " .. layer:getBlendMode())
 end
 
---@api-stub: LParallaxLayer:setClamp / clearClamp
+--@api-stub: LParallaxLayer:setClamp
+--@api-stub: LParallaxLayer:clearClamp
 -- Movement bounds.
 do
     ---@type LParallaxLayer

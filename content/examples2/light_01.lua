@@ -1,6 +1,7 @@
 --- Light Module Part 2: shadows, flicker, transitions, cookies, normals, LOccluder
 
---@api-stub: LLight:setShadowEnabled / isShadowEnabled
+--@api-stub: LLight:setShadowEnabled
+--@api-stub: LLight:isShadowEnabled
 -- Enables or disables shadow casting.
 do
     local light = lurek.light.newLight(200, 200, 150)
@@ -8,7 +9,8 @@ do
     print("shadows = " .. tostring(light:isShadowEnabled()))
 end
 
---@api-stub: LLight:setShadowColor / getShadowColor
+--@api-stub: LLight:setShadowColor
+--@api-stub: LLight:getShadowColor
 -- Sets and gets shadow color.
 do
     local light = lurek.light.newLight(0, 0, 100)
@@ -18,7 +20,8 @@ do
     print("shadow color = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 
---@api-stub: LLight:setShadowFilter / getShadowFilter
+--@api-stub: LLight:setShadowFilter
+--@api-stub: LLight:getShadowFilter
 -- Sets and gets shadow filter mode.
 do
     local light = lurek.light.newLight(0, 0, 100)
@@ -27,7 +30,8 @@ do
     print("shadow filter = " .. light:getShadowFilter())
 end
 
---@api-stub: LLight:setShadowSmooth / getShadowSmooth
+--@api-stub: LLight:setShadowSmooth
+--@api-stub: LLight:getShadowSmooth
 -- Sets and gets shadow smoothing.
 do
     local light = lurek.light.newLight(0, 0, 100)
@@ -36,7 +40,8 @@ do
     print("shadow smooth = " .. light:getShadowSmooth())
 end
 
---@api-stub: LLight:setShadowSoftness / getShadowSoftness
+--@api-stub: LLight:setShadowSoftness
+--@api-stub: LLight:getShadowSoftness
 -- Sets and gets shadow softness.
 do
     local light = lurek.light.newLight(0, 0, 100)
@@ -45,7 +50,8 @@ do
     print("shadow softness = " .. light:getShadowSoftness())
 end
 
---@api-stub: LLight:setShadowMask / getShadowMask
+--@api-stub: LLight:setShadowMask
+--@api-stub: LLight:getShadowMask
 -- Sets and gets shadow receiver mask.
 do
     local light = lurek.light.newLight(0, 0, 100)
@@ -61,7 +67,8 @@ do
     print("flicker added")
 end
 
---@api-stub: LLight:setFlicker / getFlicker
+--@api-stub: LLight:setFlicker
+--@api-stub: LLight:getFlicker
 -- Sets and gets flicker speed and strength.
 do
     local light = lurek.light.newLight(0, 0, 100)
@@ -70,7 +77,8 @@ do
     print("flicker speed=" .. speed .. " strength=" .. strength)
 end
 
---@api-stub: LLight:setFlickerEnabled / isFlickerEnabled
+--@api-stub: LLight:setFlickerEnabled
+--@api-stub: LLight:isFlickerEnabled
 -- Enables or disables flicker.
 do
     local light = lurek.light.newLight(0, 0, 100)
@@ -79,7 +87,9 @@ do
     print("flicker on = " .. tostring(light:isFlickerEnabled()))
 end
 
---@api-stub: LLight:setCookie / getCookie / clearCookie
+--@api-stub: LLight:setCookie
+--@api-stub: LLight:getCookie
+--@api-stub: LLight:clearCookie
 -- Sets, gets, and clears cookie texture path.
 do
     local light = lurek.light.newLight(0, 0, 100)
@@ -90,7 +100,9 @@ do
     print("cookie cleared")
 end
 
---@api-stub: LLight:setNormalMap / getNormalMap / clearNormalMap
+--@api-stub: LLight:setNormalMap
+--@api-stub: LLight:getNormalMap
+--@api-stub: LLight:clearNormalMap
 -- Sets, gets, and clears normal map path.
 do
     local light = lurek.light.newLight(0, 0, 100)
@@ -101,7 +113,8 @@ do
     print("normal map cleared")
 end
 
---@api-stub: LLight:setNormalStrength / getNormalStrength
+--@api-stub: LLight:setNormalStrength
+--@api-stub: LLight:getNormalStrength
 -- Sets and gets normal map strength.
 do
     local light = lurek.light.newLight(0, 0, 100)
@@ -109,7 +122,8 @@ do
     print("normal strength = " .. light:getNormalStrength())
 end
 
---@api-stub: LLight:setVolumetric / isVolumetric
+--@api-stub: LLight:setVolumetric
+--@api-stub: LLight:isVolumetric
 -- Enables volumetric mode.
 do
     local light = lurek.light.newLight(0, 0, 200)
@@ -117,7 +131,10 @@ do
     print("volumetric = " .. tostring(light:isVolumetric()))
 end
 
---@api-stub: LLight:transitionTo / updateTransition / transitionProgress / stopTransition
+--@api-stub: LLight:transitionTo
+--@api-stub: LLight:updateTransition
+--@api-stub: LLight:transitionProgress
+--@api-stub: LLight:stopTransition
 -- Animates a light toward target values.
 do
     local light = lurek.light.newLight(0, 0, 100)
@@ -147,7 +164,8 @@ do
     print("opacity = " .. occ:getOpacity())
 end
 
---@api-stub: LOccluder:setPosition / getPosition
+--@api-stub: LOccluder:setPosition
+--@api-stub: LOccluder:getPosition
 -- Sets and gets occluder position.
 do
     local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
@@ -156,7 +174,8 @@ do
     print("occ pos = " .. x .. "," .. y)
 end
 
---@api-stub: LOccluder:setVertices / getVertices
+--@api-stub: LOccluder:setVertices
+--@api-stub: LOccluder:getVertices
 -- Sets and gets vertex list.
 do
     local occ = lurek.light.newOccluder({0, 0, 20, 0, 20, 20, 0, 20})
@@ -165,7 +184,8 @@ do
     print("vertex count = " .. #v / 2)
 end
 
---@api-stub: LOccluder:setOpacity / getOpacity
+--@api-stub: LOccluder:setOpacity
+--@api-stub: LOccluder:getOpacity
 -- Sets and gets occluder opacity.
 do
     local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
@@ -173,7 +193,8 @@ do
     print("opacity = " .. occ:getOpacity())
 end
 
---@api-stub: LOccluder:setEnabled / isEnabled
+--@api-stub: LOccluder:setEnabled
+--@api-stub: LOccluder:isEnabled
 -- Enables or disables occluder.
 do
     local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
@@ -181,7 +202,8 @@ do
     print("enabled = " .. tostring(occ:isEnabled()))
 end
 
---@api-stub: LOccluder:setLightMask / getLightMask
+--@api-stub: LOccluder:setLightMask
+--@api-stub: LOccluder:getLightMask
 -- Sets and gets occluder light mask.
 do
     local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
@@ -198,7 +220,8 @@ do
     print("valid after remove = " .. tostring(occ:isValid()))
 end
 
---@api-stub: LOccluder:type / typeOf
+--@api-stub: LOccluder:type
+--@api-stub: LOccluder:typeOf
 -- Type identity.
 do
     local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})

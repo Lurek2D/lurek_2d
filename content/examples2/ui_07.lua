@@ -1,6 +1,7 @@
 -- ui_07.lua: Advanced — color picker, radio button, tree view, toast, tooltip, theme, focus, drag/drop
 
-do --@api-stub: lurek.ui.newColorPicker
+--@api-stub: lurek.ui.newColorPicker
+do
     -- create a color picker and select a color
     ---@type LColorPicker
     local cp = lurek.ui.newColorPicker()
@@ -13,7 +14,8 @@ do --@api-stub: lurek.ui.newColorPicker
     print("show alpha:", cp:getShowAlpha())
 end
 
-do --@api-stub: lurek.ui.newColorPicker onChange
+--@api-stub: lurek.ui.newColorPicker onChange
+do
     -- register a change callback on color picker
     ---@type LColorPicker
     local cp = lurek.ui.newColorPicker()
@@ -24,7 +26,8 @@ do --@api-stub: lurek.ui.newColorPicker onChange
     print("green set, mode:", cp:getColorMode())
 end
 
-do --@api-stub: lurek.ui.newRadioButton
+--@api-stub: lurek.ui.newRadioButton
+do
     -- create mutually exclusive radio buttons in a group
     ---@type LRadioButton
     local rb1 = lurek.ui.newRadioButton("Small", "size_group")
@@ -39,7 +42,8 @@ do --@api-stub: lurek.ui.newRadioButton
     print("rb2 text:", rb2:getText())
 end
 
-do --@api-stub: lurek.ui.newTreeView
+--@api-stub: lurek.ui.newTreeView
+do
     -- create a tree view with nested nodes
     ---@type LTreeView
     local tree = lurek.ui.newTreeView()
@@ -54,7 +58,9 @@ do --@api-stub: lurek.ui.newTreeView
     print("src depth:", tree:getNodeDepth(src))
 end
 
-do --@api-stub: lurek.ui.newTreeView expand/collapse
+--@api-stub: lurek.ui.newTreeView expand
+--@api-stub: lurek.collapse
+do
     -- expand and collapse tree nodes
     ---@type LTreeView
     local tree = lurek.ui.newTreeView()
@@ -70,7 +76,8 @@ do --@api-stub: lurek.ui.newTreeView expand/collapse
     print("selected:", tree:getSelectedNode())
 end
 
-do --@api-stub: lurek.ui.newToast
+--@api-stub: lurek.ui.newToast
+do
     -- create a toast notification
     ---@type LToast
     local toast = lurek.ui.newToast("File saved!", 2.5)
@@ -82,7 +89,8 @@ do --@api-stub: lurek.ui.newToast
     print("expired:", toast:isExpired())
 end
 
-do --@api-stub: lurek.ui.newTooltipPanel
+--@api-stub: lurek.ui.newTooltipPanel
+do
     -- create a tooltip panel attached to a button
     ---@type LButton
     local btn = lurek.ui.newButton("Hover me")
@@ -97,7 +105,8 @@ do --@api-stub: lurek.ui.newTooltipPanel
     print("new text:", tip:getText())
 end
 
-do --@api-stub: lurek.ui.newTheme setStyle
+--@api-stub: lurek.ui.newTheme setStyle
+do
     -- create and apply a custom theme
     ---@type LTheme
     local theme = lurek.ui.newTheme()
@@ -113,7 +122,8 @@ do --@api-stub: lurek.ui.newTheme setStyle
     print("theme type:", theme:type())
 end
 
-do --@api-stub: lurek.ui.setFocus focusNext focusPrev
+--@api-stub: lurek.ui.setFocus focusNext focusPrev
+do
     -- manage keyboard focus between widgets
     ---@type LButton
     local btn1 = lurek.ui.newButton("First")
@@ -129,7 +139,8 @@ do --@api-stub: lurek.ui.setFocus focusNext focusPrev
     print("after clear:", lurek.ui.getFocus())
 end
 
-do --@api-stub: lurek.ui.beginDrag endDrag dropOn
+--@api-stub: lurek.ui.beginDrag endDrag dropOn
+do
     -- drag and drop a widget onto a target
     ---@type LPanel
     local source = lurek.ui.newPanel()

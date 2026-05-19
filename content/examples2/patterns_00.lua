@@ -1,6 +1,9 @@
 --- Patterns Module Part 1: service locator, object pool, factory, strategy
 
---@api-stub: lurek.patterns.newServiceLocator / LServiceLocator:provide / locate / has
+--@api-stub: lurek.patterns.newServiceLocator
+--@api-stub: LServiceLocator:provide
+--@api-stub: LServiceLocator:locate
+--@api-stub: LServiceLocator:has
 -- Service locator registers and retrieves shared services.
 do
     ---@type LServiceLocator
@@ -15,7 +18,9 @@ do
     end
 end
 
---@api-stub: LServiceLocator:getServices / remove / clearAll
+--@api-stub: LServiceLocator:getServices
+--@api-stub: LServiceLocator:remove
+--@api-stub: LServiceLocator:clearAll
 -- Service listing and removal.
 do
     ---@type LServiceLocator
@@ -31,7 +36,10 @@ do
     print("after clear: count = " .. #services:getServices())
 end
 
---@api-stub: lurek.patterns.newObjectPool / LObjectPool:add / acquire / release
+--@api-stub: lurek.patterns.newObjectPool
+--@api-stub: LObjectPool:add
+--@api-stub: LObjectPool:acquire
+--@api-stub: LObjectPool:release
 -- Object pool reuses pre-allocated objects.
 do
     ---@type LObjectPool
@@ -66,7 +74,11 @@ do
     print("after clear: total = " .. pool:getTotalCount())
 end
 
---@api-stub: lurek.patterns.newFactory / LFactory:register / create / has / getTypes
+--@api-stub: lurek.patterns.newFactory
+--@api-stub: LFactory:register
+--@api-stub: LFactory:create
+--@api-stub: LFactory:has
+--@api-stub: LFactory:getTypes
 -- Factory creates typed objects from registered constructors.
 do
     ---@type LFactory
@@ -85,7 +97,9 @@ do
     print("bullet dmg = " .. b.damage)
 end
 
---@api-stub: LFactory:alias / remove / clearAll
+--@api-stub: LFactory:alias
+--@api-stub: LFactory:remove
+--@api-stub: LFactory:clearAll
 -- Factory aliases and cleanup.
 do
     ---@type LFactory
@@ -102,7 +116,10 @@ do
     print("after clear: types = " .. #factory:getTypes())
 end
 
---@api-stub: lurek.patterns.newStrategy / LStrategy:register / set / execute
+--@api-stub: lurek.patterns.newStrategy
+--@api-stub: LStrategy:register
+--@api-stub: LStrategy:set
+--@api-stub: LStrategy:execute
 -- Strategy pattern for hot-swappable algorithms.
 do
     ---@type LStrategy
@@ -124,7 +141,10 @@ do
     end
 end
 
---@api-stub: LStrategy:has / names / remove / clear
+--@api-stub: LStrategy:has
+--@api-stub: LStrategy:names
+--@api-stub: LStrategy:remove
+--@api-stub: LStrategy:clear
 -- Strategy management.
 do
     ---@type LStrategy

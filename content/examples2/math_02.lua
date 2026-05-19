@@ -27,7 +27,8 @@ do
     print("half-arc point = " .. x .. "," .. y)
 end
 
---@api-stub: LBezierCurve:getControlPoint / setControlPoint
+--@api-stub: LBezierCurve:getControlPoint
+--@api-stub: LBezierCurve:setControlPoint
 -- Reads and writes individual control points.
 do
     ---@type LBezierCurve
@@ -39,7 +40,8 @@ do
     print("cp2 moved = " .. nx .. "," .. ny)
 end
 
---@api-stub: LBezierCurve:insertControlPoint / removeControlPoint
+--@api-stub: LBezierCurve:insertControlPoint
+--@api-stub: LBezierCurve:removeControlPoint
 -- Adds and removes control points.
 do
     ---@type LBezierCurve
@@ -78,7 +80,9 @@ do
     print("derivative CPs = " .. deriv:getControlPointCount())
 end
 
---@api-stub: LBezierCurve:translate / rotate / scale
+--@api-stub: LBezierCurve:translate
+--@api-stub: LBezierCurve:rotate
+--@api-stub: LBezierCurve:scale
 -- Transforms the curve in place.
 do
     ---@type LBezierCurve
@@ -116,7 +120,8 @@ do
     print("seg1 mid = " .. x .. "," .. y)
 end
 
---@api-stub: LCatmullRom:addPoint / removePoint
+--@api-stub: LCatmullRom:addPoint
+--@api-stub: LCatmullRom:removePoint
 -- Adds and removes points.
 do
     ---@type LCatmullRom

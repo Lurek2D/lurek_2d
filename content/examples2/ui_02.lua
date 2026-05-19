@@ -11,7 +11,8 @@ do
     print("set text = " .. input:getText())
 end
 
---@api-stub: LTextInput:setPlaceholder / getPlaceholder
+--@api-stub: LTextInput:setPlaceholder
+--@api-stub: LTextInput:getPlaceholder
 -- Placeholder text for empty inputs.
 do
     ---@type LTextInput
@@ -20,7 +21,8 @@ do
     print("placeholder = " .. input:getPlaceholder())
 end
 
---@api-stub: LTextInput:setMaxLength / getCursorPosition
+--@api-stub: LTextInput:setMaxLength
+--@api-stub: LTextInput:getCursorPosition
 -- Text length limits and cursor.
 do
     ---@type LTextInput
@@ -42,7 +44,8 @@ do
     print("checked = " .. tostring(cb:isChecked()))
 end
 
---@api-stub: LCheckbox:setChecked / setText
+--@api-stub: LCheckbox:setChecked
+--@api-stub: LCheckbox:setText
 -- Toggling and relabeling a checkbox.
 do
     ---@type LCheckbox
@@ -77,7 +80,8 @@ do
     print("value = " .. slider:getValue())
 end
 
---@api-stub: LSlider:setValue / setStep
+--@api-stub: LSlider:setValue
+--@api-stub: LSlider:setStep
 -- Setting slider value and step increment.
 do
     ---@type LSlider
@@ -111,7 +115,9 @@ do
     print("set to 50 = " .. spin:getValue())
 end
 
---@api-stub: LSpinBox:increment / decrement / setStep
+--@api-stub: LSpinBox:increment
+--@api-stub: LSpinBox:decrement
+--@api-stub: LSpinBox:setStep
 -- Stepping a spin box value.
 do
     ---@type LSpinBox
@@ -144,7 +150,8 @@ do
     print("on = " .. tostring(sw:isOn()))
 end
 
---@api-stub: LSwitch:setOn / toggle
+--@api-stub: LSwitch:setOn
+--@api-stub: LSwitch:toggle
 -- Switching states.
 do
     ---@type LSwitch
@@ -165,7 +172,9 @@ do
     print("items = " .. combo:getItemCount())
 end
 
---@api-stub: LComboBox:addItem / getItem / getItemCount
+--@api-stub: LComboBox:addItem
+--@api-stub: LComboBox:getItem
+--@api-stub: LComboBox:getItemCount
 -- Populating a combo box.
 do
     ---@type LComboBox
@@ -179,7 +188,9 @@ do
     print("item 4 = " .. combo:getItem(4))
 end
 
---@api-stub: LComboBox:getSelectedIndex / getSelectedItem / clearItems
+--@api-stub: LComboBox:getSelectedIndex
+--@api-stub: LComboBox:getSelectedItem
+--@api-stub: LComboBox:clearItems
 -- Selection and clearing.
 do
     ---@type LComboBox
@@ -195,7 +206,9 @@ do
     print("after clear = " .. combo:getItemCount())
 end
 
---@api-stub: lurek.ui.setFocus / getFocus / clearFocus
+--@api-stub: lurek.ui.setFocus
+--@api-stub: lurek.getFocus
+--@api-stub: lurek.clearFocus
 -- Focus management.
 do
     ---@type LTextInput
@@ -208,7 +221,8 @@ do
     print("after clear = " .. tostring(focused))
 end
 
---@api-stub: lurek.ui.focusNext / focusPrev
+--@api-stub: lurek.ui.focusNext
+--@api-stub: lurek.focusPrev
 -- Tab-style focus navigation.
 do
     ---@type LTextInput

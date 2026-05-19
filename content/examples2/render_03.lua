@@ -1,6 +1,8 @@
 --- Render Module Part 3: shaders, meshes, shapes, OBJ models
 
---@api-stub: lurek.render.newShader / send / hasUniform
+--@api-stub: lurek.render.newShader
+--@api-stub: lurek.send
+--@api-stub: lurek.hasUniform
 -- Creating and using shaders.
 do
     local code = [[
@@ -21,7 +23,9 @@ do
     print("has 'missing' = " .. tostring(shader:hasUniform("missing")))
 end
 
---@api-stub: LShader:send / setShader / getShader
+--@api-stub: LShader:send
+--@api-stub: LShader:setShader
+--@api-stub: LShader:getShader
 -- Sending uniforms and activating shaders.
 do
     local code = [[
@@ -60,7 +64,8 @@ do
     print("released = " .. tostring(released))
 end
 
---@api-stub: lurek.render.newMesh / draw mesh
+--@api-stub: lurek.render.newMesh
+--@api-stub: lurek.draw mesh
 -- Creating and drawing a custom mesh.
 do
     local verts = {
@@ -75,7 +80,8 @@ do
     lurek.render.draw(mesh, 200, 0, math.pi / 4, 0.5, 0.5)
 end
 
---@api-stub: LMesh:setVertex / getVertex
+--@api-stub: LMesh:setVertex
+--@api-stub: LMesh:getVertex
 -- Modifying mesh vertices.
 do
     local verts = {
@@ -91,7 +97,10 @@ do
     mesh:setVertex(3, { 30, 60, 0.5, 1, 0, 1, 0, 1 })
 end
 
---@api-stub: LMesh:setTexture / release / type / typeOf
+--@api-stub: LMesh:setTexture
+--@api-stub: LMesh:release
+--@api-stub: LMesh:type
+--@api-stub: LMesh:typeOf
 -- Mesh texture and lifecycle.
 do
     local verts = {
@@ -113,7 +122,8 @@ do
     print("released = " .. tostring(released))
 end
 
---@api-stub: lurek.render.newShape / drawing commands
+--@api-stub: lurek.render.newShape
+--@api-stub: lurek.drawing commands
 -- Retained compound shape with accumulated draw commands.
 do
     ---@type LShape
@@ -135,7 +145,9 @@ do
     shape:draw(200, 250, math.pi / 6, 0.8, 0.8)
 end
 
---@api-stub: LShape:polygon / polyline / roundedRectangle
+--@api-stub: LShape:polygon
+--@api-stub: LShape:polyline
+--@api-stub: LShape:roundedRectangle
 -- Shape polygon and polyline commands.
 do
     ---@type LShape
@@ -150,7 +162,9 @@ do
     shape:draw(400, 250)
 end
 
---@api-stub: LShape:clear / type / typeOf
+--@api-stub: LShape:clear
+--@api-stub: LShape:type
+--@api-stub: LShape:typeOf
 -- Shape lifecycle.
 do
     ---@type LShape
@@ -164,7 +178,8 @@ do
     print("is LShape = " .. tostring(shape:typeOf("LShape")))
 end
 
---@api-stub: lurek.render.loadObj / LObjModel methods
+--@api-stub: lurek.render.loadObj
+--@api-stub: lurek.LObjModel methods
 -- Loading and inspecting a 3D OBJ model.
 do
     ---@type LObjModel

@@ -1,6 +1,9 @@
 --- Minimap Module Part 2: markers, objects, paths, overlays, viewport, coordinate mapping
 
---@api-stub: LMinimap:addMarker / hasMarker / getMarkerCount / getMarkerDescription
+--@api-stub: LMinimap:addMarker
+--@api-stub: LMinimap:hasMarker
+--@api-stub: LMinimap:getMarkerCount
+--@api-stub: LMinimap:getMarkerDescription
 -- Adds and queries markers.
 do
     ---@type LMinimap
@@ -24,7 +27,8 @@ do
     print("after = " .. mm:getMarkerCount())
 end
 
---@api-stub: LMinimap:setMarkerAnimation / clearMarkerAnimation
+--@api-stub: LMinimap:setMarkerAnimation
+--@api-stub: LMinimap:clearMarkerAnimation
 -- Animates markers.
 do
     ---@type LMinimap
@@ -36,7 +40,8 @@ do
     print("animation cleared")
 end
 
---@api-stub: LMinimap:addObjectType / getObjectTypeCount
+--@api-stub: LMinimap:addObjectType
+--@api-stub: LMinimap:getObjectTypeCount
 -- Registers object types with colors.
 do
     ---@type LMinimap
@@ -47,7 +52,10 @@ do
     print("unit idx = " .. idx1 .. " building idx = " .. idx2)
 end
 
---@api-stub: LMinimap:setObject / getObjectCount / removeObject / clearObjects
+--@api-stub: LMinimap:setObject
+--@api-stub: LMinimap:getObjectCount
+--@api-stub: LMinimap:removeObject
+--@api-stub: LMinimap:clearObjects
 -- Manages objects on the minimap.
 do
     ---@type LMinimap
@@ -63,7 +71,8 @@ do
     print("after clear = " .. mm:getObjectCount())
 end
 
---@api-stub: LMinimap:setObjectTypeVisible / isObjectTypeVisible
+--@api-stub: LMinimap:setObjectTypeVisible
+--@api-stub: LMinimap:isObjectTypeVisible
 -- Toggles object type visibility.
 do
     ---@type LMinimap
@@ -75,7 +84,8 @@ do
     print("visible = " .. tostring(mm:isObjectTypeVisible(t)))
 end
 
---@api-stub: LMinimap:setOwnerColor / getOwnerColor
+--@api-stub: LMinimap:setOwnerColor
+--@api-stub: LMinimap:getOwnerColor
 -- Owner color mapping for political mode.
 do
     ---@type LMinimap
@@ -86,7 +96,9 @@ do
     print("owner 1 = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 
---@api-stub: LMinimap:showPath / getPathCount / clearPath
+--@api-stub: LMinimap:showPath
+--@api-stub: LMinimap:getPathCount
+--@api-stub: LMinimap:clearPath
 -- Path overlays.
 do
     ---@type LMinimap
@@ -99,7 +111,8 @@ do
     print("after clear = " .. mm:getPathCount())
 end
 
---@api-stub: LMinimap:addPing / getPingCount
+--@api-stub: LMinimap:addPing
+--@api-stub: LMinimap:getPingCount
 -- Timed ping effects.
 do
     ---@type LMinimap
@@ -111,7 +124,10 @@ do
     print("pings after time = " .. mm:getPingCount())
 end
 
---@api-stub: LMinimap:drawLine / drawRect / clearOverlay / getOverlayShapeCount
+--@api-stub: LMinimap:drawLine
+--@api-stub: LMinimap:drawRect
+--@api-stub: LMinimap:clearOverlay
+--@api-stub: LMinimap:getOverlayShapeCount
 -- Overlay shapes.
 do
     ---@type LMinimap
@@ -123,7 +139,9 @@ do
     print("after clear = " .. mm:getOverlayShapeCount())
 end
 
---@api-stub: LMinimap:setViewportRect / getViewportRect / clearViewportRect
+--@api-stub: LMinimap:setViewportRect
+--@api-stub: LMinimap:getViewportRect
+--@api-stub: LMinimap:clearViewportRect
 -- Viewport rectangle overlay.
 do
     ---@type LMinimap
@@ -134,7 +152,8 @@ do
     mm:clearViewportRect()
 end
 
---@api-stub: LMinimap:setViewportColor / getViewportColor
+--@api-stub: LMinimap:setViewportColor
+--@api-stub: LMinimap:getViewportColor
 -- Viewport rectangle color.
 do
     ---@type LMinimap
@@ -144,7 +163,8 @@ do
     print("vp color = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 
---@api-stub: LMinimap:setViewportVisible / isViewportVisible
+--@api-stub: LMinimap:setViewportVisible
+--@api-stub: LMinimap:isViewportVisible
 -- Viewport rectangle visibility toggle.
 do
     ---@type LMinimap
@@ -153,7 +173,8 @@ do
     print("vp visible = " .. tostring(mm:isViewportVisible()))
 end
 
---@api-stub: LMinimap:setClickable / isClickable
+--@api-stub: LMinimap:setClickable
+--@api-stub: LMinimap:isClickable
 -- Clickable toggle.
 do
     ---@type LMinimap
@@ -162,7 +183,8 @@ do
     print("clickable = " .. tostring(mm:isClickable()))
 end
 
---@api-stub: LMinimap:gridToScreen / screenToGrid
+--@api-stub: LMinimap:gridToScreen
+--@api-stub: LMinimap:screenToGrid
 -- Coordinate mapping.
 do
     ---@type LMinimap

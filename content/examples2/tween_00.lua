@@ -36,7 +36,9 @@ do
     print("moved to: x=" .. pos.x .. " y=" .. pos.y)
 end
 
---@api-stub: LTween:onComplete / onUpdate / onCancel
+--@api-stub: LTween:onComplete
+--@api-stub: LTween:onUpdate
+--@api-stub: LTween:onCancel
 -- Tween lifecycle callbacks.
 do
     local obj = { scale = 1 }
@@ -55,7 +57,8 @@ do
     lurek.tween.update(0.5)
 end
 
---@api-stub: LTween:pause / resume
+--@api-stub: LTween:pause
+--@api-stub: LTween:resume
 -- Pausing and resuming a tween.
 do
     local obj = { rotation = 0 }
@@ -85,7 +88,8 @@ do
     print("after update: w=" .. obj.w)
 end
 
---@api-stub: LTween:setRepeat / setYoyo
+--@api-stub: LTween:setRepeat
+--@api-stub: LTween:setYoyo
 -- Repeating and yoyo tweens.
 do
     local obj = { x = 0 }
@@ -181,7 +185,10 @@ do
     print("settled = " .. tostring(spring:isSettled()))
 end
 
---@api-stub: LSpring:setTarget / setStiffness / setDamping / getPosition
+--@api-stub: LSpring:setTarget
+--@api-stub: LSpring:setStiffness
+--@api-stub: LSpring:setDamping
+--@api-stub: LSpring:getPosition
 -- Retargeting and tuning springs.
 do
     local obj = { size = 50 }
@@ -209,7 +216,8 @@ do
     print("active after cancel = " .. tostring(spring:isActive()))
 end
 
---@api-stub: lurek.tween.getActiveCount / cancelAll
+--@api-stub: lurek.tween.getActiveCount
+--@api-stub: lurek.cancelAll
 -- Global tween management.
 do
     local a = { x = 0 }
@@ -221,7 +229,8 @@ do
     print("after cancelAll = " .. lurek.tween.getActiveCount())
 end
 
---@api-stub: lurek.tween.registerEasing / getEasingNames
+--@api-stub: lurek.tween.registerEasing
+--@api-stub: lurek.getEasingNames
 -- Custom easing functions.
 do
     lurek.tween.registerEasing("bounce3", function(t)

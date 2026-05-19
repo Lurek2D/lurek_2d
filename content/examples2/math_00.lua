@@ -1,6 +1,7 @@
 --- Math Module Part 1: basic math functions and trigonometry
 
---@api-stub: lurek.math.pi / lurek.math.tau
+--@api-stub: lurek.math.pi
+--@api-stub: lurek.math.tau
 -- Mathematical constants.
 do
     print("pi = " .. lurek.math.pi)
@@ -115,7 +116,8 @@ do
     print("fmod(10.5, 3) = " .. lurek.math.fmod(10.5, 3))
 end
 
---@api-stub: lurek.math.min / lurek.math.max
+--@api-stub: lurek.math.min
+--@api-stub: lurek.math.max
 -- Returns minimum or maximum.
 do
     print("min(3, 7, 1, 9) = " .. lurek.math.min(3, 7, 1, 9))

@@ -1,6 +1,8 @@
 --- System/Runtime Module: version, OS, hardware, args, clipboard, logging, config, batch, power, messages
 
---@api-stub: lurek.runtime.getVersion / getOS / getArch
+--@api-stub: lurek.runtime.getVersion
+--@api-stub: lurek.getOS
+--@api-stub: lurek.getArch
 -- Basic system identification.
 do
     local version = lurek.runtime.getVersion()
@@ -24,7 +26,8 @@ do
     print("memory = " .. info.memory .. " MiB")
 end
 
---@api-stub: lurek.runtime.getProcessorCount / getMemorySize
+--@api-stub: lurek.runtime.getProcessorCount
+--@api-stub: lurek.getMemorySize
 -- Hardware details.
 do
     local cpus = lurek.runtime.getProcessorCount()
@@ -33,7 +36,8 @@ do
     print("total RAM = " .. ram .. " MB")
 end
 
---@api-stub: lurek.runtime.getArgs / parseArgs
+--@api-stub: lurek.runtime.getArgs
+--@api-stub: lurek.parseArgs
 -- Command-line argument handling.
 do
     local args = lurek.runtime.getArgs()
@@ -82,7 +86,8 @@ do
     print("missing var = " .. tostring(missing))
 end
 
---@api-stub: lurek.runtime.getClipboardText / setClipboardText
+--@api-stub: lurek.runtime.getClipboardText
+--@api-stub: lurek.setClipboardText
 -- Clipboard operations.
 do
     lurek.runtime.setClipboardText("Hello from Lurek2D!")
@@ -102,7 +107,9 @@ do
     print("open mailto = " .. tostring(mailto))
 end
 
---@api-stub: lurek.runtime.log / setLogLevel / getLogLevel
+--@api-stub: lurek.runtime.log
+--@api-stub: lurek.setLogLevel
+--@api-stub: lurek.getLogLevel
 -- Logging with different levels.
 do
     print("current log level = " .. lurek.runtime.getLogLevel())
@@ -117,7 +124,8 @@ do
     print("restored log level = " .. lurek.runtime.getLogLevel())
 end
 
---@api-stub: lurek.runtime.getConfig / reloadConfig
+--@api-stub: lurek.runtime.getConfig
+--@api-stub: lurek.reloadConfig
 -- Runtime configuration access and reload.
 do
     local config = lurek.runtime.getConfig()
@@ -134,7 +142,8 @@ do
     print("after reload revision = " .. updated.config_reload_revision)
 end
 
---@api-stub: lurek.runtime.setDebugOverlay / getDebugOverlay
+--@api-stub: lurek.runtime.setDebugOverlay
+--@api-stub: lurek.getDebugOverlay
 -- Debug overlay toggle.
 do
     print("debug overlay = " .. tostring(lurek.runtime.getDebugOverlay()))
@@ -172,21 +181,19 @@ do
     end
 end
 
---@api-stub: lurek.runtime.runBatch / getBatchResults
+--@api-stub: lurek.runtime.runBatch
+--@api-stub: lurek.getBatchResults
 -- Executing task batches with result collection.
 do
     local results = lurek.runtime.runBatch({
         load_config = function()
             local data = { width = 800, height = 600 }
-            assert(data.width > 0)
         end,
         validate_assets = function()
             local files = { "player.png", "enemy.png", "tileset.png" }
-            assert(#files == 3)
         end,
         init_audio = function()
             local channels = 16
-            assert(channels >= 8)
         end,
     })
     local passed, failed, skipped = lurek.runtime.getBatchResults(results)
@@ -223,7 +230,9 @@ do
     print("snapshot has message = " .. tostring(parsed.message ~= nil))
 end
 
---@api-stub: lurek.runtime.getMessage / getMessageCount / hasMessage
+--@api-stub: lurek.runtime.getMessage
+--@api-stub: lurek.getMessageCount
+--@api-stub: lurek.hasMessage
 -- Engine message catalog access.
 do
     local count = lurek.runtime.getMessageCount()

@@ -21,14 +21,16 @@ do
     print("intensity = " .. light:getIntensity())
 end
 
---@api-stub: lurek.light.setEnabled / isEnabled
+--@api-stub: lurek.light.setEnabled
+--@api-stub: lurek.isEnabled
 -- Enables or disables the light world.
 do
     lurek.light.setEnabled(true)
     print("light world enabled = " .. tostring(lurek.light.isEnabled()))
 end
 
---@api-stub: lurek.light.setAmbient / getAmbient
+--@api-stub: lurek.light.setAmbient
+--@api-stub: lurek.getAmbient
 -- Sets and queries global ambient color.
 do
     lurek.light.setAmbient(0.1, 0.1, 0.15, 1)
@@ -45,7 +47,8 @@ do
     print("lights = " .. lurek.light.getLightCount())
 end
 
---@api-stub: lurek.light.getMaxLights / setMaxLights
+--@api-stub: lurek.light.getMaxLights
+--@api-stub: lurek.setMaxLights
 -- Configures max light slots.
 do
     lurek.light.setMaxLights(128)
@@ -122,7 +125,8 @@ do
     print("sync ambient = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 
---@api-stub: LLight:setPosition / getPosition
+--@api-stub: LLight:setPosition
+--@api-stub: LLight:getPosition
 -- Sets and gets light position.
 do
     local light = lurek.light.newLight(0, 0, 100)
@@ -131,7 +135,8 @@ do
     print("pos = " .. x .. "," .. y)
 end
 
---@api-stub: LLight:setRadius / getRadius
+--@api-stub: LLight:setRadius
+--@api-stub: LLight:getRadius
 -- Sets and gets light radius.
 do
     local light = lurek.light.newLight(0, 0, 100)
@@ -139,7 +144,8 @@ do
     print("radius = " .. light:getRadius())
 end
 
---@api-stub: LLight:setColor / getColor
+--@api-stub: LLight:setColor
+--@api-stub: LLight:getColor
 -- Sets and gets light RGBA color.
 do
     local light = lurek.light.newLight(0, 0, 100)
@@ -148,7 +154,8 @@ do
     print("color = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 
---@api-stub: LLight:setIntensity / getIntensity
+--@api-stub: LLight:setIntensity
+--@api-stub: LLight:getIntensity
 -- Sets and gets intensity.
 do
     local light = lurek.light.newLight(0, 0, 100)
@@ -156,7 +163,8 @@ do
     print("intensity = " .. light:getIntensity())
 end
 
---@api-stub: LLight:setEnergy / getEnergy
+--@api-stub: LLight:setEnergy
+--@api-stub: LLight:getEnergy
 -- Sets and gets energy.
 do
     local light = lurek.light.newLight(0, 0, 100)
@@ -164,7 +172,8 @@ do
     print("energy = " .. light:getEnergy())
 end
 
---@api-stub: LLight:setLightType / getLightType
+--@api-stub: LLight:setLightType
+--@api-stub: LLight:getLightType
 -- Sets and gets light type.
 do
     local light = lurek.light.newLight(0, 0, 100)
@@ -172,7 +181,8 @@ do
     print("type = " .. light:getLightType())
 end
 
---@api-stub: LLight:setDirection / getDirection
+--@api-stub: LLight:setDirection
+--@api-stub: LLight:getDirection
 -- Sets and gets direction angle.
 do
     local light = lurek.light.newLight(0, 0, 100)
@@ -181,7 +191,8 @@ do
     print("direction = " .. light:getDirection())
 end
 
---@api-stub: LLight:setFalloff / getFalloff
+--@api-stub: LLight:setFalloff
+--@api-stub: LLight:getFalloff
 -- Sets and gets falloff mode.
 do
     local light = lurek.light.newLight(0, 0, 100)
@@ -189,7 +200,8 @@ do
     print("falloff = " .. light:getFalloff())
 end
 
---@api-stub: LLight:setBlendMode / getBlendMode
+--@api-stub: LLight:setBlendMode
+--@api-stub: LLight:getBlendMode
 -- Sets and gets blend mode.
 do
     local light = lurek.light.newLight(0, 0, 100)
@@ -197,7 +209,8 @@ do
     print("blend = " .. light:getBlendMode())
 end
 
---@api-stub: LLight:setAttenuation / getAttenuation
+--@api-stub: LLight:setAttenuation
+--@api-stub: LLight:getAttenuation
 -- Sets and gets attenuation.
 do
     local light = lurek.light.newLight(0, 0, 100)
@@ -206,7 +219,10 @@ do
     print("attenuation c=" .. c .. " l=" .. l .. " q=" .. q)
 end
 
---@api-stub: LLight:setInnerAngle / getInnerAngle / setOuterAngle / getOuterAngle
+--@api-stub: LLight:setInnerAngle
+--@api-stub: LLight:getInnerAngle
+--@api-stub: LLight:setOuterAngle
+--@api-stub: LLight:getOuterAngle
 -- Spot light cone angles.
 do
     local light = lurek.light.newLight(0, 0, 100)
@@ -216,7 +232,8 @@ do
     print("inner = " .. light:getInnerAngle() .. " outer = " .. light:getOuterAngle())
 end
 
---@api-stub: LLight:setEnabled / isEnabled
+--@api-stub: LLight:setEnabled
+--@api-stub: LLight:isEnabled
 -- Enables or disables a light.
 do
     local light = lurek.light.newLight(0, 0, 100)
@@ -224,7 +241,8 @@ do
     print("enabled = " .. tostring(light:isEnabled()))
 end
 
---@api-stub: LLight:setGroupId / getGroupId
+--@api-stub: LLight:setGroupId
+--@api-stub: LLight:getGroupId
 -- Sets and gets group ID.
 do
     local light = lurek.light.newLight(0, 0, 100)
@@ -232,7 +250,8 @@ do
     print("group = " .. light:getGroupId())
 end
 
---@api-stub: LLight:setLightMask / getLightMask
+--@api-stub: LLight:setLightMask
+--@api-stub: LLight:getLightMask
 -- Sets and gets inclusion mask.
 do
     local light = lurek.light.newLight(0, 0, 100)
@@ -249,7 +268,8 @@ do
     print("valid after remove = " .. tostring(light:isValid()))
 end
 
---@api-stub: LLight:type / typeOf
+--@api-stub: LLight:type
+--@api-stub: LLight:typeOf
 -- Type identity checks.
 do
     local light = lurek.light.newLight(0, 0, 100)

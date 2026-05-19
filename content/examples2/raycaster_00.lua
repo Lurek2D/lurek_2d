@@ -1,6 +1,7 @@
 --- Raycaster Module Part 1: map creation, cells, ray casting, movement, line of sight, rendering
 
---@api-stub: lurek.raycaster.new / lurek.raycaster.newMap
+--@api-stub: lurek.raycaster.new
+--@api-stub: lurek.raycaster.newMap
 -- Create a raycaster map grid.
 do
     ---@type LRaycaster
@@ -11,7 +12,9 @@ do
     print("alias size = " .. map2:width() .. "x" .. map2:height())
 end
 
---@api-stub: LRaycaster:setCell / getCell / setCells
+--@api-stub: LRaycaster:setCell
+--@api-stub: LRaycaster:getCell
+--@api-stub: LRaycaster:setCells
 -- Setting and reading cell values.
 do
     ---@type LRaycaster
@@ -30,7 +33,8 @@ do
     print("after setCells: 0,0 = " .. map:getCell(0, 0))
 end
 
---@api-stub: LRaycaster:isBlocked / isWalkBlocked
+--@api-stub: LRaycaster:isBlocked
+--@api-stub: LRaycaster:isWalkBlocked
 -- Checking solid cells.
 do
     ---@type LRaycaster
@@ -122,7 +126,8 @@ do
     end
 end
 
---@api-stub: LRaycaster:setWallAlpha / getWallAlpha
+--@api-stub: LRaycaster:setWallAlpha
+--@api-stub: LRaycaster:getWallAlpha
 -- Transparent walls.
 do
     ---@type LRaycaster
@@ -287,7 +292,8 @@ do
     print("dist 10 height = " .. string.format("%.1f", h3))
 end
 
---@api-stub: LRaycaster:type / typeOf
+--@api-stub: LRaycaster:type
+--@api-stub: LRaycaster:typeOf
 -- Type checking.
 do
     ---@type LRaycaster

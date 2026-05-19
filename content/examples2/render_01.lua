@@ -1,6 +1,7 @@
 --- Render Module Part 2: color state, transforms, scissor, clear, blend modes, wireframe, layers, depth
 
---@api-stub: lurek.render.setColor / getColor
+--@api-stub: lurek.render.setColor
+--@api-stub: lurek.getColor
 -- Color state management.
 do
     lurek.render.setColor(1, 0, 0, 1)
@@ -12,7 +13,8 @@ do
     lurek.render.setColor(1, 1, 1, 1)
 end
 
---@api-stub: lurek.render.setBackgroundColor / getBackgroundColor
+--@api-stub: lurek.render.setBackgroundColor
+--@api-stub: lurek.getBackgroundColor
 -- Background clear color.
 do
     lurek.render.setBackgroundColor(0.1, 0.1, 0.2)
@@ -21,7 +23,8 @@ do
     lurek.render.setBackgroundColor(0, 0, 0)
 end
 
---@api-stub: lurek.render.setColorMask / getColorMask
+--@api-stub: lurek.render.setColorMask
+--@api-stub: lurek.getColorMask
 -- Color channel write mask.
 do
     lurek.render.setColorMask(true, true, false, true)
@@ -30,7 +33,11 @@ do
     lurek.render.setColorMask()
 end
 
---@api-stub: lurek.render.push / pop / translate / rotate / scale
+--@api-stub: lurek.render.push
+--@api-stub: lurek.pop
+--@api-stub: lurek.translate
+--@api-stub: lurek.rotate
+--@api-stub: lurek.scale
 -- Basic transform stack.
 do
     lurek.render.push()
@@ -87,7 +94,9 @@ do
     lurek.render.pop()
 end
 
---@api-stub: lurek.render.setScissor / getScissor / intersectScissor
+--@api-stub: lurek.render.setScissor
+--@api-stub: lurek.getScissor
+--@api-stub: lurek.intersectScissor
 -- Scissor rectangle clipping.
 do
     lurek.render.setScissor(50, 300, 200, 100)
@@ -110,7 +119,8 @@ do
     print("cleared render commands")
 end
 
---@api-stub: lurek.render.setBlendMode / getBlendMode
+--@api-stub: lurek.render.setBlendMode
+--@api-stub: lurek.getBlendMode
 -- Blend mode switching.
 do
     local original = lurek.render.getBlendMode()
@@ -128,7 +138,8 @@ do
     lurek.render.setColor(1, 1, 1, 1)
 end
 
---@api-stub: lurek.render.setWireframe / isWireframe
+--@api-stub: lurek.render.setWireframe
+--@api-stub: lurek.isWireframe
 -- Wireframe mode toggle.
 do
     print("wireframe = " .. tostring(lurek.render.isWireframe()))
@@ -138,7 +149,10 @@ do
     lurek.render.setWireframe(false)
 end
 
---@api-stub: lurek.render.newLayer / setLayer / currentLayer / visibility
+--@api-stub: lurek.render.newLayer
+--@api-stub: lurek.setLayer
+--@api-stub: lurek.currentLayer
+--@api-stub: lurek.visibility
 -- Rendering layers for draw call organization.
 do
     lurek.render.newLayer("background", 0)
@@ -160,7 +174,8 @@ do
     lurek.render.setLayerVisible("background", true)
 end
 
---@api-stub: lurek.render.getLayerZOrder / setLayerZOrder
+--@api-stub: lurek.render.getLayerZOrder
+--@api-stub: lurek.setLayerZOrder
 -- Layer z-order management.
 do
     lurek.render.newLayer("midground", 5)
@@ -169,7 +184,8 @@ do
     print("midground z = " .. lurek.render.getLayerZOrder("midground"))
 end
 
---@api-stub: lurek.render.pushLayer / popLayer
+--@api-stub: lurek.render.pushLayer
+--@api-stub: lurek.popLayer
 -- Compositing layers with alpha and blend mode.
 do
     lurek.render.pushLayer(1, 0.5, "alpha")
@@ -181,7 +197,9 @@ do
     lurek.render.setColor(1, 1, 1, 1)
 end
 
---@api-stub: lurek.render.beginSortGroup / pushSortKey / flushSortGroup
+--@api-stub: lurek.render.beginSortGroup
+--@api-stub: lurek.pushSortKey
+--@api-stub: lurek.flushSortGroup
 -- Depth-sorted rendering groups.
 do
     lurek.render.beginSortGroup(1)
@@ -198,7 +216,8 @@ do
     lurek.render.setColor(1, 1, 1, 1)
 end
 
---@api-stub: lurek.render.setDepthMode / getDepthMode
+--@api-stub: lurek.render.setDepthMode
+--@api-stub: lurek.getDepthMode
 -- Depth buffer configuration.
 do
     local mode, write = lurek.render.getDepthMode()
@@ -209,7 +228,8 @@ do
     lurek.render.setDepthMode("always", false)
 end
 
---@api-stub: lurek.render.setDefaultFilter / getDefaultFilter
+--@api-stub: lurek.render.setDefaultFilter
+--@api-stub: lurek.getDefaultFilter
 -- Default texture filter settings.
 do
     local min, mag, aniso = lurek.render.getDefaultFilter()
@@ -220,7 +240,9 @@ do
     lurek.render.setDefaultFilter("linear", "linear", 1)
 end
 
---@api-stub: lurek.render.getDimensions / getWidth / getHeight
+--@api-stub: lurek.render.getDimensions
+--@api-stub: lurek.getWidth
+--@api-stub: lurek.getHeight
 -- Window dimensions query.
 do
     local w, h = lurek.render.getDimensions()

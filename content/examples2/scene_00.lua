@@ -1,6 +1,7 @@
 --- Scene Module Part 1: scene creation, stack management, registration, shared data, lifecycle
 
---@api-stub: lurek.scene.new / newScene
+--@api-stub: lurek.scene.new
+--@api-stub: lurek.newScene
 -- Creating scene instances.
 do
     local myScene = lurek.scene.new({
@@ -48,7 +49,10 @@ do
     print("two instances: " .. tostring(instance1 ~= instance2))
 end
 
---@api-stub: lurek.scene.push / pop / getCurrent / getStackSize / isEmpty
+--@api-stub: lurek.scene.push
+--@api-stub: lurek.getCurrent
+--@api-stub: lurek.getStackSize
+--@api-stub: lurek.isEmpty
 -- Stack operations.
 do
     print("empty = " .. tostring(lurek.scene.isEmpty()))
@@ -106,7 +110,11 @@ do
     lurek.scene.clear()
 end
 
---@api-stub: lurek.scene.registerScene / getRegistered / hasRegistered / getRegisteredNames / unregisterScene
+--@api-stub: lurek.scene.registerScene
+--@api-stub: lurek.getRegistered
+--@api-stub: lurek.hasRegistered
+--@api-stub: lurek.getRegisteredNames
+--@api-stub: lurek.unregisterScene
 -- Scene registration.
 do
     local menuScene = lurek.scene.new({ name = "mainMenu" })
@@ -128,7 +136,10 @@ do
     print("after unregister has credits = " .. tostring(lurek.scene.hasRegistered("credits")))
 end
 
---@api-stub: lurek.scene.setData / getData / hasData / removeData
+--@api-stub: lurek.scene.setData
+--@api-stub: lurek.getData
+--@api-stub: lurek.hasData
+--@api-stub: lurek.removeData
 -- Shared scene data map.
 do
     lurek.scene.setData("selectedLevel", 5)
@@ -160,7 +171,9 @@ do
     lurek.scene.clear()
 end
 
---@api-stub: lurek.scene.depth / getCurrentLayer / setCurrentLayer
+--@api-stub: lurek.scene.depth
+--@api-stub: lurek.getCurrentLayer
+--@api-stub: lurek.setCurrentLayer
 -- Layer management.
 do
     local scene = lurek.scene.new({ name = "layered" })
@@ -174,7 +187,10 @@ do
     lurek.scene.clear()
 end
 
---@api-stub: lurek.scene.update / process / draw / render / renderUi
+--@api-stub: lurek.scene.update
+--@api-stub: lurek.process
+--@api-stub: lurek.render
+--@api-stub: lurek.renderUi
 -- Scene lifecycle callbacks.
 do
     local updateCount = 0

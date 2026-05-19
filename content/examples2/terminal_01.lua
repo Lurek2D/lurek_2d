@@ -17,7 +17,9 @@ do
     print("applied solarized_light")
 end
 
---@api-stub: lurek.terminal.pushCmdHistory / prevCmd / nextCmd
+--@api-stub: lurek.terminal.pushCmdHistory
+--@api-stub: lurek.prevCmd
+--@api-stub: lurek.nextCmd
 -- Command history navigation.
 do
     ---@type LTerminal
@@ -33,7 +35,8 @@ do
     print("next = " .. tostring(next_cmd))
 end
 
---@api-stub: lurek.terminal.cmdHistoryLen / clearCmdHistory
+--@api-stub: lurek.terminal.cmdHistoryLen
+--@api-stub: lurek.clearCmdHistory
 -- Managing command history size.
 do
     ---@type LTerminal
@@ -46,7 +49,9 @@ do
     print("after clear len = " .. lurek.terminal.cmdHistoryLen(term))
 end
 
---@api-stub: lurek.terminal.pushScrollback / scrollbackLen / getScrollback
+--@api-stub: lurek.terminal.pushScrollback
+--@api-stub: lurek.scrollbackLen
+--@api-stub: lurek.getScrollback
 -- Scrollback buffer operations.
 do
     ---@type LTerminal
@@ -76,7 +81,9 @@ do
     print("scrollback after overflow = " .. lurek.terminal.scrollbackLen(term))
 end
 
---@api-stub: lurek.terminal.addCompletion / getCompletions / clearCompletions
+--@api-stub: lurek.terminal.addCompletion
+--@api-stub: lurek.getCompletions
+--@api-stub: lurek.clearCompletions
 -- Registering and querying completions.
 do
     lurek.terminal.clearCompletions()
@@ -94,7 +101,9 @@ do
     print("matches for 'in' = " .. #inv)
 end
 
---@api-stub: lurek.terminal.nextCompletion / resetCompletion / removeCompletion
+--@api-stub: lurek.terminal.nextCompletion
+--@api-stub: lurek.resetCompletion
+--@api-stub: lurek.removeCompletion
 -- Cycling through completion candidates.
 do
     lurek.terminal.clearCompletions()
@@ -165,7 +174,8 @@ do
     print("highlighted code2 rendered")
 end
 
---@api-stub: lurek.terminal.getMaxCols / getMaxRows
+--@api-stub: lurek.terminal.getMaxCols
+--@api-stub: lurek.getMaxRows
 -- Querying terminal size limits.
 do
     local maxCols = lurek.terminal.getMaxCols()

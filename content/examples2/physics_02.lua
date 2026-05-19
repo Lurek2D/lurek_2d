@@ -185,7 +185,10 @@ do
     print("light B y = " .. boxB:getY())
 end
 
---@api-stub: LWorld:getJointIds / jointCount / getJointBodies / getJointType
+--@api-stub: LWorld:getJointIds
+--@api-stub: LWorld:jointCount
+--@api-stub: LWorld:getJointBodies
+--@api-stub: LWorld:getJointType
 -- Querying joints.
 do
     ---@type LWorld
@@ -204,7 +207,9 @@ do
     end
 end
 
---@api-stub: LWorld:setJointLimits / getJointLimits / setJointLimitsEnabled
+--@api-stub: LWorld:setJointLimits
+--@api-stub: LWorld:getJointLimits
+--@api-stub: LWorld:setJointLimitsEnabled
 -- Joint limits (e.g., revolute angle limits).
 do
     ---@type LWorld
@@ -218,7 +223,8 @@ do
     print("limits = " .. lo .. " to " .. hi)
 end
 
---@api-stub: LWorld:setJointMotorSpeed / getJointMotorSpeed
+--@api-stub: LWorld:setJointMotorSpeed
+--@api-stub: LWorld:getJointMotorSpeed
 -- Joint motor.
 do
     ---@type LWorld
@@ -234,7 +240,8 @@ do
     print("blade angle = " .. blade:getAngle())
 end
 
---@api-stub: LWorld:setJointBreakForce / getJointBreakForce
+--@api-stub: LWorld:setJointBreakForce
+--@api-stub: LWorld:getJointBreakForce
 -- Breakable joints.
 do
     ---@type LWorld

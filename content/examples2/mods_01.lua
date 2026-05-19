@@ -8,7 +8,9 @@ do
     print("mod count = " .. mgr:getModCount())
 end
 
---@api-stub: LModManager:registerMod / hasMod / getModCount
+--@api-stub: LModManager:registerMod
+--@api-stub: LModManager:hasMod
+--@api-stub: LModManager:getModCount
 -- Registers mods with the manager.
 do
     ---@type LModManager
@@ -55,7 +57,9 @@ do
     end
 end
 
---@api-stub: LModManager:getLoadOrder / setLoadOrder / clearLoadOrder
+--@api-stub: LModManager:getLoadOrder
+--@api-stub: LModManager:setLoadOrder
+--@api-stub: LModManager:clearLoadOrder
 -- Managing mod load order.
 do
     ---@type LModManager
@@ -76,7 +80,8 @@ do
     mgr:clearLoadOrder()
 end
 
---@api-stub: LModManager:hasCircularDependencies / validateDependencies
+--@api-stub: LModManager:hasCircularDependencies
+--@api-stub: LModManager:validateDependencies
 -- Dependency validation.
 do
     ---@type LModManager
@@ -90,7 +95,10 @@ do
     print("validation messages = " .. #msgs)
 end
 
---@api-stub: LModManager:markForReload / getReloadQueue / processReloadQueue / clearReloadQueue
+--@api-stub: LModManager:markForReload
+--@api-stub: LModManager:getReloadQueue
+--@api-stub: LModManager:processReloadQueue
+--@api-stub: LModManager:clearReloadQueue
 -- Reload workflow.
 do
     ---@type LModManager

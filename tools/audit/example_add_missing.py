@@ -30,6 +30,31 @@ ROOT = Path(__file__).resolve().parents[2]
 API_JSON = ROOT / 'logs' / 'data' / 'lua_api_data.json'
 EXAMPLES_DIR = ROOT / 'content' / 'examples'
 
+
+def resolve_examples_dir(path_arg: str | None) -> Path:
+    if not path_arg:
+        return EXAMPLES_DIR
+    p = Path(path_arg)
+    return p if p.is_absolute() else ROOT / p
+
+
+def find_target_file(examples_dir: Path, module: str, ex_filename: str) -> Path:
+    """Find the file to append to.
+
+    In content/examples/, use ex_filename directly (e.g. ui.lua).
+    In examples2/ (or any dir without that file), find the last
+    <module>_NN.lua file (e.g. ui_07.lua) and append there.
+    """
+    direct = examples_dir / ex_filename
+    if direct.exists():
+        return direct
+    # Look for numbered files: <module>_00.lua .. <module>_99.lua
+    numbered = sorted(examples_dir.glob(f'{module}_*.lua'))
+    if numbered:
+        return numbered[-1]
+    # Fallback: create ex_filename in the target dir
+    return direct
+
 # filename = module name exactly (src/render/ -> render.lua, src/ecs/ -> ecs.lua)
 MODULE_TO_EXAMPLE: dict[str, str] = {
     'ai':          'ai.lua',
@@ -275,24 +300,26 @@ def patch_example(
     entries: list[Entry],
     dry_run: bool,
     verbose: bool,
+    examples_dir: Path | None = None,
 ) -> int:
     """Append missing stub blocks to the example file.  Returns count of stubs appended."""
     ex_filename = MODULE_TO_EXAMPLE.get(module, module + '.lua')
     ns = NAMESPACE_MAP.get(module, module)
-    ex_path = EXAMPLES_DIR / ex_filename
+    target_dir = examples_dir if examples_dir is not None else EXAMPLES_DIR
+    ex_path = find_target_file(target_dir, module, ex_filename)
 
     # Load or initialise the example file
     if ex_path.exists():
         raw = ex_path.read_text(encoding='utf-8', errors='replace')
     else:
         # Create a minimal header if file doesn't exist yet
+        rel = ex_path.relative_to(ROOT) if ex_path.is_relative_to(ROOT) else ex_path
         raw = (
-            f'-- content/examples/{ex_filename}\n'
-            f'-- Lurek2D lurek.{ns} API Reference\n'
-            f'-- Run with: cargo run -- content/examples/{ex_filename[:-4]}\n\n'
+            f'-- {rel}\n'
+            f'-- Lurek2D lurek.{ns} API Reference\n\n'
         )
         if verbose:
-            print(f'  [NEW] Creating {ex_filename}')
+            print(f'  [NEW] Creating {ex_path.name}')
 
     # Find missing entries
     missing = [e for e in entries if not is_covered(e, raw, ns)]
@@ -351,11 +378,13 @@ def patch_example(
 def main() -> int:
     p = argparse.ArgumentParser(description=__doc__,
                                 formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument('--module',   metavar='NAME', help='Process one module only')
-    p.add_argument('--dry-run',  action='store_true', help='Preview changes, do not write')
-    p.add_argument('--report',   action='store_true', help='Exit 1 if any stubs are needed')
-    p.add_argument('--verbose',  action='store_true', help='Show per-module progress')
+    p.add_argument('--module',       metavar='NAME', help='Process one module only')
+    p.add_argument('--examples-dir', metavar='DIR',  help='Target examples directory (default: content/examples)')
+    p.add_argument('--dry-run',      action='store_true', help='Preview changes, do not write')
+    p.add_argument('--report',       action='store_true', help='Exit 1 if any stubs are needed')
+    p.add_argument('--verbose',      action='store_true', help='Show per-module progress')
     args = p.parse_args()
+    examples_dir = resolve_examples_dir(args.examples_dir)
 
     if not API_JSON.exists():
         print(f'ERROR: {API_JSON} not found — run python tools/gen_all_docs.py first')
@@ -379,7 +408,8 @@ def main() -> int:
     total_stubs = 0
     for mod in modules:
         n = patch_example(mod, by_module.get(mod, []),
-                          dry_run=args.dry_run, verbose=args.verbose or args.dry_run)
+                          dry_run=args.dry_run, verbose=args.verbose or args.dry_run,
+                          examples_dir=examples_dir)
         total_stubs += n
 
     if total_stubs:

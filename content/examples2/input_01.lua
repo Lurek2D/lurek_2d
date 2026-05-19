@@ -138,7 +138,8 @@ do
     print("progress after reset = " .. combo:progress())
 end
 
---@api-stub: LCombo:type / typeOf
+--@api-stub: LCombo:type
+--@api-stub: LCombo:typeOf
 -- Type identity.
 do
     local combo = lurek.input.newCombo({"a"})
@@ -146,7 +147,8 @@ do
     print("is Combo = " .. tostring(combo:typeOf("Combo")))
 end
 
---@api-stub: lurek.input.startRecording / stopRecording
+--@api-stub: lurek.input.startRecording
+--@api-stub: lurek.stopRecording
 -- Records input and returns a recording handle.
 do
     lurek.input.startRecording()
@@ -180,7 +182,8 @@ do
     end
 end
 
---@api-stub: lurek.input.startPlayback / stopPlayback
+--@api-stub: lurek.input.startPlayback
+--@api-stub: lurek.stopPlayback
 -- Starts and stops playback of a loaded recording.
 do
     lurek.input.startRecording()
@@ -215,7 +218,8 @@ do
     print("playback frame = " .. frame)
 end
 
---@api-stub: lurek.input.isRecording / isPlayingBack
+--@api-stub: lurek.input.isRecording
+--@api-stub: lurek.isPlayingBack
 -- State queries for recording/playback.
 do
     print("recording = " .. tostring(lurek.input.isRecording()))

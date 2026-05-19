@@ -1,6 +1,7 @@
 -- ui_06.lua: Charts — area, bar, line, pie, scatter
 
-do --@api-stub: lurek.ui.newAreaChart
+--@api-stub: lurek.ui.newAreaChart
+do
     -- create an area chart with stacked layers
     ---@type LAreaChart
     local chart = lurek.ui.newAreaChart({ width = 400, height = 200, title = "CPU Usage" })
@@ -11,7 +12,8 @@ do --@api-stub: lurek.ui.newAreaChart
     print("is area chart:", chart:typeOf("LAreaChart"))
 end
 
-do --@api-stub: lurek.ui.newBarChart
+--@api-stub: lurek.ui.newBarChart
+do
     -- create a bar chart with categories and series
     ---@type LBarChart
     local chart = lurek.ui.newBarChart({ width = 300, height = 200, title = "Sales" })
@@ -23,7 +25,8 @@ do --@api-stub: lurek.ui.newBarChart
     print("bar chart type:", chart:type())
 end
 
-do --@api-stub: lurek.ui.newLineChart
+--@api-stub: lurek.ui.newLineChart
+do
     -- create a line chart with data series
     ---@type LLineChart
     local chart = lurek.ui.newLineChart({ width = 400, height = 250, title = "Temperature" })
@@ -38,7 +41,8 @@ do --@api-stub: lurek.ui.newLineChart
     print("line chart type:", chart:type())
 end
 
-do --@api-stub: lurek.ui.newPieChart
+--@api-stub: lurek.ui.newPieChart
+do
     -- create a pie chart with labeled segments
     ---@type LPieChart
     local chart = lurek.ui.newPieChart({ width = 200, height = 200, title = "Market Share" })
@@ -50,7 +54,8 @@ do --@api-stub: lurek.ui.newPieChart
     print("is pie chart:", chart:typeOf("LPieChart"))
 end
 
-do --@api-stub: lurek.ui.newScatterPlot
+--@api-stub: lurek.ui.newScatterPlot
+do
     -- create a scatter plot with data points
     ---@type LScatterPlot
     local chart = lurek.ui.newScatterPlot({ width = 400, height = 300, title = "Height vs Weight" })

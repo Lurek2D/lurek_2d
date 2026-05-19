@@ -1,6 +1,8 @@
 --- Province Module: province maps from PNG, spatial queries, styles, rendering, change tracking
 
---@api-stub: lurek.province.newFromPng / get / exists
+--@api-stub: lurek.province.newFromPng
+--@api-stub: lurek.get
+--@api-stub: lurek.exists
 -- Create a province registry from a color-coded PNG map.
 do
     ---@type LProvinceRegistry
@@ -12,7 +14,10 @@ do
     print("found = " .. found:getName())
 end
 
---@api-stub: LProvinceRegistry:getWidth / getHeight / provinceCount / provinceIds
+--@api-stub: LProvinceRegistry:getWidth
+--@api-stub: LProvinceRegistry:getHeight
+--@api-stub: LProvinceRegistry:provinceCount
+--@api-stub: LProvinceRegistry:provinceIds
 -- Basic registry info.
 do
     ---@type LProvinceRegistry
@@ -94,7 +99,10 @@ do
     end
 end
 
---@api-stub: LProvinceRegistry:setTerrainType / setFogState / setVisibilityState / setBorderStyle
+--@api-stub: LProvinceRegistry:setTerrainType
+--@api-stub: LProvinceRegistry:setFogState
+--@api-stub: LProvinceRegistry:setVisibilityState
+--@api-stub: LProvinceRegistry:setBorderStyle
 -- Style mutations.
 do
     ---@type LProvinceRegistry
@@ -111,7 +119,9 @@ do
     end
 end
 
---@api-stub: LProvinceRegistry:setLabelText / setLabelLine / setCapital
+--@api-stub: LProvinceRegistry:setLabelText
+--@api-stub: LProvinceRegistry:setLabelLine
+--@api-stub: LProvinceRegistry:setCapital
 -- Labels and capitals.
 do
     ---@type LProvinceRegistry
@@ -143,7 +153,8 @@ do
     end
 end
 
---@api-stub: LProvinceRegistry:setBorderClass / getBorderClass
+--@api-stub: LProvinceRegistry:setBorderClass
+--@api-stub: LProvinceRegistry:getBorderClass
 -- Border classification.
 do
     ---@type LProvinceRegistry
@@ -157,7 +168,8 @@ do
     end
 end
 
---@api-stub: LProvinceRegistry:getRevision / getChangesSince
+--@api-stub: LProvinceRegistry:getRevision
+--@api-stub: LProvinceRegistry:getChangesSince
 -- Change tracking for incremental updates.
 do
     ---@type LProvinceRegistry
@@ -178,7 +190,8 @@ do
     end
 end
 
---@api-stub: LProvinceRegistry:borderSegments / provinceSpans
+--@api-stub: LProvinceRegistry:borderSegments
+--@api-stub: LProvinceRegistry:provinceSpans
 -- Geometry data for custom rendering.
 do
     ---@type LProvinceRegistry
@@ -194,7 +207,9 @@ do
     print("total spans = " .. #spans)
 end
 
---@api-stub: LProvinceRegistry:fitCamera / screenToMap / screenToProvince
+--@api-stub: LProvinceRegistry:fitCamera
+--@api-stub: LProvinceRegistry:screenToMap
+--@api-stub: LProvinceRegistry:screenToProvince
 -- Camera and coordinate transforms.
 do
     ---@type LProvinceRegistry
@@ -217,7 +232,9 @@ do
     print("new camera = " .. newCx .. ", " .. newCy)
 end
 
---@api-stub: lurek.province.setActive / getActive / remove
+--@api-stub: lurek.province.setActive
+--@api-stub: lurek.getActive
+--@api-stub: lurek.remove
 -- Active registry management.
 do
     lurek.province.newFromPng("map_a", "assets/textures/province_map.png")
@@ -258,7 +275,8 @@ do
     print("map rendered")
 end
 
---@api-stub: LProvinceRegistry:type / typeOf
+--@api-stub: LProvinceRegistry:type
+--@api-stub: LProvinceRegistry:typeOf
 -- Type checking.
 do
     ---@type LProvinceRegistry
