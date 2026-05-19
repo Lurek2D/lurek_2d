@@ -93,9 +93,6 @@ do
 end
 
 --@api-stub: lurek.network.createRoom
---@api-stub: lurek.joinRoom
---@api-stub: lurek.leaveRoom
---@api-stub: lurek.listRooms
 -- Room management.
 do
     local room = lurek.network.createRoom("Arena", "player1", 8)
@@ -113,7 +110,6 @@ do
 end
 
 --@api-stub: lurek.network.createLobby
---@api-stub: lurek.discoverLobbies
 -- Lobby discovery on LAN.
 do
     local lobby = lurek.network.createLobby("My Game", 7777, 1, 4)
@@ -128,7 +124,6 @@ do
 end
 
 --@api-stub: lurek.network.pack
---@api-stub: lurek.unpack
 -- Binary serialization roundtrip.
 do
     local data = {hp = 100, pos = {x = 10.5, y = 20.3}, name = "Hero"}
@@ -150,7 +145,6 @@ do
 end
 
 --@api-stub: lurek.network.predictLinear
---@api-stub: lurek.reconcileSnapshot
 -- Client-side prediction and server reconciliation.
 do
     local snapshot = {x = 10, y = 20, vx = 5, vy = 0}
@@ -163,7 +157,6 @@ do
 end
 
 --@api-stub: lurek.network.newRelayTicket
---@api-stub: lurek.parseRelayTicket
 -- Relay ticket tokens.
 do
     local token = lurek.network.newRelayTicket("room_abc", "peer_42")
@@ -175,7 +168,6 @@ do
 end
 
 --@api-stub: lurek.network.makePunchProbe
---@api-stub: lurek.parsePunchProbe
 -- NAT punch-through probes.
 do
     local probe = lurek.network.makePunchProbe("peer_99")

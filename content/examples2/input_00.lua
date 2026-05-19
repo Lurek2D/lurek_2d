@@ -70,7 +70,7 @@ do
 end
 
 --@api-stub: lurek.input.mouse.getX
---@api-stub: lurek.getY
+--@api-stub: lurek.input.mouse.getY
 -- Returns individual mouse coordinates.
 do
     local x = lurek.input.mouse.getX()
@@ -152,6 +152,7 @@ do
     print("cursor name = " .. name)
 end
 
+--@api-stub: lurek.input.mouse.getSystemCursor
 --@api-stub: lurek.input.mouse.setCursor
 -- Sets an active cursor handle.
 do
@@ -241,7 +242,7 @@ do
 end
 
 --@api-stub: lurek.input.gamepad.wasPressed
---@api-stub: lurek.wasReleased
+--@api-stub: lurek.input.gamepad.wasReleased
 -- Checks if button was pressed or released this frame.
 do
     local pressed = lurek.input.gamepad.wasPressed(1, 1)
@@ -279,7 +280,7 @@ do
 end
 
 --@api-stub: lurek.input.gamepad.wasConnected
---@api-stub: lurek.wasDisconnected
+--@api-stub: lurek.input.gamepad.wasDisconnected
 -- Detects connection changes this frame.
 do
     local c = lurek.input.gamepad.wasConnected(1)
@@ -288,7 +289,7 @@ do
 end
 
 --@api-stub: lurek.input.gamepad.loadGamepadMappings
---@api-stub: lurek.saveGamepadMappings
+--@api-stub: lurek.input.gamepad.saveGamepadMappings
 -- Loads and saves SDL gamepad mappings.
 do
     lurek.input.gamepad.loadGamepadMappings("assets/gamecontrollerdb.txt")
@@ -297,7 +298,7 @@ do
 end
 
 --@api-stub: lurek.input.gamepad.getBackgroundEvents
---@api-stub: lurek.setBackgroundEvents
+--@api-stub: lurek.input.gamepad.setBackgroundEvents
 -- Controls background event processing.
 do
     local was = lurek.input.gamepad.getBackgroundEvents()
@@ -306,7 +307,7 @@ do
 end
 
 --@api-stub: lurek.input.gamepad.getJoystickCount
---@api-stub: lurek.getJoysticks
+--@api-stub: lurek.input.gamepad.getJoysticks
 -- Enumerates joysticks.
 do
     local count = lurek.input.gamepad.getJoystickCount()
@@ -343,7 +344,7 @@ do
 end
 
 --@api-stub: lurek.input.touch.wasPressed
---@api-stub: lurek.wasReleased
+--@api-stub: lurek.input.touch.wasReleased
 -- Detects touch begin/end this frame.
 do
     local pressed = lurek.input.touch.wasPressed(1)

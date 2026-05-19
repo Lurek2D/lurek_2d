@@ -207,8 +207,6 @@ do
 end
 
 --@api-stub: lurek.ui.setFocus
---@api-stub: lurek.getFocus
---@api-stub: lurek.clearFocus
 -- Focus management.
 do
     ---@type LTextInput
@@ -222,7 +220,6 @@ do
 end
 
 --@api-stub: lurek.ui.focusNext
---@api-stub: lurek.focusPrev
 -- Tab-style focus navigation.
 do
     ---@type LTextInput

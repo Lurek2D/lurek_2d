@@ -96,8 +96,8 @@ do
     print("translated = " .. text)
 end
 
---@api-stub: lurek.i18n.t (with vars)
 -- Translates a key with variable substitution.
+--@api-stub: lurek.i18n.t
 do
     local text = lurek.i18n.t("greeting.personal", {name = "World"})
     print("with vars = " .. text)

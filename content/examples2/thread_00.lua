@@ -161,8 +161,9 @@ do
     print("error = " .. tostring(t:getError()))
 end
 
---@api-stub: LThread:start with arguments
 -- Passing initial data to a thread.
+--@api-stub: lurek.thread.newThread
+--@api-stub: lurek.thread.getChannel
 do
     ---@type LThread
     local t = lurek.thread.newThread([[

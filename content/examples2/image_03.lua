@@ -11,8 +11,8 @@ do
     print("compressed w=" .. w .. " h=" .. h .. " mips=" .. mips)
 end
 
---@api-stub: lurek.image.newImageData
 -- Create blank image data by dimensions or load from file.
+--@api-stub: LImageData:getWidth
 do
     local id = lurek.image.newImageData(64, 64)
     local w = id:getWidth()

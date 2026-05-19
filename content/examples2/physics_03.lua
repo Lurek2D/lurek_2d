@@ -150,7 +150,6 @@ do
 end
 
 --@api-stub: LWorld:setBeginContact
---@api-stub: LWorld:clearBeginContact (callback)
 -- Contact callbacks (alternative to polling).
 do
     ---@type LWorld
@@ -171,7 +170,6 @@ do
 end
 
 --@api-stub: LWorld:setEndContact
---@api-stub: LWorld:clearEndContact (callback)
 -- End contact callback.
 do
     ---@type LWorld
@@ -237,8 +235,8 @@ do
     print("circles apart = " .. tostring(apart))
 end
 
---@api-stub: raycast for line-of-sight
 -- Practical: line-of-sight check between player and enemy.
+--@api-stub: LWorld:newBody
 do
     ---@type LWorld
     local world = lurek.physics.newWorld(0, 0)
@@ -258,8 +256,8 @@ do
     end
 end
 
---@api-stub: queryAABB for area damage
 -- Practical: find all bodies in explosion radius.
+--@api-stub: LWorld:newCircleBody
 do
     ---@type LWorld
     local world = lurek.physics.newWorld(0, 400)

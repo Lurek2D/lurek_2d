@@ -12,7 +12,7 @@ do
     print("progress (normalized):", bar:getProgress())
 end
 
---@api-stub: lurek.ui.newProgressBar range
+--@api-stub: lurek.ui.newProgressBar
 do
     -- change the progress bar range dynamically
     ---@type LProgressBar
@@ -37,7 +37,7 @@ do
     print("tint:", r, g, b, a)
 end
 
---@api-stub: lurek.ui.newImageWidget modes
+--@api-stub: lurek.ui.newImageWidget
 do
     -- test different scale modes on image widget
     ---@type LImageWidget
@@ -64,7 +64,7 @@ do
     print("insets:", l, t, r, b)
 end
 
---@api-stub: lurek.ui.newNinePatch slices
+--@api-stub: lurek.ui.newNinePatch
 do
     -- retrieve computed slices from nine-patch
     ---@type LNinePatch
@@ -109,7 +109,7 @@ do
     print("new thickness:", sep:getThickness())
 end
 
---@api-stub: lurek.ui.newSeparator vertical
+--@api-stub: lurek.ui.newSeparator
 do
     -- create a vertical separator and toggle orientation
     ---@type LSeparator

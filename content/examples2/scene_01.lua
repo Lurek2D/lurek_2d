@@ -1,9 +1,9 @@
 --- Scene Module Part 2: transitions, overlays, preload, depth sorter, serialization
 
 --@api-stub: lurek.scene.transitions.fade
---@api-stub: lurek.slide
---@api-stub: lurek.iris
---@api-stub: lurek.wipe
+--@api-stub: lurek.scene.transitions.slide
+--@api-stub: lurek.scene.transitions.iris
+--@api-stub: lurek.scene.transitions.wipe
 -- Transition descriptor factories.
 do
     local fade = lurek.scene.transitions.fade(0.5)
@@ -26,48 +26,7 @@ do
     end
 end
 
---@api-stub: lurek.scene.push with transitions
--- Pushing scenes with visual transitions.
-do
-    local sceneA = lurek.scene.new({
-        enter = function(self) print("A enter") end,
-        leave = function(self) print("A leave") end,
-    })
-    local sceneB = lurek.scene.new({
-        enter = function(self) print("B enter") end,
-        leave = function(self) print("B leave") end,
-    })
-    lurek.scene.push(sceneA)
-    lurek.scene.push(sceneB, "fade", 0.5, "ease_in_out")
-    print("transitioning = " .. tostring(lurek.scene.isTransitioning()))
-    lurek.scene.update(0.25)
-    print("progress = " .. string.format("%.2f", lurek.scene.getTransitionProgress()))
-    print("eased = " .. string.format("%.2f", lurek.scene.getTransitionProgressEased()))
-    lurek.scene.update(0.25)
-    print("after full dur transitioning = " .. tostring(lurek.scene.isTransitioning()))
-    lurek.scene.clear()
-end
-
---@api-stub: lurek.scene.pop with transition
--- Popping with a slide transition.
-do
-    local bottom = lurek.scene.new({
-        resume = function(self) print("bottom resume") end,
-    })
-    local top = lurek.scene.new({
-        leave = function(self) print("top leave") end,
-    })
-    lurek.scene.push(bottom)
-    lurek.scene.push(top)
-    lurek.scene.pop("slideleft", 0.3, "ease_out")
-    print("transitioning = " .. tostring(lurek.scene.isTransitioning()))
-    lurek.scene.update(0.3)
-    lurek.scene.clear()
-end
-
 --@api-stub: lurek.scene.queueTransition
---@api-stub: lurek.clearQueuedTransitions
---@api-stub: lurek.getQueuedTransitionCount
 -- Queuing multiple transitions.
 do
     local s1 = lurek.scene.new({})
@@ -83,7 +42,6 @@ do
 end
 
 --@api-stub: lurek.scene.pushOverlay
---@api-stub: lurek.isOverlay
 -- Overlay scenes (non-pausing).
 do
     local gameScene = lurek.scene.new({
@@ -118,8 +76,6 @@ do
 end
 
 --@api-stub: lurek.scene.preload
---@api-stub: lurek.pushPreloaded
---@api-stub: lurek.isPreloaded
 -- Deferred scene loading.
 do
     local loadCount = 0
@@ -155,7 +111,6 @@ do
 end
 
 --@api-stub: lurek.scene.serializeScene
---@api-stub: lurek.deserializeScene
 -- Saving and restoring scene navigation state.
 do
     local menu = lurek.scene.new({})
@@ -244,7 +199,6 @@ do
 end
 
 --@api-stub: lurek.scene.processLate
---@api-stub: lurek.processPhysics
 -- Late processing and physics callbacks.
 do
     local lateCount = 0

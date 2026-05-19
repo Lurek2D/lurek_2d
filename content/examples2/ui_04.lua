@@ -17,7 +17,7 @@ do
     print("is open:", dlg:isOpen())
 end
 
---@api-stub: lurek.ui.newDialog content
+--@api-stub: lurek.ui.newDialog
 do
     -- set a panel as dialog content widget
     ---@type LDialog
@@ -50,7 +50,7 @@ do
     print("is closeable:", win:isCloseable())
 end
 
---@api-stub: lurek.ui.newWindow title
+--@api-stub: lurek.ui.newWindow
 do
     -- change window title and toggle properties
     ---@type LGuiWindow
@@ -79,7 +79,7 @@ do
     print("orientation:", tb:getOrientation())
 end
 
---@api-stub: lurek.ui.newToolbar toggle
+--@api-stub: lurek.ui.newToolbar
 do
     -- toggle toolbar buttons and check state
     ---@type LToolbar
@@ -108,7 +108,7 @@ do
     print("section 2:", sb:getSectionText(2))
 end
 
---@api-stub: lurek.ui.newStatusBar update
+--@api-stub: lurek.ui.newStatusBar
 do
     -- update status bar sections dynamically
     ---@type LStatusBar

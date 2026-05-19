@@ -1,7 +1,7 @@
 --- UI Module Part 2: layout, containers (DockPanel, SplitPanel, ScrollPanel), flex, margin, padding
 
---@api-stub: lurek.ui.newLayout (horizontal)
 -- Creating a horizontal layout.
+--@api-stub: lurek.ui.newLayout
 do
     ---@type LLayout
     local row = lurek.ui.newLayout("horizontal")
@@ -10,8 +10,8 @@ do
     print("spacing = " .. row:getSpacing())
 end
 
---@api-stub: lurek.ui.newLayout (vertical)
 -- Creating a vertical layout.
+--@api-stub: lurek.ui.newLayout
 do
     ---@type LLayout
     local col = lurek.ui.newLayout("vertical")

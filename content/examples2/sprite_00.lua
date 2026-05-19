@@ -99,8 +99,8 @@ do
     print("frame 1: " .. frame1.x .. "," .. frame1.y .. " " .. frame1.w .. "x" .. frame1.h)
 end
 
---@api-stub: lurek.sprite.parseAtlas (TexturePacker JSON)
 -- Parsing a TexturePacker-style atlas.
+--@api-stub: lurek.sprite.parseAtlas
 do
     local atlasJson = lurek.serial.toJson({
         frames = {
@@ -218,8 +218,8 @@ do
     print("frame 1: x=" .. f1.x .. " y=" .. f1.y)
 end
 
---@api-stub: Complete animation workflow
 -- Combining sheets, groups, and frame access for a game character.
+--@api-stub: lurek.sprite.newSheet
 do
     ---@type LSpriteSheet
     local sheet = lurek.sprite.newSheet(384, 256, 48, 64)
@@ -244,8 +244,8 @@ do
     end
 end
 
---@api-stub: Varied sheet sizes
 -- Different texture and frame sizes.
+--@api-stub: lurek.sprite.newSheet
 do
     ---@type LSpriteSheet
     local tiny = lurek.sprite.newSheet(64, 64, 8, 8)

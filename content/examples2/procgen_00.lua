@@ -1,7 +1,6 @@
 --- Procgen Module: noise, dungeons, heightmaps, caves, L-systems, Voronoi, WFC, biomes, names
 
 --@api-stub: lurek.procgen.simplex2d
---@api-stub: lurek.simplex3d
 -- Simplex noise sampling.
 do
     local val = lurek.procgen.simplex2d(1.5, 2.3)
@@ -36,7 +35,6 @@ do
 end
 
 --@api-stub: lurek.procgen.noiseMapParallel
---@api-stub: lurek.noiseMapParallelSeeded
 -- Parallel noise generation for large maps.
 do
     local map = lurek.procgen.noiseMapParallel(256, 256, {
@@ -226,8 +224,8 @@ do
     print("sample dist = " .. dist1[50])
 end
 
---@api-stub: lurek.procgen.voronoi with warp
 -- Voronoi with domain warping.
+--@api-stub: lurek.procgen.voronoi
 do
     local seeds = {}
     for i = 1, 8 do
@@ -301,7 +299,6 @@ do
 end
 
 --@api-stub: lurek.procgen.generateName
---@api-stub: lurek.generateNames
 -- Markov chain name generation.
 do
     local samples = { "Aldric", "Baldric", "Cedric", "Eldric", "Godric", "Fredric" }
@@ -315,8 +312,6 @@ do
 end
 
 --@api-stub: lurek.procgen.newBiomeClassifier
---@api-stub: lurek.classify
---@api-stub: lurek.classifyMap
 -- Biome classification.
 do
     ---@type BiomeClassifier

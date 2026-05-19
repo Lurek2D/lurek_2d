@@ -116,15 +116,14 @@ do
     print("new seed = " .. ng:getSeed())
 end
 
---@api-stub: lurek.math.perlin2d (stateless)
 -- Stateless 2D Perlin noise.
+--@api-stub: lurek.math.perlin2d
 do
     local v = lurek.math.perlin2d(5.0, 3.0)
     local v2 = lurek.math.perlin2d(5.0, 3.0, 42)
     print("stateless perlin2d = " .. v .. " seeded = " .. v2)
 end
 
---@api-stub: lurek.math.perlin3d (stateless)
 -- Stateless 3D Perlin noise.
 do
     local v = lurek.math.perlin3d(1.0, 2.0, 3.0)
@@ -132,15 +131,14 @@ do
     print("stateless perlin3d = " .. v .. " seeded = " .. v2)
 end
 
---@api-stub: lurek.math.simplex2d (stateless)
 -- Stateless 2D simplex noise.
+--@api-stub: lurek.math.simplex2d
 do
     local v = lurek.math.simplex2d(2.0, 3.0)
     local v2 = lurek.math.simplex2d(2.0, 3.0, 10)
     print("stateless simplex2d = " .. v .. " seeded = " .. v2)
 end
 
---@api-stub: lurek.math.simplexNoise (stateless)
 -- Stateless 2D/3D simplex noise.
 do
     local v2d = lurek.math.simplexNoise(4.0, 5.0)
@@ -148,8 +146,8 @@ do
     print("simplexNoise 2d=" .. v2d .. " 3d=" .. v3d)
 end
 
---@api-stub: lurek.math.fbm (stateless)
 -- Stateless fractal Brownian motion.
+--@api-stub: lurek.math.fbm
 do
     local v = lurek.math.fbm(1.0, 2.0, 42)
     local v2 = lurek.math.fbm(1.0, 2.0, 42, 6, 2.0, 0.5)

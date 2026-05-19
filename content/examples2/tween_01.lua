@@ -70,8 +70,8 @@ do
     print("active after cancel = " .. tostring(seq:isActive()))
 end
 
---@api-stub: LTweenSequence:delay with callback
 -- Delay step with its own callback.
+--@api-stub: lurek.tween.sequence
 do
     local obj = { v = 0 }
     ---@type LTweenSequence
@@ -172,20 +172,6 @@ do
     lurek.tween.update(0.2)
     lurek.tween.update(0.5)
     lurek.tween.update(0.01)
-end
-
---@api-stub: lurek.tween.update
--- Global tween update in a game loop.
-do
-    local pos = { x = 0 }
-    lurek.tween.tween(0.1, pos, { x = 10 })
-    -- Simulate 6 frames at 60fps
-    for i = 1, 6 do
-        lurek.tween.update(1 / 60)
-    end
-    print("after 6 frames: x=" .. string.format("%.1f", pos.x))
-    lurek.tween.update(1.0)
-    print("after 1s: x=" .. pos.x)
 end
 
 print("tween_01.lua")

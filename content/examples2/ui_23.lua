@@ -1,5 +1,3 @@
---@api-stub: lurek.ui.beginDrag
---@api-stub: lurek.ui.clearFocus
 --@api-stub: lurek.ui.draw
 -- lurek.ui drag and draw.
 do
@@ -12,7 +10,6 @@ do
 end
 
 --@api-stub: lurek.ui.drawToImage
---@api-stub: lurek.ui.dropOn
 --@api-stub: lurek.ui.endDrag
 -- lurek.ui drawToImage and drag drop.
 do
@@ -25,8 +22,6 @@ do
 end
 
 --@api-stub: lurek.ui.flushCache
---@api-stub: lurek.ui.focusPrev
---@api-stub: lurek.ui.getActiveDrag
 -- lurek.ui cache and focus.
 do
     lurek.ui.flushCache()
@@ -37,8 +32,6 @@ do
     print("flushCache/focusPrev ok; activeDrag:", drag, "focus:", focus)
 end
 
---@api-stub: lurek.ui.getFocus
---@api-stub: lurek.ui.getTheme
 --@api-stub: lurek.ui.getToastCount
 -- lurek.ui focus and theme queries.
 do
@@ -76,7 +69,6 @@ do
 end
 
 --@api-stub: lurek.ui.newCustomWidget
---@api-stub: lurek.ui.newLayout
 --@api-stub: lurek.ui.newScrollBar
 -- lurek.ui constructors.
 do
@@ -86,7 +78,6 @@ do
     print("newCustomWidget:", w, "newLayout:", layout, "newScrollBar:", sb)
 end
 
---@api-stub: lurek.ui.newTheme
 --@api-stub: lurek.ui.parseWidgetState
 --@api-stub: lurek.ui.renderToImage
 -- lurek.ui theme, state parsing, rendering.
@@ -98,7 +89,6 @@ do
 end
 
 --@api-stub: lurek.ui.setDefaultTheme
---@api-stub: lurek.ui.setTheme
 --@api-stub: lurek.ui.setViewport
 -- lurek.ui theme and viewport.
 do

@@ -1,7 +1,6 @@
 --- Physics Module Part 5: zones, cellular automaton, terrain, body data, sleeping, debug draw, CCD, advanced
 
 --@api-stub: LWorld:addZone
---@api-stub: LWorld:LZone basic setup
 -- Zones: axis-aligned areas that apply effects to bodies inside.
 do
     ---@type LWorld
@@ -110,7 +109,6 @@ do
 end
 
 --@api-stub: lurek.physics.newCellular
---@api-stub: lurek.LCellular basic
 -- Cellular automaton: grid-based simulation (sand, water, fire).
 do
     ---@type LCellular
@@ -166,7 +164,6 @@ do
 end
 
 --@api-stub: lurek.physics.newTerrain
---@api-stub: lurek.LTerrain basic
 -- Destructible terrain: grid-backed physical terrain with collision bodies.
 do
     ---@type LWorld
@@ -316,7 +313,6 @@ do
 end
 
 --@api-stub: lurek.physics.debugDraw
---@api-stub: lurek.drawDebugGpu
 -- Global debug draw toggle and GPU debug.
 do
     ---@type LWorld
@@ -345,8 +341,6 @@ do
 end
 
 --@api-stub: lurek.physics.step
---@api-stub: lurek.getBody
---@api-stub: lurek.setBodyVelocity (free functions)
 -- Using free-function API (alternative to method calls).
 do
     ---@type LWorld
@@ -361,8 +355,9 @@ do
     print("after set vel: pos=" .. x .. "," .. y)
 end
 
---@api-stub: lurek.physics.getCollisions (free function)
 -- Polling collisions via the free-function API.
+--@api-stub: lurek.physics.step
+--@api-stub: lurek.physics.getCollisions
 do
     ---@type LWorld
     local world = lurek.physics.newWorld(0, 400)
@@ -380,7 +375,6 @@ do
 end
 
 --@api-stub: lurek.physics.isSleepingAllowed
---@api-stub: lurek.setSleepingAllowed (free function)
 -- Free-function sleep control.
 do
     ---@type LWorld

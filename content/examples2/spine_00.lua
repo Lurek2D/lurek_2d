@@ -31,8 +31,8 @@ do
     print("bone count = " .. skel:boneCount())
 end
 
---@api-stub: LSkeleton:addBone with minimal opts
 -- Bones with no opts use defaults.
+--@api-stub: lurek.spine.newSkeleton
 do
     ---@type LSkeleton
     local skel = lurek.spine.newSkeleton("minimal")
@@ -288,8 +288,9 @@ do
     print("timelines = " .. anim:getTimelineCount())
 end
 
---@api-stub: Full skeleton workflow
 -- Complete skeleton with bones, slots, skins, IK, and animation.
+--@api-stub: lurek.spine.newSkeleton
+--@api-stub: lurek.spine.newSkeletonAnimation
 do
     ---@type LSkeleton
     local skel = lurek.spine.newSkeleton("full_character")

@@ -16,8 +16,9 @@ do
     print("remaining = " .. tw:getRemaining())
 end
 
---@api-stub: lurek.tween.tween with easing
 -- Using a named easing function.
+--@api-stub: lurek.tween.tween
+--@api-stub: lurek.tween.update
 do
     local obj = { alpha = 0 }
     ---@type LTween
@@ -217,7 +218,6 @@ do
 end
 
 --@api-stub: lurek.tween.getActiveCount
---@api-stub: lurek.cancelAll
 -- Global tween management.
 do
     local a = { x = 0 }
@@ -230,7 +230,6 @@ do
 end
 
 --@api-stub: lurek.tween.registerEasing
---@api-stub: lurek.getEasingNames
 -- Custom easing functions.
 do
     lurek.tween.registerEasing("bounce3", function(t)

@@ -283,7 +283,6 @@ do
 end
 
 --@api-stub: lurek.pathfind.getThreadCount
---@api-stub: lurek.setThreadCount
 -- Thread count (placeholder API).
 do
     local tc = lurek.pathfind.getThreadCount()

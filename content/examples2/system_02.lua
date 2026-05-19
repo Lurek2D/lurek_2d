@@ -1,5 +1,4 @@
 --@api-stub: lurek.runtime.getDebugOverlay
---@api-stub: lurek.runtime.parseArgs
 --@api-stub: lurek.runtime.reloadConfig
 -- Runtime debug overlay state, arg parsing, config reload.
 do

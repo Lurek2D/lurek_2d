@@ -1,7 +1,6 @@
 --- Scene Module Part 1: scene creation, stack management, registration, shared data, lifecycle
 
 --@api-stub: lurek.scene.new
---@api-stub: lurek.newScene
 -- Creating scene instances.
 do
     local myScene = lurek.scene.new({
@@ -50,9 +49,6 @@ do
 end
 
 --@api-stub: lurek.scene.push
---@api-stub: lurek.getCurrent
---@api-stub: lurek.getStackSize
---@api-stub: lurek.isEmpty
 -- Stack operations.
 do
     print("empty = " .. tostring(lurek.scene.isEmpty()))
@@ -111,10 +107,6 @@ do
 end
 
 --@api-stub: lurek.scene.registerScene
---@api-stub: lurek.getRegistered
---@api-stub: lurek.hasRegistered
---@api-stub: lurek.getRegisteredNames
---@api-stub: lurek.unregisterScene
 -- Scene registration.
 do
     local menuScene = lurek.scene.new({ name = "mainMenu" })
@@ -137,9 +129,6 @@ do
 end
 
 --@api-stub: lurek.scene.setData
---@api-stub: lurek.getData
---@api-stub: lurek.hasData
---@api-stub: lurek.removeData
 -- Shared scene data map.
 do
     lurek.scene.setData("selectedLevel", 5)
@@ -152,8 +141,8 @@ do
     print("has difficulty = " .. tostring(lurek.scene.hasData("difficulty")))
 end
 
---@api-stub: lurek.scene.push with params
 -- Passing parameters to scene enter.
+--@api-stub: lurek.scene.new
 do
     local battleScene = lurek.scene.new({
         name = "battle",
@@ -172,8 +161,6 @@ do
 end
 
 --@api-stub: lurek.scene.depth
---@api-stub: lurek.getCurrentLayer
---@api-stub: lurek.setCurrentLayer
 -- Layer management.
 do
     local scene = lurek.scene.new({ name = "layered" })
@@ -188,9 +175,6 @@ do
 end
 
 --@api-stub: lurek.scene.update
---@api-stub: lurek.process
---@api-stub: lurek.render
---@api-stub: lurek.renderUi
 -- Scene lifecycle callbacks.
 do
     local updateCount = 0

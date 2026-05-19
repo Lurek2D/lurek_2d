@@ -14,7 +14,7 @@ do
     print("show alpha:", cp:getShowAlpha())
 end
 
---@api-stub: lurek.ui.newColorPicker onChange
+--@api-stub: lurek.ui.newColorPicker
 do
     -- register a change callback on color picker
     ---@type LColorPicker
@@ -58,8 +58,7 @@ do
     print("src depth:", tree:getNodeDepth(src))
 end
 
---@api-stub: lurek.ui.newTreeView expand
---@api-stub: lurek.collapse
+--@api-stub: lurek.ui.newTreeView
 do
     -- expand and collapse tree nodes
     ---@type LTreeView
@@ -105,7 +104,9 @@ do
     print("new text:", tip:getText())
 end
 
---@api-stub: lurek.ui.newTheme setStyle
+--@api-stub: lurek.ui.newTheme
+--@api-stub: lurek.ui.setTheme
+--@api-stub: lurek.ui.getTheme
 do
     -- create and apply a custom theme
     ---@type LTheme
@@ -122,7 +123,9 @@ do
     print("theme type:", theme:type())
 end
 
---@api-stub: lurek.ui.setFocus focusNext focusPrev
+--@api-stub: lurek.ui.getFocus
+--@api-stub: lurek.ui.focusPrev
+--@api-stub: lurek.ui.clearFocus
 do
     -- manage keyboard focus between widgets
     ---@type LButton
@@ -139,7 +142,9 @@ do
     print("after clear:", lurek.ui.getFocus())
 end
 
---@api-stub: lurek.ui.beginDrag endDrag dropOn
+--@api-stub: lurek.ui.beginDrag
+--@api-stub: lurek.ui.getActiveDrag
+--@api-stub: lurek.ui.dropOn
 do
     -- drag and drop a widget onto a target
     ---@type LPanel

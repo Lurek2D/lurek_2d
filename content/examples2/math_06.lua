@@ -82,10 +82,7 @@ do
     print(rng:typeOf("LRandomGenerator"))
 end
 
---@api-stub: lurek.math.fbm
---@api-stub: lurek.math.perlin2d
 --@api-stub: lurek.math.perlin3d
---@api-stub: lurek.math.simplex2d
 --@api-stub: lurek.math.simplexNoise
 -- Global noise functions (no generator instance needed).
 do

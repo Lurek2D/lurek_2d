@@ -303,8 +303,8 @@ do
     print("is Object = " .. tostring(map:typeOf("Object")))
 end
 
---@api-stub: practical — building a dungeon map
 -- Practical: procedurally fill a raycaster map.
+--@api-stub: lurek.raycaster.new
 do
     ---@type LRaycaster
     local map = lurek.raycaster.new(32, 32)

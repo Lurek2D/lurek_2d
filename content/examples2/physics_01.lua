@@ -45,8 +45,8 @@ do
     print("edge bounds = " .. x .. "," .. y .. "," .. w .. "," .. h)
 end
 
---@api-stub: lurek.physics.newChainShape (open)
 -- Create an open chain shape (sequence of connected edges).
+--@api-stub: lurek.physics.newChainShape
 do
     ---@type LPhysicsShape
     local chain = lurek.physics.newChainShape(false,
@@ -59,8 +59,8 @@ do
     print("open chain type = " .. chain:getType())
 end
 
---@api-stub: lurek.physics.newChainShape (closed)
 -- Create a closed chain shape (forms a loop).
+--@api-stub: lurek.physics.newChainShape
 do
     ---@type LPhysicsShape
     local loop = lurek.physics.newChainShape(true,
@@ -101,8 +101,8 @@ do
     print("configured shape")
 end
 
---@api-stub: LWorld:addFixture (circle)
 -- Add a circle fixture to a body using the world API.
+--@api-stub: LWorld:newBody
 do
     ---@type LWorld
     local world = lurek.physics.newWorld(0, 400)
@@ -113,8 +113,8 @@ do
     print("fixture count = " .. world:fixtureCount(bodyId))
 end
 
---@api-stub: LWorld:addFixture (rectangle)
 -- Add a rectangle fixture to a body.
+--@api-stub: LWorld:newBody
 do
     ---@type LWorld
     local world = lurek.physics.newWorld(0, 400)
@@ -125,8 +125,8 @@ do
     print("fixtures = " .. world:fixtureCount(bodyId))
 end
 
---@api-stub: LWorld:addFixture (polygon)
 -- Add a polygon fixture.
+--@api-stub: LWorld:newBody
 do
     ---@type LWorld
     local world = lurek.physics.newWorld(0, 400)
@@ -153,8 +153,8 @@ do
     print("fixture modified")
 end
 
---@api-stub: LWorld:addFixture sensor
 -- Creating a sensor fixture for overlap detection.
+--@api-stub: LWorld:newBody
 do
     ---@type LWorld
     local world = lurek.physics.newWorld(0, 400)
@@ -194,8 +194,8 @@ do
     print("chain body at " .. ground:getX() .. ", " .. ground:getY())
 end
 
---@api-stub: LWorld:newBodies (batch creation)
 -- Create many bodies at once for performance.
+--@api-stub: LWorld:newBodies
 do
     ---@type LWorld
     local world = lurek.physics.newWorld(0, 400)
@@ -242,8 +242,8 @@ do
     print("shape destroyed")
 end
 
---@api-stub: multiple fixtures on one body
 -- Compound body with multiple fixtures.
+--@api-stub: LWorld:newBody
 do
     ---@type LWorld
     local world = lurek.physics.newWorld(0, 400)

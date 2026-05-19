@@ -26,7 +26,6 @@ do
 end
 
 --@api-stub: LPipeline:addStep
---@api-stub: LPipeline:run (basic)
 -- Add steps and run the pipeline synchronously.
 do
     ---@type LPipeline
@@ -72,8 +71,9 @@ do
     print("report depends on: " .. deps[1])
 end
 
---@api-stub: LPipeline:run with context
 -- Running a pipeline with an initial context.
+--@api-stub: lurek.pipeline.newPipeline
+--@api-stub: lurek.pipeline.newStep
 do
     ---@type LPipeline
     local pipe = lurek.pipeline.newPipeline("ctx-demo")
@@ -90,7 +90,6 @@ do
 end
 
 --@api-stub: LPipeline:getResult
---@api-stub: LPipeline:result fields
 -- Inspecting detailed results.
 do
     ---@type LPipeline

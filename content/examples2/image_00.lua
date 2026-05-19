@@ -1,13 +1,12 @@
 --- Image Module Part 1: factory functions and LImageData basics
 
---@api-stub: lurek.image.newImageData (from dimensions)
 -- Creates blank image data from width and height.
+--@api-stub: lurek.image.newImageData
 do
     local img = lurek.image.newImageData(128, 64)
     print("image " .. img:getWidth() .. "x" .. img:getHeight())
 end
 
---@api-stub: lurek.image.newImageData (from file)
 -- Loads image data from a file path.
 do
     local img = lurek.image.newImageData("assets/textures/test.png")

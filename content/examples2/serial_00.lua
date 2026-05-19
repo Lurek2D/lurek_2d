@@ -1,7 +1,6 @@
 --- Serial Module: JSON, TOML, CSV, INI, MsgPack, XML, format detection, schema validation
 
 --@api-stub: lurek.serial.fromJson
---@api-stub: lurek.toJson
 -- JSON parsing and encoding.
 do
     local jsonStr = '{"name":"warrior","level":12,"alive":true,"items":["sword","shield"]}'
@@ -19,8 +18,9 @@ do
     print("pretty:\n" .. pretty)
 end
 
---@api-stub: lurek.serial.fromJson with nested structures
 -- Complex JSON round-trip.
+--@api-stub: lurek.serial.toJson
+--@api-stub: lurek.serial.fromJson
 do
     local complex = {
         config = {
@@ -41,7 +41,6 @@ do
 end
 
 --@api-stub: lurek.serial.fromToml
---@api-stub: lurek.toToml
 -- TOML parsing and encoding.
 do
     local tomlStr = [[
@@ -72,7 +71,6 @@ sfx_volume = 1.0
 end
 
 --@api-stub: lurek.serial.fromCsv
---@api-stub: lurek.toCsv
 -- CSV parsing with and without headers.
 do
     local csvWithHeaders = "name,age,city\nAlice,30,Warsaw\nBob,25,Krakow\nCarol,35,Gdansk"
@@ -92,8 +90,8 @@ do
     print("has header line = " .. tostring(output:find("name,age,city") ~= nil))
 end
 
---@api-stub: lurek.serial.fromCsv with custom delimiter
 -- Tab-separated and semicolon-separated.
+--@api-stub: lurek.serial.fromCsv
 do
     local tsv = "id\tproduct\tprice\n1\tSword\t150\n2\tShield\t80\n3\tPotion\t25"
     local items = lurek.serial.fromCsv(tsv, "\t", true)
@@ -134,7 +132,6 @@ dash = x
 end
 
 --@api-stub: lurek.serial.encodeMsgPack
---@api-stub: lurek.decodeMsgPack
 -- Binary MsgPack serialization round-trip.
 do
     local payload = {
@@ -176,7 +173,6 @@ do
 end
 
 --@api-stub: lurek.serial.encode
---@api-stub: lurek.decode
 -- Generic encode/decode with format parameter.
 do
     local data = { greeting = "hello", count = 42, active = true }
@@ -251,8 +247,8 @@ do
     print("all defaults height = " .. allDefaults.height)
 end
 
---@api-stub: lurek.serial.decode with auto-detection
 -- Decode without specifying format.
+--@api-stub: lurek.serial.decode
 do
     local jsonPayload = '{"auto": true, "score": 99}'
     local result = lurek.serial.decode(jsonPayload)

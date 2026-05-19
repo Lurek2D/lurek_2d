@@ -1,6 +1,5 @@
 --- Serial Module: decode, decodeMsgPack, toCsv, toJson, toToml
 
---@api-stub: lurek.serial.decode
 --@api-stub: lurek.serial.decodeMsgPack
 -- Decode binary or formatted payload into a Lua table.
 do
@@ -12,7 +11,6 @@ do
 end
 
 --@api-stub: lurek.serial.toCsv
---@api-stub: lurek.serial.toJson
 --@api-stub: lurek.serial.toToml
 -- Serialize a table to CSV, JSON, or TOML string.
 do

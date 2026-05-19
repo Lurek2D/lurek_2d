@@ -1,7 +1,6 @@
 --- Tilemap Module Part 3: hex utilities, iso helpers, coordinate conversion, TMX/LDtk loading
 
 --@api-stub: lurek.tilemap.toScreenHex
---@api-stub: lurek.fromScreenHex
 -- Converting between hex axial and screen coordinates.
 do
     local sx, sy = lurek.tilemap.toScreenHex(2, 3, 32)
@@ -96,7 +95,6 @@ do
 end
 
 --@api-stub: lurek.tilemap.toScreenIso
---@api-stub: lurek.fromScreenIso
 -- Isometric coordinate conversion.
 do
     local sx, sy = lurek.tilemap.toScreenIso(3, 5, 64, 32)
@@ -106,8 +104,6 @@ do
 end
 
 --@api-stub: lurek.tilemap.isoDirectionFromAngle
---@api-stub: lurek.isoDirectionName
---@api-stub: lurek.isoRotate
 -- Isometric direction utilities.
 do
     local dir = lurek.tilemap.isoDirectionFromAngle(45)
@@ -150,8 +146,11 @@ do
     print("named level loaded")
 end
 
---@api-stub: lurek.tilemap constants
 -- Tilemap layer type constants.
+--@api-stub: lurek.tilemap.FLOOR
+--@api-stub: lurek.tilemap.NORTH_WALL
+--@api-stub: lurek.tilemap.WEST_WALL
+--@api-stub: lurek.tilemap.OBJECT
 do
     print("FLOOR = " .. lurek.tilemap.FLOOR)
     print("NORTH_WALL = " .. lurek.tilemap.NORTH_WALL)

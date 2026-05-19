@@ -274,8 +274,8 @@ do
     print("after destroy = " .. world:jointCount())
 end
 
---@api-stub: chain of revolute joints (ragdoll segment)
 -- Practical: a chain of bodies connected by revolute joints.
+--@api-stub: LWorld:newBody
 do
     ---@type LWorld
     local world = lurek.physics.newWorld(0, 400)

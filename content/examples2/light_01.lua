@@ -156,8 +156,8 @@ do
     print("occluder valid = " .. tostring(occ:isValid()))
 end
 
---@api-stub: lurek.light.newOccluder (with opts)
 -- Creates an occluder with options.
+--@api-stub: lurek.light.newOccluder
 do
     local verts = {0, 0, 50, 0, 50, 80, 0, 80}
     local occ = lurek.light.newOccluder(verts, {opacity = 0.8})

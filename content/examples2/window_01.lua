@@ -1,6 +1,8 @@
 -- window_01.lua: Window advanced — displays, scale, focus, state, dialogs
 
---@api-stub: lurek.window.getDisplayCount getDisplayName getCurrentDisplay
+--@api-stub: lurek.window.getDisplayCount
+--@api-stub: lurek.window.getCurrentDisplay
+--@api-stub: lurek.window.getDisplayName
 do
     -- query display/monitor information
     local count = lurek.window.getDisplayCount()
@@ -11,7 +13,8 @@ do
     print("display name:", name)
 end
 
---@api-stub: lurek.window.getDesktopDimensions getDisplays
+--@api-stub: lurek.window.getDesktopDimensions
+--@api-stub: lurek.window.getDisplays
 do
     -- get desktop resolution and full display list
     local dw, dh = lurek.window.getDesktopDimensions()
@@ -33,7 +36,9 @@ do
     end
 end
 
---@api-stub: lurek.window.getScaleMode setScaleMode getScaleInfo
+--@api-stub: lurek.window.setScaleMode
+--@api-stub: lurek.window.getScaleMode
+--@api-stub: lurek.window.getScaleInfo
 do
     -- scale mode configuration
     lurek.window.setScaleMode("letterbox")
@@ -44,14 +49,14 @@ do
     print("game size:", info.game_width, "x", info.game_height)
 end
 
---@api-stub: lurek.window.getGameWidth getGameHeight
+--@api-stub: lurek.window.getGameWidth
+--@api-stub: lurek.window.getGameHeight
 do
     -- query logical game dimensions
     print("game width:", lurek.window.getGameWidth())
     print("game height:", lurek.window.getGameHeight())
 end
 
---@api-stub: lurek.window.hasFocus hasMouseFocus
 do
     -- check window focus state
     print("has keyboard focus:", lurek.window.hasFocus())
@@ -60,7 +65,11 @@ do
     print("after focus call:", lurek.window.hasFocus())
 end
 
---@api-stub: lurek.window.isOpen isVisible isResizable
+--@api-stub: lurek.window.isOpen
+--@api-stub: lurek.window.isVisible
+--@api-stub: lurek.window.isResizable
+--@api-stub: lurek.window.isMaximized
+--@api-stub: lurek.window.isMinimized
 do
     -- check window state flags
     print("is open:", lurek.window.isOpen())
@@ -70,7 +79,11 @@ do
     print("is minimized:", lurek.window.isMinimized())
 end
 
---@api-stub: lurek.window.maximize minimize restore
+--@api-stub: lurek.window.maximize
+--@api-stub: lurek.window.isMaximized
+--@api-stub: lurek.window.restore
+--@api-stub: lurek.window.minimize
+--@api-stub: lurek.window.isMinimized
 do
     -- window state management
     lurek.window.maximize()
@@ -82,7 +95,8 @@ do
     lurek.window.restore()
 end
 
---@api-stub: lurek.window.getVSync setVSync
+--@api-stub: lurek.window.setVSync
+--@api-stub: lurek.window.getVSync
 do
     -- configure vertical sync
     lurek.window.setVSync(1)
@@ -93,7 +107,11 @@ do
     print("adaptive vsync:", lurek.window.getVSync())
 end
 
---@api-stub: lurek.window.setDisplay flash requestAttention
+--@api-stub: lurek.window.setDisplay
+--@api-stub: lurek.window.flash
+--@api-stub: lurek.window.requestAttention
+--@api-stub: lurek.window.getDisplayOrientation
+--@api-stub: lurek.window.getSystemTheme
 do
     -- move window to display, flash, and request attention
     lurek.window.setDisplay(0)
@@ -124,7 +142,6 @@ do
     print("icon set")
 end
 
---@api-stub: lurek.window.onDpiChange pollDpiChange
 do
     -- register DPI change callback
     lurek.window.onDpiChange(function(new_scale)

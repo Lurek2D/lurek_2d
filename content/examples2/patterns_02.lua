@@ -21,7 +21,6 @@ do
 end
 
 --@api-stub: LObserver:getCount
---@api-stub: LObserver:subscribe with once
 -- Observer subscription count and one-shot subscriptions.
 do
     ---@type LObserver

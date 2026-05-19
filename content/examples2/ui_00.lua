@@ -211,7 +211,6 @@ do
 end
 
 --@api-stub: lurek.ui.getRoot
---@api-stub: lurek.getWidgetCount
 -- Root widget and global counts.
 do
     local root = lurek.ui.getRoot()

@@ -11,8 +11,8 @@ do
     print("tile size = " .. tw .. "x" .. th)
 end
 
---@api-stub: lurek.tilemap.newTileMap with chunk size
 -- Customizing internal chunk size.
+--@api-stub: lurek.tilemap.newTileMap
 do
     ---@type LTileMap
     local map = lurek.tilemap.newTileMap(16, 16, 32)
@@ -109,8 +109,8 @@ do
     print("tile dims = " .. tw .. "x" .. th)
 end
 
---@api-stub: lurek.tilemap.newTileSet with spacing and margin
 -- Tileset with pixel spacing between tiles.
+--@api-stub: lurek.tilemap.newTileSet
 do
     ---@type LTileSet
     local ts = lurek.tilemap.newTileSet(1, 100, 10, 16, 16, 2, 1)

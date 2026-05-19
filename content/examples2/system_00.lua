@@ -1,8 +1,6 @@
 --- System/Runtime Module: version, OS, hardware, args, clipboard, logging, config, batch, power, messages
 
 --@api-stub: lurek.runtime.getVersion
---@api-stub: lurek.getOS
---@api-stub: lurek.getArch
 -- Basic system identification.
 do
     local version = lurek.runtime.getVersion()
@@ -27,7 +25,6 @@ do
 end
 
 --@api-stub: lurek.runtime.getProcessorCount
---@api-stub: lurek.getMemorySize
 -- Hardware details.
 do
     local cpus = lurek.runtime.getProcessorCount()
@@ -37,7 +34,6 @@ do
 end
 
 --@api-stub: lurek.runtime.getArgs
---@api-stub: lurek.parseArgs
 -- Command-line argument handling.
 do
     local args = lurek.runtime.getArgs()
@@ -60,8 +56,8 @@ do
     end
 end
 
---@api-stub: lurek.runtime.parseArgs with defaults
 -- Parsing with no arguments (uses os.args).
+--@api-stub: lurek.runtime.parseArgs
 do
     local parsed = lurek.runtime.parseArgs()
     print("default parse flags = " .. type(parsed.flags))
@@ -87,7 +83,6 @@ do
 end
 
 --@api-stub: lurek.runtime.getClipboardText
---@api-stub: lurek.setClipboardText
 -- Clipboard operations.
 do
     lurek.runtime.setClipboardText("Hello from Lurek2D!")
@@ -108,8 +103,6 @@ do
 end
 
 --@api-stub: lurek.runtime.log
---@api-stub: lurek.setLogLevel
---@api-stub: lurek.getLogLevel
 -- Logging with different levels.
 do
     print("current log level = " .. lurek.runtime.getLogLevel())
@@ -125,7 +118,6 @@ do
 end
 
 --@api-stub: lurek.runtime.getConfig
---@api-stub: lurek.reloadConfig
 -- Runtime configuration access and reload.
 do
     local config = lurek.runtime.getConfig()
@@ -143,7 +135,6 @@ do
 end
 
 --@api-stub: lurek.runtime.setDebugOverlay
---@api-stub: lurek.getDebugOverlay
 -- Debug overlay toggle.
 do
     print("debug overlay = " .. tostring(lurek.runtime.getDebugOverlay()))
@@ -182,7 +173,6 @@ do
 end
 
 --@api-stub: lurek.runtime.runBatch
---@api-stub: lurek.getBatchResults
 -- Executing task batches with result collection.
 do
     local results = lurek.runtime.runBatch({
@@ -202,8 +192,8 @@ do
     print("skipped = " .. skipped)
 end
 
---@api-stub: lurek.runtime.runBatch with stopOnError
 -- Stopping batch on first failure.
+--@api-stub: lurek.runtime.runBatch
 do
     local results = lurek.runtime.runBatch({
         step1 = function()
@@ -231,8 +221,6 @@ do
 end
 
 --@api-stub: lurek.runtime.getMessage
---@api-stub: lurek.getMessageCount
---@api-stub: lurek.hasMessage
 -- Engine message catalog access.
 do
     local count = lurek.runtime.getMessageCount()

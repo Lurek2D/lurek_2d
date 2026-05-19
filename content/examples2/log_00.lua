@@ -80,7 +80,6 @@ do
 end
 
 --@api-stub: lurek.log.getLevel
---@api-stub: lurek.setLevel
 -- Gets and sets the minimum log level filter.
 do
     local prev = lurek.log.getLevel()
@@ -89,8 +88,8 @@ do
     lurek.log.setLevel(prev)
 end
 
---@api-stub: lurek.log.addSink (console)
 -- Adds a console sink.
+--@api-stub: lurek.log.addSink
 do
     local id = lurek.log.addSink({
         type = "console",
@@ -100,8 +99,8 @@ do
     print("console sink id = " .. id)
 end
 
---@api-stub: lurek.log.addSink (file)
 -- Adds a file sink with path.
+--@api-stub: lurek.log.addSink
 do
     local id = lurek.log.addSink({
         type = "file",
@@ -112,8 +111,8 @@ do
     print("file sink id = " .. id)
 end
 
---@api-stub: lurek.log.addSink (memory)
 -- Adds a memory ring buffer sink.
+--@api-stub: lurek.log.addSink
 do
     local id = lurek.log.addSink({
         type = "memory",
@@ -123,8 +122,8 @@ do
     print("memory sink id = " .. id)
 end
 
---@api-stub: lurek.log.addSink (callback)
 -- Adds a callback-based sink.
+--@api-stub: lurek.log.addSink
 do
     local id = lurek.log.addSink({
         type = "callback",
@@ -173,8 +172,10 @@ do
     end
 end
 
---@api-stub: lurek.log.readMemory (drain)
 -- Reads and drains entries from memory sink.
+--@api-stub: lurek.log.addSink
+--@api-stub: lurek.log.debug
+--@api-stub: lurek.log.readMemory
 do
     local id = lurek.log.addSink({type = "memory", level = "debug", capacity = 50})
     lurek.log.debug("ephemeral")

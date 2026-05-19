@@ -57,12 +57,4 @@ do
     print("typeOf=" .. tostring(atlas:typeOf("LSpriteAtlas")))
 end
 
---@api-stub: lurek.sprite.parseAtlas
--- Load a generic JSON atlas into an LSpriteAtlas.
-do
-    local json = [[{"frames":[{"x":0,"y":0,"w":32,"h":32},{"x":32,"y":0,"w":32,"h":32}]}]]
-    local atlas = lurek.sprite.parseAtlas(json)
-    print("atlas_count=" .. atlas:entryCount())
-end
-
 print("sprite_01.lua")

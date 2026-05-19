@@ -1,8 +1,6 @@
 --- Render Module Part 4: fonts, stencil, screenshots, text measurement, pixel density
 
 --@api-stub: lurek.render.newFont
---@api-stub: lurek.setFont
---@api-stub: lurek.getFont
 -- Loading and activating fonts.
 do
     ---@type LFont
@@ -82,8 +80,6 @@ do
 end
 
 --@api-stub: lurek.render.getFontWidth
---@api-stub: lurek.getFontHeight
---@api-stub: lurek.getFontLineHeight
 -- Font helpers that accept font as first parameter.
 do
     ---@type LFont
@@ -97,8 +93,6 @@ do
 end
 
 --@api-stub: lurek.render.getFontAscent
---@api-stub: lurek.getFontDescent
---@api-stub: lurek.getFontCellWidth
 -- Advanced font metrics.
 do
     ---@type LFont
@@ -109,7 +103,6 @@ do
 end
 
 --@api-stub: lurek.render.getFontWrap
---@api-stub: lurek.setFontLineHeight
 -- Render-level font wrapping and line height.
 do
     ---@type LFont
@@ -121,7 +114,6 @@ do
 end
 
 --@api-stub: lurek.render.stencil
---@api-stub: lurek.setStencilTest
 -- Stencil masking for shaped clipping.
 do
     lurek.render.stencil("replace", 1)
@@ -135,8 +127,6 @@ do
 end
 
 --@api-stub: lurek.render.setStencilMode
---@api-stub: lurek.getStencilMode
---@api-stub: lurek.clearStencil
 -- Stencil mode control.
 do
     lurek.render.setStencilMode("replace", "always", 1)
@@ -148,7 +138,6 @@ do
 end
 
 --@api-stub: lurek.render.captureScreenshot
---@api-stub: lurek.saveScreenshot
 -- Screenshot capture.
 do
     lurek.render.setColor(0.2, 0.4, 0.8, 1)
@@ -163,8 +152,9 @@ do
     print("screenshot saved")
 end
 
---@api-stub: lurek.render.newCanvas as render target
 -- Using a canvas as a render texture for post-processing.
+--@api-stub: lurek.render.setCanvas
+--@api-stub: lurek.render.draw
 do
     ---@type LCanvas
     local rt = lurek.render.newCanvas(256, 256)
@@ -178,8 +168,10 @@ do
     lurek.render.draw(rt, 400, 50, 0, 0.5, 0.5)
 end
 
---@api-stub: lurek.render.print with font
 -- Using fonts directly with print.
+--@api-stub: lurek.render.newFont
+--@api-stub: lurek.render.setFont
+--@api-stub: lurek.render.getDefaultFont
 do
     ---@type LFont
     local font = lurek.render.newFont("assets/fonts/default.ttf", 16)
@@ -189,33 +181,6 @@ do
     ---@type LFont
     local def = lurek.render.getDefaultFont()
     lurek.render.setFont(def)
-end
-
---@api-stub: lurek.thick shapes
--- Drawing shapes with thick line widths.
-do
-    lurek.render.setLineWidth(4)
-    lurek.render.setColor(1, 0.5, 0, 1)
-    lurek.render.line(10, 400, 60, 380, 110, 400)
-    lurek.render.setColor(0, 0.8, 0.4, 1)
-    lurek.render.rectangle("line", 130, 380, 60, 40)
-    lurek.render.setColor(0.5, 0, 1, 1)
-    lurek.render.circle("line", 240, 400, 20)
-    lurek.render.setLineWidth(1)
-    lurek.render.setColor(1, 1, 1, 1)
-end
-
---@api-stub: lurek.batch with transforms
--- Batch drawing multiple images with different transforms.
-do
-    ---@type LImage
-    local img = lurek.render.newImage("assets/textures/ray_water.png")
-    local draws = {}
-    for i = 0, 7 do
-        local angle = i * math.pi / 4
-        table.insert(draws, { img, 350 + math.cos(angle) * 40, 420 + math.sin(angle) * 40, angle, 0.25, 0.25 })
-    end
-    lurek.render.drawMany(draws)
 end
 
 print("render_04.lua")

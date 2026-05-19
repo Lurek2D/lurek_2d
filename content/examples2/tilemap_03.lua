@@ -276,7 +276,6 @@ do
 end
 
 --@api-stub: lurek.tilemap.newMapGroup
---@api-stub: lurek.LMapGroup
 -- Creating a map group and adding blocks.
 do
     ---@type LMapGroup
@@ -297,7 +296,6 @@ do
 end
 
 --@api-stub: lurek.tilemap.newMapScript
---@api-stub: lurek.LMapScript
 -- Creating a map generation script with steps.
 do
     ---@type LMapScript
@@ -333,8 +331,10 @@ do
     print("generated map type = " .. result:type())
 end
 
---@api-stub: lurek.tilemap.newMapGen with explicit dimensions
 -- Map generation using explicit width and height.
+--@api-stub: lurek.tilemap.newMapGroup
+--@api-stub: lurek.tilemap.newMapBlock
+--@api-stub: lurek.tilemap.newMapGen
 do
     ---@type LMapGroup
     local group = lurek.tilemap.newMapGroup("plains")

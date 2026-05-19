@@ -75,7 +75,6 @@ do
 end
 
 --@api-stub: lurek.pathfind.newNavGrid
---@api-stub: lurek.LNavGrid dimensions
 -- Navigation grid creation with cost-based cells.
 do
     ---@type LNavGrid

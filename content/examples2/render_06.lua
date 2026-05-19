@@ -16,16 +16,6 @@ do
     print("blend=" .. mode)
 end
 
---@api-stub: lurek.render.setCanvas
--- Get and set active render canvas.
-do
-    local c = lurek.render.newCanvas(64, 64)
-    lurek.render.setCanvas(c)
-    local current = lurek.render.getCanvas()
-    print("canvas=" .. tostring(current ~= nil))
-    lurek.render.setCanvas(nil)
-end
-
 --@api-stub: lurek.render.getColor
 -- Get and set draw color.
 do
@@ -45,21 +35,12 @@ do
 end
 
 --@api-stub: lurek.render.getFont
---@api-stub: lurek.render.setFont
 -- Get and set draw font.
 do
     local f = lurek.render.newFont("assets/fonts/Roboto-Regular.ttf", 14)
     lurek.render.setFont(f)
     local cur = lurek.render.getFont()
     print("font=" .. tostring(cur ~= nil))
-end
-
---@api-stub: lurek.render.getPointSize
--- Get and set point size.
-do
-    lurek.render.setPointSize(3.0)
-    local ps = lurek.render.getPointSize()
-    print("point_size=" .. ps)
 end
 
 --@api-stub: lurek.render.getScissor

@@ -18,8 +18,6 @@ do
 end
 
 --@api-stub: lurek.terminal.pushCmdHistory
---@api-stub: lurek.prevCmd
---@api-stub: lurek.nextCmd
 -- Command history navigation.
 do
     ---@type LTerminal
@@ -36,7 +34,6 @@ do
 end
 
 --@api-stub: lurek.terminal.cmdHistoryLen
---@api-stub: lurek.clearCmdHistory
 -- Managing command history size.
 do
     ---@type LTerminal
@@ -50,8 +47,6 @@ do
 end
 
 --@api-stub: lurek.terminal.pushScrollback
---@api-stub: lurek.scrollbackLen
---@api-stub: lurek.getScrollback
 -- Scrollback buffer operations.
 do
     ---@type LTerminal
@@ -82,8 +77,6 @@ do
 end
 
 --@api-stub: lurek.terminal.addCompletion
---@api-stub: lurek.getCompletions
---@api-stub: lurek.clearCompletions
 -- Registering and querying completions.
 do
     lurek.terminal.clearCompletions()
@@ -102,8 +95,6 @@ do
 end
 
 --@api-stub: lurek.terminal.nextCompletion
---@api-stub: lurek.resetCompletion
---@api-stub: lurek.removeCompletion
 -- Cycling through completion candidates.
 do
     lurek.terminal.clearCompletions()
@@ -175,7 +166,6 @@ do
 end
 
 --@api-stub: lurek.terminal.getMaxCols
---@api-stub: lurek.getMaxRows
 -- Querying terminal size limits.
 do
     local maxCols = lurek.terminal.getMaxCols()
@@ -184,8 +174,8 @@ do
     print("max rows = " .. maxRows)
 end
 
---@api-stub: LWidget color and visibility
 -- Widget appearance control.
+--@api-stub: LLabel:setColor
 do
     ---@type LWidget
     local label = lurek.terminal.newLabel(1, 1, "Colored")
@@ -198,8 +188,8 @@ do
     label:setVisible(true)
 end
 
---@api-stub: LWidget enabled and tag
 -- Widget enable state and tagging.
+--@api-stub: LButton:isEnabled
 do
     ---@type LWidget
     local btn = lurek.terminal.newButton(1, 1, 10, 1, "Submit")
@@ -211,8 +201,8 @@ do
     print("tag = " .. btn:getTag())
 end
 
---@api-stub: LWidget list item manipulation
 -- Adding, removing, and querying list items.
+--@api-stub: LList:addItem
 do
     ---@type LWidget
     local list = lurek.terminal.newList(1, 1, 20, 5)
@@ -228,8 +218,8 @@ do
     print("after clear: items = " .. list:getItemCount())
 end
 
---@api-stub: LWidget panel children
 -- Managing panel child widgets.
+--@api-stub: LPanel:addChild
 do
     ---@type LWidget
     local panel = lurek.terminal.newPanel(1, 1, 40, 20)

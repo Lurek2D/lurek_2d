@@ -1,9 +1,6 @@
 --- Raycaster Module Part 2: doors, height maps, lights, sprites, floor/ceiling, scene building, minimap
 
 --@api-stub: lurek.raycaster.newDoorManager
---@api-stub: lurek.addDoor
---@api-stub: lurek.openDoor
---@api-stub: lurek.closeDoor
 -- Door management for raycaster maps.
 do
     ---@type LDoorManager
@@ -24,7 +21,6 @@ do
 end
 
 --@api-stub: LDoorManager:getDoor
---@api-stub: LDoorManager:update cycle
 -- Full door open/close animation cycle.
 do
     ---@type LDoorManager
@@ -55,10 +51,6 @@ do
 end
 
 --@api-stub: lurek.raycaster.newHeightMap
---@api-stub: lurek.setFloor
---@api-stub: lurek.setCeiling
---@api-stub: lurek.floorAt
---@api-stub: lurek.ceilingAt
 -- Height map for variable floor/ceiling heights.
 do
     ---@type LHeightMap
@@ -73,8 +65,8 @@ do
     print("ceiling at 0,0 = " .. hm:ceilingAt(0, 0))
 end
 
---@api-stub: LHeightMap stepped terrain
 -- Creating stepped terrain (staircase).
+--@api-stub: lurek.raycaster.newHeightMap
 do
     ---@type LHeightMap
     local hm = lurek.raycaster.newHeightMap(8, 8)
@@ -133,8 +125,6 @@ do
 end
 
 --@api-stub: lurek.raycaster.newSpriteManager
---@api-stub: lurek.add
---@api-stub: lurek.setPosition
 -- Sprite management for billboard objects in the raycaster.
 do
     ---@type LSpriteManager

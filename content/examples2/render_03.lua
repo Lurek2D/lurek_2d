@@ -1,8 +1,6 @@
 --- Render Module Part 3: shaders, meshes, shapes, OBJ models
 
 --@api-stub: lurek.render.newShader
---@api-stub: lurek.send
---@api-stub: lurek.hasUniform
 -- Creating and using shaders.
 do
     local code = [[
@@ -65,7 +63,6 @@ do
 end
 
 --@api-stub: lurek.render.newMesh
---@api-stub: lurek.draw mesh
 -- Creating and drawing a custom mesh.
 do
     local verts = {
@@ -123,7 +120,6 @@ do
 end
 
 --@api-stub: lurek.render.newShape
---@api-stub: lurek.drawing commands
 -- Retained compound shape with accumulated draw commands.
 do
     ---@type LShape
@@ -179,7 +175,6 @@ do
 end
 
 --@api-stub: lurek.render.loadObj
---@api-stub: lurek.LObjModel methods
 -- Loading and inspecting a 3D OBJ model.
 do
     ---@type LObjModel

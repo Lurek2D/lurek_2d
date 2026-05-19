@@ -11,8 +11,8 @@ do
     print("dimensions = " .. cols .. "x" .. rows)
 end
 
---@api-stub: lurek.terminal.newTerminal (custom size)
 -- Creating a small terminal.
+--@api-stub: lurek.terminal.newTerminal
 do
     ---@type LTerminal
     local small = lurek.terminal.newTerminal(40, 20)

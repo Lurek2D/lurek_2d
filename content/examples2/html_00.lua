@@ -7,15 +7,14 @@ do
     print("doc type = " .. doc:type())
 end
 
---@api-stub: lurek.html.newDocument (with source)
 -- Creates a document from HTML text.
 do
     local doc = lurek.html.newDocument("<div id='root'>Hello</div>")
     print("doc html = " .. doc:getHtml())
 end
 
---@api-stub: lurek.html.newDocument (with options)
 -- Creates a document with CSS and viewport options.
+--@api-stub: lurek.html.newDocument
 do
     local doc = lurek.html.newDocument("<p>styled</p>", {
         css = "p { color: red; }",

@@ -1,6 +1,6 @@
 --- Patterns Module Part 5: integrated multi-pattern examples, real-world scenarios
 
---@api-stub: Integration: Factory + Pool + Observer
+--@api-stub: Integration
 -- Combined patterns: factory creates objects, pool recycles, observer reacts.
 do
     ---@type LFactory
@@ -34,8 +34,8 @@ do
     print("pool available = " .. pool:getAvailableCount())
 end
 
---@api-stub: Integration: FSM + EventBus + Blackboard
 -- Combined patterns: FSM transitions emit events, blackboard stores shared state.
+--@api-stub: LBlackboard:set
 do
     ---@type LBlackboard
     local bb = lurek.patterns.newBlackboard("game")
@@ -75,8 +75,8 @@ do
     print("current state = " .. fsm:getCurrent())
 end
 
---@api-stub: Integration: BehaviorTree + Blackboard + Strategy
 -- BT reads blackboard, strategy provides the algorithm.
+--@api-stub: LBlackboard:set
 do
     ---@type LBlackboard
     local bb = lurek.patterns.newBlackboard("ai")
@@ -128,8 +128,8 @@ do
     print("strategy = " .. tostring(strat:getCurrent()))
 end
 
---@api-stub: Integration: Mediator + Debounce + Funnel
 -- Mediator routes messages, debounce prevents spam, funnel batches.
+--@api-stub: LFunnel:onFlush
 do
     ---@type LMediator
     local med = lurek.patterns.newMediator()
@@ -165,8 +165,8 @@ do
     print("funnel pending = " .. funnel:pendingCount())
 end
 
---@api-stub: Integration: Graph + WeightedRandom + PriorityQueue
 -- Graph stores quest dependencies, weighted random picks rewards, PQ processes quest order.
+--@api-stub: LGraph:nodeCount
 do
     ---@type LPatternGraph
     local quests = lurek.patterns.newGraph(true)
@@ -199,8 +199,8 @@ do
     print("next quest = " .. tostring(next_quest))
 end
 
---@api-stub: Integration: CommandStack + Observer + Map
 -- Undo/redo with change notification and state tracking in map.
+--@api-stub: LMap:set
 do
     ---@type LMap
     local state = lurek.patterns.newMap()
@@ -253,8 +253,8 @@ do
     print("after redo = " .. state:get("x") .. "," .. state:get("y"))
 end
 
---@api-stub: Integration: Ring + Throttle + EventBus (FPS monitor)
 -- Ring stores FPS samples, throttle limits reporting, bus notifies listeners.
+--@api-stub: LEventBus:on
 do
     ---@type LRing
     local fps_ring = lurek.patterns.newRing(60, "fps")
@@ -282,8 +282,8 @@ do
     print("ring avg = " .. fps_ring:average())
 end
 
---@api-stub: Integration: Set + List + Graph (dependency resolver)
 -- Resolve load order using graph traversal with set tracking.
+--@api-stub: LGraph:bfs
 do
     ---@type LPatternGraph
     local deps = lurek.patterns.newGraph(true)

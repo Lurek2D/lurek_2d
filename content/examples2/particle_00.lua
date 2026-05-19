@@ -10,8 +10,8 @@ do
     print("active = " .. tostring(ps:isActive()))
 end
 
---@api-stub: lurek.particle.newSystem (with config)
 -- Creates a configured particle system.
+--@api-stub: lurek.particle.newSystem
 do
     ---@type LParticleSystem
     local ps = lurek.particle.newSystem({

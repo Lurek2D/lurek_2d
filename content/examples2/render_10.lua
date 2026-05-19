@@ -15,7 +15,6 @@ do
     print("drawlayer count was:", count)
 end
 
---@api-stub: lurek.render.draw
 --@api-stub: lurek.render.drawq
 --@api-stub: lurek.render.drawNineSlice
 -- Render draw, drawq, and drawNineSlice.
@@ -35,7 +34,6 @@ do
     print("draw, drawq, drawNineSlice tested")
 end
 
---@api-stub: lurek.render.drawQuadBezier
 --@api-stub: lurek.render.clearStencil
 --@api-stub: lurek.render.currentLayer
 -- Render quad bezier, clear stencil, current layer.

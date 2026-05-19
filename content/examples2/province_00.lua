@@ -1,8 +1,6 @@
 --- Province Module: province maps from PNG, spatial queries, styles, rendering, change tracking
 
 --@api-stub: lurek.province.newFromPng
---@api-stub: lurek.get
---@api-stub: lurek.exists
 -- Create a province registry from a color-coded PNG map.
 do
     ---@type LProvinceRegistry
@@ -233,8 +231,6 @@ do
 end
 
 --@api-stub: lurek.province.setActive
---@api-stub: lurek.getActive
---@api-stub: lurek.remove
 -- Active registry management.
 do
     lurek.province.newFromPng("map_a", "assets/textures/province_map.png")

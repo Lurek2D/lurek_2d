@@ -141,8 +141,8 @@ do
     print("hermite mid = " .. x .. "," .. y)
 end
 
---@api-stub: LHermite:sample (edge cases)
 -- Sampling at t=0 and t=1.
+--@api-stub: lurek.math.hermite
 do
     ---@type LHermite
     local h = lurek.math.hermite(10, 20, 80, 90, 40, 0, -40, 0)

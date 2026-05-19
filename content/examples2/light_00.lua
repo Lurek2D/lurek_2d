@@ -8,8 +8,8 @@ do
     print("radius = " .. light:getRadius())
 end
 
---@api-stub: lurek.light.newLight (with opts)
 -- Creates a light with full options table.
+--@api-stub: lurek.light.newLight
 do
     local light = lurek.light.newLight(100, 100, 150, {
         color = {1, 0.8, 0.5, 1},
@@ -22,7 +22,6 @@ do
 end
 
 --@api-stub: lurek.light.setEnabled
---@api-stub: lurek.isEnabled
 -- Enables or disables the light world.
 do
     lurek.light.setEnabled(true)
@@ -30,7 +29,6 @@ do
 end
 
 --@api-stub: lurek.light.setAmbient
---@api-stub: lurek.getAmbient
 -- Sets and queries global ambient color.
 do
     lurek.light.setAmbient(0.1, 0.1, 0.15, 1)
@@ -48,7 +46,6 @@ do
 end
 
 --@api-stub: lurek.light.getMaxLights
---@api-stub: lurek.setMaxLights
 -- Configures max light slots.
 do
     lurek.light.setMaxLights(128)

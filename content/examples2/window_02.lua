@@ -1,39 +1,7 @@
 --- Window Part 2: full lurek.window module + LGuiWindow coverage
 
 --@api-stub: lurek.window.close
---@api-stub: lurek.window.flash
 --@api-stub: lurek.window.focus
---@api-stub: lurek.window.fromPixels
---@api-stub: lurek.window.getCurrentDisplay
---@api-stub: lurek.window.getDPIScale
---@api-stub: lurek.window.getDesktopDimensions
---@api-stub: lurek.window.getDisplayCount
---@api-stub: lurek.window.getDisplayName
---@api-stub: lurek.window.getDisplayOrientation
---@api-stub: lurek.window.getDisplays
---@api-stub: lurek.window.getFullscreen
---@api-stub: lurek.window.getGameHeight
---@api-stub: lurek.window.getGameWidth
---@api-stub: lurek.window.getMode
---@api-stub: lurek.window.getNativeDPIScale
---@api-stub: lurek.window.getPixelDimensions
---@api-stub: lurek.window.getPosition
---@api-stub: lurek.window.getScaleInfo
---@api-stub: lurek.window.getScaleMode
---@api-stub: lurek.window.getSystemTheme
---@api-stub: lurek.window.getTitle
---@api-stub: lurek.window.getVSync
---@api-stub: lurek.window.isMaximized
---@api-stub: lurek.window.isMinimized
---@api-stub: lurek.window.maximize
---@api-stub: lurek.window.minimize
---@api-stub: lurek.window.restore
---@api-stub: lurek.window.setFullscreen
---@api-stub: lurek.window.setMode
---@api-stub: lurek.window.setScaleMode
---@api-stub: lurek.window.setTitle
---@api-stub: lurek.window.setVSync
---@api-stub: lurek.window.toPixels
 -- lurek.window full API: display info, title, mode, fullscreen, scale, position, icon.
 do
     local title = lurek.window.getTitle()

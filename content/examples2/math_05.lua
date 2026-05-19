@@ -209,7 +209,6 @@ do
 end
 
 --@api-stub: lurek.math.hslToRgb
---@api-stub: lurek.rgbToHsl
 -- HSL ↔ RGB conversion.
 do
     local r, g, b, a = lurek.math.hslToRgb(0.0, 1.0, 0.5)
@@ -219,7 +218,6 @@ do
 end
 
 --@api-stub: lurek.math.gammaToLinear
---@api-stub: lurek.linearToGamma
 -- Gamma ↔ linear color space conversion.
 do
     local lin = lurek.math.gammaToLinear(0.5)
@@ -237,8 +235,6 @@ do
 end
 
 --@api-stub: lurek.math.inBack
---@api-stub: lurek.outBack
---@api-stub: lurek.inOutBack (individual easings)
 -- Direct easing function calls.
 do
     local a = lurek.math.inBack(0.5)
@@ -248,8 +244,6 @@ do
 end
 
 --@api-stub: lurek.math.inBounce
---@api-stub: lurek.outBounce
---@api-stub: lurek.inOutBounce
 -- Bounce easing functions.
 do
     local a = lurek.math.inBounce(0.7)

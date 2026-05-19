@@ -54,7 +54,6 @@ do
 end
 
 --@api-stub: LWorld:newBody
---@api-stub: LWorld:LBody basic properties
 -- Creating dynamic bodies and reading position/velocity.
 do
     ---@type LWorld
@@ -79,9 +78,7 @@ do
     print("ball w = " .. ball:getWidth() .. " h = " .. ball:getHeight())
 end
 
---@api-stub: LWorld:newBody static
 --@api-stub: LWorld:kinematic
---@api-stub: LWorld:sensor types
 -- Different body types.
 do
     ---@type LWorld

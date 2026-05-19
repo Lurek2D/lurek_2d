@@ -1,7 +1,6 @@
 --- Render Module Part 3: images, canvases, quads, sprite batches, draw, drawq, drawMany, nine-slice
 
 --@api-stub: lurek.render.newImage
---@api-stub: lurek.draw
 -- Loading and drawing images.
 do
     ---@type LImage
@@ -29,8 +28,8 @@ do
     print("released = " .. tostring(released))
 end
 
---@api-stub: lurek.render.newImage from LImageData
 -- Creating an image from pixel data.
+--@api-stub: LImageData:mapPixels
 do
     ---@type LImageData
     local data = lurek.image.newImageData(32, 32)
@@ -44,9 +43,6 @@ do
 end
 
 --@api-stub: lurek.render.newCanvas
---@api-stub: lurek.setCanvas
---@api-stub: lurek.getCanvas
---@api-stub: lurek.draw canvas
 -- Off-screen canvas rendering.
 do
     ---@type LCanvas
@@ -79,8 +75,6 @@ do
 end
 
 --@api-stub: lurek.render.getCanvas
---@api-stub: lurek.getCanvasSize
---@api-stub: lurek.resetCanvas
 -- Canvas query and reset.
 do
     ---@type LCanvas
@@ -96,7 +90,6 @@ do
 end
 
 --@api-stub: lurek.render.newQuad
---@api-stub: lurek.drawq
 -- Quad-based sub-region drawing for sprite sheets.
 do
     ---@type LImage
@@ -128,7 +121,6 @@ do
 end
 
 --@api-stub: lurek.render.newSpriteBatch
---@api-stub: lurek.draw batch
 -- Batched sprite rendering.
 do
     ---@type LImage
@@ -175,7 +167,6 @@ do
 end
 
 --@api-stub: lurek.render.newNineSlice
---@api-stub: lurek.drawNineSlice
 -- 9-slice scalable UI panel rendering.
 do
     ---@type LImage
@@ -193,8 +184,6 @@ do
 end
 
 --@api-stub: lurek.render.newDrawLayer
---@api-stub: lurek.queue
---@api-stub: lurek.flush
 -- Z-ordered draw callback layers.
 do
     ---@type LDrawLayer

@@ -24,7 +24,6 @@ end
 
 --@api-stub: lurek.render.getFontHeight
 --@api-stub: lurek.render.getFontLineHeight
---@api-stub: lurek.render.getLineWidth
 -- Render font height, line height, and current line width.
 do
     local font = lurek.render.getDefaultFont(14)

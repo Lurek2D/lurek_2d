@@ -1,4 +1,3 @@
---@api-stub: lurek.log.addSink
 --@api-stub: lurek.log.setLevel
 -- Log sinks and dynamic level changes.
 do

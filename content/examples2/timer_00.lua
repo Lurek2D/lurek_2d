@@ -47,7 +47,6 @@ do
 end
 
 --@api-stub: lurek.timer.getSmoothedDelta
---@api-stub: lurek.setSmoothingFactor
 -- Exponentially smoothed delta.
 do
     lurek.timer.setSmoothingFactor(0.1)
@@ -59,7 +58,6 @@ do
 end
 
 --@api-stub: lurek.timer.getPhysicsDelta
---@api-stub: lurek.setPhysicsDelta
 -- Fixed physics timestep configuration.
 do
     local pdt = lurek.timer.getPhysicsDelta()
@@ -70,7 +68,6 @@ do
 end
 
 --@api-stub: lurek.timer.getPhysicsMaxSteps
---@api-stub: lurek.setPhysicsMaxSteps
 -- Physics step limit per frame.
 do
     local max = lurek.timer.getPhysicsMaxSteps()
@@ -279,7 +276,6 @@ do
 end
 
 --@api-stub: lurek.timer.afterReal
---@api-stub: lurek.tickRealTimers
 -- Real-time (unscaled) timer.
 do
     lurek.timer.afterReal(1.0, function()

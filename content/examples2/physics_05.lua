@@ -128,14 +128,6 @@ do
     print("got_body=" .. tostring(b2 ~= nil))
 end
 
---@api-stub: lurek.physics.getCollisions
--- Get all active collision pairs from a world.
-do
-    local world = lurek.physics.newWorld(0, 9.8)
-    local cols = lurek.physics.getCollisions(world)
-    print("collisions=" .. #cols)
-end
-
 --@api-stub: lurek.physics.newBody
 -- Free-function body creation.
 do
@@ -144,8 +136,8 @@ do
     print("body_id=" .. b:getId())
 end
 
---@api-stub: lurek.physics.newChainShape
 -- Create a chain shape.
+--@api-stub: LChainShape:getType
 do
     local chain = lurek.physics.newChainShape(false, 0, 0, 10, 0, 10, 10, 0, 10)
     print("chain_type=" .. chain:getType())
