@@ -31,7 +31,7 @@
 | Topic | Link |
 |---|---|
 | Lua API reference | [../../docs/api/lurek.md](../../docs/api/lurek.md) |
-| Project reference | [../../wiki/Project-Reference.md](../../wiki/Project-Reference.md) |
+| Project overview | [../../README.md](../../README.md) |
 | Contributor handbook | [../../docs/handbook.md](../../docs/handbook.md) |
 | Test suite overview | [../../tests/README.md](../../tests/README.md) |
 

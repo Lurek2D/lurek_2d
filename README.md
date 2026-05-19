@@ -35,40 +35,85 @@
 | 🔌 **Extensible** | Pure-Lua libraries, mod hooks, plugins, and AI-assisted workflows. |
 | 🌍 **Cross Platform** | Cross-platform desktop targets with separate engine/runtime and tooling layers. |
 
-## Start Here
+## For Engine Developers
 
-- [Wiki home](https://github.com/LurekDude/lurek_2d/wiki) — GitHub wiki landing page from the separate wiki repository.
-- [Getting started wiki](https://github.com/LurekDude/lurek_2d/wiki/Getting-Started) — first steps, orientation, and initial commands.
-- [Lurek API reference](docs/api/lurek.md) — full public `lurek.*` API surface.
-- [Rust API reference](docs/api/rust.md) — engine internals for contributors.
-- [Library API reference](docs/api/library.md) — generated reference for the pure-Lua libraries.
-- [Philosophy](docs/architecture/philosophy.md) — core rules, constraints, and design assumptions.
-- [Architecture index](docs/architecture/README.md) — navigation across all architecture files.
-- [Module specs index](docs/specs/README.md) — canonical per-module contract index.
-- [Contributor handbook](docs/handbook.md) — onboarding, build/run flow, docs workflow, and quality gates.
-- [Changelog](docs/CHANGELOG.md) — current project history.
+These links are for people extending the Rust engine, bindings, tooling, docs, tests, and release flow.
 
-## Project Guides
+| Area | Link | Why it matters |
+|---|---|---|
+| Philosophy and constraints | [docs/architecture/philosophy.md](docs/architecture/philosophy.md) | Source of truth for architecture rules, platform scope, and binding constraints. |
+| Engine architecture | [docs/architecture/engine-architecture.md](docs/architecture/engine-architecture.md) | Module groups, runtime composition, boot flow, and dependency direction. |
+| CAG and AI workflow | [docs/architecture/cag-system.md](docs/architecture/cag-system.md) | How AI-assisted engine work is structured in the main repository. |
+| VS Code extension architecture | [docs/architecture/vscode-architecture.md](docs/architecture/vscode-architecture.md) | How the extension, debug bridge, MCP, and webview tooling fit together. |
+| Rust API reference | [docs/api/rust.md](docs/api/rust.md) | Generated contributor-facing Rust API surface. |
+| Specs index | [docs/specs/README.md](docs/specs/README.md) | Canonical module-by-module contract list. |
+| Build, onboarding, and contribution | [docs/handbook.md](docs/handbook.md) · [CONTRIBUTING.md](CONTRIBUTING.md) | First setup, quality gates, contribution rules, and engine workflow. |
+| Tests and quality gates | [tests/README.md](tests/README.md) · [docs/architecture/test-framework.md](docs/architecture/test-framework.md) | Rust/Lua test model and the Lua-first placement rules. |
+| AI-assisted engine work in practice | [extensions/vscode/README.md](extensions/vscode/README.md) · [.github/agents/README.md](.github/agents/README.md) | Extension capabilities, local AI workflow, and the engine-side agent roster. |
 
-- [Examples guide](content/examples/README.md) — how to use the single-file API examples under `content/examples/`.
-- [GitHub wiki modules](https://github.com/LurekDude/lurek_2d/wiki/Modules) — generated module navigation in the separate wiki repository.
-- [Library API reference](docs/api/library.md) — public surface of the bundled pure-Lua libraries.
-- [Test suite overview](tests/README.md) — Rust/Lua test layout, commands, and coverage rules.
-- [VS Code toolkit](extensions/vscode/README.md) — extension features, installation, and editor workflow.
-- [CAG system](docs/architecture/cag-system.md) — agent, skill, prompt, and validator model for AI-assisted work.
+## For Game Developers
 
-## Architecture Files
+These links are for people making Lua games with Lurek, not changing engine internals.
 
-- [Architecture index](docs/architecture/README.md) — reading order and cross-links for the architecture set.
-- [Philosophy](docs/architecture/philosophy.md) — constraints, design doctrine, and source-of-truth rules.
-- [Engine architecture](docs/architecture/engine-architecture.md) — module groups, runtime composition, boot, and frame model.
-- [Render command architecture](docs/architecture/render-command-architecture.md) — draw-command flow and renderer structure.
-- [Test framework](docs/architecture/test-framework.md) — Lua-first test strategy and test placement rules.
-- [VS Code architecture](docs/architecture/vscode-architecture.md) — extension services, debug bridge, and MCP integration.
-- [CAG system](docs/architecture/cag-system.md) — agent graph file types, routing, and validator rules.
-- [Lua API file standard](docs/architecture/lua-api-file-standard.md) — conventions for `src/lua_api/*_api.rs`.
-- [Plugins](docs/architecture/plugins.md) — plugin boundary and future split strategy.
-- [TOGAF mapping](docs/architecture/togaf.md) — TOGAF-oriented architecture view of the repo.
+| Area | Link | Why it matters |
+|---|---|---|
+| GitHub wiki home | [Lurek2D Wiki](https://github.com/LurekDude/lurek_2d/wiki) | Main game-dev landing page in the GitHub wiki. |
+| Getting started | [Getting Started](https://github.com/LurekDude/lurek_2d/wiki/Getting-Started) | Fast orientation from an empty folder to a runnable game. |
+| First game | [First Game](https://github.com/LurekDude/lurek_2d/wiki/First-Game) | Minimal `main.lua` example and next steps. |
+| Lua API reference | [docs/api/lurek.md](docs/api/lurek.md) | Full public `lurek.*` API surface. |
+| Modules map | [Modules](https://github.com/LurekDude/lurek_2d/wiki/Modules) | Browse the engine surface by module and namespace. |
+| Examples | [content/examples/README.md](content/examples/README.md) · [Examples wiki](https://github.com/LurekDude/lurek_2d/wiki/Examples) | Single-file examples and example-browser view. |
+| Reference games and demos | [content/games/README.md](content/games/README.md) · [Reference Games wiki](https://github.com/LurekDude/lurek_2d/wiki/Reference-Games) | Larger playable projects and demo-style samples. |
+| Pure-Lua libraries | [docs/api/library.md](docs/api/library.md) · [Lunasome wiki](https://github.com/LurekDude/lurek_2d/wiki/Lunasome) | Reusable pure-Lua gameplay modules built on top of `lurek.*`. |
+| VS Code + IntelliSense | [extensions/vscode/README.md](extensions/vscode/README.md) | IntelliSense, run/debug flow, asset helpers, and extension-side tooling. |
+| AI-assisted game development | [extensions/vscode/cag/game-dev/README.md](extensions/vscode/cag/game-dev/README.md) | Local AI workflow layer for people making games with Lurek. |
+
+## Ways To Work With Lurek
+
+Lurek does not force one workflow. You can mix engine work, Lua game work, VS Code tooling, local AI, and pure-Lua libraries.
+
+| Workflow | What it looks like | Main links |
+|---|---|---|
+| Engine only | Rust + Cargo + docs, no extension required | [docs/handbook.md](docs/handbook.md) · [docs/architecture/engine-architecture.md](docs/architecture/engine-architecture.md) |
+| Engine + VS Code | Engine work with tasks, debug bridge, editor tooling, and extension integration | [extensions/vscode/README.md](extensions/vscode/README.md) · [docs/architecture/vscode-architecture.md](docs/architecture/vscode-architecture.md) |
+| Engine + local AI | Main repo CAG, local agents, prompts, validators, and MCP-assisted workflow | [docs/architecture/cag-system.md](docs/architecture/cag-system.md) · [.github/agents/README.md](.github/agents/README.md) |
+| Lua game scripts only | `main.lua`, `conf.lua`, `assets/`, examples, and the public `lurek.*` API | [docs/api/lurek.md](docs/api/lurek.md) · [Getting Started](https://github.com/LurekDude/lurek_2d/wiki/Getting-Started) |
+| Lua game scripts + VS Code IntelliSense | Lua authoring with hover docs, completions, commands, and debug flow | [extensions/vscode/README.md](extensions/vscode/README.md) |
+| Lua game scripts + local AI | Game-dev CAG layer for agents, prompts, templates, and task workflows | [extensions/vscode/cag/game-dev/README.md](extensions/vscode/cag/game-dev/README.md) |
+| Built-in editors and tools | Tilemap, particle, audio, UI, preview, and other extension webviews | [extensions/vscode/README.md](extensions/vscode/README.md) |
+| Pure-Lua libraries (Lunasome) | Reusable Lua modules in `library/`, built without touching engine Rust code | [docs/api/library.md](docs/api/library.md) · [tests/lua/library/README.md](tests/lua/library/README.md) |
+
+## Use Cases
+
+Lurek fits best where a 2D desktop runtime, Lua scripting, and AI-assisted workflow matter more than a monolithic editor.
+
+| Use case | Why Lurek fits |
+|---|---|
+| Education | Good for teaching Lua gameplay code, engine boundaries, tests, and architecture in one repo. |
+| Game jams | Fast path from empty folder to `main.lua`, examples, templates, and playable demos. |
+| Indie 2D desktop games | Rendering, audio, input, physics, save, UI, and tooling are already present. |
+| Hackathons and prototypes | Short setup path, lots of examples, and Lua-first iteration speed. |
+| Demo scene and experiments | Rendering, postfx, raycaster, globe, light, and compute modules support visual showcases. |
+| Small local tools and apps | UI, HTML, serialisation, filesystem, and runtime scripting support utility-style apps. |
+| Simulation and strategy sandboxes | Province, globe, procgen, graph, dataframe, and AI modules support systems-heavy work. |
+| Local compute-heavy experiments | `compute`, `dataframe`, `serial`, `procgen`, and visualisation modules work well for local runs. |
+| Moddable Lua systems | Public `lurek.*` API plus pure-Lua libraries make it natural to expose systems to scripts. |
+
+## Ideas And Future Directions
+
+The [ideas tree](https://github.com/LurekDude/lurek_2d/tree/main/ideas) is where future directions, experiments, and longer-horizon plans already live.
+
+| Area | Link | Why it matters |
+|---|---|---|
+| Ideas root | [ideas/](https://github.com/LurekDude/lurek_2d/tree/main/ideas) | Central backlog of experiments, architecture notes, and future directions. |
+| Runtime modes | [ideas/runtime-modes-plan.md](ideas/runtime-modes-plan.md) | Shows how runtime variants can evolve beyond the current flow. |
+| Province economy loop | [ideas/province-economy-loop.md](ideas/province-economy-loop.md) | Good example of systems-heavy game design direction inside the repo. |
+| Linux build and distribution | [ideas/linux-build-and-distribution-guide.md](ideas/linux-build-and-distribution-guide.md) | Platform packaging direction beyond the current default Windows flow. |
+| Rust ideas | [ideas/rust/](https://github.com/LurekDude/lurek_2d/tree/main/ideas/rust) | Engine-facing ideas and implementation notes. |
+| Simulation ideas | [ideas/simulation/](https://github.com/LurekDude/lurek_2d/tree/main/ideas/simulation) | Simulation-heavy directions and subsystem sketches. |
+| Plugin and extension ideas | [ideas/plugins/](https://github.com/LurekDude/lurek_2d/tree/main/ideas/plugins) · [ideas/extension/](https://github.com/LurekDude/lurek_2d/tree/main/ideas/extension) | Future plugin and editor/tooling directions. |
+
+If you want to contribute to the future shape of Lurek, start from an idea, turn it into a spec, example, demo, test, or implementation slice, then follow [docs/handbook.md](docs/handbook.md) and [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ---
 
