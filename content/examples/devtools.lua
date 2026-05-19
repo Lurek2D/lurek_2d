@@ -4,6 +4,7 @@
 
 --- DevTools Module Part 1: Logging, Profiling, Frame Stats, File Watches, Console, Inspector
 
+
 --@api-stub: lurek.devtools.log
 -- Adds a message at an explicit severity level.
 do
@@ -365,6 +366,7 @@ do
 end
 
 --- DevTools Module Part 2: LFileWatcher and LReplConsole Methods
+
 
 --@api-stub: LFileWatcher:onChanged
 -- Sets the callback invoked when a watched file changes.

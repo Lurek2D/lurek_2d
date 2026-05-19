@@ -1,0 +1,9 @@
+max_particles = 100
+emission_rate = 30.0
+lifetime_min = 0.5
+lifetime_max = 2.0
+speed_min = 30.0
+speed_max = 80.0
+direction = 0.0
+spread = 1.57
+gravity_y = 200.0

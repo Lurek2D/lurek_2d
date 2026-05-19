@@ -4,12 +4,21 @@
 
 --- Log Module: structured logging, sinks, and memory drain
 
+
 --@api-stub: lurek.log.debug
 -- Emits a debug-level message.
 do
     lurek.log.debug("tick completed")
     lurek.log.debug("player moved", "movement")
     print("debug logged")
+
+    -- Reads and drains entries from memory sink. Focus: debug.
+    local id = lurek.log.addSink({type = "memory", level = "debug", capacity = 50})
+    lurek.log.debug("ephemeral")
+    local entries = lurek.log.readMemory(id, true)
+    print("drained " .. #entries .. " entries")
+    local after = lurek.log.readMemory(id, false)
+    print("after drain = " .. #after)
 end
 
 --@api-stub: lurek.log.info
@@ -92,20 +101,17 @@ do
     lurek.log.setLevel(prev)
 end
 
--- Adds a console sink.
 --@api-stub: lurek.log.addSink
+-- Adds a console sink.
 do
     local id = lurek.log.addSink({
-        type = "console",
+        type = "memory",
         level = "debug",
-        format = "pretty",
+        capacity = 10,
     })
-    print("console sink id = " .. id)
-end
+    print("memory sink id = " .. id)
 
--- Adds a file sink with path.
---@api-stub: lurek.log.addSink
-do
+    -- Adds a file sink with path.
     local id = lurek.log.addSink({
         type = "file",
         level = "info",
@@ -113,22 +119,16 @@ do
         path = "logs/game.log",
     })
     print("file sink id = " .. id)
-end
 
--- Adds a memory ring buffer sink.
---@api-stub: lurek.log.addSink
-do
+    -- Adds a memory ring buffer sink.
     local id = lurek.log.addSink({
         type = "memory",
         level = "debug",
         capacity = 100,
     })
     print("memory sink id = " .. id)
-end
 
--- Adds a callback-based sink.
---@api-stub: lurek.log.addSink
-do
+    -- Adds a callback-based sink.
     local id = lurek.log.addSink({
         type = "callback",
         level = "warn",
@@ -137,6 +137,14 @@ do
         end,
     })
     print("callback sink id = " .. id)
+
+    -- Reads and drains entries from memory sink. Focus: addSink.
+    local id = lurek.log.addSink({type = "memory", level = "debug", capacity = 50})
+    lurek.log.debug("ephemeral")
+    local entries = lurek.log.readMemory(id, true)
+    print("drained " .. #entries .. " entries")
+    local after = lurek.log.readMemory(id, false)
+    print("after drain = " .. #after)
 end
 
 --@api-stub: lurek.log.removeSink
@@ -174,13 +182,8 @@ do
     for _, e in ipairs(entries) do
         print("  [" .. e.level .. "] " .. e.message)
     end
-end
 
--- Reads and drains entries from memory sink.
---@api-stub: lurek.log.addSink
---@api-stub: lurek.log.debug
---@api-stub: lurek.log.readMemory
-do
+    -- Reads and drains entries from memory sink. Focus: readMemory.
     local id = lurek.log.addSink({type = "memory", level = "debug", capacity = 50})
     lurek.log.debug("ephemeral")
     local entries = lurek.log.readMemory(id, true)
@@ -202,7 +205,7 @@ end
 -- Log sinks and dynamic level changes.
 do
     lurek.log.setLevel("debug")
-    lurek.log.addSink({ level = "debug", callback = function(msg) print(msg) end })
+    lurek.log.addSink({ type = "callback", level = "debug", callback = function(msg) print(msg.message) end })
     lurek.log.setLevel("info")
     lurek.log.setLevel("warn")
     lurek.log.setLevel("error")

@@ -4,6 +4,7 @@
 
 --- Effect Module Part 1: Factory functions, LPostFxEffect, LPostFxStack
 
+
 --@api-stub: lurek.effect.newEffect
 -- Creates a built-in post-processing effect by type name.
 do
@@ -28,7 +29,7 @@ end
 --@api-stub: lurek.effect.newPresetStack
 -- Creates a named preset post-processing stack.
 do
-    local stack = lurek.effect.newPresetStack("retro", 320, 240)
+    local stack = lurek.effect.newPresetStack("retro_tv", 320, 240)
     print("preset stack effects = " .. stack:getEffectCount())
 end
 
@@ -402,6 +403,7 @@ end
 
 --- Effect Module Part 2: LPostFxStack feedback/capture, LImageEffect, LOverlay triggers and state
 
+
 --@api-stub: LPostFxStack:dedup
 -- Removes duplicate effect handles while preserving first occurrences.
 do
@@ -734,6 +736,7 @@ do
 end
 
 --- Effect Module Part 3: LOverlay fog, heat haze, vignette, film grain, clouds, weather, wind, lightning, render
+
 
 --@api-stub: LOverlay:setFogEnabled
 -- Enables or disables overlay fog rendering.
@@ -1121,6 +1124,7 @@ end
 
 --- Effect Module Part 4: LScreenTransition
 
+
 --@api-stub: LScreenTransition:play
 -- Starts this screen transition forward.
 do
@@ -1213,10 +1217,31 @@ end
 
 --- Effect Module: LOverlay extended methods
 
+
 --@api-stub: LOverlay:drawToImage
+-- Overlay image export and ambient color. Focus: drawToImage.
+do
+    local ov = lurek.effect.newOverlay(800, 600)
+    local r, g, b, a = ov:getAmbientColor()
+    print("ambient", r, g, b, a)
+    ov:setCustomShader("chromatic")
+    local img = ov:drawToImage(800, 600)
+    print("img type = " .. tostring(img))
+end
+
 --@api-stub: LOverlay:getAmbientColor
+-- Overlay image export and ambient color. Focus: getAmbientColor.
+do
+    local ov = lurek.effect.newOverlay(800, 600)
+    local r, g, b, a = ov:getAmbientColor()
+    print("ambient", r, g, b, a)
+    ov:setCustomShader("chromatic")
+    local img = ov:drawToImage(800, 600)
+    print("img type = " .. tostring(img))
+end
+
 --@api-stub: LOverlay:setCustomShader
--- Overlay image export and ambient color.
+-- Overlay image export and ambient color. Focus: setCustomShader.
 do
     local ov = lurek.effect.newOverlay(800, 600)
     local r, g, b, a = ov:getAmbientColor()
@@ -1227,8 +1252,19 @@ do
 end
 
 --@api-stub: LOverlay:getTimeOfDay
+-- Time-of-day lighting control on an overlay. Focus: getTimeOfDay.
+do
+    local ov = lurek.effect.newOverlay(800, 600)
+    local tod = ov:getTimeOfDay()
+    print("time_of_day = " .. tostring(tod))
+    ov:setTimeOfDay(0.5)
+    ov:setTimeOfDay(0.0)
+    ov:setTimeOfDay(1.0)
+    print("time_of_day set")
+end
+
 --@api-stub: LOverlay:setTimeOfDay
--- Time-of-day lighting control on an overlay.
+-- Time-of-day lighting control on an overlay. Focus: setTimeOfDay.
 do
     local ov = lurek.effect.newOverlay(800, 600)
     local tod = ov:getTimeOfDay()
@@ -1240,9 +1276,31 @@ do
 end
 
 --@api-stub: LOverlay:getWater
+-- Water configuration on overlay. Focus: getWater.
+do
+    local ov = lurek.effect.newOverlay(800, 600)
+    local water = ov:getWater()
+    print("water = " .. tostring(water))
+    ov:setWater(0.5, 2.0, 1.0)
+    ov:setWaterTint(0.1, 0.4, 0.8, 0.9)
+    ov:setWaterTint(0.0, 0.0, 0.0, 0.5)
+    print("water configured")
+end
+
 --@api-stub: LOverlay:setWater
+-- Water configuration on overlay. Focus: setWater.
+do
+    local ov = lurek.effect.newOverlay(800, 600)
+    local water = ov:getWater()
+    print("water = " .. tostring(water))
+    ov:setWater(0.5, 2.0, 1.0)
+    ov:setWaterTint(0.1, 0.4, 0.8, 0.9)
+    ov:setWaterTint(0.0, 0.0, 0.0, 0.5)
+    print("water configured")
+end
+
 --@api-stub: LOverlay:setWaterTint
--- Water configuration on overlay.
+-- Water configuration on overlay. Focus: setWaterTint.
 do
     local ov = lurek.effect.newOverlay(800, 600)
     local water = ov:getWater()
@@ -1254,9 +1312,29 @@ do
 end
 
 --@api-stub: LOverlay:pullAmbientFromLight
+-- Overlay-light ambient synchronization. Focus: pullAmbientFromLight.
+do
+    local ov = lurek.effect.newOverlay(800, 600)
+    ov:pullAmbientFromLight()
+    ov:pushAmbientToLight()
+    ov:syncAmbientWithLight("avg")
+    ov:syncAmbientWithLight("light")
+    print("ambient synced")
+end
+
 --@api-stub: LOverlay:pushAmbientToLight
+-- Overlay-light ambient synchronization. Focus: pushAmbientToLight.
+do
+    local ov = lurek.effect.newOverlay(800, 600)
+    ov:pullAmbientFromLight()
+    ov:pushAmbientToLight()
+    ov:syncAmbientWithLight("avg")
+    ov:syncAmbientWithLight("light")
+    print("ambient synced")
+end
+
 --@api-stub: LOverlay:syncAmbientWithLight
--- Overlay-light ambient synchronization.
+-- Overlay-light ambient synchronization. Focus: syncAmbientWithLight.
 do
     local ov = lurek.effect.newOverlay(800, 600)
     ov:pullAmbientFromLight()

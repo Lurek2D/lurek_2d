@@ -4,6 +4,7 @@
 
 --- Network Module Part 1: LNetworkHost — server, client, peer management
 
+
 --@api-stub: lurek.network.newServer
 -- Creates a server host.
 do
@@ -65,8 +66,19 @@ do
 end
 
 --@api-stub: LNetworkHost:send
+-- Sends data to peers. Focus: send.
+do
+    ---@type LNetworkHost
+    local server = lurek.network.newServer({port = 7779, maxPeers = 8, channels = 2})
+    -- Would send to connected peer:
+    -- server:send(1, 0, "hello", true)
+    -- server:broadcast(0, "world", false)
+    print("send/broadcast ready, channels = " .. server:getChannelLimit())
+    server:destroy()
+end
+
 --@api-stub: LNetworkHost:broadcast
--- Sends data to peers.
+-- Sends data to peers. Focus: broadcast.
 do
     ---@type LNetworkHost
     local server = lurek.network.newServer({port = 7779, maxPeers = 8, channels = 2})
@@ -78,8 +90,18 @@ do
 end
 
 --@api-stub: LNetworkHost:getConnectedPeerCount
+-- Queries connected peers. Focus: getConnectedPeerCount.
+do
+    ---@type LNetworkHost
+    local server = lurek.network.newServer({port = 7780, maxPeers = 4})
+    print("connected = " .. server:getConnectedPeerCount())
+    local ids = server:getConnectedPeerIds()
+    print("peer ids = " .. #ids)
+    server:destroy()
+end
+
 --@api-stub: LNetworkHost:getConnectedPeerIds
--- Queries connected peers.
+-- Queries connected peers. Focus: getConnectedPeerIds.
 do
     ---@type LNetworkHost
     local server = lurek.network.newServer({port = 7780, maxPeers = 4})
@@ -90,9 +112,33 @@ do
 end
 
 --@api-stub: LNetworkHost:getPeerState
+-- Peer info queries. Focus: getPeerState.
+do
+    ---@type LNetworkHost
+    local server = lurek.network.newServer({port = 7781, maxPeers = 4})
+    -- With a connected peer_id=1:
+    -- print(server:getPeerState(1))
+    -- print(server:getPeerAddress(1))
+    -- print(server:getRoundTripTime(1))
+    print("peer queries ready")
+    server:destroy()
+end
+
 --@api-stub: LNetworkHost:getPeerAddress
+-- Peer info queries. Focus: getPeerAddress.
+do
+    ---@type LNetworkHost
+    local server = lurek.network.newServer({port = 7781, maxPeers = 4})
+    -- With a connected peer_id=1:
+    -- print(server:getPeerState(1))
+    -- print(server:getPeerAddress(1))
+    -- print(server:getRoundTripTime(1))
+    print("peer queries ready")
+    server:destroy()
+end
+
 --@api-stub: LNetworkHost:getRoundTripTime
--- Peer info queries.
+-- Peer info queries. Focus: getRoundTripTime.
 do
     ---@type LNetworkHost
     local server = lurek.network.newServer({port = 7781, maxPeers = 4})
@@ -120,8 +166,18 @@ do
 end
 
 --@api-stub: LNetworkHost:setBandwidthLimit
+-- Bandwidth configuration. Focus: setBandwidthLimit.
+do
+    ---@type LNetworkHost
+    local server = lurek.network.newServer({port = 7783, maxPeers = 4})
+    server:setBandwidthLimit(100000, 50000)
+    local bw = server:getBandwidthLimit()
+    print("bw in=" .. bw.incoming .. " out=" .. bw.outgoing)
+    server:destroy()
+end
+
 --@api-stub: LNetworkHost:getBandwidthLimit
--- Bandwidth configuration.
+-- Bandwidth configuration. Focus: getBandwidthLimit.
 do
     ---@type LNetworkHost
     local server = lurek.network.newServer({port = 7783, maxPeers = 4})
@@ -142,9 +198,33 @@ do
 end
 
 --@api-stub: LNetworkHost:disconnect
+-- Disconnection methods. Focus: disconnect.
+do
+    ---@type LNetworkHost
+    local host = lurek.network.newHost({addr = "0.0.0.0:7785", maxPeers = 4})
+    -- With peer_id=1:
+    -- host:disconnect(1, 0)
+    -- host:disconnectLater(1, 0)
+    -- host:disconnectNow(1, 0)
+    print("disconnect methods ready")
+    host:destroy()
+end
+
 --@api-stub: LNetworkHost:disconnectLater
+-- Disconnection methods. Focus: disconnectLater.
+do
+    ---@type LNetworkHost
+    local host = lurek.network.newHost({addr = "0.0.0.0:7785", maxPeers = 4})
+    -- With peer_id=1:
+    -- host:disconnect(1, 0)
+    -- host:disconnectLater(1, 0)
+    -- host:disconnectNow(1, 0)
+    print("disconnect methods ready")
+    host:destroy()
+end
+
 --@api-stub: LNetworkHost:disconnectNow
--- Disconnection methods.
+-- Disconnection methods. Focus: disconnectNow.
 do
     ---@type LNetworkHost
     local host = lurek.network.newHost({addr = "0.0.0.0:7785", maxPeers = 4})
@@ -157,9 +237,31 @@ do
 end
 
 --@api-stub: LNetworkHost:flush
+-- Utility methods. Focus: flush.
+do
+    ---@type LNetworkHost
+    local host = lurek.network.newServer({port = 7786, maxPeers = 4})
+    host:flush()
+    -- host:ping(1)
+    -- host:resetPeer(1)
+    print("utility methods ready")
+    host:destroy()
+end
+
 --@api-stub: LNetworkHost:ping
+-- Utility methods. Focus: ping.
+do
+    ---@type LNetworkHost
+    local host = lurek.network.newServer({port = 7786, maxPeers = 4})
+    host:flush()
+    -- host:ping(1)
+    -- host:resetPeer(1)
+    print("utility methods ready")
+    host:destroy()
+end
+
 --@api-stub: LNetworkHost:resetPeer
--- Utility methods.
+-- Utility methods. Focus: resetPeer.
 do
     ---@type LNetworkHost
     local host = lurek.network.newServer({port = 7786, maxPeers = 4})
@@ -171,6 +273,7 @@ do
 end
 
 --- Network Module Part 2: LNetworkRuntime, rooms, lobbies, pack/unpack, prediction
+
 
 --@api-stub: lurek.network.newRuntime
 -- Creates an async HTTP/TCP/WS runtime.
@@ -237,9 +340,31 @@ do
 end
 
 --@api-stub: LNetworkRuntime:tcpConnect
+-- Raw TCP connections. Focus: tcpConnect.
+do
+    ---@type LNetworkRuntime
+    local rt = lurek.network.newRuntime()
+    local id = rt:tcpConnect("127.0.0.1:9000")
+    print("tcp id = " .. id)
+    rt:tcpSend(id, "PING\n")
+    rt:tcpClose(id)
+    rt:shutdown()
+end
+
 --@api-stub: LNetworkRuntime:tcpSend
+-- Raw TCP connections. Focus: tcpSend.
+do
+    ---@type LNetworkRuntime
+    local rt = lurek.network.newRuntime()
+    local id = rt:tcpConnect("127.0.0.1:9000")
+    print("tcp id = " .. id)
+    rt:tcpSend(id, "PING\n")
+    rt:tcpClose(id)
+    rt:shutdown()
+end
+
 --@api-stub: LNetworkRuntime:tcpClose
--- Raw TCP connections.
+-- Raw TCP connections. Focus: tcpClose.
 do
     ---@type LNetworkRuntime
     local rt = lurek.network.newRuntime()
@@ -251,9 +376,31 @@ do
 end
 
 --@api-stub: LNetworkRuntime:wsConnect
+-- WebSocket connections. Focus: wsConnect.
+do
+    ---@type LNetworkRuntime
+    local rt = lurek.network.newRuntime()
+    local id = rt:wsConnect("ws://127.0.0.1:9001/game")
+    print("ws id = " .. id)
+    rt:wsSend(id, '{"action":"join","room":"lobby"}')
+    rt:wsClose(id)
+    rt:shutdown()
+end
+
 --@api-stub: LNetworkRuntime:wsSend
+-- WebSocket connections. Focus: wsSend.
+do
+    ---@type LNetworkRuntime
+    local rt = lurek.network.newRuntime()
+    local id = rt:wsConnect("ws://127.0.0.1:9001/game")
+    print("ws id = " .. id)
+    rt:wsSend(id, '{"action":"join","room":"lobby"}')
+    rt:wsClose(id)
+    rt:shutdown()
+end
+
 --@api-stub: LNetworkRuntime:wsClose
--- WebSocket connections.
+-- WebSocket connections. Focus: wsClose.
 do
     ---@type LNetworkRuntime
     local rt = lurek.network.newRuntime()
@@ -319,11 +466,11 @@ end
 --@api-stub: lurek.network.predictLinear
 -- Client-side prediction and server reconciliation.
 do
-    local snapshot = {x = 10, y = 20, vx = 5, vy = 0}
+    local snapshot = {id = 1, tick = 10, x = 10, y = 20, vx = 5, vy = 0}
     local predicted = lurek.network.predictLinear(snapshot, 0.016)
     print("predicted x = " .. (predicted --[[@as table]]).x)
 
-    local auth = {x = 10.1, y = 20}
+    local auth = {id = 1, tick = 11, x = 10.1, y = 20, vx = 5, vy = 0}
     local reconciled = lurek.network.reconcileSnapshot(predicted, auth, 0.3)
     print("reconciled x = " .. (reconciled --[[@as table]]).x)
 end
@@ -352,17 +499,153 @@ end
 
 --- Network Module Part 2: host queries, runtime lifecycle, room, relay, and snapshot
 
+
 --@api-stub: LNetworkHost:destroy
+-- Host lifecycle, role, and type introspection. Focus: destroy.
+do
+    local host = lurek.network.newHost({ port = 0, max_peers = 4, channels = 2 })
+    print("addr=" .. host:getAddress())
+    print("channels=" .. host:getChannelLimit())
+    print("peer_limit=" .. host:getPeerLimit())
+    print("role=" .. host:getRole())
+    print("is_server=" .. tostring(host:isServer()))
+    print("is_client=" .. tostring(host:isClient()))
+    print("is_destroyed=" .. tostring(host:isDestroyed()))
+    print("type=" .. host:type())
+    print("typeOf=" .. tostring(host:typeOf("LNetworkHost")))
+    host:destroy()
+end
+
 --@api-stub: LNetworkHost:getAddress
+-- Host lifecycle, role, and type introspection. Focus: getAddress.
+do
+    local host = lurek.network.newHost({ port = 0, max_peers = 4, channels = 2 })
+    print("addr=" .. host:getAddress())
+    print("channels=" .. host:getChannelLimit())
+    print("peer_limit=" .. host:getPeerLimit())
+    print("role=" .. host:getRole())
+    print("is_server=" .. tostring(host:isServer()))
+    print("is_client=" .. tostring(host:isClient()))
+    print("is_destroyed=" .. tostring(host:isDestroyed()))
+    print("type=" .. host:type())
+    print("typeOf=" .. tostring(host:typeOf("LNetworkHost")))
+    host:destroy()
+end
+
 --@api-stub: LNetworkHost:getChannelLimit
+-- Host lifecycle, role, and type introspection. Focus: getChannelLimit.
+do
+    local host = lurek.network.newHost({ port = 0, max_peers = 4, channels = 2 })
+    print("addr=" .. host:getAddress())
+    print("channels=" .. host:getChannelLimit())
+    print("peer_limit=" .. host:getPeerLimit())
+    print("role=" .. host:getRole())
+    print("is_server=" .. tostring(host:isServer()))
+    print("is_client=" .. tostring(host:isClient()))
+    print("is_destroyed=" .. tostring(host:isDestroyed()))
+    print("type=" .. host:type())
+    print("typeOf=" .. tostring(host:typeOf("LNetworkHost")))
+    host:destroy()
+end
+
 --@api-stub: LNetworkHost:getPeerLimit
+-- Host lifecycle, role, and type introspection. Focus: getPeerLimit.
+do
+    local host = lurek.network.newHost({ port = 0, max_peers = 4, channels = 2 })
+    print("addr=" .. host:getAddress())
+    print("channels=" .. host:getChannelLimit())
+    print("peer_limit=" .. host:getPeerLimit())
+    print("role=" .. host:getRole())
+    print("is_server=" .. tostring(host:isServer()))
+    print("is_client=" .. tostring(host:isClient()))
+    print("is_destroyed=" .. tostring(host:isDestroyed()))
+    print("type=" .. host:type())
+    print("typeOf=" .. tostring(host:typeOf("LNetworkHost")))
+    host:destroy()
+end
+
 --@api-stub: LNetworkHost:getRole
+-- Host lifecycle, role, and type introspection. Focus: getRole.
+do
+    local host = lurek.network.newHost({ port = 0, max_peers = 4, channels = 2 })
+    print("addr=" .. host:getAddress())
+    print("channels=" .. host:getChannelLimit())
+    print("peer_limit=" .. host:getPeerLimit())
+    print("role=" .. host:getRole())
+    print("is_server=" .. tostring(host:isServer()))
+    print("is_client=" .. tostring(host:isClient()))
+    print("is_destroyed=" .. tostring(host:isDestroyed()))
+    print("type=" .. host:type())
+    print("typeOf=" .. tostring(host:typeOf("LNetworkHost")))
+    host:destroy()
+end
+
 --@api-stub: LNetworkHost:isClient
+-- Host lifecycle, role, and type introspection. Focus: isClient.
+do
+    local host = lurek.network.newHost({ port = 0, max_peers = 4, channels = 2 })
+    print("addr=" .. host:getAddress())
+    print("channels=" .. host:getChannelLimit())
+    print("peer_limit=" .. host:getPeerLimit())
+    print("role=" .. host:getRole())
+    print("is_server=" .. tostring(host:isServer()))
+    print("is_client=" .. tostring(host:isClient()))
+    print("is_destroyed=" .. tostring(host:isDestroyed()))
+    print("type=" .. host:type())
+    print("typeOf=" .. tostring(host:typeOf("LNetworkHost")))
+    host:destroy()
+end
+
 --@api-stub: LNetworkHost:isDestroyed
+-- Host lifecycle, role, and type introspection. Focus: isDestroyed.
+do
+    local host = lurek.network.newHost({ port = 0, max_peers = 4, channels = 2 })
+    print("addr=" .. host:getAddress())
+    print("channels=" .. host:getChannelLimit())
+    print("peer_limit=" .. host:getPeerLimit())
+    print("role=" .. host:getRole())
+    print("is_server=" .. tostring(host:isServer()))
+    print("is_client=" .. tostring(host:isClient()))
+    print("is_destroyed=" .. tostring(host:isDestroyed()))
+    print("type=" .. host:type())
+    print("typeOf=" .. tostring(host:typeOf("LNetworkHost")))
+    host:destroy()
+end
+
 --@api-stub: LNetworkHost:isServer
+-- Host lifecycle, role, and type introspection. Focus: isServer.
+do
+    local host = lurek.network.newHost({ port = 0, max_peers = 4, channels = 2 })
+    print("addr=" .. host:getAddress())
+    print("channels=" .. host:getChannelLimit())
+    print("peer_limit=" .. host:getPeerLimit())
+    print("role=" .. host:getRole())
+    print("is_server=" .. tostring(host:isServer()))
+    print("is_client=" .. tostring(host:isClient()))
+    print("is_destroyed=" .. tostring(host:isDestroyed()))
+    print("type=" .. host:type())
+    print("typeOf=" .. tostring(host:typeOf("LNetworkHost")))
+    host:destroy()
+end
+
 --@api-stub: LNetworkHost:type
+-- Host lifecycle, role, and type introspection. Focus: type.
+do
+    local host = lurek.network.newHost({ port = 0, max_peers = 4, channels = 2 })
+    print("addr=" .. host:getAddress())
+    print("channels=" .. host:getChannelLimit())
+    print("peer_limit=" .. host:getPeerLimit())
+    print("role=" .. host:getRole())
+    print("is_server=" .. tostring(host:isServer()))
+    print("is_client=" .. tostring(host:isClient()))
+    print("is_destroyed=" .. tostring(host:isDestroyed()))
+    print("type=" .. host:type())
+    print("typeOf=" .. tostring(host:typeOf("LNetworkHost")))
+    host:destroy()
+end
+
 --@api-stub: LNetworkHost:typeOf
--- Host lifecycle, role, and type introspection.
+-- Host lifecycle, role, and type introspection. Focus: typeOf.
 do
     local host = lurek.network.newHost({ port = 0, max_peers = 4, channels = 2 })
     print("addr=" .. host:getAddress())
@@ -378,9 +661,25 @@ do
 end
 
 --@api-stub: LNetworkRuntime:shutdown
+-- Runtime lifecycle and type introspection. Focus: shutdown.
+do
+    local rt = lurek.network.newRuntime()
+    print("rt_type=" .. rt:type())
+    print("rt_typeOf=" .. tostring(rt:typeOf("LNetworkRuntime")))
+    rt:shutdown()
+end
+
 --@api-stub: LNetworkRuntime:type
+-- Runtime lifecycle and type introspection. Focus: type.
+do
+    local rt = lurek.network.newRuntime()
+    print("rt_type=" .. rt:type())
+    print("rt_typeOf=" .. tostring(rt:typeOf("LNetworkRuntime")))
+    rt:shutdown()
+end
+
 --@api-stub: LNetworkRuntime:typeOf
--- Runtime lifecycle and type introspection.
+-- Runtime lifecycle and type introspection. Focus: typeOf.
 do
     local rt = lurek.network.newRuntime()
     print("rt_type=" .. rt:type())
@@ -389,10 +688,43 @@ do
 end
 
 --@api-stub: lurek.network.discoverLobbies
+-- Lobby and room management. Focus: discoverLobbies.
+do
+    local lobbies = lurek.network.discoverLobbies(1000)
+    print("lobbies=" .. #lobbies)
+    local rooms = lurek.network.listRooms()
+    print("rooms=" .. #rooms)
+    lurek.network.joinRoom("room_id_1")
+    lurek.network.leaveRoom("room_id_1")
+    print("room lifecycle ok")
+end
+
 --@api-stub: lurek.network.joinRoom
+-- Lobby and room management. Focus: joinRoom.
+do
+    local lobbies = lurek.network.discoverLobbies(1000)
+    print("lobbies=" .. #lobbies)
+    local rooms = lurek.network.listRooms()
+    print("rooms=" .. #rooms)
+    lurek.network.joinRoom("room_id_1")
+    lurek.network.leaveRoom("room_id_1")
+    print("room lifecycle ok")
+end
+
 --@api-stub: lurek.network.leaveRoom
+-- Lobby and room management. Focus: leaveRoom.
+do
+    local lobbies = lurek.network.discoverLobbies(1000)
+    print("lobbies=" .. #lobbies)
+    local rooms = lurek.network.listRooms()
+    print("rooms=" .. #rooms)
+    lurek.network.joinRoom("room_id_1")
+    lurek.network.leaveRoom("room_id_1")
+    print("room lifecycle ok")
+end
+
 --@api-stub: lurek.network.listRooms
--- Lobby and room management.
+-- Lobby and room management. Focus: listRooms.
 do
     local lobbies = lurek.network.discoverLobbies(1000)
     print("lobbies=" .. #lobbies)
@@ -404,8 +736,16 @@ do
 end
 
 --@api-stub: lurek.network.parsePunchProbe
+-- Relay and punch probe parsing. Focus: parsePunchProbe.
+do
+    local ok, probe = pcall(lurek.network.parsePunchProbe, "test_payload")
+    print("probe=" .. tostring(ok))
+    local ok2, ticket = pcall(lurek.network.parseRelayTicket, "test_token")
+    print("ticket=" .. tostring(ok2))
+end
+
 --@api-stub: lurek.network.parseRelayTicket
--- Relay and punch probe parsing.
+-- Relay and punch probe parsing. Focus: parseRelayTicket.
 do
     local ok, probe = pcall(lurek.network.parsePunchProbe, "test_payload")
     print("probe=" .. tostring(ok))

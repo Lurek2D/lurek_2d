@@ -4,6 +4,7 @@
 
 --- Filesystem Module Part 1: paths, read/write, directory ops
 
+
 --@api-stub: lurek.filesystem.getSource
 -- Returns the game source directory path.
 do
@@ -229,6 +230,7 @@ do
 end
 
 --- Filesystem Module Part 2: file handles, binary, async, mount, watch, load
+
 
 --@api-stub: lurek.filesystem.openFile
 -- Opens a file handle in a requested mode.
@@ -460,15 +462,15 @@ end
 -- Reads a file from the ZIP mount.
 do
     local zip = lurek.filesystem.mountZip("assets/data.zip", "data")
-    local txt = zip:readFile("readme.txt")
-    print("zip read: " .. txt)
+    local txt = zip:readFile("data/hello.txt")
+    print("zip read bytes: " .. #txt)
 end
 
 --@api-stub: LZipMount:contains
 -- Checks if a virtual path exists in the ZIP mount.
 do
     local zip = lurek.filesystem.mountZip("assets/data.zip", "data")
-    print("has readme = " .. tostring(zip:contains("readme.txt")))
+    print("has hello = " .. tostring(zip:contains("data/hello.txt")))
 end
 
 --@api-stub: LZipMount:listFiles
@@ -503,7 +505,9 @@ end
 --@api-stub: lurek.filesystem.load
 -- Loads a Lua chunk from a file and returns it as a function.
 do
-    local chunk = lurek.filesystem.load("content/examples/hello.lua")
+    local path = "save/hello.lua"
+    lurek.filesystem.write(path, "return 'hello from save'\n")
+    local chunk = lurek.filesystem.load(path)
     print("loaded chunk type = " .. type(chunk))
 end
 

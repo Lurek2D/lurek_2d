@@ -1230,18 +1230,6 @@ do
   print("LStateMachine:typeOf: LStateMachine=" .. tostring(is_fsm) .. " LBehaviorTree=" .. tostring(is_other))
 end
 
---@api-stub: LBehaviorTree:setRoot
--- Sets the root node for this behavior tree.
-do
-  -- setRoot replaces any existing root. The tree ticks from this node.
-  local bt = lurek.ai.newBehaviorTree()
-  local root = lurek.ai.newAction(function() return "success" end)
-  bt:setRoot(root)
-  local info = bt:getDebugState()
-  -- A tree without a root does nothing when ticked.
-  print("LBehaviorTree:setRoot: nodes=" .. tostring(info.node_count))
-end
-
 --@api-stub: LBehaviorTree:getLastStatus
 -- Returns the result of the most recent tree tick.
 do
@@ -2007,6 +1995,7 @@ end
 
 --- AI Examples Part 3: Q-Learning (cont.), Utility AI, GOAP, Influence Maps, Squads
 
+
 --@api-stub: LQLearner:getExplorationDecay
 -- Returns the per-episode multiplicative decay applied to exploration rate.
 do
@@ -2482,6 +2471,7 @@ end
 
 --- AI Examples Part 4: Squad (cont.), Command Queue, Trait Profile, Stimulus World, Context Steering, Need System
 
+
 --@api-stub: LSquad:getFormation
 -- Returns the current formation type name.
 do
@@ -2717,7 +2707,7 @@ do
     tp:set("aggression", 0.9)
     tp:set("caution", 0.1)
     tp:set("curiosity", 0.4)
-    local arch = tp:archetype()
+    local arch = tp:archetype() or "unknown"
     print("archetype = " .. arch)
 end
 
@@ -2925,6 +2915,7 @@ do
 end
 
 --- AI Examples Part 5: Need System (cont.), AI Director, HTN, MCTS, Emotion, ORCA, Neural Net, Genetic Algorithm
+
 
 --@api-stub: LNeedSystem:valueOf
 -- Returns the current value of a named need.
@@ -3379,6 +3370,7 @@ do
 end
 
 --- AI Examples Part 6: Genetic Algorithm (cont.), Bandit, Neuroevolution, Strategy AI, AI LOD
+
 
 --@api-stub: LGeneticAlgorithm:popSize
 -- Returns the population size.

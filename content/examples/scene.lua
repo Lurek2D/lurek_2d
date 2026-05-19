@@ -4,6 +4,7 @@
 
 --- Scene Module Part 1: scene creation, stack management, registration, shared data, lifecycle
 
+
 --@api-stub: lurek.scene.new
 -- Creating scene instances.
 do
@@ -23,6 +24,22 @@ do
     print("scene created")
     local emptyScene = lurek.scene.newScene()
     print("empty scene = " .. tostring(emptyScene))
+
+    -- Passing parameters to scene enter.
+    local battleScene = lurek.scene.new({
+        name = "battle",
+        enemyType = "none",
+        enter = function(self, params)
+            if params then
+                self.enemyType = params.enemy or "slime"
+            end
+            print("battle start vs " .. self.enemyType)
+        end,
+        leave = function(self) end,
+    })
+    lurek.scene.push(battleScene, "none", 0, "linear", { enemy = "dragon" })
+    print("battle scene pushed")
+    lurek.scene.clear()
 end
 
 --@api-stub: lurek.scene.define
@@ -145,25 +162,6 @@ do
     print("has difficulty = " .. tostring(lurek.scene.hasData("difficulty")))
 end
 
--- Passing parameters to scene enter.
---@api-stub: lurek.scene.new
-do
-    local battleScene = lurek.scene.new({
-        name = "battle",
-        enemyType = "none",
-        enter = function(self, params)
-            if params then
-                self.enemyType = params.enemy or "slime"
-            end
-            print("battle start vs " .. self.enemyType)
-        end,
-        leave = function(self) end,
-    })
-    lurek.scene.push(battleScene, "none", 0, "linear", { enemy = "dragon" })
-    print("battle scene pushed")
-    lurek.scene.clear()
-end
-
 --@api-stub: lurek.scene.depth
 -- Layer management.
 do
@@ -231,11 +229,48 @@ end
 
 --- Scene Module Part 2: transitions, overlays, preload, depth sorter, serialization
 
+
 --@api-stub: lurek.scene.transitions.fade
+-- Transition descriptor factories. Focus: fade.
+do
+    local fade = lurek.scene.transitions.fade(0.5)
+    print("fade type = " .. fade.type .. " dur = " .. fade.duration)
+    local slide = lurek.scene.transitions.slide("left", 0.4)
+    print("slide type = " .. slide.type .. " dur = " .. slide.duration)
+    local iris = lurek.scene.transitions.iris(0.6)
+    print("iris type = " .. iris.type .. " dur = " .. iris.duration)
+    local wipe = lurek.scene.transitions.wipe(0.5)
+    print("wipe type = " .. wipe.type .. " dur = " .. wipe.duration)
+end
+
 --@api-stub: lurek.scene.transitions.slide
+-- Transition descriptor factories. Focus: slide.
+do
+    local fade = lurek.scene.transitions.fade(0.5)
+    print("fade type = " .. fade.type .. " dur = " .. fade.duration)
+    local slide = lurek.scene.transitions.slide("left", 0.4)
+    print("slide type = " .. slide.type .. " dur = " .. slide.duration)
+    local iris = lurek.scene.transitions.iris(0.6)
+    print("iris type = " .. iris.type .. " dur = " .. iris.duration)
+    local wipe = lurek.scene.transitions.wipe(0.5)
+    print("wipe type = " .. wipe.type .. " dur = " .. wipe.duration)
+end
+
 --@api-stub: lurek.scene.transitions.iris
+-- Transition descriptor factories. Focus: iris.
+do
+    local fade = lurek.scene.transitions.fade(0.5)
+    print("fade type = " .. fade.type .. " dur = " .. fade.duration)
+    local slide = lurek.scene.transitions.slide("left", 0.4)
+    print("slide type = " .. slide.type .. " dur = " .. slide.duration)
+    local iris = lurek.scene.transitions.iris(0.6)
+    print("iris type = " .. iris.type .. " dur = " .. iris.duration)
+    local wipe = lurek.scene.transitions.wipe(0.5)
+    print("wipe type = " .. wipe.type .. " dur = " .. wipe.duration)
+end
+
 --@api-stub: lurek.scene.transitions.wipe
--- Transition descriptor factories.
+-- Transition descriptor factories. Focus: wipe.
 do
     local fade = lurek.scene.transitions.fade(0.5)
     print("fade type = " .. fade.type .. " dur = " .. fade.duration)
@@ -391,11 +426,147 @@ do
 end
 
 --@api-stub: LDepthSorter:addObject
+-- Object-based depth sorting. Focus: addObject.
+do
+    ---@type LDepthSorter
+    local sorter = lurek.scene.newDepthSorter()
+    local obj1 = {
+        depth = 3,
+        drawSorted = function(self)
+            print("draw obj at depth " .. self.depth)
+        end,
+    }
+    local obj2 = {
+        depth = 1,
+        drawSorted = function(self)
+            print("draw obj at depth " .. self.depth)
+        end,
+    }
+    local obj3 = {
+        depth = 7,
+        drawSorted = function(self)
+            print("draw obj at depth " .. self.depth)
+        end,
+    }
+    sorter:addObject(obj1)
+    sorter:addObject(obj2)
+    sorter:addObject(obj3)
+    print("stable = " .. tostring(sorter:isStable()))
+    sorter:setStable(true)
+    print("stable = " .. tostring(sorter:isStable()))
+    sorter:sort()
+    print("sorted, count = " .. sorter:getCount())
+    sorter:clear()
+    print("cleared count = " .. sorter:getCount())
+end
+
 --@api-stub: LDepthSorter:sort
+-- Object-based depth sorting. Focus: sort.
+do
+    ---@type LDepthSorter
+    local sorter = lurek.scene.newDepthSorter()
+    local obj1 = {
+        depth = 3,
+        drawSorted = function(self)
+            print("draw obj at depth " .. self.depth)
+        end,
+    }
+    local obj2 = {
+        depth = 1,
+        drawSorted = function(self)
+            print("draw obj at depth " .. self.depth)
+        end,
+    }
+    local obj3 = {
+        depth = 7,
+        drawSorted = function(self)
+            print("draw obj at depth " .. self.depth)
+        end,
+    }
+    sorter:addObject(obj1)
+    sorter:addObject(obj2)
+    sorter:addObject(obj3)
+    print("stable = " .. tostring(sorter:isStable()))
+    sorter:setStable(true)
+    print("stable = " .. tostring(sorter:isStable()))
+    sorter:sort()
+    print("sorted, count = " .. sorter:getCount())
+    sorter:clear()
+    print("cleared count = " .. sorter:getCount())
+end
+
 --@api-stub: LDepthSorter:clear
+-- Object-based depth sorting. Focus: clear.
+do
+    ---@type LDepthSorter
+    local sorter = lurek.scene.newDepthSorter()
+    local obj1 = {
+        depth = 3,
+        drawSorted = function(self)
+            print("draw obj at depth " .. self.depth)
+        end,
+    }
+    local obj2 = {
+        depth = 1,
+        drawSorted = function(self)
+            print("draw obj at depth " .. self.depth)
+        end,
+    }
+    local obj3 = {
+        depth = 7,
+        drawSorted = function(self)
+            print("draw obj at depth " .. self.depth)
+        end,
+    }
+    sorter:addObject(obj1)
+    sorter:addObject(obj2)
+    sorter:addObject(obj3)
+    print("stable = " .. tostring(sorter:isStable()))
+    sorter:setStable(true)
+    print("stable = " .. tostring(sorter:isStable()))
+    sorter:sort()
+    print("sorted, count = " .. sorter:getCount())
+    sorter:clear()
+    print("cleared count = " .. sorter:getCount())
+end
+
 --@api-stub: LDepthSorter:setStable
+-- Object-based depth sorting. Focus: setStable.
+do
+    ---@type LDepthSorter
+    local sorter = lurek.scene.newDepthSorter()
+    local obj1 = {
+        depth = 3,
+        drawSorted = function(self)
+            print("draw obj at depth " .. self.depth)
+        end,
+    }
+    local obj2 = {
+        depth = 1,
+        drawSorted = function(self)
+            print("draw obj at depth " .. self.depth)
+        end,
+    }
+    local obj3 = {
+        depth = 7,
+        drawSorted = function(self)
+            print("draw obj at depth " .. self.depth)
+        end,
+    }
+    sorter:addObject(obj1)
+    sorter:addObject(obj2)
+    sorter:addObject(obj3)
+    print("stable = " .. tostring(sorter:isStable()))
+    sorter:setStable(true)
+    print("stable = " .. tostring(sorter:isStable()))
+    sorter:sort()
+    print("sorted, count = " .. sorter:getCount())
+    sorter:clear()
+    print("cleared count = " .. sorter:getCount())
+end
+
 --@api-stub: LDepthSorter:isStable
--- Object-based depth sorting.
+-- Object-based depth sorting. Focus: isStable.
 do
     ---@type LDepthSorter
     local sorter = lurek.scene.newDepthSorter()
@@ -454,28 +625,1309 @@ end
 
 --- Scene Part 2: full scene module API coverage
 
+
 --@api-stub: lurek.scene.clear
+-- Full lurek.scene module: define, push/pop, transitions, data, serialize, registry. Focus: clear.
+do
+    lurek.scene.define({
+        name = "main_scene",
+        enter = function() print("enter_main") end,
+        update = function(dt) end,
+        draw = function() end,
+        leave = function() print("leave_main") end
+    })
+
+    print("registered=" .. tostring(lurek.scene.hasRegistered("main_scene")))
+    local reg = lurek.scene.getRegistered("main_scene")
+    print("reg_def=" .. tostring(reg ~= nil))
+    local names = lurek.scene.getRegisteredNames()
+    print("reg_names=" .. #names)
+
+    local scene_def = {
+        enter = function() print("enter_main") end,
+        update = function(dt) end,
+        draw = function() end,
+        leave = function() print("leave_main") end
+    }
+
+    lurek.scene.push(scene_def)
+    print("stack_size=" .. lurek.scene.getStackSize())
+    print("is_empty=" .. tostring(lurek.scene.isEmpty()))
+    print("depth=" .. lurek.scene.depth())
+
+    local current = lurek.scene.getCurrent()
+    print("current=" .. tostring(current))
+    local layer = lurek.scene.getCurrentLayer()
+    print("layer=" .. tostring(layer))
+
+    print("is_transitioning=" .. tostring(lurek.scene.isTransitioning()))
+    print("is_overlay=" .. tostring(lurek.scene.isOverlay()))
+    print("transition_progress=" .. lurek.scene.getTransitionProgress())
+    print("transition_progress_eased=" .. lurek.scene.getTransitionProgressEased())
+
+    lurek.scene.setData("score", 42)
+    print("has_score=" .. tostring(lurek.scene.hasData("score")))
+    local score = lurek.scene.getData("score")
+    print("score=" .. tostring(score))
+
+    local transition_types = lurek.scene.getTransitionTypes()
+    print("transition_types=" .. #transition_types)
+
+    lurek.scene.draw()
+
+    local queued = lurek.scene.getQueuedTransitionCount()
+    print("queued=" .. queued)
+    lurek.scene.clearQueuedTransitions()
+
+    lurek.scene.preload("main_scene", function() return {} end)
+    print("is_preloaded=" .. tostring(lurek.scene.isPreloaded("main_scene")))
+
+    local snap = lurek.scene.serializeScene()
+    print("snapshot=" .. tostring(snap ~= nil))
+    lurek.scene.deserializeScene(snap)
+
+    lurek.scene.pop()
+    lurek.scene.clear()
+    print("cleared=" .. tostring(lurek.scene.isEmpty()))
+end
+
 --@api-stub: lurek.scene.clearQueuedTransitions
+-- Full lurek.scene module: define, push/pop, transitions, data, serialize, registry. Focus: clearQueuedTransitions.
+do
+    lurek.scene.define({
+        name = "main_scene",
+        enter = function() print("enter_main") end,
+        update = function(dt) end,
+        draw = function() end,
+        leave = function() print("leave_main") end
+    })
+
+    print("registered=" .. tostring(lurek.scene.hasRegistered("main_scene")))
+    local reg = lurek.scene.getRegistered("main_scene")
+    print("reg_def=" .. tostring(reg ~= nil))
+    local names = lurek.scene.getRegisteredNames()
+    print("reg_names=" .. #names)
+
+    local scene_def = {
+        enter = function() print("enter_main") end,
+        update = function(dt) end,
+        draw = function() end,
+        leave = function() print("leave_main") end
+    }
+
+    lurek.scene.push(scene_def)
+    print("stack_size=" .. lurek.scene.getStackSize())
+    print("is_empty=" .. tostring(lurek.scene.isEmpty()))
+    print("depth=" .. lurek.scene.depth())
+
+    local current = lurek.scene.getCurrent()
+    print("current=" .. tostring(current))
+    local layer = lurek.scene.getCurrentLayer()
+    print("layer=" .. tostring(layer))
+
+    print("is_transitioning=" .. tostring(lurek.scene.isTransitioning()))
+    print("is_overlay=" .. tostring(lurek.scene.isOverlay()))
+    print("transition_progress=" .. lurek.scene.getTransitionProgress())
+    print("transition_progress_eased=" .. lurek.scene.getTransitionProgressEased())
+
+    lurek.scene.setData("score", 42)
+    print("has_score=" .. tostring(lurek.scene.hasData("score")))
+    local score = lurek.scene.getData("score")
+    print("score=" .. tostring(score))
+
+    local transition_types = lurek.scene.getTransitionTypes()
+    print("transition_types=" .. #transition_types)
+
+    lurek.scene.draw()
+
+    local queued = lurek.scene.getQueuedTransitionCount()
+    print("queued=" .. queued)
+    lurek.scene.clearQueuedTransitions()
+
+    lurek.scene.preload("main_scene", function() return {} end)
+    print("is_preloaded=" .. tostring(lurek.scene.isPreloaded("main_scene")))
+
+    local snap = lurek.scene.serializeScene()
+    print("snapshot=" .. tostring(snap ~= nil))
+    lurek.scene.deserializeScene(snap)
+
+    lurek.scene.pop()
+    lurek.scene.clear()
+    print("cleared=" .. tostring(lurek.scene.isEmpty()))
+end
+
 --@api-stub: lurek.scene.deserializeScene
+-- Full lurek.scene module: define, push/pop, transitions, data, serialize, registry. Focus: deserializeScene.
+do
+    lurek.scene.define({
+        name = "main_scene",
+        enter = function() print("enter_main") end,
+        update = function(dt) end,
+        draw = function() end,
+        leave = function() print("leave_main") end
+    })
+
+    print("registered=" .. tostring(lurek.scene.hasRegistered("main_scene")))
+    local reg = lurek.scene.getRegistered("main_scene")
+    print("reg_def=" .. tostring(reg ~= nil))
+    local names = lurek.scene.getRegisteredNames()
+    print("reg_names=" .. #names)
+
+    local scene_def = {
+        enter = function() print("enter_main") end,
+        update = function(dt) end,
+        draw = function() end,
+        leave = function() print("leave_main") end
+    }
+
+    lurek.scene.push(scene_def)
+    print("stack_size=" .. lurek.scene.getStackSize())
+    print("is_empty=" .. tostring(lurek.scene.isEmpty()))
+    print("depth=" .. lurek.scene.depth())
+
+    local current = lurek.scene.getCurrent()
+    print("current=" .. tostring(current))
+    local layer = lurek.scene.getCurrentLayer()
+    print("layer=" .. tostring(layer))
+
+    print("is_transitioning=" .. tostring(lurek.scene.isTransitioning()))
+    print("is_overlay=" .. tostring(lurek.scene.isOverlay()))
+    print("transition_progress=" .. lurek.scene.getTransitionProgress())
+    print("transition_progress_eased=" .. lurek.scene.getTransitionProgressEased())
+
+    lurek.scene.setData("score", 42)
+    print("has_score=" .. tostring(lurek.scene.hasData("score")))
+    local score = lurek.scene.getData("score")
+    print("score=" .. tostring(score))
+
+    local transition_types = lurek.scene.getTransitionTypes()
+    print("transition_types=" .. #transition_types)
+
+    lurek.scene.draw()
+
+    local queued = lurek.scene.getQueuedTransitionCount()
+    print("queued=" .. queued)
+    lurek.scene.clearQueuedTransitions()
+
+    lurek.scene.preload("main_scene", function() return {} end)
+    print("is_preloaded=" .. tostring(lurek.scene.isPreloaded("main_scene")))
+
+    local snap = lurek.scene.serializeScene()
+    print("snapshot=" .. tostring(snap ~= nil))
+    lurek.scene.deserializeScene(snap)
+
+    lurek.scene.pop()
+    lurek.scene.clear()
+    print("cleared=" .. tostring(lurek.scene.isEmpty()))
+end
+
 --@api-stub: lurek.scene.draw
+-- Full lurek.scene module: define, push/pop, transitions, data, serialize, registry. Focus: draw.
+do
+    lurek.scene.define({
+        name = "main_scene",
+        enter = function() print("enter_main") end,
+        update = function(dt) end,
+        draw = function() end,
+        leave = function() print("leave_main") end
+    })
+
+    print("registered=" .. tostring(lurek.scene.hasRegistered("main_scene")))
+    local reg = lurek.scene.getRegistered("main_scene")
+    print("reg_def=" .. tostring(reg ~= nil))
+    local names = lurek.scene.getRegisteredNames()
+    print("reg_names=" .. #names)
+
+    local scene_def = {
+        enter = function() print("enter_main") end,
+        update = function(dt) end,
+        draw = function() end,
+        leave = function() print("leave_main") end
+    }
+
+    lurek.scene.push(scene_def)
+    print("stack_size=" .. lurek.scene.getStackSize())
+    print("is_empty=" .. tostring(lurek.scene.isEmpty()))
+    print("depth=" .. lurek.scene.depth())
+
+    local current = lurek.scene.getCurrent()
+    print("current=" .. tostring(current))
+    local layer = lurek.scene.getCurrentLayer()
+    print("layer=" .. tostring(layer))
+
+    print("is_transitioning=" .. tostring(lurek.scene.isTransitioning()))
+    print("is_overlay=" .. tostring(lurek.scene.isOverlay()))
+    print("transition_progress=" .. lurek.scene.getTransitionProgress())
+    print("transition_progress_eased=" .. lurek.scene.getTransitionProgressEased())
+
+    lurek.scene.setData("score", 42)
+    print("has_score=" .. tostring(lurek.scene.hasData("score")))
+    local score = lurek.scene.getData("score")
+    print("score=" .. tostring(score))
+
+    local transition_types = lurek.scene.getTransitionTypes()
+    print("transition_types=" .. #transition_types)
+
+    lurek.scene.draw()
+
+    local queued = lurek.scene.getQueuedTransitionCount()
+    print("queued=" .. queued)
+    lurek.scene.clearQueuedTransitions()
+
+    lurek.scene.preload("main_scene", function() return {} end)
+    print("is_preloaded=" .. tostring(lurek.scene.isPreloaded("main_scene")))
+
+    local snap = lurek.scene.serializeScene()
+    print("snapshot=" .. tostring(snap ~= nil))
+    lurek.scene.deserializeScene(snap)
+
+    lurek.scene.pop()
+    lurek.scene.clear()
+    print("cleared=" .. tostring(lurek.scene.isEmpty()))
+end
+
 --@api-stub: lurek.scene.getCurrent
+-- Full lurek.scene module: define, push/pop, transitions, data, serialize, registry. Focus: getCurrent.
+do
+    lurek.scene.define({
+        name = "main_scene",
+        enter = function() print("enter_main") end,
+        update = function(dt) end,
+        draw = function() end,
+        leave = function() print("leave_main") end
+    })
+
+    print("registered=" .. tostring(lurek.scene.hasRegistered("main_scene")))
+    local reg = lurek.scene.getRegistered("main_scene")
+    print("reg_def=" .. tostring(reg ~= nil))
+    local names = lurek.scene.getRegisteredNames()
+    print("reg_names=" .. #names)
+
+    local scene_def = {
+        enter = function() print("enter_main") end,
+        update = function(dt) end,
+        draw = function() end,
+        leave = function() print("leave_main") end
+    }
+
+    lurek.scene.push(scene_def)
+    print("stack_size=" .. lurek.scene.getStackSize())
+    print("is_empty=" .. tostring(lurek.scene.isEmpty()))
+    print("depth=" .. lurek.scene.depth())
+
+    local current = lurek.scene.getCurrent()
+    print("current=" .. tostring(current))
+    local layer = lurek.scene.getCurrentLayer()
+    print("layer=" .. tostring(layer))
+
+    print("is_transitioning=" .. tostring(lurek.scene.isTransitioning()))
+    print("is_overlay=" .. tostring(lurek.scene.isOverlay()))
+    print("transition_progress=" .. lurek.scene.getTransitionProgress())
+    print("transition_progress_eased=" .. lurek.scene.getTransitionProgressEased())
+
+    lurek.scene.setData("score", 42)
+    print("has_score=" .. tostring(lurek.scene.hasData("score")))
+    local score = lurek.scene.getData("score")
+    print("score=" .. tostring(score))
+
+    local transition_types = lurek.scene.getTransitionTypes()
+    print("transition_types=" .. #transition_types)
+
+    lurek.scene.draw()
+
+    local queued = lurek.scene.getQueuedTransitionCount()
+    print("queued=" .. queued)
+    lurek.scene.clearQueuedTransitions()
+
+    lurek.scene.preload("main_scene", function() return {} end)
+    print("is_preloaded=" .. tostring(lurek.scene.isPreloaded("main_scene")))
+
+    local snap = lurek.scene.serializeScene()
+    print("snapshot=" .. tostring(snap ~= nil))
+    lurek.scene.deserializeScene(snap)
+
+    lurek.scene.pop()
+    lurek.scene.clear()
+    print("cleared=" .. tostring(lurek.scene.isEmpty()))
+end
+
 --@api-stub: lurek.scene.getCurrentLayer
+-- Full lurek.scene module: define, push/pop, transitions, data, serialize, registry. Focus: getCurrentLayer.
+do
+    lurek.scene.define({
+        name = "main_scene",
+        enter = function() print("enter_main") end,
+        update = function(dt) end,
+        draw = function() end,
+        leave = function() print("leave_main") end
+    })
+
+    print("registered=" .. tostring(lurek.scene.hasRegistered("main_scene")))
+    local reg = lurek.scene.getRegistered("main_scene")
+    print("reg_def=" .. tostring(reg ~= nil))
+    local names = lurek.scene.getRegisteredNames()
+    print("reg_names=" .. #names)
+
+    local scene_def = {
+        enter = function() print("enter_main") end,
+        update = function(dt) end,
+        draw = function() end,
+        leave = function() print("leave_main") end
+    }
+
+    lurek.scene.push(scene_def)
+    print("stack_size=" .. lurek.scene.getStackSize())
+    print("is_empty=" .. tostring(lurek.scene.isEmpty()))
+    print("depth=" .. lurek.scene.depth())
+
+    local current = lurek.scene.getCurrent()
+    print("current=" .. tostring(current))
+    local layer = lurek.scene.getCurrentLayer()
+    print("layer=" .. tostring(layer))
+
+    print("is_transitioning=" .. tostring(lurek.scene.isTransitioning()))
+    print("is_overlay=" .. tostring(lurek.scene.isOverlay()))
+    print("transition_progress=" .. lurek.scene.getTransitionProgress())
+    print("transition_progress_eased=" .. lurek.scene.getTransitionProgressEased())
+
+    lurek.scene.setData("score", 42)
+    print("has_score=" .. tostring(lurek.scene.hasData("score")))
+    local score = lurek.scene.getData("score")
+    print("score=" .. tostring(score))
+
+    local transition_types = lurek.scene.getTransitionTypes()
+    print("transition_types=" .. #transition_types)
+
+    lurek.scene.draw()
+
+    local queued = lurek.scene.getQueuedTransitionCount()
+    print("queued=" .. queued)
+    lurek.scene.clearQueuedTransitions()
+
+    lurek.scene.preload("main_scene", function() return {} end)
+    print("is_preloaded=" .. tostring(lurek.scene.isPreloaded("main_scene")))
+
+    local snap = lurek.scene.serializeScene()
+    print("snapshot=" .. tostring(snap ~= nil))
+    lurek.scene.deserializeScene(snap)
+
+    lurek.scene.pop()
+    lurek.scene.clear()
+    print("cleared=" .. tostring(lurek.scene.isEmpty()))
+end
+
 --@api-stub: lurek.scene.getData
+-- Full lurek.scene module: define, push/pop, transitions, data, serialize, registry. Focus: getData.
+do
+    lurek.scene.define({
+        name = "main_scene",
+        enter = function() print("enter_main") end,
+        update = function(dt) end,
+        draw = function() end,
+        leave = function() print("leave_main") end
+    })
+
+    print("registered=" .. tostring(lurek.scene.hasRegistered("main_scene")))
+    local reg = lurek.scene.getRegistered("main_scene")
+    print("reg_def=" .. tostring(reg ~= nil))
+    local names = lurek.scene.getRegisteredNames()
+    print("reg_names=" .. #names)
+
+    local scene_def = {
+        enter = function() print("enter_main") end,
+        update = function(dt) end,
+        draw = function() end,
+        leave = function() print("leave_main") end
+    }
+
+    lurek.scene.push(scene_def)
+    print("stack_size=" .. lurek.scene.getStackSize())
+    print("is_empty=" .. tostring(lurek.scene.isEmpty()))
+    print("depth=" .. lurek.scene.depth())
+
+    local current = lurek.scene.getCurrent()
+    print("current=" .. tostring(current))
+    local layer = lurek.scene.getCurrentLayer()
+    print("layer=" .. tostring(layer))
+
+    print("is_transitioning=" .. tostring(lurek.scene.isTransitioning()))
+    print("is_overlay=" .. tostring(lurek.scene.isOverlay()))
+    print("transition_progress=" .. lurek.scene.getTransitionProgress())
+    print("transition_progress_eased=" .. lurek.scene.getTransitionProgressEased())
+
+    lurek.scene.setData("score", 42)
+    print("has_score=" .. tostring(lurek.scene.hasData("score")))
+    local score = lurek.scene.getData("score")
+    print("score=" .. tostring(score))
+
+    local transition_types = lurek.scene.getTransitionTypes()
+    print("transition_types=" .. #transition_types)
+
+    lurek.scene.draw()
+
+    local queued = lurek.scene.getQueuedTransitionCount()
+    print("queued=" .. queued)
+    lurek.scene.clearQueuedTransitions()
+
+    lurek.scene.preload("main_scene", function() return {} end)
+    print("is_preloaded=" .. tostring(lurek.scene.isPreloaded("main_scene")))
+
+    local snap = lurek.scene.serializeScene()
+    print("snapshot=" .. tostring(snap ~= nil))
+    lurek.scene.deserializeScene(snap)
+
+    lurek.scene.pop()
+    lurek.scene.clear()
+    print("cleared=" .. tostring(lurek.scene.isEmpty()))
+end
+
 --@api-stub: lurek.scene.getQueuedTransitionCount
+-- Full lurek.scene module: define, push/pop, transitions, data, serialize, registry. Focus: getQueuedTransitionCount.
+do
+    lurek.scene.define({
+        name = "main_scene",
+        enter = function() print("enter_main") end,
+        update = function(dt) end,
+        draw = function() end,
+        leave = function() print("leave_main") end
+    })
+
+    print("registered=" .. tostring(lurek.scene.hasRegistered("main_scene")))
+    local reg = lurek.scene.getRegistered("main_scene")
+    print("reg_def=" .. tostring(reg ~= nil))
+    local names = lurek.scene.getRegisteredNames()
+    print("reg_names=" .. #names)
+
+    local scene_def = {
+        enter = function() print("enter_main") end,
+        update = function(dt) end,
+        draw = function() end,
+        leave = function() print("leave_main") end
+    }
+
+    lurek.scene.push(scene_def)
+    print("stack_size=" .. lurek.scene.getStackSize())
+    print("is_empty=" .. tostring(lurek.scene.isEmpty()))
+    print("depth=" .. lurek.scene.depth())
+
+    local current = lurek.scene.getCurrent()
+    print("current=" .. tostring(current))
+    local layer = lurek.scene.getCurrentLayer()
+    print("layer=" .. tostring(layer))
+
+    print("is_transitioning=" .. tostring(lurek.scene.isTransitioning()))
+    print("is_overlay=" .. tostring(lurek.scene.isOverlay()))
+    print("transition_progress=" .. lurek.scene.getTransitionProgress())
+    print("transition_progress_eased=" .. lurek.scene.getTransitionProgressEased())
+
+    lurek.scene.setData("score", 42)
+    print("has_score=" .. tostring(lurek.scene.hasData("score")))
+    local score = lurek.scene.getData("score")
+    print("score=" .. tostring(score))
+
+    local transition_types = lurek.scene.getTransitionTypes()
+    print("transition_types=" .. #transition_types)
+
+    lurek.scene.draw()
+
+    local queued = lurek.scene.getQueuedTransitionCount()
+    print("queued=" .. queued)
+    lurek.scene.clearQueuedTransitions()
+
+    lurek.scene.preload("main_scene", function() return {} end)
+    print("is_preloaded=" .. tostring(lurek.scene.isPreloaded("main_scene")))
+
+    local snap = lurek.scene.serializeScene()
+    print("snapshot=" .. tostring(snap ~= nil))
+    lurek.scene.deserializeScene(snap)
+
+    lurek.scene.pop()
+    lurek.scene.clear()
+    print("cleared=" .. tostring(lurek.scene.isEmpty()))
+end
+
 --@api-stub: lurek.scene.getRegistered
+-- Full lurek.scene module: define, push/pop, transitions, data, serialize, registry. Focus: getRegistered.
+do
+    lurek.scene.define({
+        name = "main_scene",
+        enter = function() print("enter_main") end,
+        update = function(dt) end,
+        draw = function() end,
+        leave = function() print("leave_main") end
+    })
+
+    print("registered=" .. tostring(lurek.scene.hasRegistered("main_scene")))
+    local reg = lurek.scene.getRegistered("main_scene")
+    print("reg_def=" .. tostring(reg ~= nil))
+    local names = lurek.scene.getRegisteredNames()
+    print("reg_names=" .. #names)
+
+    local scene_def = {
+        enter = function() print("enter_main") end,
+        update = function(dt) end,
+        draw = function() end,
+        leave = function() print("leave_main") end
+    }
+
+    lurek.scene.push(scene_def)
+    print("stack_size=" .. lurek.scene.getStackSize())
+    print("is_empty=" .. tostring(lurek.scene.isEmpty()))
+    print("depth=" .. lurek.scene.depth())
+
+    local current = lurek.scene.getCurrent()
+    print("current=" .. tostring(current))
+    local layer = lurek.scene.getCurrentLayer()
+    print("layer=" .. tostring(layer))
+
+    print("is_transitioning=" .. tostring(lurek.scene.isTransitioning()))
+    print("is_overlay=" .. tostring(lurek.scene.isOverlay()))
+    print("transition_progress=" .. lurek.scene.getTransitionProgress())
+    print("transition_progress_eased=" .. lurek.scene.getTransitionProgressEased())
+
+    lurek.scene.setData("score", 42)
+    print("has_score=" .. tostring(lurek.scene.hasData("score")))
+    local score = lurek.scene.getData("score")
+    print("score=" .. tostring(score))
+
+    local transition_types = lurek.scene.getTransitionTypes()
+    print("transition_types=" .. #transition_types)
+
+    lurek.scene.draw()
+
+    local queued = lurek.scene.getQueuedTransitionCount()
+    print("queued=" .. queued)
+    lurek.scene.clearQueuedTransitions()
+
+    lurek.scene.preload("main_scene", function() return {} end)
+    print("is_preloaded=" .. tostring(lurek.scene.isPreloaded("main_scene")))
+
+    local snap = lurek.scene.serializeScene()
+    print("snapshot=" .. tostring(snap ~= nil))
+    lurek.scene.deserializeScene(snap)
+
+    lurek.scene.pop()
+    lurek.scene.clear()
+    print("cleared=" .. tostring(lurek.scene.isEmpty()))
+end
+
 --@api-stub: lurek.scene.getRegisteredNames
+-- Full lurek.scene module: define, push/pop, transitions, data, serialize, registry. Focus: getRegisteredNames.
+do
+    lurek.scene.define({
+        name = "main_scene",
+        enter = function() print("enter_main") end,
+        update = function(dt) end,
+        draw = function() end,
+        leave = function() print("leave_main") end
+    })
+
+    print("registered=" .. tostring(lurek.scene.hasRegistered("main_scene")))
+    local reg = lurek.scene.getRegistered("main_scene")
+    print("reg_def=" .. tostring(reg ~= nil))
+    local names = lurek.scene.getRegisteredNames()
+    print("reg_names=" .. #names)
+
+    local scene_def = {
+        enter = function() print("enter_main") end,
+        update = function(dt) end,
+        draw = function() end,
+        leave = function() print("leave_main") end
+    }
+
+    lurek.scene.push(scene_def)
+    print("stack_size=" .. lurek.scene.getStackSize())
+    print("is_empty=" .. tostring(lurek.scene.isEmpty()))
+    print("depth=" .. lurek.scene.depth())
+
+    local current = lurek.scene.getCurrent()
+    print("current=" .. tostring(current))
+    local layer = lurek.scene.getCurrentLayer()
+    print("layer=" .. tostring(layer))
+
+    print("is_transitioning=" .. tostring(lurek.scene.isTransitioning()))
+    print("is_overlay=" .. tostring(lurek.scene.isOverlay()))
+    print("transition_progress=" .. lurek.scene.getTransitionProgress())
+    print("transition_progress_eased=" .. lurek.scene.getTransitionProgressEased())
+
+    lurek.scene.setData("score", 42)
+    print("has_score=" .. tostring(lurek.scene.hasData("score")))
+    local score = lurek.scene.getData("score")
+    print("score=" .. tostring(score))
+
+    local transition_types = lurek.scene.getTransitionTypes()
+    print("transition_types=" .. #transition_types)
+
+    lurek.scene.draw()
+
+    local queued = lurek.scene.getQueuedTransitionCount()
+    print("queued=" .. queued)
+    lurek.scene.clearQueuedTransitions()
+
+    lurek.scene.preload("main_scene", function() return {} end)
+    print("is_preloaded=" .. tostring(lurek.scene.isPreloaded("main_scene")))
+
+    local snap = lurek.scene.serializeScene()
+    print("snapshot=" .. tostring(snap ~= nil))
+    lurek.scene.deserializeScene(snap)
+
+    lurek.scene.pop()
+    lurek.scene.clear()
+    print("cleared=" .. tostring(lurek.scene.isEmpty()))
+end
+
 --@api-stub: lurek.scene.getStackSize
+-- Full lurek.scene module: define, push/pop, transitions, data, serialize, registry. Focus: getStackSize.
+do
+    lurek.scene.define({
+        name = "main_scene",
+        enter = function() print("enter_main") end,
+        update = function(dt) end,
+        draw = function() end,
+        leave = function() print("leave_main") end
+    })
+
+    print("registered=" .. tostring(lurek.scene.hasRegistered("main_scene")))
+    local reg = lurek.scene.getRegistered("main_scene")
+    print("reg_def=" .. tostring(reg ~= nil))
+    local names = lurek.scene.getRegisteredNames()
+    print("reg_names=" .. #names)
+
+    local scene_def = {
+        enter = function() print("enter_main") end,
+        update = function(dt) end,
+        draw = function() end,
+        leave = function() print("leave_main") end
+    }
+
+    lurek.scene.push(scene_def)
+    print("stack_size=" .. lurek.scene.getStackSize())
+    print("is_empty=" .. tostring(lurek.scene.isEmpty()))
+    print("depth=" .. lurek.scene.depth())
+
+    local current = lurek.scene.getCurrent()
+    print("current=" .. tostring(current))
+    local layer = lurek.scene.getCurrentLayer()
+    print("layer=" .. tostring(layer))
+
+    print("is_transitioning=" .. tostring(lurek.scene.isTransitioning()))
+    print("is_overlay=" .. tostring(lurek.scene.isOverlay()))
+    print("transition_progress=" .. lurek.scene.getTransitionProgress())
+    print("transition_progress_eased=" .. lurek.scene.getTransitionProgressEased())
+
+    lurek.scene.setData("score", 42)
+    print("has_score=" .. tostring(lurek.scene.hasData("score")))
+    local score = lurek.scene.getData("score")
+    print("score=" .. tostring(score))
+
+    local transition_types = lurek.scene.getTransitionTypes()
+    print("transition_types=" .. #transition_types)
+
+    lurek.scene.draw()
+
+    local queued = lurek.scene.getQueuedTransitionCount()
+    print("queued=" .. queued)
+    lurek.scene.clearQueuedTransitions()
+
+    lurek.scene.preload("main_scene", function() return {} end)
+    print("is_preloaded=" .. tostring(lurek.scene.isPreloaded("main_scene")))
+
+    local snap = lurek.scene.serializeScene()
+    print("snapshot=" .. tostring(snap ~= nil))
+    lurek.scene.deserializeScene(snap)
+
+    lurek.scene.pop()
+    lurek.scene.clear()
+    print("cleared=" .. tostring(lurek.scene.isEmpty()))
+end
+
 --@api-stub: lurek.scene.getTransitionProgress
+-- Full lurek.scene module: define, push/pop, transitions, data, serialize, registry. Focus: getTransitionProgress.
+do
+    lurek.scene.define({
+        name = "main_scene",
+        enter = function() print("enter_main") end,
+        update = function(dt) end,
+        draw = function() end,
+        leave = function() print("leave_main") end
+    })
+
+    print("registered=" .. tostring(lurek.scene.hasRegistered("main_scene")))
+    local reg = lurek.scene.getRegistered("main_scene")
+    print("reg_def=" .. tostring(reg ~= nil))
+    local names = lurek.scene.getRegisteredNames()
+    print("reg_names=" .. #names)
+
+    local scene_def = {
+        enter = function() print("enter_main") end,
+        update = function(dt) end,
+        draw = function() end,
+        leave = function() print("leave_main") end
+    }
+
+    lurek.scene.push(scene_def)
+    print("stack_size=" .. lurek.scene.getStackSize())
+    print("is_empty=" .. tostring(lurek.scene.isEmpty()))
+    print("depth=" .. lurek.scene.depth())
+
+    local current = lurek.scene.getCurrent()
+    print("current=" .. tostring(current))
+    local layer = lurek.scene.getCurrentLayer()
+    print("layer=" .. tostring(layer))
+
+    print("is_transitioning=" .. tostring(lurek.scene.isTransitioning()))
+    print("is_overlay=" .. tostring(lurek.scene.isOverlay()))
+    print("transition_progress=" .. lurek.scene.getTransitionProgress())
+    print("transition_progress_eased=" .. lurek.scene.getTransitionProgressEased())
+
+    lurek.scene.setData("score", 42)
+    print("has_score=" .. tostring(lurek.scene.hasData("score")))
+    local score = lurek.scene.getData("score")
+    print("score=" .. tostring(score))
+
+    local transition_types = lurek.scene.getTransitionTypes()
+    print("transition_types=" .. #transition_types)
+
+    lurek.scene.draw()
+
+    local queued = lurek.scene.getQueuedTransitionCount()
+    print("queued=" .. queued)
+    lurek.scene.clearQueuedTransitions()
+
+    lurek.scene.preload("main_scene", function() return {} end)
+    print("is_preloaded=" .. tostring(lurek.scene.isPreloaded("main_scene")))
+
+    local snap = lurek.scene.serializeScene()
+    print("snapshot=" .. tostring(snap ~= nil))
+    lurek.scene.deserializeScene(snap)
+
+    lurek.scene.pop()
+    lurek.scene.clear()
+    print("cleared=" .. tostring(lurek.scene.isEmpty()))
+end
+
 --@api-stub: lurek.scene.getTransitionProgressEased
+-- Full lurek.scene module: define, push/pop, transitions, data, serialize, registry. Focus: getTransitionProgressEased.
+do
+    lurek.scene.define({
+        name = "main_scene",
+        enter = function() print("enter_main") end,
+        update = function(dt) end,
+        draw = function() end,
+        leave = function() print("leave_main") end
+    })
+
+    print("registered=" .. tostring(lurek.scene.hasRegistered("main_scene")))
+    local reg = lurek.scene.getRegistered("main_scene")
+    print("reg_def=" .. tostring(reg ~= nil))
+    local names = lurek.scene.getRegisteredNames()
+    print("reg_names=" .. #names)
+
+    local scene_def = {
+        enter = function() print("enter_main") end,
+        update = function(dt) end,
+        draw = function() end,
+        leave = function() print("leave_main") end
+    }
+
+    lurek.scene.push(scene_def)
+    print("stack_size=" .. lurek.scene.getStackSize())
+    print("is_empty=" .. tostring(lurek.scene.isEmpty()))
+    print("depth=" .. lurek.scene.depth())
+
+    local current = lurek.scene.getCurrent()
+    print("current=" .. tostring(current))
+    local layer = lurek.scene.getCurrentLayer()
+    print("layer=" .. tostring(layer))
+
+    print("is_transitioning=" .. tostring(lurek.scene.isTransitioning()))
+    print("is_overlay=" .. tostring(lurek.scene.isOverlay()))
+    print("transition_progress=" .. lurek.scene.getTransitionProgress())
+    print("transition_progress_eased=" .. lurek.scene.getTransitionProgressEased())
+
+    lurek.scene.setData("score", 42)
+    print("has_score=" .. tostring(lurek.scene.hasData("score")))
+    local score = lurek.scene.getData("score")
+    print("score=" .. tostring(score))
+
+    local transition_types = lurek.scene.getTransitionTypes()
+    print("transition_types=" .. #transition_types)
+
+    lurek.scene.draw()
+
+    local queued = lurek.scene.getQueuedTransitionCount()
+    print("queued=" .. queued)
+    lurek.scene.clearQueuedTransitions()
+
+    lurek.scene.preload("main_scene", function() return {} end)
+    print("is_preloaded=" .. tostring(lurek.scene.isPreloaded("main_scene")))
+
+    local snap = lurek.scene.serializeScene()
+    print("snapshot=" .. tostring(snap ~= nil))
+    lurek.scene.deserializeScene(snap)
+
+    lurek.scene.pop()
+    lurek.scene.clear()
+    print("cleared=" .. tostring(lurek.scene.isEmpty()))
+end
+
 --@api-stub: lurek.scene.hasData
+-- Full lurek.scene module: define, push/pop, transitions, data, serialize, registry. Focus: hasData.
+do
+    lurek.scene.define({
+        name = "main_scene",
+        enter = function() print("enter_main") end,
+        update = function(dt) end,
+        draw = function() end,
+        leave = function() print("leave_main") end
+    })
+
+    print("registered=" .. tostring(lurek.scene.hasRegistered("main_scene")))
+    local reg = lurek.scene.getRegistered("main_scene")
+    print("reg_def=" .. tostring(reg ~= nil))
+    local names = lurek.scene.getRegisteredNames()
+    print("reg_names=" .. #names)
+
+    local scene_def = {
+        enter = function() print("enter_main") end,
+        update = function(dt) end,
+        draw = function() end,
+        leave = function() print("leave_main") end
+    }
+
+    lurek.scene.push(scene_def)
+    print("stack_size=" .. lurek.scene.getStackSize())
+    print("is_empty=" .. tostring(lurek.scene.isEmpty()))
+    print("depth=" .. lurek.scene.depth())
+
+    local current = lurek.scene.getCurrent()
+    print("current=" .. tostring(current))
+    local layer = lurek.scene.getCurrentLayer()
+    print("layer=" .. tostring(layer))
+
+    print("is_transitioning=" .. tostring(lurek.scene.isTransitioning()))
+    print("is_overlay=" .. tostring(lurek.scene.isOverlay()))
+    print("transition_progress=" .. lurek.scene.getTransitionProgress())
+    print("transition_progress_eased=" .. lurek.scene.getTransitionProgressEased())
+
+    lurek.scene.setData("score", 42)
+    print("has_score=" .. tostring(lurek.scene.hasData("score")))
+    local score = lurek.scene.getData("score")
+    print("score=" .. tostring(score))
+
+    local transition_types = lurek.scene.getTransitionTypes()
+    print("transition_types=" .. #transition_types)
+
+    lurek.scene.draw()
+
+    local queued = lurek.scene.getQueuedTransitionCount()
+    print("queued=" .. queued)
+    lurek.scene.clearQueuedTransitions()
+
+    lurek.scene.preload("main_scene", function() return {} end)
+    print("is_preloaded=" .. tostring(lurek.scene.isPreloaded("main_scene")))
+
+    local snap = lurek.scene.serializeScene()
+    print("snapshot=" .. tostring(snap ~= nil))
+    lurek.scene.deserializeScene(snap)
+
+    lurek.scene.pop()
+    lurek.scene.clear()
+    print("cleared=" .. tostring(lurek.scene.isEmpty()))
+end
+
 --@api-stub: lurek.scene.hasRegistered
+-- Full lurek.scene module: define, push/pop, transitions, data, serialize, registry. Focus: hasRegistered.
+do
+    lurek.scene.define({
+        name = "main_scene",
+        enter = function() print("enter_main") end,
+        update = function(dt) end,
+        draw = function() end,
+        leave = function() print("leave_main") end
+    })
+
+    print("registered=" .. tostring(lurek.scene.hasRegistered("main_scene")))
+    local reg = lurek.scene.getRegistered("main_scene")
+    print("reg_def=" .. tostring(reg ~= nil))
+    local names = lurek.scene.getRegisteredNames()
+    print("reg_names=" .. #names)
+
+    local scene_def = {
+        enter = function() print("enter_main") end,
+        update = function(dt) end,
+        draw = function() end,
+        leave = function() print("leave_main") end
+    }
+
+    lurek.scene.push(scene_def)
+    print("stack_size=" .. lurek.scene.getStackSize())
+    print("is_empty=" .. tostring(lurek.scene.isEmpty()))
+    print("depth=" .. lurek.scene.depth())
+
+    local current = lurek.scene.getCurrent()
+    print("current=" .. tostring(current))
+    local layer = lurek.scene.getCurrentLayer()
+    print("layer=" .. tostring(layer))
+
+    print("is_transitioning=" .. tostring(lurek.scene.isTransitioning()))
+    print("is_overlay=" .. tostring(lurek.scene.isOverlay()))
+    print("transition_progress=" .. lurek.scene.getTransitionProgress())
+    print("transition_progress_eased=" .. lurek.scene.getTransitionProgressEased())
+
+    lurek.scene.setData("score", 42)
+    print("has_score=" .. tostring(lurek.scene.hasData("score")))
+    local score = lurek.scene.getData("score")
+    print("score=" .. tostring(score))
+
+    local transition_types = lurek.scene.getTransitionTypes()
+    print("transition_types=" .. #transition_types)
+
+    lurek.scene.draw()
+
+    local queued = lurek.scene.getQueuedTransitionCount()
+    print("queued=" .. queued)
+    lurek.scene.clearQueuedTransitions()
+
+    lurek.scene.preload("main_scene", function() return {} end)
+    print("is_preloaded=" .. tostring(lurek.scene.isPreloaded("main_scene")))
+
+    local snap = lurek.scene.serializeScene()
+    print("snapshot=" .. tostring(snap ~= nil))
+    lurek.scene.deserializeScene(snap)
+
+    lurek.scene.pop()
+    lurek.scene.clear()
+    print("cleared=" .. tostring(lurek.scene.isEmpty()))
+end
+
 --@api-stub: lurek.scene.isEmpty
+-- Full lurek.scene module: define, push/pop, transitions, data, serialize, registry. Focus: isEmpty.
+do
+    lurek.scene.define({
+        name = "main_scene",
+        enter = function() print("enter_main") end,
+        update = function(dt) end,
+        draw = function() end,
+        leave = function() print("leave_main") end
+    })
+
+    print("registered=" .. tostring(lurek.scene.hasRegistered("main_scene")))
+    local reg = lurek.scene.getRegistered("main_scene")
+    print("reg_def=" .. tostring(reg ~= nil))
+    local names = lurek.scene.getRegisteredNames()
+    print("reg_names=" .. #names)
+
+    local scene_def = {
+        enter = function() print("enter_main") end,
+        update = function(dt) end,
+        draw = function() end,
+        leave = function() print("leave_main") end
+    }
+
+    lurek.scene.push(scene_def)
+    print("stack_size=" .. lurek.scene.getStackSize())
+    print("is_empty=" .. tostring(lurek.scene.isEmpty()))
+    print("depth=" .. lurek.scene.depth())
+
+    local current = lurek.scene.getCurrent()
+    print("current=" .. tostring(current))
+    local layer = lurek.scene.getCurrentLayer()
+    print("layer=" .. tostring(layer))
+
+    print("is_transitioning=" .. tostring(lurek.scene.isTransitioning()))
+    print("is_overlay=" .. tostring(lurek.scene.isOverlay()))
+    print("transition_progress=" .. lurek.scene.getTransitionProgress())
+    print("transition_progress_eased=" .. lurek.scene.getTransitionProgressEased())
+
+    lurek.scene.setData("score", 42)
+    print("has_score=" .. tostring(lurek.scene.hasData("score")))
+    local score = lurek.scene.getData("score")
+    print("score=" .. tostring(score))
+
+    local transition_types = lurek.scene.getTransitionTypes()
+    print("transition_types=" .. #transition_types)
+
+    lurek.scene.draw()
+
+    local queued = lurek.scene.getQueuedTransitionCount()
+    print("queued=" .. queued)
+    lurek.scene.clearQueuedTransitions()
+
+    lurek.scene.preload("main_scene", function() return {} end)
+    print("is_preloaded=" .. tostring(lurek.scene.isPreloaded("main_scene")))
+
+    local snap = lurek.scene.serializeScene()
+    print("snapshot=" .. tostring(snap ~= nil))
+    lurek.scene.deserializeScene(snap)
+
+    lurek.scene.pop()
+    lurek.scene.clear()
+    print("cleared=" .. tostring(lurek.scene.isEmpty()))
+end
+
 --@api-stub: lurek.scene.isOverlay
+-- Full lurek.scene module: define, push/pop, transitions, data, serialize, registry. Focus: isOverlay.
+do
+    lurek.scene.define({
+        name = "main_scene",
+        enter = function() print("enter_main") end,
+        update = function(dt) end,
+        draw = function() end,
+        leave = function() print("leave_main") end
+    })
+
+    print("registered=" .. tostring(lurek.scene.hasRegistered("main_scene")))
+    local reg = lurek.scene.getRegistered("main_scene")
+    print("reg_def=" .. tostring(reg ~= nil))
+    local names = lurek.scene.getRegisteredNames()
+    print("reg_names=" .. #names)
+
+    local scene_def = {
+        enter = function() print("enter_main") end,
+        update = function(dt) end,
+        draw = function() end,
+        leave = function() print("leave_main") end
+    }
+
+    lurek.scene.push(scene_def)
+    print("stack_size=" .. lurek.scene.getStackSize())
+    print("is_empty=" .. tostring(lurek.scene.isEmpty()))
+    print("depth=" .. lurek.scene.depth())
+
+    local current = lurek.scene.getCurrent()
+    print("current=" .. tostring(current))
+    local layer = lurek.scene.getCurrentLayer()
+    print("layer=" .. tostring(layer))
+
+    print("is_transitioning=" .. tostring(lurek.scene.isTransitioning()))
+    print("is_overlay=" .. tostring(lurek.scene.isOverlay()))
+    print("transition_progress=" .. lurek.scene.getTransitionProgress())
+    print("transition_progress_eased=" .. lurek.scene.getTransitionProgressEased())
+
+    lurek.scene.setData("score", 42)
+    print("has_score=" .. tostring(lurek.scene.hasData("score")))
+    local score = lurek.scene.getData("score")
+    print("score=" .. tostring(score))
+
+    local transition_types = lurek.scene.getTransitionTypes()
+    print("transition_types=" .. #transition_types)
+
+    lurek.scene.draw()
+
+    local queued = lurek.scene.getQueuedTransitionCount()
+    print("queued=" .. queued)
+    lurek.scene.clearQueuedTransitions()
+
+    lurek.scene.preload("main_scene", function() return {} end)
+    print("is_preloaded=" .. tostring(lurek.scene.isPreloaded("main_scene")))
+
+    local snap = lurek.scene.serializeScene()
+    print("snapshot=" .. tostring(snap ~= nil))
+    lurek.scene.deserializeScene(snap)
+
+    lurek.scene.pop()
+    lurek.scene.clear()
+    print("cleared=" .. tostring(lurek.scene.isEmpty()))
+end
+
 --@api-stub: lurek.scene.isPreloaded
+-- Full lurek.scene module: define, push/pop, transitions, data, serialize, registry. Focus: isPreloaded.
+do
+    lurek.scene.define({
+        name = "main_scene",
+        enter = function() print("enter_main") end,
+        update = function(dt) end,
+        draw = function() end,
+        leave = function() print("leave_main") end
+    })
+
+    print("registered=" .. tostring(lurek.scene.hasRegistered("main_scene")))
+    local reg = lurek.scene.getRegistered("main_scene")
+    print("reg_def=" .. tostring(reg ~= nil))
+    local names = lurek.scene.getRegisteredNames()
+    print("reg_names=" .. #names)
+
+    local scene_def = {
+        enter = function() print("enter_main") end,
+        update = function(dt) end,
+        draw = function() end,
+        leave = function() print("leave_main") end
+    }
+
+    lurek.scene.push(scene_def)
+    print("stack_size=" .. lurek.scene.getStackSize())
+    print("is_empty=" .. tostring(lurek.scene.isEmpty()))
+    print("depth=" .. lurek.scene.depth())
+
+    local current = lurek.scene.getCurrent()
+    print("current=" .. tostring(current))
+    local layer = lurek.scene.getCurrentLayer()
+    print("layer=" .. tostring(layer))
+
+    print("is_transitioning=" .. tostring(lurek.scene.isTransitioning()))
+    print("is_overlay=" .. tostring(lurek.scene.isOverlay()))
+    print("transition_progress=" .. lurek.scene.getTransitionProgress())
+    print("transition_progress_eased=" .. lurek.scene.getTransitionProgressEased())
+
+    lurek.scene.setData("score", 42)
+    print("has_score=" .. tostring(lurek.scene.hasData("score")))
+    local score = lurek.scene.getData("score")
+    print("score=" .. tostring(score))
+
+    local transition_types = lurek.scene.getTransitionTypes()
+    print("transition_types=" .. #transition_types)
+
+    lurek.scene.draw()
+
+    local queued = lurek.scene.getQueuedTransitionCount()
+    print("queued=" .. queued)
+    lurek.scene.clearQueuedTransitions()
+
+    lurek.scene.preload("main_scene", function() return {} end)
+    print("is_preloaded=" .. tostring(lurek.scene.isPreloaded("main_scene")))
+
+    local snap = lurek.scene.serializeScene()
+    print("snapshot=" .. tostring(snap ~= nil))
+    lurek.scene.deserializeScene(snap)
+
+    lurek.scene.pop()
+    lurek.scene.clear()
+    print("cleared=" .. tostring(lurek.scene.isEmpty()))
+end
+
 --@api-stub: lurek.scene.isTransitioning
+-- Full lurek.scene module: define, push/pop, transitions, data, serialize, registry. Focus: isTransitioning.
+do
+    lurek.scene.define({
+        name = "main_scene",
+        enter = function() print("enter_main") end,
+        update = function(dt) end,
+        draw = function() end,
+        leave = function() print("leave_main") end
+    })
+
+    print("registered=" .. tostring(lurek.scene.hasRegistered("main_scene")))
+    local reg = lurek.scene.getRegistered("main_scene")
+    print("reg_def=" .. tostring(reg ~= nil))
+    local names = lurek.scene.getRegisteredNames()
+    print("reg_names=" .. #names)
+
+    local scene_def = {
+        enter = function() print("enter_main") end,
+        update = function(dt) end,
+        draw = function() end,
+        leave = function() print("leave_main") end
+    }
+
+    lurek.scene.push(scene_def)
+    print("stack_size=" .. lurek.scene.getStackSize())
+    print("is_empty=" .. tostring(lurek.scene.isEmpty()))
+    print("depth=" .. lurek.scene.depth())
+
+    local current = lurek.scene.getCurrent()
+    print("current=" .. tostring(current))
+    local layer = lurek.scene.getCurrentLayer()
+    print("layer=" .. tostring(layer))
+
+    print("is_transitioning=" .. tostring(lurek.scene.isTransitioning()))
+    print("is_overlay=" .. tostring(lurek.scene.isOverlay()))
+    print("transition_progress=" .. lurek.scene.getTransitionProgress())
+    print("transition_progress_eased=" .. lurek.scene.getTransitionProgressEased())
+
+    lurek.scene.setData("score", 42)
+    print("has_score=" .. tostring(lurek.scene.hasData("score")))
+    local score = lurek.scene.getData("score")
+    print("score=" .. tostring(score))
+
+    local transition_types = lurek.scene.getTransitionTypes()
+    print("transition_types=" .. #transition_types)
+
+    lurek.scene.draw()
+
+    local queued = lurek.scene.getQueuedTransitionCount()
+    print("queued=" .. queued)
+    lurek.scene.clearQueuedTransitions()
+
+    lurek.scene.preload("main_scene", function() return {} end)
+    print("is_preloaded=" .. tostring(lurek.scene.isPreloaded("main_scene")))
+
+    local snap = lurek.scene.serializeScene()
+    print("snapshot=" .. tostring(snap ~= nil))
+    lurek.scene.deserializeScene(snap)
+
+    lurek.scene.pop()
+    lurek.scene.clear()
+    print("cleared=" .. tostring(lurek.scene.isEmpty()))
+end
+
 --@api-stub: lurek.scene.pop
+-- Full lurek.scene module: define, push/pop, transitions, data, serialize, registry. Focus: pop.
+do
+    lurek.scene.define({
+        name = "main_scene",
+        enter = function() print("enter_main") end,
+        update = function(dt) end,
+        draw = function() end,
+        leave = function() print("leave_main") end
+    })
+
+    print("registered=" .. tostring(lurek.scene.hasRegistered("main_scene")))
+    local reg = lurek.scene.getRegistered("main_scene")
+    print("reg_def=" .. tostring(reg ~= nil))
+    local names = lurek.scene.getRegisteredNames()
+    print("reg_names=" .. #names)
+
+    local scene_def = {
+        enter = function() print("enter_main") end,
+        update = function(dt) end,
+        draw = function() end,
+        leave = function() print("leave_main") end
+    }
+
+    lurek.scene.push(scene_def)
+    print("stack_size=" .. lurek.scene.getStackSize())
+    print("is_empty=" .. tostring(lurek.scene.isEmpty()))
+    print("depth=" .. lurek.scene.depth())
+
+    local current = lurek.scene.getCurrent()
+    print("current=" .. tostring(current))
+    local layer = lurek.scene.getCurrentLayer()
+    print("layer=" .. tostring(layer))
+
+    print("is_transitioning=" .. tostring(lurek.scene.isTransitioning()))
+    print("is_overlay=" .. tostring(lurek.scene.isOverlay()))
+    print("transition_progress=" .. lurek.scene.getTransitionProgress())
+    print("transition_progress_eased=" .. lurek.scene.getTransitionProgressEased())
+
+    lurek.scene.setData("score", 42)
+    print("has_score=" .. tostring(lurek.scene.hasData("score")))
+    local score = lurek.scene.getData("score")
+    print("score=" .. tostring(score))
+
+    local transition_types = lurek.scene.getTransitionTypes()
+    print("transition_types=" .. #transition_types)
+
+    lurek.scene.draw()
+
+    local queued = lurek.scene.getQueuedTransitionCount()
+    print("queued=" .. queued)
+    lurek.scene.clearQueuedTransitions()
+
+    lurek.scene.preload("main_scene", function() return {} end)
+    print("is_preloaded=" .. tostring(lurek.scene.isPreloaded("main_scene")))
+
+    local snap = lurek.scene.serializeScene()
+    print("snapshot=" .. tostring(snap ~= nil))
+    lurek.scene.deserializeScene(snap)
+
+    lurek.scene.pop()
+    lurek.scene.clear()
+    print("cleared=" .. tostring(lurek.scene.isEmpty()))
+end
+
 --@api-stub: lurek.scene.pushPreloaded
--- Full lurek.scene module: define, push/pop, transitions, data, serialize, registry.
+-- Full lurek.scene module: define, push/pop, transitions, data, serialize, registry. Focus: pushPreloaded.
 do
     lurek.scene.define({
         name = "main_scene",
@@ -540,9 +1992,29 @@ do
 end
 
 --@api-stub: LDepthSorter:add
+-- LDepthSorter: queue items and flush in depth order. Focus: add.
+do
+    local ds = lurek.scene.newDepthSorter()
+    ds:add(function() lurek.render.circle("fill", 100, 100, 20) end, 5.0)
+    ds:add(function() lurek.render.circle("fill", 200, 100, 20) end, 2.0)
+    local count = ds:getCount()
+    ds:flush()
+    print("depth sorter count:", count)
+end
+
 --@api-stub: LDepthSorter:flush
+-- LDepthSorter: queue items and flush in depth order. Focus: flush.
+do
+    local ds = lurek.scene.newDepthSorter()
+    ds:add(function() lurek.render.circle("fill", 100, 100, 20) end, 5.0)
+    ds:add(function() lurek.render.circle("fill", 200, 100, 20) end, 2.0)
+    local count = ds:getCount()
+    ds:flush()
+    print("depth sorter count:", count)
+end
+
 --@api-stub: LDepthSorter:getCount
--- LDepthSorter: queue items and flush in depth order.
+-- LDepthSorter: queue items and flush in depth order. Focus: getCount.
 do
     local ds = lurek.scene.newDepthSorter()
     ds:add(function() lurek.render.circle("fill", 100, 100, 20) end, 5.0)
@@ -553,9 +2025,27 @@ do
 end
 
 --@api-stub: LDepthSorter:type
+-- LDepthSorter type checks and newScene. Focus: type.
+do
+    local ds = lurek.scene.newDepthSorter()
+    local t = ds:type()
+    local ok = ds:typeOf("LDepthSorter")
+    local sn = lurek.scene.newScene({name = "test_new", enter = function() end, draw = function() end})
+    print("type:", t, "newScene ok")
+end
+
 --@api-stub: LDepthSorter:typeOf
+-- LDepthSorter type checks and newScene. Focus: typeOf.
+do
+    local ds = lurek.scene.newDepthSorter()
+    local t = ds:type()
+    local ok = ds:typeOf("LDepthSorter")
+    local sn = lurek.scene.newScene({name = "test_new", enter = function() end, draw = function() end})
+    print("type:", t, "newScene ok")
+end
+
 --@api-stub: lurek.scene.newScene
--- LDepthSorter type checks and newScene.
+-- LDepthSorter type checks and newScene. Focus: newScene.
 do
     local ds = lurek.scene.newDepthSorter()
     local t = ds:type()
@@ -565,9 +2055,27 @@ do
 end
 
 --@api-stub: lurek.scene.process
+-- Scene process, processPhysics, and removeData. Focus: process.
+do
+    lurek.scene.process(0.016)
+    lurek.scene.processPhysics(0.016)
+    lurek.scene.setData("_test_key", 42)
+    lurek.scene.removeData("_test_key")
+    print("process, processPhysics, removeData ok")
+end
+
 --@api-stub: lurek.scene.processPhysics
+-- Scene process, processPhysics, and removeData. Focus: processPhysics.
+do
+    lurek.scene.process(0.016)
+    lurek.scene.processPhysics(0.016)
+    lurek.scene.setData("_test_key", 42)
+    lurek.scene.removeData("_test_key")
+    print("process, processPhysics, removeData ok")
+end
+
 --@api-stub: lurek.scene.removeData
--- Scene process, processPhysics, and removeData.
+-- Scene process, processPhysics, and removeData. Focus: removeData.
 do
     lurek.scene.process(0.016)
     lurek.scene.processPhysics(0.016)
@@ -577,9 +2085,27 @@ do
 end
 
 --@api-stub: lurek.scene.render
+-- Scene render, renderUi, and layer selection. Focus: render.
+do
+    lurek.scene.setCurrentLayer(0)
+    lurek.scene.render()
+    lurek.scene.renderUi()
+    local layer = lurek.scene.getCurrentLayer()
+    print("render, renderUi, setCurrentLayer ok")
+end
+
 --@api-stub: lurek.scene.renderUi
+-- Scene render, renderUi, and layer selection. Focus: renderUi.
+do
+    lurek.scene.setCurrentLayer(0)
+    lurek.scene.render()
+    lurek.scene.renderUi()
+    local layer = lurek.scene.getCurrentLayer()
+    print("render, renderUi, setCurrentLayer ok")
+end
+
 --@api-stub: lurek.scene.setCurrentLayer
--- Scene render, renderUi, and layer selection.
+-- Scene render, renderUi, and layer selection. Focus: setCurrentLayer.
 do
     lurek.scene.setCurrentLayer(0)
     lurek.scene.render()

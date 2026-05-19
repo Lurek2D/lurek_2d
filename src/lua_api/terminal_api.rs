@@ -1495,34 +1495,28 @@ pub fn register(lua: &Lua, luna: &LuaTable, state: Rc<RefCell<SharedState>>) -> 
                 String,
                 LuaTable,
             )| {
+                let read_rgb = |table: &LuaTable| -> LuaResult<[f32; 4]> {
+                    let red: u8 = table.get(1).or_else(|_| table.get("r"))?;
+                    let green: u8 = table.get(2).or_else(|_| table.get("g"))?;
+                    let blue: u8 = table.get(3).or_else(|_| table.get("b"))?;
+                    Ok([
+                        red as f32 / 255.0,
+                        green as f32 / 255.0,
+                        blue as f32 / 255.0,
+                        1.0,
+                    ])
+                };
                 let mut rules: Vec<HighlightRule> = Vec::new();
                 for pair in rules_t.sequence_values::<LuaTable>() {
                     let rt = pair?;
                     let pattern: String = rt.get("pattern")?;
                     let fg_t: LuaTable = rt.get("fg")?;
-                    let fr: u8 = fg_t.get(1)?;
-                    let fg_c: u8 = fg_t.get(2)?;
-                    let fb: u8 = fg_t.get(3)?;
+                    let fg = read_rgb(&fg_t)?;
                     let bg_opt: Option<LuaTable> = rt.get("bg").ok();
-                    let bg = bg_opt.and_then(|bt| {
-                        let br: u8 = bt.get(1).ok()?;
-                        let bg_c: u8 = bt.get(2).ok()?;
-                        let bb: u8 = bt.get(3).ok()?;
-                        Some([
-                            br as f32 / 255.0,
-                            bg_c as f32 / 255.0,
-                            bb as f32 / 255.0,
-                            1.0,
-                        ])
-                    });
+                    let bg = bg_opt.map(|bt| read_rgb(&bt)).transpose()?;
                     rules.push(HighlightRule {
                         pattern,
-                        fg: [
-                            fr as f32 / 255.0,
-                            fg_c as f32 / 255.0,
-                            fb as f32 / 255.0,
-                            1.0,
-                        ],
+                        fg,
                         bg,
                     });
                 }

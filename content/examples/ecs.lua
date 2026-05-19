@@ -4,6 +4,7 @@
 
 --- ECS Module Part 1: Universe creation, entities, components, systems, queries
 
+
 --@api-stub: lurek.ecs.newUniverse
 -- Creates an empty ECS universe for entity, component, system, and relationship management.
 do
@@ -237,6 +238,7 @@ end
 
 --- ECS Module Part 2: Blueprints, hierarchy, relations, serialization, observers, advanced queries
 
+
 --@api-stub: LUniverse:defineBlueprint
 -- Defines a named entity blueprint from a component table.
 do
@@ -465,12 +467,77 @@ end
 
 --- ECS Module: tag system, blueprints, layers, snapshots
 
+
 --@api-stub: LUniverse:defineTag
+-- Tag definition and entity tagging. Focus: defineTag.
+do
+    ---@type LUniverse
+    local u = lurek.ecs.newUniverse()
+    u:defineTag("enemy")
+    local e1 = u:spawn()
+    local e2 = u:spawn()
+    u:addTag(e1, "enemy")
+    print(u:hasTag(e1, "enemy"))
+    print(u:hasTag(e2, "enemy"))
+    local tags = u:getTags(e1)
+    for _, t in ipairs(tags) do print(t) end
+    u:removeTag(e1, "enemy")
+    print(u:hasTag(e1, "enemy"))
+end
+
 --@api-stub: LUniverse:addTag
+-- Tag definition and entity tagging. Focus: addTag.
+do
+    ---@type LUniverse
+    local u = lurek.ecs.newUniverse()
+    u:defineTag("enemy")
+    local e1 = u:spawn()
+    local e2 = u:spawn()
+    u:addTag(e1, "enemy")
+    print(u:hasTag(e1, "enemy"))
+    print(u:hasTag(e2, "enemy"))
+    local tags = u:getTags(e1)
+    for _, t in ipairs(tags) do print(t) end
+    u:removeTag(e1, "enemy")
+    print(u:hasTag(e1, "enemy"))
+end
+
 --@api-stub: LUniverse:removeTag
+-- Tag definition and entity tagging. Focus: removeTag.
+do
+    ---@type LUniverse
+    local u = lurek.ecs.newUniverse()
+    u:defineTag("enemy")
+    local e1 = u:spawn()
+    local e2 = u:spawn()
+    u:addTag(e1, "enemy")
+    print(u:hasTag(e1, "enemy"))
+    print(u:hasTag(e2, "enemy"))
+    local tags = u:getTags(e1)
+    for _, t in ipairs(tags) do print(t) end
+    u:removeTag(e1, "enemy")
+    print(u:hasTag(e1, "enemy"))
+end
+
 --@api-stub: LUniverse:hasTag
+-- Tag definition and entity tagging. Focus: hasTag.
+do
+    ---@type LUniverse
+    local u = lurek.ecs.newUniverse()
+    u:defineTag("enemy")
+    local e1 = u:spawn()
+    local e2 = u:spawn()
+    u:addTag(e1, "enemy")
+    print(u:hasTag(e1, "enemy"))
+    print(u:hasTag(e2, "enemy"))
+    local tags = u:getTags(e1)
+    for _, t in ipairs(tags) do print(t) end
+    u:removeTag(e1, "enemy")
+    print(u:hasTag(e1, "enemy"))
+end
+
 --@api-stub: LUniverse:getTags
--- Tag definition and entity tagging.
+-- Tag definition and entity tagging. Focus: getTags.
 do
     ---@type LUniverse
     local u = lurek.ecs.newUniverse()
@@ -487,13 +554,115 @@ do
 end
 
 --@api-stub: LUniverse:bitmapTag
+-- Bitmap tag queries for bulk entity filtering. Focus: bitmapTag.
+do
+    ---@type LUniverse
+    local u = lurek.ecs.newUniverse()
+    u:defineTag("enemy")
+    local e1 = u:spawn()
+    u:bitmapTag(e1, "enemy")
+    local bit = u:getBitmapTagBit("enemy")
+    print("bit = " .. tostring(bit))
+    print(u:hasBitmapTag(e1, "enemy"))
+    local all = u:queryBitmapAll({ "enemy" })
+    local any = u:queryBitmapAny({ "enemy" })
+    local tagged = u:queryBitmapTag("enemy")
+    for _, id in ipairs(tagged) do print(id) end
+    u:bitmapUntag(e1, "enemy")
+end
+
 --@api-stub: LUniverse:bitmapUntag
+-- Bitmap tag queries for bulk entity filtering. Focus: bitmapUntag.
+do
+    ---@type LUniverse
+    local u = lurek.ecs.newUniverse()
+    u:defineTag("enemy")
+    local e1 = u:spawn()
+    u:bitmapTag(e1, "enemy")
+    local bit = u:getBitmapTagBit("enemy")
+    print("bit = " .. tostring(bit))
+    print(u:hasBitmapTag(e1, "enemy"))
+    local all = u:queryBitmapAll({ "enemy" })
+    local any = u:queryBitmapAny({ "enemy" })
+    local tagged = u:queryBitmapTag("enemy")
+    for _, id in ipairs(tagged) do print(id) end
+    u:bitmapUntag(e1, "enemy")
+end
+
 --@api-stub: LUniverse:getBitmapTagBit
+-- Bitmap tag queries for bulk entity filtering. Focus: getBitmapTagBit.
+do
+    ---@type LUniverse
+    local u = lurek.ecs.newUniverse()
+    u:defineTag("enemy")
+    local e1 = u:spawn()
+    u:bitmapTag(e1, "enemy")
+    local bit = u:getBitmapTagBit("enemy")
+    print("bit = " .. tostring(bit))
+    print(u:hasBitmapTag(e1, "enemy"))
+    local all = u:queryBitmapAll({ "enemy" })
+    local any = u:queryBitmapAny({ "enemy" })
+    local tagged = u:queryBitmapTag("enemy")
+    for _, id in ipairs(tagged) do print(id) end
+    u:bitmapUntag(e1, "enemy")
+end
+
 --@api-stub: LUniverse:hasBitmapTag
+-- Bitmap tag queries for bulk entity filtering. Focus: hasBitmapTag.
+do
+    ---@type LUniverse
+    local u = lurek.ecs.newUniverse()
+    u:defineTag("enemy")
+    local e1 = u:spawn()
+    u:bitmapTag(e1, "enemy")
+    local bit = u:getBitmapTagBit("enemy")
+    print("bit = " .. tostring(bit))
+    print(u:hasBitmapTag(e1, "enemy"))
+    local all = u:queryBitmapAll({ "enemy" })
+    local any = u:queryBitmapAny({ "enemy" })
+    local tagged = u:queryBitmapTag("enemy")
+    for _, id in ipairs(tagged) do print(id) end
+    u:bitmapUntag(e1, "enemy")
+end
+
 --@api-stub: LUniverse:queryBitmapAll
+-- Bitmap tag queries for bulk entity filtering. Focus: queryBitmapAll.
+do
+    ---@type LUniverse
+    local u = lurek.ecs.newUniverse()
+    u:defineTag("enemy")
+    local e1 = u:spawn()
+    u:bitmapTag(e1, "enemy")
+    local bit = u:getBitmapTagBit("enemy")
+    print("bit = " .. tostring(bit))
+    print(u:hasBitmapTag(e1, "enemy"))
+    local all = u:queryBitmapAll({ "enemy" })
+    local any = u:queryBitmapAny({ "enemy" })
+    local tagged = u:queryBitmapTag("enemy")
+    for _, id in ipairs(tagged) do print(id) end
+    u:bitmapUntag(e1, "enemy")
+end
+
 --@api-stub: LUniverse:queryBitmapAny
+-- Bitmap tag queries for bulk entity filtering. Focus: queryBitmapAny.
+do
+    ---@type LUniverse
+    local u = lurek.ecs.newUniverse()
+    u:defineTag("enemy")
+    local e1 = u:spawn()
+    u:bitmapTag(e1, "enemy")
+    local bit = u:getBitmapTagBit("enemy")
+    print("bit = " .. tostring(bit))
+    print(u:hasBitmapTag(e1, "enemy"))
+    local all = u:queryBitmapAll({ "enemy" })
+    local any = u:queryBitmapAny({ "enemy" })
+    local tagged = u:queryBitmapTag("enemy")
+    for _, id in ipairs(tagged) do print(id) end
+    u:bitmapUntag(e1, "enemy")
+end
+
 --@api-stub: LUniverse:queryBitmapTag
--- Bitmap tag queries for bulk entity filtering.
+-- Bitmap tag queries for bulk entity filtering. Focus: queryBitmapTag.
 do
     ---@type LUniverse
     local u = lurek.ecs.newUniverse()
@@ -511,10 +680,52 @@ do
 end
 
 --@api-stub: LUniverse:extendBlueprint
+-- Blueprint extension and introspection. Focus: extendBlueprint.
+do
+    ---@type LUniverse
+    local u = lurek.ecs.newUniverse()
+    u:defineBlueprint("base", { hp = 100 })
+    u:extendBlueprint("enemy", "base", { damage = 10 })
+    print(u:hasBlueprint("enemy"))
+    print(u:hasBlueprint("missing"))
+    local names = u:listBlueprints()
+    for _, n in ipairs(names) do print(n) end
+    u:removeBlueprint("enemy")
+    print(u:hasBlueprint("enemy"))
+end
+
 --@api-stub: LUniverse:hasBlueprint
+-- Blueprint extension and introspection. Focus: hasBlueprint.
+do
+    ---@type LUniverse
+    local u = lurek.ecs.newUniverse()
+    u:defineBlueprint("base", { hp = 100 })
+    u:extendBlueprint("enemy", "base", { damage = 10 })
+    print(u:hasBlueprint("enemy"))
+    print(u:hasBlueprint("missing"))
+    local names = u:listBlueprints()
+    for _, n in ipairs(names) do print(n) end
+    u:removeBlueprint("enemy")
+    print(u:hasBlueprint("enemy"))
+end
+
 --@api-stub: LUniverse:listBlueprints
+-- Blueprint extension and introspection. Focus: listBlueprints.
+do
+    ---@type LUniverse
+    local u = lurek.ecs.newUniverse()
+    u:defineBlueprint("base", { hp = 100 })
+    u:extendBlueprint("enemy", "base", { damage = 10 })
+    print(u:hasBlueprint("enemy"))
+    print(u:hasBlueprint("missing"))
+    local names = u:listBlueprints()
+    for _, n in ipairs(names) do print(n) end
+    u:removeBlueprint("enemy")
+    print(u:hasBlueprint("enemy"))
+end
+
 --@api-stub: LUniverse:removeBlueprint
--- Blueprint extension and introspection.
+-- Blueprint extension and introspection. Focus: removeBlueprint.
 do
     ---@type LUniverse
     local u = lurek.ecs.newUniverse()
@@ -529,11 +740,83 @@ do
 end
 
 --@api-stub: LUniverse:getEntitiesByLayer
+-- Layer-based entity queries. Focus: getEntitiesByLayer.
+do
+    ---@type LUniverse
+    local u = lurek.ecs.newUniverse()
+    u:defineTag("unit")
+    local e = u:spawn()
+    u:setLayer(e, 2)
+    local layer = u:getLayer(e)
+    print("layer = " .. tostring(layer))
+    local byLayer = u:getEntitiesByLayer(2)
+    for _, id in ipairs(byLayer) do print(id) end
+    u:addTag(e, "unit")
+    local byTag = u:getEntitiesByTag("unit")
+    for _, id in ipairs(byTag) do print(id) end
+    local sorted = u:getEntitiesSorted()
+    print("sorted count = " .. #sorted)
+end
+
 --@api-stub: LUniverse:getEntitiesByTag
+-- Layer-based entity queries. Focus: getEntitiesByTag.
+do
+    ---@type LUniverse
+    local u = lurek.ecs.newUniverse()
+    u:defineTag("unit")
+    local e = u:spawn()
+    u:setLayer(e, 2)
+    local layer = u:getLayer(e)
+    print("layer = " .. tostring(layer))
+    local byLayer = u:getEntitiesByLayer(2)
+    for _, id in ipairs(byLayer) do print(id) end
+    u:addTag(e, "unit")
+    local byTag = u:getEntitiesByTag("unit")
+    for _, id in ipairs(byTag) do print(id) end
+    local sorted = u:getEntitiesSorted()
+    print("sorted count = " .. #sorted)
+end
+
 --@api-stub: LUniverse:getEntitiesSorted
+-- Layer-based entity queries. Focus: getEntitiesSorted.
+do
+    ---@type LUniverse
+    local u = lurek.ecs.newUniverse()
+    u:defineTag("unit")
+    local e = u:spawn()
+    u:setLayer(e, 2)
+    local layer = u:getLayer(e)
+    print("layer = " .. tostring(layer))
+    local byLayer = u:getEntitiesByLayer(2)
+    for _, id in ipairs(byLayer) do print(id) end
+    u:addTag(e, "unit")
+    local byTag = u:getEntitiesByTag("unit")
+    for _, id in ipairs(byTag) do print(id) end
+    local sorted = u:getEntitiesSorted()
+    print("sorted count = " .. #sorted)
+end
+
 --@api-stub: LUniverse:getLayer
+-- Layer-based entity queries. Focus: getLayer.
+do
+    ---@type LUniverse
+    local u = lurek.ecs.newUniverse()
+    u:defineTag("unit")
+    local e = u:spawn()
+    u:setLayer(e, 2)
+    local layer = u:getLayer(e)
+    print("layer = " .. tostring(layer))
+    local byLayer = u:getEntitiesByLayer(2)
+    for _, id in ipairs(byLayer) do print(id) end
+    u:addTag(e, "unit")
+    local byTag = u:getEntitiesByTag("unit")
+    for _, id in ipairs(byTag) do print(id) end
+    local sorted = u:getEntitiesSorted()
+    print("sorted count = " .. #sorted)
+end
+
 --@api-stub: LUniverse:setLayer
--- Layer-based entity queries.
+-- Layer-based entity queries. Focus: setLayer.
 do
     ---@type LUniverse
     local u = lurek.ecs.newUniverse()
@@ -552,10 +835,7 @@ do
 end
 
 --@api-stub: LUniverse:applySnapshot
---@api-stub: LUniverse:takeSnapshotDiff
---@api-stub: LUniverse:clear
---@api-stub: LUniverse:release
--- Snapshot diffing and universe lifecycle.
+-- Snapshot diffing and universe lifecycle. Focus: applySnapshot.
 do
     ---@type LUniverse
     local u = lurek.ecs.newUniverse()
@@ -563,7 +843,63 @@ do
     u:set(e, "pos", { x = 1, y = 2 })
     local diff = u:takeSnapshotDiff()
     print("diff keys = " .. tostring(diff))
-    u:applySnapshot(diff)
+    if type(diff) == "table" then
+        u:applySnapshot(diff)
+    end
+    u:clear()
+    print("cleared")
+    u:release()
+    print("released")
+end
+
+--@api-stub: LUniverse:takeSnapshotDiff
+-- Snapshot diffing and universe lifecycle. Focus: takeSnapshotDiff.
+do
+    ---@type LUniverse
+    local u = lurek.ecs.newUniverse()
+    local e = u:spawn()
+    u:set(e, "pos", { x = 1, y = 2 })
+    local diff = u:takeSnapshotDiff()
+    print("diff keys = " .. tostring(diff))
+    if type(diff) == "table" then
+        u:applySnapshot(diff)
+    end
+    u:clear()
+    print("cleared")
+    u:release()
+    print("released")
+end
+
+--@api-stub: LUniverse:clear
+-- Snapshot diffing and universe lifecycle. Focus: clear.
+do
+    ---@type LUniverse
+    local u = lurek.ecs.newUniverse()
+    local e = u:spawn()
+    u:set(e, "pos", { x = 1, y = 2 })
+    local diff = u:takeSnapshotDiff()
+    print("diff keys = " .. tostring(diff))
+    if type(diff) == "table" then
+        u:applySnapshot(diff)
+    end
+    u:clear()
+    print("cleared")
+    u:release()
+    print("released")
+end
+
+--@api-stub: LUniverse:release
+-- Snapshot diffing and universe lifecycle. Focus: release.
+do
+    ---@type LUniverse
+    local u = lurek.ecs.newUniverse()
+    local e = u:spawn()
+    u:set(e, "pos", { x = 1, y = 2 })
+    local diff = u:takeSnapshotDiff()
+    print("diff keys = " .. tostring(diff))
+    if type(diff) == "table" then
+        u:applySnapshot(diff)
+    end
     u:clear()
     print("cleared")
     u:release()

@@ -4,6 +4,7 @@
 
 --- System/Runtime Module: version, OS, hardware, args, clipboard, logging, config, batch, power, messages
 
+
 --@api-stub: lurek.runtime.getVersion
 -- Basic system identification.
 do
@@ -60,8 +61,8 @@ do
     end
 end
 
--- Parsing with no arguments (uses os.args).
 --@api-stub: lurek.runtime.parseArgs
+-- Parsing with no arguments (uses os.args).
 do
     local parsed = lurek.runtime.parseArgs()
     print("default parse flags = " .. type(parsed.flags))
@@ -127,9 +128,9 @@ do
     local config = lurek.runtime.getConfig()
     print("runtime mode = " .. config.runtime_mode)
     print("physics tick rate = " .. config.physics_tick_rate)
-    print("fixed update tick = " .. config.fixed_update_tick_rate)
-    print("frame budget warn = " .. config.frame_budget_warn_ms .. " ms")
-    print("lua callback timeout = " .. config.lua_callback_timeout_ms .. " ms")
+    print("fixed update tick = " .. tostring(config.fixed_update_tick_rate))
+    print("frame budget warn = " .. tostring(config.frame_budget_warn_ms) .. " ms")
+    print("lua callback timeout = " .. tostring(config.lua_callback_timeout_ms) .. " ms")
     print("vsync = " .. tostring(config.vsync))
     print("log level = " .. config.log_level)
     print("config revision = " .. config.config_reload_revision)
@@ -194,11 +195,8 @@ do
     print("passed = " .. passed)
     print("failed = " .. failed)
     print("skipped = " .. skipped)
-end
 
--- Stopping batch on first failure.
---@api-stub: lurek.runtime.runBatch
-do
+    -- Stopping batch on first failure.
     local results = lurek.runtime.runBatch({
         step1 = function()
             print("step1 ok")
@@ -243,20 +241,53 @@ end
 -- Retrieving the last error.
 do
     local err = lurek.runtime.getLastError()
-    print("last error message = " .. err.message)
-    print("last error code = " .. err.code)
-    print("last error category = " .. err.category)
-    if err.hint then
-        print("hint = " .. err.hint)
+    if err then
+        print("last error message = " .. tostring(err.message))
+        print("last error code = " .. tostring(err.code))
+        print("last error category = " .. tostring(err.category))
+        if err.hint then
+            print("hint = " .. err.hint)
+        end
+    else
+        print("last error = nil")
     end
 end
 
 --- System/Runtime Part 1: coverage for lurek.runtime functions missing from system_00
 
+
 --@api-stub: lurek.runtime.getOS
+-- Runtime platform info: OS, arch, memory, locales, power state. Focus: getOS.
+do
+    local os_name = lurek.runtime.getOS()
+    print("os=" .. os_name)
+    local arch = lurek.runtime.getArch()
+    print("arch=" .. arch)
+    local mem = lurek.runtime.getMemorySize()
+    print("mem_mb=" .. mem)
+    local locales = lurek.runtime.getPreferredLocales()
+    print("locales=" .. #locales)
+    local state, pct, secs = lurek.runtime.getPowerInfo()
+    print("power_state=" .. state)
+end
+
 --@api-stub: lurek.runtime.getArch
+-- Runtime platform info: OS, arch, memory, locales, power state. Focus: getArch.
+do
+    local os_name = lurek.runtime.getOS()
+    print("os=" .. os_name)
+    local arch = lurek.runtime.getArch()
+    print("arch=" .. arch)
+    local mem = lurek.runtime.getMemorySize()
+    print("mem_mb=" .. mem)
+    local locales = lurek.runtime.getPreferredLocales()
+    print("locales=" .. #locales)
+    local state, pct, secs = lurek.runtime.getPowerInfo()
+    print("power_state=" .. state)
+end
+
 --@api-stub: lurek.runtime.getMemorySize
--- Runtime platform info: OS, arch, memory, locales, power state.
+-- Runtime platform info: OS, arch, memory, locales, power state. Focus: getMemorySize.
 do
     local os_name = lurek.runtime.getOS()
     print("os=" .. os_name)
@@ -271,11 +302,7 @@ do
 end
 
 --@api-stub: lurek.runtime.setLogLevel
---@api-stub: lurek.runtime.getLogLevel
---@api-stub: lurek.runtime.setClipboardText
---@api-stub: lurek.runtime.hasMessage
---@api-stub: lurek.runtime.getMessageCount
--- Runtime log, clipboard, and message queue.
+-- Runtime log, clipboard, and message queue. Focus: setLogLevel.
 do
     lurek.runtime.setLogLevel("info")
     local lvl = lurek.runtime.getLogLevel()
@@ -289,7 +316,74 @@ do
     print("msg_count=" .. count)
     local has = lurek.runtime.hasMessage("test_msg")
     print("has_msg=" .. tostring(has))
+end
 
+--@api-stub: lurek.runtime.getLogLevel
+-- Runtime log, clipboard, and message queue. Focus: getLogLevel.
+do
+    lurek.runtime.setLogLevel("info")
+    local lvl = lurek.runtime.getLogLevel()
+    print("log_level=" .. lvl)
+
+    lurek.runtime.setClipboardText("lurek_test")
+    local clip = lurek.runtime.getClipboardText()
+    print("clipboard=" .. (clip or "nil"))
+
+    local count = lurek.runtime.getMessageCount()
+    print("msg_count=" .. count)
+    local has = lurek.runtime.hasMessage("test_msg")
+    print("has_msg=" .. tostring(has))
+end
+
+--@api-stub: lurek.runtime.setClipboardText
+-- Runtime log, clipboard, and message queue. Focus: setClipboardText.
+do
+    lurek.runtime.setLogLevel("info")
+    local lvl = lurek.runtime.getLogLevel()
+    print("log_level=" .. lvl)
+
+    lurek.runtime.setClipboardText("lurek_test")
+    local clip = lurek.runtime.getClipboardText()
+    print("clipboard=" .. (clip or "nil"))
+
+    local count = lurek.runtime.getMessageCount()
+    print("msg_count=" .. count)
+    local has = lurek.runtime.hasMessage("test_msg")
+    print("has_msg=" .. tostring(has))
+end
+
+--@api-stub: lurek.runtime.hasMessage
+-- Runtime log, clipboard, and message queue. Focus: hasMessage.
+do
+    lurek.runtime.setLogLevel("info")
+    local lvl = lurek.runtime.getLogLevel()
+    print("log_level=" .. lvl)
+
+    lurek.runtime.setClipboardText("lurek_test")
+    local clip = lurek.runtime.getClipboardText()
+    print("clipboard=" .. (clip or "nil"))
+
+    local count = lurek.runtime.getMessageCount()
+    print("msg_count=" .. count)
+    local has = lurek.runtime.hasMessage("test_msg")
+    print("has_msg=" .. tostring(has))
+end
+
+--@api-stub: lurek.runtime.getMessageCount
+-- Runtime log, clipboard, and message queue. Focus: getMessageCount.
+do
+    lurek.runtime.setLogLevel("info")
+    local lvl = lurek.runtime.getLogLevel()
+    print("log_level=" .. lvl)
+
+    lurek.runtime.setClipboardText("lurek_test")
+    local clip = lurek.runtime.getClipboardText()
+    print("clipboard=" .. (clip or "nil"))
+
+    local count = lurek.runtime.getMessageCount()
+    print("msg_count=" .. count)
+    local has = lurek.runtime.hasMessage("test_msg")
+    print("has_msg=" .. tostring(has))
 end
 
 --@api-stub: lurek.runtime.getBatchResults
@@ -304,8 +398,16 @@ do
 end
 
 --@api-stub: lurek.runtime.getDebugOverlay
+-- Runtime debug overlay state, arg parsing, config reload. Focus: getDebugOverlay.
+do
+    local overlay = lurek.runtime.getDebugOverlay()
+    local parsed = lurek.runtime.parseArgs({"--debug", "--level=5", "game.lua"})
+    lurek.runtime.reloadConfig()
+    print("getDebugOverlay:", overlay, "parseArgs flags:", type(parsed.flags), "reloadConfig ok")
+end
+
 --@api-stub: lurek.runtime.reloadConfig
--- Runtime debug overlay state, arg parsing, config reload.
+-- Runtime debug overlay state, arg parsing, config reload. Focus: reloadConfig.
 do
     local overlay = lurek.runtime.getDebugOverlay()
     local parsed = lurek.runtime.parseArgs({"--debug", "--level=5", "game.lua"})

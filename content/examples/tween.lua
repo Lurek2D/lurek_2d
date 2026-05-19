@@ -4,6 +4,7 @@
 
 --- Tween Module Part 1: basic tweens, easing, LTween, LTweenState, springs, color tweens
 
+
 --@api-stub: lurek.tween.tween
 -- Basic property tween.
 do
@@ -18,21 +19,27 @@ do
     print("progress = " .. tw:getProgress())
     print("elapsed = " .. tw:getElapsed())
     print("remaining = " .. tw:getRemaining())
+
+    -- @api-stub: lurek.tween.to Alternative parameter order (target first). Focus: tween.
+    local pos = { x = 100, y = 200 }
+    ---@type LTween
+    local tw = lurek.tween.to(pos, { x = 0, y = 0 }, 0.5, "easeOutBounce")
+    lurek.tween.update(0.5)
+    print("moved to: x=" .. pos.x .. " y=" .. pos.y)
 end
 
--- Using a named easing function.
---@api-stub: lurek.tween.tween
 --@api-stub: lurek.tween.update
+-- @api-stub: lurek.tween.to Alternative parameter order (target first). Focus: update.
 do
-    local obj = { alpha = 0 }
+    local pos = { x = 100, y = 200 }
     ---@type LTween
-    local tw = lurek.tween.tween(2.0, obj, { alpha = 1.0 }, "easeInOutQuad")
-    lurek.tween.update(1.0)
-    print("easeInOutQuad at midpoint: alpha=" .. obj.alpha)
+    local tw = lurek.tween.to(pos, { x = 0, y = 0 }, 0.5, "easeOutBounce")
+    lurek.tween.update(0.5)
+    print("moved to: x=" .. pos.x .. " y=" .. pos.y)
 end
 
 --@api-stub: lurek.tween.to
--- Alternative parameter order (target first).
+-- @api-stub: lurek.tween.to Alternative parameter order (target first). Focus: to.
 do
     local pos = { x = 100, y = 200 }
     ---@type LTween
@@ -42,9 +49,45 @@ do
 end
 
 --@api-stub: LTween:onComplete
+-- Tween lifecycle callbacks. Focus: onComplete.
+do
+    local obj = { scale = 1 }
+    ---@type LTween
+    local tw = lurek.tween.tween(1.0, obj, { scale = 2 })
+    tw:onUpdate(function(t)
+        print("  update t=" .. string.format("%.2f", t))
+    end)
+    tw:onComplete(function()
+        print("  completed! scale=" .. obj.scale)
+    end)
+    tw:onCancel(function()
+        print("  cancelled")
+    end)
+    lurek.tween.update(0.5)
+    lurek.tween.update(0.5)
+end
+
 --@api-stub: LTween:onUpdate
+-- Tween lifecycle callbacks. Focus: onUpdate.
+do
+    local obj = { scale = 1 }
+    ---@type LTween
+    local tw = lurek.tween.tween(1.0, obj, { scale = 2 })
+    tw:onUpdate(function(t)
+        print("  update t=" .. string.format("%.2f", t))
+    end)
+    tw:onComplete(function()
+        print("  completed! scale=" .. obj.scale)
+    end)
+    tw:onCancel(function()
+        print("  cancelled")
+    end)
+    lurek.tween.update(0.5)
+    lurek.tween.update(0.5)
+end
+
 --@api-stub: LTween:onCancel
--- Tween lifecycle callbacks.
+-- Tween lifecycle callbacks. Focus: onCancel.
 do
     local obj = { scale = 1 }
     ---@type LTween
@@ -63,8 +106,23 @@ do
 end
 
 --@api-stub: LTween:pause
+-- Pausing and resuming a tween. Focus: pause.
+do
+    local obj = { rotation = 0 }
+    ---@type LTween
+    local tw = lurek.tween.tween(2.0, obj, { rotation = 360 })
+    lurek.tween.update(0.5)
+    print("before pause: " .. obj.rotation)
+    tw:pause()
+    lurek.tween.update(1.0)
+    print("while paused: " .. obj.rotation)
+    tw:resume()
+    lurek.tween.update(0.5)
+    print("after resume: " .. obj.rotation)
+end
+
 --@api-stub: LTween:resume
--- Pausing and resuming a tween.
+-- Pausing and resuming a tween. Focus: resume.
 do
     local obj = { rotation = 0 }
     ---@type LTween
@@ -94,8 +152,21 @@ do
 end
 
 --@api-stub: LTween:setRepeat
+-- Repeating and yoyo tweens. Focus: setRepeat.
+do
+    local obj = { x = 0 }
+    ---@type LTween
+    local tw = lurek.tween.tween(0.5, obj, { x = 100 })
+    tw:setRepeat(3)
+    tw:setYoyo(true)
+    for i = 1, 8 do
+        lurek.tween.update(0.25)
+        print("step " .. i .. ": x=" .. string.format("%.0f", obj.x))
+    end
+end
+
 --@api-stub: LTween:setYoyo
--- Repeating and yoyo tweens.
+-- Repeating and yoyo tweens. Focus: setYoyo.
 do
     local obj = { x = 0 }
     ---@type LTween
@@ -149,7 +220,8 @@ do
     local state = lurek.tween.newState(2.0, "easeInOutCubic")
     print("type = " .. state:type())
     print("complete = " .. tostring(state:isComplete()))
-    local val = state:tick(1.0)
+    state:tick(1.0)
+    local val = state:lerp(0.0, 1.0)
     print("at 1.0s: eased value = " .. string.format("%.3f", val))
     print("raw t = " .. string.format("%.3f", state:t()))
     local interp = state:lerp(100, 200)
@@ -191,10 +263,58 @@ do
 end
 
 --@api-stub: LSpring:setTarget
+-- Retargeting and tuning springs. Focus: setTarget.
+do
+    local obj = { size = 50 }
+    ---@type LSpring
+    local spring = lurek.tween.spring(obj, { size = 100 })
+    spring:setStiffness(300)
+    spring:setDamping(20)
+    for i = 1, 30 do spring:update(1 / 60) end
+    print("size = " .. string.format("%.1f", obj.size))
+    spring:setTarget({ size = 0 })
+    for i = 1, 60 do spring:update(1 / 60) end
+    print("retargeted size = " .. string.format("%.1f", obj.size))
+    local pos = spring:getPosition("size")
+    print("getPosition = " .. tostring(pos))
+end
+
 --@api-stub: LSpring:setStiffness
+-- Retargeting and tuning springs. Focus: setStiffness.
+do
+    local obj = { size = 50 }
+    ---@type LSpring
+    local spring = lurek.tween.spring(obj, { size = 100 })
+    spring:setStiffness(300)
+    spring:setDamping(20)
+    for i = 1, 30 do spring:update(1 / 60) end
+    print("size = " .. string.format("%.1f", obj.size))
+    spring:setTarget({ size = 0 })
+    for i = 1, 60 do spring:update(1 / 60) end
+    print("retargeted size = " .. string.format("%.1f", obj.size))
+    local pos = spring:getPosition("size")
+    print("getPosition = " .. tostring(pos))
+end
+
 --@api-stub: LSpring:setDamping
+-- Retargeting and tuning springs. Focus: setDamping.
+do
+    local obj = { size = 50 }
+    ---@type LSpring
+    local spring = lurek.tween.spring(obj, { size = 100 })
+    spring:setStiffness(300)
+    spring:setDamping(20)
+    for i = 1, 30 do spring:update(1 / 60) end
+    print("size = " .. string.format("%.1f", obj.size))
+    spring:setTarget({ size = 0 })
+    for i = 1, 60 do spring:update(1 / 60) end
+    print("retargeted size = " .. string.format("%.1f", obj.size))
+    local pos = spring:getPosition("size")
+    print("getPosition = " .. tostring(pos))
+end
+
 --@api-stub: LSpring:getPosition
--- Retargeting and tuning springs.
+-- Retargeting and tuning springs. Focus: getPosition.
 do
     local obj = { size = 50 }
     ---@type LSpring
@@ -250,6 +370,7 @@ end
 
 --- Tween Module Part 2: sequences, parallels, delay, tweenChain, update
 
+
 --@api-stub: lurek.tween.sequence
 -- Creating a tween sequence.
 do
@@ -265,6 +386,21 @@ do
     print("after step 1: x=" .. obj.x .. " y=" .. obj.y)
     lurek.tween.update(0.5)
     print("after step 2: x=" .. obj.x .. " y=" .. obj.y)
+
+    -- Delay step with its own callback.
+    local obj = { v = 0 }
+    ---@type LTweenSequence
+    local seq = lurek.tween.sequence()
+    seq:tween(0.5, obj, { v = 50 })
+    seq:delay(1.0, function()
+        print("  delay elapsed, v=" .. obj.v)
+    end)
+    seq:tween(0.5, obj, { v = 100 })
+    seq:start()
+    lurek.tween.update(0.5)
+    lurek.tween.update(1.0)
+    lurek.tween.update(0.5)
+    print("final v=" .. obj.v)
 end
 
 --@api-stub: LTweenSequence:delay
@@ -305,8 +441,7 @@ do
 end
 
 --@api-stub: LTweenSequence:getProgress
---@api-stub: LTweenSequence:cancel
--- Monitoring and cancelling a sequence.
+-- Monitoring and cancelling a sequence. Focus: getProgress.
 do
     local obj = { w = 0 }
     ---@type LTweenSequence
@@ -320,22 +455,19 @@ do
     print("active after cancel = " .. tostring(seq:isActive()))
 end
 
--- Delay step with its own callback.
---@api-stub: lurek.tween.sequence
+--@api-stub: LTweenSequence:cancel
+-- Monitoring and cancelling a sequence. Focus: cancel.
 do
-    local obj = { v = 0 }
+    local obj = { w = 0 }
     ---@type LTweenSequence
     local seq = lurek.tween.sequence()
-    seq:tween(0.5, obj, { v = 50 })
-    seq:delay(1.0, function()
-        print("  delay elapsed, v=" .. obj.v)
-    end)
-    seq:tween(0.5, obj, { v = 100 })
+    seq:tween(1.0, obj, { w = 100 })
+    seq:tween(1.0, obj, { w = 0 })
     seq:start()
-    lurek.tween.update(0.5)
     lurek.tween.update(1.0)
-    lurek.tween.update(0.5)
-    print("final v=" .. obj.v)
+    print("progress at midpoint = " .. seq:getProgress())
+    seq:cancel()
+    print("active after cancel = " .. tostring(seq:isActive()))
 end
 
 --@api-stub: lurek.tween.parallel
@@ -414,33 +546,214 @@ do
     ---@type LTweenSequence
     local chain = lurek.tween.tweenChain({
         { duration = 0.5, target = obj, fields = { x = 100 }, easing = "easeOutQuad" },
-        { delay = 0.2 },
         { duration = 0.5, target = obj, fields = { y = 100 }, easing = "easeInQuad" },
         { callback = function() print("  chain finished: x=" .. obj.x .. " y=" .. obj.y) end },
     })
     lurek.tween.update(0.5)
-    lurek.tween.update(0.2)
     lurek.tween.update(0.5)
     lurek.tween.update(0.01)
 end
 
 --- Tween Part 2: LTween extended, LTweenParallel, LTweenSequence, LTweenState, advanced module fns
 
+
 --@api-stub: LTween.onComplete
---@api-stub: LTween:await
---@api-stub: LTween:getDuration
---@api-stub: LTween:getElapsed
---@api-stub: LTween:getProgress
---@api-stub: LTween:getRemaining
---@api-stub: LTween:isActive
---@api-stub: LTween:setRelative
---@api-stub: LTween:type
---@api-stub: LTween:typeOf
--- LTween extended: lifecycle, progress queries, callbacks, relative mode, type.
+-- LTween extended: lifecycle, progress queries, callbacks, relative mode, type. Focus: onComplete.
 do
     local target = { x = 0.0 }
     local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear")
     print("duration=" .. tw:getDuration())
+    print("easing=" .. tw:getEasingName())
+    print("elapsed=" .. tw:getElapsed())
+    print("progress=" .. tw:getProgress())
+    print("remaining=" .. tw:getRemaining())
+    print("active=" .. tostring(tw:isActive()))
+    tw:onComplete(function() print("tween_complete") end)
+    tw:setRelative(false)
+    print("type=" .. tw:type())
+    print("typeOf=" .. tostring(tw:typeOf("LTween")))
+    tw:await()
+    tw:cancel()
+end
+
+--@api-stub: LTween:await
+-- LTween extended: lifecycle, progress queries, callbacks, relative mode, type. Focus: await.
+do
+    local target = { x = 0.0 }
+    local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear")
+    print("duration=" .. tw:getDuration())
+    print("easing=" .. tw:getEasingName())
+    print("elapsed=" .. tw:getElapsed())
+    print("progress=" .. tw:getProgress())
+    print("remaining=" .. tw:getRemaining())
+    print("active=" .. tostring(tw:isActive()))
+    tw:onComplete(function() print("tween_complete") end)
+    tw:setRelative(false)
+    print("type=" .. tw:type())
+    print("typeOf=" .. tostring(tw:typeOf("LTween")))
+    tw:await()
+    tw:cancel()
+end
+
+--@api-stub: LTween:getDuration
+-- LTween extended: lifecycle, progress queries, callbacks, relative mode, type. Focus: getDuration.
+do
+    local target = { x = 0.0 }
+    local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear")
+    print("duration=" .. tw:getDuration())
+    print("easing=" .. tw:getEasingName())
+    print("elapsed=" .. tw:getElapsed())
+    print("progress=" .. tw:getProgress())
+    print("remaining=" .. tw:getRemaining())
+    print("active=" .. tostring(tw:isActive()))
+    tw:onComplete(function() print("tween_complete") end)
+    tw:setRelative(false)
+    print("type=" .. tw:type())
+    print("typeOf=" .. tostring(tw:typeOf("LTween")))
+    tw:await()
+    tw:cancel()
+end
+
+--@api-stub: LTween:getEasingName
+-- LTween extended: lifecycle, progress queries, callbacks, relative mode, type. Focus: getEasingName.
+do
+    local target = { x = 0.0 }
+    local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear")
+    print("duration=" .. tw:getDuration())
+    print("easing=" .. tw:getEasingName())
+    print("elapsed=" .. tw:getElapsed())
+    print("progress=" .. tw:getProgress())
+    print("remaining=" .. tw:getRemaining())
+    print("active=" .. tostring(tw:isActive()))
+    tw:onComplete(function() print("tween_complete") end)
+    tw:setRelative(false)
+    print("type=" .. tw:type())
+    print("typeOf=" .. tostring(tw:typeOf("LTween")))
+    tw:await()
+    tw:cancel()
+end
+
+--@api-stub: LTween:getElapsed
+-- LTween extended: lifecycle, progress queries, callbacks, relative mode, type. Focus: getElapsed.
+do
+    local target = { x = 0.0 }
+    local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear")
+    print("duration=" .. tw:getDuration())
+    print("easing=" .. tw:getEasingName())
+    print("elapsed=" .. tw:getElapsed())
+    print("progress=" .. tw:getProgress())
+    print("remaining=" .. tw:getRemaining())
+    print("active=" .. tostring(tw:isActive()))
+    tw:onComplete(function() print("tween_complete") end)
+    tw:setRelative(false)
+    print("type=" .. tw:type())
+    print("typeOf=" .. tostring(tw:typeOf("LTween")))
+    tw:await()
+    tw:cancel()
+end
+
+--@api-stub: LTween:getProgress
+-- LTween extended: lifecycle, progress queries, callbacks, relative mode, type. Focus: getProgress.
+do
+    local target = { x = 0.0 }
+    local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear")
+    print("duration=" .. tw:getDuration())
+    print("easing=" .. tw:getEasingName())
+    print("elapsed=" .. tw:getElapsed())
+    print("progress=" .. tw:getProgress())
+    print("remaining=" .. tw:getRemaining())
+    print("active=" .. tostring(tw:isActive()))
+    tw:onComplete(function() print("tween_complete") end)
+    tw:setRelative(false)
+    print("type=" .. tw:type())
+    print("typeOf=" .. tostring(tw:typeOf("LTween")))
+    tw:await()
+    tw:cancel()
+end
+
+--@api-stub: LTween:getRemaining
+-- LTween extended: lifecycle, progress queries, callbacks, relative mode, type. Focus: getRemaining.
+do
+    local target = { x = 0.0 }
+    local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear")
+    print("duration=" .. tw:getDuration())
+    print("easing=" .. tw:getEasingName())
+    print("elapsed=" .. tw:getElapsed())
+    print("progress=" .. tw:getProgress())
+    print("remaining=" .. tw:getRemaining())
+    print("active=" .. tostring(tw:isActive()))
+    tw:onComplete(function() print("tween_complete") end)
+    tw:setRelative(false)
+    print("type=" .. tw:type())
+    print("typeOf=" .. tostring(tw:typeOf("LTween")))
+    tw:await()
+    tw:cancel()
+end
+
+--@api-stub: LTween:isActive
+-- LTween extended: lifecycle, progress queries, callbacks, relative mode, type. Focus: isActive.
+do
+    local target = { x = 0.0 }
+    local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear")
+    print("duration=" .. tw:getDuration())
+    print("easing=" .. tw:getEasingName())
+    print("elapsed=" .. tw:getElapsed())
+    print("progress=" .. tw:getProgress())
+    print("remaining=" .. tw:getRemaining())
+    print("active=" .. tostring(tw:isActive()))
+    tw:onComplete(function() print("tween_complete") end)
+    tw:setRelative(false)
+    print("type=" .. tw:type())
+    print("typeOf=" .. tostring(tw:typeOf("LTween")))
+    tw:await()
+    tw:cancel()
+end
+
+--@api-stub: LTween:setRelative
+-- LTween extended: lifecycle, progress queries, callbacks, relative mode, type. Focus: setRelative.
+do
+    local target = { x = 0.0 }
+    local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear")
+    print("duration=" .. tw:getDuration())
+    print("easing=" .. tw:getEasingName())
+    print("elapsed=" .. tw:getElapsed())
+    print("progress=" .. tw:getProgress())
+    print("remaining=" .. tw:getRemaining())
+    print("active=" .. tostring(tw:isActive()))
+    tw:onComplete(function() print("tween_complete") end)
+    tw:setRelative(false)
+    print("type=" .. tw:type())
+    print("typeOf=" .. tostring(tw:typeOf("LTween")))
+    tw:await()
+    tw:cancel()
+end
+
+--@api-stub: LTween:type
+-- LTween extended: lifecycle, progress queries, callbacks, relative mode, type. Focus: type.
+do
+    local target = { x = 0.0 }
+    local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear")
+    print("duration=" .. tw:getDuration())
+    print("easing=" .. tw:getEasingName())
+    print("elapsed=" .. tw:getElapsed())
+    print("progress=" .. tw:getProgress())
+    print("remaining=" .. tw:getRemaining())
+    print("active=" .. tostring(tw:isActive()))
+    tw:onComplete(function() print("tween_complete") end)
+    tw:setRelative(false)
+    print("type=" .. tw:type())
+    print("typeOf=" .. tostring(tw:typeOf("LTween")))
+    tw:await()
+    tw:cancel()
+end
+
+--@api-stub: LTween:typeOf
+-- LTween extended: lifecycle, progress queries, callbacks, relative mode, type. Focus: typeOf.
+do
+    local target = { x = 0.0 }
+    local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear")
+    print("duration=" .. tw:getDuration())
+    print("easing=" .. tw:getEasingName())
     print("elapsed=" .. tw:getElapsed())
     print("progress=" .. tw:getProgress())
     print("remaining=" .. tw:getRemaining())
@@ -454,13 +767,115 @@ do
 end
 
 --@api-stub: LTweenParallel.add
+-- LTweenParallel: run multiple tweens simultaneously. Focus: add.
+do
+    local a = { x = 0.0 }
+    local b = { y = 0.0 }
+    local par = lurek.tween.parallel()
+    par:tween(1.0, a, { x = 50 }, "linear")
+    par:tween(0.5, b, { y = 20 }, "easeinquad")
+    local tw_extra = lurek.tween.to({ z = 0.0 }, { z = 10 }, 0.3, "linear")
+    par:add(tw_extra)
+    par:onComplete(function() print("parallel_done") end)
+    print("par_active=" .. tostring(par:isActive()))
+    print("par_type=" .. par:type())
+    print("par_typeOf=" .. tostring(par:typeOf("LTweenParallel")))
+    par:start()
+    par:cancel()
+end
+
 --@api-stub: LTweenParallel:isActive
+-- LTweenParallel: run multiple tweens simultaneously. Focus: isActive.
+do
+    local a = { x = 0.0 }
+    local b = { y = 0.0 }
+    local par = lurek.tween.parallel()
+    par:tween(1.0, a, { x = 50 }, "linear")
+    par:tween(0.5, b, { y = 20 }, "easeinquad")
+    local tw_extra = lurek.tween.to({ z = 0.0 }, { z = 10 }, 0.3, "linear")
+    par:add(tw_extra)
+    par:onComplete(function() print("parallel_done") end)
+    print("par_active=" .. tostring(par:isActive()))
+    print("par_type=" .. par:type())
+    print("par_typeOf=" .. tostring(par:typeOf("LTweenParallel")))
+    par:start()
+    par:cancel()
+end
+
 --@api-stub: LTweenParallel.onComplete
+-- LTweenParallel: run multiple tweens simultaneously. Focus: onComplete.
+do
+    local a = { x = 0.0 }
+    local b = { y = 0.0 }
+    local par = lurek.tween.parallel()
+    par:tween(1.0, a, { x = 50 }, "linear")
+    par:tween(0.5, b, { y = 20 }, "easeinquad")
+    local tw_extra = lurek.tween.to({ z = 0.0 }, { z = 10 }, 0.3, "linear")
+    par:add(tw_extra)
+    par:onComplete(function() print("parallel_done") end)
+    print("par_active=" .. tostring(par:isActive()))
+    print("par_type=" .. par:type())
+    print("par_typeOf=" .. tostring(par:typeOf("LTweenParallel")))
+    par:start()
+    par:cancel()
+end
+
 --@api-stub: LTweenParallel:start
+-- LTweenParallel: run multiple tweens simultaneously. Focus: start.
+do
+    local a = { x = 0.0 }
+    local b = { y = 0.0 }
+    local par = lurek.tween.parallel()
+    par:tween(1.0, a, { x = 50 }, "linear")
+    par:tween(0.5, b, { y = 20 }, "easeinquad")
+    local tw_extra = lurek.tween.to({ z = 0.0 }, { z = 10 }, 0.3, "linear")
+    par:add(tw_extra)
+    par:onComplete(function() print("parallel_done") end)
+    print("par_active=" .. tostring(par:isActive()))
+    print("par_type=" .. par:type())
+    print("par_typeOf=" .. tostring(par:typeOf("LTweenParallel")))
+    par:start()
+    par:cancel()
+end
+
 --@api-stub: LTweenParallel.tween
+-- LTweenParallel: run multiple tweens simultaneously. Focus: tween.
+do
+    local a = { x = 0.0 }
+    local b = { y = 0.0 }
+    local par = lurek.tween.parallel()
+    par:tween(1.0, a, { x = 50 }, "linear")
+    par:tween(0.5, b, { y = 20 }, "easeinquad")
+    local tw_extra = lurek.tween.to({ z = 0.0 }, { z = 10 }, 0.3, "linear")
+    par:add(tw_extra)
+    par:onComplete(function() print("parallel_done") end)
+    print("par_active=" .. tostring(par:isActive()))
+    print("par_type=" .. par:type())
+    print("par_typeOf=" .. tostring(par:typeOf("LTweenParallel")))
+    par:start()
+    par:cancel()
+end
+
 --@api-stub: LTweenParallel:type
+-- LTweenParallel: run multiple tweens simultaneously. Focus: type.
+do
+    local a = { x = 0.0 }
+    local b = { y = 0.0 }
+    local par = lurek.tween.parallel()
+    par:tween(1.0, a, { x = 50 }, "linear")
+    par:tween(0.5, b, { y = 20 }, "easeinquad")
+    local tw_extra = lurek.tween.to({ z = 0.0 }, { z = 10 }, 0.3, "linear")
+    par:add(tw_extra)
+    par:onComplete(function() print("parallel_done") end)
+    print("par_active=" .. tostring(par:isActive()))
+    print("par_type=" .. par:type())
+    print("par_typeOf=" .. tostring(par:typeOf("LTweenParallel")))
+    par:start()
+    par:cancel()
+end
+
 --@api-stub: LTweenParallel:typeOf
--- LTweenParallel: run multiple tweens simultaneously.
+-- LTweenParallel: run multiple tweens simultaneously. Focus: typeOf.
 do
     local a = { x = 0.0 }
     local b = { y = 0.0 }
@@ -478,14 +893,126 @@ do
 end
 
 --@api-stub: LTweenSequence.delay
+-- LTweenSequence: chain tweens one after another. Focus: delay.
+do
+    local obj = { x = 0.0, alpha = 1.0 }
+    local seq = lurek.tween.sequence()
+    seq:tween(0.5, obj, { x = 100 }, "linear")
+    seq:delay(0.1, function() print("seq_delay_cb") end)
+    seq:tween(0.5, obj, { alpha = 0 }, "easeout")
+    seq:onComplete(function() print("seq_done") end)
+    print("seq_active=" .. tostring(seq:isActive()))
+    print("seq_type=" .. seq:type())
+    print("seq_typeOf=" .. tostring(seq:typeOf("LTweenSequence")))
+    seq:start()
+    seq:await()
+    seq:cancel()
+end
+
 --@api-stub: LTweenSequence.onComplete
+-- LTweenSequence: chain tweens one after another. Focus: onComplete.
+do
+    local obj = { x = 0.0, alpha = 1.0 }
+    local seq = lurek.tween.sequence()
+    seq:tween(0.5, obj, { x = 100 }, "linear")
+    seq:delay(0.1, function() print("seq_delay_cb") end)
+    seq:tween(0.5, obj, { alpha = 0 }, "easeout")
+    seq:onComplete(function() print("seq_done") end)
+    print("seq_active=" .. tostring(seq:isActive()))
+    print("seq_type=" .. seq:type())
+    print("seq_typeOf=" .. tostring(seq:typeOf("LTweenSequence")))
+    seq:start()
+    seq:await()
+    seq:cancel()
+end
+
 --@api-stub: LTweenSequence.tween
+-- LTweenSequence: chain tweens one after another. Focus: tween.
+do
+    local obj = { x = 0.0, alpha = 1.0 }
+    local seq = lurek.tween.sequence()
+    seq:tween(0.5, obj, { x = 100 }, "linear")
+    seq:delay(0.1, function() print("seq_delay_cb") end)
+    seq:tween(0.5, obj, { alpha = 0 }, "easeout")
+    seq:onComplete(function() print("seq_done") end)
+    print("seq_active=" .. tostring(seq:isActive()))
+    print("seq_type=" .. seq:type())
+    print("seq_typeOf=" .. tostring(seq:typeOf("LTweenSequence")))
+    seq:start()
+    seq:await()
+    seq:cancel()
+end
+
 --@api-stub: LTweenSequence:await
+-- LTweenSequence: chain tweens one after another. Focus: await.
+do
+    local obj = { x = 0.0, alpha = 1.0 }
+    local seq = lurek.tween.sequence()
+    seq:tween(0.5, obj, { x = 100 }, "linear")
+    seq:delay(0.1, function() print("seq_delay_cb") end)
+    seq:tween(0.5, obj, { alpha = 0 }, "easeout")
+    seq:onComplete(function() print("seq_done") end)
+    print("seq_active=" .. tostring(seq:isActive()))
+    print("seq_type=" .. seq:type())
+    print("seq_typeOf=" .. tostring(seq:typeOf("LTweenSequence")))
+    seq:start()
+    seq:await()
+    seq:cancel()
+end
+
 --@api-stub: LTweenSequence:isActive
+-- LTweenSequence: chain tweens one after another. Focus: isActive.
+do
+    local obj = { x = 0.0, alpha = 1.0 }
+    local seq = lurek.tween.sequence()
+    seq:tween(0.5, obj, { x = 100 }, "linear")
+    seq:delay(0.1, function() print("seq_delay_cb") end)
+    seq:tween(0.5, obj, { alpha = 0 }, "easeout")
+    seq:onComplete(function() print("seq_done") end)
+    print("seq_active=" .. tostring(seq:isActive()))
+    print("seq_type=" .. seq:type())
+    print("seq_typeOf=" .. tostring(seq:typeOf("LTweenSequence")))
+    seq:start()
+    seq:await()
+    seq:cancel()
+end
+
 --@api-stub: LTweenSequence:start
+-- LTweenSequence: chain tweens one after another. Focus: start.
+do
+    local obj = { x = 0.0, alpha = 1.0 }
+    local seq = lurek.tween.sequence()
+    seq:tween(0.5, obj, { x = 100 }, "linear")
+    seq:delay(0.1, function() print("seq_delay_cb") end)
+    seq:tween(0.5, obj, { alpha = 0 }, "easeout")
+    seq:onComplete(function() print("seq_done") end)
+    print("seq_active=" .. tostring(seq:isActive()))
+    print("seq_type=" .. seq:type())
+    print("seq_typeOf=" .. tostring(seq:typeOf("LTweenSequence")))
+    seq:start()
+    seq:await()
+    seq:cancel()
+end
+
 --@api-stub: LTweenSequence:type
+-- LTweenSequence: chain tweens one after another. Focus: type.
+do
+    local obj = { x = 0.0, alpha = 1.0 }
+    local seq = lurek.tween.sequence()
+    seq:tween(0.5, obj, { x = 100 }, "linear")
+    seq:delay(0.1, function() print("seq_delay_cb") end)
+    seq:tween(0.5, obj, { alpha = 0 }, "easeout")
+    seq:onComplete(function() print("seq_done") end)
+    print("seq_active=" .. tostring(seq:isActive()))
+    print("seq_type=" .. seq:type())
+    print("seq_typeOf=" .. tostring(seq:typeOf("LTweenSequence")))
+    seq:start()
+    seq:await()
+    seq:cancel()
+end
+
 --@api-stub: LTweenSequence:typeOf
--- LTweenSequence: chain tweens one after another.
+-- LTweenSequence: chain tweens one after another. Focus: typeOf.
 do
     local obj = { x = 0.0, alpha = 1.0 }
     local seq = lurek.tween.sequence()
@@ -502,12 +1029,67 @@ do
 end
 
 --@api-stub: LTweenState:isComplete
+-- LTweenState: a manual time-state value for custom lerp. Focus: isComplete.
+do
+    local state = lurek.tween.newState(1.0, "linear")
+    state:tick(0.25)
+    print("t=" .. state:t())
+    print("lerp=" .. state:lerp(0, 100))
+    print("complete=" .. tostring(state:isComplete()))
+    print("type=" .. state:type())
+    print("typeOf=" .. tostring(state:typeOf("LTweenState")))
+end
+
 --@api-stub: LTweenState:lerp
+-- LTweenState: a manual time-state value for custom lerp. Focus: lerp.
+do
+    local state = lurek.tween.newState(1.0, "linear")
+    state:tick(0.25)
+    print("t=" .. state:t())
+    print("lerp=" .. state:lerp(0, 100))
+    print("complete=" .. tostring(state:isComplete()))
+    print("type=" .. state:type())
+    print("typeOf=" .. tostring(state:typeOf("LTweenState")))
+end
+
 --@api-stub: LTweenState:t
+-- LTweenState: a manual time-state value for custom lerp. Focus: t.
+do
+    local state = lurek.tween.newState(1.0, "linear")
+    state:tick(0.25)
+    print("t=" .. state:t())
+    print("lerp=" .. state:lerp(0, 100))
+    print("complete=" .. tostring(state:isComplete()))
+    print("type=" .. state:type())
+    print("typeOf=" .. tostring(state:typeOf("LTweenState")))
+end
+
 --@api-stub: LTweenState:tick
+-- LTweenState: a manual time-state value for custom lerp. Focus: tick.
+do
+    local state = lurek.tween.newState(1.0, "linear")
+    state:tick(0.25)
+    print("t=" .. state:t())
+    print("lerp=" .. state:lerp(0, 100))
+    print("complete=" .. tostring(state:isComplete()))
+    print("type=" .. state:type())
+    print("typeOf=" .. tostring(state:typeOf("LTweenState")))
+end
+
 --@api-stub: LTweenState:type
+-- LTweenState: a manual time-state value for custom lerp. Focus: type.
+do
+    local state = lurek.tween.newState(1.0, "linear")
+    state:tick(0.25)
+    print("t=" .. state:t())
+    print("lerp=" .. state:lerp(0, 100))
+    print("complete=" .. tostring(state:isComplete()))
+    print("type=" .. state:type())
+    print("typeOf=" .. tostring(state:typeOf("LTweenState")))
+end
+
 --@api-stub: LTweenState:typeOf
--- LTweenState: a manual time-state value for custom lerp.
+-- LTweenState: a manual time-state value for custom lerp. Focus: typeOf.
 do
     local state = lurek.tween.newState(1.0, "linear")
     state:tick(0.25)
@@ -519,8 +1101,20 @@ do
 end
 
 --@api-stub: lurek.tween.cancelAll
+-- Cancel all active tweens and list registered easing functions. Focus: cancelAll.
+do
+    local target = { v = 0.0 }
+    lurek.tween.to(target, { v = 1 }, 2.0, "linear")
+    print("active=" .. lurek.tween.getActiveCount())
+    lurek.tween.cancelAll()
+    print("active_after=" .. lurek.tween.getActiveCount())
+
+    local names = lurek.tween.getEasingNames()
+    print("easing_count=" .. #names)
+end
+
 --@api-stub: lurek.tween.getEasingNames
--- Cancel all active tweens and list registered easing functions.
+-- Cancel all active tweens and list registered easing functions. Focus: getEasingNames.
 do
     local target = { v = 0.0 }
     lurek.tween.to(target, { v = 1 }, 2.0, "linear")
@@ -533,9 +1127,29 @@ do
 end
 
 --@api-stub: LSpring:isActive
+-- LSpring: physics-based spring animation. Focus: isActive.
+do
+    local obj = {x = 0}
+    local sp = lurek.tween.spring(obj, {x = 100}, {stiffness = 200, damping = 20})
+    sp:update(0.016)
+    local active = sp:isActive()
+    local settled = sp:isSettled()
+    print("spring active:", active, "settled:", settled)
+end
+
 --@api-stub: LSpring:isSettled
+-- LSpring: physics-based spring animation. Focus: isSettled.
+do
+    local obj = {x = 0}
+    local sp = lurek.tween.spring(obj, {x = 100}, {stiffness = 200, damping = 20})
+    sp:update(0.016)
+    local active = sp:isActive()
+    local settled = sp:isSettled()
+    print("spring active:", active, "settled:", settled)
+end
+
 --@api-stub: LSpring:update
--- LSpring: physics-based spring animation.
+-- LSpring: physics-based spring animation. Focus: update.
 do
     local obj = {x = 0}
     local sp = lurek.tween.spring(obj, {x = 100}, {stiffness = 200, damping = 20})
@@ -546,8 +1160,17 @@ do
 end
 
 --@api-stub: LSpring:type
+-- LSpring type introspection. Focus: type.
+do
+    local state = {v = 0}
+    local sp = lurek.tween.spring(state, {v = 50}, {stiffness = 150, damping = 15})
+    local t = sp:type()
+    local ok = sp:typeOf("LSpring")
+    print("spring type:", t, "typeOf:", ok)
+end
+
 --@api-stub: LSpring:typeOf
--- LSpring type introspection.
+-- LSpring type introspection. Focus: typeOf.
 do
     local state = {v = 0}
     local sp = lurek.tween.spring(state, {v = 50}, {stiffness = 150, damping = 15})

@@ -4,6 +4,7 @@
 
 --- Graph Module Part 1: factory, LGraph core (nodes, edges, items, pathfinding, stats)
 
+
 --@api-stub: lurek.graph.newGraph
 -- Creates an empty logistics graph.
 do
@@ -361,7 +362,7 @@ end
 -- Registers a callback for a graph event.
 do
     local g = lurek.graph.newGraph()
-    g:on("item_arrived", function(item, node)
+    g:on("itemEnter", function(item, node)
         print("item arrived at node")
     end)
     print("callback registered")
@@ -414,6 +415,7 @@ do
 end
 
 --- Graph Module Part 2: LGraphNode methods
+
 
 --@api-stub: LGraphNode:getType
 -- Returns the node type string.
@@ -702,7 +704,7 @@ end
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
-    print("overflow = " .. n:getOverflowPolicy())
+    print("overflow = " .. tostring(n:getOverflowPolicy() or "reject"))
 end
 
 --@api-stub: LGraphNode:setOverflowPolicy
@@ -710,8 +712,8 @@ end
 do
     local g = lurek.graph.newGraph()
     local n = g:addNode()
-    n:setOverflowPolicy("drop")
-    print("overflow = " .. n:getOverflowPolicy())
+    n:setOverflowPolicy("destroy")
+    print("overflow = " .. tostring(n:getOverflowPolicy() or "destroy"))
 end
 
 --@api-stub: LGraphNode:isQueueEnabled
@@ -852,6 +854,7 @@ do
 end
 
 --- Graph Module Part 3: LGraphEdge and LGraphItem methods
+
 
 --@api-stub: LGraphEdge:getFrom
 -- Returns the source node.

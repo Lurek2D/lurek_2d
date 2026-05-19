@@ -4,6 +4,7 @@
 
 --- REPL Module: interactive Lua evaluation session
 
+
 --@api-stub: lurek.repl.new
 -- Creating a REPL session with default history size.
 do
@@ -12,14 +13,31 @@ do
     print("type = " .. repl:type())
     print("is LReplSession = " .. tostring(repl:typeOf("LReplSession")))
     print("initial len = " .. repl:len())
-end
 
--- Creating a session with limited history.
---@api-stub: lurek.repl.new
-do
+    -- Creating a session with limited history.
     ---@type LReplSession
     local repl = lurek.repl.new(10)
     print("len = " .. repl:len())
+
+    -- Simulating a multi-line REPL interaction.
+    ---@type LReplSession
+    local repl = lurek.repl.new(100)
+    local inputs = {
+        "scores = {}",
+        "for i = 1, 5 do scores[i] = i * 10 end",
+        "return #scores",
+        "return scores[3]",
+        "table.insert(scores, 99)",
+        "return scores[#scores]",
+    }
+    for _, input in ipairs(inputs) do
+        local result = repl:eval(input)
+        print("> " .. input)
+        if result ~= "" then
+            print("  => " .. result)
+        end
+    end
+    print("session length = " .. repl:len())
 end
 
 --@api-stub: LReplSession:eval
@@ -34,11 +52,8 @@ do
     local r3 = repl:eval("return math.pi")
     print("pi = " .. r3)
     print("history len = " .. repl:len())
-end
 
---@api-stub: LReplSession:eval
--- Evaluating statements and handling errors.
-do
+    -- Evaluating statements and handling errors.
     ---@type LReplSession
     local repl = lurek.repl.new()
     local r1 = repl:eval("local x = 42")
@@ -48,11 +63,8 @@ do
     local r3 = repl:eval("invalid syntax !@#")
     print("error = " .. r3)
     print("all recorded, len = " .. repl:len())
-end
 
---@api-stub: LReplSession:eval
--- Building up state across evaluations.
-do
+    -- Building up state across evaluations.
     ---@type LReplSession
     local repl = lurek.repl.new()
     repl:eval("x = 10")
@@ -77,11 +89,8 @@ do
     for i, entry in ipairs(hist) do
         print("  " .. i .. ": " .. entry)
     end
-end
 
---@api-stub: LReplSession:history
--- History respects max_history limit.
-do
+    -- History respects max_history limit.
     ---@type LReplSession
     local repl = lurek.repl.new(3)
     repl:eval("return 'first'")
@@ -117,11 +126,8 @@ do
             print("  " .. c)
         end
     end
-end
 
---@api-stub: LReplSession:complete
--- Completing with empty prefix.
-do
+    -- Completing with empty prefix.
     ---@type LReplSession
     local repl = lurek.repl.new()
     local all = repl:complete("")
@@ -158,32 +164,18 @@ do
     print("after clear = " .. repl:len())
 end
 
--- Simulating a multi-line REPL interaction.
---@api-stub: lurek.repl.new
+--@api-stub: LReplSession:type
+-- Type introspection on LReplSession. Focus: type.
 do
     ---@type LReplSession
-    local repl = lurek.repl.new(100)
-    local inputs = {
-        "scores = {}",
-        "for i = 1, 5 do scores[i] = i * 10 end",
-        "return #scores",
-        "return scores[3]",
-        "table.insert(scores, 99)",
-        "return scores[#scores]",
-    }
-    for _, input in ipairs(inputs) do
-        local result = repl:eval(input)
-        print("> " .. input)
-        if result ~= "" then
-            print("  => " .. result)
-        end
-    end
-    print("session length = " .. repl:len())
+    local sess = lurek.repl.new()
+    print(sess:type())
+    print(sess:typeOf("LReplSession"))
+    print(sess:typeOf("Object"))
 end
 
---@api-stub: LReplSession:type
 --@api-stub: LReplSession:typeOf
--- Type introspection on LReplSession.
+-- Type introspection on LReplSession. Focus: typeOf.
 do
     ---@type LReplSession
     local sess = lurek.repl.new()

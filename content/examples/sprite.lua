@@ -4,6 +4,7 @@
 
 --- Sprite Module: sheets, atlases, frames, groups, rows/columns, RPGMaker, Aseprite
 
+
 --@api-stub: lurek.sprite.newSheet
 -- Creating a grid-based sprite sheet.
 do
@@ -16,6 +17,43 @@ do
     print("frame size = " .. fw .. "x" .. fh)
     local cols, rows = sheet:getGridSize()
     print("grid = " .. cols .. " cols x " .. rows .. " rows")
+
+    -- Combining sheets, groups, and frame access for a game character.
+    ---@type LSpriteSheet
+    local sheet = lurek.sprite.newSheet(384, 256, 48, 64)
+    local cols, rows = sheet:getGridSize()
+    print("character sheet: " .. cols .. "x" .. rows .. " = " .. sheet:getFrameCount() .. " frames")
+    sheet:nameGroup("idle_down", 1, 4)
+    sheet:nameGroup("idle_up", 5, 4)
+    sheet:nameGroup("walk_down", 9, 6)
+    sheet:nameGroup("walk_up", 15, 6)
+    sheet:nameGroup("walk_left", 21, 6)
+    sheet:nameGroup("walk_right", 27, 6)
+    local groups = sheet:getGroupNames()
+    print("animation groups:")
+    for _, g in ipairs(groups) do
+        local frames = sheet:getGroupFrames(g)
+        print("  " .. g .. " = " .. #frames .. " frames")
+    end
+    local walkDown = sheet:getGroupFrames("walk_down")
+    print("walk_down animation frames:")
+    for i, f in ipairs(walkDown) do
+        print("  " .. i .. ": x=" .. f.x .. " y=" .. f.y .. " w=" .. f.w .. " h=" .. f.h)
+    end
+
+    -- Different texture and frame sizes.
+    ---@type LSpriteSheet
+    local tiny = lurek.sprite.newSheet(64, 64, 8, 8)
+    print("tiny: " .. tiny:getFrameCount() .. " frames of 8x8")
+    ---@type LSpriteSheet
+    local wide = lurek.sprite.newSheet(1024, 64, 128, 64)
+    print("wide: " .. wide:getFrameCount() .. " frames of 128x64")
+    ---@type LSpriteSheet
+    local tall = lurek.sprite.newSheet(64, 1024, 64, 128)
+    print("tall: " .. tall:getFrameCount() .. " frames of 64x128")
+    ---@type LSpriteSheet
+    local single = lurek.sprite.newSheet(256, 256, 256, 256)
+    print("single: " .. single:getFrameCount() .. " frame of 256x256")
 end
 
 --@api-stub: LSpriteSheet:getFrame
@@ -27,14 +65,29 @@ do
     print("frame 1: x=" .. frame1.x .. " y=" .. frame1.y .. " w=" .. frame1.w .. " h=" .. frame1.h)
     local frame2 = sheet:getFrame(2)
     print("frame 2: x=" .. frame2.x .. " y=" .. frame2.y .. " w=" .. frame2.w .. " h=" .. frame2.h)
-    local lastIdx = sheet:getFrameCount()
-    local lastFrame = sheet:getFrame(lastIdx)
-    print("last frame (" .. lastIdx .. "): x=" .. lastFrame.x .. " y=" .. lastFrame.y)
 end
 
 --@api-stub: LSpriteSheet:getRow
+-- Accessing entire rows and columns. Focus: getRow.
+do
+    ---@type LSpriteSheet
+    local sheet = lurek.sprite.newSheet(192, 192, 64, 64)
+    local cols, rows = sheet:getGridSize()
+    print("grid = " .. cols .. "x" .. rows)
+    local row0 = sheet:getRow(0)
+    print("row 0 frames = " .. #row0)
+    for i, f in ipairs(row0) do
+        print("  frame " .. i .. ": x=" .. f.x .. " y=" .. f.y)
+    end
+    local col0 = sheet:getColumn(0)
+    print("col 0 frames = " .. #col0)
+    for i, f in ipairs(col0) do
+        print("  frame " .. i .. ": x=" .. f.x .. " y=" .. f.y)
+    end
+end
+
 --@api-stub: LSpriteSheet:getColumn
--- Accessing entire rows and columns.
+-- Accessing entire rows and columns. Focus: getColumn.
 do
     ---@type LSpriteSheet
     local sheet = lurek.sprite.newSheet(192, 192, 64, 64)
@@ -53,9 +106,55 @@ do
 end
 
 --@api-stub: LSpriteSheet:nameGroup
+-- Named animation groups from frame ranges. Focus: nameGroup.
+do
+    ---@type LSpriteSheet
+    local sheet = lurek.sprite.newSheet(512, 256, 64, 64)
+    print("total frames = " .. sheet:getFrameCount())
+    sheet:nameGroup("idle", 1, 4)
+    sheet:nameGroup("walk", 5, 8)
+    sheet:nameGroup("attack", 13, 6)
+    sheet:nameGroup("death", 19, 4)
+    local names = sheet:getGroupNames()
+    print("groups = " .. #names)
+    for _, name in ipairs(names) do
+        print("  " .. name)
+    end
+    local walkFrames = sheet:getGroupFrames("walk")
+    print("walk frames = " .. #walkFrames)
+    for i, f in ipairs(walkFrames) do
+        print("  walk " .. i .. ": x=" .. f.x .. " y=" .. f.y .. " w=" .. f.w)
+    end
+    local idleFrames = sheet:getGroupFrames("idle")
+    print("idle frames = " .. #idleFrames)
+end
+
 --@api-stub: LSpriteSheet:getGroupFrames
+-- Named animation groups from frame ranges. Focus: getGroupFrames.
+do
+    ---@type LSpriteSheet
+    local sheet = lurek.sprite.newSheet(512, 256, 64, 64)
+    print("total frames = " .. sheet:getFrameCount())
+    sheet:nameGroup("idle", 1, 4)
+    sheet:nameGroup("walk", 5, 8)
+    sheet:nameGroup("attack", 13, 6)
+    sheet:nameGroup("death", 19, 4)
+    local names = sheet:getGroupNames()
+    print("groups = " .. #names)
+    for _, name in ipairs(names) do
+        print("  " .. name)
+    end
+    local walkFrames = sheet:getGroupFrames("walk")
+    print("walk frames = " .. #walkFrames)
+    for i, f in ipairs(walkFrames) do
+        print("  walk " .. i .. ": x=" .. f.x .. " y=" .. f.y .. " w=" .. f.w)
+    end
+    local idleFrames = sheet:getGroupFrames("idle")
+    print("idle frames = " .. #idleFrames)
+end
+
 --@api-stub: LSpriteSheet:getGroupNames
--- Named animation groups from frame ranges.
+-- Named animation groups from frame ranges. Focus: getGroupNames.
 do
     ---@type LSpriteSheet
     local sheet = lurek.sprite.newSheet(512, 256, 64, 64)
@@ -103,8 +202,8 @@ do
     print("frame 1: " .. frame1.x .. "," .. frame1.y .. " " .. frame1.w .. "x" .. frame1.h)
 end
 
--- Parsing a TexturePacker-style atlas.
 --@api-stub: lurek.sprite.parseAtlas
+-- Parsing a TexturePacker-style atlas.
 do
     local atlasJson = lurek.serial.toJson({
         frames = {
@@ -129,8 +228,32 @@ do
 end
 
 --@api-stub: LSpriteAtlas:getEntry
+-- Looking up atlas entries. Focus: getEntry.
+do
+    local atlasJson = lurek.serial.toJson({
+        frames = {
+            { filename = "coin_0", frame = { x = 0, y = 0, w = 16, h = 16 }, rotated = false },
+            { filename = "coin_1", frame = { x = 16, y = 0, w = 16, h = 16 }, rotated = false },
+            { filename = "coin_2", frame = { x = 32, y = 0, w = 16, h = 16 }, rotated = false },
+            { filename = "gem_0", frame = { x = 0, y = 16, w = 24, h = 24 }, rotated = false },
+        },
+        meta = { size = { w = 256, h = 256 } },
+    })
+    ---@type LSpriteAtlas
+    local atlas = lurek.sprite.parseAtlas(atlasJson)
+    local coin = atlas:getEntry("coin_0")
+    print("coin_0: x=" .. coin.x .. " y=" .. coin.y .. " w=" .. coin.w .. " h=" .. coin.h)
+    print("rotated = " .. tostring(coin.rotated))
+    local gem = atlas:getEntry("gem_0")
+    print("gem_0: x=" .. gem.x .. " y=" .. gem.y .. " w=" .. gem.w .. " h=" .. gem.h)
+    local byIdx = atlas:getByIndex(1)
+    print("index 1 name = " .. byIdx.name)
+    local byIdx3 = atlas:getByIndex(3)
+    print("index 3 name = " .. byIdx3.name)
+end
+
 --@api-stub: LSpriteAtlas:getByIndex
--- Looking up atlas entries.
+-- Looking up atlas entries. Focus: getByIndex.
 do
     local atlasJson = lurek.serial.toJson({
         frames = {
@@ -222,57 +345,139 @@ do
     print("frame 1: x=" .. f1.x .. " y=" .. f1.y)
 end
 
--- Combining sheets, groups, and frame access for a game character.
---@api-stub: lurek.sprite.newSheet
-do
-    ---@type LSpriteSheet
-    local sheet = lurek.sprite.newSheet(384, 256, 48, 64)
-    local cols, rows = sheet:getGridSize()
-    print("character sheet: " .. cols .. "x" .. rows .. " = " .. sheet:getFrameCount() .. " frames")
-    sheet:nameGroup("idle_down", 1, 4)
-    sheet:nameGroup("idle_up", 5, 4)
-    sheet:nameGroup("walk_down", 9, 6)
-    sheet:nameGroup("walk_up", 15, 6)
-    sheet:nameGroup("walk_left", 21, 6)
-    sheet:nameGroup("walk_right", 27, 6)
-    local groups = sheet:getGroupNames()
-    print("animation groups:")
-    for _, g in ipairs(groups) do
-        local frames = sheet:getGroupFrames(g)
-        print("  " .. g .. " = " .. #frames .. " frames")
-    end
-    local walkDown = sheet:getGroupFrames("walk_down")
-    print("walk_down animation frames:")
-    for i, f in ipairs(walkDown) do
-        print("  " .. i .. ": x=" .. f.x .. " y=" .. f.y .. " w=" .. f.w .. " h=" .. f.h)
-    end
-end
-
--- Different texture and frame sizes.
---@api-stub: lurek.sprite.newSheet
-do
-    ---@type LSpriteSheet
-    local tiny = lurek.sprite.newSheet(64, 64, 8, 8)
-    print("tiny: " .. tiny:getFrameCount() .. " frames of 8x8")
-    ---@type LSpriteSheet
-    local wide = lurek.sprite.newSheet(1024, 64, 128, 64)
-    print("wide: " .. wide:getFrameCount() .. " frames of 128x64")
-    ---@type LSpriteSheet
-    local tall = lurek.sprite.newSheet(64, 1024, 64, 128)
-    print("tall: " .. tall:getFrameCount() .. " frames of 64x128")
-    ---@type LSpriteSheet
-    local single = lurek.sprite.newSheet(256, 256, 256, 256)
-    print("single: " .. single:getFrameCount() .. " frame of 256x256")
-end
-
 --- Sprite Module Part 1: LSpriteSheet advanced, newAtlasSheet, newRPGMakerSheet, parseAsepriteAtlas, parseAtlas
 
+
 --@api-stub: LSpriteSheet:getFrameCount
+-- Sprite sheet frame, group, and grid queries, plus type introspection. Focus: getFrameCount.
+do
+    local sheet = lurek.sprite.newSheet(16, 16, 64, 128)
+    print("frame_count=" .. sheet:getFrameCount())
+    local fw, fh = sheet:getFrameSize()
+    print("frame_size=" .. fw .. "x" .. fh)
+    local gw, gh = sheet:getGridSize()
+    print("grid=" .. gw .. "x" .. gh)
+
+    local frame = sheet:getFrame(0)
+    print("frame0=" .. tostring(frame ~= nil))
+
+    local row = sheet:getRow(0)
+    print("row0_len=" .. #row)
+
+    local col = sheet:getColumn(0)
+    print("col0_len=" .. #col)
+
+    sheet:nameGroup("walk", 0, 4)
+    local names = sheet:getGroupNames()
+    print("groups=" .. #names)
+    local group_frames = sheet:getGroupFrames("walk")
+    print("walk_frames=" .. #group_frames)
+
+    local img = sheet:drawToImage(64, 128)
+    print("sheet_img=" .. tostring(img ~= nil))
+
+    print("type=" .. sheet:type())
+    print("typeOf=" .. tostring(sheet:typeOf("LSpriteSheet")))
+end
+
 --@api-stub: LSpriteSheet:getFrameSize
+-- Sprite sheet frame, group, and grid queries, plus type introspection. Focus: getFrameSize.
+do
+    local sheet = lurek.sprite.newSheet(16, 16, 64, 128)
+    print("frame_count=" .. sheet:getFrameCount())
+    local fw, fh = sheet:getFrameSize()
+    print("frame_size=" .. fw .. "x" .. fh)
+    local gw, gh = sheet:getGridSize()
+    print("grid=" .. gw .. "x" .. gh)
+
+    local frame = sheet:getFrame(0)
+    print("frame0=" .. tostring(frame ~= nil))
+
+    local row = sheet:getRow(0)
+    print("row0_len=" .. #row)
+
+    local col = sheet:getColumn(0)
+    print("col0_len=" .. #col)
+
+    sheet:nameGroup("walk", 0, 4)
+    local names = sheet:getGroupNames()
+    print("groups=" .. #names)
+    local group_frames = sheet:getGroupFrames("walk")
+    print("walk_frames=" .. #group_frames)
+
+    local img = sheet:drawToImage(64, 128)
+    print("sheet_img=" .. tostring(img ~= nil))
+
+    print("type=" .. sheet:type())
+    print("typeOf=" .. tostring(sheet:typeOf("LSpriteSheet")))
+end
+
 --@api-stub: LSpriteSheet:getGridSize
+-- Sprite sheet frame, group, and grid queries, plus type introspection. Focus: getGridSize.
+do
+    local sheet = lurek.sprite.newSheet(16, 16, 64, 128)
+    print("frame_count=" .. sheet:getFrameCount())
+    local fw, fh = sheet:getFrameSize()
+    print("frame_size=" .. fw .. "x" .. fh)
+    local gw, gh = sheet:getGridSize()
+    print("grid=" .. gw .. "x" .. gh)
+
+    local frame = sheet:getFrame(0)
+    print("frame0=" .. tostring(frame ~= nil))
+
+    local row = sheet:getRow(0)
+    print("row0_len=" .. #row)
+
+    local col = sheet:getColumn(0)
+    print("col0_len=" .. #col)
+
+    sheet:nameGroup("walk", 0, 4)
+    local names = sheet:getGroupNames()
+    print("groups=" .. #names)
+    local group_frames = sheet:getGroupFrames("walk")
+    print("walk_frames=" .. #group_frames)
+
+    local img = sheet:drawToImage(64, 128)
+    print("sheet_img=" .. tostring(img ~= nil))
+
+    print("type=" .. sheet:type())
+    print("typeOf=" .. tostring(sheet:typeOf("LSpriteSheet")))
+end
+
 --@api-stub: LSpriteSheet:type
+-- Sprite sheet frame, group, and grid queries, plus type introspection. Focus: type.
+do
+    local sheet = lurek.sprite.newSheet(16, 16, 64, 128)
+    print("frame_count=" .. sheet:getFrameCount())
+    local fw, fh = sheet:getFrameSize()
+    print("frame_size=" .. fw .. "x" .. fh)
+    local gw, gh = sheet:getGridSize()
+    print("grid=" .. gw .. "x" .. gh)
+
+    local frame = sheet:getFrame(0)
+    print("frame0=" .. tostring(frame ~= nil))
+
+    local row = sheet:getRow(0)
+    print("row0_len=" .. #row)
+
+    local col = sheet:getColumn(0)
+    print("col0_len=" .. #col)
+
+    sheet:nameGroup("walk", 0, 4)
+    local names = sheet:getGroupNames()
+    print("groups=" .. #names)
+    local group_frames = sheet:getGroupFrames("walk")
+    print("walk_frames=" .. #group_frames)
+
+    local img = sheet:drawToImage(64, 128)
+    print("sheet_img=" .. tostring(img ~= nil))
+
+    print("type=" .. sheet:type())
+    print("typeOf=" .. tostring(sheet:typeOf("LSpriteSheet")))
+end
+
 --@api-stub: LSpriteSheet:typeOf
--- Sprite sheet frame, group, and grid queries, plus type introspection.
+-- Sprite sheet frame, group, and grid queries, plus type introspection. Focus: typeOf.
 do
     local sheet = lurek.sprite.newSheet(16, 16, 64, 128)
     print("frame_count=" .. sheet:getFrameCount())
@@ -304,10 +509,61 @@ do
 end
 
 --@api-stub: LSpriteAtlas:entryCount
+-- Load an Aseprite JSON atlas into an LSpriteAtlas and query entries. Focus: entryCount.
+do
+    local json = [[{"frames":[{"filename":"hero_walk_0001.png","frame":{"x":0,"y":0,"w":16,"h":16},"duration":100},{"filename":"hero_walk_0002.png","frame":{"x":16,"y":0,"w":16,"h":16},"duration":100}],"meta":{"size":{"w":32,"h":16}}}]]
+    local atlas = lurek.sprite.parseAsepriteAtlas(json)
+    print("aseprite_count=" .. atlas:entryCount())
+    local names = atlas:entryNames()
+    print("aseprite_names=" .. #names)
+    local e0 = atlas:getByIndex(0)
+    print("e0=" .. tostring(e0 ~= nil))
+    local entry = atlas:getEntry("hero_walk_0001.png")
+    print("entry=" .. tostring(entry ~= nil))
+    local flipped = atlas:getFlipped("hero_walk_0001.png", true, false)
+    print("flipped=" .. tostring(flipped ~= nil))
+    print("type=" .. atlas:type())
+    print("typeOf=" .. tostring(atlas:typeOf("LSpriteAtlas")))
+end
+
 --@api-stub: LSpriteAtlas:entryNames
+-- Load an Aseprite JSON atlas into an LSpriteAtlas and query entries. Focus: entryNames.
+do
+    local json = [[{"frames":[{"filename":"hero_walk_0001.png","frame":{"x":0,"y":0,"w":16,"h":16},"duration":100},{"filename":"hero_walk_0002.png","frame":{"x":16,"y":0,"w":16,"h":16},"duration":100}],"meta":{"size":{"w":32,"h":16}}}]]
+    local atlas = lurek.sprite.parseAsepriteAtlas(json)
+    print("aseprite_count=" .. atlas:entryCount())
+    local names = atlas:entryNames()
+    print("aseprite_names=" .. #names)
+    local e0 = atlas:getByIndex(0)
+    print("e0=" .. tostring(e0 ~= nil))
+    local entry = atlas:getEntry("hero_walk_0001.png")
+    print("entry=" .. tostring(entry ~= nil))
+    local flipped = atlas:getFlipped("hero_walk_0001.png", true, false)
+    print("flipped=" .. tostring(flipped ~= nil))
+    print("type=" .. atlas:type())
+    print("typeOf=" .. tostring(atlas:typeOf("LSpriteAtlas")))
+end
+
 --@api-stub: LSpriteAtlas:type
+-- Load an Aseprite JSON atlas into an LSpriteAtlas and query entries. Focus: type.
+do
+    local json = [[{"frames":[{"filename":"hero_walk_0001.png","frame":{"x":0,"y":0,"w":16,"h":16},"duration":100},{"filename":"hero_walk_0002.png","frame":{"x":16,"y":0,"w":16,"h":16},"duration":100}],"meta":{"size":{"w":32,"h":16}}}]]
+    local atlas = lurek.sprite.parseAsepriteAtlas(json)
+    print("aseprite_count=" .. atlas:entryCount())
+    local names = atlas:entryNames()
+    print("aseprite_names=" .. #names)
+    local e0 = atlas:getByIndex(0)
+    print("e0=" .. tostring(e0 ~= nil))
+    local entry = atlas:getEntry("hero_walk_0001.png")
+    print("entry=" .. tostring(entry ~= nil))
+    local flipped = atlas:getFlipped("hero_walk_0001.png", true, false)
+    print("flipped=" .. tostring(flipped ~= nil))
+    print("type=" .. atlas:type())
+    print("typeOf=" .. tostring(atlas:typeOf("LSpriteAtlas")))
+end
+
 --@api-stub: LSpriteAtlas:typeOf
--- Load an Aseprite JSON atlas into an LSpriteAtlas and query entries.
+-- Load an Aseprite JSON atlas into an LSpriteAtlas and query entries. Focus: typeOf.
 do
     local json = [[{"frames":[{"filename":"hero_walk_0001.png","frame":{"x":0,"y":0,"w":16,"h":16},"duration":100},{"filename":"hero_walk_0002.png","frame":{"x":16,"y":0,"w":16,"h":16},"duration":100}],"meta":{"size":{"w":32,"h":16}}}]]
     local atlas = lurek.sprite.parseAsepriteAtlas(json)

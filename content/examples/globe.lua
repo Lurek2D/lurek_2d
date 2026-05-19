@@ -4,6 +4,7 @@
 
 --- Globe Module Part 1: factories, registry, constants, utilities
 
+
 --@api-stub: lurek.globe.MAX_PROVINCES
 -- Maximum number of provinces the globe supports.
 do
@@ -49,12 +50,12 @@ end
 -- Creates a globe from latitude-longitude seed points.
 do
     local seeds = {
-        {lat = 0, lon = 0},
-        {lat = 30, lon = 45},
-        {lat = -20, lon = 90},
-        {lat = 60, lon = -30},
+        {0, 0},
+        {30, 45},
+        {-20, 90},
+        {60, -30},
     }
-    local g = lurek.globe.generateVoronoi("voronoi_globe", seeds)
+    local g = lurek.globe.generateVoronoi("voronoi_globe", seeds, {})
     print("voronoi provinces = " .. g:provinceCount())
 end
 
@@ -74,7 +75,7 @@ end
 --@api-stub: lurek.globe.loadFromPNG
 -- Creates a globe from a PNG file.
 do
-    local g = lurek.globe.loadFromPNG("png_globe", "assets/textures/globe_map.png")
+    local g = lurek.globe.loadFromPNG("png_globe", "assets/textures/province_map.png")
     print("png globe provinces = " .. g:provinceCount())
 end
 
@@ -103,6 +104,7 @@ do
 end
 
 --- Globe Module Part 2: LGlobe methods (camera, provinces, markers, layers, fog)
+
 
 --@api-stub: LGlobe:getName
 -- Returns the registry name of this globe.
@@ -665,13 +667,94 @@ end
 
 --- Globe Module: LGlobeRegistry methods
 
+
 --@api-stub: LGlobeRegistry:get
+-- Globe registry: look up, create, remove, and type-check globe entries. Focus: get.
+do
+    ---@type LGlobeRegistry?
+    local reg = nil
+    if reg then
+        local globe = reg:get("earth")
+        local all_names = reg:names()
+        for _, n in ipairs(all_names) do print(n) end
+        local g2 = reg:new("mars", { radius = 1.0, subdivisions = 3 })
+        reg:remove("mars")
+        print(reg:type())
+        print(reg:typeOf("LGlobeRegistry"))
+        print(reg:typeOf("Object"))
+    end
+end
+
 --@api-stub: LGlobeRegistry:names
+-- Globe registry: look up, create, remove, and type-check globe entries. Focus: names.
+do
+    ---@type LGlobeRegistry?
+    local reg = nil
+    if reg then
+        local globe = reg:get("earth")
+        local all_names = reg:names()
+        for _, n in ipairs(all_names) do print(n) end
+        local g2 = reg:new("mars", { radius = 1.0, subdivisions = 3 })
+        reg:remove("mars")
+        print(reg:type())
+        print(reg:typeOf("LGlobeRegistry"))
+        print(reg:typeOf("Object"))
+    end
+end
+
 --@api-stub: LGlobeRegistry:new
+-- Globe registry: look up, create, remove, and type-check globe entries. Focus: new.
+do
+    ---@type LGlobeRegistry?
+    local reg = nil
+    if reg then
+        local globe = reg:get("earth")
+        local all_names = reg:names()
+        for _, n in ipairs(all_names) do print(n) end
+        local g2 = reg:new("mars", { radius = 1.0, subdivisions = 3 })
+        reg:remove("mars")
+        print(reg:type())
+        print(reg:typeOf("LGlobeRegistry"))
+        print(reg:typeOf("Object"))
+    end
+end
+
 --@api-stub: LGlobeRegistry:remove
+-- Globe registry: look up, create, remove, and type-check globe entries. Focus: remove.
+do
+    ---@type LGlobeRegistry?
+    local reg = nil
+    if reg then
+        local globe = reg:get("earth")
+        local all_names = reg:names()
+        for _, n in ipairs(all_names) do print(n) end
+        local g2 = reg:new("mars", { radius = 1.0, subdivisions = 3 })
+        reg:remove("mars")
+        print(reg:type())
+        print(reg:typeOf("LGlobeRegistry"))
+        print(reg:typeOf("Object"))
+    end
+end
+
 --@api-stub: LGlobeRegistry:type
+-- Globe registry: look up, create, remove, and type-check globe entries. Focus: type.
+do
+    ---@type LGlobeRegistry?
+    local reg = nil
+    if reg then
+        local globe = reg:get("earth")
+        local all_names = reg:names()
+        for _, n in ipairs(all_names) do print(n) end
+        local g2 = reg:new("mars", { radius = 1.0, subdivisions = 3 })
+        reg:remove("mars")
+        print(reg:type())
+        print(reg:typeOf("LGlobeRegistry"))
+        print(reg:typeOf("Object"))
+    end
+end
+
 --@api-stub: LGlobeRegistry:typeOf
--- Globe registry: look up, create, remove, and type-check globe entries.
+-- Globe registry: look up, create, remove, and type-check globe entries. Focus: typeOf.
 do
     ---@type LGlobeRegistry?
     local reg = nil

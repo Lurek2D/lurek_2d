@@ -2,51 +2,92 @@
 -- Auto-generated from content/examples2/raycaster_*.lua by tools/fix/merge_examples2_into_examples.py
 -- Run: cargo run -- content/examples/raycaster.lua
 
---- Raycaster Module Part 1: map creation, cells, ray casting, movement, line of sight, rendering
-
 --@api-stub: lurek.raycaster.new
---@api-stub: lurek.raycaster.newMap
--- Create a raycaster map grid.
+-- Create a raycaster grid with the primary constructor.
 do
     ---@type LRaycaster
     local map = lurek.raycaster.new(16, 16)
     print("size = " .. map:width() .. "x" .. map:height())
+
+    -- Practical: procedurally fill a raycaster map.
     ---@type LRaycaster
-    local map2 = lurek.raycaster.newMap(32, 32)
-    print("alias size = " .. map2:width() .. "x" .. map2:height())
+    local map = lurek.raycaster.new(32, 32)
+    for x = 0, 31 do
+        for y = 0, 31 do
+            if x == 0 or x == 31 or y == 0 or y == 31 then
+                map:setCell(x, y, 1)
+            end
+        end
+    end
+    for i = 1, 10 do
+        local wx = math.random(2, 29)
+        local wy = math.random(2, 29)
+        map:setCell(wx, wy, 2)
+    end
+    print("dungeon map: " .. map:width() .. "x" .. map:height())
+    local hit = map:castRay(16, 16, math.pi / 4, 30)
+    if hit then
+        print("ray hit at dist " .. string.format("%.2f", hit.distance))
+    end
+end
+
+--@api-stub: lurek.raycaster.newMap
+-- Create a raycaster grid with the alias constructor.
+do
+    ---@type LRaycaster
+    local map = lurek.raycaster.newMap(32, 32)
+    print("alias size = " .. map:width() .. "x" .. map:height())
 end
 
 --@api-stub: LRaycaster:setCell
---@api-stub: LRaycaster:getCell
---@api-stub: LRaycaster:setCells
--- Setting and reading cell values.
+-- Set one cell value in the raycaster map.
 do
     ---@type LRaycaster
     local map = lurek.raycaster.new(8, 8)
     map:setCell(0, 0, 1)
-    map:setCell(7, 0, 2)
-    map:setCell(0, 7, 3)
-    map:setCell(7, 7, 1)
+    print("cell set")
+end
+
+--@api-stub: LRaycaster:getCell
+-- Read one cell value from the raycaster map.
+do
+    ---@type LRaycaster
+    local map = lurek.raycaster.new(8, 8)
+    map:setCell(0, 0, 1)
     print("cell 0,0 = " .. map:getCell(0, 0))
-    print("cell 4,4 = " .. map:getCell(4, 4))
+end
+
+--@api-stub: LRaycaster:setCells
+-- Replace the full cell buffer in the raycaster map.
+do
+    ---@type LRaycaster
+    local map = lurek.raycaster.new(8, 8)
     local cells = {}
-    for i = 1, 64 do cells[i] = 0 end
-    for i = 1, 8 do cells[i] = 1 end
-    for i = 57, 64 do cells[i] = 1 end
+    for i = 1, 64 do
+        cells[i] = 0
+    end
+    for i = 1, 8 do
+        cells[i] = 1
+    end
     map:setCells(cells)
     print("after setCells: 0,0 = " .. map:getCell(0, 0))
 end
 
 --@api-stub: LRaycaster:isBlocked
---@api-stub: LRaycaster:isWalkBlocked
--- Checking solid cells.
+-- Check whether a cell blocks rays.
 do
     ---@type LRaycaster
     local map = lurek.raycaster.new(8, 8)
     map:setCell(3, 3, 1)
-    map:setCell(5, 5, 0)
     print("3,3 blocked = " .. tostring(map:isBlocked(3, 3)))
-    print("5,5 blocked = " .. tostring(map:isBlocked(5, 5)))
+end
+
+--@api-stub: LRaycaster:isWalkBlocked
+-- Check whether a cell blocks movement.
+do
+    ---@type LRaycaster
+    local map = lurek.raycaster.new(8, 8)
+    map:setCell(3, 3, 1)
     print("3,3 walk blocked = " .. tostring(map:isWalkBlocked(3, 3)))
 end
 
@@ -131,17 +172,21 @@ do
 end
 
 --@api-stub: LRaycaster:setWallAlpha
---@api-stub: LRaycaster:getWallAlpha
--- Transparent walls.
+-- Set a transparency value for a wall type.
 do
     ---@type LRaycaster
     local map = lurek.raycaster.new(8, 8)
-    map:setWallAlpha(1, 1.0)
     map:setWallAlpha(2, 0.5)
-    map:setWallAlpha(3, 0.25)
-    print("type 1 alpha = " .. map:getWallAlpha(1))
+    print("wall alpha set")
+end
+
+--@api-stub: LRaycaster:getWallAlpha
+-- Read a transparency value for a wall type.
+do
+    ---@type LRaycaster
+    local map = lurek.raycaster.new(8, 8)
+    map:setWallAlpha(2, 0.5)
     print("type 2 alpha = " .. map:getWallAlpha(2))
-    print("type 3 alpha = " .. map:getWallAlpha(3))
 end
 
 --@api-stub: LRaycaster:tryMove
@@ -297,41 +342,23 @@ do
 end
 
 --@api-stub: LRaycaster:type
---@api-stub: LRaycaster:typeOf
--- Type checking.
+-- Read the raycaster type name.
 do
     ---@type LRaycaster
     local map = lurek.raycaster.new(8, 8)
     print("type = " .. map:type())
-    print("is LRaycaster = " .. tostring(map:typeOf("LRaycaster")))
-    print("is Object = " .. tostring(map:typeOf("Object")))
 end
 
--- Practical: procedurally fill a raycaster map.
---@api-stub: lurek.raycaster.new
+--@api-stub: LRaycaster:typeOf
+-- Check the raycaster type identity.
 do
     ---@type LRaycaster
-    local map = lurek.raycaster.new(32, 32)
-    for x = 0, 31 do
-        for y = 0, 31 do
-            if x == 0 or x == 31 or y == 0 or y == 31 then
-                map:setCell(x, y, 1)
-            end
-        end
-    end
-    for i = 1, 10 do
-        local wx = math.random(2, 29)
-        local wy = math.random(2, 29)
-        map:setCell(wx, wy, 2)
-    end
-    print("dungeon map: " .. map:width() .. "x" .. map:height())
-    local hit = map:castRay(16, 16, math.pi / 4, 30)
-    if hit then
-        print("ray hit at dist " .. string.format("%.2f", hit.distance))
-    end
+    local map = lurek.raycaster.new(8, 8)
+    print("is LRaycaster = " .. tostring(map:typeOf("LRaycaster")))
 end
 
 --- Raycaster Module Part 2: doors, height maps, lights, sprites, floor/ceiling, scene building, minimap
+
 
 --@api-stub: lurek.raycaster.newDoorManager
 -- Door management for raycaster maps.
@@ -374,12 +401,18 @@ do
 end
 
 --@api-stub: LDoorManager:type
---@api-stub: LDoorManager:typeOf
--- Door manager type.
+-- Read the door-manager type name.
 do
     ---@type LDoorManager
     local doors = lurek.raycaster.newDoorManager()
     print("type = " .. doors:type())
+end
+
+--@api-stub: LDoorManager:typeOf
+-- Check the door-manager type identity.
+do
+    ---@type LDoorManager
+    local doors = lurek.raycaster.newDoorManager()
     print("is LDoorManager = " .. tostring(doors:typeOf("LDoorManager")))
 end
 
@@ -396,11 +429,8 @@ do
     print("ceiling at 5,5 = " .. hm:ceilingAt(5, 5))
     print("floor at 0,0 = " .. hm:floorAt(0, 0))
     print("ceiling at 0,0 = " .. hm:ceilingAt(0, 0))
-end
 
--- Creating stepped terrain (staircase).
---@api-stub: lurek.raycaster.newHeightMap
-do
+    -- Creating stepped terrain (staircase).
     ---@type LHeightMap
     local hm = lurek.raycaster.newHeightMap(8, 8)
     for x = 0, 7 do
@@ -415,12 +445,18 @@ do
 end
 
 --@api-stub: LHeightMap:type
---@api-stub: LHeightMap:typeOf
--- Height map type.
+-- Read the height-map type name.
 do
     ---@type LHeightMap
     local hm = lurek.raycaster.newHeightMap(4, 4)
     print("type = " .. hm:type())
+end
+
+--@api-stub: LHeightMap:typeOf
+-- Check the height-map type identity.
+do
+    ---@type LHeightMap
+    local hm = lurek.raycaster.newHeightMap(4, 4)
     print("is LHeightMap = " .. tostring(hm:typeOf("LHeightMap")))
 end
 
@@ -448,12 +484,18 @@ do
 end
 
 --@api-stub: LPointLight:type
---@api-stub: LPointLight:typeOf
--- Point light type.
+-- Read the point-light type name.
 do
     ---@type LPointLight
     local light = lurek.raycaster.newPointLight(0, 0, 1, 1, 1, 1, 1)
     print("type = " .. light:type())
+end
+
+--@api-stub: LPointLight:typeOf
+-- Check the point-light type identity.
+do
+    ---@type LPointLight
+    local light = lurek.raycaster.newPointLight(0, 0, 1, 1, 1, 1, 1)
     print("is LPointLight = " .. tostring(light:typeOf("LPointLight")))
 end
 
@@ -483,58 +525,100 @@ do
     sprites:add(9, 9, "lamp")
     local order = sprites:sortAndProject(5, 5, 0)
     print("render order = " .. #order .. " sprites")
-    for i, id in ipairs(order) do
-        print("  draw " .. i .. ": sprite " .. id)
+    for i, sprite in ipairs(order) do
+        print("  draw " .. i .. ": sprite entry = " .. tostring(sprite))
     end
 end
 
 --@api-stub: LSpriteManager:clear
---@api-stub: LSpriteManager:type
---@api-stub: LSpriteManager:typeOf
--- Sprite manager lifecycle.
+-- Remove all sprites from the manager.
 do
     ---@type LSpriteManager
     local sprites = lurek.raycaster.newSpriteManager()
     sprites:add(1, 1, "item")
     sprites:add(2, 2, "item")
     sprites:clear()
+    print("sprites cleared")
+end
+
+--@api-stub: LSpriteManager:type
+-- Read the sprite-manager type name.
+do
+    ---@type LSpriteManager
+    local sprites = lurek.raycaster.newSpriteManager()
     print("type = " .. sprites:type())
+end
+
+--@api-stub: LSpriteManager:typeOf
+-- Check the sprite-manager type identity.
+do
+    ---@type LSpriteManager
+    local sprites = lurek.raycaster.newSpriteManager()
     print("is LSpriteManager = " .. tostring(sprites:typeOf("LSpriteManager")))
 end
 
 --@api-stub: LRaycaster:setFloorTextureCell
---@api-stub: LRaycaster:getFloorTextureCell
--- Per-cell floor textures (expects LImage or nil).
+-- Assign a floor texture to one map cell.
 do
     ---@type LRaycaster
     local map = lurek.raycaster.new(8, 8)
     ---@type LImage
     local floorTex = lurek.graphics.newImage("assets/textures/ray_water.png")
     map:setFloorTextureCell(3, 3, floorTex)
-    map:setFloorTextureCell(4, 4, floorTex)
+    print("floor texture assigned")
+end
+
+--@api-stub: LRaycaster:getFloorTextureCell
+-- Read the floor texture assigned to one map cell.
+do
+    ---@type LRaycaster
+    local map = lurek.raycaster.new(8, 8)
+    ---@type LImage
+    local floorTex = lurek.graphics.newImage("assets/textures/ray_water.png")
+    map:setFloorTextureCell(3, 3, floorTex)
     print("floor at 3,3 = " .. tostring(map:getFloorTextureCell(3, 3)))
-    print("floor at 0,0 = " .. tostring(map:getFloorTextureCell(0, 0)))
 end
 
 --@api-stub: LRaycaster:setCeilingTextureCell
---@api-stub: LRaycaster:getCeilingTextureCell
--- Per-cell ceiling textures (expects LImage or nil to clear).
+-- Assign a ceiling texture to one map cell.
 do
     ---@type LRaycaster
     local map = lurek.raycaster.new(8, 8)
     ---@type LImage
     local ceilTex = lurek.graphics.newImage("assets/textures/ray_water.png")
     map:setCeilingTextureCell(2, 2, ceilTex)
-    map:setCeilingTextureCell(5, 5, ceilTex)
+    print("ceiling texture assigned")
+end
+
+--@api-stub: LRaycaster:getCeilingTextureCell
+-- Read the ceiling texture assigned to one map cell.
+do
+    ---@type LRaycaster
+    local map = lurek.raycaster.new(8, 8)
+    ---@type LImage
+    local ceilTex = lurek.graphics.newImage("assets/textures/ray_water.png")
+    map:setCeilingTextureCell(2, 2, ceilTex)
     print("ceiling at 2,2 = " .. tostring(map:getCeilingTextureCell(2, 2)))
-    print("ceiling at 5,5 = " .. tostring(map:getCeilingTextureCell(5, 5)))
-    map:setCeilingTextureCell(2, 2, nil)
-    print("cleared ceiling at 2,2 = " .. tostring(map:getCeilingTextureCell(2, 2)))
 end
 
 --@api-stub: LRaycaster:setLoweredFloorCell
+-- Define lowered-floor data for one map cell.
+do
+    ---@type LRaycaster
+    local map = lurek.raycaster.new(8, 8)
+    map:setLoweredFloorCell(4, 4, {
+        texture = 2,
+        depth = 0.3,
+        r = 0,
+        g = 100,
+        b = 200,
+        blocked = false
+    })
+    print("lowered floor assigned")
+end
+
 --@api-stub: LRaycaster:getLoweredFloorCell
--- Lowered floor cells (pits, water).
+-- Read lowered-floor data from one map cell.
 do
     ---@type LRaycaster
     local map = lurek.raycaster.new(8, 8)
@@ -549,11 +633,7 @@ do
     local cell = map:getLoweredFloorCell(4, 4)
     if cell then
         print("lowered: texture=" .. cell.texture .. " depth=" .. cell.depth)
-        print("color = " .. cell.r .. "," .. cell.g .. "," .. cell.b)
-        print("blocked = " .. tostring(cell.blocked))
     end
-    local empty = map:getLoweredFloorCell(0, 0)
-    print("no lowered at 0,0 = " .. tostring(empty))
 end
 
 --@api-stub: LRaycaster:computeTileLight
@@ -683,6 +763,7 @@ end
 
 --- Raycaster Module Part 2: buildSceneWithModels, width/height, DoorManager, HeightMap, PointLight, SpriteManager
 
+
 --@api-stub: LRaycaster:buildSceneWithModels
 -- Full scene build with model meshes alongside sprites.
 do
@@ -699,8 +780,15 @@ do
 end
 
 --@api-stub: LRaycaster:height
+-- Raycaster viewport dimensions. Focus: height.
+do
+    local rc = lurek.raycaster.new(160, 120)
+    print("w=" .. rc:width())
+    print("h=" .. rc:height())
+end
+
 --@api-stub: LRaycaster:width
--- Raycaster viewport dimensions.
+-- Raycaster viewport dimensions. Focus: width.
 do
     local rc = lurek.raycaster.new(160, 120)
     print("w=" .. rc:width())
@@ -708,11 +796,67 @@ do
 end
 
 --@api-stub: LDoorManager:addDoor
+-- Door manager lifecycle and operations. Focus: addDoor.
+do
+    local dm = lurek.raycaster.newDoorManager()
+    local id = dm:addDoor(5, 5, "horizontal", 0.5)
+    print("count=" .. dm:count())
+    dm:openDoor(id)
+    dm:update(0.1)
+    local door = dm:getDoor(id)
+    print("door=" .. tostring(door ~= nil))
+    dm:closeDoor(id)
+    print("type=" .. dm:type())
+    print("typeOf=" .. tostring(dm:typeOf("LDoorManager")))
+end
+
 --@api-stub: LDoorManager:closeDoor
+-- Door manager lifecycle and operations. Focus: closeDoor.
+do
+    local dm = lurek.raycaster.newDoorManager()
+    local id = dm:addDoor(5, 5, "horizontal", 0.5)
+    print("count=" .. dm:count())
+    dm:openDoor(id)
+    dm:update(0.1)
+    local door = dm:getDoor(id)
+    print("door=" .. tostring(door ~= nil))
+    dm:closeDoor(id)
+    print("type=" .. dm:type())
+    print("typeOf=" .. tostring(dm:typeOf("LDoorManager")))
+end
+
 --@api-stub: LDoorManager:count
+-- Door manager lifecycle and operations. Focus: count.
+do
+    local dm = lurek.raycaster.newDoorManager()
+    local id = dm:addDoor(5, 5, "horizontal", 0.5)
+    print("count=" .. dm:count())
+    dm:openDoor(id)
+    dm:update(0.1)
+    local door = dm:getDoor(id)
+    print("door=" .. tostring(door ~= nil))
+    dm:closeDoor(id)
+    print("type=" .. dm:type())
+    print("typeOf=" .. tostring(dm:typeOf("LDoorManager")))
+end
+
 --@api-stub: LDoorManager:openDoor
+-- Door manager lifecycle and operations. Focus: openDoor.
+do
+    local dm = lurek.raycaster.newDoorManager()
+    local id = dm:addDoor(5, 5, "horizontal", 0.5)
+    print("count=" .. dm:count())
+    dm:openDoor(id)
+    dm:update(0.1)
+    local door = dm:getDoor(id)
+    print("door=" .. tostring(door ~= nil))
+    dm:closeDoor(id)
+    print("type=" .. dm:type())
+    print("typeOf=" .. tostring(dm:typeOf("LDoorManager")))
+end
+
 --@api-stub: LDoorManager:update
--- Door manager lifecycle and operations.
+-- Door manager lifecycle and operations. Focus: update.
 do
     local dm = lurek.raycaster.newDoorManager()
     local id = dm:addDoor(5, 5, "horizontal", 0.5)
@@ -727,10 +871,43 @@ do
 end
 
 --@api-stub: LHeightMap:ceilingAt
+-- Height map floor/ceiling queries and mutation. Focus: ceilingAt.
+do
+    local hm = lurek.raycaster.newHeightMap(16, 16)
+    hm:setFloor(3, 3, 0.2)
+    hm:setCeiling(3, 3, 0.9)
+    print("floor=" .. hm:floorAt(3, 3))
+    print("ceiling=" .. hm:ceilingAt(3, 3))
+    print("type=" .. hm:type())
+    print("typeOf=" .. tostring(hm:typeOf("LHeightMap")))
+end
+
 --@api-stub: LHeightMap:floorAt
+-- Height map floor/ceiling queries and mutation. Focus: floorAt.
+do
+    local hm = lurek.raycaster.newHeightMap(16, 16)
+    hm:setFloor(3, 3, 0.2)
+    hm:setCeiling(3, 3, 0.9)
+    print("floor=" .. hm:floorAt(3, 3))
+    print("ceiling=" .. hm:ceilingAt(3, 3))
+    print("type=" .. hm:type())
+    print("typeOf=" .. tostring(hm:typeOf("LHeightMap")))
+end
+
 --@api-stub: LHeightMap:setCeiling
+-- Height map floor/ceiling queries and mutation. Focus: setCeiling.
+do
+    local hm = lurek.raycaster.newHeightMap(16, 16)
+    hm:setFloor(3, 3, 0.2)
+    hm:setCeiling(3, 3, 0.9)
+    print("floor=" .. hm:floorAt(3, 3))
+    print("ceiling=" .. hm:ceilingAt(3, 3))
+    print("type=" .. hm:type())
+    print("typeOf=" .. tostring(hm:typeOf("LHeightMap")))
+end
+
 --@api-stub: LHeightMap:setFloor
--- Height map floor/ceiling queries and mutation.
+-- Height map floor/ceiling queries and mutation. Focus: setFloor.
 do
     local hm = lurek.raycaster.newHeightMap(16, 16)
     hm:setFloor(3, 3, 0.2)
@@ -742,11 +919,67 @@ do
 end
 
 --@api-stub: LPointLight:color
+-- Point light queries, mutation, and type introspection. Focus: color.
+do
+    local pl = lurek.raycaster.newPointLight(8, 8, 1, 1, 0.8, 5.0, 2.0)
+    print("x=" .. pl:x())
+    print("y=" .. pl:y())
+    print("radius=" .. pl:radius())
+    print("intensity=" .. pl:intensity())
+    local r, g, b = pl:color()
+    print("color=" .. r .. "," .. g .. "," .. b)
+    pl:set(10, 10, 1, 0.8, 0.6, 6.0, 3.0)
+    print("type=" .. pl:type())
+    print("typeOf=" .. tostring(pl:typeOf("LPointLight")))
+end
+
 --@api-stub: LPointLight:intensity
+-- Point light queries, mutation, and type introspection. Focus: intensity.
+do
+    local pl = lurek.raycaster.newPointLight(8, 8, 1, 1, 0.8, 5.0, 2.0)
+    print("x=" .. pl:x())
+    print("y=" .. pl:y())
+    print("radius=" .. pl:radius())
+    print("intensity=" .. pl:intensity())
+    local r, g, b = pl:color()
+    print("color=" .. r .. "," .. g .. "," .. b)
+    pl:set(10, 10, 1, 0.8, 0.6, 6.0, 3.0)
+    print("type=" .. pl:type())
+    print("typeOf=" .. tostring(pl:typeOf("LPointLight")))
+end
+
 --@api-stub: LPointLight:radius
+-- Point light queries, mutation, and type introspection. Focus: radius.
+do
+    local pl = lurek.raycaster.newPointLight(8, 8, 1, 1, 0.8, 5.0, 2.0)
+    print("x=" .. pl:x())
+    print("y=" .. pl:y())
+    print("radius=" .. pl:radius())
+    print("intensity=" .. pl:intensity())
+    local r, g, b = pl:color()
+    print("color=" .. r .. "," .. g .. "," .. b)
+    pl:set(10, 10, 1, 0.8, 0.6, 6.0, 3.0)
+    print("type=" .. pl:type())
+    print("typeOf=" .. tostring(pl:typeOf("LPointLight")))
+end
+
 --@api-stub: LPointLight:x
+-- Point light queries, mutation, and type introspection. Focus: x.
+do
+    local pl = lurek.raycaster.newPointLight(8, 8, 1, 1, 0.8, 5.0, 2.0)
+    print("x=" .. pl:x())
+    print("y=" .. pl:y())
+    print("radius=" .. pl:radius())
+    print("intensity=" .. pl:intensity())
+    local r, g, b = pl:color()
+    print("color=" .. r .. "," .. g .. "," .. b)
+    pl:set(10, 10, 1, 0.8, 0.6, 6.0, 3.0)
+    print("type=" .. pl:type())
+    print("typeOf=" .. tostring(pl:typeOf("LPointLight")))
+end
+
 --@api-stub: LPointLight:y
--- Point light queries, mutation, and type introspection.
+-- Point light queries, mutation, and type introspection. Focus: y.
 do
     local pl = lurek.raycaster.newPointLight(8, 8, 1, 1, 0.8, 5.0, 2.0)
     print("x=" .. pl:x())
@@ -761,10 +994,49 @@ do
 end
 
 --@api-stub: LSpriteManager:add
+-- Sprite manager operations and type introspection. Focus: add.
+do
+    local sm = lurek.raycaster.newSpriteManager()
+    local id = sm:add(5, 5, "assets/textures/ray_water.png", 1.0)
+    sm:setPosition(id, 6, 6)
+    sm:setVisible(id, true)
+    sm:sortAndProject(8, 8, 0.0)
+    sm:remove(id)
+    sm:clear()
+    print("type=" .. sm:type())
+    print("typeOf=" .. tostring(sm:typeOf("LSpriteManager")))
+end
+
 --@api-stub: LSpriteManager:remove
+-- Sprite manager operations and type introspection. Focus: remove.
+do
+    local sm = lurek.raycaster.newSpriteManager()
+    local id = sm:add(5, 5, "assets/textures/ray_water.png", 1.0)
+    sm:setPosition(id, 6, 6)
+    sm:setVisible(id, true)
+    sm:sortAndProject(8, 8, 0.0)
+    sm:remove(id)
+    sm:clear()
+    print("type=" .. sm:type())
+    print("typeOf=" .. tostring(sm:typeOf("LSpriteManager")))
+end
+
 --@api-stub: LSpriteManager:setPosition
+-- Sprite manager operations and type introspection. Focus: setPosition.
+do
+    local sm = lurek.raycaster.newSpriteManager()
+    local id = sm:add(5, 5, "assets/textures/ray_water.png", 1.0)
+    sm:setPosition(id, 6, 6)
+    sm:setVisible(id, true)
+    sm:sortAndProject(8, 8, 0.0)
+    sm:remove(id)
+    sm:clear()
+    print("type=" .. sm:type())
+    print("typeOf=" .. tostring(sm:typeOf("LSpriteManager")))
+end
+
 --@api-stub: LSpriteManager:setVisible
--- Sprite manager operations and type introspection.
+-- Sprite manager operations and type introspection. Focus: setVisible.
 do
     local sm = lurek.raycaster.newSpriteManager()
     local id = sm:add(5, 5, "assets/textures/ray_water.png", 1.0)

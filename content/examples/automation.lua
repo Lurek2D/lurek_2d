@@ -4,23 +4,24 @@
 
 --- Automation Examples: Script loading, playback control, macros, conditions
 
+
 --@api-stub: lurek.automation.load
 -- Loads an automation script by name with step data.
 do
     local steps = {
-        { action = "click", x = 100, y = 200 },
-        { action = "wait", duration = 0.5 },
-        { action = "click", x = 300, y = 100 },
+        { action = "mousemove", x = 100, y = 200, dx = 0, dy = 0, time = 0.0 },
+        { action = "mousepress", x = 100, y = 200, button = 1, time = 0.1 },
+        { action = "mouserelease", x = 100, y = 200, button = 1, time = 0.2 },
     }
-    lurek.automation.load("login_flow", steps)
+    lurek.automation.load("login_flow", { steps = steps })
     print("loaded = " .. tostring(lurek.automation.hasScript("login_flow")))
 end
 
 --@api-stub: lurek.automation.unload
 -- Unloads a previously loaded automation script.
 do
-    local steps = { { action = "click", x = 50, y = 50 } }
-    lurek.automation.load("temp_script", steps)
+    local steps = { { action = "wait", time = 0.0 } }
+    lurek.automation.load("temp_script", { steps = steps })
     lurek.automation.unload("temp_script")
     print("unloaded = " .. tostring(not lurek.automation.hasScript("temp_script")))
 end
@@ -42,8 +43,8 @@ end
 --@api-stub: lurek.automation.start
 -- Starts executing a loaded automation script.
 do
-    local steps = { { action = "wait", duration = 1.0 } }
-    lurek.automation.load("run_test", steps)
+    local steps = { { action = "wait", time = 1.0 } }
+    lurek.automation.load("run_test", { steps = steps })
     lurek.automation.start("run_test")
     print("running = " .. tostring(lurek.automation.isRunning()))
 end
@@ -130,34 +131,34 @@ end
 -- Returns the index of the currently executing step.
 do
     local step = lurek.automation.getCurrentStep()
-    print("current step = " .. step)
+    print("current step = " .. tostring(step))
 end
 
 --@api-stub: lurek.automation.getStepCount
 -- Returns the total number of steps in the running script.
 do
     local count = lurek.automation.getStepCount()
-    print("step count = " .. count)
+    print("step count = " .. tostring(count))
 end
 
 --@api-stub: lurek.automation.getCurrentScript
 -- Returns the name of the currently running script.
 do
     local name = lurek.automation.getCurrentScript()
-    print("current script = " .. name)
+    print("current script = " .. tostring(name))
 end
 
 --@api-stub: lurek.automation.getElapsedTime
 -- Returns elapsed time since the script started.
 do
     local t = lurek.automation.getElapsedTime()
-    print("elapsed = " .. t .. "s")
+    print("elapsed = " .. tostring(t) .. "s")
 end
 
 --@api-stub: lurek.automation.loadFromToml
 -- Loads a script from a TOML-formatted string.
 do
-    local toml = "[steps]\naction = \"click\"\nx = 200\ny = 150\n"
+    local toml = "[[steps]]\naction = \"wait\"\ntime = 0.0\n"
     lurek.automation.loadFromToml("toml_script", toml)
     print("loaded from TOML = " .. tostring(lurek.automation.hasScript("toml_script")))
 end

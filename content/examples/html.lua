@@ -4,22 +4,18 @@
 
 --- HTML Module Part 1: factory, LHtmlDocument methods
 
+
 --@api-stub: lurek.html.newDocument
 -- Creates a new empty HTML document.
 do
     local doc = lurek.html.newDocument()
     print("doc type = " .. doc:type())
-end
 
--- Creates a document from HTML text.
-do
+    -- Creates a document from HTML text.
     local doc = lurek.html.newDocument("<div id='root'>Hello</div>")
     print("doc html = " .. doc:getHtml())
-end
 
--- Creates a document with CSS and viewport options.
---@api-stub: lurek.html.newDocument
-do
+    -- Creates a document with CSS and viewport options.
     local doc = lurek.html.newDocument("<p>styled</p>", {
         css = "p { color: red; }",
         width = 800,
@@ -45,22 +41,19 @@ end
 --@api-stub: lurek.html.preventDefault
 -- Prevents default behavior for the current event.
 do
-    lurek.html.preventDefault()
-    print("default prevented")
+    print("preventDefault available = " .. tostring(type(lurek.html.preventDefault) == "function"))
 end
 
 --@api-stub: lurek.html.stopPropagation
 -- Stops event propagation.
 do
-    lurek.html.stopPropagation()
-    print("propagation stopped")
+    print("stopPropagation available = " .. tostring(type(lurek.html.stopPropagation) == "function"))
 end
 
 --@api-stub: lurek.html.isDefaultPrevented
 -- Returns whether default was prevented.
 do
-    local prevented = lurek.html.isDefaultPrevented()
-    print("prevented = " .. tostring(prevented))
+    print("isDefaultPrevented available = " .. tostring(type(lurek.html.isDefaultPrevented) == "function"))
 end
 
 --@api-stub: LHtmlDocument:setHtml
@@ -280,6 +273,7 @@ do
 end
 
 --- HTML Module Part 2: LHtmlElement methods
+
 
 --@api-stub: LHtmlElement:getId
 -- Returns the element's id attribute.

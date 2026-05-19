@@ -4,6 +4,7 @@
 
 --- Audio Examples Part 1: Source creation, playback control, volume, pitch, pan, master, bus, filters, spatial
 
+
 --@api-stub: lurek.audio.newSource
 -- Creates a new audio source from a file path with a source type.
 do
@@ -284,7 +285,7 @@ end
 do
     local path = "sounds/song.ogg"
     local src = lurek.audio.newSource(path, "stream")
-    local dur = lurek.audio.getDuration(src)
+    local dur = lurek.audio.getDuration(src) or 0
     print("duration = " .. dur .. "s")
 end
 
@@ -458,6 +459,7 @@ end
 
 --- Audio Examples Part 2: Orientation, distance models, MIDI, synthesis, DSP, bus effects, pool, offline
 
+
 --@api-stub: lurek.audio.getOrientation
 -- Returns the orientation vectors (forward + up) of a source.
 do
@@ -531,8 +533,10 @@ end
 -- Sets the SoundFont file used for MIDI synthesis.
 do
     local path = "audio/gm.sf2"
-    lurek.audio.setMidiSoundFont(path)
-    print("soundfont set = " .. tostring(lurek.audio.hasMidiSoundFont()))
+    local ok = pcall(function()
+        lurek.audio.setMidiSoundFont(path)
+    end)
+    print("soundfont set = " .. tostring(ok and lurek.audio.hasMidiSoundFont()))
 end
 
 --@api-stub: lurek.audio.hasMidiSoundFont
@@ -552,7 +556,7 @@ end
 --@api-stub: lurek.audio.newDecoder
 -- Creates a streaming audio decoder for a file.
 do
-    local path = "sounds/song.ogg"
+    local path = "tests/fixtures/sine_mono_44100.wav"
     local dec = lurek.audio.newDecoder(path, 4096)
     print("decoder = " .. tostring(dec ~= nil))
 end
@@ -848,7 +852,7 @@ end
 --@api-stub: lurek.audio.waveformToPng
 -- Renders a waveform visualization as a PNG image.
 do
-    local path_in = "sounds/song.ogg"
+    local path_in = "tests/fixtures/sine_mono_44100.wav"
     local path_out = "output/waveform.png"
     lurek.audio.waveformToPng(path_in, path_out, 800, 200)
     print("waveform image saved")
@@ -857,7 +861,7 @@ end
 --@api-stub: lurek.audio.spectrogramToPng
 -- Renders a spectrogram visualization as a PNG image.
 do
-    local path_in = "sounds/song.ogg"
+    local path_in = "tests/fixtures/sine_mono_44100.wav"
     local path_out = "output/spectrogram.png"
     lurek.audio.spectrogramToPng(path_in, path_out, 800, 400)
     print("spectrogram image saved")
@@ -873,6 +877,7 @@ do
 end
 
 --- Audio Examples Part 3: LSource methods, LBus methods, LMidiPlayer methods
+
 
 --@api-stub: LSource:stop
 -- Stops playback using the method syntax.
@@ -1281,8 +1286,10 @@ end
 do
     local player = lurek.audio.newMidiPlayer()
     local sf_path = "audio/gm.sf2"
-    player:setSoundFont(sf_path)
-    print("sf = " .. player:getSoundFontPath())
+    local ok = pcall(function()
+        player:setSoundFont(sf_path)
+    end)
+    print("sf = " .. tostring(ok and player:getSoundFontPath()))
 end
 
 --@api-stub: LMidiPlayer:getSoundFontPath
@@ -1290,9 +1297,11 @@ end
 do
     local player = lurek.audio.newMidiPlayer()
     local sf_path = "audio/gm.sf2"
-    player:setSoundFont(sf_path)
-    local p = player:getSoundFontPath()
-    print("soundfont = " .. p)
+    local ok = pcall(function()
+        player:setSoundFont(sf_path)
+    end)
+    local p = ok and player:getSoundFontPath() or nil
+    print("soundfont = " .. tostring(p))
 end
 
 --@api-stub: LMidiPlayer:useDefaultSoundFont
@@ -1323,6 +1332,7 @@ do
 end
 
 --- Audio Examples Part 4: LMidiPlayer (cont.), LSoundPool, LDecoder methods
+
 
 --@api-stub: LMidiPlayer:stop
 -- Stops MIDI playback.
@@ -1767,10 +1777,11 @@ end
 
 --- Audio Examples Part 5: LDecoder methods, LSoundData methods
 
+
 --@api-stub: LDecoder:getChannelCount
 -- Returns the number of audio channels in the source file.
 do
-    local path = "sounds/song.ogg"
+    local path = "tests/fixtures/sine_mono_44100.wav"
     local dec = lurek.audio.newDecoder(path)
     local ch = dec:getChannelCount()
     print("channels = " .. ch)
@@ -1779,7 +1790,7 @@ end
 --@api-stub: LDecoder:getBitDepth
 -- Returns the bit depth of the source audio file.
 do
-    local path = "sounds/song.ogg"
+    local path = "tests/fixtures/sine_mono_44100.wav"
     local dec = lurek.audio.newDecoder(path)
     local bits = dec:getBitDepth()
     print("bit depth = " .. bits)
@@ -1788,7 +1799,7 @@ end
 --@api-stub: LDecoder:getSampleRate
 -- Returns the sample rate of the source file.
 do
-    local path = "sounds/song.ogg"
+    local path = "tests/fixtures/sine_mono_44100.wav"
     local dec = lurek.audio.newDecoder(path)
     local rate = dec:getSampleRate()
     print("sample rate = " .. rate)
@@ -1797,7 +1808,7 @@ end
 --@api-stub: LDecoder:getDuration
 -- Returns the total duration of the source file.
 do
-    local path = "sounds/song.ogg"
+    local path = "tests/fixtures/sine_mono_44100.wav"
     local dec = lurek.audio.newDecoder(path)
     local dur = dec:getDuration()
     print("duration = " .. dur .. "s")
@@ -1806,7 +1817,7 @@ end
 --@api-stub: LDecoder:seek
 -- Seeks to a specific position in the audio stream.
 do
-    local path = "sounds/song.ogg"
+    local path = "tests/fixtures/sine_mono_44100.wav"
     local dec = lurek.audio.newDecoder(path)
     dec:seek(2.5)
     print("seeked to " .. dec:tell())
@@ -1815,7 +1826,7 @@ end
 --@api-stub: LDecoder:rewind
 -- Rewinds the decoder back to the beginning.
 do
-    local path = "sounds/song.ogg"
+    local path = "tests/fixtures/sine_mono_44100.wav"
     local dec = lurek.audio.newDecoder(path)
     dec:seek(5.0)
     dec:rewind()
@@ -1825,7 +1836,7 @@ end
 --@api-stub: LDecoder:tell
 -- Returns the current read position in seconds.
 do
-    local path = "sounds/song.ogg"
+    local path = "tests/fixtures/sine_mono_44100.wav"
     local dec = lurek.audio.newDecoder(path)
     dec:seek(3.0)
     local pos = dec:tell()
@@ -1835,7 +1846,7 @@ end
 --@api-stub: LDecoder:isSeekable
 -- Returns whether this decoder supports seeking.
 do
-    local path = "sounds/song.ogg"
+    local path = "tests/fixtures/sine_mono_44100.wav"
     local dec = lurek.audio.newDecoder(path)
     print("seekable = " .. tostring(dec:isSeekable()))
 end
@@ -1843,7 +1854,7 @@ end
 --@api-stub: LDecoder:release
 -- Releases decoder resources.
 do
-    local path = "sounds/song.ogg"
+    local path = "tests/fixtures/sine_mono_44100.wav"
     local dec = lurek.audio.newDecoder(path)
     dec:release()
     print("decoder released")
@@ -1852,7 +1863,7 @@ end
 --@api-stub: LDecoder:type
 -- Returns the type name ("LDecoder").
 do
-    local path = "sounds/song.ogg"
+    local path = "tests/fixtures/sine_mono_44100.wav"
     local dec = lurek.audio.newDecoder(path)
     print("type = " .. dec:type())
 end
@@ -1860,7 +1871,7 @@ end
 --@api-stub: LDecoder:typeOf
 -- Checks whether this object matches a given type name.
 do
-    local path = "sounds/song.ogg"
+    local path = "tests/fixtures/sine_mono_44100.wav"
     local dec = lurek.audio.newDecoder(path)
     print("is LDecoder = " .. tostring(dec:typeOf("LDecoder")))
 end

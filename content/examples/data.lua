@@ -4,6 +4,7 @@
 
 --- Data Module Part 1: Pack/Unpack, Compression, Encoding, Hashing, TOML, MsgPack, RingBuffer, DataView, Writer
 
+
 --@api-stub: lurek.data.pack
 -- Packs Lua values into a binary string using a format string.
 do
@@ -99,7 +100,7 @@ end
 --@api-stub: lurek.data.newDataView
 -- Creates a DataView over a binary string slice.
 do
-    local raw = lurek.data.pack("I4I4", 42, 99)
+    local raw = lurek.data.pack("<II", 42, 99)
     local view = lurek.data.newDataView(raw)
     print("view size = " .. view:getSize())
 end
@@ -107,22 +108,22 @@ end
 --@api-stub: lurek.data.write
 -- Writes binary values into a byte string using a format string.
 do
-    local bytes = lurek.data.write("f", 3.14)
+    local bytes = lurek.data.write("f32", 3.14)
     print("write len = " .. #bytes)
 end
 
 --@api-stub: lurek.data.read
 -- Reads binary values from a byte string using a format string.
 do
-    local bytes = lurek.data.write("f", 3.14)
-    local val = lurek.data.read("f", bytes)
+    local bytes = lurek.data.write("f32", 3.14)
+    local val = lurek.data.read("f32", bytes)
     print("read val = " .. val)
 end
 
 --@api-stub: lurek.data.size
 -- Measures fixed byte size for a format string.
 do
-    local sz = lurek.data.size("I4")
+    local sz = lurek.data.size("u32")
     print("format size = " .. sz)
 end
 
@@ -314,7 +315,7 @@ end
 --@api-stub: LDataView:getInt32
 -- Reads a signed 32-bit integer at a byte offset.
 do
-    local raw = lurek.data.pack("i4", -100000)
+    local raw = lurek.data.pack("<i", -100000)
     local view = lurek.data.newDataView(raw)
     print("i32[0] = " .. view:getInt32(0))
 end
@@ -322,7 +323,7 @@ end
 --@api-stub: LDataView:getUInt32
 -- Reads an unsigned 32-bit integer at a byte offset.
 do
-    local raw = lurek.data.pack("I4", 3000000)
+    local raw = lurek.data.pack("<I", 3000000)
     local view = lurek.data.newDataView(raw)
     print("u32[0] = " .. view:getUInt32(0))
 end
@@ -346,7 +347,7 @@ end
 --@api-stub: LDataView:getSize
 -- Returns the data view size in bytes.
 do
-    local raw = lurek.data.pack("I4I4I4", 1, 2, 3)
+    local raw = lurek.data.pack("<III", 1, 2, 3)
     local view = lurek.data.newDataView(raw)
     print("view size = " .. view:getSize())
 end
@@ -406,6 +407,7 @@ do
 end
 
 --- Data Module Part 2: DataWriter (continued), ByteData
+
 
 --@api-stub: LDataWriter:writeU32LE
 -- Appends an unsigned 32-bit integer in little-endian.

@@ -153,6 +153,25 @@ NAMESPACE_MAP: dict[str, str] = {
     'window':      'window',
 }
 
+# Some Lua-visible classes are surfaced from multiple module docs, but examples should
+# live in one canonical module file to avoid exact duplicate --@api-stub markers.
+CANONICAL_API_MODULE: dict[str, str] = {
+    'LBehaviorTree:setRoot': 'patterns',
+    'LTween:getDuration': 'tween',
+    'LTween:getEasingName': 'tween',
+    'LTween:type': 'tween',
+    'LTween:typeOf': 'tween',
+    'LImageData:blit': 'image',
+    'LImageData:diff': 'image',
+    'LImageData:getHeight': 'image',
+    'LImageData:getRegion': 'image',
+    'LImageData:getWidth': 'image',
+    'LImageData:mapPixels': 'image',
+    'LImageData:resize': 'image',
+    'LImageData:type': 'image',
+    'LImageData:typeOf': 'image',
+}
+
 
 @dataclass
 class ApiEntry:
@@ -408,6 +427,10 @@ def build_cov(entries: list[ApiEntry], texts: dict[str, dict]) -> dict[str, Modu
     bk: dict[str, ModuleCov] = {}
     module_data_cache: dict[str, dict] = {}
     for e in entries:
+        canonical_module = CANONICAL_API_MODULE.get(e.api_name)
+        if canonical_module is not None and e.module != canonical_module:
+            continue
+
         key = e.module
         if key not in bk:
             bk[key] = ModuleCov(

@@ -4,6 +4,7 @@
 
 --- Serial Module: JSON, TOML, CSV, INI, MsgPack, XML, format detection, schema validation
 
+
 --@api-stub: lurek.serial.fromJson
 -- JSON parsing and encoding.
 do
@@ -20,11 +21,28 @@ do
     print("compact = " .. encoded)
     local pretty = lurek.serial.toJson(data, true)
     print("pretty:\n" .. pretty)
+
+    -- Complex JSON round-trip. Focus: fromJson.
+    local complex = {
+        config = {
+            window = { width = 1280, height = 720, fullscreen = false },
+            audio = { volume = 0.8, mute = false },
+        },
+        players = {
+            { id = 1, name = "Alice", scores = { 100, 200, 300 } },
+            { id = 2, name = "Bob", scores = { 50, 150 } },
+        },
+    }
+    local json = lurek.serial.toJson(complex, true)
+    print("encoded length = " .. #json)
+    local decoded = lurek.serial.fromJson(json)
+    print("window width = " .. decoded.config.window.width)
+    print("player 1 name = " .. decoded.players[1].name)
+    print("player 2 scores = " .. #decoded.players[2].scores)
 end
 
--- Complex JSON round-trip.
 --@api-stub: lurek.serial.toJson
---@api-stub: lurek.serial.fromJson
+-- Complex JSON round-trip. Focus: toJson.
 do
     local complex = {
         config = {
@@ -92,11 +110,8 @@ do
     local output = lurek.serial.toCsv(rows, ",", true)
     print("re-encoded csv length = " .. #output)
     print("has header line = " .. tostring(output:find("name,age,city") ~= nil))
-end
 
--- Tab-separated and semicolon-separated.
---@api-stub: lurek.serial.fromCsv
-do
+    -- Tab-separated and semicolon-separated.
     local tsv = "id\tproduct\tprice\n1\tSword\t150\n2\tShield\t80\n3\tPotion\t25"
     local items = lurek.serial.fromCsv(tsv, "\t", true)
     print("tsv items = " .. #items)
@@ -232,7 +247,7 @@ end
 -- Filling in default values from schema.
 do
     local schema = {
-        properties = {
+        fields = {
             width = { default = 800 },
             height = { default = 600 },
             title = { default = "Untitled" },
@@ -251,8 +266,8 @@ do
     print("all defaults height = " .. allDefaults.height)
 end
 
--- Decode without specifying format.
 --@api-stub: lurek.serial.decode
+-- Decode without specifying format.
 do
     local jsonPayload = '{"auto": true, "score": 99}'
     local result = lurek.serial.decode(jsonPayload)
@@ -261,6 +276,7 @@ do
 end
 
 --- Serial Module: decode, decodeMsgPack, toCsv, toJson, toToml
+
 
 --@api-stub: lurek.serial.decodeMsgPack
 -- Decode binary or formatted payload into a Lua table.
@@ -273,8 +289,19 @@ do
 end
 
 --@api-stub: lurek.serial.toCsv
+-- Serialize a table to CSV, JSON, or TOML string. Focus: toCsv.
+do
+    local data = { { name = "Alice", score = 100 }, { name = "Bob", score = 90 } }
+    local csv = lurek.serial.toCsv(data, ",", true)
+    print("csv lines = " .. #csv)
+    local json = lurek.serial.toJson({ a = 1, b = "hello" }, true)
+    print("json = " .. json)
+    local toml = lurek.serial.toToml({ version = "1.0", debug = false })
+    print("toml = " .. toml)
+end
+
 --@api-stub: lurek.serial.toToml
--- Serialize a table to CSV, JSON, or TOML string.
+-- Serialize a table to CSV, JSON, or TOML string. Focus: toToml.
 do
     local data = { { name = "Alice", score = 100 }, { name = "Bob", score = 90 } }
     local csv = lurek.serial.toCsv(data, ",", true)

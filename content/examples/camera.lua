@@ -4,6 +4,7 @@
 
 --- Camera Examples Part 1: Creation, position, zoom, rotation, viewport, bounds, target, follow, deadzone, lookahead, shake, update, coordinate transforms, visible area, path, parallax
 
+
 --@api-stub: lurek.camera.new
 -- Creates a new camera with the given viewport dimensions.
 do
@@ -99,8 +100,10 @@ end
 do
     local cam = lurek.camera.new(800, 600)
     cam:setBounds(0, 0, 2000, 1500)
-    local bx, by, bw, bh = cam:getBounds()
-    print("bounds = " .. bx .. "," .. by .. "," .. bw .. "," .. bh)
+    local ok, bx, by, bw, bh = cam:getBounds()
+    if ok then
+        print("bounds = " .. bx .. "," .. by .. "," .. bw .. "," .. bh)
+    end
 end
 
 --@api-stub: LCamera:hasBounds
@@ -134,8 +137,10 @@ end
 do
     local cam = lurek.camera.new(800, 600)
     cam:setTarget(500, 300)
-    local tx, ty = cam:getTarget()
-    print("target = " .. tx .. ", " .. ty)
+    local ok, tx, ty = cam:getTarget()
+    if ok then
+        print("target = " .. tx .. ", " .. ty)
+    end
 end
 
 --@api-stub: LCamera:getTarget
@@ -143,8 +148,10 @@ end
 do
     local cam = lurek.camera.new(800, 600)
     cam:setTarget(250, 125)
-    local tx, ty = cam:getTarget()
-    print("target = " .. tx .. ", " .. ty)
+    local ok, tx, ty = cam:getTarget()
+    if ok then
+        print("target = " .. tx .. ", " .. ty)
+    end
 end
 
 --@api-stub: LCamera:clearTarget
@@ -203,8 +210,10 @@ end
 do
     local cam = lurek.camera.new(800, 600)
     cam:setDeadZone(40, 20)
-    local w, h = cam:getDeadZone()
-    print("dead zone = " .. w .. "x" .. h)
+    local ok, w, h = cam:getDeadZone()
+    if ok then
+        print("dead zone = " .. w .. "x" .. h)
+    end
 end
 
 --@api-stub: LCamera:setLookAhead
@@ -441,6 +450,7 @@ do
 end
 
 --- Camera Examples Part 2: Sway, breathing, effects, constraints, presets, CameraRig
+
 
 --@api-stub: LCamera:startSway
 -- Starts a sway oscillation effect on the camera.

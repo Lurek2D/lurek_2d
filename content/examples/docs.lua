@@ -4,6 +4,7 @@
 
 --- Docs Module Part 1: Scanning, Catalog, Schema, DocEntry, Validation, Quality, Export
 
+
 --@api-stub: lurek.docs.scan
 -- Reflects the live lurek table and builds a catalog.
 do
@@ -21,7 +22,15 @@ end
 --@api-stub: lurek.docs.loadToml
 -- Loads a TOML documentation catalog file.
 do
-    local path = "docs/api/math.toml"
+    local path = "save/_fs_tests/docs_load_toml_example.toml"
+    lurek.filesystem.write(path, table.concat({
+        "[[entries]]",
+        'name = "play"',
+        'qualifiedName = "lurek.audio.play"',
+        'module = "audio"',
+        'kind = "function"',
+        'description = "Plays a sound"',
+    }, "\n"))
     local cat = lurek.docs.loadToml(path)
     print("loaded entries = " .. cat:entryCount())
 end
@@ -29,7 +38,23 @@ end
 --@api-stub: lurek.docs.loadAll
 -- Loads all TOML catalog files from a directory.
 do
-    local cat = lurek.docs.loadAll("docs/api/")
+    lurek.filesystem.write("save/_fs_tests/docs_load_all_a.toml", table.concat({
+        "[[entries]]",
+        'name = "one"',
+        'qualifiedName = "lurek.test.one"',
+        'module = "test"',
+        'kind = "function"',
+        'description = "First entry"',
+    }, "\n"))
+    lurek.filesystem.write("save/_fs_tests/docs_load_all_b.toml", table.concat({
+        "[[entries]]",
+        'name = "two"',
+        'qualifiedName = "lurek.test.two"',
+        'module = "test"',
+        'kind = "function"',
+        'description = "Second entry"',
+    }, "\n"))
+    local cat = lurek.docs.loadAll("save/_fs_tests/")
     print("all entries = " .. cat:entryCount())
 end
 
@@ -440,6 +465,7 @@ do
 end
 
 --- Docs Module Part 2: LApiCatalog, LValidationReport, LQualityReport
+
 
 --@api-stub: LApiCatalog:getModules
 -- Returns the list of module names in this catalog.

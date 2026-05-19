@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- docs(readme,wiki): reorganized the root `README.md` into a high-level landing page, added a value table for Lurek's Simple / Feature rich / Fast / Free / Portable / Extensible / CrossPlatform positioning, and moved the detailed project overview into new `wiki/Home.md` and `wiki/Project-Reference.md` pages without dropping the existing content.
+
+- docs(examples): restored the missing `image`, `patterns`, and `tween` coverage in generated `content/examples/*.lua` by removing cross-module stub rerouting from `merge_examples2_into_examples.py`, moving tween introspection examples back under `tween`, dropping misplaced duplicate source blocks from `ai` and `render` example shards, and teaching `tools/audit/example_coverage.py` to count duplicated Lua API aliases under one canonical example module.
+
 - docs(tools): refined `tools/audit/example_coverage.py` status grading to classify each API example as `MISS`, `TODO`, `PART`, or `FULL` based on marker presence, TODO markers, and non-empty block length inside `do ... end`; the Markdown export now writes per-API status lines plus a summary table with `MISS | TODO | PART | FULL | TOTAL` counts per module and in total.
 
 - docs(tools): extended `tools/audit/example_coverage.py` to audit alternate example directories such as `content/examples2/`, aggregate chunked files like `module_00.lua`..`module_NN.lua`, and export a detailed Markdown report listing every Lua API item as `OK` or `NOK` plus per-module numeric coverage summaries.

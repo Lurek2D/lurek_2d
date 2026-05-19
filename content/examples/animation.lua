@@ -4,6 +4,7 @@
 
 --- Animation Examples Part 1: Constructors, LAnimation methods, LAnimStateMachine, LBlendLayerSet
 
+
 --@api-stub: lurek.animation.new
 -- Creates a new empty animation object.
 do
@@ -14,7 +15,7 @@ end
 --@api-stub: lurek.animation.fromAseprite
 -- Creates an animation from an Aseprite JSON export string.
 do
-    local json = '{"frames":{},"meta":{"frameTags":[]}}'
+    local json = '{"frames":[{"filename":"f0","frame":{"x":0,"y":0,"w":16,"h":16}}],"meta":{"size":{"w":16,"h":16},"frameTags":[]}}'
     local anim = lurek.animation.fromAseprite(json)
     if anim then
         print("from aseprite, clips = " .. anim:getClipCount())
@@ -55,7 +56,24 @@ end
 --@api-stub: lurek.animation.buildCharacter
 -- Builds a character animation setup from a configuration table.
 do
-    local cfg = { skeleton = "humanoid", width = 64, height = 64 }
+    local cfg = {
+        texW = 64,
+        texH = 32,
+        frameW = 16,
+        frameH = 16,
+        clips = {
+            { name = "idle", start = 0, count = 2, fps = 4, looping = true, mode = "forward" },
+            { name = "run", start = 2, count = 2, fps = 8, looping = true, mode = "pingpong" },
+        },
+        states = {
+            { name = "idle", clip = "idle", looping = true },
+            { name = "run", clip = "run", looping = true },
+        },
+        transitions = {
+            { from = "idle", to = "run", condition = "speed > 0.5" },
+        },
+        initialState = "idle",
+    }
     local char = lurek.animation.buildCharacter(cfg)
     print("character built = " .. tostring(char ~= nil))
 end
@@ -506,6 +524,7 @@ end
 
 --- Animation Examples Part 2: Blend Layer Set (cont.), Animation Curve, Sync Group
 
+
 --@api-stub: LBlendLayerSet:listLayers
 -- Returns a table of all layer names in the blend set.
 do
@@ -513,7 +532,8 @@ do
     bls:addLayer("base", "idle", 1.0)
     bls:addLayer("overlay", "wave", 0.5)
     local names = bls:listLayers()
-    print("layers: " .. table.concat(names, ", "))
+    print("layers = " .. #names)
+    print("first layer = " .. tostring(names[1]))
 end
 
 --@api-stub: LBlendLayerSet:len

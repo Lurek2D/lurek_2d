@@ -4,6 +4,7 @@
 
 --- Compute Module Part 1: Array Creation, Element Access, Shape, Arithmetic, Comparisons
 
+
 --@api-stub: lurek.compute.newArray
 -- Creates a zero-filled array with a given shape and optional data type.
 do
@@ -158,7 +159,7 @@ end
 --@api-stub: LArray:reshape
 -- Returns a reshaped copy.
 do
-    local a = lurek.compute.range(1, 6, 1)
+    local a = lurek.compute.range(1, 7, 1)
     local b = a:reshape({2, 3})
     print("reshaped dims = " .. b:getDimensions())
 end
@@ -393,6 +394,7 @@ end
 
 --- Compute Module Part 2: Reduction, Linear Algebra, Morphology, Statistics, Functional
 
+
 --@api-stub: LArray:all
 -- Returns true when all elements are non-zero.
 do
@@ -448,8 +450,8 @@ end
 --@api-stub: LArray:bitwiseAnd
 -- Returns element-wise bitwise AND.
 do
-    local a = lurek.compute.fromTable({0xFF, 0x0F, 0xAA}, {3}, "uint8")
-    local b = lurek.compute.fromTable({0x0F, 0x0F, 0x55}, {3}, "uint8")
+    local a = lurek.compute.fromTable({0xFF, 0x0F, 0xAA}, {3}, "int32")
+    local b = lurek.compute.fromTable({0x0F, 0x0F, 0x55}, {3}, "int32")
     local c = a:bitwiseAnd(b)
     print("AND[1] = " .. c:get(1))
 end
@@ -457,8 +459,8 @@ end
 --@api-stub: LArray:bitwiseOr
 -- Returns element-wise bitwise OR.
 do
-    local a = lurek.compute.fromTable({0xF0, 0x0F}, {2}, "uint8")
-    local b = lurek.compute.fromTable({0x0F, 0xF0}, {2}, "uint8")
+    local a = lurek.compute.fromTable({0xF0, 0x0F}, {2}, "int32")
+    local b = lurek.compute.fromTable({0x0F, 0xF0}, {2}, "int32")
     local c = a:bitwiseOr(b)
     print("OR[1] = " .. c:get(1))
 end
@@ -466,8 +468,8 @@ end
 --@api-stub: LArray:bitwiseXor
 -- Returns element-wise bitwise XOR.
 do
-    local a = lurek.compute.fromTable({0xFF, 0x00}, {2}, "uint8")
-    local b = lurek.compute.fromTable({0x0F, 0x0F}, {2}, "uint8")
+    local a = lurek.compute.fromTable({0xFF, 0x00}, {2}, "int32")
+    local b = lurek.compute.fromTable({0x0F, 0x0F}, {2}, "int32")
     local c = a:bitwiseXor(b)
     print("XOR[1] = " .. c:get(1))
 end
@@ -475,7 +477,7 @@ end
 --@api-stub: LArray:bitwiseNot
 -- Returns element-wise bitwise NOT.
 do
-    local a = lurek.compute.fromTable({0, 255}, {2}, "uint8")
+    local a = lurek.compute.fromTable({0, 255}, {2}, "int32")
     local c = a:bitwiseNot()
     print("NOT[1] = " .. c:get(1))
 end
@@ -483,7 +485,7 @@ end
 --@api-stub: LArray:bitwiseLShift
 -- Returns element-wise left shift by a bit count.
 do
-    local a = lurek.compute.fromTable({1, 2, 4}, {3}, "uint8")
+    local a = lurek.compute.fromTable({1, 2, 4}, {3}, "int32")
     local c = a:bitwiseLShift(2)
     print("lshift(2)[1] = " .. c:get(1))
 end
@@ -491,7 +493,7 @@ end
 --@api-stub: LArray:bitwiseRShift
 -- Returns element-wise right shift by a bit count.
 do
-    local a = lurek.compute.fromTable({8, 16, 32}, {3}, "uint8")
+    local a = lurek.compute.fromTable({8, 16, 32}, {3}, "int32")
     local c = a:bitwiseRShift(2)
     print("rshift(2)[1] = " .. c:get(1))
 end
@@ -537,7 +539,7 @@ end
 --@api-stub: LArray:getRegion
 -- Returns a rectangular sub-region.
 do
-    local a = lurek.compute.range(1, 16, 1)
+    local a = lurek.compute.range(1, 17, 1)
     local m = a:reshape({4, 4})
     local region = m:getRegion(2, 2, 2, 2)
     print("region[1,1] = " .. region:get(1, 1))

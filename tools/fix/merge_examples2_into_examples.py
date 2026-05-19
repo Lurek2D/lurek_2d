@@ -17,6 +17,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+from dataclasses import dataclass
 import re
 import sys
 from pathlib import Path
@@ -28,6 +29,40 @@ EXAMPLES = ROOT / "content" / "examples"
 
 SOURCE_RE = re.compile(r"^([a-z0-9]+)_(\d+)\.lua$")
 TRAILING_PRINT_RE = re.compile(r'^print\(".*?\.lua"\)\s*$')
+STUB_RE = re.compile(r"^---?@api-stub:\s*(.+?)\s*$")
+TOP_LEVEL_DO_RE = re.compile(r"^do\b")
+TOP_LEVEL_END_RE = re.compile(r"^end\s*$")
+
+
+@dataclass
+class ExampleBlock:
+    stub: str
+    comment: str
+    inner_lines: list[str]
+
+    def append_usage(self, comment: str | None, inner_lines: list[str]) -> None:
+        extra_body = strip_blank_edges(inner_lines)
+        if not extra_body:
+            return
+
+        if self.inner_lines:
+            self.inner_lines.append("")
+
+        extra_comment = normalize_comment_text(comment)
+        if extra_comment is None:
+            extra_comment = f"Additional usage for {short_stub_name(self.stub)}."
+
+        self.inner_lines.append(f"    -- {extra_comment}")
+        self.inner_lines.extend(extra_body)
+
+    def render(self) -> str:
+        lines: list[str] = []
+        lines.append(f"--@api-stub: {self.stub}")
+        lines.append(f"-- {normalize_comment_text(self.comment) or f'Example usage for {short_stub_name(self.stub)}.'}")
+        lines.append("do")
+        lines.extend(strip_blank_edges(self.inner_lines))
+        lines.append("end")
+        return "\n".join(lines)
 
 
 def parse_args() -> argparse.Namespace:
@@ -74,6 +109,145 @@ def trim_source_chunk(text: str) -> str:
     return "\n".join(lines).strip("\n")
 
 
+def strip_blank_edges(lines: list[str]) -> list[str]:
+    cleaned = list(lines)
+    while cleaned and not cleaned[0].strip():
+        cleaned.pop(0)
+    while cleaned and not cleaned[-1].strip():
+        cleaned.pop()
+    return cleaned
+
+
+def indent_line(line: str) -> str:
+    if not line.strip():
+        return ""
+    return f"    {line.lstrip()}"
+
+
+def normalize_comment_text(comment: str | None) -> str | None:
+    if comment is None:
+        return None
+    text = " ".join(comment.split())
+    if not text:
+        return None
+    if not text.endswith((".", "!", "?")):
+        text += "."
+    return text
+
+
+def short_stub_name(stub: str) -> str:
+    tail = stub.split(":")[-1]
+    return tail.split(".")[-1]
+
+
+def comment_text_from_lines(lines: list[str]) -> str | None:
+    parts: list[str] = []
+    for line in strip_blank_edges(lines):
+        stripped = line.strip()
+        if not stripped:
+            continue
+        if stripped.startswith("---@") or stripped.startswith("---"):
+            continue
+        if stripped.startswith("--"):
+            text = stripped[2:].strip()
+            if text:
+                parts.append(text)
+
+    if not parts:
+        return None
+
+    return normalize_comment_text(" ".join(parts))
+
+
+def split_prelude(lines: list[str]) -> tuple[list[str], str | None, list[str]]:
+    trimmed = strip_blank_edges(lines)
+    if not trimmed:
+        return [], None, []
+
+    first_stub_index: int | None = None
+    stubs: list[str] = []
+    for index, line in enumerate(trimmed):
+        match = STUB_RE.match(line)
+        if not match:
+            continue
+        if first_stub_index is None:
+            first_stub_index = index
+        stubs.append(match.group(1).strip())
+
+    if first_stub_index is None:
+        return trimmed, None, []
+
+    before_stub = trimmed[:first_stub_index]
+    stub_end_index = first_stub_index
+    while stub_end_index < len(trimmed) and STUB_RE.match(trimmed[stub_end_index]):
+        stub_end_index += 1
+
+    description_after_stub = comment_text_from_lines(trimmed[stub_end_index:])
+
+    if not before_stub:
+        return [], description_after_stub, stubs
+
+    desc_end = len(before_stub) - 1
+    while desc_end >= 0 and not before_stub[desc_end].strip():
+        desc_end -= 1
+
+    desc_start = desc_end
+    while desc_start >= 0:
+        stripped = before_stub[desc_start].strip()
+        if not stripped:
+            break
+        if stripped.startswith("--") and not stripped.startswith("---@") and not stripped.startswith("---"):
+            desc_start -= 1
+            continue
+        break
+
+    if desc_end >= 0 and desc_start < desc_end:
+        description_before_stub = comment_text_from_lines(before_stub[desc_start + 1:desc_end + 1])
+        leading = strip_blank_edges(before_stub[:desc_start + 1])
+        return leading, description_after_stub or description_before_stub, stubs
+
+    return before_stub, description_after_stub, stubs
+
+
+def build_block_comment(base_comment: str | None, stub: str, total_stubs: int) -> str:
+    normalized = normalize_comment_text(base_comment)
+    if normalized is None:
+        return f"Example usage for {short_stub_name(stub)}."
+    if total_stubs <= 1:
+        return normalized
+    return f"{normalized} Focus: {short_stub_name(stub)}."
+
+
+def split_chunk_items(chunk: str) -> list[tuple[str, list[str], list[str]]]:
+    lines = chunk.split("\n")
+    items: list[tuple[str, list[str], list[str]]] = []
+    pending: list[str] = []
+    index = 0
+
+    while index < len(lines):
+        line = lines[index]
+        if TOP_LEVEL_DO_RE.match(line):
+            block_lines = [line]
+            index += 1
+            while index < len(lines):
+                block_lines.append(lines[index])
+                if TOP_LEVEL_END_RE.match(lines[index]):
+                    index += 1
+                    break
+                index += 1
+            items.append(("block", pending, block_lines))
+            pending = []
+            continue
+
+        pending.append(line)
+        index += 1
+
+    if any(line.strip() for line in pending):
+        items.append(("text", pending, []))
+
+    return items
+
+
 def build_output(module: str, sources: list[Path]) -> str:
     header = [
         f"-- content/examples/{module}.lua",
@@ -84,13 +258,55 @@ def build_output(module: str, sources: list[Path]) -> str:
         f"-- Run: cargo run -- content/examples/{module}.lua",
     ]
 
-    chunks = ["\n".join(header)]
+    chunks: list[str] = ["\n".join(header)]
+    rendered_items: list[str | ExampleBlock] = []
+    seen_stubs: dict[str, ExampleBlock] = {}
+
     for source in sources:
         chunk = trim_source_chunk(source.read_text(encoding="utf-8"))
-        if chunk:
-            chunks.append(chunk)
+        if not chunk:
+            continue
+
+        for kind, prelude_lines, block_lines in split_chunk_items(chunk):
+            if kind == "text":
+                text = "\n".join(strip_blank_edges(prelude_lines))
+                if text:
+                    rendered_items.append(text)
+                continue
+
+            leading_text, comment, stubs = split_prelude(prelude_lines)
+            if leading_text:
+                text = "\n".join(leading_text)
+                if text:
+                    rendered_items.append(text)
+
+            if not stubs:
+                raw_block = "\n".join(strip_blank_edges(prelude_lines + block_lines))
+                if raw_block:
+                    rendered_items.append(raw_block)
+                continue
+
+            block_inner = strip_blank_edges(block_lines[1:-1])
+
+            for stub in stubs:
+                target = seen_stubs.get(stub)
+                block_comment = build_block_comment(comment, stub, len(stubs))
+                if target is None:
+                    block = ExampleBlock(stub=stub, comment=block_comment, inner_lines=list(block_inner))
+                    rendered_items.append(block)
+                    seen_stubs[stub] = block
+                    continue
+
+                target.append_usage(block_comment, block_inner)
 
     chunks.append(f'print("content/examples/{module}.lua")')
+
+    for item in rendered_items:
+        if isinstance(item, ExampleBlock):
+            chunks.insert(-1, item.render())
+        else:
+            chunks.insert(-1, item)
+
     return "\n\n".join(chunks) + "\n"
 
 

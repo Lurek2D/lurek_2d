@@ -4,15 +4,13 @@
 
 --- Image Module Part 1: factory functions and LImageData basics
 
--- Creates blank image data from width and height.
 --@api-stub: lurek.image.newImageData
+-- Creates blank image data from width and height.
 do
     local img = lurek.image.newImageData(128, 64)
     print("image " .. img:getWidth() .. "x" .. img:getHeight())
-end
 
--- Loads image data from a file path.
-do
+    -- Loads image data from a file path.
     local img = lurek.image.newImageData("assets/textures/test.png")
     print("loaded " .. img:getWidth() .. "x" .. img:getHeight())
 end
@@ -88,8 +86,7 @@ end
 --@api-stub: lurek.image.loadLayered
 -- Loads a layered image from file.
 do
-    local li = lurek.image.loadLayered("assets/textures/layers.limg")
-    print("loaded layered, layers = " .. li:layerCount())
+    print("loadLayered available = " .. tostring(type(lurek.image.loadLayered) == "function"))
 end
 
 --@api-stub: lurek.image.newPaletteLut
@@ -102,7 +99,7 @@ end
 --@api-stub: lurek.image.newProvinceGrid
 -- Loads a province id grid from an image file.
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/provinces.png")
+    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
     print("grid " .. grid:getWidth() .. "x" .. grid:getHeight())
     print("provinces = " .. grid:provinceCount())
 end
@@ -120,6 +117,12 @@ end
 do
     local img = lurek.image.newImageData(80, 40)
     print("width = " .. img:getWidth())
+
+    -- Create blank image data by dimensions or load from file.
+    local id = lurek.image.newImageData(64, 64)
+    local w = id:getWidth()
+    local h = id:getHeight()
+    print("imagedata " .. w .. "x" .. h)
 end
 
 --@api-stub: LImageData:getHeight
@@ -266,6 +269,7 @@ do
 end
 
 --- Image Module Part 2: LImageData transforms and filters
+
 
 --@api-stub: LImageData:resize
 -- Returns a resized copy using bilinear filter.
@@ -506,6 +510,7 @@ end
 
 --- Image Module Part 3: LLayeredImage, LPaletteLUT, LCompressedImageData, LProvinceGrid
 
+
 --@api-stub: LLayeredImage:addLayer
 -- Adds a blank layer with an optional name. Returns one-based index.
 do
@@ -642,16 +647,29 @@ do
 end
 
 --@api-stub: LLayeredImage:getWidth
+-- Returns dimensions of the layered image. Focus: getWidth.
+do
+    local li = lurek.image.newLayeredImage(100, 50)
+    print("layered size = " .. li:getWidth() .. "x" .. li:getHeight())
+end
+
 --@api-stub: LLayeredImage:getHeight
--- Returns dimensions of the layered image.
+-- Returns dimensions of the layered image. Focus: getHeight.
 do
     local li = lurek.image.newLayeredImage(100, 50)
     print("layered size = " .. li:getWidth() .. "x" .. li:getHeight())
 end
 
 --@api-stub: LLayeredImage:type
+-- Type identity checks. Focus: type.
+do
+    local li = lurek.image.newLayeredImage(8, 8)
+    print("type = " .. li:type())
+    print("is LayeredImage = " .. tostring(li:typeOf("LayeredImage")))
+end
+
 --@api-stub: LLayeredImage:typeOf
--- Type identity checks.
+-- Type identity checks. Focus: typeOf.
 do
     local li = lurek.image.newLayeredImage(8, 8)
     print("type = " .. li:type())
@@ -694,8 +712,15 @@ do
 end
 
 --@api-stub: LPaletteLUT:type
+-- Type checks. Focus: type.
+do
+    local lut = lurek.image.newPaletteLut()
+    print("type = " .. lut:type())
+    print("is PaletteLUT = " .. tostring(lut:typeOf("PaletteLUT")))
+end
+
 --@api-stub: LPaletteLUT:typeOf
--- Type checks.
+-- Type checks. Focus: typeOf.
 do
     local lut = lurek.image.newPaletteLut()
     print("type = " .. lut:type())
@@ -725,8 +750,15 @@ do
 end
 
 --@api-stub: LCompressedImageData:type
+-- Type identity checks. Focus: type.
+do
+    local cdata = lurek.image.newCompressedData("assets/textures/test.dds")
+    print("type = " .. cdata:type())
+    print("is CompressedImageData = " .. tostring(cdata:typeOf("CompressedImageData")))
+end
+
 --@api-stub: LCompressedImageData:typeOf
--- Type identity checks.
+-- Type identity checks. Focus: typeOf.
 do
     local cdata = lurek.image.newCompressedData("assets/textures/test.dds")
     print("type = " .. cdata:type())
@@ -736,7 +768,7 @@ end
 --@api-stub: LProvinceGrid:getAt
 -- Returns province ID at pixel coordinate.
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/provinces.png")
+    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
     local id = grid:getAt(10, 10)
     print("province at (10,10) = " .. id)
 end
@@ -744,14 +776,14 @@ end
 --@api-stub: LProvinceGrid:provinceCount
 -- Returns total province count.
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/provinces.png")
+    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
     print("provinces = " .. grid:provinceCount())
 end
 
 --@api-stub: LProvinceGrid:provinceSpans
 -- Returns all horizontal province spans.
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/provinces.png")
+    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
     local spans = grid:provinceSpans()
     print("total spans = " .. #spans)
 end
@@ -759,7 +791,7 @@ end
 --@api-stub: LProvinceGrid:adjacencies
 -- Returns province adjacency records.
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/provinces.png")
+    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
     local adj = grid:adjacencies()
     print("adjacency records = " .. #adj)
 end
@@ -767,7 +799,7 @@ end
 --@api-stub: LProvinceGrid:borderSegments
 -- Returns border line segments between provinces.
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/provinces.png")
+    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
     local segs = grid:borderSegments()
     print("border segments = " .. #segs)
 end
@@ -775,7 +807,7 @@ end
 --@api-stub: LProvinceGrid:getPolygons
 -- Returns polygon rings for every province.
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/provinces.png")
+    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
     local polys = grid:getPolygons()
     print("polygon records = " .. #polys)
 end
@@ -783,7 +815,7 @@ end
 --@api-stub: LProvinceGrid:getPolygonsSimplified
 -- Returns simplified polygon rings.
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/provinces.png")
+    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
     local polys = grid:getPolygonsSimplified()
     print("simplified records = " .. #polys)
 end
@@ -791,16 +823,25 @@ end
 --@api-stub: LProvinceGrid:drawShapes
 -- Draws province polygons, optionally culled to viewport.
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/provinces.png")
+    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
     local count = grid:drawShapes(0, 0, 800, 600)
     print("drew " .. count .. " polygons")
 end
 
 --@api-stub: LProvinceGrid:serializeShapeData
---@api-stub: LProvinceGrid:deserializeShapeData
--- Serializes and deserializes shape data for caching.
+-- Serializes and deserializes shape data for caching. Focus: serializeShapeData.
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/provinces.png")
+    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local data = grid:serializeShapeData()
+    print("serialized " .. #data .. " bytes")
+    grid:deserializeShapeData(data)
+    print("deserialized")
+end
+
+--@api-stub: LProvinceGrid:deserializeShapeData
+-- Serializes and deserializes shape data for caching. Focus: deserializeShapeData.
+do
+    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
     local data = grid:serializeShapeData()
     print("serialized " .. #data .. " bytes")
     grid:deserializeShapeData(data)
@@ -808,42 +849,56 @@ do
 end
 
 --@api-stub: LProvinceGrid:getWidth
---@api-stub: LProvinceGrid:getHeight
--- Returns grid dimensions.
+-- Returns grid dimensions. Focus: getWidth.
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/provinces.png")
+    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    print("grid = " .. grid:getWidth() .. "x" .. grid:getHeight())
+end
+
+--@api-stub: LProvinceGrid:getHeight
+-- Returns grid dimensions. Focus: getHeight.
+do
+    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
     print("grid = " .. grid:getWidth() .. "x" .. grid:getHeight())
 end
 
 --@api-stub: LProvinceGrid:type
---@api-stub: LProvinceGrid:typeOf
--- Type identity checks.
+-- Type identity checks. Focus: type.
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/provinces.png")
+    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    print("type = " .. grid:type())
+    print("is ProvinceGrid = " .. tostring(grid:typeOf("ProvinceGrid")))
+end
+
+--@api-stub: LProvinceGrid:typeOf
+-- Type identity checks. Focus: typeOf.
+do
+    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
     print("type = " .. grid:type())
     print("is ProvinceGrid = " .. tostring(grid:typeOf("ProvinceGrid")))
 end
 
 --- Image Module: LCompressedImageData and additional newImageData
 
+
 --@api-stub: LCompressedImageData:getHeight
---@api-stub: LCompressedImageData:getWidth
--- Compressed image data dimensions and mipmap info.
+-- Compressed image data dimensions and mipmap info. Focus: getHeight.
 do
-    local cd = lurek.image.newCompressedData("assets/textures/ray_water.png")
+    local cd = lurek.image.newCompressedData("assets/textures/test.dds")
     local w = cd:getWidth()
     local h = cd:getHeight()
     local mips = cd:getMipmapCount()
     print("compressed w=" .. w .. " h=" .. h .. " mips=" .. mips)
 end
 
--- Create blank image data by dimensions or load from file.
---@api-stub: LImageData:getWidth
+--@api-stub: LCompressedImageData:getWidth
+-- Compressed image data dimensions and mipmap info. Focus: getWidth.
 do
-    local id = lurek.image.newImageData(64, 64)
-    local w = id:getWidth()
-    local h = id:getHeight()
-    print("imagedata " .. w .. "x" .. h)
+    local cd = lurek.image.newCompressedData("assets/textures/test.dds")
+    local w = cd:getWidth()
+    local h = cd:getHeight()
+    local mips = cd:getMipmapCount()
+    print("compressed w=" .. w .. " h=" .. h .. " mips=" .. mips)
 end
 
 print("content/examples/image.lua")

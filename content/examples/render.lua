@@ -4,6 +4,7 @@
 
 --- Render Module Part 1: basic drawing — print, rectangle, circle, line, polygon, points, arc, ellipse, triangle
 
+
 --@api-stub: lurek.render.print
 -- Drawing text to the screen.
 do
@@ -51,11 +52,8 @@ do
     lurek.render.setColor(0, 0, 1, 0.5)
     lurek.render.rectangle("fill", 80, 320, 100, 60)
     lurek.render.setColor(1, 1, 1, 1)
-end
 
---@api-stub: lurek.render.rectangle
--- Drawing rounded rectangles.
-do
+    -- Drawing rounded rectangles.
     lurek.render.setColor(0.8, 0.2, 0.8, 1)
     lurek.render.rectangle("fill", 200, 300, 120, 80, 12)
     lurek.render.setColor(1, 1, 0, 1)
@@ -141,8 +139,21 @@ do
 end
 
 --@api-stub: lurek.render.setLineWidth
+-- Controlling line width. Focus: setLineWidth.
+do
+    lurek.render.setLineWidth(1)
+    lurek.render.line(10, 630, 100, 630)
+    lurek.render.setLineWidth(3)
+    lurek.render.line(10, 640, 100, 640)
+    lurek.render.setLineWidth(5)
+    lurek.render.line(10, 650, 100, 650)
+    local w = lurek.render.getLineWidth()
+    print("line width = " .. w)
+    lurek.render.setLineWidth(1)
+end
+
 --@api-stub: lurek.render.getLineWidth
--- Controlling line width.
+-- Controlling line width. Focus: getLineWidth.
 do
     lurek.render.setLineWidth(1)
     lurek.render.line(10, 630, 100, 630)
@@ -156,8 +167,16 @@ do
 end
 
 --@api-stub: lurek.render.setPointSize
+-- Controlling point size. Focus: setPointSize.
+do
+    lurek.render.setPointSize(2)
+    local s = lurek.render.getPointSize()
+    print("point size = " .. s)
+    lurek.render.setPointSize(1)
+end
+
 --@api-stub: lurek.render.getPointSize
--- Controlling point size.
+-- Controlling point size. Focus: getPointSize.
 do
     lurek.render.setPointSize(2)
     local s = lurek.render.getPointSize()
@@ -166,8 +185,17 @@ do
 end
 
 --@api-stub: lurek.render.drawCubicBezier
+-- Drawing Bezier curves. Focus: drawCubicBezier.
+do
+    lurek.render.setColor(1, 0.5, 0, 1)
+    lurek.render.drawCubicBezier(120, 630, 160, 580, 220, 680, 260, 630, 24)
+    lurek.render.setColor(0, 1, 0.5, 1)
+    lurek.render.drawQuadBezier(300, 630, 350, 580, 400, 630, 16)
+    lurek.render.setColor(1, 1, 1, 1)
+end
+
 --@api-stub: lurek.render.drawQuadBezier
--- Drawing Bezier curves.
+-- Drawing Bezier curves. Focus: drawQuadBezier.
 do
     lurek.render.setColor(1, 0.5, 0, 1)
     lurek.render.drawCubicBezier(120, 630, 160, 580, 220, 680, 260, 630, 24)
@@ -238,6 +266,7 @@ do
 end
 
 --- Render Module Part 2: color state, transforms, scissor, clear, blend modes, wireframe, layers, depth
+
 
 --@api-stub: lurek.render.setColor
 -- Color state management.
@@ -483,6 +512,7 @@ end
 
 --- Render Module Part 3: images, canvases, quads, sprite batches, draw, drawq, drawMany, nine-slice
 
+
 --@api-stub: lurek.render.newImage
 -- Loading and drawing images.
 do
@@ -497,10 +527,7 @@ do
 end
 
 --@api-stub: LImage:getId
---@api-stub: LImage:type
---@api-stub: LImage:typeOf
---@api-stub: LImage:release
--- Image handle inspection and lifecycle.
+-- Image handle inspection and lifecycle. Focus: getId.
 do
     ---@type LImage
     local img = lurek.render.newImage("assets/textures/ray_water.png")
@@ -511,18 +538,40 @@ do
     print("released = " .. tostring(released))
 end
 
--- Creating an image from pixel data.
---@api-stub: LImageData:mapPixels
+--@api-stub: LImage:type
+-- Image handle inspection and lifecycle. Focus: type.
 do
-    ---@type LImageData
-    local data = lurek.image.newImageData(32, 32)
-    data:mapPixels(function(x, y, r, g, b, a)
-        return x / 32, y / 32, 0.5, 1
-    end)
     ---@type LImage
-    local img = lurek.render.newImage(data)
-    lurek.render.draw(img, 10, 100)
-    print("from data: " .. img:getWidth() .. "x" .. img:getHeight())
+    local img = lurek.render.newImage("assets/textures/ray_water.png")
+    print("id = " .. img:getId())
+    print("type = " .. img:type())
+    print("is LImage = " .. tostring(img:typeOf("LImage")))
+    local released = img:release()
+    print("released = " .. tostring(released))
+end
+
+--@api-stub: LImage:typeOf
+-- Image handle inspection and lifecycle. Focus: typeOf.
+do
+    ---@type LImage
+    local img = lurek.render.newImage("assets/textures/ray_water.png")
+    print("id = " .. img:getId())
+    print("type = " .. img:type())
+    print("is LImage = " .. tostring(img:typeOf("LImage")))
+    local released = img:release()
+    print("released = " .. tostring(released))
+end
+
+--@api-stub: LImage:release
+-- Image handle inspection and lifecycle. Focus: release.
+do
+    ---@type LImage
+    local img = lurek.render.newImage("assets/textures/ray_water.png")
+    print("id = " .. img:getId())
+    print("type = " .. img:type())
+    print("is LImage = " .. tostring(img:typeOf("LImage")))
+    local released = img:release()
+    print("released = " .. tostring(released))
 end
 
 --@api-stub: lurek.render.newCanvas
@@ -545,9 +594,29 @@ do
 end
 
 --@api-stub: LCanvas:type
+-- Canvas type and lifecycle. Focus: type.
+do
+    ---@type LCanvas
+    local canvas = lurek.render.newCanvas(64, 64)
+    print("type = " .. canvas:type())
+    print("is LCanvas = " .. tostring(canvas:typeOf("LCanvas")))
+    local released = canvas:release()
+    print("released = " .. tostring(released))
+end
+
 --@api-stub: LCanvas:typeOf
+-- Canvas type and lifecycle. Focus: typeOf.
+do
+    ---@type LCanvas
+    local canvas = lurek.render.newCanvas(64, 64)
+    print("type = " .. canvas:type())
+    print("is LCanvas = " .. tostring(canvas:typeOf("LCanvas")))
+    local released = canvas:release()
+    print("released = " .. tostring(released))
+end
+
 --@api-stub: LCanvas:release
--- Canvas type and lifecycle.
+-- Canvas type and lifecycle. Focus: release.
 do
     ---@type LCanvas
     local canvas = lurek.render.newCanvas(64, 64)
@@ -585,7 +654,7 @@ do
     local x, y, w, h = q1:getViewport()
     print("q1 viewport = " .. x .. "," .. y .. " " .. w .. "x" .. h)
     local tw, th = q1:getTextureDimensions()
-    print("texture = " .. tw .. "x" .. th)
+    print("texture = " .. tostring(tw) .. "x" .. tostring(th))
     lurek.render.drawq(sheet, q1, 10, 310)
     lurek.render.drawq(sheet, q2, 30, 310)
     lurek.render.drawq(sheet, q1, 60, 310, math.pi / 4, 2, 2)
@@ -594,8 +663,16 @@ do
 end
 
 --@api-stub: LQuad:type
+-- Quad type inspection. Focus: type.
+do
+    ---@type LQuad
+    local q = lurek.render.newQuad(0, 0, 8, 8, 64, 64)
+    print("type = " .. q:type())
+    print("is LQuad = " .. tostring(q:typeOf("LQuad")))
+end
+
 --@api-stub: LQuad:typeOf
--- Quad type inspection.
+-- Quad type inspection. Focus: typeOf.
 do
     ---@type LQuad
     local q = lurek.render.newQuad(0, 0, 8, 8, 64, 64)
@@ -621,9 +698,33 @@ do
 end
 
 --@api-stub: LSpriteBatch:type
+-- Sprite batch lifecycle. Focus: type.
+do
+    ---@type LImage
+    local img = lurek.render.newImage("assets/textures/ray_water.png")
+    ---@type LSpriteBatch
+    local batch = lurek.render.newSpriteBatch(img, 50)
+    print("type = " .. batch:type())
+    print("is LSpriteBatch = " .. tostring(batch:typeOf("LSpriteBatch")))
+    local released = batch:release()
+    print("released = " .. tostring(released))
+end
+
 --@api-stub: LSpriteBatch:typeOf
+-- Sprite batch lifecycle. Focus: typeOf.
+do
+    ---@type LImage
+    local img = lurek.render.newImage("assets/textures/ray_water.png")
+    ---@type LSpriteBatch
+    local batch = lurek.render.newSpriteBatch(img, 50)
+    print("type = " .. batch:type())
+    print("is LSpriteBatch = " .. tostring(batch:typeOf("LSpriteBatch")))
+    local released = batch:release()
+    print("released = " .. tostring(released))
+end
+
 --@api-stub: LSpriteBatch:release
--- Sprite batch lifecycle.
+-- Sprite batch lifecycle. Focus: release.
 do
     ---@type LImage
     local img = lurek.render.newImage("assets/textures/ray_water.png")
@@ -690,9 +791,33 @@ do
 end
 
 --@api-stub: LDrawLayer:clear
+-- Draw layer lifecycle. Focus: clear.
+do
+    ---@type LDrawLayer
+    local layer = lurek.render.newDrawLayer()
+    layer:queue(1, function() end)
+    layer:queue(2, function() end)
+    layer:clear()
+    print("cleared, count = " .. layer:getCount())
+    print("type = " .. layer:type())
+    print("is LDrawLayer = " .. tostring(layer:typeOf("LDrawLayer")))
+end
+
 --@api-stub: LDrawLayer:type
+-- Draw layer lifecycle. Focus: type.
+do
+    ---@type LDrawLayer
+    local layer = lurek.render.newDrawLayer()
+    layer:queue(1, function() end)
+    layer:queue(2, function() end)
+    layer:clear()
+    print("cleared, count = " .. layer:getCount())
+    print("type = " .. layer:type())
+    print("is LDrawLayer = " .. tostring(layer:typeOf("LDrawLayer")))
+end
+
 --@api-stub: LDrawLayer:typeOf
--- Draw layer lifecycle.
+-- Draw layer lifecycle. Focus: typeOf.
 do
     ---@type LDrawLayer
     local layer = lurek.render.newDrawLayer()
@@ -723,6 +848,7 @@ end
 
 --- Render Module Part 3: shaders, meshes, shapes, OBJ models
 
+
 --@api-stub: lurek.render.newShader
 -- Creating and using shaders.
 do
@@ -745,9 +871,59 @@ do
 end
 
 --@api-stub: LShader:send
+-- Sending uniforms and activating shaders. Focus: send.
+do
+    local code = [[
+        @vertex
+        fn vs_main(@builtin(vertex_index) idx: u32) -> @builtin(position) vec4<f32> {
+            return vec4<f32>(0.0, 0.0, 0.0, 1.0);
+        }
+        @fragment
+        fn fs_main() -> @location(0) vec4<f32> {
+            return vec4<f32>(0.5, 0.5, 1.0, 1.0);
+        }
+    ]]
+    ---@type LShader
+    local shader = lurek.render.newShader(code)
+    shader:send("time", 1.5)
+    shader:send("enabled", true)
+    shader:send("color", { 1.0, 0.5, 0.0 })
+    shader:send("offset", { 10, 20 })
+    lurek.render.setShader(shader)
+    local active = lurek.render.getShader()
+    print("shader active = " .. tostring(active))
+    lurek.render.rectangle("fill", 10, 10, 100, 100)
+    lurek.render.setShader(nil)
+end
+
 --@api-stub: LShader:setShader
+-- Sending uniforms and activating shaders. Focus: setShader.
+do
+    local code = [[
+        @vertex
+        fn vs_main(@builtin(vertex_index) idx: u32) -> @builtin(position) vec4<f32> {
+            return vec4<f32>(0.0, 0.0, 0.0, 1.0);
+        }
+        @fragment
+        fn fs_main() -> @location(0) vec4<f32> {
+            return vec4<f32>(0.5, 0.5, 1.0, 1.0);
+        }
+    ]]
+    ---@type LShader
+    local shader = lurek.render.newShader(code)
+    shader:send("time", 1.5)
+    shader:send("enabled", true)
+    shader:send("color", { 1.0, 0.5, 0.0 })
+    shader:send("offset", { 10, 20 })
+    lurek.render.setShader(shader)
+    local active = lurek.render.getShader()
+    print("shader active = " .. tostring(active))
+    lurek.render.rectangle("fill", 10, 10, 100, 100)
+    lurek.render.setShader(nil)
+end
+
 --@api-stub: LShader:getShader
--- Sending uniforms and activating shaders.
+-- Sending uniforms and activating shaders. Focus: getShader.
 do
     local code = [[
         @vertex
@@ -801,8 +977,23 @@ do
 end
 
 --@api-stub: LMesh:setVertex
+-- Modifying mesh vertices. Focus: setVertex.
+do
+    local verts = {
+        { 0, 0, 0, 0, 1, 1, 1, 1 },
+        { 50, 0, 1, 0, 1, 1, 1, 1 },
+        { 25, 50, 0.5, 1, 1, 1, 1, 1 },
+    }
+    ---@type LMesh
+    local mesh = lurek.render.newMesh(verts)
+    mesh:setVertex(1, { 10, 10, 0, 0, 1, 0, 0, 1 })
+    local x, y, u, v, r, g, b, a = mesh:getVertex(1)
+    print("v1: x=" .. x .. " y=" .. y .. " r=" .. r .. " g=" .. g .. " b=" .. b)
+    mesh:setVertex(3, { 30, 60, 0.5, 1, 0, 1, 0, 1 })
+end
+
 --@api-stub: LMesh:getVertex
--- Modifying mesh vertices.
+-- Modifying mesh vertices. Focus: getVertex.
 do
     local verts = {
         { 0, 0, 0, 0, 1, 1, 1, 1 },
@@ -818,10 +1009,73 @@ do
 end
 
 --@api-stub: LMesh:setTexture
+-- Mesh texture and lifecycle. Focus: setTexture.
+do
+    local verts = {
+        { 0, 0, 0, 0, 1, 1, 1, 1 },
+        { 64, 0, 1, 0, 1, 1, 1, 1 },
+        { 64, 64, 1, 1, 1, 1, 1, 1 },
+        { 0, 64, 0, 1, 1, 1, 1, 1 },
+    }
+    ---@type LMesh
+    local mesh = lurek.render.newMesh(verts, "fan")
+    ---@type LImage
+    local img = lurek.render.newImage("assets/textures/ray_water.png")
+    mesh:setTexture(img)
+    lurek.render.draw(mesh, 300, 100)
+    mesh:setTexture(nil)
+    print("type = " .. mesh:type())
+    print("is LMesh = " .. tostring(mesh:typeOf("LMesh")))
+    local released = mesh:release()
+    print("released = " .. tostring(released))
+end
+
 --@api-stub: LMesh:release
+-- Mesh texture and lifecycle. Focus: release.
+do
+    local verts = {
+        { 0, 0, 0, 0, 1, 1, 1, 1 },
+        { 64, 0, 1, 0, 1, 1, 1, 1 },
+        { 64, 64, 1, 1, 1, 1, 1, 1 },
+        { 0, 64, 0, 1, 1, 1, 1, 1 },
+    }
+    ---@type LMesh
+    local mesh = lurek.render.newMesh(verts, "fan")
+    ---@type LImage
+    local img = lurek.render.newImage("assets/textures/ray_water.png")
+    mesh:setTexture(img)
+    lurek.render.draw(mesh, 300, 100)
+    mesh:setTexture(nil)
+    print("type = " .. mesh:type())
+    print("is LMesh = " .. tostring(mesh:typeOf("LMesh")))
+    local released = mesh:release()
+    print("released = " .. tostring(released))
+end
+
 --@api-stub: LMesh:type
+-- Mesh texture and lifecycle. Focus: type.
+do
+    local verts = {
+        { 0, 0, 0, 0, 1, 1, 1, 1 },
+        { 64, 0, 1, 0, 1, 1, 1, 1 },
+        { 64, 64, 1, 1, 1, 1, 1, 1 },
+        { 0, 64, 0, 1, 1, 1, 1, 1 },
+    }
+    ---@type LMesh
+    local mesh = lurek.render.newMesh(verts, "fan")
+    ---@type LImage
+    local img = lurek.render.newImage("assets/textures/ray_water.png")
+    mesh:setTexture(img)
+    lurek.render.draw(mesh, 300, 100)
+    mesh:setTexture(nil)
+    print("type = " .. mesh:type())
+    print("is LMesh = " .. tostring(mesh:typeOf("LMesh")))
+    local released = mesh:release()
+    print("released = " .. tostring(released))
+end
+
 --@api-stub: LMesh:typeOf
--- Mesh texture and lifecycle.
+-- Mesh texture and lifecycle. Focus: typeOf.
 do
     local verts = {
         { 0, 0, 0, 0, 1, 1, 1, 1 },
@@ -865,9 +1119,37 @@ do
 end
 
 --@api-stub: LShape:polygon
+-- Shape polygon and polyline commands. Focus: polygon.
+do
+    ---@type LShape
+    local shape = lurek.render.newShape()
+    shape:setColor(0.8, 0.3, 0, 1)
+    shape:polygon("fill", 0, 0, 40, -10, 50, 30, 20, 50, -10, 30)
+    shape:setColor(1, 1, 1, 1)
+    shape:polyline(60, 0, 80, 20, 100, 0, 120, 20)
+    shape:setLineWidth(3)
+    shape:setColor(0.5, 0.5, 1, 1)
+    shape:roundedRectangle("line", 0, 60, 80, 40, 8)
+    shape:draw(400, 250)
+end
+
 --@api-stub: LShape:polyline
+-- Shape polygon and polyline commands. Focus: polyline.
+do
+    ---@type LShape
+    local shape = lurek.render.newShape()
+    shape:setColor(0.8, 0.3, 0, 1)
+    shape:polygon("fill", 0, 0, 40, -10, 50, 30, 20, 50, -10, 30)
+    shape:setColor(1, 1, 1, 1)
+    shape:polyline(60, 0, 80, 20, 100, 0, 120, 20)
+    shape:setLineWidth(3)
+    shape:setColor(0.5, 0.5, 1, 1)
+    shape:roundedRectangle("line", 0, 60, 80, 40, 8)
+    shape:draw(400, 250)
+end
+
 --@api-stub: LShape:roundedRectangle
--- Shape polygon and polyline commands.
+-- Shape polygon and polyline commands. Focus: roundedRectangle.
 do
     ---@type LShape
     local shape = lurek.render.newShape()
@@ -882,9 +1164,35 @@ do
 end
 
 --@api-stub: LShape:clear
+-- Shape lifecycle. Focus: clear.
+do
+    ---@type LShape
+    local shape = lurek.render.newShape()
+    shape:rectangle("fill", 0, 0, 10, 10)
+    shape:circle("fill", 20, 20, 5)
+    print("before clear = " .. shape:getCommandCount())
+    shape:clear()
+    print("after clear = " .. shape:getCommandCount())
+    print("type = " .. shape:type())
+    print("is LShape = " .. tostring(shape:typeOf("LShape")))
+end
+
 --@api-stub: LShape:type
+-- Shape lifecycle. Focus: type.
+do
+    ---@type LShape
+    local shape = lurek.render.newShape()
+    shape:rectangle("fill", 0, 0, 10, 10)
+    shape:circle("fill", 20, 20, 5)
+    print("before clear = " .. shape:getCommandCount())
+    shape:clear()
+    print("after clear = " .. shape:getCommandCount())
+    print("type = " .. shape:type())
+    print("is LShape = " .. tostring(shape:typeOf("LShape")))
+end
+
 --@api-stub: LShape:typeOf
--- Shape lifecycle.
+-- Shape lifecycle. Focus: typeOf.
 do
     ---@type LShape
     local shape = lurek.render.newShape()
@@ -901,7 +1209,7 @@ end
 -- Loading and inspecting a 3D OBJ model.
 do
     ---@type LObjModel
-    local model = lurek.render.loadObj("assets/textures/ray_water.png")
+    local model = lurek.render.loadObj("content/games/retro/dungeon_crawler/assets/models/tank.obj")
     print("faces = " .. model:getFaceCount())
     print("vertices = " .. model:getVertexCount())
     print("normals = " .. model:getNormalCount())
@@ -912,7 +1220,7 @@ end
 -- Projecting a 3D model to 2D vertex data.
 do
     ---@type LObjModel
-    local model = lurek.render.loadModel("assets/textures/ray_water.png")
+    local model = lurek.render.loadModel("content/games/retro/dungeon_crawler/assets/models/tank.obj")
     local camera = {
         x = 0, y = 0, z = -5,
         tx = 0, ty = 0, tz = 0,
@@ -929,7 +1237,7 @@ end
 -- Rendering a model to a texture.
 do
     ---@type LObjModel
-    local model = lurek.render.loadModel("assets/textures/ray_water.png")
+    local model = lurek.render.loadModel("content/games/retro/dungeon_crawler/assets/models/tank.obj")
     ---@type LImage
     local img = model:renderToImage(64, 64, 0)
     print("rendered: " .. img:getWidth() .. "x" .. img:getHeight())
@@ -940,6 +1248,7 @@ do
 end
 
 --- Render Module Part 4: fonts, stencil, screenshots, text measurement, pixel density
+
 
 --@api-stub: lurek.render.newFont
 -- Loading and activating fonts.
@@ -953,6 +1262,16 @@ do
     local active = lurek.render.getFont()
     print("active font = " .. active:type())
     lurek.render.print("Using custom font", 10, 10)
+
+    -- Using fonts directly with print. Focus: newFont.
+    ---@type LFont
+    local font = lurek.render.newFont("assets/fonts/default.ttf", 16)
+    lurek.render.setFont(font)
+    lurek.render.print("Rendered with custom font", 10, 350)
+    lurek.render.print("Second line", 10, 370)
+    ---@type LFont
+    local def = lurek.render.getDefaultFont()
+    lurek.render.setFont(def)
 end
 
 --@api-stub: lurek.render.getDefaultFont
@@ -966,14 +1285,68 @@ do
     print("big default height = " .. bigDefault:getHeight())
     lurek.render.setFont(bigDefault)
     lurek.render.print("Big default font", 10, 30)
+
+    -- Using fonts directly with print. Focus: getDefaultFont.
+    ---@type LFont
+    local font = lurek.render.newFont("assets/fonts/default.ttf", 16)
+    lurek.render.setFont(font)
+    lurek.render.print("Rendered with custom font", 10, 350)
+    lurek.render.print("Second line", 10, 370)
+    ---@type LFont
+    local def = lurek.render.getDefaultFont()
+    lurek.render.setFont(def)
 end
 
 --@api-stub: LFont:getWidth
+-- Font metrics. Focus: getWidth.
+do
+    ---@type LFont
+    local font = lurek.render.newFont("assets/fonts/default.ttf", 14)
+    print("width of 'Hello' = " .. font:getWidth("Hello"))
+    print("height = " .. font:getHeight())
+    print("line height = " .. font:getLineHeight())
+    print("ascent = " .. font:getAscent())
+    print("descent = " .. font:getDescent())
+end
+
 --@api-stub: LFont:getHeight
+-- Font metrics. Focus: getHeight.
+do
+    ---@type LFont
+    local font = lurek.render.newFont("assets/fonts/default.ttf", 14)
+    print("width of 'Hello' = " .. font:getWidth("Hello"))
+    print("height = " .. font:getHeight())
+    print("line height = " .. font:getLineHeight())
+    print("ascent = " .. font:getAscent())
+    print("descent = " .. font:getDescent())
+end
+
 --@api-stub: LFont:getLineHeight
+-- Font metrics. Focus: getLineHeight.
+do
+    ---@type LFont
+    local font = lurek.render.newFont("assets/fonts/default.ttf", 14)
+    print("width of 'Hello' = " .. font:getWidth("Hello"))
+    print("height = " .. font:getHeight())
+    print("line height = " .. font:getLineHeight())
+    print("ascent = " .. font:getAscent())
+    print("descent = " .. font:getDescent())
+end
+
 --@api-stub: LFont:getAscent
+-- Font metrics. Focus: getAscent.
+do
+    ---@type LFont
+    local font = lurek.render.newFont("assets/fonts/default.ttf", 14)
+    print("width of 'Hello' = " .. font:getWidth("Hello"))
+    print("height = " .. font:getHeight())
+    print("line height = " .. font:getLineHeight())
+    print("ascent = " .. font:getAscent())
+    print("descent = " .. font:getDescent())
+end
+
 --@api-stub: LFont:getDescent
--- Font metrics.
+-- Font metrics. Focus: getDescent.
 do
     ---@type LFont
     local font = lurek.render.newFont("assets/fonts/default.ttf", 14)
@@ -985,8 +1358,21 @@ do
 end
 
 --@api-stub: LFont:getWrap
+-- Word wrapping and line height control. Focus: getWrap.
+do
+    ---@type LFont
+    local font = lurek.render.newFont("assets/fonts/default.ttf", 12)
+    local lines, width = font:getWrap("This is a long paragraph of text that should wrap nicely.", 150)
+    print("wrapped lines = " .. #lines .. " width = " .. width)
+    for i, line in ipairs(lines) do
+        print("  " .. i .. ": " .. line)
+    end
+    font:setLineHeight(1.5)
+    print("new line height = " .. font:getLineHeight())
+end
+
 --@api-stub: LFont:setLineHeight
--- Word wrapping and line height control.
+-- Word wrapping and line height control. Focus: setLineHeight.
 do
     ---@type LFont
     local font = lurek.render.newFont("assets/fonts/default.ttf", 12)
@@ -1093,9 +1479,8 @@ do
     print("screenshot saved")
 end
 
--- Using a canvas as a render texture for post-processing.
 --@api-stub: lurek.render.setCanvas
---@api-stub: lurek.render.draw
+-- Using a canvas as a render texture for post-processing. Focus: setCanvas.
 do
     ---@type LCanvas
     local rt = lurek.render.newCanvas(256, 256)
@@ -1109,10 +1494,23 @@ do
     lurek.render.draw(rt, 400, 50, 0, 0.5, 0.5)
 end
 
--- Using fonts directly with print.
---@api-stub: lurek.render.newFont
+--@api-stub: lurek.render.draw
+-- Using a canvas as a render texture for post-processing. Focus: draw.
+do
+    ---@type LCanvas
+    local rt = lurek.render.newCanvas(256, 256)
+    lurek.render.setCanvas(rt)
+    lurek.render.setColor(0, 1, 0, 1)
+    lurek.render.rectangle("fill", 0, 0, 256, 256)
+    lurek.render.setColor(1, 0, 0, 1)
+    lurek.render.circle("fill", 128, 128, 80)
+    lurek.render.setCanvas(nil)
+    lurek.render.setColor(1, 1, 1, 1)
+    lurek.render.draw(rt, 400, 50, 0, 0.5, 0.5)
+end
+
 --@api-stub: lurek.render.setFont
---@api-stub: lurek.render.getDefaultFont
+-- Using fonts directly with print. Focus: setFont.
 do
     ---@type LFont
     local font = lurek.render.newFont("assets/fonts/default.ttf", 16)
@@ -1126,10 +1524,35 @@ end
 
 --- Render Module Part 5: LCanvas, LFont release/type, LImage release/type, LMesh, LQuad getViewport/type, LShader, LSpriteBatch
 
+
 --@api-stub: LCanvas:getDimensions
+-- Canvas dimension queries, release, and type introspection. Focus: getDimensions.
+do
+    local c = lurek.render.newCanvas(128, 64)
+    local w, h = c:getDimensions()
+    print("dims=" .. w .. "x" .. h)
+    print("w=" .. c:getWidth())
+    print("h=" .. c:getHeight())
+    print("type=" .. c:type())
+    print("typeOf=" .. tostring(c:typeOf("LCanvas")))
+    c:release()
+end
+
 --@api-stub: LCanvas:getHeight
+-- Canvas dimension queries, release, and type introspection. Focus: getHeight.
+do
+    local c = lurek.render.newCanvas(128, 64)
+    local w, h = c:getDimensions()
+    print("dims=" .. w .. "x" .. h)
+    print("w=" .. c:getWidth())
+    print("h=" .. c:getHeight())
+    print("type=" .. c:type())
+    print("typeOf=" .. tostring(c:typeOf("LCanvas")))
+    c:release()
+end
+
 --@api-stub: LCanvas:getWidth
--- Canvas dimension queries, release, and type introspection.
+-- Canvas dimension queries, release, and type introspection. Focus: getWidth.
 do
     local c = lurek.render.newCanvas(128, 64)
     local w, h = c:getDimensions()
@@ -1142,8 +1565,16 @@ do
 end
 
 --@api-stub: LFont:type
+-- Font release and type introspection. Focus: type.
+do
+    local f = lurek.render.newFont("assets/fonts/Roboto-Regular.ttf", 16)
+    print("type=" .. f:type())
+    print("typeOf=" .. tostring(f:typeOf("LFont")))
+    f:release()
+end
+
 --@api-stub: LFont:typeOf
--- Font release and type introspection.
+-- Font release and type introspection. Focus: typeOf.
 do
     local f = lurek.render.newFont("assets/fonts/Roboto-Regular.ttf", 16)
     print("type=" .. f:type())
@@ -1181,9 +1612,41 @@ do
 end
 
 --@api-stub: LShader:hasUniform
+-- Shader uniform queries, send, and type introspection. Focus: hasUniform.
+do
+    local code = [[
+        uniform float time;
+        vec4 effect(vec4 color, Image tex, vec2 uv, vec2 fragCoord) {
+            return Texel(tex, uv) * color;
+        }
+    ]]
+    local sh = lurek.render.newShader(code)
+    print("has_time=" .. tostring(sh:hasUniform("time")))
+    sh:send("time", 0.5)
+    print("type=" .. sh:type())
+    print("typeOf=" .. tostring(sh:typeOf("LShader")))
+    sh:release()
+end
+
 --@api-stub: LShader:type
+-- Shader uniform queries, send, and type introspection. Focus: type.
+do
+    local code = [[
+        uniform float time;
+        vec4 effect(vec4 color, Image tex, vec2 uv, vec2 fragCoord) {
+            return Texel(tex, uv) * color;
+        }
+    ]]
+    local sh = lurek.render.newShader(code)
+    print("has_time=" .. tostring(sh:hasUniform("time")))
+    sh:send("time", 0.5)
+    print("type=" .. sh:type())
+    print("typeOf=" .. tostring(sh:typeOf("LShader")))
+    sh:release()
+end
+
 --@api-stub: LShader:typeOf
--- Shader uniform queries, send, and type introspection.
+-- Shader uniform queries, send, and type introspection. Focus: typeOf.
 do
     local code = [[
         uniform float time;
@@ -1200,10 +1663,55 @@ do
 end
 
 --@api-stub: LSpriteBatch:add
+-- Sprite batch operations and type introspection. Focus: add.
+do
+    local img = lurek.render.newImage("assets/textures/ray_water.png")
+    local sb = lurek.render.newSpriteBatch(img, 100)
+    local id = sb:add(0, 0, 0, 1, 1, 0, 0)
+    sb:add(100, 0, 0, 1, 1, 0, 0)
+    print("count=" .. sb:getCount())
+    print("buf=" .. sb:getBufferSize())
+    sb:clear()
+    print("count_after=" .. sb:getCount())
+    print("type=" .. sb:type())
+    print("typeOf=" .. tostring(sb:typeOf("LSpriteBatch")))
+    sb:release()
+end
+
 --@api-stub: LSpriteBatch:clear
+-- Sprite batch operations and type introspection. Focus: clear.
+do
+    local img = lurek.render.newImage("assets/textures/ray_water.png")
+    local sb = lurek.render.newSpriteBatch(img, 100)
+    local id = sb:add(0, 0, 0, 1, 1, 0, 0)
+    sb:add(100, 0, 0, 1, 1, 0, 0)
+    print("count=" .. sb:getCount())
+    print("buf=" .. sb:getBufferSize())
+    sb:clear()
+    print("count_after=" .. sb:getCount())
+    print("type=" .. sb:type())
+    print("typeOf=" .. tostring(sb:typeOf("LSpriteBatch")))
+    sb:release()
+end
+
 --@api-stub: LSpriteBatch:getBufferSize
+-- Sprite batch operations and type introspection. Focus: getBufferSize.
+do
+    local img = lurek.render.newImage("assets/textures/ray_water.png")
+    local sb = lurek.render.newSpriteBatch(img, 100)
+    local id = sb:add(0, 0, 0, 1, 1, 0, 0)
+    sb:add(100, 0, 0, 1, 1, 0, 0)
+    print("count=" .. sb:getCount())
+    print("buf=" .. sb:getBufferSize())
+    sb:clear()
+    print("count_after=" .. sb:getCount())
+    print("type=" .. sb:type())
+    print("typeOf=" .. tostring(sb:typeOf("LSpriteBatch")))
+    sb:release()
+end
+
 --@api-stub: LSpriteBatch:getCount
--- Sprite batch operations and type introspection.
+-- Sprite batch operations and type introspection. Focus: getCount.
 do
     local img = lurek.render.newImage("assets/textures/ray_water.png")
     local sb = lurek.render.newSpriteBatch(img, 100)
@@ -1219,6 +1727,7 @@ do
 end
 
 --- Render Module Part 6: module-level functions (clear, color, blend, canvas, shader, transforms, font, wireframe, dims, scissor, line/point)
+
 
 --@api-stub: lurek.render.getBackgroundColor
 -- Get current background color.
@@ -1245,8 +1754,16 @@ do
 end
 
 --@api-stub: lurek.render.getHeight
+-- Screen dimension queries. Focus: getHeight.
+do
+    local w, h = lurek.render.getDimensions()
+    print("dims=" .. w .. "x" .. h)
+    print("w=" .. lurek.render.getWidth())
+    print("h=" .. lurek.render.getHeight())
+end
+
 --@api-stub: lurek.render.getWidth
--- Screen dimension queries.
+-- Screen dimension queries. Focus: getWidth.
 do
     local w, h = lurek.render.getDimensions()
     print("dims=" .. w .. "x" .. h)
@@ -1273,8 +1790,18 @@ do
 end
 
 --@api-stub: lurek.render.getShader
+-- Get and set active shader. Focus: getShader.
+do
+    local code = "vec4 effect(vec4 c, Image t, vec2 uv, vec2 fc) { return Texel(t, uv) * c; }"
+    local sh = lurek.render.newShader(code)
+    lurek.render.setShader(sh)
+    local cur = lurek.render.getShader()
+    print("shader=" .. tostring(cur ~= nil))
+    lurek.render.setShader(nil)
+end
+
 --@api-stub: lurek.render.setShader
--- Get and set active shader.
+-- Get and set active shader. Focus: setShader.
 do
     local code = "vec4 effect(vec4 c, Image t, vec2 uv, vec2 fc) { return Texel(t, uv) * c; }"
     local sh = lurek.render.newShader(code)
@@ -1293,10 +1820,7 @@ do
 end
 
 --@api-stub: lurek.render.pop
---@api-stub: lurek.render.rotate
---@api-stub: lurek.render.scale
---@api-stub: lurek.render.translate
--- Transform stack operations.
+-- Transform stack operations. Focus: pop.
 do
     lurek.render.push()
     lurek.render.translate(50, 50)
@@ -1308,49 +1832,73 @@ do
     print("transform stack ok")
 end
 
---@api-stub: LImageData:getWidth
---@api-stub: LImageData:getHeight
---@api-stub: LImageData:getRegion
--- LImageData dimensions and region extraction.
+--@api-stub: lurek.render.rotate
+-- Transform stack operations. Focus: rotate.
 do
-    local img = lurek.image.newImageData(64, 32)
-    local w = img:getWidth()
-    local h = img:getHeight()
-    local region = img:getRegion(0, 0, 16, 16)
-    print("image size:", w, h, "region:", region:getWidth(), region:getHeight())
+    lurek.render.push()
+    lurek.render.translate(50, 50)
+    lurek.render.rotate(math.pi / 4)
+    lurek.render.scale(2, 2)
+    lurek.render.shear(0.1, 0.0)
+    lurek.render.draw(lurek.render.newImage("assets/textures/ray_water.png"), 0, 0)
+    lurek.render.pop()
+    print("transform stack ok")
 end
 
---@api-stub: LImageData:blit
---@api-stub: LImageData:diff
---@api-stub: LImageData:resize
--- LImageData blit, diff and resize operations.
+--@api-stub: lurek.render.scale
+-- Transform stack operations. Focus: scale.
 do
-    local src = lurek.image.newImageData(32, 32)
-    local dst = lurek.image.newImageData(64, 64)
-    dst:blit(src, 0, 0)
-    local d = dst:diff(src)
-    local resized = src:resize(16, 16, "nearest")
-    print("blit ok, diff ok, resized:", resized:getWidth())
+    lurek.render.push()
+    lurek.render.translate(50, 50)
+    lurek.render.rotate(math.pi / 4)
+    lurek.render.scale(2, 2)
+    lurek.render.shear(0.1, 0.0)
+    lurek.render.draw(lurek.render.newImage("assets/textures/ray_water.png"), 0, 0)
+    lurek.render.pop()
+    print("transform stack ok")
 end
 
---@api-stub: LImageData:mapPixels
---@api-stub: LImageData:type
---@api-stub: LImageData:typeOf
--- LImageData pixel mapping and type introspection.
+--@api-stub: lurek.render.translate
+-- Transform stack operations. Focus: translate.
 do
-    local img = lurek.image.newImageData(8, 8)
-    img:mapPixels(function(x, y, r, g, b, a)
-        return r, g, b, a
-    end)
-    local t = img:type()
-    local ok = img:typeOf("LImageData")
-    print("map done, type:", t)
+    lurek.render.push()
+    lurek.render.translate(50, 50)
+    lurek.render.rotate(math.pi / 4)
+    lurek.render.scale(2, 2)
+    lurek.render.shear(0.1, 0.0)
+    lurek.render.draw(lurek.render.newImage("assets/textures/ray_water.png"), 0, 0)
+    lurek.render.pop()
+    print("transform stack ok")
 end
 
 --@api-stub: LImage:getDimensions
+-- LImage size introspection. Focus: getDimensions.
+do
+    local img = lurek.render.newImage("assets/textures/ray_water.png")
+    if img then
+        local w, h = img:getDimensions()
+        local w2 = img:getWidth()
+        local h2 = img:getHeight()
+        print("image dims:", w, h)
+    end
+    print("LImage size API tested")
+end
+
 --@api-stub: LImage:getWidth
+-- LImage size introspection. Focus: getWidth.
+do
+    local img = lurek.render.newImage("assets/textures/ray_water.png")
+    if img then
+        local w, h = img:getDimensions()
+        local w2 = img:getWidth()
+        local h2 = img:getHeight()
+        print("image dims:", w, h)
+    end
+    print("LImage size API tested")
+end
+
 --@api-stub: LImage:getHeight
--- LImage size introspection.
+-- LImage size introspection. Focus: getHeight.
 do
     local img = lurek.render.newImage("assets/textures/ray_water.png")
     if img then
@@ -1363,9 +1911,35 @@ do
 end
 
 --@api-stub: LNineSlice:getInsets
+-- LNineSlice insets, texture size, and type. Focus: getInsets.
+do
+    local img = lurek.render.newImage("assets/textures/ray_water.png")
+    if img then
+        local ns = lurek.render.newNineSlice(img, 4, 4, 4, 4)
+        local t, r, b, l = ns:getInsets()
+        local tw, th = ns:getTextureSize()
+        local tp = ns:type()
+        print("nineslice insets:", t, r, b, l, "type:", tp)
+    end
+    print("LNineSlice tested")
+end
+
 --@api-stub: LNineSlice:getTextureSize
+-- LNineSlice insets, texture size, and type. Focus: getTextureSize.
+do
+    local img = lurek.render.newImage("assets/textures/ray_water.png")
+    if img then
+        local ns = lurek.render.newNineSlice(img, 4, 4, 4, 4)
+        local t, r, b, l = ns:getInsets()
+        local tw, th = ns:getTextureSize()
+        local tp = ns:type()
+        print("nineslice insets:", t, r, b, l, "type:", tp)
+    end
+    print("LNineSlice tested")
+end
+
 --@api-stub: LNineSlice:type
--- LNineSlice insets, texture size, and type.
+-- LNineSlice insets, texture size, and type. Focus: type.
 do
     local img = lurek.render.newImage("assets/textures/ray_water.png")
     if img then
@@ -1379,9 +1953,43 @@ do
 end
 
 --@api-stub: LNineSlice:typeOf
+-- LNineSlice typeOf and LObjModel face/normal counts. Focus: typeOf.
+do
+    local img = lurek.render.newImage("assets/textures/ray_water.png")
+    if img then
+        local ns = lurek.render.newNineSlice(img, 2, 2, 2, 2)
+        local ok = ns:typeOf("LNineSlice")
+        print("NineSlice typeOf:", ok)
+    end
+    local model = lurek.render.loadModel("assets/models/test.obj")
+    if model then
+        local fc = model:getFaceCount()
+        local nc = model:getNormalCount()
+        print("model faces:", fc, "normals:", nc)
+    end
+    print("NineSlice typeOf + LObjModel tested")
+end
+
 --@api-stub: LObjModel:getFaceCount
+-- LNineSlice typeOf and LObjModel face/normal counts. Focus: getFaceCount.
+do
+    local img = lurek.render.newImage("assets/textures/ray_water.png")
+    if img then
+        local ns = lurek.render.newNineSlice(img, 2, 2, 2, 2)
+        local ok = ns:typeOf("LNineSlice")
+        print("NineSlice typeOf:", ok)
+    end
+    local model = lurek.render.loadModel("assets/models/test.obj")
+    if model then
+        local fc = model:getFaceCount()
+        local nc = model:getNormalCount()
+        print("model faces:", fc, "normals:", nc)
+    end
+    print("NineSlice typeOf + LObjModel tested")
+end
+
 --@api-stub: LObjModel:getNormalCount
--- LNineSlice typeOf and LObjModel face/normal counts.
+-- LNineSlice typeOf and LObjModel face/normal counts. Focus: getNormalCount.
 do
     local img = lurek.render.newImage("assets/textures/ray_water.png")
     if img then
@@ -1399,9 +2007,35 @@ do
 end
 
 --@api-stub: LObjModel:getUvCount
+-- LObjModel UV/vertex counts and LQuad texture dimensions. Focus: getUvCount.
+do
+    local model = lurek.render.loadModel("assets/models/test.obj")
+    if model then
+        local uv = model:getUvCount()
+        local vc = model:getVertexCount()
+        print("model uvs:", uv, "verts:", vc)
+    end
+    local q = lurek.render.newQuad(0, 0, 16, 16, 64, 64)
+    local tw, th = q:getTextureDimensions()
+    print("quad tex dims:", tw, th, "LObjModel + LQuad tested")
+end
+
 --@api-stub: LObjModel:getVertexCount
+-- LObjModel UV/vertex counts and LQuad texture dimensions. Focus: getVertexCount.
+do
+    local model = lurek.render.loadModel("assets/models/test.obj")
+    if model then
+        local uv = model:getUvCount()
+        local vc = model:getVertexCount()
+        print("model uvs:", uv, "verts:", vc)
+    end
+    local q = lurek.render.newQuad(0, 0, 16, 16, 64, 64)
+    local tw, th = q:getTextureDimensions()
+    print("quad tex dims:", tw, th, "LObjModel + LQuad tested")
+end
+
 --@api-stub: LQuad:getTextureDimensions
--- LObjModel UV/vertex counts and LQuad texture dimensions.
+-- LObjModel UV/vertex counts and LQuad texture dimensions. Focus: getTextureDimensions.
 do
     local model = lurek.render.loadModel("assets/models/test.obj")
     if model then
@@ -1424,9 +2058,29 @@ do
 end
 
 --@api-stub: LShape:arc
+-- LShape: arc, circle, and color. Focus: arc.
+do
+    local s = lurek.render.newShape()
+    s:setColor(1, 0.5, 0, 1)
+    s:arc("fill", 100, 100, 40, 0, math.pi)
+    s:circle("line", 200, 200, 30)
+    local c = s:getCommandCount()
+    print("shape cmds:", c)
+end
+
 --@api-stub: LShape:circle
+-- LShape: arc, circle, and color. Focus: circle.
+do
+    local s = lurek.render.newShape()
+    s:setColor(1, 0.5, 0, 1)
+    s:arc("fill", 100, 100, 40, 0, math.pi)
+    s:circle("line", 200, 200, 30)
+    local c = s:getCommandCount()
+    print("shape cmds:", c)
+end
+
 --@api-stub: LShape:setColor
--- LShape: arc, circle, and color.
+-- LShape: arc, circle, and color. Focus: setColor.
 do
     local s = lurek.render.newShape()
     s:setColor(1, 0.5, 0, 1)
@@ -1437,9 +2091,29 @@ do
 end
 
 --@api-stub: LShape:ellipse
+-- LShape: ellipse, line, rectangle drawing. Focus: ellipse.
+do
+    local s = lurek.render.newShape()
+    s:ellipse("fill", 100, 100, 50, 30)
+    s:line(10, 10, 90, 90)
+    s:rectangle("fill", 20, 20, 60, 40)
+    local c = s:getCommandCount()
+    print("shape ellipse+line+rect cmds:", c)
+end
+
 --@api-stub: LShape:line
+-- LShape: ellipse, line, rectangle drawing. Focus: line.
+do
+    local s = lurek.render.newShape()
+    s:ellipse("fill", 100, 100, 50, 30)
+    s:line(10, 10, 90, 90)
+    s:rectangle("fill", 20, 20, 60, 40)
+    local c = s:getCommandCount()
+    print("shape ellipse+line+rect cmds:", c)
+end
+
 --@api-stub: LShape:rectangle
--- LShape: ellipse, line, rectangle drawing.
+-- LShape: ellipse, line, rectangle drawing. Focus: rectangle.
 do
     local s = lurek.render.newShape()
     s:ellipse("fill", 100, 100, 50, 30)
@@ -1450,9 +2124,29 @@ do
 end
 
 --@api-stub: LShape:triangle
+-- LShape: triangle, draw and line width. Focus: triangle.
+do
+    local s = lurek.render.newShape()
+    s:setLineWidth(2)
+    s:triangle("line", 0, 0, 50, 0, 25, 50)
+    s:draw(100, 100, 0, 1, 1, 0, 0)
+    local c = s:getCommandCount()
+    print("shape triangle+draw cmds:", c)
+end
+
 --@api-stub: LShape:draw
+-- LShape: triangle, draw and line width. Focus: draw.
+do
+    local s = lurek.render.newShape()
+    s:setLineWidth(2)
+    s:triangle("line", 0, 0, 50, 0, 25, 50)
+    s:draw(100, 100, 0, 1, 1, 0, 0)
+    local c = s:getCommandCount()
+    print("shape triangle+draw cmds:", c)
+end
+
 --@api-stub: LShape:setLineWidth
--- LShape: triangle, draw and line width.
+-- LShape: triangle, draw and line width. Focus: setLineWidth.
 do
     local s = lurek.render.newShape()
     s:setLineWidth(2)
@@ -1475,9 +2169,37 @@ do
 end
 
 --@api-stub: LDrawLayer:flush
+-- LDrawLayer: queue draw commands and flush. Focus: flush.
+do
+    local dl = lurek.render.newDrawLayer()
+    dl:queue(1.0, function()
+        lurek.render.circle("fill", 100, 100, 20)
+    end)
+    dl:queue(2.0, function()
+        lurek.render.circle("fill", 200, 100, 20)
+    end)
+    local count = dl:getCount()
+    dl:flush()
+    print("drawlayer count was:", count)
+end
+
 --@api-stub: LDrawLayer:getCount
+-- LDrawLayer: queue draw commands and flush. Focus: getCount.
+do
+    local dl = lurek.render.newDrawLayer()
+    dl:queue(1.0, function()
+        lurek.render.circle("fill", 100, 100, 20)
+    end)
+    dl:queue(2.0, function()
+        lurek.render.circle("fill", 200, 100, 20)
+    end)
+    local count = dl:getCount()
+    dl:flush()
+    print("drawlayer count was:", count)
+end
+
 --@api-stub: LDrawLayer:queue
--- LDrawLayer: queue draw commands and flush.
+-- LDrawLayer: queue draw commands and flush. Focus: queue.
 do
     local dl = lurek.render.newDrawLayer()
     dl:queue(1.0, function()
@@ -1492,8 +2214,25 @@ do
 end
 
 --@api-stub: lurek.render.drawq
+-- Render draw, drawq, and drawNineSlice. Focus: drawq.
+do
+    local img = lurek.render.newImage("assets/textures/ray_water.png")
+    if img then
+        lurek.render.draw(img, 10, 10, 0, 1, 1)
+        local q = lurek.render.newQuad(0, 0, 16, 16, 64, 64)
+        if q then
+            lurek.render.drawq(img, q, 50, 50, 0, 1, 1)
+        end
+        local ns = lurek.render.newNineSlice(img, 4, 4, 4, 4)
+        if ns then
+            lurek.render.drawNineSlice(ns, 100, 100, 80, 60)
+        end
+    end
+    print("draw, drawq, drawNineSlice tested")
+end
+
 --@api-stub: lurek.render.drawNineSlice
--- Render draw, drawq, and drawNineSlice.
+-- Render draw, drawq, and drawNineSlice. Focus: drawNineSlice.
 do
     local img = lurek.render.newImage("assets/textures/ray_water.png")
     if img then
@@ -1511,8 +2250,16 @@ do
 end
 
 --@api-stub: lurek.render.clearStencil
+-- Render quad bezier, clear stencil, current layer. Focus: clearStencil.
+do
+    lurek.render.drawQuadBezier(0, 0, 100, 50, 200, 0, 20)
+    lurek.render.clearStencil()
+    local layer = lurek.render.currentLayer()
+    print("bezier drawn, stencil cleared, layer:", layer)
+end
+
 --@api-stub: lurek.render.currentLayer
--- Render quad bezier, clear stencil, current layer.
+-- Render quad bezier, clear stencil, current layer. Focus: currentLayer.
 do
     lurek.render.drawQuadBezier(0, 0, 100, 50, 200, 0, 20)
     lurek.render.clearStencil()
@@ -1521,9 +2268,29 @@ do
 end
 
 --@api-stub: lurek.render.flushSortGroup
+-- Render sort group flushing, sort key push, pop layer. Focus: flushSortGroup.
+do
+    lurek.render.pushSortKey(5)
+    lurek.render.circle("fill", 100, 100, 10)
+    lurek.render.flushSortGroup(0)
+    lurek.render.pushLayer(99, 1.0, "alpha")
+    lurek.render.popLayer(99)
+    print("flushSortGroup, pushSortKey, popLayer tested")
+end
+
 --@api-stub: lurek.render.pushSortKey
+-- Render sort group flushing, sort key push, pop layer. Focus: pushSortKey.
+do
+    lurek.render.pushSortKey(5)
+    lurek.render.circle("fill", 100, 100, 10)
+    lurek.render.flushSortGroup(0)
+    lurek.render.pushLayer(99, 1.0, "alpha")
+    lurek.render.popLayer(99)
+    print("flushSortGroup, pushSortKey, popLayer tested")
+end
+
 --@api-stub: lurek.render.popLayer
--- Render sort group flushing, sort key push, pop layer.
+-- Render sort group flushing, sort key push, pop layer. Focus: popLayer.
 do
     lurek.render.pushSortKey(5)
     lurek.render.circle("fill", 100, 100, 10)
@@ -1534,9 +2301,27 @@ do
 end
 
 --@api-stub: lurek.render.getCanvasSize
+-- Render canvas size, color mask, default filter. Focus: getCanvasSize.
+do
+    local canvas = lurek.render.newCanvas(200, 100)
+    local w, h = lurek.render.getCanvasSize(canvas)
+    local rm, gm, bm, am = lurek.render.getColorMask()
+    local min_f, mag_f, aniso = lurek.render.getDefaultFilter()
+    print("canvas size:", w, h, "color mask r:", rm, "filter:", min_f)
+end
+
 --@api-stub: lurek.render.getColorMask
+-- Render canvas size, color mask, default filter. Focus: getColorMask.
+do
+    local canvas = lurek.render.newCanvas(200, 100)
+    local w, h = lurek.render.getCanvasSize(canvas)
+    local rm, gm, bm, am = lurek.render.getColorMask()
+    local min_f, mag_f, aniso = lurek.render.getDefaultFilter()
+    print("canvas size:", w, h, "color mask r:", rm, "filter:", min_f)
+end
+
 --@api-stub: lurek.render.getDefaultFilter
--- Render canvas size, color mask, default filter.
+-- Render canvas size, color mask, default filter. Focus: getDefaultFilter.
 do
     local canvas = lurek.render.newCanvas(200, 100)
     local w, h = lurek.render.getCanvasSize(canvas)
@@ -1546,9 +2331,27 @@ do
 end
 
 --@api-stub: lurek.render.getDepthMode
+-- Render depth mode and font cell/descent metrics. Focus: getDepthMode.
+do
+    local depth_mode, depth_write = lurek.render.getDepthMode()
+    local font = lurek.render.getDefaultFont(14)
+    local cw = lurek.render.getFontCellWidth(font)
+    local descent = lurek.render.getFontDescent(font)
+    print("depth:", depth_mode, depth_write, "cell_w:", cw, "descent:", descent)
+end
+
 --@api-stub: lurek.render.getFontCellWidth
+-- Render depth mode and font cell/descent metrics. Focus: getFontCellWidth.
+do
+    local depth_mode, depth_write = lurek.render.getDepthMode()
+    local font = lurek.render.getDefaultFont(14)
+    local cw = lurek.render.getFontCellWidth(font)
+    local descent = lurek.render.getFontDescent(font)
+    print("depth:", depth_mode, depth_write, "cell_w:", cw, "descent:", descent)
+end
+
 --@api-stub: lurek.render.getFontDescent
--- Render depth mode and font cell/descent metrics.
+-- Render depth mode and font cell/descent metrics. Focus: getFontDescent.
 do
     local depth_mode, depth_write = lurek.render.getDepthMode()
     local font = lurek.render.getDefaultFont(14)
@@ -1558,8 +2361,17 @@ do
 end
 
 --@api-stub: lurek.render.getFontHeight
+-- Render font height, line height, and current line width. Focus: getFontHeight.
+do
+    local font = lurek.render.getDefaultFont(14)
+    local fh = lurek.render.getFontHeight(font)
+    local flh = lurek.render.getFontLineHeight(font)
+    local lw = lurek.render.getLineWidth()
+    print("font height:", fh, "line height:", flh, "line width:", lw)
+end
+
 --@api-stub: lurek.render.getFontLineHeight
--- Render font height, line height, and current line width.
+-- Render font height, line height, and current line width. Focus: getFontLineHeight.
 do
     local font = lurek.render.getDefaultFont(14)
     local fh = lurek.render.getFontHeight(font)
@@ -1569,9 +2381,27 @@ do
 end
 
 --@api-stub: lurek.render.getStencilMode
+-- Render stencil mode, layer visibility, and model loading. Focus: getStencilMode.
+do
+    local action, compare, ref = lurek.render.getStencilMode()
+    local visible = lurek.render.isLayerVisible("default")
+    local model = lurek.render.loadModel("assets/models/test.obj")
+    -- model may be nil if file doesn't exist; that's okay
+    print("stencil:", action, compare, ref, "layer visible:", visible, "model:", model ~= nil)
+end
+
 --@api-stub: lurek.render.isLayerVisible
+-- Render stencil mode, layer visibility, and model loading. Focus: isLayerVisible.
+do
+    local action, compare, ref = lurek.render.getStencilMode()
+    local visible = lurek.render.isLayerVisible("default")
+    local model = lurek.render.loadModel("assets/models/test.obj")
+    -- model may be nil if file doesn't exist; that's okay
+    print("stencil:", action, compare, ref, "layer visible:", visible, "model:", model ~= nil)
+end
+
 --@api-stub: lurek.render.loadModel
--- Render stencil mode, layer visibility, and model loading.
+-- Render stencil mode, layer visibility, and model loading. Focus: loadModel.
 do
     local action, compare, ref = lurek.render.getStencilMode()
     local visible = lurek.render.isLayerVisible("default")
@@ -1590,9 +2420,29 @@ do
 end
 
 --@api-stub: lurek.render.resetCanvas
+-- Render canvas reset, screenshot, font line height. Focus: resetCanvas.
+do
+    local canvas = lurek.render.newCanvas(64, 64)
+    lurek.render.resetCanvas(canvas)
+    lurek.render.saveScreenshot("save/test_screenshot.png")
+    local font = lurek.render.getDefaultFont(14)
+    lurek.render.setFontLineHeight(font, 1.2)
+    print("resetCanvas, saveScreenshot, setFontLineHeight ok")
+end
+
 --@api-stub: lurek.render.saveScreenshot
+-- Render canvas reset, screenshot, font line height. Focus: saveScreenshot.
+do
+    local canvas = lurek.render.newCanvas(64, 64)
+    lurek.render.resetCanvas(canvas)
+    lurek.render.saveScreenshot("save/test_screenshot.png")
+    local font = lurek.render.getDefaultFont(14)
+    lurek.render.setFontLineHeight(font, 1.2)
+    print("resetCanvas, saveScreenshot, setFontLineHeight ok")
+end
+
 --@api-stub: lurek.render.setFontLineHeight
--- Render canvas reset, screenshot, font line height.
+-- Render canvas reset, screenshot, font line height. Focus: setFontLineHeight.
 do
     local canvas = lurek.render.newCanvas(64, 64)
     lurek.render.resetCanvas(canvas)
@@ -1603,9 +2453,33 @@ do
 end
 
 --@api-stub: lurek.render.setLayer
+-- Render layer name, visibility, and z-order. Focus: setLayer.
+do
+    local prev_layer = lurek.render.currentLayer()
+    lurek.render.setLayer("default")
+    lurek.render.setLayerVisible("default", true)
+    lurek.render.setLayerZOrder("default", 0)
+    if prev_layer then
+        lurek.render.setLayer(prev_layer)
+    end
+    print("setLayer, setLayerVisible, setLayerZOrder ok")
+end
+
 --@api-stub: lurek.render.setLayerVisible
+-- Render layer name, visibility, and z-order. Focus: setLayerVisible.
+do
+    local prev_layer = lurek.render.currentLayer()
+    lurek.render.setLayer("default")
+    lurek.render.setLayerVisible("default", true)
+    lurek.render.setLayerZOrder("default", 0)
+    if prev_layer then
+        lurek.render.setLayer(prev_layer)
+    end
+    print("setLayer, setLayerVisible, setLayerZOrder ok")
+end
+
 --@api-stub: lurek.render.setLayerZOrder
--- Render layer name, visibility, and z-order.
+-- Render layer name, visibility, and z-order. Focus: setLayerZOrder.
 do
     local prev_layer = lurek.render.currentLayer()
     lurek.render.setLayer("default")

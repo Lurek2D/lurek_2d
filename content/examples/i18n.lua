@@ -4,6 +4,7 @@
 
 --- i18n Module: localization, translation, number/date formatting
 
+
 --@api-stub: lurek.i18n.loadTable
 -- Loads a translation table for a locale.
 do
@@ -98,11 +99,8 @@ do
     lurek.i18n.setLanguage("en")
     local text = lurek.i18n.t("greetings.hello")
     print("translated = " .. text)
-end
 
--- Translates a key with variable substitution.
---@api-stub: lurek.i18n.t
-do
+    -- Translates a key with variable substitution.
     local text = lurek.i18n.t("greeting.personal", {name = "World"})
     print("with vars = " .. text)
 end
@@ -219,7 +217,7 @@ do
     local handle = lurek.i18n.onLanguageChange(function()
         print("language changed!")
     end)
-    print("onChange handle = " .. handle)
+    print("onChange handle = " .. tostring(handle))
 end
 
 --@api-stub: lurek.i18n.onChange
@@ -228,7 +226,7 @@ do
     local handle = lurek.i18n.onChange(function()
         print("something changed")
     end)
-    print("handle = " .. handle)
+    print("handle = " .. tostring(handle))
 end
 
 --@api-stub: lurek.i18n.offChange
@@ -267,7 +265,7 @@ end
 -- Returns translation completeness as a fraction.
 do
     local cov = lurek.i18n.localeCoverage("en")
-    print("coverage = " .. cov)
+    print("coverage gaps = " .. #cov)
 end
 
 --@api-stub: lurek.i18n.getLoadedLocales

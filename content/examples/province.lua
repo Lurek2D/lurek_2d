@@ -4,6 +4,7 @@
 
 --- Province Module: province maps from PNG, spatial queries, styles, rendering, change tracking
 
+
 --@api-stub: lurek.province.newFromPng
 -- Create a province registry from a color-coded PNG map.
 do
@@ -17,19 +18,38 @@ do
 end
 
 --@api-stub: LProvinceRegistry:getWidth
---@api-stub: LProvinceRegistry:getHeight
---@api-stub: LProvinceRegistry:provinceCount
---@api-stub: LProvinceRegistry:provinceIds
--- Basic registry info.
+-- Read the province-map width in cells.
 do
     ---@type LProvinceRegistry
-    local reg = lurek.province.newFromPng("info", "assets/textures/province_map.png")
-    print("grid = " .. reg:getWidth() .. "x" .. reg:getHeight())
+    local reg = lurek.province.newFromPng("info_width", "assets/textures/province_map.png")
+    print("width = " .. reg:getWidth())
+end
+
+--@api-stub: LProvinceRegistry:getHeight
+-- Read the province-map height in cells.
+do
+    ---@type LProvinceRegistry
+    local reg = lurek.province.newFromPng("info_height", "assets/textures/province_map.png")
+    print("height = " .. reg:getHeight())
+end
+
+--@api-stub: LProvinceRegistry:provinceCount
+-- Read how many provinces exist in the registry.
+do
+    ---@type LProvinceRegistry
+    local reg = lurek.province.newFromPng("info_count", "assets/textures/province_map.png")
     print("provinces = " .. reg:provinceCount())
+end
+
+--@api-stub: LProvinceRegistry:provinceIds
+-- Read the province id list from the registry.
+do
+    ---@type LProvinceRegistry
+    local reg = lurek.province.newFromPng("info_ids", "assets/textures/province_map.png")
     local ids = reg:provinceIds()
-    print("first 5 ids:")
-    for i = 1, math.min(5, #ids) do
-        print("  " .. ids[i])
+    print("id count = " .. #ids)
+    if #ids > 0 then
+        print("first id = " .. ids[1])
     end
 end
 
@@ -102,38 +122,86 @@ do
 end
 
 --@api-stub: LProvinceRegistry:setTerrainType
---@api-stub: LProvinceRegistry:setFogState
---@api-stub: LProvinceRegistry:setVisibilityState
---@api-stub: LProvinceRegistry:setBorderStyle
--- Style mutations.
+-- Set a terrain type for one province.
 do
     ---@type LProvinceRegistry
-    local reg = lurek.province.newFromPng("style", "assets/textures/province_map.png")
+    local reg = lurek.province.newFromPng("style_terrain", "assets/textures/province_map.png")
     local ids = reg:provinceIds()
-    if #ids >= 2 then
+    if #ids >= 1 then
         reg:setTerrainType(ids[1], 1)
+        print("terrain type set")
+    end
+end
+
+--@api-stub: LProvinceRegistry:setFogState
+-- Set the fog state for one province.
+do
+    ---@type LProvinceRegistry
+    local reg = lurek.province.newFromPng("style_fog", "assets/textures/province_map.png")
+    local ids = reg:provinceIds()
+    if #ids >= 1 then
         reg:setFogState(ids[1], 0)
+        print("fog state set")
+    end
+end
+
+--@api-stub: LProvinceRegistry:setVisibilityState
+-- Set the visibility state for one province.
+do
+    ---@type LProvinceRegistry
+    local reg = lurek.province.newFromPng("style_visibility", "assets/textures/province_map.png")
+    local ids = reg:provinceIds()
+    if #ids >= 1 then
         reg:setVisibilityState(ids[1], 1)
+        print("visibility state set")
+    end
+end
+
+--@api-stub: LProvinceRegistry:setBorderStyle
+-- Set the border style for one province.
+do
+    ---@type LProvinceRegistry
+    local reg = lurek.province.newFromPng("style_border", "assets/textures/province_map.png")
+    local ids = reg:provinceIds()
+    if #ids >= 1 then
         reg:setBorderStyle(ids[1], 2)
-        reg:setTerrainType(ids[2], 3)
-        reg:setFogState(ids[2], 1)
-        print("styles applied")
+        print("border style set")
     end
 end
 
 --@api-stub: LProvinceRegistry:setLabelText
---@api-stub: LProvinceRegistry:setLabelLine
---@api-stub: LProvinceRegistry:setCapital
--- Labels and capitals.
+-- Set the display label text for a province.
 do
     ---@type LProvinceRegistry
-    local reg = lurek.province.newFromPng("labels", "assets/textures/province_map.png")
+    local reg = lurek.province.newFromPng("labels_text", "assets/textures/province_map.png")
     local ids = reg:provinceIds()
     if #ids >= 1 then
         reg:setLabelText(ids[1], "Nordland")
+        print("label text set")
+    end
+end
+
+--@api-stub: LProvinceRegistry:setLabelLine
+-- Set the label guide line for a province.
+do
+    ---@type LProvinceRegistry
+    local reg = lurek.province.newFromPng("labels_line", "assets/textures/province_map.png")
+    local ids = reg:provinceIds()
+    if #ids >= 1 then
         reg:setLabelLine(ids[1], 10, 20, 50, 20)
+        print("label line set")
+    end
+end
+
+--@api-stub: LProvinceRegistry:setCapital
+-- Set the capital marker position for a province.
+do
+    ---@type LProvinceRegistry
+    local reg = lurek.province.newFromPng("labels_capital", "assets/textures/province_map.png")
+    local ids = reg:provinceIds()
+    if #ids >= 1 then
         reg:setCapital(ids[1], 30, 25)
-        print("label and capital set")
+        print("capital set")
     end
 end
 
@@ -156,70 +224,98 @@ do
 end
 
 --@api-stub: LProvinceRegistry:setBorderClass
---@api-stub: LProvinceRegistry:getBorderClass
--- Border classification.
+-- Assign a custom class to one border edge.
 do
     ---@type LProvinceRegistry
-    local reg = lurek.province.newFromPng("borders", "assets/textures/province_map.png")
+    local reg = lurek.province.newFromPng("borders_set", "assets/textures/province_map.png")
     local pairs = reg:adjacencies()
     if #pairs >= 1 then
         local p = pairs[1]
-        reg:setBorderClass(p.province_a, p.province_b, "river")
+        reg:setBorderClass(p.province_a, p.province_b, "coast")
+        print("border class assigned")
+    end
+end
+
+--@api-stub: LProvinceRegistry:getBorderClass
+-- Read a custom class from one border edge.
+do
+    ---@type LProvinceRegistry
+    local reg = lurek.province.newFromPng("borders_get", "assets/textures/province_map.png")
+    local pairs = reg:adjacencies()
+    if #pairs >= 1 then
+        local p = pairs[1]
+        reg:setBorderClass(p.province_a, p.province_b, "coast")
         local cls = reg:getBorderClass(p.province_a, p.province_b)
         print("border class = " .. tostring(cls))
     end
 end
 
 --@api-stub: LProvinceRegistry:getRevision
---@api-stub: LProvinceRegistry:getChangesSince
--- Change tracking for incremental updates.
+-- Read the current province-registry revision.
 do
     ---@type LProvinceRegistry
-    local reg = lurek.province.newFromPng("changes", "assets/textures/province_map.png")
+    local reg = lurek.province.newFromPng("changes_revision", "assets/textures/province_map.png")
+    print("revision = " .. reg:getRevision())
+end
+
+--@api-stub: LProvinceRegistry:getChangesSince
+-- Read incremental changes since an older revision.
+do
+    ---@type LProvinceRegistry
+    local reg = lurek.province.newFromPng("changes_since", "assets/textures/province_map.png")
     local rev0 = reg:getRevision()
-    print("initial revision = " .. rev0)
     local ids = reg:provinceIds()
     if #ids >= 1 then
         reg:setPoliticalColor(ids[1], 1.0, 0.0, 0.0)
         reg:setTerrainType(ids[1], 5)
     end
-    local rev1 = reg:getRevision()
-    print("after changes = " .. rev1)
     local changes = reg:getChangesSince(rev0)
     print("changes since rev0 = " .. #changes)
-    for _, c in ipairs(changes) do
-        print("  rev=" .. c.revision .. " kind=" .. c.kind)
-    end
 end
 
 --@api-stub: LProvinceRegistry:borderSegments
---@api-stub: LProvinceRegistry:provinceSpans
--- Geometry data for custom rendering.
+-- Read border line segments for custom rendering.
 do
     ---@type LProvinceRegistry
-    local reg = lurek.province.newFromPng("geo", "assets/textures/province_map.png")
+    local reg = lurek.province.newFromPng("geo_segments", "assets/textures/province_map.png")
     local segments = reg:borderSegments()
     print("border segments = " .. #segments)
-    if #segments > 0 then
-        local s = segments[1]
-        print("  " .. s.province_a .. "/" .. s.province_b ..
-            ": (" .. s.x0 .. "," .. s.y0 .. ")->(" .. s.x1 .. "," .. s.y1 .. ")")
-    end
+end
+
+--@api-stub: LProvinceRegistry:provinceSpans
+-- Read horizontal spans for each province.
+do
+    ---@type LProvinceRegistry
+    local reg = lurek.province.newFromPng("geo_spans", "assets/textures/province_map.png")
     local spans = reg:provinceSpans()
     print("total spans = " .. #spans)
 end
 
 --@api-stub: LProvinceRegistry:fitCamera
---@api-stub: LProvinceRegistry:screenToMap
---@api-stub: LProvinceRegistry:screenToProvince
--- Camera and coordinate transforms.
+-- Fit a camera to the province map bounds.
 do
     ---@type LProvinceRegistry
-    local reg = lurek.province.newFromPng("cam", "assets/textures/province_map.png")
+    local reg = lurek.province.newFromPng("cam_fit", "assets/textures/province_map.png")
     local cx, cy, zoom = reg:fitCamera(800, 600, 1.0)
     print("camera = " .. cx .. ", " .. cy .. " zoom=" .. zoom)
+end
+
+--@api-stub: LProvinceRegistry:screenToMap
+-- Convert a screen position into map coordinates.
+do
+    ---@type LProvinceRegistry
+    local reg = lurek.province.newFromPng("cam_map", "assets/textures/province_map.png")
+    local cx, cy, zoom = reg:fitCamera(800, 600, 1.0)
     local mx, my = reg:screenToMap(400, 300, cx, cy, zoom, 1.0)
     print("map coords = " .. mx .. ", " .. my)
+end
+
+--@api-stub: LProvinceRegistry:screenToProvince
+-- Convert a screen position into a province id.
+do
+    ---@type LProvinceRegistry
+    local reg = lurek.province.newFromPng("cam_province", "assets/textures/province_map.png")
+    local cx, cy, zoom = reg:fitCamera(800, 600, 1.0)
     local pid = reg:screenToProvince(400, 300, cx, cy, zoom, 1.0)
     print("province at center = " .. tostring(pid))
 end
@@ -276,34 +372,98 @@ do
 end
 
 --@api-stub: LProvinceRegistry:type
---@api-stub: LProvinceRegistry:typeOf
--- Type checking.
+-- Read the province-registry type name.
 do
     ---@type LProvinceRegistry
-    local reg = lurek.province.newFromPng("typed", "assets/textures/province_map.png")
+    local reg = lurek.province.newFromPng("typed_name", "assets/textures/province_map.png")
     print("type = " .. reg:type())
+end
+
+--@api-stub: LProvinceRegistry:typeOf
+-- Check the province-registry type identity.
+do
+    ---@type LProvinceRegistry
+    local reg = lurek.province.newFromPng("typed_check", "assets/textures/province_map.png")
     print("is LProvinceRegistry = " .. tostring(reg:typeOf("LProvinceRegistry")))
 end
 
 --- Province Module Part 1: registry queries, module-level functions
 
+
 --@api-stub: LProvinceRegistry:getName
---@api-stub: LProvinceRegistry:importMetadataFromFiles
--- Province registry name and metadata import.
+-- Province registry name and metadata import. Focus: getName.
 do
-    local reg = lurek.province.newFromPng("test_reg", "assets/textures/ray_water.png")
+    local reg = lurek.province.newFromPng("test_reg", "content/games/strategy/eu2/map.png")
     print("name=" .. reg:getName())
-    reg:importMetadataFromFiles({ dir = "save/example_province", ext = ".toml" })
+    reg:importMetadataFromFiles({
+        color_map_png = "content/games/strategy/eu2/map.png",
+        marker_png = "content/games/strategy/eu2/map.png",
+        color_csv = "content/games/strategy/eu2/prov_cols.csv",
+        province_toml = "content/games/strategy/eu2/province.toml",
+    })
+    print("metadata imported")
+end
+
+--@api-stub: LProvinceRegistry:importMetadataFromFiles
+-- Province registry name and metadata import. Focus: importMetadataFromFiles.
+do
+    local reg = lurek.province.newFromPng("test_reg", "content/games/strategy/eu2/map.png")
+    print("name=" .. reg:getName())
+    reg:importMetadataFromFiles({
+        color_map_png = "content/games/strategy/eu2/map.png",
+        marker_png = "content/games/strategy/eu2/map.png",
+        color_csv = "content/games/strategy/eu2/prov_cols.csv",
+        province_toml = "content/games/strategy/eu2/province.toml",
+    })
     print("metadata imported")
 end
 
 --@api-stub: lurek.province.exists
---@api-stub: lurek.province.get
---@api-stub: lurek.province.getActive
---@api-stub: lurek.province.remove
--- Province module-level lifecycle functions.
+-- Province module-level lifecycle functions. Focus: exists.
 do
-    local reg = lurek.province.newFromPng("check_reg", "assets/textures/ray_water.png")
+    local reg = lurek.province.newFromPng("check_reg", "assets/textures/province_map.png")
+    print("exists=" .. tostring(lurek.province.exists("check_reg")))
+    local got = lurek.province.get("check_reg")
+    print("got=" .. tostring(got ~= nil))
+    lurek.province.setActive("check_reg")
+    local active = lurek.province.getActive()
+    print("active=" .. tostring(active ~= nil))
+    lurek.province.remove("check_reg")
+    print("exists_after=" .. tostring(lurek.province.exists("check_reg")))
+end
+
+--@api-stub: lurek.province.get
+-- Province module-level lifecycle functions. Focus: get.
+do
+    local reg = lurek.province.newFromPng("check_reg", "assets/textures/province_map.png")
+    print("exists=" .. tostring(lurek.province.exists("check_reg")))
+    local got = lurek.province.get("check_reg")
+    print("got=" .. tostring(got ~= nil))
+    lurek.province.setActive("check_reg")
+    local active = lurek.province.getActive()
+    print("active=" .. tostring(active ~= nil))
+    lurek.province.remove("check_reg")
+    print("exists_after=" .. tostring(lurek.province.exists("check_reg")))
+end
+
+--@api-stub: lurek.province.getActive
+-- Province module-level lifecycle functions. Focus: getActive.
+do
+    local reg = lurek.province.newFromPng("check_reg", "assets/textures/province_map.png")
+    print("exists=" .. tostring(lurek.province.exists("check_reg")))
+    local got = lurek.province.get("check_reg")
+    print("got=" .. tostring(got ~= nil))
+    lurek.province.setActive("check_reg")
+    local active = lurek.province.getActive()
+    print("active=" .. tostring(active ~= nil))
+    lurek.province.remove("check_reg")
+    print("exists_after=" .. tostring(lurek.province.exists("check_reg")))
+end
+
+--@api-stub: lurek.province.remove
+-- Province module-level lifecycle functions. Focus: remove.
+do
+    local reg = lurek.province.newFromPng("check_reg", "assets/textures/province_map.png")
     print("exists=" .. tostring(lurek.province.exists("check_reg")))
     local got = lurek.province.get("check_reg")
     print("got=" .. tostring(got ~= nil))

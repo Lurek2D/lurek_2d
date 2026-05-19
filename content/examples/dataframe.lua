@@ -4,6 +4,7 @@
 
 --- DataFrame Module Part 1: Creation, Structure, Row/Column Ops, Filtering, Sorting, Grouping, Stats
 
+
 --@api-stub: lurek.dataframe.newDataFrame
 -- Creates an empty dataframe.
 do
@@ -425,6 +426,7 @@ end
 
 --- DataFrame Module Part 2: Serialization, Query, Rolling, Rank, Pivot, Correlation, Normalize, LazyQuery, Database
 
+
 --@api-stub: LDataFrame:toCSV
 -- Serializes this dataframe to CSV text.
 do
@@ -844,6 +846,7 @@ end
 
 --- DataFrame Module Part 3: Database Operations, VecFrame Vectorized Operations
 
+
 --@api-stub: LDatabase:listTables
 -- Returns all table names in the database.
 do
@@ -1060,8 +1063,8 @@ end
 do
     local df = lurek.dataframe.fromRows({"v"}, {{1}, {2}, {3}})
     local vf = lurek.dataframe.toVec(df)
-    vf:colCast("v", "f64")
-    print("cast to f64 done")
+    vf:colCast("v", "float64")
+    print("cast to float64 done")
 end
 
 --@api-stub: LVecFrame:nrows

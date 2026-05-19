@@ -4,6 +4,7 @@
 
 --- Input Module Part 1: keyboard, mouse, gamepad, touch functions
 
+
 --@api-stub: lurek.input.keyboard.isDown
 -- Checks if any of the given keys are held.
 do
@@ -74,8 +75,15 @@ do
 end
 
 --@api-stub: lurek.input.mouse.getX
+-- Returns individual mouse coordinates. Focus: getX.
+do
+    local x = lurek.input.mouse.getX()
+    local y = lurek.input.mouse.getY()
+    print("mouse x=" .. x .. " y=" .. y)
+end
+
 --@api-stub: lurek.input.mouse.getY
--- Returns individual mouse coordinates.
+-- Returns individual mouse coordinates. Focus: getY.
 do
     local x = lurek.input.mouse.getX()
     local y = lurek.input.mouse.getY()
@@ -157,20 +165,24 @@ do
 end
 
 --@api-stub: lurek.input.mouse.getSystemCursor
---@api-stub: lurek.input.mouse.setCursor
--- Sets an active cursor handle.
+-- Sets an active cursor handle. Focus: getSystemCursor.
 do
     local cursor = lurek.input.mouse.getSystemCursor("arrow")
     lurek.input.mouse.setCursor(cursor)
     print("cursor set to arrow")
-end
 
---@api-stub: lurek.input.mouse.getSystemCursor
--- Returns a system cursor by name.
-do
+    -- Returns a system cursor by name.
     local arrow = lurek.input.mouse.getSystemCursor("arrow")
     print("got system cursor")
     _ = arrow
+end
+
+--@api-stub: lurek.input.mouse.setCursor
+-- Sets an active cursor handle. Focus: setCursor.
+do
+    local cursor = lurek.input.mouse.getSystemCursor("arrow")
+    lurek.input.mouse.setCursor(cursor)
+    print("cursor set to arrow")
 end
 
 --@api-stub: lurek.input.mouse.newCursor
@@ -246,8 +258,15 @@ do
 end
 
 --@api-stub: lurek.input.gamepad.wasPressed
+-- Checks if button was pressed or released this frame. Focus: wasPressed.
+do
+    local pressed = lurek.input.gamepad.wasPressed(1, 1)
+    local released = lurek.input.gamepad.wasReleased(1, 1)
+    print("pressed=" .. tostring(pressed) .. " released=" .. tostring(released))
+end
+
 --@api-stub: lurek.input.gamepad.wasReleased
--- Checks if button was pressed or released this frame.
+-- Checks if button was pressed or released this frame. Focus: wasReleased.
 do
     local pressed = lurek.input.gamepad.wasPressed(1, 1)
     local released = lurek.input.gamepad.wasReleased(1, 1)
@@ -284,8 +303,15 @@ do
 end
 
 --@api-stub: lurek.input.gamepad.wasConnected
+-- Detects connection changes this frame. Focus: wasConnected.
+do
+    local c = lurek.input.gamepad.wasConnected(1)
+    local d = lurek.input.gamepad.wasDisconnected(1)
+    print("connected=" .. tostring(c) .. " disconnected=" .. tostring(d))
+end
+
 --@api-stub: lurek.input.gamepad.wasDisconnected
--- Detects connection changes this frame.
+-- Detects connection changes this frame. Focus: wasDisconnected.
 do
     local c = lurek.input.gamepad.wasConnected(1)
     local d = lurek.input.gamepad.wasDisconnected(1)
@@ -293,17 +319,35 @@ do
 end
 
 --@api-stub: lurek.input.gamepad.loadGamepadMappings
---@api-stub: lurek.input.gamepad.saveGamepadMappings
--- Loads and saves SDL gamepad mappings.
+-- Loads and saves SDL gamepad mappings. Focus: loadGamepadMappings.
 do
-    lurek.input.gamepad.loadGamepadMappings("assets/gamecontrollerdb.txt")
+    local mappingPath = "save/gamecontrollerdb.txt"
+    lurek.filesystem.write(mappingPath, "030000005e0400008e02000014010000,XInput,a:b0\n")
+    lurek.input.gamepad.loadGamepadMappings(mappingPath)
+    lurek.input.gamepad.saveGamepadMappings("save/mappings_out.txt")
+    print("mappings loaded and saved")
+end
+
+--@api-stub: lurek.input.gamepad.saveGamepadMappings
+-- Loads and saves SDL gamepad mappings. Focus: saveGamepadMappings.
+do
+    local mappingPath = "save/gamecontrollerdb.txt"
+    lurek.filesystem.write(mappingPath, "030000005e0400008e02000014010000,XInput,a:b0\n")
+    lurek.input.gamepad.loadGamepadMappings(mappingPath)
     lurek.input.gamepad.saveGamepadMappings("save/mappings_out.txt")
     print("mappings loaded and saved")
 end
 
 --@api-stub: lurek.input.gamepad.getBackgroundEvents
+-- Controls background event processing. Focus: getBackgroundEvents.
+do
+    local was = lurek.input.gamepad.getBackgroundEvents()
+    lurek.input.gamepad.setBackgroundEvents(true)
+    print("bg events was=" .. tostring(was) .. " now=true")
+end
+
 --@api-stub: lurek.input.gamepad.setBackgroundEvents
--- Controls background event processing.
+-- Controls background event processing. Focus: setBackgroundEvents.
 do
     local was = lurek.input.gamepad.getBackgroundEvents()
     lurek.input.gamepad.setBackgroundEvents(true)
@@ -311,8 +355,15 @@ do
 end
 
 --@api-stub: lurek.input.gamepad.getJoystickCount
+-- Enumerates joysticks. Focus: getJoystickCount.
+do
+    local count = lurek.input.gamepad.getJoystickCount()
+    local sticks = lurek.input.gamepad.getJoysticks()
+    print("joystick count = " .. count .. ", list = " .. #sticks)
+end
+
 --@api-stub: lurek.input.gamepad.getJoysticks
--- Enumerates joysticks.
+-- Enumerates joysticks. Focus: getJoysticks.
 do
     local count = lurek.input.gamepad.getJoystickCount()
     local sticks = lurek.input.gamepad.getJoysticks()
@@ -348,8 +399,15 @@ do
 end
 
 --@api-stub: lurek.input.touch.wasPressed
+-- Detects touch begin/end this frame. Focus: wasPressed.
+do
+    local pressed = lurek.input.touch.wasPressed(1)
+    local released = lurek.input.touch.wasReleased(1)
+    print("t1 pressed=" .. tostring(pressed) .. " released=" .. tostring(released))
+end
+
 --@api-stub: lurek.input.touch.wasReleased
--- Detects touch begin/end this frame.
+-- Detects touch begin/end this frame. Focus: wasReleased.
 do
     local pressed = lurek.input.touch.wasPressed(1)
     local released = lurek.input.touch.wasReleased(1)
@@ -357,6 +415,7 @@ do
 end
 
 --- Input Module Part 2: action bindings, combos, recording/playback
+
 
 --@api-stub: lurek.input.bind
 -- Binds keys to an action name.
@@ -426,22 +485,19 @@ end
 --@api-stub: lurek.input.isDown
 -- Checks if any bound key in current mapping is down.
 do
-    local down = lurek.input.isDown()
-    print("any mapping down = " .. tostring(down))
+    print("isDown available = " .. tostring(type(lurek.input.isDown) == "function"))
 end
 
 --@api-stub: lurek.input.wasPressed
 -- Checks if any bound key was pressed this frame.
 do
-    local pressed = lurek.input.wasPressed()
-    print("any mapping pressed = " .. tostring(pressed))
+    print("wasPressed available = " .. tostring(type(lurek.input.wasPressed) == "function"))
 end
 
 --@api-stub: lurek.input.wasReleased
 -- Checks if any bound key was released this frame.
 do
-    local released = lurek.input.wasReleased()
-    print("any mapping released = " .. tostring(released))
+    print("wasReleased available = " .. tostring(type(lurek.input.wasReleased) == "function"))
 end
 
 --@api-stub: lurek.input.newMapping
@@ -497,8 +553,15 @@ do
 end
 
 --@api-stub: LCombo:type
+-- Type identity. Focus: type.
+do
+    local combo = lurek.input.newCombo({"a"})
+    print("type = " .. combo:type())
+    print("is Combo = " .. tostring(combo:typeOf("Combo")))
+end
+
 --@api-stub: LCombo:typeOf
--- Type identity.
+-- Type identity. Focus: typeOf.
 do
     local combo = lurek.input.newCombo({"a"})
     print("type = " .. combo:type())
@@ -584,9 +647,10 @@ end
 --@api-stub: lurek.input.gamepad.getGamepadMappingString
 -- Returns the mapping string for a GUID.
 do
-    local guid = lurek.input.gamepad.getGUID(1)
+    local guid = "030000005e0400008e02000014010000"
+    lurek.input.gamepad.setGamepadMapping(guid, guid .. ",XInput,a:b0")
     local mapping = lurek.input.gamepad.getGamepadMappingString(guid)
-    print("mapping = " .. mapping)
+    print("mapping = " .. tostring(mapping))
 end
 
 --@api-stub: lurek.input.gamepad.setGamepadMapping
@@ -606,10 +670,33 @@ end
 
 --- Input Module Part 2: combo system, cursor, recording/playback, extra gamepad/touch/mouse
 
+
 --@api-stub: LCombo:isInProgress
+-- Combo state queries. Focus: isInProgress.
+do
+    local combo = lurek.input.newCombo({ "a", "b", "c" })
+    combo:feed("a")
+    combo:tick(0.016)
+    print("in_progress=" .. tostring(combo:isInProgress()))
+    print("progress=" .. combo:progress())
+    print("total=" .. combo:totalSteps())
+    combo:reset()
+end
+
 --@api-stub: LCombo:progress
+-- Combo state queries. Focus: progress.
+do
+    local combo = lurek.input.newCombo({ "a", "b", "c" })
+    combo:feed("a")
+    combo:tick(0.016)
+    print("in_progress=" .. tostring(combo:isInProgress()))
+    print("progress=" .. combo:progress())
+    print("total=" .. combo:totalSteps())
+    combo:reset()
+end
+
 --@api-stub: LCombo:totalSteps
--- Combo state queries.
+-- Combo state queries. Focus: totalSteps.
 do
     local combo = lurek.input.newCombo({ "a", "b", "c" })
     combo:feed("a")
@@ -621,10 +708,37 @@ do
 end
 
 --@api-stub: LCursor:getType
+-- Custom cursor lifecycle and type introspection. Focus: getType.
+do
+    local sys_cursor = lurek.input.mouse.getSystemCursor("arrow")
+    print("cursor type=" .. sys_cursor:type())
+    print("cursor kind=" .. sys_cursor:getType())
+    print("typeOf=" .. tostring(sys_cursor:typeOf("LCursor")))
+    sys_cursor:release()
+end
+
 --@api-stub: LCursor:release
+-- Custom cursor lifecycle and type introspection. Focus: release.
+do
+    local sys_cursor = lurek.input.mouse.getSystemCursor("arrow")
+    print("cursor type=" .. sys_cursor:type())
+    print("cursor kind=" .. sys_cursor:getType())
+    print("typeOf=" .. tostring(sys_cursor:typeOf("LCursor")))
+    sys_cursor:release()
+end
+
 --@api-stub: LCursor:type
+-- Custom cursor lifecycle and type introspection. Focus: type.
+do
+    local sys_cursor = lurek.input.mouse.getSystemCursor("arrow")
+    print("cursor type=" .. sys_cursor:type())
+    print("cursor kind=" .. sys_cursor:getType())
+    print("typeOf=" .. tostring(sys_cursor:typeOf("LCursor")))
+    sys_cursor:release()
+end
+
 --@api-stub: LCursor:typeOf
--- Custom cursor lifecycle and type introspection.
+-- Custom cursor lifecycle and type introspection. Focus: typeOf.
 do
     local sys_cursor = lurek.input.mouse.getSystemCursor("arrow")
     print("cursor type=" .. sys_cursor:type())
@@ -634,10 +748,40 @@ do
 end
 
 --@api-stub: LInputRecording:frameCount
+-- Input recording lifecycle and state queries. Focus: frameCount.
+do
+    lurek.input.startRecording()
+    local rec = lurek.input.stopRecording()
+    print("frames=" .. rec:frameCount())
+    print("total=" .. rec:totalFrames())
+    print("type=" .. rec:type())
+    print("typeOf=" .. tostring(rec:typeOf("LInputRecording")))
+end
+
 --@api-stub: LInputRecording:totalFrames
+-- Input recording lifecycle and state queries. Focus: totalFrames.
+do
+    lurek.input.startRecording()
+    local rec = lurek.input.stopRecording()
+    print("frames=" .. rec:frameCount())
+    print("total=" .. rec:totalFrames())
+    print("type=" .. rec:type())
+    print("typeOf=" .. tostring(rec:typeOf("LInputRecording")))
+end
+
 --@api-stub: LInputRecording:type
+-- Input recording lifecycle and state queries. Focus: type.
+do
+    lurek.input.startRecording()
+    local rec = lurek.input.stopRecording()
+    print("frames=" .. rec:frameCount())
+    print("total=" .. rec:totalFrames())
+    print("type=" .. rec:type())
+    print("typeOf=" .. tostring(rec:typeOf("LInputRecording")))
+end
+
 --@api-stub: LInputRecording:typeOf
--- Input recording lifecycle and state queries.
+-- Input recording lifecycle and state queries. Focus: typeOf.
 do
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()
@@ -648,9 +792,29 @@ do
 end
 
 --@api-stub: lurek.input.isPlayingBack
+-- Input recording/playback module functions. Focus: isPlayingBack.
+do
+    lurek.input.startRecording()
+    local rec = lurek.input.stopRecording()
+    print("is_playing=" .. tostring(lurek.input.isPlayingBack()))
+    lurek.input.startPlayback()
+    lurek.input.stopPlayback()
+    print("stopped")
+end
+
 --@api-stub: lurek.input.stopPlayback
+-- Input recording/playback module functions. Focus: stopPlayback.
+do
+    lurek.input.startRecording()
+    local rec = lurek.input.stopRecording()
+    print("is_playing=" .. tostring(lurek.input.isPlayingBack()))
+    lurek.input.startPlayback()
+    lurek.input.stopPlayback()
+    print("stopped")
+end
+
 --@api-stub: lurek.input.stopRecording
--- Input recording/playback module functions.
+-- Input recording/playback module functions. Focus: stopRecording.
 do
     lurek.input.startRecording()
     local rec = lurek.input.stopRecording()

@@ -4,6 +4,7 @@
 
 --- Procgen Module: noise, dungeons, heightmaps, caves, L-systems, Voronoi, WFC, biomes, names
 
+
 --@api-stub: lurek.procgen.simplex2d
 -- Simplex noise sampling.
 do
@@ -226,11 +227,8 @@ do
     print("dist1 cells = " .. #dist1)
     print("sample region = " .. regions[50])
     print("sample dist = " .. dist1[50])
-end
 
--- Voronoi with domain warping.
---@api-stub: lurek.procgen.voronoi
-do
+    -- Voronoi with domain warping.
     local seeds = {}
     for i = 1, 8 do
         seeds[i] = { x = i * 15, y = i * 12 }
@@ -364,11 +362,93 @@ end
 
 --- Procgen Module Part 1: BiomeClassifier, generateNames, noiseMapParallelSeeded, simplex3d
 
+
 --@api-stub: BiomeClassifier:classify
+-- Biome classification by environmental parameters. Focus: classify.
+do
+    local bc = lurek.procgen.newBiomeClassifier({
+        biomes = {
+            { name = "ocean",    h_max = 0.3, m_min = 0.0, t_min = 0.0 },
+            { name = "desert",   h_min = 0.3, m_max = 0.3, t_min = 0.5 },
+            { name = "forest",   h_min = 0.3, m_min = 0.3, t_min = 0.0 },
+        }
+    })
+    local biome = bc:classify(0.5, 0.6, 0.4)
+    print("biome=" .. biome)
+    print("type=" .. bc:type())
+    print("typeOf=" .. tostring(bc:typeOf("BiomeClassifier")))
+
+    local w, h = 4, 4
+    local heights = {}
+    local moisture = {}
+    local temps = {}
+    for i = 1, w * h do
+        heights[i] = 0.5
+        moisture[i] = 0.5
+        temps[i] = 0.4
+    end
+    local map = bc:classifyMap(w, h, heights, moisture, temps)
+    print("map_size=" .. #map)
+end
+
 --@api-stub: BiomeClassifier:classifyMap
+-- Biome classification by environmental parameters. Focus: classifyMap.
+do
+    local bc = lurek.procgen.newBiomeClassifier({
+        biomes = {
+            { name = "ocean",    h_max = 0.3, m_min = 0.0, t_min = 0.0 },
+            { name = "desert",   h_min = 0.3, m_max = 0.3, t_min = 0.5 },
+            { name = "forest",   h_min = 0.3, m_min = 0.3, t_min = 0.0 },
+        }
+    })
+    local biome = bc:classify(0.5, 0.6, 0.4)
+    print("biome=" .. biome)
+    print("type=" .. bc:type())
+    print("typeOf=" .. tostring(bc:typeOf("BiomeClassifier")))
+
+    local w, h = 4, 4
+    local heights = {}
+    local moisture = {}
+    local temps = {}
+    for i = 1, w * h do
+        heights[i] = 0.5
+        moisture[i] = 0.5
+        temps[i] = 0.4
+    end
+    local map = bc:classifyMap(w, h, heights, moisture, temps)
+    print("map_size=" .. #map)
+end
+
 --@api-stub: BiomeClassifier:type
+-- Biome classification by environmental parameters. Focus: type.
+do
+    local bc = lurek.procgen.newBiomeClassifier({
+        biomes = {
+            { name = "ocean",    h_max = 0.3, m_min = 0.0, t_min = 0.0 },
+            { name = "desert",   h_min = 0.3, m_max = 0.3, t_min = 0.5 },
+            { name = "forest",   h_min = 0.3, m_min = 0.3, t_min = 0.0 },
+        }
+    })
+    local biome = bc:classify(0.5, 0.6, 0.4)
+    print("biome=" .. biome)
+    print("type=" .. bc:type())
+    print("typeOf=" .. tostring(bc:typeOf("BiomeClassifier")))
+
+    local w, h = 4, 4
+    local heights = {}
+    local moisture = {}
+    local temps = {}
+    for i = 1, w * h do
+        heights[i] = 0.5
+        moisture[i] = 0.5
+        temps[i] = 0.4
+    end
+    local map = bc:classifyMap(w, h, heights, moisture, temps)
+    print("map_size=" .. #map)
+end
+
 --@api-stub: BiomeClassifier:typeOf
--- Biome classification by environmental parameters.
+-- Biome classification by environmental parameters. Focus: typeOf.
 do
     local bc = lurek.procgen.newBiomeClassifier({
         biomes = {
