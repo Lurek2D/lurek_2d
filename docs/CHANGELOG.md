@@ -2,8 +2,6 @@
 
 ## Unreleased
 
-- feat(assets): added `assets/textures/world_map_lowpoly.svg`, a new 2:1 equirectangular low-poly world map asset with sea and continent facets built from triangles and quadrilaterals for globe projection workflows.
-
 - docs(tools): refined `tools/audit/example_coverage.py` status grading to classify each API example as `MISS`, `TODO`, `PART`, or `FULL` based on marker presence, TODO markers, and non-empty block length inside `do ... end`; the Markdown export now writes per-API status lines plus a summary table with `MISS | TODO | PART | FULL | TOTAL` counts per module and in total.
 
 - docs(tools): extended `tools/audit/example_coverage.py` to audit alternate example directories such as `content/examples2/`, aggregate chunked files like `module_00.lua`..`module_NN.lua`, and export a detailed Markdown report listing every Lua API item as `OK` or `NOK` plus per-module numeric coverage summaries.

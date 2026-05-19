@@ -1,128 +1,195 @@
 -- content/examples/repl.lua
--- Demonstrates the lurek.repl module: in-game developer console with eval, history, and tab-completion.
+-- Auto-generated from content/examples2/repl_*.lua by tools/fix/merge_examples2_into_examples.py
 -- Run: cargo run -- content/examples/repl.lua
+
+--- REPL Module: interactive Lua evaluation session
+
 --@api-stub: lurek.repl.new
--- Creates a REPL session with bounded command history (default 200 entries)
+-- Creating a REPL session with default history size.
 do
-  -- Use a small history limit for a dev console that only keeps recent commands.
-  -- Omit the argument to get the default 200-entry buffer.
-  local console = lurek.repl.new(64)
-
-  -- A larger session for an automated test runner that replays many commands
-  local test_runner = lurek.repl.new(500)
-
-  -- Default history size (200) is fine for most in-game consoles
-  local default_console = lurek.repl.new()
+    ---@type LReplSession
+    local repl = lurek.repl.new()
+    print("type = " .. repl:type())
+    print("is LReplSession = " .. tostring(repl:typeOf("LReplSession")))
+    print("initial len = " .. repl:len())
 end
+
+-- Creating a session with limited history.
+--@api-stub: lurek.repl.new
+do
+    ---@type LReplSession
+    local repl = lurek.repl.new(10)
+    print("len = " .. repl:len())
+end
+
 --@api-stub: LReplSession:eval
--- Evaluates a Lua string and returns the display result (value, output, or error text)
+-- Evaluating Lua expressions.
 do
-  local console = lurek.repl.new(32)
-
-  -- Evaluate an expression — returns the stringified result
-  local result = console:eval("2 + 2")
-  lurek.log.info("expr result: " .. result, "repl")
-
-  -- Execute a statement that modifies game state at runtime
-  console:eval("player_speed = 400")
-
-  -- Errors are returned as strings, not thrown — safe for player input
-  local err = console:eval("this is not valid lua!!")
-  lurek.log.info("error output: " .. err, "repl")
-
-  -- Use eval to toggle debug overlays from the in-game console
-  console:eval("show_hitboxes = not show_hitboxes")
+    ---@type LReplSession
+    local repl = lurek.repl.new()
+    local r1 = repl:eval("return 2 + 2")
+    print("2+2 = " .. r1)
+    local r2 = repl:eval("return 'hello' .. ' world'")
+    print("concat = " .. r2)
+    local r3 = repl:eval("return math.pi")
+    print("pi = " .. r3)
+    print("history len = " .. repl:len())
 end
+
+--@api-stub: LReplSession:eval
+-- Evaluating statements and handling errors.
+do
+    ---@type LReplSession
+    local repl = lurek.repl.new()
+    local r1 = repl:eval("local x = 42")
+    print("statement = " .. r1)
+    local r2 = repl:eval("return undefined_var")
+    print("nil result = " .. r2)
+    local r3 = repl:eval("invalid syntax !@#")
+    print("error = " .. r3)
+    print("all recorded, len = " .. repl:len())
+end
+
+--@api-stub: LReplSession:eval
+-- Building up state across evaluations.
+do
+    ---@type LReplSession
+    local repl = lurek.repl.new()
+    repl:eval("x = 10")
+    repl:eval("y = 20")
+    local sum = repl:eval("return x + y")
+    print("x + y = " .. sum)
+    repl:eval("function double(n) return n * 2 end")
+    local doubled = repl:eval("return double(x)")
+    print("double(x) = " .. doubled)
+end
+
 --@api-stub: LReplSession:history
--- Returns all recorded inputs as an array, oldest entry first
+-- Retrieving evaluation history.
 do
-  local console = lurek.repl.new(16)
-
-  -- Simulate a player typing several console commands during a session
-  console:eval("god_mode = true")
-  console:eval("spawn_enemy('goblin', 3)")
-  console:eval("tp(100, 200)")
-
-  -- Retrieve history to display in a scrollable console UI
-  local entries = console:history()
-  for i, cmd in ipairs(entries) do
-    lurek.log.info(i .. ": " .. cmd, "repl")
-  end
+    ---@type LReplSession
+    local repl = lurek.repl.new()
+    repl:eval("return 1")
+    repl:eval("return 2")
+    repl:eval("return 3")
+    local hist = repl:history()
+    print("history entries = " .. #hist)
+    for i, entry in ipairs(hist) do
+        print("  " .. i .. ": " .. entry)
+    end
 end
---@api-stub: LReplSession:clear
--- Removes all history entries; useful when switching contexts or resetting the console
+
+--@api-stub: LReplSession:history
+-- History respects max_history limit.
 do
-  local console = lurek.repl.new(16)
-
-  -- Player runs some debug commands
-  console:eval("noclip = true")
-  console:eval("set_level(5)")
-
-  -- Clear history when transitioning to a new game scene so old
-  -- commands don't clutter the scrollback
-  console:clear()
-
-  -- History is now empty
-  local count = console:len()
-  lurek.log.info("after clear: " .. tostring(count) .. " entries", "repl")
+    ---@type LReplSession
+    local repl = lurek.repl.new(3)
+    repl:eval("return 'first'")
+    repl:eval("return 'second'")
+    repl:eval("return 'third'")
+    repl:eval("return 'fourth'")
+    repl:eval("return 'fifth'")
+    local hist = repl:history()
+    print("bounded history count = " .. #hist)
+    for i, entry in ipairs(hist) do
+        print("  " .. i .. ": " .. entry)
+    end
+    print("len = " .. repl:len())
 end
---@api-stub: LReplSession:len
--- Returns the current number of stored history entries
-do
-  local console = lurek.repl.new(8)
 
-  -- Track how many commands the player has entered this session
-  console:eval("help()")
-  console:eval("list_items()")
-  console:eval("equip('sword')")
-
-  local n = console:len()
-  lurek.log.info("commands entered: " .. tostring(n), "repl")
-
-  -- Use len() to show "3/8 history slots used" in the console UI
-  local max = 8
-  lurek.log.info(tostring(n) .. "/" .. tostring(max) .. " history slots", "repl")
-end
 --@api-stub: LReplSession:complete
--- Returns an array of completion candidates matching a prefix (for tab-completion)
+-- Tab-completion of Lua symbols.
 do
-  local console = lurek.repl.new(16)
-
-  -- Simulate tab-completion when the player types "lurek.re" and presses Tab
-  local matches = console:complete("lurek.re")
-  lurek.log.info("completions for 'lurek.re': " .. tostring(#matches), "repl")
-
-  -- Display matches as a dropdown in the console overlay
-  for _, candidate in ipairs(matches) do
-    lurek.log.info("  " .. candidate, "repl")
-  end
-
-  -- Complete a shorter prefix to show broader results
-  local broad = console:complete("lurek.")
-  lurek.log.info("completions for 'lurek.': " .. tostring(#broad), "repl")
+    ---@type LReplSession
+    local repl = lurek.repl.new()
+    repl:eval("myVariable = 42")
+    repl:eval("myFunction = function() end")
+    repl:eval("myTable = {}")
+    local completions = repl:complete("my")
+    print("completions for 'my' = " .. #completions)
+    for i, c in ipairs(completions) do
+        print("  " .. c)
+    end
+    local math_completions = repl:complete("math.")
+    print("math. completions = " .. #math_completions)
+    for i, c in ipairs(math_completions) do
+        if i <= 5 then
+            print("  " .. c)
+        end
+    end
 end
+
+--@api-stub: LReplSession:complete
+-- Completing with empty prefix.
+do
+    ---@type LReplSession
+    local repl = lurek.repl.new()
+    local all = repl:complete("")
+    print("all globals count = " .. #all)
+end
+
+--@api-stub: LReplSession:clear
+-- Clearing session history.
+do
+    ---@type LReplSession
+    local repl = lurek.repl.new()
+    repl:eval("return 1")
+    repl:eval("return 2")
+    repl:eval("return 3")
+    print("before clear = " .. repl:len())
+    repl:clear()
+    print("after clear = " .. repl:len())
+    local hist = repl:history()
+    print("history after clear = " .. #hist)
+end
+
+--@api-stub: LReplSession:len
+-- Tracking history length.
+do
+    ---@type LReplSession
+    local repl = lurek.repl.new()
+    print("empty = " .. repl:len())
+    repl:eval("return 'a'")
+    print("after 1 eval = " .. repl:len())
+    repl:eval("return 'b'")
+    repl:eval("return 'c'")
+    print("after 3 evals = " .. repl:len())
+    repl:clear()
+    print("after clear = " .. repl:len())
+end
+
+-- Simulating a multi-line REPL interaction.
+--@api-stub: lurek.repl.new
+do
+    ---@type LReplSession
+    local repl = lurek.repl.new(100)
+    local inputs = {
+        "scores = {}",
+        "for i = 1, 5 do scores[i] = i * 10 end",
+        "return #scores",
+        "return scores[3]",
+        "table.insert(scores, 99)",
+        "return scores[#scores]",
+    }
+    for _, input in ipairs(inputs) do
+        local result = repl:eval(input)
+        print("> " .. input)
+        if result ~= "" then
+            print("  => " .. result)
+        end
+    end
+    print("session length = " .. repl:len())
+end
+
 --@api-stub: LReplSession:type
--- Returns the type name string "LReplSession" for this handle
-do
-  local console = lurek.repl.new()
-
-  -- Useful for generic object inspection in a debug console
-  local t = console:type()
-  lurek.log.info("handle type: " .. t, "repl")
-end
 --@api-stub: LReplSession:typeOf
--- Checks whether this handle matches a given type name (supports "LReplSession" and "Object")
+-- Type introspection on LReplSession.
 do
-  local console = lurek.repl.new()
-
-  -- Guard code that accepts any lurek object and needs to detect a REPL session
-  if console:typeOf("LReplSession") then
-    lurek.log.info("confirmed: this is a REPL session", "repl")
-  end
-
-  -- All lurek handles also match "Object"
-  if console:typeOf("Object") then
-    lurek.log.info("also matches base Object type", "repl")
-  end
+    ---@type LReplSession
+    local sess = lurek.repl.new()
+    print(sess:type())
+    print(sess:typeOf("LReplSession"))
+    print(sess:typeOf("Object"))
 end
+
 print("content/examples/repl.lua")

@@ -276,10 +276,15 @@ do
     local promise = lurek.thread.async([[
         return 42
     ]])
-    while not promise:isDone() do
-        -- busy wait (in real code, check each frame)
+    local done = false
+    for _ = 1, 1000 do
+        if promise:isDone() then
+            done = true
+            break
+        end
     end
     local val = promise:result()
+    print("done = " .. tostring(done))
     print("result = " .. tostring(val))
     print("error = " .. tostring(promise:getError()))
 end
@@ -291,17 +296,36 @@ do
     local p1 = lurek.thread.async([[
         return 10
     ]])
-    ---@type LPromise
-    local p2 = p1:chain([[
-        local prev = ...
-        return prev * 3
-    ]])
-    ---@type LPromise
-    local p3 = p2:chain([[
-        local prev = ...
-        return prev + 5
-    ]])
-    print("chain created, p3 type = " .. p3:type())
+    local p2 = nil
+    for _ = 1, 1000 do
+        if p1:isDone() then
+            p2 = p1:chain([[
+                local prev = ...
+                return prev * 3
+            ]])
+            break
+        end
+    end
+
+    local p3 = nil
+    if p2 then
+        for _ = 1, 1000 do
+            if p2:isDone() then
+                p3 = p2:chain([[
+                    local prev = ...
+                    return prev + 5
+                ]])
+                break
+            end
+        end
+    end
+
+    print("p1 done = " .. tostring(p1:isDone()))
+    print("p2 created = " .. tostring(p2 ~= nil))
+    print("p3 created = " .. tostring(p3 ~= nil))
+    if p3 then
+        print("chain created, p3 type = " .. p3:type())
+    end
 end
 
 --@api-stub: lurek.thread.getWorkerCapabilities

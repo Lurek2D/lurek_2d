@@ -1,279 +1,288 @@
 -- content/examples/serial.lua
--- Demonstrates every lurek.serial.* function with realistic game-developer usage.
+-- Auto-generated from content/examples2/serial_*.lua by tools/fix/merge_examples2_into_examples.py
 -- Run: cargo run -- content/examples/serial.lua
+
+--- Serial Module: JSON, TOML, CSV, INI, MsgPack, XML, format detection, schema validation
+
 --@api-stub: lurek.serial.fromJson
--- Parses a JSON string into a Lua table
+-- JSON parsing and encoding.
 do
-  -- Loading a player profile received from a server or read from a file
-  local json_str = '{"username":"knight42","level":12,"inventory":["sword","shield","potion"]}'
-  local profile = lurek.serial.fromJson(json_str)
-
-  -- Access nested fields directly as Lua tables
-  lurek.log.info("Player: " .. profile.username .. " (level " .. profile.level .. ")", "serial")
-  lurek.log.info("First item: " .. profile.inventory[1], "serial")
+    local jsonStr = '{"name":"warrior","level":12,"alive":true,"items":["sword","shield"]}'
+    local data = lurek.serial.fromJson(jsonStr)
+    print("name = " .. data.name)
+    print("level = " .. data.level)
+    print("alive = " .. tostring(data.alive))
+    print("items count = " .. #data.items)
+    for i, item in ipairs(data.items) do
+        print("  " .. i .. ": " .. item)
+    end
+    local encoded = lurek.serial.toJson(data)
+    print("compact = " .. encoded)
+    local pretty = lurek.serial.toJson(data, true)
+    print("pretty:\n" .. pretty)
 end
+
+-- Complex JSON round-trip.
 --@api-stub: lurek.serial.toJson
--- Serializes a Lua value into a JSON string
+--@api-stub: lurek.serial.fromJson
 do
-  -- Prepare a save-game snapshot for writing to disk or sending over network
-  local save_data = {
-    player = { x = 128.5, y = 64.0, hp = 85 },
-    quest_progress = { main = 3, side = { "gather_herbs", "rescue_cat" } },
-    timestamp = os.time(),
-  }
-
-  -- pretty=true makes the output human-readable (useful for debug saves)
-  local compact = lurek.serial.toJson(save_data)
-  local pretty = lurek.serial.toJson(save_data, true)
-  lurek.log.info("Compact length: " .. #compact .. " Pretty length: " .. #pretty, "serial")
+    local complex = {
+        config = {
+            window = { width = 1280, height = 720, fullscreen = false },
+            audio = { volume = 0.8, mute = false },
+        },
+        players = {
+            { id = 1, name = "Alice", scores = { 100, 200, 300 } },
+            { id = 2, name = "Bob", scores = { 50, 150 } },
+        },
+    }
+    local json = lurek.serial.toJson(complex, true)
+    print("encoded length = " .. #json)
+    local decoded = lurek.serial.fromJson(json)
+    print("window width = " .. decoded.config.window.width)
+    print("player 1 name = " .. decoded.players[1].name)
+    print("player 2 scores = " .. #decoded.players[2].scores)
 end
+
 --@api-stub: lurek.serial.fromToml
--- Parses a TOML string into a Lua table
+-- TOML parsing and encoding.
 do
-  -- TOML is the preferred format for game configuration in Lurek2D
-  local toml_str = [[
-title = "Dragon Quest"
+    local tomlStr = [[
+[game]
+title = "Dungeon Quest"
 version = "1.2.0"
+debug = false
 
 [window]
-width = 1280
-height = 720
+width = 1920
+height = 1080
 vsync = true
 
-[gameplay]
-difficulty = "normal"
-max_enemies = 50
+[audio]
+master_volume = 0.9
+music_volume = 0.7
+sfx_volume = 1.0
 ]]
-  local cfg = lurek.serial.fromToml(toml_str)
-
-  -- Nested TOML sections become nested Lua tables
-  lurek.log.info(cfg.title .. " v" .. cfg.version, "serial")
-  lurek.log.info("Window: " .. cfg.window.width .. "x" .. cfg.window.height, "serial")
-  lurek.log.info("Difficulty: " .. cfg.gameplay.difficulty, "serial")
+    local config = lurek.serial.fromToml(tomlStr)
+    print("title = " .. config.game.title)
+    print("version = " .. config.game.version)
+    print("window = " .. config.window.width .. "x" .. config.window.height)
+    print("vsync = " .. tostring(config.window.vsync))
+    print("master vol = " .. config.audio.master_volume)
+    local reEncoded = lurek.serial.toToml(config)
+    print("re-encoded length = " .. #reEncoded)
+    print("contains [game] = " .. tostring(reEncoded:find("%[game%]") ~= nil))
 end
---@api-stub: lurek.serial.toToml
--- Serializes a Lua table into a TOML-formatted string
+
+--@api-stub: lurek.serial.fromCsv
+-- CSV parsing with and without headers.
 do
-  -- Generate a default configuration file that players can edit
-  local defaults = {
-    audio = { master = 0.8, music = 0.6, sfx = 1.0 },
-    controls = { move_up = "w", move_down = "s" },
-    fullscreen = false,
-  }
-  local toml_output = lurek.serial.toToml(defaults)
-
-  -- The result can be written to a .toml file via lurek.filesystem
-  lurek.log.info("Generated config:\n" .. toml_output, "serial")
+    local csvWithHeaders = "name,age,city\nAlice,30,Warsaw\nBob,25,Krakow\nCarol,35,Gdansk"
+    local rows = lurek.serial.fromCsv(csvWithHeaders, ",", true)
+    print("rows with headers = " .. #rows)
+    for _, row in ipairs(rows) do
+        print("  " .. row.name .. " age=" .. row.age .. " city=" .. row.city)
+    end
+    local csvNoHeaders = "10,20,30\n40,50,60\n70,80,90"
+    local plain = lurek.serial.fromCsv(csvNoHeaders, ",", false)
+    print("plain rows = " .. #plain)
+    for i, row in ipairs(plain) do
+        print("  row " .. i .. ": " .. table.concat(row, ", "))
+    end
+    local output = lurek.serial.toCsv(rows, ",", true)
+    print("re-encoded csv length = " .. #output)
+    print("has header line = " .. tostring(output:find("name,age,city") ~= nil))
 end
+
+-- Tab-separated and semicolon-separated.
+--@api-stub: lurek.serial.fromCsv
+do
+    local tsv = "id\tproduct\tprice\n1\tSword\t150\n2\tShield\t80\n3\tPotion\t25"
+    local items = lurek.serial.fromCsv(tsv, "\t", true)
+    print("tsv items = " .. #items)
+    print("item 1 = " .. items[1].product .. " @ " .. items[1].price)
+    local semicolonData = "x;y;z\n1.0;2.5;3.7\n4.2;5.8;6.1"
+    local coords = lurek.serial.fromCsv(semicolonData, ";", true)
+    print("semicolon rows = " .. #coords)
+    print("first point x=" .. coords[1].x .. " y=" .. coords[1].y)
+end
+
 --@api-stub: lurek.serial.fromIni
--- Parses an INI-format string into a Lua table
+-- INI file parsing.
 do
-  -- INI is common in legacy game configs and mod settings
-  local ini_str = [[
+    local iniStr = [[
 [player]
-name=Warrior
-class=fighter
-starting_gold=100
+name = Hero
+class = warrior
+level = 15
 
 [display]
-resolution=1920x1080
-fullscreen=true
+resolution = 1080p
+gamma = 1.2
+fullscreen = true
+
+[controls]
+jump = space
+attack = z
+dash = x
 ]]
-  local cfg = lurek.serial.fromIni(ini_str)
-
-  -- Sections become top-level keys, key-value pairs become string fields
-  lurek.log.info("Character: " .. cfg.player.name .. " (" .. cfg.player.class .. ")", "serial")
-  lurek.log.info("Resolution: " .. cfg.display.resolution, "serial")
+    local ini = lurek.serial.fromIni(iniStr)
+    print("player name = " .. ini.player.name)
+    print("player class = " .. ini.player.class)
+    print("display res = " .. ini.display.resolution)
+    print("gamma = " .. ini.display.gamma)
+    print("jump key = " .. ini.controls.jump)
+    print("attack key = " .. ini.controls.attack)
 end
---@api-stub: lurek.serial.fromCsv
--- Parses a CSV string into an array of row tables
-do
-  -- Loading a leaderboard or item database exported from a spreadsheet
-  local csv_data = "id,name,damage,rarity\n1,Iron Sword,10,common\n2,Fire Staff,25,rare\n3,Shadow Blade,40,epic\n"
-  local items = lurek.serial.fromCsv(csv_data)
 
-  -- Each row is a table keyed by column headers (hasHeaders defaults to true)
-  for i, item in ipairs(items) do
-    lurek.log.info(item.name .. " dmg=" .. item.damage .. " [" .. item.rarity .. "]", "serial")
-  end
-
-  -- Use a custom delimiter for semicolon-separated data
-  local tsv = "name;score\nAda;1500\nMax;1200\n"
-  local scores = lurek.serial.fromCsv(tsv, ";")
-  lurek.log.info("Top scorer: " .. scores[1].name .. " = " .. scores[1].score, "serial")
-end
---@api-stub: lurek.serial.toCsv
--- Serializes an array of row tables into a CSV-formatted string
-do
-  -- Export a high-score table for display or file save
-  local scores = {
-    { rank = "1", player = "Ada", score = "15000", time = "12:34" },
-    { rank = "2", player = "Max", score = "12000", time = "14:01" },
-    { rank = "3", player = "Lin", score = "9500", time = "15:22" },
-  }
-
-  -- Default delimiter is comma, headers are written automatically
-  local csv = lurek.serial.toCsv(scores)
-  lurek.log.info("Leaderboard CSV:\n" .. csv, "serial")
-
-  -- Use semicolon delimiter for locales where comma is decimal separator
-  local csv_semi = lurek.serial.toCsv(scores, ";")
-  lurek.log.info("Semicolon variant:\n" .. csv_semi, "serial")
-end
 --@api-stub: lurek.serial.encodeMsgPack
--- Encodes a Lua table into compact binary MessagePack
+-- Binary MsgPack serialization round-trip.
 do
-  -- MessagePack is ideal for save files and network packets (smaller + faster than JSON)
-  local game_state = {
-    tick = 48000,
-    entities = {
-      { id = 1, x = 100, y = 200, hp = 50 },
-      { id = 2, x = 300, y = 150, hp = 80 },
-    },
-    seed = 987654,
-  }
-
-  local bytes = lurek.serial.encodeMsgPack(game_state)
-  local json_equivalent = lurek.serial.toJson(game_state)
-
-  -- Compare sizes: msgpack is typically 30-50% smaller than JSON
-  lurek.log.info("MsgPack: " .. #bytes .. " bytes, JSON: " .. #json_equivalent .. " bytes", "serial")
+    local payload = {
+        version = 2,
+        entities = {
+            { id = 1, x = 10.5, y = 20.3, hp = 100 },
+            { id = 2, x = 30.0, y = 40.7, hp = 50 },
+        },
+        timestamp = 1234567890,
+    }
+    local packed = lurek.serial.encodeMsgPack(payload)
+    print("packed type = " .. type(packed))
+    print("packed length = " .. #packed)
+    local unpacked = lurek.serial.decodeMsgPack(packed)
+    print("version = " .. unpacked.version)
+    print("entities = " .. #unpacked.entities)
+    print("entity 1 x = " .. unpacked.entities[1].x)
+    print("timestamp = " .. unpacked.entities[2].hp)
 end
---@api-stub: lurek.serial.decodeMsgPack
--- Decodes a binary MessagePack string back into a Lua table
-do
-  -- Round-trip: encode game state, then decode it back (e.g. loading a save)
-  local original = { player_x = 256, player_y = 128, level = 5, items = { "key", "gem" } }
-  local bytes = lurek.serial.encodeMsgPack(original)
 
-  -- Decode returns a full Lua table identical to the original
-  local restored = lurek.serial.decodeMsgPack(bytes)
-  lurek.log.info("Restored: level=" .. restored.level .. " at (" .. restored.player_x .. "," .. restored.player_y .. ")", "serial")
-  lurek.log.info("Items: " .. restored.items[1] .. ", " .. restored.items[2], "serial")
-end
 --@api-stub: lurek.serial.decodeXml
--- Parses an XML string into a nested Lua table structure
+-- XML to table conversion.
 do
-  -- Load a Tiled-style tilemap layer exported as XML
-  local xml_str = [[<map width="10" height="10" tilewidth="32">
-  <tileset firstgid="1" name="terrain" source="terrain.tsx"/>
-  <layer name="ground" width="10" height="10">
-    <data encoding="csv">1,1,2,2,3,3,1,1,2,2</data>
+    local xml = [[
+<tilemap width="10" height="8">
+  <layer name="ground" visible="true">
+    <tile x="0" y="0" id="1"/>
+    <tile x="1" y="0" id="2"/>
+    <tile x="2" y="0" id="1"/>
   </layer>
-</map>]]
-
-  local doc = lurek.serial.decodeXml(xml_str)
-
-  -- Root element: tag name, attributes, and children are all accessible
-  lurek.log.info("Map tag: " .. doc.tag .. " width=" .. doc.attrs.width, "serial")
-
-  -- Navigate children by index
-  if doc.children and #doc.children > 0 then
-    local first_child = doc.children[1]
-    lurek.log.info("First child: <" .. first_child.tag .. "> name=" .. tostring(first_child.attrs.name), "serial")
-  end
+  <layer name="objects" visible="true">
+    <tile x="5" y="3" id="10"/>
+  </layer>
+</tilemap>
+]]
+    local doc = lurek.serial.decodeXml(xml)
+    print("root tag = " .. (doc.tag or doc.name or "unknown"))
+    print("decoded xml type = " .. type(doc))
 end
---@api-stub: lurek.serial.validate
--- Validates a Lua value against a schema table
-do
-  -- Define a schema for player save data with type and range constraints
-  local save_schema = {
-    type = "table",
-    fields = {
-      hp = { type = "number", min = 0, max = 999 },
-      name = { type = "string" },
-      level = { type = "number", min = 1 },
-    },
-  }
 
-  -- Valid data passes validation
-  local ok, err = lurek.serial.validate({ hp = 100, name = "Hero", level = 5 }, save_schema)
-  lurek.log.info("Valid save: ok=" .. tostring(ok), "serial")
-
-  -- Invalid data returns false + descriptive error message
-  local ok2, err2 = lurek.serial.validate({ hp = -5, name = "Hero", level = 0 }, save_schema)
-  lurek.log.info("Invalid save: ok=" .. tostring(ok2) .. " err=" .. tostring(err2), "serial")
-
-  -- Use validate before loading untrusted user data to prevent corrupted state
-end
---@api-stub: lurek.serial.detectFormat
--- Auto-detects the serialization format of a string
-do
-  -- Useful when accepting drag-and-drop files or user-provided configs of unknown format
-  local samples = {
-    '{"type": "enemy", "hp": 50}',
-    'title = "My Game"\nversion = "1.0"',
-    '<?xml version="1.0"?><root/>',
-    "[section]\nkey=value",
-    "name,score\nAda,100",
-  }
-
-  for _, sample in ipairs(samples) do
-    local detected = lurek.serial.detectFormat(sample)
-    -- Returns "json", "toml", "xml", "ini", "csv", or nil
-    lurek.log.info("Detected: " .. tostring(detected) .. " for: " .. sample:sub(1, 20) .. "...", "serial")
-  end
-end
---@api-stub: lurek.serial.decode
--- Universal decoder that auto-detects or uses a format hint
-do
-  -- Single entry point for loading any supported format
-  -- Auto-detect mode (no format argument): inspects content to determine type
-  local json_data = lurek.serial.decode('{"weapon":"bow","ammo":15}')
-  lurek.log.info("Auto-detected JSON: weapon=" .. json_data.weapon, "serial")
-
-  -- Explicit format hint: skips detection, faster and unambiguous
-  local toml_data = lurek.serial.decode('hp = 100\nmp = 50\n', "toml")
-  lurek.log.info("TOML with hint: hp=" .. toml_data.hp .. " mp=" .. toml_data.mp, "serial")
-
-  -- CSV with options: custom delimiter and header control
-  local csv_data = lurek.serial.decode("name;score\nAda;99\n", "csv", { delimiter = ";", has_headers = true })
-  lurek.log.info("CSV: " .. csv_data[1].name .. "=" .. csv_data[1].score, "serial")
-end
 --@api-stub: lurek.serial.encode
--- Universal encoder that serializes to a specified format
+-- Generic encode/decode with format parameter.
 do
-  -- Single entry point for all serialization needs
-  local inventory = { { slot = "1", item = "sword", qty = "1" }, { slot = "2", item = "potion", qty = "5" } }
-
-  -- JSON with pretty printing for debug/config files
-  local json_out = lurek.serial.encode({ gold = 500, xp = 1200 }, "json", { pretty = true })
-  lurek.log.info("Pretty JSON:\n" .. json_out, "serial")
-
-  -- TOML for configuration export
-  local toml_out = lurek.serial.encode({ audio = { volume = 0.8 } }, "toml")
-  lurek.log.info("TOML:\n" .. toml_out, "serial")
-
-  -- CSV with custom delimiter
-  local csv_out = lurek.serial.encode(inventory, "csv", { delimiter = ";" })
-  lurek.log.info("CSV semicolon:\n" .. csv_out, "serial")
-
-  -- MsgPack for compact binary (save files, network)
-  local bin = lurek.serial.encode({ tick = 999, alive = true }, "msgpack")
-  lurek.log.info("MsgPack bytes: " .. #bin, "serial")
+    local data = { greeting = "hello", count = 42, active = true }
+    local jsonOut = lurek.serial.encode(data, "json")
+    print("json encode = " .. jsonOut)
+    local tomlOut = lurek.serial.encode(data, "toml")
+    print("toml encode length = " .. #tomlOut)
+    local backFromJson = lurek.serial.decode(jsonOut, "json")
+    print("greeting = " .. backFromJson.greeting)
+    print("count = " .. backFromJson.count)
+    local backFromToml = lurek.serial.decode(tomlOut, "toml")
+    print("active = " .. tostring(backFromToml.active))
 end
+
+--@api-stub: lurek.serial.detectFormat
+-- Automatic format detection.
+do
+    local jsonSample = '{"key": "value"}'
+    local tomlSample = '[section]\nkey = "value"'
+    local csvSample = "a,b,c\n1,2,3"
+    print("json detected = " .. lurek.serial.detectFormat(jsonSample))
+    print("toml detected = " .. lurek.serial.detectFormat(tomlSample))
+    print("csv detected = " .. lurek.serial.detectFormat(csvSample))
+end
+
+--@api-stub: lurek.serial.validate
+-- Schema-based validation.
+do
+    local schema = {
+        type = "object",
+        required = { "name", "level" },
+        properties = {
+            name = { type = "string" },
+            level = { type = "number", minimum = 1, maximum = 100 },
+            class = { type = "string" },
+        },
+    }
+    local valid = { name = "Knight", level = 50, class = "warrior" }
+    local ok, err = lurek.serial.validate(valid, schema)
+    print("valid data ok = " .. tostring(ok))
+    print("valid err = " .. tostring(err))
+    local invalid = { name = "Mage", level = 200 }
+    ok, err = lurek.serial.validate(invalid, schema)
+    print("invalid ok = " .. tostring(ok))
+    print("invalid err = " .. err)
+    local missing = { level = 10 }
+    ok, err = lurek.serial.validate(missing, schema)
+    print("missing ok = " .. tostring(ok))
+    print("missing err = " .. err)
+end
+
 --@api-stub: lurek.serial.applyDefaults
--- Merges schema defaults into a data table without overwriting existing values
+-- Filling in default values from schema.
 do
-  -- Define a schema with defaults for every field
-  local settings_schema = {
-    type = "table",
-    fields = {
-      music_volume = { type = "number", default = 0.7 },
-      sfx_volume = { type = "number", default = 1.0 },
-      language = { type = "string", default = "en" },
-      fullscreen = { type = "boolean", default = false },
-    },
-  }
-
-  -- User only set one field; applyDefaults fills the rest
-  local user_settings = { music_volume = 0.3 }
-  local complete = lurek.serial.applyDefaults(user_settings, settings_schema)
-
-  -- music_volume stays 0.3 (user override), others get defaults
-  lurek.log.info("Music: " .. complete.music_volume, "serial")   -- 0.3 (kept)
-  lurek.log.info("SFX: " .. complete.sfx_volume, "serial")       -- 1.0 (default)
-  lurek.log.info("Lang: " .. complete.language, "serial")         -- "en" (default)
-  lurek.log.info("Fullscreen: " .. tostring(complete.fullscreen), "serial") -- false (default)
+    local schema = {
+        properties = {
+            width = { default = 800 },
+            height = { default = 600 },
+            title = { default = "Untitled" },
+            vsync = { default = true },
+        },
+    }
+    local partial = { width = 1280, title = "My Game" }
+    local filled = lurek.serial.applyDefaults(partial, schema)
+    print("width = " .. filled.width)
+    print("height = " .. filled.height)
+    print("title = " .. filled.title)
+    print("vsync = " .. tostring(filled.vsync))
+    local empty = {}
+    local allDefaults = lurek.serial.applyDefaults(empty, schema)
+    print("all defaults width = " .. allDefaults.width)
+    print("all defaults height = " .. allDefaults.height)
 end
+
+-- Decode without specifying format.
+--@api-stub: lurek.serial.decode
+do
+    local jsonPayload = '{"auto": true, "score": 99}'
+    local result = lurek.serial.decode(jsonPayload)
+    print("auto-detected json: auto = " .. tostring(result.auto))
+    print("score = " .. result.score)
+end
+
+--- Serial Module: decode, decodeMsgPack, toCsv, toJson, toToml
+
+--@api-stub: lurek.serial.decodeMsgPack
+-- Decode binary or formatted payload into a Lua table.
+do
+    local ok, t = lurek.serial.decode('{"key": 1}', "json")
+    print("decode ok=" .. tostring(ok))
+    local bytes = lurek.serial.encodeMsgPack({ x = 1, y = 2 })
+    local ok2, t2 = lurek.serial.decodeMsgPack(bytes)
+    print("msgpack ok=" .. tostring(ok2))
+end
+
+--@api-stub: lurek.serial.toCsv
+--@api-stub: lurek.serial.toToml
+-- Serialize a table to CSV, JSON, or TOML string.
+do
+    local data = { { name = "Alice", score = 100 }, { name = "Bob", score = 90 } }
+    local csv = lurek.serial.toCsv(data, ",", true)
+    print("csv lines = " .. #csv)
+    local json = lurek.serial.toJson({ a = 1, b = "hello" }, true)
+    print("json = " .. json)
+    local toml = lurek.serial.toToml({ version = "1.0", debug = false })
+    print("toml = " .. toml)
+end
+
 print("content/examples/serial.lua")

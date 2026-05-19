@@ -1,216 +1,211 @@
 -- content/examples/log.lua
--- Demonstrates every lurek.log.* function with realistic game-dev usage.
+-- Auto-generated from content/examples2/log_*.lua by tools/fix/merge_examples2_into_examples.py
 -- Run: cargo run -- content/examples/log.lua
---@api-stub: lurek.log.setLevel
--- Sets the minimum severity for log output across all sinks
-do
-  -- During development use "debug" to see everything;
-  -- in shipping builds switch to "warn" to reduce noise.
-  local is_dev_build = true
-  if is_dev_build then
-    lurek.log.setLevel("debug")
-  else
-    lurek.log.setLevel("warn")
-  end
-end
---@api-stub: lurek.log.getLevel
--- Returns the current global log level as a string
-do
-  -- Use this to conditionally build expensive debug strings only when needed.
-  local level = lurek.log.getLevel()
-  if level == "debug" or level == "trace" then
-    local world_state = "entities=214 particles=890 dt=16.4ms"
-    lurek.log.debug("world snapshot: " .. world_state, "perf")
-  end
-end
+
+--- Log Module: structured logging, sinks, and memory drain
+
 --@api-stub: lurek.log.debug
--- Logs a debug message visible only at debug/trace level
+-- Emits a debug-level message.
 do
-  -- Track per-frame values that help you diagnose movement or physics issues.
-  local player = { x = 312.5, y = 144.0, vx = 2.1, vy = -0.3 }
-  lurek.log.debug(
-    string.format("player pos=(%.1f,%.1f) vel=(%.2f,%.2f)", player.x, player.y, player.vx, player.vy),
-    "movement"
-  )
+    lurek.log.debug("tick completed")
+    lurek.log.debug("player moved", "movement")
+    print("debug logged")
 end
+
 --@api-stub: lurek.log.info
--- Logs an informational message for notable lifecycle events
+-- Emits an info-level message.
 do
-  -- Record transitions that help you understand session flow in the log file.
-  local level_name = "dungeon_b2"
-  local enemy_count = 23
-  local spawn_time_ms = 4.7
-  lurek.log.info(
-    "loaded '" .. level_name .. "': " .. enemy_count .. " enemies in " .. spawn_time_ms .. "ms",
-    "scene"
-  )
+    lurek.log.info("game started")
+    lurek.log.info("asset loaded", "assets")
+    print("info logged")
 end
+
 --@api-stub: lurek.log.warn
--- Logs a warning for recoverable problems that deserve attention
+-- Emits a warning-level message.
 do
-  -- Alert on degraded performance so QA can spot patterns in the log file.
-  local fps = 42
-  local target_fps = 60
-  if fps < target_fps * 0.75 then
-    lurek.log.warn(
-      string.format("fps dropped to %d (target %d) in boss_arena", fps, target_fps),
-      "perf"
-    )
-  end
+    lurek.log.warn("low memory")
+    lurek.log.warn("texture missing", "render")
+    print("warn logged")
 end
+
 --@api-stub: lurek.log.error
--- Logs an error for failures that need immediate investigation
+-- Emits an error-level message.
 do
-  -- Always include enough context to reproduce: path, operation, fallback chosen.
-  local save_path = "save/slot2.dat"
-  local reason = "permission denied"
-  lurek.log.error(
-    "save failed: path='" .. save_path .. "' reason=" .. reason .. " (falling back to slot1)",
-    "save"
-  )
+    lurek.log.error("failed to save")
+    lurek.log.error("shader compile failed", "gpu")
+    print("error logged")
 end
+
 --@api-stub: lurek.log.print
--- Logs at a runtime-chosen level, useful when severity comes from config or data
+-- Emits a message at a given level string.
 do
-  -- Example: a modding system where script authors choose their own log level.
-  local mod_log_level = "info"  -- read from mod manifest
-  local mod_name = "expanded_items"
-  lurek.log.print(mod_log_level, "mod '" .. mod_name .. "' initialized (v1.2.0)", "mods")
+    lurek.log.print("info", "general purpose log")
+    lurek.log.print("warn", "something suspicious", "system")
+    print("print logged")
 end
+
 --@api-stub: lurek.log.debug_fields
--- Logs a debug message with a structured key-value table
+-- Emits a debug message with structured fields.
 do
-  -- Structured fields make logs machine-parseable for tooling and dashboards.
-  lurek.log.debug_fields("physics step", {
-    bodies = 64,
-    contacts = 12,
-    step_ms = 1.8,
-    island_count = 3,
-  })
+    lurek.log.debug_fields("frame stats", {fps = 60, dt = 0.016})
+    print("debug_fields logged")
 end
+
 --@api-stub: lurek.log.info_fields
--- Logs an info message with structured fields
+-- Emits an info message with structured fields.
 do
-  -- Record session milestones with exact numeric data for analytics.
-  lurek.log.info_fields("checkpoint reached", {
-    checkpoint = "forest_bridge",
-    play_time_s = 924,
-    deaths = 2,
-    coins = 187,
-  })
+    lurek.log.info_fields("player join", {name = "Alice", id = 42})
+    print("info_fields logged")
 end
+
 --@api-stub: lurek.log.warn_fields
--- Logs a warning with structured fields for machine-parseable diagnostics
+-- Emits a warning message with structured fields.
 do
-  -- Attach frame budget data so automated tools can correlate spikes.
-  local gpu_ms = 14.2
-  local budget_ms = 11.1
-  if gpu_ms > budget_ms then
-    lurek.log.warn_fields("gpu over budget", {
-      gpu_ms = gpu_ms,
-      budget_ms = budget_ms,
-      scene = "particle_storm",
-      draw_calls = 320,
-    })
-  end
+    lurek.log.warn_fields("memory usage", {used_mb = 512, limit_mb = 1024})
+    print("warn_fields logged")
 end
+
 --@api-stub: lurek.log.error_fields
--- Logs an error with structured fields for post-mortem analysis
+-- Emits an error message with structured fields.
 do
-  -- Include all context needed to reproduce without asking the player.
-  lurek.log.error_fields("asset load failed", {
-    path = "sprites/boss_phase3.png",
-    operation = "texture_decode",
-    error_code = 2,
-    fallback = "sprites/placeholder.png",
-  })
+    lurek.log.error_fields("save failed", {path = "slot1.sav", reason = "disk full"})
+    print("error_fields logged")
 end
+
 --@api-stub: lurek.log.struct
--- Logs a structured message at a runtime-selected level
+-- Emits a structured log at an explicit level.
 do
-  -- Useful when both level and fields come from game data (e.g., telemetry config).
-  local event_level = "info"
-  lurek.log.struct(event_level, "item crafted", {
-    recipe = "iron_sword",
-    materials_used = 3,
-    quality = "rare",
-    crafter = "player_01",
-  })
+    lurek.log.struct("info", "combat hit", {
+        attacker = "goblin",
+        target = "player",
+        damage = 15,
+    })
+    print("struct logged")
 end
+
+--@api-stub: lurek.log.getLevel
+-- Gets and sets the minimum log level filter.
+do
+    local prev = lurek.log.getLevel()
+    lurek.log.setLevel("warn")
+    print("level was " .. prev .. " now " .. lurek.log.getLevel())
+    lurek.log.setLevel(prev)
+end
+
+-- Adds a console sink.
 --@api-stub: lurek.log.addSink
--- Registers a new sink (memory, file, rotating, or callback) and returns its id
 do
-  -- Memory sink: captures recent warnings in a ring buffer for an in-game console.
-  local console_sink = lurek.log.addSink({
-    type = "memory",
-    capacity = 128,
-    level = "warn",
-  })
-
-  -- File sink: writes all info+ messages to a session log for QA.
-  local session_sink = lurek.log.addSink({
-    type = "file",
-    path = "save/session.log",
-    level = "info",
-  })
-
-  lurek.log.info("sinks ready: console=" .. console_sink .. " session=" .. session_sink, "boot")
+    local id = lurek.log.addSink({
+        type = "console",
+        level = "debug",
+        format = "pretty",
+    })
+    print("console sink id = " .. id)
 end
+
+-- Adds a file sink with path.
+--@api-stub: lurek.log.addSink
+do
+    local id = lurek.log.addSink({
+        type = "file",
+        level = "info",
+        format = "json",
+        path = "logs/game.log",
+    })
+    print("file sink id = " .. id)
+end
+
+-- Adds a memory ring buffer sink.
+--@api-stub: lurek.log.addSink
+do
+    local id = lurek.log.addSink({
+        type = "memory",
+        level = "debug",
+        capacity = 100,
+    })
+    print("memory sink id = " .. id)
+end
+
+-- Adds a callback-based sink.
+--@api-stub: lurek.log.addSink
+do
+    local id = lurek.log.addSink({
+        type = "callback",
+        level = "warn",
+        callback = function(entry)
+            print("callback got: " .. entry.message)
+        end,
+    })
+    print("callback sink id = " .. id)
+end
+
 --@api-stub: lurek.log.removeSink
--- Removes a sink by id; returns true if it existed
+-- Removes a sink by id.
 do
-  -- Temporarily attach a diagnostic sink, then remove it after the hot section.
-  local diag = lurek.log.addSink({ type = "memory", capacity = 64, level = "debug" })
-  lurek.log.debug("entering boss fight diagnostics", "combat")
-  -- ... boss fight runs ...
-  local was_removed = lurek.log.removeSink(diag)
-  lurek.log.info("diag sink removed=" .. tostring(was_removed), "combat")
+    local id = lurek.log.addSink({type = "memory", level = "debug", capacity = 10})
+    local ok = lurek.log.removeSink(id)
+    print("removed = " .. tostring(ok))
 end
---@api-stub: lurek.log.clearSinks
--- Removes ALL sinks; useful during teardown or hot-reload
-do
-  -- On scene transition, clear old sinks before setting up new ones.
-  lurek.log.addSink({ type = "memory", capacity = 32 })
-  lurek.log.addSink({ type = "memory", capacity = 32, level = "error" })
-  lurek.log.clearSinks()
-  -- After clearing, only stderr remains. Re-add sinks for the new scene.
-  lurek.log.info("sinks cleared for scene transition", "scene")
-end
---@api-stub: lurek.log.listSinks
--- Returns an array of tables describing every active sink
-do
-  -- Use this to build a developer HUD showing which sinks are active.
-  lurek.log.addSink({ type = "memory", capacity = 100, level = "info" })
-  local sinks = lurek.log.listSinks()
-  for _, s in ipairs(sinks) do
-    lurek.log.debug(
-      string.format("sink #%d type=%s level=%s", s.id, s.type, s.level),
-      "diag"
-    )
-  end
-end
---@api-stub: lurek.log.readMemory
--- Reads entries from a memory sink; optionally drains (clears) them
-do
-  -- Feed an in-game developer console from the memory sink.
-  local hud_sink = lurek.log.addSink({ type = "memory", capacity = 64, level = "warn" })
-  lurek.log.warn("enemy stuck in wall at tile (14,8)", "ai")
-  lurek.log.warn("texture atlas rebuild took 32ms", "render")
 
-  -- drain=true means we won't see these entries again on next read.
-  local entries = lurek.log.readMemory(hud_sink, true)
-  for _, e in ipairs(entries) do
-    -- Each entry has .level, .tag, .message, .timestamp
-    print(string.format("[%s][%s] %s", e.level, e.tag, e.message))
-  end
-end
---@api-stub: lurek.log.flushFile
--- Forces a file sink to write buffered data to disk immediately
+--@api-stub: lurek.log.listSinks
+-- Lists all active sinks.
 do
-  -- Call this before a risky operation so the log is complete if the game crashes.
-  local crash_log = lurek.log.addSink({ type = "file", path = "save/crash.log", level = "error" })
-  lurek.log.error("unrecoverable state: physics world desynced", "engine")
-  lurek.log.flushFile(crash_log)
-  -- Now the file has the error even if we abort right after.
+    local sinks = lurek.log.listSinks()
+    for _, s in ipairs(sinks) do
+        print("sink " .. s.id .. " type=" .. s.type .. " level=" .. s.level)
+    end
 end
+
+--@api-stub: lurek.log.clearSinks
+-- Removes all sinks.
+do
+    lurek.log.clearSinks()
+    local sinks = lurek.log.listSinks()
+    print("sinks after clear = " .. #sinks)
+end
+
+--@api-stub: lurek.log.readMemory
+-- Reads entries from a memory sink.
+do
+    local id = lurek.log.addSink({type = "memory", level = "debug", capacity = 50})
+    lurek.log.info("test message")
+    local entries = lurek.log.readMemory(id, false)
+    print("memory entries = " .. #entries)
+    for _, e in ipairs(entries) do
+        print("  [" .. e.level .. "] " .. e.message)
+    end
+end
+
+-- Reads and drains entries from memory sink.
+--@api-stub: lurek.log.addSink
+--@api-stub: lurek.log.debug
+--@api-stub: lurek.log.readMemory
+do
+    local id = lurek.log.addSink({type = "memory", level = "debug", capacity = 50})
+    lurek.log.debug("ephemeral")
+    local entries = lurek.log.readMemory(id, true)
+    print("drained " .. #entries .. " entries")
+    local after = lurek.log.readMemory(id, false)
+    print("after drain = " .. #after)
+end
+
+--@api-stub: lurek.log.flushFile
+-- Flushes a file sink to disk.
+do
+    local id = lurek.log.addSink({type = "file", level = "info", path = "logs/flush_test.log"})
+    lurek.log.info("flush me")
+    lurek.log.flushFile(id)
+    print("file flushed")
+end
+
+--@api-stub: lurek.log.setLevel
+-- Log sinks and dynamic level changes.
+do
+    lurek.log.setLevel("debug")
+    lurek.log.addSink({ level = "debug", callback = function(msg) print(msg) end })
+    lurek.log.setLevel("info")
+    lurek.log.setLevel("warn")
+    lurek.log.setLevel("error")
+end
+
 print("content/examples/log.lua")
