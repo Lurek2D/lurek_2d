@@ -4,7 +4,7 @@
 
 ## Navigation
 
-[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lureksome](Lureksome)
 
 ## Table of Contents
 

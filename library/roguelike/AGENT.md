@@ -1,8 +1,8 @@
-﻿# `roguelike` â€” Agent Reference (Lunasome)
+# `roguelike` â€” Agent Reference (Lureksome)
 
 | Property       | Value                                                                                                                                   |
 | -------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| **Tier**       | Tier 3 â€” Lunasome (pure Lua)                                                                                                            |
+| **Tier**       | Tier 3 â€” Lureksome (pure Lua)                                                                                                            |
 | **Source**     | `library/roguelike/init.lua`                                                                                                            |
 | **Lua Tests**  | `tests/lua/library/test_library_roguelike.lua`                                                                                          |
 | **Depends on** | `lurek.tilemap` (optional, via `:attachTilemap`), `lurek.pathfind` (optional Dijkstra backend), `lurek.math.bresenham` (re-exported) |

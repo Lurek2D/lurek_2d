@@ -34,7 +34,7 @@ Progress through a dungeon one room at a time. Each room triggers either an enem
 - `lurek.window` — updates the window title with the current floor and room number.
 - `lurek.event` — signals clean engine shutdown on Escape.
 
-**Lunasome (`library/`) modules**
+**Lureksome (`library/`) modules**
 
 _None._
 

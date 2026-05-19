@@ -37,7 +37,7 @@ Stack falling tetrominoes on a 10×20 board. Complete horizontal lines to clear 
 - `lurek.timer` — FPS counter and elapsed time for shake animation.
 - `lurek.event` — clean shutdown on Escape.
 
-**Lunasome (`content/library/`) modules**
+**Lureksome (`content/library/`) modules**
 
 _None._
 

@@ -1,6 +1,6 @@
 # tests/lua/unit — Lua Unit Tests
 
-One test file per `lurek.*` engine module and per `library/` Lunasome module.
+One test file per `lurek.*` engine module and per `library/` Lureksome module.
 
 ## Naming
 

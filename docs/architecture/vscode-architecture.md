@@ -208,7 +208,7 @@ All providers target `{ scheme: "file", language: "lua" }`.
 | `commands/editors.ts` | Opens any webview editor by name |
 | `commands/debugBridge.ts` | Connect/disconnect bridge; inspect globals, performance, logs |
 | `commands/cag.ts` | Installs bundled CAG layer to workspace `.github/` |
-| `commands/library.ts` | Lunasome library management |
+| `commands/library.ts` | Lureksome library management |
 | `commands/packaging.ts` | Build and package for distribution |
 | `commands/reference.ts` | Opens API reference editor panel |
 | `commands/test.ts` | Runs test suite |

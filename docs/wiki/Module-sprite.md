@@ -4,7 +4,7 @@
 
 ## Navigation
 
-[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lureksome](Lureksome)
 
 ## Table of Contents
 
@@ -107,12 +107,25 @@ Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
 
 ```lua
 do
-  -- Useful when you have a packed atlas but still want grid-style frame indexing.
-  -- Each atlas entry becomes one frame in the resulting sheet.
-  local json_data = '{"frames":{"sword_01":{"frame":{"x":0,"y":0,"w":32,"h":32},"rotated":false,"trimmed":false,"spriteSourceSize":{"x":0,"y":0,"w":32,"h":32},"sourceSize":{"w":32,"h":32}},"sword_02":{"frame":{"x":32,"y":0,"w":32,"h":32},"rotated":false,"trimmed":false,"spriteSourceSize":{"x":0,"y":0,"w":32,"h":32},"sourceSize":{"w":32,"h":32}}},"meta":{"app":"TexturePacker","version":"1.0","image":"items.png","format":"RGBA8888","size":{"w":64,"h":32},"scale":"1"}}'
-  local atlas = lurek.sprite.parseAtlas(json_data)
-  local sheet = lurek.sprite.newAtlasSheet(atlas, 64, 32)
-  lurek.log.info("atlas-sheet has " .. sheet:getFrameCount() .. " frames", "sprite")
+    local atlasJson = lurek.serial.toJson({
+        frames = {
+            { filename = "f0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+            { filename = "f1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+            { filename = "f2", frame = { x = 64, y = 0, w = 32, h = 32 }, rotated = false },
+            { filename = "f3", frame = { x = 96, y = 0, w = 32, h = 32 }, rotated = false },
+        },
+        meta = { size = { w = 128, h = 32 } },
+    })
+    ---@type LSpriteAtlas
+    local atlas = lurek.sprite.parseAtlas(atlasJson)
+    ---@type LSpriteSheet
+    local sheet = lurek.sprite.newAtlasSheet(atlas, 128, 32)
+    print("atlas sheet type = " .. sheet:type())
+    print("frame count = " .. sheet:getFrameCount())
+    local fw, fh = sheet:getFrameSize()
+    print("frame size = " .. fw .. "x" .. fh)
+    local f1 = sheet:getFrame(1)
+    print("frame 1: x=" .. f1.x .. " y=" .. f1.y)
 end
 ```
 
@@ -135,13 +148,16 @@ Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
 
 ```lua
 do
-  -- RPG Maker character sheets have a fixed layout: 4 directions, 3 walk frames each.
-  -- Pass the full texture dimensions; the engine calculates frame size automatically.
-  local hero = lurek.sprite.newRPGMakerSheet(96, 128)
-  for _, dir in ipairs({"down", "left", "right", "up"}) do
-    local frames = hero:getGroupFrames(dir)
-    lurek.log.info("hero." .. dir .. " has " .. #frames .. " walk frames", "sprite")
-  end
+    ---@type LSpriteSheet
+    local rpg = lurek.sprite.newRPGMakerSheet(384, 256)
+    print("rpg sheet type = " .. rpg:type())
+    print("frame count = " .. rpg:getFrameCount())
+    local fw, fh = rpg:getFrameSize()
+    print("frame size = " .. fw .. "x" .. fh)
+    local cols, rows = rpg:getGridSize()
+    print("grid = " .. cols .. "x" .. rows)
+    local frame1 = rpg:getFrame(1)
+    print("frame 1: " .. frame1.x .. "," .. frame1.y .. " " .. frame1.w .. "x" .. frame1.h)
 end
 ```
 
@@ -166,11 +182,10 @@ Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
 
 ```lua
 do
-  -- A 256x192 pixel texture sliced into 32x32 cells gives 8 columns x 6 rows = 48 frames.
-  -- This is the most common way to set up a character or tileset sprite sheet.
-  local sheet = lurek.sprite.newSheet(256, 192, 32, 32)
-  local cols, rows = sheet:getGridSize()
-  lurek.log.info("sheet ready: " .. cols .. "x" .. rows .. " (" .. sheet:getFrameCount() .. " frames)", "sprite")
+    ---@type LSpriteSheet
+    local sheet = lurek.sprite.newSheet(512, 512, 64, 64)
+    print("type = " .. sheet:type())
+    print("frame count = " .. sheet:getFrameCount())
 end
 ```
 
@@ -192,13 +207,24 @@ Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
 
 ```lua
 do
-  -- Aseprite exports animation data as JSON. Each frame tag (idle, run, attack) becomes
-  -- a named entry in the atlas, making it easy to look up animation regions by tag name.
-  local json_data = '{"frames":{"hero 0.ase":{"frame":{"x":0,"y":0,"w":16,"h":16},"rotated":false,"trimmed":false,"spriteSourceSize":{"x":0,"y":0,"w":16,"h":16},"sourceSize":{"w":16,"h":16},"duration":100}},"meta":{"app":"http://www.aseprite.org/","version":"1.3","image":"hero.png","format":"RGBA8888","size":{"w":16,"h":16},"scale":"1","frameTags":[{"name":"idle","from":0,"to":0,"direction":"forward"}]}}'
-  local atlas = lurek.sprite.parseAsepriteAtlas(json_data)
-  for _, name in ipairs(atlas:entryNames()) do
-    lurek.log.info("aseprite tag: " .. name, "sprite")
-  end
+    local aseJson = lurek.serial.toJson({
+        frames = {
+            ["hero_idle_0.png"] = { frame = { x = 0, y = 0, w = 48, h = 48 }, rotated = false, sourceSize = { w = 48, h = 48 } },
+            ["hero_idle_1.png"] = { frame = { x = 48, y = 0, w = 48, h = 48 }, rotated = false, sourceSize = { w = 48, h = 48 } },
+            ["hero_idle_2.png"] = { frame = { x = 96, y = 0, w = 48, h = 48 }, rotated = false, sourceSize = { w = 48, h = 48 } },
+            ["hero_run_0.png"] = { frame = { x = 0, y = 48, w = 48, h = 48 }, rotated = false, sourceSize = { w = 48, h = 48 } },
+            ["hero_run_1.png"] = { frame = { x = 48, y = 48, w = 48, h = 48 }, rotated = false, sourceSize = { w = 48, h = 48 } },
+        },
+        meta = { image = "hero.png", size = { w = 256, h = 256 }, scale = "1" },
+    })
+    ---@type LSpriteAtlas
+    local atlas = lurek.sprite.parseAsepriteAtlas(aseJson)
+    print("aseprite atlas entries = " .. atlas:entryCount())
+    local names = atlas:entryNames()
+    for _, name in ipairs(names) do
+        local entry = atlas:getEntry(name)
+        print("  " .. name .. ": " .. entry.w .. "x" .. entry.h .. " at " .. entry.x .. "," .. entry.y)
+    end
 end
 ```
 
@@ -220,11 +246,26 @@ Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
 
 ```lua
 do
-  -- TexturePacker exports a JSON file listing every packed sprite's position and size.
-  -- Parse the raw JSON string to get an LSpriteAtlas for named region lookups.
-  local json_data = '{"frames":{"btn_play":{"frame":{"x":0,"y":0,"w":64,"h":32},"rotated":false,"trimmed":false,"spriteSourceSize":{"x":0,"y":0,"w":64,"h":32},"sourceSize":{"w":64,"h":32}},"btn_quit":{"frame":{"x":64,"y":0,"w":64,"h":32},"rotated":false,"trimmed":false,"spriteSourceSize":{"x":0,"y":0,"w":64,"h":32},"sourceSize":{"w":64,"h":32}}},"meta":{"app":"TexturePacker","version":"1.0","image":"ui.png","format":"RGBA8888","size":{"w":128,"h":32},"scale":"1"}}'
-  local atlas = lurek.sprite.parseAtlas(json_data)
-  lurek.log.info("ui atlas loaded with " .. atlas:entryCount() .. " regions", "sprite")
+    local atlasJson = lurek.serial.toJson({
+        frames = {
+            { filename = "player_idle_0", frame = { x = 0, y = 0, w = 64, h = 64 }, rotated = false },
+            { filename = "player_idle_1", frame = { x = 64, y = 0, w = 64, h = 64 }, rotated = false },
+            { filename = "player_walk_0", frame = { x = 128, y = 0, w = 64, h = 64 }, rotated = false },
+            { filename = "player_walk_1", frame = { x = 192, y = 0, w = 64, h = 64 }, rotated = false },
+            { filename = "player_attack_0", frame = { x = 0, y = 64, w = 96, h = 96 }, rotated = false },
+        },
+        meta = { size = { w = 512, h = 512 } },
+    })
+    ---@type LSpriteAtlas
+    local atlas = lurek.sprite.parseAtlas(atlasJson)
+    print("atlas type = " .. atlas:type())
+    print("is LSpriteAtlas = " .. tostring(atlas:typeOf("LSpriteAtlas")))
+    print("entry count = " .. atlas:entryCount())
+    local names = atlas:entryNames()
+    print("entries:")
+    for _, name in ipairs(names) do
+        print("  " .. name)
+    end
 end
 ```
 
@@ -251,13 +292,24 @@ Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
 
 ```lua
 do
-  -- Aseprite exports animation data as JSON. Each frame tag (idle, run, attack) becomes
-  -- a named entry in the atlas, making it easy to look up animation regions by tag name.
-  local json_data = '{"frames":{"hero 0.ase":{"frame":{"x":0,"y":0,"w":16,"h":16},"rotated":false,"trimmed":false,"spriteSourceSize":{"x":0,"y":0,"w":16,"h":16},"sourceSize":{"w":16,"h":16},"duration":100}},"meta":{"app":"http://www.aseprite.org/","version":"1.3","image":"hero.png","format":"RGBA8888","size":{"w":16,"h":16},"scale":"1","frameTags":[{"name":"idle","from":0,"to":0,"direction":"forward"}]}}'
-  local atlas = lurek.sprite.parseAsepriteAtlas(json_data)
-  for _, name in ipairs(atlas:entryNames()) do
-    lurek.log.info("aseprite tag: " .. name, "sprite")
-  end
+    local aseJson = lurek.serial.toJson({
+        frames = {
+            ["hero_idle_0.png"] = { frame = { x = 0, y = 0, w = 48, h = 48 }, rotated = false, sourceSize = { w = 48, h = 48 } },
+            ["hero_idle_1.png"] = { frame = { x = 48, y = 0, w = 48, h = 48 }, rotated = false, sourceSize = { w = 48, h = 48 } },
+            ["hero_idle_2.png"] = { frame = { x = 96, y = 0, w = 48, h = 48 }, rotated = false, sourceSize = { w = 48, h = 48 } },
+            ["hero_run_0.png"] = { frame = { x = 0, y = 48, w = 48, h = 48 }, rotated = false, sourceSize = { w = 48, h = 48 } },
+            ["hero_run_1.png"] = { frame = { x = 48, y = 48, w = 48, h = 48 }, rotated = false, sourceSize = { w = 48, h = 48 } },
+        },
+        meta = { image = "hero.png", size = { w = 256, h = 256 }, scale = "1" },
+    })
+    ---@type LSpriteAtlas
+    local atlas = lurek.sprite.parseAsepriteAtlas(aseJson)
+    print("aseprite atlas entries = " .. atlas:entryCount())
+    local names = atlas:entryNames()
+    for _, name in ipairs(names) do
+        local entry = atlas:getEntry(name)
+        print("  " .. name .. ": " .. entry.w .. "x" .. entry.h .. " at " .. entry.x .. "," .. entry.y)
+    end
 end
 ```
 
@@ -279,12 +331,25 @@ Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
 
 ```lua
 do
-  -- Useful when you have a packed atlas but still want grid-style frame indexing.
-  -- Each atlas entry becomes one frame in the resulting sheet.
-  local json_data = '{"frames":{"sword_01":{"frame":{"x":0,"y":0,"w":32,"h":32},"rotated":false,"trimmed":false,"spriteSourceSize":{"x":0,"y":0,"w":32,"h":32},"sourceSize":{"w":32,"h":32}},"sword_02":{"frame":{"x":32,"y":0,"w":32,"h":32},"rotated":false,"trimmed":false,"spriteSourceSize":{"x":0,"y":0,"w":32,"h":32},"sourceSize":{"w":32,"h":32}}},"meta":{"app":"TexturePacker","version":"1.0","image":"items.png","format":"RGBA8888","size":{"w":64,"h":32},"scale":"1"}}'
-  local atlas = lurek.sprite.parseAtlas(json_data)
-  local sheet = lurek.sprite.newAtlasSheet(atlas, 64, 32)
-  lurek.log.info("atlas-sheet has " .. sheet:getFrameCount() .. " frames", "sprite")
+    local atlasJson = lurek.serial.toJson({
+        frames = {
+            { filename = "f0", frame = { x = 0, y = 0, w = 32, h = 32 }, rotated = false },
+            { filename = "f1", frame = { x = 32, y = 0, w = 32, h = 32 }, rotated = false },
+            { filename = "f2", frame = { x = 64, y = 0, w = 32, h = 32 }, rotated = false },
+            { filename = "f3", frame = { x = 96, y = 0, w = 32, h = 32 }, rotated = false },
+        },
+        meta = { size = { w = 128, h = 32 } },
+    })
+    ---@type LSpriteAtlas
+    local atlas = lurek.sprite.parseAtlas(atlasJson)
+    ---@type LSpriteSheet
+    local sheet = lurek.sprite.newAtlasSheet(atlas, 128, 32)
+    print("atlas sheet type = " .. sheet:type())
+    print("frame count = " .. sheet:getFrameCount())
+    local fw, fh = sheet:getFrameSize()
+    print("frame size = " .. fw .. "x" .. fh)
+    local f1 = sheet:getFrame(1)
+    print("frame 1: x=" .. f1.x .. " y=" .. f1.y)
 end
 ```
 
@@ -315,16 +380,19 @@ Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
 
 ```lua
 do
-  -- Use entryCount to validate that the atlas loaded correctly or to iterate
-  -- by numeric index when you don't know the names ahead of time.
-  local json_data = '{"frames":{"icon_health":{"frame":{"x":0,"y":0,"w":16,"h":16},"rotated":false,"trimmed":false,"spriteSourceSize":{"x":0,"y":0,"w":16,"h":16},"sourceSize":{"w":16,"h":16}},"icon_mana":{"frame":{"x":16,"y":0,"w":16,"h":16},"rotated":false,"trimmed":false,"spriteSourceSize":{"x":0,"y":0,"w":16,"h":16},"sourceSize":{"w":16,"h":16}},"icon_stamina":{"frame":{"x":32,"y":0,"w":16,"h":16},"rotated":false,"trimmed":false,"spriteSourceSize":{"x":0,"y":0,"w":16,"h":16},"sourceSize":{"w":16,"h":16}}},"meta":{"app":"TexturePacker","version":"1.0","image":"icons.png","format":"RGBA8888","size":{"w":48,"h":16},"scale":"1"}}'
-  local atlas = lurek.sprite.parseAtlas(json_data)
-  local n = atlas:entryCount()
-  if n == 0 then
-    lurek.log.warn("atlas is empty - check exporter settings", "sprite")
-  else
-    lurek.log.info("atlas has " .. n .. " sprite regions", "sprite")
-  end
+    local json = [[{"frames":[{"filename":"hero_walk_0001.png","frame":{"x":0,"y":0,"w":16,"h":16},"duration":100},{"filename":"hero_walk_0002.png","frame":{"x":16,"y":0,"w":16,"h":16},"duration":100}],"meta":{"size":{"w":32,"h":16}}}]]
+    local atlas = lurek.sprite.parseAsepriteAtlas(json)
+    print("aseprite_count=" .. atlas:entryCount())
+    local names = atlas:entryNames()
+    print("aseprite_names=" .. #names)
+    local e0 = atlas:getByIndex(0)
+    print("e0=" .. tostring(e0 ~= nil))
+    local entry = atlas:getEntry("hero_walk_0001.png")
+    print("entry=" .. tostring(entry ~= nil))
+    local flipped = atlas:getFlipped("hero_walk_0001.png", true, false)
+    print("flipped=" .. tostring(flipped ~= nil))
+    print("type=" .. atlas:type())
+    print("typeOf=" .. tostring(atlas:typeOf("LSpriteAtlas")))
 end
 ```
 
@@ -350,17 +418,19 @@ Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
 
 ```lua
 do
-  -- Useful for building UI inventories or filtering entries by naming convention.
-  -- For example, find all icons prefixed with "icon_" in a packed UI atlas.
-  local json_data = '{"frames":{"icon_sword":{"frame":{"x":0,"y":0,"w":16,"h":16},"rotated":false,"trimmed":false,"spriteSourceSize":{"x":0,"y":0,"w":16,"h":16},"sourceSize":{"w":16,"h":16}},"icon_shield":{"frame":{"x":16,"y":0,"w":16,"h":16},"rotated":false,"trimmed":false,"spriteSourceSize":{"x":0,"y":0,"w":16,"h":16},"sourceSize":{"w":16,"h":16}},"bg_panel":{"frame":{"x":32,"y":0,"w":64,"h":64},"rotated":false,"trimmed":false,"spriteSourceSize":{"x":0,"y":0,"w":64,"h":64},"sourceSize":{"w":64,"h":64}}},"meta":{"app":"TexturePacker","version":"1.0","image":"ui.png","format":"RGBA8888","size":{"w":96,"h":64},"scale":"1"}}'
-  local atlas = lurek.sprite.parseAtlas(json_data)
-  local icons = {}
-  for _, name in ipairs(atlas:entryNames()) do
-    if name:sub(1, 5) == "icon_" then
-      table.insert(icons, name)
-    end
-  end
-  lurek.log.info("found " .. #icons .. " icon regions out of " .. atlas:entryCount() .. " total", "sprite")
+    local json = [[{"frames":[{"filename":"hero_walk_0001.png","frame":{"x":0,"y":0,"w":16,"h":16},"duration":100},{"filename":"hero_walk_0002.png","frame":{"x":16,"y":0,"w":16,"h":16},"duration":100}],"meta":{"size":{"w":32,"h":16}}}]]
+    local atlas = lurek.sprite.parseAsepriteAtlas(json)
+    print("aseprite_count=" .. atlas:entryCount())
+    local names = atlas:entryNames()
+    print("aseprite_names=" .. #names)
+    local e0 = atlas:getByIndex(0)
+    print("e0=" .. tostring(e0 ~= nil))
+    local entry = atlas:getEntry("hero_walk_0001.png")
+    print("entry=" .. tostring(entry ~= nil))
+    local flipped = atlas:getFlipped("hero_walk_0001.png", true, false)
+    print("flipped=" .. tostring(flipped ~= nil))
+    print("type=" .. atlas:type())
+    print("typeOf=" .. tostring(atlas:typeOf("LSpriteAtlas")))
 end
 ```
 
@@ -391,14 +461,26 @@ Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
 
 ```lua
 do
-  -- Iterate entries by numeric index when building a preview grid or debug overlay.
-  -- Each entry is a table: {name, x, y, w, h, rotated}.
-  local json_data = '{"frames":{"tile_grass":{"frame":{"x":0,"y":0,"w":32,"h":32},"rotated":false,"trimmed":false,"spriteSourceSize":{"x":0,"y":0,"w":32,"h":32},"sourceSize":{"w":32,"h":32}},"tile_stone":{"frame":{"x":32,"y":0,"w":32,"h":32},"rotated":false,"trimmed":false,"spriteSourceSize":{"x":0,"y":0,"w":32,"h":32},"sourceSize":{"w":32,"h":32}}},"meta":{"app":"TexturePacker","version":"1.0","image":"tiles.png","format":"RGBA8888","size":{"w":64,"h":32},"scale":"1"}}'
-  local atlas = lurek.sprite.parseAtlas(json_data)
-  for i = 1, atlas:entryCount() do
-    local entry = atlas:getByIndex(i)
-    lurek.log.info("tile #" .. i .. " = " .. entry.name .. " at " .. entry.x .. "," .. entry.y, "sprite")
-  end
+    local atlasJson = lurek.serial.toJson({
+        frames = {
+            { filename = "coin_0", frame = { x = 0, y = 0, w = 16, h = 16 }, rotated = false },
+            { filename = "coin_1", frame = { x = 16, y = 0, w = 16, h = 16 }, rotated = false },
+            { filename = "coin_2", frame = { x = 32, y = 0, w = 16, h = 16 }, rotated = false },
+            { filename = "gem_0", frame = { x = 0, y = 16, w = 24, h = 24 }, rotated = false },
+        },
+        meta = { size = { w = 256, h = 256 } },
+    })
+    ---@type LSpriteAtlas
+    local atlas = lurek.sprite.parseAtlas(atlasJson)
+    local coin = atlas:getEntry("coin_0")
+    print("coin_0: x=" .. coin.x .. " y=" .. coin.y .. " w=" .. coin.w .. " h=" .. coin.h)
+    print("rotated = " .. tostring(coin.rotated))
+    local gem = atlas:getEntry("gem_0")
+    print("gem_0: x=" .. gem.x .. " y=" .. gem.y .. " w=" .. gem.w .. " h=" .. gem.h)
+    local byIdx = atlas:getByIndex(1)
+    print("index 1 name = " .. byIdx.name)
+    local byIdx3 = atlas:getByIndex(3)
+    print("index 3 name = " .. byIdx3.name)
 end
 ```
 
@@ -429,16 +511,26 @@ Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
 
 ```lua
 do
-  -- Direct name lookup is the fastest way to draw a specific UI element or item icon.
-  -- Returns {name, x, y, w, h, rotated} or nil if the name is not found.
-  local json_data = '{"frames":{"btn_play":{"frame":{"x":0,"y":0,"w":120,"h":40},"rotated":false,"trimmed":false,"spriteSourceSize":{"x":0,"y":0,"w":120,"h":40},"sourceSize":{"w":120,"h":40}},"btn_settings":{"frame":{"x":120,"y":0,"w":120,"h":40},"rotated":false,"trimmed":false,"spriteSourceSize":{"x":0,"y":0,"w":120,"h":40},"sourceSize":{"w":120,"h":40}}},"meta":{"app":"TexturePacker","version":"1.0","image":"buttons.png","format":"RGBA8888","size":{"w":240,"h":40},"scale":"1"}}'
-  local atlas = lurek.sprite.parseAtlas(json_data)
-  local btn = atlas:getEntry("btn_play")
-  if btn then
-    lurek.log.info("btn_play: " .. btn.w .. "x" .. btn.h .. " at " .. btn.x .. "," .. btn.y, "sprite")
-  else
-    lurek.log.warn("btn_play not found in atlas", "sprite")
-  end
+    local atlasJson = lurek.serial.toJson({
+        frames = {
+            { filename = "coin_0", frame = { x = 0, y = 0, w = 16, h = 16 }, rotated = false },
+            { filename = "coin_1", frame = { x = 16, y = 0, w = 16, h = 16 }, rotated = false },
+            { filename = "coin_2", frame = { x = 32, y = 0, w = 16, h = 16 }, rotated = false },
+            { filename = "gem_0", frame = { x = 0, y = 16, w = 24, h = 24 }, rotated = false },
+        },
+        meta = { size = { w = 256, h = 256 } },
+    })
+    ---@type LSpriteAtlas
+    local atlas = lurek.sprite.parseAtlas(atlasJson)
+    local coin = atlas:getEntry("coin_0")
+    print("coin_0: x=" .. coin.x .. " y=" .. coin.y .. " w=" .. coin.w .. " h=" .. coin.h)
+    print("rotated = " .. tostring(coin.rotated))
+    local gem = atlas:getEntry("gem_0")
+    print("gem_0: x=" .. gem.x .. " y=" .. gem.y .. " w=" .. gem.w .. " h=" .. gem.h)
+    local byIdx = atlas:getByIndex(1)
+    print("index 1 name = " .. byIdx.name)
+    local byIdx3 = atlas:getByIndex(3)
+    print("index 3 name = " .. byIdx3.name)
 end
 ```
 
@@ -473,14 +565,22 @@ Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
 
 ```lua
 do
-  -- Flipping avoids duplicating art: store only the right-facing sprite, then flip for left.
-  -- The returned entry adds flip_x and flip_y boolean fields to guide the renderer.
-  local json_data = '{"frames":{"enemy_run":{"frame":{"x":0,"y":0,"w":48,"h":48},"rotated":false,"trimmed":false,"spriteSourceSize":{"x":0,"y":0,"w":48,"h":48},"sourceSize":{"w":48,"h":48}}},"meta":{"app":"TexturePacker","version":"1.0","image":"enemies.png","format":"RGBA8888","size":{"w":48,"h":48},"scale":"1"}}'
-  local atlas = lurek.sprite.parseAtlas(json_data)
-  local facing_left = atlas:getFlipped("enemy_run", true, false)
-  if facing_left then
-    lurek.log.info("flipped entry: flip_x=" .. tostring(facing_left.flip_x) .. " flip_y=" .. tostring(facing_left.flip_y), "sprite")
-  end
+    local atlasJson = lurek.serial.toJson({
+        frames = {
+            { filename = "arrow_right", frame = { x = 0, y = 0, w = 32, h = 16 }, rotated = false },
+            { filename = "arrow_up", frame = { x = 32, y = 0, w = 16, h = 32 }, rotated = false },
+        },
+        meta = { size = { w = 128, h = 128 } },
+    })
+    ---@type LSpriteAtlas
+    local atlas = lurek.sprite.parseAtlas(atlasJson)
+    local flippedH = atlas:getFlipped("arrow_right", true, false)
+    print("flip_x = " .. tostring(flippedH.flip_x) .. " flip_y = " .. tostring(flippedH.flip_y))
+    print("still same coords: x=" .. flippedH.x .. " w=" .. flippedH.w)
+    local flippedBoth = atlas:getFlipped("arrow_up", true, true)
+    print("both flipped: flip_x=" .. tostring(flippedBoth.flip_x) .. " flip_y=" .. tostring(flippedBoth.flip_y))
+    local noFlip = atlas:getFlipped("arrow_right", false, false)
+    print("no flip: flip_x=" .. tostring(noFlip.flip_x) .. " flip_y=" .. tostring(noFlip.flip_y))
 end
 ```
 
@@ -506,8 +606,19 @@ Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
 
 ```lua
 do
-  local sheet = lurek.sprite.newSheet(64, 64, 32, 32)
-  lurek.log.info("sheet type: " .. sheet:type(), "sprite")
+    local json = [[{"frames":[{"filename":"hero_walk_0001.png","frame":{"x":0,"y":0,"w":16,"h":16},"duration":100},{"filename":"hero_walk_0002.png","frame":{"x":16,"y":0,"w":16,"h":16},"duration":100}],"meta":{"size":{"w":32,"h":16}}}]]
+    local atlas = lurek.sprite.parseAsepriteAtlas(json)
+    print("aseprite_count=" .. atlas:entryCount())
+    local names = atlas:entryNames()
+    print("aseprite_names=" .. #names)
+    local e0 = atlas:getByIndex(0)
+    print("e0=" .. tostring(e0 ~= nil))
+    local entry = atlas:getEntry("hero_walk_0001.png")
+    print("entry=" .. tostring(entry ~= nil))
+    local flipped = atlas:getFlipped("hero_walk_0001.png", true, false)
+    print("flipped=" .. tostring(flipped ~= nil))
+    print("type=" .. atlas:type())
+    print("typeOf=" .. tostring(atlas:typeOf("LSpriteAtlas")))
 end
 ```
 
@@ -538,11 +649,19 @@ Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
 
 ```lua
 do
-  -- typeOf is useful in generic systems that process multiple object types.
-  local sheet = lurek.sprite.newSheet(64, 64, 32, 32)
-  local is_sheet = sheet:typeOf("LSpriteSheet")
-  local is_atlas = sheet:typeOf("LSpriteAtlas")
-  lurek.log.info("typeOf LSpriteSheet: " .. tostring(is_sheet) .. ", typeOf LSpriteAtlas: " .. tostring(is_atlas), "sprite")
+    local json = [[{"frames":[{"filename":"hero_walk_0001.png","frame":{"x":0,"y":0,"w":16,"h":16},"duration":100},{"filename":"hero_walk_0002.png","frame":{"x":16,"y":0,"w":16,"h":16},"duration":100}],"meta":{"size":{"w":32,"h":16}}}]]
+    local atlas = lurek.sprite.parseAsepriteAtlas(json)
+    print("aseprite_count=" .. atlas:entryCount())
+    local names = atlas:entryNames()
+    print("aseprite_names=" .. #names)
+    local e0 = atlas:getByIndex(0)
+    print("e0=" .. tostring(e0 ~= nil))
+    local entry = atlas:getEntry("hero_walk_0001.png")
+    print("entry=" .. tostring(entry ~= nil))
+    local flipped = atlas:getFlipped("hero_walk_0001.png", true, false)
+    print("flipped=" .. tostring(flipped ~= nil))
+    print("type=" .. atlas:type())
+    print("typeOf=" .. tostring(atlas:typeOf("LSpriteAtlas")))
 end
 ```
 
@@ -575,11 +694,11 @@ Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
 
 ```lua
 do
-  -- Generates a debug overlay image showing all frames laid out. Useful for
-  -- checking that your sheet parsed correctly during development.
-  local sheet = lurek.sprite.newRPGMakerSheet(96, 128)
-  local preview = sheet:drawToImage(192, 256) -- 2x upscale for clarity
-  lurek.log.info("debug preview generated: " .. tostring(preview), "sprite")
+    ---@type LSpriteSheet
+    local sheet = lurek.sprite.newSheet(256, 256, 32, 32)
+    local img = sheet:drawToImage(256, 256)
+    print("preview image width = " .. img:getWidth())
+    print("preview image height = " .. img:getHeight())
 end
 ```
 
@@ -610,10 +729,10 @@ Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
 
 ```lua
 do
-  -- Columns are useful when animations are stacked vertically (e.g., tile variations).
-  local sheet = lurek.sprite.newSheet(96, 128, 32, 32)
-  local first_col = sheet:getColumn(0)
-  lurek.log.info("column 0 holds " .. #first_col .. " stacked poses", "sprite")
+    ---@type LSpriteSheet
+    local sheet = lurek.sprite.newSheet(192, 192, 64, 64)
+    local col0 = sheet:getColumn(0)
+    print("col 0 frames = " .. #col0)
 end
 ```
 
@@ -644,13 +763,12 @@ Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
 
 ```lua
 do
-  -- Each frame is a quad table {x, y, w, h} with normalized UV coordinates.
-  -- Use this to draw one specific frame from the sheet.
-  local sheet = lurek.sprite.newSheet(128, 64, 32, 32) -- 4 cols x 2 rows = 8 frames
-  local quad = sheet:getFrame(1)
-  if quad then
-    lurek.log.info("frame 1 UV: " .. quad.x .. "," .. quad.y .. " size " .. quad.w .. "x" .. quad.h, "sprite")
-  end
+    ---@type LSpriteSheet
+    local sheet = lurek.sprite.newSheet(256, 128, 32, 32)
+    local frame1 = sheet:getFrame(1)
+    print("frame 1: x=" .. frame1.x .. " y=" .. frame1.y .. " w=" .. frame1.w .. " h=" .. frame1.h)
+    local frame2 = sheet:getFrame(2)
+    print("frame 2: x=" .. frame2.x .. " y=" .. frame2.y .. " w=" .. frame2.w .. " h=" .. frame2.h)
 end
 ```
 
@@ -676,14 +794,33 @@ Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
 
 ```lua
 do
-  -- Knowing the frame count lets you loop animations and clamp indices safely.
-  local sheet = lurek.sprite.newSheet(192, 64, 32, 32) -- 6 cols x 2 rows
-  local count = sheet:getFrameCount()
-  -- Simulate picking a frame at 8 fps after 1.5 seconds
-  local fps = 8
-  local time = 1.5
-  local frame_idx = (math.floor(time * fps) % count) + 1
-  lurek.log.info("animating " .. count .. " frames, at t=1.5s showing frame " .. frame_idx, "sprite")
+    local sheet = lurek.sprite.newSheet(16, 16, 64, 128)
+    print("frame_count=" .. sheet:getFrameCount())
+    local fw, fh = sheet:getFrameSize()
+    print("frame_size=" .. fw .. "x" .. fh)
+    local gw, gh = sheet:getGridSize()
+    print("grid=" .. gw .. "x" .. gh)
+
+    local frame = sheet:getFrame(0)
+    print("frame0=" .. tostring(frame ~= nil))
+
+    local row = sheet:getRow(0)
+    print("row0_len=" .. #row)
+
+    local col = sheet:getColumn(0)
+    print("col0_len=" .. #col)
+
+    sheet:nameGroup("walk", 0, 4)
+    local names = sheet:getGroupNames()
+    print("groups=" .. #names)
+    local group_frames = sheet:getGroupFrames("walk")
+    print("walk_frames=" .. #group_frames)
+
+    local img = sheet:drawToImage(64, 128)
+    print("sheet_img=" .. tostring(img ~= nil))
+
+    print("type=" .. sheet:type())
+    print("typeOf=" .. tostring(sheet:typeOf("LSpriteSheet")))
 end
 ```
 
@@ -710,13 +847,33 @@ Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
 
 ```lua
 do
-  -- Use frame size to derive hitboxes, collision rects, or scale factors.
-  local sheet = lurek.sprite.newSheet(256, 256, 64, 64)
-  local fw, fh = sheet:getFrameSize()
-  -- Shrink the hitbox by a few pixels on each side for fairer gameplay
-  local hitbox_w = fw - 8
-  local hitbox_h = fh - 4
-  lurek.log.info("frame " .. fw .. "x" .. fh .. " -> hitbox " .. hitbox_w .. "x" .. hitbox_h, "sprite")
+    local sheet = lurek.sprite.newSheet(16, 16, 64, 128)
+    print("frame_count=" .. sheet:getFrameCount())
+    local fw, fh = sheet:getFrameSize()
+    print("frame_size=" .. fw .. "x" .. fh)
+    local gw, gh = sheet:getGridSize()
+    print("grid=" .. gw .. "x" .. gh)
+
+    local frame = sheet:getFrame(0)
+    print("frame0=" .. tostring(frame ~= nil))
+
+    local row = sheet:getRow(0)
+    print("row0_len=" .. #row)
+
+    local col = sheet:getColumn(0)
+    print("col0_len=" .. #col)
+
+    sheet:nameGroup("walk", 0, 4)
+    local names = sheet:getGroupNames()
+    print("groups=" .. #names)
+    local group_frames = sheet:getGroupFrames("walk")
+    print("walk_frames=" .. #group_frames)
+
+    local img = sheet:drawToImage(64, 128)
+    print("sheet_img=" .. tostring(img ~= nil))
+
+    print("type=" .. sheet:type())
+    print("typeOf=" .. tostring(sheet:typeOf("LSpriteSheet")))
 end
 ```
 
@@ -743,10 +900,33 @@ Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
 
 ```lua
 do
-  -- Grid size tells you how your texture is divided without needing to recompute.
-  local sheet = lurek.sprite.newSheet(96, 128, 32, 32)
-  local cols, rows = sheet:getGridSize()
-  lurek.log.info("grid: " .. cols .. " cols x " .. rows .. " rows", "sprite")
+    local sheet = lurek.sprite.newSheet(16, 16, 64, 128)
+    print("frame_count=" .. sheet:getFrameCount())
+    local fw, fh = sheet:getFrameSize()
+    print("frame_size=" .. fw .. "x" .. fh)
+    local gw, gh = sheet:getGridSize()
+    print("grid=" .. gw .. "x" .. gh)
+
+    local frame = sheet:getFrame(0)
+    print("frame0=" .. tostring(frame ~= nil))
+
+    local row = sheet:getRow(0)
+    print("row0_len=" .. #row)
+
+    local col = sheet:getColumn(0)
+    print("col0_len=" .. #col)
+
+    sheet:nameGroup("walk", 0, 4)
+    local names = sheet:getGroupNames()
+    print("groups=" .. #names)
+    local group_frames = sheet:getGroupFrames("walk")
+    print("walk_frames=" .. #group_frames)
+
+    local img = sheet:drawToImage(64, 128)
+    print("sheet_img=" .. tostring(img ~= nil))
+
+    print("type=" .. sheet:type())
+    print("typeOf=" .. tostring(sheet:typeOf("LSpriteSheet")))
 end
 ```
 
@@ -777,16 +957,11 @@ Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
 
 ```lua
 do
-  -- Named groups let you access animation sequences by name instead of raw indices.
-  -- RPG Maker sheets define groups automatically; custom sheets need nameGroup() first.
-  local sheet = lurek.sprite.newRPGMakerSheet(96, 128)
-  local frames = sheet:getGroupFrames("up")
-  if frames then
-    -- Cycle through the frames based on the current time
-    local idx = 1 + (os.time() % #frames)
-    local current = frames[idx]
-    lurek.log.info("hero facing up, frame UV x=" .. current.x .. " y=" .. current.y, "sprite")
-  end
+    ---@type LSpriteSheet
+    local sheet = lurek.sprite.newSheet(512, 256, 64, 64)
+    sheet:nameGroup("walk", 5, 8)
+    local walkFrames = sheet:getGroupFrames("walk")
+    print("walk frames = " .. #walkFrames)
 end
 ```
 
@@ -812,11 +987,12 @@ Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
 
 ```lua
 do
-  -- List available groups to verify your sheet setup or build animation menus.
-  local sheet = lurek.sprite.newRPGMakerSheet(96, 128)
-  local names = sheet:getGroupNames()
-  table.sort(names)
-  lurek.log.info("animation groups: " .. table.concat(names, ", "), "sprite")
+    ---@type LSpriteSheet
+    local sheet = lurek.sprite.newSheet(512, 256, 64, 64)
+    sheet:nameGroup("idle", 1, 4)
+    sheet:nameGroup("walk", 5, 8)
+    local names = sheet:getGroupNames()
+    print("groups = " .. #names)
 end
 ```
 
@@ -847,14 +1023,10 @@ Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
 
 ```lua
 do
-  -- In many sheets, each row represents a different animation direction.
-  -- Row 0 = walk down, row 1 = walk left, row 2 = walk right, row 3 = walk up.
-  local sheet = lurek.sprite.newSheet(96, 128, 32, 32) -- 3 cols x 4 rows
-  local walk_down = sheet:getRow(0)
-  lurek.log.info("walk_down row has " .. #walk_down .. " frames", "sprite")
-  for i, q in ipairs(walk_down) do
-    lurek.log.debug("  frame " .. i .. ": x=" .. q.x .. " y=" .. q.y, "sprite")
-  end
+    ---@type LSpriteSheet
+    local sheet = lurek.sprite.newSheet(192, 192, 64, 64)
+    local row0 = sheet:getRow(0)
+    print("row 0 frames = " .. #row0)
 end
 ```
 
@@ -886,15 +1058,10 @@ Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
 
 ```lua
 do
-  -- Call nameGroup after creating a generic sheet to label frame ranges.
-  -- Start is 1-based, count is how many consecutive frames belong to the group.
-  local sheet = lurek.sprite.newSheet(256, 64, 32, 32) -- 8 cols x 2 rows = 16 frames
-  sheet:nameGroup("idle", 1, 4)    -- frames 1-4
-  sheet:nameGroup("run", 5, 4)     -- frames 5-8
-  sheet:nameGroup("attack", 9, 4)  -- frames 9-12
-  sheet:nameGroup("die", 13, 4)    -- frames 13-16
-  local run_frames = sheet:getGroupFrames("run")
-  lurek.log.info("run group has " .. #run_frames .. " frames", "sprite")
+    ---@type LSpriteSheet
+    local sheet = lurek.sprite.newSheet(512, 256, 64, 64)
+    sheet:nameGroup("idle", 1, 4)
+    print("group named = idle")
 end
 ```
 
@@ -920,8 +1087,33 @@ Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
 
 ```lua
 do
-  local obj = lurek.sprite.newSheet(256, 256, 64, 64)
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LSpriteSheet"
+    local sheet = lurek.sprite.newSheet(16, 16, 64, 128)
+    print("frame_count=" .. sheet:getFrameCount())
+    local fw, fh = sheet:getFrameSize()
+    print("frame_size=" .. fw .. "x" .. fh)
+    local gw, gh = sheet:getGridSize()
+    print("grid=" .. gw .. "x" .. gh)
+
+    local frame = sheet:getFrame(0)
+    print("frame0=" .. tostring(frame ~= nil))
+
+    local row = sheet:getRow(0)
+    print("row0_len=" .. #row)
+
+    local col = sheet:getColumn(0)
+    print("col0_len=" .. #col)
+
+    sheet:nameGroup("walk", 0, 4)
+    local names = sheet:getGroupNames()
+    print("groups=" .. #names)
+    local group_frames = sheet:getGroupFrames("walk")
+    print("walk_frames=" .. #group_frames)
+
+    local img = sheet:drawToImage(64, 128)
+    print("sheet_img=" .. tostring(img ~= nil))
+
+    print("type=" .. sheet:type())
+    print("typeOf=" .. tostring(sheet:typeOf("LSpriteSheet")))
 end
 ```
 
@@ -952,8 +1144,33 @@ Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
 
 ```lua
 do
-  local obj = lurek.sprite.newSheet(256, 256, 64, 64)
-  lurek.log.debug("typeOf LSpriteSheet: " .. tostring(obj:typeOf("LSpriteSheet")), "example") -- true
+    local sheet = lurek.sprite.newSheet(16, 16, 64, 128)
+    print("frame_count=" .. sheet:getFrameCount())
+    local fw, fh = sheet:getFrameSize()
+    print("frame_size=" .. fw .. "x" .. fh)
+    local gw, gh = sheet:getGridSize()
+    print("grid=" .. gw .. "x" .. gh)
+
+    local frame = sheet:getFrame(0)
+    print("frame0=" .. tostring(frame ~= nil))
+
+    local row = sheet:getRow(0)
+    print("row0_len=" .. #row)
+
+    local col = sheet:getColumn(0)
+    print("col0_len=" .. #col)
+
+    sheet:nameGroup("walk", 0, 4)
+    local names = sheet:getGroupNames()
+    print("groups=" .. #names)
+    local group_frames = sheet:getGroupFrames("walk")
+    print("walk_frames=" .. #group_frames)
+
+    local img = sheet:drawToImage(64, 128)
+    print("sheet_img=" .. tostring(img ~= nil))
+
+    print("type=" .. sheet:type())
+    print("typeOf=" .. tostring(sheet:typeOf("LSpriteSheet")))
 end
 ```
 
@@ -962,7 +1179,7 @@ end
 
 ## 💡 Examples
 
-- [sprite.lua](../blob/main/content/examples/sprite.lua) - Sprite batch
+- [sprite.lua](../blob/main/content/examples/sprite.lua) - API example
 
 [⬆ back to top](#table-of-contents)
 

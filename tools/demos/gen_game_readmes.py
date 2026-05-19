@@ -215,7 +215,7 @@ def generate_readme(game_dir: Path) -> str:
     lines.extend(api_lines)
     lines += [
         "",
-        "**Lunasome (`library/`) modules**",
+        "**Lureksome (`library/`) modules**",
         "",
         "_None._",
         "",

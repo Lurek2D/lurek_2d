@@ -121,7 +121,7 @@ cargo test
   └── Lua BDD harness ────────────────────────────────────────────
       tests/lua/harness.rs
       ├── unit/         One file per engine module (API surface)
-      ├── library/      One file per Lunasome library
+      ├── library/      One file per Lureksome library
       ├── integration/  Tests between ≥2 modules
       ├── stress/       Throughput + allocation from Lua
       ├── security/     Sandboxing + input validation
@@ -133,7 +133,7 @@ cargo test
 **Why two layers:**
 - Rust tests cover internal engine contracts: struct invariants, error handling, resource lifecycle, mathematical correctness.
 - Lua tests cover the public `lurek.*` API surface from the user's perspective — the same VM game scripts use.
-- Library tests (`tests/lua/library/`) exclusively test Lunasome pure-Lua libraries.
+- Library tests (`tests/lua/library/`) exclusively test Lureksome pure-Lua libraries.
 
 ---
 
@@ -161,7 +161,7 @@ tests/
     ├── harness.rs       Rust harness — one #[test] per .lua file
     ├── init.lua         BDD framework (describe/it/expect_*)
     ├── unit/            One file per lurek.* namespace
-    ├── library/         One file per Lunasome library
+    ├── library/         One file per Lureksome library
     ├── integration/     Tests between ≥2 modules
     ├── stress/          Throughput + allocation from Lua
     ├── security/        Sandboxing + input validation
@@ -206,7 +206,7 @@ All Lua tests use the custom BDD framework in `tests/lua/init.lua`, loaded autom
 | Category | Path | Scope | Naming |
 |---|---|---|---|
 | Unit | `tests/lua/unit/` | One module per file | `test_<module>.lua` |
-| Library | `tests/lua/library/` | One Lunasome library | `test_library_<name>.lua` |
+| Library | `tests/lua/library/` | One Lureksome library | `test_library_<name>.lua` |
 | Integration | `tests/lua/integration/` | ≥2 modules | `test_<modA>_<modB>.lua` |
 | Stress | `tests/lua/stress/` | Throughput + allocation | `test_<module>_stress.lua` |
 | Security | `tests/lua/security/` | Sandboxing + input validation | — |

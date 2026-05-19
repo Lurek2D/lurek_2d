@@ -4,7 +4,7 @@
 
 ## Navigation
 
-[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lureksome](Lureksome)
 
 ## Table of Contents
 
@@ -326,15 +326,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    lurek.audio.create_bus("sfx")
-
-    -- Add a lowpass effect to the entire SFX bus. Returns an ID for later removal.
-    -- Effect types: "lowpass", "highpass", "bandpass", "gain", etc.
-    -- The params table provides effect-specific settings.
-    local id = lurek.audio.add_effect("sfx", "lowpass", {value = 1500.0})
-    lurek.log.info("effect id=" .. tostring(id), "audio")
-  end
+    lurek.audio.create_bus("fx_bus", nil)
+    local eid = lurek.audio.add_effect("fx_bus", "reverb", { value = 0.5 })
+    print("effect id = " .. eid)
 end
 ```
 
@@ -356,13 +350,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local sd = lurek.audio.newWhiteNoise(0.5, 44100, 0.3, 1)
-
-    -- Only keeps frequencies between low_hz and high_hz.
-    -- Bandpass on noise = wind effect. 300-3400 Hz is telephone-quality bandwidth.
-    lurek.audio.applyBandpass(sd, 300.0, 3400.0)
-  end
+    local sd = lurek.audio.newWhiteNoise(0.5, 44100, 0.5, 42)
+    lurek.audio.applyBandpass(sd, 300, 3000)
+    print("bandpass 300-3000 Hz applied")
 end
 ```
 
@@ -383,13 +373,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local sd = lurek.audio.newSineWave(440.0, 0.25, 44100, 0.3)
-
-    -- Multiplies every sample by 1.5. Values above 1.0 amplify, below 1.0 attenuate.
-    -- Careful: amplifying can cause clipping if samples exceed -1.0 to 1.0 range.
-    lurek.audio.applyGain(sd, 1.5)
-  end
+    local sd = lurek.audio.newSineWave(440, 0.5, 44100, 0.3)
+    lurek.audio.applyGain(sd, 2.0)
+    print("gain x2 applied")
 end
 ```
 
@@ -410,12 +396,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local saw = lurek.audio.newSawtoothWave(110.0, 1.0, 44100, 0.5)
-
-    -- Removes frequencies below 80 Hz — eliminates rumble and DC offset.
-    lurek.audio.applyHighpass(saw, 80.0)
-  end
+    local sd = lurek.audio.newWhiteNoise(0.5, 44100, 0.6, 99)
+    lurek.audio.applyHighpass(sd, 2000)
+    print("highpass applied at 2000 Hz")
 end
 ```
 
@@ -436,13 +419,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local saw = lurek.audio.newSawtoothWave(110.0, 1.0, 44100, 0.5)
-
-    -- Permanently modifies the buffer — removes frequencies above 800 Hz.
-    -- Use for offline sound design: generate raw wave, then shape with filters.
-    lurek.audio.applyLowpass(saw, 800.0)
-  end
+    local sd = lurek.audio.newSineWave(1000, 0.5, 44100, 0.8)
+    lurek.audio.applyLowpass(sd, 500)
+    print("lowpass applied at 500 Hz")
 end
 ```
 
@@ -462,12 +441,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  local src = lurek.audio.newSource("assets/audio/music.ogg", "static")
-  lurek.audio.setLowpass(src, 1000)
-  -- Remove the filter to restore the original sound.
-  lurek.audio.clearFilter(src)
-  lurek.log.debug("filter cleared", "audio")
-  lurek.audio.release(src)
+    local path = "sounds/voice.wav"
+    local src = lurek.audio.newSource(path, "static")
+    lurek.audio.setLowpass(src, 1000)
+    lurek.audio.clearFilter(src)
+    print("filters cleared")
 end
 ```
 
@@ -483,12 +461,8 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    lurek.audio.setMidiSoundFont("music/gm.sf2")
-
-    -- Unload the SoundFont to free memory when MIDI is no longer needed.
     lurek.audio.clearMidiSoundFont()
-  end
+    print("soundfont cleared = " .. tostring(not lurek.audio.hasMidiSoundFont()))
 end
 ```
 
@@ -508,15 +482,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local ok_foot, foot = pcall(lurek.audio.newSource, "sfx/footstep.ogg", "static")
-    if not ok_foot then return end
-
-    lurek.audio.setRandomPitch(foot, 0.95, 1.05)
-
-    -- Restore fixed pitch behavior.
-    lurek.audio.clearRandomPitch(foot)
-  end
+    local path = "sounds/click.wav"
+    local src = lurek.audio.newSource(path, "static")
+    lurek.audio.setRandomPitch(src, 0.8, 1.2)
+    lurek.audio.clearRandomPitch(src)
+    print("random pitch cleared")
 end
 ```
 
@@ -538,12 +508,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  local src = lurek.audio.newSource("assets/audio/music.ogg", "static")
-  -- clone() creates an independent copy that can play simultaneously.
-  local copy = lurek.audio.clone(src)
-  lurek.log.debug("source cloned", "audio")
-  lurek.audio.release(src)
-  lurek.audio.release(copy)
+    local path = "sounds/hit.wav"
+    local src = lurek.audio.newSource(path, "static")
+    lurek.audio.setVolume(src, 0.6)
+    local copy = lurek.audio.clone(src)
+    print("clone volume = " .. lurek.audio.getVolume(copy))
 end
 ```
 
@@ -564,13 +533,8 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- create_bus creates a named bus. Second arg is optional parent bus name.
-    -- Parent-child relationships let you build a mixing hierarchy:
-    -- master → music → ambient_music
-    lurek.audio.create_bus("music")
-    lurek.audio.create_bus("ambient", "music")
-  end
+    lurek.audio.create_bus("master_sfx", nil)
+    print("bus created: master_sfx")
 end
 ```
 
@@ -592,18 +556,13 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local ok_a, a = pcall(lurek.audio.newSource, "music/level1.mp3")
-    if not ok_a then return end
-    local b = lurek.audio.newSource("music/level2.mp3")
-
-    lurek.audio.play(a)
-
-    -- Smoothly transitions from source a to source b over 3 seconds.
-    -- Source a fades out while b fades in simultaneously — no silence gap.
-    -- Use for seamless music transitions between game areas.
-    lurek.audio.crossfade(a, b, 3.0)
-  end
+    local p1 = "sounds/track_a.ogg"
+    local p2 = "sounds/track_b.ogg"
+    local from = lurek.audio.newSource(p1, "stream")
+    local to = lurek.audio.newSource(p2, "stream")
+    lurek.audio.play(from)
+    lurek.audio.crossfade(from, to, 3.0)
+    print("crossfading over 3s")
 end
 ```
 
@@ -624,11 +583,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  local music = lurek.audio.newSource("assets/audio/music.ogg", "static")
-  -- Fade volume from 0 to full over 2 seconds.
-  lurek.audio.fadeIn(music, 2.0)
-  lurek.log.info("music fading in over 2 s", "audio")
-  lurek.audio.release(music)
+    local path = "sounds/intro.ogg"
+    local src = lurek.audio.newSource(path, "stream")
+    lurek.audio.fadeIn(src, 2.0)
+    print("fade in = " .. lurek.audio.getFadeIn(src) .. "s")
 end
 ```
 
@@ -646,15 +604,8 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local ok_sfx, sfx = pcall(lurek.audio.newSource, "sfx/jump.ogg", "static")
-    if not ok_sfx then return end
-
-    lurek.audio.play(sfx)
-
-    -- Useful for debugging voice counts or limiting simultaneous sounds.
-    lurek.log.info("active=" .. lurek.audio.getActiveSourceCount(), "audio")
-  end
+    local count = lurek.audio.getActiveSourceCount()
+    print("active sources = " .. count)
 end
 ```
 
@@ -676,14 +627,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    lurek.audio.create_bus("music")
-
-    -- Peak = loudest sample in the last audio frame. Good for VU meters.
-    -- Range: 0.0 (silent) to 1.0+ (clipping).
-    local peak = lurek.audio.getBusPeak("music")
-    lurek.log.info("music bus peak=" .. peak, "audio")
-  end
+    lurek.audio.create_bus("vu_bus", nil)
+    local peak = lurek.audio.getBusPeak("vu_bus")
+    print("bus peak = " .. peak)
 end
 ```
 
@@ -705,14 +651,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    lurek.audio.create_bus("music")
-
-    -- RMS = average loudness over the frame. More stable than peak for visual meters.
-    -- Use for beat detection or reactive visuals (compare RMS across frames).
-    local rms = lurek.audio.getBusRms("music")
-    lurek.log.info("music bus rms=" .. rms, "audio")
-  end
+    lurek.audio.create_bus("rms_bus", nil)
+    local rms = lurek.audio.getBusRms("rms_bus")
+    print("bus rms = " .. rms)
 end
 ```
 
@@ -730,10 +671,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
     lurek.audio.setDistanceModel("linear")
-    lurek.log.info("distance model=" .. lurek.audio.getDistanceModel(), "audio")
-  end
+    local model = lurek.audio.getDistanceModel()
+    print("model = " .. model)
 end
 ```
 
@@ -751,10 +691,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    lurek.audio.setDopplerScale(1.5)
-    lurek.log.info("doppler scale=" .. lurek.audio.getDopplerScale(), "audio")
-  end
+    lurek.audio.setDopplerScale(2.0)
+    local ds = lurek.audio.getDopplerScale()
+    print("doppler = " .. ds)
 end
 ```
 
@@ -776,10 +715,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  local src = lurek.audio.newSource("assets/audio/music.ogg", "static")
-  local dur = lurek.audio.getDuration(src)
-  lurek.log.info("duration: " .. tostring(dur) .. " s", "audio")
-  lurek.audio.release(src)
+    local path = "sounds/song.ogg"
+    local src = lurek.audio.newSource(path, "stream")
+    local dur = lurek.audio.getDuration(src) or 0
+    print("duration = " .. dur .. "s")
 end
 ```
 
@@ -801,11 +740,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  local src = lurek.audio.newSource("assets/audio/music.ogg", "static")
-  lurek.audio.fadeIn(src, 1.0)
-  local fade = lurek.audio.getFadeIn(src)
-  lurek.log.debug("fade-in duration: " .. tostring(fade), "audio")
-  lurek.audio.release(src)
+    local path = "sounds/start.ogg"
+    local src = lurek.audio.newSource(path, "stream")
+    lurek.audio.fadeIn(src, 1.5)
+    local fi = lurek.audio.getFadeIn(src)
+    print("fade in duration = " .. fi)
 end
 ```
 
@@ -827,14 +766,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local qs = lurek.audio.newQueueableSource(44100, 16, 1, 4)
-
-    -- Check free slots before queuing. If 0, the source is full — wait for playback to
-    -- consume a buffer before pushing more.
-    local free = lurek.audio.getFreeBufferCount(qs)
-    lurek.log.info("free buffer slots=" .. free, "audio")
-  end
+    local qid = lurek.audio.newQueueableSource(44100, 16, 1, 4)
+    local free = lurek.audio.getFreeBufferCount(qid)
+    print("free buffers = " .. free)
 end
 ```
 
@@ -856,11 +790,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  local src = lurek.audio.newSource("assets/audio/music.ogg", "static")
-  lurek.audio.setHighpass(src, 800)
-  local freq = lurek.audio.getHighpass(src)
-  lurek.log.debug("highpass: " .. tostring(freq) .. " Hz", "audio")
-  lurek.audio.release(src)
+    local path = "sounds/treble.wav"
+    local src = lurek.audio.newSource(path, "static")
+    lurek.audio.setHighpass(src, 3000)
+    local hp = lurek.audio.getHighpass(src)
+    print("highpass = " .. hp)
 end
 ```
 
@@ -878,11 +812,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    lurek.audio.setListener(320.0, 240.0, 0.0)
+    lurek.audio.setListener(10, 5, 0)
     local x, y, z = lurek.audio.getListener()
-    lurek.log.info("listener 3D=" .. x .. "," .. y .. "," .. z, "audio")
-  end
+    print("listener = " .. x .. ", " .. y .. ", " .. z)
 end
 ```
 
@@ -900,11 +832,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    lurek.audio.setListener2D(320.0, 240.0)
-    local lx, ly = lurek.audio.getListener2D()
-    lurek.log.info("listener at " .. lx .. ", " .. ly, "audio")
-  end
+    lurek.audio.setListener2D(100, 200)
+    local x, y = lurek.audio.getListener2D()
+    print("listener at " .. x .. ", " .. y)
 end
 ```
 
@@ -926,11 +856,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  local src = lurek.audio.newSource("assets/audio/music.ogg", "static")
-  lurek.audio.setLowpass(src, 3000)
-  local freq = lurek.audio.getLowpass(src)
-  lurek.log.debug("lowpass: " .. tostring(freq) .. " Hz", "audio")
-  lurek.audio.release(src)
+    local path = "sounds/bass.wav"
+    local src = lurek.audio.newSource(path, "static")
+    lurek.audio.setLowpass(src, 500)
+    local lp = lurek.audio.getLowpass(src)
+    print("lowpass = " .. lp)
 end
 ```
 
@@ -948,11 +878,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    lurek.audio.setMasterVolume(0.7)
+    lurek.audio.setMasterVolume(1.0)
     local mv = lurek.audio.getMasterVolume()
-    lurek.log.info("master=" .. mv, "audio")
-  end
+    print("master volume = " .. mv)
 end
 ```
 
@@ -970,11 +898,8 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- Engine hard limit. Plan your sound budget accordingly — prioritize important sounds.
-    local cap = lurek.audio.getMaxSources()
-    lurek.log.info("max simultaneous voices=" .. cap, "audio")
-  end
+    local max = lurek.audio.getMaxSources()
+    print("max sources = " .. max)
 end
 ```
 
@@ -992,12 +917,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    lurek.audio.setMeter(0.7)
-
-    -- Read this each frame to drive a VU meter bar in your HUD.
-    lurek.log.info("meter peak=" .. lurek.audio.getMeter(), "audio")
-  end
+    lurek.audio.setMeter(0.6)
+    local lvl = lurek.audio.getMeter()
+    print("meter = " .. lvl)
 end
 ```
 
@@ -1019,14 +941,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local ok_cone, cone = pcall(lurek.audio.newSource, "sfx/horn.ogg", "static")
-    if not ok_cone then return end
-
-    lurek.audio.setOrientation(cone, 0.0, 0.0, -1.0, 0.0, 1.0, 0.0)
-    local fx, fy, fz, ux, uy, uz = lurek.audio.getOrientation(cone)
-    lurek.log.info("forward=" .. fx .. "," .. fy .. "," .. fz, "audio")
-  end
+    local path = "sounds/speaker.wav"
+    local src = lurek.audio.newSource(path, "static")
+    lurek.audio.setOrientation(src, 0, 0, -1, 0, 1, 0)
+    local fx, fy, fz, ux, uy, uz = lurek.audio.getOrientation(src)
+    print("forward = " .. fx .. "," .. fy .. "," .. fz .. " up = " .. ux .. "," .. uy .. "," .. uz)
 end
 ```
 
@@ -1048,11 +967,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  local src = lurek.audio.newSource("assets/audio/music.ogg", "static")
-  lurek.audio.setPan(src, 0.5)
-  local pan = lurek.audio.getPan(src)
-  lurek.log.debug("pan: " .. tostring(pan), "audio") -- 0.5 (right)
-  lurek.audio.release(src)
+    local path = "sounds/ring.wav"
+    local src = lurek.audio.newSource(path, "static")
+    lurek.audio.setPan(src, 0.7)
+    local pan = lurek.audio.getPan(src)
+    print("pan = " .. pan)
 end
 ```
 
@@ -1074,11 +993,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  local src = lurek.audio.newSource("assets/audio/music.ogg", "static")
-  lurek.audio.setPitch(src, 1.5)
-  local pitch = lurek.audio.getPitch(src)
-  lurek.log.debug("pitch: " .. tostring(pitch), "audio") -- 1.5
-  lurek.audio.release(src)
+    local path = "sounds/tone.wav"
+    local src = lurek.audio.newSource(path, "static")
+    lurek.audio.setPitch(src, 0.8)
+    local p = lurek.audio.getPitch(src)
+    print("pitch = " .. p)
 end
 ```
 
@@ -1096,10 +1015,8 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local cur = lurek.audio.getPlaybackDevice()
-    lurek.log.info("current output device=" .. cur, "audio")
-  end
+    local dev = lurek.audio.getPlaybackDevice()
+    print("current device = " .. dev)
 end
 ```
 
@@ -1117,14 +1034,8 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- Returns a list of available audio output device names (headphones, speakers, etc.).
-    -- Use for a device selection dropdown in your options menu.
-    local devs = lurek.audio.getPlaybackDevices()
-    for i, name in ipairs(devs) do
-      lurek.log.info(i .. ": " .. name, "audio")
-    end
-  end
+    local devices = lurek.audio.getPlaybackDevices()
+    print("devices = " .. #devices)
 end
 ```
 
@@ -1146,14 +1057,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local ok_foot, foot = pcall(lurek.audio.newSource, "sfx/footstep.ogg", "static")
-    if not ok_foot then return end
-
-    lurek.audio.setPosition(foot, 480.0, 240.0, 0.0)
-    local x, y, z = lurek.audio.getPosition(foot)
-    lurek.log.info("emitter at " .. x .. "," .. y .. "," .. z, "audio")
-  end
+    local path = "sounds/car.wav"
+    local src = lurek.audio.newSource(path, "static")
+    lurek.audio.setPosition(src, 100, 0, 30)
+    local x, y, z = lurek.audio.getPosition(src)
+    print("pos = " .. x .. ", " .. y .. ", " .. z)
 end
 ```
 
@@ -1175,17 +1083,12 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local sfx_bus = lurek.audio.newBus("sfx")
-    local ok_hit, hit = pcall(lurek.audio.newSource, "sfx/hit.ogg", "static")
-    if not ok_hit then return end
-
-    lurek.audio.setSourceBus(hit, sfx_bus)
-
-    -- Returns the LBus object or nil if the source has no bus assignment.
-    local b = lurek.audio.getSourceBus(hit)
-    if b then lurek.log.info("routed through: " .. b:getName(), "audio") end
-  end
+    local path = "sounds/coin.wav"
+    local src = lurek.audio.newSource(path, "static")
+    local bus = lurek.audio.newBus("ui")
+    lurek.audio.setSourceBus(src, bus)
+    local b = lurek.audio.getSourceBus(src)
+    print("source bus = " .. b:getName())
 end
 ```
 
@@ -1203,14 +1106,8 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local ok__, _ = pcall(lurek.audio.newSource, "sfx/coin.ogg", "static")
-    if not ok__ then return end
-
-    -- Includes all sources: playing, paused, and stopped but not yet released.
-    local n = lurek.audio.getSourceCount()
-    lurek.log.info("total loaded sources=" .. n, "audio")
-  end
+    local total = lurek.audio.getSourceCount()
+    print("total sources = " .. total)
 end
 ```
 
@@ -1232,16 +1129,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local ok_music, music = pcall(lurek.audio.newSource, "music/level.mp3")
-    if not ok_music then return end
-
-    -- Returns "static" (fully in RAM) or "stream" (decoded progressively from disk).
-    local t = lurek.audio.getSourceType(music)
-    if t == "stream" then
-      lurek.log.info("music is streamed — low memory use", "audio")
-    end
-  end
+    local path = "sounds/fx.wav"
+    local src = lurek.audio.newSource(path, "static")
+    local stype = lurek.audio.getSourceType(src)
+    print("source type = " .. stype)
 end
 ```
 
@@ -1263,13 +1154,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local ok_music, music = pcall(lurek.audio.newSource, "music/level.mp3")
-    if not ok_music then return end
-
-    lurek.audio.setStereoWidth(music, 0.5)
-    lurek.log.info("stereo width=" .. lurek.audio.getStereoWidth(music), "audio")
-  end
+    local path = "sounds/ambient.ogg"
+    local src = lurek.audio.newSource(path, "stream")
+    lurek.audio.setStereoWidth(src, 0.8)
+    local w = lurek.audio.getStereoWidth(src)
+    print("width = " .. w)
 end
 ```
 
@@ -1291,14 +1180,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local ok_car, car = pcall(lurek.audio.newSource, "sfx/engine.ogg", "static")
-    if not ok_car then return end
-
-    lurek.audio.setVelocity(car, 60.0, 0.0, 0.0)
-    local vx, vy, vz = lurek.audio.getVelocity(car)
-    lurek.log.info("velocity=" .. vx .. "," .. vy .. "," .. vz, "audio")
-  end
+    local path = "sounds/plane.wav"
+    local src = lurek.audio.newSource(path, "static")
+    lurek.audio.setVelocity(src, 5, 3, 0)
+    local vx, vy, vz = lurek.audio.getVelocity(src)
+    print("vel = " .. vx .. ", " .. vy .. ", " .. vz)
 end
 ```
 
@@ -1320,11 +1206,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  local src = lurek.audio.newSource("assets/audio/music.ogg", "static")
-  lurek.audio.setVolume(src, 0.7)
-  local vol = lurek.audio.getVolume(src)
-  lurek.log.debug("volume: " .. tostring(vol), "audio") -- 0.7
-  lurek.audio.release(src)
+    local path = "sounds/step.wav"
+    local src = lurek.audio.newSource(path, "static")
+    lurek.audio.setVolume(src, 0.8)
+    local vol = lurek.audio.getVolume(src)
+    print("volume = " .. vol)
 end
 ```
 
@@ -1342,12 +1228,8 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- Check before playing MIDI to warn users if audio will be silent.
-    if not lurek.audio.hasMidiSoundFont() then
-      lurek.log.warn("no soundfont loaded — MIDI will be silent", "audio")
-    end
-  end
+    local has = lurek.audio.hasMidiSoundFont()
+    print("has soundfont = " .. tostring(has))
 end
 ```
 
@@ -1369,11 +1251,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  local src = lurek.audio.newSource("assets/audio/music.ogg", "static")
-  lurek.audio.setLooping(src, true)
-  local looping = lurek.audio.isLooping(src)
-  lurek.log.debug("looping: " .. tostring(looping), "audio") -- true
-  lurek.audio.release(src)
+    local path = "sounds/bgm.ogg"
+    local src = lurek.audio.newSource(path, "stream")
+    lurek.audio.setLooping(src, true)
+    print("isLooping = " .. tostring(lurek.audio.isLooping(src)))
 end
 ```
 
@@ -1395,13 +1276,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  local src = lurek.audio.newSource("assets/audio/music.ogg", "static")
-  lurek.audio.play(src)
-  lurek.audio.pause(src)
-  local paused = lurek.audio.isPaused(src)
-  lurek.log.debug("isPaused: " .. tostring(paused), "audio") -- true
-  lurek.audio.stop(src)
-  lurek.audio.release(src)
+    local path = "sounds/tick.wav"
+    local src = lurek.audio.newSource(path, "static")
+    lurek.audio.play(src)
+    lurek.audio.pause(src)
+    print("isPaused = " .. tostring(lurek.audio.isPaused(src)))
 end
 ```
 
@@ -1423,12 +1302,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  local src = lurek.audio.newSource("assets/audio/music.ogg", "static")
-  lurek.audio.play(src)
-  local playing = lurek.audio.isPlaying(src)
-  lurek.log.debug("isPlaying: " .. tostring(playing), "audio") -- true
-  lurek.audio.stop(src)
-  lurek.audio.release(src)
+    local path = "sounds/beep.wav"
+    local src = lurek.audio.newSource(path, "static")
+    lurek.audio.play(src)
+    print("after play = " .. tostring(lurek.audio.isPlaying(src)))
 end
 ```
 
@@ -1450,10 +1327,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  local src = lurek.audio.newSource("assets/audio/music.ogg", "static")
-  local stopped = lurek.audio.isStopped(src)
-  lurek.log.debug("isStopped (before play): " .. tostring(stopped), "audio") -- true
-  lurek.audio.release(src)
+    local path = "sounds/pop.wav"
+    local src = lurek.audio.newSource(path, "static")
+    print("initially stopped = " .. tostring(lurek.audio.isStopped(src)))
 end
 ```
 
@@ -1474,15 +1350,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- Create two tones at different frequencies.
-    local a = lurek.audio.newSineWave(440.0, 0.5, 44100, 0.3)
-    local b = lurek.audio.newSineWave(660.0, 0.5, 44100, 0.3)
-
-    -- Adds b's samples into a — creating a chord (A4 + E5).
-    -- Both must have same sample_rate, channels, and length.
-    lurek.audio.mixInto(a, b)
-  end
+    local dest = lurek.audio.newSineWave(440, 1.0, 44100, 0.5)
+    local src = lurek.audio.newSineWave(880, 1.0, 44100, 0.3)
+    lurek.audio.mixInto(dest, src)
+    print("mixed 880 Hz into 440 Hz")
 end
 ```
 
@@ -1504,13 +1375,8 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- Buses let you group sources (music, sfx, voice) and control them together.
-    -- Great for volume sliders in options: one slider per bus.
-    local sfx_bus = lurek.audio.newBus("sfx")
-    sfx_bus:setVolume(0.7)
-    lurek.log.info("bus=" .. sfx_bus:getName(), "audio")
-  end
+    lurek.audio.newBus("sfx")
+    print("bus created: sfx")
 end
 ```
 
@@ -1533,12 +1399,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- Args: file_path, buffer_size (samples per chunk).
-    -- Use decoders for custom streaming or analysis — decodes PCM chunk by chunk.
-    local dec = lurek.audio.newDecoder("music/long_track.ogg", 4096)
-    lurek.log.info("decoder rate=" .. dec:getSampleRate() .. " Hz", "audio")
-  end
+    local path = "tests/fixtures/sine_mono_44100.wav"
+    local dec = lurek.audio.newDecoder(path, 4096)
+    print("decoder = " .. tostring(dec ~= nil))
 end
 ```
 
@@ -1560,13 +1423,8 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- Pass a path to load immediately, or call :load() later.
-    -- MIDI playback requires a SoundFont — see setMidiSoundFont().
-    local mp = lurek.audio.newMidiPlayer("music/song.mid")
-    mp:setLooping(true)
-    mp:play()
-  end
+    local player = lurek.audio.newMidiPlayer()
+    print("midi player = " .. tostring(player ~= nil))
 end
 ```
 
@@ -1589,14 +1447,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- Args: file_path, voice_count.
-    -- A pool pre-allocates N copies of the same sound. Calling pool:play() fires the next
-    -- available voice in round-robin order — perfect for rapid-fire SFX without clone() calls.
-    local foot = lurek.audio.newPool("sfx/footstep.ogg", 8)
-    foot:setVolume(0.7)
-    foot:play()
-  end
+    local path = "sounds/shot.wav"
+    local pool = lurek.audio.newPool(path, 8)
+    print("pool voices = " .. pool:getVoiceCount())
 end
 ```
 
@@ -1621,13 +1474,8 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- Args: sample_rate, bit_depth, channels, buffer_count.
-    -- Queueable sources let you feed audio in real-time — perfect for procedural audio,
-    -- network streaming, or custom synthesis where you generate samples each frame.
-    local qs = lurek.audio.newQueueableSource(44100, 16, 1, 4)
-    lurek.log.info("queueable source id=" .. qs, "audio")
-  end
+    local qid = lurek.audio.newQueueableSource(44100, 16, 1, 4)
+    print("queueable id = " .. qid)
 end
 ```
 
@@ -1652,11 +1500,8 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- Sawtooth waves are bright and rich in harmonics — good base for synth sounds.
-    local saw = lurek.audio.newSawtoothWave(110.0, 1.0, 44100, 0.5)
-    lurek.log.info("sawtooth duration=" .. saw:getDuration() .. "s", "audio")
-  end
+    local sd = lurek.audio.newSawtoothWave(330, 0.5, 44100, 0.7)
+    print("sawtooth wave = " .. tostring(sd ~= nil))
 end
 ```
 
@@ -1681,12 +1526,8 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- Args: frequency_hz, duration_sec, sample_rate, amplitude (0.0-1.0).
-    -- Sine waves produce a pure, clean tone — useful for UI beeps or test signals.
-    local beep = lurek.audio.newSineWave(440.0, 0.25, 44100, 0.5)
-    lurek.log.info("sine wave samples=" .. beep:getSampleCount(), "audio")
-  end
+    local sd = lurek.audio.newSineWave(440, 1.0, 44100, 0.8)
+    print("sine wave = " .. tostring(sd ~= nil))
 end
 ```
 
@@ -1710,12 +1551,8 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- Args: sample_count, sample_rate, channels.
-    -- Creates a blank buffer you can fill with setSample() for procedural generation.
     local sd = lurek.audio.newSoundData(44100, 44100, 1)
-    lurek.log.info("blank buffer samples=" .. sd:getSampleCount(), "audio")
-  end
+    print("sound data created = " .. tostring(sd ~= nil))
 end
 ```
 
@@ -1738,23 +1575,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- "static" loads the entire file into memory — best for short SFX that play often.
-    -- Omitting the second arg (or "stream") streams from disk — best for music/long files.
-    local ok_jump, jump = pcall(lurek.audio.newSource, "sfx/jump.ogg", "static")
-    if not ok_jump then return end
-
-    -- Streaming source for background music — low memory, reads file progressively.
-    local ok_music, music = pcall(lurek.audio.newSource, "music/level.mp3")
-    if not ok_music then return end
-
-    -- Loop the music so it repeats until explicitly stopped.
-    lurek.audio.setLooping(music, true)
-    lurek.audio.play(music)
-
-    -- Store the SFX handle globally so lurek.update() or input callbacks can trigger it.
-    _G.jump_sfx = jump
-  end
+    local path = "sounds/click.wav"
+    local src = lurek.audio.newSource(path, "static")
+    print("source created = " .. tostring(src ~= nil))
 end
 ```
 
@@ -1779,11 +1602,8 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- Square waves have a harsh, buzzy timbre — think retro/chiptune sounds.
-    local sq = lurek.audio.newSquareWave(220.0, 0.5, 44100, 0.5)
-    lurek.log.info("square wave samples=" .. sq:getSampleCount(), "audio")
-  end
+    local sd = lurek.audio.newSquareWave(220, 0.5, 44100, 0.6)
+    print("square wave = " .. tostring(sd ~= nil))
 end
 ```
 
@@ -1808,11 +1628,8 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- Triangle waves are softer than square waves — suitable for flute-like tones.
-    local tri = lurek.audio.newTriangleWave(330.0, 0.5, 44100, 0.5)
-    lurek.log.info("triangle samples=" .. tri:getSampleCount(), "audio")
-  end
+    local sd = lurek.audio.newTriangleWave(550, 0.5, 44100, 0.5)
+    print("triangle wave = " .. tostring(sd ~= nil))
 end
 ```
 
@@ -1837,13 +1654,8 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- Args: duration_sec, sample_rate, amplitude, seed.
-    -- Deterministic seed means identical output each run — good for reproducible SFX.
-    -- White noise is useful for wind, static, explosions (with filters applied).
-    local noise = lurek.audio.newWhiteNoise(0.5, 44100, 0.3, 12345)
-    lurek.log.info("noise samples=" .. noise:getSampleCount(), "audio")
-  end
+    local sd = lurek.audio.newWhiteNoise(1.0, 44100, 0.4, 12345)
+    print("white noise = " .. tostring(sd ~= nil))
 end
 ```
 
@@ -1865,11 +1677,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- Scales the audio so the peak reaches the target amplitude (0.95 = 95% of max).
-    -- Useful for ensuring consistent volume across user-submitted audio assets.
-    lurek.audio.normalizeFile("music/raw.wav", "save/normalised.wav", 0.95)
-  end
+    local path_in = "sounds/quiet.wav"
+    local path_out = "output/normalized.wav"
+    lurek.audio.normalizeFile(path_in, path_out, 0.9)
+    print("normalized to 0.9 peak")
 end
 ```
 
@@ -1889,9 +1700,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  local src = lurek.audio.newSource('assets/audio/music.ogg', 'stream')
-  lurek.audio.play(src)
-  lurek.audio.pause(src)
+    local path = "sounds/music.ogg"
+    local src = lurek.audio.newSource(path, "stream")
+    lurek.audio.play(src)
+    lurek.audio.pause(src)
+    print("paused = " .. tostring(lurek.audio.isPaused(src)))
 end
 ```
 
@@ -1907,15 +1720,8 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local ok_music, music = pcall(lurek.audio.newSource, "music/level.mp3")
-    if not ok_music then return end
-
-    lurek.audio.play(music)
-
-    -- pauseAll() is ideal for a global pause menu — freezes every active source at once.
     lurek.audio.pauseAll()
-  end
+    print("all paused")
 end
 ```
 
@@ -1938,8 +1744,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  local sfx = lurek.audio.newSource('assets/audio/hit.wav', 'static')
-  lurek.audio.play(sfx)
+    local path = "sounds/bgm.ogg"
+    local src = lurek.audio.newSource(path, "stream")
+    lurek.audio.play(src)
+    print("playing = " .. tostring(lurek.audio.isPlaying(src)))
 end
 ```
 
@@ -1959,15 +1767,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local ok_rain, rain = pcall(lurek.audio.newSource, "music/rain_loop.ogg")
-    if not ok_rain then return end
-
-    -- Convenience: sets looping AND starts playback in one call.
-    -- Equivalent to setLooping(rain, true) followed by play(rain).
-    lurek.audio.setVolume(rain, 0.7)
-    lurek.audio.playLooping(rain)
-  end
+    local path = "sounds/wind.ogg"
+    local src = lurek.audio.newSource(path, "stream")
+    lurek.audio.playLooping(src)
+    print("playing+looping = " .. tostring(lurek.audio.isPlaying(src) and lurek.audio.isLooping(src)))
 end
 ```
 
@@ -1987,15 +1790,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local qs = lurek.audio.newQueueableSource(44100, 16, 1, 4)
-    local chunk = lurek.audio.newSineWave(440.0, 0.5, 44100, 0.5)
-    lurek.audio.queueSource(qs, chunk)
-
-    -- Start playback of the queued buffers. Audio plays continuously as long as
-    -- there are buffers in the queue.
-    lurek.audio.playQueueable(qs)
-  end
+    local qid = lurek.audio.newQueueableSource(44100, 16, 1, 4)
+    local sd = lurek.audio.newSoundData(1024, 44100, 1)
+    lurek.audio.queueSource(qid, sd)
+    lurek.audio.playQueueable(qid)
+    print("queueable playing")
 end
 ```
 
@@ -2017,13 +1816,14 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- Each effect is a table: {type = "...", p1 = ..., p2 = ..., p3 = ...}.
-    -- Processes the entire file at once (not real-time). Output is a new WAV file.
-    -- Use for pre-baking effects: reverb tails, filtered ambient loops, etc.
-    local fx = {{type = "lowpass", p1 = 800.0, p2 = 1.0, p3 = 0.5}}
-    lurek.audio.processOffline("music/in.wav", "save/out.wav", fx)
-  end
+    local effects = {
+        { type = "lowpass", p1 = 1000 },
+        { type = "gain", p1 = 0.8 },
+    }
+    local path_in = "sounds/raw.wav"
+    local path_out = "output/processed.wav"
+    lurek.audio.processOffline(path_in, path_out, effects)
+    print("offline processing done")
 end
 ```
 
@@ -2044,14 +1844,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local qs = lurek.audio.newQueueableSource(44100, 16, 1, 4)
-
-    -- Generate a short tone and push it into the queue.
-    -- The queueable source plays buffers in FIFO order, seamlessly concatenating them.
-    local chunk = lurek.audio.newSineWave(440.0, 0.1, 44100, 0.5)
-    lurek.audio.queueSource(qs, chunk)
-  end
+    local qid = lurek.audio.newQueueableSource(44100, 16, 1, 4)
+    local sd = lurek.audio.newSoundData(1024, 44100, 1)
+    lurek.audio.queueSource(qid, sd)
+    print("queued chunk")
 end
 ```
 
@@ -2073,10 +1869,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  local src = lurek.audio.newSource("assets/audio/music.ogg", "static")
-  -- Always release sources when you no longer need them to free decoder memory.
-  lurek.audio.release(src)
-  lurek.log.debug("source released", "audio")
+    local path = "sounds/temp.wav"
+    local src = lurek.audio.newSource(path, "static")
+    lurek.audio.release(src)
+    print("source released")
 end
 ```
 
@@ -2099,13 +1895,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    lurek.audio.create_bus("sfx")
-    local id = lurek.audio.add_effect("sfx", "lowpass", {value = 1500.0})
-
-    -- Remove the effect by bus name and effect ID when the player exits the muffled area.
-    lurek.audio.remove_effect("sfx", id)
-  end
+    lurek.audio.create_bus("temp_bus", nil)
+    local eid = lurek.audio.add_effect("temp_bus", "lowpass", { value = 800 })
+    local ok = lurek.audio.remove_effect("temp_bus", eid)
+    print("removed = " .. tostring(ok))
 end
 ```
 
@@ -2125,10 +1918,12 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  local src = lurek.audio.newSource('assets/audio/music.ogg', 'stream')
-  lurek.audio.play(src)
-  lurek.audio.pause(src)
-  lurek.audio.resume(src)
+    local path = "sounds/music.ogg"
+    local src = lurek.audio.newSource(path, "stream")
+    lurek.audio.play(src)
+    lurek.audio.pause(src)
+    lurek.audio.resume(src)
+    print("playing after resume = " .. tostring(lurek.audio.isPlaying(src)))
 end
 ```
 
@@ -2144,16 +1939,8 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local ok_music, music = pcall(lurek.audio.newSource, "music/level.mp3")
-    if not ok_music then return end
-
-    lurek.audio.play(music)
-    lurek.audio.pauseAll()
-
-    -- resumeAll() when closing the pause menu — restores all frozen audio.
     lurek.audio.resumeAll()
-  end
+    print("all resumed")
 end
 ```
 
@@ -2174,13 +1961,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local tone = lurek.audio.newSineWave(440.0, 1.0, 44100, 0.5)
-
-    -- Export procedurally generated audio as a standard WAV file.
-    -- Useful for offline sound generation or recording gameplay audio.
-    lurek.audio.saveWAV(tone, "save/tone.wav")
-  end
+    local sd = lurek.audio.newSineWave(440, 1.0, 44100, 0.8)
+    lurek.audio.saveWAV(sd, "output/test_tone.wav")
+    print("saved WAV file")
 end
 ```
 
@@ -2201,12 +1984,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  local src = lurek.audio.newSource("assets/audio/music.ogg", "static")
-  -- Jump to 0.5 seconds into the track.
-  lurek.audio.seek(src, 0.5)
-  local pos = lurek.audio.tell(src)
-  lurek.log.debug("position after seek: " .. tostring(pos) .. " s", "audio")
-  lurek.audio.release(src)
+    local path = "sounds/long.ogg"
+    local src = lurek.audio.newSource(path, "stream")
+    lurek.audio.play(src)
+    lurek.audio.seek(src, 5.0)
+    print("seeked to 5s, pos = " .. lurek.audio.tell(src))
 end
 ```
 
@@ -2227,12 +2009,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    lurek.audio.create_bus("music")
-
-    -- Set volume by bus name. All sources routed to "music" will be scaled by this.
-    lurek.audio.set_bus_volume("music", 0.7)
-  end
+    lurek.audio.create_bus("music_bus", nil)
+    lurek.audio.set_bus_volume("music_bus", 0.7)
+    print("music_bus volume = 0.7")
 end
 ```
 
@@ -2257,14 +2036,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    lurek.audio.create_bus("sfx")
-    local id = lurek.audio.add_effect("sfx", "lowpass", {value = 1500.0})
-
-    -- Modify a running effect parameter in real-time. Smoothly animate the cutoff
-    -- in update() for gradual transitions (e.g. diving underwater).
-    lurek.audio.set_effect_param("sfx", id, "cutoff", 800.0)
-  end
+    lurek.audio.create_bus("eq_bus", nil)
+    local eid = lurek.audio.add_effect("eq_bus", "highpass", { cutoff = 200 })
+    local ok = lurek.audio.set_effect_param("eq_bus", eid, "cutoff", 500)
+    print("param set = " .. tostring(ok))
 end
 ```
 
@@ -2284,11 +2059,8 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- Available models: "linear", "inverse", "exponent".
-    -- "linear" = predictable falloff. "inverse" = more natural. "exponent" = steep dropoff.
-    lurek.audio.setDistanceModel("linear")
-  end
+    lurek.audio.setDistanceModel("inverse")
+    print("distance model = " .. lurek.audio.getDistanceModel())
 end
 ```
 
@@ -2308,11 +2080,8 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- 1.0 = realistic Doppler. 0.0 = disabled. Higher = exaggerated effect.
-    -- Set once at game start based on your world scale.
-    lurek.audio.setDopplerScale(1.0)
-  end
+    lurek.audio.setDopplerScale(1.5)
+    print("doppler scale = " .. lurek.audio.getDopplerScale())
 end
 ```
 
@@ -2333,11 +2102,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  local src = lurek.audio.newSource("assets/audio/music.ogg", "static")
-  -- Cut frequencies below 800 Hz (treble-only pass).
-  lurek.audio.setHighpass(src, 800)
-  lurek.log.debug("highpass filter set to 800 Hz", "audio")
-  lurek.audio.release(src)
+    local path = "sounds/radio.wav"
+    local src = lurek.audio.newSource(path, "static")
+    lurek.audio.setHighpass(src, 2000)
+    print("highpass = " .. lurek.audio.getHighpass(src) .. " Hz")
 end
 ```
 
@@ -2359,10 +2127,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- For 2D games, set Z to 0. The engine uses all three axes for distance calculations.
-    lurek.audio.setListener(320.0, 240.0, 0.0)
-  end
+    lurek.audio.setListener(0, 0, 0)
+    local x, y, z = lurek.audio.getListener()
+    print("listener 3D = " .. x .. ", " .. y .. ", " .. z)
 end
 ```
 
@@ -2383,12 +2150,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- The listener is typically the camera or player position.
-    -- Sources with setPosition will be panned/attenuated relative to this point.
-    local cam_x, cam_y = 320.0, 240.0
-    lurek.audio.setListener2D(cam_x, cam_y)
-  end
+    lurek.audio.setListener2D(400, 300)
+    local x, y = lurek.audio.getListener2D()
+    print("listener 2D = " .. x .. ", " .. y)
 end
 ```
 
@@ -2409,10 +2173,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  local music = lurek.audio.newSource("assets/audio/music.ogg", "static")
-  lurek.audio.setLooping(music, true)
-  lurek.log.debug("music will loop indefinitely", "audio")
-  lurek.audio.release(music)
+    local path = "sounds/ambient.ogg"
+    local src = lurek.audio.newSource(path, "stream")
+    lurek.audio.setLooping(src, true)
+    print("looping = " .. tostring(lurek.audio.isLooping(src)))
 end
 ```
 
@@ -2433,11 +2197,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  local src = lurek.audio.newSource("assets/audio/music.ogg", "static")
-  -- Muffle high-frequency content above 3 kHz (muffled/underwater effect).
-  lurek.audio.setLowpass(src, 3000)
-  lurek.log.debug("lowpass filter set to 3000 Hz", "audio")
-  lurek.audio.release(src)
+    local path = "sounds/engine.ogg"
+    local src = lurek.audio.newSource(path, "stream")
+    lurek.audio.setLowpass(src, 800)
+    print("lowpass = " .. lurek.audio.getLowpass(src) .. " Hz")
 end
 ```
 
@@ -2457,12 +2220,8 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- Master volume scales ALL sources and buses. Use it for a global volume slider
-    -- in your options menu. Range: 0.0 (mute everything) to 1.0 (full output).
-    local user_volume = 0.7
-    lurek.audio.setMasterVolume(user_volume)
-  end
+    lurek.audio.setMasterVolume(0.75)
+    print("master volume = " .. lurek.audio.getMasterVolume())
 end
 ```
 
@@ -2482,11 +2241,8 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- Used by VU meter displays. The engine tracks peak level internally;
-    -- this lets you override it for testing UI without audio playing.
-    lurek.audio.setMeter(0.7)
-  end
+    lurek.audio.setMeter(0.8)
+    print("meter set to 0.8")
 end
 ```
 
@@ -2506,11 +2262,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- Must be called before MIDI playback. Points to a .sf2 file (General MIDI compatible).
-    -- Without a SoundFont, MIDI notes will be silent.
-    lurek.audio.setMidiSoundFont("music/gm.sf2")
-  end
+    local path = "audio/gm.sf2"
+    local ok = pcall(function()
+        lurek.audio.setMidiSoundFont(path)
+    end)
+    print("soundfont set = " .. tostring(ok and lurek.audio.hasMidiSoundFont()))
 end
 ```
 
@@ -2536,15 +2292,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local ok_cone, cone = pcall(lurek.audio.newSource, "sfx/horn.ogg", "static")
-    if not ok_cone then return end
-
-    -- 6 floats: forward_x, forward_y, forward_z, up_x, up_y, up_z.
-    -- Orientation matters for directional sources (cone attenuation).
-    lurek.audio.setOrientation(cone, 0.0, 0.0, -1.0, 0.0, 1.0, 0.0)
-    lurek.audio.play(cone)
-  end
+    local path = "sounds/speaker.wav"
+    local src = lurek.audio.newSource(path, "static")
+    lurek.audio.setOrientation(src, 0, 0, -1, 0, 1, 0)
+    print("orientation set: forward(0,0,-1) up(0,1,0)")
 end
 ```
 
@@ -2565,11 +2316,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  local sfx = lurek.audio.newSource("assets/audio/music.ogg", "static")
-  -- Pan hard right for an enemy approaching from the right.
-  lurek.audio.setPan(sfx, 1.0)
-  lurek.log.debug("panned right", "audio")
-  lurek.audio.release(sfx)
+    local path = "sounds/ping.wav"
+    local src = lurek.audio.newSource(path, "static")
+    lurek.audio.setPan(src, -0.5)
+    print("pan = " .. lurek.audio.getPan(src))
 end
 ```
 
@@ -2590,11 +2340,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  local sfx = lurek.audio.newSource("assets/audio/music.ogg", "static")
-  -- Speed up the sound (higher pitch = faster).
-  lurek.audio.setPitch(sfx, 1.25)
-  lurek.log.debug("pitch set to 1.25", "audio")
-  lurek.audio.release(sfx)
+    local path = "sounds/ding.wav"
+    local src = lurek.audio.newSource(path, "static")
+    lurek.audio.setPitch(src, 1.5)
+    print("pitch = " .. lurek.audio.getPitch(src))
 end
 ```
 
@@ -2614,12 +2363,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- Switch audio output to a specific device by name.
-    -- Get available names from getPlaybackDevices() first.
-    local devs = lurek.audio.getPlaybackDevices()
-    if devs[1] then lurek.audio.setPlaybackDevice(devs[1]) end
-  end
+    local devices = lurek.audio.getPlaybackDevices()
+    if #devices > 0 then
+        lurek.audio.setPlaybackDevice(devices[1])
+        print("set device = " .. devices[1])
+    end
 end
 ```
 
@@ -2642,15 +2390,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local ok_foot, foot = pcall(lurek.audio.newSource, "sfx/footstep.ogg", "static")
-    if not ok_foot then return end
-
-    -- Place the source at a world position. The engine calculates panning and volume
-    -- based on distance from the listener using the active distance model.
-    lurek.audio.setPosition(foot, 480.0, 240.0, 0.0)
-    lurek.audio.play(foot)
-  end
+    local path = "sounds/bird.wav"
+    local src = lurek.audio.newSource(path, "static")
+    lurek.audio.setPosition(src, 50, 20, 0)
+    local x, y, z = lurek.audio.getPosition(src)
+    print("source pos = " .. x .. ", " .. y .. ", " .. z)
 end
 ```
 
@@ -2672,15 +2416,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local ok_foot, foot = pcall(lurek.audio.newSource, "sfx/footstep.ogg", "static")
-    if not ok_foot then return end
-
-    -- Each time this source plays, pitch is randomly chosen between 0.95 and 1.05.
-    -- Prevents repetitive SFX from sounding robotic (footsteps, gunshots, UI clicks).
-    lurek.audio.setRandomPitch(foot, 0.95, 1.05)
-    lurek.audio.play(foot)
-  end
+    local path = "sounds/step.wav"
+    local src = lurek.audio.newSource(path, "static")
+    lurek.audio.setRandomPitch(src, 0.9, 1.1)
+    print("random pitch range = 0.9 to 1.1")
 end
 ```
 
@@ -2701,15 +2440,12 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local voice_bus = lurek.audio.newBus("voice")
-    local ok_line, line = pcall(lurek.audio.newSource, "voice/line01.ogg", "static")
-    if not ok_line then return end
-
-    -- After this call, the source's effective volume = source_vol * bus_vol * master_vol.
-    -- Muting the bus silences all dialogue lines at once.
-    lurek.audio.setSourceBus(line, voice_bus)
-  end
+    local path = "sounds/sword.wav"
+    local src = lurek.audio.newSource(path, "static")
+    local bus = lurek.audio.newBus("effects")
+    lurek.audio.setSourceBus(src, bus)
+    local b = lurek.audio.getSourceBus(src)
+    print("bus = " .. b:getName())
 end
 ```
 
@@ -2730,15 +2466,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local ok_music, music = pcall(lurek.audio.newSource, "music/level.mp3")
-    if not ok_music then return end
-
-    -- 0.0 = mono (center only), 1.0 = normal stereo, >1.0 = widened stereo.
-    -- Narrowing stereo width helps important sounds cut through a busy mix.
-    lurek.audio.setStereoWidth(music, 0.5)
-    lurek.audio.play(music)
-  end
+    local path = "sounds/music.ogg"
+    local src = lurek.audio.newSource(path, "stream")
+    lurek.audio.setStereoWidth(src, 0.5)
+    print("stereo width = " .. lurek.audio.getStereoWidth(src))
 end
 ```
 
@@ -2761,15 +2492,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local ok_car, car = pcall(lurek.audio.newSource, "sfx/engine.ogg", "static")
-    if not ok_car then return end
-
-    -- Velocity is in units/second. Combined with Doppler scale, this causes pitch shift
-    -- when the source moves toward or away from the listener (think passing car).
-    lurek.audio.setVelocity(car, 60.0, 0.0, 0.0)
-    lurek.audio.play(car)
-  end
+    local path = "sounds/siren.wav"
+    local src = lurek.audio.newSource(path, "static")
+    lurek.audio.setVelocity(src, 10, 0, 0)
+    local vx, vy, vz = lurek.audio.getVelocity(src)
+    print("velocity = " .. vx .. ", " .. vy .. ", " .. vz)
 end
 ```
 
@@ -2790,10 +2517,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  local music = lurek.audio.newSource("assets/audio/music.ogg", "static")
-  lurek.audio.setVolume(music, 0.6)
-  lurek.log.debug("volume set to 60%", "audio")
-  lurek.audio.release(music)
+    local path = "sounds/alert.wav"
+    local src = lurek.audio.newSource(path, "static")
+    lurek.audio.setVolume(src, 0.5)
+    print("volume = " .. lurek.audio.getVolume(src))
 end
 ```
 
@@ -2816,11 +2543,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- Renders a frequency-over-time spectrogram as PNG — great for audio debugging.
-    -- Shows which frequencies are present at each time point.
-    lurek.audio.spectrogramToPng("music/level.wav", "save/level_spec.png", 800, 400)
-  end
+    local path_in = "tests/fixtures/sine_mono_44100.wav"
+    local path_out = "output/spectrogram.png"
+    lurek.audio.spectrogramToPng(path_in, path_out, 800, 400)
+    print("spectrogram image saved")
 end
 ```
 
@@ -2840,9 +2566,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  local src = lurek.audio.newSource('assets/audio/music.ogg', 'stream')
-  lurek.audio.play(src)
-  lurek.audio.stop(src)
+    local path = "sounds/shot.wav"
+    local src = lurek.audio.newSource(path, "static")
+    lurek.audio.play(src)
+    lurek.audio.stop(src)
+    print("stopped = " .. tostring(lurek.audio.isStopped(src)))
 end
 ```
 
@@ -2858,9 +2586,8 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  -- Stop every active audio source at once (e.g., game over or menu open).
-  lurek.audio.stopAll()
-  lurek.log.info("all audio stopped", "audio")
+    lurek.audio.stopAll()
+    print("all stopped")
 end
 ```
 
@@ -2880,13 +2607,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local qs = lurek.audio.newQueueableSource(44100, 16, 1, 4)
-    lurek.audio.playQueueable(qs)
-
-    -- Stops playback and discards remaining queued buffers.
-    lurek.audio.stopQueueable(qs)
-  end
+    local qid = lurek.audio.newQueueableSource(44100, 16, 1, 4)
+    lurek.audio.stopQueueable(qid)
+    print("queueable stopped")
 end
 ```
 
@@ -2908,11 +2631,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  local src = lurek.audio.newSource("assets/audio/music.ogg", "static")
-  lurek.audio.seek(src, 1.0)
-  local pos = lurek.audio.tell(src)
-  lurek.log.debug("tell: " .. tostring(pos) .. " s", "audio")
-  lurek.audio.release(src)
+    local path = "sounds/track.ogg"
+    local src = lurek.audio.newSource(path, "stream")
+    lurek.audio.play(src)
+    local pos = lurek.audio.tell(src)
+    print("position = " .. pos)
 end
 ```
 
@@ -2935,11 +2658,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- Renders the audio waveform as a PNG image for debug/visualization.
-    -- Args: input_path, output_png_path, width, height.
-    lurek.audio.waveformToPng("music/level.wav", "save/level_wave.png", 800, 200)
-  end
+    local path_in = "tests/fixtures/sine_mono_44100.wav"
+    local path_out = "output/waveform.png"
+    lurek.audio.waveformToPng(path_in, path_out, 800, 200)
+    print("waveform image saved")
 end
 ```
 
@@ -2966,17 +2688,12 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local sfx_bus = lurek.audio.newBus("sfx")
-    local ok_hit, hit = pcall(lurek.audio.newSource, "sfx/hit.ogg", "static")
-    if not ok_hit then return end
-
-    lurek.audio.setSourceBus(hit, sfx_bus)
-
-    -- Returns the LBus object or nil if the source has no bus assignment.
-    local b = lurek.audio.getSourceBus(hit)
-    if b then lurek.log.info("routed through: " .. b:getName(), "audio") end
-  end
+    local path = "sounds/coin.wav"
+    local src = lurek.audio.newSource(path, "static")
+    local bus = lurek.audio.newBus("ui")
+    lurek.audio.setSourceBus(src, bus)
+    local b = lurek.audio.getSourceBus(src)
+    print("source bus = " .. b:getName())
 end
 ```
 
@@ -2998,12 +2715,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- Args: file_path, buffer_size (samples per chunk).
-    -- Use decoders for custom streaming or analysis — decodes PCM chunk by chunk.
-    local dec = lurek.audio.newDecoder("music/long_track.ogg", 4096)
-    lurek.log.info("decoder rate=" .. dec:getSampleRate() .. " Hz", "audio")
-  end
+    local path = "tests/fixtures/sine_mono_44100.wav"
+    local dec = lurek.audio.newDecoder(path, 4096)
+    print("decoder = " .. tostring(dec ~= nil))
 end
 ```
 
@@ -3025,13 +2739,8 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- Pass a path to load immediately, or call :load() later.
-    -- MIDI playback requires a SoundFont — see setMidiSoundFont().
-    local mp = lurek.audio.newMidiPlayer("music/song.mid")
-    mp:setLooping(true)
-    mp:play()
-  end
+    local player = lurek.audio.newMidiPlayer()
+    print("midi player = " .. tostring(player ~= nil))
 end
 ```
 
@@ -3053,11 +2762,8 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- Sawtooth waves are bright and rich in harmonics — good base for synth sounds.
-    local saw = lurek.audio.newSawtoothWave(110.0, 1.0, 44100, 0.5)
-    lurek.log.info("sawtooth duration=" .. saw:getDuration() .. "s", "audio")
-  end
+    local sd = lurek.audio.newSawtoothWave(330, 0.5, 44100, 0.7)
+    print("sawtooth wave = " .. tostring(sd ~= nil))
 end
 ```
 
@@ -3079,14 +2785,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- Args: file_path, voice_count.
-    -- A pool pre-allocates N copies of the same sound. Calling pool:play() fires the next
-    -- available voice in round-robin order — perfect for rapid-fire SFX without clone() calls.
-    local foot = lurek.audio.newPool("sfx/footstep.ogg", 8)
-    foot:setVolume(0.7)
-    foot:play()
-  end
+    local path = "sounds/shot.wav"
+    local pool = lurek.audio.newPool(path, 8)
+    print("pool voices = " .. pool:getVoiceCount())
 end
 ```
 
@@ -3108,12 +2809,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  local src = lurek.audio.newSource("assets/audio/music.ogg", "static")
-  -- clone() creates an independent copy that can play simultaneously.
-  local copy = lurek.audio.clone(src)
-  lurek.log.debug("source cloned", "audio")
-  lurek.audio.release(src)
-  lurek.audio.release(copy)
+    local path = "sounds/hit.wav"
+    local src = lurek.audio.newSource(path, "static")
+    lurek.audio.setVolume(src, 0.6)
+    local copy = lurek.audio.clone(src)
+    print("clone volume = " .. lurek.audio.getVolume(copy))
 end
 ```
 
@@ -3141,12 +2841,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local b = lurek.audio.newBus("voice")
-
-    -- Remove any ducking configuration previously set with setDuckTarget().
-    b:clearDuck()
-  end
+    local bus = lurek.audio.newBus("narrator")
+    bus:setDuckTarget("bg_music", 0.2)
+    bus:clearDuck()
+    print("duck cleared")
 end
 ```
 
@@ -3172,10 +2870,8 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local b = lurek.audio.newBus("music")
-    lurek.log.info("bus name=" .. b:getName(), "audio")
-  end
+    local bus = lurek.audio.newBus("gameplay")
+    print("bus name = " .. bus:getName())
 end
 ```
 
@@ -3201,12 +2897,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local b = lurek.audio.newBus("music")
-
-    -- Peak amplitude from 0.0 to 1.0 over the last processing frame.
-    lurek.log.info("peak=" .. b:getPeak(), "audio")
-  end
+    local bus = lurek.audio.newBus("meter_bus")
+    local peak = bus:getPeak()
+    print("peak = " .. peak)
 end
 ```
 
@@ -3232,11 +2925,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local b = lurek.audio.newBus("music")
-    b:setPitch(0.85)
-    lurek.log.info("bus pitch=" .. b:getPitch(), "audio")
-  end
+    local bus = lurek.audio.newBus("ambient")
+    bus:setPitch(0.9)
+    local p = bus:getPitch()
+    print("pitch = " .. p)
 end
 ```
 
@@ -3262,11 +2954,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  -- Read bus volume to display the current setting in a HUD slider.
-  local bus = lurek.audio.newBus("music")
-  bus:setVolume(0.8)
-  local vol = bus:getVolume()
-  lurek.log.info("music bus volume=" .. vol, "audio")
+    local bus = lurek.audio.newBus("music")
+    bus:setVolume(0.8)
+    local v = bus:getVolume()
+    print("volume = " .. v)
 end
 ```
 
@@ -3292,12 +2983,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  -- Toggle bus pause state with a single key.
-  local bus = lurek.audio.newBus("music")
-  bus:pause()
-  if bus:isPaused() then
-    lurek.log.info("music is paused — press P to resume", "audio")
-  end
+    local bus = lurek.audio.newBus("ui")
+    bus:pause()
+    print("paused = " .. tostring(bus:isPaused()))
 end
 ```
 
@@ -3320,10 +3008,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  -- Pause all music when opening the inventory screen.
-  local bus = lurek.audio.newBus("music")
-  bus:pause()
-  lurek.log.info("music bus paused", "audio")
+    local bus = lurek.audio.newBus("dialog")
+    bus:pause()
+    print("bus paused = " .. tostring(bus:isPaused()))
 end
 ```
 
@@ -3346,13 +3033,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local b = lurek.audio.newBus("music")
-    b:pause()
-
-    -- Resumes all sources that were paused by this bus.
-    b:resume()
-  end
+    local bus = lurek.audio.newBus("world")
+    bus:pause()
+    bus:resume()
+    print("bus resumed = " .. tostring(not bus:isPaused()))
 end
 ```
 
@@ -3382,16 +3066,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    lurek.audio.newBus("music")
-    lurek.audio.newBus("sfx")
-    local sfxBus = lurek.audio.newBus("sfx_active")
-
-    -- Ducking: when sfx_active bus has audio playing, automatically reduce the music
-    -- bus to 30% volume. Common pattern: duck music during dialogue or important SFX.
-    sfxBus:setDuckTarget("music", 0.3)
-    lurek.log.info("duck target set: music will lower when sfx_active plays", "audio")
-  end
+    local music = lurek.audio.newBus("bg_music")
+    local voice = lurek.audio.newBus("voice_over")
+    voice:setDuckTarget("bg_music", 0.3)
+    print("ducking bg_music to 0.3 when voice active")
 end
 ```
 
@@ -3419,12 +3097,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local b = lurek.audio.newBus("music")
-
-    -- Pitch-shift ALL sources on this bus. Useful for slow-motion effects (0.5 = half speed).
-    b:setPitch(0.85)
-  end
+    local bus = lurek.audio.newBus("fx")
+    bus:setPitch(1.2)
+    print("bus pitch = " .. bus:getPitch())
 end
 ```
 
@@ -3452,10 +3127,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  -- Control group volume for options menu sliders (music/sfx/voice).
-  local bus = lurek.audio.newBus("sfx")
-  bus:setVolume(0.6)
-  lurek.log.info("sfx bus volume set to 0.6", "audio")
+    local bus = lurek.audio.newBus("sfx")
+    bus:setVolume(0.6)
+    print("bus volume = " .. bus:getVolume())
 end
 ```
 
@@ -3481,9 +3155,8 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  -- Confirm the handle type before calling bus-specific methods.
-  local bus = lurek.audio.newBus("sfx")
-  lurek.log.info("handle type: " .. bus:type(), "audio")
+    local bus = lurek.audio.newBus("test")
+    print("type = " .. bus:type())
 end
 ```
 
@@ -3514,11 +3187,8 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  -- Runtime type-guard in generic audio management functions.
-  local bus = lurek.audio.newBus("sfx")
-  if bus:typeOf("LBus") then
-    lurek.log.info("confirmed LBus handle", "audio")
-  end
+    local bus = lurek.audio.newBus("check")
+    print("is LBus = " .. tostring(bus:typeOf("LBus")))
 end
 ```
 
@@ -3544,14 +3214,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local dec = lurek.audio.newDecoder("music/long_track.ogg", 4096)
-
-    -- Decodes the next chunk of PCM data. Returns SoundData or nil at end of stream.
-    -- Call in a loop to process the entire file, or feed chunks to a queueable source.
+    local path = "sounds/song.ogg"
+    local dec = lurek.audio.newDecoder(path, 4096)
     local chunk = dec:decode()
-    if chunk then lurek.log.info("decoded " .. chunk:getSampleCount() .. " samples", "audio") end
-  end
+    print("decoded chunk = " .. tostring(chunk ~= nil))
 end
 ```
 
@@ -3577,12 +3243,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  -- Verify bit depth for quality reporting or format validation.
-  local ok_dec, dec = pcall(lurek.audio.newDecoder, "sfx/explosion.ogg", 4096)
-  if ok_dec then
+    local path = "tests/fixtures/sine_mono_44100.wav"
+    local dec = lurek.audio.newDecoder(path)
     local bits = dec:getBitDepth()
-    lurek.log.info("bit depth=" .. bits, "audio")
-  end
+    print("bit depth = " .. bits)
 end
 ```
 
@@ -3608,12 +3272,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  -- Check channel count to detect mono vs stereo for spatial audio decisions.
-  local ok_dec, dec = pcall(lurek.audio.newDecoder, "music/theme.ogg", 4096)
-  if ok_dec then
+    local path = "tests/fixtures/sine_mono_44100.wav"
+    local dec = lurek.audio.newDecoder(path)
     local ch = dec:getChannelCount()
-    lurek.log.info("channels=" .. ch, "audio")
-  end
+    print("channels = " .. ch)
 end
 ```
 
@@ -3639,12 +3301,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  -- Use duration to display track length in a music player UI.
-  local ok_dec, dec = pcall(lurek.audio.newDecoder, "music/theme.ogg", 4096)
-  if ok_dec then
+    local path = "tests/fixtures/sine_mono_44100.wav"
+    local dec = lurek.audio.newDecoder(path)
     local dur = dec:getDuration()
-    lurek.log.info("track duration=" .. dur .. "s", "audio")
-  end
+    print("duration = " .. dur .. "s")
 end
 ```
 
@@ -3670,12 +3330,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  -- Confirm sample rate matches your output device for clean playback.
-  local ok_dec, dec = pcall(lurek.audio.newDecoder, "music/theme.ogg", 4096)
-  if ok_dec then
+    local path = "tests/fixtures/sine_mono_44100.wav"
+    local dec = lurek.audio.newDecoder(path)
     local rate = dec:getSampleRate()
-    lurek.log.info("sample rate=" .. rate .. " Hz", "audio")
-  end
+    print("sample rate = " .. rate)
 end
 ```
 
@@ -3701,12 +3359,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local dec = lurek.audio.newDecoder("music/long_track.ogg", 4096)
-
-    -- Some formats/sources may not support seeking. Check before calling seek().
-    if dec:isSeekable() then dec:seek(15.0) end
-  end
+    local path = "tests/fixtures/sine_mono_44100.wav"
+    local dec = lurek.audio.newDecoder(path)
+    print("seekable = " .. tostring(dec:isSeekable()))
 end
 ```
 
@@ -3729,12 +3384,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local dec = lurek.audio.newDecoder("music/long_track.ogg", 4096)
-
-    -- Free decoder resources. Handle becomes invalid after this.
+    local path = "tests/fixtures/sine_mono_44100.wav"
+    local dec = lurek.audio.newDecoder(path)
     dec:release()
-  end
+    print("decoder released")
 end
 ```
 
@@ -3757,13 +3410,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local dec = lurek.audio.newDecoder("music/long_track.ogg", 4096)
-    dec:seek(15.0)
-
-    -- Reset to the beginning. Useful for re-reading the file without recreating the decoder.
+    local path = "tests/fixtures/sine_mono_44100.wav"
+    local dec = lurek.audio.newDecoder(path)
+    dec:seek(5.0)
     dec:rewind()
-  end
+    print("rewound to " .. dec:tell())
 end
 ```
 
@@ -3791,12 +3442,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local dec = lurek.audio.newDecoder("music/long_track.ogg", 4096)
-
-    -- Jump to 15 seconds. Next decode() returns data from this position.
-    dec:seek(15.0)
-  end
+    local path = "tests/fixtures/sine_mono_44100.wav"
+    local dec = lurek.audio.newDecoder(path)
+    dec:seek(2.5)
+    print("seeked to " .. dec:tell())
 end
 ```
 
@@ -3822,12 +3471,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local dec = lurek.audio.newDecoder("music/long_track.ogg", 4096)
-
-    -- Returns current read position in seconds.
-    lurek.log.info("decoder at=" .. dec:tell() .. "s", "audio")
-  end
+    local path = "tests/fixtures/sine_mono_44100.wav"
+    local dec = lurek.audio.newDecoder(path)
+    dec:seek(3.0)
+    local pos = dec:tell()
+    print("position = " .. pos)
 end
 ```
 
@@ -3853,8 +3501,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  local obj = lurek.audio.newDecoder('assets/audio/music.ogg')
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LDecoder"
+    local path = "tests/fixtures/sine_mono_44100.wav"
+    local dec = lurek.audio.newDecoder(path)
+    print("type = " .. dec:type())
 end
 ```
 
@@ -3885,8 +3534,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  local obj = lurek.audio.newDecoder('assets/audio/music.ogg')
-  lurek.log.debug("typeOf LDecoder: " .. tostring(obj:typeOf("LDecoder")), "example") -- true
+    local path = "tests/fixtures/sine_mono_44100.wav"
+    local dec = lurek.audio.newDecoder(path)
+    print("is LDecoder = " .. tostring(dec:typeOf("LDecoder")))
 end
 ```
 
@@ -3912,13 +3562,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local b = lurek.audio.newBus("music")
-    local mp = lurek.audio.newMidiPlayer("music/song.mid")
-    mp:setBus(b)
-    local cur = mp:getBus()
-    if cur then lurek.log.info("midi bus=" .. cur:getName(), "audio") end
-  end
+    local player = lurek.audio.newMidiPlayer()
+    local bus = lurek.audio.newBus("midi_out")
+    player:setBus(bus)
+    local b = player:getBus()
+    print("bus = " .. b:getName())
 end
 ```
 
@@ -3944,10 +3592,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  -- Check channel count for complexity analysis or debug display.
-  local mp = lurek.audio.newMidiPlayer("music/orchestra.mid")
-  local ch = mp:getChannelCount()
-  lurek.log.info("MIDI channels=" .. ch, "audio")
+    local path = "music/theme.mid"
+    local player = lurek.audio.newMidiPlayer(path)
+    local count = player:getChannelCount()
+    print("channels = " .. count)
 end
 ```
 
@@ -3978,13 +3626,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local mp = lurek.audio.newMidiPlayer("music/song.mid")
-
-    -- Returns the GM program number (0-127) assigned to channel 1.
-    local inst = mp:getChannelInstrument(1)
-    lurek.log.info("ch1 instrument=" .. inst, "audio")
-  end
+    local player = lurek.audio.newMidiPlayer()
+    player:setChannelInstrument(2, 48)
+    local inst = player:getChannelInstrument(2)
+    print("ch2 instrument = " .. inst)
 end
 ```
 
@@ -4010,12 +3655,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local mp = lurek.audio.newMidiPlayer("music/song.mid")
-
-    -- Output audio channels: 1 = mono, 2 = stereo.
-    lurek.log.info("output channels=" .. mp:getChannels(), "audio")
-  end
+    local player = lurek.audio.newMidiPlayer()
+    local ch = player:getChannels()
+    print("output channels = " .. ch)
 end
 ```
 
@@ -4046,11 +3688,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local mp = lurek.audio.newMidiPlayer("music/song.mid")
-    mp:setChannelVolume(10, 0.4)
-    lurek.log.info("drums vol=" .. mp:getChannelVolume(10), "audio")
-  end
+    local player = lurek.audio.newMidiPlayer()
+    player:setChannelVolume(2, 0.6)
+    local v = player:getChannelVolume(2)
+    print("ch2 volume = " .. v)
 end
 ```
 
@@ -4076,10 +3717,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  -- Show total track length in the jukebox UI.
-  local mp = lurek.audio.newMidiPlayer("music/credits.mid")
-  local dur = mp:getDuration()
-  lurek.log.info("MIDI duration=" .. dur .. "s", "audio")
+    local path = "music/theme.mid"
+    local player = lurek.audio.newMidiPlayer(path)
+    local dur = player:getDuration()
+    print("duration = " .. dur .. "s")
 end
 ```
 
@@ -4105,11 +3746,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local mp = lurek.audio.newMidiPlayer("music/song.mid")
-    local path = mp:getFilePath()
-    if path then lurek.log.info("loaded midi=" .. path, "audio") end
-  end
+    local path = "music/theme.mid"
+    local player = lurek.audio.newMidiPlayer(path)
+    print("file = " .. player:getFilePath())
 end
 ```
 
@@ -4135,12 +3774,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local mp = lurek.audio.newMidiPlayer("music/song.mid")
-
-    -- Total note-on events in the file — useful for progress displays.
-    lurek.log.info("total notes=" .. mp:getNoteCount(), "audio")
-  end
+    local path = "music/theme.mid"
+    local player = lurek.audio.newMidiPlayer(path)
+    local notes = player:getNoteCount()
+    print("notes = " .. notes)
 end
 ```
 
@@ -4166,12 +3803,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local mp = lurek.audio.newMidiPlayer("music/song.mid")
-
-    -- The tempo as authored in the MIDI file — before any setTempo/setTempoScale calls.
-    lurek.log.info("original bpm=" .. mp:getOriginalTempo(), "audio")
-  end
+    local path = "music/theme.mid"
+    local player = lurek.audio.newMidiPlayer(path)
+    local orig = player:getOriginalTempo()
+    print("original tempo = " .. orig)
 end
 ```
 
@@ -4197,10 +3832,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  -- Verify synthesis rate matches the audio device for clean output.
-  local mp = lurek.audio.newMidiPlayer("music/town.mid")
-  local rate = mp:getSampleRate()
-  lurek.log.info("MIDI synthesis rate=" .. rate .. " Hz", "audio")
+    local player = lurek.audio.newMidiPlayer()
+    local rate = player:getSampleRate()
+    print("sample rate = " .. rate)
 end
 ```
 
@@ -4226,11 +3860,13 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local mp = lurek.audio.newMidiPlayer("music/song.mid")
-    local sf = mp:getSoundFontPath()
-    if sf then lurek.log.info("soundfont=" .. sf, "audio") end
-  end
+    local player = lurek.audio.newMidiPlayer()
+    local sf_path = "audio/gm.sf2"
+    local ok = pcall(function()
+        player:setSoundFont(sf_path)
+    end)
+    local p = ok and player:getSoundFontPath() or nil
+    print("soundfont = " .. tostring(p))
 end
 ```
 
@@ -4256,11 +3892,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local mp = lurek.audio.newMidiPlayer("music/song.mid")
-    mp:setTempo(140)
-    lurek.log.info("bpm=" .. mp:getTempo(), "audio")
-  end
+    local player = lurek.audio.newMidiPlayer()
+    player:setTempo(120)
+    local t = player:getTempo()
+    print("tempo = " .. t)
 end
 ```
 
@@ -4286,11 +3921,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local mp = lurek.audio.newMidiPlayer("music/song.mid")
-    mp:setTempoScale(0.85)
-    lurek.log.info("tempo scale=" .. mp:getTempoScale(), "audio")
-  end
+    local player = lurek.audio.newMidiPlayer()
+    player:setTempoScale(0.8)
+    local s = player:getTempoScale()
+    print("scale = " .. s)
 end
 ```
 
@@ -4316,12 +3950,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local mp = lurek.audio.newMidiPlayer("music/song.mid")
-
-    -- PPQN (Pulses Per Quarter Note) — the MIDI file's timing resolution.
-    lurek.log.info("ppq=" .. mp:getTicksPerBeat(), "audio")
-  end
+    local path = "music/theme.mid"
+    local player = lurek.audio.newMidiPlayer(path)
+    local tpb = player:getTicksPerBeat()
+    print("ticks/beat = " .. tpb)
 end
 ```
 
@@ -4347,10 +3979,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local mp = lurek.audio.newMidiPlayer("music/song.mid")
-    lurek.log.info("midi tracks=" .. mp:getTrackCount(), "audio")
-  end
+    local path = "music/theme.mid"
+    local player = lurek.audio.newMidiPlayer(path)
+    local count = player:getTrackCount()
+    print("tracks = " .. count)
 end
 ```
 
@@ -4381,13 +4013,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local mp = lurek.audio.newMidiPlayer("music/song.mid")
-
-    -- Track names are metadata embedded in the MIDI file (e.g. "Piano", "Bass").
-    local name = mp:getTrackName(1)
-    if name then lurek.log.info("track 1=" .. name, "audio") end
-  end
+    local path = "music/theme.mid"
+    local player = lurek.audio.newMidiPlayer(path)
+    local name = player:getTrackName(1)
+    print("track 1 = " .. name)
 end
 ```
 
@@ -4413,11 +4042,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local mp = lurek.audio.newMidiPlayer("music/song.mid")
-    mp:setVolume(0.7)
-    lurek.log.info("midi volume=" .. mp:getVolume(), "audio")
-  end
+    local player = lurek.audio.newMidiPlayer()
+    player:setVolume(0.5)
+    local v = player:getVolume()
+    print("volume = " .. v)
 end
 ```
 
@@ -4448,11 +4076,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local mp = lurek.audio.newMidiPlayer("music/song.mid")
-    mp:setChannelMuted(10, true)
-    if mp:isChannelMuted(10) then lurek.log.info("drums muted", "audio") end
-  end
+    local player = lurek.audio.newMidiPlayer()
+    player:setChannelMuted(3, true)
+    print("ch3 muted = " .. tostring(player:isChannelMuted(3)))
 end
 ```
 
@@ -4478,12 +4104,8 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local mp = lurek.audio.newMidiPlayer("music/song.mid")
-
-    -- Always check before playback — the file might not exist.
-    if mp:isLoaded() then mp:play() end
-  end
+    local player = lurek.audio.newMidiPlayer()
+    print("loaded = " .. tostring(player:isLoaded()))
 end
 ```
 
@@ -4509,11 +4131,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local mp = lurek.audio.newMidiPlayer("music/song.mid")
-    mp:setLooping(true)
-    if mp:isLooping() then lurek.log.info("midi will loop", "audio") end
-  end
+    local path = "music/theme.mid"
+    local player = lurek.audio.newMidiPlayer(path)
+    player:setLooping(true)
+    print("isLooping = " .. tostring(player:isLooping()))
 end
 ```
 
@@ -4539,12 +4160,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local mp = lurek.audio.newMidiPlayer("music/song.mid")
-    mp:play()
-    mp:pause()
-    if mp:isPaused() then mp:play() end
-  end
+    local path = "music/theme.mid"
+    local player = lurek.audio.newMidiPlayer(path)
+    player:play()
+    player:pause()
+    print("paused = " .. tostring(player:isPaused()))
 end
 ```
 
@@ -4570,11 +4190,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local mp = lurek.audio.newMidiPlayer("music/song.mid")
-    mp:play()
-    if mp:isPlaying() then lurek.log.info("midi is active", "audio") end
-  end
+    local path = "music/theme.mid"
+    local player = lurek.audio.newMidiPlayer(path)
+    player:play()
+    print("playing = " .. tostring(player:isPlaying()))
 end
 ```
 
@@ -4605,11 +4224,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local mp = lurek.audio.newMidiPlayer("music/song.mid")
-    mp:setTrackMuted(2, true)
-    if mp:isTrackMuted(2) then lurek.log.info("track 2 muted", "audio") end
-  end
+    local path = "music/theme.mid"
+    local player = lurek.audio.newMidiPlayer(path)
+    player:setTrackMuted(2, true)
+    print("track 2 muted = " .. tostring(player:isTrackMuted(2)))
 end
 ```
 
@@ -4640,14 +4258,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local mp = lurek.audio.newMidiPlayer()
-
-    -- Load a MIDI file after creation. Returns true on success.
-    if mp:load("music/song.mid") then
-      lurek.log.info("midi loaded successfully", "audio")
-    end
-  end
+    local player = lurek.audio.newMidiPlayer()
+    local path = "music/theme.mid"
+    local ok = player:load(path)
+    print("loaded = " .. tostring(ok))
 end
 ```
 
@@ -4678,13 +4292,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local mp = lurek.audio.newMidiPlayer()
-
-    -- Load MIDI from raw binary data (e.g. read from a custom archive or network).
-    local data = lurek.fs.read("music/song.mid")
-    mp:loadData(data)
-  end
+    local player = lurek.audio.newMidiPlayer()
+    local data = "MThd..." -- raw MIDI bytes
+    local ok = player:loadData(data)
+    print("loaded data = " .. tostring(ok))
 end
 ```
 
@@ -4707,13 +4318,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local mp = lurek.audio.newMidiPlayer("music/song.mid")
-    mp:play()
-
-    -- Pauses at current position. All active notes are silenced.
-    mp:pause()
-  end
+    local path = "music/theme.mid"
+    local player = lurek.audio.newMidiPlayer(path)
+    player:play()
+    player:pause()
+    print("midi paused = " .. tostring(player:isPaused()))
 end
 ```
 
@@ -4736,12 +4345,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  -- Start MIDI playback for background music in a retro-style RPG.
-  local ok_mp, mp = pcall(lurek.audio.newMidiPlayer, "music/battle.mid")
-  if ok_mp then
-    mp:play()
-    lurek.log.info("MIDI playback started", "audio")
-  end
+    local path = "music/theme.mid"
+    local player = lurek.audio.newMidiPlayer(path)
+    player:play()
+    print("midi playing = " .. tostring(player:isPlaying()))
 end
 ```
 
@@ -4769,13 +4376,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  -- Jump to the chorus section of a MIDI track for a boss encounter intro.
-  local ok_mp, mp = pcall(lurek.audio.newMidiPlayer, "music/boss.mid")
-  if ok_mp then
-    mp:play()
-    mp:seek(12.5)
-    lurek.log.info("seeked to 12.5s", "audio")
-  end
+    local path = "music/theme.mid"
+    local player = lurek.audio.newMidiPlayer(path)
+    player:play()
+    player:seek(5.0)
+    print("seeked to " .. player:tell())
 end
 ```
 
@@ -4803,12 +4408,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  -- Route MIDI through the music bus so the options slider controls it.
-  local music_bus = lurek.audio.newBus("music")
-  local mp = lurek.audio.newMidiPlayer("music/town.mid")
-  mp:setBus(music_bus)
-  mp:play()
-  lurek.log.info("MIDI routed through music bus", "audio")
+    local player = lurek.audio.newMidiPlayer()
+    local bus = lurek.audio.newBus("midi_bus")
+    player:setBus(bus)
+    print("bus set")
 end
 ```
 
@@ -4838,14 +4441,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local midi = lurek.audio.newMidiPlayer()
-
-    -- Change the GM instrument on channel 0. Program 41 = Violin.
-    -- See General MIDI instrument table for program numbers.
-    midi:setChannelInstrument(0, 41)
-    lurek.log.info("ch0 instrument=" .. midi:getChannelInstrument(0), "audio")
-  end
+    local player = lurek.audio.newMidiPlayer()
+    player:setChannelInstrument(1, 25)
+    print("ch1 instrument = " .. player:getChannelInstrument(1))
 end
 ```
 
@@ -4875,12 +4473,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local mp = lurek.audio.newMidiPlayer("music/song.mid")
-
-    -- Mute the drum channel for a quieter arrangement.
-    mp:setChannelMuted(10, true)
-  end
+    local player = lurek.audio.newMidiPlayer()
+    player:setChannelMuted(10, true)
+    print("ch10 muted = " .. tostring(player:isChannelMuted(10)))
 end
 ```
 
@@ -4908,12 +4503,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local mp = lurek.audio.newMidiPlayer("music/song.mid")
-
-    -- Force stereo output.
-    mp:setChannels(2)
-  end
+    local player = lurek.audio.newMidiPlayer()
+    player:setChannels(2)
+    print("set stereo output")
 end
 ```
 
@@ -4943,12 +4535,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local mp = lurek.audio.newMidiPlayer("music/song.mid")
-
-    -- Channel 10 is typically drums in General MIDI. Lower its volume.
-    mp:setChannelVolume(10, 0.4)
-  end
+    local player = lurek.audio.newMidiPlayer()
+    player:setChannelVolume(1, 0.8)
+    print("ch1 volume = " .. player:getChannelVolume(1))
 end
 ```
 
@@ -4976,12 +4565,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local mp = lurek.audio.newMidiPlayer("music/song.mid")
-
-    -- Loop the MIDI — it restarts from the beginning when it ends.
-    mp:setLooping(true)
-  end
+    local path = "music/theme.mid"
+    local player = lurek.audio.newMidiPlayer(path)
+    player:setLooping(true)
+    print("looping = " .. tostring(player:isLooping()))
 end
 ```
 
@@ -5009,14 +4596,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local mp = lurek.audio.newMidiPlayer("music/song.mid")
-
-    -- Callback fires when MIDI playback reaches the end (if not looping).
-    mp:setOnEnd(function()
-      lurek.log.info("midi playback finished", "audio")
+    local player = lurek.audio.newMidiPlayer()
+    player:setOnEnd(function()
+        print("midi playback ended")
     end)
-  end
+    print("onEnd callback set")
 end
 ```
 
@@ -5044,14 +4628,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local mp = lurek.audio.newMidiPlayer("music/song.mid")
-
-    -- Callback fires when a note is released.
-    mp:setOnNoteOff(function(ch, note)
-      lurek.log.info("note OFF ch=" .. ch .. " note=" .. note, "audio")
+    local player = lurek.audio.newMidiPlayer()
+    player:setOnNoteOff(function(ch, note)
+        print("note off: ch=" .. ch .. " note=" .. note)
     end)
-  end
+    print("onNoteOff callback set")
 end
 ```
 
@@ -5079,14 +4660,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local mp = lurek.audio.newMidiPlayer("music/song.mid")
-
-    -- Callback fires for each MIDI note-on event. Use for rhythm games or visualizers.
-    mp:setOnNoteOn(function(ch, note)
-      lurek.log.info("note ON ch=" .. ch .. " note=" .. note, "audio")
+    local player = lurek.audio.newMidiPlayer()
+    player:setOnNoteOn(function(ch, note, vel)
+        print("note on: ch=" .. ch .. " note=" .. note .. " vel=" .. vel)
     end)
-  end
+    print("onNoteOn callback set")
 end
 ```
 
@@ -5114,12 +4692,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local mp = lurek.audio.newMidiPlayer("music/song.mid")
-
-    -- Change synthesis rate. Higher = better quality, more CPU.
-    mp:setSampleRate(48000)
-  end
+    local player = lurek.audio.newMidiPlayer()
+    player:setSampleRate(48000)
+    print("sample rate = " .. player:getSampleRate())
 end
 ```
 
@@ -5147,12 +4722,12 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local mp = lurek.audio.newMidiPlayer("music/song.mid")
-
-    -- Override the global SoundFont for this player instance.
-    mp:setSoundFont("music/orchestra.sf2")
-  end
+    local player = lurek.audio.newMidiPlayer()
+    local sf_path = "audio/gm.sf2"
+    local ok = pcall(function()
+        player:setSoundFont(sf_path)
+    end)
+    print("sf = " .. tostring(ok and player:getSoundFontPath()))
 end
 ```
 
@@ -5180,12 +4755,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local mp = lurek.audio.newMidiPlayer("music/song.mid")
-
-    -- Override the MIDI file's tempo. Value is in BPM (beats per minute).
-    mp:setTempo(140)
-  end
+    local player = lurek.audio.newMidiPlayer()
+    player:setTempo(140)
+    print("tempo = " .. player:getTempo())
 end
 ```
 
@@ -5213,13 +4785,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local mp = lurek.audio.newMidiPlayer("music/song.mid")
-
-    -- Scale relative to original: 1.0 = normal, 0.5 = half speed, 2.0 = double speed.
-    -- Easier than setTempo when you want relative changes.
-    mp:setTempoScale(0.85)
-  end
+    local player = lurek.audio.newMidiPlayer()
+    player:setTempoScale(1.5)
+    print("tempo scale = " .. player:getTempoScale())
 end
 ```
 
@@ -5249,12 +4817,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local mp = lurek.audio.newMidiPlayer("music/song.mid")
-
-    -- Mute track 2 (1-based index). Tracks can contain notes across multiple channels.
-    mp:setTrackMuted(2, true)
-  end
+    local path = "music/theme.mid"
+    local player = lurek.audio.newMidiPlayer(path)
+    player:setTrackMuted(1, true)
+    print("track 1 muted = " .. tostring(player:isTrackMuted(1)))
 end
 ```
 
@@ -5282,11 +4848,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  -- Lower MIDI volume when voice dialog is playing.
-  local mp = lurek.audio.newMidiPlayer("music/town.mid")
-  mp:setVolume(0.4)
-  mp:play()
-  lurek.log.info("MIDI volume set to 0.4", "audio")
+    local player = lurek.audio.newMidiPlayer()
+    player:setVolume(0.7)
+    print("volume = " .. player:getVolume())
 end
 ```
 
@@ -5314,13 +4878,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local mp = lurek.audio.newMidiPlayer("music/song.mid")
-
-    -- Solo channel 1 — mutes all other channels so you hear only this one.
-    -- Useful for isolating instruments during development.
-    mp:soloChannel(1)
-  end
+    local player = lurek.audio.newMidiPlayer()
+    player:soloChannel(1)
+    print("ch1 soloed")
 end
 ```
 
@@ -5343,13 +4903,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local mp = lurek.audio.newMidiPlayer("music/song.mid")
-    mp:play()
-
-    -- Stops and rewinds to the beginning.
-    mp:stop()
-  end
+    local path = "music/theme.mid"
+    local player = lurek.audio.newMidiPlayer(path)
+    player:play()
+    player:stop()
+    print("midi stopped")
 end
 ```
 
@@ -5375,11 +4933,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  -- Display current MIDI position for a music visualizer or progress bar.
-  local mp = lurek.audio.newMidiPlayer("music/town.mid")
-  mp:play()
-  local pos = mp:tell()
-  lurek.log.info("MIDI position=" .. pos .. "s", "audio")
+    local path = "music/theme.mid"
+    local player = lurek.audio.newMidiPlayer(path)
+    player:play()
+    local pos = player:tell()
+    print("position = " .. pos)
 end
 ```
 
@@ -5405,9 +4963,8 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  -- Confirm handle type before calling MIDI-specific methods.
-  local mp = lurek.audio.newMidiPlayer("music/town.mid")
-  lurek.log.info("handle type: " .. mp:type(), "audio")
+    local player = lurek.audio.newMidiPlayer()
+    print("type = " .. player:type())
 end
 ```
 
@@ -5438,11 +4995,8 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  -- Type-guard for generic audio handle processing.
-  local mp = lurek.audio.newMidiPlayer("music/town.mid")
-  if mp:typeOf("LMidiPlayer") then
-    lurek.log.info("confirmed LMidiPlayer handle", "audio")
-  end
+    local player = lurek.audio.newMidiPlayer()
+    print("is LMidiPlayer = " .. tostring(player:typeOf("LMidiPlayer")))
 end
 ```
 
@@ -5465,13 +5019,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local mp = lurek.audio.newMidiPlayer("music/song.mid")
-    mp:soloChannel(1)
-
-    -- Restore normal playback — all channels audible again.
-    mp:unsoloAll()
-  end
+    local player = lurek.audio.newMidiPlayer()
+    player:soloChannel(1)
+    player:unsoloAll()
+    print("unsolo all done")
 end
 ```
 
@@ -5494,12 +5045,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local mp = lurek.audio.newMidiPlayer("music/song.mid")
-
-    -- Revert to the engine's built-in default SoundFont.
-    mp:useDefaultSoundFont()
-  end
+    local player = lurek.audio.newMidiPlayer()
+    player:useDefaultSoundFont()
+    print("using default soundfont")
 end
 ```
 
@@ -5543,13 +5091,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  local sd = lurek.audio.newSineWave(440, 0.5, 44100, 0.5)
-  local idata = lurek.image.newImageData(256, 64)
-
-  -- Render a green waveform at position (0,0) with size 256x64 pixels.
-  -- Useful for audio editors, level meters, or debug visualization.
-  sd:drawWaveform(idata, 0, 0, 256, 64, 0, 255, 0, 255)
-  lurek.log.info("waveform drawn to image 256x64", "audio")
+    local sd = lurek.audio.newSineWave(440, 1.0, 44100, 0.8)
+    local img = lurek.image.newImageData(400, 100)
+    sd:drawWaveform(img, 0, 0, 400, 100, 0, 255, 0, 255)
+    print("waveform drawn to image")
 end
 ```
 
@@ -5575,8 +5120,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  local sd = lurek.audio.newSineWave(440, 0.5, 44100, 0.5)
-  lurek.log.info("bit_depth=" .. sd:getBitDepth(), "audio")
+    local sd = lurek.audio.newSoundData(44100, 44100, 1)
+    local bits = sd:getBitDepth()
+    print("bit depth = " .. bits)
 end
 ```
 
@@ -5602,8 +5148,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  local sd = lurek.audio.newSineWave(440, 0.5, 44100, 0.5)
-  lurek.log.info("channels=" .. sd:getChannelCount(), "audio")
+    local sd = lurek.audio.newSoundData(44100, 44100, 2)
+    local ch = sd:getChannelCount()
+    print("channels = " .. ch)
 end
 ```
 
@@ -5629,8 +5176,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  local sd = lurek.audio.newSineWave(440, 2.0, 44100, 0.5)
-  lurek.log.info("duration=" .. sd:getDuration() .. "s", "audio")
+    local sd = lurek.audio.newSoundData(44100, 44100, 1)
+    local dur = sd:getDuration()
+    print("duration = " .. dur .. "s")
 end
 ```
 
@@ -5661,11 +5209,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  local sd = lurek.audio.newSineWave(440, 1.0, 44100, 0.5)
-
-  -- Zero-based index. Returns normalized float value (-1.0 to 1.0).
-  local s = sd:getSample(1)
-  lurek.log.info("sample[1]=" .. tostring(s), "audio")
+    local sd = lurek.audio.newSineWave(440, 0.1, 44100, 1.0)
+    local val = sd:getSample(0)
+    print("sample[0] = " .. val)
 end
 ```
 
@@ -5691,8 +5237,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  local sd = lurek.audio.newSineWave(440, 1.0, 44100, 0.5)
-  lurek.log.info("sample_count=" .. sd:getSampleCount(), "audio")
+    local sd = lurek.audio.newSoundData(44100, 44100, 1)
+    local count = sd:getSampleCount()
+    print("samples = " .. count)
 end
 ```
 
@@ -5718,8 +5265,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  local sd = lurek.audio.newSineWave(440, 0.5, 44100, 0.5)
-  lurek.log.info("sample_rate=" .. sd:getSampleRate(), "audio")
+    local sd = lurek.audio.newSoundData(22050, 22050, 1)
+    local rate = sd:getSampleRate()
+    print("sample rate = " .. rate)
 end
 ```
 
@@ -5749,11 +5297,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  local sd = lurek.audio.newSineWave(440, 0.5, 44100, 0.5)
-
-  -- Zero out the first sample — direct buffer manipulation for procedural audio.
-  sd:setSample(0, 0.0)
-  lurek.log.info("sample[0] after zero=" .. sd:getSample(0), "audio")
+    local sd = lurek.audio.newSoundData(100, 44100, 1)
+    sd:setSample(0, 0.5)
+    sd:setSample(50, -0.3)
+    print("sample[0] = " .. sd:getSample(0) .. " sample[50] = " .. sd:getSample(50))
 end
 ```
 
@@ -5779,11 +5326,8 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  local ok_s, source_obj = pcall(lurek.audio.newSource)
-
-  -- Returns "LSource" for type identification in generic collections.
-  local t = (ok_s and source_obj) and source_obj:type() or "LSource"
-  lurek.log.info("LSource:type = " .. t, "audio")
+    local sd = lurek.audio.newSoundData(100, 44100, 1)
+    print("type = " .. sd:type())
 end
 ```
 
@@ -5814,11 +5358,8 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  local ok_s, source_obj = pcall(lurek.audio.newSource)
-
-  -- Accepts "LSource", "Source", or "Object".
-  lurek.log.info("is LSource: " .. tostring((ok_s and source_obj) and source_obj:typeOf("LSource") or false), "audio")
-  lurek.log.info("is wrong: " .. tostring((ok_s and source_obj) and source_obj:typeOf("Unknown") or false), "audio")
+    local sd = lurek.audio.newSoundData(100, 44100, 1)
+    print("is LSoundData = " .. tostring(sd:typeOf("LSoundData")))
 end
 ```
 
@@ -5844,12 +5385,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local pool = lurek.audio.newPool("sfx/footstep.ogg", 8)
-
-    -- Returns the total number of pre-allocated voices (not just active ones).
-    lurek.log.info("pool voices=" .. pool:getVoiceCount(), "audio")
-  end
+    local path = "sounds/beep.wav"
+    local pool = lurek.audio.newPool(path, 8)
+    print("voices = " .. pool:getVoiceCount())
 end
 ```
 
@@ -5875,14 +5413,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local pool = lurek.audio.newPool("sfx/footstep.ogg", 8)
-
-    -- play() fires the next available voice in round-robin order.
-    -- Returns the numeric source ID of the voice that started.
+    local path = "sounds/shot.wav"
+    local pool = lurek.audio.newPool(path, 4)
     local id = pool:play()
-    lurek.log.info("voice id=" .. id, "audio")
-  end
+    print("playing voice id = " .. id)
 end
 ```
 
@@ -5905,10 +5439,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  -- Free pool memory when leaving a scene that used rapid-fire SFX.
-  local pool = lurek.audio.newPool("sfx/gunshot.ogg", 8)
-  pool:release()
-  lurek.log.info("sound pool released", "audio")
+    local path = "sounds/pop.wav"
+    local pool = lurek.audio.newPool(path, 4)
+    pool:release()
+    print("pool released")
 end
 ```
 
@@ -5936,13 +5470,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    lurek.audio.create_bus("sfx")
-    local pool = lurek.audio.newPool("sfx/footstep.ogg", 8)
-
-    -- Route all pool voices through the "sfx" bus.
-    pool:setBus("sfx")
-  end
+    local path = "sounds/coin.wav"
+    local pool = lurek.audio.newPool(path, 4)
+    lurek.audio.newBus("pool_bus")
+    pool:setBus("pool_bus")
+    print("pool routed to pool_bus")
 end
 ```
 
@@ -5970,12 +5502,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local pool = lurek.audio.newPool("sfx/footstep.ogg", 8)
-
-    -- Sets volume for ALL voices in the pool.
-    pool:setVolume(0.7)
-  end
+    local path = "sounds/click.wav"
+    local pool = lurek.audio.newPool(path, 4)
+    pool:setVolume(0.5)
+    print("pool volume = 0.5")
 end
 ```
 
@@ -5998,13 +5528,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local pool = lurek.audio.newPool("sfx/footstep.ogg", 8)
+    local path = "sounds/step.wav"
+    local pool = lurek.audio.newPool(path, 4)
     pool:play()
-
-    -- Silences all active voices in the pool at once.
     pool:stopAll()
-  end
+    print("all voices stopped")
 end
 ```
 
@@ -6030,9 +5558,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  -- Check handle type for generic audio resource management.
-  local pool = lurek.audio.newPool("sfx/footstep.ogg", 4)
-  lurek.log.info("pool type: " .. pool:type(), "audio")
+    local path = "sounds/ding.wav"
+    local pool = lurek.audio.newPool(path, 2)
+    print("type = " .. pool:type())
 end
 ```
 
@@ -6063,11 +5591,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  -- Type-guard before calling pool-specific methods.
-  local pool = lurek.audio.newPool("sfx/footstep.ogg", 4)
-  if pool:typeOf("LSoundPool") then
-    lurek.log.info("confirmed LSoundPool handle", "audio")
-  end
+    local path = "sounds/ring.wav"
+    local pool = lurek.audio.newPool(path, 2)
+    print("is LSoundPool = " .. tostring(pool:typeOf("LSoundPool")))
 end
 ```
 
@@ -6090,14 +5616,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local ok_s, s = pcall(lurek.audio.newSource, "music/level.mp3")
-    if not ok_s then return end
-
-    s:setLowpass(800)
-    -- Remove all filters — restore full frequency range.
-    s:clearFilter()
-  end
+    local path = "sounds/voice.wav"
+    local src = lurek.audio.newSource(path, "static")
+    src:setLowpass(800)
+    src:clearFilter()
+    print("filters cleared")
 end
 ```
 
@@ -6123,15 +5646,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local ok_s, s = pcall(lurek.audio.newSource, "sfx/hit.ogg", "static")
-    if not ok_s then return end
-
-    -- Clone shares the audio buffer but has independent volume, pitch, and playback state.
-    local s2 = s:clone()
-    s:play()
-    s2:play()
-  end
+    local path = "sounds/hit.wav"
+    local src = lurek.audio.newSource(path, "static")
+    src:setVolume(0.3)
+    local copy = src:clone()
+    print("clone volume = " .. copy:getVolume())
 end
 ```
 
@@ -6159,14 +5678,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local ok_s, s = pcall(lurek.audio.newSource, "music/level.mp3")
-    if not ok_s then return end
-
-    -- Set before play: source ramps from silence over 2.5 seconds.
-    s:fadeIn(2.5)
-    s:play()
-  end
+    local path = "sounds/intro.ogg"
+    local src = lurek.audio.newSource(path, "stream")
+    src:fadeIn(2.5)
+    print("fade in = " .. src:getFadeIn() .. "s")
 end
 ```
 
@@ -6192,11 +5707,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  -- Show track length in the music player UI.
-  local ok, s = pcall(lurek.audio.newSource, "music/level.mp3")
-  if ok then
-    lurek.log.info("duration=" .. (s:getDuration() or 0) .. "s", "audio")
-  end
+    local path = "sounds/track.ogg"
+    local src = lurek.audio.newSource(path, "stream")
+    local dur = src:getDuration()
+    print("duration = " .. dur .. "s")
 end
 ```
 
@@ -6222,13 +5736,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local ok_s, s = pcall(lurek.audio.newSource, "music/level.mp3")
-    if not ok_s then return end
-
-    s:fadeIn(2.5)
-    lurek.log.info("fade-in=" .. s:getFadeIn() .. "s", "audio")
-  end
+    local path = "sounds/start.ogg"
+    local src = lurek.audio.newSource(path, "stream")
+    src:fadeIn(1.0)
+    local fi = src:getFadeIn()
+    print("fade in = " .. fi)
 end
 ```
 
@@ -6254,13 +5766,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local ok_s, s = pcall(lurek.audio.newSource, "music/level.mp3")
-    if not ok_s then return end
-
-    s:setHighpass(200)
-    lurek.log.info("highpass=" .. s:getHighpass() .. " Hz", "audio")
-  end
+    local path = "sounds/treble.wav"
+    local src = lurek.audio.newSource(path, "static")
+    src:setHighpass(4000)
+    local hp = src:getHighpass()
+    print("highpass = " .. hp)
 end
 ```
 
@@ -6286,13 +5796,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local ok_s, s = pcall(lurek.audio.newSource, "music/level.mp3")
-    if not ok_s then return end
-
-    s:setLowpass(800)
-    lurek.log.info("lowpass=" .. s:getLowpass() .. " Hz", "audio")
-  end
+    local path = "sounds/bass.wav"
+    local src = lurek.audio.newSource(path, "static")
+    src:setLowpass(400)
+    local lp = src:getLowpass()
+    print("lowpass = " .. lp)
 end
 ```
 
@@ -6318,13 +5826,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local ok_s, s = pcall(lurek.audio.newSource, "sfx/swoosh.ogg", "static")
-    if not ok_s then return end
-
-    s:setPan(-0.5)
-    lurek.log.info("pan=" .. s:getPan(), "audio")
-  end
+    local path = "sounds/ping.wav"
+    local src = lurek.audio.newSource(path, "static")
+    src:setPan(0.5)
+    local pan = src:getPan()
+    print("pan = " .. pan)
 end
 ```
 
@@ -6350,12 +5856,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  -- Display current pitch in a debug overlay.
-  local ok, s = pcall(lurek.audio.newSource, "sfx/engine.ogg", "static")
-  if ok then
-    s:setPitch(1.3)
-    lurek.log.info("pitch=" .. s:getPitch(), "audio")
-  end
+    local path = "sounds/beep.wav"
+    local src = lurek.audio.newSource(path, "static")
+    src:setPitch(0.7)
+    local p = src:getPitch()
+    print("pitch = " .. p)
 end
 ```
 
@@ -6381,13 +5886,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local ok_s, s = pcall(lurek.audio.newSource, "music/level.mp3")
-    if not ok_s then return end
-
-    -- Returns "static" or "stream".
-    if s:getType() == "stream" then lurek.log.info("streaming from disk", "audio") end
-  end
+    local path = "sounds/song.ogg"
+    local src = lurek.audio.newSource(path, "stream")
+    print("type = " .. src:getType())
 end
 ```
 
@@ -6413,12 +5914,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  -- Read current volume to implement a fade-out step.
-  local ok, s = pcall(lurek.audio.newSource, "music/level.mp3")
-  if ok then
-    s:setVolume(0.8)
-    lurek.log.info("source vol=" .. s:getVolume(), "audio")
-  end
+    local path = "sounds/ding.wav"
+    local src = lurek.audio.newSource(path, "static")
+    src:setVolume(0.9)
+    local v = src:getVolume()
+    print("volume = " .. v)
 end
 ```
 
@@ -6444,12 +5944,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  -- Verify loop state before deciding to restart manually.
-  local ok, s = pcall(lurek.audio.newSource, "music/level.mp3")
-  if ok then
-    s:setLooping(true)
-    if s:isLooping() then lurek.log.info("source loops", "audio") end
-  end
+    local path = "sounds/bgm.ogg"
+    local src = lurek.audio.newSource(path, "stream")
+    src:setLooping(true)
+    print("isLooping = " .. tostring(src:isLooping()))
 end
 ```
 
@@ -6475,13 +5973,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  -- Toggle pause/resume with a single call.
-  local ok, s = pcall(lurek.audio.newSource, "music/level.mp3")
-  if ok then
-    s:play()
-    s:pause()
-    if s:isPaused() then s:resume() end
-  end
+    local path = "sounds/step.wav"
+    local src = lurek.audio.newSource(path, "static")
+    src:play()
+    src:pause()
+    print("paused = " .. tostring(src:isPaused()))
 end
 ```
 
@@ -6507,12 +6003,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  -- Only trigger a new SFX if the previous one finished.
-  local ok, s = pcall(lurek.audio.newSource, "sfx/sting.ogg", "static")
-  if ok then
-    s:play()
-    if s:isPlaying() then lurek.log.info("sting active", "audio") end
-  end
+    local path = "sounds/click.wav"
+    local src = lurek.audio.newSource(path, "static")
+    src:play()
+    print("playing = " .. tostring(src:isPlaying()))
 end
 ```
 
@@ -6538,14 +6032,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local ok_s, s = pcall(lurek.audio.newSource, "sfx/jump.ogg", "static")
-    if not ok_s then return end
-
-    s:play()
-    s:stop()
-    if s:isStopped() then lurek.log.info("source idle", "audio") end
-  end
+    local path = "sounds/pop.wav"
+    local src = lurek.audio.newSource(path, "static")
+    print("stopped = " .. tostring(src:isStopped()))
 end
 ```
 
@@ -6568,12 +6057,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  -- Freeze music when opening the pause menu.
-  local ok, s = pcall(lurek.audio.newSource, "music/level.mp3")
-  if ok then
-    s:play()
-    s:pause()
-  end
+    local path = "sounds/music.ogg"
+    local src = lurek.audio.newSource(path, "stream")
+    src:play()
+    src:pause()
+    print("paused = " .. tostring(src:isPaused()))
 end
 ```
 
@@ -6596,9 +6084,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  -- Fire a one-shot SFX when the player jumps.
-  local ok, s = pcall(lurek.audio.newSource, "sfx/jump.ogg", "static")
-  if ok then s:play() end
+    local path = "sounds/coin.wav"
+    local src = lurek.audio.newSource(path, "static")
+    src:play()
+    print("playing via method = " .. tostring(src:isPlaying()))
 end
 ```
 
@@ -6621,13 +6110,12 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  -- Continue music when closing the pause menu.
-  local ok, s = pcall(lurek.audio.newSource, "music/level.mp3")
-  if ok then
-    s:play()
-    s:pause()
-    s:resume()
-  end
+    local path = "sounds/music.ogg"
+    local src = lurek.audio.newSource(path, "stream")
+    src:play()
+    src:pause()
+    src:resume()
+    print("resumed = " .. tostring(src:isPlaying()))
 end
 ```
 
@@ -6655,12 +6143,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  -- Skip the intro and jump to 10 seconds in.
-  local ok, s = pcall(lurek.audio.newSource, "music/level.mp3")
-  if ok then
-    s:play()
-    s:seek(10.0)
-  end
+    local path = "sounds/long.ogg"
+    local src = lurek.audio.newSource(path, "stream")
+    src:play()
+    src:seek(10.0)
+    print("seeked to " .. src:tell())
 end
 ```
 
@@ -6688,14 +6175,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local ok_s, s = pcall(lurek.audio.newSource, "music/level.mp3")
-    if not ok_s then return end
-
-    s:play()
-    -- Removes bass — simulates tinny speaker or radio.
-    s:setHighpass(200)
-  end
+    local path = "sounds/radio.wav"
+    local src = lurek.audio.newSource(path, "static")
+    src:setHighpass(1500)
+    print("highpass = " .. src:getHighpass())
 end
 ```
 
@@ -6723,12 +6206,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  -- Loop ambient wind for an outdoor scene.
-  local ok, s = pcall(lurek.audio.newSource, "sfx/wind.ogg", "static")
-  if ok then
-    s:setLooping(true)
-    s:play()
-  end
+    local path = "sounds/ambient.ogg"
+    local src = lurek.audio.newSource(path, "stream")
+    src:setLooping(true)
+    print("looping = " .. tostring(src:isLooping()))
 end
 ```
 
@@ -6756,14 +6237,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local ok_s, s = pcall(lurek.audio.newSource, "music/level.mp3")
-    if not ok_s then return end
-
-    s:play()
-    -- Muffles audio — good for underwater or behind-wall effects.
-    s:setLowpass(800)
-  end
+    local path = "sounds/engine.ogg"
+    local src = lurek.audio.newSource(path, "stream")
+    src:setLowpass(600)
+    print("lowpass = " .. src:getLowpass())
 end
 ```
 
@@ -6791,14 +6268,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  function lurek.init()
-    local ok_s, s = pcall(lurek.audio.newSource, "sfx/swoosh.ogg", "static")
-    if not ok_s then return end
-
-    -- -1.0 = hard left, 0.0 = center, 1.0 = hard right.
-    s:setPan(-0.5)
-    s:play()
-  end
+    local path = "sounds/ring.wav"
+    local src = lurek.audio.newSource(path, "static")
+    src:setPan(-0.8)
+    print("pan = " .. src:getPan())
 end
 ```
 
@@ -6826,12 +6299,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  -- Raise pitch for a speed-up power-up effect.
-  local ok, s = pcall(lurek.audio.newSource, "sfx/engine.ogg", "static")
-  if ok then
-    s:setPitch(1.5)
-    s:play()
-  end
+    local path = "sounds/tone.wav"
+    local src = lurek.audio.newSource(path, "static")
+    src:setPitch(1.5)
+    print("pitch = " .. src:getPitch())
 end
 ```
 
@@ -6859,12 +6330,10 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  -- Set ambient rain to 40% volume so it doesn't overpower dialog.
-  local ok, s = pcall(lurek.audio.newSource, "sfx/rain_loop.ogg", "static")
-  if ok then
-    s:setVolume(0.4)
-    s:play()
-  end
+    local path = "sounds/ping.wav"
+    local src = lurek.audio.newSource(path, "static")
+    src:setVolume(0.4)
+    print("volume = " .. src:getVolume())
 end
 ```
 
@@ -6887,12 +6356,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  -- Cut off an alarm when the player reaches safety.
-  local ok, s = pcall(lurek.audio.newSource, "sfx/alarm.ogg", "static")
-  if ok then
-    s:play()
-    s:stop()
-  end
+    local path = "sounds/shot.wav"
+    local src = lurek.audio.newSource(path, "static")
+    src:play()
+    src:stop()
+    print("stopped = " .. tostring(src:isStopped()))
 end
 ```
 
@@ -6918,12 +6386,11 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  -- Sync game events to music position.
-  local ok, s = pcall(lurek.audio.newSource, "music/level.mp3")
-  if ok then
-    s:play()
-    lurek.log.info("position=" .. s:tell() .. "s", "audio")
-  end
+    local path = "sounds/long.ogg"
+    local src = lurek.audio.newSource(path, "stream")
+    src:play()
+    local pos = src:tell()
+    print("position = " .. pos)
 end
 ```
 
@@ -6949,8 +6416,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  local obj = lurek.audio.newSource('assets/audio/music.ogg', 'static')
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LSource"
+    local path = "sounds/click.wav"
+    local src = lurek.audio.newSource(path, "static")
+    print("type = " .. src:type())
 end
 ```
 
@@ -6981,8 +6449,9 @@ Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
 
 ```lua
 do
-  local obj = lurek.audio.newSource('assets/audio/music.ogg', 'static')
-  lurek.log.debug("typeOf LSource: " .. tostring(obj:typeOf("LSource")), "example") -- true
+    local path = "sounds/click.wav"
+    local src = lurek.audio.newSource(path, "static")
+    print("is LSource = " .. tostring(src:typeOf("LSource")))
 end
 ```
 
@@ -6991,7 +6460,7 @@ end
 
 ## 💡 Examples
 
-- [audio.lua](../blob/main/content/examples/audio.lua) - Sources, mixer, spatial audio
+- [audio.lua](../blob/main/content/examples/audio.lua) - API example
 
 [⬆ back to top](#table-of-contents)
 

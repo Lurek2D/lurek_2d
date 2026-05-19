@@ -1,8 +1,8 @@
-# `inventory` — Agent Reference (Lunasome)
+# `inventory` — Agent Reference (Lureksome)
 
 | Property              | Value                                                                                                                                                                                                                                           |
 | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Tier**              | Tier 3 --- Lunasome (pure Lua, no Rust dependencies)                                                                                                                                                                                            |
+| **Tier**              | Tier 3 --- Lureksome (pure Lua, no Rust dependencies)                                                                                                                                                                                            |
 | **Source**            | \library/inventory/init.lua\                                                                                                                                                                                                                    |
 | **Lua Tests**         | \	ests/lua/library/test_library_inventory.lua\                                                                                                                                                                                                  |
 | **Depends on**        | \lurek.*\ public API only                                                                                                                                                                                                                       |  | **Status** | full |

@@ -5,7 +5,7 @@ Checks:
   - logs/data/lua_api_data.json matches a fresh gen_lua_api_data.py run
     (ignoring volatile top-level metadata like timestamps).
   - docs/api/lurek.lua matches a fresh gen_luadoc.py run.
-  - docs/api/library.lua matches a fresh gen_lib_docs.py LuaCATS render.
+    - docs/api/lureksome.lua matches a fresh gen_lib_docs.py LuaCATS render.
 
 Advisory-only JSON output also includes current source/json/stub drift counts,
 but those do not affect the validator exit code.
@@ -33,7 +33,7 @@ ROOT = Path(__file__).resolve().parents[2]
 SRC_LUA_API_DIR = ROOT / "src" / "lua_api"
 LUA_API_JSON_PATH = ROOT / "logs" / "data" / "lua_api_data.json"
 LUREK_STUB_PATH = ROOT / "docs" / "api" / "lurek.lua"
-LIBRARY_STUB_PATH = ROOT / "docs" / "api" / "library.lua"
+LIBRARY_STUB_PATH = ROOT / "docs" / "api" / "lureksome.lua"
 EXTENSION_API_PATH = ROOT / "extensions" / "vscode" / "data" / "lurek-api.json"
 DOCS_TOOLS_DIR = ROOT / "tools" / "docs"
 MIN_LUA_SUMMARY_VISIBLE_CHARS = 30
@@ -540,7 +540,7 @@ def _print_text_report(result: dict) -> None:
     )
     print(
         "[OK]" if artifacts["library_stub_identical_to_committed"] else "[FAIL]",
-        "docs/api/library.lua matches fresh generator output",
+        "docs/api/lureksome.lua matches fresh generator output",
     )
     print(
         "[OK]" if artifacts["extension_api_identical_to_committed"] else "[FAIL]",

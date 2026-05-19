@@ -28,7 +28,8 @@ EXAMPLES_DIR = ROOT / "content" / "examples"
 EXAMPLES_INDEX = EXAMPLES_DIR / "README.md"
 GAMES_DIR = ROOT / "content" / "games"
 GAMES_INDEX = GAMES_DIR / "README.md"
-LIBRARY_DOC = ROOT / "docs" / "api" / "library.md"
+LIBRARY_DOC = ROOT / "docs" / "api" / "lureksome.md"
+LIBRARY_STUB = ROOT / "docs" / "api" / "lureksome.lua"
 API_MARKDOWN = ROOT / "docs" / "api" / "lurek.md"
 API_STUB = ROOT / "docs" / "api" / "lurek.lua"
 ENGINE_ARCH = ROOT / "docs" / "architecture" / "engine-architecture.md"
@@ -38,7 +39,7 @@ GROUPS = ["Foundations", "Core Runtime", "Platform Services", "Feature Systems",
 STATIC_ORDER = [
     "Home", "Getting-Started", "First-Game", "Project-Structure", "Callbacks",
     "Runtime-Model", "Modules", "API", "API-Reference", "Examples",
-    "Reference-Games", "Lunasome", "Glossary", "_Sidebar", "_Footer",
+    "Reference-Games", "Lureksome", "Glossary", "_Sidebar", "_Footer",
 ]
 CALLBACK_ORDER = [
     "lurek.init", "lurek.ready", "lurek.process", "lurek.process_physics",
@@ -214,7 +215,7 @@ def navigation_block(extra_links: list[tuple[str, str]] | None = None) -> list[s
         wiki("API"),
         wiki("Examples"),
         wiki("Reference-Games", "Reference Games"),
-        wiki("Lunasome"),
+        wiki("Lureksome"),
     ]
     for slug, label in extra_links or []:
         rendered = wiki(slug, label)
@@ -1034,7 +1035,7 @@ def home_page(context: Context) -> Page:
         f"- {wiki('Runtime-Model', 'Runtime Model')} - startup and frame order.",
         f"- {wiki('Examples')} - files from `content/examples/`.",
         f"- {wiki('Reference-Games', 'Reference Games')} - games from `content/games/`.",
-        f"- {wiki('Lunasome')} - reusable Lua libraries over the runtime.",
+        f"- {wiki('Lureksome')} - reusable Lua libraries over the runtime.",
         f"- {wiki('Glossary')} - common runtime and API terms.",
     ]
     return Page("Home.md", page("Lurek2D Wiki", body))
@@ -1261,18 +1262,24 @@ def games_page(context: Context) -> Page:
     return Page("Reference-Games.md", page("Reference Games", body))
 
 
-def lunasome_page(context: Context) -> Page:
-    body = ["Lunasome is the set of reusable Lua libraries built on top of the runtime. This page summarizes the generated `docs/api/library.md` reference.", ""]
+def lureksome_page(context: Context) -> Page:
+    body = ["Lureksome is the set of reusable Lua libraries built on top of the runtime. This page summarizes the generated `docs/api/lureksome.md` reference and links to the LuaCATS stub in `docs/api/lureksome.lua`.", ""]
     if context.library_summary:
         body += [f"**{context.library_summary}**", ""]
-    body += [f"Full source file: {file_link(context, LIBRARY_DOC, 'docs/api/library.md')}", "", "| Library | Scope |", "|---|---|"]
+    body += [
+        f"Markdown reference: {file_link(context, LIBRARY_DOC, 'docs/api/lureksome.md')}",
+        f"LuaCATS stub: {file_link(context, LIBRARY_STUB, 'docs/api/lureksome.lua')}",
+        "",
+        "| Library | Scope |",
+        "|---|---|",
+    ]
     for name, _anchor, detail_text in context.library_entries:
-        body.append(f"| {file_link(context, LIBRARY_DOC, 'library.' + name)} | {table_cell(detail_text)} |")
-    return Page("Lunasome.md", page("Lunasome", body))
+        body.append(f"| {file_link(context, LIBRARY_STUB, 'library.' + name)} | {table_cell(detail_text)} |")
+    return Page("Lureksome.md", page("Lureksome", body))
 
 
 def glossary_page(context: Context) -> Page:
-    body = ["The glossary collects terms that appear across module and API pages.", "", "## Core Terms", "", "- `lurek.*` - the only public API namespace for game scripts.", "- `callback` - a function called by the runtime, such as `lurek.process(dt)`.", "- `dt` - elapsed time since the previous frame, in seconds.", "- `main.lua` - the main game script.", "- `conf.lua` - optional startup configuration for a game.", "- `Lunasome` - reusable Lua libraries layered over the base runtime API.", "", "## Lua API Types", ""]
+    body = ["The glossary collects terms that appear across module and API pages.", "", "## Core Terms", "", "- `lurek.*` - the only public API namespace for game scripts.", "- `callback` - a function called by the runtime, such as `lurek.process(dt)`.", "- `dt` - elapsed time since the previous frame, in seconds.", "- `main.lua` - the main game script.", "- `conf.lua` - optional startup configuration for a game.", "- `Lureksome` - reusable Lua libraries layered over the base runtime API.", "", "## Lua API Types", ""]
     class_rows: list[tuple[str, str, str]] = []
     for module, api_module in context.api_modules.items():
         for class_name, class_data in classes(api_module):
@@ -1285,18 +1292,18 @@ def glossary_page(context: Context) -> Page:
 def sidebar_page(context: Context) -> Page:
     lines = ["* " + wiki("Home"), "* " + wiki("Getting-Started", "Getting Started"), "* " + wiki("First-Game", "First Game"), "* " + wiki("Project-Structure", "Project Structure"), "", "**User Guide**", "", "* " + wiki("Callbacks"), "* " + wiki("Runtime-Model", "Runtime Model"), "* " + wiki("Glossary"), "", "**Module Groups**", "", "* " + wiki("Modules", "All Modules")]
     lines += ["* " + wiki("Modules#" + heading_anchor(group), group) for group in GROUPS if any(module_group(context, module) == group for module in context.modules)]
-    lines += ["", "**API Indexes**", "", "* " + wiki("API"), "* " + wiki("API-Reference", "API Reference"), "", "**Examples And Games**", "", "* " + wiki("Examples"), "* " + wiki("Reference-Games", "Reference Games"), "", "**Libraries**", "", "* " + wiki("Lunasome")]
+    lines += ["", "**API Indexes**", "", "* " + wiki("API"), "* " + wiki("API-Reference", "API Reference"), "", "**Examples And Games**", "", "* " + wiki("Examples"), "* " + wiki("Reference-Games", "Reference Games"), "", "**Libraries**", "", "* " + wiki("Lureksome")]
     return Page("_Sidebar.md", BANNER + "\n".join(lines).rstrip() + "\n")
 
 
 def footer_page(context: Context) -> Page:
     separator = " " + chr(183) + " "
-    lines = ["Generated by `tools/docs/gen_wiki.py`. Do not edit generated wiki pages by hand.", "", separator.join([wiki("Home"), wiki("Modules"), wiki("API"), wiki("Examples"), wiki("Reference-Games", "Reference Games"), wiki("Lunasome")])]
+    lines = ["Generated by `tools/docs/gen_wiki.py`. Do not edit generated wiki pages by hand.", "", separator.join([wiki("Home"), wiki("Modules"), wiki("API"), wiki("Examples"), wiki("Reference-Games", "Reference Games"), wiki("Lureksome")])]
     return Page("_Footer.md", BANNER + "\n".join(lines).rstrip() + "\n")
 
 
 def build_pages(context: Context) -> list[Page]:
-    pages = [home_page(context), start_page(context), first_game_page(context), project_page(context), callbacks_page(context), runtime_page(context), modules_page(context), api_page(context), api_reference_page(context), examples_page(context), games_page(context), lunasome_page(context), glossary_page(context)]
+    pages = [home_page(context), start_page(context), first_game_page(context), project_page(context), callbacks_page(context), runtime_page(context), modules_page(context), api_page(context), api_reference_page(context), examples_page(context), games_page(context), lureksome_page(context), glossary_page(context)]
     pages += [module_page(context, module) for module in context.modules]
     pages += [sidebar_page(context), footer_page(context)]
     order = {slug + ".md": index for index, slug in enumerate(STATIC_ORDER)}

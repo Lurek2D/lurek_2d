@@ -1,8 +1,8 @@
-﻿# `loot` â€” Agent Reference (Lunasome)
+# `loot` â€” Agent Reference (Lureksome)
 
 | Property       | Value                                                                                                        |
 | -------------- | ------------------------------------------------------------------------------------------------------------ |
-| **Tier**       | Tier 3 â€” Lunasome (pure Lua)                                                                                 |
+| **Tier**       | Tier 3 â€” Lureksome (pure Lua)                                                                                 |
 | **Source**     | `library/loot/init.lua`                                                                                      |
 | **Lua Tests**  | `tests/lua/library/test_library_loot.lua`                                                                    |
 | **Depends on** | `lurek.math.newRandomGenerator` (sampling), `lurek.serial.fromToml` + `lurek.filesystem.read` (TOML loader, optional) |

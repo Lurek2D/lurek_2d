@@ -158,7 +158,7 @@ if (Test-Path $DemosSource) {
     Write-OK "Copied content/games/"
 }
 
-# Copy library (Lunasome pure-Lua standard libraries)
+# Copy library (Lureksome pure-Lua standard libraries)
 $LibrarySource = Join-Path $WorkspaceRoot 'library'
 if (Test-Path $LibrarySource) {
     $LibraryDest = Join-Path $PackageDir 'library'
@@ -209,7 +209,7 @@ Bundled examples
   Use any example as a starting point:
     lurekc.bat examples\physics
 
-Lunasome standard libraries (library\)
+Lureksome standard libraries (library\)
 ----------------------------------------
   Pure-Lua game modules you can require from your game scripts.
   Available: battle, cardgame, combat, crafting, dialog, economy,

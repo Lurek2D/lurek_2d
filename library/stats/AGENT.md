@@ -1,8 +1,8 @@
-﻿# `stats` — Agent Reference (Lunasome)
+# `stats` — Agent Reference (Lureksome)
 
 | Property | Value |
 |----------|-------|
-| **Tier** | Tier 3 — Lunasome (pure Lua, no Rust dependencies) |
+| **Tier** | Tier 3 — Lureksome (pure Lua, no Rust dependencies) |
 | **Source** | `library/stats/init.lua` |
 | **Lua Tests** | `tests/lua/library/test_library_stats.lua` |
 | **Test count** | 70 tests — all passing |

@@ -4,7 +4,7 @@
 
 ## Navigation
 
-[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lureksome](Lureksome)
 
 ## Table of Contents
 
@@ -36,5 +36,5 @@ Lurek2D is a single-binary 2D runtime for games written in Lua. This wiki is gen
 - [Runtime Model](Runtime-Model) - startup and frame order.
 - [Examples](Examples) - files from `content/examples/`.
 - [Reference Games](Reference-Games) - games from `content/games/`.
-- [Lunasome](Lunasome) - reusable Lua libraries over the runtime.
+- [Lureksome](Lureksome) - reusable Lua libraries over the runtime.
 - [Glossary](Glossary) - common runtime and API terms.

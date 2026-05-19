@@ -34,7 +34,7 @@ Manage a medieval shop stocking eight items across Weapons, Armor, and Potions c
 - `lurek.event` — signals clean engine shutdown on Escape.
 - `lurek.camera` — reads camera position for scene origin alignment.
 
-**Lunasome (`library/`) modules**
+**Lureksome (`library/`) modules**
 
 _None._
 

@@ -1,4 +1,4 @@
-﻿# Lurek2D â€” Lua BDD Tests
+# Lurek2D â€” Lua BDD Tests
 
 Lua tests exercise the `lurek.*` API surface through a Behaviour-Driven Development framework.
 They run headless inside a minimal Lua VM â€” no GPU, audio, or window is required.
@@ -24,7 +24,7 @@ cargo test lua_test_<module> -- --nocapture
 | `init.lua` | BDD framework â€” `describe`, `it`, `expect_*`, `test_summary` |
 | `unit/` | Per-module tests for a single `lurek.*` namespace |
 | `integration/` | Tests that span multiple `lurek.*` modules |
-| `library/` | Tests for `library/` Lunasome modules |
+| `library/` | Tests for `library/` Lureksome modules |
 | `stress/` | Performance and capacity tests |
 | `security/` | Lua sandbox and input validation tests |
 | `golden/` | Deterministic output comparison tests |
@@ -116,7 +116,7 @@ fn lua_test_<module>() {
 
 ## Library Tests (`library/`)
 
-Tests for `library/` Lunasome modules live in `tests/lua/library/`:
+Tests for `library/` Lureksome modules live in `tests/lua/library/`:
 
 ```
 tests/lua/library/test_library_<name>.lua

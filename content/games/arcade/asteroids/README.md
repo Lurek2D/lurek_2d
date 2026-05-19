@@ -36,7 +36,7 @@ Pilot a ship through an asteroid field. Rotate with A/D and thrust with W to acc
 - `lurek.event` — clean shutdown on Escape.
 - `lurek.camera` — camera setup for 800×600 viewport.
 
-**Lunasome (`content/library/`) modules**
+**Lureksome (`content/library/`) modules**
 
 _None._
 

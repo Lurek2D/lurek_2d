@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""library_coverage.py — Audit Lunasome library coverage across three dimensions.
+"""library_coverage.py — Audit Lureksome library coverage across three dimensions.
 
 Measures:
 
@@ -8,7 +8,7 @@ Measures:
      Also tracks ``@param`` and ``@return`` annotation completeness.
 
   2. **API doc coverage** — What % of public functions are present in
-     ``docs/api/library.md`` (the generated human-readable API reference).
+      ``docs/api/lureksome.md`` (the generated human-readable API reference).
 
   3. **Test coverage** — What % of public functions have a ``@covers`` marker
      in the corresponding ``tests/lua/library/test_library_<name>.lua``.
@@ -37,7 +37,7 @@ from typing import List, Optional
 REPO = Path(__file__).resolve().parent.parent.parent
 LIB_DIR = REPO / "library"
 TEST_LIB_DIR = REPO / "tests" / "lua" / "library"
-API_MD = REPO / "docs" / "api" / "library.md"
+API_MD = REPO / "docs" / "api" / "lureksome.md"
 
 # ── Lua source parsers ────────────────────────────────────────────────────────
 
@@ -146,7 +146,7 @@ def _test_covered_names(test_lua: Path) -> set[str]:
 
 
 def _api_md_names(lib_name: str) -> set[str]:
-    """Return bare function names documented in docs/api/library.md for a library."""
+    """Return bare function names documented in docs/api/lureksome.md for a library."""
     if not API_MD.exists():
         return set()
     text = API_MD.read_text(encoding="utf-8", errors="replace")
@@ -223,7 +223,7 @@ def audit_library(lib_name: str) -> dict:
     result["param_pct"] = round(with_param / len(funcs) * 100, 1)
     result["return_pct"] = round(with_return / len(funcs) * 100, 1)
 
-    # API doc coverage (docs/api/library.md)
+    # API doc coverage (docs/api/lureksome.md)
     api_names = _api_md_names(lib_name)
     bare_names = {_bare_name(f["name"]) for f in funcs}
     in_api = {n for n in bare_names if n in api_names}

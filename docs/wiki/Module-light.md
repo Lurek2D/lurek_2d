@@ -4,7 +4,7 @@
 
 ## Navigation
 
-[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lureksome](Lureksome)
 
 ## Table of Contents
 
@@ -191,9 +191,11 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- Call once per frame in lurek.process(dt) to animate all flickering lights.
-  -- This updates intensity modulation for every light that has flicker enabled.
-  function lurek.process(dt) lurek.light.advanceFlickers(dt) end
+    local light = lurek.light.newLight(200, 200, 100)
+    light:addFlicker(0.5, 1.0, 4.0)
+    light:setFlickerEnabled(true)
+    lurek.light.advanceFlickers(0.016)
+    print("flickers advanced")
 end
 ```
 
@@ -209,10 +211,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- Call on scene transitions to ensure no stale lights carry over.
-  -- After clear(), getLightCount() and getOccluderCount() both return 0.
-  lurek.light.clear()
-  lurek.log.info("light world reset for new scene", "light")
+    lurek.light.newLight(0, 0, 50)
+    lurek.light.clear()
+    print("after clear: lights = " .. lurek.light.getLightCount())
 end
 ```
 
@@ -230,12 +231,16 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- Returns r, g, b, a. Use this to adapt gameplay to current lighting conditions.
-  local r, g, b, _ = lurek.light.getAmbient()
-  -- If overall brightness is low, the player might need extra light sources
-  if r + g + b < 0.5 then
-    lurek.log.info("scene is dark — consider spawning extra torches", "light")
-  end
+    local r, g, b, a = lurek.light.getAmbient()
+    print("ambient", r, g, b, a)
+    local mx = lurek.light.getMaxLights()
+    print("max lights = " .. mx)
+    local enabled = lurek.light.isEnabled()
+    print("enabled = " .. tostring(enabled))
+    lurek.light.setMaxLights(64)
+    lurek.light.setEnabled(true)
+    local r2, g2, b2, a2 = lurek.light.getAmbient()
+    print("ambient2", r2, g2, b2, a2)
 end
 ```
 
@@ -253,13 +258,8 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- Returns a list of tables with {x, y, angle, intensity} for each light
-  -- marked as volumetric. Use these hints to drive a post-process god-ray shader.
-  local hints = lurek.light.getGodRayHints()
-  for _, h in ipairs(hints) do
-    -- Each hint gives the light's position and direction — feed into a radial blur
-    lurek.log.debug("god-ray src x=" .. h.x .. " y=" .. h.y .. " angle=" .. h.angle, "fx")
-  end
+    local hints = lurek.light.getGodRayHints()
+    print("god ray hints = " .. #hints)
 end
 ```
 
@@ -281,10 +281,11 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- Useful to verify group population or balance light budgets across groups.
-  local TORCHES_GROUP = 1
-  local n = lurek.light.getGroupCount(TORCHES_GROUP)
-  lurek.log.info("torches group has " .. n .. " lights", "light")
+    local a = lurek.light.newLight(0, 0, 50)
+    local b = lurek.light.newLight(10, 10, 50)
+    a:setGroupId(1)
+    b:setGroupId(1)
+    print("group 1 count = " .. lurek.light.getGroupCount(1))
 end
 ```
 
@@ -302,11 +303,10 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- Use for performance budgeting: too many lights in one frame hurts fill rate
-  local n = lurek.light.getLightCount()
-  if n > 32 then
-    lurek.log.warn("scene has " .. n .. " lights — may exceed GPU budget", "perf")
-  end
+    lurek.light.clear()
+    lurek.light.newLight(0, 0, 100)
+    lurek.light.newLight(50, 50, 80)
+    print("lights = " .. lurek.light.getLightCount())
 end
 ```
 
@@ -324,12 +324,8 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- The engine enforces a hard cap on simultaneous lights (default varies by quality).
-  -- Lights beyond the cap are silently skipped.
-  local cap = lurek.light.getMaxLights()
-  if cap < 64 then
-    lurek.light.setMaxLights(64)  -- raise for levels with many torch sconces
-  end
+    lurek.light.setMaxLights(128)
+    print("max lights = " .. lurek.light.getMaxLights())
 end
 ```
 
@@ -347,12 +343,8 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- Returns a list of hints for lights that have a normal map path set.
-  -- Use to drive per-pixel normal-mapped lighting in a custom shader pass.
-  local hints = lurek.light.getNormalMapHints()
-  for _, h in ipairs(hints) do
-    lurek.log.debug("normal-map=" .. h.normalMap .. " strength=" .. h.strength, "fx")
-  end
+    local hints = lurek.light.getNormalMapHints()
+    print("normal map hints = " .. #hints)
 end
 ```
 
@@ -370,9 +362,10 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- Each occluder generates shadow geometry. Monitor the count for performance.
-  local n = lurek.light.getOccluderCount()
-  lurek.log.info("active occluders: " .. n, "light")
+    lurek.light.clear()
+    lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
+    lurek.light.newOccluder({20, 20, 30, 20, 30, 30, 20, 30})
+    print("occluders = " .. lurek.light.getOccluderCount())
 end
 ```
 
@@ -390,9 +383,16 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  lurek.light.setEnabled(true)
-  local on = lurek.light.isEnabled()
-  lurek.log.debug("lighting system enabled: " .. tostring(on), "light") -- true
+    local r, g, b, a = lurek.light.getAmbient()
+    print("ambient", r, g, b, a)
+    local mx = lurek.light.getMaxLights()
+    print("max lights = " .. mx)
+    local enabled = lurek.light.isEnabled()
+    print("enabled = " .. tostring(enabled))
+    lurek.light.setMaxLights(64)
+    lurek.light.setEnabled(true)
+    local r2, g2, b2, a2 = lurek.light.getAmbient()
+    print("ambient2", r2, g2, b2, a2)
 end
 ```
 
@@ -417,22 +417,8 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- newLight(x, y, radius, opts?) creates a point light at world position (x, y)
-  -- with the given radius. The optional table configures color, intensity, blend mode,
-  -- falloff, shadows, flicker, group, type, direction, and more in one call.
-  local torch = lurek.light.newLight(200, 150, 180, {
-    color       = {1.0, 0.7, 0.3, 1.0},  -- warm orange flame
-    intensity   = 1.2,                     -- slightly brighter than default 1.0
-    blend       = "add",                   -- additive blending for fire glow
-    falloff     = "smooth",                -- smooth falloff feels natural for torches
-    shadowEnabled = true,                  -- cast shadows from nearby occluders
-    flickerSpeed    = 6.0,                 -- flicker animation speed
-    flickerStrength = 0.12,                -- 12% intensity variance for a lively flame
-    groupId     = 1,                       -- assign to group 1 (torches)
-  })
-  -- After creation, the handle can be stored and updated per-frame
-  torch:setBlendMode("add")
-  lurek.log.info("torch lit at (200, 150) radius=180", "light")
+    local light = lurek.light.newLight(400, 300, 200)
+    print("radius = " .. light:getRadius())
 end
 ```
 
@@ -455,16 +441,14 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- Occluders block light and produce shadows. Vertices are a flat array: {x1,y1, x2,y2, ...}
-  -- representing a closed polygon. Minimum 3 vertices (6 numbers).
-  -- Use occluders for walls, pillars, crates, or any solid geometry that should block light.
-  local wall = lurek.light.newOccluder(
-    { 100, 100,  300, 100,  300, 120,  100, 120 },  -- a horizontal wall segment
-    { opacity = 0.85, lightMask = 0xFFFF }           -- slightly translucent, blocks all lights
-  )
-  -- Translucent occluders (opacity < 1.0) let some light bleed through,
-  -- useful for curtains, frosted glass, or thin wooden fences.
-  wall:setEnabled(true)
+    local verts = {0, 0, 100, 0, 100, 50, 0, 50}
+    local occ = lurek.light.newOccluder(verts)
+    print("occluder valid = " .. tostring(occ:isValid()))
+
+    -- Creates an occluder with options.
+    local verts = {0, 0, 50, 0, 50, 80, 0, 80}
+    local occ = lurek.light.newOccluder(verts, {opacity = 0.8})
+    print("opacity = " .. occ:getOpacity())
 end
 ```
 
@@ -487,11 +471,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- Ambient color fills the entire scene before any lights are applied.
-  -- Use low values for dark dungeons, higher for outdoor daylight.
-  -- Format: setAmbient(r, g, b, a) with each channel 0.0 to 1.0.
-  lurek.light.setAmbient(0.15, 0.18, 0.30, 1.0)  -- deep dusk blue for a nighttime scene
-  lurek.log.info("ambient set to dusk blue", "light")
+    lurek.light.setAmbient(0.1, 0.1, 0.15, 1)
+    local r, g, b, a = lurek.light.getAmbient()
+    print("ambient = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 ```
 
@@ -511,10 +493,8 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- Toggle the entire lighting system on/off (e.g., for a brightness option).
-  lurek.light.setEnabled(false)
-  lurek.log.debug("lighting disabled globally", "light")
-  lurek.light.setEnabled(true)
+    lurek.light.setEnabled(true)
+    print("light world enabled = " .. tostring(lurek.light.isEnabled()))
 end
 ```
 
@@ -538,9 +518,8 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- Flash all alarm lights red simultaneously during an alert state.
-  local ALARM_LIGHTS = 3
-  lurek.light.setGroupColor(ALARM_LIGHTS, 1.0, 0.1, 0.1, 1.0)  -- intense red
+    lurek.light.setGroupColor(1, 1, 0, 0, 1)
+    print("group 1 set to red")
 end
 ```
 
@@ -561,10 +540,8 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- Groups let you batch-control related lights without tracking each handle.
-  -- Example: turn off all torches in a dungeon wing when the player leaves.
-  local TORCHES_GROUP = 1
-  lurek.light.setGroupEnabled(TORCHES_GROUP, false)  -- all group-1 torches go dark
+    lurek.light.setGroupEnabled(1, false)
+    print("group 1 disabled")
 end
 ```
 
@@ -585,9 +562,8 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- Dim an entire group at once — useful for "power failing" effect on streetlamps.
-  local STREETLAMPS = 2
-  lurek.light.setGroupIntensity(STREETLAMPS, 0.6)  -- dim to 60%
+    lurek.light.setGroupIntensity(1, 3.0)
+    print("group 1 intensity = 3")
 end
 ```
 
@@ -607,11 +583,16 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- Adjust based on player graphics quality setting.
-  -- Higher cap = more lights rendered but more GPU work per frame.
-  local quality = "high"
-  local cap = (quality == "high") and 128 or 32
-  lurek.light.setMaxLights(cap)
+    local r, g, b, a = lurek.light.getAmbient()
+    print("ambient", r, g, b, a)
+    local mx = lurek.light.getMaxLights()
+    print("max lights = " .. mx)
+    local enabled = lurek.light.isEnabled()
+    print("enabled = " .. tostring(enabled))
+    lurek.light.setMaxLights(64)
+    lurek.light.setEnabled(true)
+    local r2, g2, b2, a2 = lurek.light.getAmbient()
+    print("ambient2", r2, g2, b2, a2)
 end
 ```
 
@@ -629,12 +610,8 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- syncAmbient() returns the same ambient color set by setAmbient(),
-  -- useful for other systems (fog, particles) that need the ambient reference.
-  local r, g, b, a = lurek.light.syncAmbient()
-  -- Tint fog color to match ambient for a cohesive look
-  local fog_tint = { r * 0.8, g * 0.8, b * 0.8, a }
-  lurek.log.debug("fog tint=(" .. fog_tint[1] .. "," .. fog_tint[2] .. ")", "fx")
+    local r, g, b, a = lurek.light.syncAmbient()
+    print("sync ambient = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 ```
 
@@ -661,22 +638,8 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- newLight(x, y, radius, opts?) creates a point light at world position (x, y)
-  -- with the given radius. The optional table configures color, intensity, blend mode,
-  -- falloff, shadows, flicker, group, type, direction, and more in one call.
-  local torch = lurek.light.newLight(200, 150, 180, {
-    color       = {1.0, 0.7, 0.3, 1.0},  -- warm orange flame
-    intensity   = 1.2,                     -- slightly brighter than default 1.0
-    blend       = "add",                   -- additive blending for fire glow
-    falloff     = "smooth",                -- smooth falloff feels natural for torches
-    shadowEnabled = true,                  -- cast shadows from nearby occluders
-    flickerSpeed    = 6.0,                 -- flicker animation speed
-    flickerStrength = 0.12,                -- 12% intensity variance for a lively flame
-    groupId     = 1,                       -- assign to group 1 (torches)
-  })
-  -- After creation, the handle can be stored and updated per-frame
-  torch:setBlendMode("add")
-  lurek.log.info("torch lit at (200, 150) radius=180", "light")
+    local light = lurek.light.newLight(400, 300, 200)
+    print("radius = " .. light:getRadius())
 end
 ```
 
@@ -698,16 +661,14 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- Occluders block light and produce shadows. Vertices are a flat array: {x1,y1, x2,y2, ...}
-  -- representing a closed polygon. Minimum 3 vertices (6 numbers).
-  -- Use occluders for walls, pillars, crates, or any solid geometry that should block light.
-  local wall = lurek.light.newOccluder(
-    { 100, 100,  300, 100,  300, 120,  100, 120 },  -- a horizontal wall segment
-    { opacity = 0.85, lightMask = 0xFFFF }           -- slightly translucent, blocks all lights
-  )
-  -- Translucent occluders (opacity < 1.0) let some light bleed through,
-  -- useful for curtains, frosted glass, or thin wooden fences.
-  wall:setEnabled(true)
+    local verts = {0, 0, 100, 0, 100, 50, 0, 50}
+    local occ = lurek.light.newOccluder(verts)
+    print("occluder valid = " .. tostring(occ:isValid()))
+
+    -- Creates an occluder with options.
+    local verts = {0, 0, 50, 0, 50, 80, 0, 80}
+    local occ = lurek.light.newOccluder(verts, {opacity = 0.8})
+    print("opacity = " .. occ:getOpacity())
 end
 ```
 
@@ -744,11 +705,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- Convenience: specify intensity bounds and Hz instead of raw speed/strength.
-  -- addFlicker(0.8, 1.2, 8.0) means oscillate between 80%-120% at 8 Hz.
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:addFlicker(0.8, 1.2, 8.0)
-  lurek.log.info("flicker active=" .. tostring(lt:isFlickerEnabled()), "light")
+    local light = lurek.light.newLight(100, 100, 80)
+    light:addFlicker(0.5, 1.0, 8.0)
+    print("flicker added")
 end
 ```
 
@@ -771,11 +730,12 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- Remove cookie to revert to plain circular light shape
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setCookie("assets/gobo.png")
-  lt:clearCookie()
-  lurek.log.info("cookie after clear=" .. tostring(lt:getCookie()), "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setCookie("assets/textures/cookie_star.png")
+    local path = light:getCookie()
+    print("cookie = " .. path)
+    light:clearCookie()
+    print("cookie cleared")
 end
 ```
 
@@ -798,9 +758,12 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- Revert to flat lighting without normal-mapped bumps
-  local l = lurek.light.newLight(100, 100, 64)
-  l:clearNormalMap()
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setNormalMap("assets/textures/stone_normal.png")
+    local nm = light:getNormalMap()
+    print("normal map = " .. nm)
+    light:clearNormalMap()
+    print("normal map cleared")
 end
 ```
 
@@ -828,10 +791,10 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setAttenuation(1.0, 0.14, 0.07)  -- steeper falloff, smaller effective range
-  local c, l, q = lt:getAttenuation()
-  lurek.log.info("c=" .. c .. " l=" .. l .. " q=" .. q, "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setAttenuation(1, 0.1, 0.01)
+    local c, l, q = light:getAttenuation()
+    print("attenuation c=" .. c .. " l=" .. l .. " q=" .. q)
 end
 ```
 
@@ -857,9 +820,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setBlendMode("mix")  -- alpha-blend for colored ambient fill
-  lurek.log.info("blend_mode=" .. lt:getBlendMode(), "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setBlendMode("add")
+    print("blend = " .. light:getBlendMode())
 end
 ```
 
@@ -888,10 +851,10 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setColor(0.2, 0.4, 1.0, 1.0)   -- cool blue security light
-  local r, g, b, a = lt:getColor()
-  lurek.log.info("r=" .. r .. " g=" .. g .. " b=" .. b, "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1, 0.5, 0, 0.9)
+    local r, g, b, a = light:getColor()
+    print("color = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 ```
 
@@ -917,9 +880,12 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setCookie("assets/gobo_slats.png")  -- venetian blind pattern
-  lurek.log.info("cookie=" .. tostring(lt:getCookie()), "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setCookie("assets/textures/cookie_star.png")
+    local path = light:getCookie()
+    print("cookie = " .. path)
+    light:clearCookie()
+    print("cookie cleared")
 end
 ```
 
@@ -945,10 +911,10 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setLightType("spot")
-  lt:setDirection(math.pi)  -- point left
-  lurek.log.info("direction=" .. lt:getDirection(), "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setLightType("directional")
+    light:setDirection(1.57)
+    print("direction = " .. light:getDirection())
 end
 ```
 
@@ -974,9 +940,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setEnergy(0.7)
-  lurek.log.info("energy=" .. lt:getEnergy(), "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setEnergy(2.5)
+    print("energy = " .. light:getEnergy())
 end
 ```
 
@@ -1002,9 +968,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setFalloff("linear")
-  lurek.log.info("falloff=" .. lt:getFalloff(), "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setFalloff("smooth")
+    print("falloff = " .. light:getFalloff())
 end
 ```
 
@@ -1031,10 +997,10 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setFlicker(5.0, 0.2)
-  local speed, strength = lt:getFlicker()
-  lurek.log.info("speed=" .. speed .. " strength=" .. strength, "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setFlicker(3.0, 0.4)
+    local speed, strength = light:getFlicker()
+    print("flicker speed=" .. speed .. " strength=" .. strength)
 end
 ```
 
@@ -1060,9 +1026,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setGroupId(2)
-  lurek.log.info("group_id=" .. lt:getGroupId(), "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setGroupId(5)
+    print("group = " .. light:getGroupId())
 end
 ```
 
@@ -1088,10 +1054,11 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setLightType("spot")
-  lt:setInnerAngle(math.pi / 6)
-  lurek.log.info("inner_angle=" .. lt:getInnerAngle(), "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setLightType("spot")
+    light:setInnerAngle(0.3)
+    light:setOuterAngle(0.8)
+    print("inner = " .. light:getInnerAngle() .. " outer = " .. light:getOuterAngle())
 end
 ```
 
@@ -1117,9 +1084,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setIntensity(0.8)
-  lurek.log.info("intensity=" .. lt:getIntensity(), "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setIntensity(5)
+    print("intensity = " .. light:getIntensity())
 end
 ```
 
@@ -1145,9 +1112,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local l = lurek.light.newLight(400, 300, 200)
-  local mask = l:getLightMask()
-  lurek.log.debug("light mask: " .. tostring(mask), "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setLightMask(3)
+    print("mask = " .. light:getLightMask())
 end
 ```
 
@@ -1173,9 +1140,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setLightType("point")  -- default omnidirectional
-  lurek.log.info("type=" .. lt:getLightType(), "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setLightType("spot")
+    print("type = " .. light:getLightType())
 end
 ```
 
@@ -1201,8 +1168,12 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local l = lurek.light.newLight(100, 100, 64)
-  local map = l:getNormalMap()
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setNormalMap("assets/textures/stone_normal.png")
+    local nm = light:getNormalMap()
+    print("normal map = " .. nm)
+    light:clearNormalMap()
+    print("normal map cleared")
 end
 ```
 
@@ -1228,8 +1199,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local l = lurek.light.newLight(100, 100, 64)
-  local s = l:getNormalStrength()
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setNormalStrength(1.5)
+    print("normal strength = " .. light:getNormalStrength())
 end
 ```
 
@@ -1255,10 +1227,11 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setLightType("spot")
-  lt:setOuterAngle(math.pi / 3)
-  lurek.log.info("outer_angle=" .. lt:getOuterAngle(), "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setLightType("spot")
+    light:setInnerAngle(0.3)
+    light:setOuterAngle(0.8)
+    print("inner = " .. light:getInnerAngle() .. " outer = " .. light:getOuterAngle())
 end
 ```
 
@@ -1285,9 +1258,10 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local l = lurek.light.newLight(200, 150, 180)
-  local x, y = l:getPosition()
-  lurek.log.debug("light pos: " .. x .. "," .. y, "light") -- 200, 150
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setPosition(200, 150)
+    local x, y = light:getPosition()
+    print("pos = " .. x .. "," .. y)
 end
 ```
 
@@ -1313,8 +1287,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local lt = lurek.light.newLight(400, 300, 180)
-  lurek.log.info("radius=" .. lt:getRadius(), "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setRadius(250)
+    print("radius = " .. light:getRadius())
 end
 ```
 
@@ -1343,10 +1318,11 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setShadowColor(0.1, 0.1, 0.3, 0.9)
-  local r, g, b, a = lt:getShadowColor()
-  lurek.log.info("shadow_color=" .. r .. "," .. g .. "," .. b, "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setShadowEnabled(true)
+    light:setShadowColor(0, 0, 0.1, 0.8)
+    local r, g, b, a = light:getShadowColor()
+    print("shadow color = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 ```
 
@@ -1372,9 +1348,10 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setShadowFilter("pcf13")  -- highest quality for cinematic shots
-  lurek.log.info("shadow_filter=" .. lt:getShadowFilter(), "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setShadowEnabled(true)
+    light:setShadowFilter("pcf5")
+    print("shadow filter = " .. light:getShadowFilter())
 end
 ```
 
@@ -1400,9 +1377,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setShadowMask(0b11111111)
-  lurek.log.info("shadow_mask=" .. lt:getShadowMask(), "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setShadowMask(7)
+    print("shadow mask = " .. light:getShadowMask())
 end
 ```
 
@@ -1428,9 +1405,10 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setShadowSmooth(1.5)
-  lurek.log.info("shadow_smooth=" .. lt:getShadowSmooth(), "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setShadowEnabled(true)
+    light:setShadowSmooth(2.0)
+    print("shadow smooth = " .. light:getShadowSmooth())
 end
 ```
 
@@ -1456,8 +1434,10 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local l = lurek.light.newLight(100, 100, 64)
-  local s = l:getShadowSoftness()
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setShadowEnabled(true)
+    light:setShadowSoftness(1.5)
+    print("shadow softness = " .. light:getShadowSoftness())
 end
 ```
 
@@ -1483,8 +1463,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local l = lurek.light.newLight(400, 300, 200)
-  lurek.log.debug("enabled: " .. tostring(l:isEnabled()), "light") -- true
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setEnabled(false)
+    print("enabled = " .. tostring(light:isEnabled()))
 end
 ```
 
@@ -1510,10 +1491,10 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setFlicker(4.0, 0.1)
-  lt:setFlickerEnabled(false)  -- pause flicker during cutscene
-  lurek.log.info("flicker_enabled=" .. tostring(lt:isFlickerEnabled()), "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setFlicker(2.0, 0.3)
+    light:setFlickerEnabled(true)
+    print("flicker on = " .. tostring(light:isFlickerEnabled()))
 end
 ```
 
@@ -1539,9 +1520,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setShadowEnabled(false)
-  lurek.log.info("shadow=" .. tostring(lt:isShadowEnabled()), "light")
+    local light = lurek.light.newLight(200, 200, 150)
+    light:setShadowEnabled(true)
+    print("shadows = " .. tostring(light:isShadowEnabled()))
 end
 ```
 
@@ -1567,10 +1548,10 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local l = lurek.light.newLight(400, 300, 200)
-  lurek.log.debug("valid: " .. tostring(l:isValid()), "light") -- true
-  l:remove()
-  lurek.log.debug("valid after remove: " .. tostring(l:isValid()), "light") -- false
+    local light = lurek.light.newLight(0, 0, 100)
+    print("valid = " .. tostring(light:isValid()))
+    light:remove()
+    print("valid after remove = " .. tostring(light:isValid()))
 end
 ```
 
@@ -1596,9 +1577,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setVolumetric(false)
-  lurek.log.info("volumetric=" .. tostring(lt:isVolumetric()), "light")
+    local light = lurek.light.newLight(0, 0, 200)
+    light:setVolumetric(true)
+    print("volumetric = " .. tostring(light:isVolumetric()))
 end
 ```
 
@@ -1621,9 +1602,14 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local l = lurek.light.newLight(400, 300, 150)
-  l:remove()
-  lurek.log.debug("light removed", "light")
+    local lt = lurek.light.newLight(200, 300, 150)
+    local r, g, b, a = lurek.light.getAmbient()
+    print("ambient", r, g, b, a)
+    local count = lurek.light.getLightCount()
+    print("lights = " .. count)
+    lt:remove()
+    local count2 = lurek.light.getLightCount()
+    print("after remove = " .. count2)
 end
 ```
 
@@ -1655,12 +1641,10 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- Classic OpenGL attenuation: 1/(c + l*d + q*d^2)
-  -- (1.0, 0.09, 0.032) approximates a 50-unit range indoor lamp
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setAttenuation(1.0, 0.09, 0.032)
-  local c, l, q = lt:getAttenuation()
-  lurek.log.info("attenuation c=" .. c .. " l=" .. l .. " q=" .. q, "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setAttenuation(1, 0.1, 0.01)
+    local c, l, q = light:getAttenuation()
+    print("attenuation c=" .. c .. " l=" .. l .. " q=" .. q)
 end
 ```
 
@@ -1688,10 +1672,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- "add" is the standard for self-luminous objects (lamps, fire, neon)
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setBlendMode("add")
-  lurek.log.info("blend_mode=" .. lt:getBlendMode(), "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setBlendMode("add")
+    print("blend = " .. light:getBlendMode())
 end
 ```
 
@@ -1725,11 +1708,10 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- Animate color for a neon sign cycling between warm and cool tones
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setColor(1.0, 0.6, 0.2, 1.0)   -- warm orange neon
-  local r, g, b, a = lt:getColor()
-  lurek.log.info("color r=" .. r .. " g=" .. g, "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1, 0.5, 0, 0.9)
+    local r, g, b, a = light:getColor()
+    print("color = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 ```
 
@@ -1757,10 +1739,12 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- Cookie textures mask the light shape — window blinds, leaf patterns, gobos
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setCookie("assets/cookie_window.png")
-  lurek.log.info("cookie=" .. tostring(lt:getCookie()), "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setCookie("assets/textures/cookie_star.png")
+    local path = light:getCookie()
+    print("cookie = " .. path)
+    light:clearCookie()
+    print("cookie cleared")
 end
 ```
 
@@ -1788,11 +1772,10 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- Rotate a spotlight to sweep across a room (security camera effect)
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setLightType("spot")
-  lt:setDirection(math.pi / 4)   -- point northeast
-  lurek.log.info("direction=" .. lt:getDirection(), "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setLightType("directional")
+    light:setDirection(1.57)
+    print("direction = " .. light:getDirection())
 end
 ```
 
@@ -1820,11 +1803,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local l = lurek.light.newLight(400, 300, 200)
-  -- Flicker effect: disable then re-enable.
-  l:setEnabled(false)
-  lurek.log.debug("light off: " .. tostring(not l:isEnabled()), "light") -- true
-  l:setEnabled(true)
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setEnabled(false)
+    print("enabled = " .. tostring(light:isEnabled()))
 end
 ```
 
@@ -1852,9 +1833,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setEnergy(1.5)
-  lurek.log.info("energy=" .. lt:getEnergy(), "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setEnergy(2.5)
+    print("energy = " .. light:getEnergy())
 end
 ```
 
@@ -1882,10 +1863,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- "smooth" is most natural; "linear" is cheaper; "constant" for uniform fill
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setFalloff("smooth")
-  lurek.log.info("falloff=" .. lt:getFalloff(), "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setFalloff("smooth")
+    print("falloff = " .. light:getFalloff())
 end
 ```
 
@@ -1915,11 +1895,10 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- speed=8 means 8 oscillation units/sec, strength=0.15 means 15% variance
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setFlicker(8.0, 0.15)
-  local speed, strength = lt:getFlicker()
-  lurek.log.info("flicker speed=" .. speed .. " strength=" .. strength, "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setFlicker(3.0, 0.4)
+    local speed, strength = light:getFlicker()
+    print("flicker speed=" .. speed .. " strength=" .. strength)
 end
 ```
 
@@ -1947,11 +1926,10 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- Configure first, then enable — avoids one frame of uninitialized flicker
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setFlicker(6.0, 0.1)
-  lt:setFlickerEnabled(true)
-  lurek.log.info("flicker=" .. tostring(lt:isFlickerEnabled()), "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setFlicker(2.0, 0.3)
+    light:setFlickerEnabled(true)
+    print("flicker on = " .. tostring(light:isFlickerEnabled()))
 end
 ```
 
@@ -1979,9 +1957,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setGroupId(1)  -- assign to torches group
-  lurek.log.info("group_id=" .. lt:getGroupId(), "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setGroupId(5)
+    print("group = " .. light:getGroupId())
 end
 ```
 
@@ -2009,10 +1987,11 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setLightType("spot")
-  lt:setInnerAngle(math.pi / 8)  -- tight center beam
-  lurek.log.info("inner_angle=" .. lt:getInnerAngle(), "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setLightType("spot")
+    light:setInnerAngle(0.3)
+    light:setOuterAngle(0.8)
+    print("inner = " .. light:getInnerAngle() .. " outer = " .. light:getOuterAngle())
 end
 ```
 
@@ -2040,10 +2019,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- Overbright intensity for explosion flash
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setIntensity(2.5)  -- 250% brightness burst
-  lurek.log.info("intensity=" .. lt:getIntensity(), "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setIntensity(5)
+    print("intensity = " .. light:getIntensity())
 end
 ```
 
@@ -2071,9 +2049,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local l = lurek.light.newLight(400, 300, 200)
-  l:setLightMask(0xFF)
-  lurek.log.debug("light mask set", "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setLightMask(3)
+    print("mask = " .. light:getLightMask())
 end
 ```
 
@@ -2101,13 +2079,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- Configure a spotlight: set type, aim direction, and cone angles
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setLightType("spot")
-  lt:setDirection(math.pi / 2)       -- aim downward
-  lt:setInnerAngle(math.pi / 8)     -- narrow bright center
-  lt:setOuterAngle(math.pi / 4)     -- wider soft edge
-  lurek.log.info("type=" .. lt:getLightType(), "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setLightType("spot")
+    print("type = " .. light:getLightType())
 end
 ```
 
@@ -2135,9 +2109,12 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- Normal maps add per-pixel bump illusion to surfaces lit by this light
-  local l = lurek.light.newLight(100, 100, 64)
-  l:setNormalMap("assets/textures/normal.png")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setNormalMap("assets/textures/stone_normal.png")
+    local nm = light:getNormalMap()
+    print("normal map = " .. nm)
+    light:clearNormalMap()
+    print("normal map cleared")
 end
 ```
 
@@ -2165,9 +2142,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- 0.0 = no bump, 1.0 = standard, >1.0 = exaggerated depth
-  local l = lurek.light.newLight(100, 100, 64)
-  l:setNormalStrength(0.75)
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setNormalStrength(1.5)
+    print("normal strength = " .. light:getNormalStrength())
 end
 ```
 
@@ -2195,12 +2172,11 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- Outer must be >= inner. The penumbra zone is between inner and outer.
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setLightType("spot")
-  lt:setInnerAngle(math.pi / 8)
-  lt:setOuterAngle(math.pi / 4)  -- soft falloff zone from pi/8 to pi/4
-  lurek.log.info("outer_angle=" .. lt:getOuterAngle(), "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setLightType("spot")
+    light:setInnerAngle(0.3)
+    light:setOuterAngle(0.8)
+    print("inner = " .. light:getInnerAngle() .. " outer = " .. light:getOuterAngle())
 end
 ```
 
@@ -2230,10 +2206,10 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local l = lurek.light.newLight(400, 300, 200)
-  l:setPosition(500, 200)
-  local x, y = l:getPosition()
-  lurek.log.debug("moved to: " .. x .. "," .. y, "light") -- 500, 200
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setPosition(200, 150)
+    local x, y = light:getPosition()
+    print("pos = " .. x .. "," .. y)
 end
 ```
 
@@ -2261,10 +2237,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- Expand radius to simulate a growing fire
-  local lt = lurek.light.newLight(400, 300, 100)
-  lt:setRadius(250)  -- fire has spread, illuminate more area
-  lurek.log.info("radius=" .. lt:getRadius(), "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setRadius(250)
+    print("radius = " .. light:getRadius())
 end
 ```
 
@@ -2298,12 +2273,11 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- Dark blue shadows create a cold night atmosphere
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setShadowEnabled(true)
-  lt:setShadowColor(0.0, 0.0, 0.2, 0.8)
-  local r, g, b, a = lt:getShadowColor()
-  lurek.log.info("shadow_color b=" .. b .. " a=" .. a, "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setShadowEnabled(true)
+    light:setShadowColor(0, 0, 0.1, 0.8)
+    local r, g, b, a = light:getShadowColor()
+    print("shadow color = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 ```
 
@@ -2331,10 +2305,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- Only enable shadows for lights where they add gameplay value
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setShadowEnabled(true)
-  lurek.log.info("shadow=" .. tostring(lt:isShadowEnabled()), "light")
+    local light = lurek.light.newLight(200, 200, 150)
+    light:setShadowEnabled(true)
+    print("shadows = " .. tostring(light:isShadowEnabled()))
 end
 ```
 
@@ -2362,11 +2335,10 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- pcf5 is a good balance of quality and performance for most scenes
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setShadowEnabled(true)
-  lt:setShadowFilter("pcf5")
-  lurek.log.info("shadow_filter=" .. lt:getShadowFilter(), "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setShadowEnabled(true)
+    light:setShadowFilter("pcf5")
+    print("shadow filter = " .. light:getShadowFilter())
 end
 ```
 
@@ -2394,11 +2366,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- Only receive shadows from the first 4 layers (walls, not decorations)
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setShadowEnabled(true)
-  lt:setShadowMask(0b00001111)
-  lurek.log.info("shadow_mask=" .. lt:getShadowMask(), "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setShadowMask(7)
+    print("shadow mask = " .. light:getShadowMask())
 end
 ```
 
@@ -2426,9 +2396,10 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setShadowSmooth(2.0)  -- moderate blur on shadow edges
-  lurek.log.info("shadow_smooth=" .. lt:getShadowSmooth(), "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setShadowEnabled(true)
+    light:setShadowSmooth(2.0)
+    print("shadow smooth = " .. light:getShadowSmooth())
 end
 ```
 
@@ -2456,9 +2427,10 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- Higher softness = wider penumbra, looks like a large area light source
-  local l = lurek.light.newLight(100, 100, 64)
-  l:setShadowSoftness(0.5)
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setShadowEnabled(true)
+    light:setShadowSoftness(1.5)
+    print("shadow softness = " .. light:getShadowSoftness())
 end
 ```
 
@@ -2486,10 +2458,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- Volumetric lights provide hints for god-ray post-process rendering
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setVolumetric(true)
-  lurek.log.info("volumetric=" .. tostring(lt:isVolumetric()), "light")
+    local light = lurek.light.newLight(0, 0, 200)
+    light:setVolumetric(true)
+    print("volumetric = " .. tostring(light:isVolumetric()))
 end
 ```
 
@@ -2512,11 +2483,15 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- Interrupt a long fade if the player cancels the action
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:transitionTo({ intensity = 0.1 }, 5.0)
-  lt:stopTransition()  -- cancel the fade, keep current values
-  lurek.log.info("progress after stop=" .. lt:transitionProgress(), "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1, 0, 0, 1)
+    light:setIntensity(1.0)
+    light:transitionTo({color = {0, 0, 1, 1}, intensity = 3.0, radius = 200}, 2.0)
+    local applied = light:updateTransition(0.5)
+    print("applied = " .. tostring(applied))
+    print("progress = " .. light:transitionProgress())
+    light:stopTransition()
+    print("stopped, progress = " .. light:transitionProgress())
 end
 ```
 
@@ -2542,11 +2517,15 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- 0.0 = just started, 1.0 = complete (or no transition active)
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:transitionTo({ intensity = 0.2 }, 2.0)
-  lt:updateTransition(1.0)   -- advance halfway through the 2s transition
-  lurek.log.info("transition_progress=" .. lt:transitionProgress(), "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1, 0, 0, 1)
+    light:setIntensity(1.0)
+    light:transitionTo({color = {0, 0, 1, 1}, intensity = 3.0, radius = 200}, 2.0)
+    local applied = light:updateTransition(0.5)
+    print("applied = " .. tostring(applied))
+    print("progress = " .. light:transitionProgress())
+    light:stopTransition()
+    print("stopped, progress = " .. light:transitionProgress())
 end
 ```
 
@@ -2576,15 +2555,15 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- Smooth day-to-night transition: fade from bright white to dim blue over 2 seconds
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setColor(1.0, 1.0, 0.8, 1.0)  -- start: warm white
-  lt:transitionTo(
-    { r = 0.0, g = 0.0, b = 1.0, a = 1.0, intensity = 0.3, radius = 100 },
-    2.0  -- 2-second fade to dim blue
-  )
-  lt:updateTransition(0.5)  -- advance 0.5s into the transition
-  lurek.log.info("transition progress=" .. lt:transitionProgress(), "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1, 0, 0, 1)
+    light:setIntensity(1.0)
+    light:transitionTo({color = {0, 0, 1, 1}, intensity = 3.0, radius = 200}, 2.0)
+    local applied = light:updateTransition(0.5)
+    print("applied = " .. tostring(applied))
+    print("progress = " .. light:transitionProgress())
+    light:stopTransition()
+    print("stopped, progress = " .. light:transitionProgress())
 end
 ```
 
@@ -2610,8 +2589,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local obj = lurek.light.newLight(400, 300, 200)
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LLight"
+    local light = lurek.light.newLight(0, 0, 100)
+    print("type = " .. light:type())
+    print("is Light = " .. tostring(light:typeOf("Light")))
 end
 ```
 
@@ -2642,8 +2622,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local obj = lurek.light.newLight(400, 300, 200)
-  lurek.log.debug("typeOf LLight: " .. tostring(obj:typeOf("LLight")), "example") -- true
+    local light = lurek.light.newLight(0, 0, 100)
+    print("type = " .. light:type())
+    print("is Light = " .. tostring(light:typeOf("Light")))
 end
 ```
 
@@ -2674,11 +2655,15 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- Call every frame with dt to drive the transition forward
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:transitionTo({ r = 1.0, g = 0.0, b = 0.0, a = 1.0 }, 1.0)
-  lt:updateTransition(0.25)  -- 25% through the 1-second transition
-  lurek.log.info("progress=" .. lt:transitionProgress(), "light")
+    local light = lurek.light.newLight(0, 0, 100)
+    light:setColor(1, 0, 0, 1)
+    light:setIntensity(1.0)
+    light:transitionTo({color = {0, 0, 1, 1}, intensity = 3.0, radius = 200}, 2.0)
+    local applied = light:updateTransition(0.5)
+    print("applied = " .. tostring(applied))
+    print("progress = " .. light:transitionProgress())
+    light:stopTransition()
+    print("stopped, progress = " .. light:transitionProgress())
 end
 ```
 
@@ -2704,9 +2689,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setLightMask(0b11111111)   -- illuminate all layers
-  lurek.log.info("light_mask=" .. lt:getLightMask(), "light")
+    local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
+    occ:setLightMask(5)
+    print("occ mask = " .. occ:getLightMask())
 end
 ```
 
@@ -2732,10 +2717,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local wall = lurek.light.newOccluder({ 0, 0, 100, 0, 100, 20, 0, 20 })
-  if wall:getOpacity() < 1.0 then
-    lurek.log.debug("translucent occluder — partial shadow", "light")
-  end
+    local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
+    occ:setOpacity(0.6)
+    print("opacity = " .. occ:getOpacity())
 end
 ```
 
@@ -2762,9 +2746,10 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local lt = lurek.light.newLight(100, 200, 150)
-  local x, y = lt:getPosition()
-  lurek.log.info("x=" .. x .. " y=" .. y, "light")
+    local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
+    occ:setPosition(50, 75)
+    local x, y = occ:getPosition()
+    print("occ pos = " .. x .. "," .. y)
 end
 ```
 
@@ -2790,10 +2775,10 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- Returns a flat {x1,y1, x2,y2, ...} table. Divide length by 2 for vertex count.
-  local crate = lurek.light.newOccluder({ 50, 50, 100, 50, 100, 100, 50, 100 })
-  local v = crate:getVertices()
-  lurek.log.debug("crate has " .. (#v / 2) .. " vertices", "light")
+    local occ = lurek.light.newOccluder({0, 0, 20, 0, 20, 20, 0, 20})
+    occ:setVertices({0, 0, 30, 0, 30, 30, 0, 30})
+    local v = occ:getVertices()
+    print("vertex count = " .. #v / 2)
 end
 ```
 
@@ -2819,8 +2804,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local lt = lurek.light.newLight(400, 300, 200)
-  lurek.log.info("enabled by default=" .. tostring(lt:isEnabled()), "light")
+    local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
+    occ:setEnabled(false)
+    print("enabled = " .. tostring(occ:isEnabled()))
 end
 ```
 
@@ -2846,8 +2832,10 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local lt = lurek.light.newLight(400, 300, 200)
-  lurek.log.info("valid=" .. tostring(lt:isValid()), "light")
+    local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
+    print("valid = " .. tostring(occ:isValid()))
+    occ:remove()
+    print("valid after remove = " .. tostring(occ:isValid()))
 end
 ```
 
@@ -2870,11 +2858,13 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- After remove(), the handle is stale — isValid() returns false
-  local lt = lurek.light.newLight(400, 300, 200)
-  lurek.log.info("valid before remove=" .. tostring(lt:isValid()), "light")
-  lt:remove()
-  lurek.log.info("valid after remove=" .. tostring(lt:isValid()), "light")
+    local vtbl = { 0, 0, 100, 0, 100, 100, 0, 100 }
+    local occ = lurek.light.newOccluder(vtbl)
+    local n = lurek.light.getOccluderCount()
+    print("occluders = " .. n)
+    occ:remove()
+    local n2 = lurek.light.getOccluderCount()
+    print("after remove = " .. n2)
 end
 ```
 
@@ -2902,12 +2892,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- Toggle lights with player interaction (light switches, circuit breakers)
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setEnabled(false)
-  lurek.log.info("enabled=" .. tostring(lt:isEnabled()), "light")
-  lt:setEnabled(true)
-  lurek.log.info("re-enabled=" .. tostring(lt:isEnabled()), "light")
+    local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
+    occ:setEnabled(false)
+    print("enabled = " .. tostring(occ:isEnabled()))
 end
 ```
 
@@ -2935,10 +2922,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- Bit masks let you selectively light specific layers
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setLightMask(0b00000011)   -- illuminate layers 1 and 2 only
-  lurek.log.info("light_mask=" .. lt:getLightMask(), "light")
+    local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
+    occ:setLightMask(5)
+    print("occ mask = " .. occ:getLightMask())
 end
 ```
 
@@ -2966,10 +2952,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- Opacity 1.0 = fully opaque (hard shadow), 0.0 = invisible (no shadow).
-  -- Partial opacity creates soft/translucent barriers: curtains, glass, foliage.
-  local fence = lurek.light.newOccluder({ 0, 0, 200, 0, 200, 10, 0, 10 })
-  fence:setOpacity(0.4)  -- chain-link fence lets most light through
+    local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
+    occ:setOpacity(0.6)
+    print("opacity = " .. occ:getOpacity())
 end
 ```
 
@@ -2999,11 +2984,10 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- Move a spotlight to track enemy patrol routes
-  local lt = lurek.light.newLight(400, 300, 200)
-  lt:setPosition(512, 256)
-  local x, y = lt:getPosition()
-  lurek.log.info("position=" .. x .. "," .. y, "light")
+    local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
+    occ:setPosition(50, 75)
+    local x, y = occ:getPosition()
+    print("occ pos = " .. x .. "," .. y)
 end
 ```
 
@@ -3031,11 +3015,10 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  -- Replace occluder geometry at runtime — useful for destructible walls
-  -- or doors that change shape when opened.
-  local wall = lurek.light.newOccluder({ 0, 0, 100, 0, 100, 20, 0, 20 })
-  -- Door opened: widen the occluder to cover the new frame
-  wall:setVertices({ 0, 0, 200, 0, 200, 20, 0, 20 })
+    local occ = lurek.light.newOccluder({0, 0, 20, 0, 20, 20, 0, 20})
+    occ:setVertices({0, 0, 30, 0, 30, 30, 0, 30})
+    local v = occ:getVertices()
+    print("vertex count = " .. #v / 2)
 end
 ```
 
@@ -3061,9 +3044,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local occluder_obj = lurek.light.newOccluder({0,0,100,0,100,50,0,50})
-  local t = occluder_obj:type()
-  lurek.log.info("LOccluder:type = " .. t, "light")
+    local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
+    print("type = " .. occ:type())
+    print("is Occluder = " .. tostring(occ:typeOf("Occluder")))
 end
 ```
 
@@ -3094,9 +3077,9 @@ Exact example from [light.lua](../blob/main/content/examples/light.lua):
 
 ```lua
 do
-  local occluder_obj = lurek.light.newOccluder({0,0,100,0,100,50,0,50})
-  lurek.log.info("is LOccluder: " .. tostring(occluder_obj:typeOf("LOccluder")), "light")
-  lurek.log.info("is wrong: " .. tostring(occluder_obj:typeOf("Unknown")), "light")
+    local occ = lurek.light.newOccluder({0, 0, 10, 0, 10, 10, 0, 10})
+    print("type = " .. occ:type())
+    print("is Occluder = " .. tostring(occ:typeOf("Occluder")))
 end
 ```
 
@@ -3105,7 +3088,7 @@ end
 
 ## 💡 Examples
 
-- [light.lua](../blob/main/content/examples/light.lua) - 2D point lights
+- [light.lua](../blob/main/content/examples/light.lua) - API example
 
 [⬆ back to top](#table-of-contents)
 

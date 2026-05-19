@@ -10,19 +10,22 @@
 
 ## Table of Contents
 
-1. [What Lurek2D is](#1-what-lurek2d-is)
-2. [Audience map](#2-audience-map)
-3. [First 30 minutes](#3-first-30-minutes)
-4. [Repository tour](#4-repository-tour)
-5. [Build and run](#5-build-and-run)
-6. [Writing your first game](#6-writing-your-first-game)
-7. [Writing your first engine change](#7-writing-your-first-engine-change)
-8. [Documentation system](#8-documentation-system)
-9. [Testing](#9-testing)
-10. [Quality gates and commits](#10-quality-gates-and-commits)
-11. [Working with AI agents (CAG)](#11-working-with-ai-agents-cag)
-12. [Where to look when stuck](#12-where-to-look-when-stuck)
-13. [Glossary](#13-glossary)
+- [Lurek2D Handbook](#lurek2d-handbook)
+	- [Table of Contents](#table-of-contents)
+	- [1. What Lurek2D is](#1-what-lurek2d-is)
+	- [2. Audience map](#2-audience-map)
+	- [3. First 30 minutes](#3-first-30-minutes)
+	- [4. Repository tour](#4-repository-tour)
+	- [5. Build and run](#5-build-and-run)
+	- [6. Writing your first game](#6-writing-your-first-game)
+	- [7. Writing your first engine change](#7-writing-your-first-engine-change)
+	- [8. Documentation system](#8-documentation-system)
+	- [9. Testing](#9-testing)
+		- [Testing rules for contributors](#testing-rules-for-contributors)
+	- [10. Quality gates and commits](#10-quality-gates-and-commits)
+	- [11. Working with AI agents (CAG)](#11-working-with-ai-agents-cag)
+	- [12. Where to look when stuck](#12-where-to-look-when-stuck)
+	- [13. Glossary](#13-glossary)
 
 ---
 
@@ -40,7 +43,7 @@ Six personas. Each maps to the handbook sections that matter most.
 | ------------ | ------------------------------------------------- | ----------------------------------------- | ----------------------------------------------------------------- |
 | **GameDev**  | Writing a game in Lua against `lurek.*`.          | §3 First 30 min · §6 First game           | §8 Docs · §9 Testing                                              |
 | **EngDev**   | Modifying Rust source under `src/`.               | §3 · §7 First engine change               | §10 Quality gates · §8 Docs                                       |
-| **Modder**   | Authoring a Lunasome library or sandboxed mod.    | §3 · §6 (Lua skeleton) · §11 (CAG skills) | [library-authoring](../.github/skills/library-authoring/SKILL.md) |
+| **Modder**   | Authoring a Lureksome library or sandboxed mod.   | §3 · §6 (Lua skeleton) · §11 (CAG skills) | [library-authoring](../.github/skills/library-authoring/SKILL.md) |
 | **Player**   | Just running shipped games / demos.               | §3 (steps 1–4) only                       | —                                                                 |
 | **GameTest** | Writing Lua BDD tests for game/library behaviour. | §3 · §9 Testing                           | [test-framework.md](architecture/test-framework.md)               |
 | **EngTest**  | Writing Rust unit / integration / benches.        | §3 · §9 · §10                             | [test-framework.md](architecture/test-framework.md)               |
@@ -85,7 +88,7 @@ Authoritative layout lives in the system prompt's *Repository Layout* section ([
 | [tests/](../tests/)                         | Rust + Lua test suites; Lua tests are registered manually in [tests/lua/harness.rs](../tests/lua/harness.rs).                 |
 | [docs/](.)                                  | Architecture (`architecture/`), per-module specs (`specs/`), generated APIs (`API/`), and the changelog.                      |
 | [tools/](../tools/)                         | Permanent CLI scripts: `validate/`, `audit/`, `fix/`, `docs/`, `dev/`, `demos/`, `dist/`, `github/`, `assets/`.               |
-| [content/](../content/)                     | Lua content — `games/` (showcase apps), `examples/` (one-file API demos), `library/` (Lunasome libs), `layouts/`, `plugins/`. |
+| [content/](../content/)                     | Lua content — `games/` (showcase apps), `examples/` (one-file API demos), `library/` (Lureksome libs), `layouts/`, `plugins/`. |
 | [.github/](../.github/)                     | CAG layer — system prompt + agents/, skills/, prompts/. See §11.                                                              |
 | [extensions/vscode/](../extensions/vscode/) | First-party VS Code extension.                                                                                                |
 | [work/](../work/)                           | Active session folders; closed sessions move to `work/archive/`.                                                              |
@@ -213,7 +216,7 @@ Workflow for a one-bug-or-feature PR against `src/`.
    ```bash
    python tools/gen_all_docs.py
    ```
-    This rewrites the *Files / Types / Functions / Lua API Reference / References* sections of every affected spec and refreshes [docs/api/lurek.md](api/lurek.md), [docs/api/rust.md](api/rust.md), [docs/api/library.md](api/library.md), and [docs/api/lurek.lua](api/lurek.lua).
+    This rewrites the *Files / Types / Functions / Lua API Reference / References* sections of every affected spec and refreshes [docs/api/lurek.md](api/lurek.md), [docs/api/rust.md](api/rust.md), [docs/api/lureksome.md](api/lureksome.md), [docs/api/lurek.lua](api/lurek.lua), and [docs/api/lureksome.lua](api/lureksome.lua).
 5. **Update the spec's manual sections** (`## Summary`, `## Notes`) only if behaviour changed in a user-visible way.
 6. **Add tests** — Lua first. The Lua-first rule is binding: behaviour observable through `lurek.*` MUST be tested in Lua under [tests/lua/](../tests/lua/), and the new test file must be registered manually in [tests/lua/harness.rs](../tests/lua/harness.rs). Reach for [tests/rust/unit/](../tests/rust/unit/) only for internals not reachable from Lua.
 7. **Run quality gates** (§10).
@@ -368,7 +371,7 @@ All prompts are listed in [.github/prompts/](../.github/prompts/); browse there 
 | **ECS**                             | Entity-Component-System. Lurek2D's lightweight implementation lives in `src/ecs/` ([docs/specs/ecs.md](specs/ecs.md)).                                                                                             |
 | **Edge/Integration**                | The top responsibility group: `app`, `lua_api`, `devtools`, `debugbridge`, `docs`, `pipeline`, `bin`. [architecture/engine-architecture.md](architecture/engine-architecture.md#module-group-model).               |
 | **GameFS**                          | Sandboxed filesystem facade preventing path traversal out of the game folder. `src/filesystem/`, [docs/specs/filesystem.md](specs/filesystem.md).                                                                  |
-| **Lunasome**                        | Pure-Lua standard library at [content/library/](../content/library/). Consumes only public `lurek.*` APIs.                                                                                                         |
+| **Lureksome**                       | Pure-Lua standard library at [content/library/](../content/library/). Consumes only public `lurek.*` APIs.                                                                                                         |
 | **LuaJIT**                          | The shipping Lua runtime via `mlua` (constraint **B-01**). Lua 5.4 is a non-shipping fallback. [architecture/philosophy.md](architecture/philosophy.md).                                                           |
 | **Persona**                         | One of six target user profiles (EngDev, GameDev, Modder, Player, GameTest, EngTest). [architecture/cag-system.md § 4](architecture/cag-system.md#4-six-persona-model).                                            |
 | **Plugin tier**                     | One of CORE-KEEP / TIER-1-PLUGIN / TIER-2-PLUGIN / THIRD-PARTY-PLUGIN. [architecture/plugins.md § 4](architecture/plugins.md#4-plugin-tiers).                                                                      |

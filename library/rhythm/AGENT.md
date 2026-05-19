@@ -1,8 +1,8 @@
-﻿# `rhythm` â€” Agent Reference (Lunasome)
+# `rhythm` â€” Agent Reference (Lureksome)
 
 | Property       | Value                                                                                                                                                                        |
 | -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Tier**       | Tier 3 â€” Lunasome (pure Lua)                                                                                                                                                 |
+| **Tier**       | Tier 3 â€” Lureksome (pure Lua)                                                                                                                                                 |
 | **Source**     | `library/rhythm/init.lua`                                                                                                                                                    |
 | **Lua Tests**  | `tests/lua/library/test_library_rhythm.lua`                                                                                                                                  |
 | **Depends on** | `lurek.audio` (`Source:getPosition` for `fromAudio`/`syncToAudio`), `lurek.timer.getMicroTime` (default `judge` time), `lurek.event` (optional `rhythm.beat/bar/miss` emits) |

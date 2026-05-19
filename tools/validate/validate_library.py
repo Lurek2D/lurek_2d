@@ -1,4 +1,4 @@
-"""Validate Lunasome libraries under content/library/.
+"""Validate Lureksome libraries under content/library/.
 
 Checks every library directory for required structure and conventions:
   - Has init.lua (the entry point loaded by require()).
@@ -101,7 +101,7 @@ def validate_one(lib_dir: Path, strict: bool = False) -> list[dict]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Validate Lunasome libraries under content/library/."
+        description="Validate Lureksome libraries under content/library/."
     )
     parser.add_argument("--library", help="Validate only this library")
     parser.add_argument("--strict", action="store_true",

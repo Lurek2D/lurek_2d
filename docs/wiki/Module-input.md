@@ -4,7 +4,7 @@
 
 ## Navigation
 
-[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lureksome](Lureksome)
 
 ## Table of Contents
 
@@ -191,14 +191,15 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  function lurek.process(dt)
-    -- Each call returns an array of event records: {kind="press", name="space"}
-    local events = lurek.input.advancePlayback()
-    for _, ev in ipairs(events) do
-      -- Feed events into the game as if they were live input
-      lurek.log.debug("replay event: " .. ev.kind .. " " .. ev.name, "replay")
+    lurek.input.startRecording()
+    local rec = lurek.input.stopRecording()
+    if rec then
+        lurek.input.loadRecording(rec:toJson())
+        lurek.input.startPlayback()
+        local events = lurek.input.advancePlayback()
+        print("events = " .. #events)
+        lurek.input.stopPlayback()
     end
-  end
 end
 ```
 
@@ -219,15 +220,9 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  -- Single key binding
-  lurek.input.bind("jump", "space")
-
-  -- Multiple keys for one action — player can use any of them
-  lurek.input.bind("move_left", { "a", "left" })
-  lurek.input.bind("move_right", { "d", "right" })
-  lurek.input.bind("attack", { "left", "gamepad:0:0" })  -- mouse left OR gamepad A
-
-  lurek.log.info("default action bindings installed", "input")
+    lurek.input.bind("jump", "space")
+    lurek.input.bind("move_left", {"a", "left"})
+    print("actions bound")
 end
 ```
 
@@ -243,11 +238,10 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  lurek.input.bind("jump", "space")
-  lurek.input.bind("fire", "left")
-  -- Clear everything before loading a new keybind profile
-  lurek.input.clearBindings()
-  lurek.log.info("all bindings cleared — ready to load new profile", "input")
+    lurek.input.bind("a1", "q")
+    lurek.input.bind("a2", "e")
+    lurek.input.clearBindings()
+    print("all bindings cleared")
 end
 ```
 
@@ -269,22 +263,9 @@ Returns a gamepad axis value by index.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
--- Read an analog axis value (-1.0 to 1.0 for sticks, 0.0 to 1.0 for triggers).
 do
-  function lurek.process(dt)
-    -- Axis 0 = left stick X, axis 1 = left stick Y (typically)
-    local lx = lurek.input.gamepad.getAxis(0, 0)
-    local ly = lurek.input.gamepad.getAxis(0, 1)
-
-    -- Apply deadzone to avoid drift from resting stick position
-    local deadzone = 0.15
-    if math.abs(lx) < deadzone then lx = 0 end
-    if math.abs(ly) < deadzone then ly = 0 end
-
-    if lx ~= 0 or ly ~= 0 then
-      lurek.log.debug("left stick: (" .. string.format("%.2f", lx) .. ", " .. string.format("%.2f", ly) .. ")", "input")
-    end
-  end
+    local val = lurek.input.gamepad.getAxis(1, 1)
+    print("axis 1 = " .. val)
 end
 ```
 
@@ -305,22 +286,10 @@ Returns the axis count for a gamepad.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
--- Get the number of axes on a gamepad (sticks + triggers).
 do
-  local id = 0
-  local naxis = lurek.input.gamepad.getAxisCount(id)
-  -- Standard controller: 6 axes (2 sticks x2 + 2 triggers)
-  if naxis < 4 then
-    lurek.log.warn("gamepad " .. id .. " has only " .. naxis .. " axes — dual-stick unavailable", "input")
-  end
+    local count = lurek.input.gamepad.getAxisCount(1)
+    print("axes = " .. count)
 end
---@api-stub: lurek.input.getAxis
--- Read an analog axis value (-1.0 to 1.0 for sticks, 0.0 to 1.0 for triggers).
-do
-  function lurek.process(dt)
-    -- Axis 0 = left stick X, axis 1 = left stick Y (typically)
-    local lx = lurek.input.gamepad.getAxis(0, 0)
-    local ly = lurek.input.gamepad.getAxis(0, 1)
 ```
 
 ### lurek.input.gamepad.getBackgroundEvents
@@ -336,23 +305,10 @@ Returns whether background gamepad event processing is enabled.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
-  lurek.input.gamepad.setBackgroundEvents(true)
-  lurek.log.info("gamepad input continues while window is unfocused", "input")
-end
---@api-stub: lurek.input.getBackgroundEvents
--- Query whether background gamepad events are enabled.
 do
-  local on = lurek.input.gamepad.getBackgroundEvents()
-  lurek.log.debug("background gamepad events: " .. tostring(on), "input")
-end
---@api-stub: lurek.input.setGamepadMapping
--- Store a custom SDL-style mapping string for a specific gamepad GUID.
-do
-  -- SDL mapping format: GUID,Name,button:bN,axis:aN,...
-  local guid = "030000005e040000130b000011050000"
-  local mapping = guid .. ",My Custom Pad,a:b0,b:b1,x:b2,y:b3,start:b7,back:b6,"
-  lurek.input.gamepad.setGamepadMapping(guid, mapping)
-  lurek.log.info("custom mapping stored for GUID " .. guid, "input")
+    local was = lurek.input.gamepad.getBackgroundEvents()
+    lurek.input.gamepad.setBackgroundEvents(true)
+    print("bg events was=" .. tostring(was) .. " now=true")
 end
 ```
 
@@ -370,14 +326,9 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  lurek.input.bind("jump", "space")
-  lurek.input.bind("move_left", { "a", "left" })
-
-  -- Useful for displaying current bindings in an options screen
-  local bindings = lurek.input.getBindings()
-  for action, keys in pairs(bindings) do
-    lurek.log.debug(action .. " bound to: " .. table.concat(keys --[[@as string[] ]], ", "), "input")
-  end
+    lurek.input.bind("shoot", "x")
+    local bindings = lurek.input.getBindings()
+    print("bindings count = " .. #bindings)
 end
 ```
 
@@ -398,23 +349,10 @@ Returns the button count for a gamepad.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
--- Get the number of buttons on a gamepad.
 do
-  local id = 0
-  local nbtn = lurek.input.gamepad.getButtonCount(id)
-  lurek.log.debug("gamepad " .. id .. " has " .. nbtn .. " buttons", "input")
+    local count = lurek.input.gamepad.getButtonCount(1)
+    print("buttons = " .. count)
 end
---@api-stub: lurek.input.getAxisCount
--- Get the number of axes on a gamepad (sticks + triggers).
-do
-  local id = 0
-  local naxis = lurek.input.gamepad.getAxisCount(id)
-  -- Standard controller: 6 axes (2 sticks x2 + 2 triggers)
-  if naxis < 4 then
-    lurek.log.warn("gamepad " .. id .. " has only " .. naxis .. " axes — dual-stick unavailable", "input")
-  end
-end
---@api-stub: lurek.input.getAxis
 ```
 
 ### lurek.input.gamepad.getCount
@@ -430,24 +368,10 @@ Returns the number of gamepad slots tracked by the runtime.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
-    end
-  end
-end
---@api-stub: lurek.input.getCount
--- Get the number of gamepad slots currently tracked by the runtime.
 do
-  local n = lurek.input.gamepad.getCount()
-  lurek.log.info("gamepad slots tracked: " .. n, "input")
+    local count = lurek.input.gamepad.getCount()
+    print("gamepad slots = " .. count)
 end
---@api-stub: lurek.input.getJoystickCount
--- Get the number of joystick slots tracked (may differ from gamepad count).
-do
-  local slots = lurek.input.gamepad.getJoystickCount()
-  if slots == 0 then
-    lurek.log.info("no joystick devices detected", "input")
-  end
-end
---@api-stub: lurek.input.getJoysticks
 ```
 
 ### lurek.input.mouse.getCursor
@@ -463,24 +387,10 @@ Returns the current system cursor name.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
-    lurek.log.warn("custom cursors unsupported — using sprite fallback", "input")
-  end
-end
---@api-stub: lurek.input.getCursor
--- Get the name of the currently active cursor.
 do
-  local name = lurek.input.mouse.getCursor()
-  lurek.log.debug("active cursor: " .. name, "ui")
+    local name = lurek.input.mouse.getCursor()
+    print("cursor name = " .. name)
 end
---@api-stub: lurek.input.getWheelDelta
--- Get mouse wheel scroll delta this frame (horizontal, vertical).
-do
-  function lurek.process(dt)
-    local dx, dy = lurek.input.mouse.getWheelDelta()
-    -- dy > 0 = scroll up (zoom in), dy < 0 = scroll down (zoom out)
-    if dy ~= 0 then
-      lurek.log.debug("zoom delta: " .. dy, "camera")
-    end
 ```
 
 ### lurek.input.gamepad.getGamepadMappingString
@@ -500,23 +410,12 @@ Returns a stored mapping string for a gamepad GUID.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
--- Retrieve the stored mapping string for a gamepad GUID.
 do
-  local guid = "030000005e040000130b000011050000"
-  local mapping = lurek.input.gamepad.getGamepadMappingString(guid)
-  if mapping then
-    lurek.log.debug("mapping for " .. guid .. ": " .. #mapping .. " chars", "input")
-  else
-    lurek.log.debug("no custom mapping for " .. guid, "input")
-  end
+    local guid = "030000005e0400008e02000014010000"
+    lurek.input.gamepad.setGamepadMapping(guid, guid .. ",XInput,a:b0")
+    local mapping = lurek.input.gamepad.getGamepadMappingString(guid)
+    print("mapping = " .. tostring(mapping))
 end
---@api-stub: lurek.input.loadGamepadMappings
--- Load gamepad mappings from a file (SDL GameControllerDB format).
-do
-  -- Wrap in pcall because the file may not exist in headless/test environments
-  local ok, n = pcall(lurek.input.gamepad.loadGamepadMappings, "save/gamecontrollerdb.txt")
-  if ok then
-    lurek.log.info("loaded controller mappings from file", "input")
 ```
 
 ### lurek.input.gamepad.getGUID
@@ -536,24 +435,10 @@ Returns the GUID string for a gamepad.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
-    lurek.log.debug("vibrate request ignored (no haptics backend)", "input")
-  end
-end
---@api-stub: lurek.input.getGUID
--- Get the unique hardware GUID for a gamepad (for mapping lookups).
 do
-  local guid = lurek.input.gamepad.getGUID(0)
-  if guid ~= "" then
-    -- GUIDs identify controller hardware for custom mapping databases
-    lurek.log.debug("gamepad 0 GUID: " .. guid, "input")
-  end
+    local guid = lurek.input.gamepad.getGUID(1)
+    print("guid = " .. guid)
 end
---@api-stub: lurek.input.getHat
--- Read a gamepad hat (d-pad on older controllers) direction string.
-do
-  -- Hat returns a direction code: "c"=center, "u"=up, "d"=down, "l"=left, "r"=right,
-  -- "lu"=left-up, "ld"=left-down, "ru"=right-up, "rd"=right-down
-  local dir = lurek.input.gamepad.getHat(0, 0)
 ```
 
 ### lurek.input.gamepad.getHat
@@ -574,23 +459,10 @@ Returns hat direction for a gamepad hat index.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
--- Read a gamepad hat (d-pad on older controllers) direction string.
 do
-  -- Hat returns a direction code: "c"=center, "u"=up, "d"=down, "l"=left, "r"=right,
-  -- "lu"=left-up, "ld"=left-down, "ru"=right-up, "rd"=right-down
-  local dir = lurek.input.gamepad.getHat(0, 0)
-  if dir ~= "c" then
-    lurek.log.debug("d-pad hat direction: " .. dir, "input")
-  end
+    local hat = lurek.input.gamepad.getHat(1, 1)
+    print("hat 1 = " .. hat)
 end
---@api-stub: lurek.input.setVibration
--- Alternate vibration API with same signature as vibrate.
-do
-  local id = 0
-  local ok = lurek.input.gamepad.setVibration(id, 0.5, 0.5, 200)
-  lurek.log.debug("setVibration queued: " .. tostring(ok), "input")
-end
---@api-stub: lurek.input.wasPressed
 ```
 
 ### lurek.input.gamepad.getJoystickCount
@@ -606,24 +478,11 @@ Returns the number of joystick slots tracked by the runtime.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
-  local n = lurek.input.gamepad.getCount()
-  lurek.log.info("gamepad slots tracked: " .. n, "input")
-end
---@api-stub: lurek.input.getJoystickCount
--- Get the number of joystick slots tracked (may differ from gamepad count).
 do
-  local slots = lurek.input.gamepad.getJoystickCount()
-  if slots == 0 then
-    lurek.log.info("no joystick devices detected", "input")
-  end
+    local count = lurek.input.gamepad.getJoystickCount()
+    local sticks = lurek.input.gamepad.getJoysticks()
+    print("joystick count = " .. count .. ", list = " .. #sticks)
 end
---@api-stub: lurek.input.getJoysticks
--- Get an array of connected gamepad IDs for iterating players.
-do
-  local ids = lurek.input.gamepad.getJoysticks()
-  -- Assign each connected gamepad to a player slot
-  for i, id in ipairs(ids) do
-    lurek.log.debug("player " .. i .. " assigned to gamepad id " .. id, "input")
 ```
 
 ### lurek.input.gamepad.getJoysticks
@@ -639,24 +498,11 @@ Returns ids for currently connected gamepads.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
-    lurek.log.info("no joystick devices detected", "input")
-  end
-end
---@api-stub: lurek.input.getJoysticks
--- Get an array of connected gamepad IDs for iterating players.
 do
-  local ids = lurek.input.gamepad.getJoysticks()
-  -- Assign each connected gamepad to a player slot
-  for i, id in ipairs(ids) do
-    lurek.log.debug("player " .. i .. " assigned to gamepad id " .. id, "input")
-  end
+    local count = lurek.input.gamepad.getJoystickCount()
+    local sticks = lurek.input.gamepad.getJoysticks()
+    print("joystick count = " .. count .. ", list = " .. #sticks)
 end
---@api-stub: lurek.input.isConnected
--- Check if a specific gamepad ID is currently connected.
-do
-  local id = 0
-  if not lurek.input.gamepad.isConnected(id) then
-    -- Show "press Start to join" or fall back to keyboard
 ```
 
 ### lurek.input.keyboard.getKeyFromScancode
@@ -676,23 +522,10 @@ Converts a scancode name to its key name when known.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
--- Convert a physical scancode to its layout-dependent key name.
 do
-  -- Useful for displaying keybind labels that match the player's keyboard layout.
-  local key_name = lurek.input.keyboard.getKeyFromScancode("lshift")
-  local label = key_name or "unbound"
-  lurek.log.info("crouch is bound to: " .. label, "ui")
+    local key = lurek.input.keyboard.getKeyFromScancode("a")
+    print("scancode 'a' → key '" .. key .. "'")
 end
---@api-stub: lurek.input.isModifierActive
--- Check if a modifier key (ctrl, shift, alt, gui) is currently held.
-do
-  function lurek.process(dt)
-    -- Combine modifier checks with key checks for shortcuts like Ctrl+S
-    if lurek.input.keyboard.isModifierActive("ctrl") and lurek.input.keyboard.isDown("s") then
-      lurek.log.info("Ctrl+S pressed — triggering quick-save", "input")
-    end
-
-    -- Shift for sprint modifier
 ```
 
 ### lurek.input.gamepad.getName
@@ -712,23 +545,10 @@ Returns a gamepad display name by its id.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
--- Get the human-readable display name of a gamepad.
 do
-  local id = 0
-  local name = lurek.input.gamepad.getName(id)
-  -- Show in options menu so players know which controller is which
-  lurek.log.info("gamepad " .. id .. " name: " .. name, "input")
+    local name = lurek.input.gamepad.getName(1)
+    print("gamepad name = " .. name)
 end
---@api-stub: lurek.input.isGamepad
--- Check if a joystick slot has a recognized gamepad mapping (SDL layout).
-do
-  local id = 0
-  if lurek.input.gamepad.isGamepad(id) then
-    -- Has standard A/B/X/Y/LB/RB/triggers/sticks mapping
-    lurek.log.debug("slot " .. id .. " is a mapped gamepad (standard layout)", "input")
-  else
-    -- Raw joystick — button indices may vary
-    lurek.log.debug("slot " .. id .. " is an unmapped joystick", "input")
 ```
 
 ### lurek.input.getPlaybackFrame
@@ -745,13 +565,8 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  function lurek.process(dt)
-    local f = lurek.input.getPlaybackFrame()
-    -- Show progress bar in replay viewer
-    if f > 0 and f % 60 == 0 then
-      lurek.log.debug("replay at frame " .. f .. " (second " .. (f / 60) .. ")", "replay")
-    end
-  end
+    local frame = lurek.input.getPlaybackFrame()
+    print("playback frame = " .. frame)
 end
 ```
 
@@ -765,27 +580,13 @@ Returns the current mouse position.
 
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
-  -- Use this for click-to-select interactions in strategy games.
-  local g = lurek.globe.new("pick_demo", {})
-  g:addProvince({ id = 1, centroid = {0,0}, vertices = {{-5,-5},{5,-5},{5,5},{-5,5}} })
-
-  function lurek.input_pressed(key)
-    if key == "mouse_left" then
-      local mx, my = lurek.input.mouse.getPosition()
-      mx, my = mx or 0, my or 0
-      local id = g:pick(mx, my)
-      if id then
-        lurek.log.info("selected province " .. id, "globe")
-      end
-    end
-  end
-end
---@api-stub: LGlobe:pickLatLon
--- Picks at screen coordinates and returns the hit province centroid in screen space.
 do
+    local x, y = lurek.input.mouse.getPosition()
+    print("mouse at " .. x .. "," .. y)
+end
 ```
 
 ### lurek.input.touch.getPosition
@@ -806,12 +607,8 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  function lurek.process(dt)
-    -- Returns two values: x and y in pixels from top-left corner
-    local mx, my = lurek.input.mouse.getPosition()
-    -- Use for aiming, UI hover detection, or world-space conversion
-    lurek.log.debug("cursor at (" .. mx .. ", " .. my .. ")", "input")
-  end
+    local x, y = lurek.input.touch.getPosition(1)
+    print("touch 1 at " .. x .. "," .. y)
 end
 ```
 
@@ -832,23 +629,10 @@ Returns pressure for a touch point by its id.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
--- Get pressure value for a specific touch ID (0.0 to 1.0).
 do
-  function lurek.process(dt)
-    local touches = lurek.input.touch.getTouches()
-    if touches[1] then
-      local p = lurek.input.touch.getPressure(touches[1].id)
-      -- Use pressure for brush size in a drawing app
-      if p > 0.5 then
-        lurek.log.debug("firm press (pressure " .. string.format("%.2f", p) .. ")", "input")
-      end
-    end
-  end
+    local p = lurek.input.touch.getPressure(1)
+    print("pressure = " .. p)
 end
---@api-stub: lurek.input.getTouchCount
--- Get the number of currently active touch points.
-do
-  function lurek.process(dt)
 ```
 
 ### lurek.input.mouse.getRelativeMode
@@ -864,22 +648,8 @@ Returns whether relative mouse mode is enabled.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
--- Query whether relative mouse mode is active.
 do
-  function lurek.process(dt)
-    if lurek.input.mouse.getRelativeMode() then
-      -- In relative mode, use mousemoved dx/dy for camera rotation
-      lurek.log.debug("camera integrating mouse delta this frame", "camera")
-    end
-  end
-end
---@api-stub: lurek.input.setPosition
--- Warp the cursor to a specific window position.
-do
-  -- Re-center cursor after each frame in a custom mouselook implementation
-  local cx, cy = 400, 300
-  lurek.input.mouse.setPosition(cx, cy)
-  lurek.log.debug("cursor warped to center (" .. cx .. "," .. cy .. ")", "input")
+    print("relative mode = " .. tostring(lurek.input.mouse.getRelativeMode()))
 end
 ```
 
@@ -900,23 +670,10 @@ Converts a key name to its scancode name when known.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
--- Convert a logical key name (layout-dependent) to its physical scancode.
 do
-  -- Useful for showing the player which physical key to press in tutorials.
-  local sc = lurek.input.keyboard.getScancodeFromKey("space")
-  if sc then
-    lurek.log.debug("'space' maps to physical scancode: " .. sc, "input")
-  end
+    local sc = lurek.input.keyboard.getScancodeFromKey("space")
+    print("key 'space' → scancode '" .. sc .. "'")
 end
---@api-stub: lurek.input.getKeyFromScancode
--- Convert a physical scancode to its layout-dependent key name.
-do
-  -- Useful for displaying keybind labels that match the player's keyboard layout.
-  local key_name = lurek.input.keyboard.getKeyFromScancode("lshift")
-  local label = key_name or "unbound"
-  lurek.log.info("crouch is bound to: " .. label, "ui")
-end
---@api-stub: lurek.input.isModifierActive
 ```
 
 ### lurek.input.mouse.getSystemCursor
@@ -936,23 +693,10 @@ Creates a system cursor handle from a cursor name.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
--- Get a system cursor handle by name (crosshair, hand, ibeam, etc.).
 do
-  -- Pre-load system cursors at startup for fast switching during gameplay
-  local crosshair = lurek.input.mouse.getSystemCursor("crosshair")
-  function lurek.process(dt)
-    -- Switch to crosshair when aiming
-    lurek.input.mouse.setCursor(crosshair)
-  end
+    local cursor = lurek.input.mouse.getSystemCursor("arrow")
+    print("got system cursor = " .. tostring(cursor ~= nil))
 end
---@api-stub: lurek.input.isCursorSupported
--- Check if the platform supports custom/system cursor changes.
-do
-  if lurek.input.mouse.isCursorSupported() then
-    lurek.input.mouse.setCursor("hand")
-    lurek.log.debug("custom cursors supported on this platform", "input")
-  else
-    -- Fallback: draw a sprite at mouse position instead
 ```
 
 ### lurek.input.touch.getTouchCount
@@ -968,23 +712,10 @@ Returns the current active touch count.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
--- Get the number of currently active touch points.
 do
-  function lurek.process(dt)
     local count = lurek.input.touch.getTouchCount()
-    -- Detect pinch-to-zoom gesture (two fingers)
-    if count >= 2 then
-      lurek.log.debug("multi-touch: " .. count .. " fingers — pinch gesture?", "input")
-    end
-  end
+    print("touches = " .. count)
 end
---@api-stub: lurek.input.bind
--- Bind one or more keys to a named action (supports string or array of strings).
-do
-  -- Single key binding
-  lurek.input.bind("jump", "space")
-
-  -- Multiple keys for one action — player can use any of them
 ```
 
 ### lurek.input.touch.getTouches
@@ -1000,23 +731,10 @@ Returns active touch points with id, position, and pressure.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
--- Get all active touch points with id, position, and pressure.
 do
-  function lurek.process(dt)
     local touches = lurek.input.touch.getTouches()
-    -- Each touch has: id (unique per finger), x, y, pressure
-    for _, tp in ipairs(touches) do
-      lurek.log.debug("touch " .. tp.id .. " at (" .. tp.x .. ", " .. tp.y .. ")", "input")
-    end
-  end
+    print("touch ids = " .. #touches)
 end
---@api-stub: lurek.input.getPressure
--- Get pressure value for a specific touch ID (0.0 to 1.0).
-do
-  function lurek.process(dt)
-    local touches = lurek.input.touch.getTouches()
-    if touches[1] then
-      local p = lurek.input.touch.getPressure(touches[1].id)
 ```
 
 ### lurek.input.mouse.getWheelDelta
@@ -1029,27 +747,13 @@ Returns the current mouse wheel delta.
 
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
-  -- Multiplies current zoom level. factor > 1 zooms in, factor < 1 zooms out.
-  -- Combine with mouse wheel for natural zoom interaction.
-  local g = lurek.globe.new("zoom_demo", {})
-  local zoom_sensitivity = 0.1  -- how much each wheel tick changes zoom
-
-  function lurek.process(dt)
-    local _, wheel = lurek.input.mouse.getWheelDelta()
-    if wheel ~= 0 then
-      -- Convert wheel delta to a multiplicative factor
-      -- wheel > 0 = scroll up = zoom in, wheel < 0 = scroll down = zoom out
-      g:zoom(1.0 + wheel * zoom_sensitivity)
-    end
-  end
-end
---@api-stub: LGlobe:setCamera
--- Sets the camera latitude, longitude, and zoom directly.
 do
-  -- Globe:setCamera(lat, lon, zoom) -> nil
+    local delta = lurek.input.mouse.getWheelDelta()
+    print("wheel delta = " .. delta)
+end
 ```
 
 ### lurek.input.mouse.getX
@@ -1065,23 +769,10 @@ Returns the current mouse x coordinate.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
--- Get just the mouse x coordinate (avoids unpacking two values).
 do
-  function lurek.process(dt)
     local x = lurek.input.mouse.getX()
-    -- Example: horizontal slider mapped to screen width
-    local screen_width = 800
-    local volume = math.max(0, math.min(1, x / screen_width))
-    lurek.log.debug("volume slider value: " .. string.format("%.2f", volume), "ui")
-  end
+    print("mouse x=" .. x)
 end
---@api-stub: lurek.input.getY
--- Get just the mouse y coordinate.
-do
-  function lurek.process(dt)
-    local y = lurek.input.mouse.getY()
-    -- Detect cursor in a specific screen region (e.g. top menu bar)
-    if y < 32 then
 ```
 
 ### lurek.input.mouse.getY
@@ -1097,22 +788,9 @@ Returns the current mouse y coordinate.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
--- Get just the mouse y coordinate.
 do
-  function lurek.process(dt)
     local y = lurek.input.mouse.getY()
-    -- Detect cursor in a specific screen region (e.g. top menu bar)
-    if y < 32 then
-      lurek.log.debug("cursor in top menu strip — show toolbar", "ui")
-    end
-  end
-end
---@api-stub: lurek.input.setVisible
--- Show or hide the OS mouse cursor.
-do
-  -- Hide cursor during gameplay for a custom crosshair or cinematic
-  lurek.input.mouse.setVisible(false)
-  lurek.log.info("cursor hidden — using custom crosshair sprite", "input")
+    print("mouse y=" .. y)
 end
 ```
 
@@ -1129,24 +807,54 @@ Returns whether key repeat tracking is enabled.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
-  lurek.input.keyboard.setKeyRepeat(true)
-  lurek.log.info("key repeat enabled — menus will auto-scroll on hold", "input")
-end
---@api-stub: lurek.input.hasKeyRepeat
--- Query whether key-repeat is currently enabled.
 do
-  local enabled = lurek.input.keyboard.hasKeyRepeat()
-  if not enabled then
-    -- Warn during startup so designers know menu UX will be affected
-    lurek.log.warn("key repeat disabled — hold-to-scroll will not work in menus", "input")
-  end
+    print("key repeat = " .. tostring(lurek.input.keyboard.hasKeyRepeat()))
 end
---@api-stub: lurek.input.setTextInput
--- Enable or disable text input mode (IME composition, unicode entry).
+
+--@api-stub: lurek.input.keyboard.setKeyRepeat
+-- Enables or disables key repeat.
 do
-  local function open_chat()
-    -- When a text field gains focus, enable text input so the OS can
-    -- deliver composed characters (e.g. accented letters, CJK input).
+    lurek.input.keyboard.setKeyRepeat(true)
+    print("key repeat enabled")
+end
+
+--@api-stub: lurek.input.keyboard.hasTextInput
+-- Returns whether text input mode is active.
+do
+    print("text input = " .. tostring(lurek.input.keyboard.hasTextInput()))
+end
+
+--@api-stub: lurek.input.keyboard.setTextInput
+-- Enables or disables text input mode.
+do
+    lurek.input.keyboard.setTextInput(true)
+    print("text input enabled")
+end
+
+--@api-stub: lurek.input.mouse.getPosition
+-- Returns mouse x,y position.
+do
+    local x, y = lurek.input.mouse.getPosition()
+    print("mouse at " .. x .. "," .. y)
+end
+
+--@api-stub: lurek.input.mouse.getX
+-- Returns individual mouse coordinates. Focus: getX.
+do
+    local x = lurek.input.mouse.getX()
+    print("mouse x=" .. x)
+end
+
+--@api-stub: lurek.input.mouse.getY
+-- Returns individual mouse coordinates. Focus: getY.
+do
+    local y = lurek.input.mouse.getY()
+    print("mouse y=" .. y)
+end
+
+--@api-stub: lurek.input.mouse.isDown
+-- Checks if a mouse button is held.
+do
 ```
 
 ### lurek.input.keyboard.hasTextInput
@@ -1162,23 +870,9 @@ Returns whether text input tracking is enabled.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
--- Query whether text input mode is active (useful to suppress game controls).
 do
-  function lurek.process(dt)
-    if lurek.input.keyboard.hasTextInput() then
-      -- Player is typing in a text field — do not process movement keys
-      return
-    end
-    -- Normal gameplay controls continue here...
-  end
+    print("text input = " .. tostring(lurek.input.keyboard.hasTextInput()))
 end
---@api-stub: lurek.input.getScancodeFromKey
--- Convert a logical key name (layout-dependent) to its physical scancode.
-do
-  -- Useful for showing the player which physical key to press in tutorials.
-  local sc = lurek.input.keyboard.getScancodeFromKey("space")
-  if sc then
-    lurek.log.debug("'space' maps to physical scancode: " .. sc, "input")
 ```
 
 ### lurek.input.isActionDown
@@ -1199,13 +893,9 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  lurek.input.bind("jump", { "space", "w" })
-  function lurek.process(dt)
-    -- Use for continuous actions like holding jump for variable height
-    if lurek.input.isActionDown("jump") then
-      lurek.log.debug("jump action held — extending jump height", "input")
-    end
-  end
+    lurek.input.bind("fire", "space")
+    local down = lurek.input.isActionDown("fire")
+    print("fire down = " .. tostring(down))
 end
 ```
 
@@ -1226,23 +916,10 @@ Returns whether a gamepad id is currently connected.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
--- Check if a specific gamepad ID is currently connected.
 do
-  local id = 0
-  if not lurek.input.gamepad.isConnected(id) then
-    -- Show "press Start to join" or fall back to keyboard
-    lurek.log.warn("player 1 controller not connected", "input")
-  end
+    local connected = lurek.input.gamepad.isConnected(1)
+    print("gamepad 1 connected = " .. tostring(connected))
 end
---@api-stub: lurek.input.getName
--- Get the human-readable display name of a gamepad.
-do
-  local id = 0
-  local name = lurek.input.gamepad.getName(id)
-  -- Show in options menu so players know which controller is which
-  lurek.log.info("gamepad " .. id .. " name: " .. name, "input")
-end
---@api-stub: lurek.input.isGamepad
 ```
 
 ### lurek.input.mouse.isCursorSupported
@@ -1258,24 +935,9 @@ Returns whether the current platform supports cursor changes.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
-    lurek.input.mouse.setCursor(crosshair)
-  end
-end
---@api-stub: lurek.input.isCursorSupported
--- Check if the platform supports custom/system cursor changes.
 do
-  if lurek.input.mouse.isCursorSupported() then
-    lurek.input.mouse.setCursor("hand")
-    lurek.log.debug("custom cursors supported on this platform", "input")
-  else
-    -- Fallback: draw a sprite at mouse position instead
-    lurek.log.warn("custom cursors unsupported — using sprite fallback", "input")
-  end
+    print("cursor supported = " .. tostring(lurek.input.mouse.isCursorSupported()))
 end
---@api-stub: lurek.input.getCursor
--- Get the name of the currently active cursor.
-do
-  local name = lurek.input.mouse.getCursor()
 ```
 
 ### lurek.input.gamepad.isDown
@@ -1297,24 +959,8 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  function lurek.process(dt)
-    -- Pass multiple key names; returns true if ANY of them is held.
-    -- Useful for movement where WASD and arrows should both work.
-    if lurek.input.keyboard.isDown("space", "w", "up") then
-      -- Player is holding a jump/up key — apply upward velocity
-      lurek.log.debug("jump key held — applying upward force", "input")
-    end
-
-    -- Typical 4-direction movement pattern:
-    local dx, dy = 0, 0
-    if lurek.input.keyboard.isDown("a", "left")  then dx = dx - 1 end
-    if lurek.input.keyboard.isDown("d", "right") then dx = dx + 1 end
-    if lurek.input.keyboard.isDown("w", "up")    then dy = dy - 1 end
-    if lurek.input.keyboard.isDown("s", "down")  then dy = dy + 1 end
-    if dx ~= 0 or dy ~= 0 then
-      lurek.log.debug("moving: dx=" .. dx .. " dy=" .. dy, "input")
-    end
-  end
+    local pressed = lurek.input.gamepad.isDown(1, 1)
+    print("button 1 = " .. tostring(pressed))
 end
 ```
 
@@ -1332,25 +978,53 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  function lurek.process(dt)
-    -- Pass multiple key names; returns true if ANY of them is held.
-    -- Useful for movement where WASD and arrows should both work.
-    if lurek.input.keyboard.isDown("space", "w", "up") then
-      -- Player is holding a jump/up key — apply upward velocity
-      lurek.log.debug("jump key held — applying upward force", "input")
-    end
-
-    -- Typical 4-direction movement pattern:
-    local dx, dy = 0, 0
-    if lurek.input.keyboard.isDown("a", "left")  then dx = dx - 1 end
-    if lurek.input.keyboard.isDown("d", "right") then dx = dx + 1 end
-    if lurek.input.keyboard.isDown("w", "up")    then dy = dy - 1 end
-    if lurek.input.keyboard.isDown("s", "down")  then dy = dy + 1 end
-    if dx ~= 0 or dy ~= 0 then
-      lurek.log.debug("moving: dx=" .. dx .. " dy=" .. dy, "input")
-    end
-  end
+    print("isDown available = " .. tostring(type(lurek.input.isDown) == "function"))
 end
+
+--@api-stub: lurek.input.wasPressed
+-- Checks if any bound key was pressed this frame.
+do
+    print("wasPressed available = " .. tostring(type(lurek.input.wasPressed) == "function"))
+end
+
+--@api-stub: lurek.input.wasReleased
+-- Checks if any bound key was released this frame.
+do
+    print("wasReleased available = " .. tostring(type(lurek.input.wasReleased) == "function"))
+end
+
+--@api-stub: lurek.input.newMapping
+-- Creates an action mapping with query closures.
+do
+    local mapping = lurek.input.newMapping("attack", {"z", "button1"})
+    local held = mapping.isDown()
+    local just = mapping.wasPressed()
+    local done = mapping.wasReleased()
+    print("held=" .. tostring(held) .. " just=" .. tostring(just) .. " done=" .. tostring(done))
+end
+
+--@api-stub: lurek.input.newCombo
+-- Creates a combo detector.
+do
+    local combo = lurek.input.newCombo({"down", "right", "z"}, {total_gap = 500})
+    print("combo steps = " .. combo:totalSteps())
+    print("in progress = " .. tostring(combo:isInProgress()))
+    print("progress = " .. combo:progress())
+end
+
+--@api-stub: LCombo:feed
+-- Feeds a key press to the combo.
+do
+    local combo = lurek.input.newCombo({"a", "b", "c"})
+    local result = combo:feed("a")
+    print("feed a → " .. result)
+end
+
+--@api-stub: LCombo:tick
+-- Advances combo timer by delta time.
+do
+    local combo = lurek.input.newCombo({"x", "y"}, {total_gap = 300})
+    local result = combo:tick(0.016)
 ```
 
 ### lurek.input.keyboard.isDown
@@ -1367,27 +1041,13 @@ Returns whether any of the supplied key names are currently held down.
 
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
-  -- Call this each frame scaled by dt for smooth keyboard/gamepad navigation.
-  local g = lurek.globe.new("pan_demo", {})
-  local pan_speed = 45.0  -- degrees per second
-
-  function lurek.process(dt)
-    -- WASD-style panning: A/D for longitude, W/S for latitude
-    if lurek.input.keyboard.isDown("a") then g:pan(0, -pan_speed * dt) end
-    if lurek.input.keyboard.isDown("d") then g:pan(0,  pan_speed * dt) end
-    if lurek.input.keyboard.isDown("w") then g:pan( pan_speed * dt, 0) end
-    if lurek.input.keyboard.isDown("s") then g:pan(-pan_speed * dt, 0) end
-  end
-end
---@api-stub: LGlobe:zoom
--- Multiplies the globe camera zoom by a factor.
 do
-  -- Globe:zoom(factor) -> nil
-  -- Multiplies current zoom level. factor > 1 zooms in, factor < 1 zooms out.
-  -- Combine with mouse wheel for natural zoom interaction.
+    local down = lurek.input.keyboard.isDown("space", "w", "up")
+    print("any key down = " .. tostring(down))
+end
 ```
 
 ### lurek.input.mouse.isDown
@@ -1408,24 +1068,9 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  function lurek.process(dt)
-    -- Pass multiple key names; returns true if ANY of them is held.
-    -- Useful for movement where WASD and arrows should both work.
-    if lurek.input.keyboard.isDown("space", "w", "up") then
-      -- Player is holding a jump/up key — apply upward velocity
-      lurek.log.debug("jump key held — applying upward force", "input")
-    end
-
-    -- Typical 4-direction movement pattern:
-    local dx, dy = 0, 0
-    if lurek.input.keyboard.isDown("a", "left")  then dx = dx - 1 end
-    if lurek.input.keyboard.isDown("d", "right") then dx = dx + 1 end
-    if lurek.input.keyboard.isDown("w", "up")    then dy = dy - 1 end
-    if lurek.input.keyboard.isDown("s", "down")  then dy = dy + 1 end
-    if dx ~= 0 or dy ~= 0 then
-      lurek.log.debug("moving: dx=" .. dx .. " dy=" .. dy, "input")
-    end
-  end
+    local left = lurek.input.mouse.isDown(1)
+    local right = lurek.input.mouse.isDown(2)
+    print("left=" .. tostring(left) .. " right=" .. tostring(right))
 end
 ```
 
@@ -1446,23 +1091,10 @@ Returns whether a connected gamepad exists at an id.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
--- Check if a joystick slot has a recognized gamepad mapping (SDL layout).
 do
-  local id = 0
-  if lurek.input.gamepad.isGamepad(id) then
-    -- Has standard A/B/X/Y/LB/RB/triggers/sticks mapping
-    lurek.log.debug("slot " .. id .. " is a mapped gamepad (standard layout)", "input")
-  else
-    -- Raw joystick — button indices may vary
-    lurek.log.debug("slot " .. id .. " is an unmapped joystick", "input")
-  end
+    local is_gp = lurek.input.gamepad.isGamepad(1)
+    print("is gamepad = " .. tostring(is_gp))
 end
---@api-stub: lurek.input.getButtonCount
--- Get the number of buttons on a gamepad.
-do
-  local id = 0
-  local nbtn = lurek.input.gamepad.getButtonCount(id)
-  lurek.log.debug("gamepad " .. id .. " has " .. nbtn .. " buttons", "input")
 ```
 
 ### lurek.input.mouse.isGrabbed
@@ -1478,23 +1110,8 @@ Returns whether the mouse is grabbed by the window.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
-  lurek.input.mouse.setRelativeMode(true)
-  lurek.log.info("entered mouselook mode (grabbed + relative)", "input")
-end
---@api-stub: lurek.input.isGrabbed
--- Query whether the mouse is grabbed by the window.
 do
-  if lurek.input.mouse.isGrabbed() then
-    lurek.log.debug("mouse locked to window — Alt+Tab will release", "input")
-  end
-end
---@api-stub: lurek.input.setRelativeMode
--- Enable relative mode: cursor is hidden and dx/dy deltas are reported.
-do
-  -- Relative mode reports movement deltas instead of absolute position.
-  -- Essential for camera rotation in first/third-person games.
-  lurek.input.mouse.setRelativeMode(true)
-  lurek.log.info("relative mouse: read dx/dy from lurek.mousemoved callback", "input")
+    print("grabbed = " .. tostring(lurek.input.mouse.isGrabbed()))
 end
 ```
 
@@ -1515,23 +1132,11 @@ Returns whether a named keyboard modifier is active.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
--- Check if a modifier key (ctrl, shift, alt, gui) is currently held.
 do
-  function lurek.process(dt)
-    -- Combine modifier checks with key checks for shortcuts like Ctrl+S
-    if lurek.input.keyboard.isModifierActive("ctrl") and lurek.input.keyboard.isDown("s") then
-      lurek.log.info("Ctrl+S pressed — triggering quick-save", "input")
-    end
-
-    -- Shift for sprint modifier
-    if lurek.input.keyboard.isModifierActive("shift") and lurek.input.keyboard.isDown("w") then
-      lurek.log.debug("sprinting forward", "input")
-    end
-  end
+    local shift = lurek.input.keyboard.isModifierActive("shift")
+    local ctrl = lurek.input.keyboard.isModifierActive("ctrl")
+    print("shift=" .. tostring(shift) .. " ctrl=" .. tostring(ctrl))
 end
---@api-stub: lurek.input.getPosition
--- Get the current mouse cursor position in window coordinates.
-do
 ```
 
 ### lurek.input.isPlayingBack
@@ -1548,13 +1153,12 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  function lurek.process(dt)
-    if lurek.input.isPlayingBack() then
-      -- During playback, skip live input processing
-      return
-    end
-    -- Normal live input handling...
-  end
+    lurek.input.startRecording()
+    local rec = lurek.input.stopRecording()
+    print("is_playing=" .. tostring(lurek.input.isPlayingBack()))
+    lurek.input.startPlayback()
+    lurek.input.stopPlayback()
+    print("stopped")
 end
 ```
 
@@ -1572,10 +1176,8 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  if lurek.input.isRecording() then
-    -- Show a red "REC" indicator in the HUD
-    lurek.log.debug("REC indicator should be visible", "ui")
-  end
+    print("recording = " .. tostring(lurek.input.isRecording()))
+    print("playing = " .. tostring(lurek.input.isPlayingBack()))
 end
 ```
 
@@ -1596,24 +1198,10 @@ Returns whether a scancode is currently down.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
--- Check if a physical scancode is held, ignoring keyboard layout remapping.
 do
-  function lurek.process(dt)
-    -- Scancodes refer to physical key positions (hardware layout).
-    -- On AZERTY keyboards, "a" is in the QWERTY "q" position.
-    -- Use scancodes when you want consistent physical positions regardless of locale.
-    if lurek.input.keyboard.isScancodeDown("a") then
-      lurek.log.debug("physical 'A' position held (strafe-left)", "input")
-    end
-  end
+    local down = lurek.input.keyboard.isScancodeDown("a")
+    print("scancode a down = " .. tostring(down))
 end
---@api-stub: lurek.input.setKeyRepeat
--- Enable or disable OS key-repeat events reaching lurek.keypressed callback.
-do
-  -- Enable key repeat so that holding a key fires repeated keypressed events.
-  -- Useful for menu navigation: holding "down" scrolls through items.
-  lurek.input.keyboard.setKeyRepeat(true)
-  lurek.log.info("key repeat enabled — menus will auto-scroll on hold", "input")
 ```
 
 ### lurek.input.gamepad.isVibrationSupported
@@ -1633,23 +1221,10 @@ Returns whether a gamepad supports vibration requests.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
--- Check if a gamepad supports haptic feedback (rumble).
 do
-  local id = 0
-  if lurek.input.gamepad.isVibrationSupported(id) then
-    lurek.log.info("gamepad " .. id .. " supports rumble — haptics enabled", "input")
-  else
-    lurek.log.info("gamepad " .. id .. " has no rumble motor", "input")
-  end
+    local sup = lurek.input.gamepad.isVibrationSupported(1)
+    print("vibration supported = " .. tostring(sup))
 end
---@api-stub: lurek.input.vibrate
--- Trigger gamepad vibration with asymmetric motor strengths and duration.
-do
-  -- low_freq = heavy motor (body rumble), high_freq = light motor (texture feel)
-  -- duration_ms = how long the vibration lasts
-  local id = 0
-  local low_freq = 0.4   -- gentle body thump
-  local high_freq = 0.8  -- strong buzz
 ```
 
 ### lurek.input.mouse.isVisible
@@ -1665,23 +1240,9 @@ Returns whether the mouse cursor is visible.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
--- Query whether the OS cursor is currently visible.
 do
-  -- Restore cursor when opening pause menu
-  if not lurek.input.mouse.isVisible() then
-    lurek.input.mouse.setVisible(true)
-    lurek.log.info("pause menu opened — OS cursor restored", "ui")
-  end
+    print("cursor visible = " .. tostring(lurek.input.mouse.isVisible()))
 end
---@api-stub: lurek.input.setGrabbed
--- Confine the cursor to the game window (prevents leaving window bounds).
-do
-  -- Grab + relative mode is the standard FPS mouselook setup
-  lurek.input.mouse.setGrabbed(true)
-  lurek.input.mouse.setRelativeMode(true)
-  lurek.log.info("entered mouselook mode (grabbed + relative)", "input")
-end
---@api-stub: lurek.input.isGrabbed
 ```
 
 ### lurek.input.gamepad.loadGamepadMappings
@@ -1699,22 +1260,12 @@ Loads gamepad mapping strings from a file.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
--- Load gamepad mappings from a file (SDL GameControllerDB format).
 do
-  -- Wrap in pcall because the file may not exist in headless/test environments
-  local ok, n = pcall(lurek.input.gamepad.loadGamepadMappings, "save/gamecontrollerdb.txt")
-  if ok then
-    lurek.log.info("loaded controller mappings from file", "input")
-  else
-    lurek.log.debug("gamecontrollerdb.txt not found — using built-in mappings", "input")
-  end
-end
---@api-stub: lurek.input.saveGamepadMappings
--- Save all current gamepad mappings to a file for persistence.
-do
-  -- Save user's custom mappings so they persist across sessions
-  lurek.input.gamepad.saveGamepadMappings("save/user_mappings.txt")
-  lurek.log.info("user gamepad mappings saved to disk", "input")
+    local mappingPath = "save/gamecontrollerdb.txt"
+    lurek.filesystem.write(mappingPath, "030000005e0400008e02000014010000,XInput,a:b0\n")
+    lurek.input.gamepad.loadGamepadMappings(mappingPath)
+    lurek.input.gamepad.saveGamepadMappings("save/mappings_out.txt")
+    print("mappings loaded and saved")
 end
 ```
 
@@ -1734,10 +1285,13 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  -- Load a previously saved recording (e.g. from a file)
-  local json = '{"version":1,"total_frames":1,"frames":[]}'
-  lurek.input.loadRecording(json)
-  lurek.log.info("recording loaded — ready for playback", "replay")
+    lurek.input.startRecording()
+    local rec = lurek.input.stopRecording()
+    if rec then
+        local json = rec:toJson()
+        lurek.input.loadRecording(json)
+        print("recording loaded")
+    end
 end
 ```
 
@@ -1760,15 +1314,10 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  -- Simple combo: press down, right, then attack in sequence
-  -- opts.total_gap limits how long the entire sequence can take (ms)
-  local hadouken = lurek.input.newCombo(
-    { "down", { key = "right", gap = 300 }, "a" },
-    { total_gap = 1500 }
-  )
-  -- gap per step = max ms allowed between that step and the previous one
-  -- total_gap = max ms for the entire combo from first to last input
-  lurek.log.info("hadouken combo ready (" .. hadouken:totalSteps() .. " steps)", "combat")
+    local combo = lurek.input.newCombo({"down", "right", "z"}, {total_gap = 500})
+    print("combo steps = " .. combo:totalSteps())
+    print("in progress = " .. tostring(combo:isInProgress()))
+    print("progress = " .. combo:progress())
 end
 ```
 
@@ -1793,24 +1342,12 @@ Creates a custom cursor handle from RGBA pixels and hotspot coordinates.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
-    255, 0,   0,   255,   -- top-left: red
-    0,   255, 0,   255,   -- top-right: green
-    0,   0,   255, 255,   -- bottom-left: blue
-    255, 255, 255, 255,   -- bottom-right: white
-  }
-  -- hotx, hoty define where the "click point" is within the image
-  local cur = lurek.input.mouse.newCursor(pixels, w, h, 0, 0)
-  lurek.input.mouse.setCursor(cur)
-  lurek.log.debug("custom 2x2 debug cursor active", "input")
-end
---@api-stub: lurek.input.getSystemCursor
--- Get a system cursor handle by name (crosshair, hand, ibeam, etc.).
 do
-  -- Pre-load system cursors at startup for fast switching during gameplay
-  local crosshair = lurek.input.mouse.getSystemCursor("crosshair")
-  function lurek.process(dt)
-    -- Switch to crosshair when aiming
-    lurek.input.mouse.setCursor(crosshair)
+    local pixels = {}
+    for i = 1, 16 * 16 * 4 do pixels[i] = 255 end
+    local cursor = lurek.input.mouse.newCursor(pixels, 16, 16, 0, 0)
+    print("custom cursor type = " .. cursor:getType())
+end
 ```
 
 ### lurek.input.newMapping
@@ -1832,19 +1369,11 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  -- newMapping creates and binds in one call, returning a query table.
-  -- Cleaner than separate bind() + isActionDown() calls for per-character abilities.
-  local dash = lurek.input.newMapping("dash", { "shift", "gamepad:0:0" })
-
-  function lurek.process(dt)
-    -- The mapping object has .isDown(), .wasPressed(), .wasReleased() closures
-    if dash.wasPressed() then
-      lurek.log.info("dash triggered!", "input")
-    end
-    if dash.isDown() then
-      lurek.log.debug("dash held — maintaining velocity", "input")
-    end
-  end
+    local mapping = lurek.input.newMapping("attack", {"z", "button1"})
+    local held = mapping.isDown()
+    local just = mapping.wasPressed()
+    local done = mapping.wasReleased()
+    print("held=" .. tostring(held) .. " just=" .. tostring(just) .. " done=" .. tostring(done))
 end
 ```
 
@@ -1863,22 +1392,12 @@ Saves gamepad mapping strings to a file.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
--- Save all current gamepad mappings to a file for persistence.
 do
-  -- Save user's custom mappings so they persist across sessions
-  lurek.input.gamepad.saveGamepadMappings("save/user_mappings.txt")
-  lurek.log.info("user gamepad mappings saved to disk", "input")
-end
---@api-stub: lurek.input.getTouches
--- Get all active touch points with id, position, and pressure.
-do
-  function lurek.process(dt)
-    local touches = lurek.input.touch.getTouches()
-    -- Each touch has: id (unique per finger), x, y, pressure
-    for _, tp in ipairs(touches) do
-      lurek.log.debug("touch " .. tp.id .. " at (" .. tp.x .. ", " .. tp.y .. ")", "input")
-    end
-  end
+    local mappingPath = "save/gamecontrollerdb.txt"
+    lurek.filesystem.write(mappingPath, "030000005e0400008e02000014010000,XInput,a:b0\n")
+    lurek.input.gamepad.loadGamepadMappings(mappingPath)
+    lurek.input.gamepad.saveGamepadMappings("save/mappings_out.txt")
+    print("mappings loaded and saved")
 end
 ```
 
@@ -1897,23 +1416,11 @@ Enables or disables background gamepad event processing.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
--- Enable or disable gamepad input while the window is unfocused.
 do
-  -- Useful for streaming overlays or multi-window setups
-  lurek.input.gamepad.setBackgroundEvents(true)
-  lurek.log.info("gamepad input continues while window is unfocused", "input")
+    local was = lurek.input.gamepad.getBackgroundEvents()
+    lurek.input.gamepad.setBackgroundEvents(true)
+    print("bg events was=" .. tostring(was) .. " now=true")
 end
---@api-stub: lurek.input.getBackgroundEvents
--- Query whether background gamepad events are enabled.
-do
-  local on = lurek.input.gamepad.getBackgroundEvents()
-  lurek.log.debug("background gamepad events: " .. tostring(on), "input")
-end
---@api-stub: lurek.input.setGamepadMapping
--- Store a custom SDL-style mapping string for a specific gamepad GUID.
-do
-  -- SDL mapping format: GUID,Name,button:bN,axis:aN,...
-  local guid = "030000005e040000130b000011050000"
 ```
 
 ### lurek.input.mouse.setCursor
@@ -1931,23 +1438,11 @@ Sets the active cursor from a cursor handle, system cursor name, or nil for arro
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
--- Set the active cursor shape from a handle, system name, or nil for default arrow.
 do
-  -- Pass a string for built-in system cursors
-  lurek.input.mouse.setCursor("hand")
-  lurek.log.debug("cursor set to 'hand' — hovering a clickable element", "ui")
+    local cursor = lurek.input.mouse.getSystemCursor("arrow")
+    lurek.input.mouse.setCursor(cursor)
+    print("cursor set to arrow")
 end
---@api-stub: lurek.input.newCursor
--- Create a custom cursor from RGBA pixel data with hotspot coordinates.
-do
-  -- Create a tiny 2x2 colored cursor for debugging
-  -- Pixel data is a flat array: R,G,B,A for each pixel, row by row
-  local w, h = 2, 2
-  local pixels = {
-    255, 0,   0,   255,   -- top-left: red
-    0,   255, 0,   255,   -- top-right: green
-    0,   0,   255, 255,   -- bottom-left: blue
-    255, 255, 255, 255,   -- bottom-right: white
 ```
 
 ### lurek.input.gamepad.setGamepadMapping
@@ -1966,23 +1461,11 @@ Stores a controller mapping string for a gamepad GUID.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
--- Store a custom SDL-style mapping string for a specific gamepad GUID.
 do
-  -- SDL mapping format: GUID,Name,button:bN,axis:aN,...
-  local guid = "030000005e040000130b000011050000"
-  local mapping = guid .. ",My Custom Pad,a:b0,b:b1,x:b2,y:b3,start:b7,back:b6,"
-  lurek.input.gamepad.setGamepadMapping(guid, mapping)
-  lurek.log.info("custom mapping stored for GUID " .. guid, "input")
+    local guid = lurek.input.gamepad.getGUID(1)
+    lurek.input.gamepad.setGamepadMapping(guid, "custom_mapping_string")
+    print("custom mapping set")
 end
---@api-stub: lurek.input.getGamepadMappingString
--- Retrieve the stored mapping string for a gamepad GUID.
-do
-  local guid = "030000005e040000130b000011050000"
-  local mapping = lurek.input.gamepad.getGamepadMappingString(guid)
-  if mapping then
-    lurek.log.debug("mapping for " .. guid .. ": " .. #mapping .. " chars", "input")
-  else
-    lurek.log.debug("no custom mapping for " .. guid, "input")
 ```
 
 ### lurek.input.mouse.setGrabbed
@@ -2000,23 +1483,10 @@ Sets whether the mouse is grabbed by the window.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
--- Confine the cursor to the game window (prevents leaving window bounds).
 do
-  -- Grab + relative mode is the standard FPS mouselook setup
-  lurek.input.mouse.setGrabbed(true)
-  lurek.input.mouse.setRelativeMode(true)
-  lurek.log.info("entered mouselook mode (grabbed + relative)", "input")
+    lurek.input.mouse.setGrabbed(false)
+    print("mouse released")
 end
---@api-stub: lurek.input.isGrabbed
--- Query whether the mouse is grabbed by the window.
-do
-  if lurek.input.mouse.isGrabbed() then
-    lurek.log.debug("mouse locked to window — Alt+Tab will release", "input")
-  end
-end
---@api-stub: lurek.input.setRelativeMode
--- Enable relative mode: cursor is hidden and dx/dy deltas are reported.
-do
 ```
 
 ### lurek.input.keyboard.setKeyRepeat
@@ -2034,23 +1504,54 @@ Enables or disables key repeat tracking.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
--- Enable or disable OS key-repeat events reaching lurek.keypressed callback.
 do
-  -- Enable key repeat so that holding a key fires repeated keypressed events.
-  -- Useful for menu navigation: holding "down" scrolls through items.
-  lurek.input.keyboard.setKeyRepeat(true)
-  lurek.log.info("key repeat enabled — menus will auto-scroll on hold", "input")
+    lurek.input.keyboard.setKeyRepeat(true)
+    print("key repeat enabled")
 end
---@api-stub: lurek.input.hasKeyRepeat
--- Query whether key-repeat is currently enabled.
+
+--@api-stub: lurek.input.keyboard.hasTextInput
+-- Returns whether text input mode is active.
 do
-  local enabled = lurek.input.keyboard.hasKeyRepeat()
-  if not enabled then
-    -- Warn during startup so designers know menu UX will be affected
-    lurek.log.warn("key repeat disabled — hold-to-scroll will not work in menus", "input")
-  end
+    print("text input = " .. tostring(lurek.input.keyboard.hasTextInput()))
 end
---@api-stub: lurek.input.setTextInput
+
+--@api-stub: lurek.input.keyboard.setTextInput
+-- Enables or disables text input mode.
+do
+    lurek.input.keyboard.setTextInput(true)
+    print("text input enabled")
+end
+
+--@api-stub: lurek.input.mouse.getPosition
+-- Returns mouse x,y position.
+do
+    local x, y = lurek.input.mouse.getPosition()
+    print("mouse at " .. x .. "," .. y)
+end
+
+--@api-stub: lurek.input.mouse.getX
+-- Returns individual mouse coordinates. Focus: getX.
+do
+    local x = lurek.input.mouse.getX()
+    print("mouse x=" .. x)
+end
+
+--@api-stub: lurek.input.mouse.getY
+-- Returns individual mouse coordinates. Focus: getY.
+do
+    local y = lurek.input.mouse.getY()
+    print("mouse y=" .. y)
+end
+
+--@api-stub: lurek.input.mouse.isDown
+-- Checks if a mouse button is held.
+do
+    local left = lurek.input.mouse.isDown(1)
+    local right = lurek.input.mouse.isDown(2)
+    print("left=" .. tostring(left) .. " right=" .. tostring(right))
+end
+
+--@api-stub: lurek.input.mouse.getWheelDelta
 ```
 
 ### lurek.input.mouse.setPosition
@@ -2069,23 +1570,10 @@ Requests a mouse cursor position change.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
--- Warp the cursor to a specific window position.
 do
-  -- Re-center cursor after each frame in a custom mouselook implementation
-  local cx, cy = 400, 300
-  lurek.input.mouse.setPosition(cx, cy)
-  lurek.log.debug("cursor warped to center (" .. cx .. "," .. cy .. ")", "input")
+    lurek.input.mouse.setPosition(400, 300)
+    print("mouse warped to 400,300")
 end
---@api-stub: lurek.input.setCursor
--- Set the active cursor shape from a handle, system name, or nil for default arrow.
-do
-  -- Pass a string for built-in system cursors
-  lurek.input.mouse.setCursor("hand")
-  lurek.log.debug("cursor set to 'hand' — hovering a clickable element", "ui")
-end
---@api-stub: lurek.input.newCursor
--- Create a custom cursor from RGBA pixel data with hotspot coordinates.
-do
 ```
 
 ### lurek.input.mouse.setRelativeMode
@@ -2103,23 +1591,10 @@ Sets the relative mouse input mode state.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
--- Confine the cursor to the game window (prevents leaving window bounds).
 do
-  -- Grab + relative mode is the standard FPS mouselook setup
-  lurek.input.mouse.setGrabbed(true)
-  lurek.input.mouse.setRelativeMode(true)
-  lurek.log.info("entered mouselook mode (grabbed + relative)", "input")
+    lurek.input.mouse.setRelativeMode(false)
+    print("relative mode off")
 end
---@api-stub: lurek.input.isGrabbed
--- Query whether the mouse is grabbed by the window.
-do
-  if lurek.input.mouse.isGrabbed() then
-    lurek.log.debug("mouse locked to window — Alt+Tab will release", "input")
-  end
-end
---@api-stub: lurek.input.setRelativeMode
--- Enable relative mode: cursor is hidden and dx/dy deltas are reported.
-do
 ```
 
 ### lurek.input.keyboard.setTextInput
@@ -2137,23 +1612,10 @@ Enables or disables text input tracking.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
--- Enable or disable text input mode (IME composition, unicode entry).
 do
-  local function open_chat()
-    -- When a text field gains focus, enable text input so the OS can
-    -- deliver composed characters (e.g. accented letters, CJK input).
     lurek.input.keyboard.setTextInput(true)
-    lurek.log.info("chat box focused — text input mode on", "input")
-  end
-
-  local function close_chat()
-    -- Disable text input when leaving the field, so normal game keys resume.
-    lurek.input.keyboard.setTextInput(false)
-    lurek.log.info("chat box closed — text input mode off", "input")
-  end
-
-  open_chat()
-  close_chat()
+    print("text input enabled")
+end
 ```
 
 ### lurek.input.gamepad.setVibration
@@ -2176,22 +1638,9 @@ Requests gamepad vibration with low and high frequency motor strengths.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
--- Alternate vibration API with same signature as vibrate.
 do
-  local id = 0
-  local ok = lurek.input.gamepad.setVibration(id, 0.5, 0.5, 200)
-  lurek.log.debug("setVibration queued: " .. tostring(ok), "input")
-end
---@api-stub: lurek.input.wasPressed
--- Check if a gamepad button was pressed THIS frame (edge-triggered, not held).
-do
-  function lurek.process(dt)
-    -- Button 0 is typically "A" on Xbox / "Cross" on PlayStation
-    if lurek.input.gamepad.wasPressed(0, 0) then
-      -- Use for one-shot actions: jump, confirm, interact
-      lurek.log.info("gamepad A pressed — jump triggered", "input")
-    end
-  end
+    lurek.input.gamepad.setVibration(1, 0.3, 0.7, 100)
+    print("vibration set")
 end
 ```
 
@@ -2210,23 +1659,10 @@ Sets the mouse cursor visibility state.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
--- Show or hide the OS mouse cursor.
 do
-  -- Hide cursor during gameplay for a custom crosshair or cinematic
-  lurek.input.mouse.setVisible(false)
-  lurek.log.info("cursor hidden — using custom crosshair sprite", "input")
-end
---@api-stub: lurek.input.isVisible
--- Query whether the OS cursor is currently visible.
-do
-  -- Restore cursor when opening pause menu
-  if not lurek.input.mouse.isVisible() then
     lurek.input.mouse.setVisible(true)
-    lurek.log.info("pause menu opened — OS cursor restored", "ui")
-  end
+    print("cursor shown")
 end
---@api-stub: lurek.input.setGrabbed
--- Confine the cursor to the game window (prevents leaving window bounds).
 ```
 
 ### lurek.input.startPlayback
@@ -2241,11 +1677,15 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  local json = '{"version":1,"total_frames":1,"frames":[]}'
-  lurek.input.loadRecording(json)
-  -- Once started, advancePlayback() returns events each frame
-  lurek.input.startPlayback()
-  lurek.log.info("playback started — live input suppressed", "replay")
+    lurek.input.startRecording()
+    local rec = lurek.input.stopRecording()
+    if rec then
+        lurek.input.loadRecording(rec:toJson())
+        lurek.input.startPlayback()
+        print("playing = " .. tostring(lurek.input.isPlayingBack()))
+        lurek.input.stopPlayback()
+        print("stopped = " .. tostring(not lurek.input.isPlayingBack()))
+    end
 end
 ```
 
@@ -2261,9 +1701,12 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  -- Start recording at the beginning of a level for replay/ghost data
-  lurek.input.startRecording()
-  lurek.log.info("input recording started", "replay")
+    lurek.input.startRecording()
+    local recording = lurek.input.stopRecording()
+    if recording then
+        print("frames = " .. recording:frameCount())
+        print("total = " .. recording:totalFrames())
+    end
 end
 ```
 
@@ -2279,8 +1722,12 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  lurek.input.stopPlayback()
-  lurek.log.info("playback stopped — live input restored", "replay")
+    lurek.input.startRecording()
+    local rec = lurek.input.stopRecording()
+    print("is_playing=" .. tostring(lurek.input.isPlayingBack()))
+    lurek.input.startPlayback()
+    lurek.input.stopPlayback()
+    print("stopped")
 end
 ```
 
@@ -2298,12 +1745,12 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  lurek.input.startRecording()
-  local rec = lurek.input.stopRecording()
-  if rec then
-    -- rec is an LInputRecording handle — serialize with :toJson()
-    lurek.log.info("captured " .. rec:totalFrames() .. " frames of input", "replay")
-  end
+    lurek.input.startRecording()
+    local rec = lurek.input.stopRecording()
+    print("is_playing=" .. tostring(lurek.input.isPlayingBack()))
+    lurek.input.startPlayback()
+    lurek.input.stopPlayback()
+    print("stopped")
 end
 ```
 
@@ -2325,10 +1772,9 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  lurek.input.bind("jump", "space")
-  -- Player clears a binding in the options menu
-  local existed = lurek.input.unbind("jump")
-  lurek.log.debug("unbind 'jump': had bindings = " .. tostring(existed), "input")
+    lurek.input.bind("temp", "t")
+    local had = lurek.input.unbind("temp")
+    print("unbind had bindings = " .. tostring(had))
 end
 ```
 
@@ -2352,24 +1798,10 @@ Requests gamepad vibration with low and high frequency motor strengths.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
-  -- low_freq = heavy motor (body rumble), high_freq = light motor (texture feel)
-  -- duration_ms = how long the vibration lasts
-  local id = 0
-  local low_freq = 0.4   -- gentle body thump
-  local high_freq = 0.8  -- strong buzz
-  local duration_ms = 250
-  local ok = lurek.input.gamepad.vibrate(id, low_freq, high_freq, duration_ms)
-  if not ok then
-    lurek.log.debug("vibrate request ignored (no haptics backend)", "input")
-  end
-end
---@api-stub: lurek.input.getGUID
--- Get the unique hardware GUID for a gamepad (for mapping lookups).
 do
-  local guid = lurek.input.gamepad.getGUID(0)
-  if guid ~= "" then
-    -- GUIDs identify controller hardware for custom mapping databases
-    lurek.log.debug("gamepad 0 GUID: " .. guid, "input")
+    local ok = lurek.input.gamepad.vibrate(1, 0.5, 0.5, 200)
+    print("vibrate ok = " .. tostring(ok))
+end
 ```
 
 ### lurek.input.gamepad.virtualDpad
@@ -2391,23 +1823,10 @@ Converts analog x and y values into virtual d-pad booleans and direction.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
-  function lurek.process(dt)
-    local lx = lurek.input.gamepad.getAxis(0, 0)
-    local ly = lurek.input.gamepad.getAxis(0, 1)
-
-    -- virtualDpad applies a deadzone and returns: up, down, left, right (booleans)
-    -- and direction (string: "c", "u", "d", "l", "r", "lu", "ld", "ru", "rd")
-    local pad = lurek.input.gamepad.virtualDpad(lx, ly, 0.25)
-
-    if pad.direction ~= "c" then
-      lurek.log.debug("virtual dpad: " .. pad.direction, "input")
-    end
-
-    -- Use booleans for grid-based movement
-    if pad.up then
-      lurek.log.debug("dpad UP — move character north", "input")
-    end
-  end
+do
+    local dpad = lurek.input.gamepad.virtualDpad(0.8, 0.0, 0.3)
+    print("direction = " .. dpad.direction)
+    print("right = " .. tostring(dpad.right))
 end
 ```
 
@@ -2429,13 +1848,9 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  lurek.input.bind("confirm", "return")
-  function lurek.process(dt)
-    -- Use for one-shot actions: menu select, interact, fire
-    if lurek.input.wasActionPressed("confirm") then
-      lurek.log.info("menu: option confirmed", "ui")
-    end
-  end
+    lurek.input.bind("jump", "space")
+    local pressed = lurek.input.wasActionPressed("jump")
+    print("jump pressed = " .. tostring(pressed))
 end
 ```
 
@@ -2458,15 +1873,9 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  lurek.input.bind("jump", "space")
-  function lurek.process(dt)
-    -- Input buffering: accept jump input if pressed within last 6 frames.
-    -- This makes platformers feel responsive — player can press jump slightly
-    -- before landing and it still registers.
-    if lurek.input.wasActionPressedWithin("jump", 6) then
-      lurek.log.debug("buffered jump accepted (within 6-frame window)", "input")
-    end
-  end
+    lurek.input.bind("dodge", "shift")
+    local recent = lurek.input.wasActionPressedWithin("dodge", 10)
+    print("dodge recent = " .. tostring(recent))
 end
 ```
 
@@ -2488,13 +1897,9 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  lurek.input.bind("shoot", "left")
-  function lurek.process(dt)
-    -- Release-triggered actions: charged attacks, bow release
-    if lurek.input.wasActionReleased("shoot") then
-      lurek.log.info("charged shot released — firing projectile", "combat")
-    end
-  end
+    lurek.input.bind("run", "shift")
+    local released = lurek.input.wasActionReleased("run")
+    print("run released = " .. tostring(released))
 end
 ```
 
@@ -2515,23 +1920,10 @@ Returns whether a gamepad connected this frame.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
--- Check if a gamepad connected during this frame (hot-plug detection).
 do
-  function lurek.process(dt)
-    if lurek.input.gamepad.wasConnected(0) then
-      -- Show "controller connected" notification, assign to player slot
-      lurek.log.info("player 1 controller connected — switching to gamepad mode", "input")
-    end
-  end
+    local c = lurek.input.gamepad.wasConnected(1)
+    print("connected=" .. tostring(c))
 end
---@api-stub: lurek.input.wasDisconnected
--- Check if a gamepad disconnected during this frame.
-do
-  function lurek.process(dt)
-    if lurek.input.gamepad.wasDisconnected(0) then
-      -- Pause the game and show reconnection prompt
-      lurek.log.warn("controller disconnected — pausing game", "input")
-    end
 ```
 
 ### lurek.input.gamepad.wasDisconnected
@@ -2551,23 +1943,10 @@ Returns whether a gamepad disconnected this frame.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
--- Check if a gamepad disconnected during this frame.
 do
-  function lurek.process(dt)
-    if lurek.input.gamepad.wasDisconnected(0) then
-      -- Pause the game and show reconnection prompt
-      lurek.log.warn("controller disconnected — pausing game", "input")
-    end
-  end
+    local d = lurek.input.gamepad.wasDisconnected(1)
+    print("disconnected=" .. tostring(d))
 end
---@api-stub: lurek.input.virtualDpad
--- Convert analog stick values into a virtual d-pad with direction and booleans.
-do
-  function lurek.process(dt)
-    local lx = lurek.input.gamepad.getAxis(0, 0)
-    local ly = lurek.input.gamepad.getAxis(0, 1)
-
-    -- virtualDpad applies a deadzone and returns: up, down, left, right (booleans)
 ```
 
 ### lurek.input.gamepad.wasPressed
@@ -2588,23 +1967,10 @@ Returns whether a gamepad button was pressed this frame.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
--- Check if a gamepad button was pressed THIS frame (edge-triggered, not held).
 do
-  function lurek.process(dt)
-    -- Button 0 is typically "A" on Xbox / "Cross" on PlayStation
-    if lurek.input.gamepad.wasPressed(0, 0) then
-      -- Use for one-shot actions: jump, confirm, interact
-      lurek.log.info("gamepad A pressed — jump triggered", "input")
-    end
-  end
+    local pressed = lurek.input.gamepad.wasPressed(1, 1)
+    print("pressed=" .. tostring(pressed))
 end
---@api-stub: lurek.input.wasReleased
--- Check if a gamepad button was released THIS frame (edge-triggered).
-do
-  function lurek.process(dt)
-    -- Useful for charged attacks: start charge on press, release on release
-    if lurek.input.gamepad.wasReleased(0, 0) then
-      lurek.log.info("gamepad A released — charged shot fired", "input")
 ```
 
 ### lurek.input.touch.wasPressed
@@ -2625,13 +1991,9 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  function lurek.process(dt)
-    -- Button 0 is typically "A" on Xbox / "Cross" on PlayStation
-    if lurek.input.gamepad.wasPressed(0, 0) then
-      -- Use for one-shot actions: jump, confirm, interact
-      lurek.log.info("gamepad A pressed — jump triggered", "input")
-    end
-  end
+    local pressed = lurek.input.touch.wasPressed(1)
+    local released = lurek.input.touch.wasReleased(1)
+    print("t1 pressed=" .. tostring(pressed) .. " released=" .. tostring(released))
 end
 ```
 
@@ -2649,14 +2011,53 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  function lurek.process(dt)
-    -- Button 0 is typically "A" on Xbox / "Cross" on PlayStation
-    if lurek.input.gamepad.wasPressed(0, 0) then
-      -- Use for one-shot actions: jump, confirm, interact
-      lurek.log.info("gamepad A pressed — jump triggered", "input")
-    end
-  end
+    print("wasPressed available = " .. tostring(type(lurek.input.wasPressed) == "function"))
 end
+
+--@api-stub: lurek.input.wasReleased
+-- Checks if any bound key was released this frame.
+do
+    print("wasReleased available = " .. tostring(type(lurek.input.wasReleased) == "function"))
+end
+
+--@api-stub: lurek.input.newMapping
+-- Creates an action mapping with query closures.
+do
+    local mapping = lurek.input.newMapping("attack", {"z", "button1"})
+    local held = mapping.isDown()
+    local just = mapping.wasPressed()
+    local done = mapping.wasReleased()
+    print("held=" .. tostring(held) .. " just=" .. tostring(just) .. " done=" .. tostring(done))
+end
+
+--@api-stub: lurek.input.newCombo
+-- Creates a combo detector.
+do
+    local combo = lurek.input.newCombo({"down", "right", "z"}, {total_gap = 500})
+    print("combo steps = " .. combo:totalSteps())
+    print("in progress = " .. tostring(combo:isInProgress()))
+    print("progress = " .. combo:progress())
+end
+
+--@api-stub: LCombo:feed
+-- Feeds a key press to the combo.
+do
+    local combo = lurek.input.newCombo({"a", "b", "c"})
+    local result = combo:feed("a")
+    print("feed a → " .. result)
+end
+
+--@api-stub: LCombo:tick
+-- Advances combo timer by delta time.
+do
+    local combo = lurek.input.newCombo({"x", "y"}, {total_gap = 300})
+    local result = combo:tick(0.016)
+    print("tick → " .. result)
+end
+
+--@api-stub: LCombo:getStep
+-- Returns step info at an index.
+do
 ```
 
 ### lurek.input.gamepad.wasReleased
@@ -2677,23 +2078,10 @@ Returns whether a gamepad button was released this frame.
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
--- Check if a gamepad button was released THIS frame (edge-triggered).
 do
-  function lurek.process(dt)
-    -- Useful for charged attacks: start charge on press, release on release
-    if lurek.input.gamepad.wasReleased(0, 0) then
-      lurek.log.info("gamepad A released — charged shot fired", "input")
-    end
-  end
+    local released = lurek.input.gamepad.wasReleased(1, 1)
+    print("released=" .. tostring(released))
 end
---@api-stub: lurek.input.wasConnected
--- Check if a gamepad connected during this frame (hot-plug detection).
-do
-  function lurek.process(dt)
-    if lurek.input.gamepad.wasConnected(0) then
-      -- Show "controller connected" notification, assign to player slot
-      lurek.log.info("player 1 controller connected — switching to gamepad mode", "input")
-    end
 ```
 
 ### lurek.input.touch.wasReleased
@@ -2714,12 +2102,9 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  function lurek.process(dt)
-    -- Useful for charged attacks: start charge on press, release on release
-    if lurek.input.gamepad.wasReleased(0, 0) then
-      lurek.log.info("gamepad A released — charged shot fired", "input")
-    end
-  end
+    local pressed = lurek.input.touch.wasPressed(1)
+    local released = lurek.input.touch.wasReleased(1)
+    print("t1 pressed=" .. tostring(pressed) .. " released=" .. tostring(released))
 end
 ```
 
@@ -2737,13 +2122,53 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  function lurek.process(dt)
-    -- Useful for charged attacks: start charge on press, release on release
-    if lurek.input.gamepad.wasReleased(0, 0) then
-      lurek.log.info("gamepad A released — charged shot fired", "input")
-    end
-  end
+    print("wasReleased available = " .. tostring(type(lurek.input.wasReleased) == "function"))
 end
+
+--@api-stub: lurek.input.newMapping
+-- Creates an action mapping with query closures.
+do
+    local mapping = lurek.input.newMapping("attack", {"z", "button1"})
+    local held = mapping.isDown()
+    local just = mapping.wasPressed()
+    local done = mapping.wasReleased()
+    print("held=" .. tostring(held) .. " just=" .. tostring(just) .. " done=" .. tostring(done))
+end
+
+--@api-stub: lurek.input.newCombo
+-- Creates a combo detector.
+do
+    local combo = lurek.input.newCombo({"down", "right", "z"}, {total_gap = 500})
+    print("combo steps = " .. combo:totalSteps())
+    print("in progress = " .. tostring(combo:isInProgress()))
+    print("progress = " .. combo:progress())
+end
+
+--@api-stub: LCombo:feed
+-- Feeds a key press to the combo.
+do
+    local combo = lurek.input.newCombo({"a", "b", "c"})
+    local result = combo:feed("a")
+    print("feed a → " .. result)
+end
+
+--@api-stub: LCombo:tick
+-- Advances combo timer by delta time.
+do
+    local combo = lurek.input.newCombo({"x", "y"}, {total_gap = 300})
+    local result = combo:tick(0.016)
+    print("tick → " .. result)
+end
+
+--@api-stub: LCombo:getStep
+-- Returns step info at an index.
+do
+    local combo = lurek.input.newCombo({"a", "b"})
+    local step = combo:getStep(1)
+    print("step 1 key = " .. step.key .. " gap = " .. step.gap_ms)
+end
+
+--@api-stub: LCombo:reset
 ```
 
 
@@ -2769,15 +2194,10 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  -- Simple combo: press down, right, then attack in sequence
-  -- opts.total_gap limits how long the entire sequence can take (ms)
-  local hadouken = lurek.input.newCombo(
-    { "down", { key = "right", gap = 300 }, "a" },
-    { total_gap = 1500 }
-  )
-  -- gap per step = max ms allowed between that step and the previous one
-  -- total_gap = max ms for the entire combo from first to last input
-  lurek.log.info("hadouken combo ready (" .. hadouken:totalSteps() .. " steps)", "combat")
+    local combo = lurek.input.newCombo({"down", "right", "z"}, {total_gap = 500})
+    print("combo steps = " .. combo:totalSteps())
+    print("in progress = " .. tostring(combo:isInProgress()))
+    print("progress = " .. combo:progress())
 end
 ```
 
@@ -2798,23 +2218,10 @@ LCursor = {}
 Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
--- Get a system cursor handle by name (crosshair, hand, ibeam, etc.).
 do
-  -- Pre-load system cursors at startup for fast switching during gameplay
-  local crosshair = lurek.input.mouse.getSystemCursor("crosshair")
-  function lurek.process(dt)
-    -- Switch to crosshair when aiming
-    lurek.input.mouse.setCursor(crosshair)
-  end
+    local cursor = lurek.input.mouse.getSystemCursor("arrow")
+    print("got system cursor = " .. tostring(cursor ~= nil))
 end
---@api-stub: lurek.input.isCursorSupported
--- Check if the platform supports custom/system cursor changes.
-do
-  if lurek.input.mouse.isCursorSupported() then
-    lurek.input.mouse.setCursor("hand")
-    lurek.log.debug("custom cursors supported on this platform", "input")
-  else
-    -- Fallback: draw a sprite at mouse position instead
 ```
 
 ### LInputRecording
@@ -2835,12 +2242,12 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  lurek.input.startRecording()
-  local rec = lurek.input.stopRecording()
-  if rec then
-    -- rec is an LInputRecording handle — serialize with :toJson()
-    lurek.log.info("captured " .. rec:totalFrames() .. " frames of input", "replay")
-  end
+    lurek.input.startRecording()
+    local rec = lurek.input.stopRecording()
+    print("is_playing=" .. tostring(lurek.input.isPlayingBack()))
+    lurek.input.startPlayback()
+    lurek.input.stopPlayback()
+    print("stopped")
 end
 ```
 
@@ -2876,14 +2283,9 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  local combo = lurek.input.newCombo({ "down", "right", "a" })
-  -- feed() returns: "completed", "advanced", "broken", or "idle"
-  local result = combo:feed("down")
-  lurek.log.debug("fed 'down' to combo — result: " .. result, "combat")
-  -- "advanced" means the key matched the next expected step
-  -- "completed" means the full sequence was entered successfully
-  -- "broken" means wrong key broke the sequence
-  -- "idle" means no combo is in progress and key did not start one
+    local combo = lurek.input.newCombo({"a", "b", "c"})
+    local result = combo:feed("a")
+    print("feed a → " .. result)
 end
 ```
 
@@ -2914,12 +2316,9 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  local combo = lurek.input.newCombo({ "down", { key = "right", gap = 300 }, "a" })
-  local step = combo:getStep(2)
-  if step then
-    -- step.key = the key name, step.gap_ms = max time allowed for this step
-    lurek.log.debug("step 2: key=" .. step.key .. " gap=" .. step.gap_ms .. "ms", "combat")
-  end
+    local combo = lurek.input.newCombo({"a", "b"})
+    local step = combo:getStep(1)
+    print("step 1 key = " .. step.key .. " gap = " .. step.gap_ms)
 end
 ```
 
@@ -2945,12 +2344,13 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  local combo = lurek.input.newCombo({ "down", "right", "a" })
-  combo:feed("down")
-  if combo:isInProgress() then
-    -- Show combo progress indicator in the HUD
-    lurek.log.debug("combo in progress — show HUD indicator", "ui")
-  end
+    local combo = lurek.input.newCombo({ "a", "b", "c" })
+    combo:feed("a")
+    combo:tick(0.016)
+    print("in_progress=" .. tostring(combo:isInProgress()))
+    print("progress=" .. combo:progress())
+    print("total=" .. combo:totalSteps())
+    combo:reset()
 end
 ```
 
@@ -2976,11 +2376,13 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  local combo = lurek.input.newCombo({ "right", "right", "attack" })
-  combo:feed("right")
-  local steps_done = combo:progress()
-  -- Use for HUD: highlight completed steps in the combo display
-  lurek.log.info("combo progress: " .. steps_done .. "/" .. combo:totalSteps(), "input")
+    local combo = lurek.input.newCombo({ "a", "b", "c" })
+    combo:feed("a")
+    combo:tick(0.016)
+    print("in_progress=" .. tostring(combo:isInProgress()))
+    print("progress=" .. combo:progress())
+    print("total=" .. combo:totalSteps())
+    combo:reset()
 end
 ```
 
@@ -3003,11 +2405,10 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  local combo = lurek.input.newCombo({ "down", "right", "a" })
-  combo:feed("down")
-  -- Player got interrupted — clear combo progress
-  combo:reset()
-  lurek.log.debug("combo reset after stagger", "combat")
+    local combo = lurek.input.newCombo({"q", "w", "e"})
+    combo:feed("q")
+    combo:reset()
+    print("progress after reset = " .. combo:progress())
 end
 ```
 
@@ -3038,15 +2439,9 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  local combo = lurek.input.newCombo({ "down", "right", "a" })
-  function lurek.process(dt)
-    -- tick() returns: "expired", "in_progress", or "idle"
-    local status = combo:tick(dt)
-    if status == "expired" then
-      -- Player took too long between inputs — combo window closed
-      lurek.log.debug("combo timed out", "combat")
-    end
-  end
+    local combo = lurek.input.newCombo({"x", "y"}, {total_gap = 300})
+    local result = combo:tick(0.016)
+    print("tick → " .. result)
 end
 ```
 
@@ -3072,10 +2467,13 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  local combo = lurek.input.newCombo({ "down", "right", "a" })
-  local total = combo:totalSteps()
-  -- Useful for drawing a combo step indicator in the HUD
-  lurek.log.debug("combo has " .. total .. " steps", "combat")
+    local combo = lurek.input.newCombo({ "a", "b", "c" })
+    combo:feed("a")
+    combo:tick(0.016)
+    print("in_progress=" .. tostring(combo:isInProgress()))
+    print("progress=" .. combo:progress())
+    print("total=" .. combo:totalSteps())
+    combo:reset()
 end
 ```
 
@@ -3101,8 +2499,9 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  local obj = lurek.input.newCombo({'ctrl', 's'})
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LCombo"
+    local combo = lurek.input.newCombo({"a"})
+    print("type = " .. combo:type())
+    print("is Combo = " .. tostring(combo:typeOf("Combo")))
 end
 ```
 
@@ -3133,8 +2532,9 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  local obj = lurek.input.newCombo({'ctrl', 's'})
-  lurek.log.debug("typeOf LCombo: " .. tostring(obj:typeOf("LCombo")), "example") -- true
+    local combo = lurek.input.newCombo({"a"})
+    print("type = " .. combo:type())
+    print("is Combo = " .. tostring(combo:typeOf("Combo")))
 end
 ```
 
@@ -3160,10 +2560,11 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  local cur = lurek.input.mouse.getSystemCursor("crosshair")
-  local kind = cur:getType()
-  -- Returns "system" for getSystemCursor results, "custom" for newCursor results
-  lurek.log.debug("cursor type: " .. kind, "input")
+    local sys_cursor = lurek.input.mouse.getSystemCursor("arrow")
+    print("cursor type=" .. sys_cursor:type())
+    print("cursor kind=" .. sys_cursor:getType())
+    print("typeOf=" .. tostring(sys_cursor:typeOf("LCursor")))
+    sys_cursor:release()
 end
 ```
 
@@ -3186,10 +2587,11 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  local cur = lurek.input.mouse.getSystemCursor("hand")
-  -- Call release when done with a cursor to signal intent (future-proofs for mobile)
-  cur:release()
-  lurek.log.debug("cursor handle released", "input")
+    local sys_cursor = lurek.input.mouse.getSystemCursor("arrow")
+    print("cursor type=" .. sys_cursor:type())
+    print("cursor kind=" .. sys_cursor:getType())
+    print("typeOf=" .. tostring(sys_cursor:typeOf("LCursor")))
+    sys_cursor:release()
 end
 ```
 
@@ -3215,8 +2617,11 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  local obj = lurek.input.mouse.getSystemCursor('crosshair')
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LCursor"
+    local sys_cursor = lurek.input.mouse.getSystemCursor("arrow")
+    print("cursor type=" .. sys_cursor:type())
+    print("cursor kind=" .. sys_cursor:getType())
+    print("typeOf=" .. tostring(sys_cursor:typeOf("LCursor")))
+    sys_cursor:release()
 end
 ```
 
@@ -3247,8 +2652,11 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  local obj = lurek.input.mouse.getSystemCursor('crosshair')
-  lurek.log.debug("typeOf LCursor: " .. tostring(obj:typeOf("LCursor")), "example") -- true
+    local sys_cursor = lurek.input.mouse.getSystemCursor("arrow")
+    print("cursor type=" .. sys_cursor:type())
+    print("cursor kind=" .. sys_cursor:getType())
+    print("typeOf=" .. tostring(sys_cursor:typeOf("LCursor")))
+    sys_cursor:release()
 end
 ```
 
@@ -3274,12 +2682,12 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  lurek.input.startRecording()
-  local rec = lurek.input.stopRecording()
-  if rec and rec:frameCount() == 0 then
-    -- No input was captured (recording was too short or player was idle)
-    lurek.log.warn("recording has no input events — nothing to replay", "replay")
-  end
+    lurek.input.startRecording()
+    local rec = lurek.input.stopRecording()
+    print("frames=" .. rec:frameCount())
+    print("total=" .. rec:totalFrames())
+    print("type=" .. rec:type())
+    print("typeOf=" .. tostring(rec:typeOf("LInputRecording")))
 end
 ```
 
@@ -3305,14 +2713,12 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  lurek.input.startRecording()
-  local rec = lurek.input.stopRecording()
-  if rec then
-    -- Save replay data to a file for later playback
-    local json = rec:toJson()
-    lurek.log.debug("recording serialized: " .. #json .. " bytes", "replay")
-    -- Could write to file: lurek.filesystem.write("replay.json", json)
-  end
+    lurek.input.startRecording()
+    local rec = lurek.input.stopRecording()
+    if rec then
+        local json = rec:toJson()
+        print("json length = " .. #json)
+    end
 end
 ```
 
@@ -3338,12 +2744,12 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  lurek.input.startRecording()
-  local rec = lurek.input.stopRecording()
-  if rec then
-    -- Use totalFrames for progress bar length in replay viewer
-    lurek.log.info("recording length: " .. rec:totalFrames() .. " frames", "replay")
-  end
+    lurek.input.startRecording()
+    local rec = lurek.input.stopRecording()
+    print("frames=" .. rec:frameCount())
+    print("total=" .. rec:totalFrames())
+    print("type=" .. rec:type())
+    print("typeOf=" .. tostring(rec:typeOf("LInputRecording")))
 end
 ```
 
@@ -3369,13 +2775,12 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  local obj = lurek.input.startRecording()
-  local rec = lurek.input.stopRecording()
-  if rec then
-    local _ = rec:toJson()
-  end
-  local t = obj and obj:type() or "LInputRecording"
-  lurek.log.info("LInputRecording:type = " .. t, "input")
+    lurek.input.startRecording()
+    local rec = lurek.input.stopRecording()
+    print("frames=" .. rec:frameCount())
+    print("total=" .. rec:totalFrames())
+    print("type=" .. rec:type())
+    print("typeOf=" .. tostring(rec:typeOf("LInputRecording")))
 end
 ```
 
@@ -3406,13 +2811,12 @@ Exact example from [input.lua](../blob/main/content/examples/input.lua):
 
 ```lua
 do
-  local obj = lurek.input.startRecording()
-  local rec = lurek.input.stopRecording()
-  if rec then
-    local _ = rec:toJson()
-  end
-  lurek.log.info("is LInputRecording: " .. tostring(obj and obj:typeOf("LInputRecording") or false), "input")
-  lurek.log.info("is wrong: " .. tostring(obj and obj:typeOf("Unknown") or false), "input")
+    lurek.input.startRecording()
+    local rec = lurek.input.stopRecording()
+    print("frames=" .. rec:frameCount())
+    print("total=" .. rec:totalFrames())
+    print("type=" .. rec:type())
+    print("typeOf=" .. tostring(rec:typeOf("LInputRecording")))
 end
 ```
 
@@ -3421,7 +2825,7 @@ end
 
 ## 💡 Examples
 
-- [input.lua](../blob/main/content/examples/input.lua) - Keyboard, mouse, gamepad, actions
+- [input.lua](../blob/main/content/examples/input.lua) - API example
 
 [⬆ back to top](#table-of-contents)
 

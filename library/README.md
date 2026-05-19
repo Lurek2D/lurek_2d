@@ -1,4 +1,4 @@
-﻿# Lunasome â€” Lurek2D Standard Library
+# Lureksome â€” Lurek2D Standard Library
 
 The `library/` folder is Tier 3 in Lurek2D's active layer model. It contains pure-Lua gameplay libraries that ship alongside the engine but are not embedded in the binary.
 
@@ -7,7 +7,7 @@ The `library/` folder is Tier 3 in Lurek2D's active layer model. It contains pur
 - Baseline, Tier 1, and Tier 2 live in the Rust runtime under `src/`.
 - `src/lua_api/` is the bridge that exposes the public `lurek.*` surface.
 - Tier 3 lives here in `library/`.
-- Lunasome modules consume public `lurek.*` APIs and other Lua modules; the Rust engine does not depend on `library/`.
+- Lureksome modules consume public `lurek.*` APIs and other Lua modules; the Rust engine does not depend on `library/`.
 - `content/demos/` is a consumer of the public Lua surface, not part of the numbered layer model.
 
 ## Deliverables
@@ -15,7 +15,7 @@ The `library/` folder is Tier 3 in Lurek2D's active layer model. It contains pur
 | Deliverable        | Role                                                                      |
 | ------------------ | ------------------------------------------------------------------------- |
 | `lurek2d[.exe]`    | Engine runtime binary â€” windowing, GPU, physics, audio, input, filesystem |
-| `library/` | Lunasome standard library â€” pure-Lua gameplay systems                     |
+| `library/` | Lureksome standard library â€” pure-Lua gameplay systems                     |
 | `content/demos/`   | Reference games and verification targets built on the public Lua surface  |
 
 ## Usage
@@ -84,10 +84,10 @@ where the library wraps or composes a `lurek.*` surface.
 ## Generating Docs
 
 ```powershell
-python tools/docs/gen_lib_docs.py          # generate docs/library/*.md per module
+python tools/docs/gen_lib_docs.py          # generate docs/api/lureksome.md and docs/api/lureksome.lua
 python tools/docs/gen_lib_docs.py --check  # report modules missing doc coverage
 ```
-# Lunasome ďż˝ďż˝ďż˝ Lurek2D Standard Library
+# Lureksome ďż˝ďż˝ďż˝ Lurek2D Standard Library
 
 The `library/` folder is Tier 3 in Lurek2D's active layer model. It contains pure-Lua gameplay libraries that ship alongside the engine but are not embedded in the binary.
 
@@ -96,7 +96,7 @@ The `library/` folder is Tier 3 in Lurek2D's active layer model. It contains pur
 - Baseline, Tier 1, and Tier 2 live in the Rust runtime under `src/`.
 - `src/lua_api/` is the bridge that exposes the public `lurek.*` surface.
 - Tier 3 lives here in `library/`.
-- Lunasome modules consume public `lurek.*` APIs and other Lua modules; the Rust engine does not depend on `library/`.
+- Lureksome modules consume public `lurek.*` APIs and other Lua modules; the Rust engine does not depend on `library/`.
 - `content/demos/` is a consumer of the public Lua surface, not part of the numbered layer model.
 
 ## Deliverables
@@ -104,7 +104,7 @@ The `library/` folder is Tier 3 in Lurek2D's active layer model. It contains pur
 | Deliverable        | Role                                                                        |
 | ------------------ | --------------------------------------------------------------------------- |
 | `lurek2d[.exe]`    | Engine runtime binary ďż˝ďż˝ďż˝ windowing, GPU, physics, audio, input, filesystem |
-| `library/` | Lunasome standard library ďż˝ďż˝ďż˝ pure-Lua gameplay systems                     |
+| `library/` | Lureksome standard library ďż˝ďż˝ďż˝ pure-Lua gameplay systems                     |
 | `content/demos/`   | Reference games and verification targets built on the public Lua surface    |
 
 ## Usage
@@ -153,7 +153,7 @@ function M.newThing(name, opts) end
 ## Generating Docs
 
 ```powershell
-python tools/gen_lib_docs.py          # generate docs/library/*.md per module
+python tools/gen_lib_docs.py          # generate docs/api/lureksome.md and docs/api/lureksome.lua
 python tools/gen_lib_docs.py --check  # report modules missing doc coverage
 ```
 

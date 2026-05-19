@@ -37,7 +37,7 @@ Companion documents: [philosophy.md](philosophy.md) · [engine-architecture.md](
 - Arbitrary FFI sandboxing — plugins run with the same trust as the core engine
 - Mobile / WASM plugins — constraint A-02 keeps the project desktop-only
 - A package manager or marketplace
-- Replacing pure-Lua extensibility — Lunasome libraries in `library/` remain the recommended path for game-side reuse
+- Replacing pure-Lua extensibility — Lureksome libraries in `library/` remain the recommended path for game-side reuse
 
 ---
 
@@ -133,9 +133,9 @@ Sorted by tier then LOC descending. Per user decision **D-1**, `physics` is TIER
 | `compute` | 3 652 | none | TIER-2 | GPU compute is specialist. |
 | `procgen` | 3 021 | none | TIER-2 | Keep noise/Perlin in core; move L-systems/WFC/dungeon generators. |
 | `mods` | 672 | none | TIER-2 | Sandboxed mod loader; opt-in per game. |
-| `minimap` | 1 574 | none | TIER-2 | Candidate for pure-Lua reimplementation in Lunasome. |
-| `parallax` | 708 | none | TIER-2 | Tiny; strongest Lunasome reimplementation candidate. |
-| `save` | 803 | `serde` | TIER-2 | Thin wrapper over `filesystem` + `serial`; could become Lunasome. |
+| `minimap` | 1 574 | none | TIER-2 | Candidate for pure-Lua reimplementation in Lureksome. |
+| `parallax` | 708 | none | TIER-2 | Tiny; strongest Lureksome reimplementation candidate. |
+| `save` | 803 | `serde` | TIER-2 | Thin wrapper over `filesystem` + `serial`; could become Lureksome. |
 | `debugbridge` | — | TCP/WS server | TIER-2 | Dev-only. Already optional by intent. |
 
 **Coupling refactor required before extraction.** `src/runtime/shared_state.rs` currently holds `parallax`, `particle`, `raycaster`, `tilemap`, and `ui` via direct `use crate::<m>` imports. Plugin extraction requires first introducing a `SharedState` extension trait or per-plugin registration table — migration step M1.
@@ -162,7 +162,7 @@ Each plugin builds as a `cdylib`. Engine scans `plugins/` next to binary at star
 
 ### Option C — Pure Lua (already available)
 
-Many candidates can be reimplemented in pure Lua against existing `lurek.*` APIs. Lunasome (`library/`) is the right home.
+Many candidates can be reimplemented in pure Lua against existing `lurek.*` APIs. Lureksome (`library/`) is the right home.
 
 **Recommendation:** Use for `parallax`, `minimap`, `save`, and any candidate whose Rust footprint is mostly bookkeeping.
 
@@ -246,7 +246,7 @@ All steps keep `cargo test` green throughout.
 | LÖVE | None — plain Lua libs or LuaJIT FFI | ~6 MB |
 | Solar2D | Lua frontend + native plugin server | ~6–10 MB |
 | Godot | GDExtension (stable C ABI since 4.1) | ~60–100 MB |
-| Lurek2D (proposed) | Cargo features (M2/M3), Lunasome Lua libs, optional `libloading` (M4) | **≤ 10 MB stripped (A-05)** |
+| Lurek2D (proposed) | Cargo features (M2/M3), Lureksome Lua libs, optional `libloading` (M4) | **≤ 10 MB stripped (A-05)** |
 
 Position: simpler than Godot's GDExtension (no full ABI surface to maintain in v1), more native than RPG Maker's JS, smaller core than LÖVE-with-everything-bundled.
 
@@ -259,7 +259,7 @@ Position: simpler than Godot's GDExtension (no full ABI surface to maintain in v
 3. **Plugin Lua VM access from worker threads.** B-04: LuaJIT VMs cannot share state. Plugin `on_load` must declare whether it spawns workers. Workers cannot register `lurek.*` functions on the main VM after boot.
 4. **`dlopen` paths on Linux.** `LD_LIBRARY_PATH`, `RPATH`, and AppImage layouts surface plugins differently. Needs a documented install layout before M4.
 5. **Steam SDK licensing.** Steamworks SDK is closed and per-publisher licensed. Wrapper plugin must live in a separate repo; Lurek2D core can never link it.
-6. **Lua-candidate evaluation.** `parallax`, `minimap`, `save` could become Lunasome libraries instead of Rust plugins. Decision deferred.
+6. **Lua-candidate evaluation.** `parallax`, `minimap`, `save` could become Lureksome libraries instead of Rust plugins. Decision deferred.
 7. **Plugin testing harness.** Each plugin needs its own `tests/lua/` slice. Open: shared harness or per-plugin?
 8. **Spec location.** When a module becomes a plugin, its spec stays in `docs/specs/<name>.md` with a "Plugin: TIER-1" header. Tier is also recorded in `docs/specs/README.md`.
 9. **VS Code extension integration.** The extension needs to know which plugins are present for IntelliSense and run-with-profile commands. Open: emit `plugins.json` at boot, or parse `Cargo.toml` features?

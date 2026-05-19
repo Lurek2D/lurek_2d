@@ -4,7 +4,7 @@
 
 ## Navigation
 
-[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lureksome](Lureksome)
 
 ## Table of Contents
 
@@ -303,24 +303,55 @@ Attaches a previously created shape to a body, using the shape's stored material
 
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Module-level example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
+--@api-stub: lurek.physics.newWorld
+-- Create a physics world with gravity. Focus: newWorld.
 do
-  -- attachShape uses the density/friction/restitution set on the shape itself.
-  -- This pattern lets you pre-configure shapes and reuse them across bodies.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local car = lurek.physics.newBody(world, 200, 200, "dynamic")
-
-  -- Create a roof shape with custom material properties
-  local roof = lurek.physics.newRectangleShape(64, 16)
-  roof:setDensity(0.5)     -- lightweight roof panel
-  roof:setFriction(0.3)    -- slightly slippery
-  roof:setRestitution(0.1) -- minimal bounce
-
-  -- Attach the configured shape — body mass updates automatically from density
-  lurek.physics.attachShape(car, roof)
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local gx, gy = world:getGravity()
+    print("gravity = " .. gx .. ", " .. gy)
+    world:setGravity(0, 800)
+    gx, gy = world:getGravity()
+    print("new gravity = " .. gx .. ", " .. gy)
 end
+
+--@api-stub: LWorld:getGravity
+-- Create a physics world with gravity. Focus: getGravity.
+do
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local gx, gy = world:getGravity()
+    print("gravity = " .. gx .. ", " .. gy)
+    world:setGravity(0, 800)
+    gx, gy = world:getGravity()
+    print("new gravity = " .. gx .. ", " .. gy)
+end
+
+--@api-stub: LWorld:setGravity
+-- Create a physics world with gravity. Focus: setGravity.
+do
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local gx, gy = world:getGravity()
+    print("gravity = " .. gx .. ", " .. gy)
+    world:setGravity(0, 800)
+    gx, gy = world:getGravity()
+    print("new gravity = " .. gx .. ", " .. gy)
+end
+
+--@api-stub: LWorld:step
+-- Stepping the simulation. Focus: step.
+do
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    world:step(1 / 60)
+    world:step(1 / 60)
+    print("stepped twice at 60fps")
+    local leftover = world:stepFixed(0.025, 1 / 60, 4)
+    print("fixed step leftover = " .. leftover)
 ```
 
 ### lurek.physics.debugDraw
@@ -339,13 +370,14 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- debugDraw renders wireframe outlines of all collision shapes on screen.
-  -- Toggle it with a key press during development to visualize physics bodies.
-  lurek.physics.debugDraw(true)
-  function lurek.process(dt)
-    -- Press F3 to hide the debug overlay for a clean view
-    if lurek.input.keyboard.isDown("f3") then lurek.physics.debugDraw(false) end
-  end
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    world:newCircleBody(100, 100, 15, "dynamic")
+    lurek.physics.debugDraw(true)
+    print("debug draw enabled")
+    lurek.physics.drawDebugGpu(world)
+    print("GPU debug drawn")
+    lurek.physics.debugDraw(false)
 end
 ```
 
@@ -365,10 +397,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- destroyWorld is a no-op in Lurek2D because worlds are garbage-collected.
-  -- It exists for code that expects explicit cleanup (porting from other engines).
-  local world = lurek.physics.newWorld(0, 9.81)
-  lurek.physics.destroyWorld(world)
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    world:newCircleBody(100, 100, 10, "dynamic")
+    world:newCircleBody(200, 200, 10, "dynamic")
+    print("before clear: " .. world:getBodyCount())
+    world:clear()
+    print("after clear: " .. world:getBodyCount())
+    lurek.physics.destroyWorld(world)
+    print("world destroyed")
 end
 ```
 
@@ -389,15 +426,9 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- drawDebugGpu renders physics shapes using the GPU pipeline (faster than CPU).
-  -- Accepts an optional config table to customize colors and line thickness.
-  local world = lurek.physics.newWorld(0, 9.81)
-  function lurek.draw()
-    lurek.physics.drawDebugGpu(world, {
-      bodyColor = {0, 1, 0, 1},   -- green for dynamic bodies (RGBA 0-1)
-      lineWidth = 2.0              -- thicker lines for visibility
-    })
-  end
+    local world = lurek.physics.newWorld(0, 9.8)
+    lurek.physics.drawDebugGpu(world, {})
+    print("debug_gpu_draw ok")
 end
 ```
 
@@ -420,12 +451,10 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- getBody returns x, y, vx, vy in one call — avoids multiple method lookups.
-  -- Useful for ECS-style code where you batch-query many bodies each frame.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local body = lurek.physics.newBody(world, 100, 200, "dynamic")
-  local x, y, vx, vy = lurek.physics.getBody(world, body)
-  lurek.log.debug("crate at " .. x .. "," .. y .. " v=" .. vx .. "," .. vy, "phys")
+    local world = lurek.physics.newWorld(0, 9.8)
+    local b = lurek.physics.newBody(world, 0, 0, "dynamic")
+    local b2 = lurek.physics.getBody(world, b)
+    print("got_body=" .. tostring(b2 ~= nil))
 end
 ```
 
@@ -447,16 +476,19 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Poll collision events each frame to trigger game logic (damage, sounds, etc).
-  -- Events are cleared on the next step(), so process them before stepping again.
-  local world = lurek.physics.newWorld(0, 9.81)
-  function lurek.process(dt)
-    lurek.physics.step(world, dt)
-    for _, c in ipairs(lurek.physics.getCollisions(world)) do
-      -- c.body_a and c.body_b are body IDs — use getBodyData to identify entities
-      lurek.log.debug("hit " .. c.body_a .. " vs " .. c.body_b, "phys")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local floor = world:newBody(200, 500, "static")
+    world:addFixture(floor:getId(), "rectangle", 0, 0.5, 0, false, 400, 20)
+    world:newCircleBody(200, 100, 10, "dynamic")
+    for _ = 1, 120 do
+        lurek.physics.step(world, 1 / 60)
     end
-  end
+    local collisions = lurek.physics.getCollisions(world)
+    print("collisions = " .. #collisions)
+    for _, c in ipairs(collisions) do
+        print("  A=" .. c.body_a .. " B=" .. c.body_b)
+    end
 end
 ```
 
@@ -479,11 +511,13 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  local world = lurek.physics.newWorld(0, 9.8)
-  local body = lurek.physics.newBody(world, 100, 100, 'dynamic')
-  lurek.physics.setSleepingAllowed(world, body, true)
-  local allowed = lurek.physics.isSleepingAllowed(world, body)
-  lurek.log.debug("sleeping allowed: " .. tostring(allowed), "physics") -- true
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local body = world:newCircleBody(100, 100, 10, "dynamic")
+    lurek.physics.setSleepingAllowed(world, body, true)
+    print("allowed = " .. tostring(lurek.physics.isSleepingAllowed(world, body)))
+    lurek.physics.setSleepingAllowed(world, body, false)
+    print("allowed = " .. tostring(lurek.physics.isSleepingAllowed(world, body)))
 end
 ```
 
@@ -508,10 +542,9 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- newBody(world, x, y, type) creates a physics body without needing world:newBody.
-  local world = lurek.physics.newWorld(0, 9.8)
-  local body = lurek.physics.newBody(world, 200, 100, "dynamic")
-  lurek.log.debug("body type: " .. body:type(), "physics") -- "LBody"
+    local world = lurek.physics.newWorld(0, 0)
+    local b = lurek.physics.newBody(world, 50, 50, "static")
+    print("body_id=" .. b:getId())
 end
 ```
 
@@ -534,15 +567,14 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Cellular automata simulate granular materials without per-particle physics bodies.
-  -- Each cell holds a material type that flows/falls/burns according to simple rules.
-  local sand = lurek.physics.newCellular(128, 64)
-
-  -- Drop sand from the top center — it will pile up naturally
-  sand:setCell(64, 0, lurek.physics.CELL_SAND)
-
-  -- Call step() each frame to advance the simulation one tick
-  function lurek.process(dt) sand:step() end
+    ---@type LCellular
+    local grid = lurek.physics.newCellular(64, 64)
+    grid:setCell(32, 0, 1)
+    grid:setCell(33, 0, 1)
+    grid:setCell(34, 0, 1)
+    print("cell at 32,0 = " .. grid:getCell(32, 0))
+    grid:step()
+    print("after step: cell at 32,1 = " .. grid:getCell(32, 1))
 end
 ```
 
@@ -565,11 +597,25 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Chains are sequences of connected edges — ideal for terrain outlines.
-  -- First arg: closed (true=loop, false=open polyline).
-  -- Remaining args: x,y coordinate pairs defining the path.
-  local hill = lurek.physics.newChainShape(false, 0, 400, 100, 360, 200, 380, 300, 420)
-  lurek.log.info("hill chain type=" .. hill:getType(), "phys")
+    ---@type LPhysicsShape
+    local chain = lurek.physics.newChainShape(false,
+        0, 100,
+        50, 80,
+        100, 90,
+        150, 70,
+        200, 100
+    )
+    print("open chain type = " .. chain:getType())
+
+    -- Create a closed chain shape (forms a loop).
+    ---@type LPhysicsShape
+    local loop = lurek.physics.newChainShape(true,
+        0, 0,
+        100, 0,
+        100, 100,
+        0, 100
+    )
+    print("closed chain type = " .. loop:getType())
 end
 ```
 
@@ -591,10 +637,12 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Circles are the cheapest collision shape — prefer for balls, coins, bullets.
-  -- The radius is in world units (pixels at default 1:1 meter scale).
-  local ball_shape = lurek.physics.newCircleShape(16)
-  lurek.log.info("ball radius=" .. ball_shape:getRadius(), "phys")
+    ---@type LPhysicsShape
+    local circle = lurek.physics.newCircleShape(16)
+    print("type = " .. circle:getType())
+    local x, y, w, h = circle:getBoundingBox()
+    print("bounding box = " .. x .. "," .. y .. "," .. w .. "," .. h)
+    print("radius = " .. circle:getRadius())
 end
 ```
 
@@ -619,10 +667,11 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Edges are infinitely thin line segments — perfect for floor boundaries.
-  -- They are one-sided: objects can only collide from the "outside" direction.
-  local floor_shape = lurek.physics.newEdgeShape(0, 480, 800, 480)
-  lurek.log.info("floor edge type=" .. floor_shape:getType(), "phys")
+    ---@type LPhysicsShape
+    local edge = lurek.physics.newEdgeShape(0, 0, 100, 0)
+    print("edge type = " .. edge:getType())
+    local x, y, w, h = edge:getBoundingBox()
+    print("edge bounds = " .. x .. "," .. y .. "," .. w .. "," .. h)
 end
 ```
 
@@ -644,10 +693,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Polygon shapes must be convex (no inward angles) with max 8 vertices.
-  -- Vertices are in local (body-relative) coordinates, wound counter-clockwise.
-  local triangle = lurek.physics.newPolygonShape(0, 0, 32, 0, 16, 28)
-  lurek.log.info("triangle type=" .. triangle:getType(), "phys")
+    ---@type LPhysicsShape
+    local triangle = lurek.physics.newPolygonShape(
+        0, -20,
+        -15, 15,
+        15, 15
+    )
+    print("polygon type = " .. triangle:getType())
+    local x, y, w, h = triangle:getBoundingBox()
+    print("poly bounds = " .. x .. "," .. y .. "," .. w .. "," .. h)
 end
 ```
 
@@ -670,12 +724,11 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Standalone shapes can be configured with material properties before attaching.
-  -- This decouples shape definition from body creation — share shapes across bodies.
-  local crate_shape = lurek.physics.newRectangleShape(64, 64)
-
-  -- Verify the shape was created with the expected type
-  lurek.log.info("crate shape type=" .. crate_shape:getType(), "phys")
+    ---@type LPhysicsShape
+    local rect = lurek.physics.newRectangleShape(64, 32)
+    print("type = " .. rect:getType())
+    local x, y, w, h = rect:getBoundingBox()
+    print("bounding box = " .. x .. "," .. y .. "," .. w .. "," .. h)
 end
 ```
 
@@ -700,16 +753,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Terrain is a grid where each cell is solid or empty.
-  -- After modifying cells, call flush() to regenerate physics colliders.
-  -- Args: width (cells), height (cells), cellSize (pixels per cell), world
-  local world = lurek.physics.newWorld(0, 9.81)
-  local terrain = lurek.physics.newTerrain(64, 32, 8.0, world)
-
-  -- Fill the entire grid solid, then carve tunnels later
-  terrain:fillAll(true)
-  -- flush() must be called to sync the grid state to the physics engine
-  terrain:flush()
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    ---@type LTerrain
+    local terrain = lurek.physics.newTerrain(128, 64, 4, world)
+    terrain:fillAll(true)
+    terrain:fillCircle(64, 32, 10, false)
+    terrain:flush()
+    print("terrain created with hole")
+    print("dirty = " .. tostring(terrain:isDirty()))
 end
 ```
 
@@ -732,13 +784,13 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- newWorld(gx, gy) creates the simulation container.
-  -- gx=0 means no horizontal gravity; gy=9.81 is Earth-like downward pull.
-  -- Positive Y points down in screen space, so gy>0 makes things fall.
-  local world = lurek.physics.newWorld(0, 9.81)
-
-  -- The world starts empty. Verify it was created successfully.
-  lurek.log.info("physics world created with " .. world:getBodyCount() .. " bodies", "boot")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local gx, gy = world:getGravity()
+    print("gravity = " .. gx .. ", " .. gy)
+    world:setGravity(0, 800)
+    gx, gy = world:getGravity()
+    print("new gravity = " .. gx .. ", " .. gy)
 end
 ```
 
@@ -761,13 +813,10 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Directly override velocity — useful for projectiles that need a fixed speed.
-  -- Unlike applyImpulse, this ignores mass and replaces the current velocity.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local bullet = lurek.physics.newBody(world, 100, 200, "dynamic")
-
-  -- Fire bullet rightward at 600 px/s with slight upward arc
-  lurek.physics.setBodyVelocity(world, bullet, 600, -200)
+    local world = lurek.physics.newWorld(0, 9.8)
+    local body = lurek.physics.newBody(world, 0, 0, "dynamic")
+    lurek.physics.setBodyVelocity(world, body, 10, 5)
+    print("velocity set")
 end
 ```
 
@@ -789,11 +838,10 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  local world = lurek.physics.newWorld(0, 9.8)
-  local body = lurek.physics.newBody(world, 100, 100, 'dynamic')
-  -- Allow idle bodies to sleep (saves CPU when bodies are stationary).
-  lurek.physics.setSleepingAllowed(world, body, false)
-  lurek.log.debug("sleeping not allowed for body", "physics")
+    local world = lurek.physics.newWorld(0, 9.8)
+    local body = lurek.physics.newBody(world, 0, 0, "dynamic")
+    lurek.physics.setSleepingAllowed(world, body, false)
+    print("sleeping_allowed set")
 end
 ```
 
@@ -814,12 +862,31 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  local world = lurek.physics.newWorld(0, 9.8)
-  local body = world:newBody(200, 0, "dynamic")
-  -- Advance the simulation by 1/60 s.
-  lurek.physics.step(world, 1/60)
-  local x, y = body:getPosition()
-  lurek.log.debug("pos after step: " .. string.format("%.2f, %.2f", x, y), "physics")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local body = world:newCircleBody(100, 100, 10, "dynamic")
+    lurek.physics.step(world, 1 / 60)
+    local x, y, vx, vy = lurek.physics.getBody(world, body)
+    print("free fn: pos=" .. x .. "," .. y .. " vel=" .. vx .. "," .. vy)
+    lurek.physics.setBodyVelocity(world, body, 50, -100)
+    lurek.physics.step(world, 1 / 60)
+    x, y, vx, vy = lurek.physics.getBody(world, body)
+    print("after set vel: pos=" .. x .. "," .. y)
+
+    -- Polling collisions via the free-function API. Focus: step.
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local floor = world:newBody(200, 500, "static")
+    world:addFixture(floor:getId(), "rectangle", 0, 0.5, 0, false, 400, 20)
+    world:newCircleBody(200, 100, 10, "dynamic")
+    for _ = 1, 120 do
+        lurek.physics.step(world, 1 / 60)
+    end
+    local collisions = lurek.physics.getCollisions(world)
+    print("collisions = " .. #collisions)
+    for _, c in ipairs(collisions) do
+        print("  A=" .. c.body_a .. " B=" .. c.body_b)
+    end
 end
 ```
 
@@ -848,11 +915,10 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Lightweight overlap test without needing a physics world.
-  -- Use for broad-phase checks, UI hit testing, or camera culling.
-  -- Args: ax,ay,aw,ah (rect 1) and bx,by,bw,bh (rect 2)
-  local hit = lurek.physics.testAABB(0, 0, 10, 10, 5, 5, 20, 20)
-  lurek.log.debug("AABB overlap=" .. tostring(hit), "physics")
+    local overlap = lurek.physics.testAABB(0, 0, 50, 50, 25, 25, 50, 50)
+    print("overlap = " .. tostring(overlap))
+    local noOverlap = lurek.physics.testAABB(0, 0, 10, 10, 100, 100, 10, 10)
+    print("no overlap = " .. tostring(noOverlap))
 end
 ```
 
@@ -880,10 +946,10 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Useful for checking if a bullet (circle) hits a rectangular target.
-  -- Args: cx,cy,cr (circle) and ax,ay,aw,ah (rectangle)
-  local hit = lurek.physics.testCircleAABB(5, 5, 3, 0, 0, 10, 10)
-  lurek.log.debug("circle-AABB overlap=" .. tostring(hit), "physics")
+    local hit = lurek.physics.testCircleAABB(50, 50, 20, 30, 30, 40, 40)
+    print("circle-aabb hit = " .. tostring(hit))
+    local miss = lurek.physics.testCircleAABB(0, 0, 5, 100, 100, 10, 10)
+    print("circle-aabb miss = " .. tostring(miss))
 end
 ```
 
@@ -910,10 +976,10 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Fast circle-vs-circle overlap test. No physics world needed.
-  -- Args: ax,ay,ar (circle 1) and bx,by,br (circle 2)
-  local hit = lurek.physics.testCircles(0, 0, 5, 3, 3, 5)
-  lurek.log.debug("circles overlap=" .. tostring(hit), "physics")
+    local touching = lurek.physics.testCircles(0, 0, 20, 30, 0, 20)
+    print("circles touching = " .. tostring(touching))
+    local apart = lurek.physics.testCircles(0, 0, 5, 100, 0, 5)
+    print("circles apart = " .. tostring(apart))
 end
 ```
 
@@ -940,10 +1006,10 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Simple point-in-rectangle test — use for mouse click detection.
-  -- Args: px,py (point) and ax,ay,aw,ah (rectangle)
-  local hit = lurek.physics.testPoint(5, 5, 0, 0, 10, 10)
-  lurek.log.debug("point-in-AABB=" .. tostring(hit), "physics")
+    local inside = lurek.physics.testPoint(5, 5, 0, 0, 10, 10)
+    local outside = lurek.physics.testPoint(20, 20, 0, 0, 10, 10)
+    print("inside=" .. tostring(inside))
+    print("outside=" .. tostring(outside))
 end
 ```
 
@@ -970,10 +1036,9 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- newBody(world, x, y, type) creates a physics body without needing world:newBody.
-  local world = lurek.physics.newWorld(0, 9.8)
-  local body = lurek.physics.newBody(world, 200, 100, "dynamic")
-  lurek.log.debug("body type: " .. body:type(), "physics") -- "LBody"
+    local world = lurek.physics.newWorld(0, 0)
+    local b = lurek.physics.newBody(world, 50, 50, "static")
+    print("body_id=" .. b:getId())
 end
 ```
 
@@ -995,15 +1060,14 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Cellular automata simulate granular materials without per-particle physics bodies.
-  -- Each cell holds a material type that flows/falls/burns according to simple rules.
-  local sand = lurek.physics.newCellular(128, 64)
-
-  -- Drop sand from the top center — it will pile up naturally
-  sand:setCell(64, 0, lurek.physics.CELL_SAND)
-
-  -- Call step() each frame to advance the simulation one tick
-  function lurek.process(dt) sand:step() end
+    ---@type LCellular
+    local grid = lurek.physics.newCellular(64, 64)
+    grid:setCell(32, 0, 1)
+    grid:setCell(33, 0, 1)
+    grid:setCell(34, 0, 1)
+    print("cell at 32,0 = " .. grid:getCell(32, 0))
+    grid:step()
+    print("after step: cell at 32,1 = " .. grid:getCell(32, 1))
 end
 ```
 
@@ -1025,11 +1089,25 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Chains are sequences of connected edges — ideal for terrain outlines.
-  -- First arg: closed (true=loop, false=open polyline).
-  -- Remaining args: x,y coordinate pairs defining the path.
-  local hill = lurek.physics.newChainShape(false, 0, 400, 100, 360, 200, 380, 300, 420)
-  lurek.log.info("hill chain type=" .. hill:getType(), "phys")
+    ---@type LPhysicsShape
+    local chain = lurek.physics.newChainShape(false,
+        0, 100,
+        50, 80,
+        100, 90,
+        150, 70,
+        200, 100
+    )
+    print("open chain type = " .. chain:getType())
+
+    -- Create a closed chain shape (forms a loop).
+    ---@type LPhysicsShape
+    local loop = lurek.physics.newChainShape(true,
+        0, 0,
+        100, 0,
+        100, 100,
+        0, 100
+    )
+    print("closed chain type = " .. loop:getType())
 end
 ```
 
@@ -1051,16 +1129,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Terrain is a grid where each cell is solid or empty.
-  -- After modifying cells, call flush() to regenerate physics colliders.
-  -- Args: width (cells), height (cells), cellSize (pixels per cell), world
-  local world = lurek.physics.newWorld(0, 9.81)
-  local terrain = lurek.physics.newTerrain(64, 32, 8.0, world)
-
-  -- Fill the entire grid solid, then carve tunnels later
-  terrain:fillAll(true)
-  -- flush() must be called to sync the grid state to the physics engine
-  terrain:flush()
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    ---@type LTerrain
+    local terrain = lurek.physics.newTerrain(128, 64, 4, world)
+    terrain:fillAll(true)
+    terrain:fillCircle(64, 32, 10, false)
+    terrain:flush()
+    print("terrain created with hole")
+    print("dirty = " .. tostring(terrain:isDirty()))
 end
 ```
 
@@ -1082,13 +1159,13 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- newWorld(gx, gy) creates the simulation container.
-  -- gx=0 means no horizontal gravity; gy=9.81 is Earth-like downward pull.
-  -- Positive Y points down in screen space, so gy>0 makes things fall.
-  local world = lurek.physics.newWorld(0, 9.81)
-
-  -- The world starts empty. Verify it was created successfully.
-  lurek.log.info("physics world created with " .. world:getBodyCount() .. " bodies", "boot")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local gx, gy = world:getGravity()
+    print("gravity = " .. gx .. ", " .. gy)
+    world:setGravity(0, 800)
+    gx, gy = world:getGravity()
+    print("new gravity = " .. gx .. ", " .. gy)
 end
 ```
 
@@ -1110,13 +1187,13 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Zones apply area effects: custom gravity, damping, or force fields.
-  -- Bodies inside the zone rectangle are affected each step.
-  local world = lurek.physics.newWorld(0, 9.81)
-
-  -- Create a water zone: reduced gravity simulates buoyancy
-  local water = world:addZone(0, 400, 800, 200)
-  water:setGravityDirectional(0, 2.0) -- gentle downward pull in water
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local zone = world:addZone(100, 100, 200, 200)
+    print("zone id = " .. zone:getId())
+    zone:setEnabled(true)
+    zone:setPriority(10)
+    zone:setLayerMask(1)
 end
 ```
 
@@ -1149,10 +1226,18 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Instant spin change — like flicking a spinning top.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local top = world:newBody(100, 200, "dynamic")
-  top:applyAngularImpulse(2.5) -- instant spin
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(200, 200, 10, "dynamic")
+    body:applyForce(100, 0)
+    body:applyForceAtPoint(0, -50, 210, 200)
+    body:applyImpulse(0, -200)
+    body:applyAngularImpulse(5.0)
+    body:applyTorque(10.0)
+    world:step(1 / 60)
+    local vx, vy = body:getVelocity()
+    print("after forces: vx=" .. vx .. " vy=" .. vy)
+    print("angular vel = " .. body:getAngularVelocity())
 end
 ```
 
@@ -1182,14 +1267,18 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Force accumulates over the step — it's continuous, not instant like impulse.
-  -- Use for thrusters, wind, or sustained push effects.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local rocket = world:newBody(100, 200, "dynamic")
-  function lurek.process(dt)
-    -- Continuous upward thrust — stronger than gravity to fly
-    rocket:applyForce(0, -200)
-  end
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(200, 200, 10, "dynamic")
+    body:applyForce(100, 0)
+    body:applyForceAtPoint(0, -50, 210, 200)
+    body:applyImpulse(0, -200)
+    body:applyAngularImpulse(5.0)
+    body:applyTorque(10.0)
+    world:step(1 / 60)
+    local vx, vy = body:getVelocity()
+    print("after forces: vx=" .. vx .. " vy=" .. vy)
+    print("angular vel = " .. body:getAngularVelocity())
 end
 ```
 
@@ -1223,15 +1312,18 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Force at a specific point generates both linear AND angular acceleration.
-  -- Use for off-center hits — a bullet hitting the corner of a crate spins it.
-  -- Args: fx, fy (force vector), px, py (world-space application point)
-  local world = lurek.physics.newWorld(0, 9.81)
-  local b = world:newBody(200, 200, "dynamic")
-
-  -- Push right at the top-right corner — creates spin + rightward motion
-  b:applyForceAtPoint(100, 0, 220, 200)
-  lurek.log.info("force at point applied", "physics")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(200, 200, 10, "dynamic")
+    body:applyForce(100, 0)
+    body:applyForceAtPoint(0, -50, 210, 200)
+    body:applyImpulse(0, -200)
+    body:applyAngularImpulse(5.0)
+    body:applyTorque(10.0)
+    world:step(1 / 60)
+    local vx, vy = body:getVelocity()
+    print("after forces: vx=" .. vx .. " vy=" .. vy)
+    print("angular vel = " .. body:getAngularVelocity())
 end
 ```
 
@@ -1261,14 +1353,18 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Impulse = instant velocity change. Affected by mass (heavier = less effect).
-  -- Use for jumps, explosions, and knockback — one-shot force application.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local player = world:newBody(100, 200, "dynamic")
-  function lurek.process(dt)
-    -- Jump: apply upward impulse (negative Y = up in screen space)
-    if lurek.input.keyboard.isDown("space") then player:applyImpulse(0, -300) end
-  end
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(200, 200, 10, "dynamic")
+    body:applyForce(100, 0)
+    body:applyForceAtPoint(0, -50, 210, 200)
+    body:applyImpulse(0, -200)
+    body:applyAngularImpulse(5.0)
+    body:applyTorque(10.0)
+    world:step(1 / 60)
+    local vx, vy = body:getVelocity()
+    print("after forces: vx=" .. vx .. " vy=" .. vy)
+    print("angular vel = " .. body:getAngularVelocity())
 end
 ```
 
@@ -1296,11 +1392,18 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Torque is a rotational force — spins the body.
-  -- Positive = counter-clockwise, negative = clockwise.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local wheel = world:newBody(100, 200, "dynamic")
-  wheel:applyTorque(50.0) -- spin the wheel counter-clockwise
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newCircleBody(200, 200, 10, "dynamic")
+    body:applyForce(100, 0)
+    body:applyForceAtPoint(0, -50, 210, 200)
+    body:applyImpulse(0, -200)
+    body:applyAngularImpulse(5.0)
+    body:applyTorque(10.0)
+    world:step(1 / 60)
+    local vx, vy = body:getVelocity()
+    print("after forces: vx=" .. vx .. " vy=" .. vy)
+    print("angular vel = " .. body:getAngularVelocity())
 end
 ```
 
@@ -1323,11 +1426,16 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Remove a projectile after it hits a target. The body handle becomes invalid.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local arrow = world:newBody(400, 200, "dynamic")
-  arrow:destroy()
-  lurek.log.info("arrow removed from world", "phys")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    world:newBody(100, 100, "dynamic")
+    world:newBody(200, 200, "dynamic")
+    world:newBody(300, 300, "static")
+    print("bodies = " .. world:getBodyCount())
+    local temp = world:newBody(400, 400, "dynamic")
+    print("bodies = " .. world:getBodyCount())
+    temp:destroy()
+    print("after destroy = " .. world:getBodyCount())
 end
 ```
 
@@ -1353,12 +1461,13 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Returns rotation in radians (0 = no rotation, positive = counter-clockwise).
-  -- Use for rotating sprites to match physics body orientation.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local crate = world:newBody(100, 200, "dynamic")
-  local rad = crate:getAngle()
-  lurek.log.debug("angle=" .. rad .. " rad", "phys")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newBody(100, 100, "dynamic")
+    body:setAngle(math.pi / 4)
+    print("angle = " .. body:getAngle())
+    body:setAngularVelocity(2.0)
+    print("angular vel = " .. body:getAngularVelocity())
 end
 ```
 
@@ -1384,10 +1493,13 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Angular damping slows rotation over time (rotational drag).
-  local world = lurek.physics.newWorld(0, 9.81)
-  local top = world:newBody(100, 200, "dynamic")
-  lurek.log.debug("ang damping=" .. top:getAngularDamping(), "phys")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newBody(100, 100, "dynamic")
+    body:setLinearDamping(0.5)
+    body:setAngularDamping(0.3)
+    print("linear damp = " .. body:getLinearDamping())
+    print("angular damp = " .. body:getAngularDamping())
 end
 ```
 
@@ -1413,13 +1525,13 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Angular velocity is in radians/sec.
-  -- Use to detect over-spinning and apply braking torque.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local wheel = world:newBody(100, 200, "dynamic")
-  if math.abs(wheel:getAngularVelocity()) > 30 then
-    wheel:applyTorque(-5) -- brake to prevent infinite spin
-  end
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newBody(100, 100, "dynamic")
+    body:setAngle(math.pi / 4)
+    print("angle = " .. body:getAngle())
+    body:setAngularVelocity(2.0)
+    print("angular vel = " .. body:getAngularVelocity())
 end
 ```
 
@@ -1445,11 +1557,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Friction controls how much bodies resist sliding against each other.
-  -- 0 = ice, 1 = rubber. Check before adjusting for gameplay feel.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local crate = world:newBody(100, 200, "dynamic")
-  if crate:getFriction() < 0.5 then crate:setFriction(0.7) end
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local body = world:newCircleBody(100, 100, 20, "dynamic")
+    body:setMass(5.0)
+    print("mass = " .. body:getMass())
+    body:setFriction(0.8)
+    print("friction = " .. body:getFriction())
+    body:setRestitution(0.6)
+    print("restitution = " .. body:getRestitution())
 end
 ```
 
@@ -1475,11 +1591,16 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Gravity scale multiplies world gravity for this body only.
-  -- 1.0 = normal, 0 = no gravity, 2 = double, -1 = inverted.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local body = world:newBody(100, 200, "dynamic")
-  lurek.log.debug("g-scale=" .. body:getGravityScale(), "phys")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local normal = world:newBody(100, 100, "dynamic")
+    local floaty = world:newBody(200, 100, "dynamic")
+    local inverted = world:newBody(300, 100, "dynamic")
+    floaty:setGravityScale(0.2)
+    inverted:setGravityScale(-1.0)
+    print("normal gravity = " .. normal:getGravityScale())
+    print("floaty gravity = " .. floaty:getGravityScale())
+    print("inverted gravity = " .. inverted:getGravityScale())
 end
 ```
 
@@ -1505,10 +1626,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Returns the bounding height from the primary fixture shape.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local body = world:newBody(100, 200, "dynamic")
-  lurek.log.debug("body height=" .. body:getHeight(), "phys")
+    local world = lurek.physics.newWorld(0, 9.8)
+    local body = lurek.physics.newBody(world, 100, 100, "dynamic")
+    local x, y = body:getPosition()
+    print("pos=" .. x .. "," .. y)
+    print("x=" .. body:getX())
+    print("y=" .. body:getY())
+    print("id=" .. body:getId())
+    print("w=" .. body:getWidth())
+    print("h=" .. body:getHeight())
 end
 ```
 
@@ -1534,11 +1660,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Every body has a unique numeric ID used by World methods and events.
-  -- Store the ID to look up bodies in collision callbacks.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local crate = world:newBody(100, 200, "dynamic")
-  lurek.log.debug("crate id=" .. crate:getId(), "phys")
+    local world = lurek.physics.newWorld(0, 9.8)
+    local body = lurek.physics.newBody(world, 100, 100, "dynamic")
+    local x, y = body:getPosition()
+    print("pos=" .. x .. "," .. y)
+    print("x=" .. body:getX())
+    print("y=" .. body:getY())
+    print("id=" .. body:getId())
+    print("w=" .. body:getWidth())
+    print("h=" .. body:getHeight())
 end
 ```
 
@@ -1564,11 +1694,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Collision layers use a bitmask — bodies only collide if layers AND nonzero.
-  -- Useful for separating player, enemies, projectiles, and pickups.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local pickup = world:newBody(100, 200, "dynamic")
-  lurek.log.debug("layer=" .. pickup:getLayer(), "phys")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local body = world:newBody(100, 100, "dynamic")
+    body:setType("kinematic")
+    print("type = " .. body:getType())
+    body:setLayer(2)
+    body:setMask(1)
+    print("layer = " .. body:getLayer())
+    print("mask = " .. body:getMask())
 end
 ```
 
@@ -1594,11 +1728,13 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Damping simulates drag — higher values slow the body faster.
-  -- 0 = no drag (space), 1-3 = air, 5+ = water/mud.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local body = world:newBody(100, 200, "dynamic")
-  lurek.log.debug("damping=" .. body:getLinearDamping(), "phys")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newBody(100, 100, "dynamic")
+    body:setLinearDamping(0.5)
+    body:setAngularDamping(0.3)
+    print("linear damp = " .. body:getLinearDamping())
+    print("angular damp = " .. body:getAngularDamping())
 end
 ```
 
@@ -1624,11 +1760,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- The mask determines which layers THIS body can collide WITH.
-  -- Body A collides with body B if (A.layer & B.mask) ~= 0 AND (B.layer & A.mask) ~= 0
-  local world = lurek.physics.newWorld(0, 9.81)
-  local body = world:newBody(100, 200, "dynamic")
-  lurek.log.debug("mask=" .. body:getMask(), "phys")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local body = world:newBody(100, 100, "dynamic")
+    body:setType("kinematic")
+    print("type = " .. body:getType())
+    body:setLayer(2)
+    body:setMask(1)
+    print("layer = " .. body:getLayer())
+    print("mask = " .. body:getMask())
 end
 ```
 
@@ -1654,11 +1794,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Mass is computed from density * fixture area, or set manually.
-  -- Heavier bodies resist impulses more and push lighter ones aside.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local crate = world:newBody(100, 200, "dynamic")
-  lurek.log.debug("crate mass=" .. crate:getMass() .. " kg", "phys")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local body = world:newCircleBody(100, 100, 20, "dynamic")
+    body:setMass(5.0)
+    print("mass = " .. body:getMass())
+    body:setFriction(0.8)
+    print("friction = " .. body:getFriction())
+    body:setRestitution(0.6)
+    print("restitution = " .. body:getRestitution())
 end
 ```
 
@@ -1685,12 +1829,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Returns x, y in world coordinates (pixels at default scale).
-  -- Use for drawing sprites at the body's current location.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local crate = world:newBody(100, 200, "dynamic")
-  local x, y = crate:getPosition()
-  lurek.log.debug("crate at " .. x .. "," .. y, "phys")
+    local world = lurek.physics.newWorld(0, 9.8)
+    local body = lurek.physics.newBody(world, 100, 100, "dynamic")
+    local x, y = body:getPosition()
+    print("pos=" .. x .. "," .. y)
+    print("x=" .. body:getX())
+    print("y=" .. body:getY())
+    print("id=" .. body:getId())
+    print("w=" .. body:getWidth())
+    print("h=" .. body:getHeight())
 end
 ```
 
@@ -1716,10 +1863,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Restitution = bounciness. 0 = dead stop, 1 = perfect elastic bounce.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local ball = world:newBody(100, 200, "dynamic")
-  lurek.log.debug("ball bounce=" .. ball:getRestitution(), "phys")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local body = world:newCircleBody(100, 100, 20, "dynamic")
+    body:setMass(5.0)
+    print("mass = " .. body:getMass())
+    body:setFriction(0.8)
+    print("friction = " .. body:getFriction())
+    body:setRestitution(0.6)
+    print("restitution = " .. body:getRestitution())
 end
 ```
 
@@ -1745,11 +1897,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Query type to apply different logic (e.g., only damage dynamic bodies).
-  local world = lurek.physics.newWorld(0, 9.81)
-  local crate = world:newBody(100, 200, "dynamic")
-  local kind = crate:getType()
-  lurek.log.info("body type: " .. kind, "phys")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local body = world:newBody(100, 100, "dynamic")
+    body:setType("kinematic")
+    print("type = " .. body:getType())
+    body:setLayer(2)
+    body:setMask(1)
+    print("layer = " .. body:getLayer())
+    print("mask = " .. body:getMask())
 end
 ```
 
@@ -1776,12 +1932,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Returns vx, vy in pixels/sec (at default scale).
-  -- Use for animation state selection (idle vs walking vs falling).
-  local world = lurek.physics.newWorld(0, 9.81)
-  local body = world:newBody(100, 200, "dynamic")
-  local vx, vy = body:getVelocity()
-  lurek.log.debug("v=" .. vx .. "," .. vy, "phys")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local body = world:newBody(0, 0, "dynamic")
+    body:setPosition(200, 100)
+    body:setVelocity(50, -100)
+    local vx, vy = body:getVelocity()
+    print("velocity = " .. vx .. ", " .. vy)
+    local x, y = body:getPosition()
+    print("pos = " .. x .. ", " .. y)
 end
 ```
 
@@ -1807,11 +1966,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Returns the bounding width from the primary fixture shape.
-  -- Useful for scaling sprites to match the physics body.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local body = world:newBody(100, 200, "dynamic")
-  lurek.log.debug("body width=" .. body:getWidth(), "phys")
+    local world = lurek.physics.newWorld(0, 9.8)
+    local body = lurek.physics.newBody(world, 100, 100, "dynamic")
+    local x, y = body:getPosition()
+    print("pos=" .. x .. "," .. y)
+    print("x=" .. body:getX())
+    print("y=" .. body:getY())
+    print("id=" .. body:getId())
+    print("w=" .. body:getWidth())
+    print("h=" .. body:getHeight())
 end
 ```
 
@@ -1837,11 +2000,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Shorthand for getting only the X coordinate.
-  -- Useful for boundary checks without unpacking both values.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local enemy = world:newBody(900, 200, "dynamic")
-  if enemy:getX() > 800 then enemy:destroy() end -- off-screen cleanup
+    local world = lurek.physics.newWorld(0, 9.8)
+    local body = lurek.physics.newBody(world, 100, 100, "dynamic")
+    local x, y = body:getPosition()
+    print("pos=" .. x .. "," .. y)
+    print("x=" .. body:getX())
+    print("y=" .. body:getY())
+    print("id=" .. body:getId())
+    print("w=" .. body:getWidth())
+    print("h=" .. body:getHeight())
 end
 ```
 
@@ -1867,10 +2034,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Check if player fell below the level — respawn at start.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local player = world:newBody(100, 200, "dynamic")
-  if player:getY() > 1000 then player:setPosition(100, 200) end
+    local world = lurek.physics.newWorld(0, 9.8)
+    local body = lurek.physics.newBody(world, 100, 100, "dynamic")
+    local x, y = body:getPosition()
+    print("pos=" .. x .. "," .. y)
+    print("x=" .. body:getX())
+    print("y=" .. body:getY())
+    print("id=" .. body:getId())
+    print("w=" .. body:getWidth())
+    print("h=" .. body:getHeight())
 end
 ```
 
@@ -1896,11 +2068,14 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- "Bullet" mode enables CCD (Continuous Collision Detection).
-  -- Prevents small fast objects from passing through thin walls.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local proj = world:newBody(100, 200, "dynamic")
-  if proj:isBullet() then lurek.log.debug("CCD on", "phys") end
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local bullet = world:newCircleBody(100, 100, 4, "dynamic")
+    bullet:setBullet(true)
+    print("is bullet = " .. tostring(bullet:isBullet()))
+    local player = world:newBody(200, 200, "dynamic")
+    player:setFixedRotation(true)
+    print("fixed rotation = " .. tostring(player:isFixedRotation()))
 end
 ```
 
@@ -1926,11 +2101,14 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Fixed rotation prevents the body from spinning on collision.
-  -- Essential for player characters — they should stay upright.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local player = world:newBody(100, 200, "dynamic")
-  if not player:isFixedRotation() then player:setFixedRotation(true) end
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local bullet = world:newCircleBody(100, 100, 4, "dynamic")
+    bullet:setBullet(true)
+    print("is bullet = " .. tostring(bullet:isBullet()))
+    local player = world:newBody(200, 200, "dynamic")
+    player:setFixedRotation(true)
+    print("fixed rotation = " .. tostring(player:isFixedRotation()))
 end
 ```
 
@@ -1956,10 +2134,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Sleeping bodies are frozen and cost zero CPU. They wake on collision.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local body = world:newBody(100, 200, "dynamic")
-  if not body:isSleeping() then lurek.log.debug("active", "phys") end
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local body = world:newBody(100, 100, "dynamic")
+    body:setSleepingAllowed(true)
+    print("sleeping allowed = " .. tostring(body:isSleepingAllowed()))
+    body:sleep()
+    print("sleeping = " .. tostring(body:isSleeping()))
+    body:wakeUp()
+    print("sleeping after wake = " .. tostring(body:isSleeping()))
 end
 ```
 
@@ -1985,9 +2168,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  local world = lurek.physics.newWorld(0, 9.81)
-  local body = world:newBody(100, 200, "dynamic")
-  if body:isSleepingAllowed() then body:setSleepingAllowed(false) end
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local body = world:newBody(100, 100, "dynamic")
+    body:setSleepingAllowed(true)
+    print("sleeping allowed = " .. tostring(body:isSleepingAllowed()))
+    body:sleep()
+    print("sleeping = " .. tostring(body:isSleeping()))
+    body:wakeUp()
+    print("sleeping after wake = " .. tostring(body:isSleeping()))
 end
 ```
 
@@ -2015,10 +2204,13 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Set rotation directly — useful for static props like tilted signs.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local sign = world:newBody(200, 200, "static")
-  sign:setAngle(math.pi / 4) -- 45 degree tilt
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newBody(100, 100, "dynamic")
+    body:setAngle(math.pi / 4)
+    print("angle = " .. body:getAngle())
+    body:setAngularVelocity(2.0)
+    print("angular vel = " .. body:getAngularVelocity())
 end
 ```
 
@@ -2046,11 +2238,13 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Low angular damping: crate spins freely when knocked.
-  -- High angular damping: crate resists spinning.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local crate = world:newBody(100, 200, "dynamic")
-  crate:setAngularDamping(0.5) -- moderate spin decay
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newBody(100, 100, "dynamic")
+    body:setLinearDamping(0.5)
+    body:setAngularDamping(0.3)
+    print("linear damp = " .. body:getLinearDamping())
+    print("angular damp = " .. body:getAngularDamping())
 end
 ```
 
@@ -2078,10 +2272,13 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Set a constant spin — useful for kinematic turrets or spinning hazards.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local turret = world:newBody(200, 200, "kinematic")
-  turret:setAngularVelocity(1.5) -- slow constant rotation
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newBody(100, 100, "dynamic")
+    body:setAngle(math.pi / 4)
+    print("angle = " .. body:getAngle())
+    body:setAngularVelocity(2.0)
+    print("angular vel = " .. body:getAngularVelocity())
 end
 ```
 
@@ -2109,11 +2306,14 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Enable bullet mode for arrows, bullets, or any high-speed projectile.
-  -- Costs more CPU per body — only use when tunneling is a real risk.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local arrow = world:newBody(100, 200, "dynamic")
-  arrow:setBullet(true)
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local bullet = world:newCircleBody(100, 100, 4, "dynamic")
+    bullet:setBullet(true)
+    print("is bullet = " .. tostring(bullet:isBullet()))
+    local player = world:newBody(200, 200, "dynamic")
+    player:setFixedRotation(true)
+    print("fixed rotation = " .. tostring(player:isFixedRotation()))
 end
 ```
 
@@ -2141,10 +2341,14 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Lock rotation for characters, unlock for physics props.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local player = world:newBody(100, 200, "dynamic")
-  player:setFixedRotation(true) -- player won't topple over
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local bullet = world:newCircleBody(100, 100, 4, "dynamic")
+    bullet:setBullet(true)
+    print("is bullet = " .. tostring(bullet:isBullet()))
+    local player = world:newBody(200, 200, "dynamic")
+    player:setFixedRotation(true)
+    print("fixed rotation = " .. tostring(player:isFixedRotation()))
 end
 ```
 
@@ -2172,12 +2376,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Friction controls how much a body resists sliding against surfaces.
-  -- 0.0 = ice, 1.0 = rubber. Affects all fixtures on this body.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local ice_block = world:newBody(200, 300, "dynamic")
-  ice_block:setFriction(0.05)
-  lurek.log.debug("ice block friction set to 0.05", "phys")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local body = world:newCircleBody(100, 100, 20, "dynamic")
+    body:setMass(5.0)
+    print("mass = " .. body:getMass())
+    body:setFriction(0.8)
+    print("friction = " .. body:getFriction())
+    body:setRestitution(0.6)
+    print("restitution = " .. body:getRestitution())
 end
 ```
 
@@ -2205,10 +2412,16 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Balloon floats upward with negative gravity scale.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local balloon = world:newBody(100, 200, "dynamic")
-  balloon:setGravityScale(-0.5) -- gently floats up
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local normal = world:newBody(100, 100, "dynamic")
+    local floaty = world:newBody(200, 100, "dynamic")
+    local inverted = world:newBody(300, 100, "dynamic")
+    floaty:setGravityScale(0.2)
+    inverted:setGravityScale(-1.0)
+    print("normal gravity = " .. normal:getGravityScale())
+    print("floaty gravity = " .. floaty:getGravityScale())
+    print("inverted gravity = " .. inverted:getGravityScale())
 end
 ```
 
@@ -2236,10 +2449,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Place pickups on layer 0x04 so they only collide with the player (mask 0x04).
-  local world = lurek.physics.newWorld(0, 9.81)
-  local pickup = world:newBody(100, 200, "dynamic")
-  pickup:setLayer(0x04) -- layer 3 (bit 2)
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local body = world:newBody(100, 100, "dynamic")
+    body:setType("kinematic")
+    print("type = " .. body:getType())
+    body:setLayer(2)
+    body:setMask(1)
+    print("layer = " .. body:getLayer())
+    print("mask = " .. body:getMask())
 end
 ```
 
@@ -2267,10 +2485,13 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- High damping for underwater fish — simulates water resistance.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local fish = world:newBody(100, 200, "dynamic")
-  fish:setLinearDamping(2.0) -- slows quickly when thrust stops
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 0)
+    local body = world:newBody(100, 100, "dynamic")
+    body:setLinearDamping(0.5)
+    body:setAngularDamping(0.3)
+    print("linear damp = " .. body:getLinearDamping())
+    print("angular damp = " .. body:getAngularDamping())
 end
 ```
 
@@ -2298,10 +2519,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Ghost that only collides with walls (layer 0x01), not other characters.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local ghost = world:newBody(100, 200, "dynamic")
-  ghost:setMask(0x01) -- only respond to layer 1 (walls)
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local body = world:newBody(100, 100, "dynamic")
+    body:setType("kinematic")
+    print("type = " .. body:getType())
+    body:setLayer(2)
+    body:setMask(1)
+    print("layer = " .. body:getLayer())
+    print("mask = " .. body:getMask())
 end
 ```
 
@@ -2329,10 +2555,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Override mass directly — useful when density-based calculation is impractical.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local heavy = world:newBody(100, 200, "dynamic")
-  heavy:setMass(50.0) -- 50 kg — hard to push
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local body = world:newCircleBody(100, 100, 20, "dynamic")
+    body:setMass(5.0)
+    print("mass = " .. body:getMass())
+    body:setFriction(0.8)
+    print("friction = " .. body:getFriction())
+    body:setRestitution(0.6)
+    print("restitution = " .. body:getRestitution())
 end
 ```
 
@@ -2362,11 +2593,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Teleports the body — no physics forces are applied.
-  -- Use for respawning or snapping to a checkpoint.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local player = world:newBody(100, 200, "dynamic")
-  player:setPosition(400, 300) -- teleport to screen center
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local body = world:newBody(0, 0, "dynamic")
+    body:setPosition(200, 100)
+    body:setVelocity(50, -100)
+    local vx, vy = body:getVelocity()
+    print("velocity = " .. vx .. ", " .. vy)
+    local x, y = body:getPosition()
+    print("pos = " .. x .. ", " .. y)
 end
 ```
 
@@ -2394,12 +2629,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Restitution controls bounce: 0.0 = no bounce, 1.0 = perfect bounce.
-  -- Values above 1.0 add energy (use sparingly for jump pads).
-  local world = lurek.physics.newWorld(0, 9.81)
-  local ball = world:newBody(150, 100, "dynamic")
-  ball:setRestitution(0.8)
-  lurek.log.debug("bouncy ball restitution=0.8", "phys")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local body = world:newCircleBody(100, 100, 20, "dynamic")
+    body:setMass(5.0)
+    print("mass = " .. body:getMass())
+    body:setFriction(0.8)
+    print("friction = " .. body:getFriction())
+    body:setRestitution(0.6)
+    print("restitution = " .. body:getRestitution())
 end
 ```
 
@@ -2427,10 +2665,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Disable sleep for bodies that must always respond to forces (player, active NPCs).
-  local world = lurek.physics.newWorld(0, 9.81)
-  local player = world:newBody(100, 200, "dynamic")
-  player:setSleepingAllowed(false) -- always simulated
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local body = world:newBody(100, 100, "dynamic")
+    body:setSleepingAllowed(true)
+    print("sleeping allowed = " .. tostring(body:isSleepingAllowed()))
+    body:sleep()
+    print("sleeping = " .. tostring(body:isSleeping()))
+    body:wakeUp()
+    print("sleeping after wake = " .. tostring(body:isSleeping()))
 end
 ```
 
@@ -2458,10 +2701,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Change type at runtime: static wall becomes dynamic rubble when exploded.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local wall = world:newBody(200, 200, "static")
-  wall:setType("dynamic") -- wall crumbles — now affected by gravity
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local body = world:newBody(100, 100, "dynamic")
+    body:setType("kinematic")
+    print("type = " .. body:getType())
+    body:setLayer(2)
+    body:setMask(1)
+    print("layer = " .. body:getLayer())
+    print("mask = " .. body:getMask())
 end
 ```
 
@@ -2491,14 +2739,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Directly set velocity — ignores mass, replaces current motion.
-  -- Use for constant-speed movement (conveyors, kinematic platforms).
-  local world = lurek.physics.newWorld(0, 9.81)
-  local player = world:newBody(100, 200, "dynamic")
-  function lurek.process(dt)
-    -- Move player rightward at constant 150 px/s (overrides gravity effect on X)
-    player:setVelocity(150, 0)
-  end
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local body = world:newBody(0, 0, "dynamic")
+    body:setPosition(200, 100)
+    body:setVelocity(50, -100)
+    local vx, vy = body:getVelocity()
+    print("velocity = " .. vx .. ", " .. vy)
+    local x, y = body:getPosition()
+    print("pos = " .. x .. ", " .. y)
 end
 ```
 
@@ -2521,11 +2770,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Force a body to sleep — pauses simulation until disturbed.
-  -- Use for settled debris that shouldn't move unless hit again.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local rubble = world:newBody(100, 200, "dynamic")
-  rubble:sleep()
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local body = world:newBody(100, 100, "dynamic")
+    body:setSleepingAllowed(true)
+    print("sleeping allowed = " .. tostring(body:isSleepingAllowed()))
+    body:sleep()
+    print("sleeping = " .. tostring(body:isSleeping()))
+    body:wakeUp()
+    print("sleeping after wake = " .. tostring(body:isSleeping()))
 end
 ```
 
@@ -2551,8 +2804,12 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  local obj = (function() local w = lurek.physics.newWorld(0, 9.8); return w:newBody(100, 100, 'dynamic') end)()
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LBody"
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local body = world:newBody(0, 0, "dynamic")
+    print("type = " .. body:type())
+    print("is LBody = " .. tostring(body:typeOf("LBody")))
+    print("is Object = " .. tostring(body:typeOf("Object")))
 end
 ```
 
@@ -2583,8 +2840,12 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  local obj = (function() local w = lurek.physics.newWorld(0, 9.8); return w:newBody(100, 100, 'dynamic') end)()
-  lurek.log.debug("typeOf LBody: " .. tostring(obj:typeOf("LBody")), "example") -- true
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local body = world:newBody(0, 0, "dynamic")
+    print("type = " .. body:type())
+    print("is LBody = " .. tostring(body:typeOf("LBody")))
+    print("is Object = " .. tostring(body:typeOf("Object")))
 end
 ```
 
@@ -2607,11 +2868,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Explicitly wake a body before applying forces — sleeping bodies ignore forces.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local body = world:newBody(100, 200, "dynamic")
-  body:wakeUp()
-  body:applyImpulse(0, -100) -- impulse now takes effect
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local body = world:newBody(100, 100, "dynamic")
+    body:setSleepingAllowed(true)
+    print("sleeping allowed = " .. tostring(body:isSleepingAllowed()))
+    body:sleep()
+    print("sleeping = " .. tostring(body:isSleeping()))
+    body:wakeUp()
+    print("sleeping after wake = " .. tostring(body:isSleeping()))
 end
 ```
 
@@ -2642,11 +2907,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Count how many cells of a given type exist — useful for win conditions.
-  -- Example: "drain all water" puzzle — check if water count is zero.
-  local sand = lurek.physics.newCellular(128, 64)
-  local water = sand:countCells(lurek.physics.CELL_WATER)
-  lurek.log.debug("water cells=" .. water, "cell")
+    local ca = lurek.physics.newCellular(32, 32)
+    ca:setCell(5, 5, 1)
+    print("cell(5,5)=" .. ca:getCell(5, 5))
+    ca:step()
+    print("count=" .. ca:countCells(1))
+    local img = ca:toImageDataRegion(0, 0, 32, 32)
+    print("img=" .. tostring(img ~= nil))
+    print("type=" .. ca:type())
+    print("typeOf=" .. tostring(ca:typeOf("LCellular")))
 end
 ```
 
@@ -2680,11 +2949,14 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Fill a circular region with a material type.
-  -- Args: cx, cy (center cell), r (radius in cells), cellType
-  local ca = lurek.physics.newCellular(64, 64)
-  ca:fillCircle(32, 32, 20, lurek.physics.CELL_SAND)
-  lurek.log.info("cellular circle filled", "physics")
+    ---@type LCellular
+    local grid = lurek.physics.newCellular(128, 128)
+    grid:fillRect(10, 10, 20, 5, 2)
+    grid:fillCircle(64, 64, 15, 3)
+    local count = grid:countCells(2)
+    print("type-2 cells = " .. count)
+    local count3 = grid:countCells(3)
+    print("type-3 cells = " .. count3)
 end
 ```
 
@@ -2720,11 +2992,14 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Fill a rectangular region with a material type.
-  -- Args: cx0, cy0 (top-left cell), cw, ch (size in cells), cellType
-  local ca = lurek.physics.newCellular(32, 32)
-  ca:fillRect(4, 4, 28, 28, lurek.physics.CELL_WATER)
-  lurek.log.info("cellular rect filled", "physics")
+    ---@type LCellular
+    local grid = lurek.physics.newCellular(128, 128)
+    grid:fillRect(10, 10, 20, 5, 2)
+    grid:fillCircle(64, 64, 15, 3)
+    local count = grid:countCells(2)
+    print("type-2 cells = " .. count)
+    local count3 = grid:countCells(3)
+    print("type-3 cells = " .. count3)
 end
 ```
 
@@ -2755,11 +3030,12 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Returns positions of all cells matching a type — for rendering highlights.
-  local sand = lurek.physics.newCellular(128, 64)
-  for _, p in ipairs(sand:findCells(lurek.physics.CELL_FIRE)) do
-    lurek.log.debug("fire at " .. p.x .. "," .. p.y, "cell")
-  end
+    ---@type LCellular
+    local grid = lurek.physics.newCellular(32, 32)
+    grid:fillRect(14, 0, 4, 2, 1)
+    grid:stepN(10)
+    local positions = grid:findCells(1)
+    print("type-1 cells after 10 steps = " .. #positions)
 end
 ```
 
@@ -2792,13 +3068,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Read the material type at a grid position.
-  -- Returns the numeric constant (compare with CELL_* values).
-  local sand = lurek.physics.newCellular(128, 64)
-  if sand:getCell(10, 10) == lurek.physics.CELL_AIR then
-    -- Cell is empty — safe to place new material here
-    sand:setCell(10, 10, lurek.physics.CELL_ROCK)
-  end
+    local ca = lurek.physics.newCellular(32, 32)
+    ca:setCell(5, 5, 1)
+    print("cell(5,5)=" .. ca:getCell(5, 5))
+    ca:step()
+    print("count=" .. ca:countCells(1))
+    local img = ca:toImageDataRegion(0, 0, 32, 32)
+    print("img=" .. tostring(img ~= nil))
+    print("type=" .. ca:type())
+    print("typeOf=" .. tostring(ca:typeOf("LCellular")))
 end
 ```
 
@@ -2829,11 +3107,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Restore cellular state from a save. Returns true on success.
-  local sand = lurek.physics.newCellular(128, 64)
-  local blob = sand:toBytes()
-  local ok = sand:loadFromBytes(blob)
-  lurek.log.info("cellular reload ok=" .. tostring(ok), "save")
+    ---@type LCellular
+    local grid = lurek.physics.newCellular(32, 32)
+    grid:fillCircle(16, 16, 8, 1)
+    local bytes = grid:toBytes()
+    print("grid bytes length = " .. #bytes)
+    ---@type LCellular
+    local grid2 = lurek.physics.newCellular(32, 32)
+    grid2:loadFromBytes(bytes)
+    print("loaded cell at 16,16 = " .. grid2:getCell(16, 16))
 end
 ```
 
@@ -2865,12 +3147,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Place materials into the cellular grid by type constant.
-  -- Available types: CELL_AIR(0), CELL_SAND(1), CELL_WATER(2),
-  --                  CELL_ROCK(3), CELL_FIRE(4), CELL_GAS(5)
-  local sand = lurek.physics.newCellular(128, 64)
-  sand:setCell(64, 0, lurek.physics.CELL_SAND)   -- sand falls down
-  sand:setCell(65, 0, lurek.physics.CELL_WATER)  -- water flows sideways
+    local ca = lurek.physics.newCellular(32, 32)
+    ca:setCell(5, 5, 1)
+    print("cell(5,5)=" .. ca:getCell(5, 5))
+    ca:step()
+    print("count=" .. ca:countCells(1))
+    local img = ca:toImageDataRegion(0, 0, 32, 32)
+    print("img=" .. tostring(img ~= nil))
+    print("type=" .. ca:type())
+    print("typeOf=" .. tostring(ca:typeOf("LCellular")))
 end
 ```
 
@@ -2893,12 +3178,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- step() advances the simulation by one tick.
-  -- Sand falls, water flows, fire spreads, gas rises.
-  local sand = lurek.physics.newCellular(128, 64)
-  function lurek.process(dt)
-    sand:step() -- one tick per frame gives smooth 60fps simulation
-  end
+    local ca = lurek.physics.newCellular(32, 32)
+    ca:setCell(5, 5, 1)
+    print("cell(5,5)=" .. ca:getCell(5, 5))
+    ca:step()
+    print("count=" .. ca:countCells(1))
+    local img = ca:toImageDataRegion(0, 0, 32, 32)
+    print("img=" .. tostring(img ~= nil))
+    print("type=" .. ca:type())
+    print("typeOf=" .. tostring(ca:typeOf("LCellular")))
 end
 ```
 
@@ -2926,10 +3214,12 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Run multiple ticks at once — useful for fast-forward or pre-settling.
-  -- Warning: large N can spike frame time.
-  local sand = lurek.physics.newCellular(128, 64)
-  sand:stepN(30) -- settle the grid before gameplay starts
+    ---@type LCellular
+    local grid = lurek.physics.newCellular(32, 32)
+    grid:fillRect(14, 0, 4, 2, 1)
+    grid:stepN(10)
+    local positions = grid:findCells(1)
+    print("type-1 cells after 10 steps = " .. #positions)
 end
 ```
 
@@ -2955,10 +3245,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Serialize the cellular grid for saving — stores all cell types.
-  local sand = lurek.physics.newCellular(128, 64)
-  local blob = sand:toBytes()
-  lurek.log.info("cellular blob=" .. #blob .. " bytes", "save")
+    ---@type LCellular
+    local grid = lurek.physics.newCellular(32, 32)
+    grid:fillCircle(16, 16, 8, 1)
+    local bytes = grid:toBytes()
+    print("grid bytes length = " .. #bytes)
+    ---@type LCellular
+    local grid2 = lurek.physics.newCellular(32, 32)
+    grid2:loadFromBytes(bytes)
+    print("loaded cell at 16,16 = " .. grid2:getCell(16, 16))
 end
 ```
 
@@ -2984,18 +3279,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Render terrain to RGBA pixels with custom solid/empty colors.
-  -- Args: sr,sg,sb (solid RGB 0-255), er,eg,eb (empty RGB 0-255)
-  -- Use to create a texture from the terrain grid for rendering.
-  local _w = lurek.physics.newWorld(0, 9.81)
-  local terrain = lurek.physics.newTerrain(32, 32, 8, _w)
-  terrain:fillAll(true)
-  terrain:fillCircle(16, 16, 8, false)
-  terrain:flush()
-
-  -- White for solid, black for empty
-  local bytes = terrain:toImageData(255, 255, 255, 0, 0, 0)
-  lurek.log.info("terrain image: " .. #bytes .. " bytes", "physics")
+    ---@type LCellular
+    local grid = lurek.physics.newCellular(32, 32)
+    grid:fillCircle(16, 16, 8, 1)
+    local bytes = grid:toBytes()
+    print("grid bytes length = " .. #bytes)
+    ---@type LCellular
+    local grid2 = lurek.physics.newCellular(32, 32)
+    grid2:loadFromBytes(bytes)
+    print("loaded cell at 16,16 = " .. grid2:getCell(16, 16))
 end
 ```
 
@@ -3032,15 +3324,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Render only a sub-region of the cellular grid — for viewport culling.
-  -- Args: cx0, cy0 (top-left cell), cw, ch (size in cells)
-  -- Returns raw RGBA bytes (cw * ch * 4).
-  local ca = lurek.physics.newCellular(64, 64)
-  ca:fillRect(0, 0, 63, 63, lurek.physics.CELL_SAND)
-
-  -- Only render the visible portion
-  local img = ca:toImageDataRegion(10, 10, 40, 40)
-  lurek.log.info("region img: " .. #img .. " bytes", "physics")
+    local ca = lurek.physics.newCellular(32, 32)
+    ca:setCell(5, 5, 1)
+    print("cell(5,5)=" .. ca:getCell(5, 5))
+    ca:step()
+    print("count=" .. ca:countCells(1))
+    local img = ca:toImageDataRegion(0, 0, 32, 32)
+    print("img=" .. tostring(img ~= nil))
+    print("type=" .. ca:type())
+    print("typeOf=" .. tostring(ca:typeOf("LCellular")))
 end
 ```
 
@@ -3066,8 +3358,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  local obj = lurek.physics.newCellular(40, 30)
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LCellular"
+    local ca = lurek.physics.newCellular(32, 32)
+    ca:setCell(5, 5, 1)
+    print("cell(5,5)=" .. ca:getCell(5, 5))
+    ca:step()
+    print("count=" .. ca:countCells(1))
+    local img = ca:toImageDataRegion(0, 0, 32, 32)
+    print("img=" .. tostring(img ~= nil))
+    print("type=" .. ca:type())
+    print("typeOf=" .. tostring(ca:typeOf("LCellular")))
 end
 ```
 
@@ -3098,8 +3397,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  local obj = lurek.physics.newCellular(40, 30)
-  lurek.log.debug("typeOf LCellular: " .. tostring(obj:typeOf("LCellular")), "example") -- true
+    local ca = lurek.physics.newCellular(32, 32)
+    ca:setCell(5, 5, 1)
+    print("cell(5,5)=" .. ca:getCell(5, 5))
+    ca:step()
+    print("count=" .. ca:countCells(1))
+    local img = ca:toImageDataRegion(0, 0, 32, 32)
+    print("img=" .. tostring(img ~= nil))
+    print("type=" .. ca:type())
+    print("typeOf=" .. tostring(ca:typeOf("LCellular")))
 end
 ```
 
@@ -3122,10 +3428,10 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- No-op in Lurek2D — shapes are garbage-collected.
-  -- Call for code clarity or porting from engines with manual cleanup.
-  local shape = lurek.physics.newRectangleShape(32, 32)
-  shape:destroy()
+    ---@type LPhysicsShape
+    local shape = lurek.physics.newCircleShape(10)
+    shape:destroy()
+    print("shape destroyed")
 end
 ```
 
@@ -3154,11 +3460,11 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Returns minX, minY, maxX, maxY in local (shape-relative) coordinates.
-  -- Useful for calculating sprite bounds from the collision shape.
-  local crate_shape = lurek.physics.newRectangleShape(64, 32)
-  local x1, y1, x2, y2 = crate_shape:getBoundingBox()
-  lurek.log.debug("aabb " .. x1 .. "," .. y1 .. "->" .. x2 .. "," .. y2, "phys")
+    local circle = lurek.physics.newCircleShape(10.0)
+    print("shape_type=" .. circle:getType())
+    print("radius=" .. circle:getRadius())
+    local x1, y1, x2, y2 = circle:getBoundingBox()
+    print("bb=" .. x1 .. "," .. y1 .. "," .. x2 .. "," .. y2)
 end
 ```
 
@@ -3184,9 +3490,11 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Only valid for circle shapes — errors if called on other types.
-  local ball = lurek.physics.newCircleShape(16)
-  lurek.log.debug("radius=" .. ball:getRadius(), "phys")
+    local circle = lurek.physics.newCircleShape(10.0)
+    print("shape_type=" .. circle:getType())
+    print("radius=" .. circle:getRadius())
+    local x1, y1, x2, y2 = circle:getBoundingBox()
+    print("bb=" .. x1 .. "," .. y1 .. "," .. x2 .. "," .. y2)
 end
 ```
 
@@ -3212,12 +3520,11 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Returns "circle", "rectangle", "polygon", "edge", or "chain".
-  -- Use to branch logic when processing different shape kinds.
-  local shape = lurek.physics.newCircleShape(16)
-  if shape:getType() == "circle" then
-    lurek.log.debug("ball-shape r=" .. shape:getRadius(), "phys")
-  end
+    local circle = lurek.physics.newCircleShape(10.0)
+    print("shape_type=" .. circle:getType())
+    print("radius=" .. circle:getRadius())
+    local x1, y1, x2, y2 = circle:getBoundingBox()
+    print("bb=" .. x1 .. "," .. y1 .. "," .. x2 .. "," .. y2)
 end
 ```
 
@@ -3245,10 +3552,10 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Density affects mass calculation when attached: mass = density * area.
-  -- Higher density = heavier body for the same shape size.
-  local shape = lurek.physics.newRectangleShape(32, 32)
-  shape:setDensity(2.0) -- twice as heavy as default
+    ---@type LPhysicsShape
+    local shape = lurek.physics.newCircleShape(12)
+    shape:setDensity(2.5)
+    print("density set")
 end
 ```
 
@@ -3276,10 +3583,10 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Per-shape friction — useful when one body has multiple fixtures
-  -- (e.g., icy top and rubber bottom).
-  local shape = lurek.physics.newRectangleShape(32, 32)
-  shape:setFriction(0.7)
+    ---@type LPhysicsShape
+    local shape = lurek.physics.newCircleShape(12)
+    shape:setFriction(0.9)
+    print("friction set")
 end
 ```
 
@@ -3307,9 +3614,10 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Per-shape bounciness — the ball's circle is bouncy, its sensor is not.
-  local ball = lurek.physics.newCircleShape(16)
-  ball:setRestitution(0.85) -- very bouncy
+    ---@type LPhysicsShape
+    local shape = lurek.physics.newCircleShape(12)
+    shape:setRestitution(0.3)
+    print("restitution set")
 end
 ```
 
@@ -3337,10 +3645,10 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Sensors detect overlap but don't push bodies apart.
-  -- Use for trigger zones, pickup collection areas, or hitboxes.
-  local trigger = lurek.physics.newRectangleShape(64, 64)
-  trigger:setSensor(true) -- no collision response, only detection
+    ---@type LPhysicsShape
+    local shape = lurek.physics.newCircleShape(12)
+    shape:setSensor(false)
+    print("sensor flag set")
 end
 ```
 
@@ -3366,10 +3674,9 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  local world = lurek.physics.newWorld(0, 9.81)
-  local zone = world:addZone(0, 0, 100, 100)
-  local t = zone:type()
-  lurek.log.info("LZone:type = " .. t, "physics")
+    ---@type LPhysicsShape
+    local shape = lurek.physics.newCircleShape(10)
+    print("shape type = " .. shape:type())
 end
 ```
 
@@ -3400,10 +3707,9 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  local world = lurek.physics.newWorld(0, 9.81)
-  local zone = world:addZone(0, 0, 100, 100)
-  lurek.log.info("is LZone: " .. tostring(zone:typeOf("LZone")), "physics")
-  lurek.log.info("is wrong: " .. tostring(zone:typeOf("Unknown")), "physics")
+    ---@type LPhysicsShape
+    local shape = lurek.physics.newCircleShape(10)
+    print("is LPhysicsShape = " .. tostring(shape:typeOf("LPhysicsShape")))
 end
 ```
 
@@ -3429,14 +3735,17 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- collapseColumns merges vertically adjacent cells into larger colliders.
-  -- Call after large modifications to optimize the collider count.
-  -- Returns how many cells were collapsed.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local terrain = lurek.physics.newTerrain(64, 32, 8.0, world)
-  local fell = terrain:collapseColumns()
-  lurek.log.info("collapsed " .. fell .. " cells", "terrain")
-  terrain:flush()
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    ---@type LTerrain
+    local terrain = lurek.physics.newTerrain(32, 32, 8, world)
+    terrain:fillAll(true)
+    terrain:fillRect(10, 0, 12, 15, false)
+    terrain:flush()
+    terrain:collapseColumns()
+    terrain:flush()
+    local solids = terrain:solidPositions()
+    print("solid positions = " .. #solids)
 end
 ```
 
@@ -3464,11 +3773,14 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Fill the entire grid solid or empty in one call.
-  -- Typical pattern: fillAll(true) then carve out tunnels/caves.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local terrain = lurek.physics.newTerrain(64, 32, 8.0, world)
-  terrain:fillAll(true) -- everything is solid ground
+    local world = lurek.physics.newWorld(0, 9.8)
+    local terrain = lurek.physics.newTerrain(32, 32, 16, world)
+    terrain:fillAll(true)
+    print("is_dirty=" .. tostring(terrain:isDirty()))
+    terrain:fillCircle(256, 256, 50, false)
+    terrain:flush()
+    print("type=" .. terrain:type())
+    print("typeOf=" .. tostring(terrain:typeOf("LTerrain")))
 end
 ```
 
@@ -3502,13 +3814,14 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Explosion carves a circular crater in destructible terrain.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local terrain = lurek.physics.newTerrain(64, 32, 8.0, world)
-  terrain:fillAll(true)
-  terrain:fillCircle(32.0, 16.0, 24.0, false)
-  terrain:flush()
-  lurek.log.info("explosion crater carved at (32,16) r=24", "phys")
+    local world = lurek.physics.newWorld(0, 9.8)
+    local terrain = lurek.physics.newTerrain(32, 32, 16, world)
+    terrain:fillAll(true)
+    print("is_dirty=" .. tostring(terrain:isDirty()))
+    terrain:fillCircle(256, 256, 50, false)
+    terrain:flush()
+    print("type=" .. terrain:type())
+    print("typeOf=" .. tostring(terrain:typeOf("LTerrain")))
 end
 ```
 
@@ -3544,13 +3857,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Dig a rectangular tunnel through the terrain for a mining game.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local terrain = lurek.physics.newTerrain(64, 32, 8.0, world)
-  terrain:fillAll(true)
-  terrain:fillRect(10.0, 12.0, 64.0, 16.0, false)
-  terrain:flush()
-  lurek.log.info("tunnel carved at (10,12) 64x16", "phys")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    ---@type LTerrain
+    local terrain = lurek.physics.newTerrain(64, 64, 8, world)
+    terrain:fillAll(true)
+    terrain:fillRect(20, 20, 10, 10, false)
+    terrain:setCell(5, 5, true)
+    print("cell at 5,5 = " .. tostring(terrain:getCell(5, 5)))
+    terrain:flush()
 end
 ```
 
@@ -3573,14 +3888,14 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- flush() converts the cell grid into physics colliders.
-  -- Batch your setCell calls, then flush once — much faster than flushing per-cell.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local terrain = lurek.physics.newTerrain(64, 32, 8.0, world)
-  terrain:setCell(5, 5, true)
-  terrain:setCell(6, 5, true)
-  terrain:setCell(7, 5, true)
-  terrain:flush() -- one flush for all three changes
+    local world = lurek.physics.newWorld(0, 9.8)
+    local terrain = lurek.physics.newTerrain(32, 32, 16, world)
+    terrain:fillAll(true)
+    print("is_dirty=" .. tostring(terrain:isDirty()))
+    terrain:fillCircle(256, 256, 50, false)
+    terrain:flush()
+    print("type=" .. terrain:type())
+    print("typeOf=" .. tostring(terrain:typeOf("LTerrain")))
 end
 ```
 
@@ -3613,13 +3928,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Check if a specific cell is solid before placing an object there.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local terrain = lurek.physics.newTerrain(64, 32, 8.0, world)
-  terrain:fillAll(true)
-  terrain:setCell(5, 5, false)
-  local solid = terrain:getCell(5, 5)
-  lurek.log.debug("cell (5,5) solid=" .. tostring(solid), "phys")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    ---@type LTerrain
+    local terrain = lurek.physics.newTerrain(64, 64, 8, world)
+    terrain:fillAll(true)
+    terrain:fillRect(20, 20, 10, 10, false)
+    terrain:setCell(5, 5, true)
+    print("cell at 5,5 = " .. tostring(terrain:getCell(5, 5)))
+    terrain:flush()
 end
 ```
 
@@ -3645,11 +3962,14 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- isDirty returns true if cells changed since the last flush.
-  -- Use to conditionally flush only when needed (saves CPU).
-  local world = lurek.physics.newWorld(0, 9.81)
-  local terrain = lurek.physics.newTerrain(64, 32, 8.0, world)
-  if terrain:isDirty() then terrain:flush() end
+    local world = lurek.physics.newWorld(0, 9.8)
+    local terrain = lurek.physics.newTerrain(32, 32, 16, world)
+    terrain:fillAll(true)
+    print("is_dirty=" .. tostring(terrain:isDirty()))
+    terrain:fillCircle(256, 256, 50, false)
+    terrain:flush()
+    print("type=" .. terrain:type())
+    print("typeOf=" .. tostring(terrain:typeOf("LTerrain")))
 end
 ```
 
@@ -3680,14 +4000,21 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Restore a previously saved terrain state on level load.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local terrain = lurek.physics.newTerrain(64, 32, 8.0, world)
-  terrain:fillAll(true)
-  local saved = terrain:toBytes()
-  local ok = terrain:loadFromBytes(saved)
-  terrain:flush()
-  lurek.log.info("terrain restored from bytes, success=" .. tostring(ok), "phys")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    ---@type LTerrain
+    local terrain = lurek.physics.newTerrain(32, 32, 4, world)
+    terrain:fillAll(true)
+    terrain:fillCircle(16, 16, 6, false)
+    terrain:flush()
+    local data = terrain:toBytes()
+    print("terrain bytes = " .. #data)
+    ---@type LTerrain
+    local terrain2 = lurek.physics.newTerrain(32, 32, 4, world)
+    terrain2:loadFromBytes(data)
+    terrain2:flush()
+    print("loaded cell 0,0 = " .. tostring(terrain2:getCell(0, 0)))
+    print("loaded cell 16,16 = " .. tostring(terrain2:getCell(16, 16)))
 end
 ```
 
@@ -3719,13 +4046,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Carve a single cell out of the terrain (e.g., player digs one tile).
-  local world = lurek.physics.newWorld(0, 9.81)
-  local terrain = lurek.physics.newTerrain(64, 32, 8.0, world)
-  terrain:fillAll(true)
-  terrain:setCell(10, 5, false)
-  terrain:flush()
-  lurek.log.debug("carved cell (10,5) out of terrain", "phys")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    ---@type LTerrain
+    local terrain = lurek.physics.newTerrain(64, 64, 8, world)
+    terrain:fillAll(true)
+    terrain:fillRect(20, 20, 10, 10, false)
+    terrain:setCell(5, 5, true)
+    print("cell at 5,5 = " .. tostring(terrain:getCell(5, 5)))
+    terrain:flush()
 end
 ```
 
@@ -3751,12 +4080,17 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Returns a table of {x, y} for all solid cells — useful for rendering or effects.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local terrain = lurek.physics.newTerrain(64, 32, 8.0, world)
-  terrain:fillAll(true)
-  local positions = terrain:solidPositions()
-  lurek.log.debug("solid cells=" .. #positions, "terrain")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    ---@type LTerrain
+    local terrain = lurek.physics.newTerrain(32, 32, 8, world)
+    terrain:fillAll(true)
+    terrain:fillRect(10, 0, 12, 15, false)
+    terrain:flush()
+    terrain:collapseColumns()
+    terrain:flush()
+    local solids = terrain:solidPositions()
+    print("solid positions = " .. #solids)
 end
 ```
 
@@ -3791,19 +4125,17 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Spawn small dynamic bodies at positions — for destruction particle effects.
-  -- Each debris piece is a small physics body that falls and bounces.
-  -- Args: positions (array of {x,y}), mass, restitution
-  local world = lurek.physics.newWorld(0, 9.81)
-  local terrain = lurek.physics.newTerrain(32, 32, 8, world)
-  terrain:fillAll(true)
-  terrain:fillCircle(16, 16, 6, false) -- carve a hole
-  terrain:flush()
-
-  -- Spawn debris at the carved positions for a destruction effect
-  local positions = terrain:solidPositions()
-  local debris = terrain:spawnDebris(positions, 1.0, 0.5)
-  lurek.log.info("debris count: " .. #debris, "physics")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    ---@type LTerrain
+    local terrain = lurek.physics.newTerrain(32, 32, 8, world)
+    terrain:fillAll(true)
+    terrain:fillRect(10, 0, 12, 15, false)
+    terrain:flush()
+    terrain:collapseColumns()
+    terrain:flush()
+    local solids = terrain:solidPositions()
+    print("solid positions = " .. #solids)
 end
 ```
 
@@ -3829,13 +4161,21 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Save terrain state to disk so the player can resume later.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local terrain = lurek.physics.newTerrain(64, 32, 8.0, world)
-  terrain:fillAll(true)
-  terrain:fillCircle(20.0, 10.0, 8.0, false)
-  local data = terrain:toBytes()
-  lurek.log.info("terrain serialized, " .. #data .. " bytes", "phys")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    ---@type LTerrain
+    local terrain = lurek.physics.newTerrain(32, 32, 4, world)
+    terrain:fillAll(true)
+    terrain:fillCircle(16, 16, 6, false)
+    terrain:flush()
+    local data = terrain:toBytes()
+    print("terrain bytes = " .. #data)
+    ---@type LTerrain
+    local terrain2 = lurek.physics.newTerrain(32, 32, 4, world)
+    terrain2:loadFromBytes(data)
+    terrain2:flush()
+    print("loaded cell 0,0 = " .. tostring(terrain2:getCell(0, 0)))
+    print("loaded cell 16,16 = " .. tostring(terrain2:getCell(16, 16)))
 end
 ```
 
@@ -3876,13 +4216,21 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Generate a minimap preview of the terrain with green for solid, black for empty.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local terrain = lurek.physics.newTerrain(64, 32, 8.0, world)
-  terrain:fillAll(true)
-  terrain:fillCircle(32.0, 16.0, 10.0, false)
-  local pixels = terrain:toImageData(0, 200, 0, 0, 0, 0)
-  lurek.log.info("terrain preview generated: " .. #pixels .. " bytes", "phys")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    ---@type LTerrain
+    local terrain = lurek.physics.newTerrain(32, 32, 4, world)
+    terrain:fillAll(true)
+    terrain:fillCircle(16, 16, 6, false)
+    terrain:flush()
+    local data = terrain:toBytes()
+    print("terrain bytes = " .. #data)
+    ---@type LTerrain
+    local terrain2 = lurek.physics.newTerrain(32, 32, 4, world)
+    terrain2:loadFromBytes(data)
+    terrain2:flush()
+    print("loaded cell 0,0 = " .. tostring(terrain2:getCell(0, 0)))
+    print("loaded cell 16,16 = " .. tostring(terrain2:getCell(16, 16)))
 end
 ```
 
@@ -3908,9 +4256,14 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  local world = lurek.physics.newWorld(0, 9.8)
-  local obj = lurek.physics.newTerrain(64, 64, 1.0, world)
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LTerrain"
+    local world = lurek.physics.newWorld(0, 9.8)
+    local terrain = lurek.physics.newTerrain(32, 32, 16, world)
+    terrain:fillAll(true)
+    print("is_dirty=" .. tostring(terrain:isDirty()))
+    terrain:fillCircle(256, 256, 50, false)
+    terrain:flush()
+    print("type=" .. terrain:type())
+    print("typeOf=" .. tostring(terrain:typeOf("LTerrain")))
 end
 ```
 
@@ -3941,9 +4294,14 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  local world = lurek.physics.newWorld(0, 9.8)
-  local obj = lurek.physics.newTerrain(64, 64, 1.0, world)
-  lurek.log.debug("typeOf LTerrain: " .. tostring(obj:typeOf("LTerrain")), "example") -- true
+    local world = lurek.physics.newWorld(0, 9.8)
+    local terrain = lurek.physics.newTerrain(32, 32, 16, world)
+    terrain:fillAll(true)
+    print("is_dirty=" .. tostring(terrain:isDirty()))
+    terrain:fillCircle(256, 256, 50, false)
+    terrain:flush()
+    print("type=" .. terrain:type())
+    print("typeOf=" .. tostring(terrain:typeOf("LTerrain")))
 end
 ```
 
@@ -3986,15 +4344,21 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Distance joint keeps two bodies at a fixed distance apart, like a rigid rod.
-  -- Args: bodyA, bodyB, anchorAX, anchorAY, anchorBX, anchorBY, length
-  local world = lurek.physics.newWorld(0, 9.81)
-  local a = world:newBody(100, 100, "dynamic")
-  local b = world:newBody(200, 100, "dynamic")
-
-  -- Connect body centers with a 100px rod — they can rotate but not separate
-  local jid = world:addDistanceJoint(a:getId(), b:getId(), 100, 100, 200, 100, 100)
-  lurek.log.info("distance joint: " .. jid, "physics")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local bodyA = world:newCircleBody(100, 100, 10, "dynamic")
+    local bodyB = world:newCircleBody(200, 100, 10, "dynamic")
+    local jointId = world:addDistanceJoint(
+        bodyA:getId(), bodyB:getId(),
+        100, 100,
+        200, 100,
+        100
+    )
+    print("distance joint id = " .. jointId)
+    world:step(1 / 60)
+    local ax, ay = bodyA:getPosition()
+    local bx, by = bodyB:getPosition()
+    print("A=" .. ax .. "," .. ay .. " B=" .. bx .. "," .. by)
 end
 ```
 
@@ -4037,15 +4401,18 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- addFixture attaches a collider to an existing body with full material control.
-  -- Args: bodyId, shapeType, density, friction, restitution, sensor, ...sizeArgs
-  -- sizeArgs depend on shape: circle(radius), rectangle(w,h), polygon(x1,y1,...)
-  local world = lurek.physics.newWorld(0, 9.81)
-  local b = world:newBody(200, 200, "dynamic")
-
-  -- Add a circle collider: density=1, friction=0.4, bounce=0.3, not a sensor, r=16
-  local fid = world:addFixture(b:getId(), "circle", 1.0, 0.4, 0.3, false, 16.0)
-  lurek.log.info("fixture id: " .. fid, "physics")
+    local world = lurek.physics.newWorld(0, 9.8)
+    local body = world:newBody(0, 0, "dynamic")
+    local fid = world:addFixture(body:getId(), "circle", 1.0, 0.3, 0.5, false, 5.0)
+    print("fixture_count=" .. world:fixtureCount(body:getId()))
+    world:setBodyType(body:getId(), "static")
+    world:clearBeginContact()
+    world:clearEndContact()
+    local bodies = world:newBodies({{ x=10, y=10, type="dynamic" }, { x=20, y=10, type="static" }})
+    print("batch_bodies=" .. #bodies)
+    local jid = world:addMouseJoint(body:getId(), 0, 0, 1000)
+    world:setMouseJointTarget(jid, 50, 50)
+    world:destroyBody(body:getId())
 end
 ```
 
@@ -4086,14 +4453,22 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Friction joint applies resistance to relative motion between two bodies.
-  -- Use for simulating surface friction (top-down car on road) or drag.
-  -- Args: bodyA, bodyB, anchorX, anchorY, maxForce, maxTorque
-  local world = lurek.physics.newWorld(0, 9.81)
-  local a = world:newBody(100, 100, "dynamic")
-  local b = world:newBody(100, 100, "static")
-  local jid = world:addFrictionJoint(a:getId(), b:getId(), 100, 100, 50, 10)
-  lurek.log.info("friction joint: " .. jid, "physics")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 0)
+    local ground = world:newBody(200, 400, "static")
+    local puck = world:newCircleBody(200, 400, 10, "dynamic")
+    puck:setVelocity(200, 0)
+    local jointId = world:addFrictionJoint(
+        ground:getId(), puck:getId(),
+        200, 400,
+        100, 50
+    )
+    print("friction joint id = " .. jointId)
+    for _ = 1, 60 do
+        world:step(1 / 60)
+    end
+    local vx, vy = puck:getVelocity()
+    print("puck vel after friction = " .. vx .. ", " .. vy)
 end
 ```
 
@@ -4130,20 +4505,12 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Gear joint synchronizes rotation between two bodies at an anchor.
-  -- When one gear turns clockwise, the other turns counter-clockwise.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local a = world:newBody(100, 200, "dynamic")
-  local b = world:newBody(200, 200, "dynamic")
-  local c = world:newBody(150, 200, "static")
-
-  -- Both gears need a revolute joint to the chassis first
-  local j1 = world:addRevoluteJoint(c:getId(), a:getId(), 100, 200)
-  local j2 = world:addRevoluteJoint(c:getId(), b:getId(), 200, 200)
-
-  -- Link the gears together
-  local jid = world:addGearJoint(a:getId(), b:getId(), 150, 200)
-  lurek.log.info("gear joint: " .. jid, "physics")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 0)
+    local gearA = world:newCircleBody(100, 200, 20, "dynamic")
+    local gearB = world:newCircleBody(200, 200, 20, "dynamic")
+    local jointId = world:addGearJoint(gearA:getId(), gearB:getId(), 150, 200)
+    print("gear joint id = " .. jointId)
 end
 ```
 
@@ -4178,14 +4545,14 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Motor joint drives body B toward a target offset from body A.
-  -- Factor (0-1) controls convergence speed — higher = faster tracking.
-  -- Use for smooth following behavior (camera rigs, puppet limbs).
-  local world = lurek.physics.newWorld(0, 9.81)
-  local a = world:newBody(100, 100, "dynamic")
-  local b = world:newBody(200, 200, "dynamic")
-  local jid = world:addMotorJoint(a:getId(), b:getId(), 0.3)
-  lurek.log.info("motor joint: " .. jid, "physics")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 0)
+    local platform = world:newBody(200, 200, "static")
+    local mover = world:newBody(200, 200, "dynamic")
+    local jointId = world:addMotorJoint(platform:getId(), mover:getId(), 0.5)
+    print("motor joint id = " .. jointId)
+    world:step(1 / 60)
+    print("mover pos = " .. mover:getX() .. ", " .. mover:getY())
 end
 ```
 
@@ -4222,13 +4589,20 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Mouse joint pulls a body toward a target point with spring-like force.
-  -- Update the target each frame to follow the cursor — for drag-and-drop physics.
-  -- Args: bodyId, targetX, targetY, maxForce
-  local world = lurek.physics.newWorld(0, 9.81)
-  local b = world:newBody(200, 200, "dynamic")
-  local jid = world:addMouseJoint(b:getId(), 200, 200, 1000)
-  lurek.log.info("mouse joint: " .. jid, "physics")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local box = world:newCircleBody(200, 200, 15, "dynamic")
+    local jointId = world:addMouseJoint(box:getId(), 300, 100, 500)
+    print("mouse joint id = " .. jointId)
+    for _ = 1, 30 do
+        world:step(1 / 60)
+    end
+    print("box pos = " .. box:getX() .. ", " .. box:getY())
+    world:setMouseJointTarget(jointId, 400, 150)
+    for _ = 1, 30 do
+        world:step(1 / 60)
+    end
+    print("box after retarget = " .. box:getX() .. ", " .. box:getY())
 end
 ```
 
@@ -4269,16 +4643,19 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Prismatic (slider) joint constrains body B to slide along an axis.
-  -- Use for elevators, pistons, or sliding doors.
-  -- Args: bodyA, bodyB, anchorX, anchorY, axisX, axisY
-  local world = lurek.physics.newWorld(0, 9.81)
-  local a = world:newBody(100, 300, "static")   -- anchor post
-  local b = world:newBody(100, 200, "dynamic")  -- sliding platform
-
-  -- Slides along Y axis (0,-1 = up/down direction)
-  local jid = world:addPrismaticJoint(a:getId(), b:getId(), 100, 300, 0, -1)
-  lurek.log.info("prismatic joint: " .. jid, "physics")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local rail = world:newBody(300, 300, "static")
+    local slider = world:newBody(300, 300, "dynamic")
+    local jointId = world:addPrismaticJoint(
+        rail:getId(), slider:getId(),
+        300, 300,
+        1, 0
+    )
+    print("prismatic joint id = " .. jointId)
+    slider:applyForce(200, 0)
+    world:step(1 / 60)
+    print("slider x = " .. slider:getX())
 end
 ```
 
@@ -4315,13 +4692,19 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Pulley: when one side goes down, the other goes up. Like a real pulley.
-  -- Use for counterweight elevators or balance puzzles.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local a = world:newBody(100, 200, "dynamic")
-  local b = world:newBody(300, 200, "dynamic")
-  local jid = world:addPulleyJoint(a:getId(), b:getId(), 100, 100)
-  lurek.log.info("pulley joint: " .. jid, "physics")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local boxA = world:newCircleBody(100, 200, 10, "dynamic")
+    local boxB = world:newCircleBody(300, 200, 10, "dynamic")
+    local jointId = world:addPulleyJoint(boxA:getId(), boxB:getId(), 200, 50)
+    print("pulley joint id = " .. jointId)
+    boxA:setMass(5.0)
+    boxB:setMass(1.0)
+    for _ = 1, 60 do
+        world:step(1 / 60)
+    end
+    print("heavy A y = " .. boxA:getY())
+    print("light B y = " .. boxB:getY())
 end
 ```
 
@@ -4358,15 +4741,14 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Revolute (hinge) joint lets two bodies rotate freely around an anchor point.
-  -- Use for doors, wheels, flippers, pendulums, and ragdoll limbs.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local door = world:newBody(200, 200, "dynamic")
-  local wall = world:newBody(200, 200, "static")
-
-  -- Door rotates around the wall anchor point
-  local jid = world:addRevoluteJoint(wall:getId(), door:getId(), 200, 200)
-  lurek.log.info("revolute joint: " .. jid, "physics")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local arm = world:newBody(200, 200, "dynamic")
+    local pivot = world:newBody(200, 150, "static")
+    local jointId = world:addRevoluteJoint(pivot:getId(), arm:getId(), 200, 150)
+    print("revolute joint id = " .. jointId)
+    world:step(1 / 60)
+    print("arm angle = " .. arm:getAngle())
 end
 ```
 
@@ -4409,14 +4791,21 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Rope joint limits maximum distance between two anchor points.
-  -- Bodies can get closer but never further than maxLength apart.
-  -- Args: bodyA, bodyB, anchorAX, anchorAY, anchorBX, anchorBY, maxLength
-  local world = lurek.physics.newWorld(0, 9.81)
-  local a = world:newBody(100, 100, "dynamic")
-  local b = world:newBody(100, 200, "dynamic")
-  local jid = world:addRopeJoint(a:getId(), b:getId(), 100, 100, 100, 200, 120)
-  lurek.log.info("rope joint: " .. jid, "physics")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local ceiling = world:newBody(300, 50, "static")
+    local weight = world:newCircleBody(300, 150, 8, "dynamic")
+    local jointId = world:addRopeJoint(
+        ceiling:getId(), weight:getId(),
+        0, 0,
+        0, 0,
+        120
+    )
+    print("rope joint id = " .. jointId)
+    for _ = 1, 60 do
+        world:step(1 / 60)
+    end
+    print("weight y = " .. weight:getY())
 end
 ```
 
@@ -4453,13 +4842,16 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Weld joint rigidly connects two bodies — no relative movement at all.
-  -- Use to glue pieces together (compound objects, stuck items).
-  local world = lurek.physics.newWorld(0, 9.81)
-  local a = world:newBody(150, 200, "dynamic")
-  local b = world:newBody(170, 200, "dynamic")
-  local jid = world:addWeldJoint(a:getId(), b:getId(), 160, 200)
-  lurek.log.info("weld joint: " .. jid, "physics")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local chassis = world:newBody(200, 200, "dynamic")
+    local turret = world:newBody(200, 180, "dynamic")
+    local jointId = world:addWeldJoint(chassis:getId(), turret:getId(), 200, 190)
+    print("weld joint id = " .. jointId)
+    chassis:applyForce(100, 0)
+    world:step(1 / 60)
+    print("chassis x = " .. chassis:getX())
+    print("turret x = " .. turret:getX())
 end
 ```
 
@@ -4500,16 +4892,18 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Wheel joint = revolute + prismatic. Simulates a wheel on a suspension.
-  -- The wheel rotates freely AND can bounce along the suspension axis.
-  -- Args: bodyA (chassis), bodyB (wheel), anchorX, anchorY, axisX, axisY
-  local world = lurek.physics.newWorld(0, 9.81)
-  local chassis = world:newBody(200, 200, "dynamic")
-  local wheel   = world:newBody(200, 240, "dynamic")
-
-  -- Suspension axis points up (0,-1) — wheel bounces vertically
-  local jid = world:addWheelJoint(chassis:getId(), wheel:getId(), 200, 240, 0, -1)
-  lurek.log.info("wheel joint: " .. jid, "physics")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local car = world:newBody(200, 200, "dynamic")
+    local wheel = world:newCircleBody(200, 230, 12, "dynamic")
+    local jointId = world:addWheelJoint(
+        car:getId(), wheel:getId(),
+        200, 230,
+        0, 1
+    )
+    print("wheel joint id = " .. jointId)
+    world:step(1 / 60)
+    print("wheel pos = " .. wheel:getX() .. ", " .. wheel:getY())
 end
 ```
 
@@ -4546,13 +4940,13 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Zones apply area effects: custom gravity, damping, or force fields.
-  -- Bodies inside the zone rectangle are affected each step.
-  local world = lurek.physics.newWorld(0, 9.81)
-
-  -- Create a water zone: reduced gravity simulates buoyancy
-  local water = world:addZone(0, 400, 800, 200)
-  water:setGravityDirectional(0, 2.0) -- gentle downward pull in water
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local zone = world:addZone(100, 100, 200, 200)
+    print("zone id = " .. zone:getId())
+    zone:setEnabled(true)
+    zone:setPriority(10)
+    zone:setLayerMask(1)
 end
 ```
 
@@ -4575,12 +4969,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- clear() removes all bodies and joints instantly — useful for level transitions.
-  -- After clear, the world is empty but still valid for reuse.
-  local world = lurek.physics.newWorld(0, 9.81)
-  world:newBody(100, 200, "dynamic")
-  world:clear()
-  lurek.log.info("world cleared, body count=" .. world:getBodyCount(), "scene")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    world:newCircleBody(100, 100, 10, "dynamic")
+    world:newCircleBody(200, 200, 10, "dynamic")
+    print("before clear: " .. world:getBodyCount())
+    world:clear()
+    print("after clear: " .. world:getBodyCount())
+    lurek.physics.destroyWorld(world)
+    print("world destroyed")
 end
 ```
 
@@ -4603,10 +5000,18 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Remove the callback to stop receiving begin-contact notifications.
-  local world = lurek.physics.newWorld(0, 9.81)
-  world:setBeginContact(function(a, b) end)
-  world:clearBeginContact() -- callback is now nil, won't fire
+    local world = lurek.physics.newWorld(0, 9.8)
+    local body = world:newBody(0, 0, "dynamic")
+    local fid = world:addFixture(body:getId(), "circle", 1.0, 0.3, 0.5, false, 5.0)
+    print("fixture_count=" .. world:fixtureCount(body:getId()))
+    world:setBodyType(body:getId(), "static")
+    world:clearBeginContact()
+    world:clearEndContact()
+    local bodies = world:newBodies({{ x=10, y=10, type="dynamic" }, { x=20, y=10, type="static" }})
+    print("batch_bodies=" .. #bodies)
+    local jid = world:addMouseJoint(body:getId(), 0, 0, 1000)
+    world:setMouseJointTarget(jid, 50, 50)
+    world:destroyBody(body:getId())
 end
 ```
 
@@ -4634,11 +5039,18 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Detach the Lua data from a body (frees the reference for GC).
-  local world = lurek.physics.newWorld(0, 9.81)
-  local body = world:newBody(100, 200, "dynamic")
-  world:setBodyData(body:getId(), { name = "crate" })
-  world:clearBodyData(body:getId()) -- data is now nil
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local player = world:newCircleBody(100, 100, 10, "dynamic")
+    local enemy = world:newCircleBody(300, 100, 10, "dynamic")
+    world:setBodyData(player:getId(), { tag = "player", hp = 100 })
+    world:setBodyData(enemy:getId(), { tag = "enemy", hp = 50 })
+    local pd = world:getBodyData(player:getId())
+    print("player data tag = " .. tostring(pd))
+    local ed = world:getBodyData(enemy:getId())
+    print("enemy data tag = " .. tostring(ed))
+    world:clearBodyData(player:getId())
+    print("after clear = " .. tostring(world:getBodyData(player:getId())))
 end
 ```
 
@@ -4666,10 +5078,18 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Remove one-way platform behavior — body blocks from all directions again.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local platform = world:newBody(200, 300, "static")
-  world:clearBodyOneWay(platform:getId())
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local platform = world:newBody(200, 400, "static")
+    world:addFixture(platform:getId(), "rectangle", 0, 0.5, 0, false, 100, 10)
+    world:setBodyOneWay(platform:getId(), 0, -1)
+    local nx, ny = world:getBodyOneWay(platform:getId())
+    if nx then
+        print("one-way normal = " .. nx .. ", " .. ny)
+    end
+    world:clearBodyOneWay(platform:getId())
+    nx, ny = world:getBodyOneWay(platform:getId())
+    print("after clear: " .. tostring(nx))
 end
 ```
 
@@ -4692,9 +5112,18 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  local world = lurek.physics.newWorld(0, 9.81)
-  world:setEndContact(function(a, b) end)
-  world:clearEndContact()
+    local world = lurek.physics.newWorld(0, 9.8)
+    local body = world:newBody(0, 0, "dynamic")
+    local fid = world:addFixture(body:getId(), "circle", 1.0, 0.3, 0.5, false, 5.0)
+    print("fixture_count=" .. world:fixtureCount(body:getId()))
+    world:setBodyType(body:getId(), "static")
+    world:clearBeginContact()
+    world:clearEndContact()
+    local bodies = world:newBodies({{ x=10, y=10, type="dynamic" }, { x=20, y=10, type="static" }})
+    print("batch_bodies=" .. #bodies)
+    local jid = world:addMouseJoint(body:getId(), 0, 0, 1000)
+    world:setMouseJointTarget(jid, 50, 50)
+    world:destroyBody(body:getId())
 end
 ```
 
@@ -4722,12 +5151,18 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- destroyBody removes a body by its numeric ID.
-  -- All attached fixtures and joints are also removed.
-  -- Use when an enemy dies or a projectile hits something.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local enemy = world:newBody(300, 200, "dynamic")
-  world:destroyBody(enemy:getId()) -- enemy is now invalid, don't use it
+    local world = lurek.physics.newWorld(0, 9.8)
+    local body = world:newBody(0, 0, "dynamic")
+    local fid = world:addFixture(body:getId(), "circle", 1.0, 0.3, 0.5, false, 5.0)
+    print("fixture_count=" .. world:fixtureCount(body:getId()))
+    world:setBodyType(body:getId(), "static")
+    world:clearBeginContact()
+    world:clearEndContact()
+    local bodies = world:newBodies({{ x=10, y=10, type="dynamic" }, { x=20, y=10, type="static" }})
+    print("batch_bodies=" .. #bodies)
+    local jid = world:addMouseJoint(body:getId(), 0, 0, 1000)
+    world:setMouseJointTarget(jid, 50, 50)
+    world:destroyBody(body:getId())
 end
 ```
 
@@ -4755,13 +5190,14 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- destroyJoint disconnects two bodies. The bodies remain in the world.
-  -- Use when cutting a rope, breaking a hinge, or detaching a limb.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local b1 = world:newBody(0, 0, "static")
-  local b2 = world:newBody(0, 100, "dynamic")
-  local jid = world:addRevoluteJoint(b1:getId(), b2:getId(), 0, 50)
-  world:destroyJoint(jid) -- b2 is now free-falling
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local a = world:newBody(100, 100, "static")
+    local b = world:newBody(100, 200, "dynamic")
+    local jid = world:addRevoluteJoint(a:getId(), b:getId(), 100, 100)
+    print("joints = " .. world:jointCount())
+    world:destroyJoint(jid)
+    print("after destroy = " .. world:jointCount())
 end
 ```
 
@@ -4797,16 +5233,14 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- CPU-rendered debug visualization onto an ImageData target.
-  -- Slower than drawDebugGpu but works without a render pass.
-  -- Optional RGBA args set the wireframe color (0-255).
-  local world = lurek.physics.newWorld(0, 9.81)
-  world:newBody(200, 200, "static")
-  local debug_img = lurek.image.newImageData(400, 400)
-  function lurek.draw()
-    world:drawDebug(debug_img) -- draws green wireframes by default
-  end
-  lurek.log.info("drawDebug hooked", "physics")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    world:newCircleBody(200, 200, 20, "dynamic")
+    world:newBody(200, 500, "static")
+    ---@type LImageData
+    local img = lurek.image.newImageData(800, 600)
+    world:drawDebug(img, 0, 255, 0, 200)
+    print("debug drawn to image data")
 end
 ```
 
@@ -4837,12 +5271,18 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- A body can have multiple fixtures (colliders). Use fixtureCount to inspect.
-  -- Multi-fixture bodies are common for complex shapes (character = box + circle feet).
-  local world = lurek.physics.newWorld(0, 9.81)
-  local body = world:newBody(100, 200, "dynamic")
-  local n = world:fixtureCount(body:getId())
-  lurek.log.debug("body has " .. n .. " fixtures", "phys")
+    local world = lurek.physics.newWorld(0, 9.8)
+    local body = world:newBody(0, 0, "dynamic")
+    local fid = world:addFixture(body:getId(), "circle", 1.0, 0.3, 0.5, false, 5.0)
+    print("fixture_count=" .. world:fixtureCount(body:getId()))
+    world:setBodyType(body:getId(), "static")
+    world:clearBeginContact()
+    world:clearEndContact()
+    local bodies = world:newBodies({{ x=10, y=10, type="dynamic" }, { x=20, y=10, type="static" }})
+    print("batch_bodies=" .. #bodies)
+    local jid = world:addMouseJoint(body:getId(), 0, 0, 1000)
+    world:setMouseJointTarget(jid, 50, 50)
+    world:destroyBody(body:getId())
 end
 ```
 
@@ -4868,15 +5308,22 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Begin-contact fires ONCE when two bodies first start touching.
-  -- Use for "on enter" triggers: stepping on a switch, entering a zone.
-  local world = lurek.physics.newWorld(0, 9.81)
-  function lurek.process(dt)
-    world:step(dt)
-    for _, e in ipairs(world:getBeginContactEvents()) do
-      lurek.log.debug("begin " .. e.bodyA .. "/" .. e.bodyB, "phys")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local floor = world:newBody(200, 500, "static")
+    world:addFixture(floor:getId(), "rectangle", 0, 0.5, 0, false, 600, 20)
+    world:newCircleBody(200, 100, 10, "dynamic")
+    local count = 0
+    for frame = 1, 180 do
+        world:step(1 / 60)
+        local events = world:getBeginContactEvents()
+        if #events > 0 then
+            count = #events
+            print("frame " .. frame .. ": begin events = " .. count)
+            break
+        end
     end
-  end
+    print("begin total = " .. count)
 end
 ```
 
@@ -4909,11 +5356,18 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Point query: returns the body ID at a pixel coordinate, or nil.
-  -- Use for click-to-select, mouse picking, or touch interaction.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local hit = world:getBodyAtPoint(150, 200)
-  if hit then lurek.log.debug("clicked body=" .. hit, "phys") end
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    world:newCircleBody(200, 200, 30, "static")
+    world:newCircleBody(400, 400, 30, "static")
+    local id = world:getBodyAtPoint(210, 205)
+    if id then
+        print("body at point = " .. id)
+    else
+        print("no body at point")
+    end
+    local miss = world:getBodyAtPoint(0, 0)
+    print("miss = " .. tostring(miss))
 end
 ```
 
@@ -4944,10 +5398,12 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Check and enable CCD if not already set.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local body = world:newBody(100, 200, "dynamic")
-  if not world:getBodyCCD(body:getId()) then world:setBodyCCD(body:getId(), true) end
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 0)
+    local bullet = world:newCircleBody(100, 100, 3, "dynamic")
+    world:setBodyCCD(bullet:getId(), true)
+    print("CCD enabled = " .. tostring(world:getBodyCCD(bullet:getId())))
+    bullet:setVelocity(2000, 0)
 end
 ```
 
@@ -4978,12 +5434,20 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Get contacts for a SPECIFIC body — useful for ground detection in platformers.
-  -- Check if any contact normal points upward (body is resting on something).
-  local world = lurek.physics.newWorld(0, 9.81)
-  local player = world:newBody(100, 200, "dynamic")
-  local touches = world:getBodyContacts(player:getId())
-  lurek.log.debug("player contacts=" .. #touches, "phys")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local floor = world:newBody(200, 500, "static")
+    world:addFixture(floor:getId(), "rectangle", 0, 0.5, 0, false, 400, 20)
+    local ball = world:newCircleBody(200, 480, 10, "dynamic")
+    for _ = 1, 60 do
+        world:step(1 / 60)
+    end
+    local contacts = world:getBodyContacts(ball:getId())
+    print("ball contacts = " .. #contacts)
+    for _, c in ipairs(contacts) do
+        print("  other=" .. c.bodyB .. " normal=" .. c.normalX .. "," .. c.normalY ..
+            " touching=" .. tostring(c.isTouching))
+    end
 end
 ```
 
@@ -5009,10 +5473,16 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Useful for pool management — limit spawning if too many bodies exist.
-  local world = lurek.physics.newWorld(0, 9.81)
-  world:newBody(100, 200, "dynamic")
-  if world:getBodyCount() < 1000 then world:newBody(150, 200, "dynamic") end
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    world:newBody(100, 100, "dynamic")
+    world:newBody(200, 200, "dynamic")
+    world:newBody(300, 300, "static")
+    print("bodies = " .. world:getBodyCount())
+    local temp = world:newBody(400, 400, "dynamic")
+    print("bodies = " .. world:getBodyCount())
+    temp:destroy()
+    print("after destroy = " .. world:getBodyCount())
 end
 ```
 
@@ -5043,15 +5513,18 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Attach arbitrary Lua data to bodies for game logic identification.
-  -- This avoids maintaining a separate ID-to-entity lookup table.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local body = world:newBody(100, 200, "dynamic")
-  world:setBodyData(body:getId(), { kind = "enemy", hp = 30 })
-
-  -- Later, in a collision callback, retrieve the data to know what collided
-  local data = world:getBodyData(body:getId())
-  if data then lurek.log.debug("entity kind=" .. data.kind, "phys") end
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local player = world:newCircleBody(100, 100, 10, "dynamic")
+    local enemy = world:newCircleBody(300, 100, 10, "dynamic")
+    world:setBodyData(player:getId(), { tag = "player", hp = 100 })
+    world:setBodyData(enemy:getId(), { tag = "enemy", hp = 50 })
+    local pd = world:getBodyData(player:getId())
+    print("player data tag = " .. tostring(pd))
+    local ed = world:getBodyData(enemy:getId())
+    print("enemy data tag = " .. tostring(ed))
+    world:clearBodyData(player:getId())
+    print("after clear = " .. tostring(world:getBodyData(player:getId())))
 end
 ```
 
@@ -5077,13 +5550,12 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Returns a table of all body IDs currently in the world.
-  -- Iterate to update game state, check positions, or batch-process bodies.
-  local world = lurek.physics.newWorld(0, 9.81)
-  world:newBody(100, 200, "dynamic")
-  for _, id in ipairs(world:getBodyIds()) do
-    lurek.log.debug("body id=" .. id, "phys")
-  end
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    world:newBody(100, 100, "dynamic")
+    world:newBody(200, 200, "static")
+    local ids = world:getBodyIds()
+    print("body ids = " .. #ids)
 end
 ```
 
@@ -5115,12 +5587,18 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Returns the one-way normal (nx, ny) or nil if not set.
-  -- The normal points toward the blocking side — objects pass through from behind.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local platform = world:newBody(200, 300, "static")
-  local nx, ny = world:getBodyOneWay(platform:getId())
-  if nx then lurek.log.debug("one-way n=" .. nx .. "," .. ny, "phys") end
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local platform = world:newBody(200, 400, "static")
+    world:addFixture(platform:getId(), "rectangle", 0, 0.5, 0, false, 100, 10)
+    world:setBodyOneWay(platform:getId(), 0, -1)
+    local nx, ny = world:getBodyOneWay(platform:getId())
+    if nx then
+        print("one-way normal = " .. nx .. ", " .. ny)
+    end
+    world:clearBodyOneWay(platform:getId())
+    nx, ny = world:getBodyOneWay(platform:getId())
+    print("after clear: " .. tostring(nx))
 end
 ```
 
@@ -5151,10 +5629,10 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Returns "static", "dynamic", "kinematic", or "sensor".
-  local world = lurek.physics.newWorld(0, 9.81)
-  local body = world:newBody(100, 200, "dynamic")
-  if world:getBodyType(body:getId()) == "dynamic" then body:setMass(1.0) end
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local body = world:newBody(100, 100, "dynamic")
+    print("body type = " .. world:getBodyType(body:getId()))
 end
 ```
 
@@ -5180,16 +5658,23 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- getCollisionEvents returns all collisions from the LAST step.
-  -- Each entry has bodyA and bodyB fields (numeric IDs).
-  -- Process these to trigger damage, spawn particles, play sounds.
-  local world = lurek.physics.newWorld(0, 9.81)
-  function lurek.process(dt)
-    world:step(dt)
-    for _, e in ipairs(world:getCollisionEvents()) do
-      lurek.log.debug("hit " .. e.bodyA .. " vs " .. e.bodyB, "phys")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local ground = world:newBody(200, 500, "static")
+    world:addFixture(ground:getId(), "rectangle", 0, 0.5, 0, false, 400, 20)
+    world:newCircleBody(190, 100, 8, "dynamic")
+    world:newCircleBody(210, 100, 8, "dynamic")
+    for frame = 1, 120 do
+        world:step(1 / 60)
+        local events = world:getCollisionEvents()
+        if #events > 0 then
+            print("frame " .. frame .. ": " .. #events .. " collision(s)")
+            for _, ev in ipairs(events) do
+                print("  A=" .. ev.bodyA .. " B=" .. ev.bodyB)
+            end
+            break
+        end
     end
-  end
 end
 ```
 
@@ -5215,16 +5700,19 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- getContacts returns ALL current contact manifolds (persistent, not events).
-  -- Each has bodyA, bodyB, normalX, normalY, isTouching.
-  -- Use for continuous checks like "is anything touching the lava?"
-  local world = lurek.physics.newWorld(0, 9.81)
-  for _, c in ipairs(world:getContacts()) do
-    if c.isTouching then
-      -- The normal points from bodyA toward bodyB at the contact surface
-      lurek.log.debug("contact n=" .. c.normalX .. "," .. c.normalY, "phys")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local floor = world:newBody(200, 400, "static")
+    world:addFixture(floor:getId(), "rectangle", 0, 0.5, 0, false, 400, 20)
+    local ball = world:newCircleBody(200, 100, 10, "dynamic")
+    for _ = 1, 120 do
+        world:step(1 / 60)
     end
-  end
+    local contacts = world:getContacts()
+    print("active contacts = " .. #contacts)
+    for _, c in ipairs(contacts) do
+        print("  bodyA=" .. c.bodyA .. " bodyB=" .. c.bodyB)
+    end
 end
 ```
 
@@ -5250,15 +5738,22 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- End-contact fires ONCE when two bodies stop touching.
-  -- Use for "on leave" triggers: leaving a pressure plate, exiting water.
-  local world = lurek.physics.newWorld(0, 9.81)
-  function lurek.process(dt)
-    world:step(dt)
-    for _, e in ipairs(world:getEndContactEvents()) do
-      lurek.log.debug("end " .. e.bodyA .. "/" .. e.bodyB, "phys")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local floor = world:newBody(200, 500, "static")
+    world:addFixture(floor:getId(), "rectangle", 0, 0.5, 0, false, 600, 20)
+    local ball = world:newCircleBody(200, 100, 10, "dynamic")
+    ball:setRestitution(0.9)
+    local count = 0
+    for frame = 1, 300 do
+        world:step(1 / 60)
+        local events = world:getEndContactEvents()
+        if #events > 0 then
+            count = #events
+            print("frame " .. frame .. ": end events = " .. count)
+            break
+        end
     end
-  end
 ```
 
 ### LWorld:getGravity
@@ -5284,10 +5779,13 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Returns gx, gy — the global force applied to all dynamic bodies each step.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local gx, gy = world:getGravity()
-  lurek.log.info("gravity=" .. gx .. "," .. gy, "phys")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local gx, gy = world:getGravity()
+    print("gravity = " .. gx .. ", " .. gy)
+    world:setGravity(0, 800)
+    gx, gy = world:getGravity()
+    print("new gravity = " .. gx .. ", " .. gy)
 end
 ```
 
@@ -5319,14 +5817,13 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- getJointBodies returns the two body IDs connected by a joint.
-  -- Useful for damage propagation — if joint breaks, damage both connected bodies.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local b1 = world:newBody(0, 0, "static")
-  local b2 = world:newBody(0, 100, "dynamic")
-  local jid = world:addRevoluteJoint(b1:getId(), b2:getId(), 0, 50)
-  local a, b = world:getJointBodies(jid)
-  lurek.log.debug("joint " .. jid .. " links " .. a .. " <-> " .. b, "phys")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local a = world:newBody(100, 100, "static")
+    local b = world:newCircleBody(100, 200, 10, "dynamic")
+    local jid = world:addRevoluteJoint(a:getId(), b:getId(), 100, 100)
+    local bodyA, bodyB = world:getJointBodies(jid)
+    print("joint bodies = " .. bodyA .. "," .. bodyB)
 end
 ```
 
@@ -5357,12 +5854,16 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  local world = lurek.physics.newWorld(0, 9.81)
-  local b1 = world:newBody(0, 0, "static")
-  local b2 = world:newBody(0, 100, "dynamic")
-  local jid = world:addRevoluteJoint(b1:getId(), b2:getId(), 0, 50)
-  local f = world:getJointBreakForce(jid)
-  if f then lurek.log.debug("breaks at " .. f .. " N", "phys") end
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local ceiling = world:newBody(200, 50, "static")
+    local weight = world:newCircleBody(200, 100, 10, "dynamic")
+    local jid = world:addDistanceJoint(
+        ceiling:getId(), weight:getId(),
+        0, 0, 0, 0, 50
+    )
+    world:setJointBreakForce(jid, 500)
+    print("break force = " .. world:getJointBreakForce(jid))
 end
 ```
 
@@ -5388,11 +5889,13 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Iterate all joints to inspect, update, or conditionally destroy them.
-  local world = lurek.physics.newWorld(0, 9.81)
-  for _, jid in ipairs(world:getJointIds()) do
-    lurek.log.debug("joint id=" .. jid, "phys")
-  end
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local a = world:newBody(100, 100, "static")
+    local b = world:newCircleBody(100, 200, 10, "dynamic")
+    world:addRevoluteJoint(a:getId(), b:getId(), 100, 100)
+    local ids = world:getJointIds()
+    print("joint ids = " .. #ids)
 end
 ```
 
@@ -5424,14 +5927,14 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Joint limits constrain the range of motion (angle for revolute, distance for prismatic).
-  -- Returns lower, upper bounds.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local b1 = world:newBody(0, 0, "static")
-  local b2 = world:newBody(0, 100, "dynamic")
-  local jid = world:addRevoluteJoint(b1:getId(), b2:getId(), 0, 50)
-  local lo, hi = world:getJointLimits(jid)
-  lurek.log.debug("limits=[" .. lo .. ", " .. hi .. "]", "phys")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local anchor = world:newBody(200, 100, "static")
+    local arm = world:newBody(200, 200, "dynamic")
+    local jid = world:addRevoluteJoint(anchor:getId(), arm:getId(), 200, 100)
+    world:setJointLimits(jid, -math.pi / 4, math.pi / 4)
+    local lo, hi = world:getJointLimits(jid)
+    print("limits = " .. lo .. " to " .. hi)
 end
 ```
 
@@ -5462,13 +5965,13 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Motor speed is in radians/sec for revolute, meters/sec for prismatic.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local b1 = world:newBody(0, 0, "static")
-  local b2 = world:newBody(0, 100, "dynamic")
-  local jid = world:addRevoluteJoint(b1:getId(), b2:getId(), 0, 50)
-  local rpm = world:getJointMotorSpeed(jid)
-  lurek.log.debug("motor speed=" .. rpm, "phys")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 0)
+    local hub = world:newBody(200, 200, "static")
+    local blade = world:newBody(200, 200, "dynamic")
+    local jid = world:addRevoluteJoint(hub:getId(), blade:getId(), 200, 200)
+    world:setJointMotorSpeed(jid, 5.0)
+    print("motor speed = " .. world:getJointMotorSpeed(jid))
 end
 ```
 
@@ -5499,14 +6002,12 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Returns "revolute", "distance", "prismatic", "weld", etc.
-  -- Useful for generic joint-processing logic.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local b1 = world:newBody(0, 0, "static")
-  local b2 = world:newBody(0, 100, "dynamic")
-  local jid = world:addRevoluteJoint(b1:getId(), b2:getId(), 0, 50)
-  local kind = world:getJointType(jid)
-  if kind == "revolute" then lurek.log.debug("hinge joint", "phys") end
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local a = world:newBody(100, 100, "static")
+    local b = world:newCircleBody(100, 200, 10, "dynamic")
+    local jid = world:addRevoluteJoint(a:getId(), b:getId(), 100, 100)
+    print("joint type = " .. world:getJointType(jid))
 end
 ```
 
@@ -5532,10 +6033,14 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Use getMeter to convert between pixel coordinates and physics units.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local ppm = world:getMeter()
-  lurek.log.debug("1 meter = " .. ppm .. " pixels", "phys")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 9.81)
+    world:setMeter(64)
+    print("meter = " .. world:getMeter() .. " px")
+    local meters = world:toPhysics(128)
+    print("128px = " .. meters .. "m")
+    local pixels = world:toPixels(2.0)
+    print("2m = " .. pixels .. "px")
 end
 ```
 
@@ -5561,9 +6066,10 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  local world = lurek.physics.newWorld(0, 9.81)
-  local iters = world:getSolverIterations()
-  lurek.log.info("solver iterations=" .. iters, "phys")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    world:setSolverIterations(8)
+    print("solver iterations = " .. world:getSolverIterations())
 end
 ```
 
@@ -5589,15 +6095,19 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Zone events fire when bodies enter or leave a zone's bounds.
-  -- Each event has zone_id, body_id, and kind ("enter" or "leave").
-  local world = lurek.physics.newWorld(0, 9.81)
-  function lurek.process(dt)
-    world:step(dt)
-    for _, e in ipairs(world:getZoneEvents()) do
-      lurek.log.debug("zone " .. e.zone_id .. " " .. e.kind .. " body=" .. e.body_id, "phys")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local zone = world:addZone(150, 300, 200, 100)
+    zone:setEnabled(true)
+    local ball = world:newCircleBody(250, 100, 8, "dynamic")
+    for frame = 1, 120 do
+        world:step(1 / 60)
+        local events = world:getZoneEvents()
+        for _, ev in ipairs(events) do
+            print("frame " .. frame .. ": zone=" .. ev.zone_id ..
+                " body=" .. ev.body_id .. " kind=" .. ev.kind)
+        end
     end
-  end
 end
 ```
 
@@ -5628,13 +6138,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Sleeping bodies are not simulated — they're frozen in place until disturbed.
-  -- Use to count active vs inactive bodies for performance monitoring.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local body = world:newBody(100, 200, "dynamic")
-  if not world:isBodySleeping(body:getId()) then
-    lurek.log.debug("body active", "phys")
-  end
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local body = world:newCircleBody(100, 100, 10, "dynamic")
+    local id = body:getId()
+    lurek.physics.setSleepingAllowed(world, body, true)
+    world:sleepBody(id)
+    print("sleeping = " .. tostring(world:isBodySleeping(id)))
+    world:wakeUpBody(id)
+    print("after wake = " .. tostring(world:isBodySleeping(id)))
 end
 ```
 
@@ -5660,9 +6172,12 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- jointCount returns the total number of active joints in the world.
-  local world = lurek.physics.newWorld(0, 9.81)
-  lurek.log.info("joints=" .. world:jointCount(), "phys")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local a = world:newBody(100, 100, "static")
+    local b = world:newCircleBody(100, 200, 10, "dynamic")
+    world:addRevoluteJoint(a:getId(), b:getId(), 100, 100)
+    print("joint count = " .. world:jointCount())
 end
 ```
 
@@ -5693,15 +6208,35 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Batch-create bodies for better performance when spawning many at once.
-  -- Each entry is {x, y, type}. Returns a table of body IDs.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local ids = world:newBodies({
-    { 100, 200, "dynamic" },  -- crate 1
-    { 132, 200, "dynamic" },  -- crate 2
-    { 164, 200, "dynamic" },  -- crate 3
-  })
-  lurek.log.info("spawned " .. #ids .. " crates", "phys")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local specs = {}
+    for i = 1, 50 do
+        specs[i] = {
+            x = i * 15,
+            y = 50,
+            body_type = "dynamic",
+            shape = "circle",
+            radius = 5
+        }
+    end
+    local ids = world:newBodies(specs)
+    print("batch created " .. #ids .. " bodies")
+    print("total count = " .. world:getBodyCount())
+
+    -- World body management. Focus: newBodies.
+    local world = lurek.physics.newWorld(0, 9.8)
+    local body = world:newBody(0, 0, "dynamic")
+    local fid = world:addFixture(body:getId(), "circle", 1.0, 0.3, 0.5, false, 5.0)
+    print("fixture_count=" .. world:fixtureCount(body:getId()))
+    world:setBodyType(body:getId(), "static")
+    world:clearBeginContact()
+    world:clearEndContact()
+    local bodies = world:newBodies({{ x=10, y=10, type="dynamic" }, { x=20, y=10, type="static" }})
+    print("batch_bodies=" .. #bodies)
+    local jid = world:addMouseJoint(body:getId(), 0, 0, 1000)
+    world:setMouseJointTarget(jid, 50, 50)
+    world:destroyBody(body:getId())
 end
 ```
 
@@ -5736,12 +6271,16 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- World:newBody(x, y, type) creates a body and returns an LBody handle.
-  -- The handle provides per-body methods (setMass, applyImpulse, etc).
-  local world = lurek.physics.newWorld(0, 9.81)
-  local crate = world:newBody(100, 200, "dynamic")
-  crate:setMass(2.5)         -- heavier crate resists impulses more
-  crate:setRestitution(0.3)  -- slight bounce on impact
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local body = world:newBody(100, 50, "dynamic")
+    local x, y = body:getPosition()
+    print("pos = " .. x .. ", " .. y)
+    print("type = " .. body:getType())
+    print("id = " .. body:getId())
+    world:step(1 / 60)
+    x, y = body:getPosition()
+    print("after step: y = " .. y)
 end
 ```
 
@@ -5780,15 +6319,11 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Creates a body with a chain (polyline) collider in one call.
-  -- Use for terrain outlines, rails, or complex static boundaries.
-  -- Args: x, y (body position), vertices (flat {x1,y1,x2,y2,...}), closed, type
-  local world = lurek.physics.newWorld(0, 9.81)
-  local verts = {0,400, 200,380, 400,400, 600,390, 800,400}
-
-  -- Open chain = path with two endpoints (not a loop)
-  local b = world:newChainBody(0, 0, verts, false, "static")
-  lurek.log.info("chain body: " .. b:getId(), "physics")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local terrain = { 0, 100, 100, 80, 200, 90, 300, 60, 400, 100 }
+    local ground = world:newChainBody(0, 500, terrain, false, "static")
+    print("chain body at " .. ground:getX() .. ", " .. ground:getY())
 end
 ```
 
@@ -5825,11 +6360,31 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Convenience: creates a body with a circle collider already attached.
-  -- Faster than newBody + addFixture for simple circle objects.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local b = world:newCircleBody(300, 200, 20, "dynamic") -- ball, radius 20
-  lurek.log.info("circle body: " .. b:getId(), "physics")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local ball = world:newCircleBody(200, 100, 16, "dynamic")
+    print("ball pos = " .. ball:getX() .. ", " .. ball:getY())
+    print("ball w = " .. ball:getWidth() .. " h = " .. ball:getHeight())
+
+    -- Practical: find all bodies in explosion radius.
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    for i = 1, 10 do
+        world:newCircleBody(50 + i * 40, 200, 6, "dynamic")
+    end
+    local explosionX, explosionY = 250, 200
+    local radius = 80
+    local affected = world:queryAABB(
+        explosionX - radius, explosionY - radius,
+        radius * 2, radius * 2
+    )
+    print("bodies in explosion area = " .. #affected)
+    for _, id in ipairs(affected) do
+        local bx = world:getBodyType(id)
+        if bx == "dynamic" then
+            print("  applying force to body " .. id)
+        end
+    end
 end
 ```
 
@@ -5872,13 +6427,10 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Creates a body with an edge (line segment) collider.
-  -- Args: x, y (body pos), x1,y1,x2,y2 (edge endpoints relative to body), type
-  local world = lurek.physics.newWorld(0, 9.81)
-
-  -- Floor: a static edge from left to right at y=400
-  local b = world:newEdgeBody(0, 0, 0, 400, 800, 400, "static")
-  lurek.log.info("edge body: " .. b:getId(), "physics")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local wall = world:newEdgeBody(0, 500, 0, 0, 800, 0, "static")
+    print("edge body at " .. wall:getX() .. ", " .. wall:getY())
 end
 ```
 
@@ -5915,13 +6467,11 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Creates a body with a convex polygon collider.
-  -- Vertices must be convex, max 8 points, in local coordinates.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local verts = {-20,-10, 20,-10, 20,10, -20,10} -- a rectangle via polygon
-
-  local b = world:newPolygonBody(300, 200, verts, "dynamic")
-  lurek.log.info("polygon body: " .. b:getId(), "physics")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local verts = { 0, -20, -15, 15, 15, 15 }
+    local tri = world:newPolygonBody(100, 200, verts, "dynamic")
+    print("polygon body at " .. tri:getX() .. ", " .. tri:getY())
 end
 ```
 
@@ -5958,14 +6508,16 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Query all bodies whose bounding boxes overlap a rectangle.
-  -- Returns a table of body IDs. Use for area-of-effect damage or selection.
-  local world = lurek.physics.newWorld(0, 9.81)
-  world:newCircleBody(100, 100, 20, "static")
-
-  -- Find all bodies in the rectangle (80,80) to (210,210)
-  local hits = world:queryAABB(80, 80, 130, 130)
-  lurek.log.info("AABB hits: " .. #hits, "physics")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    world:newCircleBody(100, 100, 10, "dynamic")
+    world:newCircleBody(150, 120, 10, "dynamic")
+    world:newCircleBody(500, 500, 10, "dynamic")
+    local found = world:queryAABB(50, 50, 200, 200)
+    print("bodies in AABB = " .. #found)
+    for _, id in ipairs(found) do
+        print("  body id = " .. id)
+    end
 end
 ```
 
@@ -6002,15 +6554,19 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Cast a ray between two points. Returns the first body hit.
-  -- Use for line-of-sight checks, hitscan weapons, or laser beams.
-  -- Returns: bodyId, normalX, normalY, fraction (or nil if no hit)
-  local world = lurek.physics.newWorld(0, 9.81)
-  world:newCircleBody(200, 200, 30, "static")
-
-  -- Shoot a ray from (0,200) to (400,200) — horizontal line
-  local id, nx, ny, frac = world:raycast(0, 200, 400, 200)
-  lurek.log.info("raycast hit: " .. tostring(id), "physics")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    world:newCircleBody(200, 200, 20, "static")
+    world:newCircleBody(400, 200, 20, "static")
+    local hit = world:raycast(0, 200, 600, 200)
+    if hit then
+        print("hit body " .. hit.bodyId)
+        print("hit point = " .. hit.x .. ", " .. hit.y)
+        print("normal = " .. hit.normalX .. ", " .. hit.normalY)
+        print("toi = " .. hit.toi)
+    else
+        print("no hit")
+    end
 end
 ```
 
@@ -6049,16 +6605,16 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Cast a directional ray and get ALL bodies hit (not just the first).
-  -- Use for piercing projectiles or penetration-based damage.
-  -- Args: x, y (origin), dx, dy (direction), maxDist
-  local world = lurek.physics.newWorld(0, 9.81)
-  world:newCircleBody(100, 200, 20, "static")
-  world:newCircleBody(300, 200, 20, "static")
-
-  -- Ray going right from origin, max 400px distance
-  local hits = world:raycastAll(0, 200, 1, 0, 400)
-  lurek.log.info("all hits: " .. #hits, "physics")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 0)
+    for i = 1, 5 do
+        world:newCircleBody(100 + i * 80, 200, 10, "static")
+    end
+    local hits = world:raycastAll(50, 200, 1, 0, 600)
+    print("total hits = " .. #hits)
+    for i, hit in ipairs(hits) do
+        print("  hit " .. i .. ": body=" .. hit.bodyId .. " at " .. hit.x .. "," .. hit.y)
+    end
 end
 ```
 
@@ -6097,13 +6653,18 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Like raycastAll but returns only the closest hit.
-  -- More efficient when you only need the first obstruction.
-  -- Returns a table {bodyId, x, y, normalX, normalY, toi} or nil.
-  local world = lurek.physics.newWorld(0, 9.81)
-  world:newCircleBody(150, 200, 20, "static")
-  local hit = world:raycastClosest(0, 200, 1, 0, 400)
-  lurek.log.info("closest hit: " .. tostring(hit and hit.bodyId), "physics")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    world:newCircleBody(200, 300, 15, "static")
+    world:newCircleBody(200, 500, 15, "static")
+    local hit = world:raycastClosest(200, 100, 0, 1, 500)
+    if hit then
+        print("closest hit body = " .. hit.bodyId)
+        print("at " .. hit.x .. ", " .. hit.y)
+        print("distance factor = " .. hit.toi)
+    else
+        print("no hit within range")
+    end
 end
 ```
 
@@ -6131,12 +6692,21 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Callback fires during step() when two bodies first touch.
-  -- Arguments are body IDs (not LBody objects) — use getBodyData to identify.
-  local world = lurek.physics.newWorld(0, 9.81)
-  world:setBeginContact(function(a, b)
-    lurek.log.info("touch " .. a .. " <-> " .. b, "phys")
-  end)
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local ground = world:newBody(200, 500, "static")
+    world:addFixture(ground:getId(), "rectangle", 0, 0.5, 0, false, 400, 20)
+    world:newCircleBody(200, 100, 10, "dynamic")
+    local contactCount = 0
+    world:setBeginContact(function(bodyA, bodyB)
+        contactCount = contactCount + 1
+        print("callback: contact #" .. contactCount .. " A=" .. bodyA .. " B=" .. bodyB)
+    end)
+    for _ = 1, 120 do
+        world:step(1 / 60)
+    end
+    print("total begin contacts = " .. contactCount)
+    world:clearBeginContact()
 end
 ```
 
@@ -6166,11 +6736,12 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- CCD (Continuous Collision Detection) prevents fast bodies from tunneling
-  -- through thin walls. Enable for bullets, arrows, or anything moving > 500px/s.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local bullet = world:newBody(100, 200, "dynamic")
-  world:setBodyCCD(bullet:getId(), true) -- no more passing through walls
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 0)
+    local bullet = world:newCircleBody(100, 100, 3, "dynamic")
+    world:setBodyCCD(bullet:getId(), true)
+    print("CCD enabled = " .. tostring(world:getBodyCCD(bullet:getId())))
+    bullet:setVelocity(2000, 0)
 end
 ```
 
@@ -6200,12 +6771,18 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Attach any Lua value to a body ID for identification in callbacks.
-  -- Common pattern: store entity type and game state for collision resolution.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local b = world:newBody(200, 200, "dynamic")
-  world:setBodyData(b:getId(), {entityId=42, type="player"})
-  lurek.log.info("body data set", "physics")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local player = world:newCircleBody(100, 100, 10, "dynamic")
+    local enemy = world:newCircleBody(300, 100, 10, "dynamic")
+    world:setBodyData(player:getId(), { tag = "player", hp = 100 })
+    world:setBodyData(enemy:getId(), { tag = "enemy", hp = 50 })
+    local pd = world:getBodyData(player:getId())
+    print("player data tag = " .. tostring(pd))
+    local ed = world:getBodyData(enemy:getId())
+    print("enemy data tag = " .. tostring(ed))
+    world:clearBodyData(player:getId())
+    print("after clear = " .. tostring(world:getBodyData(player:getId())))
 end
 ```
 
@@ -6237,13 +6814,18 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- One-way platform: bodies pass through from below, block from above.
-  -- The normal vector points toward the blocking side.
-  -- (0, -1) means "blocks from above" — classic platformer drop-through platform.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local platform = world:newBody(400, 300, "static")
-  world:setBodyOneWay(platform:getId(), 0, -1) -- blocks downward movement only
-  lurek.log.info("one-way platform set", "physics")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local platform = world:newBody(200, 400, "static")
+    world:addFixture(platform:getId(), "rectangle", 0, 0.5, 0, false, 100, 10)
+    world:setBodyOneWay(platform:getId(), 0, -1)
+    local nx, ny = world:getBodyOneWay(platform:getId())
+    if nx then
+        print("one-way normal = " .. nx .. ", " .. ny)
+    end
+    world:clearBodyOneWay(platform:getId())
+    nx, ny = world:getBodyOneWay(platform:getId())
+    print("after clear: " .. tostring(nx))
 end
 ```
 
@@ -6273,11 +6855,18 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Change body type at runtime without recreating it.
-  -- Common pattern: door starts "static", becomes "kinematic" when triggered.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local door = world:newBody(200, 200, "static")
-  world:setBodyType(door:getId(), "kinematic") -- now movable by code
+    local world = lurek.physics.newWorld(0, 9.8)
+    local body = world:newBody(0, 0, "dynamic")
+    local fid = world:addFixture(body:getId(), "circle", 1.0, 0.3, 0.5, false, 5.0)
+    print("fixture_count=" .. world:fixtureCount(body:getId()))
+    world:setBodyType(body:getId(), "static")
+    world:clearBeginContact()
+    world:clearEndContact()
+    local bodies = world:newBodies({{ x=10, y=10, type="dynamic" }, { x=20, y=10, type="static" }})
+    print("batch_bodies=" .. #bodies)
+    local jid = world:addMouseJoint(body:getId(), 0, 0, 1000)
+    world:setMouseJointTarget(jid, 50, 50)
+    world:destroyBody(body:getId())
 end
 ```
 
@@ -6305,12 +6894,20 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Fires when two bodies separate after being in contact.
-  local world = lurek.physics.newWorld(0, 9.81)
-  world:setEndContact(function(a, b)
-    lurek.log.debug("apart " .. a .. " / " .. b, "phys")
-  end)
-end
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local ground = world:newBody(200, 500, "static")
+    world:addFixture(ground:getId(), "rectangle", 0, 0.5, 0, false, 400, 20)
+    local ball = world:newCircleBody(200, 100, 10, "dynamic")
+    ball:setRestitution(0.9)
+    local endCount = 0
+    world:setEndContact(function(bodyA, bodyB)
+        endCount = endCount + 1
+    end)
+    for _ = 1, 300 do
+        world:step(1 / 60)
+    end
+    print("end contacts (bounces) = " .. endCount)
 ```
 
 ### LWorld:setFixtureFriction
@@ -6341,13 +6938,13 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Change friction on a specific fixture index (0-based).
-  -- Use when a body has multiple fixtures with different surface properties.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local b = world:newBody(200, 200, "dynamic")
-  local fid = world:addFixture(b:getId(), "rectangle", 1.0, 0.5, 0.0, false, 32.0, 32.0)
-  world:setFixtureFriction(b:getId(), fid, 0.1) -- make this fixture slippery
-  lurek.log.info("fixture friction set", "physics")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local body = world:newBody(100, 100, "dynamic")
+    local bodyId = body:getId()
+    world:addFixture(bodyId, "circle", 1.0, 0.3, 0.5, false, 10)
+    world:setFixtureFriction(bodyId, 0, 0.8)
+    print("fixture friction updated")
 end
 ```
 
@@ -6379,12 +6976,13 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Change bounciness on a specific fixture after creation.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local b = world:newBody(200, 200, "dynamic")
-  local fid = world:addFixture(b:getId(), "circle", 1.0, 0.5, 0.8, false, 16.0)
-  world:setFixtureRestitution(b:getId(), fid, 0.8) -- very bouncy ball
-  lurek.log.info("restitution set", "physics")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local body = world:newBody(100, 100, "dynamic")
+    local bodyId = body:getId()
+    world:addFixture(bodyId, "circle", 1.0, 0.3, 0.5, false, 10)
+    world:setFixtureRestitution(bodyId, 0, 0.9)
+    print("fixture restitution updated")
 end
 ```
 
@@ -6416,13 +7014,13 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Toggle sensor mode on a fixture — sensor detects overlap without pushing.
-  -- Use to add a detection radius around a solid body.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local b = world:newBody(200, 200, "static")
-  local fid = world:addFixture(b:getId(), "circle", 0.0, 0.0, 0.0, true, 40.0)
-  world:setFixtureSensor(b:getId(), fid, true) -- confirm it's a sensor
-  lurek.log.info("sensor fixture set", "physics")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local body = world:newBody(100, 100, "dynamic")
+    local bodyId = body:getId()
+    world:addFixture(bodyId, "circle", 1.0, 0.3, 0.5, false, 10)
+    world:setFixtureSensor(bodyId, 0, true)
+    print("fixture sensor updated")
 end
 ```
 
@@ -6452,13 +7050,13 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Change gravity at runtime for gameplay effects (flip gravity, zero-G zones).
-  -- All dynamic bodies respond immediately on the next step.
-  local world = lurek.physics.newWorld(0, 9.81)
-  function lurek.process(dt)
-    -- Press G to flip gravity upward (negative Y = up in screen space)
-    if lurek.input.keyboard.isDown("g") then world:setGravity(0, -9.81) end
-  end
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local gx, gy = world:getGravity()
+    print("gravity = " .. gx .. ", " .. gy)
+    world:setGravity(0, 800)
+    gx, gy = world:getGravity()
+    print("new gravity = " .. gx .. ", " .. gy)
 end
 ```
 
@@ -6488,13 +7086,16 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Breakable joints snap when the constraint force exceeds the threshold.
-  -- Great for destructible structures — chains break under too much tension.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local b1 = world:newBody(0, 0, "static")
-  local b2 = world:newBody(0, 100, "dynamic")
-  local jid = world:addRevoluteJoint(b1:getId(), b2:getId(), 0, 50)
-  world:setJointBreakForce(jid, 5000.0) -- breaks at 5000 Newtons
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local ceiling = world:newBody(200, 50, "static")
+    local weight = world:newCircleBody(200, 100, 10, "dynamic")
+    local jid = world:addDistanceJoint(
+        ceiling:getId(), weight:getId(),
+        0, 0, 0, 0, 50
+    )
+    world:setJointBreakForce(jid, 500)
+    print("break force set")
 end
 ```
 
@@ -6526,16 +7127,13 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Constrain a revolute joint to a specific angular range.
-  -- For prismatic joints, limits are in meters (distance).
-  local world = lurek.physics.newWorld(0, 9.81)
-  local a = world:newBody(100, 200, "static")
-  local b = world:newBody(100, 100, "dynamic")
-  local jid = world:addRevoluteJoint(a:getId(), b:getId(), 100, 200)
-
-  -- Allow only 45 degrees of rotation each way
-  world:setJointLimits(jid, -math.pi/4, math.pi/4)
-  lurek.log.info("joint limits set", "physics")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local anchor = world:newBody(200, 100, "static")
+    local arm = world:newBody(200, 200, "dynamic")
+    local jid = world:addRevoluteJoint(anchor:getId(), arm:getId(), 200, 100)
+    world:setJointLimits(jid, -math.pi / 4, math.pi / 4)
+    print("joint limits set")
 end
 ```
 
@@ -6565,14 +7163,13 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Enable/disable the limits constraint on a joint.
-  -- Joint must have limits set first — then enable to enforce them.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local a = world:newBody(100, 200, "static")
-  local b = world:newBody(100, 100, "dynamic")
-  local jid = world:addRevoluteJoint(a:getId(), b:getId(), 100, 200)
-  world:setJointLimitsEnabled(jid, true) -- now limits are enforced
-  lurek.log.info("joint limits enabled", "physics")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local anchor = world:newBody(200, 100, "static")
+    local arm = world:newBody(200, 200, "dynamic")
+    local jid = world:addRevoluteJoint(anchor:getId(), arm:getId(), 200, 100)
+    world:setJointLimitsEnabled(jid, true)
+    print("joint limits enabled")
 end
 ```
 
@@ -6602,14 +7199,13 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Set the motor speed on a revolute or prismatic joint.
-  -- The motor actively drives the joint toward this speed.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local axle = world:newBody(200, 200, "static")
-  local wheel = world:newBody(200, 240, "dynamic")
-  local jid = world:addRevoluteJoint(axle:getId(), wheel:getId(), 200, 220)
-  world:setJointMotorSpeed(jid, 2.0) -- spin at 2 rad/s
-  lurek.log.info("motor speed: 2.0 rad/s", "physics")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 0)
+    local hub = world:newBody(200, 200, "static")
+    local blade = world:newBody(200, 200, "dynamic")
+    local jid = world:addRevoluteJoint(hub:getId(), blade:getId(), 200, 200)
+    world:setJointMotorSpeed(jid, 5.0)
+    print("motor speed set")
 end
 ```
 
@@ -6637,12 +7233,14 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- setMeter defines how many pixels equal 1 physics meter.
-  -- Default is 1 (1 pixel = 1 meter). Set to 64 for "64 pixels = 1 meter".
-  -- This affects how gravity and forces translate to pixel movement.
-  local world = lurek.physics.newWorld(0, 9.81)
-  world:setMeter(64) -- now 64 pixels = 1 physics meter
-  lurek.log.info("ppm=" .. world:getMeter(), "phys")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 9.81)
+    world:setMeter(64)
+    print("meter = " .. world:getMeter() .. " px")
+    local meters = world:toPhysics(128)
+    print("128px = " .. meters .. "m")
+    local pixels = world:toPixels(2.0)
+    print("2m = " .. pixels .. "px")
 end
 ```
 
@@ -6674,15 +7272,18 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Update the target position of a mouse joint each frame.
-  -- The body springs toward the target — creating drag-and-drop physics.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local b = world:newBody(300, 200, "dynamic")
-  local jid = world:addMouseJoint(b:getId(), 300, 200, 2000)
-
-  -- Move the target — body will follow with spring-like lag
-  world:setMouseJointTarget(jid, 350, 250)
-  lurek.log.info("mouse joint target updated", "physics")
+    local world = lurek.physics.newWorld(0, 9.8)
+    local body = world:newBody(0, 0, "dynamic")
+    local fid = world:addFixture(body:getId(), "circle", 1.0, 0.3, 0.5, false, 5.0)
+    print("fixture_count=" .. world:fixtureCount(body:getId()))
+    world:setBodyType(body:getId(), "static")
+    world:clearBeginContact()
+    world:clearEndContact()
+    local bodies = world:newBodies({{ x=10, y=10, type="dynamic" }, { x=20, y=10, type="static" }})
+    print("batch_bodies=" .. #bodies)
+    local jid = world:addMouseJoint(body:getId(), 0, 0, 1000)
+    world:setMouseJointTarget(jid, 50, 50)
+    world:destroyBody(body:getId())
 end
 ```
 
@@ -6710,10 +7311,10 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- More iterations = more accurate stacking and joint behavior, but slower.
-  -- Default is 4. Use 8-12 for precision puzzles or tall stacks of crates.
-  local world = lurek.physics.newWorld(0, 9.81)
-  world:setSolverIterations(12)
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    world:setSolverIterations(8)
+    print("solver iterations = " .. world:getSolverIterations())
 end
 ```
 
@@ -6741,11 +7342,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Force a body to sleep immediately — useful for settled rubble or debris.
-  -- The body won't move until another body collides with it or you call wakeUp.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local rubble = world:newBody(100, 200, "dynamic")
-  world:sleepBody(rubble:getId())
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local body = world:newCircleBody(100, 100, 10, "dynamic")
+    local id = body:getId()
+    lurek.physics.setSleepingAllowed(world, body, true)
+    world:sleepBody(id)
+    print("sleeping = " .. tostring(world:isBodySleeping(id)))
+    world:wakeUpBody(id)
+    print("after wake = " .. tostring(world:isBodySleeping(id)))
 end
 ```
 
@@ -6773,11 +7378,13 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- The method variant steps the world by dt seconds. Call once per frame.
-  local world = lurek.physics.newWorld(0, 9.81)
-  world:newBody(100, 0, "dynamic")
-  world:step(0.016)
-  lurek.log.debug("world stepped by 16ms", "phys")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    world:step(1 / 60)
+    world:step(1 / 60)
+    print("stepped twice at 60fps")
+    local leftover = world:stepFixed(0.025, 1 / 60, 4)
+    print("fixed step leftover = " .. leftover)
 end
 ```
 
@@ -6812,13 +7419,13 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Fixed-timestep stepping for deterministic simulation.
-  -- Args: accumulator (seconds), stepDt (fixed step size), maxSteps
-  -- Returns leftover time to carry into the next frame.
-  -- Use for multiplayer or replay-critical games where determinism matters.
-  local world = lurek.physics.newWorld(0, 9.81)
-  world:stepFixed(1/60, 6, 2) -- step with 1/60 accumulated, 6 sub-steps max, 2 iterations
-  lurek.log.info("fixed step done", "physics")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    world:step(1 / 60)
+    world:step(1 / 60)
+    print("stepped twice at 60fps")
+    local leftover = world:stepFixed(0.025, 1 / 60, 4)
+    print("fixed step leftover = " .. leftover)
 end
 ```
 
@@ -6849,12 +7456,14 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- toPhysics converts a pixel measurement to physics meters using the current scale.
-  -- Use when passing pixel positions to physics functions that expect meters.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local px = 128
-  local meters = world:toPhysics(px)
-  lurek.log.debug(px .. " px = " .. meters .. " m", "phys")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 9.81)
+    world:setMeter(64)
+    print("meter = " .. world:getMeter() .. " px")
+    local meters = world:toPhysics(128)
+    print("128px = " .. meters .. "m")
+    local pixels = world:toPixels(2.0)
+    print("2m = " .. pixels .. "px")
 end
 ```
 
@@ -6885,11 +7494,14 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- toPixels is the inverse of toPhysics — convert physics meters back to pixels.
-  -- Use when drawing physics positions on screen.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local pixels = world:toPixels(2.5)
-  lurek.log.debug("2.5 m = " .. pixels .. " px", "phys")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 9.81)
+    world:setMeter(64)
+    print("meter = " .. world:getMeter() .. " px")
+    local meters = world:toPhysics(128)
+    print("128px = " .. meters .. "m")
+    local pixels = world:toPixels(2.0)
+    print("2m = " .. pixels .. "px")
 end
 ```
 
@@ -6915,8 +7527,10 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  local obj = lurek.physics.newWorld(0, 9.8)
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LWorld"
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    print("type = " .. world:type())
+    print("is LWorld = " .. tostring(world:typeOf("LWorld")))
 end
 ```
 
@@ -6947,8 +7561,10 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  local obj = lurek.physics.newWorld(0, 9.8)
-  lurek.log.debug("typeOf LWorld: " .. tostring(obj:typeOf("LWorld")), "example") -- true
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    print("type = " .. world:type())
+    print("is LWorld = " .. tostring(world:typeOf("LWorld")))
 end
 ```
 
@@ -6976,12 +7592,15 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Manually wake a sleeping body before applying forces or impulses.
-  -- Forces applied to sleeping bodies are ignored unless you wake them first.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local body = world:newBody(100, 200, "dynamic")
-  world:wakeUpBody(body:getId())
-  body:applyImpulse(0, -100) -- now the impulse takes effect
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local body = world:newCircleBody(100, 100, 10, "dynamic")
+    local id = body:getId()
+    lurek.physics.setSleepingAllowed(world, body, true)
+    world:sleepBody(id)
+    print("sleeping = " .. tostring(world:isBodySleeping(id)))
+    world:wakeUpBody(id)
+    print("after wake = " .. tostring(world:isBodySleeping(id)))
 end
 ```
 
@@ -7004,11 +7623,13 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Remove a temporary speed-boost zone after it expires.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local boost = world:addZone(300, 200, 64, 64)
-  boost:destroy()
-  lurek.log.info("speed boost zone removed", "phys")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local z1 = world:addZone(0, 0, 100, 100)
+    local z2 = world:addZone(200, 200, 100, 100)
+    print("zone 1 id = " .. z1:getId())
+    z1:destroy()
+    print("zone 1 destroyed")
 end
 ```
 
@@ -7034,11 +7655,14 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Use zone IDs to track which zones are active and remove them later.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local zone = world:addZone(0, 400, 200, 100)
-  local id = zone:getId()
-  lurek.log.info("created zone id=" .. id, "phys")
+    local world = lurek.physics.newWorld(0, 9.8)
+    local zone = world:addZone(0, 0, 200, 200)
+    print("zone_id=" .. zone:getId())
+    zone:setEnabled(true)
+    zone:setLayerMask(0xFF)
+    zone:setPriority(1)
+    print("type=" .. zone:type())
+    print("typeOf=" .. tostring(zone:typeOf("LZone")))
 end
 ```
 
@@ -7066,12 +7690,19 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Override angular damping for bodies inside this zone.
-  -- Use to prevent spinning in specific areas (e.g., sticky surfaces).
-  local world = lurek.physics.newWorld(0, 9.81)
-  local z = world:addZone(100, 100, 300, 300)
-  z:setAngularDampingOverride(5.0) -- bodies stop spinning quickly inside
-  lurek.log.info("zone angular damping set", "physics")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local water = world:addZone(100, 300, 400, 200)
+    water:setLinearDampingOverride(3.0)
+    water:setAngularDampingOverride(2.0)
+    water:setGravityDirectional(0, 100)
+    local diver = world:newCircleBody(300, 310, 8, "dynamic")
+    diver:setVelocity(0, 100)
+    for _ = 1, 120 do
+        world:step(1 / 60)
+    end
+    local vx, vy = diver:getVelocity()
+    print("diver in water: vel=" .. vx .. "," .. vy)
 end
 ```
 
@@ -7103,11 +7734,12 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Override the zone shape from rectangle to circle for radial effects.
-  -- Useful for gravity wells, explosions, or circular force fields.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local well = world:addZone(0, 0, 1, 1) -- initial rect doesn't matter
-  well:setCircle(400, 300, 120) -- centered at (400,300), radius 120px
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local zone = world:addZone(200, 200, 100, 100)
+    zone:setCircle(250, 250, 80)
+    zone:setGravityZero()
+    print("circular zone created")
 end
 ```
 
@@ -7135,10 +7767,14 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Disabled zones have no effect on bodies — useful for toggling traps.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local field = world:addZone(0, 0, 200, 200)
-  field:setEnabled(false) -- force field is off until player hits a switch
+    local world = lurek.physics.newWorld(0, 9.8)
+    local zone = world:addZone(0, 0, 200, 200)
+    print("zone_id=" .. zone:getId())
+    zone:setEnabled(true)
+    zone:setLayerMask(0xFF)
+    zone:setPriority(1)
+    print("type=" .. zone:type())
+    print("typeOf=" .. tostring(zone:typeOf("LZone")))
 end
 ```
 
@@ -7168,11 +7804,18 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Override gravity direction and magnitude inside this zone.
-  -- Bodies inside experience this gravity instead of the world gravity.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local water = world:addZone(0, 400, 800, 200)
-  water:setGravityDirectional(0, 2.0) -- slow sinking in water
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local windZone = world:addZone(0, 0, 300, 600)
+    windZone:setGravityDirectional(200, 0)
+    local vortex = world:addZone(400, 200, 150, 150)
+    vortex:setGravityPoint(475, 275, 500)
+    local ball = world:newCircleBody(50, 300, 8, "dynamic")
+    for _ = 1, 60 do
+        world:step(1 / 60)
+    end
+    local x, y = ball:getPosition()
+    print("ball in wind zone: " .. x .. ", " .. y)
 end
 ```
 
@@ -7204,12 +7847,18 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Point gravity attracts bodies toward a center — like a black hole.
-  -- Args: cx, cy (attractor center), strength (pull force magnitude)
-  local world = lurek.physics.newWorld(0, 9.81)
-  local z = world:addZone(0, 0, 800, 600)
-  z:setGravityPoint(400, 300, 500) -- everything pulls toward screen center
-  lurek.log.info("gravity point set", "physics")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local windZone = world:addZone(0, 0, 300, 600)
+    windZone:setGravityDirectional(200, 0)
+    local vortex = world:addZone(400, 200, 150, 150)
+    vortex:setGravityPoint(475, 275, 500)
+    local ball = world:newCircleBody(50, 300, 8, "dynamic")
+    for _ = 1, 60 do
+        world:step(1 / 60)
+    end
+    local x, y = ball:getPosition()
+    print("ball in wind zone: " .. x .. ", " .. y)
 end
 ```
 
@@ -7241,12 +7890,18 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Repulsor pushes bodies away from a center point — opposite of point gravity.
-  -- Use for force fields, explosions, or area denial.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local z = world:addZone(200, 200, 600, 400)
-  z:setGravityRepulsor(400, 300, 300) -- pushes everything outward from center
-  lurek.log.info("gravity repulsor set", "physics")
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local repulsor = world:addZone(200, 200, 100, 100)
+    repulsor:setGravityRepulsor(250, 250, 300)
+    local zeroG = world:addZone(400, 100, 200, 200)
+    zeroG:setGravityZero()
+    local ball = world:newCircleBody(450, 200, 8, "dynamic")
+    for _ = 1, 60 do
+        world:step(1 / 60)
+    end
+    local vx, vy = ball:getVelocity()
+    print("ball in zero-g: vel=" .. vx .. "," .. vy)
 end
 ```
 
@@ -7269,11 +7924,18 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Zero-G zone: bodies float freely with no gravitational pull.
-  -- Perfect for space sections or anti-gravity puzzles.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local bubble = world:addZone(300, 100, 200, 200)
-  bubble:setGravityZero() -- bodies inside float weightlessly
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local repulsor = world:addZone(200, 200, 100, 100)
+    repulsor:setGravityRepulsor(250, 250, 300)
+    local zeroG = world:addZone(400, 100, 200, 200)
+    zeroG:setGravityZero()
+    local ball = world:newCircleBody(450, 200, 8, "dynamic")
+    for _ = 1, 60 do
+        world:step(1 / 60)
+    end
+    local vx, vy = ball:getVelocity()
+    print("ball in zero-g: vel=" .. vx .. "," .. vy)
 end
 ```
 
@@ -7301,11 +7963,14 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Layer mask controls which bodies are affected by this zone.
-  -- Only bodies whose layer bitmask ANDs nonzero with this mask are affected.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local slow = world:addZone(100, 100, 200, 200)
-  slow:setLayerMask(0x02) -- only affects bodies on layer 2
+    local world = lurek.physics.newWorld(0, 9.8)
+    local zone = world:addZone(0, 0, 200, 200)
+    print("zone_id=" .. zone:getId())
+    zone:setEnabled(true)
+    zone:setLayerMask(0xFF)
+    zone:setPriority(1)
+    print("type=" .. zone:type())
+    print("typeOf=" .. tostring(zone:typeOf("LZone")))
 end
 ```
 
@@ -7333,11 +7998,19 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- Linear damping acts like air resistance or viscosity.
-  -- High damping = bodies slow down quickly (mud, honey, thick fluid).
-  local world = lurek.physics.newWorld(0, 9.81)
-  local glue = world:addZone(0, 0, 100, 100)
-  glue:setLinearDampingOverride(5.0) -- bodies slow dramatically inside
+    ---@type LWorld
+    local world = lurek.physics.newWorld(0, 400)
+    local water = world:addZone(100, 300, 400, 200)
+    water:setLinearDampingOverride(3.0)
+    water:setAngularDampingOverride(2.0)
+    water:setGravityDirectional(0, 100)
+    local diver = world:newCircleBody(300, 310, 8, "dynamic")
+    diver:setVelocity(0, 100)
+    for _ = 1, 120 do
+        world:step(1 / 60)
+    end
+    local vx, vy = diver:getVelocity()
+    print("diver in water: vel=" .. vx .. "," .. vy)
 end
 ```
 
@@ -7365,11 +8038,14 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- When zones overlap, higher priority wins. Use to layer effects.
-  -- Example: a small zero-G bubble inside a larger gravity zone.
-  local world = lurek.physics.newWorld(0, 9.81)
-  local wind = world:addZone(0, 0, 200, 200)
-  wind:setPriority(10) -- higher priority overrides lower-priority overlapping zones
+    local world = lurek.physics.newWorld(0, 9.8)
+    local zone = world:addZone(0, 0, 200, 200)
+    print("zone_id=" .. zone:getId())
+    zone:setEnabled(true)
+    zone:setLayerMask(0xFF)
+    zone:setPriority(1)
+    print("type=" .. zone:type())
+    print("typeOf=" .. tostring(zone:typeOf("LZone")))
 end
 ```
 
@@ -7395,9 +8071,14 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- LZone is created via world:newZone(x, y, w, h); verified at runtime
-  local world = lurek.physics.newWorld(0, 9.8)
-  lurek.log.debug("LZone: use world:newZone(x, y, w, h) to create", "example")
+    local world = lurek.physics.newWorld(0, 9.8)
+    local zone = world:addZone(0, 0, 200, 200)
+    print("zone_id=" .. zone:getId())
+    zone:setEnabled(true)
+    zone:setLayerMask(0xFF)
+    zone:setPriority(1)
+    print("type=" .. zone:type())
+    print("typeOf=" .. tostring(zone:typeOf("LZone")))
 end
 ```
 
@@ -7428,9 +8109,14 @@ Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
 
 ```lua
 do
-  -- LZone is created via world:newZone(x, y, w, h); verified at runtime
-  local world = lurek.physics.newWorld(0, 9.8)
-  lurek.log.debug("LZone: typeOf verified via w:newZone at runtime", "example")
+    local world = lurek.physics.newWorld(0, 9.8)
+    local zone = world:addZone(0, 0, 200, 200)
+    print("zone_id=" .. zone:getId())
+    zone:setEnabled(true)
+    zone:setLayerMask(0xFF)
+    zone:setPriority(1)
+    print("type=" .. zone:type())
+    print("typeOf=" .. tostring(zone:typeOf("LZone")))
 end
 ```
 
@@ -7439,7 +8125,7 @@ end
 
 ## 💡 Examples
 
-- [physics.lua](../blob/main/content/examples/physics.lua) - Rigid bodies, joints
+- [physics.lua](../blob/main/content/examples/physics.lua) - API example
 
 [⬆ back to top](#table-of-contents)
 

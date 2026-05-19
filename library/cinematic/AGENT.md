@@ -1,8 +1,8 @@
-﻿# `cinematic` â€” Agent Reference (Lunasome)
+# `cinematic` â€” Agent Reference (Lureksome)
 
 | Property       | Value                                                                                                                                                                       |
 | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Tier**       | Tier 3 â€” Lunasome (pure Lua)                                                                                                                                                |
+| **Tier**       | Tier 3 â€” Lureksome (pure Lua)                                                                                                                                                |
 | **Source**     | `library/cinematic/init.lua`                                                                                                                                                |
 | **Lua Tests**  | `tests/lua/library/test_library_cinematic.lua`                                                                                                                              |
 | **Depends on** | `lurek.tween`, `lurek.camera`, `lurek.audio`, `lurek.event` (each clip kind degrades to a no-op when its binding is unavailable), `lurek.filesystem` + `lurek.serial` (TOML loader) |

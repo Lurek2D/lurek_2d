@@ -4,7 +4,7 @@
 
 ## Navigation
 
-[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lureksome](Lureksome)
 
 ## Table of Contents
 
@@ -107,21 +107,12 @@ Exact example from [log.lua](../blob/main/content/examples/log.lua):
 
 ```lua
 do
-  -- Memory sink: captures recent warnings in a ring buffer for an in-game console.
-  local console_sink = lurek.log.addSink({
-    type = "memory",
-    capacity = 128,
-    level = "warn",
-  })
-
-  -- File sink: writes all info+ messages to a session log for QA.
-  local session_sink = lurek.log.addSink({
-    type = "file",
-    path = "save/session.log",
-    level = "info",
-  })
-
-  lurek.log.info("sinks ready: console=" .. console_sink .. " session=" .. session_sink, "boot")
+    local id = lurek.log.addSink({
+        type = "memory",
+        level = "debug",
+        capacity = 10,
+    })
+    print("memory sink id = " .. id)
 end
 ```
 
@@ -137,12 +128,9 @@ Exact example from [log.lua](../blob/main/content/examples/log.lua):
 
 ```lua
 do
-  -- On scene transition, clear old sinks before setting up new ones.
-  lurek.log.addSink({ type = "memory", capacity = 32 })
-  lurek.log.addSink({ type = "memory", capacity = 32, level = "error" })
-  lurek.log.clearSinks()
-  -- After clearing, only stderr remains. Re-add sinks for the new scene.
-  lurek.log.info("sinks cleared for scene transition", "scene")
+    lurek.log.clearSinks()
+    local sinks = lurek.log.listSinks()
+    print("sinks after clear = " .. #sinks)
 end
 ```
 
@@ -163,12 +151,8 @@ Exact example from [log.lua](../blob/main/content/examples/log.lua):
 
 ```lua
 do
-  -- Track per-frame values that help you diagnose movement or physics issues.
-  local player = { x = 312.5, y = 144.0, vx = 2.1, vy = -0.3 }
-  lurek.log.debug(
-    string.format("player pos=(%.1f,%.1f) vel=(%.2f,%.2f)", player.x, player.y, player.vx, player.vy),
-    "movement"
-  )
+    lurek.log.debug("tick completed")
+    print("debug logged")
 end
 ```
 
@@ -189,13 +173,8 @@ Exact example from [log.lua](../blob/main/content/examples/log.lua):
 
 ```lua
 do
-  -- Structured fields make logs machine-parseable for tooling and dashboards.
-  lurek.log.debug_fields("physics step", {
-    bodies = 64,
-    contacts = 12,
-    step_ms = 1.8,
-    island_count = 3,
-  })
+    lurek.log.debug_fields("frame stats", {fps = 60, dt = 0.016})
+    print("debug_fields logged")
 end
 ```
 
@@ -216,13 +195,9 @@ Exact example from [log.lua](../blob/main/content/examples/log.lua):
 
 ```lua
 do
-  -- Always include enough context to reproduce: path, operation, fallback chosen.
-  local save_path = "save/slot2.dat"
-  local reason = "permission denied"
-  lurek.log.error(
-    "save failed: path='" .. save_path .. "' reason=" .. reason .. " (falling back to slot1)",
-    "save"
-  )
+    lurek.log.error("failed to save")
+    lurek.log.error("shader compile failed", "gpu")
+    print("error logged")
 end
 ```
 
@@ -243,13 +218,8 @@ Exact example from [log.lua](../blob/main/content/examples/log.lua):
 
 ```lua
 do
-  -- Include all context needed to reproduce without asking the player.
-  lurek.log.error_fields("asset load failed", {
-    path = "sprites/boss_phase3.png",
-    operation = "texture_decode",
-    error_code = 2,
-    fallback = "sprites/placeholder.png",
-  })
+    lurek.log.error_fields("save failed", {path = "slot1.sav", reason = "disk full"})
+    print("error_fields logged")
 end
 ```
 
@@ -269,11 +239,10 @@ Exact example from [log.lua](../blob/main/content/examples/log.lua):
 
 ```lua
 do
-  -- Call this before a risky operation so the log is complete if the game crashes.
-  local crash_log = lurek.log.addSink({ type = "file", path = "save/crash.log", level = "error" })
-  lurek.log.error("unrecoverable state: physics world desynced", "engine")
-  lurek.log.flushFile(crash_log)
-  -- Now the file has the error even if we abort right after.
+    local id = lurek.log.addSink({type = "file", level = "info", path = "logs/flush_test.log"})
+    lurek.log.info("flush me")
+    lurek.log.flushFile(id)
+    print("file flushed")
 end
 ```
 
@@ -291,12 +260,10 @@ Exact example from [log.lua](../blob/main/content/examples/log.lua):
 
 ```lua
 do
-  -- Use this to conditionally build expensive debug strings only when needed.
-  local level = lurek.log.getLevel()
-  if level == "debug" or level == "trace" then
-    local world_state = "entities=214 particles=890 dt=16.4ms"
-    lurek.log.debug("world snapshot: " .. world_state, "perf")
-  end
+    local prev = lurek.log.getLevel()
+    lurek.log.setLevel("warn")
+    print("level was " .. prev .. " now " .. lurek.log.getLevel())
+    lurek.log.setLevel(prev)
 end
 ```
 
@@ -317,14 +284,9 @@ Exact example from [log.lua](../blob/main/content/examples/log.lua):
 
 ```lua
 do
-  -- Record transitions that help you understand session flow in the log file.
-  local level_name = "dungeon_b2"
-  local enemy_count = 23
-  local spawn_time_ms = 4.7
-  lurek.log.info(
-    "loaded '" .. level_name .. "': " .. enemy_count .. " enemies in " .. spawn_time_ms .. "ms",
-    "scene"
-  )
+    lurek.log.info("game started")
+    lurek.log.info("asset loaded", "assets")
+    print("info logged")
 end
 ```
 
@@ -345,13 +307,8 @@ Exact example from [log.lua](../blob/main/content/examples/log.lua):
 
 ```lua
 do
-  -- Record session milestones with exact numeric data for analytics.
-  lurek.log.info_fields("checkpoint reached", {
-    checkpoint = "forest_bridge",
-    play_time_s = 924,
-    deaths = 2,
-    coins = 187,
-  })
+    lurek.log.info_fields("player join", {name = "Alice", id = 42})
+    print("info_fields logged")
 end
 ```
 
@@ -369,15 +326,8 @@ Exact example from [log.lua](../blob/main/content/examples/log.lua):
 
 ```lua
 do
-  -- Use this to build a developer HUD showing which sinks are active.
-  lurek.log.addSink({ type = "memory", capacity = 100, level = "info" })
-  local sinks = lurek.log.listSinks()
-  for _, s in ipairs(sinks) do
-    lurek.log.debug(
-      string.format("sink #%d type=%s level=%s", s.id, s.type, s.level),
-      "diag"
-    )
-  end
+    local sinks = lurek.log.listSinks()
+    print("sink count = " .. #sinks)
 end
 ```
 
@@ -399,10 +349,9 @@ Exact example from [log.lua](../blob/main/content/examples/log.lua):
 
 ```lua
 do
-  -- Example: a modding system where script authors choose their own log level.
-  local mod_log_level = "info"  -- read from mod manifest
-  local mod_name = "expanded_items"
-  lurek.log.print(mod_log_level, "mod '" .. mod_name .. "' initialized (v1.2.0)", "mods")
+    lurek.log.print("info", "general purpose log")
+    lurek.log.print("warn", "something suspicious", "system")
+    print("print logged")
 end
 ```
 
@@ -425,17 +374,10 @@ Exact example from [log.lua](../blob/main/content/examples/log.lua):
 
 ```lua
 do
-  -- Feed an in-game developer console from the memory sink.
-  local hud_sink = lurek.log.addSink({ type = "memory", capacity = 64, level = "warn" })
-  lurek.log.warn("enemy stuck in wall at tile (14,8)", "ai")
-  lurek.log.warn("texture atlas rebuild took 32ms", "render")
-
-  -- drain=true means we won't see these entries again on next read.
-  local entries = lurek.log.readMemory(hud_sink, true)
-  for _, e in ipairs(entries) do
-    -- Each entry has .level, .tag, .message, .timestamp
-    print(string.format("[%s][%s] %s", e.level, e.tag, e.message))
-  end
+    local id = lurek.log.addSink({type = "memory", level = "debug", capacity = 50})
+    lurek.log.info("test message")
+    local entries = lurek.log.readMemory(id, false)
+    print("memory entries = " .. #entries)
 end
 ```
 
@@ -457,12 +399,9 @@ Exact example from [log.lua](../blob/main/content/examples/log.lua):
 
 ```lua
 do
-  -- Temporarily attach a diagnostic sink, then remove it after the hot section.
-  local diag = lurek.log.addSink({ type = "memory", capacity = 64, level = "debug" })
-  lurek.log.debug("entering boss fight diagnostics", "combat")
-  -- ... boss fight runs ...
-  local was_removed = lurek.log.removeSink(diag)
-  lurek.log.info("diag sink removed=" .. tostring(was_removed), "combat")
+    local id = lurek.log.addSink({type = "memory", level = "debug", capacity = 10})
+    local ok = lurek.log.removeSink(id)
+    print("removed = " .. tostring(ok))
 end
 ```
 
@@ -482,14 +421,8 @@ Exact example from [log.lua](../blob/main/content/examples/log.lua):
 
 ```lua
 do
-  -- During development use "debug" to see everything;
-  -- in shipping builds switch to "warn" to reduce noise.
-  local is_dev_build = true
-  if is_dev_build then
     lurek.log.setLevel("debug")
-  else
-    lurek.log.setLevel("warn")
-  end
+    print("level set to debug")
 end
 ```
 
@@ -511,14 +444,12 @@ Exact example from [log.lua](../blob/main/content/examples/log.lua):
 
 ```lua
 do
-  -- Useful when both level and fields come from game data (e.g., telemetry config).
-  local event_level = "info"
-  lurek.log.struct(event_level, "item crafted", {
-    recipe = "iron_sword",
-    materials_used = 3,
-    quality = "rare",
-    crafter = "player_01",
-  })
+    lurek.log.struct("info", "combat hit", {
+        attacker = "goblin",
+        target = "player",
+        damage = 15,
+    })
+    print("struct logged")
 end
 ```
 
@@ -539,15 +470,9 @@ Exact example from [log.lua](../blob/main/content/examples/log.lua):
 
 ```lua
 do
-  -- Alert on degraded performance so QA can spot patterns in the log file.
-  local fps = 42
-  local target_fps = 60
-  if fps < target_fps * 0.75 then
-    lurek.log.warn(
-      string.format("fps dropped to %d (target %d) in boss_arena", fps, target_fps),
-      "perf"
-    )
-  end
+    lurek.log.warn("low memory")
+    lurek.log.warn("texture missing", "render")
+    print("warn logged")
 end
 ```
 
@@ -568,17 +493,8 @@ Exact example from [log.lua](../blob/main/content/examples/log.lua):
 
 ```lua
 do
-  -- Attach frame budget data so automated tools can correlate spikes.
-  local gpu_ms = 14.2
-  local budget_ms = 11.1
-  if gpu_ms > budget_ms then
-    lurek.log.warn_fields("gpu over budget", {
-      gpu_ms = gpu_ms,
-      budget_ms = budget_ms,
-      scene = "particle_storm",
-      draw_calls = 320,
-    })
-  end
+    lurek.log.warn_fields("memory usage", {used_mb = 512, limit_mb = 1024})
+    print("warn_fields logged")
 end
 ```
 
@@ -587,7 +503,7 @@ end
 
 ## 💡 Examples
 
-- [log.lua](../blob/main/content/examples/log.lua) - Structured log output
+- [log.lua](../blob/main/content/examples/log.lua) - API example
 
 [⬆ back to top](#table-of-contents)
 

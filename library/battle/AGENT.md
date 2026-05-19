@@ -1,8 +1,8 @@
-﻿# `battle` — Agent Reference (Lunasome)
+# `battle` — Agent Reference (Lureksome)
 
 | Property | Value |
 |----------|-------|
-| **Tier** | Tier 3 — Lunasome (pure Lua, no Rust dependencies) |
+| **Tier** | Tier 3 — Lureksome (pure Lua, no Rust dependencies) |
 | **Source** | `library/battle/init.lua` |
 | **Lua Tests** | `tests/lua/library/test_library_battle.lua` |
 | **Depends on** | `lurek.*` public API only |

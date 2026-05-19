@@ -30,7 +30,7 @@ Each spec follows [SPEC_TEMPLATE.md](SPEC_TEMPLATE.md). Sections split into two 
 
 Regen workflow:
 
-- `python tools/gen_all_docs.py` — full sweep: regenerates every spec's auto sections plus `docs/api/lurek.md`, `docs/api/rust.md`, `docs/api/library.md`, `docs/api/lurek.lua`, and coverage reports under `logs/reports/`.
+- `python tools/gen_all_docs.py` — full sweep: regenerates every spec's auto sections plus `docs/api/lurek.md`, `docs/api/rust.md`, `docs/api/lureksome.md`, `docs/api/lurek.lua`, `docs/api/lureksome.lua`, and coverage reports under `logs/reports/`.
 - `python tools/docs/gen_module_specs.py` — specs only.
 - `python tools/validate/validate_module_coverage.py` — ensures every top-level `src/` module still has a matching spec file.
 - `python tools/audit/doc_coverage.py` — flags missing / undersized manual prose.

@@ -7,7 +7,7 @@ functionality without modifying or recompiling the engine.
 
 | Folder | Purpose | Audience |
 |---|---|---|
-| `library/` | Lunasome Tier-3 standard library — curated, shipped with engine | Engine shipping set |
+| `library/` | Lureksome Tier-3 standard library — curated, shipped with engine | Engine shipping set |
 | `plugins/` | Third-party or experimental Lua plugins — drop-in, no engine changes | Community |
 
 ## Plugin Layout

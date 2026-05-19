@@ -31,7 +31,7 @@ You have three lives — a falling Boulder kills you, as does running out of tim
 - `lurek.event` — signals clean engine shutdown on Escape.
 - `lurek.timer` — queries elapsed time to drive diamond pulse and exit glow animations.
 
-**Lunasome (`library/`) modules**
+**Lureksome (`library/`) modules**
 
 _None._
 

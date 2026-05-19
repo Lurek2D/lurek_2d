@@ -1,8 +1,8 @@
-﻿# `province_map` — Agent Reference (Lunasome)
+# `province_map` — Agent Reference (Lureksome)
 
 | Property | Value |
 |----------|-------|
-| **Tier** | Tier 3 — Lunasome (pure Lua, no Rust dependencies) |
+| **Tier** | Tier 3 — Lureksome (pure Lua, no Rust dependencies) |
 | **Source** | `library/province_map/init.lua` |
 | **Lua Tests** | `tests/lua/library/test_library_province_map.lua` |
 | **Depends on** | `lurek.*` public API only |

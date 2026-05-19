@@ -1,8 +1,8 @@
-﻿# `narrative` â€” Agent Reference (Lunasome)
+# `narrative` â€” Agent Reference (Lureksome)
 
 | Property       | Value                                                                                                                                                           |
 | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Tier**       | Tier 3 â€” Lunasome (pure Lua)                                                                                                                                    |
+| **Tier**       | Tier 3 â€” Lureksome (pure Lua)                                                                                                                                    |
 | **Source**     | `library/narrative/init.lua`                                                                                                                                    |
 | **Lua Tests**  | `tests/lua/library/test_library_narrative.lua`                                                                                                                  |
 | **Depends on** | `lurek.filesystem.read` (loadFile), `lurek.serial` (precompile blobs), `lurek.i18n.t` (optional), `lurek.log.debug` (trace), `lurek.save` (collector wiring) |

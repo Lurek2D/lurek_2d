@@ -126,7 +126,7 @@ These constraints formalise the [module group model](engine-architecture.md#modu
 | **T-02** | Active | `lua_api` (`src/lua_api/`) is the binding layer that registers `lurek.*`. It sits in Edge/Integration. No domain module may import `lua_api`. |
 | **T-03** | Active | **No cycles, ever.** The module import graph must be a DAG. Same-group imports are allowed when acyclic. |
 | **T-04** | Active | **Composition root is one-way.** `app` and `lua_api` may depend on any module below them. Nothing below them imports `app` or any `lua_api` binding module. |
-| **T-05** | Active | **Lunasome** (`library/`) is the pure-Lua standard library. It consumes only public `lurek.*` APIs — no Rust engine internals, no `require` of engine source files. |
+| **T-05** | Active | **Lureksome** (`library/`) is the pure-Lua standard library. It consumes only public `lurek.*` APIs — no Rust engine internals, no `require` of engine source files. |
 | **T-06** | Active | **Foundations group modules** (`math`, `log`, `data`, `serial`, `compute`, `dataframe`, `graph`, `procgen`, `patterns`) must never import render, audio, input, physics, or Lua APIs. |
 | **T-07** | Active | **Edge/Integration group modules** (`devtools`, `debugbridge`, `automation`) are never imported by domain modules. They are optional components compiled only for development builds. |
 | **T-08** | Active | Platform SDK integrations must not be imported by any module in Foundations, Core Runtime, Platform Services, or Feature Systems. They belong to external wrapping binaries only. |

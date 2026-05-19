@@ -72,9 +72,9 @@ class LuaCodeLensProvider implements vscode.CodeLensProvider {
       const libName = filePath.match(/\/library\/([^/]+)\//)?.[1];
       if (libName) {
         lenses.push(new vscode.CodeLens(new vscode.Range(0, 0, 0, 0), {
-          title: `📦 Lunasome library: ${libName}`,
+          title: `📦 Lureksome library: ${libName}`,
           command: "",
-          tooltip: `This is the entry point for the "${libName}" Lunasome library`,
+          tooltip: `This is the entry point for the "${libName}" Lureksome library`,
         }));
       }
     }

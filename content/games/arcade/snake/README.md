@@ -36,7 +36,7 @@ Guide the snake around a 32×28 grid collecting food. Each food item adds a segm
 - `lurek.timer` — FPS counter in the HUD.
 - `lurek.event` — clean shutdown on Escape.
 
-**Lunasome (`content/library/`) modules**
+**Lureksome (`content/library/`) modules**
 
 _(none)_
 

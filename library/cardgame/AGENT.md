@@ -1,8 +1,8 @@
-﻿# `cardgame` — Agent Reference (Lunasome)
+# `cardgame` — Agent Reference (Lureksome)
 
 | Property | Value |
 |----------|-------|
-| **Tier** | Tier 3 — Lunasome (pure Lua, no Rust dependencies) |
+| **Tier** | Tier 3 — Lureksome (pure Lua, no Rust dependencies) |
 | **Source** | `library/cardgame/init.lua` |
 | **Lua Tests** | `tests/lua/library/test_library_cardgame.lua` |
 | **Depends on** | `lurek.*` public API only |

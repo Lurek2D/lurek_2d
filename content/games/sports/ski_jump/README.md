@@ -32,7 +32,7 @@ Each round consists of three phases. During the approach the skier accelerates d
 - `lurek.window` — sets the window title and sky background colour on startup.
 - `lurek.event` — signals clean engine shutdown on Escape.
 
-**Lunasome (`library/`) modules**
+**Lureksome (`library/`) modules**
 
 _None._
 

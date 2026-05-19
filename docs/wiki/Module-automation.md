@@ -4,7 +4,7 @@
 
 ## Navigation
 
-[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lureksome](Lureksome)
 
 ## Table of Contents
 
@@ -122,13 +122,9 @@ Exact example from [automation.lua](../blob/main/content/examples/automation.lua
 
 ```lua
 do
-  -- Read conditions from the debug overlay to verify game state during replays
-  function lurek.draw_ui()
-    local boss = lurek.automation.getCondition("boss_defeated")
-    local door = lurek.automation.getCondition("door_open")
-    lurek.render.print("boss_defeated=" .. tostring(boss), 8, 72)
-    lurek.render.print("door_open=" .. tostring(door), 8, 88)
-  end
+    lurek.automation.setCondition("ready", true)
+    local val = lurek.automation.getCondition("ready")
+    print("ready = " .. tostring(val))
 end
 ```
 
@@ -146,15 +142,8 @@ Exact example from [automation.lua](../blob/main/content/examples/automation.lua
 
 ```lua
 do
-  -- Show the current automation script name in a debug HUD
-  function lurek.draw_ui()
     local name = lurek.automation.getCurrentScript()
-    if name then
-      lurek.render.print("playing: " .. name, 8, 24)
-    else
-      lurek.render.print("automation idle", 8, 24)
-    end
-  end
+    print("current script = " .. tostring(name))
 end
 ```
 
@@ -172,15 +161,8 @@ Exact example from [automation.lua](../blob/main/content/examples/automation.lua
 
 ```lua
 do
-  -- Display a progress bar during automation playback
-  function lurek.draw_ui()
-    if lurek.automation.isRunning() then
-      local step = lurek.automation.getCurrentStep()
-      local total = lurek.automation.getStepCount()
-      local pct = step / math.max(total, 1)
-      lurek.render.rectangle("fill", 8, 8, 200 * pct, 12)
-    end
-  end
+    local step = lurek.automation.getCurrentStep()
+    print("current step = " .. tostring(step))
 end
 ```
 
@@ -198,13 +180,8 @@ Exact example from [automation.lua](../blob/main/content/examples/automation.lua
 
 ```lua
 do
-  -- Show a running timer while automation plays for QA timing analysis
-  function lurek.draw_ui()
-    if lurek.automation.isRunning() then
-      local elapsed = lurek.automation.getElapsedTime()
-      lurek.render.print(string.format("auto t=%.2fs", elapsed), 8, 40)
-    end
-  end
+    local t = lurek.automation.getElapsedTime()
+    print("elapsed = " .. tostring(t) .. "s")
 end
 ```
 
@@ -222,15 +199,8 @@ Exact example from [automation.lua](../blob/main/content/examples/automation.lua
 
 ```lua
 do
-  -- After a test run completes, check if there was an error and report it
-  function lurek.quit()
     local err = lurek.automation.getLastError()
-    if err then
-      lurek.log.error("automation error on exit: " .. err, "automation")
-    else
-      lurek.log.info("automation completed cleanly", "automation")
-    end
-  end
+    print("last error = " .. (err or ""))
 end
 ```
 
@@ -248,13 +218,8 @@ Exact example from [automation.lua](../blob/main/content/examples/automation.lua
 
 ```lua
 do
-  -- Show speed indicator when running faster than real-time
-  function lurek.draw_ui()
     local speed = lurek.automation.getPlaybackSpeed()
-    if speed ~= 1.0 then
-      lurek.render.print(string.format("[%.1fx]", speed), 8, 56)
-    end
-  end
+    print("playback speed = " .. speed)
 end
 ```
 
@@ -272,13 +237,8 @@ Exact example from [automation.lua](../blob/main/content/examples/automation.lua
 
 ```lua
 do
-  -- Useful for debug overlays or test harness inventory
-  lurek.automation.load("walk_right", { steps = { { time = 0, action = "keypress", key = "d" } } })
-  lurek.automation.load("jump_combo", { steps = { { time = 0, action = "keypress", key = "space" } } })
-  local scripts = lurek.automation.getScripts()
-  for i, name in ipairs(scripts) do
-    lurek.log.debug("script [" .. i .. "]: " .. name, "automation")
-  end
+    local scripts = lurek.automation.getScripts()
+    print("loaded scripts = " .. #scripts)
 end
 ```
 
@@ -296,12 +256,8 @@ Exact example from [automation.lua](../blob/main/content/examples/automation.lua
 
 ```lua
 do
-  -- Log how many steps will execute before starting a long automation run
-  function lurek.init()
-    lurek.automation.start("speed_run")
     local count = lurek.automation.getStepCount()
-    lurek.log.info("speed_run: " .. count .. " input steps queued", "automation")
-  end
+    print("step count = " .. tostring(count))
 end
 ```
 
@@ -323,13 +279,8 @@ Exact example from [automation.lua](../blob/main/content/examples/automation.lua
 
 ```lua
 do
-  -- Check whether a script has a step limit before running it in CI
-  local limit = lurek.automation.getStepLimit("speed_run")
-  if limit then
-    lurek.log.info("speed_run capped at " .. limit .. " steps", "automation")
-  else
-    lurek.log.info("speed_run has no step limit", "automation")
-  end
+    local limit = lurek.automation.getStepLimit("run_test")
+    print("step limit = " .. limit)
 end
 ```
 
@@ -351,13 +302,8 @@ Exact example from [automation.lua](../blob/main/content/examples/automation.lua
 
 ```lua
 do
-  -- Verify required macros exist before starting an automated test run
-  local required = { "confirm", "cancel", "menu_nav" }
-  for _, name in ipairs(required) do
-    if not lurek.automation.hasMacro(name) then
-      lurek.log.warn("missing required macro: " .. name, "automation")
-    end
-  end
+    local has = lurek.automation.hasMacro("fast_login")
+    print("has macro = " .. tostring(has))
 end
 ```
 
@@ -379,17 +325,8 @@ Exact example from [automation.lua](../blob/main/content/examples/automation.lua
 
 ```lua
 do
-  -- Guard against double-loading: only register the attract-mode script once
-  if not lurek.automation.hasScript("attract_loop") then
-    lurek.automation.load("attract_loop", {
-      steps = {
-        { time = 0.0, action = "keypress", key = "right" },
-        { time = 1.0, action = "keyrelease", key = "right" },
-        { time = 2.0, action = "keypress", key = "space" },
-        { time = 2.1, action = "keyrelease", key = "space" },
-      },
-    })
-  end
+    local has = lurek.automation.hasScript("nonexistent")
+    print("has nonexistent = " .. tostring(has))
 end
 ```
 
@@ -407,19 +344,8 @@ Exact example from [automation.lua](../blob/main/content/examples/automation.lua
 
 ```lua
 do
-  -- Chain scripts: when one finishes, start the next
-  local queue = { "phase_1", "phase_2", "phase_3" }
-  local qi = 1
-  function lurek.process(dt)
-    lurek.automation.update(dt)
-    if lurek.automation.isComplete() then
-      lurek.automation.stop()
-      qi = qi + 1
-      if qi <= #queue then
-        lurek.automation.start(queue[qi])
-      end
-    end
-  end
+    local done = lurek.automation.isComplete()
+    print("isComplete = " .. tostring(done))
 end
 ```
 
@@ -437,15 +363,8 @@ Exact example from [automation.lua](../blob/main/content/examples/automation.lua
 
 ```lua
 do
-  -- Check for failures each frame and abort the test run if automation breaks
-  function lurek.process(dt)
-    lurek.automation.update(dt)
-    if lurek.automation.isFailed() then
-      local err = lurek.automation.getLastError() or "unknown error"
-      lurek.log.error("automation failed: " .. err, "automation")
-      lurek.automation.stop()
-    end
-  end
+    local failed = lurek.automation.isFailed()
+    print("isFailed = " .. tostring(failed))
 end
 ```
 
@@ -463,15 +382,8 @@ Exact example from [automation.lua](../blob/main/content/examples/automation.lua
 
 ```lua
 do
-  -- Draw a pulsing indicator when highlight mode shows injected inputs
-  function lurek.draw()
-    if lurek.automation.isHighlightMode() then
-      local alpha = 0.3 + 0.3 * math.sin(lurek.timer.getTime() * 4)
-      lurek.render.setColor(1, 1, 0, alpha)
-      lurek.render.rectangle("fill", 0, 0, 16, 16)
-      lurek.render.setColor(1, 1, 1, 1)
-    end
-  end
+    local hl = lurek.automation.isHighlightMode()
+    print("highlight mode = " .. tostring(hl))
 end
 ```
 
@@ -489,14 +401,8 @@ Exact example from [automation.lua](../blob/main/content/examples/automation.lua
 
 ```lua
 do
-  -- Dim the auto indicator when paused
-  function lurek.draw_ui()
-    if lurek.automation.isPaused() then
-      lurek.render.setColor(0.5, 0.5, 0.5, 0.7)
-      lurek.render.print("[AUTO PAUSED]", 8, 8)
-      lurek.render.setColor(1, 1, 1, 1)
-    end
-  end
+    local paused = lurek.automation.isPaused()
+    print("isPaused = " .. tostring(paused))
 end
 ```
 
@@ -514,14 +420,8 @@ Exact example from [automation.lua](../blob/main/content/examples/automation.lua
 
 ```lua
 do
-  -- Show an indicator so players know the game is in auto-play mode
-  function lurek.draw_ui()
-    if lurek.automation.isRunning() then
-      lurek.render.setColor(1, 1, 0, 1)
-      lurek.render.print("[AUTO] press ESC to cancel", 8, 8)
-      lurek.render.setColor(1, 1, 1, 1)
-    end
-  end
+    local running = lurek.automation.isRunning()
+    print("isRunning = " .. tostring(running))
 end
 ```
 
@@ -539,13 +439,8 @@ Exact example from [automation.lua](../blob/main/content/examples/automation.lua
 
 ```lua
 do
-  -- Print available macros at startup for QA reference
-  local macros = lurek.automation.listMacros()
-  if #macros > 0 then
-    lurek.log.info("available macros: " .. table.concat(macros, ", "), "automation")
-  else
-    lurek.log.info("no macros registered", "automation")
-  end
+    local macros = lurek.automation.listMacros()
+    print("macros = " .. #macros)
 end
 ```
 
@@ -566,21 +461,9 @@ Exact example from [automation.lua](../blob/main/content/examples/automation.lua
 
 ```lua
 do
-  -- Define an automation script as a table with steps array and optional meta.
-  -- Each step has a time (seconds from script start), action type, and parameters.
-  -- Common actions: "keypress", "keyrelease", "mousepress", "mouserelease", "mousemove", "wait"
-  local menu_skip = {
-    meta = { description = "skip main menu and start game" },
-    steps = {
-      { time = 0.0, action = "wait" },
-      { time = 0.5, action = "keypress",   key = "return" },
-      { time = 0.6, action = "keyrelease", key = "return" },
-      { time = 1.2, action = "keypress",   key = "return" },
-      { time = 1.3, action = "keyrelease", key = "return" },
-    },
-  }
-  -- The name is used to reference this script in start(), saveMacro(), etc.
-  lurek.automation.load("menu_skip", menu_skip)
+    local steps = { { action = "wait", time = 0.0 } }
+    lurek.automation.load("login_flow", { steps = steps })
+    print("loaded = " .. tostring(lurek.automation.hasScript("login_flow")))
 end
 ```
 
@@ -601,53 +484,10 @@ Exact example from [automation.lua](../blob/main/content/examples/automation.lua
 
 ```lua
 do
-  -- TOML format is useful for loading scripts from external files or configs
-  -- Each [[steps]] block defines one step with time, action, and key fields
-  local toml_text = [=[
-[meta]
-description = "press jump then dash"
-
-[[steps]]
-time = 0.0
-action = "keypress"
-key = "space"
-
-[[steps]]
-time = 0.15
-action = "keyrelease"
-key = "space"
-
-[[steps]]
-time = 0.3
-action = "keypress"
-key = "lshift"
-
-[[steps]]
-time = 0.4
-action = "keyrelease"
-key = "lshift"
-]=]
-  lurek.automation.loadFromToml("jump_dash", toml_text)
+    local toml = "[[steps]]\naction = \"wait\"\ntime = 0.0\n"
+    lurek.automation.loadFromToml("toml_script", toml)
+    print("loaded from TOML = " .. tostring(lurek.automation.hasScript("toml_script")))
 end
---@api-stub: lurek.automation.getStepLimit
--- Returns the maximum step count for a loaded script, or nil if unlimited
-do
-  -- Check whether a script has a step limit before running it in CI
-  local limit = lurek.automation.getStepLimit("speed_run")
-  if limit then
-    lurek.log.info("speed_run capped at " .. limit .. " steps", "automation")
-  else
-    lurek.log.info("speed_run has no step limit", "automation")
-  end
-end
---@api-stub: lurek.automation.setStepLimit
--- Sets the maximum number of steps a script will execute before auto-stopping
-do
-  -- Cap long scripts during CI to avoid infinite loops in broken automation
-  local CI_STEP_CAP = 128
-  local ok = lurek.automation.setStepLimit("speed_run", CI_STEP_CAP)
-  if ok then
-    lurek.log.info("speed_run limited to " .. CI_STEP_CAP .. " steps for CI", "automation")
 ```
 
 ### lurek.automation.pause
@@ -662,16 +502,8 @@ Exact example from [automation.lua](../blob/main/content/examples/automation.lua
 
 ```lua
 do
-  -- Pause automation when the game menu opens so input does not bleed through
-  local menu_visible = false
-  function lurek.keypressed(key)
-    if key == "escape" then
-      menu_visible = not menu_visible
-      if menu_visible and lurek.automation.isRunning() then
-        lurek.automation.pause()
-      end
-    end
-  end
+    lurek.automation.pause()
+    print("paused = " .. tostring(lurek.automation.isPaused()))
 end
 ```
 
@@ -691,12 +523,8 @@ Exact example from [automation.lua](../blob/main/content/examples/automation.lua
 
 ```lua
 do
-  -- Play a macro whenever a dialog appears to auto-dismiss it during testing
-  function lurek.init()
-    if lurek.automation.hasMacro("confirm") then
-      lurek.automation.playMacro("confirm")
-    end
-  end
+    lurek.automation.playMacro("fast_login")
+    print("macro playing")
 end
 ```
 
@@ -712,16 +540,8 @@ Exact example from [automation.lua](../blob/main/content/examples/automation.lua
 
 ```lua
 do
-  -- Resume automation when the menu closes
-  local menu_visible = true
-  function lurek.keypressed(key)
-    if key == "escape" and menu_visible then
-      menu_visible = false
-      if lurek.automation.isPaused() then
-        lurek.automation.resume()
-      end
-    end
-  end
+    lurek.automation.resume()
+    print("resumed")
 end
 ```
 
@@ -742,15 +562,8 @@ Exact example from [automation.lua](../blob/main/content/examples/automation.lua
 
 ```lua
 do
-  -- Macros are lightweight named copies stored for quick replay
-  -- Useful for common input sequences reused across different test scenarios
-  lurek.automation.load("confirm_dialog", {
-    steps = {
-      { time = 0.0, action = "keypress",   key = "return" },
-      { time = 0.1, action = "keyrelease", key = "return" },
-    },
-  })
-  lurek.automation.saveMacro("confirm", "confirm_dialog")
+    lurek.automation.saveMacro("fast_login", "login_flow")
+    print("macro saved")
 end
 ```
 
@@ -771,14 +584,8 @@ Exact example from [automation.lua](../blob/main/content/examples/automation.lua
 
 ```lua
 do
-  -- Conditions let automation scripts branch or wait based on game state
-  -- without the script needing direct access to game variables
-  local boss_defeated = false
-  function lurek.process(dt)
-    -- Update the condition each frame so automation scripts can react
-    lurek.automation.setCondition("boss_defeated", boss_defeated)
-    lurek.automation.update(dt)
-  end
+    lurek.automation.setCondition("logged_in", true)
+    print("condition set")
 end
 ```
 
@@ -798,10 +605,8 @@ Exact example from [automation.lua](../blob/main/content/examples/automation.lua
 
 ```lua
 do
-  -- Enable highlight mode during recording or debugging so the developer
-  -- can visually confirm which inputs are being injected
-  local debug_mode = true
-  lurek.automation.setHighlightMode(debug_mode)
+    lurek.automation.setHighlightMode(true)
+    print("highlight = " .. tostring(lurek.automation.isHighlightMode()))
 end
 ```
 
@@ -821,14 +626,8 @@ Exact example from [automation.lua](../blob/main/content/examples/automation.lua
 
 ```lua
 do
-  -- Run automation at 4x speed during CI to complete tests faster
-  -- Use 0.5x for slow-motion debugging of input timing issues
-  local is_ci = false -- os.getenv not available in lurek sandbox
-  if is_ci then
-    lurek.automation.setPlaybackSpeed(4.0)
-  else
-    lurek.automation.setPlaybackSpeed(1.0)
-  end
+    lurek.automation.setPlaybackSpeed(2.0)
+    print("speed = " .. lurek.automation.getPlaybackSpeed())
 end
 ```
 
@@ -851,12 +650,8 @@ Exact example from [automation.lua](../blob/main/content/examples/automation.lua
 
 ```lua
 do
-  -- Cap long scripts during CI to avoid infinite loops in broken automation
-  local CI_STEP_CAP = 128
-  local ok = lurek.automation.setStepLimit("speed_run", CI_STEP_CAP)
-  if ok then
-    lurek.log.info("speed_run limited to " .. CI_STEP_CAP .. " steps for CI", "automation")
-  end
+    lurek.automation.setStepLimit("run_test", 1000)
+    print("step limit set to 1000")
 end
 ```
 
@@ -876,20 +671,10 @@ Exact example from [automation.lua](../blob/main/content/examples/automation.lua
 
 ```lua
 do
-  -- Typical pattern: load in conf, start in init
-  lurek.automation.load("speed_run", {
-    meta = { description = "automated speed-run route" },
-    steps = {
-      { time = 0.0, action = "keypress",   key = "d" },
-      { time = 2.5, action = "keyrelease", key = "d" },
-      { time = 2.6, action = "keypress",   key = "space" },
-      { time = 2.7, action = "keyrelease", key = "space" },
-    },
-  })
-  -- Start playback — the script will inject input events when update() is called
-  function lurek.init()
-    lurek.automation.start("speed_run")
-  end
+    local steps = { { action = "wait", time = 0.0 } }
+    lurek.automation.load("run_test", { steps = steps })
+    lurek.automation.start("run_test")
+    print("running = " .. tostring(lurek.automation.isRunning()))
 end
 ```
 
@@ -905,13 +690,8 @@ Exact example from [automation.lua](../blob/main/content/examples/automation.lua
 
 ```lua
 do
-  -- Let the player break out of automation by pressing Escape
-  function lurek.keypressed(key)
-    if key == "escape" and lurek.automation.isRunning() then
-      lurek.automation.stop()
-      lurek.log.info("player cancelled automation", "automation")
-    end
-  end
+    lurek.automation.stop()
+    print("stopped = " .. tostring(not lurek.automation.isRunning()))
 end
 ```
 
@@ -933,18 +713,10 @@ Exact example from [automation.lua](../blob/main/content/examples/automation.lua
 
 ```lua
 do
-  -- Load a temporary calibration script for the tutorial
-  lurek.automation.load("tutorial_tap", {
-    steps = {
-      { time = 0.0, action = "keypress",   key = "space" },
-      { time = 0.1, action = "keyrelease", key = "space" },
-    },
-  })
-  -- After the tutorial finishes, remove the script to keep memory clean
-  local removed = lurek.automation.unload("tutorial_tap")
-  if removed then
-    lurek.log.info("tutorial_tap script cleaned up", "automation")
-  end
+    local steps = { { action = "wait", time = 0.0 } }
+    lurek.automation.load("temp_script", { steps = steps })
+    lurek.automation.unload("temp_script")
+    print("unloaded = " .. tostring(not lurek.automation.hasScript("temp_script")))
 end
 ```
 
@@ -964,12 +736,8 @@ Exact example from [automation.lua](../blob/main/content/examples/automation.lua
 
 ```lua
 do
-  -- Call update() every frame in process() to drive the automation timeline
-  -- The module compares elapsed time against each step's time field
-  -- and fires the corresponding input event when the step is reached
-  function lurek.process(dt)
-    lurek.automation.update(dt)
-  end
+    lurek.automation.update(0.016)
+    print("updated by 16ms")
 end
 ```
 
@@ -990,17 +758,10 @@ Exact example from [automation.lua](../blob/main/content/examples/automation.lua
 
 ```lua
 do
-  -- Wait for a loading screen to finish before continuing the automation
-  -- The predicate is called each frame during update(); if it returns true
-  -- or the timeout (seconds) expires, playback resumes
-  local level_loaded = false
-  function lurek.init()
     lurek.automation.waitUntil(function()
-      return level_loaded
-    end, 10.0)
-  end
-  -- Somewhere else in the game:
-  -- level_loaded = true  -- this unblocks the automation
+        return lurek.automation.getCondition("ready")
+    end, 5.0)
+    print("waitUntil registered with 5s timeout")
 end
 ```
 
@@ -1009,7 +770,7 @@ end
 
 ## 💡 Examples
 
-- [automation.lua](../blob/main/content/examples/automation.lua) - Macro recording and playback
+- [automation.lua](../blob/main/content/examples/automation.lua) - API example
 
 [⬆ back to top](#table-of-contents)
 

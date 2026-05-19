@@ -4,7 +4,7 @@
 
 ## Navigation
 
-[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lureksome](Lureksome)
 
 ## Table of Contents
 
@@ -121,13 +121,12 @@ Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
 
 ```lua
 do
-  -- Returns RGBA 0-255 values for common biome names.
-  -- Use these as defaults; override with your own palette if needed.
-  local biome_names = { "ocean", "desert", "grassland", "taiga", "tundra" }
-  for _, name in ipairs(biome_names) do
-    local r, g, b, a = lurek.procgen.biomeColor(name)
-    lurek.log.debug("  " .. name .. " -> rgba(" .. r .. "," .. g .. "," .. b .. "," .. a .. ")", "procgen")
-  end
+    local r, g, b, a = lurek.procgen.biomeColor("ocean")
+    print("ocean color = " .. r .. "," .. g .. "," .. b .. "," .. a)
+    r, g, b, a = lurek.procgen.biomeColor("desert")
+    print("desert color = " .. r .. "," .. g .. "," .. b .. "," .. a)
+    r, g, b, a = lurek.procgen.biomeColor("taiga")
+    print("taiga color = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 ```
 
@@ -149,22 +148,22 @@ Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
 
 ```lua
 do
-  -- BSP splits the area recursively, then places rooms in each leaf.
-  -- max_depth controls room count; min_size prevents tiny rooms.
-  local dungeon = lurek.procgen.bspDungeon({
-    width = 80,
-    height = 50,
-    min_size = 8,
-    max_depth = 5,
-    seed = 7,
-    padding = 1,
-  })
-  lurek.log.info("bsp dungeon: " .. #dungeon.rooms .. " rooms, " .. #dungeon.corridors .. " corridors", "procgen")
-  -- Place player in the first room's center
-  local spawn = dungeon.rooms[1]
-  local px = spawn.x + math.floor(spawn.w / 2)
-  local py = spawn.y + math.floor(spawn.h / 2)
-  lurek.log.debug("  player spawn: (" .. px .. ", " .. py .. ")", "procgen")
+    local dungeon = lurek.procgen.bspDungeon({
+        width = 80,
+        height = 60,
+        min_size = 8,
+        max_depth = 5,
+        seed = 42,
+        padding = 1
+    })
+    print("rooms = " .. #dungeon.rooms)
+    print("corridors = " .. #dungeon.corridors)
+    for i, room in ipairs(dungeon.rooms) do
+        if i <= 3 then
+            print("  room " .. i .. ": " .. room.x .. "," .. room.y ..
+                " size=" .. room.w .. "x" .. room.h)
+        end
+    end
 end
 ```
 
@@ -187,21 +186,23 @@ Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
 
 ```lua
 do
-  -- Prefab rooms let you place handcrafted content (boss arenas, shops)
-  -- into procedural layouts for a mix of authored + generated feel.
-  local prefabs = {
-    { name = "boss_arena", width = 6, height = 6 },
-    { name = "treasure_vault", width = 4, height = 3 },
-  }
-  local dungeon, placements = lurek.procgen.bspDungeonWithPrefabs(
-    { width = 60, height = 40, max_depth = 4, seed = 9 },
-    prefabs
-  )
-  local dungeon_result = dungeon --[[@as {rooms: table}]]
-  lurek.log.info("bsp+prefabs: " .. #dungeon_result.rooms .. " rooms", "procgen")
-  for _, p in ipairs(placements) do
-    lurek.log.debug("  placed '" .. p.name .. "' at (" .. p.x .. "," .. p.y .. ")", "procgen")
-  end
+    local prefabs = {
+        { name = "boss_room", width = 10, height = 10 },
+        { name = "treasure_vault", width = 6, height = 6 },
+        { name = "library", width = 8, height = 5 },
+    }
+    local dungeon, placed = lurek.procgen.bspDungeonWithPrefabs({
+        width = 80,
+        height = 60,
+        min_size = 10,
+        max_depth = 4,
+        seed = 55
+    }, prefabs)
+    print("placed prefabs = " .. #placed)
+    for _, p in ipairs(placed) do
+        print("  " .. p.name .. " at " .. p.x .. "," .. p.y ..
+            " size=" .. p.width .. "x" .. p.height)
+    end
 end
 ```
 
@@ -225,21 +226,19 @@ Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
 
 ```lua
 do
-  -- Use cellular automata to carve natural-looking cave systems.
-  -- fill = initial wall density, iterations = smoothing passes.
-  local w, h = 80, 60
-  local cave = lurek.procgen.cellularAutomata(w, h, {
-    fill = 0.45,
-    iterations = 5,
-    seed = 1337,
-  })
-  -- Count walkable tiles to ensure the cave is playable
-  local floor_count = 0
-  for i = 1, #cave do
-    if cave[i] == 0 then floor_count = floor_count + 1 end
-  end
-  local pct = math.floor(floor_count / (w * h) * 100)
-  lurek.log.info("cave: " .. floor_count .. " walkable tiles (" .. pct .. "% open)", "procgen")
+    local cave = lurek.procgen.cellularAutomata(80, 60, {
+        fill = 0.45,
+        iterations = 5,
+        birth = 5,
+        survive = 4,
+        seed = 777
+    })
+    print("cave cells = " .. #cave)
+    local walls = 0
+    for _, v in ipairs(cave) do
+        if v == 1 then walls = walls + 1 end
+    end
+    print("walls = " .. walls .. " empty = " .. (#cave - walls))
 end
 ```
 
@@ -267,26 +266,18 @@ Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
 
 ```lua
 do
-  -- Useful for validating cave connectivity: fill from the player spawn
-  -- and check whether all floor tiles are reachable.
-  local w, h = 32, 32
-  local grid = lurek.procgen.cellularAutomata(w, h, { fill = 0.4, iterations = 4, seed = 55 })
-  -- Find first open cell as spawn point (startX/startY are 0-based)
-  local sx, sy = 0, 0
-  for y = 0, h - 1 do
-    for x = 0, w - 1 do
-      if grid[y * w + x + 1] == 0 then
-        sx, sy = x, y
-        goto found
-      end
+    local grid = {}
+    for i = 1, 100 do grid[i] = 0 end
+    grid[1] = 200
+    grid[2] = 200
+    grid[11] = 200
+    grid[12] = 200
+    local filled = lurek.procgen.floodFill(grid, 10, 10, 0, 0, 128, true)
+    local count = 0
+    for _, v in ipairs(filled) do
+        if v == 1 then count = count + 1 end
     end
-  end
-  ::found::
-  -- Fill from spawn; threshold=1, above=false means fill cells < 1 (i.e. floor=0)
-  local mask = lurek.procgen.floodFill(grid, w, h, sx, sy, 1, false)
-  local reachable = 0
-  for i = 1, #mask do if mask[i] == 1 then reachable = reachable + 1 end end
-  lurek.log.info("flood fill from (" .. sx .. "," .. sy .. "): " .. reachable .. " reachable cells", "procgen")
+    print("flood filled cells = " .. count)
 end
 ```
 
@@ -311,11 +302,14 @@ Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
 
 ```lua
 do
-  -- Train a Markov chain on sample names, then generate new ones
-  -- that feel similar but are unique. Great for NPCs, towns, items.
-  local elf_names = { "Aelindra", "Thalion", "Caladwen", "Elowen", "Galadhon", "Nimrodel", "Idril" }
-  local name = lurek.procgen.generateName(elf_names, 4, 9, 17)
-  lurek.log.info("generated elf name: '" .. name .. "'", "procgen")
+    local samples = { "Aldric", "Baldric", "Cedric", "Eldric", "Godric", "Fredric" }
+    local name = lurek.procgen.generateName(samples, 4, 8, 1)
+    print("generated name = " .. name)
+    local names = lurek.procgen.generateNames(samples, 5, 4, 8, 2)
+    print("batch names:")
+    for _, n in ipairs(names) do
+        print("  " .. n)
+    end
 end
 ```
 
@@ -341,14 +335,12 @@ Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
 
 ```lua
 do
-  -- Batch generation is faster than calling generateName in a loop.
-  -- Use different sample sets for different cultures or item types.
-  local dwarf_samples = { "Thorin", "Gimli", "Durin", "Balin", "Dwalin", "Gloin", "Bofur", "Bombur" }
-  local party = lurek.procgen.generateNames(dwarf_samples, 5, 4, 8, 42)
-  lurek.log.info("dwarf party roster:", "procgen")
-  for i = 1, #party do
-    lurek.log.debug("  " .. i .. ". " .. party[i], "procgen")
-  end
+    local samples = { "Alon", "Beren", "Caran", "Doran", "Elan" }
+    local names = lurek.procgen.generateNames(samples, 5, 3, 8, 42)
+    print("names_count=" .. #names)
+    for i, n in ipairs(names) do
+        print("name_" .. i .. "=" .. n)
+    end
 end
 ```
 
@@ -370,24 +362,24 @@ Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
 
 ```lua
 do
-  -- Multi-octave noise creates natural terrain. Erosion carves rivers.
-  local hm = lurek.procgen.heightmap({
-    width = 128,
-    height = 128,
-    scale = 0.04,
-    octaves = 5,
-    persistence = 0.5,
-    lacunarity = 2.0,
-    seed = 99,
-    erosion_passes = 3,
-  })
-  -- Find min/max to normalize for display or gameplay logic
-  local min_h, max_h = 1.0, 0.0
-  for i = 1, #hm.cells do
-    if hm.cells[i] < min_h then min_h = hm.cells[i] end
-    if hm.cells[i] > max_h then max_h = hm.cells[i] end
-  end
-  lurek.log.info("heightmap " .. hm.width .. "x" .. hm.height .. " range=[" .. string.format("%.2f", min_h) .. ", " .. string.format("%.2f", max_h) .. "]", "procgen")
+    local hm = lurek.procgen.heightmap({
+        width = 128,
+        height = 128,
+        scale = 0.01,
+        octaves = 6,
+        lacunarity = 2.0,
+        persistence = 0.5,
+        seed = 99,
+        erosion_passes = 3
+    })
+    print("heightmap: " .. hm.width .. "x" .. hm.height)
+    print("cells count = " .. #hm.cells)
+    local minH, maxH = 1, 0
+    for _, v in ipairs(hm.cells) do
+        if v < minH then minH = v end
+        if v > maxH then maxH = v end
+    end
+    print("range = " .. minH .. " to " .. maxH)
 end
 ```
 
@@ -412,14 +404,14 @@ Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
 
 ```lua
 do
-  -- Converts binary cave data into smooth gradients.
-  -- Useful for lighting falloff or elevation-based gameplay.
-  local w, h = 32, 32
-  local cave = lurek.procgen.cellularAutomata(w, h, { fill = 0.45, iterations = 4, seed = 88 })
-  local hm = lurek.procgen.heightmapFromCellular(w, h, cave, 0)
-  -- Cells near walls have low height, open areas have high height
-  local centre = hm.cells[math.floor(h / 2) * w + math.floor(w / 2)]
-  lurek.log.info("cave heightmap centre value=" .. string.format("%.3f", centre), "procgen")
+    local cells = lurek.procgen.cellularAutomata(64, 64, {
+        fill = 0.4,
+        iterations = 4,
+        seed = 100
+    })
+    local hm = lurek.procgen.heightmapFromCellular(64, 64, cells, 0)
+    print("cave heightmap: " .. hm.width .. "x" .. hm.height)
+    print("sample = " .. hm.cells[1])
 end
 ```
 
@@ -441,16 +433,15 @@ Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
 
 ```lua
 do
-  -- L-systems produce self-similar patterns ideal for vegetation,
-  -- river networks, or cave branching paths.
-  local rules = { F = "F+F-F-F+F" }
-  local result = lurek.procgen.lsystem({
-    axiom = "F",
-    rules = rules,
-    iterations = 3,
-  })
-  -- The string encodes movement: F=forward, +=turn left, -=turn right
-  lurek.log.info("lsystem output length=" .. #result .. " chars (Koch curve variant)", "procgen")
+    local result = lurek.procgen.lsystem({
+        axiom = "F",
+        iterations = 3,
+        rules = {
+            F = "F[+F]F[-F]F"
+        }
+    })
+    print("lsystem length = " .. #result)
+    print("first 40 chars = " .. result:sub(1, 40))
 end
 ```
 
@@ -474,20 +465,18 @@ Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
 
 ```lua
 do
-  -- Interprets an L-system as turtle commands and returns line segments.
-  -- Perfect for procedural trees, lightning bolts, or crack patterns.
-  local rules = { F = "FF+[+F-F-F]-[-F+F+F]" }
-  local segments = lurek.procgen.lsystemSegments(
-    { axiom = "F", rules = rules, iterations = 4 },
-    25.0,  -- turn angle in degrees
-    5.0    -- step length in pixels
-  )
-  -- Each segment has {x1, y1, x2, y2} ready for line drawing
-  lurek.log.info("procedural tree: " .. #segments .. " branch segments", "procgen")
-  if #segments > 0 then
-    local s = segments[1]
-    lurek.log.debug("  first segment: (" .. string.format("%.1f", s.x1) .. "," .. string.format("%.1f", s.y1) .. ") -> (" .. string.format("%.1f", s.x2) .. "," .. string.format("%.1f", s.y2) .. ")", "procgen")
-  end
+    local segments = lurek.procgen.lsystemSegments({
+        axiom = "F",
+        iterations = 4,
+        rules = {
+            F = "FF+[+F-F-F]-[-F+F+F]"
+        }
+    }, 25, 5.0)
+    print("tree segments = " .. #segments)
+    if #segments > 0 then
+        local s = segments[1]
+        print("first: " .. s.x1 .. "," .. s.y1 .. " -> " .. s.x2 .. "," .. s.y2)
+    end
 end
 ```
 
@@ -509,18 +498,20 @@ Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
 
 ```lua
 do
-  -- Configure how height/moisture/temperature map to biome types.
-  -- Tweak thresholds to control how much ocean, desert, or tundra appears.
-  local bc = lurek.procgen.newBiomeClassifier({
-    ocean_threshold = 0.3,       -- below this height = ocean
-    coast_threshold = 0.35,      -- between ocean and coast = beach
-    mountain_threshold = 0.85,   -- above this = mountain
-    cold_temperature = 0.2,      -- below = cold biomes
-    warm_temperature = 0.7,      -- above = warm biomes
-    dry_moisture = 0.3,          -- below = arid biomes
-    wet_moisture = 0.7,          -- above = wet biomes
-  })
-  lurek.log.info("biome classifier created: " .. bc:type(), "procgen")
+    ---@type BiomeClassifier
+    local bc = lurek.procgen.newBiomeClassifier({
+        ocean_threshold = 0.3,
+        coast_threshold = 0.35,
+        mountain_threshold = 0.8
+    })
+    local biome = bc:classify(0.5, 0.6, 0.5)
+    print("point biome = " .. biome)
+    local heights = { 0.1, 0.4, 0.6, 0.9 }
+    local moisture = { 0.8, 0.5, 0.3, 0.2 }
+    local biomes = bc:classifyMap(2, 2, heights, moisture)
+    for i, b in ipairs(biomes) do
+        print("  cell " .. i .. " = " .. b)
+    end
 end
 ```
 
@@ -544,22 +535,17 @@ Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
 
 ```lua
 do
-  -- Single-threaded noise map generation for smaller maps.
-  -- Use separate noise maps for height, moisture, and temperature.
-  local moisture_map = lurek.procgen.noiseMap(64, 64, {
-    scale_x = 0.06,
-    scale_y = 0.06,
-    octaves = 3,
-    persistence = 0.5,
-    seed = 11,
-  })
-  -- Normalize noise values for biome input (noise is roughly -1 to 1)
-  local min_v, max_v = moisture_map[1], moisture_map[1]
-  for i = 2, #moisture_map do
-    if moisture_map[i] < min_v then min_v = moisture_map[i] end
-    if moisture_map[i] > max_v then max_v = moisture_map[i] end
-  end
-  lurek.log.info("noise map: " .. #moisture_map .. " samples, range=[" .. string.format("%.3f", min_v) .. "," .. string.format("%.3f", max_v) .. "]", "procgen")
+    local map = lurek.procgen.noiseMap(64, 64, {
+        scale_x = 0.05,
+        scale_y = 0.05,
+        octaves = 4,
+        lacunarity = 2.0,
+        persistence = 0.5,
+        seed = 42
+    })
+    print("noise map length = " .. #map)
+    print("sample [1] = " .. map[1])
+    print("sample [100] = " .. map[100])
 end
 ```
 
@@ -583,18 +569,12 @@ Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
 
 ```lua
 do
-  -- For large maps (256x256+), parallel generation is significantly faster.
-  -- Uses seed=0 internally; use noiseMapParallelSeeded for reproducibility.
-  local big_map = lurek.procgen.noiseMapParallel(256, 256, {
-    scale_x = 0.02,
-    scale_y = 0.02,
-    octaves = 5,
-    lacunarity = 2.0,
-    persistence = 0.5,
-  })
-  -- Sample a few points to verify distribution
-  local mid = big_map[256 * 128 + 128]
-  lurek.log.info("parallel noise: " .. #big_map .. " cells, centre=" .. string.format("%.4f", mid), "procgen")
+    local map = lurek.procgen.noiseMapParallel(256, 256, {
+        scale_x = 0.02,
+        scale_y = 0.02,
+        octaves = 6
+    })
+    print("parallel map length = " .. #map)
 end
 ```
 
@@ -618,23 +598,12 @@ Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
 
 ```lua
 do
-  -- Same as noiseMapParallel but with explicit seed for deterministic results.
-  -- Essential for multiplayer or replay-based games.
-  local map_a = lurek.procgen.noiseMapParallelSeeded(64, 64, {
-    scale_x = 0.04,
-    scale_y = 0.04,
-    octaves = 4,
-    seed = 12345,
-  })
-  local map_b = lurek.procgen.noiseMapParallelSeeded(64, 64, {
-    scale_x = 0.04,
-    scale_y = 0.04,
-    octaves = 4,
-    seed = 12345,
-  })
-  -- Same seed = same output, guaranteed
-  local match = (map_a[1] == map_b[1]) and (map_a[100] == map_b[100])
-  lurek.log.info("seeded parallel: deterministic=" .. tostring(match) .. " first=" .. string.format("%.4f", map_a[1]), "procgen")
+    local map = lurek.procgen.noiseMapParallelSeeded(16, 16, {
+        scale = 0.1,
+        octaves = 4,
+        seed = 12345,
+    })
+    print("map_len=" .. #map)
 end
 ```
 
@@ -659,53 +628,11 @@ Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
 
 ```lua
 do
-  -- Periodic Perlin noise tiles seamlessly across map edges.
-  -- periodX/periodY control the tiling repeat distance.
-  local period_x, period_y = 8.0, 8.0
-  local sample_x, sample_y = 2.5, 3.1
-  local n = lurek.procgen.perlinNoise(sample_x, sample_y, period_x, period_y)
-  -- Use noise to decide terrain type at this tile
-  local terrain = "grass"
-  if n > 0.4 then terrain = "rock"
-  elseif n < -0.3 then terrain = "water" end
-  lurek.log.info("tile(" .. sample_x .. "," .. sample_y .. ") noise=" .. string.format("%.3f", n) .. " -> " .. terrain, "procgen")
+    local n = lurek.procgen.perlinNoise(0.5, 0.5, 4.0, 4.0)
+    print("perlin = " .. n)
+    local n2 = lurek.procgen.perlinNoise(4.5, 0.5, 4.0, 4.0)
+    print("tiled same = " .. n2)
 end
---@api-stub: lurek.procgen.poissonDisk
--- Place trees/items with even spacing using Poisson disk sampling
-do
-  -- Generates natural-looking point distributions for object placement.
-  -- minDist=40 means no two trees closer than 40px apart.
-  local map_w, map_h = 800, 600
-  local min_dist = 40
-  local trees = lurek.procgen.poissonDisk(map_w, map_h, min_dist, 30, 42)
-  lurek.log.info("placed " .. #trees .. " trees across " .. map_w .. "x" .. map_h .. " map", "procgen")
-  -- Each point has .x and .y fields ready for sprite placement
-  for i = 1, math.min(3, #trees) do
-    lurek.log.debug("  tree " .. i .. " at (" .. string.format("%.1f", trees[i].x) .. ", " .. string.format("%.1f", trees[i].y) .. ")", "procgen")
-  end
-end
---@api-stub: lurek.procgen.voronoi
--- Compute a Voronoi diagram for biome regions or territory maps
-do
-  -- Voronoi divides space into regions closest to each seed point.
-  -- Great for territory borders, biome zones, or shattered terrain.
-  local w, h = 128, 128
-  local seeds = {
-    { x = 32, y = 32 },
-    { x = 96, y = 32 },
-    { x = 64, y = 96 },
-    { x = 20, y = 80 },
-    { x = 100, y = 80 },
-  }
-  -- warp_strength adds organic distortion to the borders
-  local regions, dist_near, dist_far = lurek.procgen.voronoi(w, h, seeds, {
-    warp_strength = 0.3,
-    seed = 7,
-  })
-  -- dist_far - dist_near gives edge proximity (useful for border rendering)
-  local border_cells = 0
-  for i = 1, #dist_near do
-    if (dist_far[i] - dist_near[i]) < 3.0 then border_cells = border_cells + 1 end
 ```
 
 ### lurek.procgen.poissonDisk
@@ -730,16 +657,11 @@ Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
 
 ```lua
 do
-  -- Generates natural-looking point distributions for object placement.
-  -- minDist=40 means no two trees closer than 40px apart.
-  local map_w, map_h = 800, 600
-  local min_dist = 40
-  local trees = lurek.procgen.poissonDisk(map_w, map_h, min_dist, 30, 42)
-  lurek.log.info("placed " .. #trees .. " trees across " .. map_w .. "x" .. map_h .. " map", "procgen")
-  -- Each point has .x and .y fields ready for sprite placement
-  for i = 1, math.min(3, #trees) do
-    lurek.log.debug("  tree " .. i .. " at (" .. string.format("%.1f", trees[i].x) .. ", " .. string.format("%.1f", trees[i].y) .. ")", "procgen")
-  end
+    local points = lurek.procgen.poissonDisk(200, 200, 15, 30, 42)
+    print("poisson points = " .. #points)
+    for i = 1, math.min(5, #points) do
+        print("  point " .. i .. ": " .. points[i].x .. ", " .. points[i].y)
+    end
 end
 ```
 
@@ -761,22 +683,18 @@ Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
 
 ```lua
 do
-  -- Simpler than BSP: place rooms randomly, reject overlaps, then
-  -- connect each room to the previous one with L-shaped corridors.
-  local dungeon = lurek.procgen.roomsDungeon({
-    width = 60,
-    height = 40,
-    max_rooms = 12,
-    min_room_size = 5,
-    max_room_size = 10,
-    seed = 2,
-  })
-  -- .grid is a flat tilemap: 0=wall, 1=floor
-  local walls, floors = 0, 0
-  for i = 1, #dungeon.grid do
-    if dungeon.grid[i] == 1 then floors = floors + 1 else walls = walls + 1 end
-  end
-  lurek.log.info("rooms dungeon: " .. #dungeon.rooms .. " rooms, " .. floors .. " floor tiles", "procgen")
+    local dungeon = lurek.procgen.roomsDungeon({
+        width = 60,
+        height = 40,
+        max_rooms = 10,
+        min_room_size = 5,
+        max_room_size = 12,
+        seed = 123
+    })
+    print("rooms = " .. #dungeon.rooms)
+    print("corridors = " .. #dungeon.corridors)
+    print("grid = " .. dungeon.width .. "x" .. dungeon.height)
+    print("grid cells = " .. #dungeon.grid)
 end
 ```
 
@@ -800,27 +718,18 @@ Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
 
 ```lua
 do
-  -- Prefabs can have masks (shaped footprints) that get stamped onto the grid.
-  -- stampValue controls what tile value the prefab cells become.
-  local prefabs = {
-    { name = "altar", width = 3, height = 3, mask = {
-      0, 1, 0,
-      1, 1, 1,
-      0, 1, 0,
-    } },
-    { name = "pillar_hall", width = 5, height = 3, mask = {
-      1, 0, 1, 0, 1,
-      1, 1, 1, 1, 1,
-      1, 0, 1, 0, 1,
-    } },
-  }
-  local dungeon, placements = lurek.procgen.roomsDungeonWithPrefabs(
-    { width = 50, height = 35, max_rooms = 10, seed = 21 },
-    prefabs,
-    3  -- stampValue: prefab cells become tile 3 in the grid
-  )
-  local dungeon_result = dungeon --[[@as {rooms: table}]]
-  lurek.log.info("prefab dungeon: " .. #dungeon_result.rooms .. " rooms, " .. #placements .. " prefabs placed", "procgen")
+    local prefabs = {
+        { name = "shop", width = 5, height = 5 },
+        { name = "shrine", width = 4, height = 4 },
+    }
+    local dungeon, placed = lurek.procgen.roomsDungeonWithPrefabs({
+        width = 50,
+        height = 40,
+        max_rooms = 8,
+        seed = 200
+    }, prefabs, 3)
+    print("dungeon grid = " .. dungeon.width .. "x" .. dungeon.height)
+    print("placed = " .. #placed)
 end
 ```
 
@@ -843,13 +752,8 @@ Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
 
 ```lua
 do
-  -- Simplex noise is faster than Perlin for single-point sampling.
-  -- Use it in update loops for real-time procedural effects.
-  local terrain_height = lurek.procgen.simplex2d(12.5, 7.25)
-  -- Remap from [-1,1] to [0,1] for gameplay use
-  local normalized = (terrain_height + 1.0) * 0.5
-  local is_water = normalized < 0.3
-  lurek.log.info("simplex2d at (12.5, 7.25): raw=" .. string.format("%.3f", terrain_height) .. " water=" .. tostring(is_water), "procgen")
+    local val = lurek.procgen.simplex2d(1.5, 2.3)
+    print("simplex2d = " .. val)
 end
 ```
 
@@ -873,18 +777,8 @@ Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
 
 ```lua
 do
-  -- The third axis is perfect for animating noise over time.
-  -- Each frame, increment z slightly for flowing lava, clouds, etc.
-  local time = 0.0
-  local x, y = 4.0, 4.0
-  local cloud_density = lurek.procgen.simplex3d(x, y, time)
-  -- Simulate a few frames of cloud movement
-  local densities = {}
-  for frame = 0, 4 do
-    local t = frame * 0.1
-    densities[frame + 1] = string.format("%.2f", lurek.procgen.simplex3d(x, y, t))
-  end
-  lurek.log.info("cloud evolution over 5 frames: " .. table.concat(densities, ", "), "procgen")
+    local v = lurek.procgen.simplex3d(0.1, 0.5, 0.9)
+    print("simplex3d=" .. v)
 end
 ```
 
@@ -909,27 +803,27 @@ Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
 
 ```lua
 do
-  -- Voronoi divides space into regions closest to each seed point.
-  -- Great for territory borders, biome zones, or shattered terrain.
-  local w, h = 128, 128
-  local seeds = {
-    { x = 32, y = 32 },
-    { x = 96, y = 32 },
-    { x = 64, y = 96 },
-    { x = 20, y = 80 },
-    { x = 100, y = 80 },
-  }
-  -- warp_strength adds organic distortion to the borders
-  local regions, dist_near, dist_far = lurek.procgen.voronoi(w, h, seeds, {
-    warp_strength = 0.3,
-    seed = 7,
-  })
-  -- dist_far - dist_near gives edge proximity (useful for border rendering)
-  local border_cells = 0
-  for i = 1, #dist_near do
-    if (dist_far[i] - dist_near[i]) < 3.0 then border_cells = border_cells + 1 end
-  end
-  lurek.log.info("voronoi: " .. #seeds .. " regions, " .. border_cells .. " border cells", "procgen")
+    local seeds = {}
+    for i = 1, 10 do
+        seeds[i] = { x = math.random(0, 99), y = math.random(0, 99) }
+    end
+    local regions, dist1, dist2 = lurek.procgen.voronoi(100, 100, seeds)
+    print("region cells = " .. #regions)
+    print("dist1 cells = " .. #dist1)
+    print("sample region = " .. regions[50])
+    print("sample dist = " .. dist1[50])
+
+    -- Voronoi with domain warping.
+    local seeds = {}
+    for i = 1, 8 do
+        seeds[i] = { x = i * 15, y = i * 12 }
+    end
+    local regions = lurek.procgen.voronoi(128, 128, seeds, {
+        warp_scale = 0.05,
+        warp_strength = 10.0,
+        seed = 42
+    })
+    print("warped voronoi cells = " .. #regions)
 end
 ```
 
@@ -951,34 +845,29 @@ Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
 
 ```lua
 do
-  -- WFC ensures every tile placement respects adjacency rules.
-  -- Great for auto-generating coherent tilemap levels.
-  local tiles = {
-    { id = 1, weight = 1.0 },  -- ground
-    { id = 2, weight = 0.3 },  -- water
-    { id = 3, weight = 0.5 },  -- sand (transition)
-  }
-  -- Define which tiles can appear next to each other
-  local adjacencies = {
-    [1] = { 1, 3 },     -- ground neighbors: ground, sand
-    [2] = { 2, 3 },     -- water neighbors: water, sand
-    [3] = { 1, 2, 3 },  -- sand neighbors: anything (transition tile)
-  }
-  local result = lurek.procgen.wfcGenerate({
-    width = 16,
-    height = 16,
-    tiles = tiles,
-    adjacencies = adjacencies,
-    seed = 1,
-    max_attempts = 10,
-  })
-  -- Count tile distribution
-  local counts = { [1] = 0, [2] = 0, [3] = 0 }
-  for i = 1, #result.cells do
-    local id = result.cells[i]
-    if counts[id] then counts[id] = counts[id] + 1 end
-  end
-  lurek.log.info("wfc " .. result.width .. "x" .. result.height .. ": ground=" .. counts[1] .. " water=" .. counts[2] .. " sand=" .. counts[3], "procgen")
+    local result = lurek.procgen.wfcGenerate({
+        width = 10,
+        height = 10,
+        seed = 42,
+        max_attempts = 100,
+        tiles = {
+            { id = 1, weight = 1.0 },
+            { id = 2, weight = 1.0 },
+            { id = 3, weight = 0.5 },
+        },
+        adjacencies = {
+            [1] = { 1, 2 },
+            [2] = { 1, 2, 3 },
+            [3] = { 2, 3 },
+        }
+    })
+    print("wfc: " .. result.width .. "x" .. result.height)
+    print("cells = " .. #result.cells)
+    local line = ""
+    for i = 1, 10 do
+        line = line .. result.cells[i] .. " "
+    end
+    print("row 1: " .. line)
 end
 ```
 
@@ -1003,20 +892,18 @@ Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
 
 ```lua
 do
-  -- Creates an overworld map structure with regions and weighted edges.
-  -- Regions have names, positions, and tags; edges have travel cost.
-  local world = lurek.procgen.worldGraph(1024, 768, 8, 5)
-  lurek.log.info("world: " .. #world.regions .. " regions, " .. #world.edges .. " connections", "procgen")
-  -- Print first few regions as example
-  for i = 1, math.min(3, #world.regions) do
-    local r = world.regions[i]
-    lurek.log.debug("  region '" .. r.name .. "' at (" .. r.x .. "," .. r.y .. ")", "procgen")
-  end
-  -- Edges connect regions with travel cost (useful for pathfinding)
-  if #world.edges > 0 then
-    local e = world.edges[1]
-    lurek.log.debug("  edge: region " .. e.from .. " <-> " .. e.to .. " cost=" .. e.cost, "procgen")
-  end
+    local world = lurek.procgen.worldGraph(500, 500, 12, 42)
+    print("regions = " .. #world.regions)
+    print("edges = " .. #world.edges)
+    for i = 1, math.min(3, #world.regions) do
+        local r = world.regions[i]
+        print("  region " .. r.id .. ": " .. r.name ..
+            " at " .. r.x .. "," .. r.y)
+    end
+    for i = 1, math.min(3, #world.edges) do
+        local e = world.edges[i]
+        print("  edge " .. e.from .. " -> " .. e.to .. " cost=" .. e.cost)
+    end
 end
 ```
 
@@ -1043,18 +930,20 @@ Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
 
 ```lua
 do
-  -- Configure how height/moisture/temperature map to biome types.
-  -- Tweak thresholds to control how much ocean, desert, or tundra appears.
-  local bc = lurek.procgen.newBiomeClassifier({
-    ocean_threshold = 0.3,       -- below this height = ocean
-    coast_threshold = 0.35,      -- between ocean and coast = beach
-    mountain_threshold = 0.85,   -- above this = mountain
-    cold_temperature = 0.2,      -- below = cold biomes
-    warm_temperature = 0.7,      -- above = warm biomes
-    dry_moisture = 0.3,          -- below = arid biomes
-    wet_moisture = 0.7,          -- above = wet biomes
-  })
-  lurek.log.info("biome classifier created: " .. bc:type(), "procgen")
+    ---@type BiomeClassifier
+    local bc = lurek.procgen.newBiomeClassifier({
+        ocean_threshold = 0.3,
+        coast_threshold = 0.35,
+        mountain_threshold = 0.8
+    })
+    local biome = bc:classify(0.5, 0.6, 0.5)
+    print("point biome = " .. biome)
+    local heights = { 0.1, 0.4, 0.6, 0.9 }
+    local moisture = { 0.8, 0.5, 0.3, 0.2 }
+    local biomes = bc:classifyMap(2, 2, heights, moisture)
+    for i, b in ipairs(biomes) do
+        print("  cell " .. i .. " = " .. b)
+    end
 end
 ```
 
@@ -1094,16 +983,29 @@ Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
 
 ```lua
 do
-  -- Pass height, moisture, and temperature (each 0.0-1.0).
-  -- Returns a biome name string for gameplay or rendering logic.
-  local bc = lurek.procgen.newBiomeClassifier()
-  -- High altitude, low moisture, cold = tundra or mountain
-  local mountain_biome = bc:classify(0.9, 0.2, 0.1)
-  -- Low altitude, high moisture, warm = tropical
-  local tropical_biome = bc:classify(0.4, 0.9, 0.8)
-  -- Very low altitude = ocean
-  local ocean_biome = bc:classify(0.1, 0.5, 0.5)
-  lurek.log.info("biomes: mountain=" .. mountain_biome .. " tropical=" .. tropical_biome .. " ocean=" .. ocean_biome, "procgen")
+    local bc = lurek.procgen.newBiomeClassifier({
+        biomes = {
+            { name = "ocean",    h_max = 0.3, m_min = 0.0, t_min = 0.0 },
+            { name = "desert",   h_min = 0.3, m_max = 0.3, t_min = 0.5 },
+            { name = "forest",   h_min = 0.3, m_min = 0.3, t_min = 0.0 },
+        }
+    })
+    local biome = bc:classify(0.5, 0.6, 0.4)
+    print("biome=" .. biome)
+    print("type=" .. bc:type())
+    print("typeOf=" .. tostring(bc:typeOf("BiomeClassifier")))
+
+    local w, h = 4, 4
+    local heights = {}
+    local moisture = {}
+    local temps = {}
+    for i = 1, w * h do
+        heights[i] = 0.5
+        moisture[i] = 0.5
+        temps[i] = 0.4
+    end
+    local map = bc:classifyMap(w, h, heights, moisture, temps)
+    print("map_size=" .. #map)
 end
 ```
 
@@ -1142,24 +1044,29 @@ Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
 
 ```lua
 do
-  -- Bulk classification is much faster than calling :classify() per cell.
-  -- Feed in parallel arrays of height, moisture, and temperature.
-  local bc = lurek.procgen.newBiomeClassifier()
-  local w, h = 4, 4
-  local heights = {}
-  local moisture = {}
-  local temperature = {}
-  -- Generate simple gradient data for demonstration
-  for y = 0, h - 1 do
-    for x = 0, w - 1 do
-      local i = y * w + x + 1
-      heights[i] = (x + y) / (w + h - 2)      -- rises toward bottom-right
-      moisture[i] = x / (w - 1)                 -- wet on right
-      temperature[i] = 1.0 - (y / (h - 1))     -- warm at top
+    local bc = lurek.procgen.newBiomeClassifier({
+        biomes = {
+            { name = "ocean",    h_max = 0.3, m_min = 0.0, t_min = 0.0 },
+            { name = "desert",   h_min = 0.3, m_max = 0.3, t_min = 0.5 },
+            { name = "forest",   h_min = 0.3, m_min = 0.3, t_min = 0.0 },
+        }
+    })
+    local biome = bc:classify(0.5, 0.6, 0.4)
+    print("biome=" .. biome)
+    print("type=" .. bc:type())
+    print("typeOf=" .. tostring(bc:typeOf("BiomeClassifier")))
+
+    local w, h = 4, 4
+    local heights = {}
+    local moisture = {}
+    local temps = {}
+    for i = 1, w * h do
+        heights[i] = 0.5
+        moisture[i] = 0.5
+        temps[i] = 0.4
     end
-  end
-  local biomes = bc:classifyMap(w, h, heights, moisture, temperature)
-  lurek.log.info("classifyMap: " .. #biomes .. " cells, corners: TL=" .. biomes[1] .. " BR=" .. biomes[#biomes], "procgen")
+    local map = bc:classifyMap(w, h, heights, moisture, temps)
+    print("map_size=" .. #map)
 end
 ```
 
@@ -1185,9 +1092,29 @@ Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
 
 ```lua
 do
-  local bc = lurek.procgen.newBiomeClassifier()
-  local t = bc:type()
-  lurek.log.debug("classifier type: " .. t, "procgen")
+    local bc = lurek.procgen.newBiomeClassifier({
+        biomes = {
+            { name = "ocean",    h_max = 0.3, m_min = 0.0, t_min = 0.0 },
+            { name = "desert",   h_min = 0.3, m_max = 0.3, t_min = 0.5 },
+            { name = "forest",   h_min = 0.3, m_min = 0.3, t_min = 0.0 },
+        }
+    })
+    local biome = bc:classify(0.5, 0.6, 0.4)
+    print("biome=" .. biome)
+    print("type=" .. bc:type())
+    print("typeOf=" .. tostring(bc:typeOf("BiomeClassifier")))
+
+    local w, h = 4, 4
+    local heights = {}
+    local moisture = {}
+    local temps = {}
+    for i = 1, w * h do
+        heights[i] = 0.5
+        moisture[i] = 0.5
+        temps[i] = 0.4
+    end
+    local map = bc:classifyMap(w, h, heights, moisture, temps)
+    print("map_size=" .. #map)
 end
 ```
 
@@ -1218,11 +1145,29 @@ Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
 
 ```lua
 do
-  -- Useful for polymorphic code that handles multiple object types.
-  local bc = lurek.procgen.newBiomeClassifier()
-  local is_classifier = bc:typeOf("BiomeClassifier")
-  local is_sprite = bc:typeOf("Sprite")
-  lurek.log.debug("is BiomeClassifier=" .. tostring(is_classifier) .. ", is Sprite=" .. tostring(is_sprite), "procgen")
+    local bc = lurek.procgen.newBiomeClassifier({
+        biomes = {
+            { name = "ocean",    h_max = 0.3, m_min = 0.0, t_min = 0.0 },
+            { name = "desert",   h_min = 0.3, m_max = 0.3, t_min = 0.5 },
+            { name = "forest",   h_min = 0.3, m_min = 0.3, t_min = 0.0 },
+        }
+    })
+    local biome = bc:classify(0.5, 0.6, 0.4)
+    print("biome=" .. biome)
+    print("type=" .. bc:type())
+    print("typeOf=" .. tostring(bc:typeOf("BiomeClassifier")))
+
+    local w, h = 4, 4
+    local heights = {}
+    local moisture = {}
+    local temps = {}
+    for i = 1, w * h do
+        heights[i] = 0.5
+        moisture[i] = 0.5
+        temps[i] = 0.4
+    end
+    local map = bc:classifyMap(w, h, heights, moisture, temps)
+    print("map_size=" .. #map)
 end
 ```
 
@@ -1231,7 +1176,7 @@ end
 
 ## 💡 Examples
 
-- [procgen.lua](../blob/main/content/examples/procgen.lua) - Procedural map generation
+- [procgen.lua](../blob/main/content/examples/procgen.lua) - API example
 
 [⬆ back to top](#table-of-contents)
 

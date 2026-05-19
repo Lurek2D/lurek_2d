@@ -4,7 +4,7 @@
 
 ## Navigation
 
-[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lureksome](Lureksome)
 
 ## Table of Contents
 
@@ -83,15 +83,10 @@ Exact example from [repl.lua](../blob/main/content/examples/repl.lua):
 
 ```lua
 do
-  -- Use a small history limit for a dev console that only keeps recent commands.
-  -- Omit the argument to get the default 200-entry buffer.
-  local console = lurek.repl.new(64)
-
-  -- A larger session for an automated test runner that replays many commands
-  local test_runner = lurek.repl.new(500)
-
-  -- Default history size (200) is fine for most in-game consoles
-  local default_console = lurek.repl.new()
+    ---@type LReplSession
+    local repl = lurek.repl.new()
+    print("type = " .. repl:type())
+    print("initial len = " .. repl:len())
 end
 ```
 
@@ -118,15 +113,10 @@ Exact example from [repl.lua](../blob/main/content/examples/repl.lua):
 
 ```lua
 do
-  -- Use a small history limit for a dev console that only keeps recent commands.
-  -- Omit the argument to get the default 200-entry buffer.
-  local console = lurek.repl.new(64)
-
-  -- A larger session for an automated test runner that replays many commands
-  local test_runner = lurek.repl.new(500)
-
-  -- Default history size (200) is fine for most in-game consoles
-  local default_console = lurek.repl.new()
+    ---@type LReplSession
+    local repl = lurek.repl.new()
+    print("type = " .. repl:type())
+    print("initial len = " .. repl:len())
 end
 ```
 
@@ -154,19 +144,16 @@ Exact example from [repl.lua](../blob/main/content/examples/repl.lua):
 
 ```lua
 do
-  local console = lurek.repl.new(16)
-
-  -- Player runs some debug commands
-  console:eval("noclip = true")
-  console:eval("set_level(5)")
-
-  -- Clear history when transitioning to a new game scene so old
-  -- commands don't clutter the scrollback
-  console:clear()
-
-  -- History is now empty
-  local count = console:len()
-  lurek.log.info("after clear: " .. tostring(count) .. " entries", "repl")
+    ---@type LReplSession
+    local repl = lurek.repl.new()
+    repl:eval("return 1")
+    repl:eval("return 2")
+    repl:eval("return 3")
+    print("before clear = " .. repl:len())
+    repl:clear()
+    print("after clear = " .. repl:len())
+    local hist = repl:history()
+    print("history after clear = " .. #hist)
 end
 ```
 
@@ -197,20 +184,11 @@ Exact example from [repl.lua](../blob/main/content/examples/repl.lua):
 
 ```lua
 do
-  local console = lurek.repl.new(16)
-
-  -- Simulate tab-completion when the player types "lurek.re" and presses Tab
-  local matches = console:complete("lurek.re")
-  lurek.log.info("completions for 'lurek.re': " .. tostring(#matches), "repl")
-
-  -- Display matches as a dropdown in the console overlay
-  for _, candidate in ipairs(matches) do
-    lurek.log.info("  " .. candidate, "repl")
-  end
-
-  -- Complete a shorter prefix to show broader results
-  local broad = console:complete("lurek.")
-  lurek.log.info("completions for 'lurek.': " .. tostring(#broad), "repl")
+    ---@type LReplSession
+    local repl = lurek.repl.new()
+    repl:eval("myVariable = 42")
+    local completions = repl:complete("my")
+    print("completions for 'my' = " .. #completions)
 end
 ```
 
@@ -241,21 +219,10 @@ Exact example from [repl.lua](../blob/main/content/examples/repl.lua):
 
 ```lua
 do
-  local console = lurek.repl.new(32)
-
-  -- Evaluate an expression — returns the stringified result
-  local result = console:eval("2 + 2")
-  lurek.log.info("expr result: " .. result, "repl")
-
-  -- Execute a statement that modifies game state at runtime
-  console:eval("player_speed = 400")
-
-  -- Errors are returned as strings, not thrown — safe for player input
-  local err = console:eval("this is not valid lua!!")
-  lurek.log.info("error output: " .. err, "repl")
-
-  -- Use eval to toggle debug overlays from the in-game console
-  console:eval("show_hitboxes = not show_hitboxes")
+    ---@type LReplSession
+    local repl = lurek.repl.new()
+    local r1 = repl:eval("return 2 + 2")
+    print("2+2 = " .. r1)
 end
 ```
 
@@ -281,18 +248,13 @@ Exact example from [repl.lua](../blob/main/content/examples/repl.lua):
 
 ```lua
 do
-  local console = lurek.repl.new(16)
-
-  -- Simulate a player typing several console commands during a session
-  console:eval("god_mode = true")
-  console:eval("spawn_enemy('goblin', 3)")
-  console:eval("tp(100, 200)")
-
-  -- Retrieve history to display in a scrollable console UI
-  local entries = console:history()
-  for i, cmd in ipairs(entries) do
-    lurek.log.info(i .. ": " .. cmd, "repl")
-  end
+    ---@type LReplSession
+    local repl = lurek.repl.new()
+    repl:eval("return 1")
+    repl:eval("return 2")
+    repl:eval("return 3")
+    local hist = repl:history()
+    print("history entries = " .. #hist)
 end
 ```
 
@@ -318,19 +280,16 @@ Exact example from [repl.lua](../blob/main/content/examples/repl.lua):
 
 ```lua
 do
-  local console = lurek.repl.new(8)
-
-  -- Track how many commands the player has entered this session
-  console:eval("help()")
-  console:eval("list_items()")
-  console:eval("equip('sword')")
-
-  local n = console:len()
-  lurek.log.info("commands entered: " .. tostring(n), "repl")
-
-  -- Use len() to show "3/8 history slots used" in the console UI
-  local max = 8
-  lurek.log.info(tostring(n) .. "/" .. tostring(max) .. " history slots", "repl")
+    ---@type LReplSession
+    local repl = lurek.repl.new()
+    print("empty = " .. repl:len())
+    repl:eval("return 'a'")
+    print("after 1 eval = " .. repl:len())
+    repl:eval("return 'b'")
+    repl:eval("return 'c'")
+    print("after 3 evals = " .. repl:len())
+    repl:clear()
+    print("after clear = " .. repl:len())
 end
 ```
 
@@ -356,11 +315,9 @@ Exact example from [repl.lua](../blob/main/content/examples/repl.lua):
 
 ```lua
 do
-  local console = lurek.repl.new()
-
-  -- Useful for generic object inspection in a debug console
-  local t = console:type()
-  lurek.log.info("handle type: " .. t, "repl")
+    ---@type LReplSession
+    local sess = lurek.repl.new()
+    print(sess:type())
 end
 ```
 
@@ -391,17 +348,9 @@ Exact example from [repl.lua](../blob/main/content/examples/repl.lua):
 
 ```lua
 do
-  local console = lurek.repl.new()
-
-  -- Guard code that accepts any lurek object and needs to detect a REPL session
-  if console:typeOf("LReplSession") then
-    lurek.log.info("confirmed: this is a REPL session", "repl")
-  end
-
-  -- All lurek handles also match "Object"
-  if console:typeOf("Object") then
-    lurek.log.info("also matches base Object type", "repl")
-  end
+    ---@type LReplSession
+    local sess = lurek.repl.new()
+    print(sess:typeOf("LReplSession"))
 end
 ```
 

@@ -4,7 +4,7 @@
 
 ## Navigation
 
-[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lureksome](Lureksome)
 
 ## Table of Contents
 
@@ -141,12 +141,11 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  -- Show a "session played" notification after 3 real seconds regardless of game speed
-  lurek.timer.afterReal(3.0, function()
-    lurek.log.info("you have been playing for a while!", "ui")
-  end)
-
-  function lurek.process() lurek.timer.tickRealTimers() end
+    lurek.timer.afterReal(1.0, function()
+        print("1 second of real time passed")
+    end)
+    local fired = lurek.timer.tickRealTimers()
+    print("real timers fired = " .. fired)
 end
 ```
 
@@ -168,15 +167,15 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  -- Chain steps for a simple cutscene: each delay is relative to the previous step
-  local cutscene = lurek.timer.chain({
-    { delay = 0.0, func = function() lurek.log.info("fade from black", "cutscene") end },
-    { delay = 1.5, func = function() lurek.log.info("show dialog box", "cutscene") end },
-    { delay = 3.0, func = function() lurek.log.info("camera pan to exit", "cutscene") end },
-    { delay = 1.0, func = function() lurek.log.info("give player control", "cutscene") end },
-  })
-
-  function lurek.process(dt) cutscene:update(dt) end
+    ---@type LScheduler
+    local sched = lurek.timer.chain({
+        { delay = 0.5, func = function() print("step 1 at 0.5s") end },
+        { delay = 1.0, func = function() print("step 2 at 1.5s") end },
+        { delay = 0.5, func = function() print("step 3 at 2.0s") end },
+    })
+    sched:update(0.5)
+    sched:update(1.0)
+    sched:update(0.5)
 end
 ```
 
@@ -194,14 +193,8 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  function lurek.process()
-    local avg_dt = lurek.timer.getAverageDelta()
-    local budget_ms = avg_dt * 1000
-    -- Use average frame time to decide whether to enable expensive effects
-    if budget_ms > 18 then
-      lurek.log.warn(string.format("frame budget tight: %.1fms", budget_ms), "perf")
-    end
-  end
+    local avg = lurek.timer.getAverageDelta()
+    print("average delta = " .. avg)
 end
 ```
 
@@ -219,14 +212,8 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  local player_x = 100
-  local speed = 200 -- pixels per second
-
-  function lurek.process()
-    -- Multiply speed by dt so the player moves the same distance regardless of FPS
     local dt = lurek.timer.getDelta()
-    player_x = player_x + speed * dt
-  end
+    print("delta time = " .. dt .. " seconds")
 end
 ```
 
@@ -244,13 +231,8 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  function lurek.draw_ui()
     local fps = lurek.timer.getFPS()
-    -- Show a warning in the HUD when performance drops below acceptable threshold
-    if fps < 30 then
-      lurek.log.warn("performance drop: " .. fps .. " FPS", "perf")
-    end
-  end
+    print("current FPS = " .. fps)
 end
 ```
 
@@ -268,13 +250,8 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  function lurek.process()
-    local frame = lurek.timer.getFrameCount()
-    -- Log a heartbeat every 300 frames (roughly every 5 seconds at 60 FPS)
-    if frame % 300 == 0 then
-      lurek.log.info("heartbeat at frame " .. frame, "engine")
-    end
-  end
+    local frames = lurek.timer.getFrameCount()
+    print("total frames = " .. frames)
 end
 ```
 
@@ -292,12 +269,11 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  -- Measure how long a pathfinding computation takes
-  local t0 = lurek.timer.getMicroTime()
-  local sum = 0
-  for i = 1, 50000 do sum = sum + i end
-  local elapsed = lurek.timer.getMicroTime() - t0
-  lurek.log.info(string.format("computation took %.3fms", elapsed * 1000), "bench")
+    local start = lurek.timer.getMicroTime()
+    local sum = 0
+    for i = 1, 10000 do sum = sum + i end
+    local elapsed = lurek.timer.getMicroTime() - start
+    print("loop took " .. elapsed .. " seconds")
 end
 ```
 
@@ -315,10 +291,8 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  local pdt = lurek.timer.getPhysicsDelta()
-  local hz = math.floor(1.0 / pdt + 0.5)
-  -- Display the physics tick rate for debugging physics behavior
-  lurek.log.info("physics running at " .. hz .. " Hz (dt=" .. pdt .. "s)", "physics")
+    local pdt = lurek.timer.getPhysicsDelta()
+    print("physics delta = " .. pdt)
 end
 ```
 
@@ -336,11 +310,10 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  local max_steps = lurek.timer.getPhysicsMaxSteps()
-  -- Warn if the cap is too low for a physics-heavy game
-  if max_steps < 4 then
-    lurek.log.warn("low physics step cap (" .. max_steps .. "); may skip collisions on lag spikes", "physics")
-  end
+    local max = lurek.timer.getPhysicsMaxSteps()
+    print("max physics steps = " .. max)
+    lurek.timer.setPhysicsMaxSteps(8)
+    print("set to 8: " .. lurek.timer.getPhysicsMaxSteps())
 end
 ```
 
@@ -358,12 +331,9 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  function lurek.draw_ui()
-    local sdt = lurek.timer.getSmoothedDelta()
-    -- Display smooth frame time in the debug HUD without flicker
-    local ms = sdt * 1000
-    lurek.log.debug(string.format("frame: %.2fms", ms), "hud")
-  end
+    lurek.timer.setSmoothingFactor(0.1)
+    local sd = lurek.timer.getSmoothedDelta()
+    print("smoothed delta (alpha=0.1) = " .. sd)
 end
 ```
 
@@ -381,12 +351,8 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  function lurek.draw()
-    -- Create a pulsing opacity effect using sine of elapsed time
     local t = lurek.timer.getTime()
-    local alpha = 0.5 + 0.5 * math.sin(t * 3.0)
-    lurek.log.debug(string.format("glow alpha=%.2f", alpha), "fx")
-  end
+    print("elapsed time = " .. t .. " seconds")
 end
 ```
 
@@ -404,17 +370,11 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  -- Separate schedulers let you pause UI timers without affecting gameplay
-  local ui_timers = lurek.timer.newScheduler()
-  local game_timers = lurek.timer.newScheduler()
-
-  ui_timers:after(2.0, function() lurek.log.info("hide tooltip", "ui") end)
-  game_timers:every(1.0, function() lurek.log.debug("enemy patrol step", "ai") end)
-
-  function lurek.process(dt)
-    ui_timers:update(dt)
-    game_timers:update(dt)
-  end
+    ---@type LScheduler
+    local sched = lurek.timer.newScheduler()
+    print("type = " .. sched:type())
+    print("is LScheduler = " .. tostring(sched:typeOf("LScheduler")))
+    print("empty = " .. tostring(sched:isEmpty()))
 end
 ```
 
@@ -434,10 +394,9 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  -- Double physics precision for a boss fight with tight collision requirements
-  lurek.timer.setPhysicsDelta(1 / 120)
-  local pdt = lurek.timer.getPhysicsDelta()
-  lurek.log.info("physics precision mode: " .. math.floor(1 / pdt + 0.5) .. " Hz", "physics")
+    lurek.timer.setPhysicsDelta(1/60)
+    local pd = lurek.timer.getPhysicsDelta()
+    print("physics_delta=" .. pd)
 end
 ```
 
@@ -457,9 +416,9 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  -- Allow more catch-up steps for a fast-paced bullet-hell game
-  lurek.timer.setPhysicsMaxSteps(8)
-  lurek.log.info("physics catch-up cap set to 8 steps/frame", "physics")
+    lurek.timer.setPhysicsMaxSteps(5)
+    local pm = lurek.timer.getPhysicsMaxSteps()
+    print("physics_max_steps=" .. pm)
 end
 ```
 
@@ -479,9 +438,9 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  -- Use a low factor for a very stable frame time display
-  lurek.timer.setSmoothingFactor(0.05)
-  lurek.log.info("smoothing factor set to 0.05 for stable HUD timer", "perf")
+    lurek.timer.setSmoothingFactor(0.1)
+    local sd = lurek.timer.getSmoothedDelta()
+    print("smoothed_delta=" .. sd)
 end
 ```
 
@@ -501,12 +460,9 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  -- Simulate a brief pause during a loading transition
-  lurek.log.info("loading assets...", "loader")
-  local before = lurek.timer.getMicroTime()
-  lurek.timer.sleep(0.05)
-  local elapsed = lurek.timer.getMicroTime() - before
-  lurek.log.info(string.format("blocked for %.1fms", elapsed * 1000), "loader")
+    print("sleeping 0.01s...")
+    lurek.timer.sleep(0.01)
+    print("woke up")
 end
 ```
 
@@ -524,9 +480,8 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  -- Useful for deterministic replay systems where you control time advancement
-  local dt = lurek.timer.step()
-  lurek.log.debug(string.format("manual step: dt=%.4fs", dt), "replay")
+    local dt = lurek.timer.step()
+    print("stepped, dt = " .. dt)
 end
 ```
 
@@ -544,15 +499,8 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  -- Register a toast notification that auto-hides after 0.5 real seconds
-  lurek.timer.afterReal(0.5, function() lurek.log.debug("toast dismissed", "ui") end)
-
-  function lurek.process()
     local fired = lurek.timer.tickRealTimers()
-    if fired > 0 then
-      lurek.log.debug("real-time callbacks fired: " .. fired, "timer")
-    end
-  end
+    print("real timers fired = " .. fired)
 end
 ```
 
@@ -570,12 +518,14 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  function lurek.process()
-    local resumed = lurek.timer.tickWaits()
-    if resumed > 0 then
-      lurek.log.debug("resumed " .. resumed .. " waiting coroutines", "timer")
-    end
-  end
+    local co = coroutine.create(function()
+        lurek.timer.waitFrames(1)
+        lurek.timer.waitSeconds(0)
+    end)
+    coroutine.resume(co)
+    lurek.timer.tickWaits()
+    lurek.timer.tickWaits()
+    print("wait coroutine = " .. coroutine.status(co))
 end
 ```
 
@@ -595,15 +545,13 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  -- Wait exactly 120 frames (2 seconds at 60 FPS) before enabling player input
-  local setup = coroutine.wrap(function()
-    lurek.log.debug("waiting 120 frames for intro to finish", "game")
-    lurek.timer.waitFrames(120)
-    lurek.log.info("player input enabled", "game")
-  end)
-
-  function lurek.init() setup() end
-  function lurek.process() lurek.timer.tickWaits() end
+    local co = coroutine.create(function()
+        lurek.timer.waitFrames(1)
+    end)
+    coroutine.resume(co)
+    lurek.timer.tickWaits()
+    lurek.timer.tickWaits()
+    print("wait coroutine = " .. coroutine.status(co))
 end
 ```
 
@@ -623,17 +571,12 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  -- Use coroutine-based sequencing for a multi-phase intro
-  local intro = coroutine.wrap(function()
-    lurek.log.info("wave 1: spawn enemies", "game")
-    lurek.timer.waitSeconds(2.0)
-    lurek.log.info("wave 2: spawn boss", "game")
-    lurek.timer.waitSeconds(3.0)
-    lurek.log.info("wave complete", "game")
-  end)
-
-  function lurek.init() intro() end
-  function lurek.process() lurek.timer.tickWaits() end
+    local co = coroutine.create(function()
+        lurek.timer.waitSeconds(0)
+    end)
+    coroutine.resume(co)
+    lurek.timer.tickWaits()
+    print("wait coroutine = " .. coroutine.status(co))
 end
 ```
 
@@ -660,15 +603,15 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  -- Chain steps for a simple cutscene: each delay is relative to the previous step
-  local cutscene = lurek.timer.chain({
-    { delay = 0.0, func = function() lurek.log.info("fade from black", "cutscene") end },
-    { delay = 1.5, func = function() lurek.log.info("show dialog box", "cutscene") end },
-    { delay = 3.0, func = function() lurek.log.info("camera pan to exit", "cutscene") end },
-    { delay = 1.0, func = function() lurek.log.info("give player control", "cutscene") end },
-  })
-
-  function lurek.process(dt) cutscene:update(dt) end
+    ---@type LScheduler
+    local sched = lurek.timer.chain({
+        { delay = 0.5, func = function() print("step 1 at 0.5s") end },
+        { delay = 1.0, func = function() print("step 2 at 1.5s") end },
+        { delay = 0.5, func = function() print("step 3 at 2.0s") end },
+    })
+    sched:update(0.5)
+    sched:update(1.0)
+    sched:update(0.5)
 end
 ```
 
@@ -706,14 +649,14 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  local sched = lurek.timer.newScheduler()
-  -- Spawn a power-up 3 seconds into the level
-  local id = sched:after(3.0, function()
-    lurek.log.info("power-up spawned at center", "game")
-  end)
-  lurek.log.debug("power-up timer id=" .. id, "timer")
-
-  function lurek.process(dt) sched:update(dt) end
+    ---@type LScheduler
+    local sched = lurek.timer.newScheduler()
+    local fired = false
+    local id = sched:after(0.5, function()
+        fired = true
+        print("callback fired after 0.5s")
+    end)
+    print("scheduled id = " .. id)
 end
 ```
 
@@ -746,13 +689,17 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  local sched = lurek.timer.newScheduler()
-  -- Flash the screen white exactly 15 frames after an explosion
-  sched:afterFrames(15, function()
-    lurek.log.info("screen flash complete", "fx")
-  end)
-
-  function lurek.process() sched:updateFrames() end
+    ---@type LScheduler
+    local sched = lurek.timer.newScheduler()
+    sched:afterFrames(3, function()
+        print("fired after 3 frames")
+    end)
+    for i = 1, 6 do
+        local n = sched:updateFrames()
+        if n > 0 then
+            print("  frame " .. i .. ": " .. n .. " fired")
+        end
+    end
 end
 ```
 
@@ -787,17 +734,12 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  local sched = lurek.timer.newScheduler()
-  -- Each hit resets the combo timeout; only fires when player stops attacking
-  sched:afterNamed("combo_timeout", 1.5, function()
-    lurek.log.info("combo dropped", "combat")
-  end)
-  -- Simulate another hit resetting the timer
-  sched:afterNamed("combo_timeout", 1.5, function()
-    lurek.log.info("combo dropped (reset)", "combat")
-  end)
-
-  function lurek.process(dt) sched:update(dt) end
+    ---@type LScheduler
+    local sched = lurek.timer.newScheduler()
+    sched:afterNamed("save", 2.0, function()
+        print("save triggered")
+    end)
+    print("named timer scheduled")
 end
 ```
 
@@ -828,13 +770,15 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  local sched = lurek.timer.newScheduler()
-  -- Schedule a self-destruct, then defuse it
-  local bomb_id = sched:after(5.0, function()
-    lurek.log.info("BOOM!", "game")
-  end)
-  local defused = sched:cancel(bomb_id)
-  lurek.log.info("bomb defused: " .. tostring(defused), "game")
+    ---@type LScheduler
+    local sched = lurek.timer.newScheduler()
+    local id1 = sched:after(1.0, function() end)
+    local id2 = sched:after(2.0, function() end)
+    local id3 = sched:after(3.0, function() end)
+    print("count = " .. sched:getCount())
+    local ok = sched:cancel(id2)
+    print("cancel id2 = " .. tostring(ok))
+    print("count after = " .. sched:getCount())
 end
 ```
 
@@ -860,13 +804,15 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  local sched = lurek.timer.newScheduler()
-  sched:after(1.0, function() end)
-  sched:every(0.5, function() end)
-  sched:after(3.0, function() end)
-  -- Scene is ending; drop everything at once
-  local removed = sched:cancelAll()
-  lurek.log.info("scene exit: cleared " .. removed .. " timers", "scene")
+    ---@type LScheduler
+    local sched = lurek.timer.newScheduler()
+    local id1 = sched:after(1.0, function() end)
+    local id2 = sched:after(2.0, function() end)
+    local id3 = sched:after(3.0, function() end)
+    print("count = " .. sched:getCount())
+    local removed = sched:cancelAll()
+    print("cancelAll removed = " .. removed)
+    print("empty = " .. tostring(sched:isEmpty()))
 end
 ```
 
@@ -897,13 +843,13 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  local sched = lurek.timer.newScheduler()
-  sched:afterNamed("invulnerability", 5.0, function()
-    lurek.log.info("invuln expired", "combat")
-  end)
-  -- Player picked up another star; cancel old timer before scheduling new one
-  local ok = sched:cancelNamed("invulnerability")
-  lurek.log.debug("old invuln cancelled: " .. tostring(ok), "combat")
+    ---@type LScheduler
+    local sched = lurek.timer.newScheduler()
+    sched:afterNamed("save", 2.0, function()
+        print("save triggered")
+    end)
+    local cancelled = sched:cancelNamed("save")
+    print("cancelled = " .. tostring(cancelled))
 end
 ```
 
@@ -938,14 +884,18 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  local sched = lurek.timer.newScheduler()
-  -- Spawn a coin every 2 seconds, up to 10 times
-  local id = sched:every(2.0, function()
-    lurek.log.info("coin spawned", "game")
-  end, 10)
-  lurek.log.debug("coin spawner id=" .. id, "game")
-
-  function lurek.process(dt) sched:update(dt) end
+    ---@type LScheduler
+    local sched = lurek.timer.newScheduler()
+    local count = 0
+    local id = sched:every(0.25, function()
+        count = count + 1
+        print("tick " .. count)
+    end, 4)
+    print("repeating id = " .. id)
+    for i = 1, 8 do
+        sched:update(0.25)
+    end
+    print("final count = " .. count)
 end
 ```
 
@@ -980,13 +930,17 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  local sched = lurek.timer.newScheduler()
-  -- Emit a trail particle every 4 frames while the missile is alive
-  sched:everyFrames(4, function()
-    lurek.log.debug("trail particle emitted", "fx")
-  end)
-
-  function lurek.process() sched:updateFrames() end
+    ---@type LScheduler
+    local sched = lurek.timer.newScheduler()
+    sched:everyFrames(2, function()
+        print("every 2 frames")
+    end, 3)
+    for i = 1, 6 do
+        local n = sched:updateFrames()
+        if n > 0 then
+            print("  frame " .. i .. ": " .. n .. " fired")
+        end
+    end
 end
 ```
 
@@ -1023,17 +977,13 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  local sched = lurek.timer.newScheduler()
-  -- Health regen ticks every 2 seconds; upgrading resets to faster rate
-  sched:everyNamed("hp_regen", 2.0, function()
-    lurek.log.debug("+5 HP", "rpg")
-  end)
-  -- After upgrade, replace with faster regen
-  sched:everyNamed("hp_regen", 1.0, function()
-    lurek.log.debug("+5 HP (upgraded)", "rpg")
-  end)
-
-  function lurek.process(dt) sched:update(dt) end
+    ---@type LScheduler
+    local sched = lurek.timer.newScheduler()
+    sched:everyNamed("regen", 1.0, function()
+        print("health regen tick")
+    end)
+    sched:update(1.0)
+    sched:update(1.0)
 end
 ```
 
@@ -1059,12 +1009,11 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  local sched = lurek.timer.newScheduler()
-  sched:after(1.0, function() end)
-  sched:every(0.5, function() end)
-  sched:after(3.0, function() end)
-  local n = sched:getCount()
-  lurek.log.debug("active scheduled events: " .. n, "timer")
+    local sched = lurek.timer.newScheduler()
+    print("count=" .. sched:getCount())
+
+    local id1 = sched:after(1.0, function() print("after") end)
+    print("count_after=" .. sched:getCount())
 end
 ```
 
@@ -1096,12 +1045,11 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  local sched = lurek.timer.newScheduler()
-  local id = sched:every(2.5, function() end)
-  local found, interval = sched:getInterval(id)
-  if found then
-    lurek.log.debug(string.format("spawn interval: %.1fs", interval), "game")
-  end
+    ---@type LScheduler
+    local sched = lurek.timer.newScheduler()
+    local id = sched:every(0.5, function() end, 10)
+    local found2, interval = sched:getInterval(id)
+    print("interval = " .. interval)
 end
 ```
 
@@ -1133,15 +1081,11 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  local sched = lurek.timer.newScheduler()
-  local id = sched:after(5.0, function()
-    lurek.log.info("ability ready!", "combat")
-  end)
-  -- Query how much time remains on the cooldown
-  local found, remaining = sched:getRemaining(id)
-  if found then
-    lurek.log.info(string.format("cooldown: %.1fs remaining", remaining), "hud")
-  end
+    ---@type LScheduler
+    local sched = lurek.timer.newScheduler()
+    local id = sched:every(0.5, function() end, 10)
+    local found, remaining = sched:getRemaining(id)
+    print("found = " .. tostring(found) .. ", remaining = " .. remaining)
 end
 ```
 
@@ -1173,16 +1117,53 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  local sched = lurek.timer.newScheduler()
-  -- Fire 5 shots with a 0.3s delay between each
-  local id = sched:every(0.3, function()
-    lurek.log.debug("shot fired", "combat")
-  end, 5)
-  local found, charges = sched:getRepeatCount(id)
-  if found then
-    lurek.log.info("burst shots remaining: " .. charges, "combat")
-  end
+    ---@type LScheduler
+    local sched = lurek.timer.newScheduler()
+    local id = sched:every(0.5, function() end, 10)
+    local found3, repeats = sched:getRepeatCount(id)
+    print("repeat count = " .. repeats)
 end
+
+--@api-stub: LScheduler:resetEvent
+-- Querying event state. Focus: resetEvent.
+do
+    ---@type LScheduler
+    local sched = lurek.timer.newScheduler()
+    local id = sched:every(0.5, function() end, 10)
+    sched:update(0.3)
+    sched:resetEvent(id)
+    local found, remaining = sched:getRemaining(id)
+    print("after reset, remaining = " .. remaining)
+end
+
+--@api-stub: LScheduler:setInterval
+-- Dynamic interval and time scaling. Focus: setInterval.
+do
+    ---@type LScheduler
+    local sched = lurek.timer.newScheduler()
+    local id = sched:every(1.0, function()
+        print("tick")
+    end)
+    sched:setInterval(id, 0.5)
+    print("interval changed to 0.5")
+end
+
+--@api-stub: LScheduler:setTimeScale
+-- Dynamic interval and time scaling. Focus: setTimeScale.
+do
+    ---@type LScheduler
+    local sched = lurek.timer.newScheduler()
+    sched:setTimeScale(2.0)
+    print("time scale = " .. sched:getTimeScale())
+end
+
+--@api-stub: LScheduler:getTimeScale
+-- Dynamic interval and time scaling. Focus: getTimeScale.
+do
+    ---@type LScheduler
+    local sched = lurek.timer.newScheduler()
+    sched:setTimeScale(2.0)
+    print("time scale = " .. sched:getTimeScale())
 ```
 
 ### LScheduler:getTimeScale
@@ -1207,10 +1188,10 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  local sched = lurek.timer.newScheduler()
-  sched:setTimeScale(2.0)
-  local scale = sched:getTimeScale()
-  lurek.log.info("scheduler running at " .. scale .. "x speed", "debug")
+    ---@type LScheduler
+    local sched = lurek.timer.newScheduler()
+    sched:setTimeScale(2.0)
+    print("time scale = " .. sched:getTimeScale())
 end
 ```
 
@@ -1236,14 +1217,10 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  local sched = lurek.timer.newScheduler()
-
-  function lurek.process(dt)
-    -- Only call update when there is work to do
-    if not sched:isEmpty() then
-      sched:update(dt)
-    end
-  end
+    local sched = lurek.timer.newScheduler()
+    print("empty=" .. tostring(sched:isEmpty()))
+    sched:cancelAll()
+    print("empty_after=" .. tostring(sched:isEmpty()))
 end
 ```
 
@@ -1274,13 +1251,13 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  local sched = lurek.timer.newScheduler()
-  local id = sched:every(2.0, function() end)
-  sched:pause(id)
-  -- Toggle logic: only show "paused" icon if timer is actually paused
-  if sched:isPaused(id) then
-    lurek.log.debug("showing pause indicator for timer " .. id, "ui")
-  end
+    ---@type LScheduler
+    local sched = lurek.timer.newScheduler()
+    local id = sched:after(1.0, function()
+        print("should not fire while paused")
+    end)
+    sched:pause(id)
+    print("paused = " .. tostring(sched:isPaused(id)))
 end
 ```
 
@@ -1311,12 +1288,10 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  local sched = lurek.timer.newScheduler()
-  sched:everyNamed("music_fade", 5.0, function() end)
-  sched:pauseNamed("music_fade")
-  if sched:isPausedNamed("music_fade") then
-    lurek.log.debug("music fade is on hold", "audio")
-  end
+    local sched = lurek.timer.newScheduler()
+    sched:afterNamed("named_once", 2.0, function() print("named_once") end)
+    sched:pauseNamed("named_once")
+    print("paused_named=" .. tostring(sched:isPausedNamed("named_once")))
 end
 ```
 
@@ -1347,13 +1322,13 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  local sched = lurek.timer.newScheduler()
-  local patrol_id = sched:every(1.0, function()
-    lurek.log.debug("guard patrol step", "ai")
-  end)
-  -- Pause the patrol when the player enters a dialog
-  sched:pause(patrol_id)
-  lurek.log.info("guard patrol paused during dialog", "ai")
+    ---@type LScheduler
+    local sched = lurek.timer.newScheduler()
+    local id = sched:after(1.0, function()
+        print("should not fire while paused")
+    end)
+    sched:pause(id)
+    print("paused = " .. tostring(sched:isPaused(id)))
 end
 ```
 
@@ -1384,13 +1359,10 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  local sched = lurek.timer.newScheduler()
-  sched:everyNamed("auto_save", 30.0, function()
-    lurek.log.info("auto-saving...", "save")
-  end)
-  -- Pause auto-save during a boss fight to avoid hitches
-  sched:pauseNamed("auto_save")
-  lurek.log.info("auto-save paused for boss fight", "save")
+    local sched = lurek.timer.newScheduler()
+    sched:afterNamed("named_once", 2.0, function() print("named_once") end)
+    sched:pauseNamed("named_once")
+    print("paused_named=" .. tostring(sched:isPausedNamed("named_once")))
 end
 ```
 
@@ -1421,14 +1393,13 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  local sched = lurek.timer.newScheduler()
-  -- A buff expires in 10 seconds; picking up another refreshes the timer
-  local buff_id = sched:after(10.0, function()
-    lurek.log.info("shield buff expired", "rpg")
-  end)
-  -- Player picked up another shield orb: refresh the timer
-  sched:resetEvent(buff_id)
-  lurek.log.info("shield buff refreshed to full duration", "rpg")
+    ---@type LScheduler
+    local sched = lurek.timer.newScheduler()
+    local id = sched:every(0.5, function() end, 10)
+    sched:update(0.3)
+    sched:resetEvent(id)
+    local found, remaining = sched:getRemaining(id)
+    print("after reset, remaining = " .. remaining)
 end
 ```
 
@@ -1459,14 +1430,14 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  local sched = lurek.timer.newScheduler()
-  local id = sched:every(0.5, function()
-    lurek.log.debug("heartbeat", "fx")
-  end)
-  sched:pause(id)
-  -- Dialog ended; resume the effect
-  local ok = sched:resume(id)
-  lurek.log.info("heartbeat resumed: " .. tostring(ok), "fx")
+    ---@type LScheduler
+    local sched = lurek.timer.newScheduler()
+    local id = sched:after(1.0, function()
+        print("should not fire while paused")
+    end)
+    sched:pause(id)
+    sched:resume(id)
+    print("resumed, paused = " .. tostring(sched:isPaused(id)))
 end
 ```
 
@@ -1497,12 +1468,11 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  local sched = lurek.timer.newScheduler()
-  sched:everyNamed("auto_save", 30.0, function() end)
-  sched:pauseNamed("auto_save")
-  -- Boss fight over; resume auto-save
-  local ok = sched:resumeNamed("auto_save")
-  lurek.log.info("auto-save resumed: " .. tostring(ok), "save")
+    local sched = lurek.timer.newScheduler()
+    sched:afterNamed("named_once", 2.0, function() print("named_once") end)
+    sched:pauseNamed("named_once")
+    sched:resumeNamed("named_once")
+    print("resumeNamed ok")
 end
 ```
 
@@ -1535,13 +1505,13 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  local sched = lurek.timer.newScheduler()
-  local spawn_id = sched:every(3.0, function()
-    lurek.log.debug("enemy spawned", "ai")
-  end)
-  -- As the game progresses, increase spawn rate
-  sched:setInterval(spawn_id, 1.0)
-  lurek.log.info("spawn rate increased: now every 1.0s", "difficulty")
+    ---@type LScheduler
+    local sched = lurek.timer.newScheduler()
+    local id = sched:every(1.0, function()
+        print("tick")
+    end)
+    sched:setInterval(id, 0.5)
+    print("interval changed to 0.5")
 end
 ```
 
@@ -1569,15 +1539,10 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  local enemies = lurek.timer.newScheduler()
-  enemies:every(1.0, function()
-    lurek.log.debug("enemy action tick", "ai")
-  end)
-  -- Slow-motion effect: enemies run at quarter speed
-  enemies:setTimeScale(0.25)
-  lurek.log.info("slow-motion activated: enemy time scale = 0.25", "fx")
-
-  function lurek.process(dt) enemies:update(dt) end
+    ---@type LScheduler
+    local sched = lurek.timer.newScheduler()
+    sched:setTimeScale(2.0)
+    print("time scale = " .. sched:getTimeScale())
 end
 ```
 
@@ -1603,9 +1568,8 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  local sched = lurek.timer.newScheduler()
-  -- Useful for generic serialization or debug logging of object types
-  lurek.log.debug("object type: " .. sched:type(), "debug")
+    local sched = lurek.timer.newScheduler()
+    print("type=" .. sched:type())
 end
 ```
 
@@ -1636,11 +1600,8 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  local sched = lurek.timer.newScheduler()
-  -- Runtime type checking for polymorphic systems
-  if sched:typeOf("LScheduler") then
-    lurek.log.debug("confirmed: this is a scheduler", "debug")
-  end
+    local sched = lurek.timer.newScheduler()
+    print("typeOf=" .. tostring(sched:typeOf("LScheduler")))
 end
 ```
 
@@ -1671,17 +1632,15 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  local sched = lurek.timer.newScheduler()
-  sched:after(0.5, function() lurek.log.info("delayed event fired", "game") end)
-  sched:every(1.0, function() lurek.log.debug("periodic tick", "game") end)
-
-  function lurek.process(dt)
-    -- Call once per frame with the frame's delta time
-    local fired = sched:update(dt)
-    if fired > 0 then
-      lurek.log.debug("callbacks fired this frame: " .. fired, "timer")
-    end
-  end
+    ---@type LScheduler
+    local sched = lurek.timer.newScheduler()
+    local fired = false
+    local id = sched:after(0.5, function()
+        fired = true
+        print("callback fired after 0.5s")
+    end)
+    sched:update(0.3)
+    print("after 0.3s, fired = " .. tostring(fired))
 end
 ```
 
@@ -1707,18 +1666,17 @@ Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
 
 ```lua
 do
-  local sched = lurek.timer.newScheduler()
-  sched:everyFrames(15, function()
-    lurek.log.debug("quarter-second visual tick", "fx")
-  end)
-  sched:afterFrames(60, function()
-    lurek.log.info("one-second mark reached", "game")
-  end)
-
-  function lurek.process()
-    -- Separate from update(dt); handles frame-counted events
-    sched:updateFrames()
-  end
+    ---@type LScheduler
+    local sched = lurek.timer.newScheduler()
+    sched:afterFrames(3, function()
+        print("fired after 3 frames")
+    end)
+    for i = 1, 6 do
+        local n = sched:updateFrames()
+        if n > 0 then
+            print("  frame " .. i .. ": " .. n .. " fired")
+        end
+    end
 end
 ```
 
@@ -1727,7 +1685,7 @@ end
 
 ## 💡 Examples
 
-- [timer.lua](../blob/main/content/examples/timer.lua) - One-shot and repeating timers
+- [timer.lua](../blob/main/content/examples/timer.lua) - API example
 
 [⬆ back to top](#table-of-contents)
 

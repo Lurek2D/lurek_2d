@@ -4,7 +4,7 @@
 
 ## Navigation
 
-[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lureksome](Lureksome)
 
 ## Table of Contents
 
@@ -159,12 +159,15 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- createLobby advertises a game session on the local network via UDP broadcast.
-  -- Other players on the same LAN can find it with discoverLobbies().
-  -- Parameters: name, port, current_player_count (default 1), max_players (default 8).
-  -- Returns a lobby info table: { name, port, player_count, max_players, host }.
-  local lobby = lurek.network.createLobby("Tom's Co-op", 5555, 1, 4)
-  lurek.log.info("advertised lobby " .. lobby.name .. " on port " .. lobby.port, "net")
+    local lobby = lurek.network.createLobby("My Game", 7777, 1, 4)
+    print("lobby=" .. lobby.name .. " port=" .. lobby.port)
+    print("max=" .. lobby.max_players)
+
+    local found = lurek.network.discoverLobbies(2000)
+    print("discovered = " .. #found)
+    for _, l in ipairs(found) do
+        print("  " .. l.name .. " at " .. l.host .. ":" .. l.port)
+    end
 end
 ```
 
@@ -188,19 +191,18 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- Rooms are in-memory matchmaking records for organizing players before
-  -- a game starts. They exist only in the current process (not networked).
-  -- Useful for local lobby screens, split-screen selection, or testing.
-  -- Parameters: name, host_id, max_players (default 8).
-  -- Returns: { id, name, host, player_count, max_players }.
-  local room = lurek.network.createRoom("Ranked-1", "hostA", 6)
-  -- Join our own room (increments player_count).
-  local same = lurek.network.joinRoom(room.id)
-  lurek.log.info("room " .. room.id .. " players=" .. (same and same.player_count or 0), "match")
-  -- List all rooms currently tracked.
-  local _all = lurek.network.listRooms()
-  -- Leave and clean up.
-  lurek.network.leaveRoom(room.id)
+    local room = lurek.network.createRoom("Arena", "player1", 8)
+    print("room id=" .. room.id .. " name=" .. room.name)
+    print("host=" .. room.host .. " max=" .. room.max_players)
+
+    local joined = lurek.network.joinRoom(room.id)
+    if joined then print("joined room") end
+
+    local rooms = lurek.network.listRooms()
+    print("rooms available = " .. #rooms)
+
+    lurek.network.leaveRoom(room.id)
+    print("left room")
 end
 ```
 
@@ -222,15 +224,13 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- discoverLobbies listens for UDP broadcast packets from createLobby calls
-  -- on the local network. It blocks for up to timeout_ms (default 500) then
-  -- returns all lobbies found.
-  -- Each entry: { name, port, player_count, max_players, host }.
-  local lobbies = lurek.network.discoverLobbies(750)
-  for i, info in ipairs(lobbies) do
-    -- Show discovered lobbies in a server browser UI.
-    lurek.log.info(i .. ": " .. info.name .. " " .. info.host .. ":" .. info.port, "lobby")
-  end
+    local lobbies = lurek.network.discoverLobbies(1000)
+    print("lobbies=" .. #lobbies)
+    local rooms = lurek.network.listRooms()
+    print("rooms=" .. #rooms)
+    lurek.network.joinRoom("room_id_1")
+    lurek.network.leaveRoom("room_id_1")
+    print("room lifecycle ok")
 end
 ```
 
@@ -252,14 +252,13 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- joinRoom increments the player count in an existing room.
-  -- Returns the updated room info table, or nil if the room id does not exist.
-  local room = lurek.network.createRoom("casual", "hostB", 3)
-  local joined = lurek.network.joinRoom(room.id)
-  if joined then
-    local joined_room = joined --[[@as {id: string, player_count: integer}]]
-    lurek.log.debug("joined room=" .. joined_room.id .. " count=" .. joined_room.player_count, "match")
-  end
+    local lobbies = lurek.network.discoverLobbies(1000)
+    print("lobbies=" .. #lobbies)
+    local rooms = lurek.network.listRooms()
+    print("rooms=" .. #rooms)
+    lurek.network.joinRoom("room_id_1")
+    lurek.network.leaveRoom("room_id_1")
+    print("room lifecycle ok")
 end
 ```
 
@@ -281,15 +280,13 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- leaveRoom decrements the player count. Returns the updated room info,
-  -- or nil if the room does not exist.
-  local room = lurek.network.createRoom("coop", "hostC", 3)
-  local _ = lurek.network.joinRoom(room.id)
-  local left = lurek.network.leaveRoom(room.id)
-  if left then
-    local left_room = left --[[@as {id: string}]]
-    lurek.log.debug("left room=" .. left_room.id, "match")
-  end
+    local lobbies = lurek.network.discoverLobbies(1000)
+    print("lobbies=" .. #lobbies)
+    local rooms = lurek.network.listRooms()
+    print("rooms=" .. #rooms)
+    lurek.network.joinRoom("room_id_1")
+    lurek.network.leaveRoom("room_id_1")
+    print("room lifecycle ok")
 end
 ```
 
@@ -307,10 +304,13 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- Returns an array of all room info tables currently tracked in memory.
-  -- Useful for rendering a room browser or debugging matchmaking.
-  local rooms = lurek.network.listRooms()
-  lurek.log.debug("room count=" .. #rooms, "match")
+    local lobbies = lurek.network.discoverLobbies(1000)
+    print("lobbies=" .. #lobbies)
+    local rooms = lurek.network.listRooms()
+    print("rooms=" .. #rooms)
+    lurek.network.joinRoom("room_id_1")
+    lurek.network.leaveRoom("room_id_1")
+    print("room lifecycle ok")
 end
 ```
 
@@ -332,11 +332,12 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- A punch probe is a small binary payload containing a peer id.
-  -- Send this via UDP to punch through NAT — the other side parses it
-  -- to learn your identity and respond.
-  local probe = lurek.network.makePunchProbe("peer-C")
-  lurek.log.debug("probe bytes=" .. #probe, "relay")
+    local probe = lurek.network.makePunchProbe("peer_99")
+    print("probe = " .. probe)
+    local peer_id = lurek.network.parsePunchProbe(probe)
+    if peer_id then
+        print("parsed peer = " .. peer_id)
+    end
 end
 ```
 
@@ -358,23 +359,10 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- newClient creates a host with role = "client" and immediately attempts
-  -- to connect to the given address. If the server is unreachable, the
-  -- connect will eventually time out (signaled via service() as a disconnect event).
-  -- Options:
-  --   addr     = "ip:port"  (required) remote server address
-  --   channels = number     (optional) channel count to negotiate
-  --   data     = number     (optional) connect handshake data (e.g. protocol version)
-  pcall(function()
-    local client = lurek.network.newClient{
-      addr = "127.0.0.1:5555",
-      channels = 2,
-    }
-    -- After creation, poll client:service() in your game loop.
-    -- A "connect" event means the server accepted us.
-    lurek.log.info("dialling " .. client:getAddress(), "net")
+    ---@type LNetworkHost
+    local client = lurek.network.newClient({addr = "127.0.0.1:7777", channels = 2})
+    print("role = " .. client:getRole())
     client:destroy()
-  end)
 end
 ```
 
@@ -396,23 +384,10 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- newHost creates a raw ENet host bound to a specific address.
-  -- Use this when you need full control over peer-to-peer topology (not client/server).
-  -- Options:
-  --   addr       = "ip:port"  (required) local bind address; use port 0 for OS-assigned
-  --   maxPeers   = number     (optional, default 32) max simultaneous connections
-  --   channels   = number     (optional, default 2)  logical channels per peer
-  --   inBandwidth  = number   (optional) incoming bandwidth cap in bytes/sec, 0 = unlimited
-  --   outBandwidth = number   (optional) outgoing bandwidth cap in bytes/sec, 0 = unlimited
-  local host = lurek.network.newHost{
-    addr = "0.0.0.0:5555",
-    maxPeers = 32,
-    channels = 2,
-  }
-  -- The host is ready to accept connections or connect to others.
-  lurek.log.info("listening on " .. host:getAddress(), "net")
-  -- Always destroy when done to release the port and memory.
-  host:destroy()
+    ---@type LNetworkHost
+    local host = lurek.network.newHost({addr = "0.0.0.0:8888", maxPeers = 32, channels = 4})
+    print("address = " .. host:getAddress())
+    host:destroy()
 end
 ```
 
@@ -435,18 +410,12 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- Relay tickets encode a room_id + peer_id pair into a single opaque string.
-  -- Exchange tickets between peers so they know who to punch through to.
-  -- Workflow: create ticket → send to relay server → relay forwards to partner →
-  -- partner parses → partner sends a punch probe back.
-  local ticket = lurek.network.newRelayTicket("room-1", "peer-A")
-  local parsed = lurek.network.parseRelayTicket(ticket)
-  if parsed then
-    -- Build a UDP probe so the remote peer can learn our public address.
-    local probe = lurek.network.makePunchProbe(parsed.peer_id)
-    local from_peer = lurek.network.parsePunchProbe(probe)
-    lurek.log.debug("relay ticket peer=" .. tostring(from_peer), "relay")
-  end
+    local token = lurek.network.newRelayTicket("room_abc", "peer_42")
+    print("ticket = " .. token)
+    local parsed = lurek.network.parseRelayTicket(token)
+    if parsed then
+        print("parsed room = " .. (parsed --[[@as table]]).room_id)
+    end
 end
 ```
 
@@ -464,15 +433,10 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- The NetworkRuntime runs async I/O on a background thread, separate from
-  -- ENet hosts. Use it for HTTP requests, TCP streams, and WebSocket connections
-  -- that should not block your game loop.
-  -- Poll results each frame with rt:poll().
-  local rt = lurek.network.newRuntime()
-  -- Fire-and-forget GET — response will appear in poll() later.
-  rt:httpGet("http://127.0.0.1:9/version")
-  -- Shut down cleanly when the game exits.
-  function lurek.quit() rt:shutdown() end
+    ---@type LNetworkRuntime
+    local rt = lurek.network.newRuntime()
+    print("runtime created")
+    rt:shutdown()
 end
 ```
 
@@ -494,20 +458,10 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- newServer is a convenience wrapper around newHost with role = "server".
-  -- Servers are authoritative — they accept incoming client connections.
-  -- Options:
-  --   port       = number  (required) port to listen on
-  --   maxPeers   = number  (optional, default 32) max clients
-  --   channels   = number  (optional, default 2)  channel count
-  -- Typical multiplayer setup: one server, many clients.
-  local server = lurek.network.newServer{
-    port = 5555,
-    maxPeers = 16,
-    channels = 2,
-  }
-  lurek.log.info("server up on " .. server:getAddress(), "net")
-  server:destroy()
+    ---@type LNetworkHost
+    local server = lurek.network.newServer({port = 7777, maxPeers = 16, channels = 2})
+    print("role = " .. server:getRole())
+    server:destroy()
 end
 ```
 
@@ -529,14 +483,11 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- pack serializes Lua tables, numbers, strings, booleans, and nil into a
-  -- compact binary format suitable for sending over network hosts.
-  -- Supported types: nil, boolean, integer, number, string, table (array or map).
-  -- Nested tables are allowed. Functions, userdata, and threads are NOT supported.
-  local snapshot = { x = 128.5, y = 64.0, hp = 87, weapon = "rifle" }
-  local bytes = lurek.network.pack(snapshot)
-  -- The result is a binary string — send it with host:send() or host:broadcast().
-  lurek.log.debug("packed " .. #bytes .. " bytes", "net")
+    local data = {hp = 100, pos = {x = 10.5, y = 20.3}, name = "Hero"}
+    local packed = lurek.network.pack(data)
+    print("packed bytes = " .. #packed)
+    local unpacked = lurek.network.unpack(packed)
+    print("unpacked hp = " .. (unpacked --[[@as table]]).hp)
 end
 ```
 
@@ -558,11 +509,10 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- parsePunchProbe extracts the peer id from a received probe payload.
-  -- Returns nil if the payload is invalid.
-  local probe = lurek.network.makePunchProbe("peer-D")
-  local who = lurek.network.parsePunchProbe(probe)
-  lurek.log.debug("probe peer=" .. tostring(who), "relay")
+    local ok, probe = pcall(lurek.network.parsePunchProbe, "test_payload")
+    print("probe=" .. tostring(ok))
+    local ok2, ticket = pcall(lurek.network.parseRelayTicket, "test_token")
+    print("ticket=" .. tostring(ok2))
 end
 ```
 
@@ -584,11 +534,10 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- parseRelayTicket decodes a ticket string back into { room_id, peer_id }.
-  -- Returns nil if the token is malformed or corrupted.
-  local token = lurek.network.newRelayTicket("room-2", "peer-B")
-  local parsed = lurek.network.parseRelayTicket(token)
-  if parsed then lurek.log.debug(parsed.room_id .. ":" .. parsed.peer_id, "relay") end
+    local ok, probe = pcall(lurek.network.parsePunchProbe, "test_payload")
+    print("probe=" .. tostring(ok))
+    local ok2, ticket = pcall(lurek.network.parseRelayTicket, "test_token")
+    print("ticket=" .. tostring(ok2))
 end
 ```
 
@@ -611,17 +560,13 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- Client-side prediction: move an entity forward using its velocity and dt
-  -- so the player sees smooth motion between server ticks.
-  -- Snapshot fields: id, tick, x, y, vx, vy.
-  -- Returns a new snapshot with x/y advanced by vx*dt / vy*dt and tick+1.
-  local now = { id = 1, tick = 10, x = 0.0, y = 0.0, vx = 2.0, vy = 0.0 }
-  local predicted = lurek.network.predictLinear(now, 0.1)
-  -- predicted.x is now 0.2 (0.0 + 2.0 * 0.1)
-  -- When the server snapshot arrives, reconcile to correct drift.
-  local server = { id = 1, tick = 11, x = 0.18, y = 0.0, vx = 2.0, vy = 0.0 }
-  local smooth = lurek.network.reconcileSnapshot(predicted, server, 0.5)
-  lurek.log.debug("reconciled x=" .. smooth.x, "net-sync")
+    local snapshot = {id = 1, tick = 10, x = 10, y = 20, vx = 5, vy = 0}
+    local predicted = lurek.network.predictLinear(snapshot, 0.016)
+    print("predicted x = " .. (predicted --[[@as table]]).x)
+
+    local auth = {id = 1, tick = 11, x = 10.1, y = 20, vx = 5, vy = 0}
+    local reconciled = lurek.network.reconcileSnapshot(predicted, auth, 0.3)
+    print("reconciled x = " .. (reconciled --[[@as table]]).x)
 end
 ```
 
@@ -645,15 +590,10 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- reconcileSnapshot blends a client-predicted state toward the server truth.
-  -- alpha controls the blend: 0.0 = keep predicted, 1.0 = snap to server.
-  -- Typical values: 0.3-0.6 for smooth correction without visible snapping.
-  -- Fields are interpolated: out.x = lerp(pred.x, auth.x, alpha).
-  local predicted = { id = 2, tick = 20, x = 1.0, y = 0.0, vx = 1.0, vy = 0.0 }
-  local server = { id = 2, tick = 20, x = 1.2, y = 0.1, vx = 1.0, vy = 0.0 }
-  local out = lurek.network.reconcileSnapshot(predicted, server, 0.5)
-  -- out.x = 1.1 (halfway between 1.0 and 1.2)
-  lurek.log.debug("reconciled snapshot tick=" .. out.tick, "net-sync")
+    local pred = { x = 10, y = 10 }
+    local auth = { x = 12, y = 11 }
+    local result = lurek.network.reconcileSnapshot(pred, auth, 0.5)
+    print("reconcile=" .. tostring(result ~= nil))
 end
 ```
 
@@ -677,15 +617,12 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- syncEntity is a convenience that packs an entity table and broadcasts it
-  -- to all peers on the given channel. Combines pack + broadcast in one call.
-  -- Parameters: host, entity_id, data_table, channel (default 0), reliable (default false).
-  -- Use reliable=false for frequent position updates (unreliable is faster).
-  -- Use reliable=true for important state changes (spawn, death, score).
-  local server = lurek.network.newServer{ port = 5555, maxPeers = 8 }
-  local player = { x = 100.0, y = 200.0, hp = 80 }
-  lurek.network.syncEntity(server, 1, player, 0, false)
-  server:destroy()
+    ---@type LNetworkHost
+    local server = lurek.network.newServer({port = 7790, maxPeers = 4})
+    local entity_data = {x = 100, y = 200, hp = 50}
+    lurek.network.syncEntity(server, 1, entity_data, 0, true)
+    print("entity synced")
+    server:destroy()
 end
 ```
 
@@ -707,14 +644,9 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- unpack is the inverse of pack — it restores the original Lua value from bytes.
-  -- Use this on the receiving end when you get data from a "receive" event.
-  local payload = lurek.network.pack({ id = 42, action = "fire" })
-  local msg = lurek.network.unpack(payload)
-  if msg then
-    -- msg is now a table identical to the original.
-    lurek.log.info("received action=" .. msg.action .. " id=" .. msg.id, "net")
-  end
+    local raw = lurek.network.pack({ id = 1, data = "hello" })
+    local msg = lurek.network.unpack(raw)
+    print("unpacked_id=" .. tostring(msg))
 end
 ```
 
@@ -741,23 +673,10 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- newClient creates a host with role = "client" and immediately attempts
-  -- to connect to the given address. If the server is unreachable, the
-  -- connect will eventually time out (signaled via service() as a disconnect event).
-  -- Options:
-  --   addr     = "ip:port"  (required) remote server address
-  --   channels = number     (optional) channel count to negotiate
-  --   data     = number     (optional) connect handshake data (e.g. protocol version)
-  pcall(function()
-    local client = lurek.network.newClient{
-      addr = "127.0.0.1:5555",
-      channels = 2,
-    }
-    -- After creation, poll client:service() in your game loop.
-    -- A "connect" event means the server accepted us.
-    lurek.log.info("dialling " .. client:getAddress(), "net")
+    ---@type LNetworkHost
+    local client = lurek.network.newClient({addr = "127.0.0.1:7777", channels = 2})
+    print("role = " .. client:getRole())
     client:destroy()
-  end)
 end
 ```
 
@@ -779,15 +698,10 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- The NetworkRuntime runs async I/O on a background thread, separate from
-  -- ENet hosts. Use it for HTTP requests, TCP streams, and WebSocket connections
-  -- that should not block your game loop.
-  -- Poll results each frame with rt:poll().
-  local rt = lurek.network.newRuntime()
-  -- Fire-and-forget GET — response will appear in poll() later.
-  rt:httpGet("http://127.0.0.1:9/version")
-  -- Shut down cleanly when the game exits.
-  function lurek.quit() rt:shutdown() end
+    ---@type LNetworkRuntime
+    local rt = lurek.network.newRuntime()
+    print("runtime created")
+    rt:shutdown()
 end
 ```
 
@@ -824,13 +738,10 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- broadcast sends the same data to every connected peer at once.
-  -- Parameters: channel_id, data (binary string), reliable (default true).
-  -- Use reliable=true for important game events (round start, score update).
-  -- Use reliable=false for high-frequency updates (positions, animations).
-  local host = lurek.network.newServer({port=7777, maxPeers=32})
-  host:broadcast(0, lurek.network.pack({ event = "round_start", map = "arena" }), true)
-  lurek.log.info("broadcast sent to all peers", "network")
+    ---@type LNetworkHost
+    local server = lurek.network.newServer({port = 7779, maxPeers = 8, channels = 2})
+    print("broadcast ready, channels = " .. server:getChannelLimit())
+    server:destroy()
 end
 ```
 
@@ -865,16 +776,11 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- connect() can be called on any host (not just clients) to initiate a
-  -- connection to a remote address. Returns the peer_id assigned to this connection.
-  -- Parameters: address_string, channels (default 1), connect_data (default 0).
-  -- The connect_data value is delivered to the remote in the "connect" event.
-  local client = lurek.network.newClient({addr="127.0.0.1:7777"})
-  local ok, err = pcall(function()
-    local peer = client:connect("127.0.0.1:7777")
-    lurek.log.info("connect initiated, peer_id=" .. peer, "network")
-  end)
-  if not ok then lurek.log.info("connect: no server available", "network") end
+    ---@type LNetworkHost
+    local host = lurek.network.newHost({addr = "0.0.0.0:0", maxPeers = 1})
+    local peer_id = host:connect("127.0.0.1:7777", 2)
+    print("connecting, peer_id = " .. peer_id)
+    host:destroy()
 end
 ```
 
@@ -897,12 +803,17 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- After destroy(), the host cannot be used. All peers are forcibly disconnected.
-  -- Always call in lurek.quit() to release the bound port cleanly.
-  local host = lurek.network.newServer{ port = 5569, maxPeers = 8 }
-  function lurek.quit()
+    local host = lurek.network.newHost({ port = 0, max_peers = 4, channels = 2 })
+    print("addr=" .. host:getAddress())
+    print("channels=" .. host:getChannelLimit())
+    print("peer_limit=" .. host:getPeerLimit())
+    print("role=" .. host:getRole())
+    print("is_server=" .. tostring(host:isServer()))
+    print("is_client=" .. tostring(host:isClient()))
+    print("is_destroyed=" .. tostring(host:isDestroyed()))
+    print("type=" .. host:type())
+    print("typeOf=" .. tostring(host:typeOf("LNetworkHost")))
     host:destroy()
-  end
 end
 ```
 
@@ -932,13 +843,14 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- disconnect sends a disconnect command and waits for the remote to ack.
-  -- The remote will receive a "disconnect" event via service().
-  -- Use for clean player logout or session end.
-  -- Optional second parameter: disconnect data (integer) passed to remote.
-  local host = lurek.network.newServer({port=7778, maxPeers=8})
-  host:disconnect(1)
-  lurek.log.info("disconnect requested for peer 1", "network")
+    ---@type LNetworkHost
+    local host = lurek.network.newHost({addr = "0.0.0.0:7785", maxPeers = 4})
+    -- With peer_id=1:
+    -- host:disconnect(1, 0)
+    -- host:disconnectLater(1, 0)
+    -- host:disconnectNow(1, 0)
+    print("disconnect methods ready")
+    host:destroy()
 end
 ```
 
@@ -968,13 +880,14 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- disconnectLater ensures all queued reliable packets are delivered before
-  -- the disconnect fires. Use when you need to send final data (game results,
-  -- goodbye message) and then cleanly close the connection.
-  local host = lurek.network.newServer({port=7779, maxPeers=8})
-  host:send(1, 0, lurek.network.pack({ result = "victory", score = 1500 }), true)
-  host:disconnectLater(1)
-  lurek.log.info("disconnect-later queued after final data", "network")
+    ---@type LNetworkHost
+    local host = lurek.network.newHost({addr = "0.0.0.0:7785", maxPeers = 4})
+    -- With peer_id=1:
+    -- host:disconnect(1, 0)
+    -- host:disconnectLater(1, 0)
+    -- host:disconnectNow(1, 0)
+    print("disconnect methods ready")
+    host:destroy()
 end
 ```
 
@@ -1004,11 +917,14 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- disconnectNow drops the peer instantly. Pending outgoing data is lost.
-  -- Use for emergency kicks (detected exploit, server shutting down NOW).
-  local host = lurek.network.newServer({port=7780, maxPeers=8})
-  host:disconnectNow(1)
-  lurek.log.info("disconnect-now issued — peer dropped", "network")
+    ---@type LNetworkHost
+    local host = lurek.network.newHost({addr = "0.0.0.0:7785", maxPeers = 4})
+    -- With peer_id=1:
+    -- host:disconnect(1, 0)
+    -- host:disconnectLater(1, 0)
+    -- host:disconnectNow(1, 0)
+    print("disconnect methods ready")
+    host:destroy()
 end
 ```
 
@@ -1031,12 +947,13 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- Normally packets are flushed at each service() call. Use flush() when you
-  -- need packets sent immediately (e.g. just before destroying the host or at
-  -- the end of a frame where service() won't be called again).
-  local host = lurek.network.newServer{ port = 5557, maxPeers = 8 }
-  host:broadcast(0, lurek.network.pack({ event = "round_end" }), true)
-  host:flush()
+    ---@type LNetworkHost
+    local host = lurek.network.newServer({port = 7786, maxPeers = 4})
+    host:flush()
+    -- host:ping(1)
+    -- host:resetPeer(1)
+    print("utility methods ready")
+    host:destroy()
 end
 ```
 
@@ -1062,11 +979,17 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- When binding to port 0 the OS assigns a random port.
-  -- Use getAddress() to find out which port was actually assigned.
-  local host = lurek.network.newHost{ addr = "0.0.0.0:0", maxPeers = 4 }
-  local bound = host:getAddress()
-  lurek.log.info("bound to " .. bound, "net")
+    local host = lurek.network.newHost({ port = 0, max_peers = 4, channels = 2 })
+    print("addr=" .. host:getAddress())
+    print("channels=" .. host:getChannelLimit())
+    print("peer_limit=" .. host:getPeerLimit())
+    print("role=" .. host:getRole())
+    print("is_server=" .. tostring(host:isServer()))
+    print("is_client=" .. tostring(host:isClient()))
+    print("is_destroyed=" .. tostring(host:isDestroyed()))
+    print("type=" .. host:type())
+    print("typeOf=" .. tostring(host:typeOf("LNetworkHost")))
+    host:destroy()
 end
 ```
 
@@ -1092,14 +1015,12 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- Returns a table: { incoming = number, outgoing = number }.
-  -- 0 means unlimited. Use to display throttle settings in admin UI.
-  pcall(function()
-    local host = lurek.network.newServer{ port = 5565, maxPeers = 8 }
-    local bw = host:getBandwidthLimit()
-    lurek.log.info("bw in=" .. tostring(bw.incoming) .. " out=" .. tostring(bw.outgoing) .. " B/s", "net")
-    host:destroy()
-  end)
+    ---@type LNetworkHost
+    local server = lurek.network.newServer({port = 7783, maxPeers = 4})
+    server:setBandwidthLimit(100000, 50000)
+    local bw = server:getBandwidthLimit()
+    print("bw in=" .. bw.incoming .. " out=" .. bw.outgoing)
+    server:destroy()
 end
 ```
 
@@ -1125,11 +1046,17 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- Channels let you multiplex different traffic types on one connection.
-  -- Common pattern: channel 0 = game state, channel 1 = chat, channel 2 = voice.
-  local host = lurek.network.newServer{ port = 5564, maxPeers = 8, channels = 4 }
-  local channels = host:getChannelLimit()
-  assert(channels >= 2, "need at least 2 channels for state+chat")
+    local host = lurek.network.newHost({ port = 0, max_peers = 4, channels = 2 })
+    print("addr=" .. host:getAddress())
+    print("channels=" .. host:getChannelLimit())
+    print("peer_limit=" .. host:getPeerLimit())
+    print("role=" .. host:getRole())
+    print("is_server=" .. tostring(host:isServer()))
+    print("is_client=" .. tostring(host:isClient()))
+    print("is_destroyed=" .. tostring(host:isDestroyed()))
+    print("type=" .. host:type())
+    print("typeOf=" .. tostring(host:typeOf("LNetworkHost")))
+    host:destroy()
 end
 ```
 
@@ -1155,11 +1082,10 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- Use for "players online" display or to check if the server is full
-  -- before advertising in the lobby.
-  local host = lurek.network.newServer{ port = 5566, maxPeers = 8 }
-  local n = host:getConnectedPeerCount()
-  lurek.log.info("players online: " .. n, "net")
+    ---@type LNetworkHost
+    local server = lurek.network.newServer({port = 7780, maxPeers = 4})
+    print("connected = " .. server:getConnectedPeerCount())
+    server:destroy()
 end
 ```
 
@@ -1185,12 +1111,11 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- Iterate over connected peers to send targeted messages, collect state,
-  -- or broadcast a welcome packet to everyone.
-  local host = lurek.network.newServer{ port = 5567, maxPeers = 8 }
-  for _, pid in ipairs(host:getConnectedPeerIds()) do
-    host:send(pid, 1, lurek.network.pack({ welcome = true }), true)
-  end
+    ---@type LNetworkHost
+    local server = lurek.network.newServer({port = 7780, maxPeers = 4})
+    local ids = server:getConnectedPeerIds()
+    print("peer ids = " .. #ids)
+    server:destroy()
 end
 ```
 
@@ -1221,11 +1146,14 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- Useful for logging, banning by IP, or displaying player connections
-  -- in a server admin panel.
-  local host = lurek.network.newServer{ port = 5562, maxPeers = 8 }
-  local addr = host:getPeerAddress(1)
-  if addr then lurek.log.info("peer 1 at " .. addr, "net") end
+    ---@type LNetworkHost
+    local server = lurek.network.newServer({port = 7781, maxPeers = 4})
+    -- With a connected peer_id=1:
+    -- print(server:getPeerState(1))
+    -- print(server:getPeerAddress(1))
+    -- print(server:getRoundTripTime(1))
+    print("peer queries ready")
+    server:destroy()
 end
 ```
 
@@ -1251,10 +1179,17 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- Use to display "players: N / max" in a server browser or HUD.
-  local host = lurek.network.newServer{ port = 5563, maxPeers = 16 }
-  local cap = host:getPeerLimit()
-  lurek.log.info("max players: " .. cap, "net")
+    local host = lurek.network.newHost({ port = 0, max_peers = 4, channels = 2 })
+    print("addr=" .. host:getAddress())
+    print("channels=" .. host:getChannelLimit())
+    print("peer_limit=" .. host:getPeerLimit())
+    print("role=" .. host:getRole())
+    print("is_server=" .. tostring(host:isServer()))
+    print("is_client=" .. tostring(host:isClient()))
+    print("is_destroyed=" .. tostring(host:isDestroyed()))
+    print("type=" .. host:type())
+    print("typeOf=" .. tostring(host:typeOf("LNetworkHost")))
+    host:destroy()
 end
 ```
 
@@ -1285,15 +1220,14 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- Possible states: "disconnected", "connecting", "acknowledging_connect",
-  -- "connection_pending", "connection_succeeded", "connected",
-  -- "disconnect_later", "disconnecting", "acknowledging_disconnect", "zombie".
-  -- Only send data to peers in "connected" state.
-  local host = lurek.network.newServer{ port = 5561, maxPeers = 8 }
-  local state = host:getPeerState(1)
-  if state == "connected" then
-    host:send(1, 0, "hello", true)
-  end
+    ---@type LNetworkHost
+    local server = lurek.network.newServer({port = 7781, maxPeers = 4})
+    -- With a connected peer_id=1:
+    -- print(server:getPeerState(1))
+    -- print(server:getPeerAddress(1))
+    -- print(server:getRoundTripTime(1))
+    print("peer queries ready")
+    server:destroy()
 end
 ```
 
@@ -1324,15 +1258,16 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- Stats table fields:
-  --   round_trip_time, round_trip_time_variance,
-  --   packets_sent, packets_lost, packet_loss,
-  --   incoming_bandwidth, outgoing_bandwidth,
-  --   incoming_data_total, outgoing_data_total.
-  -- Use for network quality monitoring and adaptive bitrate logic.
-  local host = lurek.network.newServer{ port = 5568, maxPeers = 8 }
-  local stats = host:getPeerStats(1)
-  lurek.log.debug("peer 1 sent=" .. stats.packets_sent .. " lost=" .. stats.packets_lost, "net")
+    ---@type LNetworkHost
+    local server = lurek.network.newServer({port = 7782, maxPeers = 4})
+    -- With a connected peer_id=1:
+    -- local stats = server:getPeerStats(1)
+    -- print("rtt=" .. stats.round_trip_time)
+    -- print("sent=" .. stats.packets_sent)
+    -- print("lost=" .. stats.packets_lost)
+    -- print("loss=" .. stats.packet_loss)
+    print("stats query ready")
+    server:destroy()
 end
 ```
 
@@ -1358,11 +1293,17 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- Use getRole() to branch logic: servers run authoritative simulation,
-  -- clients run prediction, raw hosts handle custom topologies.
-  local host = lurek.network.newServer{ port = 5571, maxPeers = 8 }
-  local role = host:getRole()
-  lurek.log.info("running as " .. role, "net")
+    local host = lurek.network.newHost({ port = 0, max_peers = 4, channels = 2 })
+    print("addr=" .. host:getAddress())
+    print("channels=" .. host:getChannelLimit())
+    print("peer_limit=" .. host:getPeerLimit())
+    print("role=" .. host:getRole())
+    print("is_server=" .. tostring(host:isServer()))
+    print("is_client=" .. tostring(host:isClient()))
+    print("is_destroyed=" .. tostring(host:isDestroyed()))
+    print("type=" .. host:type())
+    print("typeOf=" .. tostring(host:typeOf("LNetworkHost")))
+    host:destroy()
 end
 ```
 
@@ -1393,13 +1334,14 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- getRoundTripTime returns the smoothed RTT from the last ping exchange.
-  -- Use it to display latency in the HUD or to adjust prediction/interpolation.
-  local host = lurek.network.newServer{ port = 5560, maxPeers = 8 }
-  local rtt_ms = host:getRoundTripTime(1)
-  if rtt_ms > 150 then
-    lurek.log.warn("high latency: " .. rtt_ms .. " ms", "net")
-  end
+    ---@type LNetworkHost
+    local server = lurek.network.newServer({port = 7781, maxPeers = 4})
+    -- With a connected peer_id=1:
+    -- print(server:getPeerState(1))
+    -- print(server:getPeerAddress(1))
+    -- print(server:getRoundTripTime(1))
+    print("peer queries ready")
+    server:destroy()
 end
 ```
 
@@ -1425,11 +1367,17 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- Use to guard client-only logic like input prediction or interpolation.
-  local client = lurek.network.newClient{ addr = "127.0.0.1:5555" }
-  if client:isClient() then
-    lurek.log.info("running prediction-only logic", "net")
-  end
+    local host = lurek.network.newHost({ port = 0, max_peers = 4, channels = 2 })
+    print("addr=" .. host:getAddress())
+    print("channels=" .. host:getChannelLimit())
+    print("peer_limit=" .. host:getPeerLimit())
+    print("role=" .. host:getRole())
+    print("is_server=" .. tostring(host:isServer()))
+    print("is_client=" .. tostring(host:isClient()))
+    print("is_destroyed=" .. tostring(host:isDestroyed()))
+    print("type=" .. host:type())
+    print("typeOf=" .. tostring(host:typeOf("LNetworkHost")))
+    host:destroy()
 end
 ```
 
@@ -1455,11 +1403,17 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- Check before using a host reference that might have been destroyed
-  -- elsewhere (e.g. in a quit handler).
-  local host = lurek.network.newServer{ port = 5570, maxPeers = 8 }
-  host:destroy()
-  if host:isDestroyed() then lurek.log.info("host shut down cleanly", "net") end
+    local host = lurek.network.newHost({ port = 0, max_peers = 4, channels = 2 })
+    print("addr=" .. host:getAddress())
+    print("channels=" .. host:getChannelLimit())
+    print("peer_limit=" .. host:getPeerLimit())
+    print("role=" .. host:getRole())
+    print("is_server=" .. tostring(host:isServer()))
+    print("is_client=" .. tostring(host:isClient()))
+    print("is_destroyed=" .. tostring(host:isDestroyed()))
+    print("type=" .. host:type())
+    print("typeOf=" .. tostring(host:typeOf("LNetworkHost")))
+    host:destroy()
 end
 ```
 
@@ -1485,12 +1439,17 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- Convenience check — equivalent to host:getRole() == "server".
-  -- Use to guard server-only logic like world simulation or anti-cheat.
-  local host = lurek.network.newServer{ port = 5572, maxPeers = 8 }
-  if host:isServer() then
-    lurek.log.info("authoritative tick enabled", "net")
-  end
+    local host = lurek.network.newHost({ port = 0, max_peers = 4, channels = 2 })
+    print("addr=" .. host:getAddress())
+    print("channels=" .. host:getChannelLimit())
+    print("peer_limit=" .. host:getPeerLimit())
+    print("role=" .. host:getRole())
+    print("is_server=" .. tostring(host:isServer()))
+    print("is_client=" .. tostring(host:isClient()))
+    print("is_destroyed=" .. tostring(host:isDestroyed()))
+    print("type=" .. host:type())
+    print("typeOf=" .. tostring(host:typeOf("LNetworkHost")))
+    host:destroy()
 end
 ```
 
@@ -1518,12 +1477,13 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- ping() sends a lightweight probe; the RTT result is available later via
-  -- getRoundTripTime(). ENet pings automatically at intervals, but call this
-  -- manually if you need a fresh measurement right now.
-  local host = lurek.network.newServer{ port = 5559, maxPeers = 8 }
-  local peer_id = 1
-  host:ping(peer_id)
+    ---@type LNetworkHost
+    local host = lurek.network.newServer({port = 7786, maxPeers = 4})
+    host:flush()
+    -- host:ping(1)
+    -- host:resetPeer(1)
+    print("utility methods ready")
+    host:destroy()
 end
 ```
 
@@ -1551,13 +1511,13 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- resetPeer immediately drops a peer with no farewell packet. The remote
-  -- side will eventually time out. Use for kicking cheaters or cleaning up
-  -- peers that stopped responding to pings.
-  local host = lurek.network.newServer{ port = 5558, maxPeers = 8 }
-  local cheater_peer_id = 3
-  host:resetPeer(cheater_peer_id)
-  lurek.log.warn("force-reset peer " .. cheater_peer_id, "net")
+    ---@type LNetworkHost
+    local host = lurek.network.newServer({port = 7786, maxPeers = 4})
+    host:flush()
+    -- host:ping(1)
+    -- host:resetPeer(1)
+    print("utility methods ready")
+    host:destroy()
 end
 ```
 
@@ -1591,13 +1551,10 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- send targets a single peer (unlike broadcast which hits everyone).
-  -- Parameters: peer_id, channel_id, data (binary string), reliable (default true).
-  -- Use for private messages, targeted state corrections, or peer-specific commands.
-  local host = lurek.network.newServer({port=7781, maxPeers=8})
-  local player_state = lurek.network.pack({ x = 50, y = 120, anim = "run" })
-  host:send(1, 0, player_state, false)
-  lurek.log.info("sent state to peer 1 (unreliable)", "network")
+    ---@type LNetworkHost
+    local server = lurek.network.newServer({port = 7779, maxPeers = 8, channels = 2})
+    print("send ready, channels = " .. server:getChannelLimit())
+    server:destroy()
 end
 ```
 
@@ -1623,53 +1580,18 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- service() must be called every frame (or at your network tick rate).
-  -- It returns one event per call: { type, peer_id, ... } or nil.
-  -- Event types:
-  --   "connect"    — a peer connected. Fields: peer_id, data.
-  --   "disconnect" — a peer disconnected. Fields: peer_id, data.
-  --   "receive"    — data arrived. Fields: peer_id, channel_id, data (binary string).
-  -- Call in a loop to drain all pending events each frame.
-  local host = lurek.network.newServer{ port = 5556, maxPeers = 8 }
-  function lurek.process(dt)
-    local ev = host:service()
-    while ev do
-      if ev.type == "connect" then
-        lurek.log.info("peer " .. ev.peer_id .. " joined", "net")
-      elseif ev.type == "receive" then
-        local msg = lurek.network.unpack(ev.data)
-        lurek.log.debug("got " .. #ev.data .. " bytes from peer " .. ev.peer_id, "net")
-      elseif ev.type == "disconnect" then
-        lurek.log.info("peer " .. ev.peer_id .. " left", "net")
-      end
-      ev = host:service()
+    ---@type LNetworkHost
+    local server = lurek.network.newServer({port = 7778, maxPeers = 4})
+    local ev = server:service()
+    if ev then
+        print("event type = " .. ev.type)
+        if ev.peer_id then print("peer = " .. ev.peer_id) end
+        if ev.payload then print("payload len = " .. #ev.payload) end
+    else
+        print("no events")
     end
-  end
+    server:destroy()
 end
---@api-stub: LNetworkHost:flush
--- Sends all queued outgoing packets on this host immediately without waiting for service.
-do
-  -- Normally packets are flushed at each service() call. Use flush() when you
-  -- need packets sent immediately (e.g. just before destroying the host or at
-  -- the end of a frame where service() won't be called again).
-  local host = lurek.network.newServer{ port = 5557, maxPeers = 8 }
-  host:broadcast(0, lurek.network.pack({ event = "round_end" }), true)
-  host:flush()
-end
---@api-stub: LNetworkHost:resetPeer
--- Forcibly resets a peer connection by id without sending a graceful disconnect message.
-do
-  -- resetPeer immediately drops a peer with no farewell packet. The remote
-  -- side will eventually time out. Use for kicking cheaters or cleaning up
-  -- peers that stopped responding to pings.
-  local host = lurek.network.newServer{ port = 5558, maxPeers = 8 }
-  local cheater_peer_id = 3
-  host:resetPeer(cheater_peer_id)
-  lurek.log.warn("force-reset peer " .. cheater_peer_id, "net")
-end
---@api-stub: LNetworkHost:ping
--- Sends a ping packet to a peer to trigger a round-trip time measurement.
-do
 ```
 
 ### LNetworkHost:setBandwidthLimit
@@ -1698,12 +1620,11 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- Throttle bandwidth to prevent saturating slow connections.
-  -- Parameters: incoming_limit, outgoing_limit (bytes per second).
-  -- Pass 0 for unlimited. Limits are enforced by ENet's bandwidth management.
-  local host = lurek.network.newServer({port=7782, maxPeers=8})
-  host:setBandwidthLimit(128000, 64000)
-  lurek.log.info("bandwidth capped: 128KB/s in, 64KB/s out", "network")
+    ---@type LNetworkHost
+    local server = lurek.network.newServer({port = 7783, maxPeers = 4})
+    server:setBandwidthLimit(100000, 50000)
+    print("bandwidth limit set")
+    server:destroy()
 end
 ```
 
@@ -1731,12 +1652,11 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- Call before peers connect. Both sides negotiate to the lower channel count.
-  -- Increasing channels after connections are established has no effect on
-  -- already-connected peers.
-  local host = lurek.network.newHost{ addr = "0.0.0.0:0", maxPeers = 8 }
-  host:setChannelLimit(4)
-  lurek.log.info("now negotiating " .. host:getChannelLimit() .. " channels", "net")
+    ---@type LNetworkHost
+    local host = lurek.network.newHost({addr = "0.0.0.0:7784", maxPeers = 2, channels = 1})
+    host:setChannelLimit(4)
+    print("channels = " .. host:getChannelLimit())
+    host:destroy()
 end
 ```
 
@@ -1762,8 +1682,17 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  local obj = lurek.network.newHost({addr = '127.0.0.1:7777', maxPeers = 8})
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LNetworkHost"
+    local host = lurek.network.newHost({ port = 0, max_peers = 4, channels = 2 })
+    print("addr=" .. host:getAddress())
+    print("channels=" .. host:getChannelLimit())
+    print("peer_limit=" .. host:getPeerLimit())
+    print("role=" .. host:getRole())
+    print("is_server=" .. tostring(host:isServer()))
+    print("is_client=" .. tostring(host:isClient()))
+    print("is_destroyed=" .. tostring(host:isDestroyed()))
+    print("type=" .. host:type())
+    print("typeOf=" .. tostring(host:typeOf("LNetworkHost")))
+    host:destroy()
 end
 ```
 
@@ -1794,8 +1723,17 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  local obj = lurek.network.newHost({addr = '0.0.0.0:0', maxPeers = 8})
-  lurek.log.debug("typeOf LNetworkHost: " .. tostring(obj:typeOf("LNetworkHost")), "example") -- true
+    local host = lurek.network.newHost({ port = 0, max_peers = 4, channels = 2 })
+    print("addr=" .. host:getAddress())
+    print("channels=" .. host:getChannelLimit())
+    print("peer_limit=" .. host:getPeerLimit())
+    print("role=" .. host:getRole())
+    print("is_server=" .. tostring(host:isServer()))
+    print("is_client=" .. tostring(host:isClient()))
+    print("is_destroyed=" .. tostring(host:isDestroyed()))
+    print("type=" .. host:type())
+    print("typeOf=" .. tostring(host:typeOf("LNetworkHost")))
+    host:destroy()
 end
 ```
 
@@ -1828,12 +1766,11 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- httpGet is a shorthand for httpRequest with method="GET".
-  -- Optional second parameter: headers table.
-  -- Returns a request id — match it in poll() responses.
-  local rt = lurek.network.newRuntime()
-  local id = rt:httpGet("http://127.0.0.1:9/leaderboard", { ["Accept"] = "application/json" })
-  lurek.log.info("GET leaderboard, request id=" .. id, "network")
+    ---@type LNetworkRuntime
+    local rt = lurek.network.newRuntime()
+    local req_id = rt:httpGet("https://example.com/api/status")
+    print("GET request id = " .. req_id)
+    rt:shutdown()
 end
 ```
 
@@ -1868,16 +1805,15 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- httpPost is a shorthand for httpRequest with method="POST".
-  -- Parameters: url, body_string, optional headers table.
-  -- Use for submitting scores, saving game state to a backend, or auth tokens.
-  local rt = lurek.network.newRuntime()
-  local id = rt:httpPost(
-    "http://127.0.0.1:9/save",
-    '{"slot":1,"data":"..."}',
-    { ["Content-Type"] = "application/json" }
-  )
-  lurek.log.info("POST save, request id=" .. id, "network")
+    ---@type LNetworkRuntime
+    local rt = lurek.network.newRuntime()
+    local req_id = rt:httpPost(
+        "https://example.com/api/data",
+        '{"key":"value"}',
+        {["Content-Type"] = "application/json"}
+    )
+    print("POST request id = " .. req_id)
+    rt:shutdown()
 end
 ```
 
@@ -1908,22 +1844,17 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- httpRequest is the most flexible HTTP method. Provide an options table:
-  --   url     = string   (required)
-  --   method  = string   (optional, default "GET") — "GET", "POST", "PUT", "DELETE", etc.
-  --   headers = table    (optional) key-value header pairs
-  --   body    = string   (optional) request body for POST/PUT
-  --   timeout = number   (optional) timeout in seconds
-  -- Returns a request id — poll rt:poll() to get the response asynchronously.
-  local rt = lurek.network.newRuntime()
-  local req_id = rt:httpRequest{
-    method = "POST",
-    url = "http://127.0.0.1:9/scores",
-    headers = { ["Content-Type"] = "application/json" },
-    body = '{"name":"tom","score":4200}',
-    timeout = 5,
-  }
-  lurek.log.info("submitted score request id=" .. req_id, "net")
+    ---@type LNetworkRuntime
+    local rt = lurek.network.newRuntime()
+    local req_id = rt:httpRequest({
+        url = "https://example.com/api/resource",
+        method = "PUT",
+        headers = {["Authorization"] = "Bearer token123"},
+        body = "updated data",
+        timeout = 5000,
+    })
+    print("custom request id = " .. req_id)
+    rt:shutdown()
 end
 ```
 
@@ -1949,53 +1880,17 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- poll() returns an array of response tables. Each has a "type" field:
-  --   "http"      — HTTP response. Fields: request_id, status, headers, body.
-  --   "tcp_data"  — TCP data received. Fields: id, data.
-  --   "tcp_close" — TCP connection closed. Fields: id.
-  --   "ws_msg"    — WebSocket message. Fields: id, data.
-  --   "ws_close"  — WebSocket closed. Fields: id.
-  --   "error"     — Operation failed. Fields: request_id or id, error.
-  -- Call every frame to process all pending network responses.
-  local rt = lurek.network.newRuntime()
-  function lurek.process(dt)
-    for _, resp in ipairs(rt:poll()) do
-      if resp.type == "http" then
-        lurek.log.info("http status=" .. resp.status, "net")
-      elseif resp.type == "ws_msg" then
-        lurek.log.info("ws: " .. resp.data, "net")
-      end
+    ---@type LNetworkRuntime
+    local rt = lurek.network.newRuntime()
+    rt:httpGet("https://example.com/ping")
+    local events = rt:poll()
+    for _, ev in ipairs(events) do
+        print("event type = " .. ev.type)
+        if ev.status then print("  status = " .. ev.status) end
+        if ev.body then print("  body len = " .. #ev.body) end
     end
-  end
-end
---@api-stub: LNetworkRuntime:shutdown
--- Shuts down the network runtime and cancels all pending async network operations.
-do
-  -- shutdown() stops the background thread and drops all open connections.
-  -- Always call in lurek.quit() to ensure clean resource release.
-  local rt = lurek.network.newRuntime()
-  function lurek.quit()
     rt:shutdown()
-  end
 end
---@api-stub: LNetworkHost:broadcast
--- Sends a packet to all currently connected peers on a channel with optional reliability.
-do
-  -- broadcast sends the same data to every connected peer at once.
-  -- Parameters: channel_id, data (binary string), reliable (default true).
-  -- Use reliable=true for important game events (round start, score update).
-  -- Use reliable=false for high-frequency updates (positions, animations).
-  local host = lurek.network.newServer({port=7777, maxPeers=32})
-  host:broadcast(0, lurek.network.pack({ event = "round_start", map = "arena" }), true)
-  lurek.log.info("broadcast sent to all peers", "network")
-end
---@api-stub: LNetworkHost:connect
--- Initiates a connection from this client host to a remote server address string.
-do
-  -- connect() can be called on any host (not just clients) to initiate a
-  -- connection to a remote address. Returns the peer_id assigned to this connection.
-  -- Parameters: address_string, channels (default 1), connect_data (default 0).
-  -- The connect_data value is delivered to the remote in the "connect" event.
 ```
 
 ### LNetworkRuntime:shutdown
@@ -2017,12 +1912,10 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- shutdown() stops the background thread and drops all open connections.
-  -- Always call in lurek.quit() to ensure clean resource release.
-  local rt = lurek.network.newRuntime()
-  function lurek.quit()
+    local rt = lurek.network.newRuntime()
+    print("rt_type=" .. rt:type())
+    print("rt_typeOf=" .. tostring(rt:typeOf("LNetworkRuntime")))
     rt:shutdown()
-  end
 end
 ```
 
@@ -2050,11 +1943,13 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- After tcpClose, the connection id becomes invalid. Any pending data
-  -- in the write buffer may or may not be sent (use flush patterns if needed).
-  local rt = lurek.network.newRuntime()
-  local conn = rt:tcpConnect("127.0.0.1:9")
-  rt:tcpClose(conn)
+    ---@type LNetworkRuntime
+    local rt = lurek.network.newRuntime()
+    local id = rt:tcpConnect("127.0.0.1:9000")
+    print("tcp id = " .. id)
+    rt:tcpSend(id, "PING\n")
+    rt:tcpClose(id)
+    rt:shutdown()
 end
 ```
 
@@ -2085,12 +1980,13 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- tcpConnect opens a persistent TCP stream to a remote server.
-  -- Use for custom protocols, login servers, or any ordered byte-stream needs.
-  -- The connection is non-blocking — poll rt:poll() for connect/data events.
-  local rt = lurek.network.newRuntime()
-  local conn = rt:tcpConnect("127.0.0.1:9")
-  lurek.log.info("dialling tcp conn=" .. conn, "net")
+    ---@type LNetworkRuntime
+    local rt = lurek.network.newRuntime()
+    local id = rt:tcpConnect("127.0.0.1:9000")
+    print("tcp id = " .. id)
+    rt:tcpSend(id, "PING\n")
+    rt:tcpClose(id)
+    rt:shutdown()
 end
 ```
 
@@ -2120,11 +2016,13 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- tcpSend writes bytes into the TCP stream. The data is buffered and flushed
-  -- by the background runtime. Use line terminators or length prefixes for framing.
-  local rt = lurek.network.newRuntime()
-  local conn = rt:tcpConnect("127.0.0.1:9")
-  rt:tcpSend(conn, "LOGIN tom\n")
+    ---@type LNetworkRuntime
+    local rt = lurek.network.newRuntime()
+    local id = rt:tcpConnect("127.0.0.1:9000")
+    print("tcp id = " .. id)
+    rt:tcpSend(id, "PING\n")
+    rt:tcpClose(id)
+    rt:shutdown()
 end
 ```
 
@@ -2150,10 +2048,10 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- type() returns "LNetworkRuntime".
-  local rt = lurek.network.newRuntime()
-  lurek.log.info(rt:type(), "net")
-  rt:shutdown()
+    local rt = lurek.network.newRuntime()
+    print("rt_type=" .. rt:type())
+    print("rt_typeOf=" .. tostring(rt:typeOf("LNetworkRuntime")))
+    rt:shutdown()
 end
 ```
 
@@ -2184,10 +2082,10 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- typeOf checks against "LNetworkRuntime" and "Object".
-  local rt = lurek.network.newRuntime()
-  lurek.log.info("is LNetworkRuntime: " .. tostring(rt:typeOf("LNetworkRuntime")), "net")
-  rt:shutdown()
+    local rt = lurek.network.newRuntime()
+    print("rt_type=" .. rt:type())
+    print("rt_typeOf=" .. tostring(rt:typeOf("LNetworkRuntime")))
+    rt:shutdown()
 end
 ```
 
@@ -2215,10 +2113,13 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- wsClose sends a WebSocket close frame and releases the connection slot.
-  local rt = lurek.network.newRuntime()
-  local ws = rt:wsConnect("ws://127.0.0.1:9/lobby")
-  rt:wsClose(ws)
+    ---@type LNetworkRuntime
+    local rt = lurek.network.newRuntime()
+    local id = rt:wsConnect("ws://127.0.0.1:9001/game")
+    print("ws id = " .. id)
+    rt:wsSend(id, '{"action":"join","room":"lobby"}')
+    rt:wsClose(id)
+    rt:shutdown()
 end
 ```
 
@@ -2249,13 +2150,13 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- wsConnect starts a WebSocket handshake with a remote server.
-  -- Use WebSockets for lobby chat, real-time leaderboards, or matchmaking.
-  -- The URL must start with ws:// or wss://.
-  -- Poll rt:poll() for connect confirmation and incoming messages.
-  local rt = lurek.network.newRuntime()
-  local ws = rt:wsConnect("ws://127.0.0.1:9/lobby")
-  lurek.log.info("opening websocket id=" .. ws, "net")
+    ---@type LNetworkRuntime
+    local rt = lurek.network.newRuntime()
+    local id = rt:wsConnect("ws://127.0.0.1:9001/game")
+    print("ws id = " .. id)
+    rt:wsSend(id, '{"action":"join","room":"lobby"}')
+    rt:wsClose(id)
+    rt:shutdown()
 end
 ```
 
@@ -2285,11 +2186,13 @@ Exact example from [network.lua](../blob/main/content/examples/network.lua):
 
 ```lua
 do
-  -- wsSend transmits a string as a WebSocket text frame.
-  -- Use JSON for structured messages. Binary frames use raw byte strings.
-  local rt = lurek.network.newRuntime()
-  local ws = rt:wsConnect("ws://127.0.0.1:9/lobby")
-  rt:wsSend(ws, '{"chat":"hello everyone!"}')
+    ---@type LNetworkRuntime
+    local rt = lurek.network.newRuntime()
+    local id = rt:wsConnect("ws://127.0.0.1:9001/game")
+    print("ws id = " .. id)
+    rt:wsSend(id, '{"action":"join","room":"lobby"}')
+    rt:wsClose(id)
+    rt:shutdown()
 end
 ```
 
@@ -2298,7 +2201,7 @@ end
 
 ## 💡 Examples
 
-- [network.lua](../blob/main/content/examples/network.lua) - TCP/UDP sockets
+- [network.lua](../blob/main/content/examples/network.lua) - API example
 
 [⬆ back to top](#table-of-contents)
 

@@ -32,7 +32,7 @@ Soldiers killed in action are gone permanently — entering the next mission wit
 - `lurek.window` — sets the window title on startup.
 - `lurek.event` — signals clean engine shutdown on Escape.
 
-**Lunasome (`library/`) modules**
+**Lureksome (`library/`) modules**
 
 _None._
 

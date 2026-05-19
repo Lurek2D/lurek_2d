@@ -4,7 +4,7 @@
 
 ## Navigation
 
-[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lureksome](Lureksome)
 
 ## Table of Contents
 
@@ -165,19 +165,12 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  -- Use distanceShade to simulate distance fog in a dungeon.
-  -- Objects further away become darker, reaching 0.0 at maxDistance.
-  local max_visible = 12.0  -- beyond 12 units everything is black
-  local wall_dist = 6.0     -- this wall is 6 units away
-
-  local shade = lurek.raycaster.distanceShade(wall_dist, max_visible)
-
-  -- Multiply your wall color by shade to darken distant surfaces
-  local base_r, base_g, base_b = 0.8, 0.6, 0.4
-  local r = base_r * shade
-  local g = base_g * shade
-  local b = base_b * shade
-  lurek.log.debug("wall rgb=" .. r .. "," .. g .. "," .. b, "raycaster")
+    local bright = lurek.raycaster.distanceShade(0, 10)
+    local mid = lurek.raycaster.distanceShade(5, 10)
+    local dark = lurek.raycaster.distanceShade(9, 10)
+    print("dist 0: " .. string.format("%.2f", bright))
+    print("dist 5: " .. string.format("%.2f", mid))
+    print("dist 9: " .. string.format("%.2f", dark))
 end
 ```
 
@@ -200,15 +193,9 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  -- Create a 16x12 grid map. Each cell holds an integer:
-  -- 0 = empty (walkable), 1+ = wall type (blocks rays and movement).
-  local rc = lurek.raycaster.new(16, 12)
-
-  -- Place a single wall tile at column 3, row 4 with wall type 1
-  rc:setCell(3, 4, 1)
-
-  -- The map dimensions are fixed at creation time
-  lurek.log.info("grid " .. rc:width() .. "x" .. rc:height(), "raycaster")
+    ---@type LRaycaster
+    local map = lurek.raycaster.new(16, 16)
+    print("size = " .. map:width() .. "x" .. map:height())
 end
 ```
 
@@ -226,14 +213,21 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  -- DoorManager tracks sliding doors that open and close over time.
-  -- Each door lives at a grid cell and slides in one direction.
-  local doors = lurek.raycaster.newDoorManager()
-
-  -- Add a horizontal-sliding door at cell (5,7) that opens at 2.5 units/sec
-  doors:addDoor(5, 7, "horizontal", 2.5)
-  -- Add a vertical-sliding door at cell (9,3) — slower at 1.8 units/sec
-  doors:addDoor(9, 3, "vertical", 1.8)
+    ---@type LDoorManager
+    local doors = lurek.raycaster.newDoorManager()
+    local idx1 = doors:addDoor(5, 3, "north", 2.0)
+    local idx2 = doors:addDoor(8, 6, "east", 1.5)
+    print("door 1 idx = " .. idx1)
+    print("door 2 idx = " .. idx2)
+    print("total doors = " .. doors:count())
+    doors:openDoor(idx1)
+    doors:update(0.5)
+    local d = doors:getDoor(idx1)
+    print("door 1: state=" .. d.state .. " open=" .. d.openAmount)
+    doors:closeDoor(idx1)
+    doors:update(1.0)
+    d = doors:getDoor(idx1)
+    print("after close: state=" .. d.state)
 end
 ```
 
@@ -256,17 +250,29 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  -- HeightMap adds variable floor/ceiling elevations to a flat raycaster map.
-  -- Use it for pits, raised platforms, and low ceilings.
-  local hm = lurek.raycaster.newHeightMap(16, 12)
+    ---@type LHeightMap
+    local hm = lurek.raycaster.newHeightMap(16, 16)
+    hm:setFloor(5, 5, -0.3)
+    hm:setCeiling(5, 5, 0.8)
+    hm:setFloor(10, 10, 0.2)
+    hm:setCeiling(10, 10, 1.5)
+    print("floor at 5,5 = " .. hm:floorAt(5, 5))
+    print("ceiling at 5,5 = " .. hm:ceilingAt(5, 5))
+    print("floor at 0,0 = " .. hm:floorAt(0, 0))
+    print("ceiling at 0,0 = " .. hm:ceilingAt(0, 0))
 
-  -- Lower the floor at (4,5) to create a shallow pit
-  -- Negative values = floor sinks below default level
-  hm:setFloor(4, 5, -0.25)
-
-  -- Raise the ceiling at (4,5) to give extra headroom above the pit
-  hm:setCeiling(4, 5, 1.5)
-end
+    -- Creating stepped terrain (staircase).
+    ---@type LHeightMap
+    local hm = lurek.raycaster.newHeightMap(8, 8)
+    for x = 0, 7 do
+        local height = x * 0.1
+        for y = 0, 7 do
+            hm:setFloor(x, y, height)
+            hm:setCeiling(x, y, 1.0 + height)
+        end
+    end
+    print("stair start floor = " .. hm:floorAt(0, 0))
+    print("stair end floor = " .. hm:floorAt(7, 0))
 ```
 
 ### lurek.raycaster.newMap
@@ -288,14 +294,9 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  -- newMap is identical to new() — use whichever reads better in your code.
-  -- Here we build a 32x32 dungeon with solid border walls.
-  local map = lurek.raycaster.newMap(32, 32)
-
-  -- Build perimeter walls: top and bottom rows
-  for x = 0, 31 do map:setCell(x, 0, 1); map:setCell(x, 31, 1) end
-  -- Left and right columns
-  for y = 0, 31 do map:setCell(0, y, 1); map:setCell(31, y, 1) end
+    ---@type LRaycaster
+    local map = lurek.raycaster.newMap(32, 32)
+    print("alias size = " .. map:width() .. "x" .. map:height())
 end
 ```
 
@@ -323,18 +324,13 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  -- Point lights illuminate nearby tiles with colored falloff.
-  -- Args: x, y, red, green, blue, radius, intensity
-  -- This creates a warm torch light at world position (8.5, 6.0)
-  local torch = lurek.raycaster.newPointLight(
-    8.5, 6.0,     -- world position
-    1.0, 0.7, 0.3, -- warm orange color
-    4.0,           -- illuminates tiles within 4 units
-    1.5            -- 150% brightness multiplier
-  )
-
-  -- Query properties for debug display
-  lurek.log.info("torch radius=" .. torch:radius(), "raycaster")
+    ---@type LPointLight
+    local torch = lurek.raycaster.newPointLight(5.5, 3.5, 1.0, 0.8, 0.4, 4.0, 1.5)
+    print("pos = " .. torch:x() .. ", " .. torch:y())
+    local r, g, b = torch:color()
+    print("color = " .. r .. "," .. g .. "," .. b)
+    print("radius = " .. torch:radius())
+    print("intensity = " .. torch:intensity())
 end
 ```
 
@@ -352,14 +348,17 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  -- SpriteManager tracks world-space billboard sprites (enemies, items, props).
-  -- Sprites always face the camera and can be sorted by distance for correct draw order.
-  local sprites = lurek.raycaster.newSpriteManager()
-
-  -- Add sprites with: x, y, texture_name, scale
-  -- These exist in world space and are projected to screen during rendering
-  sprites:add(6.5, 4.5, "enemy_zombie", 1.0)   -- full-size enemy
-  sprites:add(10.0, 8.0, "barrel", 0.75)        -- smaller prop barrel
+    ---@type LSpriteManager
+    local sprites = lurek.raycaster.newSpriteManager()
+    local barrel = sprites:add(5.5, 3.5, "barrel", 1.0)
+    local torch = sprites:add(8.5, 2.5, "torch", 0.5)
+    local enemy = sprites:add(10.5, 7.5, "enemy", 1.2)
+    print("barrel id = " .. barrel)
+    print("torch id = " .. torch)
+    sprites:setPosition(enemy, 11, 8)
+    sprites:setVisible(torch, false)
+    sprites:remove(barrel)
+    print("sprite manager ready")
 end
 ```
 
@@ -383,19 +382,12 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  -- Use projectColumn to manually render wall strips in a custom renderer.
-  -- Given: distance from camera to wall, field of view, and screen height,
-  -- it returns: projected height, top pixel, bottom pixel.
-  local fov = math.pi / 3  -- 60 degree FOV
-  local wall_dist = 4.5    -- wall is 4.5 units away
-
-  local h, top, bot = lurek.raycaster.projectColumn(wall_dist, fov, 720)
-
-  -- h = how tall the wall column appears on screen
-  -- top = y pixel where the column starts (from top)
-  -- bot = y pixel where the column ends
-  -- Closer walls produce larger h values
-  lurek.log.debug("col h=" .. h .. " top=" .. top .. " bot=" .. bot, "raycaster")
+    local h1 = lurek.raycaster.projectColumn(1.0, math.pi / 3, 200)
+    local h2 = lurek.raycaster.projectColumn(5.0, math.pi / 3, 200)
+    local h3 = lurek.raycaster.projectColumn(10.0, math.pi / 3, 200)
+    print("dist 1 height = " .. string.format("%.1f", h1))
+    print("dist 5 height = " .. string.format("%.1f", h2))
+    print("dist 10 height = " .. string.format("%.1f", h3))
 end
 ```
 
@@ -422,14 +414,21 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  -- DoorManager tracks sliding doors that open and close over time.
-  -- Each door lives at a grid cell and slides in one direction.
-  local doors = lurek.raycaster.newDoorManager()
-
-  -- Add a horizontal-sliding door at cell (5,7) that opens at 2.5 units/sec
-  doors:addDoor(5, 7, "horizontal", 2.5)
-  -- Add a vertical-sliding door at cell (9,3) — slower at 1.8 units/sec
-  doors:addDoor(9, 3, "vertical", 1.8)
+    ---@type LDoorManager
+    local doors = lurek.raycaster.newDoorManager()
+    local idx1 = doors:addDoor(5, 3, "north", 2.0)
+    local idx2 = doors:addDoor(8, 6, "east", 1.5)
+    print("door 1 idx = " .. idx1)
+    print("door 2 idx = " .. idx2)
+    print("total doors = " .. doors:count())
+    doors:openDoor(idx1)
+    doors:update(0.5)
+    local d = doors:getDoor(idx1)
+    print("door 1: state=" .. d.state .. " open=" .. d.openAmount)
+    doors:closeDoor(idx1)
+    doors:update(1.0)
+    d = doors:getDoor(idx1)
+    print("after close: state=" .. d.state)
 end
 ```
 
@@ -451,17 +450,29 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  -- HeightMap adds variable floor/ceiling elevations to a flat raycaster map.
-  -- Use it for pits, raised platforms, and low ceilings.
-  local hm = lurek.raycaster.newHeightMap(16, 12)
+    ---@type LHeightMap
+    local hm = lurek.raycaster.newHeightMap(16, 16)
+    hm:setFloor(5, 5, -0.3)
+    hm:setCeiling(5, 5, 0.8)
+    hm:setFloor(10, 10, 0.2)
+    hm:setCeiling(10, 10, 1.5)
+    print("floor at 5,5 = " .. hm:floorAt(5, 5))
+    print("ceiling at 5,5 = " .. hm:ceilingAt(5, 5))
+    print("floor at 0,0 = " .. hm:floorAt(0, 0))
+    print("ceiling at 0,0 = " .. hm:ceilingAt(0, 0))
 
-  -- Lower the floor at (4,5) to create a shallow pit
-  -- Negative values = floor sinks below default level
-  hm:setFloor(4, 5, -0.25)
-
-  -- Raise the ceiling at (4,5) to give extra headroom above the pit
-  hm:setCeiling(4, 5, 1.5)
-end
+    -- Creating stepped terrain (staircase).
+    ---@type LHeightMap
+    local hm = lurek.raycaster.newHeightMap(8, 8)
+    for x = 0, 7 do
+        local height = x * 0.1
+        for y = 0, 7 do
+            hm:setFloor(x, y, height)
+            hm:setCeiling(x, y, 1.0 + height)
+        end
+    end
+    print("stair start floor = " .. hm:floorAt(0, 0))
+    print("stair end floor = " .. hm:floorAt(7, 0))
 ```
 
 ### LPointLight
@@ -482,18 +493,13 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  -- Point lights illuminate nearby tiles with colored falloff.
-  -- Args: x, y, red, green, blue, radius, intensity
-  -- This creates a warm torch light at world position (8.5, 6.0)
-  local torch = lurek.raycaster.newPointLight(
-    8.5, 6.0,     -- world position
-    1.0, 0.7, 0.3, -- warm orange color
-    4.0,           -- illuminates tiles within 4 units
-    1.5            -- 150% brightness multiplier
-  )
-
-  -- Query properties for debug display
-  lurek.log.info("torch radius=" .. torch:radius(), "raycaster")
+    ---@type LPointLight
+    local torch = lurek.raycaster.newPointLight(5.5, 3.5, 1.0, 0.8, 0.4, 4.0, 1.5)
+    print("pos = " .. torch:x() .. ", " .. torch:y())
+    local r, g, b = torch:color()
+    print("color = " .. r .. "," .. g .. "," .. b)
+    print("radius = " .. torch:radius())
+    print("intensity = " .. torch:intensity())
 end
 ```
 
@@ -515,15 +521,9 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  -- Create a 16x12 grid map. Each cell holds an integer:
-  -- 0 = empty (walkable), 1+ = wall type (blocks rays and movement).
-  local rc = lurek.raycaster.new(16, 12)
-
-  -- Place a single wall tile at column 3, row 4 with wall type 1
-  rc:setCell(3, 4, 1)
-
-  -- The map dimensions are fixed at creation time
-  lurek.log.info("grid " .. rc:width() .. "x" .. rc:height(), "raycaster")
+    ---@type LRaycaster
+    local map = lurek.raycaster.new(16, 16)
+    print("size = " .. map:width() .. "x" .. map:height())
 end
 ```
 
@@ -545,14 +545,17 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  -- SpriteManager tracks world-space billboard sprites (enemies, items, props).
-  -- Sprites always face the camera and can be sorted by distance for correct draw order.
-  local sprites = lurek.raycaster.newSpriteManager()
-
-  -- Add sprites with: x, y, texture_name, scale
-  -- These exist in world space and are projected to screen during rendering
-  sprites:add(6.5, 4.5, "enemy_zombie", 1.0)   -- full-size enemy
-  sprites:add(10.0, 8.0, "barrel", 0.75)        -- smaller prop barrel
+    ---@type LSpriteManager
+    local sprites = lurek.raycaster.newSpriteManager()
+    local barrel = sprites:add(5.5, 3.5, "barrel", 1.0)
+    local torch = sprites:add(8.5, 2.5, "torch", 0.5)
+    local enemy = sprites:add(10.5, 7.5, "enemy", 1.2)
+    print("barrel id = " .. barrel)
+    print("torch id = " .. torch)
+    sprites:setPosition(enemy, 11, 8)
+    sprites:setVisible(torch, false)
+    sprites:remove(barrel)
+    print("sprite manager ready")
 end
 ```
 
@@ -594,12 +597,16 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local dm = lurek.raycaster.newDoorManager()
-
-  -- addDoor returns the zero-based index of the new door.
-  -- Use this index for openDoor/closeDoor/getDoor calls.
-  local did = dm:addDoor(5, 7, "horizontal", 1.0)
-  lurek.log.info("door id: " .. did, "raycaster")
+    local dm = lurek.raycaster.newDoorManager()
+    local id = dm:addDoor(5, 5, "horizontal", 0.5)
+    print("count=" .. dm:count())
+    dm:openDoor(id)
+    dm:update(0.1)
+    local door = dm:getDoor(id)
+    print("door=" .. tostring(door ~= nil))
+    dm:closeDoor(id)
+    print("type=" .. dm:type())
+    print("typeOf=" .. tostring(dm:typeOf("LDoorManager")))
 end
 ```
 
@@ -627,12 +634,16 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local doors = lurek.raycaster.newDoorManager()
-  local idx = doors:addDoor(12, 4, "vertical", 1.5)
-
-  -- Doors can be triggered to close after a timer or when the player moves away
-  doors:openDoor(idx)
-  doors:closeDoor(idx)  -- immediately reverses direction
+    local dm = lurek.raycaster.newDoorManager()
+    local id = dm:addDoor(5, 5, "horizontal", 0.5)
+    print("count=" .. dm:count())
+    dm:openDoor(id)
+    dm:update(0.1)
+    local door = dm:getDoor(id)
+    print("door=" .. tostring(door ~= nil))
+    dm:closeDoor(id)
+    print("type=" .. dm:type())
+    print("typeOf=" .. tostring(dm:typeOf("LDoorManager")))
 end
 ```
 
@@ -658,12 +669,16 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local doors = lurek.raycaster.newDoorManager()
-  doors:addDoor(2, 2, "horizontal", 2.0)
-  doors:addDoor(8, 5, "vertical", 2.0)
-
-  -- Useful for iterating all doors (indices 0 to count-1)
-  lurek.log.info("level has " .. doors:count() .. " doors", "doors")
+    local dm = lurek.raycaster.newDoorManager()
+    local id = dm:addDoor(5, 5, "horizontal", 0.5)
+    print("count=" .. dm:count())
+    dm:openDoor(id)
+    dm:update(0.1)
+    local door = dm:getDoor(id)
+    print("door=" .. tostring(door ~= nil))
+    dm:closeDoor(id)
+    print("type=" .. dm:type())
+    print("typeOf=" .. tostring(dm:typeOf("LDoorManager")))
 end
 ```
 
@@ -694,15 +709,21 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local doors = lurek.raycaster.newDoorManager()
-  local idx = doors:addDoor(5, 7, "horizontal", 2.0)
-
-  -- getDoor returns: { x, y, openAmount (0.0..1.0), state ("closed"|"opening"|"open"|"closing") }
-  -- Use openAmount to check if the player can pass through
-  local d = doors:getDoor(idx)
-  if d and d.openAmount > 0.9 then
-    lurek.log.info("door " .. d.x .. "," .. d.y .. " passable (state=" .. d.state .. ")", "doors")
-  end
+    ---@type LDoorManager
+    local doors = lurek.raycaster.newDoorManager()
+    local idx = doors:addDoor(3, 3, "south", 4.0)
+    doors:openDoor(idx)
+    for i = 1, 10 do
+        doors:update(0.1)
+    end
+    local d = doors:getDoor(idx)
+    print("after 1s: open=" .. string.format("%.2f", d.openAmount))
+    doors:closeDoor(idx)
+    for i = 1, 10 do
+        doors:update(0.1)
+    end
+    d = doors:getDoor(idx)
+    print("after close 1s: open=" .. string.format("%.2f", d.openAmount))
 end
 ```
 
@@ -730,12 +751,16 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local doors = lurek.raycaster.newDoorManager()
-  local idx = doors:addDoor(5, 7, "horizontal", 2.0)
-
-  -- openDoor starts the animation — call update(dt) each frame to advance it.
-  -- The door slides from closed (0.0) to fully open (1.0) at the configured speed.
-  doors:openDoor(idx)
+    local dm = lurek.raycaster.newDoorManager()
+    local id = dm:addDoor(5, 5, "horizontal", 0.5)
+    print("count=" .. dm:count())
+    dm:openDoor(id)
+    dm:update(0.1)
+    local door = dm:getDoor(id)
+    print("door=" .. tostring(door ~= nil))
+    dm:closeDoor(id)
+    print("type=" .. dm:type())
+    print("typeOf=" .. tostring(dm:typeOf("LDoorManager")))
 end
 ```
 
@@ -761,9 +786,9 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  -- type() returns the engine type string for this door manager handle.
-  local doors = lurek.raycaster.newDoorManager()
-  lurek.log.info("door mgr type: " .. doors:type(), "raycaster")
+    ---@type LDoorManager
+    local doors = lurek.raycaster.newDoorManager()
+    print("type = " .. doors:type())
 end
 ```
 
@@ -794,10 +819,9 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  -- typeOf checks handle identity for polymorphic dispatch.
-  local doors = lurek.raycaster.newDoorManager()
-  local is_door = doors:typeOf("LDoorManager")
-  lurek.log.info("is LDoorManager=" .. tostring(is_door), "raycaster")
+    ---@type LDoorManager
+    local doors = lurek.raycaster.newDoorManager()
+    print("is LDoorManager = " .. tostring(doors:typeOf("LDoorManager")))
 end
 ```
 
@@ -825,14 +849,16 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local doors = lurek.raycaster.newDoorManager()
-  doors:addDoor(3, 3, "horizontal", 2.0)
-
-  -- Call update once per frame in lurek.process to animate all doors.
-  -- dt is seconds since last frame — doors slide at their configured speed.
-  function lurek.process(dt)
-    doors:update(dt)
-  end
+    local dm = lurek.raycaster.newDoorManager()
+    local id = dm:addDoor(5, 5, "horizontal", 0.5)
+    print("count=" .. dm:count())
+    dm:openDoor(id)
+    dm:update(0.1)
+    local door = dm:getDoor(id)
+    print("door=" .. tostring(door ~= nil))
+    dm:closeDoor(id)
+    print("type=" .. dm:type())
+    print("typeOf=" .. tostring(dm:typeOf("LDoorManager")))
 end
 ```
 
@@ -865,11 +891,13 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local hm = lurek.raycaster.newHeightMap(16, 12)
-
-  -- Compute available headroom at a cell to check if tall entities can pass
-  local headroom = hm:ceilingAt(3, 4) - hm:floorAt(3, 4)
-  lurek.log.debug("cell headroom=" .. headroom, "raycaster")
+    local hm = lurek.raycaster.newHeightMap(16, 16)
+    hm:setFloor(3, 3, 0.2)
+    hm:setCeiling(3, 3, 0.9)
+    print("floor=" .. hm:floorAt(3, 3))
+    print("ceiling=" .. hm:ceilingAt(3, 3))
+    print("type=" .. hm:type())
+    print("typeOf=" .. tostring(hm:typeOf("LHeightMap")))
 end
 ```
 
@@ -902,14 +930,13 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local hm = lurek.raycaster.newHeightMap(16, 12)
-  hm:setFloor(5, 5, -0.4)
-
-  -- Query the floor to detect pits for gameplay (damage zones, water, etc.)
-  local h = hm:floorAt(5, 5)
-  if h < 0 then
-    lurek.log.debug("pit depth " .. -h, "raycaster")
-  end
+    local hm = lurek.raycaster.newHeightMap(16, 16)
+    hm:setFloor(3, 3, 0.2)
+    hm:setCeiling(3, 3, 0.9)
+    print("floor=" .. hm:floorAt(3, 3))
+    print("ceiling=" .. hm:ceilingAt(3, 3))
+    print("type=" .. hm:type())
+    print("typeOf=" .. tostring(hm:typeOf("LHeightMap")))
 end
 ```
 
@@ -941,11 +968,13 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local hm = lurek.raycaster.newHeightMap(16, 12)
-
-  -- Create a low-ceiling corridor along row 0.
-  -- Lower values = ceiling comes down, making the space feel cramped.
-  for x = 0, 15 do hm:setCeiling(x, 0, 0.6) end
+    local hm = lurek.raycaster.newHeightMap(16, 16)
+    hm:setFloor(3, 3, 0.2)
+    hm:setCeiling(3, 3, 0.9)
+    print("floor=" .. hm:floorAt(3, 3))
+    print("ceiling=" .. hm:ceilingAt(3, 3))
+    print("type=" .. hm:type())
+    print("typeOf=" .. tostring(hm:typeOf("LHeightMap")))
 end
 ```
 
@@ -977,13 +1006,13 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local hm = lurek.raycaster.newHeightMap(16, 12)
-
-  -- Create a trench: lower the floor across several cells.
-  -- Negative offset = floor drops below default level (a pit).
-  for x = 4, 7 do hm:setFloor(x, 6, -0.5) end
-  -- Gradual ramp: half-depth at the edge
-  hm:setFloor(8, 6, -0.25)
+    local hm = lurek.raycaster.newHeightMap(16, 16)
+    hm:setFloor(3, 3, 0.2)
+    hm:setCeiling(3, 3, 0.9)
+    print("floor=" .. hm:floorAt(3, 3))
+    print("ceiling=" .. hm:ceilingAt(3, 3))
+    print("type=" .. hm:type())
+    print("typeOf=" .. tostring(hm:typeOf("LHeightMap")))
 end
 ```
 
@@ -1009,9 +1038,9 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  -- type() returns the engine type string for this height map handle.
-  local hm = lurek.raycaster.newHeightMap(16, 12)
-  lurek.log.info("heightmap type: " .. hm:type(), "raycaster")
+    ---@type LHeightMap
+    local hm = lurek.raycaster.newHeightMap(4, 4)
+    print("type = " .. hm:type())
 end
 ```
 
@@ -1042,10 +1071,9 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  -- typeOf checks handle identity for polymorphic dispatch.
-  local hm = lurek.raycaster.newHeightMap(16, 12)
-  local is_hm = hm:typeOf("LHeightMap")
-  lurek.log.info("is LHeightMap=" .. tostring(is_hm), "raycaster")
+    ---@type LHeightMap
+    local hm = lurek.raycaster.newHeightMap(4, 4)
+    print("is LHeightMap = " .. tostring(hm:typeOf("LHeightMap")))
 end
 ```
 
@@ -1073,12 +1101,16 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local light = lurek.raycaster.newPointLight(4, 4, 1.0, 0.4, 0.2, 5, 1)
-
-  -- color() returns r, g, b channels (0.0..1.0)
-  -- Use this to tint nearby surfaces for colored lighting
-  local r, g, b = light:color()
-  lurek.log.debug("torch tint " .. r .. "," .. g .. "," .. b, "raycaster")
+    local pl = lurek.raycaster.newPointLight(8, 8, 1, 1, 0.8, 5.0, 2.0)
+    print("x=" .. pl:x())
+    print("y=" .. pl:y())
+    print("radius=" .. pl:radius())
+    print("intensity=" .. pl:intensity())
+    local r, g, b = pl:color()
+    print("color=" .. r .. "," .. g .. "," .. b)
+    pl:set(10, 10, 1, 0.8, 0.6, 6.0, 3.0)
+    print("type=" .. pl:type())
+    print("typeOf=" .. tostring(pl:typeOf("LPointLight")))
 end
 ```
 
@@ -1104,13 +1136,16 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local light = lurek.raycaster.newPointLight(2, 3, 1, 0.5, 0.2, 3, 2.5)
-
-  -- Combine intensity with distanceShade for manual per-pixel lighting
-  local dist_to_wall = 1.5
-  local shade = lurek.raycaster.distanceShade(dist_to_wall, 6.0)
-  local contribution = light:intensity() * shade
-  lurek.log.debug("light contribution at wall=" .. contribution, "raycaster")
+    local pl = lurek.raycaster.newPointLight(8, 8, 1, 1, 0.8, 5.0, 2.0)
+    print("x=" .. pl:x())
+    print("y=" .. pl:y())
+    print("radius=" .. pl:radius())
+    print("intensity=" .. pl:intensity())
+    local r, g, b = pl:color()
+    print("color=" .. r .. "," .. g .. "," .. b)
+    pl:set(10, 10, 1, 0.8, 0.6, 6.0, 3.0)
+    print("type=" .. pl:type())
+    print("typeOf=" .. tostring(pl:typeOf("LPointLight")))
 end
 ```
 
@@ -1136,12 +1171,16 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local light = lurek.raycaster.newPointLight(8, 6, 1, 1, 1, 6.0, 1.0)
-
-  -- Radius determines how far the light reaches before fading to zero.
-  -- Larger radius = softer, wider illumination area.
-  local r = light:radius()
-  if r > 5 then lurek.log.info("large light radius=" .. r, "raycaster") end
+    local pl = lurek.raycaster.newPointLight(8, 8, 1, 1, 0.8, 5.0, 2.0)
+    print("x=" .. pl:x())
+    print("y=" .. pl:y())
+    print("radius=" .. pl:radius())
+    print("intensity=" .. pl:intensity())
+    local r, g, b = pl:color()
+    print("color=" .. r .. "," .. g .. "," .. b)
+    pl:set(10, 10, 1, 0.8, 0.6, 6.0, 3.0)
+    print("type=" .. pl:type())
+    print("typeOf=" .. tostring(pl:typeOf("LPointLight")))
 end
 ```
 
@@ -1181,17 +1220,12 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local light = lurek.raycaster.newPointLight(4.5, 3.5, 1.0, 0.9, 0.7, 6.0, 1.0)
-
-  -- set() updates position, color, radius, and intensity all at once.
-  -- Useful for animating a light (flickering torch, moving lantern).
-  light:set(
-    4.5, 3.5,       -- position stays the same
-    1.0, 0.9, 0.7,  -- warm color
-    6.0,             -- radius
-    1.0              -- intensity
-  )
-  lurek.log.info("point light configured", "raycaster")
+    ---@type LPointLight
+    local light = lurek.raycaster.newPointLight(2, 2, 1, 1, 1, 3, 1.0)
+    light:set(8, 8, 0, 0, 1, 6, 2.0)
+    print("moved to " .. light:x() .. "," .. light:y())
+    print("new radius = " .. light:radius())
+    print("new intensity = " .. light:intensity())
 end
 ```
 
@@ -1217,9 +1251,9 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  -- type() returns the engine type string for this point light handle.
-  local torch = lurek.raycaster.newPointLight(5.5, 3.5, 1.0, 0.8, 0.4, 6.0, 1.0)
-  lurek.log.info("light type: " .. torch:type(), "raycaster")
+    ---@type LPointLight
+    local light = lurek.raycaster.newPointLight(0, 0, 1, 1, 1, 1, 1)
+    print("type = " .. light:type())
 end
 ```
 
@@ -1250,10 +1284,9 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  -- typeOf checks handle identity for polymorphic dispatch.
-  local torch = lurek.raycaster.newPointLight(5.5, 3.5, 1.0, 0.8, 0.4, 6.0, 1.0)
-  local is_light = torch:typeOf("LPointLight")
-  lurek.log.info("is LPointLight=" .. tostring(is_light), "raycaster")
+    ---@type LPointLight
+    local light = lurek.raycaster.newPointLight(0, 0, 1, 1, 1, 1, 1)
+    print("is LPointLight = " .. tostring(light:typeOf("LPointLight")))
 end
 ```
 
@@ -1279,13 +1312,16 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local light = lurek.raycaster.newPointLight(10.0, 5.0, 1, 1, 1, 5, 1)
-
-  -- Use x() and y() to track a light's position for distance checks
-  local px = light:x()
-  if px > 8 then
-    lurek.log.debug("light is east of midpoint at x=" .. px, "raycaster")
-  end
+    local pl = lurek.raycaster.newPointLight(8, 8, 1, 1, 0.8, 5.0, 2.0)
+    print("x=" .. pl:x())
+    print("y=" .. pl:y())
+    print("radius=" .. pl:radius())
+    print("intensity=" .. pl:intensity())
+    local r, g, b = pl:color()
+    print("color=" .. r .. "," .. g .. "," .. b)
+    pl:set(10, 10, 1, 0.8, 0.6, 6.0, 3.0)
+    print("type=" .. pl:type())
+    print("typeOf=" .. tostring(pl:typeOf("LPointLight")))
 end
 ```
 
@@ -1311,11 +1347,16 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local light = lurek.raycaster.newPointLight(4.0, 7.5, 1, 0.8, 0.6, 4, 1.2)
-
-  -- Determine which grid row the light falls in
-  local py = light:y()
-  lurek.log.debug("light row " .. math.floor(py), "raycaster")
+    local pl = lurek.raycaster.newPointLight(8, 8, 1, 1, 0.8, 5.0, 2.0)
+    print("x=" .. pl:x())
+    print("y=" .. pl:y())
+    print("radius=" .. pl:radius())
+    print("intensity=" .. pl:intensity())
+    local r, g, b = pl:color()
+    print("color=" .. r .. "," .. g .. "," .. b)
+    pl:set(10, 10, 1, 0.8, 0.6, 6.0, 3.0)
+    print("type=" .. pl:type())
+    print("typeOf=" .. tostring(pl:typeOf("LPointLight")))
 end
 ```
 
@@ -1354,21 +1395,26 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local rc = lurek.raycaster.new(32, 32)
-  -- Build some walls
-  rc:setCell(12, 14, 1)
-  rc:setCell(13, 15, 1)
-
-  -- buildMinimapWindow samples a square region around the center.
-  -- Each result has: x, y, blocked, visible, r, g, b, luma.
-  -- Use this to render a lit minimap overlay in-game.
-  local rows = rc:buildMinimapWindow(
-    12.5, 14.5,  -- center position (player location)
-    10,          -- sample radius (10 tiles in each direction)
-    0.25,        -- ambient light level
-    nil          -- no point lights (or pass an array)
-  )
-  lurek.log.info("minimap rows: " .. #rows, "raycaster")
+    ---@type LRaycaster
+    local map = lurek.raycaster.new(16, 16)
+    for x = 0, 15 do
+        map:setCell(x, 0, 1)
+        map:setCell(x, 15, 1)
+    end
+    for y = 0, 15 do
+        map:setCell(0, y, 1)
+        map:setCell(15, y, 1)
+    end
+    map:setCell(5, 8, 1)
+    local cells = map:buildMinimapWindow(8, 8, 5, 0.2)
+    print("minimap cells = " .. #cells)
+    for i = 1, math.min(3, #cells) do
+        local c = cells[i]
+        print("  " .. c.x .. "," .. c.y ..
+            " blocked=" .. tostring(c.blocked) ..
+            " visible=" .. tostring(c.visible) ..
+            " luma=" .. string.format("%.2f", c.luma))
+    end
 end
 ```
 
@@ -1405,35 +1451,27 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local rc = lurek.raycaster.new(16, 16)
-  -- Build a simple room
-  for x = 0, 15 do rc:setCell(x, 0, 1); rc:setCell(x, 15, 1) end
-  for y = 0, 15 do rc:setCell(0, y, 1); rc:setCell(15, y, 1) end
-
-  local wall_tex = lurek.render.newImage("assets/icon.png")
-
-  -- buildScene generates all render quads for a full raycaster frame.
-  -- The scene is stored internally and rendered automatically by the engine.
-  local params = {
-    px = 8, py = 8,         -- player position
-    angle = 0,              -- facing angle in radians
-    fov = math.pi/3,        -- 60 degree field of view
-    rays = 320,             -- number of ray columns (higher = more detail)
-    max_dist = 16,          -- max render distance
-    screen_w = 320,         -- output width
-    screen_h = 240,         -- output height
-    -- Optional parameters with defaults:
-    -- ambient = 0.3,       -- base ambient light
-    -- shade_dist = 8.0,    -- distance fog cutoff
-    -- floor_r/g/b = 0.2,   -- default floor color
-    -- ceiling_r/g/b = 0.1, -- default ceiling color
-    -- camera_height = 0.5, -- eye height (0.0..1.0)
-    -- horizon_offset = 0.0 -- vertical look offset
-  }
-
-  -- Wall textures map cell values to texture images
-  local quad_count = rc:buildScene(params, nil, nil, { [1] = wall_tex })
-  lurek.log.info("scene quads: " .. quad_count, "raycaster")
+    ---@type LRaycaster
+    local map = lurek.raycaster.new(16, 16)
+    for x = 0, 15 do
+        map:setCell(x, 0, 1)
+        map:setCell(x, 15, 1)
+    end
+    for y = 0, 15 do
+        map:setCell(0, y, 1)
+        map:setCell(15, y, 1)
+    end
+    local params = {
+        cam_x = 8,
+        cam_y = 8,
+        cam_angle = 0,
+        fov = math.pi / 3,
+        screen_w = 320,
+        screen_h = 200,
+        max_dist = 16
+    }
+    local numQuads = map:buildScene(params)
+    print("scene quads = " .. numQuads)
 end
 ```
 
@@ -1472,18 +1510,16 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local rc = lurek.raycaster.new(8, 8)
-  rc:setCell(3, 3, 1)
-
-  -- buildSceneWithModels extends buildScene with 3D model projection.
-  -- Models are .obj files rendered as billboards at their world position.
-  local params = {
-    px = 1.5, py = 1.5, angle = 0, fov = 1.0,
-    rays = 160, max_dist = 8,
-    screen_w = 320, screen_h = 200
-  }
-  local ok, n = pcall(function() return rc:buildSceneWithModels(params) end)
-  lurek.log.info("buildSceneWithModels ok=" .. tostring(ok), "raycaster")
+    local rc = lurek.raycaster.new(80, 60)
+    local map = lurek.raycaster.newMap(16, 16)
+        local scene = rc:buildSceneWithModels(
+        { px = 8, py = 8, angle = 0 },
+        {},
+        {},
+        { "assets/textures/ray_water.png" },
+        {}
+    )
+    print("scene=" .. tostring(scene ~= nil))
 end
 ```
 
@@ -1526,18 +1562,18 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local rc = lurek.raycaster.new(16, 16)
-
-  -- castFloorRow is for software-rendered textured floors.
-  -- It computes UV coordinates for one horizontal scanline below/above the walls.
-  -- Camera direction and plane define the perspective projection.
-  local cam_x, cam_y = 8.0, 8.0
-  local dir_x, dir_y = 1.0, 0.0     -- looking east
-  local plane_x, plane_y = 0.0, 0.66 -- FOV plane perpendicular to direction
-
-  local uvs = rc:castFloorRow(cam_x, cam_y, dir_x, dir_y, plane_x, plane_y, 240)
-  -- Each entry is {u, v} — the world-space texture coordinate for that pixel
-  lurek.log.info("floor row uv count: " .. (uvs and #uvs or 0), "raycaster")
+    ---@type LRaycaster
+    local map = lurek.raycaster.new(16, 16)
+    local dirX = math.cos(0)
+    local dirY = math.sin(0)
+    local planeX = -dirY * 0.66
+    local planeY = dirX * 0.66
+    local uvs = map:castFloorRow(8, 8, dirX, dirY, planeX, planeY, 150)
+    print("floor UVs = " .. #uvs)
+    if #uvs > 0 then
+        print("first UV: u=" .. string.format("%.2f", uvs[1].u) ..
+            " v=" .. string.format("%.2f", uvs[1].v))
+    end
 end
 ```
 
@@ -1574,22 +1610,25 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local rc = lurek.raycaster.new(16, 16)
-  -- Build some walls to hit
-  for x = 0, 15 do rc:setCell(x, 0, 1); rc:setCell(x, 15, 1) end
-
-  -- Cast a ray from the center looking north (angle 0 = along -Y axis)
-  -- Returns a hit table or nil if nothing within maxDist
-  local hit = rc:castRay(8, 8, 0, 16)
-  if hit then
-    -- hit.distance = perpendicular (fisheye-corrected) distance
-    -- hit.raw_distance = true euclidean distance
-    -- hit.cell_value = which wall type was hit
-    -- hit.side = 0 (vertical grid line) or 1 (horizontal grid line)
-    -- hit.tex_u = texture U coordinate (0.0..1.0) for the hit column
-    -- hit.hit_x, hit.hit_y = exact world position of the hit
-    lurek.log.info("ray dist: " .. hit.distance .. " cell=" .. hit.cell_value, "raycaster")
-  end
+    ---@type LRaycaster
+    local map = lurek.raycaster.new(16, 16)
+    for x = 0, 15 do
+        map:setCell(x, 0, 1)
+        map:setCell(x, 15, 1)
+    end
+    for y = 0, 15 do
+        map:setCell(0, y, 1)
+        map:setCell(15, y, 1)
+    end
+    local hit = map:castRay(8, 8, 0, 20)
+    if hit then
+        print("distance = " .. hit.distance)
+        print("cell_value = " .. hit.cell_value)
+        print("side = " .. hit.side)
+        print("tex_u = " .. hit.tex_u)
+        print("hit pos = " .. hit.hit_x .. ", " .. hit.hit_y)
+        print("did hit = " .. tostring(hit.hit))
+    end
 end
 ```
 
@@ -1628,16 +1667,17 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local rc = lurek.raycaster.new(16, 16)
-  -- Set up a glass wall (semi-transparent) and a solid wall behind it
-  rc:setCell(8, 4, 2)   -- glass wall
-  rc:setWallAlpha(2, 0.3)
-  rc:setCell(8, 2, 1)   -- solid wall behind
-
-  -- castRayMulti returns ALL hits in distance order, up to maxHits (default 4, max 8).
-  -- Essential for rendering layered transparent walls.
-  local results = rc:castRayMulti(8.5, 8.5, math.pi * 1.5, 16)
-  lurek.log.info("multi-ray hits: " .. #results, "raycaster")
+    ---@type LRaycaster
+    local map = lurek.raycaster.new(16, 16)
+    map:setCell(5, 8, 2)
+    map:setCell(10, 8, 1)
+    map:setWallAlpha(2, 0.5)
+    local hits = map:castRayMulti(2, 8.5, 0, 20, 4)
+    print("multi hits = " .. #hits)
+    for i, h in ipairs(hits) do
+        print("  hit " .. i .. ": dist=" .. string.format("%.2f", h.distance) ..
+            " cell=" .. h.cell_value)
+    end
 end
 ```
 
@@ -1678,14 +1718,23 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local rc = lurek.raycaster.new(16, 16)
-  for x = 0, 15 do rc:setCell(x, 0, 1); rc:setCell(x, 15, 1) end
-  for y = 0, 15 do rc:setCell(0, y, 1); rc:setCell(15, y, 1) end
-
-  -- castRays sweeps rays across your FOV, returning full hit info per column.
-  -- Use this for custom rendering where you need tex_u, side, etc.
-  local cols = rc:castRays(8, 8, 0, math.pi/3, 320, 16)
-  lurek.log.info("columns: " .. (cols and #cols or 0), "raycaster")
+    ---@type LRaycaster
+    local map = lurek.raycaster.new(16, 16)
+    for x = 0, 15 do
+        map:setCell(x, 0, 1)
+        map:setCell(x, 15, 1)
+    end
+    for y = 0, 15 do
+        map:setCell(0, y, 1)
+        map:setCell(15, y, 1)
+    end
+    local hits = map:castRays(8, 8, 0, math.pi / 3, 10, 20)
+    print("rays cast = " .. #hits)
+    for i, h in ipairs(hits) do
+        if h.hit then
+            print("  ray " .. i .. ": dist=" .. string.format("%.2f", h.distance))
+        end
+    end
 end
 ```
 
@@ -1726,13 +1775,19 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local rc = lurek.raycaster.new(16, 16)
-  for x = 0, 15 do rc:setCell(x, 0, 1); rc:setCell(x, 15, 1) end
-
-  -- castRaysFlat is faster than castRays when you only need distances
-  -- (e.g. for depth-based effects, occlusion, or simple column height calculation).
-  local dists = rc:castRaysFlat(8, 8, 0, math.pi/3, 320, 16)
-  lurek.log.info("flat ray count: " .. (dists and #dists or 0), "raycaster")
+    ---@type LRaycaster
+    local map = lurek.raycaster.new(16, 16)
+    for x = 0, 15 do
+        map:setCell(x, 0, 1)
+        map:setCell(x, 15, 1)
+    end
+    for y = 0, 15 do
+        map:setCell(0, y, 1)
+        map:setCell(15, y, 1)
+    end
+    local distances = map:castRaysFlat(8, 8, 0, math.pi / 3, 320, 20)
+    print("distance array = " .. #distances)
+    print("center dist = " .. string.format("%.2f", distances[160]))
 end
 ```
 
@@ -1772,14 +1827,17 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local rc = lurek.raycaster.new(16, 16)
-
-  -- computeTileLight accounts for walls blocking light paths.
-  -- Returns r, g, b, luma — use luma for quick brightness checks.
-  local r, g, b, luma = rc:computeTileLight(8, 8, 0.2, {
-    { x = 8.5, y = 8.5, radius = 5.0, r = 1.0, g = 0.8, b = 0.6, intensity = 8.0 }
-  })
-  lurek.log.info("tile luma: " .. luma, "raycaster")
+    ---@type LRaycaster
+    local map = lurek.raycaster.new(16, 16)
+    ---@type LPointLight
+    local light1 = lurek.raycaster.newPointLight(8, 8, 1.0, 0.9, 0.7, 5.0, 2.0)
+    ---@type LPointLight
+    local light2 = lurek.raycaster.newPointLight(3, 3, 0.2, 0.5, 1.0, 3.0, 1.0)
+    local r, g, b, luma = map:computeTileLight(7, 8, 0.1, { light1, light2 })
+    print("tile light: r=" .. string.format("%.2f", r) ..
+        " g=" .. string.format("%.2f", g) ..
+        " b=" .. string.format("%.2f", b) ..
+        " luma=" .. string.format("%.2f", luma))
 end
 ```
 
@@ -1822,20 +1880,19 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local rc = lurek.raycaster.new(16, 16)
-  for x = 0, 15 do rc:setCell(x, 0, 1); rc:setCell(x, 15, 1) end
-  for y = 0, 15 do rc:setCell(0, y, 1); rc:setCell(15, y, 1) end
-
-  -- drawCameraSweep renders numFrames views at evenly-spaced rotation angles,
-  -- stitched into a single wide image. Use for sprite-sheet generation or panoramas.
-  local img = rc:drawCameraSweep(
-    8, 8,       -- camera position
-    math.pi/3,  -- FOV per frame
-    16,         -- max render distance
-    6,          -- 6 rotation frames (60 degrees each = full 360)
-    64, 48      -- each frame is 64x48 pixels
-  )
-  lurek.log.info("camera sweep drawn", "raycaster")
+    ---@type LRaycaster
+    local map = lurek.raycaster.new(8, 8)
+    for x = 0, 7 do
+        map:setCell(x, 0, 1)
+        map:setCell(x, 7, 1)
+    end
+    for y = 0, 7 do
+        map:setCell(0, y, 1)
+        map:setCell(7, y, 1)
+    end
+    ---@type LImageData
+    local strip = map:drawCameraSweep(4, 4, math.pi / 3, 8, 8, 160, 100)
+    print("camera sweep strip created")
 end
 ```
 
@@ -1880,14 +1937,19 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local rc = lurek.raycaster.new(16, 16)
-  for x = 0, 15 do rc:setCell(x, 0, 1); rc:setCell(x, 15, 1) end
-  for y = 0, 15 do rc:setCell(0, y, 1); rc:setCell(15, y, 1) end
-
-  -- drawDepthMap produces a grayscale image: white = close, black = far.
-  -- Useful for post-processing effects (depth-of-field, fog) or AI visibility.
-  local img = rc:drawDepthMap(8, 8, 0, math.pi/3, 320, 320, 240, 16)
-  lurek.log.info("depth map drawn", "raycaster")
+    ---@type LRaycaster
+    local map = lurek.raycaster.new(16, 16)
+    for x = 0, 15 do
+        map:setCell(x, 0, 1)
+        map:setCell(x, 15, 1)
+    end
+    for y = 0, 15 do
+        map:setCell(0, y, 1)
+        map:setCell(15, y, 1)
+    end
+    ---@type LImageData
+    local depth = map:drawDepthMap(8, 8, 0, math.pi / 3, 160, 160, 100, 16)
+    print("depth map created")
 end
 ```
 
@@ -1926,13 +1988,12 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local rc = lurek.raycaster.new(16, 16)
-  rc:setCell(8, 8, 1)  -- wall in the middle
-
-  -- drawLineOfSight creates a debug image with the grid, the ray, and hit marker.
-  -- Useful for visualizing AI sight lines during development.
-  local img = rc:drawLineOfSight(4, 4, 12, 12, 8)
-  lurek.log.info("LOS drawn", "raycaster")
+    ---@type LRaycaster
+    local map = lurek.raycaster.new(8, 8)
+    map:setCell(4, 4, 1)
+    ---@type LImageData
+    local img = map:drawLineOfSight(1, 1, 7, 7, 16)
+    print("LOS image created")
 end
 ```
 
@@ -1969,13 +2030,20 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local rc = lurek.raycaster.new(16, 16)
-  for x = 0, 15 do rc:setCell(x, 0, 1); rc:setCell(x, 15, 1) end
-
-  -- drawTopDown creates a bird's-eye debug image showing walls, player position, and direction.
-  -- scale = pixels per grid cell (8 = 8px per tile)
-  local img = rc:drawTopDown(8, 8, 0, 8)
-  lurek.log.info("top-down drawn", "raycaster")
+    ---@type LRaycaster
+    local map = lurek.raycaster.new(8, 8)
+    for x = 0, 7 do
+        map:setCell(x, 0, 1)
+        map:setCell(x, 7, 1)
+    end
+    for y = 0, 7 do
+        map:setCell(0, y, 1)
+        map:setCell(7, y, 1)
+    end
+    map:setCell(3, 3, 1)
+    ---@type LImageData
+    local img = map:drawTopDown(4.5, 4.5, 0, 16)
+    print("top-down image created")
 end
 ```
 
@@ -2018,14 +2086,19 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local rc = lurek.raycaster.new(16, 16)
-  for x = 0, 15 do rc:setCell(x, 0, 1); rc:setCell(x, 15, 1) end
-  for y = 0, 15 do rc:setCell(0, y, 1); rc:setCell(15, y, 1) end
-
-  -- drawView creates a CPU-rendered flat-shaded image.
-  -- Useful for minimaps, thumbnails, or software rendering fallback.
-  local img = rc:drawView(8, 8, 0, math.pi/3, 320, 240, 16)
-  lurek.log.info("view rendered", "raycaster")
+    ---@type LRaycaster
+    local map = lurek.raycaster.new(16, 16)
+    for x = 0, 15 do
+        map:setCell(x, 0, 1)
+        map:setCell(x, 15, 1)
+    end
+    for y = 0, 15 do
+        map:setCell(0, y, 1)
+        map:setCell(15, y, 1)
+    end
+    ---@type LImageData
+    local img = map:drawView(8, 8, 0, math.pi / 3, 320, 200, 16)
+    print("view image created")
 end
 ```
 
@@ -2058,13 +2131,12 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local rc = lurek.raycaster.new(16, 16)
-  local tex = lurek.render.newImage("assets/icon.png")
-  rc:setCeilingTextureCell(2, 2, tex)
-
-  -- Returns nil if no ceiling texture is assigned to this cell
-  local id = rc:getCeilingTextureCell(2, 2)
-  lurek.log.info("ceiling tex id: " .. tostring(id), "raycaster")
+    ---@type LRaycaster
+    local map = lurek.raycaster.new(8, 8)
+    ---@type LImage
+    local ceilTex = lurek.render.newImage("assets/textures/ray_water.png")
+    map:setCeilingTextureCell(2, 2, ceilTex)
+    print("ceiling at 2,2 = " .. tostring(map:getCeilingTextureCell(2, 2)))
 end
 ```
 
@@ -2097,13 +2169,10 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local rc = lurek.raycaster.new(8, 8)
-  rc:setCell(2, 2, 3)
-
-  -- Returns the integer wall type at that position
-  if rc:getCell(2, 2) == 3 then
-    lurek.log.debug("cell holds tile id 3", "raycaster")
-  end
+    ---@type LRaycaster
+    local map = lurek.raycaster.new(8, 8)
+    map:setCell(0, 0, 1)
+    print("cell 0,0 = " .. map:getCell(0, 0))
 end
 ```
 
@@ -2136,13 +2205,12 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local rc = lurek.raycaster.new(16, 16)
-  local tex = lurek.render.newImage("assets/icon.png")
-  rc:setFloorTextureCell(2, 2, tex)
-
-  -- Returns the numeric texture id, or nil if no override is set
-  local id = rc:getFloorTextureCell(2, 2)
-  lurek.log.info("floor tex id: " .. tostring(id), "raycaster")
+    ---@type LRaycaster
+    local map = lurek.raycaster.new(8, 8)
+    ---@type LImage
+    local floorTex = lurek.render.newImage("assets/textures/ray_water.png")
+    map:setFloorTextureCell(3, 3, floorTex)
+    print("floor at 3,3 = " .. tostring(map:getFloorTextureCell(3, 3)))
 end
 ```
 
@@ -2175,15 +2243,20 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local rc = lurek.raycaster.new(16, 16)
-  local tex = lurek.render.newImage("assets/icon.png")
-  rc:setLoweredFloorCell(3, 3, { texture = tex, depth = 0.25, blocked = true })
-
-  -- Returns a table with: texture, depth, r, g, b, blocked — or nil if normal cell
-  local cell = rc:getLoweredFloorCell(3, 3)
-  if cell then
-    lurek.log.info("pit depth=" .. cell.depth .. " blocked=" .. tostring(cell.blocked), "raycaster")
-  end
+    ---@type LRaycaster
+    local map = lurek.raycaster.new(8, 8)
+    map:setLoweredFloorCell(4, 4, {
+        texture = 2,
+        depth = 0.3,
+        r = 0,
+        g = 100,
+        b = 200,
+        blocked = false
+    })
+    local cell = map:getLoweredFloorCell(4, 4)
+    if cell then
+        print("lowered: texture=" .. cell.texture .. " depth=" .. cell.depth)
+    end
 end
 ```
 
@@ -2214,12 +2287,10 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local rc = lurek.raycaster.new(8, 8)
-  rc:setWallAlpha(2, 0.6)
-
-  -- Query the current alpha to check if a wall type is see-through
-  local a = rc:getWallAlpha(2)
-  if a < 1.0 then lurek.log.debug("tile 2 alpha=" .. a, "raycaster") end
+    ---@type LRaycaster
+    local map = lurek.raycaster.new(8, 8)
+    map:setWallAlpha(2, 0.5)
+    print("type 2 alpha = " .. map:getWallAlpha(2))
 end
 ```
 
@@ -2260,14 +2331,22 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local rc = lurek.raycaster.new(8, 8)
-
-  -- gridMove is for tile-by-tile dungeon crawlers (like Dungeon Master, Eye of the Beholder).
-  -- dir: 1=North, 2=East, 3=South, 4=West
-  -- action: "forward", "back", "left", "right" (relative to facing direction)
-  -- step: typically 1.0 for one full tile
-  local x, y, moved = rc:gridMove(2.5, 2.5, 1, "forward", 1.0)
-  lurek.log.debug("gridMove -> " .. x .. "," .. y .. " moved=" .. tostring(moved), "raycaster")
+    ---@type LRaycaster
+    local map = lurek.raycaster.new(8, 8)
+    for x = 0, 7 do
+        map:setCell(x, 0, 1)
+        map:setCell(x, 7, 1)
+    end
+    for y = 0, 7 do
+        map:setCell(0, y, 1)
+        map:setCell(7, y, 1)
+    end
+    local px, py = 4.5, 4.5
+    local dir = 1
+    local nx, ny, ok = map:gridMove(px, py, dir, "forward", 1.0)
+    print("forward: " .. nx .. "," .. ny .. " ok=" .. tostring(ok))
+    nx, ny, ok = map:gridMove(nx, ny, dir, "left", 1.0)
+    print("strafe left: " .. nx .. "," .. ny .. " ok=" .. tostring(ok))
 end
 ```
 
@@ -2293,10 +2372,9 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local rc = lurek.raycaster.new(20, 15)
-
-  -- Use height() for boundary loops
-  for y = 0, rc:height() - 1 do rc:setCell(0, y, 1) end
+    local rc = lurek.raycaster.new(160, 120)
+    print("w=" .. rc:width())
+    print("h=" .. rc:height())
 end
 ```
 
@@ -2329,13 +2407,10 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local rc = lurek.raycaster.new(8, 8)
-  rc:setCell(4, 4, 1)
-
-  -- isBlocked checks only the wall grid (ignores lowered floor blocking).
-  -- Use isWalkBlocked for full collision checks including pits.
-  local blocked = rc:isBlocked(4, 4)
-  lurek.log.debug("(4,4) blocked=" .. tostring(blocked), "raycaster")
+    ---@type LRaycaster
+    local map = lurek.raycaster.new(8, 8)
+    map:setCell(3, 3, 1)
+    print("3,3 blocked = " .. tostring(map:isBlocked(3, 3)))
 end
 ```
 
@@ -2368,12 +2443,10 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local rc = lurek.raycaster.new(16, 16)
-  rc:setCell(1, 1, 2)
-
-  -- isWalkBlocked returns true for walls AND for lowered-floor cells marked blocked=true.
-  -- This is what tryMove and gridMove use internally for collision.
-  lurek.log.info("walk blocked: " .. tostring(rc:isWalkBlocked(1, 1)), "raycaster")
+    ---@type LRaycaster
+    local map = lurek.raycaster.new(8, 8)
+    map:setCell(3, 3, 1)
+    print("3,3 walk blocked = " .. tostring(map:isWalkBlocked(3, 3)))
 end
 ```
 
@@ -2410,12 +2483,13 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local rc = lurek.raycaster.new(16, 16)
-
-  -- lineOfSight returns true if no wall blocks the straight path between two points.
-  -- Use for AI visibility checks: can an enemy see the player?
-  local can_see = rc:lineOfSight(4, 4, 12, 12)
-  lurek.log.info("LOS clear: " .. tostring(can_see), "raycaster")
+    ---@type LRaycaster
+    local map = lurek.raycaster.new(16, 16)
+    map:setCell(8, 8, 1)
+    local clear = map:lineOfSight(4, 4, 12, 4)
+    print("clear path = " .. tostring(clear))
+    local blocked = map:lineOfSight(4, 8, 12, 8)
+    print("blocked path = " .. tostring(blocked))
 end
 ```
 
@@ -2458,23 +2532,13 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local rc = lurek.raycaster.new(16, 16)
-
-  -- projectSprite converts a world position to screen-space coordinates.
-  -- Use it to draw enemy/item billboards at the correct screen position and scale.
-  local sp = rc:projectSprite(
-    8, 4,         -- sprite world position
-    4, 4,         -- player world position
-    0,            -- player facing angle
-    math.pi/3,   -- FOV
-    320           -- screen width
-  )
-  if sp and sp.visible then
-    -- sp.screen_x = horizontal pixel position on screen
-    -- sp.scale = size multiplier (closer = larger)
-    -- sp.distance = distance from camera to sprite
-    lurek.log.info("sprite at screen_x=" .. sp.screen_x .. " scale=" .. sp.scale, "raycaster")
-  end
+    ---@type LRaycaster
+    local map = lurek.raycaster.new(16, 16)
+    local proj = map:projectSprite(10, 8, 8, 8, 0, math.pi / 3, 320)
+    print("screen_x = " .. proj.screen_x)
+    print("scale = " .. string.format("%.2f", proj.scale))
+    print("distance = " .. string.format("%.2f", proj.distance))
+    print("visible = " .. tostring(proj.visible))
 end
 ```
 
@@ -2517,23 +2581,22 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local rc = lurek.raycaster.new(32, 32)
-  -- Build some walls to block visibility
-  rc:setCell(12, 10, 1)
-  rc:setCell(13, 10, 1)
-
-  -- Casts rays across the FOV and walks along each ray, collecting visible cells.
-  -- Returns array of {x, y} tables — mark these on your fog-of-war map.
-  -- step (last param) controls sampling density: smaller = more accurate, slower.
-  local cells = rc:revealCellsFromRays(
-    10.5, 10.5,   -- origin
-    0.0,           -- center angle (north)
-    math.pi / 3,  -- 60 degree FOV
-    32,            -- number of rays
-    12.0,          -- max reveal distance
-    0.2            -- walk step along each ray
-  )
-  lurek.log.info("revealed cells: " .. #cells, "raycaster")
+    ---@type LRaycaster
+    local map = lurek.raycaster.new(16, 16)
+    for x = 0, 15 do
+        map:setCell(x, 0, 1)
+        map:setCell(x, 15, 1)
+    end
+    for y = 0, 15 do
+        map:setCell(0, y, 1)
+        map:setCell(15, y, 1)
+    end
+    map:setCell(6, 8, 1)
+    local revealed = map:revealCellsFromRays(8, 8, 0, math.pi * 2, 64, 10)
+    print("revealed cells = " .. #revealed)
+    if #revealed > 0 then
+        print("first: " .. revealed[1].x .. "," .. revealed[1].y)
+    end
 end
 ```
 
@@ -2565,14 +2628,12 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local rc = lurek.raycaster.new(16, 16)
-  local tex = lurek.render.newImage("assets/icon.png")
-
-  -- Same as setFloorTextureCell but for the ceiling surface
-  rc:setCeilingTextureCell(4, 4, tex)
-
-  -- Pass nil to clear
-  rc:setCeilingTextureCell(4, 4, nil)
+    ---@type LRaycaster
+    local map = lurek.raycaster.new(8, 8)
+    ---@type LImage
+    local ceilTex = lurek.render.newImage("assets/textures/ray_water.png")
+    map:setCeilingTextureCell(2, 2, ceilTex)
+    print("ceiling texture assigned")
 end
 ```
 
@@ -2604,12 +2665,10 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local rc = lurek.raycaster.new(16, 16)
-
-  -- Cell values: 0 = empty/walkable, 1+ = solid wall with that texture index.
-  -- Different non-zero values can map to different wall textures in buildScene.
-  rc:setCell(4, 4, 2)  -- wall type 2 at column 4, row 4
-  lurek.log.info("cell 4,4 = 2", "raycaster")
+    ---@type LRaycaster
+    local map = lurek.raycaster.new(8, 8)
+    map:setCell(0, 0, 1)
+    print("cell set")
 end
 ```
 
@@ -2637,16 +2696,17 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local rc = lurek.raycaster.new(4, 3)
-
-  -- setCells takes a row-major flat array: width*height elements.
-  -- This is the fastest way to load a level from data.
-  -- Row 0 (top): all walls. Row 1: corridor. Row 2: all walls.
-  rc:setCells({
-    1, 1, 1, 1,
-    1, 0, 0, 1,
-    1, 1, 1, 1,
-  })
+    ---@type LRaycaster
+    local map = lurek.raycaster.new(8, 8)
+    local cells = {}
+    for i = 1, 64 do
+        cells[i] = 0
+    end
+    for i = 1, 8 do
+        cells[i] = 1
+    end
+    map:setCells(cells)
+    print("after setCells: 0,0 = " .. map:getCell(0, 0))
 end
 ```
 
@@ -2678,15 +2738,12 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local rc = lurek.raycaster.new(16, 16)
-  local tex = lurek.render.newImage("assets/icon.png")
-
-  -- Assign a custom floor texture to a specific cell.
-  -- This overrides the default floor color for that tile in buildScene.
-  rc:setFloorTextureCell(4, 4, tex)
-
-  -- Pass nil to remove the override and revert to the default floor
-  rc:setFloorTextureCell(4, 4, nil)
+    ---@type LRaycaster
+    local map = lurek.raycaster.new(8, 8)
+    ---@type LImage
+    local floorTex = lurek.render.newImage("assets/textures/ray_water.png")
+    map:setFloorTextureCell(3, 3, floorTex)
+    print("floor texture assigned")
 end
 ```
 
@@ -2718,22 +2775,17 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local rc = lurek.raycaster.new(16, 16)
-  local tex = lurek.render.newImage("assets/icon.png")
-
-  -- Lowered floors create visible pits with their own texture and depth.
-  -- Options: texture (required), depth (0.0..0.75), r/g/b tint, blocked flag.
-  rc:setLoweredFloorCell(6, 6, {
-    texture = tex,    -- pit floor texture
-    depth = 0.25,     -- how deep the pit is (clamped to 0..0.75)
-    r = 0.8,          -- blue-ish tint for water pit
-    g = 0.9,
-    b = 1.0,
-    blocked = true,   -- player cannot walk through (isWalkBlocked returns true)
-  })
-
-  -- Pass nil to remove the lowered floor and revert to a normal cell
-  rc:setLoweredFloorCell(6, 6, nil)
+    ---@type LRaycaster
+    local map = lurek.raycaster.new(8, 8)
+    map:setLoweredFloorCell(4, 4, {
+        texture = 2,
+        depth = 0.3,
+        r = 0,
+        g = 100,
+        b = 200,
+        blocked = false
+    })
+    print("lowered floor assigned")
 end
 ```
 
@@ -2763,13 +2815,10 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local rc = lurek.raycaster.new(8, 8)
-  rc:setCell(3, 3, 5)
-
-  -- Make tile type 5 semi-transparent (glass walls, force fields).
-  -- Alpha 0.0 = fully transparent, 1.0 = fully opaque (default).
-  -- castRayMulti will pass through transparent walls and report multiple hits.
-  rc:setWallAlpha(5, 0.4)
+    ---@type LRaycaster
+    local map = lurek.raycaster.new(8, 8)
+    map:setWallAlpha(2, 0.5)
+    print("wall alpha set")
 end
 ```
 
@@ -2808,15 +2857,22 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local rc = lurek.raycaster.new(8, 8)
-  rc:setCell(4, 3, 1)
-
-  -- tryMove handles collision with wall-sliding.
-  -- Pass current position + desired movement delta.
-  -- Returns: final_x, final_y, did_move_at_all
-  -- If the direct path is blocked, it tries sliding along each axis separately.
-  local x, y, moved = rc:tryMove(3.5, 3.5, 1.0, 0.0)
-  lurek.log.debug("tryMove -> " .. x .. "," .. y .. " moved=" .. tostring(moved), "raycaster")
+    ---@type LRaycaster
+    local map = lurek.raycaster.new(8, 8)
+    for x = 0, 7 do
+        map:setCell(x, 0, 1)
+        map:setCell(x, 7, 1)
+    end
+    for y = 0, 7 do
+        map:setCell(0, y, 1)
+        map:setCell(7, y, 1)
+    end
+    local px, py = 4.5, 4.5
+    local nx, ny, moved = map:tryMove(px, py, 0.1, 0)
+    print("moved = " .. tostring(moved))
+    print("new pos = " .. nx .. ", " .. ny)
+    local wx, wy, wmoved = map:tryMove(0.5, 0.5, -1, 0)
+    print("wall slide: moved=" .. tostring(wmoved) .. " pos=" .. wx .. "," .. wy)
 end
 ```
 
@@ -2842,8 +2898,9 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local obj = lurek.raycaster.new(800, 600)
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LRaycaster"
+    ---@type LRaycaster
+    local map = lurek.raycaster.new(8, 8)
+    print("type = " .. map:type())
 end
 ```
 
@@ -2874,8 +2931,9 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local obj = lurek.raycaster.new(800, 600)
-  lurek.log.debug("typeOf LRaycaster: " .. tostring(obj:typeOf("LRaycaster")), "example") -- true
+    ---@type LRaycaster
+    local map = lurek.raycaster.new(8, 8)
+    print("is LRaycaster = " .. tostring(map:typeOf("LRaycaster")))
 end
 ```
 
@@ -2901,10 +2959,9 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local rc = lurek.raycaster.new(20, 15)
-
-  -- Use width() for boundary loops when building perimeter walls
-  for x = 0, rc:width() - 1 do rc:setCell(x, 0, 1) end
+    local rc = lurek.raycaster.new(160, 120)
+    print("w=" .. rc:width())
+    print("h=" .. rc:height())
 end
 ```
 
@@ -2941,12 +2998,15 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local sm = lurek.raycaster.newSpriteManager()
-
-  -- add() places a billboard sprite in the world.
-  -- Returns a unique id for later manipulation (move, hide, remove).
-  local id = sm:add(3.5, 2.5, "crate", 1.0)
-  lurek.log.info("sprite id: " .. id, "raycaster")
+    local sm = lurek.raycaster.newSpriteManager()
+    local id = sm:add(5, 5, "assets/textures/ray_water.png", 1.0)
+    sm:setPosition(id, 6, 6)
+    sm:setVisible(id, true)
+    sm:sortAndProject(8, 8, 0.0)
+    sm:remove(id)
+    sm:clear()
+    print("type=" .. sm:type())
+    print("typeOf=" .. tostring(sm:typeOf("LSpriteManager")))
 end
 ```
 
@@ -2969,12 +3029,12 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local sprites = lurek.raycaster.newSpriteManager()
-  sprites:add(1, 1, "barrel", 1.0)
-  sprites:add(3, 4, "barrel", 1.0)
-
-  -- Use clear() when transitioning between levels
-  sprites:clear()
+    ---@type LSpriteManager
+    local sprites = lurek.raycaster.newSpriteManager()
+    sprites:add(1, 1, "item")
+    sprites:add(2, 2, "item")
+    sprites:clear()
+    print("sprites cleared")
 end
 ```
 
@@ -3002,11 +3062,15 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local sprites = lurek.raycaster.newSpriteManager()
-  local id = sprites:add(5.0, 4.0, "potion", 0.5)
-
-  -- Remove a sprite when it is picked up or destroyed
-  sprites:remove(id)
+    local sm = lurek.raycaster.newSpriteManager()
+    local id = sm:add(5, 5, "assets/textures/ray_water.png", 1.0)
+    sm:setPosition(id, 6, 6)
+    sm:setVisible(id, true)
+    sm:sortAndProject(8, 8, 0.0)
+    sm:remove(id)
+    sm:clear()
+    print("type=" .. sm:type())
+    print("typeOf=" .. tostring(sm:typeOf("LSpriteManager")))
 end
 ```
 
@@ -3038,13 +3102,15 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local sprites = lurek.raycaster.newSpriteManager()
-  local id = sprites:add(2.0, 2.0, "enemy_imp", 1.0)
-
-  -- Move sprites each frame for enemy AI or animated props
-  function lurek.process(dt)
-    sprites:setPosition(id, 2.0 + dt, 2.0)
-  end
+    local sm = lurek.raycaster.newSpriteManager()
+    local id = sm:add(5, 5, "assets/textures/ray_water.png", 1.0)
+    sm:setPosition(id, 6, 6)
+    sm:setVisible(id, true)
+    sm:sortAndProject(8, 8, 0.0)
+    sm:remove(id)
+    sm:clear()
+    print("type=" .. sm:type())
+    print("typeOf=" .. tostring(sm:typeOf("LSpriteManager")))
 end
 ```
 
@@ -3074,12 +3140,15 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local sprites = lurek.raycaster.newSpriteManager()
-  local id = sprites:add(7.0, 3.0, "key_red", 0.6)
-
-  -- Hide sprites temporarily (e.g. item already collected but may respawn)
-  -- Hidden sprites are skipped during sortAndProject
-  sprites:setVisible(id, false)
+    local sm = lurek.raycaster.newSpriteManager()
+    local id = sm:add(5, 5, "assets/textures/ray_water.png", 1.0)
+    sm:setPosition(id, 6, 6)
+    sm:setVisible(id, true)
+    sm:sortAndProject(8, 8, 0.0)
+    sm:remove(id)
+    sm:clear()
+    print("type=" .. sm:type())
+    print("typeOf=" .. tostring(sm:typeOf("LSpriteManager")))
 end
 ```
 
@@ -3114,15 +3183,16 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local sm = lurek.raycaster.newSpriteManager()
-  sm:add(3.5, 2.5, "crate", 1.0)
-  sm:add(6.0, 5.0, "enemy", 1.0)
-
-  -- sortAndProject returns sprites sorted back-to-front for correct draw order.
-  -- Each entry: { id, x, y, texture, scale, distance }
-  -- Draw them in order to get correct painter's-algorithm layering.
-  local projs = sm:sortAndProject(8, 8, 0)
-  lurek.log.info("projected sprites: " .. #projs, "raycaster")
+    ---@type LSpriteManager
+    local sprites = lurek.raycaster.newSpriteManager()
+    sprites:add(3, 3, "crate")
+    sprites:add(6, 6, "pillar")
+    sprites:add(9, 9, "lamp")
+    local order = sprites:sortAndProject(5, 5, 0)
+    print("render order = " .. #order .. " sprites")
+    for i, sprite in ipairs(order) do
+        print("  draw " .. i .. ": sprite entry = " .. tostring(sprite))
+    end
 end
 ```
 
@@ -3148,9 +3218,9 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local sprites = lurek.raycaster.newSpriteManager()
-  -- Always returns "LSpriteManager"
-  lurek.log.info("SpriteManager:type = " .. tostring(sprites and sprites:type() or "nil"), "raycaster")
+    ---@type LSpriteManager
+    local sprites = lurek.raycaster.newSpriteManager()
+    print("type = " .. sprites:type())
 end
 ```
 
@@ -3181,11 +3251,9 @@ Exact example from [raycaster.lua](../blob/main/content/examples/raycaster.lua):
 
 ```lua
 do
-  local sprites = lurek.raycaster.newSpriteManager()
-  -- Accepts "LSpriteManager", "SpriteManager", or "Object"
-  if sprites and sprites:typeOf("LSpriteManager") then
-    lurek.log.debug("sprite mgr ok", "raycaster")
-  end
+    ---@type LSpriteManager
+    local sprites = lurek.raycaster.newSpriteManager()
+    print("is LSpriteManager = " .. tostring(sprites:typeOf("LSpriteManager")))
 end
 ```
 
@@ -3194,7 +3262,7 @@ end
 
 ## 💡 Examples
 
-- [raycaster.lua](../blob/main/content/examples/raycaster.lua) - Textured-quad 2.5D raycasting
+- [raycaster.lua](../blob/main/content/examples/raycaster.lua) - API example
 
 [⬆ back to top](#table-of-contents)
 

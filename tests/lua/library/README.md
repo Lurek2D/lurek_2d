@@ -1,6 +1,6 @@
 # tests/lua/library — Lua Library Tests
 
-One test file per Lunasome `library/` module (Tier 3 pure-Lua).
+One test file per Lureksome `library/` module (Tier 3 pure-Lua).
 
 ## Naming
 

@@ -33,7 +33,7 @@ python tools/gen_all_docs.py
 | `gen_lib_docs.py` | `library/` | `docs/reports/lib-api.md` | â€” |
 | `gen_engine_docs.py` | `src/` structure | `docs/reports/` engine docs | â€” |
 | `gen_lua_dev_docs.py` | `lua_api_data.json` | `docs/reports/` developer docs | â€” |
-| `gen_lua_library_api.py` | `library/` | LuaCATS stubs for Lunasome modules | â€” |
+| `gen_lua_library_api.py` | `library/` | LuaCATS stubs for Lureksome modules | â€” |
 | `gen_test_docs.py` | `tests/` | `docs/reports/test_docs_rust.md`, `docs/reports/test_docs_lua.md` | `--mode rust\|lua`, `--output` |
 | `gen_module_specs.py` | `src/<module>/` | `docs/specs/<module>.md` (merged module spec) | `--module NAME`, `--all`, `--scaffold`, `--write` |
 | `gen_wiki.py` | `src/`, `content/`, `docs/specs/` | All `wiki/*.md` pages | â€” |

@@ -1,8 +1,8 @@
-﻿# `item` — Agent Reference (Lunasome)
+# `item` — Agent Reference (Lureksome)
 
 | Property | Value |
 |----------|-------|
-| **Tier** | Tier 3 — Lunasome (pure Lua, no Rust dependencies) |
+| **Tier** | Tier 3 — Lureksome (pure Lua, no Rust dependencies) |
 | **Source** | `library/item/init.lua` |
 | **Lua Tests** | `tests/lua/library/test_library_item.lua` |
 | **Depends on** | `lurek.*` public API only |
@@ -137,7 +137,7 @@ Analysis helpers (operate on flat item arrays)
 
 | Property | Value |
 |----------|-------|
-| **Tier** | Tier 3 — Lunasome (pure Lua, no Rust dependencies) |
+| **Tier** | Tier 3 — Lureksome (pure Lua, no Rust dependencies) |
 | **Source** | `library/item/init.lua` |
 | **Lua Tests** | `tests/lua/library/test_library_item.lua` |
 | **Depends on** | `lurek.*` public API only |

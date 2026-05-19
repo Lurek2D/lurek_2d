@@ -4,7 +4,7 @@
 
 ## Navigation
 
-[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lureksome](Lureksome)
 
 ## Table of Contents
 
@@ -20,7 +20,7 @@ The glossary collects terms that appear across module and API pages.
 - `dt` - elapsed time since the previous frame, in seconds.
 - `main.lua` - the main game script.
 - `conf.lua` - optional startup configuration for a game.
-- `Lunasome` - reusable Lua libraries layered over the base runtime API.
+- `Lureksome` - reusable Lua libraries layered over the base runtime API.
 
 ## Lua API Types
 

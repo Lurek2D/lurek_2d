@@ -4,7 +4,7 @@
 
 ## Navigation
 
-[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lureksome](Lureksome)
 
 ## Table of Contents
 
@@ -14,55 +14,55 @@ Examples come from `content/examples/` and show isolated `lurek.*` namespaces. A
 
 | File | Namespace | Description |
 |---|---|---|
-| [ai.lua](../blob/main/content/examples/ai.lua) | `lurek.ai` | Behaviour trees, FSM, GOAP, steering |
-| [animation.lua](../blob/main/content/examples/animation.lua) | `lurek.animation` | Frame sequences, grids, playback control |
-| [audio.lua](../blob/main/content/examples/audio.lua) | `lurek.audio` | Sources, mixer, spatial audio |
-| [automation.lua](../blob/main/content/examples/automation.lua) | `lurek.automation` | Macro recording and playback |
-| [camera.lua](../blob/main/content/examples/camera.lua) | `lurek.camera` | Viewport pan, zoom, shake |
-| [compute.lua](../blob/main/content/examples/compute.lua) | `lurek.compute` | GPU-side compute passes |
-| [data.lua](../blob/main/content/examples/data.lua) | `lurek.data` | Typed arrays, buffers |
-| [dataframe.lua](../blob/main/content/examples/dataframe.lua) | `lurek.dataframe` | Tabular in-memory data |
-| [debugbridge.lua](../blob/main/content/examples/debugbridge.lua) | `lurek.debugbridge` | Live debug variable bridge |
-| [devtools.lua](../blob/main/content/examples/devtools.lua) | `lurek.devtools` | In-game console, overlay |
-| [docs.lua](../blob/main/content/examples/docs.lua) | `lurek.docs` | Runtime docstring queries |
-| [ecs.lua](../blob/main/content/examples/ecs.lua) | `lurek.ecs` | Entity-Component-System |
-| [effect.lua](../blob/main/content/examples/effect.lua) | `lurek.effect` | Post-process effect pipeline |
+| [ai.lua](../blob/main/content/examples/ai.lua) | `lurek.ai` | API example |
+| [animation.lua](../blob/main/content/examples/animation.lua) | `lurek.animation` | API example |
+| [audio.lua](../blob/main/content/examples/audio.lua) | `lurek.audio` | API example |
+| [automation.lua](../blob/main/content/examples/automation.lua) | `lurek.automation` | API example |
+| [camera.lua](../blob/main/content/examples/camera.lua) | `lurek.camera` | API example |
+| [compute.lua](../blob/main/content/examples/compute.lua) | `lurek.compute` | API example |
+| [data.lua](../blob/main/content/examples/data.lua) | `lurek.data` | API example |
+| [dataframe.lua](../blob/main/content/examples/dataframe.lua) | `lurek.dataframe` | API example |
+| [debugbridge.lua](../blob/main/content/examples/debugbridge.lua) | `lurek.debugbridge` | API example |
+| [devtools.lua](../blob/main/content/examples/devtools.lua) | `lurek.devtools` | API example |
+| [docs.lua](../blob/main/content/examples/docs.lua) | `lurek.docs` | API example |
+| [ecs.lua](../blob/main/content/examples/ecs.lua) | `lurek.ecs` | API example |
+| [effect.lua](../blob/main/content/examples/effect.lua) | `lurek.effect` | API example |
 | [engine.lua](../blob/main/content/examples/engine.lua) | `lurek.engine` | API example |
-| [event.lua](../blob/main/content/examples/event.lua) | `lurek.event` | Custom event bus |
+| [event.lua](../blob/main/content/examples/event.lua) | `lurek.event` | API example |
 | [filesystem.lua](../blob/main/content/examples/filesystem.lua) | `lurek.filesystem` | API example |
-| [globe.lua](../blob/main/content/examples/globe.lua) | `lurek.globe` | XCOM-style province globe — all 53 API calls |
-| [graph.lua](../blob/main/content/examples/graph.lua) | `lurek.graph` | Directed/undirected graph |
+| [globe.lua](../blob/main/content/examples/globe.lua) | `lurek.globe` | API example |
+| [graph.lua](../blob/main/content/examples/graph.lua) | `lurek.graph` | API example |
 | [html.lua](../blob/main/content/examples/html.lua) | `lurek.html` | API example |
-| [i18n.lua](../blob/main/content/examples/i18n.lua) | `lurek.i18n` | Localisation strings |
-| [image.lua](../blob/main/content/examples/image.lua) | `lurek.image` | Pixel data creation and manipulation |
-| [input.lua](../blob/main/content/examples/input.lua) | `lurek.input` | Keyboard, mouse, gamepad, actions |
-| [light.lua](../blob/main/content/examples/light.lua) | `lurek.light` | 2D point lights |
-| [log.lua](../blob/main/content/examples/log.lua) | `lurek.log` | Structured log output |
-| [math.lua](../blob/main/content/examples/math.lua) | `lurek.math` | Vectors, noise, RNG |
-| [minimap.lua](../blob/main/content/examples/minimap.lua) | `lurek.minimap` | Minimap renderer |
-| [mods.lua](../blob/main/content/examples/mods.lua) | `lurek.mods` | Mod loading and sandboxing |
-| [network.lua](../blob/main/content/examples/network.lua) | `lurek.network` | TCP/UDP sockets |
-| [parallax.lua](../blob/main/content/examples/parallax.lua) | `lurek.parallax` | Multi-layer parallax scrolling |
-| [particle.lua](../blob/main/content/examples/particle.lua) | `lurek.particle` | Particle system |
-| [pathfind.lua](../blob/main/content/examples/pathfind.lua) | `lurek.pathfind` | A\*, Dijkstra, navmesh |
-| [patterns.lua](../blob/main/content/examples/patterns.lua) | `lurek.patterns` | Tileable pattern generation |
-| [physics.lua](../blob/main/content/examples/physics.lua) | `lurek.physics` | Rigid bodies, joints |
-| [pipeline.lua](../blob/main/content/examples/pipeline.lua) | `lurek.pipeline` | Render pipeline composition |
-| [procgen.lua](../blob/main/content/examples/procgen.lua) | `lurek.procgen` | Procedural map generation |
+| [i18n.lua](../blob/main/content/examples/i18n.lua) | `lurek.i18n` | API example |
+| [image.lua](../blob/main/content/examples/image.lua) | `lurek.image` | API example |
+| [input.lua](../blob/main/content/examples/input.lua) | `lurek.input` | API example |
+| [light.lua](../blob/main/content/examples/light.lua) | `lurek.light` | API example |
+| [log.lua](../blob/main/content/examples/log.lua) | `lurek.log` | API example |
+| [math.lua](../blob/main/content/examples/math.lua) | `lurek.math` | API example |
+| [minimap.lua](../blob/main/content/examples/minimap.lua) | `lurek.minimap` | API example |
+| [mods.lua](../blob/main/content/examples/mods.lua) | `lurek.mods` | API example |
+| [network.lua](../blob/main/content/examples/network.lua) | `lurek.network` | API example |
+| [particle.lua](../blob/main/content/examples/particle.lua) | `lurek.particle` | API example |
+| [pathfind.lua](../blob/main/content/examples/pathfind.lua) | `lurek.pathfind` | API example |
+| [patterns.lua](../blob/main/content/examples/patterns.lua) | `lurek.patterns` | API example |
+| [physics.lua](../blob/main/content/examples/physics.lua) | `lurek.physics` | API example |
+| [pipeline.lua](../blob/main/content/examples/pipeline.lua) | `lurek.pipeline` | API example |
+| [procgen.lua](../blob/main/content/examples/procgen.lua) | `lurek.procgen` | API example |
 | [province.lua](../blob/main/content/examples/province.lua) | `lurek.province` | API example |
-| [raycaster.lua](../blob/main/content/examples/raycaster.lua) | `lurek.raycaster` | Textured-quad 2.5D raycasting |
-| [render.lua](../blob/main/content/examples/render.lua) | `lurek.render` | Shapes, sprites, canvas, blend modes |
+| [raycaster.lua](../blob/main/content/examples/raycaster.lua) | `lurek.raycaster` | API example |
+| [parallax.lua](../blob/main/content/examples/parallax.lua) | `lurek.render` | API example |
+| [render.lua](../blob/main/content/examples/render.lua) | `lurek.render` | API example |
 | [repl.lua](../blob/main/content/examples/repl.lua) | `lurek.repl` | API example |
 | [system.lua](../blob/main/content/examples/system.lua) | `lurek.runtime` | API example |
-| [save.lua](../blob/main/content/examples/save.lua) | `lurek.save` | Save/load game state |
-| [scene.lua](../blob/main/content/examples/scene.lua) | `lurek.scene` | Scene graph, transitions |
-| [serial.lua](../blob/main/content/examples/serial.lua) | `lurek.serial` | Serialisation (TOML/JSON/binary) |
-| [spine.lua](../blob/main/content/examples/spine.lua) | `lurek.spine` | Spine skeletal animation |
-| [sprite.lua](../blob/main/content/examples/sprite.lua) | `lurek.sprite` | Sprite batch |
-| [terminal.lua](../blob/main/content/examples/terminal.lua) | `lurek.terminal` | In-game terminal widget |
-| [thread.lua](../blob/main/content/examples/thread.lua) | `lurek.thread` | Worker threads, channels |
-| [tilemap.lua](../blob/main/content/examples/tilemap.lua) | `lurek.tilemap` | Tile layers, auto-tile |
-| [timer.lua](../blob/main/content/examples/timer.lua) | `lurek.timer` | One-shot and repeating timers |
-| [tween.lua](../blob/main/content/examples/tween.lua) | `lurek.tween` | Easing and animation tweens |
-| [ui.lua](../blob/main/content/examples/ui.lua) | `lurek.ui` | Immediate-mode UI widgets |
-| [window.lua](../blob/main/content/examples/window.lua) | `lurek.window` | Window title, size, fullscreen |
+| [save.lua](../blob/main/content/examples/save.lua) | `lurek.save` | API example |
+| [scene.lua](../blob/main/content/examples/scene.lua) | `lurek.scene` | API example |
+| [serial.lua](../blob/main/content/examples/serial.lua) | `lurek.serial` | API example |
+| [spine.lua](../blob/main/content/examples/spine.lua) | `lurek.spine` | API example |
+| [sprite.lua](../blob/main/content/examples/sprite.lua) | `lurek.sprite` | API example |
+| [terminal.lua](../blob/main/content/examples/terminal.lua) | `lurek.terminal` | API example |
+| [thread.lua](../blob/main/content/examples/thread.lua) | `lurek.thread` | API example |
+| [tilemap.lua](../blob/main/content/examples/tilemap.lua) | `lurek.tilemap` | API example |
+| [timer.lua](../blob/main/content/examples/timer.lua) | `lurek.timer` | API example |
+| [tween.lua](../blob/main/content/examples/tween.lua) | `lurek.tween` | API example |
+| [ui.lua](../blob/main/content/examples/ui.lua) | `lurek.ui` | API example |
+| [window.lua](../blob/main/content/examples/window.lua) | `lurek.window` | API example |

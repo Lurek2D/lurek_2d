@@ -46,7 +46,7 @@ Clear all dots to advance to the next level, where ghosts move faster. You start
 - `lurek.event` — clean shutdown on Escape.
 - `lurek.camera` — world-space camera attachment for maze rendering.
 
-**Lunasome (`content/library/`) modules**
+**Lureksome (`content/library/`) modules**
 
 _None._
 

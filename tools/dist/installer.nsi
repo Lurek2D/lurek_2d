@@ -94,7 +94,7 @@ Section "Engine (required)" SecEngine
     File "..\..\README.md"
     File "..\..\LICENSE"
 
-    ; Lunasome standard libraries — recurse entire library/ tree
+    ; Lureksome standard libraries — recurse entire library/ tree
     SetOutPath "$INSTDIR\library"
     File /r "..\..\library\*.*"
 
@@ -102,8 +102,8 @@ Section "Engine (required)" SecEngine
     SetOutPath "$INSTDIR\docs"
     File "..\..\docs\api\lurek.md"
     File "..\..\docs\api\lurek.lua"
-    File "..\..\docs\api\library.md"
-    File "..\..\docs\api\library.lua"
+    File "..\..\docs\api\lureksome.md"
+    File "..\..\docs\api\lureksome.lua"
     WriteRegStr   HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "DisplayName"          "${APP_NAME} ${APP_VERSION}"
     WriteRegStr   HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "DisplayVersion"       "${APP_VERSION}"
     WriteRegStr   HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "Publisher"            "${APP_PUBLISHER}"

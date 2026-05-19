@@ -860,7 +860,7 @@ def main():
             if candidate in _l_declared_lower:
                 _OPAQUE_ALIASES[type_name] = _l_declared_lower[candidate]
 
-    # Types defined as @class in docs/api/library.lua â€” skip generating aliases for them
+    # Types defined as @class in docs/api/lureksome.lua â€” skip generating aliases for them
     # to avoid 'duplicate-doc-alias' warnings from the Lua language server.
     _SKIP_ALIAS = {"EventBus", "Scheduler", "Stack"}
 

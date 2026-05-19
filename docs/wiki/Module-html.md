@@ -4,7 +4,7 @@
 
 ## Navigation
 
-[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lureksome](Lureksome)
 
 ## Table of Contents
 
@@ -138,17 +138,53 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- isDefaultPrevented() lets you check whether preventDefault was called
-  -- during the current event dispatch. Useful in post-event logic.
-  local doc = lurek.html.newDocument("<body><button id='submit'>Submit</button></body>")
-  doc:on("click", function(ev)
-    lurek.html.preventDefault()
-    -- After calling preventDefault, verify the state:
-    local prevented = lurek.html.isDefaultPrevented()
-    lurek.log.info("isDefaultPrevented=" .. tostring(prevented), "html")
-  end)
-  pcall(function() doc:mousepressed(20, 20, 1) end)
+    print("isDefaultPrevented available = " .. tostring(type(lurek.html.isDefaultPrevented) == "function"))
 end
+
+--@api-stub: LHtmlDocument:setHtml
+-- Sets the document body HTML.
+do
+    local doc = lurek.html.newDocument()
+    doc:setHtml("<h1>Title</h1><p>Body text</p>")
+    print("html set")
+end
+
+--@api-stub: LHtmlDocument:getHtml
+-- Returns the current document HTML.
+do
+    local doc = lurek.html.newDocument("<span>test</span>")
+    local html = doc:getHtml()
+    print("html = " .. html)
+end
+
+--@api-stub: LHtmlDocument:setCss
+-- Replaces the document stylesheet.
+do
+    local doc = lurek.html.newDocument("<div class='box'>X</div>")
+    doc:setCss(".box { width: 100px; height: 100px; }")
+    print("css set")
+end
+
+--@api-stub: LHtmlDocument:addCss
+-- Appends CSS rules.
+do
+    local doc = lurek.html.newDocument("<p>styled</p>")
+    doc:addCss("p { font-size: 16px; }")
+    doc:addCss("p { margin: 10px; }")
+    print("css appended")
+end
+
+--@api-stub: LHtmlDocument:clearCss
+-- Removes all CSS rules.
+do
+    local doc = lurek.html.newDocument("<p>unstyled</p>")
+    doc:setCss("p { color: red; }")
+    doc:clearCss()
+    print("css cleared")
+end
+
+--@api-stub: LHtmlDocument:setViewport
+-- Sets the layout viewport size.
 ```
 
 ### lurek.html.loadDocument
@@ -170,21 +206,8 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- loadDocument reads an .html file from GameFS (the content/ folder tree).
-  -- If a companion .css file exists at the same path, it loads automatically.
-  -- You can also pass opts.css or opts.cssPath to override.
-  -- This is ideal for separating UI markup from game logic.
-  local ok, doc = pcall(lurek.html.loadDocument, "ui/main_menu.html", {
-    -- Override viewport for this specific menu screen
-    width = 1280,
-    height = 720,
-  })
-  if ok and doc then
-    lurek.log.info("loadDocument succeeded", "html")
-  else
-    -- Graceful fallback when file is missing (common during development)
-    lurek.log.info("loadDocument: file not found (expected in example)", "html")
-  end
+    local doc = lurek.html.loadDocument("content/layouts/menu.html")
+    print("loaded doc type = " .. doc:type())
 end
 ```
 
@@ -207,39 +230,8 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- newDocument is the primary way to create a UI overlay.
-  -- Pass HTML source as the first argument and an options table with css, width, height.
-  -- The document starts dirty (needs layout) until you call update() or relayout().
-  local hud = lurek.html.newDocument([[
-<body>
-  <div id="score" class="hud-item">Score: 0</div>
-  <div id="lives" class="hud-item">&#9825; &#9825; &#9825;</div>
-  <div id="ammo" class="hud-item">Ammo: 30/90</div>
-</body>
-]], {
-    -- Inline CSS defines the visual style for all elements in this document.
-    css = [[
-      body { margin: 0; padding: 8px; }
-      .hud-item {
-        color: white;
-        font-size: 22px;
-        padding: 4px 12px;
-        margin-bottom: 4px;
-        background: rgba(0,0,0,0.5);
-      }
-    ]],
-    -- Viewport dimensions control the layout space. Match your game window size.
-    width = 800,
-    height = 600,
-  })
-
-  -- After creation, the document is dirty until the first update or relayout.
-  lurek.log.info("newDocument created, dirty=" .. tostring(hud:isDirty()), "html")
-
-  -- You can also create a minimal empty document and populate it later:
-  local empty = lurek.html.newDocument()
-  empty:setHtml("<body><p>Populated later</p></body>")
-  lurek.log.info("empty doc populated", "html")
+    local doc = lurek.html.newDocument()
+    print("doc created = " .. tostring(doc ~= nil))
 end
 ```
 
@@ -255,18 +247,52 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- preventDefault() is called inside event handlers to stop the default action.
-  -- For example, preventing a link from navigating or a form from submitting.
-  local doc = lurek.html.newDocument([[
-<body><a id="link" href="#">Settings</a></body>
-]])
-  doc:on("click", function(ev)
-    -- Prevent the engine from handling the link navigation —
-    -- we want to open our own settings screen instead.
-    lurek.html.preventDefault()
-  end)
-  pcall(function() doc:mousepressed(50, 50, 1) end)
-  lurek.log.info("preventDefault called in handler", "html")
+    print("preventDefault available = " .. tostring(type(lurek.html.preventDefault) == "function"))
+end
+
+--@api-stub: lurek.html.stopPropagation
+-- Stops event propagation.
+do
+    print("stopPropagation available = " .. tostring(type(lurek.html.stopPropagation) == "function"))
+end
+
+--@api-stub: lurek.html.isDefaultPrevented
+-- Returns whether default was prevented.
+do
+    print("isDefaultPrevented available = " .. tostring(type(lurek.html.isDefaultPrevented) == "function"))
+end
+
+--@api-stub: LHtmlDocument:setHtml
+-- Sets the document body HTML.
+do
+    local doc = lurek.html.newDocument()
+    doc:setHtml("<h1>Title</h1><p>Body text</p>")
+    print("html set")
+end
+
+--@api-stub: LHtmlDocument:getHtml
+-- Returns the current document HTML.
+do
+    local doc = lurek.html.newDocument("<span>test</span>")
+    local html = doc:getHtml()
+    print("html = " .. html)
+end
+
+--@api-stub: LHtmlDocument:setCss
+-- Replaces the document stylesheet.
+do
+    local doc = lurek.html.newDocument("<div class='box'>X</div>")
+    doc:setCss(".box { width: 100px; height: 100px; }")
+    print("css set")
+end
+
+--@api-stub: LHtmlDocument:addCss
+-- Appends CSS rules.
+do
+    local doc = lurek.html.newDocument("<p>styled</p>")
+    doc:addCss("p { font-size: 16px; }")
+    doc:addCss("p { margin: 10px; }")
+    print("css appended")
 end
 ```
 
@@ -282,32 +308,53 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- stopPropagation() prevents the event from bubbling to parent elements.
-  -- Useful when an inner button should handle clicks without triggering
-  -- the parent panel's click handler (e.g., close button inside a dialog).
-  local doc = lurek.html.newDocument([[
-<body>
-  <div id="dialog">
-    <button id="close">X</button>
-    <p>Dialog content</p>
-  </div>
-</body>
-]])
-  doc:on("click", function(ev)
-    -- This fires for all clicks — the close button handler below
-    -- calls stopPropagation to prevent this from firing redundantly.
-    lurek.log.info("document-level click (dialog bg)", "html")
-  end)
-  doc:update(0)
-  local close_btn = doc:getElementById("close")
-  if close_btn then
-    close_btn:on("click", function(ev)
-      lurek.html.stopPropagation()
-      lurek.log.info("close button clicked, propagation stopped", "html")
-    end)
-  end
-  pcall(function() doc:mousepressed(10, 10, 1) end)
+    print("stopPropagation available = " .. tostring(type(lurek.html.stopPropagation) == "function"))
 end
+
+--@api-stub: lurek.html.isDefaultPrevented
+-- Returns whether default was prevented.
+do
+    print("isDefaultPrevented available = " .. tostring(type(lurek.html.isDefaultPrevented) == "function"))
+end
+
+--@api-stub: LHtmlDocument:setHtml
+-- Sets the document body HTML.
+do
+    local doc = lurek.html.newDocument()
+    doc:setHtml("<h1>Title</h1><p>Body text</p>")
+    print("html set")
+end
+
+--@api-stub: LHtmlDocument:getHtml
+-- Returns the current document HTML.
+do
+    local doc = lurek.html.newDocument("<span>test</span>")
+    local html = doc:getHtml()
+    print("html = " .. html)
+end
+
+--@api-stub: LHtmlDocument:setCss
+-- Replaces the document stylesheet.
+do
+    local doc = lurek.html.newDocument("<div class='box'>X</div>")
+    doc:setCss(".box { width: 100px; height: 100px; }")
+    print("css set")
+end
+
+--@api-stub: LHtmlDocument:addCss
+-- Appends CSS rules.
+do
+    local doc = lurek.html.newDocument("<p>styled</p>")
+    doc:addCss("p { font-size: 16px; }")
+    doc:addCss("p { margin: 10px; }")
+    print("css appended")
+end
+
+--@api-stub: LHtmlDocument:clearCss
+-- Removes all CSS rules.
+do
+    local doc = lurek.html.newDocument("<p>unstyled</p>")
+    doc:setCss("p { color: red; }")
 ```
 
 ### lurek.html.supports
@@ -328,13 +375,8 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- Use supports() to check engine capabilities before using advanced CSS.
-  -- This lets your UI code degrade gracefully on different engine versions.
-  local has_flex = lurek.html.supports("css-flex")
-  local has_grid = lurek.html.supports("css-grid")
-  local has_transitions = lurek.html.supports("css-transitions")
-  lurek.log.info("flex=" .. tostring(has_flex) .. " grid=" .. tostring(has_grid)
-    .. " transitions=" .. tostring(has_transitions), "html")
+    local ok = lurek.html.supports("flexbox")
+    print("flexbox supported = " .. tostring(ok))
 end
 ```
 
@@ -361,21 +403,8 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- loadDocument reads an .html file from GameFS (the content/ folder tree).
-  -- If a companion .css file exists at the same path, it loads automatically.
-  -- You can also pass opts.css or opts.cssPath to override.
-  -- This is ideal for separating UI markup from game logic.
-  local ok, doc = pcall(lurek.html.loadDocument, "ui/main_menu.html", {
-    -- Override viewport for this specific menu screen
-    width = 1280,
-    height = 720,
-  })
-  if ok and doc then
-    lurek.log.info("loadDocument succeeded", "html")
-  else
-    -- Graceful fallback when file is missing (common during development)
-    lurek.log.info("loadDocument: file not found (expected in example)", "html")
-  end
+    local doc = lurek.html.loadDocument("content/layouts/menu.html")
+    print("loaded doc type = " .. doc:type())
 end
 ```
 
@@ -397,19 +426,9 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- getRoot() returns the top-level element (usually <body>).
-  -- From the root you can traverse the full DOM tree using query/queryAll.
-  local doc = lurek.html.newDocument([[
-<body>
-  <header>Game Title</header>
-  <main>Content</main>
-  <footer>v1.0</footer>
-</body>
-]])
-  local root = doc:getRoot()
-  if root then
-    lurek.log.info("root tag: " .. root:getTagName(), "html")
-  end
+    local doc = lurek.html.newDocument("<div>root child</div>")
+    local root = doc:getRoot()
+    print("root tag = " .. root:getTagName())
 end
 ```
 
@@ -442,24 +461,10 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- addCss appends rules without replacing existing styles.
-  -- Use this to layer additional styles on top (e.g., status effects, highlights).
-  local doc = lurek.html.newDocument([[
-<body>
-  <div id="score" class="hud">Score: 500</div>
-  <div id="combo" class="hud combo">x3 COMBO!</div>
-</body>
-]], { css = ".hud { color: white; font-size: 18px; padding: 8px; }" })
-
-  -- Add a pulsing highlight for the combo counter
-  doc:addCss([[
-    .combo {
-      color: gold;
-      font-size: 28px;
-      font-weight: bold;
-    }
-  ]])
-  lurek.log.info("addCss appended combo highlight rule", "html")
+    local doc = lurek.html.newDocument("<p>styled</p>")
+    doc:addCss("p { font-size: 16px; }")
+    doc:addCss("p { margin: 10px; }")
+    print("css appended")
 end
 ```
 
@@ -482,15 +487,10 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- clearCss removes all stylesheet rules. Elements revert to default appearance.
-  -- Useful before applying a completely new skin from scratch.
-  local doc = lurek.html.newDocument("<body><p>styled text</p></body>", {
-    css = "p { color: red; font-size: 24px; }"
-  })
-  doc:clearCss()
-  -- Now re-apply a fresh stylesheet
-  doc:setCss("p { color: green; font-size: 16px; }")
-  lurek.log.info("clearCss + setCss: theme fully replaced", "html")
+    local doc = lurek.html.newDocument("<p>unstyled</p>")
+    doc:setCss("p { color: red; }")
+    doc:clearCss()
+    print("css cleared")
 end
 ```
 
@@ -520,18 +520,9 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- draw(x, y) queues GPU render commands for this frame.
-  -- Call in lurek.draw() after updating. x/y offset lets you scroll or position
-  -- the UI layer (e.g., camera shake effect on the HUD).
-  local doc = lurek.html.newDocument([[
-<body><p class="hud">HP: 100</p></body>
-]], { css = ".hud { color: lime; font-size: 20px; }" })
-  doc:update(0)
-
-  -- Draw at top-left corner (default position)
-  pcall(function() doc:draw(0, 0) end)
-  -- You could also offset for screen shake: doc:draw(shake_x, shake_y)
-  lurek.log.info("draw queued render commands", "html")
+    local doc = lurek.html.newDocument("<p>Hello</p>")
+    doc:draw(10, 20)
+    print("drawn at 10,20")
 end
 ```
 
@@ -562,28 +553,11 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- getElementById is the fastest way to access a specific element.
-  -- Always call update(0) before querying to ensure the DOM is ready.
-  -- Returns nil if no element has that id.
-  local doc = lurek.html.newDocument([[
-<body>
-  <div id="player-name">Hero</div>
-  <div id="player-level">Lvl 12</div>
-  <div id="player-gold">Gold: 450</div>
-</body>
-]])
-  doc:update(0)
-
-  local gold_el = doc:getElementById("player-gold")
-  if gold_el then
-    -- Update the gold display when player earns coins
-    gold_el:setText("Gold: 500")
-    lurek.log.info("getElementById found and updated gold display", "html")
-  end
-
-  -- Accessing a non-existent id returns nil safely
-  local missing = doc:getElementById("does-not-exist")
-  lurek.log.info("missing element is nil: " .. tostring(missing == nil), "html")
+    local doc = lurek.html.newDocument("<div id='hero'>Player</div>")
+    local el = doc:getElementById("hero")
+    if el then
+        print("found: " .. el:getText())
+    end
 end
 ```
 
@@ -609,10 +583,9 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  local doc = lurek.html.newDocument()
-  doc:setHtml("<p>Hello</p>")
-  local html = doc:getHtml()
-  lurek.log.debug("html: " .. html, "html")
+    local doc = lurek.html.newDocument("<span>test</span>")
+    local html = doc:getHtml()
+    print("html = " .. html)
 end
 ```
 
@@ -638,19 +611,9 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- getRoot() returns the top-level element (usually <body>).
-  -- From the root you can traverse the full DOM tree using query/queryAll.
-  local doc = lurek.html.newDocument([[
-<body>
-  <header>Game Title</header>
-  <main>Content</main>
-  <footer>v1.0</footer>
-</body>
-]])
-  local root = doc:getRoot()
-  if root then
-    lurek.log.info("root tag: " .. root:getTagName(), "html")
-  end
+    local doc = lurek.html.newDocument("<div>root child</div>")
+    local root = doc:getRoot()
+    print("root tag = " .. root:getTagName())
 end
 ```
 
@@ -677,10 +640,10 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- getViewport returns current width, height — useful for positioning calculations.
-  local doc = lurek.html.newDocument("<body>vp</body>", { width = 1280, height = 720 })
-  local w, h = doc:getViewport()
-  lurek.log.info("getViewport: " .. tostring(w) .. "x" .. tostring(h), "html")
+    local doc = lurek.html.newDocument()
+    doc:setViewport(800, 600)
+    local w, h = doc:getViewport()
+    print("viewport = " .. w .. "x" .. h)
 end
 ```
 
@@ -706,20 +669,9 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- isDirty() returns true when content or styles changed but layout hasn't
-  -- been recalculated yet. You can use this to avoid redundant relayout calls.
-  local doc = lurek.html.newDocument("<body><p id='hp'>HP: 100</p></body>")
-  lurek.log.info("after creation, dirty=" .. tostring(doc:isDirty()), "html")
-
-  doc:update(0)
-  doc:relayout()
-  lurek.log.info("after relayout, dirty=" .. tostring(doc:isDirty()), "html")
-
-  -- Changing content marks the document dirty again
-  doc:update(0)
-  local el = doc:getElementById("hp")
-  if el then el:setText("HP: 50") end
-  lurek.log.info("after setText, dirty=" .. tostring(doc:isDirty()), "html")
+    local doc = lurek.html.newDocument("<p>X</p>")
+    doc:setHtml("<p>Y</p>")
+    print("dirty = " .. tostring(doc:isDirty()))
 end
 ```
 
@@ -750,20 +702,9 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- keypressed() sends keyboard input to the focused element.
-  -- Call from lurek.keypressed(key). Returns true if consumed.
-  -- Works with text inputs, buttons (enter = activate), and custom key bindings.
-  local doc = lurek.html.newDocument([[
-<body><input id="chat-input" type="text"/></body>
-]])
-  doc:update(0)
-  local input_el = doc:getElementById("chat-input")
-  if input_el then
-    input_el:focus()
-  end
-  -- Simulate pressing Enter to submit the chat message
-  local consumed = doc:keypressed("return")
-  lurek.log.info("keypressed(return) consumed=" .. tostring(consumed), "html")
+    local doc = lurek.html.newDocument("<input id='in'/>")
+    local handled = doc:keypressed("return")
+    print("keypressed handled = " .. tostring(handled))
 end
 ```
 
@@ -796,17 +737,9 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- mousemoved() enables hover states and tooltip positioning.
-  -- Call from lurek.mousemoved(x, y) to keep the UI responsive.
-  local doc = lurek.html.newDocument([[
-<body>
-  <button id="btn" class="hoverable">Hover Me</button>
-</body>
-]], { css = ".hoverable:hover { color: yellow; }" })
-
-  -- Simulate cursor moving over the button area
-  doc:mousemoved(50, 20)
-  lurek.log.info("mousemoved enables hover CSS states", "html")
+    local doc = lurek.html.newDocument("<div>hover me</div>")
+    local handled = doc:mousemoved(100, 50)
+    print("mousemoved handled = " .. tostring(handled))
 end
 ```
 
@@ -841,23 +774,9 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- mousepressed() forwards mouse input to the HTML layer.
-  -- Call this from lurek.mousepressed(x, y, button) in your game.
-  -- Returns true if the event was consumed (hit an element), false otherwise.
-  -- When true, you can skip world-space click handling (UI eats the click).
-  local doc = lurek.html.newDocument([[
-<body>
-  <button id="attack" style="width:100px;height:40px">Attack</button>
-</body>
-]], { width = 800, height = 600 })
-  doc:update(0)
-  doc:on("click", function(ev)
-    lurek.log.info("attack button clicked!", "html")
-  end)
-
-  -- Simulate a left-click at pixel (50, 20)
-  local consumed = doc:mousepressed(50, 20, 1)
-  lurek.log.info("mousepressed consumed=" .. tostring(consumed), "html")
+    local doc = lurek.html.newDocument("<button>click</button>")
+    local handled = doc:mousepressed(100, 50, 1)
+    print("mousepressed handled = " .. tostring(handled))
 end
 ```
 
@@ -892,12 +811,9 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- mousereleased() completes the click cycle. Call from lurek.mousereleased().
-  -- Some UI patterns (drag-drop, hold buttons) depend on both press and release.
-  local doc = lurek.html.newDocument("<body><button>Hold</button></body>")
-  doc:mousepressed(50, 20, 1)
-  doc:mousereleased(50, 20, 1)
-  lurek.log.info("mousereleased completes the press/release cycle", "html")
+    local doc = lurek.html.newDocument("<button>click</button>")
+    local handled = doc:mousereleased(100, 50, 1)
+    print("mousereleased handled = " .. tostring(handled))
 end
 ```
 
@@ -925,10 +841,10 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  local doc = lurek.html.newDocument()
-  local handle = doc:on("click", function(evt) lurek.log.debug("clicked", "html") end)
-  doc:off(handle)
-  lurek.log.debug("event listener removed", "html")
+    local doc = lurek.html.newDocument()
+    local h = doc:on("hover", function() end)
+    doc:off(h)
+    print("unregistered")
 end
 ```
 
@@ -961,11 +877,11 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  local doc = lurek.html.newDocument()
-  doc:setHtml('<button id="ok">OK</button>')
-  doc:on("click", function(evt)
-    lurek.log.debug("button clicked in HTML UI", "html")
-  end)
+    local doc = lurek.html.newDocument("<button id='btn'>Click</button>")
+    local handle = doc:on("click", function(ev)
+        print("clicked!")
+    end)
+    print("registered handle = " .. handle)
 end
 ```
 
@@ -996,10 +912,11 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  local doc = lurek.html.newDocument()
-  doc:setHtml('<div id="hud"><span class="hp">100</span></div>')
-  local el = doc:query("#hud")
-  lurek.log.debug("found element: " .. tostring(el ~= nil), "html")
+    local doc = lurek.html.newDocument("<p class='intro'>Hello</p><p>World</p>")
+    local el = doc:query(".intro")
+    if el then
+        print("query found: " .. el:getText())
+    end
 end
 ```
 
@@ -1030,10 +947,9 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  local doc = lurek.html.newDocument()
-  doc:setHtml('<ul><li>a</li><li>b</li><li>c</li></ul>')
-  local items = doc:queryAll("li")
-  lurek.log.debug("list items: " .. #items, "html") -- 3
+    local doc = lurek.html.newDocument("<li>A</li><li>B</li><li>C</li>")
+    local items = doc:queryAll("li")
+    print("items = " .. #items)
 end
 ```
 
@@ -1056,21 +972,9 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- relayout() forces layout recalculation immediately instead of waiting
-  -- for the next update(). Call this when you need accurate element positions
-  -- right after changing content (e.g., before reading getRect).
-  local doc = lurek.html.newDocument([[
-<body><div id="tooltip">Damage: 50-75</div></body>
-]], { css = "#tooltip { padding: 8px; font-size: 14px; }", width = 400, height = 300 })
-
-  -- After setting new content, force layout so getRect returns correct values
-  doc:update(0)
-  doc:relayout()
-  local el = doc:getElementById("tooltip")
-  if el then
-    local x, y, w, h = el:getRect()
-    lurek.log.info("relayout done, tooltip rect: " .. w .. "x" .. h, "html")
-  end
+    local doc = lurek.html.newDocument("<div>content</div>")
+    doc:relayout()
+    print("relayout done")
 end
 ```
 
@@ -1100,12 +1004,9 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- render() is an alias for draw(). Both queue the same render commands.
-  -- Use whichever name reads better in your game loop.
-  local doc = lurek.html.newDocument("<body><div>Menu overlay</div></body>")
-  doc:update(0)
-  pcall(function() doc:render(0, 0) end)
-  lurek.log.info("render (alias for draw) called", "html")
+    local doc = lurek.html.newDocument("<p>World</p>")
+    doc:render(0, 0)
+    print("rendered")
 end
 ```
 
@@ -1133,23 +1034,9 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- setCss completely replaces all styles. Use this when switching themes
-  -- (e.g., day/night mode, colorblind mode, or different UI skins).
-  local doc = lurek.html.newDocument([[
-<body><div id="panel" class="themed">Options</div></body>
-]])
-  -- Switch from a dark theme to a light theme
-  doc:setCss([[
-    body { margin: 0; }
-    .themed {
-      background: #f0f0f0;
-      color: #222;
-      font-size: 20px;
-      padding: 16px;
-      border: 2px solid #ccc;
-    }
-  ]])
-  lurek.log.info("setCss applied light theme", "html")
+    local doc = lurek.html.newDocument("<div class='box'>X</div>")
+    doc:setCss(".box { width: 100px; height: 100px; }")
+    print("css set")
 end
 ```
 
@@ -1177,9 +1064,9 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  local doc = lurek.html.newDocument()
-  doc:setHtml("<h1>Game Over</h1><p>Score: 1234</p>")
-  lurek.log.debug("html set", "html")
+    local doc = lurek.html.newDocument()
+    doc:setHtml("<h1>Title</h1><p>Body text</p>")
+    print("html set")
 end
 ```
 
@@ -1209,15 +1096,9 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- setViewport changes the layout area. Call this when the game window resizes
-  -- so that the HTML UI reflows to match the new resolution.
-  local doc = lurek.html.newDocument([[
-<body><div class="panel">Responsive UI</div></body>
-]], { css = ".panel { width: 50%; margin: auto; }", width = 800, height = 600 })
-
-  -- Simulate a window resize from 800x600 to 1920x1080
-  doc:setViewport(1920, 1080)
-  lurek.log.info("setViewport updated to 1920x1080", "html")
+    local doc = lurek.html.newDocument()
+    doc:setViewport(1024, 768)
+    print("viewport set to 1024x768")
 end
 ```
 
@@ -1248,23 +1129,9 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- textinput() forwards typed characters to the focused input element.
-  -- Call from lurek.textinput(text). Unlike keypressed, this carries the actual
-  -- character value (handles shift, caps lock, international input, etc.).
-  local doc = lurek.html.newDocument([[
-<body><input id="name-field" type="text"/></body>
-]])
-  doc:update(0)
-  local field = doc:getElementById("name-field")
-  if field then
-    field:focus()
-  end
-  -- Type a character into the focused input
-  doc:textinput("H")
-  doc:textinput("e")
-  doc:textinput("r")
-  doc:textinput("o")
-  lurek.log.info("textinput sent 'Hero' character by character", "html")
+    local doc = lurek.html.newDocument("<input/>")
+    local handled = doc:textinput("A")
+    print("textinput handled = " .. tostring(handled))
 end
 ```
 
@@ -1290,8 +1157,8 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  local obj = lurek.html.newDocument()
-  lurek.log.debug("type: " .. obj:type(), "example") -- "LHtmlDocument"
+    local doc = lurek.html.newDocument()
+    print("type = " .. doc:type())
 end
 ```
 
@@ -1322,8 +1189,8 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  local obj = lurek.html.newDocument()
-  lurek.log.debug("typeOf LHtmlDocument: " .. tostring(obj:typeOf("LHtmlDocument")), "example") -- true
+    local doc = lurek.html.newDocument()
+    print("is HtmlDocument = " .. tostring(doc:typeOf("HtmlDocument")))
 end
 ```
 
@@ -1351,17 +1218,9 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- update(dt) must be called every frame to advance CSS animations and timers.
-  -- Pass the frame delta time (seconds). Typically called in lurek.update(dt).
-  local doc = lurek.html.newDocument([[
-<body><div id="toast" class="fade-in">Achievement Unlocked!</div></body>
-]], { css = ".fade-in { opacity: 0; transition: opacity 0.5s; }" })
-
-  -- Simulate 10 frames at 60 FPS
-  for i = 1, 10 do
-    doc:update(1 / 60)
-  end
-  lurek.log.info("update called for 10 frames", "html")
+    local doc = lurek.html.newDocument()
+    doc:update(0.016)
+    print("updated")
 end
 ```
 
@@ -1394,19 +1253,9 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- wheelmoved() enables scrollable UI areas (long inventory lists, text logs).
-  -- dx = horizontal scroll, dy = vertical scroll (negative = scroll up).
-  local doc = lurek.html.newDocument([[
-<body>
-  <div id="chat-log" style="height:200px;overflow:auto">
-    <p>Line 1</p><p>Line 2</p><p>Line 3</p>
-    <p>Line 4</p><p>Line 5</p><p>Line 6</p>
-  </div>
-</body>
-]])
-  -- Scroll down by 3 units (e.g., user scrolls mouse wheel down)
-  doc:wheelmoved(0, -3)
-  lurek.log.info("wheelmoved scrolled chat log down", "html")
+    local doc = lurek.html.newDocument("<div style='overflow:scroll;height:100px'><p>long</p></div>")
+    local handled = doc:wheelmoved(0, -3)
+    print("wheelmoved handled = " .. tostring(handled))
 end
 ```
 
@@ -1434,18 +1283,12 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- addClass() adds a CSS class. Classes control visual state through CSS rules.
-  -- Common pattern: add "active", "selected", "damaged", "hidden" classes.
-  local doc = lurek.html.newDocument([[
-<body><div id="player-portrait" class="portrait">Hero</div></body>
-]], { css = ".portrait.damaged { border: 2px solid red; }" })
-  doc:update(0)
-  local portrait = doc:getElementById("player-portrait")
-  if portrait then
-    -- Player takes damage — add visual feedback
-    portrait:addClass("damaged")
-    lurek.log.info("addClass(damaged) adds red border via CSS", "html")
-  end
+    local doc = lurek.html.newDocument("<div>box</div>")
+    local el = doc:query("div")
+    if el then
+        el:addClass("highlight")
+        print("class added")
+    end
 end
 ```
 
@@ -1473,20 +1316,12 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- appendHtml() adds new content at the end without replacing existing content.
-  -- Perfect for chat logs, notification stacks, or growing lists.
-  local doc = lurek.html.newDocument([[
-<body><div id="chat-log"></div></body>
-]], { css = "#chat-log { font-size: 14px; }" })
-  doc:update(0)
-  local log_el = doc:getElementById("chat-log")
-  if log_el then
-    -- Append chat messages as they arrive
-    log_el:appendHtml('<p class="msg">[System] Welcome to the game!</p>')
-    log_el:appendHtml('<p class="msg">[Player1] Hello everyone</p>')
-    log_el:appendHtml('<p class="msg">[Player2] Ready to start?</p>')
-    lurek.log.info("appendHtml added 3 chat messages", "html")
-  end
+    local doc = lurek.html.newDocument("<ul><li>first</li></ul>")
+    local el = doc:query("ul")
+    if el then
+        el:appendHtml("<li>second</li>")
+        print("html appended")
+    end
 end
 ```
 
@@ -1509,19 +1344,13 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- blur() removes focus from this element. Keyboard input stops going to it.
-  -- Use when closing a dialog or when the player presses Escape.
-  local doc = lurek.html.newDocument([[
-<body><input id="chat" type="text"/></body>
-]])
-  doc:update(0)
-  local chat = doc:getElementById("chat")
-  if chat then
-    chat:focus()
-    -- Player presses Escape → close chat, return focus to the game
-    chat:blur()
-    lurek.log.info("blur() removed focus from chat input", "html")
-  end
+    local doc = lurek.html.newDocument("<input id='field2'/>")
+    local el = doc:getElementById("field2")
+    if el then
+        el:focus()
+        el:blur()
+        print("blurred")
+    end
 end
 ```
 
@@ -1544,20 +1373,12 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- focus() directs keyboard input to this element.
-  -- Call when opening a dialog with a text input, or when Tab-navigating UI.
-  local doc = lurek.html.newDocument([[
-<body>
-  <input id="player-name" type="text" placeholder="Enter name..."/>
-</body>
-]])
-  doc:update(0)
-  local input = doc:getElementById("player-name")
-  if input then
-    -- Auto-focus the name field when the character creation screen opens
-    input:focus()
-    lurek.log.info("focus() set on player name input", "html")
-  end
+    local doc = lurek.html.newDocument("<input id='field'/>")
+    local el = doc:getElementById("field")
+    if el then
+        el:focus()
+        print("focused")
+    end
 end
 ```
 
@@ -1588,22 +1409,12 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- getAttribute() reads any HTML attribute. Returns nil if the attribute is absent.
-  -- Useful for reading data-* attributes that store game state on elements.
-  local doc = lurek.html.newDocument([[
-<body>
-  <div id="item-slot" class="slot" data-item-id="sword_01" data-quantity="3">
-    Iron Sword (x3)
-  </div>
-</body>
-]])
-  doc:update(0)
-  local slot = doc:getElementById("item-slot")
-  if slot then
-    local item_id = slot:getAttribute("data-item-id")
-    local qty = slot:getAttribute("data-quantity")
-    lurek.log.info("item=" .. tostring(item_id) .. " qty=" .. tostring(qty), "html")
-  end
+    local doc = lurek.html.newDocument("<a href='#top'>link</a>")
+    local el = doc:query("a")
+    if el then
+        local href = el:getAttribute("href")
+        print("href = " .. tostring(href))
+    end
 end
 ```
 
@@ -1629,19 +1440,12 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- getDocument() navigates from an element back to its parent document.
-  -- Useful when you pass elements to utility functions that also need the doc.
-  local doc = lurek.html.newDocument([[
-<body><div id="panel">Inventory Panel</div></body>
-]])
-  doc:update(0)
-  local el = doc:getElementById("panel")
-  if el then
-    local owner = el:getDocument()
-    -- The returned document is the same handle, so you can call doc methods on it
-    local w, h = owner:getViewport()
-    lurek.log.info("getDocument viewport: " .. tostring(w) .. "x" .. tostring(h), "html")
-  end
+    local doc = lurek.html.newDocument("<p>owned</p>")
+    local el = doc:query("p")
+    if el then
+        local owner = el:getDocument()
+        print("owner type = " .. owner:type())
+    end
 end
 ```
 
@@ -1667,22 +1471,11 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- getHtml() returns the raw HTML inside this element (including child tags).
-  -- Useful for cloning or inspecting complex UI structures.
-  local doc = lurek.html.newDocument([[
-<body>
-  <div id="tooltip">
-    <b>Fire Sword</b><br/>
-    <span class="stat">Damage: 50-75</span>
-  </div>
-</body>
-]])
-  doc:update(0)
-  local el = doc:getElementById("tooltip")
-  if el then
-    local inner = el:getHtml()
-    lurek.log.info("getHtml (tooltip inner): " .. inner, "html")
-  end
+    local doc = lurek.html.newDocument("<div><span>inner</span></div>")
+    local el = doc:query("div")
+    if el then
+        print("html = " .. el:getHtml())
+    end
 end
 ```
 
@@ -1708,13 +1501,11 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- getId() returns the id attribute string, or nil if no id is set.
-  local doc = lurek.html.newDocument("<body><div id='health-bar'>HP</div></body>")
-  doc:update(0)
-  local el = doc:getElementById("health-bar")
-  if el then
-    lurek.log.info("getId=" .. tostring(el:getId()), "html")
-  end
+    local doc = lurek.html.newDocument("<div id='main'>content</div>")
+    local el = doc:getElementById("main")
+    if el then
+        print("id = " .. tostring(el:getId()))
+    end
 end
 ```
 
@@ -1743,24 +1534,14 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- getRect() returns x, y, width, height of the element after layout.
-  -- Triggers relayout if needed. Use for hit-testing, tooltip positioning,
-  -- or aligning game objects to UI elements.
-  local doc = lurek.html.newDocument([[
-<body>
-  <div id="minimap" style="position:absolute;right:8px;top:8px;width:150px;height:150px">
-    Map
-  </div>
-</body>
-]], { width = 800, height = 600 })
-  doc:update(0)
-  doc:relayout()
-  local minimap = doc:getElementById("minimap")
-  if minimap then
-    local x, y, w, h = minimap:getRect()
-    lurek.log.info("minimap rect: x=" .. tostring(x) .. " y=" .. tostring(y)
-      .. " w=" .. tostring(w) .. " h=" .. tostring(h), "html")
-  end
+    local doc = lurek.html.newDocument("<div style='width:100px;height:50px'>box</div>")
+    doc:setViewport(800, 600)
+    doc:relayout()
+    local el = doc:query("div")
+    if el then
+        local x, y, w, h = el:getRect()
+        print("rect = " .. x .. "," .. y .. " " .. w .. "x" .. h)
+    end
 end
 ```
 
@@ -1791,18 +1572,12 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- getStyle() reads a CSS property value from this element.
-  -- Returns the inline style if set, otherwise the computed value, or nil.
-  local doc = lurek.html.newDocument([[
-<body><div id="health-fill" style="width:75%;background:green">HP</div></body>
-]])
-  doc:update(0)
-  local bar = doc:getElementById("health-fill")
-  if bar then
-    local width = bar:getStyle("width")
-    local bg = bar:getStyle("background")
-    lurek.log.info("health bar width=" .. tostring(width) .. " bg=" .. tostring(bg), "html")
-  end
+    local doc = lurek.html.newDocument("<div style='color:red'>R</div>")
+    local el = doc:query("div")
+    if el then
+        local c = el:getStyle("color")
+        print("color = " .. tostring(c))
+    end
 end
 ```
 
@@ -1828,19 +1603,9 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- getTagName() returns the HTML tag (div, span, button, input, etc.).
-  -- Useful for generic element-processing logic.
-  local doc = lurek.html.newDocument([[
-<body>
-  <button id="action">Attack</button>
-  <span id="label">HP</span>
-</body>
-]])
-  doc:update(0)
-  local btn = doc:getElementById("action")
-  local lbl = doc:getElementById("label")
-  if btn then lurek.log.info("action tag: " .. btn:getTagName(), "html") end
-  if lbl then lurek.log.info("label tag: " .. lbl:getTagName(), "html") end
+    local doc = lurek.html.newDocument("<section>stuff</section>")
+    local root = doc:getRoot()
+    print("tag = " .. root:getTagName())
 end
 ```
 
@@ -1866,17 +1631,11 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- getText() returns visible text content of the element and its children.
-  local doc = lurek.html.newDocument([[
-<body>
-  <div id="dialog-text">The elder speaks: "Beware the dragon!"</div>
-</body>
-]])
-  doc:update(0)
-  local el = doc:getElementById("dialog-text")
-  if el then
-    lurek.log.info("getText: " .. el:getText(), "html")
-  end
+    local doc = lurek.html.newDocument("<p>Hello World</p>")
+    local el = doc:query("p")
+    if el then
+        print("text = " .. el:getText())
+    end
 end
 ```
 
@@ -1907,20 +1666,11 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- hasClass() checks for a specific class. Use for state checks
-  -- (is this button disabled? is this panel visible? is this slot selected?).
-  local doc = lurek.html.newDocument([[
-<body>
-  <button id="action-btn" class="btn primary disabled">Cast Spell</button>
-</body>
-]])
-  doc:update(0)
-  local btn = doc:getElementById("action-btn")
-  if btn then
-    local is_disabled = btn:hasClass("disabled")
-    local is_primary = btn:hasClass("primary")
-    lurek.log.info("disabled=" .. tostring(is_disabled) .. " primary=" .. tostring(is_primary), "html")
-  end
+    local doc = lurek.html.newDocument("<div class='visible'>Y</div>")
+    local el = doc:query("div")
+    if el then
+        print("has visible = " .. tostring(el:hasClass("visible")))
+    end
 end
 ```
 
@@ -1948,22 +1698,13 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- Element-level off() removes a specific listener from this element.
-  -- Use when a button becomes inactive or a temporary handler expires.
-  local doc = lurek.html.newDocument([[
-<body><button id="one-shot">Claim Reward</button></body>
-]])
-  doc:update(0)
-  local btn = doc:getElementById("one-shot")
-  if btn then
-    local handle
-    handle = btn:on("click", function(ev)
-      lurek.log.info("reward claimed! removing handler...", "html")
-      -- Self-removing handler: fires only once
-      btn:off(handle)
-    end)
-    lurek.log.info("element:off() ready for one-shot pattern", "html")
-  end
+    local doc = lurek.html.newDocument("<div id='d'>X</div>")
+    local el = doc:getElementById("d")
+    if el then
+        local h = el:on("hover", function() end)
+        el:off(h)
+        print("handler removed")
+    end
 end
 ```
 
@@ -1996,27 +1737,14 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- Element-level on() fires only when the event targets this specific element.
-  -- More precise than document-level listeners. Returns a handle for off().
-  local doc = lurek.html.newDocument([[
-<body>
-  <button id="attack-btn">Attack</button>
-  <button id="defend-btn">Defend</button>
-</body>
-]])
-  doc:update(0)
-  local attack = doc:getElementById("attack-btn")
-  local defend = doc:getElementById("defend-btn")
-  if attack and defend then
-    -- Each button gets its own dedicated handler
-    attack:on("click", function(ev)
-      lurek.log.info("attack action triggered!", "html")
-    end)
-    defend:on("click", function(ev)
-      lurek.log.info("defend action triggered!", "html")
-    end)
-    lurek.log.info("element:on() registered per-button handlers", "html")
-  end
+    local doc = lurek.html.newDocument("<button id='btn'>Go</button>")
+    local el = doc:getElementById("btn")
+    if el then
+        local h = el:on("click", function()
+            print("button clicked")
+        end)
+        print("element handle = " .. h)
+    end
 end
 ```
 
@@ -2047,25 +1775,14 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- Element-level query() searches only within this element's subtree.
-  -- More efficient than document-level query when you know the parent.
-  local doc = lurek.html.newDocument([[
-<body>
-  <div id="inventory">
-    <div class="slot selected"><span class="name">Sword</span></div>
-    <div class="slot"><span class="name">Shield</span></div>
-  </div>
-</body>
-]])
-  doc:update(0)
-  local inv = doc:getElementById("inventory")
-  if inv then
-    -- Find the selected slot's item name within the inventory subtree
-    local selected = inv:query(".slot.selected .name")
-    if selected then
-      lurek.log.info("selected item: " .. selected:getText(), "html")
+    local doc = lurek.html.newDocument("<div><span class='x'>found</span></div>")
+    local div = doc:query("div")
+    if div then
+        local span = div:query(".x")
+        if span then
+            print("child query = " .. span:getText())
+        end
     end
-  end
 end
 ```
 
@@ -2096,23 +1813,12 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- Element-level queryAll() returns all matching descendants.
-  -- Use for processing items in a specific container.
-  local doc = lurek.html.newDocument([[
-<body>
-  <ul id="buff-list">
-    <li class="buff">Shield +5</li>
-    <li class="buff">Speed +10%</li>
-    <li class="buff">Regen 2/s</li>
-  </ul>
-</body>
-]])
-  doc:update(0)
-  local list = doc:getElementById("buff-list")
-  if list then
-    local buffs = list:queryAll(".buff")
-    lurek.log.info("active buffs: " .. #buffs, "html")
-  end
+    local doc = lurek.html.newDocument("<ul><li>A</li><li>B</li></ul>")
+    local ul = doc:query("ul")
+    if ul then
+        local items = ul:queryAll("li")
+        print("child items = " .. #items)
+    end
 end
 ```
 
@@ -2135,24 +1841,12 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- remove() deletes the element from the DOM entirely.
-  -- Use for dismissing notifications, removing defeated enemies from a list, etc.
-  local doc = lurek.html.newDocument([[
-<body>
-  <div id="notification" class="toast">Quest Complete!</div>
-  <div id="main-hud">Score: 500</div>
-</body>
-]])
-  doc:update(0)
-  local toast = doc:getElementById("notification")
-  if toast then
-    -- Dismiss the notification after the player sees it
-    toast:remove()
-    lurek.log.info("notification removed from DOM", "html")
-  end
-  -- Verify it's gone
-  local check = doc:getElementById("notification")
-  lurek.log.info("notification after remove: " .. tostring(check), "html")
+    local doc = lurek.html.newDocument("<div><p id='del'>gone</p></div>")
+    local el = doc:getElementById("del")
+    if el then
+        el:remove()
+        print("element removed")
+    end
 end
 ```
 
@@ -2180,18 +1874,12 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- removeAttribute() deletes an attribute entirely.
-  -- Use when clearing item data from an inventory slot.
-  local doc = lurek.html.newDocument([[
-<body><div id="slot" data-item-id="old_sword" data-equipped="true">Old Sword</div></body>
-]])
-  doc:update(0)
-  local slot = doc:getElementById("slot")
-  if slot then
-    -- Player unequips the item
-    slot:removeAttribute("data-equipped")
-    lurek.log.info("removeAttribute cleared equipped flag", "html")
-  end
+    local doc = lurek.html.newDocument("<div data-x='1'>X</div>")
+    local el = doc:query("div")
+    if el then
+        el:removeAttribute("data-x")
+        print("data-x removed")
+    end
 end
 ```
 
@@ -2219,17 +1907,12 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- removeClass() removes a class. Use to revert visual states.
-  local doc = lurek.html.newDocument([[
-<body><div id="btn" class="btn disabled">Start</div></body>
-]], { css = ".disabled { opacity: 0.5; }" })
-  doc:update(0)
-  local btn = doc:getElementById("btn")
-  if btn then
-    -- Enable the button after loading finishes
-    btn:removeClass("disabled")
-    lurek.log.info("removeClass(disabled) re-enables the button", "html")
-  end
+    local doc = lurek.html.newDocument("<div class='active old'>X</div>")
+    local el = doc:query("div")
+    if el then
+        el:removeClass("old")
+        print("class removed")
+    end
 end
 ```
 
@@ -2259,20 +1942,12 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- setAttribute() sets any attribute. Pass nil as value to remove it.
-  -- data-* attributes are great for storing game metadata on UI elements.
-  local doc = lurek.html.newDocument([[
-<body><div id="slot" class="inventory-slot">Empty</div></body>
-]])
-  doc:update(0)
-  local slot = doc:getElementById("slot")
-  if slot then
-    -- When player picks up an item, store its data on the slot element
-    slot:setAttribute("data-item-id", "health_potion")
-    slot:setAttribute("data-stack", "5")
-    slot:setText("Health Potion (x5)")
-    lurek.log.info("setAttribute stored item data on slot", "html")
-  end
+    local doc = lurek.html.newDocument("<img/>")
+    local el = doc:query("img")
+    if el then
+        el:setAttribute("src", "icon.png")
+        print("src set")
+    end
 end
 ```
 
@@ -2300,23 +1975,12 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- setHtml() replaces all content inside the element with new markup.
-  -- WARNING: Any child element handles obtained before this call become stale.
-  -- Use this for dynamic content blocks (shop listings, inventory grids).
-  local doc = lurek.html.newDocument([[
-<body><div id="shop-items">Loading...</div></body>
-]])
-  doc:update(0)
-  local shop = doc:getElementById("shop-items")
-  if shop then
-    -- Populate the shop with items after loading
-    shop:setHtml([[
-      <div class="item">Potion - 50g</div>
-      <div class="item">Shield - 200g</div>
-      <div class="item">Scroll - 75g</div>
-    ]])
-    lurek.log.info("setHtml populated shop items", "html")
-  end
+    local doc = lurek.html.newDocument("<div>old</div>")
+    local el = doc:query("div")
+    if el then
+        el:setHtml("<b>new</b>")
+        print("html updated")
+    end
 end
 ```
 
@@ -2344,16 +2008,10 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- setId() changes or removes the element's id.
-  -- Pass nil to clear the id attribute entirely.
-  local doc = lurek.html.newDocument("<body><div id='slot-empty'>Empty</div></body>")
-  doc:update(0)
-  local el = doc:getElementById("slot-empty")
-  if el then
-    -- Rename the slot when an item is placed in it
-    el:setId("slot-sword")
-    lurek.log.info("setId changed to: " .. tostring(el:getId()), "html")
-  end
+    local doc = lurek.html.newDocument("<div>content</div>")
+    local root = doc:getRoot()
+    root:setId("container")
+    print("id set")
 end
 ```
 
@@ -2383,22 +2041,12 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- setStyle() sets an inline CSS property. Pass nil to clear it.
-  -- Great for dynamic values like health bar width, opacity fades, positioning.
-  local doc = lurek.html.newDocument([[
-<body>
-  <div id="hp-bar" style="width:100%;height:20px;background:green"></div>
-</body>
-]])
-  doc:update(0)
-  local bar = doc:getElementById("hp-bar")
-  if bar then
-    -- Player takes damage: shrink the bar and change color
-    local hp_percent = 35
-    bar:setStyle("width", hp_percent .. "%")
-    bar:setStyle("background", "red")  -- red when low HP
-    lurek.log.info("setStyle updated health bar to " .. hp_percent .. "%", "html")
-  end
+    local doc = lurek.html.newDocument("<p>text</p>")
+    local el = doc:query("p")
+    if el then
+        el:setStyle("font-size", "20px")
+        print("style set")
+    end
 end
 ```
 
@@ -2426,26 +2074,12 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- setText() replaces the element's text. This is the primary way to update
-  -- dynamic UI values (score, health, timer, gold, etc.) every frame.
-  local doc = lurek.html.newDocument([[
-<body>
-  <span id="score">Score: 0</span>
-  <span id="timer">Time: 60</span>
-</body>
-]])
-  doc:update(0)
-  local score_el = doc:getElementById("score")
-  local timer_el = doc:getElementById("timer")
-  if score_el then
-    -- Update score when player collects a coin
-    score_el:setText("Score: 150")
-  end
-  if timer_el then
-    -- Update countdown timer
-    timer_el:setText("Time: 45")
-  end
-  lurek.log.info("setText updated score and timer displays", "html")
+    local doc = lurek.html.newDocument("<span>old</span>")
+    local el = doc:query("span")
+    if el then
+        el:setText("new text")
+        print("text set")
+    end
 end
 ```
 
@@ -2478,22 +2112,12 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- toggleClass() adds the class if absent, removes if present. Returns final state.
-  -- Optional second argument forces the class on (true) or off (false).
-  local doc = lurek.html.newDocument([[
-<body><div id="panel" class="sidebar">Menu</div></body>
-]], { css = ".sidebar.open { width: 200px; } .sidebar { width: 0; }" })
-  doc:update(0)
-  local panel = doc:getElementById("panel")
-  if panel then
-    -- Toggle the sidebar open/closed when player presses Tab
-    local is_open = panel:toggleClass("open")
-    lurek.log.info("toggleClass(open) → now open=" .. tostring(is_open), "html")
-
-    -- Force closed regardless of current state
-    local forced = panel:toggleClass("open", false)
-    lurek.log.info("toggleClass(open, false) → forced closed=" .. tostring(forced), "html")
-  end
+    local doc = lurek.html.newDocument("<div class='on'>Z</div>")
+    local el = doc:query("div")
+    if el then
+        local result = el:toggleClass("on")
+        print("toggle result = " .. tostring(result))
+    end
 end
 ```
 
@@ -2519,13 +2143,9 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- type() returns "LHtmlElement" for all DOM element handles.
-  local doc = lurek.html.newDocument("<body><div id='box'>Hello</div></body>")
-  doc:update(0)
-  local el = doc:getElementById("box")
-  if el then
-    lurek.log.info("element:type() = " .. el:type(), "html")
-  end
+    local doc = lurek.html.newDocument("<div>X</div>")
+    local el = doc:getRoot()
+    print("type = " .. el:type())
 end
 ```
 
@@ -2556,15 +2176,9 @@ Exact example from [html.lua](../blob/main/content/examples/html.lua):
 
 ```lua
 do
-  -- typeOf() checks the type. Matches "LHtmlElement" and base "Object".
-  local doc = lurek.html.newDocument("<body><span id='tag'>text</span></body>")
-  doc:update(0)
-  local el = doc:getElementById("tag")
-  if el then
-    lurek.log.info("typeOf(LHtmlElement)=" .. tostring(el:typeOf("LHtmlElement")), "html")
-    lurek.log.info("typeOf(Object)=" .. tostring(el:typeOf("Object")), "html")
-    lurek.log.info("typeOf(LImage)=" .. tostring(el:typeOf("LImage")), "html")
-  end
+    local doc = lurek.html.newDocument("<div>X</div>")
+    local el = doc:getRoot()
+    print("is HtmlElement = " .. tostring(el:typeOf("HtmlElement")))
 end
 ```
 

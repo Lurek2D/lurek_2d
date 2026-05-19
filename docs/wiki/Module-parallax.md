@@ -4,7 +4,7 @@
 
 ## Navigation
 
-[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lunasome](Lunasome)
+[Home](Home) | [Modules](Modules) | [API](API) | [Examples](Examples) | [Reference Games](Reference-Games) | [Lureksome](Lureksome)
 
 ## Table of Contents
 
@@ -130,39 +130,15 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- newLayer accepts a table with a required "texture" field and many optional fields.
-    -- Use it to build each visual depth layer in a side-scroller or top-down scene.
-    local ok_sky, sky_tex = pcall(lurek.render.newImage, "assets/parallax/sky.png")
-    if not ok_sky then return end
-
-    -- Minimal layer: just a texture, everything else defaults (no scroll, z=0, full opacity)
-    local sky = lurek.parallax.newLayer({ texture = sky_tex })
-
-    -- Full options table showing all configurable fields at creation time:
-    local hills = lurek.parallax.newLayer({
-      texture    = lurek.render.newImage("assets/parallax/hills.png"),
-      scroll_factor_x = 0.4,   -- moves at 40% of camera speed (distant hills)
-      scroll_factor_y = 0.0,   -- no vertical parallax (locked to horizon)
-      offset_x   = 0,          -- horizontal pixel offset from origin
-      offset_y   = 120,        -- push layer down 120px (below sky)
-      autoscroll_x = 0,        -- no automatic horizontal drift
-      autoscroll_y = 0,        -- no automatic vertical drift
-      repeat_x   = true,       -- tile horizontally so scrolling never shows gaps
-      repeat_y   = false,      -- do not tile vertically
-      z          = 5,          -- draw order: lower z = further back
-      opacity    = 1.0,        -- fully opaque
-      blend_mode = "normal",   -- standard alpha blending
-      visible    = true,       -- starts visible
-      scale_x    = 1.0,        -- no horizontal scaling
-      scale_y    = 1.0,        -- no vertical scaling
-      tiling     = false,      -- explicit tiling mode off (repeat_x handles simple tiling)
-      depth      = 5.0,        -- alternative depth-based parallax factor
+    ---@type LParallaxLayer
+    local layer = lurek.parallax.newLayer({
+        texture = load_parallax_image(),
+        scroll_factor_x = 0.3,
+        scroll_factor_y = 0.1,
+        z = 10,
+        opacity = 0.9,
     })
-
-    -- The returned handle is an LParallaxLayer with full getter/setter access.
-    sky:setRepeat(true, false)
-  end
+    print("type = " .. layer:type())
 end
 ```
 
@@ -185,25 +161,11 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- Presets ("far", "mid", "fog") give pre-configured scroll/repeat/opacity values.
-    -- Use them to quickly prototype a scene without tuning every parameter.
-    local cloud_tex = lurek.render.newImage("assets/parallax/clouds.png")
-
-    -- "far" preset: very slow scroll factor, ideal for distant sky/mountain layers
-    local far_clouds = lurek.parallax.newPresetLayer("far", cloud_tex)
-
-    -- "mid" preset: moderate scroll factor, good for treelines or buildings
-    local mid_tex = lurek.render.newImage("assets/parallax/treeline.png")
-    local mid_trees = lurek.parallax.newPresetLayer("mid", mid_tex)
-
-    -- "fog" preset: foreground overlay with low opacity and fast autoscroll
-    local fog_tex = lurek.render.newImage("assets/parallax/fog.png")
-    local fog_layer = lurek.parallax.newPresetLayer("fog", fog_tex)
-
-    -- You can still override any preset value after creation:
-    fog_layer:setOpacity(0.3)
-  end
+    ---@type LImage
+    local img = lurek.render.newImage("assets/textures/ray_water.png")
+    ---@type LParallaxLayer
+    local far = lurek.parallax.newPresetLayer("far", img)
+    print("far depth = " .. far:getDepth())
 end
 ```
 
@@ -225,17 +187,10 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- A ParallaxSet groups layers so you can update/render them all with one call.
-    -- Name it for debugging and scene management (e.g., swap backdrops by set name).
-    local forest_backdrop = lurek.parallax.newSet("forest_backdrop")
-
-    -- Sets start visible and empty. Add layers after creation.
-    forest_backdrop:setVisible(true)
-
-    -- The name is useful for logging which backdrop is active during scene transitions.
-    lurek.log.info("backdrop ready: " .. forest_backdrop:getName(), "scene")
-  end
+    ---@type LParallaxSet
+    local set = lurek.parallax.newSet("background")
+    print("name = " .. set:getName() .. " type = " .. set:type())
+    print("layers = " .. set:layerCount())
 end
 ```
 
@@ -262,39 +217,15 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- newLayer accepts a table with a required "texture" field and many optional fields.
-    -- Use it to build each visual depth layer in a side-scroller or top-down scene.
-    local ok_sky, sky_tex = pcall(lurek.render.newImage, "assets/parallax/sky.png")
-    if not ok_sky then return end
-
-    -- Minimal layer: just a texture, everything else defaults (no scroll, z=0, full opacity)
-    local sky = lurek.parallax.newLayer({ texture = sky_tex })
-
-    -- Full options table showing all configurable fields at creation time:
-    local hills = lurek.parallax.newLayer({
-      texture    = lurek.render.newImage("assets/parallax/hills.png"),
-      scroll_factor_x = 0.4,   -- moves at 40% of camera speed (distant hills)
-      scroll_factor_y = 0.0,   -- no vertical parallax (locked to horizon)
-      offset_x   = 0,          -- horizontal pixel offset from origin
-      offset_y   = 120,        -- push layer down 120px (below sky)
-      autoscroll_x = 0,        -- no automatic horizontal drift
-      autoscroll_y = 0,        -- no automatic vertical drift
-      repeat_x   = true,       -- tile horizontally so scrolling never shows gaps
-      repeat_y   = false,      -- do not tile vertically
-      z          = 5,          -- draw order: lower z = further back
-      opacity    = 1.0,        -- fully opaque
-      blend_mode = "normal",   -- standard alpha blending
-      visible    = true,       -- starts visible
-      scale_x    = 1.0,        -- no horizontal scaling
-      scale_y    = 1.0,        -- no vertical scaling
-      tiling     = false,      -- explicit tiling mode off (repeat_x handles simple tiling)
-      depth      = 5.0,        -- alternative depth-based parallax factor
+    ---@type LParallaxLayer
+    local layer = lurek.parallax.newLayer({
+        texture = load_parallax_image(),
+        scroll_factor_x = 0.3,
+        scroll_factor_y = 0.1,
+        z = 10,
+        opacity = 0.9,
     })
-
-    -- The returned handle is an LParallaxLayer with full getter/setter access.
-    sky:setRepeat(true, false)
-  end
+    print("type = " .. layer:type())
 end
 ```
 
@@ -316,17 +247,10 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- A ParallaxSet groups layers so you can update/render them all with one call.
-    -- Name it for debugging and scene management (e.g., swap backdrops by set name).
-    local forest_backdrop = lurek.parallax.newSet("forest_backdrop")
-
-    -- Sets start visible and empty. Add layers after creation.
-    forest_backdrop:setVisible(true)
-
-    -- The name is useful for logging which backdrop is active during scene transitions.
-    lurek.log.info("backdrop ready: " .. forest_backdrop:getName(), "scene")
-  end
+    ---@type LParallaxSet
+    local set = lurek.parallax.newSet("background")
+    print("name = " .. set:getName() .. " type = " .. set:type())
+    print("layers = " .. set:layerCount())
 end
 ```
 
@@ -361,17 +285,13 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- Effect passes apply GPU shader effects to a single layer (e.g., blur, distortion).
-    -- Pass an effect name and an optional params table with numeric shader uniforms.
-    local fog = lurek.parallax.newLayer({ texture = lurek.render.newImage("assets/parallax/fog.png") })
-
-    -- Add a motion blur effect with a strength uniform — the shader reads this value.
-    fog:addEffectPass("motion_blur", { strength = 0.2 })
-
-    -- You can chain multiple effects; they render in order (first added = first applied).
-    fog:addEffectPass("color_shift", { hue_offset = 0.1, saturation = 0.8 })
-  end
+    ---@type LParallaxLayer
+    local layer = lurek.parallax.newLayer({texture = load_parallax_image()})
+    layer:addEffectPass("blur", {1.5})
+    layer:addEffectPass("tint", {1.0, 0.8, 0.6, 1.0})
+    print("effects = " .. layer:effectCount())
+    layer:clearEffects()
+    print("after clear = " .. layer:effectCount())
 end
 ```
 
@@ -394,15 +314,12 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  function lurek.init()
-    local hills = lurek.parallax.newLayer({ texture = lurek.render.newImage("assets/parallax/hills.png") })
-    hills:setClamp(0, 0, 800, 600)
-
-    -- clearClamp removes the boundary restriction entirely.
-    -- Call this when transitioning from a bounded level to an infinite runner section.
-    hills:clearClamp()
-    hills:setRepeat(true, false) -- now tiling takes over
-  end
+    ---@type LParallaxLayer
+    local layer = lurek.parallax.newLayer({texture = load_parallax_image()})
+    layer:setClamp(-100, -50, 100, 50)
+    print("clamped")
+    layer:clearClamp()
+    print("clamp cleared")
 end
 ```
 
@@ -425,16 +342,13 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  function lurek.init()
-    local fog = lurek.parallax.newLayer({ texture = lurek.render.newImage("assets/parallax/fog.png") })
-    fog:addEffectPass("motion_blur", { strength = 0.1 })
-    fog:addEffectPass("vignette", { radius = 0.5 })
-
-    -- clearEffects removes the entire effect chain at once.
-    -- Use this when transitioning scenes or disabling weather effects.
-    fog:clearEffects()
-    -- After clearing, effectCount() returns 0 and no shaders are applied.
-  end
+    ---@type LParallaxLayer
+    local layer = lurek.parallax.newLayer({texture = load_parallax_image()})
+    layer:addEffectPass("blur", {1.5})
+    layer:addEffectPass("tint", {1.0, 0.8, 0.6, 1.0})
+    print("effects = " .. layer:effectCount())
+    layer:clearEffects()
+    print("after clear = " .. layer:effectCount())
 end
 ```
 
@@ -460,15 +374,13 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  function lurek.init()
-    local fog = lurek.parallax.newLayer({ texture = lurek.render.newImage("assets/parallax/fog.png") })
-    fog:addEffectPass("motion_blur", { strength = 0.1 })
-    fog:addEffectPass("glow", { intensity = 0.4 })
-
-    -- effectCount is useful for UI debug overlays or conditional logic.
-    local n = fog:effectCount()
-    lurek.log.debug("fog has " .. n .. " effect passes", "parallax") -- prints "2"
-  end
+    ---@type LParallaxLayer
+    local layer = lurek.parallax.newLayer({texture = load_parallax_image()})
+    layer:addEffectPass("blur", {1.5})
+    layer:addEffectPass("tint", {1.0, 0.8, 0.6, 1.0})
+    print("effects = " .. layer:effectCount())
+    layer:clearEffects()
+    print("after clear = " .. layer:effectCount())
 end
 ```
 
@@ -495,16 +407,14 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  function lurek.init()
-    local clouds = lurek.parallax.newLayer({
-      texture = lurek.render.newImage("assets/parallax/clouds.png"),
-      autoscroll_x = 15,
-    })
-
-    -- Useful for adjusting wind speed dynamically based on game weather state.
-    local vx, vy = clouds:getAutoscroll()
-    lurek.log.debug("wind speed: vx=" .. vx .. " vy=" .. vy, "weather")
-  end
+    ---@type LParallaxLayer
+    local layer = lurek.parallax.newLayer({texture = load_parallax_image()})
+    layer:setAutoscroll(20, 0)
+    local vx, vy = layer:getAutoscroll()
+    print("autoscroll = " .. vx .. "," .. vy)
+    layer:update(1.0)
+    layer:resetAutoscroll()
+    print("autoscroll reset")
 end
 ```
 
@@ -530,17 +440,12 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  function lurek.init()
-    local rays = lurek.parallax.newLayer({
-      texture = lurek.render.newImage("assets/parallax/godrays.png"),
-      blend_mode = "additive",
-    })
-
-    -- Returns one of: "normal", "additive", "multiply", "replace", "screen"
-    if rays:getBlendMode() ~= "normal" then
-      lurek.log.debug("layer uses special blend: " .. rays:getBlendMode(), "parallax")
-    end
-  end
+    ---@type LParallaxLayer
+    local layer = lurek.parallax.newLayer({texture = load_parallax_image()})
+    layer:setBlendMode("add")
+    print("blend = " .. layer:getBlendMode())
+    layer:setBlendMode("alpha")
+    print("blend = " .. layer:getBlendMode())
 end
 ```
 
@@ -566,13 +471,10 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  function lurek.init()
-    local mist = lurek.parallax.newLayer({ texture = lurek.render.newImage("assets/parallax/mist.png") })
-    mist:setDepth(10.5)
-
-    -- Retrieve depth for sorting or for computing relative distances between layers.
-    lurek.log.debug("mist depth=" .. mist:getDepth(), "parallax")
-  end
+    ---@type LParallaxLayer
+    local layer = lurek.parallax.newLayer({texture = load_parallax_image()})
+    layer:setDepth(0.5)
+    print("depth = " .. layer:getDepth())
 end
 ```
 
@@ -600,19 +502,12 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  function lurek.init()
-    local clouds = lurek.parallax.newLayer({ texture = lurek.render.newImage("assets/parallax/clouds.png") })
-    clouds:setMotionStretch(true, 0.25, 1.4)
-
-    -- Returns three values: enabled (boolean), strength (number), max_scale (number)
-    local enabled, strength, max_scale = clouds:getMotionStretch()
-
-    -- Use this to save/restore layer state or build a debug inspector.
-    lurek.log.debug(
-      "stretch: on=" .. tostring(enabled) .. " str=" .. strength .. " max=" .. max_scale,
-      "parallax"
-    )
-  end
+    ---@type LParallaxLayer
+    local layer = lurek.parallax.newLayer({texture = load_parallax_image()})
+    layer:setMotionStretch(true, 0.5, 2.0)
+    local enabled, strength, max_scale = layer:getMotionStretch()
+    print("stretch enabled=" .. tostring(enabled))
+    print("strength=" .. strength .. " max=" .. max_scale)
 end
 ```
 
@@ -639,16 +534,11 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  function lurek.init()
-    local layer = lurek.parallax.newLayer({
-      texture = lurek.render.newImage("assets/parallax/sky.png"),
-      offset_y = 32,
-    })
-
-    -- Retrieve the offset to verify it matches your layout calculations.
+    ---@type LParallaxLayer
+    local layer = lurek.parallax.newLayer({texture = load_parallax_image()})
+    layer:setOffset(10, -5)
     local ox, oy = layer:getOffset()
-    lurek.log.debug("layer offset: x=" .. ox .. " y=" .. oy, "parallax")
-  end
+    print("offset = " .. ox .. "," .. oy)
 end
 ```
 
@@ -674,16 +564,10 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  function lurek.init()
-    local fog = lurek.parallax.newLayer({
-      texture = lurek.render.newImage("assets/parallax/fog.png"),
-      opacity = 0.5,
-    })
-
-    -- Retrieve opacity for tween targets or conditional logic.
-    local a = fog:getOpacity()
-    lurek.log.debug("fog opacity=" .. a, "weather")
-  end
+    ---@type LParallaxLayer
+    local layer = lurek.parallax.newLayer({texture = load_parallax_image()})
+    layer:setOpacity(0.7)
+    print("opacity = " .. layer:getOpacity())
 end
 ```
 
@@ -710,17 +594,11 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  function lurek.init()
-    local layer = lurek.parallax.newLayer({
-      texture = lurek.render.newImage("assets/parallax/sky.png"),
-      scroll_factor_x = 0.3,
-      scroll_factor_y = 0.1,
-    })
-
-    -- Returns two numbers: horizontal and vertical scroll factors.
-    local fx, fy = layer:getScrollFactor()
-    lurek.log.debug("scroll factor: x=" .. fx .. " y=" .. fy, "parallax")
-  end
+    ---@type LParallaxLayer
+    local layer = lurek.parallax.newLayer({texture = load_parallax_image()})
+    layer:setScrollFactor(0.5, 0.2)
+    local sx, sy = layer:getScrollFactor()
+    print("scroll = " .. sx .. "," .. sy)
 end
 ```
 
@@ -746,15 +624,10 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  function lurek.init()
-    local stars = lurek.parallax.newLayer({ texture = lurek.render.newImage("assets/parallax/stars.png") })
-    stars:setTiling(true)
-
-    -- Check tiling state for conditional logic or debug output.
-    if stars:getTiling() then
-      lurek.log.debug("starfield tiling is active", "parallax")
-    end
-  end
+    ---@type LParallaxLayer
+    local layer = lurek.parallax.newLayer({texture = load_parallax_image()})
+    layer:setTiling(true)
+    print("tiling = " .. tostring(layer:getTiling()))
 end
 ```
 
@@ -783,14 +656,11 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  function lurek.init()
-    local sky = lurek.parallax.newLayer({ texture = lurek.render.newImage("assets/parallax/sky.png") })
-    sky:setTint(0.5, 0.6, 1.0, 1.0) -- cool blue moonlight tint
-
-    -- Returns four numbers: red, green, blue, alpha.
-    local r, g, b, a = sky:getTint()
-    lurek.log.debug("tint: r=" .. r .. " g=" .. g .. " b=" .. b .. " a=" .. a, "parallax")
-  end
+    ---@type LParallaxLayer
+    local layer = lurek.parallax.newLayer({texture = load_parallax_image()})
+    layer:setTint(1.0, 0.8, 0.6, 1.0)
+    local r, g, b, a = layer:getTint()
+    print("tint = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 ```
 
@@ -816,17 +686,10 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  function lurek.init()
-    local layer = lurek.parallax.newLayer({
-      texture = lurek.render.newImage("assets/parallax/sky.png"),
-      z = 5,
-    })
-
-    -- Use getZ() for sorting logic or conditional rendering by depth.
-    if layer:getZ() < 10 then
-      lurek.log.debug("this is a background layer", "parallax")
-    end
-  end
+    ---@type LParallaxLayer
+    local layer = lurek.parallax.newLayer({texture = load_parallax_image()})
+    layer:setZ(-5)
+    print("z = " .. layer:getZ())
 end
 ```
 
@@ -852,12 +715,10 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  -- isVisible returns the current visibility state of the layer.
-  local fog = lurek.parallax.newLayer({ texture = lurek.render.newImage("assets/parallax/fog.png") })
-  fog:setVisible(false)
-  if not fog:isVisible() then
-    lurek.log.info("fog layer is off", "parallax")
-  end
+    ---@type LParallaxLayer
+    local layer = lurek.parallax.newLayer({texture = load_parallax_image()})
+    layer:setVisible(false)
+    print("visible = " .. tostring(layer:isVisible()))
 end
 ```
 
@@ -887,13 +748,13 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  -- render(cam_x, cam_y) draws the layer offset by the given camera position.
-  local hills = lurek.parallax.newLayer({
-    texture = lurek.render.newImage("assets/parallax/hills.png"),
-    scroll_factor_x = 0.5,
-  })
-  local cam_x, cam_y = 200, 0
-  hills:render(cam_x, cam_y)
+    ---@type LParallaxLayer
+    local layer = lurek.parallax.newLayer({texture = load_parallax_image()})
+    layer:setAutoscroll(50, 0)
+    layer:update(0.016)
+    layer:render(100, 50)
+    layer:renderAuto()
+    print("rendered")
 end
 ```
 
@@ -916,12 +777,13 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  -- renderAuto uses the active runtime camera automatically (no manual coords needed).
-  local sky = lurek.parallax.newLayer({
-    texture = lurek.render.newImage("assets/parallax/sky.png"),
-    scroll_factor_x = 0.1,
-  })
-  sky:renderAuto()
+    ---@type LParallaxLayer
+    local layer = lurek.parallax.newLayer({texture = load_parallax_image()})
+    layer:setAutoscroll(50, 0)
+    layer:update(0.016)
+    layer:render(100, 50)
+    layer:renderAuto()
+    print("rendered")
 end
 ```
 
@@ -944,17 +806,14 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  function lurek.init()
-    local fog = lurek.parallax.newLayer({
-      texture = lurek.render.newImage("assets/parallax/fog.png"),
-      autoscroll_x = 8,
-    })
-
-    -- After updating for a while, the internal offset accumulates.
-    -- resetAutoscroll() snaps it back to the start position.
-    -- Use this on scene transitions or level resets to avoid visual jumps.
-    fog:resetAutoscroll()
-  end
+    ---@type LParallaxLayer
+    local layer = lurek.parallax.newLayer({texture = load_parallax_image()})
+    layer:setAutoscroll(20, 0)
+    local vx, vy = layer:getAutoscroll()
+    print("autoscroll = " .. vx .. "," .. vy)
+    layer:update(1.0)
+    layer:resetAutoscroll()
+    print("autoscroll reset")
 end
 ```
 
@@ -984,17 +843,14 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- Autoscroll makes the layer drift continuously without camera movement.
-    -- Perfect for drifting clouds, flowing water reflections, or wind effects.
-    local clouds = lurek.parallax.newLayer({ texture = lurek.render.newImage("assets/parallax/clouds.png") })
-
-    -- Disable camera-based scroll so ONLY the autoscroll moves the layer.
-    clouds:setScrollFactor(0, 0)
-
-    -- Drift right at 20 px/s — requires calling :update(dt) each frame.
-    clouds:setAutoscroll(20, 0)
-  end
+    ---@type LParallaxLayer
+    local layer = lurek.parallax.newLayer({texture = load_parallax_image()})
+    layer:setAutoscroll(20, 0)
+    local vx, vy = layer:getAutoscroll()
+    print("autoscroll = " .. vx .. "," .. vy)
+    layer:update(1.0)
+    layer:resetAutoscroll()
+    print("autoscroll reset")
 end
 ```
 
@@ -1022,15 +878,12 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- Blend modes: "normal" (alpha), "additive" (glow/light), "multiply" (shadow/overlay),
-    -- "replace" (no blending), "screen" (lighten).
-    local godrays = lurek.parallax.newLayer({ texture = lurek.render.newImage("assets/parallax/godrays.png") })
-
-    -- Additive blending makes bright areas glow and dark areas disappear.
-    -- Perfect for light rays, magic auras, or fire overlays.
-    godrays:setBlendMode("additive")
-  end
+    ---@type LParallaxLayer
+    local layer = lurek.parallax.newLayer({texture = load_parallax_image()})
+    layer:setBlendMode("add")
+    print("blend = " .. layer:getBlendMode())
+    layer:setBlendMode("alpha")
+    print("blend = " .. layer:getBlendMode())
 end
 ```
 
@@ -1064,17 +917,12 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- Clamp prevents the layer from scrolling beyond defined bounds.
-    -- Useful for levels with fixed boundaries where the sky should not wrap endlessly.
-    local hills = lurek.parallax.newLayer({
-      texture = lurek.render.newImage("assets/parallax/hills.png"),
-      scroll_factor_x = 0.3,
-    })
-
-    -- The layer will not scroll beyond this 800x600 pixel boundary.
-    hills:setClamp(0, 0, 800, 600)
-  end
+    ---@type LParallaxLayer
+    local layer = lurek.parallax.newLayer({texture = load_parallax_image()})
+    layer:setClamp(-100, -50, 100, 50)
+    print("clamped")
+    layer:clearClamp()
+    print("clamp cleared")
 end
 ```
 
@@ -1102,15 +950,10 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- Depth is an alternative to scroll_factor for more intuitive layer ordering.
-    -- Higher depth = further from camera = slower relative movement.
-    local mist = lurek.parallax.newLayer({ texture = lurek.render.newImage("assets/parallax/mist.png") })
-
-    -- setZ controls draw order, setDepth controls parallax movement intensity.
-    mist:setZ(10)
-    mist:setDepth(10.5)
-  end
+    ---@type LParallaxLayer
+    local layer = lurek.parallax.newLayer({texture = load_parallax_image()})
+    layer:setDepth(0.5)
+    print("depth = " .. layer:getDepth())
 end
 ```
 
@@ -1142,19 +985,12 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- Motion stretch simulates speed lines / directional blur when the camera moves fast.
-    -- Great for racing games, dash abilities, or high-speed scrolling sections.
-    local clouds = lurek.parallax.newLayer({
-      texture = lurek.render.newImage("assets/parallax/clouds.png"),
-      scroll_factor_x = 0.15,
-    })
-
-    -- Parameters: enabled (bool), strength (0..1 scale factor), max_scale (caps the stretch)
-    -- Higher strength = more stretch per pixel of camera movement.
-    -- max_scale prevents the layer from stretching beyond a sane limit.
-    clouds:setMotionStretch(true, 0.35, 1.6)
-  end
+    ---@type LParallaxLayer
+    local layer = lurek.parallax.newLayer({texture = load_parallax_image()})
+    layer:setMotionStretch(true, 0.5, 2.0)
+    local enabled, strength, max_scale = layer:getMotionStretch()
+    print("stretch enabled=" .. tostring(enabled))
+    print("strength=" .. strength .. " max=" .. max_scale)
 end
 ```
 
@@ -1184,14 +1020,11 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- Offset shifts the layer's base position before any scroll calculations.
-    -- Use it to vertically position layers (e.g., horizon at y=96).
-    local horizon = lurek.parallax.newLayer({ texture = lurek.render.newImage("assets/parallax/horizon.png") })
-
-    -- Push the horizon texture down 96 pixels from the top of the screen.
-    horizon:setOffset(0, 96)
-  end
+    ---@type LParallaxLayer
+    local layer = lurek.parallax.newLayer({texture = load_parallax_image()})
+    layer:setOffset(10, -5)
+    local ox, oy = layer:getOffset()
+    print("offset = " .. ox .. "," .. oy)
 end
 ```
 
@@ -1219,14 +1052,10 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- Opacity controls layer transparency. 0 = invisible, 1 = fully opaque.
-    -- Use it for fade-in/out transitions or atmospheric depth cues.
-    local fog = lurek.parallax.newLayer({ texture = lurek.render.newImage("assets/parallax/fog.png") })
-
-    -- Semi-transparent fog gives a sense of depth without fully obscuring layers behind.
-    fog:setOpacity(0.6)
-  end
+    ---@type LParallaxLayer
+    local layer = lurek.parallax.newLayer({texture = load_parallax_image()})
+    layer:setOpacity(0.7)
+    print("opacity = " .. layer:getOpacity())
 end
 ```
 
@@ -1256,15 +1085,53 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  function lurek.init()
-    local sky = lurek.parallax.newLayer({ texture = lurek.render.newImage("assets/parallax/sky.png") })
-
-    -- repeat_x=true tiles the texture horizontally so it wraps seamlessly.
-    -- Essential for infinite side-scrolling backgrounds.
-    -- repeat_y=false means vertical edges are not tiled (sky ends at top/bottom).
-    sky:setRepeat(true, false)
-  end
+    ---@type LParallaxLayer
+    local layer = lurek.parallax.newLayer({texture = load_parallax_image()})
+    layer:setRepeat(true, false)
+    print("repeat set: horizontal only")
 end
+
+--@api-stub: LParallaxLayer:setScale
+-- Layer scale factor.
+do
+    ---@type LParallaxLayer
+    local layer = lurek.parallax.newLayer({texture = load_parallax_image()})
+    layer:setScale(2.0, 2.0)
+    print("scaled 2x")
+end
+
+--@api-stub: LParallaxLayer:setTint
+-- Color tinting. Focus: setTint.
+do
+    ---@type LParallaxLayer
+    local layer = lurek.parallax.newLayer({texture = load_parallax_image()})
+    layer:setTint(1.0, 0.8, 0.6, 1.0)
+    local r, g, b, a = layer:getTint()
+    print("tint = " .. r .. "," .. g .. "," .. b .. "," .. a)
+end
+
+--@api-stub: LParallaxLayer:getTint
+-- Color tinting. Focus: getTint.
+do
+    ---@type LParallaxLayer
+    local layer = lurek.parallax.newLayer({texture = load_parallax_image()})
+    layer:setTint(1.0, 0.8, 0.6, 1.0)
+    local r, g, b, a = layer:getTint()
+    print("tint = " .. r .. "," .. g .. "," .. b .. "," .. a)
+end
+
+--@api-stub: LParallaxLayer:setBlendMode
+-- Blend mode selection. Focus: setBlendMode.
+do
+    ---@type LParallaxLayer
+    local layer = lurek.parallax.newLayer({texture = load_parallax_image()})
+    layer:setBlendMode("add")
+    print("blend = " .. layer:getBlendMode())
+    layer:setBlendMode("alpha")
+    print("blend = " .. layer:getBlendMode())
+end
+
+--@api-stub: LParallaxLayer:getBlendMode
 ```
 
 ### LParallaxLayer:setScale
@@ -1293,14 +1160,10 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- Scale enlarges or shrinks the layer texture on screen.
-    -- Use it for pixel-art upscaling or making a small texture fill more area.
-    local pixel_sky = lurek.parallax.newLayer({ texture = lurek.render.newImage("assets/parallax/pixel_sky.png") })
-
-    -- 2x scale makes each pixel of the source texture draw as 2x2 screen pixels.
-    pixel_sky:setScale(2.0, 2.0)
-  end
+    ---@type LParallaxLayer
+    local layer = lurek.parallax.newLayer({texture = load_parallax_image()})
+    layer:setScale(2.0, 2.0)
+    print("scaled 2x")
 end
 ```
 
@@ -1330,14 +1193,11 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  function lurek.init()
-    local mid = lurek.parallax.newLayer({ texture = lurek.render.newImage("assets/parallax/treeline.png") })
-
-    -- scroll_factor_x=0.6 means this layer moves at 60% of camera speed.
-    -- Lower values = appears further away. 1.0 = moves with camera (foreground).
-    -- 0.0 = completely static (pinned to screen, like a sky gradient).
-    mid:setScrollFactor(0.6, 0.0)
-  end
+    ---@type LParallaxLayer
+    local layer = lurek.parallax.newLayer({texture = load_parallax_image()})
+    layer:setScrollFactor(0.5, 0.2)
+    local sx, sy = layer:getScrollFactor()
+    print("scroll = " .. sx .. "," .. sy)
 end
 ```
 
@@ -1367,15 +1227,10 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- By default, tile size matches the texture dimensions.
-    -- Override it to scale tiles independently of the source texture size.
-    local pattern = lurek.parallax.newLayer({ texture = lurek.render.newImage("assets/parallax/pattern.png") })
-    pattern:setTiling(true)
-
-    -- Force 128x128 pixel tiles regardless of the source texture resolution.
-    pattern:setTileSize(128, 128)
-  end
+    ---@type LParallaxLayer
+    local layer = lurek.parallax.newLayer({texture = load_parallax_image()})
+    layer:setTileSize(64, 64)
+    print("tile size set")
 end
 ```
 
@@ -1403,14 +1258,10 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- Tiling mode tiles the texture in a grid pattern, different from simple repeat.
-    -- Use it for starfields, brick walls, or any repeating-pattern background.
-    local stars = lurek.parallax.newLayer({ texture = lurek.render.newImage("assets/parallax/stars.png") })
-
-    -- When tiling is on, the layer fills the viewport with repeated tiles.
-    stars:setTiling(true)
-  end
+    ---@type LParallaxLayer
+    local layer = lurek.parallax.newLayer({texture = load_parallax_image()})
+    layer:setTiling(true)
+    print("tiling = " .. tostring(layer:getTiling()))
 end
 ```
 
@@ -1444,14 +1295,11 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- Tint multiplies the texture color channels. Use it for day/night cycles,
-    -- sunset warmth, or flash effects. All values are 0.0–1.0.
-    local sky = lurek.parallax.newLayer({ texture = lurek.render.newImage("assets/parallax/sky.png") })
-
-    -- Warm sunset tint: boost red, reduce blue, full alpha.
-    sky:setTint(1.0, 0.6, 0.4, 1.0)
-  end
+    ---@type LParallaxLayer
+    local layer = lurek.parallax.newLayer({texture = load_parallax_image()})
+    layer:setTint(1.0, 0.8, 0.6, 1.0)
+    local r, g, b, a = layer:getTint()
+    print("tint = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
 ```
 
@@ -1479,10 +1327,10 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  -- setVisible(true/false) toggles drawing without destroying the layer.
-  local fog = lurek.parallax.newLayer({ texture = lurek.render.newImage("assets/parallax/fog.png") })
-  fog:setVisible(false)  -- hide fog during clear weather
-  lurek.log.info("fog hidden", "parallax")
+    ---@type LParallaxLayer
+    local layer = lurek.parallax.newLayer({texture = load_parallax_image()})
+    layer:setVisible(false)
+    print("visible = " .. tostring(layer:isVisible()))
 end
 ```
 
@@ -1510,14 +1358,10 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- Z order controls draw sequence: lower z draws first (background), higher z draws later (foreground).
-    -- This is independent of scroll_factor — a fast-scrolling layer can still be behind a slow one.
-    local trees = lurek.parallax.newLayer({ texture = lurek.render.newImage("assets/parallax/trees.png") })
-
-    -- z=20 places this layer in front of a z=5 sky but behind a z=50 foreground mist.
-    trees:setZ(20)
-  end
+    ---@type LParallaxLayer
+    local layer = lurek.parallax.newLayer({texture = load_parallax_image()})
+    layer:setZ(-5)
+    print("z = " .. layer:getZ())
 end
 ```
 
@@ -1543,9 +1387,9 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  -- type() returns the engine type string for handle identification.
-  local layer = lurek.parallax.newLayer({ texture = lurek.render.newImage("assets/parallax/sky.png") })
-  lurek.log.info("layer type: " .. layer:type(), "parallax")
+    local img = lurek.render.newImage("assets/textures/ray_water.png")
+    local layer = lurek.parallax.newLayer({ image = img, scroll_factor = 0.5, z = -1 })
+    print(layer:type())
 end
 ```
 
@@ -1573,12 +1417,13 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  -- Call update each frame to advance autoscroll (drifting clouds, flowing water).
-  local clouds = lurek.parallax.newLayer({
-    texture = lurek.render.newImage("assets/parallax/clouds.png"),
-    autoscroll_x = 20,
-  })
-  function lurek.process(dt) clouds:update(dt) end
+    ---@type LParallaxLayer
+    local layer = lurek.parallax.newLayer({texture = load_parallax_image()})
+    layer:setAutoscroll(50, 0)
+    layer:update(0.016)
+    layer:render(100, 50)
+    layer:renderAuto()
+    print("rendered")
 end
 ```
 
@@ -1606,27 +1451,20 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- Build a multi-layer forest backdrop by adding layers individually.
-    -- Layers are automatically sorted by z after each addLayer call.
-    local backdrop = lurek.parallax.newSet("woods")
-
-    local sky = lurek.parallax.newLayer({
-      texture = lurek.render.newImage("assets/parallax/sky.png"),
-      z = 0,
-      scroll_factor_x = 0.1,
-    })
-    local trees = lurek.parallax.newLayer({
-      texture = lurek.render.newImage("assets/parallax/trees.png"),
-      z = 20,
-      scroll_factor_x = 0.6,
-      repeat_x = true,
-    })
-
-    -- Order of addLayer calls does not matter — z-sort handles draw order.
-    backdrop:addLayer(trees)
-    backdrop:addLayer(sky)
-  end
+    ---@type LParallaxSet
+    local set = lurek.parallax.newSet("scene")
+    ---@type LParallaxLayer
+    local l1 = lurek.parallax.newLayer({texture = load_parallax_image(), z = 0})
+    ---@type LParallaxLayer
+    local l2 = lurek.parallax.newLayer({texture = load_parallax_image(), z = 5})
+    ---@type LParallaxLayer
+    local l3 = lurek.parallax.newLayer({texture = load_parallax_image(), z = 10})
+    set:addLayer(l1)
+    set:addLayer(l2)
+    set:addLayer(l3)
+    print("layers = " .. set:layerCount())
+    local removed = set:removeLayerAt(2)
+    print("removed = " .. tostring(removed) .. " layers = " .. set:layerCount())
 end
 ```
 
@@ -1657,17 +1495,18 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  function lurek.init()
-    local set = lurek.parallax.newSet("order_debug")
-    local img = lurek.render.newImage("assets/parallax/sky.png")
-    set:addLayer(lurek.parallax.newLayer({ texture = img, z = 10 }))
-    set:addLayer(lurek.parallax.newLayer({ texture = img, z = -5 }))
+    ---@type LParallaxSet
+    local set = lurek.parallax.newSet("sorted")
+    ---@type LParallaxLayer
+    local far = lurek.parallax.newLayer({texture = load_parallax_image(), z = 100})
+    ---@type LParallaxLayer
+    local near = lurek.parallax.newLayer({texture = load_parallax_image(), z = 1})
+    set:addLayer(far)
+    set:addLayer(near)
+    print("z at 1 = " .. set:getLayerZAt(1))
+    print("z at 2 = " .. set:getLayerZAt(2))
     set:sortByZ()
-
-    -- After sorting, index 1 has the lowest z (furthest back).
-    local first_z = set:getLayerZAt(1)
-    lurek.log.debug("first layer z=" .. tostring(first_z), "parallax") -- -5
-  end
+    print("sorted: z at 1 = " .. set:getLayerZAt(1))
 end
 ```
 
@@ -1693,12 +1532,14 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  function lurek.init()
-    local set = lurek.parallax.newSet("foreground")
-
-    -- getName is useful for debugging or for scene managers that look up sets by name.
-    lurek.log.info("active backdrop: " .. set:getName(), "scene")
-  end
+    ---@type LParallaxSet
+    local set = lurek.parallax.newSet("temp")
+    set:setName("sky_layers")
+    print("name = " .. set:getName())
+    set:setVisible(false)
+    print("visible = " .. tostring(set:isVisible()))
+    set:setVisible(true)
+    print("visible = " .. tostring(set:isVisible()))
 end
 ```
 
@@ -1724,20 +1565,14 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  local backdrop
-  function lurek.init()
-    backdrop = lurek.parallax.newSet("woods")
-    backdrop:addLayer(lurek.parallax.newLayer({
-      texture = lurek.render.newImage("assets/parallax/clouds.png"),
-      autoscroll_x = 8,
-    }))
-  end
-  function lurek.process(dt)
-    -- Skip updating hidden sets to save CPU time during menus.
-    if backdrop:isVisible() then
-      backdrop:update(dt)
-    end
-  end
+    ---@type LParallaxSet
+    local set = lurek.parallax.newSet("temp")
+    set:setName("sky_layers")
+    print("name = " .. set:getName())
+    set:setVisible(false)
+    print("visible = " .. tostring(set:isVisible()))
+    set:setVisible(true)
+    print("visible = " .. tostring(set:isVisible()))
 end
 ```
 
@@ -1763,16 +1598,20 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  function lurek.init()
-    local backdrop = lurek.parallax.newSet("count_demo")
-    local sky = lurek.parallax.newLayer({ texture = lurek.render.newImage("assets/parallax/sky.png") })
-    local hills = lurek.parallax.newLayer({ texture = lurek.render.newImage("assets/parallax/hills.png") })
-    backdrop:addLayer(sky)
-    backdrop:addLayer(hills)
-
-    -- layerCount helps validate scene setup or limit dynamic layer additions.
-    lurek.log.debug("layers in set: " .. backdrop:layerCount(), "scene") -- 2
-  end
+    ---@type LParallaxSet
+    local set = lurek.parallax.newSet("scene")
+    ---@type LParallaxLayer
+    local l1 = lurek.parallax.newLayer({texture = load_parallax_image(), z = 0})
+    ---@type LParallaxLayer
+    local l2 = lurek.parallax.newLayer({texture = load_parallax_image(), z = 5})
+    ---@type LParallaxLayer
+    local l3 = lurek.parallax.newLayer({texture = load_parallax_image(), z = 10})
+    set:addLayer(l1)
+    set:addLayer(l2)
+    set:addLayer(l3)
+    print("layers = " .. set:layerCount())
+    local removed = set:removeLayerAt(2)
+    print("removed = " .. tostring(removed) .. " layers = " .. set:layerCount())
 end
 ```
 
@@ -1803,15 +1642,20 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  function lurek.init()
-    local backdrop = lurek.parallax.newSet("storm")
-    local rain = lurek.parallax.newLayer({ texture = lurek.render.newImage("assets/parallax/rain.png") })
-    backdrop:addLayer(rain)
-
-    -- Remove the first (and only) layer. Returns true on success, false if index is invalid.
-    local removed = backdrop:removeLayerAt(1)
-    lurek.log.debug("removed=" .. tostring(removed), "parallax") -- true
-  end
+    ---@type LParallaxSet
+    local set = lurek.parallax.newSet("scene")
+    ---@type LParallaxLayer
+    local l1 = lurek.parallax.newLayer({texture = load_parallax_image(), z = 0})
+    ---@type LParallaxLayer
+    local l2 = lurek.parallax.newLayer({texture = load_parallax_image(), z = 5})
+    ---@type LParallaxLayer
+    local l3 = lurek.parallax.newLayer({texture = load_parallax_image(), z = 10})
+    set:addLayer(l1)
+    set:addLayer(l2)
+    set:addLayer(l3)
+    print("layers = " .. set:layerCount())
+    local removed = set:removeLayerAt(2)
+    print("removed = " .. tostring(removed) .. " layers = " .. set:layerCount())
 end
 ```
 
@@ -1841,22 +1685,16 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  local backdrop
-  function lurek.init()
-    backdrop = lurek.parallax.newSet("preview")
-    backdrop:addLayer(lurek.parallax.newLayer({
-      texture = lurek.render.newImage("assets/parallax/sky.png"),
-      scroll_factor_x = 0.1,
-    }))
-    backdrop:addLayer(lurek.parallax.newLayer({
-      texture = lurek.render.newImage("assets/parallax/hills.png"),
-      scroll_factor_x = 0.4,
-    }))
-  end
-  function lurek.draw()
-    -- Pass your own camera position for manual camera control.
-    backdrop:render(0, 0)
-  end
+    ---@type LParallaxSet
+    local set = lurek.parallax.newSet("world")
+    ---@type LParallaxLayer
+    local layer = lurek.parallax.newLayer({texture = load_parallax_image(), z = 0})
+    layer:setAutoscroll(30, 0)
+    set:addLayer(layer)
+    set:update(0.016)
+    set:render(200, 100)
+    set:renderAuto()
+    print("set rendered")
 end
 ```
 
@@ -1879,27 +1717,16 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  local backdrop
-  function lurek.init()
-    -- renderAuto is the simplest way to draw a full parallax scene.
-    -- Reads camera from lurek.camera automatically.
-    backdrop = lurek.parallax.newSet("scene")
-    backdrop:addLayer(lurek.parallax.newLayer({
-      texture = lurek.render.newImage("assets/parallax/sky.png"),
-      scroll_factor_x = 0.1,
-      z = 0,
-    }))
-    backdrop:addLayer(lurek.parallax.newLayer({
-      texture = lurek.render.newImage("assets/parallax/hills.png"),
-      scroll_factor_x = 0.4,
-      z = 10,
-      repeat_x = true,
-    }))
-  end
-  function lurek.draw()
-    -- Typical game loop: just call renderAuto before drawing game objects.
-    backdrop:renderAuto()
-  end
+    ---@type LParallaxSet
+    local set = lurek.parallax.newSet("world")
+    ---@type LParallaxLayer
+    local layer = lurek.parallax.newLayer({texture = load_parallax_image(), z = 0})
+    layer:setAutoscroll(30, 0)
+    set:addLayer(layer)
+    set:update(0.016)
+    set:render(200, 100)
+    set:renderAuto()
+    print("set rendered")
 end
 ```
 
@@ -1927,12 +1754,14 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  function lurek.init()
-    local set = lurek.parallax.newSet("placeholder")
-
-    -- Rename the set when reusing it for a different level section.
-    set:setName("level_3_backdrop")
-  end
+    ---@type LParallaxSet
+    local set = lurek.parallax.newSet("temp")
+    set:setName("sky_layers")
+    print("name = " .. set:getName())
+    set:setVisible(false)
+    print("visible = " .. tostring(set:isVisible()))
+    set:setVisible(true)
+    print("visible = " .. tostring(set:isVisible()))
 end
 ```
 
@@ -1960,14 +1789,14 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  function lurek.init()
-    -- Use set visibility to toggle entire backdrops during menus, cutscenes, or transitions.
-    local backdrop = lurek.parallax.newSet("menu_aware")
-    backdrop:addLayer(lurek.parallax.newLayer({ texture = lurek.render.newImage("assets/parallax/sky.png") }))
-
-    -- Hide the backdrop when entering the pause menu.
-    backdrop:setVisible(false)
-  end
+    ---@type LParallaxSet
+    local set = lurek.parallax.newSet("temp")
+    set:setName("sky_layers")
+    print("name = " .. set:getName())
+    set:setVisible(false)
+    print("visible = " .. tostring(set:isVisible()))
+    set:setVisible(true)
+    print("visible = " .. tostring(set:isVisible()))
 end
 ```
 
@@ -1990,15 +1819,18 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  function lurek.init()
-    local backdrop = lurek.parallax.newSet("sortable")
-    local hills = lurek.parallax.newLayer({ texture = lurek.render.newImage("assets/parallax/hills.png") })
-    backdrop:addLayer(hills)
-
-    -- If you change a layer's z after adding it, call sortByZ to restore correct order.
-    hills:setZ(15)
-    backdrop:sortByZ()
-  end
+    ---@type LParallaxSet
+    local set = lurek.parallax.newSet("sorted")
+    ---@type LParallaxLayer
+    local far = lurek.parallax.newLayer({texture = load_parallax_image(), z = 100})
+    ---@type LParallaxLayer
+    local near = lurek.parallax.newLayer({texture = load_parallax_image(), z = 1})
+    set:addLayer(far)
+    set:addLayer(near)
+    print("z at 1 = " .. set:getLayerZAt(1))
+    print("z at 2 = " .. set:getLayerZAt(2))
+    set:sortByZ()
+    print("sorted: z at 1 = " .. set:getLayerZAt(1))
 end
 ```
 
@@ -2024,14 +1856,8 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  function lurek.init()
-    local set = lurek.parallax.newSet("intro")
-
-    -- type() returns "LParallaxSet" — distinguishes sets from individual layers.
-    if set:type() == "LParallaxSet" then
-      lurek.log.debug("confirmed parallax set handle", "scene")
-    end
-  end
+    local set = lurek.parallax.newSet("bg_set")
+    print(set:type())
 end
 ```
 
@@ -2059,24 +1885,16 @@ Exact example from [parallax.lua](../blob/main/content/examples/parallax.lua):
 
 ```lua
 do
-  local backdrop
-  function lurek.init()
-    -- update(dt) calls :update(dt) on every layer in the set.
-    -- Much simpler than updating each layer individually.
-    backdrop = lurek.parallax.newSet("ambient")
-    backdrop:addLayer(lurek.parallax.newLayer({
-      texture = lurek.render.newImage("assets/parallax/clouds.png"),
-      autoscroll_x = 8,
-    }))
-    backdrop:addLayer(lurek.parallax.newLayer({
-      texture = lurek.render.newImage("assets/parallax/fog.png"),
-      autoscroll_x = 3,
-    }))
-  end
-  function lurek.process(dt)
-    -- One call updates both cloud drift and fog crawl.
-    backdrop:update(dt)
-  end
+    ---@type LParallaxSet
+    local set = lurek.parallax.newSet("world")
+    ---@type LParallaxLayer
+    local layer = lurek.parallax.newLayer({texture = load_parallax_image(), z = 0})
+    layer:setAutoscroll(30, 0)
+    set:addLayer(layer)
+    set:update(0.016)
+    set:render(200, 100)
+    set:renderAuto()
+    print("set rendered")
 end
 ```
 
@@ -2085,7 +1903,7 @@ end
 
 ## 💡 Examples
 
-- [parallax.lua](../blob/main/content/examples/parallax.lua) - Multi-layer parallax scrolling
+No module-specific example file was found.
 
 [⬆ back to top](#table-of-contents)
 

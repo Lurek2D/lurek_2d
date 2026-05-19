@@ -1,6 +1,6 @@
 # Doll Library
 
-**Tier**: 3 — Lunasome (Pure Lua)
+**Tier**: 3 — Lureksome (Pure Lua)
 **Status**: full
 **Path**: `library/doll/`
 **Optional bindings**: `lurek.render` (caller-side renderer for `getDrawList()` entries), `lurek.image` (texture loader for `Part:setTexture`)

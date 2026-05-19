@@ -42,7 +42,7 @@ Key characteristics:
 
 - **Serialisation rule:** TOML for human-authored config; JSON for external interop only; never YAML — constraint `B-05`.
 - **Save/load boundary:** `lurek.serial` and `lurek.save` own all serialised format contracts. Module specs in `docs/specs/` document each module's data surface.
-- **Generated data:** `logs/data/lua_api_data.json` is the machine-readable API data source. `docs/api/lurek.lua` and `docs/api/library.lua` are generated — never edited by hand. Changes flow from `src/lua_api/*_api.rs` through `python tools/gen_all_docs.py`.
+- **Generated data:** `logs/data/lua_api_data.json` is the machine-readable API data source. `docs/api/lurek.lua` and `docs/api/lureksome.lua` are generated — never edited by hand. Changes flow from `src/lua_api/*_api.rs` through `python tools/gen_all_docs.py`.
 - **Config schemas:** TOML layout files in `content/layouts/` validated by `tools/ui/` scripts.
 
 ### Application Architecture

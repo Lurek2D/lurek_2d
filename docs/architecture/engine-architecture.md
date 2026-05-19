@@ -84,7 +84,7 @@ graph TD
 | **Platform Services** | OS-facing backends behind pure-Rust contracts (GPU, audio, physics, input, windowing) | Foundations, Core Runtime | Feature Systems, Edge |
 | **Feature Systems** | Game-domain services: sprites, scenes, particles, UI, AI, tilemaps | Foundations, Core Runtime, Platform Services | Edge/Integration |
 | **Edge/Integration** | Composition root (`app`), scripting bridge (`lua_api`), devtools | Everything below | (top of the DAG) |
-| **Lunasome** | Pure-Lua gameplay libraries | Public `lurek.*` API only | Rust engine internals |
+| **Lureksome** | Pure-Lua gameplay libraries | Public `lurek.*` API only | Rust engine internals |
 
 The binding dependency constraints **T-01 through T-08** are defined in [philosophy.md § Active Module Group Constraints](philosophy.md#active-module-group-constraints). Consult `philosophy.md` directly — this document does not restate them.
 
@@ -167,7 +167,7 @@ The binding dependency constraints **T-01 through T-08** are defined in [philoso
 | `pipeline` | Asset pipeline utilities | Pipeline stages |
 | `bin` | Binary entry points, CLI arg parsing | `main()` |
 
-### Lunasome (library/)
+### Lureksome (library/)
 
 Pure-Lua gameplay libraries, each consuming only public `lurek.*` APIs:
 
@@ -598,7 +598,7 @@ lurek2d/
 │   ├── specs/              One <module>.md per src/<module>/
 │   ├── api/                Generated API references (never edit by hand)
 │   └── CHANGELOG.md        Version history
-├── library/                Lunasome — pure-Lua standard libraries
+├── library/                Lureksome — pure-Lua standard libraries
 ├── tools/                  CLI scripts (docs, audit, fix, validate, dist)
 ├── assets/                 Engine assets (splash, icon, fonts)
 ├── extensions/vscode/      VS Code extension (MCP, IntelliSense, webview)
