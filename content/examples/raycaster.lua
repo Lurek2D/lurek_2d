@@ -542,7 +542,7 @@ do
     ---@type LRaycaster
     local map = lurek.raycaster.new(8, 8)
     ---@type LImage
-    local floorTex = lurek.graphics.newImage("assets/textures/ray_water.png")
+    local floorTex = lurek.render.newImage("assets/textures/ray_water.png")
     map:setFloorTextureCell(3, 3, floorTex)
     print("floor texture assigned")
 end
@@ -553,7 +553,7 @@ do
     ---@type LRaycaster
     local map = lurek.raycaster.new(8, 8)
     ---@type LImage
-    local floorTex = lurek.graphics.newImage("assets/textures/ray_water.png")
+    local floorTex = lurek.render.newImage("assets/textures/ray_water.png")
     map:setFloorTextureCell(3, 3, floorTex)
     print("floor at 3,3 = " .. tostring(map:getFloorTextureCell(3, 3)))
 end
@@ -564,7 +564,7 @@ do
     ---@type LRaycaster
     local map = lurek.raycaster.new(8, 8)
     ---@type LImage
-    local ceilTex = lurek.graphics.newImage("assets/textures/ray_water.png")
+    local ceilTex = lurek.render.newImage("assets/textures/ray_water.png")
     map:setCeilingTextureCell(2, 2, ceilTex)
     print("ceiling texture assigned")
 end
@@ -575,7 +575,7 @@ do
     ---@type LRaycaster
     local map = lurek.raycaster.new(8, 8)
     ---@type LImage
-    local ceilTex = lurek.graphics.newImage("assets/textures/ray_water.png")
+    local ceilTex = lurek.render.newImage("assets/textures/ray_water.png")
     map:setCeilingTextureCell(2, 2, ceilTex)
     print("ceiling at 2,2 = " .. tostring(map:getCeilingTextureCell(2, 2)))
 end

@@ -501,11 +501,10 @@ do
     local chain = lurek.tween.tweenChain({
         { duration = 0.5, target = obj, fields = { x = 100 }, easing = "easeOutQuad" },
         { duration = 0.5, target = obj, fields = { y = 100 }, easing = "easeInQuad" },
-        { callback = function() print("  chain finished: x=" .. obj.x .. " y=" .. obj.y) end },
     })
     lurek.tween.update(0.5)
     lurek.tween.update(0.5)
-    lurek.tween.update(0.01)
+    print("chain result: x=" .. obj.x .. " y=" .. obj.y)
 end
 
 --- Tween Part 2: LTween extended, LTweenParallel, LTweenSequence, LTweenState, advanced module fns

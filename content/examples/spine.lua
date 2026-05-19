@@ -618,8 +618,8 @@ do
     skel:setIKTarget("arm_ik", 120, 180)
     skel:playAnimation("walk", true)
     print("anim_time=" .. skel:getAnimationTime())
-    local wx, wy = skel:getBoneWorld(b0)
-    print("world=" .. wx .. "," .. wy)
+    local world = skel:getBoneWorld(b0)
+    print("world=" .. world.x .. "," .. world.y)
     skel:blendAnimation(blendAnim, 0.5, 1.0)
     skel:stopAnimation()
 

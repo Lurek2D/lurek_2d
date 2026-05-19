@@ -539,10 +539,10 @@ do
     local ts = lurek.tilemap.newTileSet(1, 64, 8, 16, 16)
     sheet:applyToTileSet(ts, "terrain")
     local id = ts:getAutoTileId("terrain", 5)
-    print("after apply, bitmask 5 -> tile " .. id)
+    print("after apply, bitmask 5 -> tile " .. tostring(id))
     sheet:applyToTileSet(ts, "water", 17)
     id = ts:getAutoTileId("water", 0)
-    print("water bitmask 0 -> tile " .. id)
+    print("water bitmask 0 -> tile " .. tostring(id))
 end
 
 --@api-stub: LAutoTileSheet:getBitmaskForTile

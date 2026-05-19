@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- docs(readme): fixed the GitHub-facing wiki links in the root `README.md` to use the real GitHub wiki URLs (`/wiki/...`) instead of `wiki/*.md` paths inside the main repository, because the wiki lives in a separate git repository.
+
 - docs(readme,wiki): replaced link-heavy tables in the root `README.md` and `wiki/Home.md` with plain bullet-list navigation so the main project links use the most renderer-compatible Markdown form.
 
 - docs(readme): normalized all root `README.md` local links from `./path` form to plain repo-relative `path` form so the landing page uses the simplest possible file links across Markdown renderers.

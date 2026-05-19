@@ -21,7 +21,7 @@
 - **Model:** Rust owns systems, Lua owns game logic.
 - **Scope:** rendering, audio, input, physics, scene/tilemap/sprite/tween, save, networking, tooling.
 - **Repo contents:** engine + API docs + examples + reference games + Lua libraries + extension tooling.
-- **Details:** the full project reference now lives in [wiki/Project-Reference.md](wiki/Project-Reference.md).
+- **Details:** the GitHub wiki overview lives at [Lurek2D Wiki](https://github.com/LurekDude/lurek_2d/wiki).
 
 ## Lurek Is...
 
@@ -37,8 +37,8 @@
 
 ## Start Here
 
-- [Wiki home](wiki/Home.md) — curated entry point for the detailed docs moved out of the root README.
-- [Project reference](wiki/Project-Reference.md) — full high-level project overview, module map, use cases, tech stack, and licensing.
+- [Wiki home](https://github.com/LurekDude/lurek_2d/wiki) — GitHub wiki landing page from the separate wiki repository.
+- [Getting started wiki](https://github.com/LurekDude/lurek_2d/wiki/Getting-Started) — first steps, orientation, and initial commands.
 - [Lurek API reference](docs/api/lurek.md) — full public `lurek.*` API surface.
 - [Rust API reference](docs/api/rust.md) — engine internals for contributors.
 - [Library API reference](docs/api/library.md) — generated reference for the pure-Lua libraries.
@@ -51,7 +51,7 @@
 ## Project Guides
 
 - [Examples guide](content/examples/README.md) — how to use the single-file API examples under `content/examples/`.
-- [Detailed project reference](wiki/Project-Reference.md) — runtime modules, game categories, what ships, and project identity.
+- [GitHub wiki modules](https://github.com/LurekDude/lurek_2d/wiki/Modules) — generated module navigation in the separate wiki repository.
 - [Library API reference](docs/api/library.md) — public surface of the bundled pure-Lua libraries.
 - [Test suite overview](tests/README.md) — Rust/Lua test layout, commands, and coverage rules.
 - [VS Code toolkit](extensions/vscode/README.md) — extension features, installation, and editor workflow.

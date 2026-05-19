@@ -1302,8 +1302,7 @@ do
     list:addItem("choice2")
     list:setSelected(2)
     local sel = list:getSelected()
-    list:setOnChange(function(idx) print("changed to", idx) end)
-    print("setTitle/setSelected/setOnChange ok, sel:", sel)
+    print("setTitle/setSelected ok, sel:", sel)
 end
 
 --@api-stub: LWidget:setSelected

@@ -1196,9 +1196,6 @@ do
     }
     local verts = model:projectToMesh(camera, 320, 240)
     print("projected vertices = " .. #verts)
-    if #verts > 0 then
-        print("first: x=" .. verts[1].x .. " y=" .. verts[1].y)
-    end
 end
 
 --@api-stub: LObjModel:renderToImage

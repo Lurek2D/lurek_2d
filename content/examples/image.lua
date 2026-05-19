@@ -22,7 +22,7 @@ end
 --@api-stub: lurek.image.loadImage
 -- Loads and decodes an image from GameFS.
 do
-    local img = lurek.image.loadImage("assets/textures/test.png")
+    local img = lurek.image.loadImage("assets/textures/province_map.png")
     print("loaded image " .. img:getWidth() .. "x" .. img:getHeight())
 end
 

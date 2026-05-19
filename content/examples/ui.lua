@@ -2481,9 +2481,9 @@ do
     sb:addSection("Ready", 120)
     sb:addSection("Line 1", 80)
     print("sections=" .. sb:getSectionCount())
-    print("text0=" .. sb:getSectionText(0))
-    sb:setSectionText(0, "Loading...")
-    print("text0_after=" .. sb:getSectionText(0))
+    print("text1=" .. sb:getSectionText(1))
+    sb:setSectionText(1, "Loading...")
+    print("text1_after=" .. sb:getSectionText(1))
 end
 
 --@api-stub: LStatusBar:getSectionCount

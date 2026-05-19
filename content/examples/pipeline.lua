@@ -396,12 +396,12 @@ do
     pipe:addStep(lurek.pipeline.newStep("count", function(ctx)
         ctx.n = (ctx.n or 0) + 1
     end))
-    pipe:run()
-    local ctx1 = pipe:getContext()
+    local ctx1 = {}
+    pipe:run(ctx1)
     print("first run n = " .. ctx1.n)
     pipe:reset()
-    pipe:run()
-    local ctx2 = pipe:getContext()
+    local ctx2 = {}
+    pipe:run(ctx2)
     print("second run n = " .. ctx2.n)
 end
 
