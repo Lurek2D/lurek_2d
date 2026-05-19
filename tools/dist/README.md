@@ -15,6 +15,7 @@ distribution archives, and installing the engine locally.
 | `installer.nsi` | Windows | NSIS installer script → `dist/lurek2d-*-setup.exe` |
 | `pack.ps1` | Windows | Pack a game folder into a `.lurek` archive (PowerShell) |
 | `pack.py` | Cross-platform | Pack a game folder into a `.lurek` archive (Python) |
+| `package_games.py` | Cross-platform | Package game and demo content for distribution workflows |
 
 ## Quick start — full release
 
@@ -77,3 +78,7 @@ artifacts and a SHA256 checksum file attached.
 | Node.js 18+ / npm | `scoop install nodejs` | VS Code extension |
 
 ```
+
+## Filename index
+
+`pack.py`, `package_games.py`

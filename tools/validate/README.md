@@ -87,3 +87,7 @@ python tools/validate/validate_library.py
 python tools/validate/validate_library.py --library camera_utils --strict
 ```
 
+## Filename index
+
+`cag_validate.py`, `check_callbacks.py`, `validate_changelog.py`, `validate_game.py`, `validate_generated_lua_stubs.py`, `validate_library.py`, `validate_lua_api.py`, `validate_lua_binding_reports.py`, `validate_module_coverage.py`, `validate_param_types.py`, `validate_rust_source_docs.py`
+

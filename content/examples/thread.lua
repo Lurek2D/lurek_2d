@@ -324,7 +324,6 @@ do
     local inCh = pool:getInputChannel()
     ---@type LChannel
     local outCh = pool:getOutputChannel()
-    print("input channel type = " .. inCh:type())
     print("output channel type = " .. outCh:type())
     inCh:push("job")
     print("output message = " .. tostring(outCh:demand(1.0)))
@@ -370,9 +369,7 @@ do
         end
     end
     local val = promise:result()
-    print("done = " .. tostring(done))
     print("result = " .. tostring(val))
-    print("error = " .. tostring(promise:getError()))
 end
 
 --@api-stub: LPromise:isDone
@@ -389,10 +386,7 @@ do
             break
         end
     end
-    local val = promise:result()
     print("done = " .. tostring(done))
-    print("result = " .. tostring(val))
-    print("error = " .. tostring(promise:getError()))
 end
 
 --@api-stub: LPromise:getError
@@ -409,9 +403,6 @@ do
             break
         end
     end
-    local val = promise:result()
-    print("done = " .. tostring(done))
-    print("result = " .. tostring(val))
     print("error = " .. tostring(promise:getError()))
 end
 
@@ -471,36 +462,7 @@ end
 -- Channel full API coverage: push/pop variants, supply, demand, capacity, count, type. Focus: getCapacity.
 do
     local ch = lurek.thread.newChannel()
-    print("bounded=" .. tostring(ch:isBounded()))
     print("capacity=" .. tostring(ch:getCapacity()))
-    print("count=" .. ch:getCount())
-
-    ch:push("hello")
-    local peeked = ch:peek()
-    print("peeked=" .. tostring(peeked))
-    local popped = ch:pop()
-    print("popped=" .. tostring(popped))
-
-    ch:pushTable({ a = 1, b = 2 })
-    local t = ch:popTable()
-    print("table=" .. tostring(t ~= nil))
-
-    ch:pushBytes("raw_data")
-    local raw = ch:popBytes()
-    print("bytes=" .. tostring(raw ~= nil))
-
-    ch:supply("supplied_value")
-    local demanded = ch:demand(100)
-    print("demanded=" .. tostring(demanded))
-
-    local ok = ch:tryPush("try_value")
-    print("try_push=" .. tostring(ok))
-
-    ch:clear()
-    print("count_after_clear=" .. ch:getCount())
-
-    print("type=" .. ch:type())
-    print("typeOf=" .. tostring(ch:typeOf("LChannel")))
 end
 
 --@api-stub: LChannel:isBounded
@@ -508,106 +470,19 @@ end
 do
     local ch = lurek.thread.newChannel()
     print("bounded=" .. tostring(ch:isBounded()))
-    print("capacity=" .. tostring(ch:getCapacity()))
-    print("count=" .. ch:getCount())
-
-    ch:push("hello")
-    local peeked = ch:peek()
-    print("peeked=" .. tostring(peeked))
-    local popped = ch:pop()
-    print("popped=" .. tostring(popped))
-
-    ch:pushTable({ a = 1, b = 2 })
-    local t = ch:popTable()
-    print("table=" .. tostring(t ~= nil))
-
-    ch:pushBytes("raw_data")
-    local raw = ch:popBytes()
-    print("bytes=" .. tostring(raw ~= nil))
-
-    ch:supply("supplied_value")
-    local demanded = ch:demand(100)
-    print("demanded=" .. tostring(demanded))
-
-    local ok = ch:tryPush("try_value")
-    print("try_push=" .. tostring(ok))
-
-    ch:clear()
-    print("count_after_clear=" .. ch:getCount())
-
-    print("type=" .. ch:type())
-    print("typeOf=" .. tostring(ch:typeOf("LChannel")))
 end
 
 --@api-stub: LChannel:type
 -- Channel full API coverage: push/pop variants, supply, demand, capacity, count, type. Focus: type.
 do
     local ch = lurek.thread.newChannel()
-    print("bounded=" .. tostring(ch:isBounded()))
-    print("capacity=" .. tostring(ch:getCapacity()))
-    print("count=" .. ch:getCount())
-
-    ch:push("hello")
-    local peeked = ch:peek()
-    print("peeked=" .. tostring(peeked))
-    local popped = ch:pop()
-    print("popped=" .. tostring(popped))
-
-    ch:pushTable({ a = 1, b = 2 })
-    local t = ch:popTable()
-    print("table=" .. tostring(t ~= nil))
-
-    ch:pushBytes("raw_data")
-    local raw = ch:popBytes()
-    print("bytes=" .. tostring(raw ~= nil))
-
-    ch:supply("supplied_value")
-    local demanded = ch:demand(100)
-    print("demanded=" .. tostring(demanded))
-
-    local ok = ch:tryPush("try_value")
-    print("try_push=" .. tostring(ok))
-
-    ch:clear()
-    print("count_after_clear=" .. ch:getCount())
-
     print("type=" .. ch:type())
-    print("typeOf=" .. tostring(ch:typeOf("LChannel")))
 end
 
 --@api-stub: LChannel:typeOf
 -- Channel full API coverage: push/pop variants, supply, demand, capacity, count, type. Focus: typeOf.
 do
     local ch = lurek.thread.newChannel()
-    print("bounded=" .. tostring(ch:isBounded()))
-    print("capacity=" .. tostring(ch:getCapacity()))
-    print("count=" .. ch:getCount())
-
-    ch:push("hello")
-    local peeked = ch:peek()
-    print("peeked=" .. tostring(peeked))
-    local popped = ch:pop()
-    print("popped=" .. tostring(popped))
-
-    ch:pushTable({ a = 1, b = 2 })
-    local t = ch:popTable()
-    print("table=" .. tostring(t ~= nil))
-
-    ch:pushBytes("raw_data")
-    local raw = ch:popBytes()
-    print("bytes=" .. tostring(raw ~= nil))
-
-    ch:supply("supplied_value")
-    local demanded = ch:demand(100)
-    print("demanded=" .. tostring(demanded))
-
-    local ok = ch:tryPush("try_value")
-    print("try_push=" .. tostring(ok))
-
-    ch:clear()
-    print("count_after_clear=" .. ch:getCount())
-
-    print("type=" .. ch:type())
     print("typeOf=" .. tostring(ch:typeOf("LChannel")))
 end
 
@@ -622,14 +497,9 @@ do
     ]]
     local t = lurek.thread.newThread(code)
     t:start()
-    local running = t:isRunning()
-    print("running=" .. tostring(running))
     t:wait()
-    print("status=" .. tostring(status:pop()))
     local err = t:getError()
     print("error=" .. tostring(err))
-    print("type=" .. t:type())
-    print("typeOf=" .. tostring(t:typeOf("LThread")))
 end
 
 --@api-stub: LThread:isRunning
@@ -645,12 +515,6 @@ do
     t:start()
     local running = t:isRunning()
     print("running=" .. tostring(running))
-    t:wait()
-    print("status=" .. tostring(status:pop()))
-    local err = t:getError()
-    print("error=" .. tostring(err))
-    print("type=" .. t:type())
-    print("typeOf=" .. tostring(t:typeOf("LThread")))
 end
 
 --@api-stub: LThread:start
@@ -664,14 +528,7 @@ do
     ]]
     local t = lurek.thread.newThread(code)
     t:start()
-    local running = t:isRunning()
-    print("running=" .. tostring(running))
-    t:wait()
-    print("status=" .. tostring(status:pop()))
-    local err = t:getError()
-    print("error=" .. tostring(err))
-    print("type=" .. t:type())
-    print("typeOf=" .. tostring(t:typeOf("LThread")))
+    print("start ok")
 end
 
 --@api-stub: LThread:type
@@ -684,15 +541,7 @@ do
         ch:push("done")
     ]]
     local t = lurek.thread.newThread(code)
-    t:start()
-    local running = t:isRunning()
-    print("running=" .. tostring(running))
-    t:wait()
-    print("status=" .. tostring(status:pop()))
-    local err = t:getError()
-    print("error=" .. tostring(err))
     print("type=" .. t:type())
-    print("typeOf=" .. tostring(t:typeOf("LThread")))
 end
 
 --@api-stub: LThread:typeOf
@@ -705,14 +554,6 @@ do
         ch:push("done")
     ]]
     local t = lurek.thread.newThread(code)
-    t:start()
-    local running = t:isRunning()
-    print("running=" .. tostring(running))
-    t:wait()
-    print("status=" .. tostring(status:pop()))
-    local err = t:getError()
-    print("error=" .. tostring(err))
-    print("type=" .. t:type())
     print("typeOf=" .. tostring(t:typeOf("LThread")))
 end
 
@@ -721,35 +562,24 @@ end
 do
     local p = lurek.thread.async("return 42")
     local t = p:type()
-    local ok = p:typeOf("LPromise")
-    local thread = lurek.thread.newThread("return 'done'")
-    thread:start()
-    thread:wait()
-    print("LPromise type:", t, "typeOf:", ok, "LThread:wait ok")
+    print("LPromise type:", t)
 end
 
 --@api-stub: LPromise:typeOf
 -- LPromise type checks and LThread wait. Focus: typeOf.
 do
     local p = lurek.thread.async("return 42")
-    local t = p:type()
     local ok = p:typeOf("LPromise")
-    local thread = lurek.thread.newThread("return 'done'")
-    thread:start()
-    thread:wait()
-    print("LPromise type:", t, "typeOf:", ok, "LThread:wait ok")
+    print("LPromise typeOf:", ok)
 end
 
 --@api-stub: LThread:wait
 -- LPromise type checks and LThread wait. Focus: wait.
 do
-    local p = lurek.thread.async("return 42")
-    local t = p:type()
-    local ok = p:typeOf("LPromise")
     local thread = lurek.thread.newThread("return 'done'")
     thread:start()
     thread:wait()
-    print("LPromise type:", t, "typeOf:", ok, "LThread:wait ok")
+    print("LThread:wait ok")
 end
 
 --@api-stub: LThreadPool:size
@@ -757,29 +587,23 @@ end
 do
     local pool = lurek.thread.newPool(3, "return require 'lurek'.thread and 'ok' or 'ok'")
     local sz = pool:size()
-    local t = pool:type()
-    local ok = pool:typeOf("LThreadPool")
-    print("pool size:", sz, "type:", t, "typeOf:", ok)
+    print("pool size:", sz)
 end
 
 --@api-stub: LThreadPool:type
 -- LThreadPool size and type checks. Focus: type.
 do
     local pool = lurek.thread.newPool(3, "return require 'lurek'.thread and 'ok' or 'ok'")
-    local sz = pool:size()
     local t = pool:type()
-    local ok = pool:typeOf("LThreadPool")
-    print("pool size:", sz, "type:", t, "typeOf:", ok)
+    print("type:", t)
 end
 
 --@api-stub: LThreadPool:typeOf
 -- LThreadPool size and type checks. Focus: typeOf.
 do
     local pool = lurek.thread.newPool(3, "return require 'lurek'.thread and 'ok' or 'ok'")
-    local sz = pool:size()
-    local t = pool:type()
     local ok = pool:typeOf("LThreadPool")
-    print("pool size:", sz, "type:", t, "typeOf:", ok)
+    print("typeOf:", ok)
 end
 
 print("content/examples/thread.lua")

@@ -1,4 +1,4 @@
-﻿"""Validate math-module API stubs in content/examples/math.lua.
+"""Validate math-module API stubs in content/examples/math.lua.
 
 Narrower variant of strict_api_check.py that restricts analysis to the
 'math' module only. Useful for rapid iteration when improving math.lua

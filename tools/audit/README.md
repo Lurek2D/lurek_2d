@@ -124,3 +124,7 @@ python tools/audit/wiki_coverage.py                               # wiki coverag
 python tools/audit/wiki_coverage.py --strict --format json        # strict mode, JSON output
 ```
 
+## Filename index
+
+`audit_module.py`, `cag_coverage.py`, `cag_link_check.py`, `cag_persona_matrix.py`, `count_gaps.py`, `docstring_audit.py`, `doc_audit.py`, `doc_coverage.py`, `example_add_missing.py`, `example_coverage.py`, `extract_constructors.py`, `generate_examples2_stubs.py`, `gen_coverage_gaps.py`, `gen_lua_contract_tests.py`, `get_api_sigs.py`, `golden_test.py`, `inline_test_audit.py`, `integration_coverage.py`, `library_coverage.py`, `lua_api_test_coverage.py`, `lua_covers_lurek_api_audit.py`, `lua_evidence_golden_contract_audit.py`, `lua_spec_coverage.py`, `lua_test_structure_audit.py`, `mutation_report.py`, `parse_test_log.py`, `perf_regression_gate.py`, `quality_report.py`, `scan_api_names.py`, `scan_exact.py`, `scan_module_fns.py`, `scan_sigs.py`, `stress_report.py`, `strict_api_check.py`, `strict_api_check_math.py`, `test_analytics.py`, `test_coverage.py`, `thin_modrs_audit.py`, `thin_wrapper_audit.py`, `tool_registry_audit.py`, `unit_test_api_coverage.py`, `wiki_coverage.py`
+

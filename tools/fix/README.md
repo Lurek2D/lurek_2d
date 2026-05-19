@@ -7,6 +7,9 @@ stale path references.
 > **Caution**: These scripts modify files in-place. Always run with
 > `--dry-run` first (where supported) to preview changes.
 
+This folder is for reusable fixers only. One-off migrations and single-batch
+cleanup scripts belong under `work/<session>/scripts/`, not `tools/fix/`.
+
 ## Scripts
 
 ### Docstring fixers — add or repair `///` doc comments
@@ -17,6 +20,7 @@ stale path references.
 | `add_lua_docstrings_auto.py` | Auto-generate `///` Lua docstring stubs non-interactively | `--dry-run` |
 | `docstring_fix.py` | Apply docstring fixes from `logs/data/docstring_audit.json` | `--dry-run` |
 | `fix_docstrings.py` | Auto-fill missing `# Parameters`/`# Returns`/`# Fields`/`# Variants` | — |
+| `fix_param_types.py` | Auto-fix `number` vs `integer` mismatches in Lua binding `@param` tags | `--apply` |
 | `improve_lua_docstrings.py` | Upgrade low-quality stub `///` comments with richer descriptions | `--dry-run` |
 
 ### Example/content fixers — modify content/ files
@@ -44,6 +48,8 @@ python tools/fix/docstring_fix.py --dry-run              # preview audit fixes
 python tools/fix/docstring_fix.py                        # apply
 
 python tools/fix/fix_docstrings.py                       # auto-fill sections
+python tools/fix/fix_param_types.py                      # preview param-type fixes
+python tools/fix/fix_param_types.py --apply              # apply param-type fixes
 
 # --- Examples ---
 python tools/fix/format_examples.py                      # format all examples

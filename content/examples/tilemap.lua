@@ -196,9 +196,6 @@ do
     map:addTileSet(terrain)
     map:addTileSet(objects)
     print("tileset count = " .. map:getTileSetCount())
-    ---@type LTileSet
-    local ts1 = map:getTileSet(1)
-    print("tileset 1 first gid = " .. ts1:getFirstGid())
 end
 
 --@api-stub: LTileMap:getTileSet
@@ -212,7 +209,6 @@ do
     local objects = lurek.tilemap.newTileSet(65, 32, 8, 32, 32)
     map:addTileSet(terrain)
     map:addTileSet(objects)
-    print("tileset count = " .. map:getTileSetCount())
     ---@type LTileSet
     local ts1 = map:getTileSet(1)
     print("tileset 1 first gid = " .. ts1:getFirstGid())
@@ -230,9 +226,6 @@ do
     map:addTileSet(terrain)
     map:addTileSet(objects)
     print("tileset count = " .. map:getTileSetCount())
-    ---@type LTileSet
-    local ts1 = map:getTileSet(1)
-    print("tileset 1 first gid = " .. ts1:getFirstGid())
 end
 
 --@api-stub: LTileMap:isSolid
@@ -249,8 +242,6 @@ do
     map:setTile(layer, 4, 3, 1)
     print("3,3 solid = " .. tostring(map:isSolid(layer, 3, 3)))
     print("5,5 solid = " .. tostring(map:isSolid(layer, 5, 5)))
-    local overlap = map:rectOverlapsSolid(layer, 80, 80, 40, 40)
-    print("rect overlaps solid = " .. tostring(overlap))
 end
 
 --@api-stub: LTileMap:rectOverlapsSolid
@@ -265,8 +256,6 @@ do
     local layer = map:addLayer("collision", 10, 10)
     map:setTile(layer, 3, 3, 1)
     map:setTile(layer, 4, 3, 1)
-    print("3,3 solid = " .. tostring(map:isSolid(layer, 3, 3)))
-    print("5,5 solid = " .. tostring(map:isSolid(layer, 5, 5)))
     local overlap = map:rectOverlapsSolid(layer, 80, 80, 40, 40)
     print("rect overlaps solid = " .. tostring(overlap))
 end
@@ -280,13 +269,6 @@ do
     map:setViewport(0, 0, 800, 600)
     local vx, vy, vw, vh = map:getViewport()
     print("viewport = " .. vx .. "," .. vy .. " " .. vw .. "x" .. vh)
-    map:setViewport(64, 32, 800, 600)
-    vx, vy, vw, vh = map:getViewport()
-    print("scrolled viewport = " .. vx .. "," .. vy)
-    map:render()
-    print("rendered at origin")
-    map:render(10, 10)
-    print("rendered with offset")
 end
 
 --@api-stub: LTileMap:getViewport
@@ -298,13 +280,6 @@ do
     map:setViewport(0, 0, 800, 600)
     local vx, vy, vw, vh = map:getViewport()
     print("viewport = " .. vx .. "," .. vy .. " " .. vw .. "x" .. vh)
-    map:setViewport(64, 32, 800, 600)
-    vx, vy, vw, vh = map:getViewport()
-    print("scrolled viewport = " .. vx .. "," .. vy)
-    map:render()
-    print("rendered at origin")
-    map:render(10, 10)
-    print("rendered with offset")
 end
 
 --@api-stub: LTileMap:render
@@ -314,11 +289,6 @@ do
     local map = lurek.tilemap.newTileMap(32, 32)
     map:addLayer("ground", 100, 100)
     map:setViewport(0, 0, 800, 600)
-    local vx, vy, vw, vh = map:getViewport()
-    print("viewport = " .. vx .. "," .. vy .. " " .. vw .. "x" .. vh)
-    map:setViewport(64, 32, 800, 600)
-    vx, vy, vw, vh = map:getViewport()
-    print("scrolled viewport = " .. vx .. "," .. vy)
     map:render()
     print("rendered at origin")
     map:render(10, 10)
@@ -333,10 +303,6 @@ do
     map:addLayer("main", 20, 20)
     local tx, ty = map:worldToTile(100, 80)
     print("world(100,80) -> tile(" .. tx .. "," .. ty .. ")")
-    local wx, wy = map:tileToWorld(5, 3)
-    print("tile(5,3) -> world(" .. wx .. "," .. wy .. ")")
-    local tx2, ty2 = map:worldToTile(0, 0)
-    print("world(0,0) -> tile(" .. tx2 .. "," .. ty2 .. ")")
 end
 
 --@api-stub: LTileMap:tileToWorld
@@ -345,12 +311,8 @@ do
     ---@type LTileMap
     local map = lurek.tilemap.newTileMap(32, 32)
     map:addLayer("main", 20, 20)
-    local tx, ty = map:worldToTile(100, 80)
-    print("world(100,80) -> tile(" .. tx .. "," .. ty .. ")")
     local wx, wy = map:tileToWorld(5, 3)
     print("tile(5,3) -> world(" .. wx .. "," .. wy .. ")")
-    local tx2, ty2 = map:worldToTile(0, 0)
-    print("world(0,0) -> tile(" .. tx2 .. "," .. ty2 .. ")")
 end
 
 --@api-stub: LTileMap:setLayerVisible
@@ -359,11 +321,8 @@ do
     ---@type LTileMap
     local map = lurek.tilemap.newTileMap(32, 32)
     map:addLayer("background", 20, 20)
-    map:addLayer("foreground", 20, 20)
-    print("layer 1 visible = " .. tostring(map:getLayerVisible(1)))
     map:setLayerVisible(1, false)
     print("after hide = " .. tostring(map:getLayerVisible(1)))
-    map:setLayerVisible(1, true)
 end
 
 --@api-stub: LTileMap:getLayerVisible
@@ -372,11 +331,7 @@ do
     ---@type LTileMap
     local map = lurek.tilemap.newTileMap(32, 32)
     map:addLayer("background", 20, 20)
-    map:addLayer("foreground", 20, 20)
     print("layer 1 visible = " .. tostring(map:getLayerVisible(1)))
-    map:setLayerVisible(1, false)
-    print("after hide = " .. tostring(map:getLayerVisible(1)))
-    map:setLayerVisible(1, true)
 end
 
 --@api-stub: LTileMap:setLayerColor
@@ -429,13 +384,9 @@ do
     ---@type LTileMap
     local map = lurek.tilemap.newTileMap(32, 32)
     map:addLayer("background", 40, 30)
-    map:addLayer("midground", 40, 30)
     map:setLayerParallax(1, 0.5, 0.5)
-    map:setLayerParallax(2, 0.8, 0.8)
     local px, py = map:getLayerParallax(1)
     print("bg parallax = " .. px .. ", " .. py)
-    px, py = map:getLayerParallax(2)
-    print("mid parallax = " .. px .. ", " .. py)
 end
 
 --@api-stub: LTileMap:getLayerParallax
@@ -444,13 +395,9 @@ do
     ---@type LTileMap
     local map = lurek.tilemap.newTileMap(32, 32)
     map:addLayer("background", 40, 30)
-    map:addLayer("midground", 40, 30)
     map:setLayerParallax(1, 0.5, 0.5)
-    map:setLayerParallax(2, 0.8, 0.8)
     local px, py = map:getLayerParallax(1)
     print("bg parallax = " .. px .. ", " .. py)
-    px, py = map:getLayerParallax(2)
-    print("mid parallax = " .. px .. ", " .. py)
 end
 
 --- Tilemap Module Part 2: auto-tiling, collision sweep, tile callbacks, navigation
@@ -462,14 +409,8 @@ do
     ---@type LTileSet
     local ts = lurek.tilemap.newTileSet(1, 32, 8, 16, 16)
     ts:setAutoTileRule("grass", 0, 1)
-    ts:setAutoTileRule("grass", 1, 2)
-    ts:setAutoTileRule("grass", 2, 3)
-    ts:setAutoTileRule("grass", 3, 4)
-    ts:setAutoTileRule("grass", 15, 16)
     local id = ts:getAutoTileId("grass", 0)
     print("bitmask 0 -> tile " .. id)
-    id = ts:getAutoTileId("grass", 15)
-    print("bitmask 15 -> tile " .. id)
 end
 
 --@api-stub: LTileSet:getAutoTileId
@@ -478,13 +419,8 @@ do
     ---@type LTileSet
     local ts = lurek.tilemap.newTileSet(1, 32, 8, 16, 16)
     ts:setAutoTileRule("grass", 0, 1)
-    ts:setAutoTileRule("grass", 1, 2)
-    ts:setAutoTileRule("grass", 2, 3)
-    ts:setAutoTileRule("grass", 3, 4)
     ts:setAutoTileRule("grass", 15, 16)
-    local id = ts:getAutoTileId("grass", 0)
-    print("bitmask 0 -> tile " .. id)
-    id = ts:getAutoTileId("grass", 15)
+    local id = ts:getAutoTileId("grass", 15)
     print("bitmask 15 -> tile " .. id)
 end
 
@@ -494,11 +430,7 @@ do
     ---@type LTileSet
     local ts = lurek.tilemap.newTileSet(1, 256, 16, 16, 16)
     ts:setAutoTileRule8("wall", 0, 1)
-    ts:setAutoTileRule8("wall", 255, 48)
-    ts:setAutoTileRule8("wall", 127, 32)
-    local id = ts:getAutoTileId8("wall", 255)
-    print("8-bit bitmask 255 -> tile " .. id)
-    id = ts:getAutoTileId8("wall", 0)
+    local id = ts:getAutoTileId8("wall", 0)
     print("8-bit bitmask 0 -> tile " .. id)
 end
 
@@ -507,13 +439,9 @@ end
 do
     ---@type LTileSet
     local ts = lurek.tilemap.newTileSet(1, 256, 16, 16, 16)
-    ts:setAutoTileRule8("wall", 0, 1)
     ts:setAutoTileRule8("wall", 255, 48)
-    ts:setAutoTileRule8("wall", 127, 32)
     local id = ts:getAutoTileId8("wall", 255)
     print("8-bit bitmask 255 -> tile " .. id)
-    id = ts:getAutoTileId8("wall", 0)
-    print("8-bit bitmask 0 -> tile " .. id)
 end
 
 --@api-stub: lurek.tilemap.newAutoTileSheet
@@ -552,8 +480,6 @@ do
     local sheet = lurek.tilemap.newAutoTileSheet(16, 16, "minimal16")
     local bitmask = sheet:getBitmaskForTile(3)
     print("tile 3 has bitmask = " .. bitmask)
-    local tile = sheet:getTileForBitmask(7)
-    print("bitmask 7 -> tile " .. tile)
 end
 
 --@api-stub: LAutoTileSheet:getTileForBitmask
@@ -561,8 +487,6 @@ end
 do
     ---@type LAutoTileSheet
     local sheet = lurek.tilemap.newAutoTileSheet(16, 16, "minimal16")
-    local bitmask = sheet:getBitmaskForTile(3)
-    print("tile 3 has bitmask = " .. bitmask)
     local tile = sheet:getTileForBitmask(7)
     print("bitmask 7 -> tile " .. tile)
 end
@@ -630,8 +554,6 @@ do
     map:fill(layer, 1)
     map:applyAutoTileAt(layer, 5, 5, "dirt")
     print("single cell auto-tiled at 5,5")
-    map:applyAutoTile8At(layer, 3, 3, "dirt")
-    print("single cell 8-bit auto-tiled at 3,3")
 end
 
 --@api-stub: LTileMap:applyAutoTile8At
@@ -647,8 +569,6 @@ do
     map:addTileSet(ts)
     local layer = map:addLayer("ground", 10, 10)
     map:fill(layer, 1)
-    map:applyAutoTileAt(layer, 5, 5, "dirt")
-    print("single cell auto-tiled at 5,5")
     map:applyAutoTile8At(layer, 3, 3, "dirt")
     print("single cell 8-bit auto-tiled at 3,3")
 end
@@ -679,17 +599,10 @@ do
     local map = lurek.tilemap.newTileMap(32, 32)
     local layer = map:addLayer("triggers", 10, 10)
     map:setTile(layer, 3, 3, 5)
-    map:setTile(layer, 7, 2, 5)
     map:onTileEnter(5, function(entity, tx, ty)
         print("entity entered trigger tile at " .. tx .. "," .. ty)
     end)
-    map:onTileExit(5, function(entity, tx, ty)
-        print("entity left trigger tile at " .. tx .. "," .. ty)
-    end)
-    map:onTileStep(5, function(entity, tx, ty)
-        print("entity stepping on trigger at " .. tx .. "," .. ty)
-    end)
-    print("3 callbacks registered for gid=5")
+    print("enter callback registered for gid=5")
 end
 
 --@api-stub: LTileMap:onTileExit
@@ -699,17 +612,10 @@ do
     local map = lurek.tilemap.newTileMap(32, 32)
     local layer = map:addLayer("triggers", 10, 10)
     map:setTile(layer, 3, 3, 5)
-    map:setTile(layer, 7, 2, 5)
-    map:onTileEnter(5, function(entity, tx, ty)
-        print("entity entered trigger tile at " .. tx .. "," .. ty)
-    end)
     map:onTileExit(5, function(entity, tx, ty)
         print("entity left trigger tile at " .. tx .. "," .. ty)
     end)
-    map:onTileStep(5, function(entity, tx, ty)
-        print("entity stepping on trigger at " .. tx .. "," .. ty)
-    end)
-    print("3 callbacks registered for gid=5")
+    print("exit callback registered for gid=5")
 end
 
 --@api-stub: LTileMap:onTileStep
@@ -719,17 +625,10 @@ do
     local map = lurek.tilemap.newTileMap(32, 32)
     local layer = map:addLayer("triggers", 10, 10)
     map:setTile(layer, 3, 3, 5)
-    map:setTile(layer, 7, 2, 5)
-    map:onTileEnter(5, function(entity, tx, ty)
-        print("entity entered trigger tile at " .. tx .. "," .. ty)
-    end)
-    map:onTileExit(5, function(entity, tx, ty)
-        print("entity left trigger tile at " .. tx .. "," .. ty)
-    end)
     map:onTileStep(5, function(entity, tx, ty)
         print("entity stepping on trigger at " .. tx .. "," .. ty)
     end)
-    print("3 callbacks registered for gid=5")
+    print("step callback registered for gid=5")
 end
 
 --@api-stub: LTileMap:checkEntities
@@ -749,8 +648,6 @@ do
     }
     map:checkEntities(layer, entities)
     print("entities checked against tile events")
-    map:fireTileExit(3, entities[1], 2, 2)
-    map:fireTileStep(3, entities[1], 2, 2)
 end
 
 --@api-stub: LTileMap:fireTileExit
@@ -768,10 +665,8 @@ do
         { x = 64, y = 64 },
         { x = 128, y = 128 },
     }
-    map:checkEntities(layer, entities)
-    print("entities checked against tile events")
     map:fireTileExit(3, entities[1], 2, 2)
-    map:fireTileStep(3, entities[1], 2, 2)
+    print("tile exit fired")
 end
 
 --@api-stub: LTileMap:fireTileStep
@@ -789,10 +684,8 @@ do
         { x = 64, y = 64 },
         { x = 128, y = 128 },
     }
-    map:checkEntities(layer, entities)
-    print("entities checked against tile events")
-    map:fireTileExit(3, entities[1], 2, 2)
     map:fireTileStep(3, entities[1], 2, 2)
+    print("tile step fired")
 end
 
 --@api-stub: LTileMap:tileTypeIndex
@@ -851,13 +744,8 @@ do
     ---@type LTileMap
     local map = lurek.tilemap.newTileMap(32, 32)
     map:addLayer("main", 10, 10)
-    print("default orientation = " .. map:getOrientation())
     map:setOrientation("isometric")
     print("set to " .. map:getOrientation())
-    map:setOrientation("hexagonal")
-    print("set to " .. map:getOrientation())
-    map:setOrientation("topdown")
-    print("back to " .. map:getOrientation())
 end
 
 --@api-stub: LTileMap:getOrientation
@@ -867,12 +755,6 @@ do
     local map = lurek.tilemap.newTileMap(32, 32)
     map:addLayer("main", 10, 10)
     print("default orientation = " .. map:getOrientation())
-    map:setOrientation("isometric")
-    print("set to " .. map:getOrientation())
-    map:setOrientation("hexagonal")
-    print("set to " .. map:getOrientation())
-    map:setOrientation("topdown")
-    print("back to " .. map:getOrientation())
 end
 
 --@api-stub: LTileMap:drawToImage
@@ -910,8 +792,6 @@ end
 do
     local sx, sy = lurek.tilemap.toScreenHex(2, 3, 32)
     print("hex(2,3) -> screen(" .. sx .. ", " .. sy .. ")")
-    local q, r = lurek.tilemap.fromScreenHex(sx, sy, 32)
-    print("screen -> hex(" .. q .. ", " .. r .. ")")
 end
 
 --@api-stub: lurek.tilemap.hexDistance
@@ -1004,8 +884,6 @@ end
 do
     local sx, sy = lurek.tilemap.toScreenIso(3, 5, 64, 32)
     print("tile(3,5) -> screen(" .. sx .. ", " .. sy .. ")")
-    local tx, ty = lurek.tilemap.fromScreenIso(sx, sy, 64, 32)
-    print("screen -> tile(" .. tx .. ", " .. ty .. ")")
 end
 
 --@api-stub: lurek.tilemap.isoDirectionFromAngle
@@ -1013,12 +891,6 @@ end
 do
     local dir = lurek.tilemap.isoDirectionFromAngle(45)
     print("45 degrees -> direction " .. dir)
-    local name = lurek.tilemap.isoDirectionName(dir)
-    print("direction name = " .. name)
-    local rotated = lurek.tilemap.isoRotate(dir, 1)
-    print("rotated +90 = " .. lurek.tilemap.isoDirectionName(rotated))
-    rotated = lurek.tilemap.isoRotate(dir, 2)
-    print("rotated +180 = " .. lurek.tilemap.isoDirectionName(rotated))
 end
 
 --@api-stub: lurek.tilemap.loadTMX
@@ -1093,13 +965,8 @@ do
     ---@type LChunkMap
     local cm = lurek.tilemap.newChunkMap(16)
     cm:setTile(10, 20, 5)
-    cm:setTile(-5, 3, 8)
-    cm:setTile(100, 200, 12)
     local gid = cm:getTile(10, 20)
     print("tile at 10,20 = " .. gid)
-    cm:clearTile(10, 20)
-    gid = cm:getTile(10, 20)
-    print("after clear = " .. gid)
 end
 
 --@api-stub: LChunkMap:getTile
@@ -1108,13 +975,8 @@ do
     ---@type LChunkMap
     local cm = lurek.tilemap.newChunkMap(16)
     cm:setTile(10, 20, 5)
-    cm:setTile(-5, 3, 8)
-    cm:setTile(100, 200, 12)
     local gid = cm:getTile(10, 20)
     print("tile at 10,20 = " .. gid)
-    cm:clearTile(10, 20)
-    gid = cm:getTile(10, 20)
-    print("after clear = " .. gid)
 end
 
 --@api-stub: LChunkMap:clearTile
@@ -1123,12 +985,8 @@ do
     ---@type LChunkMap
     local cm = lurek.tilemap.newChunkMap(16)
     cm:setTile(10, 20, 5)
-    cm:setTile(-5, 3, 8)
-    cm:setTile(100, 200, 12)
-    local gid = cm:getTile(10, 20)
-    print("tile at 10,20 = " .. gid)
     cm:clearTile(10, 20)
-    gid = cm:getTile(10, 20)
+    local gid = cm:getTile(10, 20)
     print("after clear = " .. gid)
 end
 
@@ -1149,16 +1007,11 @@ do
     ---@type LChunkMap
     local cm = lurek.tilemap.newChunkMap(16)
     cm:loadChunk(0, 0)
-    cm:loadChunk(1, 0)
-    cm:loadChunk(0, 1)
     local loaded = cm:getLoadedChunks()
     print("loaded chunks = " .. #loaded)
     for _, c in ipairs(loaded) do
         print("  chunk (" .. c.cx .. ", " .. c.cy .. ")")
     end
-    cm:unloadChunk(1, 0)
-    loaded = cm:getLoadedChunks()
-    print("after unload = " .. #loaded .. " chunks")
 end
 
 --@api-stub: LChunkMap:unloadChunk
@@ -1168,14 +1021,8 @@ do
     local cm = lurek.tilemap.newChunkMap(16)
     cm:loadChunk(0, 0)
     cm:loadChunk(1, 0)
-    cm:loadChunk(0, 1)
-    local loaded = cm:getLoadedChunks()
-    print("loaded chunks = " .. #loaded)
-    for _, c in ipairs(loaded) do
-        print("  chunk (" .. c.cx .. ", " .. c.cy .. ")")
-    end
     cm:unloadChunk(1, 0)
-    loaded = cm:getLoadedChunks()
+    local loaded = cm:getLoadedChunks()
     print("after unload = " .. #loaded .. " chunks")
 end
 
@@ -1192,9 +1039,6 @@ do
     for _, c in ipairs(loaded) do
         print("  chunk (" .. c.cx .. ", " .. c.cy .. ")")
     end
-    cm:unloadChunk(1, 0)
-    loaded = cm:getLoadedChunks()
-    print("after unload = " .. #loaded .. " chunks")
 end
 
 --@api-stub: LChunkMap:chunkTileRange
@@ -1236,12 +1080,8 @@ end
 do
     ---@type LIsoMap
     local iso = lurek.tilemap.newIsoMap(10, 10, 64, 32, 16, 4)
-    print("part count = " .. iso:getPartCount())
     local lvl = iso:addLevel()
     print("added level, count = " .. iso:getLevelCount())
-    iso:setTilePart(1, 3, 4, 1, 5)
-    local gid = iso:getTilePart(1, 3, 4, 1)
-    print("tile part at (1,3,4,part=1) = " .. gid)
 end
 
 --@api-stub: LIsoMap:getLevelCount
@@ -1249,12 +1089,8 @@ end
 do
     ---@type LIsoMap
     local iso = lurek.tilemap.newIsoMap(10, 10, 64, 32, 16, 4)
-    print("part count = " .. iso:getPartCount())
     local lvl = iso:addLevel()
     print("added level, count = " .. iso:getLevelCount())
-    iso:setTilePart(1, 3, 4, 1, 5)
-    local gid = iso:getTilePart(1, 3, 4, 1)
-    print("tile part at (1,3,4,part=1) = " .. gid)
 end
 
 --@api-stub: LIsoMap:setTilePart
@@ -1262,9 +1098,7 @@ end
 do
     ---@type LIsoMap
     local iso = lurek.tilemap.newIsoMap(10, 10, 64, 32, 16, 4)
-    print("part count = " .. iso:getPartCount())
-    local lvl = iso:addLevel()
-    print("added level, count = " .. iso:getLevelCount())
+    iso:addLevel()
     iso:setTilePart(1, 3, 4, 1, 5)
     local gid = iso:getTilePart(1, 3, 4, 1)
     print("tile part at (1,3,4,part=1) = " .. gid)
@@ -1275,9 +1109,7 @@ end
 do
     ---@type LIsoMap
     local iso = lurek.tilemap.newIsoMap(10, 10, 64, 32, 16, 4)
-    print("part count = " .. iso:getPartCount())
-    local lvl = iso:addLevel()
-    print("added level, count = " .. iso:getLevelCount())
+    iso:addLevel()
     iso:setTilePart(1, 3, 4, 1, 5)
     local gid = iso:getTilePart(1, 3, 4, 1)
     print("tile part at (1,3,4,part=1) = " .. gid)
@@ -1291,9 +1123,6 @@ do
     iso:addLevel()
     iso:fillLevel(1, 1, 3)
     print("filled level 1, part 1 with gid=3")
-    print("level 1 visible = " .. tostring(iso:isLevelVisible(1)))
-    iso:setLevelVisible(1, false)
-    print("after hide = " .. tostring(iso:isLevelVisible(1)))
 end
 
 --@api-stub: LIsoMap:isLevelVisible
@@ -1302,11 +1131,7 @@ do
     ---@type LIsoMap
     local iso = lurek.tilemap.newIsoMap(8, 8, 64, 32, 16)
     iso:addLevel()
-    iso:fillLevel(1, 1, 3)
-    print("filled level 1, part 1 with gid=3")
     print("level 1 visible = " .. tostring(iso:isLevelVisible(1)))
-    iso:setLevelVisible(1, false)
-    print("after hide = " .. tostring(iso:isLevelVisible(1)))
 end
 
 --@api-stub: LIsoMap:setLevelVisible
@@ -1315,9 +1140,6 @@ do
     ---@type LIsoMap
     local iso = lurek.tilemap.newIsoMap(8, 8, 64, 32, 16)
     iso:addLevel()
-    iso:fillLevel(1, 1, 3)
-    print("filled level 1, part 1 with gid=3")
-    print("level 1 visible = " .. tostring(iso:isLevelVisible(1)))
     iso:setLevelVisible(1, false)
     print("after hide = " .. tostring(iso:isLevelVisible(1)))
 end
@@ -1329,7 +1151,6 @@ do
     local iso = lurek.tilemap.newIsoMap(10, 10, 64, 32, 16)
     iso:setOrigin(400, 100)
     local sx, sy = iso:tileToScreen(3, 2, 1)
-    print("tile(3,2,z=1) -> screen(" .. sx .. ", " .. sy .. ")")
     local tx, ty = iso:screenToTile(sx, sy)
     print("screen -> tile(" .. tx .. ", " .. ty .. ")")
 end
@@ -1342,8 +1163,6 @@ do
     iso:setOrigin(400, 100)
     local sx, sy = iso:tileToScreen(3, 2, 1)
     print("tile(3,2,z=1) -> screen(" .. sx .. ", " .. sy .. ")")
-    local tx, ty = iso:screenToTile(sx, sy)
-    print("screen -> tile(" .. tx .. ", " .. ty .. ")")
 end
 
 --@api-stub: LIsoMap:setOrigin
@@ -1352,10 +1171,7 @@ do
     ---@type LIsoMap
     local iso = lurek.tilemap.newIsoMap(10, 10, 64, 32, 16)
     iso:setOrigin(400, 100)
-    local sx, sy = iso:tileToScreen(3, 2, 1)
-    print("tile(3,2,z=1) -> screen(" .. sx .. ", " .. sy .. ")")
-    local tx, ty = iso:screenToTile(sx, sy)
-    print("screen -> tile(" .. tx .. ", " .. ty .. ")")
+    print("origin set")
 end
 
 --@api-stub: LIsoMap:setPartOrder
@@ -1363,10 +1179,8 @@ end
 do
     ---@type LIsoMap
     local iso = lurek.tilemap.newIsoMap(5, 5, 64, 32, 16, 4)
-    local order = iso:getPartOrder()
-    print("default part order: " .. #order .. " entries")
     iso:setPartOrder({ 4, 3, 2, 1 })
-    order = iso:getPartOrder()
+    local order = iso:getPartOrder()
     print("reversed order[1] = " .. order[1])
 end
 
@@ -1619,19 +1433,6 @@ do
     print("segment size = " .. block:getSegmentSize())
     print("width in segments = " .. block:getWidthInSegments())
     print("height in segments = " .. block:getHeightInSegments())
-
-    -- Map generation using explicit width and height. Focus: newMapBlock.
-    ---@type LMapGroup
-    local group = lurek.tilemap.newMapGroup("plains")
-    ---@type LMapBlock
-    local block = lurek.tilemap.newMapBlock(4, 4, 1, 1)
-    block:setName("grass")
-    group:addBlock(block)
-    ---@type LMapGen
-    local gen = lurek.tilemap.newMapGen(group, 20, 15, 2)
-    ---@type LTileMap
-    local result = gen:generate()
-    print("generated 20x15 map, type = " .. result:type())
 end
 
 --@api-stub: LMapBlock:setTile
@@ -1639,10 +1440,6 @@ end
 do
     ---@type LMapBlock
     local block = lurek.tilemap.newMapBlock(4, 4)
-    block:setName("room_corner")
-    print("name = " .. block:getName())
-    block:setWeight(3.0)
-    print("weight = " .. block:getWeight())
     block:setTile(1, 1, 1, 5)
     block:setTile(1, 2, 2, 8)
     print("tile (1,1,1) = " .. block:getTile(1, 1, 1))
@@ -1654,10 +1451,6 @@ end
 do
     ---@type LMapBlock
     local block = lurek.tilemap.newMapBlock(4, 4)
-    block:setName("room_corner")
-    print("name = " .. block:getName())
-    block:setWeight(3.0)
-    print("weight = " .. block:getWeight())
     block:setTile(1, 1, 1, 5)
     block:setTile(1, 2, 2, 8)
     print("tile (1,1,1) = " .. block:getTile(1, 1, 1))
@@ -1671,12 +1464,6 @@ do
     local block = lurek.tilemap.newMapBlock(4, 4)
     block:setName("room_corner")
     print("name = " .. block:getName())
-    block:setWeight(3.0)
-    print("weight = " .. block:getWeight())
-    block:setTile(1, 1, 1, 5)
-    block:setTile(1, 2, 2, 8)
-    print("tile (1,1,1) = " .. block:getTile(1, 1, 1))
-    print("tile (1,2,2) = " .. block:getTile(1, 2, 2))
 end
 
 --@api-stub: LMapBlock:getName
@@ -1686,12 +1473,6 @@ do
     local block = lurek.tilemap.newMapBlock(4, 4)
     block:setName("room_corner")
     print("name = " .. block:getName())
-    block:setWeight(3.0)
-    print("weight = " .. block:getWeight())
-    block:setTile(1, 1, 1, 5)
-    block:setTile(1, 2, 2, 8)
-    print("tile (1,1,1) = " .. block:getTile(1, 1, 1))
-    print("tile (1,2,2) = " .. block:getTile(1, 2, 2))
 end
 
 --@api-stub: LMapBlock:setWeight
@@ -1699,14 +1480,8 @@ end
 do
     ---@type LMapBlock
     local block = lurek.tilemap.newMapBlock(4, 4)
-    block:setName("room_corner")
-    print("name = " .. block:getName())
     block:setWeight(3.0)
     print("weight = " .. block:getWeight())
-    block:setTile(1, 1, 1, 5)
-    block:setTile(1, 2, 2, 8)
-    print("tile (1,1,1) = " .. block:getTile(1, 1, 1))
-    print("tile (1,2,2) = " .. block:getTile(1, 2, 2))
 end
 
 --@api-stub: LMapBlock:getWeight
@@ -1714,14 +1489,8 @@ end
 do
     ---@type LMapBlock
     local block = lurek.tilemap.newMapBlock(4, 4)
-    block:setName("room_corner")
-    print("name = " .. block:getName())
     block:setWeight(3.0)
     print("weight = " .. block:getWeight())
-    block:setTile(1, 1, 1, 5)
-    block:setTile(1, 2, 2, 8)
-    print("tile (1,1,1) = " .. block:getTile(1, 1, 1))
-    print("tile (1,2,2) = " .. block:getTile(1, 2, 2))
 end
 
 --@api-stub: LMapBlock:setSide
@@ -1770,19 +1539,6 @@ do
     print("block count = " .. group:getBlockCount())
     group:removeBlock(1)
     print("after remove = " .. group:getBlockCount())
-
-    -- Map generation using explicit width and height. Focus: newMapGroup.
-    ---@type LMapGroup
-    local group = lurek.tilemap.newMapGroup("plains")
-    ---@type LMapBlock
-    local block = lurek.tilemap.newMapBlock(4, 4, 1, 1)
-    block:setName("grass")
-    group:addBlock(block)
-    ---@type LMapGen
-    local gen = lurek.tilemap.newMapGen(group, 20, 15, 2)
-    ---@type LTileMap
-    local result = gen:generate()
-    print("generated 20x15 map, type = " .. result:type())
 end
 
 --@api-stub: lurek.tilemap.newMapScript
@@ -1818,19 +1574,6 @@ do
     ---@type LTileMap
     local result = gen:generate(1, 42, "terrain")
     print("generated map type = " .. result:type())
-
-    -- Map generation using explicit width and height. Focus: newMapGen.
-    ---@type LMapGroup
-    local group = lurek.tilemap.newMapGroup("plains")
-    ---@type LMapBlock
-    local block = lurek.tilemap.newMapBlock(4, 4, 1, 1)
-    block:setName("grass")
-    group:addBlock(block)
-    ---@type LMapGen
-    local gen = lurek.tilemap.newMapGen(group, 20, 15, 2)
-    ---@type LTileMap
-    local result = gen:generate()
-    print("generated 20x15 map, type = " .. result:type())
 end
 
 --@api-stub: LMapGen:generate
@@ -1850,7 +1593,6 @@ do
     group:addScript(script)
     ---@type LMapGen
     local gen = lurek.tilemap.newMapGen(group, "small", 1)
-    print("type = " .. gen:type())
     ---@type LTileMap
     local result = gen:generate(1, 42, "terrain")
     print("generated map type = " .. result:type())
@@ -1865,87 +1607,43 @@ do
     local tm = lurek.tilemap.newTileMap(16, 16, 8)
     local cs = tm:getChunkSize()
     print("chunk_size=" .. cs)
-    local tw, th = tm:getTileDimensions()
-    print("tile_w=" .. tw .. " tile_h=" .. th)
-    local tw2 = tm:getTileWidth()
-    local th2 = tm:getTileHeight()
-    print("tw2=" .. tw2 .. " th2=" .. th2)
-    print("type=" .. tm:type())
-    print("typeOf=" .. tostring(tm:typeOf("LTileMap")))
 end
 
 --@api-stub: LTileMap:getTileDimensions
 -- TileMap introspection: tile dimensions, chunk size, and type queries. Focus: getTileDimensions.
 do
     local tm = lurek.tilemap.newTileMap(16, 16, 8)
-    local cs = tm:getChunkSize()
-    print("chunk_size=" .. cs)
     local tw, th = tm:getTileDimensions()
     print("tile_w=" .. tw .. " tile_h=" .. th)
-    local tw2 = tm:getTileWidth()
-    local th2 = tm:getTileHeight()
-    print("tw2=" .. tw2 .. " th2=" .. th2)
-    print("type=" .. tm:type())
-    print("typeOf=" .. tostring(tm:typeOf("LTileMap")))
 end
 
 --@api-stub: LTileMap:getTileHeight
 -- TileMap introspection: tile dimensions, chunk size, and type queries. Focus: getTileHeight.
 do
     local tm = lurek.tilemap.newTileMap(16, 16, 8)
-    local cs = tm:getChunkSize()
-    print("chunk_size=" .. cs)
-    local tw, th = tm:getTileDimensions()
-    print("tile_w=" .. tw .. " tile_h=" .. th)
-    local tw2 = tm:getTileWidth()
     local th2 = tm:getTileHeight()
-    print("tw2=" .. tw2 .. " th2=" .. th2)
-    print("type=" .. tm:type())
-    print("typeOf=" .. tostring(tm:typeOf("LTileMap")))
+    print("tile_height=" .. th2)
 end
 
 --@api-stub: LTileMap:getTileWidth
 -- TileMap introspection: tile dimensions, chunk size, and type queries. Focus: getTileWidth.
 do
     local tm = lurek.tilemap.newTileMap(16, 16, 8)
-    local cs = tm:getChunkSize()
-    print("chunk_size=" .. cs)
-    local tw, th = tm:getTileDimensions()
-    print("tile_w=" .. tw .. " tile_h=" .. th)
     local tw2 = tm:getTileWidth()
-    local th2 = tm:getTileHeight()
-    print("tw2=" .. tw2 .. " th2=" .. th2)
-    print("type=" .. tm:type())
-    print("typeOf=" .. tostring(tm:typeOf("LTileMap")))
+    print("tile_width=" .. tw2)
 end
 
 --@api-stub: LTileMap:type
 -- TileMap introspection: tile dimensions, chunk size, and type queries. Focus: type.
 do
     local tm = lurek.tilemap.newTileMap(16, 16, 8)
-    local cs = tm:getChunkSize()
-    print("chunk_size=" .. cs)
-    local tw, th = tm:getTileDimensions()
-    print("tile_w=" .. tw .. " tile_h=" .. th)
-    local tw2 = tm:getTileWidth()
-    local th2 = tm:getTileHeight()
-    print("tw2=" .. tw2 .. " th2=" .. th2)
     print("type=" .. tm:type())
-    print("typeOf=" .. tostring(tm:typeOf("LTileMap")))
 end
 
 --@api-stub: LTileMap:typeOf
 -- TileMap introspection: tile dimensions, chunk size, and type queries. Focus: typeOf.
 do
     local tm = lurek.tilemap.newTileMap(16, 16, 8)
-    local cs = tm:getChunkSize()
-    print("chunk_size=" .. cs)
-    local tw, th = tm:getTileDimensions()
-    print("tile_w=" .. tw .. " tile_h=" .. th)
-    local tw2 = tm:getTileWidth()
-    local th2 = tm:getTileHeight()
-    print("tw2=" .. tw2 .. " th2=" .. th2)
-    print("type=" .. tm:type())
     print("typeOf=" .. tostring(tm:typeOf("LTileMap")))
 end
 
@@ -1954,49 +1652,25 @@ end
 do
     local hx, hy = lurek.tilemap.fromScreenHex(80, 40, 32)
     print("hex_x=" .. hx .. " hex_y=" .. hy)
-    local ix, iy = lurek.tilemap.fromScreenIso(128, 64, 32, 16)
-    print("iso_x=" .. ix .. " iso_y=" .. iy)
-    local name = lurek.tilemap.isoDirectionName(1)
-    print("iso_dir=" .. name)
-    local rotated = lurek.tilemap.isoRotate(1, 2)
-    print("iso_rotated=" .. rotated)
 end
 
 --@api-stub: lurek.tilemap.fromScreenIso
 -- Hex and isometric coordinate helpers. Focus: fromScreenIso.
 do
-    local hx, hy = lurek.tilemap.fromScreenHex(80, 40, 32)
-    print("hex_x=" .. hx .. " hex_y=" .. hy)
     local ix, iy = lurek.tilemap.fromScreenIso(128, 64, 32, 16)
     print("iso_x=" .. ix .. " iso_y=" .. iy)
-    local name = lurek.tilemap.isoDirectionName(1)
-    print("iso_dir=" .. name)
-    local rotated = lurek.tilemap.isoRotate(1, 2)
-    print("iso_rotated=" .. rotated)
 end
 
 --@api-stub: lurek.tilemap.isoDirectionName
 -- Hex and isometric coordinate helpers. Focus: isoDirectionName.
 do
-    local hx, hy = lurek.tilemap.fromScreenHex(80, 40, 32)
-    print("hex_x=" .. hx .. " hex_y=" .. hy)
-    local ix, iy = lurek.tilemap.fromScreenIso(128, 64, 32, 16)
-    print("iso_x=" .. ix .. " iso_y=" .. iy)
     local name = lurek.tilemap.isoDirectionName(1)
     print("iso_dir=" .. name)
-    local rotated = lurek.tilemap.isoRotate(1, 2)
-    print("iso_rotated=" .. rotated)
 end
 
 --@api-stub: lurek.tilemap.isoRotate
 -- Hex and isometric coordinate helpers. Focus: isoRotate.
 do
-    local hx, hy = lurek.tilemap.fromScreenHex(80, 40, 32)
-    print("hex_x=" .. hx .. " hex_y=" .. hy)
-    local ix, iy = lurek.tilemap.fromScreenIso(128, 64, 32, 16)
-    print("iso_x=" .. ix .. " iso_y=" .. iy)
-    local name = lurek.tilemap.isoDirectionName(1)
-    print("iso_dir=" .. name)
     local rotated = lurek.tilemap.isoRotate(1, 2)
     print("iso_rotated=" .. rotated)
 end
@@ -2010,16 +1684,6 @@ do
     -- firstGid, tileCount, columns, tileWidth, tileHeight, spacing, margin
     local ts = lurek.tilemap.newTileSet(1, 16, 4, 16, 16, 1, 0)
     print("columns=" .. ts:getColumns())
-    print("firstGid=" .. ts:getFirstGid())
-    print("margin=" .. ts:getMargin())
-    print("spacing=" .. ts:getSpacing())
-    print("tileCount=" .. ts:getTileCount())
-    local tw, th = ts:getTileDimensions()
-    print("tile_w=" .. tw .. " tile_h=" .. th)
-    print("tileWidth=" .. ts:getTileWidth())
-    print("tileHeight=" .. ts:getTileHeight())
-    print("type=" .. ts:type())
-    print("typeOf=" .. tostring(ts:typeOf("LTileSet")))
 end
 
 --@api-stub: LTileSet:getFirstGid
@@ -2027,17 +1691,7 @@ end
 do
     -- firstGid, tileCount, columns, tileWidth, tileHeight, spacing, margin
     local ts = lurek.tilemap.newTileSet(1, 16, 4, 16, 16, 1, 0)
-    print("columns=" .. ts:getColumns())
     print("firstGid=" .. ts:getFirstGid())
-    print("margin=" .. ts:getMargin())
-    print("spacing=" .. ts:getSpacing())
-    print("tileCount=" .. ts:getTileCount())
-    local tw, th = ts:getTileDimensions()
-    print("tile_w=" .. tw .. " tile_h=" .. th)
-    print("tileWidth=" .. ts:getTileWidth())
-    print("tileHeight=" .. ts:getTileHeight())
-    print("type=" .. ts:type())
-    print("typeOf=" .. tostring(ts:typeOf("LTileSet")))
 end
 
 --@api-stub: LTileSet:getMargin
@@ -2045,17 +1699,7 @@ end
 do
     -- firstGid, tileCount, columns, tileWidth, tileHeight, spacing, margin
     local ts = lurek.tilemap.newTileSet(1, 16, 4, 16, 16, 1, 0)
-    print("columns=" .. ts:getColumns())
-    print("firstGid=" .. ts:getFirstGid())
     print("margin=" .. ts:getMargin())
-    print("spacing=" .. ts:getSpacing())
-    print("tileCount=" .. ts:getTileCount())
-    local tw, th = ts:getTileDimensions()
-    print("tile_w=" .. tw .. " tile_h=" .. th)
-    print("tileWidth=" .. ts:getTileWidth())
-    print("tileHeight=" .. ts:getTileHeight())
-    print("type=" .. ts:type())
-    print("typeOf=" .. tostring(ts:typeOf("LTileSet")))
 end
 
 --@api-stub: LTileSet:getSpacing
@@ -2063,17 +1707,7 @@ end
 do
     -- firstGid, tileCount, columns, tileWidth, tileHeight, spacing, margin
     local ts = lurek.tilemap.newTileSet(1, 16, 4, 16, 16, 1, 0)
-    print("columns=" .. ts:getColumns())
-    print("firstGid=" .. ts:getFirstGid())
-    print("margin=" .. ts:getMargin())
     print("spacing=" .. ts:getSpacing())
-    print("tileCount=" .. ts:getTileCount())
-    local tw, th = ts:getTileDimensions()
-    print("tile_w=" .. tw .. " tile_h=" .. th)
-    print("tileWidth=" .. ts:getTileWidth())
-    print("tileHeight=" .. ts:getTileHeight())
-    print("type=" .. ts:type())
-    print("typeOf=" .. tostring(ts:typeOf("LTileSet")))
 end
 
 --@api-stub: LTileSet:getTileCount
@@ -2081,17 +1715,7 @@ end
 do
     -- firstGid, tileCount, columns, tileWidth, tileHeight, spacing, margin
     local ts = lurek.tilemap.newTileSet(1, 16, 4, 16, 16, 1, 0)
-    print("columns=" .. ts:getColumns())
-    print("firstGid=" .. ts:getFirstGid())
-    print("margin=" .. ts:getMargin())
-    print("spacing=" .. ts:getSpacing())
     print("tileCount=" .. ts:getTileCount())
-    local tw, th = ts:getTileDimensions()
-    print("tile_w=" .. tw .. " tile_h=" .. th)
-    print("tileWidth=" .. ts:getTileWidth())
-    print("tileHeight=" .. ts:getTileHeight())
-    print("type=" .. ts:type())
-    print("typeOf=" .. tostring(ts:typeOf("LTileSet")))
 end
 
 --@api-stub: LTileSet:getTileDimensions
@@ -2099,17 +1723,8 @@ end
 do
     -- firstGid, tileCount, columns, tileWidth, tileHeight, spacing, margin
     local ts = lurek.tilemap.newTileSet(1, 16, 4, 16, 16, 1, 0)
-    print("columns=" .. ts:getColumns())
-    print("firstGid=" .. ts:getFirstGid())
-    print("margin=" .. ts:getMargin())
-    print("spacing=" .. ts:getSpacing())
-    print("tileCount=" .. ts:getTileCount())
     local tw, th = ts:getTileDimensions()
     print("tile_w=" .. tw .. " tile_h=" .. th)
-    print("tileWidth=" .. ts:getTileWidth())
-    print("tileHeight=" .. ts:getTileHeight())
-    print("type=" .. ts:type())
-    print("typeOf=" .. tostring(ts:typeOf("LTileSet")))
 end
 
 --@api-stub: LTileSet:getTileHeight
@@ -2117,17 +1732,7 @@ end
 do
     -- firstGid, tileCount, columns, tileWidth, tileHeight, spacing, margin
     local ts = lurek.tilemap.newTileSet(1, 16, 4, 16, 16, 1, 0)
-    print("columns=" .. ts:getColumns())
-    print("firstGid=" .. ts:getFirstGid())
-    print("margin=" .. ts:getMargin())
-    print("spacing=" .. ts:getSpacing())
-    print("tileCount=" .. ts:getTileCount())
-    local tw, th = ts:getTileDimensions()
-    print("tile_w=" .. tw .. " tile_h=" .. th)
-    print("tileWidth=" .. ts:getTileWidth())
     print("tileHeight=" .. ts:getTileHeight())
-    print("type=" .. ts:type())
-    print("typeOf=" .. tostring(ts:typeOf("LTileSet")))
 end
 
 --@api-stub: LTileSet:getTileWidth
@@ -2135,17 +1740,7 @@ end
 do
     -- firstGid, tileCount, columns, tileWidth, tileHeight, spacing, margin
     local ts = lurek.tilemap.newTileSet(1, 16, 4, 16, 16, 1, 0)
-    print("columns=" .. ts:getColumns())
-    print("firstGid=" .. ts:getFirstGid())
-    print("margin=" .. ts:getMargin())
-    print("spacing=" .. ts:getSpacing())
-    print("tileCount=" .. ts:getTileCount())
-    local tw, th = ts:getTileDimensions()
-    print("tile_w=" .. tw .. " tile_h=" .. th)
     print("tileWidth=" .. ts:getTileWidth())
-    print("tileHeight=" .. ts:getTileHeight())
-    print("type=" .. ts:type())
-    print("typeOf=" .. tostring(ts:typeOf("LTileSet")))
 end
 
 --@api-stub: LTileSet:type
@@ -2153,17 +1748,7 @@ end
 do
     -- firstGid, tileCount, columns, tileWidth, tileHeight, spacing, margin
     local ts = lurek.tilemap.newTileSet(1, 16, 4, 16, 16, 1, 0)
-    print("columns=" .. ts:getColumns())
-    print("firstGid=" .. ts:getFirstGid())
-    print("margin=" .. ts:getMargin())
-    print("spacing=" .. ts:getSpacing())
-    print("tileCount=" .. ts:getTileCount())
-    local tw, th = ts:getTileDimensions()
-    print("tile_w=" .. tw .. " tile_h=" .. th)
-    print("tileWidth=" .. ts:getTileWidth())
-    print("tileHeight=" .. ts:getTileHeight())
     print("type=" .. ts:type())
-    print("typeOf=" .. tostring(ts:typeOf("LTileSet")))
 end
 
 --@api-stub: LTileSet:typeOf
@@ -2171,16 +1756,6 @@ end
 do
     -- firstGid, tileCount, columns, tileWidth, tileHeight, spacing, margin
     local ts = lurek.tilemap.newTileSet(1, 16, 4, 16, 16, 1, 0)
-    print("columns=" .. ts:getColumns())
-    print("firstGid=" .. ts:getFirstGid())
-    print("margin=" .. ts:getMargin())
-    print("spacing=" .. ts:getSpacing())
-    print("tileCount=" .. ts:getTileCount())
-    local tw, th = ts:getTileDimensions()
-    print("tile_w=" .. tw .. " tile_h=" .. th)
-    print("tileWidth=" .. ts:getTileWidth())
-    print("tileHeight=" .. ts:getTileHeight())
-    print("type=" .. ts:type())
     print("typeOf=" .. tostring(ts:typeOf("LTileSet")))
 end
 
@@ -2189,29 +1764,23 @@ end
 do
     local sheet = lurek.tilemap.newAutoTileSheet(16, 16, "blob47")
     local layout = sheet:getLayout()
-    local count = sheet:getTileCount()
-    local h = sheet:getTileHeight()
-    print("layout:", layout, "tileCount:", count, "tileHeight:", h)
+    print("layout:", layout)
 end
 
 --@api-stub: LAutoTileSheet:getTileCount
 -- LAutoTileSheet dimension and layout queries. Focus: getTileCount.
 do
     local sheet = lurek.tilemap.newAutoTileSheet(16, 16, "blob47")
-    local layout = sheet:getLayout()
     local count = sheet:getTileCount()
-    local h = sheet:getTileHeight()
-    print("layout:", layout, "tileCount:", count, "tileHeight:", h)
+    print("tileCount:", count)
 end
 
 --@api-stub: LAutoTileSheet:getTileHeight
 -- LAutoTileSheet dimension and layout queries. Focus: getTileHeight.
 do
     local sheet = lurek.tilemap.newAutoTileSheet(16, 16, "blob47")
-    local layout = sheet:getLayout()
-    local count = sheet:getTileCount()
     local h = sheet:getTileHeight()
-    print("layout:", layout, "tileCount:", count, "tileHeight:", h)
+    print("tileHeight:", h)
 end
 
 --@api-stub: LAutoTileSheet:getTileWidth
@@ -2219,29 +1788,23 @@ end
 do
     local sheet = lurek.tilemap.newAutoTileSheet(32, 32, "minimal16")
     local w = sheet:getTileWidth()
-    local t = sheet:type()
-    local ok = sheet:typeOf("LAutoTileSheet")
-    print("tileWidth:", w, "type:", t, "typeOf:", ok)
+    print("tileWidth:", w)
 end
 
 --@api-stub: LAutoTileSheet:type
 -- LAutoTileSheet tile width and type identity. Focus: type.
 do
     local sheet = lurek.tilemap.newAutoTileSheet(32, 32, "minimal16")
-    local w = sheet:getTileWidth()
     local t = sheet:type()
-    local ok = sheet:typeOf("LAutoTileSheet")
-    print("tileWidth:", w, "type:", t, "typeOf:", ok)
+    print("type:", t)
 end
 
 --@api-stub: LAutoTileSheet:typeOf
 -- LAutoTileSheet tile width and type identity. Focus: typeOf.
 do
     local sheet = lurek.tilemap.newAutoTileSheet(32, 32, "minimal16")
-    local w = sheet:getTileWidth()
-    local t = sheet:type()
     local ok = sheet:typeOf("LAutoTileSheet")
-    print("tileWidth:", w, "type:", t, "typeOf:", ok)
+    print("typeOf:", ok)
 end
 
 --@api-stub: LChunkMap:getChunkSize
@@ -2249,29 +1812,23 @@ end
 do
     local cm = lurek.tilemap.newChunkMap(32)
     local sz = cm:getChunkSize()
-    local t = cm:type()
-    local ok = cm:typeOf("LChunkMap")
-    print("chunkSize:", sz, "type:", t, "typeOf:", ok)
+    print("chunkSize:", sz)
 end
 
 --@api-stub: LChunkMap:type
 -- LChunkMap size and type identity. Focus: type.
 do
     local cm = lurek.tilemap.newChunkMap(32)
-    local sz = cm:getChunkSize()
     local t = cm:type()
-    local ok = cm:typeOf("LChunkMap")
-    print("chunkSize:", sz, "type:", t, "typeOf:", ok)
+    print("type:", t)
 end
 
 --@api-stub: LChunkMap:typeOf
 -- LChunkMap size and type identity. Focus: typeOf.
 do
     local cm = lurek.tilemap.newChunkMap(32)
-    local sz = cm:getChunkSize()
-    local t = cm:type()
     local ok = cm:typeOf("LChunkMap")
-    print("chunkSize:", sz, "type:", t, "typeOf:", ok)
+    print("typeOf:", ok)
 end
 
 --@api-stub: LIsoMap:getHeight
@@ -2279,39 +1836,31 @@ end
 do
     local iso = lurek.tilemap.newIsoMap(20, 15, 64, 32, 16, 4)
     local h = iso:getHeight()
-    local lh = iso:getLevelHeight()
-    local pc = iso:getPartCount()
-    print("isomap height:", h, "levelHeight:", lh, "partCount:", pc)
+    print("isomap height:", h)
 end
 
 --@api-stub: LIsoMap:getLevelHeight
 -- LIsoMap dimension and level geometry queries. Focus: getLevelHeight.
 do
     local iso = lurek.tilemap.newIsoMap(20, 15, 64, 32, 16, 4)
-    local h = iso:getHeight()
     local lh = iso:getLevelHeight()
-    local pc = iso:getPartCount()
-    print("isomap height:", h, "levelHeight:", lh, "partCount:", pc)
+    print("levelHeight:", lh)
 end
 
 --@api-stub: LIsoMap:getPartCount
 -- LIsoMap dimension and level geometry queries. Focus: getPartCount.
 do
     local iso = lurek.tilemap.newIsoMap(20, 15, 64, 32, 16, 4)
-    local h = iso:getHeight()
-    local lh = iso:getLevelHeight()
     local pc = iso:getPartCount()
-    print("isomap height:", h, "levelHeight:", lh, "partCount:", pc)
+    print("partCount:", pc)
 end
 
 --@api-stub: LIsoMap:getTileHeight
 -- LIsoMap tile size and width. Focus: getTileHeight.
 do
     local iso = lurek.tilemap.newIsoMap(10, 10, 64, 32, 16, 4)
-    local tw = iso:getTileWidth()
     local th = iso:getTileHeight()
-    local w = iso:getWidth()
-    print("tileWidth:", tw, "tileHeight:", th, "width:", w)
+    print("tileHeight:", th)
 end
 
 --@api-stub: LIsoMap:getTileWidth
@@ -2319,19 +1868,15 @@ end
 do
     local iso = lurek.tilemap.newIsoMap(10, 10, 64, 32, 16, 4)
     local tw = iso:getTileWidth()
-    local th = iso:getTileHeight()
-    local w = iso:getWidth()
-    print("tileWidth:", tw, "tileHeight:", th, "width:", w)
+    print("tileWidth:", tw)
 end
 
 --@api-stub: LIsoMap:getWidth
 -- LIsoMap tile size and width. Focus: getWidth.
 do
     local iso = lurek.tilemap.newIsoMap(10, 10, 64, 32, 16, 4)
-    local tw = iso:getTileWidth()
-    local th = iso:getTileHeight()
     local w = iso:getWidth()
-    print("tileWidth:", tw, "tileHeight:", th, "width:", w)
+    print("width:", w)
 end
 
 --@api-stub: LIsoMap:type
@@ -2339,19 +1884,15 @@ end
 do
     local iso = lurek.tilemap.newIsoMap(8, 8, 32, 16, 8, 2)
     local t = iso:type()
-    local ok = iso:typeOf("LIsoMap")
-    local notOk = iso:typeOf("LTileMap")
-    print("type:", t, "typeOf:", ok, "typeOf LTileMap:", notOk)
+    print("type:", t)
 end
 
 --@api-stub: LIsoMap:typeOf
 -- LIsoMap type identity. Focus: typeOf.
 do
     local iso = lurek.tilemap.newIsoMap(8, 8, 32, 16, 8, 2)
-    local t = iso:type()
     local ok = iso:typeOf("LIsoMap")
-    local notOk = iso:typeOf("LTileMap")
-    print("type:", t, "typeOf:", ok, "typeOf LTileMap:", notOk)
+    print("typeOf:", ok)
 end
 
 --@api-stub: LLargeMapRenderer:getChunkSize
@@ -2359,29 +1900,23 @@ end
 do
     local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
     local cs = lmr:getChunkSize()
-    local cols = lmr:getTilesetColumns()
-    local t = lmr:type()
-    print("chunkSize:", cs, "tilesetColumns:", cols, "type:", t)
+    print("chunkSize:", cs)
 end
 
 --@api-stub: LLargeMapRenderer:getTilesetColumns
 -- LLargeMapRenderer chunk size, tileset columns, and type. Focus: getTilesetColumns.
 do
     local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
-    local cs = lmr:getChunkSize()
     local cols = lmr:getTilesetColumns()
-    local t = lmr:type()
-    print("chunkSize:", cs, "tilesetColumns:", cols, "type:", t)
+    print("tilesetColumns:", cols)
 end
 
 --@api-stub: LLargeMapRenderer:type
 -- LLargeMapRenderer chunk size, tileset columns, and type. Focus: type.
 do
     local lmr = lurek.tilemap.newLargeMapRenderer(16, 16)
-    local cs = lmr:getChunkSize()
-    local cols = lmr:getTilesetColumns()
     local t = lmr:type()
-    print("chunkSize:", cs, "tilesetColumns:", cols, "type:", t)
+    print("type:", t)
 end
 
 --@api-stub: LLargeMapRenderer:typeOf
@@ -2389,32 +1924,23 @@ end
 do
     local lmr = lurek.tilemap.newLargeMapRenderer(32, 32)
     local ok = lmr:typeOf("LLargeMapRenderer")
-    local mb = lurek.tilemap.newMapBlock(10, 8, 2, 4)
-    local w, h = mb:getDimensions()
-    local height = mb:getHeight()
-    print("typeOf:", ok, "getDimensions:", w, h, "getHeight:", height)
+    print("typeOf:", ok)
 end
 
 --@api-stub: LMapBlock:getDimensions
 -- LLargeMapRenderer typeOf and LMapBlock dimension queries. Focus: getDimensions.
 do
-    local lmr = lurek.tilemap.newLargeMapRenderer(32, 32)
-    local ok = lmr:typeOf("LLargeMapRenderer")
     local mb = lurek.tilemap.newMapBlock(10, 8, 2, 4)
     local w, h = mb:getDimensions()
-    local height = mb:getHeight()
-    print("typeOf:", ok, "getDimensions:", w, h, "getHeight:", height)
+    print("getDimensions:", w, h)
 end
 
 --@api-stub: LMapBlock:getHeight
 -- LLargeMapRenderer typeOf and LMapBlock dimension queries. Focus: getHeight.
 do
-    local lmr = lurek.tilemap.newLargeMapRenderer(32, 32)
-    local ok = lmr:typeOf("LLargeMapRenderer")
     local mb = lurek.tilemap.newMapBlock(10, 8, 2, 4)
-    local w, h = mb:getDimensions()
     local height = mb:getHeight()
-    print("typeOf:", ok, "getDimensions:", w, h, "getHeight:", height)
+    print("getHeight:", height)
 end
 
 --@api-stub: LMapBlock:getHeightInSegments
@@ -2422,29 +1948,23 @@ end
 do
     local mb = lurek.tilemap.newMapBlock(12, 8, 3, 4)
     local hs = mb:getHeightInSegments()
-    local lc = mb:getLayerCount()
-    local ss = mb:getSegmentSize()
-    print("heightInSegments:", hs, "layerCount:", lc, "segmentSize:", ss)
+    print("heightInSegments:", hs)
 end
 
 --@api-stub: LMapBlock:getLayerCount
 -- LMapBlock segment and layer metadata. Focus: getLayerCount.
 do
     local mb = lurek.tilemap.newMapBlock(12, 8, 3, 4)
-    local hs = mb:getHeightInSegments()
     local lc = mb:getLayerCount()
-    local ss = mb:getSegmentSize()
-    print("heightInSegments:", hs, "layerCount:", lc, "segmentSize:", ss)
+    print("layerCount:", lc)
 end
 
 --@api-stub: LMapBlock:getSegmentSize
 -- LMapBlock segment and layer metadata. Focus: getSegmentSize.
 do
     local mb = lurek.tilemap.newMapBlock(12, 8, 3, 4)
-    local hs = mb:getHeightInSegments()
-    local lc = mb:getLayerCount()
     local ss = mb:getSegmentSize()
-    print("heightInSegments:", hs, "layerCount:", lc, "segmentSize:", ss)
+    print("segmentSize:", ss)
 end
 
 --@api-stub: LMapBlock:getWidth
@@ -2452,29 +1972,23 @@ end
 do
     local mb = lurek.tilemap.newMapBlock(16, 12, 1, 4)
     local w = mb:getWidth()
-    local ws = mb:getWidthInSegments()
-    local t = mb:type()
-    print("width:", w, "widthInSegments:", ws, "type:", t)
+    print("width:", w)
 end
 
 --@api-stub: LMapBlock:getWidthInSegments
 -- LMapBlock width and type. Focus: getWidthInSegments.
 do
     local mb = lurek.tilemap.newMapBlock(16, 12, 1, 4)
-    local w = mb:getWidth()
     local ws = mb:getWidthInSegments()
-    local t = mb:type()
-    print("width:", w, "widthInSegments:", ws, "type:", t)
+    print("widthInSegments:", ws)
 end
 
 --@api-stub: LMapBlock:type
 -- LMapBlock width and type. Focus: type.
 do
     local mb = lurek.tilemap.newMapBlock(16, 12, 1, 4)
-    local w = mb:getWidth()
-    local ws = mb:getWidthInSegments()
     local t = mb:type()
-    print("width:", w, "widthInSegments:", ws, "type:", t)
+    print("type:", t)
 end
 
 --@api-stub: LMapBlock:typeOf
@@ -2494,8 +2008,7 @@ do
     group:addBlock(mb)
     local gen = lurek.tilemap.newMapGen(group, "small", 4)
     local t = gen:type()
-    local ok = gen:typeOf("LMapGen")
-    print("addBlock ok, LMapGen type:", t, "typeOf:", ok)
+    print("LMapGen type:", t)
 end
 
 --@api-stub: LMapGen:typeOf
@@ -2505,9 +2018,8 @@ do
     local mb = lurek.tilemap.newMapBlock(8, 8, 1, 2)
     group:addBlock(mb)
     local gen = lurek.tilemap.newMapGen(group, "small", 4)
-    local t = gen:type()
     local ok = gen:typeOf("LMapGen")
-    print("addBlock ok, LMapGen type:", t, "typeOf:", ok)
+    print("LMapGen typeOf:", ok)
 end
 
 --@api-stub: LMapGroup:addBlock
@@ -2516,10 +2028,7 @@ do
     local group = lurek.tilemap.newMapGroup("dungeon")
     local mb = lurek.tilemap.newMapBlock(8, 8, 1, 2)
     group:addBlock(mb)
-    local gen = lurek.tilemap.newMapGen(group, "small", 4)
-    local t = gen:type()
-    local ok = gen:typeOf("LMapGen")
-    print("addBlock ok, LMapGen type:", t, "typeOf:", ok)
+    print("addBlock ok")
 end
 
 --@api-stub: LMapGroup:addScript
@@ -2530,10 +2039,7 @@ do
     group:addBlock(mb)
     local script = lurek.tilemap.newMapScript()
     group:addScript(script)
-    local bc = group:getBlockCount()
-    local sc = group:getScriptCount()
-    local name = group:getName()
-    print("blockCount:", bc, "scriptCount:", sc, "name:", name)
+    print("addScript ok")
 end
 
 --@api-stub: LMapGroup:getBlockCount
@@ -2545,9 +2051,7 @@ do
     local script = lurek.tilemap.newMapScript()
     group:addScript(script)
     local bc = group:getBlockCount()
-    local sc = group:getScriptCount()
-    local name = group:getName()
-    print("blockCount:", bc, "scriptCount:", sc, "name:", name)
+    print("blockCount:", bc)
 end
 
 --@api-stub: LMapGroup:getName
@@ -2558,23 +2062,19 @@ do
     group:addBlock(mb)
     local script = lurek.tilemap.newMapScript()
     group:addScript(script)
-    local bc = group:getBlockCount()
-    local sc = group:getScriptCount()
     local name = group:getName()
-    print("blockCount:", bc, "scriptCount:", sc, "name:", name)
+    print("name:", name)
 end
 
 --@api-stub: LMapGroup:getScriptCount
 -- LMapGroup remove block and type. Focus: getScriptCount.
 do
-    local group = lurek.tilemap.newMapGroup("plains")
-    local mb1 = lurek.tilemap.newMapBlock(4, 4, 1, 2)
-    local mb2 = lurek.tilemap.newMapBlock(4, 4, 1, 2)
-    group:addBlock(mb1)
-    group:addBlock(mb2)
-    group:removeBlock(1)
-    local t = group:type()
-    print("removeBlock ok, blockCount:", group:getBlockCount(), "type:", t)
+    local group = lurek.tilemap.newMapGroup("forest")
+    local script1 = lurek.tilemap.newMapScript()
+    local script2 = lurek.tilemap.newMapScript()
+    group:addScript(script1)
+    group:addScript(script2)
+    print("scriptCount:", group:getScriptCount())
 end
 
 --@api-stub: LMapGroup:removeBlock
@@ -2586,8 +2086,7 @@ do
     group:addBlock(mb1)
     group:addBlock(mb2)
     group:removeBlock(1)
-    local t = group:type()
-    print("removeBlock ok, blockCount:", group:getBlockCount(), "type:", t)
+    print("removeBlock ok, blockCount:", group:getBlockCount())
 end
 
 --@api-stub: LMapGroup:type
@@ -2598,9 +2097,8 @@ do
     local mb2 = lurek.tilemap.newMapBlock(4, 4, 1, 2)
     group:addBlock(mb1)
     group:addBlock(mb2)
-    group:removeBlock(1)
     local t = group:type()
-    print("removeBlock ok, blockCount:", group:getBlockCount(), "type:", t)
+    print("type:", t)
 end
 
 --@api-stub: LMapGroup:typeOf
@@ -2608,35 +2106,26 @@ end
 do
     local group = lurek.tilemap.newMapGroup("cave")
     local ok = group:typeOf("LMapGroup")
-    local script = lurek.tilemap.newMapScript()
-    script:addStep({type = "fill", gid = 1})
-    script:addStep({type = "rect", x = 1, y = 1, w = 4, h = 4, gid = 2})
-    local cnt = script:getStepCount()
-    print("LMapGroup typeOf:", ok, "stepCount:", cnt)
+    print("LMapGroup typeOf:", ok)
 end
 
 --@api-stub: LMapScript:addStep
 -- LMapGroup typeOf and LMapScript step management. Focus: addStep.
 do
-    local group = lurek.tilemap.newMapGroup("cave")
-    local ok = group:typeOf("LMapGroup")
     local script = lurek.tilemap.newMapScript()
     script:addStep({type = "fill", gid = 1})
     script:addStep({type = "rect", x = 1, y = 1, w = 4, h = 4, gid = 2})
-    local cnt = script:getStepCount()
-    print("LMapGroup typeOf:", ok, "stepCount:", cnt)
+    print("stepCount:", script:getStepCount())
 end
 
 --@api-stub: LMapScript:getStepCount
 -- LMapGroup typeOf and LMapScript step management. Focus: getStepCount.
 do
-    local group = lurek.tilemap.newMapGroup("cave")
-    local ok = group:typeOf("LMapGroup")
     local script = lurek.tilemap.newMapScript()
     script:addStep({type = "fill", gid = 1})
     script:addStep({type = "rect", x = 1, y = 1, w = 4, h = 4, gid = 2})
     local cnt = script:getStepCount()
-    print("LMapGroup typeOf:", ok, "stepCount:", cnt)
+    print("stepCount:", cnt)
 end
 
 --@api-stub: LMapScript:type
@@ -2644,19 +2133,15 @@ end
 do
     local script = lurek.tilemap.newMapScript()
     local t = script:type()
-    local ok = script:typeOf("LMapScript")
-    local notOk = script:typeOf("LMapBlock")
-    print("LMapScript type:", t, "typeOf:", ok, "typeOf LMapBlock:", notOk)
+    print("LMapScript type:", t)
 end
 
 --@api-stub: LMapScript:typeOf
 -- LMapScript type identity. Focus: typeOf.
 do
     local script = lurek.tilemap.newMapScript()
-    local t = script:type()
     local ok = script:typeOf("LMapScript")
-    local notOk = script:typeOf("LMapBlock")
-    print("LMapScript type:", t, "typeOf:", ok, "typeOf LMapBlock:", notOk)
+    print("LMapScript typeOf:", ok)
 end
 
 print("content/examples/tilemap.lua")

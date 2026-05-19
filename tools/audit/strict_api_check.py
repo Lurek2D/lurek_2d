@@ -1,4 +1,4 @@
-﻿"""Validate all lurek.* API stubs in content/examples/ against the master API data.
+"""Validate all lurek.* API stubs in content/examples/ against the master API data.
 
 Reads logs/data/lua_api_data.json and cross-references every registered function,
 method, and property against its --@api: marker block in the corresponding example
