@@ -366,8 +366,8 @@ end
 --@api-stub: lurek.math.polygonUnion
 -- Computes union of two polygons.
 do
-    local a = {{x = 0, y = 0}, {x = 10, y = 0}, {x = 10, y = 10}, {x = 0, y = 10}}
-    local b = {{x = 5, y = 5}, {x = 15, y = 5}, {x = 15, y = 15}, {x = 5, y = 15}}
+    local a = {0, 0, 10, 0, 10, 10, 0, 10}
+    local b = {5, 5, 15, 5, 15, 15, 5, 15}
     local result = lurek.math.polygonUnion(a, b)
     print("union vertices = " .. #result)
 end

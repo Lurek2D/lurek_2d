@@ -37,44 +37,38 @@
 
 ## Start Here
 
-| Topic | Link | Why open it |
-|---|---|---|
-| Wiki home | [wiki/Home.md](wiki/Home.md) | Curated entry point for the detailed docs moved out of the root README. |
-| Project reference | [wiki/Project-Reference.md](wiki/Project-Reference.md) | Full high-level project overview, module map, use cases, tech stack, and licensing. |
-| Lurek API reference | [docs/api/lurek.md](docs/api/lurek.md) | Full public `lurek.*` API surface. |
-| Rust API reference | [docs/api/rust.md](docs/api/rust.md) | Engine internals for contributors. |
-| Library API reference | [docs/api/library.md](docs/api/library.md) | Generated reference for the pure-Lua libraries. |
-| Philosophy | [docs/architecture/philosophy.md](docs/architecture/philosophy.md) | Core rules, constraints, and design assumptions. |
-| Architecture index | [docs/architecture/README.md](docs/architecture/README.md) | Navigation across all architecture files. |
-| Module specs index | [docs/specs/README.md](docs/specs/README.md) | Canonical per-module contract index. |
-| Contributor handbook | [docs/handbook.md](docs/handbook.md) | Onboarding, build/run flow, docs workflow, and quality gates. |
-| Changelog | [docs/CHANGELOG.md](docs/CHANGELOG.md) | Current project history. |
+- [Wiki home](wiki/Home.md) — curated entry point for the detailed docs moved out of the root README.
+- [Project reference](wiki/Project-Reference.md) — full high-level project overview, module map, use cases, tech stack, and licensing.
+- [Lurek API reference](docs/api/lurek.md) — full public `lurek.*` API surface.
+- [Rust API reference](docs/api/rust.md) — engine internals for contributors.
+- [Library API reference](docs/api/library.md) — generated reference for the pure-Lua libraries.
+- [Philosophy](docs/architecture/philosophy.md) — core rules, constraints, and design assumptions.
+- [Architecture index](docs/architecture/README.md) — navigation across all architecture files.
+- [Module specs index](docs/specs/README.md) — canonical per-module contract index.
+- [Contributor handbook](docs/handbook.md) — onboarding, build/run flow, docs workflow, and quality gates.
+- [Changelog](docs/CHANGELOG.md) — current project history.
 
 ## Project Guides
 
-| Guide | Link | Scope |
-|---|---|---|
-| Examples guide | [content/examples/README.md](content/examples/README.md) | How to use the single-file API examples under `content/examples/`. |
-| Detailed project reference | [wiki/Project-Reference.md](wiki/Project-Reference.md) | Runtime modules, game categories, what ships, and project identity. |
-| Library API reference | [docs/api/library.md](docs/api/library.md) | Public surface of the bundled pure-Lua libraries. |
-| Test suite overview | [tests/README.md](tests/README.md) | Rust/Lua test layout, commands, and coverage rules. |
-| VS Code toolkit | [extensions/vscode/README.md](extensions/vscode/README.md) | Extension features, installation, and editor workflow. |
-| CAG system | [docs/architecture/cag-system.md](docs/architecture/cag-system.md) | Agent, skill, prompt, and validator model for AI-assisted work. |
+- [Examples guide](content/examples/README.md) — how to use the single-file API examples under `content/examples/`.
+- [Detailed project reference](wiki/Project-Reference.md) — runtime modules, game categories, what ships, and project identity.
+- [Library API reference](docs/api/library.md) — public surface of the bundled pure-Lua libraries.
+- [Test suite overview](tests/README.md) — Rust/Lua test layout, commands, and coverage rules.
+- [VS Code toolkit](extensions/vscode/README.md) — extension features, installation, and editor workflow.
+- [CAG system](docs/architecture/cag-system.md) — agent, skill, prompt, and validator model for AI-assisted work.
 
 ## Architecture Files
 
-| File | Link | Focus |
-|---|---|---|
-| Architecture index | [docs/architecture/README.md](docs/architecture/README.md) | Reading order and cross-links for the architecture set. |
-| Philosophy | [docs/architecture/philosophy.md](docs/architecture/philosophy.md) | Constraints, design doctrine, and source-of-truth rules. |
-| Engine architecture | [docs/architecture/engine-architecture.md](docs/architecture/engine-architecture.md) | Module groups, runtime composition, boot, and frame model. |
-| Render command architecture | [docs/architecture/render-command-architecture.md](docs/architecture/render-command-architecture.md) | Draw-command flow and renderer structure. |
-| Test framework | [docs/architecture/test-framework.md](docs/architecture/test-framework.md) | Lua-first test strategy and test placement rules. |
-| VS Code architecture | [docs/architecture/vscode-architecture.md](docs/architecture/vscode-architecture.md) | Extension services, debug bridge, and MCP integration. |
-| CAG system | [docs/architecture/cag-system.md](docs/architecture/cag-system.md) | Agent graph file types, routing, and validator rules. |
-| Lua API file standard | [docs/architecture/lua-api-file-standard.md](docs/architecture/lua-api-file-standard.md) | Conventions for `src/lua_api/*_api.rs`. |
-| Plugins | [docs/architecture/plugins.md](docs/architecture/plugins.md) | Plugin boundary and future split strategy. |
-| TOGAF mapping | [docs/architecture/togaf.md](docs/architecture/togaf.md) | TOGAF-oriented architecture view of the repo. |
+- [Architecture index](docs/architecture/README.md) — reading order and cross-links for the architecture set.
+- [Philosophy](docs/architecture/philosophy.md) — constraints, design doctrine, and source-of-truth rules.
+- [Engine architecture](docs/architecture/engine-architecture.md) — module groups, runtime composition, boot, and frame model.
+- [Render command architecture](docs/architecture/render-command-architecture.md) — draw-command flow and renderer structure.
+- [Test framework](docs/architecture/test-framework.md) — Lua-first test strategy and test placement rules.
+- [VS Code architecture](docs/architecture/vscode-architecture.md) — extension services, debug bridge, and MCP integration.
+- [CAG system](docs/architecture/cag-system.md) — agent graph file types, routing, and validator rules.
+- [Lua API file standard](docs/architecture/lua-api-file-standard.md) — conventions for `src/lua_api/*_api.rs`.
+- [Plugins](docs/architecture/plugins.md) — plugin boundary and future split strategy.
+- [TOGAF mapping](docs/architecture/togaf.md) — TOGAF-oriented architecture view of the repo.
 
 ---
 

@@ -37,7 +37,7 @@ end
 do
     ---@type LNetworkHost
     local host = lurek.network.newHost({addr = "0.0.0.0:0", maxPeers = 1})
-    local peer_id = host:connect("127.0.0.1:7777", 2, 0)
+    local peer_id = host:connect("127.0.0.1:7777", 2)
     print("connecting, peer_id = " .. peer_id)
     host:destroy()
 end

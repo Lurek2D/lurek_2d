@@ -524,8 +524,8 @@ do
     local cam = lurek.camera.new(800, 600)
     cam:shake(5.0, 0.5)
     cam:update(0.01)
-    local sx, sy, sr = cam:getShakeOffset()
-    print("shake = " .. sx .. ", " .. sy .. " rot=" .. sr)
+    local sx, sy = cam:getShakeOffset()
+    print("shake = " .. sx .. ", " .. sy)
 end
 
 --@api-stub: LCamera:getRenderOffset

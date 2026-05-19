@@ -92,7 +92,7 @@ do
     local points = lurek.globe.greatCirclePath(0, 0, 45, 90, 5)
     print("path has " .. #points .. " points")
     for _, p in ipairs(points) do
-        print("  lat=" .. p.lat .. " lon=" .. p.lon)
+        print("  lat=" .. p.lat .. " lng=" .. p.lng)
     end
 end
 

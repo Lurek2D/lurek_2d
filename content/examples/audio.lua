@@ -661,8 +661,8 @@ end
 -- Sets a parameter on an existing bus effect.
 do
     lurek.audio.create_bus("eq_bus", nil)
-    local eid = lurek.audio.add_effect("eq_bus", "highpass", { value = 200 })
-    local ok = lurek.audio.set_effect_param("eq_bus", eid, "value", 500)
+    local eid = lurek.audio.add_effect("eq_bus", "highpass", { cutoff = 200 })
+    local ok = lurek.audio.set_effect_param("eq_bus", eid, "cutoff", 500)
     print("param set = " .. tostring(ok))
 end
 

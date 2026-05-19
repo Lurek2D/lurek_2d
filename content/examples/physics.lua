@@ -878,20 +878,6 @@ do
     print("closed chain type = " .. loop:getType())
 end
 
---@api-stub: lurek.physics.attachShape
--- Attach a standalone shape to a body.
-do
-    ---@type LWorld
-    local world = lurek.physics.newWorld(0, 400)
-    local body = world:newBody(200, 200, "dynamic")
-    ---@type LPhysicsShape
-    local circle = lurek.physics.newCircleShape(20)
-    lurek.physics.attachShape(body, circle)
-    world:step(1 / 60)
-    local x, y = body:getPosition()
-    print("body with shape: " .. x .. ", " .. y)
-end
-
 --@api-stub: LPhysicsShape:setDensity
 -- Set the density of a standalone shape.
 do

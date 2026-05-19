@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- docs(readme,wiki): replaced link-heavy tables in the root `README.md` and `wiki/Home.md` with plain bullet-list navigation so the main project links use the most renderer-compatible Markdown form.
+
 - docs(readme): normalized all root `README.md` local links from `./path` form to plain repo-relative `path` form so the landing page uses the simplest possible file links across Markdown renderers.
 
 - docs(contributing): refreshed `CONTRIBUTING.md` so the README footer target now uses the current repository URL, current module-doc workflow (`docs/specs/*.md` instead of retired `AGENT.md` files), and current doc validation commands.
