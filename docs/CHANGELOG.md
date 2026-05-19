@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- docs(readme): normalized all root `README.md` local links from `./path` form to plain repo-relative `path` form so the landing page uses the simplest possible file links across Markdown renderers.
+
 - docs(contributing): refreshed `CONTRIBUTING.md` so the README footer target now uses the current repository URL, current module-doc workflow (`docs/specs/*.md` instead of retired `AGENT.md` files), and current doc validation commands.
 
 - docs(readme,wiki): replaced root README wiki-anchor navigation with file-only curated links, added a separate architecture-files table plus direct `lurek` API and philosophy links, added `content/examples/README.md`, and refreshed the linked handbook/specs/architecture pages so every file referenced from the root README has current, coherent content.
