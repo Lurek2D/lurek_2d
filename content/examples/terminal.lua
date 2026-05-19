@@ -11,15 +11,8 @@ do
     ---@type LTerminal
     local term = lurek.terminal.newTerminal(80, 40)
     print("type = " .. term:type())
-    print("is LTerminal = " .. tostring(term:typeOf("LTerminal")))
     local cols, rows = term:getDimensions()
     print("dimensions = " .. cols .. "x" .. rows)
-
-    -- Creating a small terminal.
-    ---@type LTerminal
-    local small = lurek.terminal.newTerminal(40, 20)
-    local cols, rows = small:getDimensions()
-    print("small = " .. cols .. "x" .. rows)
 end
 
 --@api-stub: LTerminal:set
@@ -28,10 +21,6 @@ do
     ---@type LTerminal
     local term = lurek.terminal.newTerminal(80, 25)
     term:set(1, 1, "H", 1, 1, 1, 1, 0, 0, 0, 0)
-    term:set(2, 1, "e", 0, 1, 0, 1, 0, 0, 0.2, 1)
-    term:set(3, 1, "l", 1, 0, 0, 1)
-    term:set(4, 1, "l")
-    term:set(5, 1, "o")
     local ch, fr, fg, fb, fa, br, bg, bb, ba = term:get(1, 1)
     print("cell(1,1) ch=" .. ch .. " fg=(" .. fr .. "," .. fg .. "," .. fb .. ")")
 end
@@ -42,10 +31,6 @@ do
     ---@type LTerminal
     local term = lurek.terminal.newTerminal(80, 25)
     term:set(1, 1, "H", 1, 1, 1, 1, 0, 0, 0, 0)
-    term:set(2, 1, "e", 0, 1, 0, 1, 0, 0, 0.2, 1)
-    term:set(3, 1, "l", 1, 0, 0, 1)
-    term:set(4, 1, "l")
-    term:set(5, 1, "o")
     local ch, fr, fg, fb, fa, br, bg, bb, ba = term:get(1, 1)
     print("cell(1,1) ch=" .. ch .. " fg=(" .. fr .. "," .. fg .. "," .. fb .. ")")
 end
@@ -78,14 +63,9 @@ end
 do
     ---@type LTerminal
     local term = lurek.terminal.newTerminal(80, 25)
-    local w, h = term:getCellSize()
-    print("default cell = " .. w .. "x" .. h)
     term:setCellSize(12, 20)
-    w, h = term:getCellSize()
+    local w, h = term:getCellSize()
     print("custom cell = " .. w .. "x" .. h)
-    term:resetCellSize()
-    w, h = term:getCellSize()
-    print("reset cell = " .. w .. "x" .. h)
 end
 
 --@api-stub: LTerminal:setCellSize
@@ -93,14 +73,8 @@ end
 do
     ---@type LTerminal
     local term = lurek.terminal.newTerminal(80, 25)
-    local w, h = term:getCellSize()
-    print("default cell = " .. w .. "x" .. h)
     term:setCellSize(12, 20)
-    w, h = term:getCellSize()
-    print("custom cell = " .. w .. "x" .. h)
-    term:resetCellSize()
-    w, h = term:getCellSize()
-    print("reset cell = " .. w .. "x" .. h)
+    print("cell size set")
 end
 
 --@api-stub: LTerminal:resetCellSize
@@ -108,13 +82,9 @@ end
 do
     ---@type LTerminal
     local term = lurek.terminal.newTerminal(80, 25)
-    local w, h = term:getCellSize()
-    print("default cell = " .. w .. "x" .. h)
     term:setCellSize(12, 20)
-    w, h = term:getCellSize()
-    print("custom cell = " .. w .. "x" .. h)
     term:resetCellSize()
-    w, h = term:getCellSize()
+    local w, h = term:getCellSize()
     print("reset cell = " .. w .. "x" .. h)
 end
 
@@ -139,10 +109,6 @@ do
     term:print(1, 1, "Rendering test")
     term:render()
     print("rendered at default pos")
-    term:render(10, 10)
-    print("rendered at offset 10,10")
-    term:autoResize()
-    print("auto-resized window to fit grid")
 end
 
 --@api-stub: LTerminal:autoResize
@@ -150,11 +116,6 @@ end
 do
     ---@type LTerminal
     local term = lurek.terminal.newTerminal(60, 20)
-    term:print(1, 1, "Rendering test")
-    term:render()
-    print("rendered at default pos")
-    term:render(10, 10)
-    print("rendered at offset 10,10")
     term:autoResize()
     print("auto-resized window to fit grid")
 end
@@ -1099,39 +1060,27 @@ end
 -- LWidget appearance getters. Focus: getColor.
 do
     local label = lurek.terminal.newLabel(0, 0, "Tag")
-    local border = lurek.terminal.newBorder(0, 1, 10, 3)
-    border:setTag("my_border")
-    border:setStyle("single")
-    local tag = border:getTag()
+    label:setColor(255, 200, 100, 255)
     local r, g, b, a = label:getColor()
-    local style = border:getStyle()
-    print("getColor:", r, g, b, a, "getStyle:", style, "getTag:", tag)
+    print("getColor:", r, g, b, a)
 end
 
 --@api-stub: LWidget:getStyle
 -- LWidget appearance getters. Focus: getStyle.
 do
-    local label = lurek.terminal.newLabel(0, 0, "Tag")
     local border = lurek.terminal.newBorder(0, 1, 10, 3)
-    border:setTag("my_border")
     border:setStyle("single")
-    local tag = border:getTag()
-    local r, g, b, a = label:getColor()
     local style = border:getStyle()
-    print("getColor:", r, g, b, a, "getStyle:", style, "getTag:", tag)
+    print("getStyle:", style)
 end
 
 --@api-stub: LWidget:getTag
 -- LWidget appearance getters. Focus: getTag.
 do
-    local label = lurek.terminal.newLabel(0, 0, "Tag")
     local border = lurek.terminal.newBorder(0, 1, 10, 3)
     border:setTag("my_border")
-    border:setStyle("single")
     local tag = border:getTag()
-    local r, g, b, a = label:getColor()
-    local style = border:getStyle()
-    print("getColor:", r, g, b, a, "getStyle:", style, "getTag:", tag)
+    print("getTag:", tag)
 end
 
 --@api-stub: LWidget:getText
@@ -1213,20 +1162,25 @@ end
 -- Example usage for isEnabled.
 do
     local btn = lurek.terminal.newButton(0, 0, 10, 1, "Test")
-    local enabled = btn:isEnabled()
-    local visible = btn:isVisible()
-    local t = btn:type()
-    print("isEnabled:", enabled, "isVisible:", visible, "type:", t)
+    print("before:", btn:isEnabled())
+    btn:setEnabled(false)
+    print("after:", btn:isEnabled())
 end
 
 --@api-stub: LWidget:isVisible
 -- Example usage for isVisible.
 do
     local btn = lurek.terminal.newButton(0, 0, 10, 1, "Test")
-    local enabled = btn:isEnabled()
-    local visible = btn:isVisible()
-    local t = btn:type()
-    print("isEnabled:", enabled, "isVisible:", visible, "type:", t)
+    print("before:", btn:isVisible())
+    btn:setVisible(false)
+    print("after:", btn:isVisible())
+end
+
+--@api-stub: LWidget:type
+-- LWidget runtime type name.
+do
+    local btn = lurek.terminal.newButton(0, 0, 10, 1, "Btn")
+    print("type:", btn:type())
 end
 
 --@api-stub: LWidget:typeOf
@@ -1243,35 +1197,24 @@ end
 do
     local label = lurek.terminal.newLabel(0, 0, "Styled")
     label:setColor(255, 200, 100, 255)
-    label:setEnabled(false)
-    label:setEnabled(true)
-    label:setVisible(false)
-    label:setVisible(true)
-    print("setColor/setEnabled/setVisible ok")
+    local r, g, b, a = label:getColor()
+    print("setColor:", r, g, b, a)
 end
 
 --@api-stub: LWidget:setEnabled
 -- LWidget color, enable, visible setters. Focus: setEnabled.
 do
     local label = lurek.terminal.newLabel(0, 0, "Styled")
-    label:setColor(255, 200, 100, 255)
     label:setEnabled(false)
-    label:setEnabled(true)
-    label:setVisible(false)
-    label:setVisible(true)
-    print("setColor/setEnabled/setVisible ok")
+    print("setEnabled:", label:isEnabled())
 end
 
 --@api-stub: LWidget:setVisible
 -- LWidget color, enable, visible setters. Focus: setVisible.
 do
     local label = lurek.terminal.newLabel(0, 0, "Styled")
-    label:setColor(255, 200, 100, 255)
-    label:setEnabled(false)
-    label:setEnabled(true)
     label:setVisible(false)
-    label:setVisible(true)
-    print("setColor/setEnabled/setVisible ok")
+    print("setVisible:", label:isVisible())
 end
 
 --@api-stub: LWidget:setMaxLength

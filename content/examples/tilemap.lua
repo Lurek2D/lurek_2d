@@ -11,16 +11,8 @@ do
     ---@type LTileMap
     local map = lurek.tilemap.newTileMap(32, 32)
     print("type = " .. map:type())
-    print("is LTileMap = " .. tostring(map:typeOf("LTileMap")))
     local tw, th = map:getTileDimensions()
     print("tile size = " .. tw .. "x" .. th)
-
-    -- Customizing internal chunk size.
-    ---@type LTileMap
-    local map = lurek.tilemap.newTileMap(16, 16, 32)
-    print("tile width = " .. map:getTileWidth())
-    print("tile height = " .. map:getTileHeight())
-    print("chunk size = " .. map:getChunkSize())
 end
 
 --@api-stub: LTileMap:addLayer
@@ -30,11 +22,6 @@ do
     local map = lurek.tilemap.newTileMap(32, 32)
     local ground = map:addLayer("ground", 50, 50)
     print("ground layer idx = " .. ground)
-    local objects = map:addLayer("objects", 50, 50)
-    print("objects layer idx = " .. objects)
-    local overlay = map:addLayer("overlay", 50, 50)
-    print("overlay layer idx = " .. overlay)
-    print("layer count = " .. map:getLayerCount())
 end
 
 --@api-stub: LTileMap:getLayerName
@@ -43,11 +30,7 @@ do
     ---@type LTileMap
     local map = lurek.tilemap.newTileMap(32, 32)
     map:addLayer("terrain", 40, 30)
-    map:addLayer("decoration", 40, 30)
-    map:addLayer("collision", 40, 30)
-    for i = 1, map:getLayerCount() do
-        print("layer " .. i .. " = " .. map:getLayerName(i))
-    end
+    print("layer 1 = " .. map:getLayerName(1))
 end
 
 --@api-stub: LTileMap:getLayerCount
@@ -56,11 +39,7 @@ do
     ---@type LTileMap
     local map = lurek.tilemap.newTileMap(32, 32)
     map:addLayer("terrain", 40, 30)
-    map:addLayer("decoration", 40, 30)
-    map:addLayer("collision", 40, 30)
-    for i = 1, map:getLayerCount() do
-        print("layer " .. i .. " = " .. map:getLayerName(i))
-    end
+    print("layer count = " .. map:getLayerCount())
 end
 
 --@api-stub: LTileMap:setTile
@@ -70,13 +49,8 @@ do
     local map = lurek.tilemap.newTileMap(32, 32)
     local layer = map:addLayer("main", 10, 10)
     map:setTile(layer, 3, 4, 5)
-    map:setTile(layer, 5, 5, 12)
-    map:setTile(layer, 1, 1, 1)
     local gid = map:getTile(layer, 3, 4)
     print("tile at 3,4 = " .. gid)
-    map:clearTile(layer, 3, 4)
-    gid = map:getTile(layer, 3, 4)
-    print("after clear = " .. gid)
 end
 
 --@api-stub: LTileMap:getTile
@@ -86,13 +60,8 @@ do
     local map = lurek.tilemap.newTileMap(32, 32)
     local layer = map:addLayer("main", 10, 10)
     map:setTile(layer, 3, 4, 5)
-    map:setTile(layer, 5, 5, 12)
-    map:setTile(layer, 1, 1, 1)
     local gid = map:getTile(layer, 3, 4)
     print("tile at 3,4 = " .. gid)
-    map:clearTile(layer, 3, 4)
-    gid = map:getTile(layer, 3, 4)
-    print("after clear = " .. gid)
 end
 
 --@api-stub: LTileMap:clearTile
@@ -102,12 +71,8 @@ do
     local map = lurek.tilemap.newTileMap(32, 32)
     local layer = map:addLayer("main", 10, 10)
     map:setTile(layer, 3, 4, 5)
-    map:setTile(layer, 5, 5, 12)
-    map:setTile(layer, 1, 1, 1)
-    local gid = map:getTile(layer, 3, 4)
-    print("tile at 3,4 = " .. gid)
     map:clearTile(layer, 3, 4)
-    gid = map:getTile(layer, 3, 4)
+    local gid = map:getTile(layer, 3, 4)
     print("after clear = " .. gid)
 end
 
@@ -145,18 +110,7 @@ do
     ---@type LTileSet
     local ts = lurek.tilemap.newTileSet(1, 64, 8, 32, 32)
     print("type = " .. ts:type())
-    print("is LTileSet = " .. tostring(ts:typeOf("LTileSet")))
     print("first gid = " .. ts:getFirstGid())
-    print("tile count = " .. ts:getTileCount())
-    print("columns = " .. ts:getColumns())
-    local tw, th = ts:getTileDimensions()
-    print("tile dims = " .. tw .. "x" .. th)
-
-    -- Tileset with pixel spacing between tiles.
-    ---@type LTileSet
-    local ts = lurek.tilemap.newTileSet(1, 100, 10, 16, 16, 2, 1)
-    print("spacing = " .. ts:getSpacing())
-    print("margin = " .. ts:getMargin())
     print("tile count = " .. ts:getTileCount())
 end
 
@@ -166,13 +120,8 @@ do
     ---@type LTileSet
     local ts = lurek.tilemap.newTileSet(1, 32, 8, 32, 32)
     ts:setSolid(1, true)
-    ts:setSolid(5, true)
-    ts:setSolid(10, true)
     print("tile 1 solid = " .. tostring(ts:isSolid(1)))
     print("tile 2 solid = " .. tostring(ts:isSolid(2)))
-    print("tile 5 solid = " .. tostring(ts:isSolid(5)))
-    ts:setSolid(5, false)
-    print("tile 5 after clear = " .. tostring(ts:isSolid(5)))
 end
 
 --@api-stub: LTileSet:setSolid
@@ -181,13 +130,7 @@ do
     ---@type LTileSet
     local ts = lurek.tilemap.newTileSet(1, 32, 8, 32, 32)
     ts:setSolid(1, true)
-    ts:setSolid(5, true)
-    ts:setSolid(10, true)
     print("tile 1 solid = " .. tostring(ts:isSolid(1)))
-    print("tile 2 solid = " .. tostring(ts:isSolid(2)))
-    print("tile 5 solid = " .. tostring(ts:isSolid(5)))
-    ts:setSolid(5, false)
-    print("tile 5 after clear = " .. tostring(ts:isSolid(5)))
 end
 
 --@api-stub: LTileSet:getQuad

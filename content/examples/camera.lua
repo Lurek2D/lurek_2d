@@ -110,7 +110,6 @@ end
 -- Returns true if bounds are set on the camera.
 do
     local cam = lurek.camera.new(800, 600)
-    print("has bounds = " .. tostring(cam:hasBounds()))
     cam:setBounds(0, 0, 1000, 1000)
     print("has bounds = " .. tostring(cam:hasBounds()))
 end
@@ -684,8 +683,7 @@ end
 do
     local rig = lurek.camera.newRig()
     rig:setPosition("left", 100, 200)
-    rig:setPosition("right", 600, 200)
-    print("cameras positioned")
+    print("camera positioned: left")
 end
 
 --@api-stub: LCameraRig:setZoom
@@ -740,7 +738,6 @@ end
 do
     local rig = lurek.camera.newRig()
     rig:setPosition("p1", 0, 0)
-    rig:setPosition("p2", 100, 100)
     local list = rig:names()
     print("cameras = " .. #list)
 end
@@ -760,7 +757,6 @@ do
     local rig = lurek.camera.newRig()
     rig:setPosition("x", 0, 0)
     print("has x = " .. tostring(rig:has("x")))
-    print("has z = " .. tostring(rig:has("z")))
 end
 
 --@api-stub: LCameraRig:type

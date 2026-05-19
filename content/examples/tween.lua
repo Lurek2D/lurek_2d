@@ -12,28 +12,15 @@ do
     ---@type LTween
     local tw = lurek.tween.tween(1.0, obj, { x = 100, y = 50 })
     print("type = " .. tw:type())
-    print("active = " .. tostring(tw:isActive()))
-    print("duration = " .. tw:getDuration())
     lurek.tween.update(0.5)
     print("at 0.5s: x=" .. obj.x .. " y=" .. obj.y)
-    print("progress = " .. tw:getProgress())
-    print("elapsed = " .. tw:getElapsed())
-    print("remaining = " .. tw:getRemaining())
-
-    -- @api-stub: lurek.tween.to Alternative parameter order (target first). Focus: tween.
-    local pos = { x = 100, y = 200 }
-    ---@type LTween
-    local tw = lurek.tween.to(pos, { x = 0, y = 0 }, 0.5, "easeOutBounce")
-    lurek.tween.update(0.5)
-    print("moved to: x=" .. pos.x .. " y=" .. pos.y)
 end
 
 --@api-stub: lurek.tween.update
 -- @api-stub: lurek.tween.to Alternative parameter order (target first). Focus: update.
 do
     local pos = { x = 100, y = 200 }
-    ---@type LTween
-    local tw = lurek.tween.to(pos, { x = 0, y = 0 }, 0.5, "easeOutBounce")
+    lurek.tween.to(pos, { x = 0, y = 0 }, 0.5, "easeOutBounce")
     lurek.tween.update(0.5)
     print("moved to: x=" .. pos.x .. " y=" .. pos.y)
 end
@@ -42,8 +29,7 @@ end
 -- @api-stub: lurek.tween.to Alternative parameter order (target first). Focus: to.
 do
     local pos = { x = 100, y = 200 }
-    ---@type LTween
-    local tw = lurek.tween.to(pos, { x = 0, y = 0 }, 0.5, "easeOutBounce")
+    lurek.tween.to(pos, { x = 0, y = 0 }, 0.5, "easeOutBounce")
     lurek.tween.update(0.5)
     print("moved to: x=" .. pos.x .. " y=" .. pos.y)
 end
@@ -54,16 +40,9 @@ do
     local obj = { scale = 1 }
     ---@type LTween
     local tw = lurek.tween.tween(1.0, obj, { scale = 2 })
-    tw:onUpdate(function(t)
-        print("  update t=" .. string.format("%.2f", t))
-    end)
     tw:onComplete(function()
         print("  completed! scale=" .. obj.scale)
     end)
-    tw:onCancel(function()
-        print("  cancelled")
-    end)
-    lurek.tween.update(0.5)
     lurek.tween.update(0.5)
 end
 
@@ -76,13 +55,6 @@ do
     tw:onUpdate(function(t)
         print("  update t=" .. string.format("%.2f", t))
     end)
-    tw:onComplete(function()
-        print("  completed! scale=" .. obj.scale)
-    end)
-    tw:onCancel(function()
-        print("  cancelled")
-    end)
-    lurek.tween.update(0.5)
     lurek.tween.update(0.5)
 end
 
@@ -92,17 +64,10 @@ do
     local obj = { scale = 1 }
     ---@type LTween
     local tw = lurek.tween.tween(1.0, obj, { scale = 2 })
-    tw:onUpdate(function(t)
-        print("  update t=" .. string.format("%.2f", t))
-    end)
-    tw:onComplete(function()
-        print("  completed! scale=" .. obj.scale)
-    end)
     tw:onCancel(function()
         print("  cancelled")
     end)
-    lurek.tween.update(0.5)
-    lurek.tween.update(0.5)
+    tw:cancel()
 end
 
 --@api-stub: LTween:pause
@@ -116,9 +81,6 @@ do
     tw:pause()
     lurek.tween.update(1.0)
     print("while paused: " .. obj.rotation)
-    tw:resume()
-    lurek.tween.update(0.5)
-    print("after resume: " .. obj.rotation)
 end
 
 --@api-stub: LTween:resume
@@ -158,11 +120,7 @@ do
     ---@type LTween
     local tw = lurek.tween.tween(0.5, obj, { x = 100 })
     tw:setRepeat(3)
-    tw:setYoyo(true)
-    for i = 1, 8 do
-        lurek.tween.update(0.25)
-        print("step " .. i .. ": x=" .. string.format("%.0f", obj.x))
-    end
+    print("repeat set")
 end
 
 --@api-stub: LTween:setYoyo
@@ -171,12 +129,8 @@ do
     local obj = { x = 0 }
     ---@type LTween
     local tw = lurek.tween.tween(0.5, obj, { x = 100 })
-    tw:setRepeat(3)
     tw:setYoyo(true)
-    for i = 1, 8 do
-        lurek.tween.update(0.25)
-        print("step " .. i .. ": x=" .. string.format("%.0f", obj.x))
-    end
+    print("yoyo set")
 end
 
 --@api-stub: LTween:relative

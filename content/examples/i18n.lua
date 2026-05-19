@@ -99,10 +99,6 @@ do
     lurek.i18n.setLanguage("en")
     local text = lurek.i18n.t("greetings.hello")
     print("translated = " .. text)
-
-    -- Translates a key with variable substitution.
-    local text = lurek.i18n.t("greeting.personal", {name = "World"})
-    print("with vars = " .. text)
 end
 
 --@api-stub: lurek.i18n.hasKey

@@ -9,18 +9,7 @@
 -- Creates a point light with position, radius, and optional settings.
 do
     local light = lurek.light.newLight(400, 300, 200)
-    print("light type = " .. light:getLightType())
     print("radius = " .. light:getRadius())
-
-    -- Creates a light with full options table.
-    local light = lurek.light.newLight(100, 100, 150, {
-        color = {1, 0.8, 0.5, 1},
-        intensity = 2.0,
-        falloff = "smooth",
-    })
-    local r, g, b, a = light:getColor()
-    print("color = " .. r .. "," .. g .. "," .. b .. "," .. a)
-    print("intensity = " .. light:getIntensity())
 end
 
 --@api-stub: lurek.light.setEnabled

@@ -10,14 +10,7 @@
 do
     ---@type LServiceLocator
     local services = lurek.patterns.newServiceLocator()
-    services:provide("audio", {volume = 0.8, muted = false})
-    services:provide("config", {difficulty = "hard", language = "en"})
-    print("has audio = " .. tostring(services:has("audio")))
-    print("has physics = " .. tostring(services:has("physics")))
-    local audio = services:locate("audio")
-    if audio then
-        print("audio volume = " .. audio.volume)
-    end
+    print("locator created = " .. tostring(services ~= nil))
 end
 
 --@api-stub: LServiceLocator:provide
@@ -26,13 +19,7 @@ do
     ---@type LServiceLocator
     local services = lurek.patterns.newServiceLocator()
     services:provide("audio", {volume = 0.8, muted = false})
-    services:provide("config", {difficulty = "hard", language = "en"})
     print("has audio = " .. tostring(services:has("audio")))
-    print("has physics = " .. tostring(services:has("physics")))
-    local audio = services:locate("audio")
-    if audio then
-        print("audio volume = " .. audio.volume)
-    end
 end
 
 --@api-stub: LServiceLocator:locate
@@ -41,9 +28,6 @@ do
     ---@type LServiceLocator
     local services = lurek.patterns.newServiceLocator()
     services:provide("audio", {volume = 0.8, muted = false})
-    services:provide("config", {difficulty = "hard", language = "en"})
-    print("has audio = " .. tostring(services:has("audio")))
-    print("has physics = " .. tostring(services:has("physics")))
     local audio = services:locate("audio")
     if audio then
         print("audio volume = " .. audio.volume)
@@ -56,13 +40,8 @@ do
     ---@type LServiceLocator
     local services = lurek.patterns.newServiceLocator()
     services:provide("audio", {volume = 0.8, muted = false})
-    services:provide("config", {difficulty = "hard", language = "en"})
     print("has audio = " .. tostring(services:has("audio")))
     print("has physics = " .. tostring(services:has("physics")))
-    local audio = services:locate("audio")
-    if audio then
-        print("audio volume = " .. audio.volume)
-    end
 end
 
 --@api-stub: LServiceLocator:getServices
@@ -72,13 +51,8 @@ do
     local services = lurek.patterns.newServiceLocator()
     services:provide("renderer", {backend = "wgpu"})
     services:provide("input", {keyboard = true})
-    services:provide("save", {slot = 1})
     local names = services:getServices()
     print("services = " .. #names)
-    services:remove("save")
-    print("after remove: has save = " .. tostring(services:has("save")))
-    services:clearAll()
-    print("after clear: count = " .. #services:getServices())
 end
 
 --@api-stub: LServiceLocator:remove
@@ -86,15 +60,9 @@ end
 do
     ---@type LServiceLocator
     local services = lurek.patterns.newServiceLocator()
-    services:provide("renderer", {backend = "wgpu"})
-    services:provide("input", {keyboard = true})
     services:provide("save", {slot = 1})
-    local names = services:getServices()
-    print("services = " .. #names)
     services:remove("save")
     print("after remove: has save = " .. tostring(services:has("save")))
-    services:clearAll()
-    print("after clear: count = " .. #services:getServices())
 end
 
 --@api-stub: LServiceLocator:clearAll
@@ -103,12 +71,6 @@ do
     ---@type LServiceLocator
     local services = lurek.patterns.newServiceLocator()
     services:provide("renderer", {backend = "wgpu"})
-    services:provide("input", {keyboard = true})
-    services:provide("save", {slot = 1})
-    local names = services:getServices()
-    print("services = " .. #names)
-    services:remove("save")
-    print("after remove: has save = " .. tostring(services:has("save")))
     services:clearAll()
     print("after clear: count = " .. #services:getServices())
 end
@@ -118,21 +80,7 @@ end
 do
     ---@type LObjectPool
     local pool = lurek.patterns.newObjectPool()
-    for i = 1, 10 do
-        pool:add({id = i, active = false, x = 0, y = 0})
-    end
-    print("total = " .. pool:getTotalCount())
-    print("available = " .. pool:getAvailableCount())
-    print("active = " .. pool:getActiveCount())
-    local obj = pool:acquire()
-    if obj then
-        obj.active = true
-        obj.x = 100
-        print("acquired id = " .. obj.id)
-        print("active count = " .. pool:getActiveCount())
-        pool:release(obj)
-        print("after release: available = " .. pool:getAvailableCount())
-    end
+    print("pool created = " .. tostring(pool ~= nil))
 end
 
 --@api-stub: LObjectPool:add

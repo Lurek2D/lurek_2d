@@ -837,71 +837,38 @@ end
 --@api-stub: LUniverse:applySnapshot
 -- Snapshot diffing and universe lifecycle. Focus: applySnapshot.
 do
-    ---@type LUniverse
     local u = lurek.ecs.newUniverse()
     local e = u:spawn()
     u:set(e, "pos", { x = 1, y = 2 })
-    local diff = u:takeSnapshotDiff()
-    print("diff keys = " .. tostring(diff))
-    if type(diff) == "table" then
-        u:applySnapshot(diff)
-    end
+    local snap = u:snapshot()
     u:clear()
-    print("cleared")
-    u:release()
-    print("released")
+    u:applySnapshot(snap)
+    print("entities after apply = " .. u:getEntityCount())
 end
 
 --@api-stub: LUniverse:takeSnapshotDiff
 -- Snapshot diffing and universe lifecycle. Focus: takeSnapshotDiff.
 do
-    ---@type LUniverse
     local u = lurek.ecs.newUniverse()
     local e = u:spawn()
     u:set(e, "pos", { x = 1, y = 2 })
     local diff = u:takeSnapshotDiff()
-    print("diff keys = " .. tostring(diff))
-    if type(diff) == "table" then
-        u:applySnapshot(diff)
-    end
-    u:clear()
-    print("cleared")
-    u:release()
-    print("released")
+    print("dirty entities = " .. tostring(#diff.dirty_entities))
 end
 
 --@api-stub: LUniverse:clear
 -- Snapshot diffing and universe lifecycle. Focus: clear.
 do
-    ---@type LUniverse
     local u = lurek.ecs.newUniverse()
-    local e = u:spawn()
-    u:set(e, "pos", { x = 1, y = 2 })
-    local diff = u:takeSnapshotDiff()
-    print("diff keys = " .. tostring(diff))
-    if type(diff) == "table" then
-        u:applySnapshot(diff)
-    end
+    u:spawn()
     u:clear()
-    print("cleared")
-    u:release()
-    print("released")
+    print("entities after clear = " .. u:getEntityCount())
 end
 
 --@api-stub: LUniverse:release
 -- Snapshot diffing and universe lifecycle. Focus: release.
 do
-    ---@type LUniverse
     local u = lurek.ecs.newUniverse()
-    local e = u:spawn()
-    u:set(e, "pos", { x = 1, y = 2 })
-    local diff = u:takeSnapshotDiff()
-    print("diff keys = " .. tostring(diff))
-    if type(diff) == "table" then
-        u:applySnapshot(diff)
-    end
-    u:clear()
-    print("cleared")
     u:release()
     print("released")
 end

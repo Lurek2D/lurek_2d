@@ -8,11 +8,7 @@
 --@api-stub: lurek.automation.load
 -- Loads an automation script by name with step data.
 do
-    local steps = {
-        { action = "mousemove", x = 100, y = 200, dx = 0, dy = 0, time = 0.0 },
-        { action = "mousepress", x = 100, y = 200, button = 1, time = 0.1 },
-        { action = "mouserelease", x = 100, y = 200, button = 1, time = 0.2 },
-    }
+    local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("login_flow", { steps = steps })
     print("loaded = " .. tostring(lurek.automation.hasScript("login_flow")))
 end
@@ -43,7 +39,7 @@ end
 --@api-stub: lurek.automation.start
 -- Starts executing a loaded automation script.
 do
-    local steps = { { action = "wait", time = 1.0 } }
+    local steps = { { action = "wait", time = 0.0 } }
     lurek.automation.load("run_test", { steps = steps })
     lurek.automation.start("run_test")
     print("running = " .. tostring(lurek.automation.isRunning()))

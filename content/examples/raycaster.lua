@@ -8,27 +8,6 @@ do
     ---@type LRaycaster
     local map = lurek.raycaster.new(16, 16)
     print("size = " .. map:width() .. "x" .. map:height())
-
-    -- Practical: procedurally fill a raycaster map.
-    ---@type LRaycaster
-    local map = lurek.raycaster.new(32, 32)
-    for x = 0, 31 do
-        for y = 0, 31 do
-            if x == 0 or x == 31 or y == 0 or y == 31 then
-                map:setCell(x, y, 1)
-            end
-        end
-    end
-    for i = 1, 10 do
-        local wx = math.random(2, 29)
-        local wy = math.random(2, 29)
-        map:setCell(wx, wy, 2)
-    end
-    print("dungeon map: " .. map:width() .. "x" .. map:height())
-    local hit = map:castRay(16, 16, math.pi / 4, 30)
-    if hit then
-        print("ray hit at dist " .. string.format("%.2f", hit.distance))
-    end
 end
 
 --@api-stub: lurek.raycaster.newMap

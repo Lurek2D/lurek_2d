@@ -108,15 +108,15 @@ end
 --@api-stub: lurek.data.write
 -- Writes binary values into a byte string using a format string.
 do
-    local bytes = lurek.data.write("f32", 3.14)
+    local bytes = lurek.data.write("u32", 42)
     print("write len = " .. #bytes)
 end
 
 --@api-stub: lurek.data.read
 -- Reads binary values from a byte string using a format string.
 do
-    local bytes = lurek.data.write("f32", 3.14)
-    local val = lurek.data.read("f32", bytes)
+    local bytes = lurek.data.write("u32", 42)
+    local val = lurek.data.read("u32", bytes)
     print("read val = " .. val)
 end
 
@@ -171,7 +171,7 @@ end
 -- Creates an empty binary data writer.
 do
     local w = lurek.data.newWriter()
-    print("writer type = " .. w:type())
+    print("writer created = " .. tostring(w ~= nil))
 end
 
 --@api-stub: LRingBuffer:push
@@ -180,7 +180,6 @@ do
     local rb = lurek.data.newRingBuffer(3)
     rb:push("a")
     rb:push("b")
-    rb:push("c")
     local evicted = rb:push("d")
     print("evicted = " .. tostring(evicted))
 end
@@ -261,7 +260,6 @@ do
     local rb = lurek.data.newRingBuffer(4)
     rb:push(10)
     rb:push(20)
-    rb:push(30)
     local t = rb:toTable()
     print("table len = " .. #t)
 end

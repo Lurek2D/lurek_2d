@@ -9,13 +9,11 @@
 -- Mathematical constants. Focus: pi.
 do
     print("pi = " .. lurek.math.pi)
-    print("tau = " .. lurek.math.tau)
 end
 
 --@api-stub: lurek.math.tau
 -- Mathematical constants. Focus: tau.
 do
-    print("pi = " .. lurek.math.pi)
     print("tau = " .. lurek.math.tau)
 end
 
@@ -131,13 +129,11 @@ end
 -- Returns minimum or maximum. Focus: min.
 do
     print("min(3, 7, 1, 9) = " .. lurek.math.min(3, 7, 1, 9))
-    print("max(3, 7, 1, 9) = " .. lurek.math.max(3, 7, 1, 9))
 end
 
 --@api-stub: lurek.math.max
 -- Returns minimum or maximum. Focus: max.
 do
-    print("min(3, 7, 1, 9) = " .. lurek.math.min(3, 7, 1, 9))
     print("max(3, 7, 1, 9) = " .. lurek.math.max(3, 7, 1, 9))
 end
 

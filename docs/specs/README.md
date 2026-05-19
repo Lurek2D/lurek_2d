@@ -30,9 +30,9 @@ Each spec follows [SPEC_TEMPLATE.md](SPEC_TEMPLATE.md). Sections split into two 
 
 Regen workflow:
 
-- `python tools/gen_all_docs.py` — full sweep: regenerates every spec's auto sections plus `docs/lua-api.md`, `docs/reports/rust-api.md`, `docs/lurek.lua`, `docs/reports/library-docs.md`, and `docs/reports/coverage_gaps.md`.
+- `python tools/gen_all_docs.py` — full sweep: regenerates every spec's auto sections plus `docs/api/lurek.md`, `docs/api/rust.md`, `docs/api/library.md`, `docs/api/lurek.lua`, and coverage reports under `logs/reports/`.
 - `python tools/docs/gen_module_specs.py` — specs only.
-- `python tools/audit/validate_agent_md.py` — validates the merged spec format. The script name is kept for backwards compatibility; the per-module `src/<module>/AGENT.md` files have been retired.
+- `python tools/validate/validate_module_coverage.py` — ensures every top-level `src/` module still has a matching spec file.
 - `python tools/audit/doc_coverage.py` — flags missing / undersized manual prose.
 
 > **Do not hand-edit the auto sections.** Edits there are silently overwritten on the next regen. If an auto section is wrong, fix the source (Rust docstrings or `src/lua_api/<module>_api.rs` annotations) and rerun the generator.
@@ -50,7 +50,7 @@ Regen workflow:
 - `TIER-2-PLUGIN` — second-wave plugin candidate (smaller savings or partial split).
 - `—` — not yet evaluated, or not a plugin candidate by structural role (Foundations / Core Runtime / Edge integration).
 
-Plugin tier definitions land in [docs/architecture/plugins.md](../architecture/plugins.md) (authored in P7 of the current docs sweep — link will resolve once that file lands).
+Plugin tier definitions live in [docs/architecture/plugins.md](../architecture/plugins.md).
 
 ### Foundations
 
@@ -154,7 +154,7 @@ Composition root, scripting bridge, devtools, build outputs. Top of the DAG — 
 
 Then run the quality gate before committing:
 
-- `python tools/audit/validate_agent_md.py` — exit 0.
+- `python tools/validate/validate_module_coverage.py` — exit 0.
 - `python tools/audit/doc_coverage.py` — exit 0.
 - `python tools/validate/cag_validate.py` — exit 0 if `.github/` was touched in step 5.
 - Add an entry to `docs/CHANGELOG.md` under the current version.
@@ -167,9 +167,9 @@ Then run the quality gate before committing:
 - [docs/architecture/engine-architecture.md](../architecture/engine-architecture.md) — module group dependency model, full module inventory by tier, frame loop, boot sequence.
 - [docs/architecture/render-command-architecture.md](../architecture/render-command-architecture.md) — three-layer render pipeline (Lua → `RenderCommand` queue → wgpu); cross-cuts every Platform Services + Feature Systems spec that pushes draw calls.
 - [docs/architecture/philosophy.md](../architecture/philosophy.md) — binding constraints (A-01..A-05, B-01..B-05, T-01..T-08, C-01..C-05, Q-01..Q-05) and Zen Rules. Cited from every spec's `General Info` block.
-- [docs/architecture/plugins.md](../architecture/plugins.md) — *(authored in P7 of the current docs sweep)* defines `CORE-KEEP` / `TIER-1-PLUGIN` / `TIER-2-PLUGIN` semantics, manifest format, load mechanism, and the phased migration plan.
-- [docs/handbook.md](../handbook.md) — *(authored in P7 of the current docs sweep)* contributor onboarding: where to look, how to ship a change, how to run the quality gates.
-- [docs/API/lua-api.md](../API/lua-api.md) — generated reference for the `lurek.*` Lua surface; companion to every spec's `Lua API Reference` section.
+- [docs/architecture/plugins.md](../architecture/plugins.md) — defines `CORE-KEEP` / `TIER-1-PLUGIN` / `TIER-2-PLUGIN` semantics, manifest format, load mechanism, and the phased migration plan.
+- [docs/handbook.md](../handbook.md) — contributor onboarding: where to look, how to ship a change, and how to run the quality gates.
+- [docs/api/lurek.md](../api/lurek.md) — generated reference for the `lurek.*` Lua surface; companion to every spec's `Lua API Reference` section.
 - [.github/copilot-instructions.md](../../.github/copilot-instructions.md#cross-artifact-sync) — Cross-Artifact Sync table that tells you which other files to update when a spec changes.
 
 ---
@@ -179,6 +179,6 @@ Then run the quality gate before committing:
 - [SPEC_TEMPLATE.md](SPEC_TEMPLATE.md) — canonical section list and authoring guide for a single spec.
 - [tools/docs/gen_module_specs.py](../../tools/docs/gen_module_specs.py) — generator for the auto sections.
 - [tools/gen_all_docs.py](../../tools/gen_all_docs.py) — full doc-regeneration sweep.
-- [tools/audit/validate_agent_md.py](../../tools/audit/validate_agent_md.py) — merged-spec format validator (legacy script name).
+- [tools/validate/validate_module_coverage.py](../../tools/validate/validate_module_coverage.py) — spec coverage validator for top-level modules.
 - [tools/audit/doc_coverage.py](../../tools/audit/doc_coverage.py) — manual-prose coverage report.
 - `work/docs-api-arch-specs-review-20260418/reports/P1_EVIDENCE.md` § 5 — plugin candidate evaluation matrix (source of the Plugin tier column).

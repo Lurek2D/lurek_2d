@@ -48,7 +48,6 @@ end
 do
     local avg = lurek.timer.getAverageDelta()
     print("average delta = " .. avg)
-    print("estimated avg FPS = " .. math.floor(1 / avg))
 end
 
 --@api-stub: lurek.timer.getSmoothedDelta
@@ -57,9 +56,6 @@ do
     lurek.timer.setSmoothingFactor(0.1)
     local sd = lurek.timer.getSmoothedDelta()
     print("smoothed delta (alpha=0.1) = " .. sd)
-    lurek.timer.setSmoothingFactor(0.5)
-    sd = lurek.timer.getSmoothedDelta()
-    print("smoothed delta (alpha=0.5) = " .. sd)
 end
 
 --@api-stub: lurek.timer.getPhysicsDelta
@@ -67,9 +63,6 @@ end
 do
     local pdt = lurek.timer.getPhysicsDelta()
     print("physics delta = " .. pdt)
-    lurek.timer.setPhysicsDelta(1 / 120)
-    print("set to 120Hz: " .. lurek.timer.getPhysicsDelta())
-    lurek.timer.setPhysicsDelta(1 / 60)
 end
 
 --@api-stub: lurek.timer.getPhysicsMaxSteps
@@ -109,12 +102,6 @@ do
         print("callback fired after 0.5s")
     end)
     print("scheduled id = " .. id)
-    print("count = " .. sched:getCount())
-    -- simulate time passing
-    sched:update(0.3)
-    print("after 0.3s, fired = " .. tostring(fired))
-    sched:update(0.3)
-    print("after 0.6s, fired = " .. tostring(fired))
 end
 
 --@api-stub: LScheduler:update
@@ -127,13 +114,8 @@ do
         fired = true
         print("callback fired after 0.5s")
     end)
-    print("scheduled id = " .. id)
-    print("count = " .. sched:getCount())
-    -- simulate time passing
     sched:update(0.3)
     print("after 0.3s, fired = " .. tostring(fired))
-    sched:update(0.3)
-    print("after 0.6s, fired = " .. tostring(fired))
 end
 
 --@api-stub: LScheduler:every
@@ -161,14 +143,7 @@ do
     sched:afterNamed("save", 2.0, function()
         print("save triggered")
     end)
-    sched:update(1.0)
-    -- Reset the timer by scheduling again with same name
-    sched:afterNamed("save", 2.0, function()
-        print("save triggered (reset)")
-    end)
-    sched:update(1.5)
-    local cancelled = sched:cancelNamed("save")
-    print("cancelled = " .. tostring(cancelled))
+    print("named timer scheduled")
 end
 
 --@api-stub: LScheduler:cancelNamed
@@ -179,12 +154,6 @@ do
     sched:afterNamed("save", 2.0, function()
         print("save triggered")
     end)
-    sched:update(1.0)
-    -- Reset the timer by scheduling again with same name
-    sched:afterNamed("save", 2.0, function()
-        print("save triggered (reset)")
-    end)
-    sched:update(1.5)
     local cancelled = sched:cancelNamed("save")
     print("cancelled = " .. tostring(cancelled))
 end

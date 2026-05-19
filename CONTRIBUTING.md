@@ -9,8 +9,8 @@ Lurek2D is a desktop-only 2D engine written in Rust that runs Lua game scripts. 
 **Prerequisites**: Rust stable ≥ 1.78, Cargo, Python 3.10+ (for tooling scripts).
 
 ```bash
-git clone https://github.com/LurekDude/luna_2d.git
-cd luna_2d
+git clone https://github.com/LurekDude/lurek_2d.git
+cd lurek_2d
 python tools/dev/parallel_cargo.py build debug  # debug build → build/debug/lurek2d
 python tools/dev/parallel_cargo.py run debug -- content/games/showcase/hello_world  # verify it works
 ```
@@ -51,13 +51,13 @@ python tools/dev/parallel_cargo.py clippy --deny-warnings       # strict lint
 
 ### Engine (Rust source — `src/`)
 
-- Read `src/<module>/AGENT.md` before touching a module — it lists invariants and patterns.
+- Read `docs/specs/<module>.md` and the matching architecture docs before touching a module — they carry the current public contract and design rules.
 - No `unsafe` without a `// SAFETY:` comment explaining the invariant.
 - Per-frame code must not heap-allocate — grow buffers at startup.
-- Add `///` doc-comments to every new `pub` item. Verify: `python tools/docs/collect_docs.py --report-missing` must exit 0.
+- Add `///` doc-comments to every new `pub` item. Verify: `python tools/validate/validate_rust_source_docs.py` must exit 0.
 - Use `log::info!` / `log::debug!` / `log::warn!` / `log::error!` — never `println!`.
 - No `.unwrap()` or `.expect()` in production paths — use `?` or return a `LuaError`.
-- Regenerate API docs after any `lurek.*` binding change: `python tools/gen_all_docs.py --skip-legacy`.
+- Regenerate API docs after any `lurek.*` binding change: `python tools/gen_all_docs.py`.
 
 ### Tests (`tests/`)
 
@@ -134,10 +134,10 @@ The `.github/` directory contains agents, skills, prompts, and the system prompt
 
 ## Documentation
 
-- Update `docs/specs/<module>.md` and `src/<module>/AGENT.md` when public APIs or behavior change.
+- Update `docs/specs/<module>.md` and the relevant `docs/architecture/*.md` files when public APIs or behavior change.
 - Update `docs/CHANGELOG.md` for every code, API, or tooling change (required for every commit).
 - Regenerate generated reference files: `python tools/gen_all_docs.py`.
-- Verify doc coverage: `python tools/docs/collect_docs.py --report-missing`.
+- Verify doc coverage: `python tools/audit/doc_coverage.py`.
 
 ---
 

@@ -78,16 +78,14 @@ end
 -- Returns individual mouse coordinates. Focus: getX.
 do
     local x = lurek.input.mouse.getX()
-    local y = lurek.input.mouse.getY()
-    print("mouse x=" .. x .. " y=" .. y)
+    print("mouse x=" .. x)
 end
 
 --@api-stub: lurek.input.mouse.getY
 -- Returns individual mouse coordinates. Focus: getY.
 do
-    local x = lurek.input.mouse.getX()
     local y = lurek.input.mouse.getY()
-    print("mouse x=" .. x .. " y=" .. y)
+    print("mouse y=" .. y)
 end
 
 --@api-stub: lurek.input.mouse.isDown
@@ -168,13 +166,7 @@ end
 -- Sets an active cursor handle. Focus: getSystemCursor.
 do
     local cursor = lurek.input.mouse.getSystemCursor("arrow")
-    lurek.input.mouse.setCursor(cursor)
-    print("cursor set to arrow")
-
-    -- Returns a system cursor by name.
-    local arrow = lurek.input.mouse.getSystemCursor("arrow")
-    print("got system cursor")
-    _ = arrow
+    print("got system cursor = " .. tostring(cursor ~= nil))
 end
 
 --@api-stub: lurek.input.mouse.setCursor
@@ -261,16 +253,14 @@ end
 -- Checks if button was pressed or released this frame. Focus: wasPressed.
 do
     local pressed = lurek.input.gamepad.wasPressed(1, 1)
-    local released = lurek.input.gamepad.wasReleased(1, 1)
-    print("pressed=" .. tostring(pressed) .. " released=" .. tostring(released))
+    print("pressed=" .. tostring(pressed))
 end
 
 --@api-stub: lurek.input.gamepad.wasReleased
 -- Checks if button was pressed or released this frame. Focus: wasReleased.
 do
-    local pressed = lurek.input.gamepad.wasPressed(1, 1)
     local released = lurek.input.gamepad.wasReleased(1, 1)
-    print("pressed=" .. tostring(pressed) .. " released=" .. tostring(released))
+    print("released=" .. tostring(released))
 end
 
 --@api-stub: lurek.input.gamepad.getHat
@@ -306,16 +296,14 @@ end
 -- Detects connection changes this frame. Focus: wasConnected.
 do
     local c = lurek.input.gamepad.wasConnected(1)
-    local d = lurek.input.gamepad.wasDisconnected(1)
-    print("connected=" .. tostring(c) .. " disconnected=" .. tostring(d))
+    print("connected=" .. tostring(c))
 end
 
 --@api-stub: lurek.input.gamepad.wasDisconnected
 -- Detects connection changes this frame. Focus: wasDisconnected.
 do
-    local c = lurek.input.gamepad.wasConnected(1)
     local d = lurek.input.gamepad.wasDisconnected(1)
-    print("connected=" .. tostring(c) .. " disconnected=" .. tostring(d))
+    print("disconnected=" .. tostring(d))
 end
 
 --@api-stub: lurek.input.gamepad.loadGamepadMappings

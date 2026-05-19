@@ -11,23 +11,6 @@ do
     ---@type LParticleSystem
     local ps = lurek.particle.newSystem()
     print("type = " .. ps:type())
-    print("count = " .. ps:count())
-    print("active = " .. tostring(ps:isActive()))
-
-    -- Creates a configured particle system.
-    ---@type LParticleSystem
-    local ps = lurek.particle.newSystem({
-        bufferSize = 256,
-        emissionRate = 50,
-        particleLifetime = {0.5, 2.0},
-        speed = {100, 200},
-        direction = 0,
-        spread = math.pi / 4,
-    })
-    print("buffer = " .. ps:getBufferSize())
-    print("rate = " .. ps:getEmissionRate())
-    local lmin, lmax = ps:getParticleLifetime()
-    print("lifetime = " .. lmin .. ".." .. lmax)
 end
 
 --@api-stub: lurek.particle.newPreset
@@ -35,26 +18,14 @@ end
 do
     ---@type LParticleSystem
     local fire = lurek.particle.newPreset("fire")
-    ---@type LParticleSystem
-    local smoke = lurek.particle.newPreset("smoke")
-    ---@type LParticleSystem
-    local rain = lurek.particle.newPreset("rain")
-    ---@type LParticleSystem
-    local snow = lurek.particle.newPreset("snow")
-    ---@type LParticleSystem
-    local sparks = lurek.particle.newPreset("sparks")
     print("fire rate = " .. fire:getEmissionRate())
-    print("smoke rate = " .. smoke:getEmissionRate())
-    print("rain rate = " .. rain:getEmissionRate())
-    print("snow rate = " .. snow:getEmissionRate())
-    print("sparks rate = " .. sparks:getEmissionRate())
 end
 
 --@api-stub: lurek.particle.fromTOML
 -- Creates a system from a TOML config file.
 do
     ---@type LParticleSystem
-    local ps = lurek.particle.fromTOML("particles/explosion.toml")
+    local ps = lurek.particle.fromTOML("save/particle_test.toml")
     print("from TOML, buffer = " .. ps:getBufferSize())
 end
 
@@ -82,11 +53,7 @@ do
     ---@type LParticleSystem
     local ps = lurek.particle.newSystem()
     ps:setPosition(100, 200)
-    local x, y = ps:getPosition()
-    print("pos = " .. x .. "," .. y)
-    ps:moveTo(300, 400)
-    local mx, my = ps:getPosition()
-    print("moved = " .. mx .. "," .. my)
+    print("position set")
 end
 
 --@api-stub: LParticleSystem:getPosition
@@ -97,9 +64,6 @@ do
     ps:setPosition(100, 200)
     local x, y = ps:getPosition()
     print("pos = " .. x .. "," .. y)
-    ps:moveTo(300, 400)
-    local mx, my = ps:getPosition()
-    print("moved = " .. mx .. "," .. my)
 end
 
 --@api-stub: LParticleSystem:moveTo
@@ -107,9 +71,6 @@ end
 do
     ---@type LParticleSystem
     local ps = lurek.particle.newSystem()
-    ps:setPosition(100, 200)
-    local x, y = ps:getPosition()
-    print("pos = " .. x .. "," .. y)
     ps:moveTo(300, 400)
     local mx, my = ps:getPosition()
     print("moved = " .. mx .. "," .. my)
@@ -197,9 +158,7 @@ do
     ---@type LParticleSystem
     local ps = lurek.particle.newSystem()
     ps:setDirection(math.pi / 2)
-    ps:setSpread(math.pi / 6)
     print("dir = " .. ps:getDirection())
-    print("spread = " .. ps:getSpread())
 end
 
 --@api-stub: LParticleSystem:getDirection
@@ -208,9 +167,7 @@ do
     ---@type LParticleSystem
     local ps = lurek.particle.newSystem()
     ps:setDirection(math.pi / 2)
-    ps:setSpread(math.pi / 6)
     print("dir = " .. ps:getDirection())
-    print("spread = " .. ps:getSpread())
 end
 
 --@api-stub: LParticleSystem:setSpread
@@ -218,9 +175,7 @@ end
 do
     ---@type LParticleSystem
     local ps = lurek.particle.newSystem()
-    ps:setDirection(math.pi / 2)
     ps:setSpread(math.pi / 6)
-    print("dir = " .. ps:getDirection())
     print("spread = " .. ps:getSpread())
 end
 
@@ -229,9 +184,7 @@ end
 do
     ---@type LParticleSystem
     local ps = lurek.particle.newSystem()
-    ps:setDirection(math.pi / 2)
     ps:setSpread(math.pi / 6)
-    print("dir = " .. ps:getDirection())
     print("spread = " .. ps:getSpread())
 end
 

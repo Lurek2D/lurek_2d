@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- docs(contributing): refreshed `CONTRIBUTING.md` so the README footer target now uses the current repository URL, current module-doc workflow (`docs/specs/*.md` instead of retired `AGENT.md` files), and current doc validation commands.
+
+- docs(readme,wiki): replaced root README wiki-anchor navigation with file-only curated links, added a separate architecture-files table plus direct `lurek` API and philosophy links, added `content/examples/README.md`, and refreshed the linked handbook/specs/architecture pages so every file referenced from the root README has current, coherent content.
+
 - docs(readme,wiki): reorganized the root `README.md` into a high-level landing page, added a value table for Lurek's Simple / Feature rich / Fast / Free / Portable / Extensible / CrossPlatform positioning, and moved the detailed project overview into new `wiki/Home.md` and `wiki/Project-Reference.md` pages without dropping the existing content.
 
 - docs(examples): restored the missing `image`, `patterns`, and `tween` coverage in generated `content/examples/*.lua` by removing cross-module stub rerouting from `merge_examples2_into_examples.py`, moving tween introspection examples back under `tween`, dropping misplaced duplicate source blocks from `ai` and `render` example shards, and teaching `tools/audit/example_coverage.py` to count duplicated Lua API aliases under one canonical example module.

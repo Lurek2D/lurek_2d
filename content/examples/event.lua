@@ -91,9 +91,7 @@ do
     lurek.event.enableHistory(50)
     lurek.event.push("score", 999)
     local history = lurek.event.getHistory()
-    for _, entry in ipairs(history) do
-        print("history: " .. entry.name)
-    end
+    print("history entries = " .. #history)
 end
 
 --@api-stub: lurek.event.clearHistory

@@ -11,10 +11,6 @@ do
     ---@type LProvinceRegistry
     local reg = lurek.province.newFromPng("world", "assets/textures/province_map.png")
     print("registry name = " .. reg:getName())
-    print("exists = " .. tostring(lurek.province.exists("world")))
-    ---@type LProvinceRegistry
-    local found = lurek.province.get("world")
-    print("found = " .. found:getName())
 end
 
 --@api-stub: LProvinceRegistry:getWidth
@@ -60,8 +56,6 @@ do
     local reg = lurek.province.newFromPng("spatial", "assets/textures/province_map.png")
     local id = reg:getAt(50, 50)
     print("province at 50,50 = " .. id)
-    local id2 = reg:getAt(0, 0)
-    print("province at 0,0 = " .. id2)
 end
 
 --@api-stub: LProvinceRegistry:getNeighbors
@@ -73,9 +67,6 @@ do
     if #ids > 0 then
         local neighbors = reg:getNeighbors(ids[1])
         print("province " .. ids[1] .. " neighbors = " .. #neighbors)
-        for _, n in ipairs(neighbors) do
-            print("  " .. n)
-        end
     end
 end
 
@@ -86,10 +77,6 @@ do
     local reg = lurek.province.newFromPng("pairs", "assets/textures/province_map.png")
     local pairs = reg:adjacencies()
     print("adjacency pairs = " .. #pairs)
-    for i = 1, math.min(3, #pairs) do
-        local p = pairs[i]
-        print("  " .. p.province_a .. " <-> " .. p.province_b)
-    end
 end
 
 --@api-stub: LProvinceRegistry:getProvince

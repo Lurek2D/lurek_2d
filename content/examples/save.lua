@@ -20,30 +20,13 @@ do
     ---@type LSaveManager
     local mgr = lurek.save.newSaveManager()
     local playerHP = 100
-    local playerGold = 500
-    local inventory = { "sword", "shield", "potion" }
     mgr:register("player", function()
-        return { hp = playerHP, gold = playerGold }
+        return { hp = playerHP }
     end, function(data)
         playerHP = data.hp
-        playerGold = data.gold
-    end)
-    mgr:register("inventory", function()
-        return inventory
-    end, function(data)
-        inventory = data
     end)
     local snapshot = mgr:collect()
     print("collected player hp = " .. snapshot.player.hp)
-    print("collected gold = " .. snapshot.player.gold)
-    print("collected items = " .. #snapshot.inventory)
-    playerHP = 50
-    playerGold = 200
-    inventory = {}
-    mgr:restore(snapshot)
-    print("restored hp = " .. playerHP)
-    print("restored gold = " .. playerGold)
-    print("restored items = " .. #inventory)
 end
 
 --@api-stub: LSaveManager:collect
@@ -52,30 +35,13 @@ do
     ---@type LSaveManager
     local mgr = lurek.save.newSaveManager()
     local playerHP = 100
-    local playerGold = 500
-    local inventory = { "sword", "shield", "potion" }
     mgr:register("player", function()
-        return { hp = playerHP, gold = playerGold }
+        return { hp = playerHP }
     end, function(data)
         playerHP = data.hp
-        playerGold = data.gold
-    end)
-    mgr:register("inventory", function()
-        return inventory
-    end, function(data)
-        inventory = data
     end)
     local snapshot = mgr:collect()
     print("collected player hp = " .. snapshot.player.hp)
-    print("collected gold = " .. snapshot.player.gold)
-    print("collected items = " .. #snapshot.inventory)
-    playerHP = 50
-    playerGold = 200
-    inventory = {}
-    mgr:restore(snapshot)
-    print("restored hp = " .. playerHP)
-    print("restored gold = " .. playerGold)
-    print("restored items = " .. #inventory)
 end
 
 --@api-stub: LSaveManager:restore
@@ -84,30 +50,15 @@ do
     ---@type LSaveManager
     local mgr = lurek.save.newSaveManager()
     local playerHP = 100
-    local playerGold = 500
-    local inventory = { "sword", "shield", "potion" }
     mgr:register("player", function()
-        return { hp = playerHP, gold = playerGold }
+        return { hp = playerHP }
     end, function(data)
         playerHP = data.hp
-        playerGold = data.gold
-    end)
-    mgr:register("inventory", function()
-        return inventory
-    end, function(data)
-        inventory = data
     end)
     local snapshot = mgr:collect()
-    print("collected player hp = " .. snapshot.player.hp)
-    print("collected gold = " .. snapshot.player.gold)
-    print("collected items = " .. #snapshot.inventory)
     playerHP = 50
-    playerGold = 200
-    inventory = {}
     mgr:restore(snapshot)
     print("restored hp = " .. playerHP)
-    print("restored gold = " .. playerGold)
-    print("restored items = " .. #inventory)
 end
 
 --@api-stub: LSaveManager:save
@@ -123,18 +74,6 @@ do
     end)
     mgr:save("test_slot")
     print("saved to test_slot")
-    print("exists = " .. tostring(mgr:exists("test_slot")))
-    score = 0
-    local ok, err = mgr:load("test_slot")
-    print("load ok = " .. tostring(ok))
-    print("restored score = " .. score)
-    local missing_ok, missing_err = mgr:load("nonexistent")
-    print("missing load ok = " .. tostring(missing_ok))
-    if missing_err then
-        print("error = " .. missing_err)
-    end
-    mgr:delete("test_slot")
-    print("after delete exists = " .. tostring(mgr:exists("test_slot")))
 end
 
 --@api-stub: LSaveManager:load
@@ -149,19 +88,11 @@ do
         score = data.value
     end)
     mgr:save("test_slot")
-    print("saved to test_slot")
-    print("exists = " .. tostring(mgr:exists("test_slot")))
     score = 0
-    local ok, err = mgr:load("test_slot")
+    local ok = mgr:load("test_slot")
     print("load ok = " .. tostring(ok))
     print("restored score = " .. score)
-    local missing_ok, missing_err = mgr:load("nonexistent")
-    print("missing load ok = " .. tostring(missing_ok))
-    if missing_err then
-        print("error = " .. missing_err)
-    end
     mgr:delete("test_slot")
-    print("after delete exists = " .. tostring(mgr:exists("test_slot")))
 end
 
 --@api-stub: LSaveManager:exists
@@ -176,19 +107,8 @@ do
         score = data.value
     end)
     mgr:save("test_slot")
-    print("saved to test_slot")
     print("exists = " .. tostring(mgr:exists("test_slot")))
-    score = 0
-    local ok, err = mgr:load("test_slot")
-    print("load ok = " .. tostring(ok))
-    print("restored score = " .. score)
-    local missing_ok, missing_err = mgr:load("nonexistent")
-    print("missing load ok = " .. tostring(missing_ok))
-    if missing_err then
-        print("error = " .. missing_err)
-    end
     mgr:delete("test_slot")
-    print("after delete exists = " .. tostring(mgr:exists("test_slot")))
 end
 
 --@api-stub: LSaveManager:delete
@@ -203,17 +123,6 @@ do
         score = data.value
     end)
     mgr:save("test_slot")
-    print("saved to test_slot")
-    print("exists = " .. tostring(mgr:exists("test_slot")))
-    score = 0
-    local ok, err = mgr:load("test_slot")
-    print("load ok = " .. tostring(ok))
-    print("restored score = " .. score)
-    local missing_ok, missing_err = mgr:load("nonexistent")
-    print("missing load ok = " .. tostring(missing_ok))
-    if missing_err then
-        print("error = " .. missing_err)
-    end
     mgr:delete("test_slot")
     print("after delete exists = " .. tostring(mgr:exists("test_slot")))
 end

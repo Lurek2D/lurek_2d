@@ -22,24 +22,6 @@ do
         end,
     })
     print("scene created")
-    local emptyScene = lurek.scene.newScene()
-    print("empty scene = " .. tostring(emptyScene))
-
-    -- Passing parameters to scene enter.
-    local battleScene = lurek.scene.new({
-        name = "battle",
-        enemyType = "none",
-        enter = function(self, params)
-            if params then
-                self.enemyType = params.enemy or "slime"
-            end
-            print("battle start vs " .. self.enemyType)
-        end,
-        leave = function(self) end,
-    })
-    lurek.scene.push(battleScene, "none", 0, "linear", { enemy = "dragon" })
-    print("battle scene pushed")
-    lurek.scene.clear()
 end
 
 --@api-stub: lurek.scene.define
@@ -72,35 +54,14 @@ end
 --@api-stub: lurek.scene.push
 -- Stack operations.
 do
-    print("empty = " .. tostring(lurek.scene.isEmpty()))
-    print("depth = " .. lurek.scene.getStackSize())
     local scene1 = lurek.scene.new({
         name = "title",
         enter = function(self) print("title enter") end,
         leave = function(self) print("title leave") end,
-        pause = function(self) print("title pause") end,
-        resume = function(self) print("title resume") end,
     })
     lurek.scene.push(scene1)
     print("after push depth = " .. lurek.scene.getStackSize())
-    print("empty = " .. tostring(lurek.scene.isEmpty()))
-    local current = lurek.scene.getCurrent()
-    print("current = " .. current.name)
-    local scene2 = lurek.scene.new({
-        name = "options",
-        enter = function(self) print("options enter") end,
-        leave = function(self) print("options leave") end,
-    })
-    lurek.scene.push(scene2)
-    print("depth = " .. lurek.scene.getStackSize())
-    current = lurek.scene.getCurrent()
-    print("current = " .. current.name)
-    lurek.scene.pop()
-    print("after pop depth = " .. lurek.scene.getStackSize())
-    current = lurek.scene.getCurrent()
-    print("current = " .. current.name)
     lurek.scene.clear()
-    print("after clear depth = " .. lurek.scene.getStackSize())
 end
 
 --@api-stub: lurek.scene.switchTo
@@ -131,35 +92,16 @@ end
 -- Scene registration.
 do
     local menuScene = lurek.scene.new({ name = "mainMenu" })
-    local gameScene = lurek.scene.new({ name = "game" })
-    local creditsScene = lurek.scene.new({ name = "credits" })
     lurek.scene.registerScene("mainMenu", menuScene)
-    lurek.scene.registerScene("game", gameScene)
-    lurek.scene.registerScene("credits", creditsScene)
     print("has mainMenu = " .. tostring(lurek.scene.hasRegistered("mainMenu")))
-    print("has unknown = " .. tostring(lurek.scene.hasRegistered("unknown")))
-    local retrieved = lurek.scene.getRegistered("game")
-    print("retrieved game = " .. retrieved.name)
-    local names = lurek.scene.getRegisteredNames()
-    print("registered count = " .. #names)
-    for _, n in ipairs(names) do
-        print("  " .. n)
-    end
-    lurek.scene.unregisterScene("credits")
-    print("after unregister has credits = " .. tostring(lurek.scene.hasRegistered("credits")))
 end
 
 --@api-stub: lurek.scene.setData
 -- Shared scene data map.
 do
     lurek.scene.setData("selectedLevel", 5)
-    lurek.scene.setData("playerName", "Hero")
-    lurek.scene.setData("difficulty", "hard")
     print("has selectedLevel = " .. tostring(lurek.scene.hasData("selectedLevel")))
     print("selectedLevel = " .. lurek.scene.getData("selectedLevel"))
-    print("playerName = " .. lurek.scene.getData("playerName"))
-    lurek.scene.removeData("difficulty")
-    print("has difficulty = " .. tostring(lurek.scene.hasData("difficulty")))
 end
 
 --@api-stub: lurek.scene.depth
@@ -168,11 +110,6 @@ do
     local scene = lurek.scene.new({ name = "layered" })
     lurek.scene.push(scene)
     print("depth = " .. lurek.scene.depth())
-    local layer = lurek.scene.getCurrentLayer()
-    print("layer = " .. layer)
-    local ok = lurek.scene.setCurrentLayer(5)
-    print("set layer ok = " .. tostring(ok))
-    print("new layer = " .. lurek.scene.getCurrentLayer())
     lurek.scene.clear()
 end
 

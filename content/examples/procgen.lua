@@ -10,8 +10,6 @@
 do
     local val = lurek.procgen.simplex2d(1.5, 2.3)
     print("simplex2d = " .. val)
-    local val3 = lurek.procgen.simplex3d(1.0, 2.0, 0.5)
-    print("simplex3d = " .. val3)
 end
 
 --@api-stub: lurek.procgen.perlinNoise
@@ -48,13 +46,6 @@ do
         octaves = 6
     })
     print("parallel map length = " .. #map)
-    local seeded = lurek.procgen.noiseMapParallelSeeded(128, 128, {
-        scale_x = 0.03,
-        scale_y = 0.03,
-        octaves = 4,
-        seed = 12345
-    })
-    print("seeded map length = " .. #seeded)
 end
 
 --@api-stub: lurek.procgen.heightmap

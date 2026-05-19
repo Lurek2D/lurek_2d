@@ -11,22 +11,6 @@ do
     ---@type LPipeline
     local pipe = lurek.pipeline.newPipeline("build")
     print("name = " .. pipe:getName())
-    pipe:setName("deploy")
-    print("renamed = " .. pipe:getName())
-
-    -- Running a pipeline with an initial context. Focus: newPipeline.
-    ---@type LPipeline
-    local pipe = lurek.pipeline.newPipeline("ctx-demo")
-    pipe:addStep(lurek.pipeline.newStep("init", function(ctx)
-        ctx.count = ctx.count + 1
-    end))
-    pipe:addStep(lurek.pipeline.newStep("double", function(ctx)
-        ctx.count = ctx.count * 2
-    end))
-    local result = pipe:run({ count = 5 })
-    print("success = " .. tostring(result.success))
-    local ctx = pipe:getContext()
-    print("final count = " .. ctx.count)
 end
 
 --@api-stub: LPipeline:getName
@@ -55,24 +39,8 @@ do
     ---@type LPipelineStep
     local step = lurek.pipeline.newStep("compile", function(ctx)
         ctx.compiled = true
-        print("compiling...")
     end)
     print("step name = " .. step:getName())
-    print("status = " .. step:getStatus())
-
-    -- Running a pipeline with an initial context. Focus: newStep.
-    ---@type LPipeline
-    local pipe = lurek.pipeline.newPipeline("ctx-demo")
-    pipe:addStep(lurek.pipeline.newStep("init", function(ctx)
-        ctx.count = ctx.count + 1
-    end))
-    pipe:addStep(lurek.pipeline.newStep("double", function(ctx)
-        ctx.count = ctx.count * 2
-    end))
-    local result = pipe:run({ count = 5 })
-    print("success = " .. tostring(result.success))
-    local ctx = pipe:getContext()
-    print("final count = " .. ctx.count)
 end
 
 --@api-stub: LPipelineStep:getName
@@ -81,10 +49,8 @@ do
     ---@type LPipelineStep
     local step = lurek.pipeline.newStep("compile", function(ctx)
         ctx.compiled = true
-        print("compiling...")
     end)
     print("step name = " .. step:getName())
-    print("status = " .. step:getStatus())
 end
 
 --@api-stub: LPipeline:addStep
@@ -120,15 +86,8 @@ do
             ctx.total = ctx.total + v
         end
     end)
-    ---@type LPipelineStep
-    local report = lurek.pipeline.newStep("report", function(ctx)
-        print("total = " .. ctx.total)
-    end)
     parse:dependsOn("fetch")
-    report:dependsOn("parse")
     print("parse deps = " .. parse:getDependencyCount())
-    local deps = report:getDependencies()
-    print("report depends on: " .. deps[1])
 end
 
 --@api-stub: LPipelineStep:getDependencies
@@ -149,9 +108,7 @@ do
     local report = lurek.pipeline.newStep("report", function(ctx)
         print("total = " .. ctx.total)
     end)
-    parse:dependsOn("fetch")
     report:dependsOn("parse")
-    print("parse deps = " .. parse:getDependencyCount())
     local deps = report:getDependencies()
     print("report depends on: " .. deps[1])
 end
@@ -170,15 +127,8 @@ do
             ctx.total = ctx.total + v
         end
     end)
-    ---@type LPipelineStep
-    local report = lurek.pipeline.newStep("report", function(ctx)
-        print("total = " .. ctx.total)
-    end)
     parse:dependsOn("fetch")
-    report:dependsOn("parse")
     print("parse deps = " .. parse:getDependencyCount())
-    local deps = report:getDependencies()
-    print("report depends on: " .. deps[1])
 end
 
 --@api-stub: LPipeline:getResult

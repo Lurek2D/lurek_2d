@@ -9,10 +9,6 @@
 do
     local img = lurek.image.newImageData(128, 64)
     print("image " .. img:getWidth() .. "x" .. img:getHeight())
-
-    -- Loads image data from a file path.
-    local img = lurek.image.newImageData("assets/textures/test.png")
-    print("loaded " .. img:getWidth() .. "x" .. img:getHeight())
 end
 
 --@api-stub: lurek.image.newImageDataFromBytes
@@ -117,12 +113,6 @@ end
 do
     local img = lurek.image.newImageData(80, 40)
     print("width = " .. img:getWidth())
-
-    -- Create blank image data by dimensions or load from file.
-    local id = lurek.image.newImageData(64, 64)
-    local w = id:getWidth()
-    local h = id:getHeight()
-    print("imagedata " .. w .. "x" .. h)
 end
 
 --@api-stub: LImageData:getHeight

@@ -10,10 +10,6 @@
 do
     local version = lurek.runtime.getVersion()
     print("engine version = " .. version)
-    local os_name = lurek.runtime.getOS()
-    print("operating system = " .. os_name)
-    local arch = lurek.runtime.getArch()
-    print("architecture = " .. arch)
 end
 
 --@api-stub: lurek.runtime.getInfo
@@ -34,8 +30,6 @@ end
 do
     local cpus = lurek.runtime.getProcessorCount()
     print("logical processors = " .. cpus)
-    local ram = lurek.runtime.getMemorySize()
-    print("total RAM = " .. ram .. " MB")
 end
 
 --@api-stub: lurek.runtime.getArgs
@@ -43,22 +37,6 @@ end
 do
     local args = lurek.runtime.getArgs()
     print("raw args count = " .. #args)
-    for i, arg in ipairs(args) do
-        print("  arg[" .. i .. "] = " .. arg)
-    end
-    local parsed = lurek.runtime.parseArgs({ "--verbose", "--output=result.txt", "-debug", "input.lua", "extra" })
-    print("flags:")
-    for k, v in pairs(parsed.flags) do
-        print("  " .. k .. " = " .. tostring(v))
-    end
-    print("options:")
-    for k, v in pairs(parsed.options) do
-        print("  " .. k .. " = " .. v)
-    end
-    print("positional:")
-    for i, v in ipairs(parsed.positional) do
-        print("  " .. i .. ": " .. v)
-    end
 end
 
 --@api-stub: lurek.runtime.parseArgs
@@ -93,9 +71,6 @@ do
     lurek.runtime.setClipboardText("Hello from Lurek2D!")
     local text = lurek.runtime.getClipboardText()
     print("clipboard = " .. text)
-    lurek.runtime.setClipboardText("player_save_data = {hp=100, gold=500}")
-    local data = lurek.runtime.getClipboardText()
-    print("clipboard data = " .. data)
 end
 
 --@api-stub: lurek.runtime.openURL
@@ -110,16 +85,7 @@ end
 --@api-stub: lurek.runtime.log
 -- Logging with different levels.
 do
-    print("current log level = " .. lurek.runtime.getLogLevel())
     lurek.runtime.log("info", "Game starting up")
-    lurek.runtime.log("debug", "Loading assets phase 1")
-    lurek.runtime.log("warn", "Texture not found, using fallback")
-    lurek.runtime.log("error", "Failed to connect to server")
-    lurek.runtime.setLogLevel("debug")
-    print("new log level = " .. lurek.runtime.getLogLevel())
-    lurek.runtime.log("debug", "This message is now visible")
-    lurek.runtime.setLogLevel("info")
-    print("restored log level = " .. lurek.runtime.getLogLevel())
 end
 
 --@api-stub: lurek.runtime.getConfig
@@ -128,15 +94,6 @@ do
     local config = lurek.runtime.getConfig()
     print("runtime mode = " .. config.runtime_mode)
     print("physics tick rate = " .. config.physics_tick_rate)
-    print("fixed update tick = " .. tostring(config.fixed_update_tick_rate))
-    print("frame budget warn = " .. tostring(config.frame_budget_warn_ms) .. " ms")
-    print("lua callback timeout = " .. tostring(config.lua_callback_timeout_ms) .. " ms")
-    print("vsync = " .. tostring(config.vsync))
-    print("log level = " .. config.log_level)
-    print("config revision = " .. config.config_reload_revision)
-    lurek.runtime.reloadConfig()
-    local updated = lurek.runtime.getConfig()
-    print("after reload revision = " .. updated.config_reload_revision)
 end
 
 --@api-stub: lurek.runtime.setDebugOverlay

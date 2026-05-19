@@ -96,7 +96,6 @@ end
 do
     local path = "sounds/beep.wav"
     local src = lurek.audio.newSource(path, "static")
-    print("before play = " .. tostring(lurek.audio.isPlaying(src)))
     lurek.audio.play(src)
     print("after play = " .. tostring(lurek.audio.isPlaying(src)))
 end
@@ -247,8 +246,7 @@ end
 -- Creates a named audio bus for grouping and routing sources.
 do
     lurek.audio.newBus("sfx")
-    lurek.audio.newBus("music")
-    print("buses created: sfx, music")
+    print("bus created: sfx")
 end
 
 --@api-stub: lurek.audio.setSourceBus
@@ -631,8 +629,7 @@ end
 -- Creates a named audio bus with optional parent.
 do
     lurek.audio.create_bus("master_sfx", nil)
-    lurek.audio.create_bus("footsteps", "master_sfx")
-    print("bus hierarchy created")
+    print("bus created: master_sfx")
 end
 
 --@api-stub: lurek.audio.set_bus_volume

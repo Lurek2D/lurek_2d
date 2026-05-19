@@ -32,15 +32,8 @@ do
     ---@type LChannel
     local ch = lurek.thread.newChannel()
     local id1 = ch:push("hello")
-    local id2 = ch:push(42)
-    local id3 = ch:push({ x = 10, y = 20 })
-    print("pushed ids: " .. id1 .. ", " .. id2 .. ", " .. id3)
+    print("pushed id: " .. id1)
     print("count = " .. ch:getCount())
-    local val1 = ch:pop()
-    print("pop 1 = " .. tostring(val1))
-    local val2 = ch:pop()
-    print("pop 2 = " .. tostring(val2))
-    print("remaining = " .. ch:getCount())
 end
 
 --@api-stub: LChannel:pop
@@ -48,16 +41,9 @@ end
 do
     ---@type LChannel
     local ch = lurek.thread.newChannel()
-    local id1 = ch:push("hello")
-    local id2 = ch:push(42)
-    local id3 = ch:push({ x = 10, y = 20 })
-    print("pushed ids: " .. id1 .. ", " .. id2 .. ", " .. id3)
-    print("count = " .. ch:getCount())
+    ch:push("hello")
     local val1 = ch:pop()
     print("pop 1 = " .. tostring(val1))
-    local val2 = ch:pop()
-    print("pop 2 = " .. tostring(val2))
-    print("remaining = " .. ch:getCount())
 end
 
 --@api-stub: LChannel:peek
@@ -92,13 +78,8 @@ end
 do
     ---@type LChannel
     local ch = lurek.thread.newBoundedChannel(2)
-    local ok1 = ch:tryPush("a")
-    print("tryPush 1 = " .. tostring(ok1))
-    local ok2 = ch:tryPush("b")
-    print("tryPush 2 = " .. tostring(ok2))
-    local ok3 = ch:tryPush("c")
-    print("tryPush 3 (full) = " .. tostring(ok3))
-    print("count = " .. ch:getCount())
+    ch:tryPush("a")
+    ch:tryPush("b")
     local supplied = ch:supply("d")
     print("supply when full = " .. tostring(supplied))
 end
@@ -110,13 +91,6 @@ do
     local ch = lurek.thread.newBoundedChannel(2)
     local ok1 = ch:tryPush("a")
     print("tryPush 1 = " .. tostring(ok1))
-    local ok2 = ch:tryPush("b")
-    print("tryPush 2 = " .. tostring(ok2))
-    local ok3 = ch:tryPush("c")
-    print("tryPush 3 (full) = " .. tostring(ok3))
-    print("count = " .. ch:getCount())
-    local supplied = ch:supply("d")
-    print("supply when full = " .. tostring(supplied))
 end
 
 --@api-stub: LChannel:pushBytes
@@ -127,9 +101,6 @@ do
     local data = string.rep("\x00\xFF", 100)
     local id = ch:pushBytes(data)
     print("pushBytes id = " .. id)
-    local retrieved = ch:popBytes()
-    print("popBytes length = " .. #retrieved)
-    print("data matches = " .. tostring(retrieved == data))
 end
 
 --@api-stub: LChannel:popBytes
@@ -138,11 +109,9 @@ do
     ---@type LChannel
     local ch = lurek.thread.newChannel()
     local data = string.rep("\x00\xFF", 100)
-    local id = ch:pushBytes(data)
-    print("pushBytes id = " .. id)
+    ch:pushBytes(data)
     local retrieved = ch:popBytes()
     print("popBytes length = " .. #retrieved)
-    print("data matches = " .. tostring(retrieved == data))
 end
 
 --@api-stub: LChannel:pushTable
@@ -153,10 +122,6 @@ do
     local payload = { name = "player", hp = 100, items = { "sword", "shield" } }
     local id = ch:pushTable(payload)
     print("pushTable id = " .. id)
-    local result = ch:popTable()
-    print("popTable name = " .. result.name)
-    print("popTable hp = " .. result.hp)
-    print("popTable items = " .. #result.items)
 end
 
 --@api-stub: LChannel:popTable
@@ -165,12 +130,9 @@ do
     ---@type LChannel
     local ch = lurek.thread.newChannel()
     local payload = { name = "player", hp = 100, items = { "sword", "shield" } }
-    local id = ch:pushTable(payload)
-    print("pushTable id = " .. id)
+    ch:pushTable(payload)
     local result = ch:popTable()
     print("popTable name = " .. result.name)
-    print("popTable hp = " .. result.hp)
-    print("popTable items = " .. #result.items)
 end
 
 --@api-stub: LChannel:clear
@@ -205,31 +167,11 @@ do
     ---@type LChannel
     local ch = lurek.thread.getChannel("events")
     ch:push("player_died")
-    ch:push("level_complete")
     ---@type LChannel
     local same = lurek.thread.getChannel("events")
     local msg = same:pop()
     print("shared channel msg = " .. tostring(msg))
     print("same instance = " .. tostring(ch == same))
-
-    -- Passing initial data to a thread. Focus: getChannel.
-    ---@type LChannel
-    local out = lurek.thread.getChannel("output")
-    out:clear()
-    ---@type LThread
-    local t = lurek.thread.newThread([[
-        local count, prefix = ...
-        local ch = lurek.thread.getChannel("output")
-        for i = 1, count do
-            ch:push(prefix .. "_" .. i)
-        end
-    ]])
-    t:start(5, "item")
-    t:wait()
-    for i = 1, 5 do
-        local val = out:pop()
-        print("received: " .. tostring(val))
-    end
 end
 
 --@api-stub: lurek.thread.newThread

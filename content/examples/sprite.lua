@@ -11,49 +11,7 @@ do
     ---@type LSpriteSheet
     local sheet = lurek.sprite.newSheet(512, 512, 64, 64)
     print("type = " .. sheet:type())
-    print("is LSpriteSheet = " .. tostring(sheet:typeOf("LSpriteSheet")))
     print("frame count = " .. sheet:getFrameCount())
-    local fw, fh = sheet:getFrameSize()
-    print("frame size = " .. fw .. "x" .. fh)
-    local cols, rows = sheet:getGridSize()
-    print("grid = " .. cols .. " cols x " .. rows .. " rows")
-
-    -- Combining sheets, groups, and frame access for a game character.
-    ---@type LSpriteSheet
-    local sheet = lurek.sprite.newSheet(384, 256, 48, 64)
-    local cols, rows = sheet:getGridSize()
-    print("character sheet: " .. cols .. "x" .. rows .. " = " .. sheet:getFrameCount() .. " frames")
-    sheet:nameGroup("idle_down", 1, 4)
-    sheet:nameGroup("idle_up", 5, 4)
-    sheet:nameGroup("walk_down", 9, 6)
-    sheet:nameGroup("walk_up", 15, 6)
-    sheet:nameGroup("walk_left", 21, 6)
-    sheet:nameGroup("walk_right", 27, 6)
-    local groups = sheet:getGroupNames()
-    print("animation groups:")
-    for _, g in ipairs(groups) do
-        local frames = sheet:getGroupFrames(g)
-        print("  " .. g .. " = " .. #frames .. " frames")
-    end
-    local walkDown = sheet:getGroupFrames("walk_down")
-    print("walk_down animation frames:")
-    for i, f in ipairs(walkDown) do
-        print("  " .. i .. ": x=" .. f.x .. " y=" .. f.y .. " w=" .. f.w .. " h=" .. f.h)
-    end
-
-    -- Different texture and frame sizes.
-    ---@type LSpriteSheet
-    local tiny = lurek.sprite.newSheet(64, 64, 8, 8)
-    print("tiny: " .. tiny:getFrameCount() .. " frames of 8x8")
-    ---@type LSpriteSheet
-    local wide = lurek.sprite.newSheet(1024, 64, 128, 64)
-    print("wide: " .. wide:getFrameCount() .. " frames of 128x64")
-    ---@type LSpriteSheet
-    local tall = lurek.sprite.newSheet(64, 1024, 64, 128)
-    print("tall: " .. tall:getFrameCount() .. " frames of 64x128")
-    ---@type LSpriteSheet
-    local single = lurek.sprite.newSheet(256, 256, 256, 256)
-    print("single: " .. single:getFrameCount() .. " frame of 256x256")
 end
 
 --@api-stub: LSpriteSheet:getFrame
@@ -72,18 +30,8 @@ end
 do
     ---@type LSpriteSheet
     local sheet = lurek.sprite.newSheet(192, 192, 64, 64)
-    local cols, rows = sheet:getGridSize()
-    print("grid = " .. cols .. "x" .. rows)
     local row0 = sheet:getRow(0)
     print("row 0 frames = " .. #row0)
-    for i, f in ipairs(row0) do
-        print("  frame " .. i .. ": x=" .. f.x .. " y=" .. f.y)
-    end
-    local col0 = sheet:getColumn(0)
-    print("col 0 frames = " .. #col0)
-    for i, f in ipairs(col0) do
-        print("  frame " .. i .. ": x=" .. f.x .. " y=" .. f.y)
-    end
 end
 
 --@api-stub: LSpriteSheet:getColumn
@@ -91,18 +39,8 @@ end
 do
     ---@type LSpriteSheet
     local sheet = lurek.sprite.newSheet(192, 192, 64, 64)
-    local cols, rows = sheet:getGridSize()
-    print("grid = " .. cols .. "x" .. rows)
-    local row0 = sheet:getRow(0)
-    print("row 0 frames = " .. #row0)
-    for i, f in ipairs(row0) do
-        print("  frame " .. i .. ": x=" .. f.x .. " y=" .. f.y)
-    end
     local col0 = sheet:getColumn(0)
     print("col 0 frames = " .. #col0)
-    for i, f in ipairs(col0) do
-        print("  frame " .. i .. ": x=" .. f.x .. " y=" .. f.y)
-    end
 end
 
 --@api-stub: LSpriteSheet:nameGroup
@@ -110,23 +48,8 @@ end
 do
     ---@type LSpriteSheet
     local sheet = lurek.sprite.newSheet(512, 256, 64, 64)
-    print("total frames = " .. sheet:getFrameCount())
     sheet:nameGroup("idle", 1, 4)
-    sheet:nameGroup("walk", 5, 8)
-    sheet:nameGroup("attack", 13, 6)
-    sheet:nameGroup("death", 19, 4)
-    local names = sheet:getGroupNames()
-    print("groups = " .. #names)
-    for _, name in ipairs(names) do
-        print("  " .. name)
-    end
-    local walkFrames = sheet:getGroupFrames("walk")
-    print("walk frames = " .. #walkFrames)
-    for i, f in ipairs(walkFrames) do
-        print("  walk " .. i .. ": x=" .. f.x .. " y=" .. f.y .. " w=" .. f.w)
-    end
-    local idleFrames = sheet:getGroupFrames("idle")
-    print("idle frames = " .. #idleFrames)
+    print("group named = idle")
 end
 
 --@api-stub: LSpriteSheet:getGroupFrames
@@ -134,23 +57,9 @@ end
 do
     ---@type LSpriteSheet
     local sheet = lurek.sprite.newSheet(512, 256, 64, 64)
-    print("total frames = " .. sheet:getFrameCount())
-    sheet:nameGroup("idle", 1, 4)
     sheet:nameGroup("walk", 5, 8)
-    sheet:nameGroup("attack", 13, 6)
-    sheet:nameGroup("death", 19, 4)
-    local names = sheet:getGroupNames()
-    print("groups = " .. #names)
-    for _, name in ipairs(names) do
-        print("  " .. name)
-    end
     local walkFrames = sheet:getGroupFrames("walk")
     print("walk frames = " .. #walkFrames)
-    for i, f in ipairs(walkFrames) do
-        print("  walk " .. i .. ": x=" .. f.x .. " y=" .. f.y .. " w=" .. f.w)
-    end
-    local idleFrames = sheet:getGroupFrames("idle")
-    print("idle frames = " .. #idleFrames)
 end
 
 --@api-stub: LSpriteSheet:getGroupNames
@@ -158,23 +67,10 @@ end
 do
     ---@type LSpriteSheet
     local sheet = lurek.sprite.newSheet(512, 256, 64, 64)
-    print("total frames = " .. sheet:getFrameCount())
     sheet:nameGroup("idle", 1, 4)
     sheet:nameGroup("walk", 5, 8)
-    sheet:nameGroup("attack", 13, 6)
-    sheet:nameGroup("death", 19, 4)
     local names = sheet:getGroupNames()
     print("groups = " .. #names)
-    for _, name in ipairs(names) do
-        print("  " .. name)
-    end
-    local walkFrames = sheet:getGroupFrames("walk")
-    print("walk frames = " .. #walkFrames)
-    for i, f in ipairs(walkFrames) do
-        print("  walk " .. i .. ": x=" .. f.x .. " y=" .. f.y .. " w=" .. f.w)
-    end
-    local idleFrames = sheet:getGroupFrames("idle")
-    print("idle frames = " .. #idleFrames)
 end
 
 --@api-stub: LSpriteSheet:drawToImage

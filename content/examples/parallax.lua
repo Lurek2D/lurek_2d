@@ -21,8 +21,6 @@ do
         opacity = 0.9,
     })
     print("type = " .. layer:type())
-    print("z = " .. layer:getZ())
-    print("opacity = " .. layer:getOpacity())
 end
 
 --@api-stub: lurek.parallax.newPresetLayer
@@ -32,13 +30,7 @@ do
     local img = lurek.render.newImage("assets/textures/ray_water.png")
     ---@type LParallaxLayer
     local far = lurek.parallax.newPresetLayer("far", img)
-    ---@type LParallaxLayer
-    local mid = lurek.parallax.newPresetLayer("mid", img)
-    ---@type LParallaxLayer
-    local fog = lurek.parallax.newPresetLayer("fog", img)
     print("far depth = " .. far:getDepth())
-    print("mid depth = " .. mid:getDepth())
-    print("fog depth = " .. fog:getDepth())
 end
 
 --@api-stub: LParallaxLayer:setScrollFactor
@@ -124,8 +116,6 @@ do
     local layer = lurek.parallax.newLayer({texture = load_parallax_image()})
     layer:setVisible(false)
     print("visible = " .. tostring(layer:isVisible()))
-    layer:setVisible(true)
-    print("visible = " .. tostring(layer:isVisible()))
 end
 
 --@api-stub: LParallaxLayer:isVisible
@@ -134,8 +124,6 @@ do
     ---@type LParallaxLayer
     local layer = lurek.parallax.newLayer({texture = load_parallax_image()})
     layer:setVisible(false)
-    print("visible = " .. tostring(layer:isVisible()))
-    layer:setVisible(true)
     print("visible = " .. tostring(layer:isVisible()))
 end
 
@@ -163,7 +151,6 @@ do
     ---@type LParallaxLayer
     local layer = lurek.parallax.newLayer({texture = load_parallax_image()})
     layer:setTiling(true)
-    layer:setTileSize(64, 64)
     print("tiling = " .. tostring(layer:getTiling()))
 end
 
@@ -173,7 +160,6 @@ do
     ---@type LParallaxLayer
     local layer = lurek.parallax.newLayer({texture = load_parallax_image()})
     layer:setTiling(true)
-    layer:setTileSize(64, 64)
     print("tiling = " .. tostring(layer:getTiling()))
 end
 
@@ -182,9 +168,8 @@ end
 do
     ---@type LParallaxLayer
     local layer = lurek.parallax.newLayer({texture = load_parallax_image()})
-    layer:setTiling(true)
     layer:setTileSize(64, 64)
-    print("tiling = " .. tostring(layer:getTiling()))
+    print("tile size set")
 end
 
 --@api-stub: LParallaxLayer:setRepeat

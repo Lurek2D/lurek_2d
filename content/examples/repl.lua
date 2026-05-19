@@ -11,33 +11,7 @@ do
     ---@type LReplSession
     local repl = lurek.repl.new()
     print("type = " .. repl:type())
-    print("is LReplSession = " .. tostring(repl:typeOf("LReplSession")))
     print("initial len = " .. repl:len())
-
-    -- Creating a session with limited history.
-    ---@type LReplSession
-    local repl = lurek.repl.new(10)
-    print("len = " .. repl:len())
-
-    -- Simulating a multi-line REPL interaction.
-    ---@type LReplSession
-    local repl = lurek.repl.new(100)
-    local inputs = {
-        "scores = {}",
-        "for i = 1, 5 do scores[i] = i * 10 end",
-        "return #scores",
-        "return scores[3]",
-        "table.insert(scores, 99)",
-        "return scores[#scores]",
-    }
-    for _, input in ipairs(inputs) do
-        local result = repl:eval(input)
-        print("> " .. input)
-        if result ~= "" then
-            print("  => " .. result)
-        end
-    end
-    print("session length = " .. repl:len())
 end
 
 --@api-stub: LReplSession:eval
@@ -47,33 +21,6 @@ do
     local repl = lurek.repl.new()
     local r1 = repl:eval("return 2 + 2")
     print("2+2 = " .. r1)
-    local r2 = repl:eval("return 'hello' .. ' world'")
-    print("concat = " .. r2)
-    local r3 = repl:eval("return math.pi")
-    print("pi = " .. r3)
-    print("history len = " .. repl:len())
-
-    -- Evaluating statements and handling errors.
-    ---@type LReplSession
-    local repl = lurek.repl.new()
-    local r1 = repl:eval("local x = 42")
-    print("statement = " .. r1)
-    local r2 = repl:eval("return undefined_var")
-    print("nil result = " .. r2)
-    local r3 = repl:eval("invalid syntax !@#")
-    print("error = " .. r3)
-    print("all recorded, len = " .. repl:len())
-
-    -- Building up state across evaluations.
-    ---@type LReplSession
-    local repl = lurek.repl.new()
-    repl:eval("x = 10")
-    repl:eval("y = 20")
-    local sum = repl:eval("return x + y")
-    print("x + y = " .. sum)
-    repl:eval("function double(n) return n * 2 end")
-    local doubled = repl:eval("return double(x)")
-    print("double(x) = " .. doubled)
 end
 
 --@api-stub: LReplSession:history
@@ -86,24 +33,6 @@ do
     repl:eval("return 3")
     local hist = repl:history()
     print("history entries = " .. #hist)
-    for i, entry in ipairs(hist) do
-        print("  " .. i .. ": " .. entry)
-    end
-
-    -- History respects max_history limit.
-    ---@type LReplSession
-    local repl = lurek.repl.new(3)
-    repl:eval("return 'first'")
-    repl:eval("return 'second'")
-    repl:eval("return 'third'")
-    repl:eval("return 'fourth'")
-    repl:eval("return 'fifth'")
-    local hist = repl:history()
-    print("bounded history count = " .. #hist)
-    for i, entry in ipairs(hist) do
-        print("  " .. i .. ": " .. entry)
-    end
-    print("len = " .. repl:len())
 end
 
 --@api-stub: LReplSession:complete
@@ -112,26 +41,8 @@ do
     ---@type LReplSession
     local repl = lurek.repl.new()
     repl:eval("myVariable = 42")
-    repl:eval("myFunction = function() end")
-    repl:eval("myTable = {}")
     local completions = repl:complete("my")
     print("completions for 'my' = " .. #completions)
-    for i, c in ipairs(completions) do
-        print("  " .. c)
-    end
-    local math_completions = repl:complete("math.")
-    print("math. completions = " .. #math_completions)
-    for i, c in ipairs(math_completions) do
-        if i <= 5 then
-            print("  " .. c)
-        end
-    end
-
-    -- Completing with empty prefix.
-    ---@type LReplSession
-    local repl = lurek.repl.new()
-    local all = repl:complete("")
-    print("all globals count = " .. #all)
 end
 
 --@api-stub: LReplSession:clear
@@ -170,8 +81,6 @@ do
     ---@type LReplSession
     local sess = lurek.repl.new()
     print(sess:type())
-    print(sess:typeOf("LReplSession"))
-    print(sess:typeOf("Object"))
 end
 
 --@api-stub: LReplSession:typeOf
@@ -179,9 +88,7 @@ end
 do
     ---@type LReplSession
     local sess = lurek.repl.new()
-    print(sess:type())
     print(sess:typeOf("LReplSession"))
-    print(sess:typeOf("Object"))
 end
 
 print("content/examples/repl.lua")

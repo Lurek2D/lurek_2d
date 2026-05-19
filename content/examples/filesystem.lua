@@ -167,9 +167,6 @@ end
 do
     local items = lurek.filesystem.getDirectoryItems("save")
     print("save/ has " .. #items .. " items")
-    for _, name in ipairs(items) do
-        print("  " .. name)
-    end
 end
 
 --@api-stub: lurek.filesystem.listRecursive

@@ -11,61 +11,8 @@ do
     ---@type LSkeleton
     local skel = lurek.spine.newSkeleton("hero")
     print("type = " .. skel:type())
-    print("is LSkeleton = " .. tostring(skel:typeOf("LSkeleton")))
     print("bone count = " .. skel:boneCount())
     print("slot count = " .. skel:slotCount())
-
-    -- Bones with no opts use defaults.
-    ---@type LSkeleton
-    local skel = lurek.spine.newSkeleton("minimal")
-    local root = skel:addBone("root")
-    print("root (no opts) = " .. root)
-    local child = skel:addChildBone("child", root)
-    print("child (no opts) = " .. child)
-    print("bone count = " .. skel:boneCount())
-
-    -- Complete skeleton with bones, slots, skins, IK, and animation. Focus: newSkeleton.
-    ---@type LSkeleton
-    local skel = lurek.spine.newSkeleton("full_character")
-    local root = skel:addBone("root", { x = 200, y = 400 })
-    local hip = skel:addChildBone("hip", root)
-    local torso = skel:addChildBone("torso", hip, { y = -30 })
-    local head = skel:addChildBone("head", torso, { y = -25 })
-    local lArm = skel:addChildBone("l_arm", torso, { x = -15, y = -5 })
-    local rArm = skel:addChildBone("r_arm", torso, { x = 15, y = -5 })
-    local lLeg = skel:addChildBone("l_leg", hip, { x = -8, y = 25 })
-    local rLeg = skel:addChildBone("r_leg", hip, { x = 8, y = 25 })
-    skel:addSlot("torso_slot", torso, "torso_default")
-    skel:addSlot("head_slot", head, "head_default")
-    skel:addSlot("l_arm_slot", lArm, "arm_default")
-    skel:addSlot("r_arm_slot", rArm, "arm_default")
-    skel:addSlot("l_leg_slot", lLeg, "leg_default")
-    skel:addSlot("r_leg_slot", rLeg, "leg_default")
-    skel:addSkin("default")
-    skel:addSkin("armored")
-    skel:setSkinMapping("armored", "torso_slot", "plate_torso")
-    skel:setSkinMapping("armored", "head_slot", "helmet")
-    skel:addIKConstraint("l_arm_ik", { lArm })
-    skel:addIKConstraint("r_arm_ik", { rArm })
-    ---@type LSkeletonAnimation
-    local idleAnim = lurek.spine.newSkeletonAnimation("idle", 1.0)
-    idleAnim:addKeyframe(0, "y", 0.0, 0)
-    idleAnim:addKeyframe(0, "y", 0.5, -3)
-    idleAnim:addKeyframe(0, "y", 1.0, 0)
-    skel:addAnimation(idleAnim)
-    skel:setSkin("armored")
-    skel:playAnimation("idle", true)
-    print("full character:")
-    print("  bones = " .. skel:boneCount())
-    print("  slots = " .. skel:slotCount())
-    print("  skin = " .. skel:getSkin())
-    for i = 1, 10 do
-        skel:updateAnimation(1 / 60)
-        skel:updateWorldTransforms()
-    end
-    print("  after 10 frames, time = " .. string.format("%.3f", skel:getAnimationTime()))
-    local headWorld = skel:getBoneWorld(head)
-    print("  head pos = " .. string.format("%.1f, %.1f", headWorld.x, headWorld.y))
 end
 
 --@api-stub: LSkeleton:addBone
@@ -75,16 +22,6 @@ do
     local skel = lurek.spine.newSkeleton("character")
     local root = skel:addBone("root", { x = 0, y = 0, rotation = 0, scale_x = 1, scale_y = 1 })
     print("root bone index = " .. root)
-    local spine_bone = skel:addChildBone("spine", root, { x = 0, y = -20 })
-    print("spine bone index = " .. spine_bone)
-    local head = skel:addChildBone("head", spine_bone, { x = 0, y = -30 })
-    print("head bone index = " .. head)
-    local leftArm = skel:addChildBone("left_arm", spine_bone, { x = -15, y = -10 })
-    local rightArm = skel:addChildBone("right_arm", spine_bone, { x = 15, y = -10 })
-    print("left arm = " .. leftArm .. " right arm = " .. rightArm)
-    local leftLeg = skel:addChildBone("left_leg", root, { x = -8, y = 20 })
-    local rightLeg = skel:addChildBone("right_leg", root, { x = 8, y = 20 })
-    print("bone count = " .. skel:boneCount())
 end
 
 --@api-stub: LSkeleton:addChildBone
@@ -93,17 +30,8 @@ do
     ---@type LSkeleton
     local skel = lurek.spine.newSkeleton("character")
     local root = skel:addBone("root", { x = 0, y = 0, rotation = 0, scale_x = 1, scale_y = 1 })
-    print("root bone index = " .. root)
     local spine_bone = skel:addChildBone("spine", root, { x = 0, y = -20 })
     print("spine bone index = " .. spine_bone)
-    local head = skel:addChildBone("head", spine_bone, { x = 0, y = -30 })
-    print("head bone index = " .. head)
-    local leftArm = skel:addChildBone("left_arm", spine_bone, { x = -15, y = -10 })
-    local rightArm = skel:addChildBone("right_arm", spine_bone, { x = 15, y = -10 })
-    print("left arm = " .. leftArm .. " right arm = " .. rightArm)
-    local leftLeg = skel:addChildBone("left_leg", root, { x = -8, y = 20 })
-    local rightLeg = skel:addChildBone("right_leg", root, { x = 8, y = 20 })
-    print("bone count = " .. skel:boneCount())
 end
 
 --@api-stub: LSkeleton:addSlot
@@ -131,14 +59,8 @@ do
     local root = skel:addBone("root")
     local upperArm = skel:addChildBone("upper_arm", root, { x = 20 })
     local lowerArm = skel:addChildBone("lower_arm", upperArm, { x = 20 })
-    local hand = skel:addChildBone("hand", lowerArm, { x = 15 })
-    local ikId = skel:addIKConstraint("arm_ik", { upperArm, lowerArm, hand }, true)
+    local ikId = skel:addIKConstraint("arm_ik", { upperArm, lowerArm }, true)
     print("ik constraint id = " .. ikId)
-    skel:setIKTarget("arm_ik", 60, -30)
-    print("IK target set")
-    skel:updateWorldTransforms()
-    local result = skel:getBoneWorld(hand)
-    print("hand world pos = " .. string.format("%.1f, %.1f", result.x, result.y))
 end
 
 --@api-stub: LSkeleton:setIKTarget
@@ -149,14 +71,9 @@ do
     local root = skel:addBone("root")
     local upperArm = skel:addChildBone("upper_arm", root, { x = 20 })
     local lowerArm = skel:addChildBone("lower_arm", upperArm, { x = 20 })
-    local hand = skel:addChildBone("hand", lowerArm, { x = 15 })
-    local ikId = skel:addIKConstraint("arm_ik", { upperArm, lowerArm, hand }, true)
-    print("ik constraint id = " .. ikId)
+    skel:addIKConstraint("arm_ik", { upperArm, lowerArm }, true)
     skel:setIKTarget("arm_ik", 60, -30)
     print("IK target set")
-    skel:updateWorldTransforms()
-    local result = skel:getBoneWorld(hand)
-    print("hand world pos = " .. string.format("%.1f, %.1f", result.x, result.y))
 end
 
 --@api-stub: LSkeleton:addSkin
@@ -167,20 +84,8 @@ do
     local root = skel:addBone("root")
     local body = skel:addChildBone("body", root)
     skel:addSlot("body_slot", body, "default_body")
-    skel:addSlot("armor_slot", body, "no_armor")
     skel:addSkin("default")
-    skel:addSkin("warrior")
-    skel:addSkin("mage")
-    skel:setSkinMapping("warrior", "body_slot", "warrior_body")
-    skel:setSkinMapping("warrior", "armor_slot", "plate_armor")
-    skel:setSkinMapping("mage", "body_slot", "mage_body")
-    skel:setSkinMapping("mage", "armor_slot", "mage_robe")
-    skel:setSkin("warrior")
-    print("current skin = " .. skel:getSkin())
-    skel:setSkin("mage")
-    print("current skin = " .. skel:getSkin())
-    skel:setSkin("default")
-    print("current skin = " .. skel:getSkin())
+    print("skin added")
 end
 
 --@api-stub: LSkeleton:setSkin
@@ -191,19 +96,10 @@ do
     local root = skel:addBone("root")
     local body = skel:addChildBone("body", root)
     skel:addSlot("body_slot", body, "default_body")
-    skel:addSlot("armor_slot", body, "no_armor")
     skel:addSkin("default")
     skel:addSkin("warrior")
-    skel:addSkin("mage")
     skel:setSkinMapping("warrior", "body_slot", "warrior_body")
-    skel:setSkinMapping("warrior", "armor_slot", "plate_armor")
-    skel:setSkinMapping("mage", "body_slot", "mage_body")
-    skel:setSkinMapping("mage", "armor_slot", "mage_robe")
     skel:setSkin("warrior")
-    print("current skin = " .. skel:getSkin())
-    skel:setSkin("mage")
-    print("current skin = " .. skel:getSkin())
-    skel:setSkin("default")
     print("current skin = " .. skel:getSkin())
 end
 
@@ -215,20 +111,10 @@ do
     local root = skel:addBone("root")
     local body = skel:addChildBone("body", root)
     skel:addSlot("body_slot", body, "default_body")
-    skel:addSlot("armor_slot", body, "no_armor")
     skel:addSkin("default")
     skel:addSkin("warrior")
-    skel:addSkin("mage")
     skel:setSkinMapping("warrior", "body_slot", "warrior_body")
-    skel:setSkinMapping("warrior", "armor_slot", "plate_armor")
-    skel:setSkinMapping("mage", "body_slot", "mage_body")
-    skel:setSkinMapping("mage", "armor_slot", "mage_robe")
-    skel:setSkin("warrior")
-    print("current skin = " .. skel:getSkin())
-    skel:setSkin("mage")
-    print("current skin = " .. skel:getSkin())
-    skel:setSkin("default")
-    print("current skin = " .. skel:getSkin())
+    print("skin mapping set")
 end
 
 --@api-stub: LSkeleton:getSkin

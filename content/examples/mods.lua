@@ -18,9 +18,6 @@ do
         priority = 10,
     })
     print("id=" .. m:getId() .. " name=" .. m:getName())
-    print("version=" .. m:getVersion() .. " author=" .. m:getAuthor())
-    print("desc=" .. m:getDescription())
-    print("priority=" .. m:getPriority())
 end
 
 --@api-stub: LMod:setEnabled
@@ -29,8 +26,6 @@ do
     ---@type LMod
     local m = lurek.mods.newMod({id = "toggle", name = "Toggle", version = "1.0", author = "A", description = "d"})
     m:setEnabled(true)
-    print("enabled=" .. tostring(m:isEnabled()) .. " loaded=" .. tostring(m:isLoaded()))
-    m:setEnabled(false)
     print("enabled=" .. tostring(m:isEnabled()))
 end
 
@@ -40,8 +35,6 @@ do
     ---@type LMod
     local m = lurek.mods.newMod({id = "toggle", name = "Toggle", version = "1.0", author = "A", description = "d"})
     m:setEnabled(true)
-    print("enabled=" .. tostring(m:isEnabled()) .. " loaded=" .. tostring(m:isLoaded()))
-    m:setEnabled(false)
     print("enabled=" .. tostring(m:isEnabled()))
 end
 
@@ -50,10 +43,7 @@ end
 do
     ---@type LMod
     local m = lurek.mods.newMod({id = "toggle", name = "Toggle", version = "1.0", author = "A", description = "d"})
-    m:setEnabled(true)
-    print("enabled=" .. tostring(m:isEnabled()) .. " loaded=" .. tostring(m:isLoaded()))
-    m:setEnabled(false)
-    print("enabled=" .. tostring(m:isEnabled()))
+    print("loaded=" .. tostring(m:isLoaded()))
 end
 
 --@api-stub: LMod:setHook
@@ -62,13 +52,7 @@ do
     ---@type LMod
     local m = lurek.mods.newMod({id = "hooks", name = "Hooks", version = "1.0", author = "A", description = "d"})
     m:setHook("onLoad", function() print("loaded!") end)
-    m:setHook("onUnload", function() print("unloaded!") end)
     print("has onLoad = " .. tostring(m:hasHook("onLoad")))
-    print("has onSave = " .. tostring(m:hasHook("onSave")))
-    local names = m:getHookNames()
-    print("hooks = " .. table.concat(names, ", "))
-    local fn = m:getHook("onLoad")
-    if fn then fn() end
 end
 
 --@api-stub: LMod:getHook
@@ -77,13 +61,8 @@ do
     ---@type LMod
     local m = lurek.mods.newMod({id = "hooks", name = "Hooks", version = "1.0", author = "A", description = "d"})
     m:setHook("onLoad", function() print("loaded!") end)
-    m:setHook("onUnload", function() print("unloaded!") end)
-    print("has onLoad = " .. tostring(m:hasHook("onLoad")))
-    print("has onSave = " .. tostring(m:hasHook("onSave")))
-    local names = m:getHookNames()
-    print("hooks = " .. table.concat(names, ", "))
     local fn = m:getHook("onLoad")
-    if fn then fn() end
+    print("hook exists = " .. tostring(fn ~= nil))
 end
 
 --@api-stub: LMod:hasHook
@@ -92,13 +71,7 @@ do
     ---@type LMod
     local m = lurek.mods.newMod({id = "hooks", name = "Hooks", version = "1.0", author = "A", description = "d"})
     m:setHook("onLoad", function() print("loaded!") end)
-    m:setHook("onUnload", function() print("unloaded!") end)
     print("has onLoad = " .. tostring(m:hasHook("onLoad")))
-    print("has onSave = " .. tostring(m:hasHook("onSave")))
-    local names = m:getHookNames()
-    print("hooks = " .. table.concat(names, ", "))
-    local fn = m:getHook("onLoad")
-    if fn then fn() end
 end
 
 --@api-stub: LMod:getHookNames
@@ -108,12 +81,8 @@ do
     local m = lurek.mods.newMod({id = "hooks", name = "Hooks", version = "1.0", author = "A", description = "d"})
     m:setHook("onLoad", function() print("loaded!") end)
     m:setHook("onUnload", function() print("unloaded!") end)
-    print("has onLoad = " .. tostring(m:hasHook("onLoad")))
-    print("has onSave = " .. tostring(m:hasHook("onSave")))
     local names = m:getHookNames()
     print("hooks = " .. table.concat(names, ", "))
-    local fn = m:getHook("onLoad")
-    if fn then fn() end
 end
 
 --@api-stub: LMod:setConfig
@@ -122,10 +91,7 @@ do
     ---@type LMod
     local m = lurek.mods.newMod({id = "cfg", name = "Cfg", version = "1.0", author = "A", description = "d"})
     m:setConfig({difficulty = "hard", volume = 0.8})
-    local cfg = m:getConfig()
-    if cfg then
-        print("config stored")
-    end
+    print("config stored")
 end
 
 --@api-stub: LMod:getConfig
@@ -136,7 +102,7 @@ do
     m:setConfig({difficulty = "hard", volume = 0.8})
     local cfg = m:getConfig()
     if cfg then
-        print("config stored")
+        print("config exists = true")
     end
 end
 
@@ -149,10 +115,7 @@ do
         {key = "volume", type = "number", default = "0.5"},
         {key = "language", type = "string", default = "en"},
     })
-    local schema = m:getConfigSchema()
-    for _, entry in ipairs(schema) do
-        print(entry.key .. " (" .. entry.type .. ") = " .. entry.default)
-    end
+    print("schema set")
 end
 
 --@api-stub: LMod:getConfigSchema
@@ -165,9 +128,7 @@ do
         {key = "language", type = "string", default = "en"},
     })
     local schema = m:getConfigSchema()
-    for _, entry in ipairs(schema) do
-        print(entry.key .. " (" .. entry.type .. ") = " .. entry.default)
-    end
+    print("schema entries = " .. #schema)
 end
 
 --@api-stub: LMod:setApiVersion
@@ -194,8 +155,7 @@ do
     ---@type LMod
     local m = lurek.mods.newMod({id = "caps", name = "Caps", version = "1.0", author = "A", description = "d"})
     m:setCapabilities({"renderer", "audio", "physics"})
-    local caps = m:getCapabilities()
-    print("capabilities = " .. table.concat(caps, ", "))
+    print("capabilities set")
 end
 
 --@api-stub: LMod:getCapabilities
@@ -233,10 +193,7 @@ end
 do
     ---@type LContentRegistry
     local reg = lurek.mods.newRegistry()
-    reg:registerType("weapon")
-    reg:registerType("armor")
-    local types = reg:getTypes()
-    print("types = " .. table.concat(types, ", "))
+    print("registry created = " .. tostring(reg ~= nil))
 end
 
 --@api-stub: LContentRegistry:register

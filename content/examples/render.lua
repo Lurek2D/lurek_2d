@@ -9,26 +9,20 @@
 -- Drawing text to the screen.
 do
     lurek.render.print("Hello, Lurek2D!", 10, 10)
-    lurek.render.print("Scaled text", 10, 30, 2.0)
-    lurek.render.print("Small text", 10, 60, 0.5)
-    lurek.render.print("", 0, 0)
+       -- Removed scaled and small text prints
+       lurek.render.print("", 0, 0)
 end
 
 --@api-stub: lurek.render.printf
 -- Drawing aligned, word-wrapped text.
 do
-    lurek.render.printf("Left-aligned paragraph that wraps at 200 pixels width.", 10, 100, 200, "left")
-    lurek.render.printf("Centered text within a 300px box.", 10, 140, 300, "center")
-    lurek.render.printf("Right-aligned text example.", 10, 180, 250, "right")
-    lurek.render.printf("Justified paragraph with multiple words.", 10, 220, 200, "justify")
+       lurek.render.printf("Centered text within a 300px box.", 10, 140, 300, "center")
 end
 
 --@api-stub: lurek.render.printRotated
 -- Drawing rotated text around its center.
 do
     lurek.render.printRotated("Rotated!", 200, 200, math.pi / 4)
-    lurek.render.printRotated("Upside down", 300, 200, math.pi)
-    lurek.render.printRotated("Scaled rotated", 400, 200, -math.pi / 6, 1.5)
 end
 
 --@api-stub: lurek.render.printRich
@@ -47,17 +41,6 @@ end
 do
     lurek.render.setColor(1, 0, 0, 1)
     lurek.render.rectangle("fill", 50, 300, 100, 60)
-    lurek.render.setColor(0, 1, 0, 1)
-    lurek.render.rectangle("line", 50, 300, 100, 60)
-    lurek.render.setColor(0, 0, 1, 0.5)
-    lurek.render.rectangle("fill", 80, 320, 100, 60)
-    lurek.render.setColor(1, 1, 1, 1)
-
-    -- Drawing rounded rectangles.
-    lurek.render.setColor(0.8, 0.2, 0.8, 1)
-    lurek.render.rectangle("fill", 200, 300, 120, 80, 12)
-    lurek.render.setColor(1, 1, 0, 1)
-    lurek.render.rectangle("line", 200, 300, 120, 80, 12, 6)
     lurek.render.setColor(1, 1, 1, 1)
 end
 
@@ -141,26 +124,15 @@ end
 --@api-stub: lurek.render.setLineWidth
 -- Controlling line width. Focus: setLineWidth.
 do
-    lurek.render.setLineWidth(1)
-    lurek.render.line(10, 630, 100, 630)
-    lurek.render.setLineWidth(3)
-    lurek.render.line(10, 640, 100, 640)
     lurek.render.setLineWidth(5)
-    lurek.render.line(10, 650, 100, 650)
-    local w = lurek.render.getLineWidth()
-    print("line width = " .. w)
+       print("line width set")
     lurek.render.setLineWidth(1)
 end
 
 --@api-stub: lurek.render.getLineWidth
 -- Controlling line width. Focus: getLineWidth.
 do
-    lurek.render.setLineWidth(1)
-    lurek.render.line(10, 630, 100, 630)
-    lurek.render.setLineWidth(3)
-    lurek.render.line(10, 640, 100, 640)
     lurek.render.setLineWidth(5)
-    lurek.render.line(10, 650, 100, 650)
     local w = lurek.render.getLineWidth()
     print("line width = " .. w)
     lurek.render.setLineWidth(1)
@@ -189,16 +161,12 @@ end
 do
     lurek.render.setColor(1, 0.5, 0, 1)
     lurek.render.drawCubicBezier(120, 630, 160, 580, 220, 680, 260, 630, 24)
-    lurek.render.setColor(0, 1, 0.5, 1)
-    lurek.render.drawQuadBezier(300, 630, 350, 580, 400, 630, 16)
     lurek.render.setColor(1, 1, 1, 1)
 end
 
 --@api-stub: lurek.render.drawQuadBezier
 -- Drawing Bezier curves. Focus: drawQuadBezier.
 do
-    lurek.render.setColor(1, 0.5, 0, 1)
-    lurek.render.drawCubicBezier(120, 630, 160, 580, 220, 680, 260, 630, 24)
     lurek.render.setColor(0, 1, 0.5, 1)
     lurek.render.drawQuadBezier(300, 630, 350, 580, 400, 630, 16)
     lurek.render.setColor(1, 1, 1, 1)

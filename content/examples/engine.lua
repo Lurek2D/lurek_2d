@@ -79,8 +79,6 @@ end
 -- Returns current resource memory usage and object counts.
 do
     local stats = lurek.engine.getResourceStats()
-    print("textures: " .. stats.texture_count .. " (" .. stats.texture_bytes .. " bytes)")
-    print("fonts: " .. stats.font_count .. " (" .. stats.font_bytes .. " bytes)")
     print("total: " .. stats.total_bytes .. " / " .. stats.budget_bytes .. " budget")
 end
 
@@ -89,10 +87,6 @@ end
 do
     local prof = lurek.engine.getFrameProfile()
     print("frame total = " .. prof.app_frame_total_ms .. " ms")
-    print("  tick = " .. prof.app_tick_ms .. " ms")
-    print("  update = " .. prof.app_update_ms .. " ms")
-    print("  render = " .. prof.app_render_ms .. " ms")
-    print("  draw = " .. prof.draw_ms .. " ms")
 end
 
 --@api-stub: lurek.engine.getFrameProfileText

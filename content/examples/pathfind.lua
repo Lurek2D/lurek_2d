@@ -11,10 +11,6 @@ do
     ---@type LPathGrid
     local grid = lurek.pathfind.newPathGrid(20, 15, 32)
     print("width = " .. grid:getWidth() .. " height = " .. grid:getHeight())
-    print("cell size = " .. grid:getCellSize())
-    grid:setWalkable(5, 5, false)
-    print("(5,5) walkable = " .. tostring(grid:isWalkable(5, 5)))
-    print("(1,1) walkable = " .. tostring(grid:isWalkable(1, 1)))
 end
 
 --@api-stub: LPathGrid:setWalkable
@@ -22,11 +18,8 @@ end
 do
     ---@type LPathGrid
     local grid = lurek.pathfind.newPathGrid(20, 15, 32)
-    print("width = " .. grid:getWidth() .. " height = " .. grid:getHeight())
-    print("cell size = " .. grid:getCellSize())
     grid:setWalkable(5, 5, false)
     print("(5,5) walkable = " .. tostring(grid:isWalkable(5, 5)))
-    print("(1,1) walkable = " .. tostring(grid:isWalkable(1, 1)))
 end
 
 --@api-stub: LPathGrid:isWalkable
@@ -34,11 +27,8 @@ end
 do
     ---@type LPathGrid
     local grid = lurek.pathfind.newPathGrid(20, 15, 32)
-    print("width = " .. grid:getWidth() .. " height = " .. grid:getHeight())
-    print("cell size = " .. grid:getCellSize())
     grid:setWalkable(5, 5, false)
     print("(5,5) walkable = " .. tostring(grid:isWalkable(5, 5)))
-    print("(1,1) walkable = " .. tostring(grid:isWalkable(1, 1)))
 end
 
 --@api-stub: LPathGrid:setCost
@@ -47,10 +37,7 @@ do
     ---@type LPathGrid
     local grid = lurek.pathfind.newPathGrid(10, 10, 16)
     grid:setCost(3, 3, 5)
-    grid:setCost(4, 3, 10)
     print("cost at (3,3) = " .. grid:getCost(3, 3))
-    print("cost at (4,3) = " .. grid:getCost(4, 3))
-    print("default cost = " .. grid:getCost(1, 1))
 end
 
 --@api-stub: LPathGrid:getCost
@@ -59,10 +46,7 @@ do
     ---@type LPathGrid
     local grid = lurek.pathfind.newPathGrid(10, 10, 16)
     grid:setCost(3, 3, 5)
-    grid:setCost(4, 3, 10)
     print("cost at (3,3) = " .. grid:getCost(3, 3))
-    print("cost at (4,3) = " .. grid:getCost(4, 3))
-    print("default cost = " .. grid:getCost(1, 1))
 end
 
 --@api-stub: LPathGrid:findPath
@@ -107,8 +91,6 @@ do
     ---@type LPathGrid
     local grid = lurek.pathfind.newPathGrid(5, 5, 32)
     print("type = " .. grid:type())
-    print("is LPathGrid = " .. tostring(grid:typeOf("LPathGrid")))
-    print("is Object = " .. tostring(grid:typeOf("Object")))
 end
 
 --@api-stub: LPathGrid:typeOf
@@ -116,9 +98,7 @@ end
 do
     ---@type LPathGrid
     local grid = lurek.pathfind.newPathGrid(5, 5, 32)
-    print("type = " .. grid:type())
     print("is LPathGrid = " .. tostring(grid:typeOf("LPathGrid")))
-    print("is Object = " .. tostring(grid:typeOf("Object")))
 end
 
 --@api-stub: lurek.pathfind.newNavGrid
@@ -137,11 +117,7 @@ do
     ---@type LNavGrid
     local nav = lurek.pathfind.newNavGrid(30, 30)
     nav:setBlocked(10, 10, true)
-    nav:setBlocked(11, 10, true)
     print("(10,10) blocked = " .. tostring(nav:isBlocked(10, 10)))
-    print("(1,1) blocked = " .. tostring(nav:isBlocked(1, 1)))
-    nav:setCost(5, 5, 200)
-    print("cost at (5,5) = " .. nav:getCost(5, 5))
 end
 
 --@api-stub: LNavGrid:isBlocked
@@ -150,11 +126,7 @@ do
     ---@type LNavGrid
     local nav = lurek.pathfind.newNavGrid(30, 30)
     nav:setBlocked(10, 10, true)
-    nav:setBlocked(11, 10, true)
     print("(10,10) blocked = " .. tostring(nav:isBlocked(10, 10)))
-    print("(1,1) blocked = " .. tostring(nav:isBlocked(1, 1)))
-    nav:setCost(5, 5, 200)
-    print("cost at (5,5) = " .. nav:getCost(5, 5))
 end
 
 --@api-stub: LNavGrid:setCost
@@ -162,10 +134,6 @@ end
 do
     ---@type LNavGrid
     local nav = lurek.pathfind.newNavGrid(30, 30)
-    nav:setBlocked(10, 10, true)
-    nav:setBlocked(11, 10, true)
-    print("(10,10) blocked = " .. tostring(nav:isBlocked(10, 10)))
-    print("(1,1) blocked = " .. tostring(nav:isBlocked(1, 1)))
     nav:setCost(5, 5, 200)
     print("cost at (5,5) = " .. nav:getCost(5, 5))
 end
@@ -175,10 +143,6 @@ end
 do
     ---@type LNavGrid
     local nav = lurek.pathfind.newNavGrid(30, 30)
-    nav:setBlocked(10, 10, true)
-    nav:setBlocked(11, 10, true)
-    print("(10,10) blocked = " .. tostring(nav:isBlocked(10, 10)))
-    print("(1,1) blocked = " .. tostring(nav:isBlocked(1, 1)))
     nav:setCost(5, 5, 200)
     print("cost at (5,5) = " .. nav:getCost(5, 5))
 end
@@ -189,10 +153,7 @@ do
     ---@type LNavGrid
     local nav = lurek.pathfind.newNavGrid(20, 20)
     nav:fill(1)
-    nav:fillRect(5, 5, 5, 5, 255)
     print("(1,1) walkable = " .. tostring(nav:isWalkable(1, 1)))
-    print("(7,7) walkable size 1 = " .. tostring(nav:isWalkable(7, 7)))
-    print("(7,7) walkable size 3 = " .. tostring(nav:isWalkable(7, 7, 3)))
 end
 
 --@api-stub: LNavGrid:fill
@@ -201,10 +162,7 @@ do
     ---@type LNavGrid
     local nav = lurek.pathfind.newNavGrid(20, 20)
     nav:fill(1)
-    nav:fillRect(5, 5, 5, 5, 255)
-    print("(1,1) walkable = " .. tostring(nav:isWalkable(1, 1)))
-    print("(7,7) walkable size 1 = " .. tostring(nav:isWalkable(7, 7)))
-    print("(7,7) walkable size 3 = " .. tostring(nav:isWalkable(7, 7, 3)))
+    print("fill applied")
 end
 
 --@api-stub: LNavGrid:fillRect
@@ -212,11 +170,8 @@ end
 do
     ---@type LNavGrid
     local nav = lurek.pathfind.newNavGrid(20, 20)
-    nav:fill(1)
     nav:fillRect(5, 5, 5, 5, 255)
-    print("(1,1) walkable = " .. tostring(nav:isWalkable(1, 1)))
-    print("(7,7) walkable size 1 = " .. tostring(nav:isWalkable(7, 7)))
-    print("(7,7) walkable size 3 = " .. tostring(nav:isWalkable(7, 7, 3)))
+    print("fillRect applied")
 end
 
 --@api-stub: LNavGrid:setDiagonalMode
@@ -226,10 +181,6 @@ do
     local nav = lurek.pathfind.newNavGrid(10, 10)
     nav:setDiagonalMode("always")
     print("diag mode = " .. nav:getDiagonalMode())
-    nav:setDiagonalMode("nocornercut")
-    print("diag mode = " .. nav:getDiagonalMode())
-    nav:setDiagonalMode("none")
-    print("diag mode = " .. nav:getDiagonalMode())
 end
 
 --@api-stub: LNavGrid:getDiagonalMode
@@ -238,10 +189,6 @@ do
     ---@type LNavGrid
     local nav = lurek.pathfind.newNavGrid(10, 10)
     nav:setDiagonalMode("always")
-    print("diag mode = " .. nav:getDiagonalMode())
-    nav:setDiagonalMode("nocornercut")
-    print("diag mode = " .. nav:getDiagonalMode())
-    nav:setDiagonalMode("none")
     print("diag mode = " .. nav:getDiagonalMode())
 end
 

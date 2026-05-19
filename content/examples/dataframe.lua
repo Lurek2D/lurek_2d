@@ -25,7 +25,6 @@ do
     local df = lurek.dataframe.fromTable({
         {name = "Alice", age = 30},
         {name = "Bob", age = 25},
-        {name = "Carol", age = 35},
     })
     print("fromTable rows = " .. df:nrows())
 end
@@ -35,7 +34,7 @@ end
 do
     local df = lurek.dataframe.fromRows(
         {"x", "y", "z"},
-        {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}}
+        {{1, 2, 3}, {4, 5, 6}}
     )
     print("fromRows = " .. df:nrows() .. "x" .. df:ncols())
 end
@@ -95,7 +94,6 @@ do
     local df = lurek.dataframe.fromTable({
         {team = "A", score = 10},
         {team = "A", score = 20},
-        {team = "B", score = 30},
     })
     local gf = df:groupByObj("team")
     local agg = gf:aggregate("score", function(vals)
@@ -286,7 +284,6 @@ do
     local df = lurek.dataframe.fromTable({
         {team = "A", pts = 10},
         {team = "B", pts = 20},
-        {team = "A", pts = 30},
     })
     local groups = df:groupBy("team")
     print("group A rows = " .. groups["A"]:nrows())
@@ -1063,8 +1060,8 @@ end
 do
     local df = lurek.dataframe.fromRows({"v"}, {{1}, {2}, {3}})
     local vf = lurek.dataframe.toVec(df)
-    vf:colCast("v", "float64")
-    print("cast to float64 done")
+    vf:colCast("v", "f64")
+    print("cast to f64 done")
 end
 
 --@api-stub: LVecFrame:nrows

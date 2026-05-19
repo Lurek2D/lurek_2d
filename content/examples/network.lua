@@ -11,10 +11,6 @@ do
     ---@type LNetworkHost
     local server = lurek.network.newServer({port = 7777, maxPeers = 16, channels = 2})
     print("role = " .. server:getRole())
-    print("isServer = " .. tostring(server:isServer()))
-    print("peer limit = " .. server:getPeerLimit())
-    print("channel limit = " .. server:getChannelLimit())
-    print("address = " .. server:getAddress())
     server:destroy()
 end
 
@@ -24,8 +20,6 @@ do
     ---@type LNetworkHost
     local client = lurek.network.newClient({addr = "127.0.0.1:7777", channels = 2})
     print("role = " .. client:getRole())
-    print("isClient = " .. tostring(client:isClient()))
-    print("destroyed = " .. tostring(client:isDestroyed()))
     client:destroy()
 end
 
@@ -35,7 +29,6 @@ do
     ---@type LNetworkHost
     local host = lurek.network.newHost({addr = "0.0.0.0:8888", maxPeers = 32, channels = 4})
     print("address = " .. host:getAddress())
-    print("peers = " .. host:getPeerLimit())
     host:destroy()
 end
 
@@ -70,10 +63,7 @@ end
 do
     ---@type LNetworkHost
     local server = lurek.network.newServer({port = 7779, maxPeers = 8, channels = 2})
-    -- Would send to connected peer:
-    -- server:send(1, 0, "hello", true)
-    -- server:broadcast(0, "world", false)
-    print("send/broadcast ready, channels = " .. server:getChannelLimit())
+    print("send ready, channels = " .. server:getChannelLimit())
     server:destroy()
 end
 
@@ -82,10 +72,7 @@ end
 do
     ---@type LNetworkHost
     local server = lurek.network.newServer({port = 7779, maxPeers = 8, channels = 2})
-    -- Would send to connected peer:
-    -- server:send(1, 0, "hello", true)
-    -- server:broadcast(0, "world", false)
-    print("send/broadcast ready, channels = " .. server:getChannelLimit())
+    print("broadcast ready, channels = " .. server:getChannelLimit())
     server:destroy()
 end
 
@@ -95,8 +82,6 @@ do
     ---@type LNetworkHost
     local server = lurek.network.newServer({port = 7780, maxPeers = 4})
     print("connected = " .. server:getConnectedPeerCount())
-    local ids = server:getConnectedPeerIds()
-    print("peer ids = " .. #ids)
     server:destroy()
 end
 
@@ -105,7 +90,6 @@ end
 do
     ---@type LNetworkHost
     local server = lurek.network.newServer({port = 7780, maxPeers = 4})
-    print("connected = " .. server:getConnectedPeerCount())
     local ids = server:getConnectedPeerIds()
     print("peer ids = " .. #ids)
     server:destroy()
@@ -171,8 +155,7 @@ do
     ---@type LNetworkHost
     local server = lurek.network.newServer({port = 7783, maxPeers = 4})
     server:setBandwidthLimit(100000, 50000)
-    local bw = server:getBandwidthLimit()
-    print("bw in=" .. bw.incoming .. " out=" .. bw.outgoing)
+    print("bandwidth limit set")
     server:destroy()
 end
 

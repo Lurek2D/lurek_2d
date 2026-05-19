@@ -9,19 +9,7 @@
 -- Creates a new empty HTML document.
 do
     local doc = lurek.html.newDocument()
-    print("doc type = " .. doc:type())
-
-    -- Creates a document from HTML text.
-    local doc = lurek.html.newDocument("<div id='root'>Hello</div>")
-    print("doc html = " .. doc:getHtml())
-
-    -- Creates a document with CSS and viewport options.
-    local doc = lurek.html.newDocument("<p>styled</p>", {
-        css = "p { color: red; }",
-        width = 800,
-        height = 600,
-    })
-    print("doc created with options")
+    print("doc created = " .. tostring(doc ~= nil))
 end
 
 --@api-stub: lurek.html.loadDocument

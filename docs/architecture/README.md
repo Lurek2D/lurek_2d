@@ -1,6 +1,6 @@
 # Lurek2D — Architecture Index
 
-Navigation for `docs/architecture2/`. These files describe the engine design, module structure, rendering pipeline, test strategy, VS Code extension, CAG layer, plugin model, and TOGAF alignment. The discovery index loaded every session is [.github/copilot-instructions.md](../../.github/copilot-instructions.md). Per-module contracts live in [docs/specs/](../specs/). Contributor onboarding is in [docs/handbook.md](../handbook.md).
+Navigation for `docs/architecture/`. These files describe the engine design, module structure, rendering pipeline, test strategy, VS Code extension, CAG layer, plugin model, and TOGAF alignment. The discovery index loaded every session is [.github/copilot-instructions.md](../../.github/copilot-instructions.md). Per-module contracts live in [docs/specs/](../specs/). Contributor onboarding is in [docs/handbook.md](../handbook.md).
 
 ---
 

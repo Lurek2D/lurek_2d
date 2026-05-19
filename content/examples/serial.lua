@@ -14,31 +14,6 @@ do
     print("level = " .. data.level)
     print("alive = " .. tostring(data.alive))
     print("items count = " .. #data.items)
-    for i, item in ipairs(data.items) do
-        print("  " .. i .. ": " .. item)
-    end
-    local encoded = lurek.serial.toJson(data)
-    print("compact = " .. encoded)
-    local pretty = lurek.serial.toJson(data, true)
-    print("pretty:\n" .. pretty)
-
-    -- Complex JSON round-trip. Focus: fromJson.
-    local complex = {
-        config = {
-            window = { width = 1280, height = 720, fullscreen = false },
-            audio = { volume = 0.8, mute = false },
-        },
-        players = {
-            { id = 1, name = "Alice", scores = { 100, 200, 300 } },
-            { id = 2, name = "Bob", scores = { 50, 150 } },
-        },
-    }
-    local json = lurek.serial.toJson(complex, true)
-    print("encoded length = " .. #json)
-    local decoded = lurek.serial.fromJson(json)
-    print("window width = " .. decoded.config.window.width)
-    print("player 1 name = " .. decoded.players[1].name)
-    print("player 2 scores = " .. #decoded.players[2].scores)
 end
 
 --@api-stub: lurek.serial.toJson
@@ -56,10 +31,6 @@ do
     }
     local json = lurek.serial.toJson(complex, true)
     print("encoded length = " .. #json)
-    local decoded = lurek.serial.fromJson(json)
-    print("window width = " .. decoded.config.window.width)
-    print("player 1 name = " .. decoded.players[1].name)
-    print("player 2 scores = " .. #decoded.players[2].scores)
 end
 
 --@api-stub: lurek.serial.fromToml
@@ -85,11 +56,6 @@ sfx_volume = 1.0
     print("title = " .. config.game.title)
     print("version = " .. config.game.version)
     print("window = " .. config.window.width .. "x" .. config.window.height)
-    print("vsync = " .. tostring(config.window.vsync))
-    print("master vol = " .. config.audio.master_volume)
-    local reEncoded = lurek.serial.toToml(config)
-    print("re-encoded length = " .. #reEncoded)
-    print("contains [game] = " .. tostring(reEncoded:find("%[game%]") ~= nil))
 end
 
 --@api-stub: lurek.serial.fromCsv
@@ -98,28 +64,7 @@ do
     local csvWithHeaders = "name,age,city\nAlice,30,Warsaw\nBob,25,Krakow\nCarol,35,Gdansk"
     local rows = lurek.serial.fromCsv(csvWithHeaders, ",", true)
     print("rows with headers = " .. #rows)
-    for _, row in ipairs(rows) do
-        print("  " .. row.name .. " age=" .. row.age .. " city=" .. row.city)
-    end
-    local csvNoHeaders = "10,20,30\n40,50,60\n70,80,90"
-    local plain = lurek.serial.fromCsv(csvNoHeaders, ",", false)
-    print("plain rows = " .. #plain)
-    for i, row in ipairs(plain) do
-        print("  row " .. i .. ": " .. table.concat(row, ", "))
-    end
-    local output = lurek.serial.toCsv(rows, ",", true)
-    print("re-encoded csv length = " .. #output)
-    print("has header line = " .. tostring(output:find("name,age,city") ~= nil))
-
-    -- Tab-separated and semicolon-separated.
-    local tsv = "id\tproduct\tprice\n1\tSword\t150\n2\tShield\t80\n3\tPotion\t25"
-    local items = lurek.serial.fromCsv(tsv, "\t", true)
-    print("tsv items = " .. #items)
-    print("item 1 = " .. items[1].product .. " @ " .. items[1].price)
-    local semicolonData = "x;y;z\n1.0;2.5;3.7\n4.2;5.8;6.1"
-    local coords = lurek.serial.fromCsv(semicolonData, ";", true)
-    print("semicolon rows = " .. #coords)
-    print("first point x=" .. coords[1].x .. " y=" .. coords[1].y)
+    print("first row name = " .. rows[1].name)
 end
 
 --@api-stub: lurek.serial.fromIni

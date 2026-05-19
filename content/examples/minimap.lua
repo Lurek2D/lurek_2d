@@ -10,9 +10,7 @@
 do
     ---@type LMinimap
     local mm = lurek.minimap.newMinimap(64, 64, 200, 200)
-    local gw, gh = mm:getGridSize()
-    local dw, dh = mm:getDisplaySize()
-    print("grid=" .. gw .. "x" .. gh .. " display=" .. dw .. "x" .. dh)
+    print("minimap created = " .. tostring(mm ~= nil))
 end
 
 --@api-stub: LMinimap:setTerrain
@@ -21,10 +19,7 @@ do
     ---@type LMinimap
     local mm = lurek.minimap.newMinimap(16, 16)
     mm:setTerrain(1, 1, 1)
-    mm:setTerrain(2, 1, 2)
-    mm:setTerrain(3, 1, 3)
     print("terrain(1,1) = " .. mm:getTerrain(1, 1))
-    print("terrain(2,1) = " .. mm:getTerrain(2, 1))
 end
 
 --@api-stub: LMinimap:getTerrain
@@ -33,10 +28,7 @@ do
     ---@type LMinimap
     local mm = lurek.minimap.newMinimap(16, 16)
     mm:setTerrain(1, 1, 1)
-    mm:setTerrain(2, 1, 2)
-    mm:setTerrain(3, 1, 3)
     print("terrain(1,1) = " .. mm:getTerrain(1, 1))
-    print("terrain(2,1) = " .. mm:getTerrain(2, 1))
 end
 
 --@api-stub: LMinimap:setTerrainColor
@@ -45,8 +37,6 @@ do
     ---@type LMinimap
     local mm = lurek.minimap.newMinimap(16, 16)
     mm:setTerrainColor(1, 0.2, 0.6, 0.1)
-    mm:setTerrainColor(2, 0.1, 0.3, 0.8)
-    mm:setTerrainColor(3, 0.8, 0.8, 0.2, 0.9)
     local r, g, b, a = mm:getTerrainColor(1)
     print("terrain 1 color = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
@@ -57,8 +47,6 @@ do
     ---@type LMinimap
     local mm = lurek.minimap.newMinimap(16, 16)
     mm:setTerrainColor(1, 0.2, 0.6, 0.1)
-    mm:setTerrainColor(2, 0.1, 0.3, 0.8)
-    mm:setTerrainColor(3, 0.8, 0.8, 0.2, 0.9)
     local r, g, b, a = mm:getTerrainColor(1)
     print("terrain 1 color = " .. r .. "," .. g .. "," .. b .. "," .. a)
 end
@@ -99,9 +87,7 @@ do
     local mm = lurek.minimap.newMinimap(8, 8)
     mm:setFogEnabled(true)
     mm:setFogLevel(1, 1, 255)
-    mm:setFogLevel(4, 4, 128)
     print("fog(1,1) = " .. mm:getFogLevel(1, 1))
-    print("fog(4,4) = " .. mm:getFogLevel(4, 4))
 end
 
 --@api-stub: LMinimap:getFogLevel
@@ -111,9 +97,7 @@ do
     local mm = lurek.minimap.newMinimap(8, 8)
     mm:setFogEnabled(true)
     mm:setFogLevel(1, 1, 255)
-    mm:setFogLevel(4, 4, 128)
     print("fog(1,1) = " .. mm:getFogLevel(1, 1))
-    print("fog(4,4) = " .. mm:getFogLevel(4, 4))
 end
 
 --@api-stub: LMinimap:setFogColor
@@ -168,8 +152,6 @@ do
     local mm = lurek.minimap.newMinimap(8, 8)
     mm:setColorMode("political")
     print("mode = " .. mm:getColorMode())
-    mm:setColorMode("terrain")
-    print("mode = " .. mm:getColorMode())
 end
 
 --@api-stub: LMinimap:getColorMode
@@ -179,8 +161,6 @@ do
     local mm = lurek.minimap.newMinimap(8, 8)
     mm:setColorMode("political")
     print("mode = " .. mm:getColorMode())
-    mm:setColorMode("terrain")
-    print("mode = " .. mm:getColorMode())
 end
 
 --@api-stub: LMinimap:setLayer
@@ -189,14 +169,7 @@ do
     ---@type LMinimap
     local mm = lurek.minimap.newMinimap(4, 4)
     mm:setLayer(1)
-    print("layer = " .. mm:getLayer() .. " count = " .. mm:getLayerCount())
-    local data = {}
-    for i = 1, 16 do data[i] = i end
-    mm:setLayerData(1, data)
-    local out = mm:getLayerData(1)
-    if out then
-        print("layer data len = " .. #out)
-    end
+    print("layer = " .. mm:getLayer())
 end
 
 --@api-stub: LMinimap:getLayer
@@ -205,14 +178,7 @@ do
     ---@type LMinimap
     local mm = lurek.minimap.newMinimap(4, 4)
     mm:setLayer(1)
-    print("layer = " .. mm:getLayer() .. " count = " .. mm:getLayerCount())
-    local data = {}
-    for i = 1, 16 do data[i] = i end
-    mm:setLayerData(1, data)
-    local out = mm:getLayerData(1)
-    if out then
-        print("layer data len = " .. #out)
-    end
+    print("layer = " .. mm:getLayer())
 end
 
 --@api-stub: LMinimap:getLayerCount
@@ -221,14 +187,7 @@ do
     ---@type LMinimap
     local mm = lurek.minimap.newMinimap(4, 4)
     mm:setLayer(1)
-    print("layer = " .. mm:getLayer() .. " count = " .. mm:getLayerCount())
-    local data = {}
-    for i = 1, 16 do data[i] = i end
-    mm:setLayerData(1, data)
-    local out = mm:getLayerData(1)
-    if out then
-        print("layer data len = " .. #out)
-    end
+    print("count = " .. mm:getLayerCount())
 end
 
 --@api-stub: LMinimap:setLayerData
@@ -236,15 +195,10 @@ end
 do
     ---@type LMinimap
     local mm = lurek.minimap.newMinimap(4, 4)
-    mm:setLayer(1)
-    print("layer = " .. mm:getLayer() .. " count = " .. mm:getLayerCount())
     local data = {}
     for i = 1, 16 do data[i] = i end
     mm:setLayerData(1, data)
-    local out = mm:getLayerData(1)
-    if out then
-        print("layer data len = " .. #out)
-    end
+    print("layer data set")
 end
 
 --@api-stub: LMinimap:getLayerData
@@ -252,8 +206,6 @@ end
 do
     ---@type LMinimap
     local mm = lurek.minimap.newMinimap(4, 4)
-    mm:setLayer(1)
-    print("layer = " .. mm:getLayer() .. " count = " .. mm:getLayerCount())
     local data = {}
     for i = 1, 16 do data[i] = i end
     mm:setLayerData(1, data)

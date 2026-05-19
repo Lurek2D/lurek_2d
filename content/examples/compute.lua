@@ -159,7 +159,7 @@ end
 --@api-stub: LArray:reshape
 -- Returns a reshaped copy.
 do
-    local a = lurek.compute.range(1, 7, 1)
+    local a = lurek.compute.fromTable({1, 2, 3, 4, 5, 6}, {6})
     local b = a:reshape({2, 3})
     print("reshaped dims = " .. b:getDimensions())
 end

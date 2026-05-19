@@ -2,9 +2,9 @@
 
 > Onboarding manual for contributors and game authors. New here? Start at §3.
 >
-> Companion docs: [README.md](README.md) (one-page intro) · [CONTRIBUTING.md](CONTRIBUTING.md) (PR contract) ·
+> Companion docs: [../README.md](../README.md) (one-page intro) · [../CONTRIBUTING.md](../CONTRIBUTING.md) (PR contract) ·
 > [docs/architecture/](architecture/) (deep design) · [docs/specs/](specs/) (per-module reference) ·
-> [docs/reports/](reports/) (auto-generated `lurek.*` and Rust references).
+> [docs/api/](api/) (auto-generated `lurek.*`, Rust, and library references).
 
 ---
 
@@ -56,8 +56,8 @@ A working dev loop in five steps.
 1. **Install Rust ≥ 1.78 (stable)**. The repo pins `stable` via [rust-toolchain.toml](../rust-toolchain.toml); `rustup` will pick it up automatically. You also need Python ≥ 3.10 for the docs / validation tooling.
 2. **Clone**:
    ```bash
-   git clone https://github.com/LurekDude/luna_2d.git
-   cd luna_2d
+    git clone https://github.com/LurekDude/lurek_2d.git
+    cd lurek_2d
    ```
 3. **Build & run the splash screen**:
    ```bash
@@ -137,19 +137,19 @@ Distribution:
 
 ## 6. Writing your first game
 
-A Lurek2D game is a folder with a `main.lua` (mandatory) and an optional `conf.lua`. The engine fires four optional callbacks (constraint **C-04**: an empty `main.lua` is a valid game).
+A Lurek2D game is a folder with a `main.lua` (mandatory) and an optional `conf.lua`. The engine can call several optional lifecycle callbacks; the most common starting trio is `lurek.init`, `lurek.process`, and `lurek.draw` (constraint **C-04**: an empty `main.lua` is a valid game).
 
 Smallest possible game — `content/games/showcase/my_game/main.lua`:
 
 ```lua
-function lurek.load()
+function lurek.init()
     -- One-time setup. Load assets, init state.
     state = { x = 100, y = 100 }
 end
 
-function lurek.update(dt)
+function lurek.process(dt)
     -- Per-frame logic. dt is seconds since last frame.
-    if lurek.input.isKeyDown("right") then
+    if lurek.input.keyboard.isDown("right") then
         state.x = state.x + 200 * dt
     end
 end
@@ -178,12 +178,12 @@ Run it:
 cargo run -- content/games/showcase/my_game
 ```
 
-Or build once and drag the `my_game/` folder onto the splash window. Browse the full `lurek.*` surface in [docs/lua-api.md](lua-api.md). For Lua patterns and idioms, see the [lua-scripting](../.github/skills/lua-scripting/SKILL.md) skill.
+Or build once and drag the `my_game/` folder onto the splash window. Browse the full `lurek.*` surface in [docs/api/lurek.md](api/lurek.md). For Lua patterns and idioms, see the [lua-scripting](../.github/skills/lua-scripting/SKILL.md) skill.
 
-**Adding assets**. Put a PNG next to `main.lua` and load it in `lurek.load`:
+**Adding assets**. Put a PNG next to `main.lua` and load it in `lurek.init`:
 
 ```lua
-function lurek.load()
+function lurek.init()
     state = { x = 100, y = 100 }
     state.player = lurek.render.newImage("player.png")
     state.click   = lurek.audio.newSource("click.ogg", "static")
@@ -198,7 +198,7 @@ function lurek.mousepressed(x, y, button)
 end
 ```
 
-Assets are resolved relative to the game folder by `GameFS`. The sandbox prevents `..` escapes. Supported image formats are PNG (always) and DDS (compressed). Audio formats are OGG Vorbis and WAV — see [Cargo.toml](../Cargo.toml) for the build-time format set. For more single-API examples, browse [content/examples/](../content/examples/).
+Assets are resolved relative to the game folder by `GameFS`. The sandbox prevents `..` escapes. Supported image formats are PNG (always) and DDS (compressed). Audio formats are OGG Vorbis and WAV — see [Cargo.toml](../Cargo.toml) for the build-time format set. For more single-API examples, browse [content/examples/README.md](../content/examples/README.md).
 
 ---
 
@@ -213,7 +213,7 @@ Workflow for a one-bug-or-feature PR against `src/`.
    ```bash
    python tools/gen_all_docs.py
    ```
-   This rewrites the *Files / Types / Functions / Lua API Reference / References* sections of every affected spec and refreshes [docs/lua-api.md](lua-api.md), [docs/reports/rust-api.md](reports/rust-api.md), and [docs/lurek.lua](lurek.lua).
+    This rewrites the *Files / Types / Functions / Lua API Reference / References* sections of every affected spec and refreshes [docs/api/lurek.md](api/lurek.md), [docs/api/rust.md](api/rust.md), [docs/api/library.md](api/library.md), and [docs/api/lurek.lua](api/lurek.lua).
 5. **Update the spec's manual sections** (`## Summary`, `## Notes`) only if behaviour changed in a user-visible way.
 6. **Add tests** — Lua first. The Lua-first rule is binding: behaviour observable through `lurek.*` MUST be tested in Lua under [tests/lua/](../tests/lua/), and the new test file must be registered manually in [tests/lua/harness.rs](../tests/lua/harness.rs). Reach for [tests/rust/unit/](../tests/rust/unit/) only for internals not reachable from Lua.
 7. **Run quality gates** (§10).
@@ -231,9 +231,9 @@ Three docs tiers. Each has a different lifecycle:
 | ---------------------------- | ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Architecture (narrative)** | [docs/architecture/](architecture/) | Hand-written. Index at [architecture/README.md](architecture/README.md).                                                                                        |
 | **Per-module specs**         | [docs/specs/](specs/)               | Mixed: `Summary` and `Notes` are manual prose; everything else is regenerated by `tools/docs/gen_module_specs.py`. Index at [specs/README.md](specs/README.md). |
-| **Generated API references** | [docs/reports/](reports/)             | Fully auto-generated by `python tools/gen_all_docs.py`. Never hand-edit.                                                                                        |
+| **Generated API references** | [docs/api/](api/)                  | Fully auto-generated by `python tools/gen_all_docs.py`. Never hand-edit.                                                                                        |
 
-The cross-artifact sync table in the system prompt ([.github/copilot-instructions.md § Cross-Artifact Sync](../.github/copilot-instructions.md)) tells you which docs to update when source changes. Regenerate generated docs after any public-API change. Module-spec manual-vs-auto rules are documented in [docs/specs/SPEC_TEMPLATE.md](specs/SPEC_TEMPLATE.md) and enforced by `python tools/audit/validate_agent_md.py`.
+The cross-artifact sync table in the system prompt ([.github/copilot-instructions.md § Cross-Artifact Sync](../.github/copilot-instructions.md)) tells you which docs to update when source changes. Regenerate generated docs after any public-API change. Module-spec manual-vs-auto rules are documented in [docs/specs/SPEC_TEMPLATE.md](specs/SPEC_TEMPLATE.md) and checked by `python tools/validate/validate_module_coverage.py` plus `python tools/audit/doc_coverage.py`.
 
 ---
 
@@ -344,7 +344,7 @@ All prompts are listed in [.github/prompts/](../.github/prompts/); browse there 
 | Symptom                                      | Where to look                                                                                                                                                                     |
 | -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Build fails on a fresh clone                 | Verify Rust ≥ 1.78; delete `build/` and retry. See [build-system](../.github/skills/build-system/SKILL.md).                                                                       |
-| `lurek.*` function isn't documented          | Run `python tools/gen_all_docs.py`; check [docs/lua-api.md](lua-api.md).                                                                                                  |
+| `lurek.*` function isn't documented          | Run `python tools/gen_all_docs.py`; check [docs/api/lurek.md](api/lurek.md).                                                                                                     |
 | Module's spec is out of date                 | `python tools/docs/gen_module_specs.py`; manual `Summary` / `Notes` are preserved.                                                                                                |
 | Lua test runs but isn't registered           | Add a `#[test] fn lua_test_<category>_<name>()` in [tests/lua/harness.rs](../tests/lua/harness.rs).                                                                               |
 | CAG validator fails                          | `python tools/validate/cag_validate.py --format text`; see [tools-cag-validation](../.github/skills/tools-cag-validation/SKILL.md).                                               |

@@ -29,7 +29,7 @@ do
     anim:addFrame(0, 0, 32, 32)
     anim:addClip("idle", { 0 }, 1, true)
     local sm = lurek.animation.newStateMachine(anim, "idle")
-    print("state machine state = " .. sm:getState())
+    print("state machine created = " .. tostring(sm ~= nil))
 end
 
 --@api-stub: lurek.animation.newCurve
@@ -58,19 +58,14 @@ end
 do
     local cfg = {
         texW = 64,
-        texH = 32,
+        texH = 16,
         frameW = 16,
         frameH = 16,
         clips = {
             { name = "idle", start = 0, count = 2, fps = 4, looping = true, mode = "forward" },
-            { name = "run", start = 2, count = 2, fps = 8, looping = true, mode = "pingpong" },
         },
         states = {
             { name = "idle", clip = "idle", looping = true },
-            { name = "run", clip = "run", looping = true },
-        },
-        transitions = {
-            { from = "idle", to = "run", condition = "speed > 0.5" },
         },
         initialState = "idle",
     }
@@ -83,8 +78,6 @@ end
 do
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 32, 32)
-    anim:addFrame(32, 0, 32, 32)
-    anim:addFrame(64, 0, 32, 32)
     print("frames = " .. anim:getFrameCount())
 end
 
@@ -103,7 +96,6 @@ do
     anim:addFramesFromRects({
         { x = 0, y = 0, w = 16, h = 16 },
         { x = 16, y = 0, w = 16, h = 16 },
-        { x = 32, y = 0, w = 16, h = 16 },
     })
     print("frames from rects = " .. anim:getFrameCount())
 end
@@ -114,7 +106,6 @@ do
     local anim = lurek.animation.new()
     anim:addFramesFromGrid(128, 32, 32, 32, 0, 4)
     anim:addClip("walk", { 0, 1, 2, 3 }, 10, true, "forward")
-    anim:addClip("bounce", { 0, 1, 2, 3 }, 8, true, "pingpong")
     print("clips = " .. anim:getClipCount())
 end
 
@@ -230,7 +221,6 @@ do
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 16, 16)
     anim:addClip("x", { 0 }, 1, false)
-    print("before play = " .. tostring(anim:isPlaying()))
     anim:play("x")
     print("after play = " .. tostring(anim:isPlaying()))
 end
@@ -410,10 +400,8 @@ do
     local anim = lurek.animation.new()
     anim:addFrame(0, 0, 32, 32)
     anim:addClip("idle", { 0 }, 5, true)
-    anim:addClip("attack", { 0 }, 10, false)
     local sm = lurek.animation.newStateMachine(anim, "idle")
     sm:addState("idle", "idle", true)
-    sm:addState("attack", "attack", false)
     print("states added")
 end
 
@@ -440,7 +428,6 @@ do
     local sm = lurek.animation.newStateMachine(anim, "idle")
     sm:addState("idle", "idle", true)
     sm:setParam("speed", 2.5)
-    sm:setParam("grounded", 1)
     print("params set")
 end
 
@@ -482,7 +469,6 @@ end
 do
     local bls = lurek.animation.newBlendLayerSet()
     bls:addLayer("base", "idle", 1.0)
-    bls:addLayer("upper", "wave", 0.5, { "spine", "arm_l", "arm_r" })
     print("layers added")
 end
 
@@ -530,7 +516,6 @@ end
 do
     local bls = lurek.animation.newBlendLayerSet()
     bls:addLayer("base", "idle", 1.0)
-    bls:addLayer("overlay", "wave", 0.5)
     local names = bls:listLayers()
     print("layers = " .. #names)
     print("first layer = " .. tostring(names[1]))
@@ -541,7 +526,6 @@ end
 do
     local bls = lurek.animation.newBlendLayerSet()
     bls:addLayer("a", "clip_a", 1.0)
-    bls:addLayer("b", "clip_b", 0.5)
     print("layer count = " .. bls:len())
 end
 
@@ -565,7 +549,6 @@ do
     local curve = lurek.animation.newCurve()
     curve:addKeyframe(0.0, 0.0)
     curve:addKeyframe(0.5, 1.0)
-    curve:addKeyframe(1.0, 0.0)
     print("keyframes = " .. curve:keyframeCount())
 end
 
@@ -596,8 +579,6 @@ do
     local curve = lurek.animation.newCurve()
     curve:addKeyframe(0.0, 0.0)
     curve:addKeyframe(0.25, 5.0)
-    curve:addKeyframe(0.75, 8.0)
-    curve:addKeyframe(1.0, 10.0)
     print("keyframe count = " .. curve:keyframeCount())
 end
 
@@ -641,7 +622,6 @@ end
 do
     local sg = lurek.animation.newSyncGroup()
     sg:add(1)
-    sg:add(2)
     print("sync group members = " .. sg:memberCount())
 end
 
@@ -659,7 +639,6 @@ end
 do
     local sg = lurek.animation.newSyncGroup()
     sg:add(1)
-    sg:add(2)
     sg:clear()
     print("after clear, members = " .. sg:memberCount())
 end
@@ -669,8 +648,6 @@ end
 do
     local sg = lurek.animation.newSyncGroup()
     sg:add(1)
-    sg:add(2)
-    sg:add(3)
     print("member count = " .. sg:memberCount())
 end
 

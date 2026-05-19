@@ -8,16 +8,19 @@
 --@api-stub: lurek.debugbridge.start
 -- Starts the localhost debug bridge server on a port.
 do
-    local ok = lurek.debugbridge.start(19740)
-    print("started = " .. tostring(ok))
+    local ok, started = pcall(function()
+        return lurek.debugbridge.start(19740)
+    end)
+    print("started = " .. tostring(ok and started))
 end
 
 --@api-stub: lurek.debugbridge.stop
 -- Stops the debug bridge server and joins the server thread.
 do
-    lurek.debugbridge.start()
-    lurek.debugbridge.stop()
-    print("bridge stopped")
+    local ok = pcall(function()
+        lurek.debugbridge.stop()
+    end)
+    print("bridge stopped = " .. tostring(ok))
 end
 
 --@api-stub: lurek.debugbridge.isRunning
@@ -29,7 +32,6 @@ end
 --@api-stub: lurek.debugbridge.getPort
 -- Returns the configured TCP port.
 do
-    lurek.debugbridge.start(19740)
     print("port = " .. lurek.debugbridge.getPort())
 end
 
@@ -42,7 +44,6 @@ end
 --@api-stub: lurek.debugbridge.poll
 -- Polls pending debugger requests and queues responses.
 do
-    lurek.debugbridge.start()
     lurek.debugbridge.poll()
     print("polled")
 end

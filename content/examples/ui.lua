@@ -11,10 +11,7 @@ do
     ---@type LButton
     local btn = lurek.ui.newButton("Click Me")
     print("type = " .. btn:type())
-    print("is LButton = " .. tostring(btn:typeOf("LButton")))
     print("text = " .. btn:getText())
-    btn:setText("OK")
-    print("changed text = " .. btn:getText())
 end
 
 --@api-stub: LButton:setOnClick
@@ -58,9 +55,6 @@ do
     btn:setPosition(100, 50)
     local x, y = btn:getPosition()
     print("position = " .. x .. ", " .. y)
-    btn:setPosition(200, 150)
-    x, y = btn:getPosition()
-    print("moved to = " .. x .. ", " .. y)
 end
 
 --@api-stub: LUiWidget:getPosition
@@ -71,9 +65,6 @@ do
     btn:setPosition(100, 50)
     local x, y = btn:getPosition()
     print("position = " .. x .. ", " .. y)
-    btn:setPosition(200, 150)
-    x, y = btn:getPosition()
-    print("moved to = " .. x .. ", " .. y)
 end
 
 --@api-stub: LUiWidget:setSize
@@ -84,9 +75,6 @@ do
     panel:setSize(300, 200)
     local w, h = panel:getSize()
     print("size = " .. w .. "x" .. h)
-    panel:setSize(500, 400)
-    w, h = panel:getSize()
-    print("resized to = " .. w .. "x" .. h)
 end
 
 --@api-stub: LUiWidget:getSize
@@ -97,9 +85,6 @@ do
     panel:setSize(300, 200)
     local w, h = panel:getSize()
     print("size = " .. w .. "x" .. h)
-    panel:setSize(500, 400)
-    w, h = panel:getSize()
-    print("resized to = " .. w .. "x" .. h)
 end
 
 --@api-stub: LUiWidget:getRect
@@ -121,8 +106,6 @@ do
     print("visible = " .. tostring(lbl:isVisible()))
     lbl:setVisible(false)
     print("hidden = " .. tostring(lbl:isVisible()))
-    lbl:setVisible(true)
-    print("shown = " .. tostring(lbl:isVisible()))
 end
 
 --@api-stub: LUiWidget:setVisible
@@ -130,11 +113,8 @@ end
 do
     ---@type LLabel
     local lbl = lurek.ui.newLabel("Toggle Me")
-    print("visible = " .. tostring(lbl:isVisible()))
     lbl:setVisible(false)
     print("hidden = " .. tostring(lbl:isVisible()))
-    lbl:setVisible(true)
-    print("shown = " .. tostring(lbl:isVisible()))
 end
 
 --@api-stub: LUiWidget:isEnabled
@@ -145,7 +125,6 @@ do
     print("enabled = " .. tostring(btn:isEnabled()))
     btn:setEnabled(false)
     print("disabled = " .. tostring(btn:isEnabled()))
-    btn:setEnabled(true)
 end
 
 --@api-stub: LUiWidget:setEnabled
@@ -153,10 +132,8 @@ end
 do
     ---@type LButton
     local btn = lurek.ui.newButton("Action")
-    print("enabled = " .. tostring(btn:isEnabled()))
     btn:setEnabled(false)
     print("disabled = " .. tostring(btn:isEnabled()))
-    btn:setEnabled(true)
 end
 
 --@api-stub: LUiWidget:getAlpha
@@ -201,9 +178,6 @@ do
     lbl:setAlpha(0)
     lbl:fadeIn()
     print("fading in, animating = " .. tostring(lbl:isAnimating()))
-    lbl:cancelAnimations()
-    lbl:fadeOut()
-    print("fading out")
 end
 
 --@api-stub: LUiWidget:fadeOut
@@ -211,10 +185,6 @@ end
 do
     ---@type LLabel
     local lbl = lurek.ui.newLabel("Fading")
-    lbl:setAlpha(0)
-    lbl:fadeIn()
-    print("fading in, animating = " .. tostring(lbl:isAnimating()))
-    lbl:cancelAnimations()
     lbl:fadeOut()
     print("fading out")
 end
