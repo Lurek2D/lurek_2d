@@ -6,21 +6,18 @@
 
 
 --@api-stub: lurek.dataframe.newDataFrame
--- Creates an empty dataframe.
 do
     local df = lurek.dataframe.newDataFrame()
     print("new df cols = " .. df:ncols())
 end
 
 --@api-stub: lurek.dataframe.newDatabase
--- Creates an empty dataframe database.
 do
     local db = lurek.dataframe.newDatabase()
     print("db tables = " .. db:tableCount())
 end
 
 --@api-stub: lurek.dataframe.fromTable
--- Creates a dataframe from an array of row tables.
 do
     local df = lurek.dataframe.fromTable({
         {name = "Alice", age = 30},
@@ -30,7 +27,6 @@ do
 end
 
 --@api-stub: lurek.dataframe.fromRows
--- Creates a dataframe from column names and row arrays.
 do
     local df = lurek.dataframe.fromRows(
         {"x", "y", "z"},
@@ -40,7 +36,6 @@ do
 end
 
 --@api-stub: lurek.dataframe.fromCSV
--- Parses a dataframe from CSV text.
 do
     local csv = "name,score\nAlice,90\nBob,85\n"
     local df = lurek.dataframe.fromCSV(csv)
@@ -48,7 +43,6 @@ do
 end
 
 --@api-stub: lurek.dataframe.fromJSON
--- Parses a dataframe from JSON text.
 do
     local json = '[{"id":1,"val":10},{"id":2,"val":20}]'
     local df = lurek.dataframe.fromJSON(json)
@@ -56,7 +50,6 @@ do
 end
 
 --@api-stub: lurek.dataframe.fromBinary
--- Deserializes a dataframe from binary data.
 do
     local df = lurek.dataframe.fromTable({{a = 1, b = 2}})
     local bin = df:toBinary()
@@ -65,14 +58,12 @@ do
 end
 
 --@api-stub: lurek.dataframe.random
--- Creates a random dataframe from column definitions.
 do
     local df = lurek.dataframe.random({{"score", "float"}, {"rank", "int"}}, 10)
     print("random rows = " .. df:nrows())
 end
 
 --@api-stub: lurek.dataframe.toVec
--- Converts a dataframe to a vectorized frame.
 do
     local df = lurek.dataframe.fromRows({"a", "b"}, {{1, 2}, {3, 4}})
     local vf = lurek.dataframe.toVec(df)
@@ -80,7 +71,6 @@ do
 end
 
 --@api-stub: lurek.dataframe.fromVec
--- Converts a vectorized frame back to a dataframe.
 do
     local df = lurek.dataframe.fromRows({"x"}, {{10}, {20}})
     local vf = lurek.dataframe.toVec(df)
@@ -89,23 +79,13 @@ do
 end
 
 --@api-stub: LGroupedFrame:aggregate
--- Aggregates a column in each group with a Lua function.
 do
-    local df = lurek.dataframe.fromTable({
-        {team = "A", score = 10},
-        {team = "A", score = 20},
-    })
-    local gf = df:groupByObj("team")
-    local agg = gf:aggregate("score", function(vals)
-        local s = 0
-        for _, v in ipairs(vals) do s = s + v end
-        return s
-    end)
+    local gf = lurek.dataframe.fromTable({ { team = "A", score = 10 }, { team = "A", score = 20 } }):groupByObj("team")
+    local agg = gf:aggregate("score", function(vals) return vals[1] + vals[2] end)
     print("agg rows = " .. agg:nrows())
 end
 
 --@api-stub: LGroupedFrame:type
--- Returns the type name ("LGroupedFrame").
 do
     local df = lurek.dataframe.fromTable({{cat = "x", v = 1}})
     local gf = df:groupByObj("cat")
@@ -113,7 +93,6 @@ do
 end
 
 --@api-stub: LGroupedFrame:typeOf
--- Returns whether this handle matches a type name.
 do
     local df = lurek.dataframe.fromTable({{cat = "x", v = 1}})
     local gf = df:groupByObj("cat")
@@ -121,21 +100,18 @@ do
 end
 
 --@api-stub: LDataFrame:nrows
--- Returns the number of rows.
 do
     local df = lurek.dataframe.fromRows({"a"}, {{1}, {2}, {3}})
     print("nrows = " .. df:nrows())
 end
 
 --@api-stub: LDataFrame:ncols
--- Returns the number of columns.
 do
     local df = lurek.dataframe.fromRows({"a", "b", "c"}, {{1, 2, 3}})
     print("ncols = " .. df:ncols())
 end
 
 --@api-stub: LDataFrame:columns
--- Returns all column names in order.
 do
     local df = lurek.dataframe.fromRows({"x", "y"}, {{1, 2}})
     local cols = df:columns()
@@ -143,14 +119,12 @@ do
 end
 
 --@api-stub: LDataFrame:count
--- Returns the row count (alias for nrows).
 do
     local df = lurek.dataframe.fromRows({"v"}, {{1}, {2}})
     print("count = " .. df:count())
 end
 
 --@api-stub: LDataFrame:addColumn
--- Adds a column with an optional default value.
 do
     local df = lurek.dataframe.fromRows({"a"}, {{1}, {2}})
     df:addColumn("b", 0)
@@ -158,7 +132,6 @@ do
 end
 
 --@api-stub: LDataFrame:removeColumn
--- Removes a column by name.
 do
     local df = lurek.dataframe.fromRows({"a", "b"}, {{1, 2}})
     df:removeColumn("b")
@@ -166,7 +139,6 @@ do
 end
 
 --@api-stub: LDataFrame:rename
--- Renames a column.
 do
     local df = lurek.dataframe.fromRows({"old_name"}, {{1}})
     df:rename("old_name", "new_name")
@@ -175,7 +147,6 @@ do
 end
 
 --@api-stub: LDataFrame:getColumn
--- Returns a column as an array table.
 do
     local df = lurek.dataframe.fromRows({"score"}, {{10}, {20}, {30}})
     local col = df:getColumn("score")
@@ -183,7 +154,6 @@ do
 end
 
 --@api-stub: LDataFrame:addRow
--- Adds a row and returns its one-based index.
 do
     local df = lurek.dataframe.fromRows({"name", "val"}, {{"a", 1}})
     local idx = df:addRow({name = "b", val = 2})
@@ -191,7 +161,6 @@ do
 end
 
 --@api-stub: LDataFrame:removeRow
--- Removes a row by one-based index.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{1}, {2}, {3}})
     df:removeRow(2)
@@ -199,7 +168,6 @@ do
 end
 
 --@api-stub: LDataFrame:getRow
--- Returns a row as a table keyed by column name.
 do
     local df = lurek.dataframe.fromTable({{name = "Alice", age = 30}})
     local row = df:getRow(1)
@@ -207,7 +175,6 @@ do
 end
 
 --@api-stub: LDataFrame:getValue
--- Returns one cell value.
 do
     local df = lurek.dataframe.fromRows({"a", "b"}, {{10, 20}, {30, 40}})
     local val = df:getValue(2, "b")
@@ -215,7 +182,6 @@ do
 end
 
 --@api-stub: LDataFrame:setValue
--- Sets one cell value.
 do
     local df = lurek.dataframe.fromRows({"x"}, {{0}, {0}})
     df:setValue(1, "x", 99)
@@ -223,7 +189,6 @@ do
 end
 
 --@api-stub: LDataFrame:filter
--- Returns rows matching a column comparison.
 do
     local df = lurek.dataframe.fromRows({"score"}, {{10}, {50}, {80}, {30}})
     local filtered = df:filter("score", ">", 40)
@@ -231,7 +196,6 @@ do
 end
 
 --@api-stub: LDataFrame:sort
--- Returns rows sorted by a column.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{3}, {1}, {2}})
     local sorted = df:sort("v", true)
@@ -239,7 +203,6 @@ do
 end
 
 --@api-stub: LDataFrame:head
--- Returns the first N rows.
 do
     local df = lurek.dataframe.fromRows({"x"}, {{1}, {2}, {3}, {4}, {5}})
     local top = df:head(3)
@@ -247,7 +210,6 @@ do
 end
 
 --@api-stub: LDataFrame:tail
--- Returns the last N rows.
 do
     local df = lurek.dataframe.fromRows({"x"}, {{1}, {2}, {3}, {4}, {5}})
     local bottom = df:tail(2)
@@ -255,7 +217,6 @@ do
 end
 
 --@api-stub: LDataFrame:slice
--- Returns a one-based inclusive row slice.
 do
     local df = lurek.dataframe.fromRows({"x"}, {{1}, {2}, {3}, {4}, {5}})
     local mid = df:slice(2, 4)
@@ -263,7 +224,6 @@ do
 end
 
 --@api-stub: LDataFrame:select
--- Returns a dataframe with selected columns.
 do
     local df = lurek.dataframe.fromRows({"a", "b", "c"}, {{1, 2, 3}})
     local sub = df:select("a", "c")
@@ -271,7 +231,6 @@ do
 end
 
 --@api-stub: LDataFrame:unique
--- Returns unique values from a column.
 do
     local df = lurek.dataframe.fromRows({"color"}, {{"red"}, {"blue"}, {"red"}, {"green"}})
     local uniq = df:unique("color")
@@ -279,18 +238,12 @@ do
 end
 
 --@api-stub: LDataFrame:groupBy
--- Groups rows by a column into a table of dataframes.
 do
-    local df = lurek.dataframe.fromTable({
-        {team = "A", pts = 10},
-        {team = "B", pts = 20},
-    })
-    local groups = df:groupBy("team")
+    local groups = lurek.dataframe.fromTable({ { team = "A", pts = 10 }, { team = "B", pts = 20 } }):groupBy("team")
     print("group A rows = " .. groups["A"]:nrows())
 end
 
 --@api-stub: LDataFrame:groupByObj
--- Groups rows and returns a LGroupedFrame handle.
 do
     local df = lurek.dataframe.fromTable({
         {cat = "x", v = 1}, {cat = "y", v = 2},
@@ -300,7 +253,6 @@ do
 end
 
 --@api-stub: LDataFrame:join
--- Joins this dataframe with another on column references.
 do
     local left = lurek.dataframe.fromTable({{id = 1, name = "A"}, {id = 2, name = "B"}})
     local right = lurek.dataframe.fromTable({{id = 1, score = 90}, {id = 2, score = 80}})
@@ -309,7 +261,6 @@ do
 end
 
 --@api-stub: LDataFrame:merge
--- Appends another dataframe's rows into this one.
 do
     local a = lurek.dataframe.fromRows({"v"}, {{1}, {2}})
     local b = lurek.dataframe.fromRows({"v"}, {{3}, {4}})
@@ -318,7 +269,6 @@ do
 end
 
 --@api-stub: LDataFrame:countBy
--- Counts occurrences of each value in a column.
 do
     local df = lurek.dataframe.fromRows({"fruit"}, {{"apple"}, {"banana"}, {"apple"}})
     local counts = df:countBy("fruit")
@@ -326,19 +276,15 @@ do
 end
 
 --@api-stub: LDataFrame:dropNil
--- Returns rows where the column is not nil.
 do
     local df = lurek.dataframe.newDataFrame()
     df:addColumn("x")
     df:addRow({x = 1})
     df:addRow({})
-    df:addRow({x = 3})
-    local clean = df:dropNil("x")
-    print("after dropNil rows = " .. clean:nrows())
+    print("after dropNil rows = " .. df:dropNil("x"):nrows())
 end
 
 --@api-stub: LDataFrame:sample
--- Returns a random sample of rows.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{1}, {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, {10}})
     local s = df:sample(3, 42)
@@ -346,7 +292,6 @@ do
 end
 
 --@api-stub: LDataFrame:describe
--- Returns summary statistics for numeric columns.
 do
     local df = lurek.dataframe.fromRows({"score"}, {{10}, {20}, {30}, {40}, {50}})
     local stats = df:describe()
@@ -354,67 +299,57 @@ do
 end
 
 --@api-stub: LDataFrame:sum
--- Returns the sum of a numeric column.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{1}, {2}, {3}, {4}})
     print("sum = " .. df:sum("v"))
 end
 
 --@api-stub: LDataFrame:mean
--- Returns the mean of a numeric column.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{10}, {20}, {30}})
     print("mean = " .. df:mean("v"))
 end
 
 --@api-stub: LDataFrame:min
--- Returns the minimum of a column.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{5}, {1}, {8}})
     print("min = " .. df:min("v"))
 end
 
 --@api-stub: LDataFrame:max
--- Returns the maximum of a column.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{5}, {1}, {8}})
     print("max = " .. df:max("v"))
 end
 
 --@api-stub: LDataFrame:median
--- Returns the median of a numeric column.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{1}, {2}, {3}, {4}, {5}})
     print("median = " .. df:median("v"))
 end
 
 --@api-stub: LDataFrame:stddev
--- Returns the standard deviation of a column.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{2}, {4}, {4}, {4}, {5}, {5}, {7}, {9}})
     print("stddev = " .. df:stddev("v"))
 end
 
 --@api-stub: LDataFrame:variance
--- Returns the variance of a column.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{2}, {4}, {4}, {4}, {5}, {5}, {7}, {9}})
     print("variance = " .. df:variance("v"))
 end
 
 --@api-stub: LDataFrame:fillNil
--- Replaces nil cells in a column with a value.
 do
     local df = lurek.dataframe.newDataFrame()
     df:addColumn("x")
-    df:addRow({x = 1})
     df:addRow({})
     df:fillNil("x", 0)
     print("filled = " .. df:getValue(2, "x"))
 end
 
 --@api-stub: LDataFrame:apply
--- Applies a function to each value in a column in place.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{1}, {2}, {3}})
     df:apply("v", function(x) return (x or 0) * 10 end)
@@ -425,7 +360,6 @@ end
 
 
 --@api-stub: LDataFrame:toCSV
--- Serializes this dataframe to CSV text.
 do
     local df = lurek.dataframe.fromRows({"name", "val"}, {{"a", 1}, {"b", 2}})
     local csv = df:toCSV()
@@ -433,7 +367,6 @@ do
 end
 
 --@api-stub: LDataFrame:toJSON
--- Serializes this dataframe to JSON text.
 do
     local df = lurek.dataframe.fromRows({"x"}, {{10}, {20}})
     local json = df:toJSON()
@@ -441,7 +374,6 @@ do
 end
 
 --@api-stub: LDataFrame:toBinary
--- Serializes this dataframe to binary data.
 do
     local df = lurek.dataframe.fromRows({"a"}, {{1}, {2}})
     local bin = df:toBinary()
@@ -449,7 +381,6 @@ do
 end
 
 --@api-stub: LDataFrame:toTable
--- Converts to an array of row tables.
 do
     local df = lurek.dataframe.fromRows({"k", "v"}, {{"x", 1}, {"y", 2}})
     local t = df:toTable()
@@ -457,7 +388,6 @@ do
 end
 
 --@api-stub: LDataFrame:rows
--- Returns an iterator over row index and row table pairs.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{10}, {20}, {30}})
     local count = 0
@@ -466,7 +396,6 @@ do
 end
 
 --@api-stub: LDataFrame:toString
--- Formats as a human-readable text table.
 do
     local df = lurek.dataframe.fromRows({"x", "y"}, {{1, 2}})
     local s = df:toString()
@@ -474,7 +403,6 @@ do
 end
 
 --@api-stub: LDataFrame:query
--- Runs a SQL-style query against this dataframe.
 do
     local df = lurek.dataframe.fromRows({"name", "score"}, {{"a", 90}, {"b", 50}, {"c", 80}})
     local result = df:query("SELECT name FROM self WHERE score > 60")
@@ -482,7 +410,6 @@ do
 end
 
 --@api-stub: LDataFrame:clone
--- Returns a deep copy.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{1}, {2}})
     local copy = df:clone()
@@ -491,7 +418,6 @@ do
 end
 
 --@api-stub: LDataFrame:withRollingMean
--- Adds a rolling mean column in place.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{1}, {2}, {3}, {4}, {5}})
     df:withRollingMean("v", 3, "rm")
@@ -499,7 +425,6 @@ do
 end
 
 --@api-stub: LDataFrame:withRollingSum
--- Adds a rolling sum column in place.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{1}, {2}, {3}, {4}})
     df:withRollingSum("v", 2, "rs")
@@ -507,7 +432,6 @@ do
 end
 
 --@api-stub: LDataFrame:withRollingMin
--- Adds a rolling minimum column in place.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{5}, {3}, {8}, {1}})
     df:withRollingMin("v", 2, "rmin")
@@ -515,7 +439,6 @@ do
 end
 
 --@api-stub: LDataFrame:withRollingMax
--- Adds a rolling maximum column in place.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{5}, {3}, {8}, {1}})
     df:withRollingMax("v", 2, "rmax")
@@ -523,7 +446,6 @@ do
 end
 
 --@api-stub: LDataFrame:withRank
--- Adds a rank column in place.
 do
     local df = lurek.dataframe.fromRows({"score"}, {{30}, {10}, {20}})
     df:withRank("score", true, "rank")
@@ -531,7 +453,6 @@ do
 end
 
 --@api-stub: LDataFrame:withPctChange
--- Adds a percent-change column in place.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{100}, {110}, {105}})
     df:withPctChange("v", "pct")
@@ -539,7 +460,6 @@ do
 end
 
 --@api-stub: LDataFrame:withCumsum
--- Adds a cumulative-sum column in place.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{1}, {2}, {3}, {4}})
     df:withCumsum("v", "csum")
@@ -547,7 +467,6 @@ do
 end
 
 --@api-stub: LDataFrame:groupAgg
--- Groups by one column and aggregates another.
 do
     local df = lurek.dataframe.fromTable({
         {cat = "A", v = 10}, {cat = "A", v = 20}, {cat = "B", v = 30},
@@ -557,26 +476,18 @@ do
 end
 
 --@api-stub: LDataFrame:pivot
--- Pivots rows into columns.
 do
-    local df = lurek.dataframe.fromTable({
-        {row = "r1", col = "c1", val = 10},
-        {row = "r1", col = "c2", val = 20},
-        {row = "r2", col = "c1", val = 30},
-    })
-    local pv = df:pivot("row", "col", "val")
+    local pv = lurek.dataframe.fromTable({ { row = "r1", col = "c1", val = 10 }, { row = "r1", col = "c2", val = 20 }, { row = "r2", col = "c1", val = 30 } }):pivot("row", "col", "val")
     print("pivot cols = " .. pv:ncols())
 end
 
 --@api-stub: LDataFrame:corr
--- Returns correlation between two numeric columns.
 do
     local df = lurek.dataframe.fromRows({"a", "b"}, {{1, 2}, {2, 4}, {3, 6}})
     print("corr = " .. df:corr("a", "b"))
 end
 
 --@api-stub: LDataFrame:correlationMatrix
--- Returns a correlation matrix dataframe.
 do
     local df = lurek.dataframe.fromRows({"x", "y"}, {{1, 2}, {2, 4}, {3, 6}})
     local cm = df:correlationMatrix()
@@ -584,7 +495,6 @@ do
 end
 
 --@api-stub: LDataFrame:zscoreCol
--- Adds a z-score normalized column in place.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{2}, {4}, {4}, {4}, {5}, {5}, {7}, {9}})
     df:zscoreCol("v", "z")
@@ -592,7 +502,6 @@ do
 end
 
 --@api-stub: LDataFrame:normalizeCol
--- Adds a range-normalized column in place.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{0}, {50}, {100}})
     df:normalizeCol("v", 0, 1, "norm")
@@ -600,7 +509,6 @@ do
 end
 
 --@api-stub: LDataFrame:outliers
--- Returns rows considered outliers for a numeric column.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{1}, {2}, {3}, {100}, {2}, {3}})
     local out = df:outliers("v", 2.0)
@@ -608,21 +516,18 @@ do
 end
 
 --@api-stub: LDataFrame:modeVal
--- Returns the most common value of a column.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{1}, {2}, {2}, {3}})
     print("mode = " .. df:modeVal("v"))
 end
 
 --@api-stub: LDataFrame:entropy
--- Returns entropy for a column.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{1}, {1}, {2}, {2}, {3}})
     print("entropy = " .. df:entropy("v"))
 end
 
 --@api-stub: LDataFrame:addRowBatch
--- Appends multiple rows from array-style row tables.
 do
     local df = lurek.dataframe.fromRows({"a", "b"}, {{1, 2}})
     df:addRowBatch({{3, 4}, {5, 6}})
@@ -630,7 +535,6 @@ do
 end
 
 --@api-stub: LDataFrame:getColumnAsF64
--- Returns a numeric column as an array of numbers.
 do
     local df = lurek.dataframe.fromRows({"score"}, {{10}, {20}, {30}})
     local vals = df:getColumnAsF64("score")
@@ -638,7 +542,6 @@ do
 end
 
 --@api-stub: LDataFrame:setColumnFromF64
--- Replaces a numeric column from an array of numbers.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{0}, {0}, {0}})
     df:setColumnFromF64("v", {100, 200, 300})
@@ -646,21 +549,18 @@ do
 end
 
 --@api-stub: LDataFrame:type
--- Returns the type name ("LDataFrame").
 do
     local df = lurek.dataframe.newDataFrame()
     print("type = " .. df:type())
 end
 
 --@api-stub: LDataFrame:typeOf
--- Returns whether this handle matches a type name.
 do
     local df = lurek.dataframe.newDataFrame()
     print("is LDataFrame = " .. tostring(df:typeOf("LDataFrame")))
 end
 
 --@api-stub: LDataFrame:withEval
--- Returns a dataframe with a column computed from an expression.
 do
     local df = lurek.dataframe.fromRows({"a", "b"}, {{1, 2}, {3, 4}})
     local result = df:withEval("sum", "a + b")
@@ -668,19 +568,12 @@ do
 end
 
 --@api-stub: LDataFrame:pivotTable
--- Builds a pivot table with aggregate function.
 do
-    local df = lurek.dataframe.fromTable({
-        {region = "N", product = "X", sales = 10},
-        {region = "N", product = "Y", sales = 20},
-        {region = "S", product = "X", sales = 30},
-    })
-    local pt = df:pivotTable("region", "product", "sales", "sum")
+    local pt = lurek.dataframe.fromTable({ { region = "N", product = "X", sales = 10 }, { region = "N", product = "Y", sales = 20 }, { region = "S", product = "X", sales = 30 } }):pivotTable("region", "product", "sales", "sum")
     print("pivotTable rows = " .. pt:nrows())
 end
 
 --@api-stub: LDataFrame:rollingMean
--- Returns a dataframe with a rolling mean column.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{1}, {2}, {3}, {4}, {5}})
     local rm = df:rollingMean("v", 3)
@@ -688,7 +581,6 @@ do
 end
 
 --@api-stub: LDataFrame:rollingSum
--- Returns a dataframe with a rolling sum column.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{1}, {2}, {3}, {4}})
     local rs = df:rollingSum("v", 2)
@@ -696,7 +588,6 @@ do
 end
 
 --@api-stub: LDataFrame:rank
--- Returns a dataframe with a rank column.
 do
     local df = lurek.dataframe.fromRows({"score"}, {{30}, {10}, {20}})
     local ranked = df:rank("score", "asc")
@@ -704,7 +595,6 @@ do
 end
 
 --@api-stub: LDataFrame:lazy
--- Starts a lazy query pipeline.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{1}, {2}, {3}})
     local lq = df:lazy()
@@ -712,7 +602,6 @@ do
 end
 
 --@api-stub: LLazyQuery:filter
--- Adds a filter step to the lazy pipeline.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{1}, {2}, {3}, {4}, {5}})
     local result = df:lazy():filter("v", ">", 3):collect()
@@ -720,7 +609,6 @@ do
 end
 
 --@api-stub: LLazyQuery:sort
--- Adds a sort step.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{3}, {1}, {2}})
     local result = df:lazy():sort("v", true):collect()
@@ -728,7 +616,6 @@ do
 end
 
 --@api-stub: LLazyQuery:head
--- Adds a head limit step.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{1}, {2}, {3}, {4}, {5}})
     local result = df:lazy():head(2):collect()
@@ -736,7 +623,6 @@ do
 end
 
 --@api-stub: LLazyQuery:tail
--- Adds a tail limit step.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{1}, {2}, {3}, {4}, {5}})
     local result = df:lazy():tail(2):collect()
@@ -744,7 +630,6 @@ do
 end
 
 --@api-stub: LLazyQuery:limit
--- Adds a row limit step.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{1}, {2}, {3}, {4}})
     local result = df:lazy():limit(2):collect()
@@ -752,7 +637,6 @@ do
 end
 
 --@api-stub: LLazyQuery:slice
--- Adds a row slice step.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{1}, {2}, {3}, {4}, {5}})
     local result = df:lazy():slice(2, 4):collect()
@@ -760,19 +644,15 @@ do
 end
 
 --@api-stub: LLazyQuery:dropNil
--- Adds a drop-nil step.
 do
     local df = lurek.dataframe.newDataFrame()
     df:addColumn("x")
     df:addRow({x = 1})
     df:addRow({})
-    df:addRow({x = 3})
-    local result = df:lazy():dropNil("x"):collect()
-    print("lazy dropNil rows = " .. result:nrows())
+    print("lazy dropNil rows = " .. df:lazy():dropNil("x"):collect():nrows())
 end
 
 --@api-stub: LLazyQuery:select
--- Adds a column selection step.
 do
     local df = lurek.dataframe.fromRows({"a", "b", "c"}, {{1, 2, 3}})
     local result = df:lazy():select({"a", "c"}):collect()
@@ -780,7 +660,6 @@ do
 end
 
 --@api-stub: LLazyQuery:collect
--- Executes the lazy query and returns a dataframe.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{5}, {3}, {8}, {1}})
     local result = df:lazy():sort("v"):head(2):collect()
@@ -788,7 +667,6 @@ do
 end
 
 --@api-stub: LLazyQuery:type
--- Returns the type name ("LLazyQuery").
 do
     local df = lurek.dataframe.fromRows({"v"}, {{1}})
     local lq = df:lazy()
@@ -796,7 +674,6 @@ do
 end
 
 --@api-stub: LLazyQuery:typeOf
--- Returns whether this handle matches a type name.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{1}})
     local lq = df:lazy()
@@ -804,7 +681,6 @@ do
 end
 
 --@api-stub: LDatabase:addTable
--- Adds a named dataframe table to the database.
 do
     local db = lurek.dataframe.newDatabase()
     local df = lurek.dataframe.fromRows({"v"}, {{1}, {2}})
@@ -813,7 +689,6 @@ do
 end
 
 --@api-stub: LDatabase:getTable
--- Returns a copy of a named table.
 do
     local db = lurek.dataframe.newDatabase()
     local df = lurek.dataframe.fromRows({"x"}, {{42}})
@@ -823,7 +698,6 @@ do
 end
 
 --@api-stub: LDatabase:removeTable
--- Removes a named table.
 do
     local db = lurek.dataframe.newDatabase()
     local df = lurek.dataframe.fromRows({"v"}, {{1}})
@@ -833,7 +707,6 @@ do
 end
 
 --@api-stub: LDatabase:hasTable
--- Returns whether a named table exists.
 do
     local db = lurek.dataframe.newDatabase()
     local df = lurek.dataframe.fromRows({"v"}, {{1}})
@@ -845,18 +718,15 @@ end
 
 
 --@api-stub: LDatabase:listTables
--- Returns all table names in the database.
 do
     local db = lurek.dataframe.newDatabase()
     local df = lurek.dataframe.fromRows({"v"}, {{1}})
     db:addTable("alpha", df)
     db:addTable("beta", df)
-    local names = db:listTables()
-    print("tables = " .. #names)
+    print("tables = " .. #db:listTables())
 end
 
 --@api-stub: LDatabase:tableCount
--- Returns the number of tables in the database.
 do
     local db = lurek.dataframe.newDatabase()
     local df = lurek.dataframe.fromRows({"v"}, {{1}})
@@ -865,30 +735,24 @@ do
 end
 
 --@api-stub: LDatabase:clear
--- Removes all tables from the database.
 do
     local db = lurek.dataframe.newDatabase()
     local df = lurek.dataframe.fromRows({"v"}, {{1}})
     db:addTable("t1", df)
-    db:addTable("t2", df)
     db:clear()
     print("after clear = " .. db:tableCount())
 end
 
 --@api-stub: LDatabase:merge
--- Merges another database into this one.
 do
-    local db1 = lurek.dataframe.newDatabase()
-    local db2 = lurek.dataframe.newDatabase()
-    local df = lurek.dataframe.fromRows({"v"}, {{1}})
-    db1:addTable("a", df)
-    db2:addTable("b", df)
+    local db1, db2 = lurek.dataframe.newDatabase(), lurek.dataframe.newDatabase()
+    db1:addTable("a", lurek.dataframe.fromRows({"v"}, {{1}}))
+    db2:addTable("b", lurek.dataframe.fromRows({"v"}, {{1}}))
     db1:merge(db2)
     print("merged count = " .. db1:tableCount())
 end
 
 --@api-stub: LDatabase:toJSON
--- Serializes the database to JSON text.
 do
     local db = lurek.dataframe.newDatabase()
     local df = lurek.dataframe.fromRows({"x"}, {{42}})
@@ -898,7 +762,6 @@ do
 end
 
 --@api-stub: LDatabase:query
--- Runs a SQL-style query against the database tables.
 do
     local db = lurek.dataframe.newDatabase()
     local df = lurek.dataframe.fromRows({"name", "score"}, {{"a", 90}, {"b", 50}})
@@ -908,21 +771,18 @@ do
 end
 
 --@api-stub: LDatabase:type
--- Returns the type name ("LDatabase").
 do
     local db = lurek.dataframe.newDatabase()
     print("type = " .. db:type())
 end
 
 --@api-stub: LDatabase:typeOf
--- Returns whether this handle matches a type name.
 do
     local db = lurek.dataframe.newDatabase()
     print("is LDatabase = " .. tostring(db:typeOf("LDatabase")))
 end
 
 --@api-stub: LVecFrame:colAdd
--- Adds a scalar to a numeric column in place.
 do
     local df = lurek.dataframe.fromRows({"a", "b"}, {{1, 10}, {2, 20}, {3, 30}})
     local vf = lurek.dataframe.toVec(df)
@@ -931,7 +791,6 @@ do
 end
 
 --@api-stub: LVecFrame:colSub
--- Subtracts a scalar from a numeric column in place.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{10}, {20}, {30}})
     local vf = lurek.dataframe.toVec(df)
@@ -940,7 +799,6 @@ do
 end
 
 --@api-stub: LVecFrame:colMul
--- Multiplies a numeric column by a scalar in place.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{2}, {3}, {4}})
     local vf = lurek.dataframe.toVec(df)
@@ -949,7 +807,6 @@ do
 end
 
 --@api-stub: LVecFrame:colDiv
--- Divides a numeric column by a scalar in place.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{100}, {200}, {300}})
     local vf = lurek.dataframe.toVec(df)
@@ -958,7 +815,6 @@ do
 end
 
 --@api-stub: LVecFrame:colAbs
--- Applies absolute value to a numeric column in place.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{-5}, {3}, {-1}})
     local vf = lurek.dataframe.toVec(df)
@@ -967,7 +823,6 @@ do
 end
 
 --@api-stub: LVecFrame:colSqrt
--- Applies square root to a numeric column in place.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{4}, {9}, {16}})
     local vf = lurek.dataframe.toVec(df)
@@ -976,7 +831,6 @@ do
 end
 
 --@api-stub: LVecFrame:colFloor
--- Applies floor to a numeric column in place.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{1.7}, {2.3}, {3.9}})
     local vf = lurek.dataframe.toVec(df)
@@ -985,7 +839,6 @@ do
 end
 
 --@api-stub: LVecFrame:colCeil
--- Applies ceil to a numeric column in place.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{1.1}, {2.5}, {3.9}})
     local vf = lurek.dataframe.toVec(df)
@@ -994,7 +847,6 @@ do
 end
 
 --@api-stub: LVecFrame:colNeg
--- Negates a numeric column in place.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{5}, {-3}, {0}})
     local vf = lurek.dataframe.toVec(df)
@@ -1003,7 +855,6 @@ do
 end
 
 --@api-stub: LVecFrame:colClamp
--- Clamps a numeric column in place.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{-10}, {5}, {100}})
     local vf = lurek.dataframe.toVec(df)
@@ -1012,7 +863,6 @@ do
 end
 
 --@api-stub: LVecFrame:colOp
--- Applies a binary column operation into an output column.
 do
     local df = lurek.dataframe.fromRows({"a", "b"}, {{10, 3}, {20, 5}})
     local vf = lurek.dataframe.toVec(df)
@@ -1021,7 +871,6 @@ do
 end
 
 --@api-stub: LVecFrame:reduce
--- Reduces a numeric column with a named operation.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{1}, {2}, {3}, {4}})
     local vf = lurek.dataframe.toVec(df)
@@ -1030,7 +879,6 @@ do
 end
 
 --@api-stub: LVecFrame:filterMask
--- Builds a boolean mask for a column comparison.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{1}, {5}, {3}, {8}})
     local vf = lurek.dataframe.toVec(df)
@@ -1039,7 +887,6 @@ do
 end
 
 --@api-stub: LVecFrame:applyMask
--- Filters rows by a boolean mask table.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{1}, {2}, {3}, {4}})
     local vf = lurek.dataframe.toVec(df)
@@ -1048,7 +895,6 @@ do
 end
 
 --@api-stub: LVecFrame:colType
--- Returns the data type name for a column.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{1.5}, {2.5}})
     local vf = lurek.dataframe.toVec(df)
@@ -1056,7 +902,6 @@ do
 end
 
 --@api-stub: LVecFrame:colCast
--- Casts a column to another data type in place.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{1}, {2}, {3}})
     local vf = lurek.dataframe.toVec(df)
@@ -1065,7 +910,6 @@ do
 end
 
 --@api-stub: LVecFrame:nrows
--- Returns the number of rows.
 do
     local df = lurek.dataframe.fromRows({"a"}, {{1}, {2}, {3}})
     local vf = lurek.dataframe.toVec(df)
@@ -1073,7 +917,6 @@ do
 end
 
 --@api-stub: LVecFrame:ncols
--- Returns the number of columns.
 do
     local df = lurek.dataframe.fromRows({"a", "b"}, {{1, 2}})
     local vf = lurek.dataframe.toVec(df)
@@ -1081,7 +924,6 @@ do
 end
 
 --@api-stub: LVecFrame:columns
--- Returns all column names in order.
 do
     local df = lurek.dataframe.fromRows({"x", "y"}, {{1, 2}})
     local vf = lurek.dataframe.toVec(df)
@@ -1090,7 +932,6 @@ do
 end
 
 --@api-stub: LVecFrame:parReduce
--- Reduces multiple columns in parallel.
 do
     local df = lurek.dataframe.fromRows({"a", "b"}, {{1, 10}, {2, 20}, {3, 30}})
     local vf = lurek.dataframe.toVec(df)
@@ -1099,7 +940,6 @@ do
 end
 
 --@api-stub: LVecFrame:parScalarOp
--- Applies a scalar op to multiple columns in parallel.
 do
     local df = lurek.dataframe.fromRows({"a", "b"}, {{1, 10}, {2, 20}})
     local vf = lurek.dataframe.toVec(df)
@@ -1108,7 +948,6 @@ do
 end
 
 --@api-stub: LVecFrame:toDataFrame
--- Converts this vectorized frame back to a dataframe.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{1}, {2}})
     local vf = lurek.dataframe.toVec(df)
@@ -1118,7 +957,6 @@ do
 end
 
 --@api-stub: LVecFrame:type
--- Returns the type name ("LVecFrame").
 do
     local df = lurek.dataframe.fromRows({"v"}, {{1}})
     local vf = lurek.dataframe.toVec(df)
@@ -1126,7 +964,6 @@ do
 end
 
 --@api-stub: LVecFrame:typeOf
--- Returns whether this handle matches a type name.
 do
     local df = lurek.dataframe.fromRows({"v"}, {{1}})
     local vf = lurek.dataframe.toVec(df)

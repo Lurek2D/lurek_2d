@@ -6,28 +6,24 @@
 
 
 --@api-stub: lurek.camera.new
--- Creates a new camera with the given viewport dimensions.
 do
     local cam = lurek.camera.new(800, 600)
     print("camera created = " .. tostring(cam ~= nil))
 end
 
 --@api-stub: lurek.camera.newCamera
--- Alternative constructor for a camera with viewport size.
 do
     local cam = lurek.camera.newCamera(1280, 720)
     print("camera = " .. tostring(cam ~= nil))
 end
 
 --@api-stub: lurek.camera.newRig
--- Creates a camera rig for multi-camera management.
 do
     local rig = lurek.camera.newRig()
     print("rig = " .. tostring(rig ~= nil))
 end
 
 --@api-stub: LCamera:setPosition
--- Sets the camera position in world coordinates.
 do
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(200, 150)
@@ -36,7 +32,6 @@ do
 end
 
 --@api-stub: LCamera:getPosition
--- Returns the current camera position.
 do
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(100, 50)
@@ -45,7 +40,6 @@ do
 end
 
 --@api-stub: LCamera:setZoom
--- Sets the camera zoom level (1.0 = no zoom).
 do
     local cam = lurek.camera.new(800, 600)
     cam:setZoom(2.0)
@@ -53,7 +47,6 @@ do
 end
 
 --@api-stub: LCamera:getZoom
--- Returns the current zoom level.
 do
     local cam = lurek.camera.new(800, 600)
     cam:setZoom(0.5)
@@ -62,7 +55,6 @@ do
 end
 
 --@api-stub: LCamera:setRotation
--- Sets the camera rotation in radians.
 do
     local cam = lurek.camera.new(800, 600)
     cam:setRotation(math.pi / 4)
@@ -70,7 +62,6 @@ do
 end
 
 --@api-stub: LCamera:getRotation
--- Returns the current camera rotation.
 do
     local cam = lurek.camera.new(800, 600)
     cam:setRotation(1.5)
@@ -79,7 +70,6 @@ do
 end
 
 --@api-stub: LCamera:setViewport
--- Sets the viewport rectangle on screen.
 do
     local cam = lurek.camera.new(800, 600)
     cam:setViewport(0, 0, 400, 300)
@@ -87,7 +77,6 @@ do
 end
 
 --@api-stub: LCamera:getViewport
--- Returns the current viewport rectangle.
 do
     local cam = lurek.camera.new(800, 600)
     cam:setViewport(10, 10, 780, 580)
@@ -96,18 +85,14 @@ do
 end
 
 --@api-stub: LCamera:getBounds
--- Returns the camera movement bounds.
 do
     local cam = lurek.camera.new(800, 600)
     cam:setBounds(0, 0, 2000, 1500)
     local ok, bx, by, bw, bh = cam:getBounds()
-    if ok then
-        print("bounds = " .. bx .. "," .. by .. "," .. bw .. "," .. bh)
-    end
+    print("bounds = " .. tostring(ok) .. "," .. tostring(bx) .. "," .. tostring(by) .. "," .. tostring(bw) .. "," .. tostring(bh))
 end
 
 --@api-stub: LCamera:hasBounds
--- Returns true if bounds are set on the camera.
 do
     local cam = lurek.camera.new(800, 600)
     cam:setBounds(0, 0, 1000, 1000)
@@ -115,7 +100,6 @@ do
 end
 
 --@api-stub: LCamera:setBounds
--- Sets the movement bounds that clamp camera position.
 do
     local cam = lurek.camera.new(800, 600)
     cam:setBounds(0, 0, 3200, 2400)
@@ -123,7 +107,6 @@ do
 end
 
 --@api-stub: LCamera:removeBounds
--- Removes the movement bounds from the camera.
 do
     local cam = lurek.camera.new(800, 600)
     cam:setBounds(0, 0, 1000, 1000)
@@ -132,29 +115,22 @@ do
 end
 
 --@api-stub: LCamera:setTarget
--- Sets the target position the camera should follow.
 do
     local cam = lurek.camera.new(800, 600)
     cam:setTarget(500, 300)
     local ok, tx, ty = cam:getTarget()
-    if ok then
-        print("target = " .. tx .. ", " .. ty)
-    end
+    print("target = " .. tostring(ok) .. ", " .. tostring(tx) .. ", " .. tostring(ty))
 end
 
 --@api-stub: LCamera:getTarget
--- Returns the current follow target position.
 do
     local cam = lurek.camera.new(800, 600)
     cam:setTarget(250, 125)
     local ok, tx, ty = cam:getTarget()
-    if ok then
-        print("target = " .. tx .. ", " .. ty)
-    end
+    print("target = " .. tostring(ok) .. ", " .. tostring(tx) .. ", " .. tostring(ty))
 end
 
 --@api-stub: LCamera:clearTarget
--- Clears the follow target so the camera stays still.
 do
     local cam = lurek.camera.new(800, 600)
     cam:setTarget(100, 100)
@@ -163,7 +139,6 @@ do
 end
 
 --@api-stub: LCamera:setFollowSmooth
--- Sets the follow smoothing speed (higher = snappier).
 do
     local cam = lurek.camera.new(800, 600)
     cam:setFollowSmooth(5.0)
@@ -171,7 +146,6 @@ do
 end
 
 --@api-stub: LCamera:getFollowSmooth
--- Returns the current follow smoothing speed.
 do
     local cam = lurek.camera.new(800, 600)
     cam:setFollowSmooth(3.0)
@@ -180,7 +154,6 @@ do
 end
 
 --@api-stub: LCamera:setFollowEasing
--- Sets the easing function name for follow interpolation.
 do
     local cam = lurek.camera.new(800, 600)
     cam:setFollowEasing("quadOut")
@@ -188,7 +161,6 @@ do
 end
 
 --@api-stub: LCamera:getFollowEasing
--- Returns the current follow easing function name.
 do
     local cam = lurek.camera.new(800, 600)
     cam:setFollowEasing("linear")
@@ -197,7 +169,6 @@ do
 end
 
 --@api-stub: LCamera:setDeadZone
--- Sets the dead zone size around the target.
 do
     local cam = lurek.camera.new(800, 600)
     cam:setDeadZone(50, 30)
@@ -205,18 +176,14 @@ do
 end
 
 --@api-stub: LCamera:getDeadZone
--- Returns the current dead zone dimensions.
 do
     local cam = lurek.camera.new(800, 600)
     cam:setDeadZone(40, 20)
     local ok, w, h = cam:getDeadZone()
-    if ok then
-        print("dead zone = " .. w .. "x" .. h)
-    end
+    print("dead zone = " .. tostring(ok) .. "," .. tostring(w) .. "x" .. tostring(h))
 end
 
 --@api-stub: LCamera:setLookAhead
--- Sets the look-ahead multiplier for follow direction.
 do
     local cam = lurek.camera.new(800, 600)
     cam:setLookAhead(1.5)
@@ -224,7 +191,6 @@ do
 end
 
 --@api-stub: LCamera:getLookAhead
--- Returns the current look-ahead multiplier.
 do
     local cam = lurek.camera.new(800, 600)
     cam:setLookAhead(2.0)
@@ -233,7 +199,6 @@ do
 end
 
 --@api-stub: LCamera:onWindowResize
--- Handles a window resize by adjusting the viewport.
 do
     local cam = lurek.camera.new(800, 600)
     cam:onWindowResize(1920, 1080)
@@ -241,7 +206,6 @@ do
 end
 
 --@api-stub: LCamera:onWindowResizeScaled
--- Handles window resize with scaling to fit game dimensions.
 do
     local cam = lurek.camera.new(800, 600)
     cam:onWindowResizeScaled(800, 600, 1920, 1080, "letterbox")
@@ -249,7 +213,6 @@ do
 end
 
 --@api-stub: LCamera:shake
--- Starts a screen shake effect with intensity and duration.
 do
     local cam = lurek.camera.new(800, 600)
     cam:shake(10.0, 0.5)
@@ -257,7 +220,6 @@ do
 end
 
 --@api-stub: LCamera:update
--- Updates the camera state (follow, shake, path) by a time delta.
 do
     local cam = lurek.camera.new(800, 600)
     cam:setTarget(200, 100)
@@ -267,7 +229,6 @@ do
 end
 
 --@api-stub: LCamera:toWorld
--- Converts a screen coordinate to world space.
 do
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(100, 100)
@@ -276,7 +237,6 @@ do
 end
 
 --@api-stub: LCamera:toScreen
--- Converts a world coordinate to screen space.
 do
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(100, 100)
@@ -285,7 +245,6 @@ do
 end
 
 --@api-stub: LCamera:getVisibleArea
--- Returns the world-space rectangle currently visible.
 do
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(400, 300)
@@ -294,7 +253,6 @@ do
 end
 
 --@api-stub: LCamera:lookAt
--- Immediately centers the camera on a world position.
 do
     local cam = lurek.camera.new(800, 600)
     cam:lookAt(500, 250)
@@ -303,7 +261,6 @@ do
 end
 
 --@api-stub: LCamera:move
--- Moves the camera by a relative offset.
 do
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(100, 100)
@@ -313,7 +270,6 @@ do
 end
 
 --@api-stub: LCamera:followPath
--- Starts the camera along a path of waypoints over a duration.
 do
     local cam = lurek.camera.new(800, 600)
     local points = { { x = 0, y = 0 }, { x = 400, y = 200 }, { x = 800, y = 0 } }
@@ -322,7 +278,6 @@ do
 end
 
 --@api-stub: LCamera:stopPath
--- Stops path following immediately.
 do
     local cam = lurek.camera.new(800, 600)
     local points = { { x = 0, y = 0 }, { x = 100, y = 100 } }
@@ -332,7 +287,6 @@ do
 end
 
 --@api-stub: LCamera:updatePath
--- Advances path following by a time delta.
 do
     local cam = lurek.camera.new(800, 600)
     local points = { { x = 0, y = 0 }, { x = 200, y = 200 } }
@@ -342,18 +296,15 @@ do
 end
 
 --@api-stub: LCamera:pathProgress
--- Returns the normalized path progress (0 to 1).
 do
     local cam = lurek.camera.new(800, 600)
-    local points = { { x = 0, y = 0 }, { x = 100, y = 100 } }
+    local points = {{ x = 0, y = 0 }, { x = 100, y = 100 }}
     cam:followPath(points, 1.0)
-    cam:updatePath(0.5)
-    local p = cam:pathProgress()
+    cam:updatePath(0.5); local p = cam:pathProgress()
     print("progress = " .. p)
 end
 
 --@api-stub: LCamera:zoomTo
--- Animates the zoom to a target level over a duration.
 do
     local cam = lurek.camera.new(800, 600)
     cam:zoomTo(2.0, 1.0, "quadOut")
@@ -361,7 +312,6 @@ do
 end
 
 --@api-stub: LCamera:stopZoom
--- Stops an active zoom animation.
 do
     local cam = lurek.camera.new(800, 600)
     cam:zoomTo(3.0, 2.0, "linear")
@@ -370,7 +320,6 @@ do
 end
 
 --@api-stub: LCamera:updateZoom
--- Advances the zoom animation by a time delta.
 do
     local cam = lurek.camera.new(800, 600)
     cam:zoomTo(2.0, 1.0, "linear")
@@ -379,7 +328,6 @@ do
 end
 
 --@api-stub: LCamera:setParallaxFactor
--- Sets a parallax scrolling factor for a named layer.
 do
     local cam = lurek.camera.new(800, 600)
     cam:setParallaxFactor("background", 0.5)
@@ -387,7 +335,6 @@ do
 end
 
 --@api-stub: LCamera:getParallaxFactor
--- Returns the parallax factor for a named layer.
 do
     local cam = lurek.camera.new(800, 600)
     cam:setParallaxFactor("clouds", 0.3)
@@ -396,7 +343,6 @@ do
 end
 
 --@api-stub: LCamera:clearParallaxFactors
--- Removes all parallax factor settings.
 do
     local cam = lurek.camera.new(800, 600)
     cam:setParallaxFactor("fg", 1.2)
@@ -405,7 +351,6 @@ do
 end
 
 --@api-stub: LCamera:apply
--- Applies the camera transform for rendering.
 do
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(400, 300)
@@ -414,7 +359,6 @@ do
 end
 
 --@api-stub: LCamera:reset
--- Resets the camera to default position, zoom, and rotation.
 do
     local cam = lurek.camera.new(800, 600)
     cam:setPosition(500, 500)
@@ -424,7 +368,6 @@ do
 end
 
 --@api-stub: LCamera:attach
--- Attaches the camera transform (push matrix).
 do
     local cam = lurek.camera.new(800, 600)
     cam:attach()
@@ -432,7 +375,6 @@ do
 end
 
 --@api-stub: LCamera:detach
--- Detaches the camera transform (pop matrix).
 do
     local cam = lurek.camera.new(800, 600)
     cam:attach()
@@ -441,7 +383,6 @@ do
 end
 
 --@api-stub: LCamera:zoomPulse
--- Creates a quick zoom pulse effect (e.g. on hit).
 do
     local cam = lurek.camera.new(800, 600)
     cam:zoomPulse(0.2, 0.3)
@@ -452,7 +393,6 @@ end
 
 
 --@api-stub: LCamera:startSway
--- Starts a sway oscillation effect on the camera.
 do
     local cam = lurek.camera.new(800, 600)
     cam:startSway(3.0, 2.0, 1.5, 0.5)
@@ -460,7 +400,6 @@ do
 end
 
 --@api-stub: LCamera:stopSway
--- Stops the sway effect.
 do
     local cam = lurek.camera.new(800, 600)
     cam:startSway(2.0, 1.0, 1.0, 0.3)
@@ -469,7 +408,6 @@ do
 end
 
 --@api-stub: LCamera:isSway
--- Returns true if sway is active.
 do
     local cam = lurek.camera.new(800, 600)
     cam:startSway(1.0, 1.0, 1.0, 0.5)
@@ -477,7 +415,6 @@ do
 end
 
 --@api-stub: LCamera:startBreathing
--- Starts a subtle breathing zoom effect.
 do
     local cam = lurek.camera.new(800, 600)
     cam:startBreathing(0.02, 0.5)
@@ -485,7 +422,6 @@ do
 end
 
 --@api-stub: LCamera:stopBreathing
--- Stops the breathing effect.
 do
     local cam = lurek.camera.new(800, 600)
     cam:startBreathing(0.01, 0.3)
@@ -494,7 +430,6 @@ do
 end
 
 --@api-stub: LCamera:isBreathing
--- Returns true if breathing effect is active.
 do
     local cam = lurek.camera.new(800, 600)
     cam:startBreathing(0.02, 0.5)
@@ -502,7 +437,6 @@ do
 end
 
 --@api-stub: LCamera:getEffectiveZoom
--- Returns the zoom level including all effects.
 do
     local cam = lurek.camera.new(800, 600)
     cam:setZoom(2.0)
@@ -511,7 +445,6 @@ do
 end
 
 --@api-stub: LCamera:getEffectOffset
--- Returns the combined effect offset applied to the camera.
 do
     local cam = lurek.camera.new(800, 600)
     local ox, oy = cam:getEffectOffset()
@@ -519,7 +452,6 @@ do
 end
 
 --@api-stub: LCamera:getShakeOffset
--- Returns the current shake offset and rotation.
 do
     local cam = lurek.camera.new(800, 600)
     cam:shake(5.0, 0.5)
@@ -529,7 +461,6 @@ do
 end
 
 --@api-stub: LCamera:getRenderOffset
--- Returns the final render offset for drawing.
 do
     local cam = lurek.camera.new(800, 600)
     local rx, ry = cam:getRenderOffset()
@@ -537,7 +468,6 @@ do
 end
 
 --@api-stub: LCamera:setZoomConstraints
--- Sets minimum and maximum zoom bounds.
 do
     local cam = lurek.camera.new(800, 600)
     cam:setZoomConstraints(0.5, 4.0)
@@ -545,7 +475,6 @@ do
 end
 
 --@api-stub: LCamera:getZoomConstraints
--- Returns the min and max zoom constraints.
 do
     local cam = lurek.camera.new(800, 600)
     cam:setZoomConstraints(0.25, 3.0)
@@ -554,7 +483,6 @@ do
 end
 
 --@api-stub: LCamera:setZoomDamping
--- Sets the damping factor for zoom changes.
 do
     local cam = lurek.camera.new(800, 600)
     cam:setZoomDamping(0.9)
@@ -562,7 +490,6 @@ do
 end
 
 --@api-stub: LCamera:getZoomDamping
--- Returns the current zoom damping factor.
 do
     local cam = lurek.camera.new(800, 600)
     cam:setZoomDamping(0.8)
@@ -571,7 +498,6 @@ do
 end
 
 --@api-stub: LCamera:setRotationConstraints
--- Sets minimum and maximum rotation bounds.
 do
     local cam = lurek.camera.new(800, 600)
     cam:setRotationConstraints(-0.5, 0.5)
@@ -579,7 +505,6 @@ do
 end
 
 --@api-stub: LCamera:getRotationConstraints
--- Returns the min and max rotation constraints.
 do
     local cam = lurek.camera.new(800, 600)
     cam:setRotationConstraints(-1.0, 1.0)
@@ -588,7 +513,6 @@ do
 end
 
 --@api-stub: LCamera:setRotationDamping
--- Sets the damping factor for rotation changes.
 do
     local cam = lurek.camera.new(800, 600)
     cam:setRotationDamping(0.85)
@@ -596,7 +520,6 @@ do
 end
 
 --@api-stub: LCamera:getRotationDamping
--- Returns the current rotation damping factor.
 do
     local cam = lurek.camera.new(800, 600)
     cam:setRotationDamping(0.7)
@@ -605,7 +528,6 @@ do
 end
 
 --@api-stub: LCamera:presetTightFollow
--- Applies a tight follow preset (very responsive).
 do
     local cam = lurek.camera.new(800, 600)
     cam:presetTightFollow()
@@ -613,7 +535,6 @@ do
 end
 
 --@api-stub: LCamera:presetCinematicFollow
--- Applies a cinematic follow preset (slow, smooth).
 do
     local cam = lurek.camera.new(800, 600)
     cam:presetCinematicFollow()
@@ -621,7 +542,6 @@ do
 end
 
 --@api-stub: LCamera:presetBalancedFollow
--- Applies a balanced follow preset (medium responsiveness).
 do
     local cam = lurek.camera.new(800, 600)
     cam:presetBalancedFollow()
@@ -629,7 +549,6 @@ do
 end
 
 --@api-stub: LCamera:presetAggressiveFollow
--- Applies an aggressive follow preset (almost instant snap).
 do
     local cam = lurek.camera.new(800, 600)
     cam:presetAggressiveFollow()
@@ -637,21 +556,18 @@ do
 end
 
 --@api-stub: LCamera:type
--- Returns the type name of this object ("LCamera").
 do
     local cam = lurek.camera.new(800, 600)
     print("type = " .. cam:type())
 end
 
 --@api-stub: LCamera:typeOf
--- Checks whether this object matches a given type name.
 do
     local cam = lurek.camera.new(800, 600)
     print("is LCamera = " .. tostring(cam:typeOf("LCamera")))
 end
 
 --@api-stub: LCameraRig:splitScreen
--- Applies a split-screen layout using the current window size.
 do
     local rig = lurek.camera.newRig()
     rig:setPosition("player1", 100, 100)
@@ -661,7 +577,6 @@ do
 end
 
 --@api-stub: LCameraRig:minimap
--- Applies a minimap layout using the current window size.
 do
     local rig = lurek.camera.newRig()
     rig:setPosition("main", 400, 300)
@@ -670,7 +585,6 @@ do
 end
 
 --@api-stub: LCameraRig:pictureInPicture
--- Applies a picture-in-picture layout using optional inset size.
 do
     local rig = lurek.camera.newRig()
     rig:setPosition("main", 200, 200)
@@ -679,7 +593,6 @@ do
 end
 
 --@api-stub: LCameraRig:setPosition
--- Sets the position of a named camera, creating it if needed.
 do
     local rig = lurek.camera.newRig()
     rig:setPosition("left", 100, 200)
@@ -687,7 +600,6 @@ do
 end
 
 --@api-stub: LCameraRig:setZoom
--- Sets the zoom of a named camera, creating it if needed.
 do
     local rig = lurek.camera.newRig()
     rig:setPosition("a", 0, 0)
@@ -696,7 +608,6 @@ do
 end
 
 --@api-stub: LCameraRig:setTarget
--- Sets the follow target of a named camera.
 do
     local rig = lurek.camera.newRig()
     rig:setPosition("cam1", 0, 0)
@@ -705,7 +616,6 @@ do
 end
 
 --@api-stub: LCameraRig:updateAll
--- Advances every camera in this rig by a time delta.
 do
     local rig = lurek.camera.newRig()
     rig:setPosition("a", 0, 0)
@@ -715,7 +625,6 @@ do
 end
 
 --@api-stub: LCameraRig:apply
--- Appends render commands for a named camera.
 do
     local rig = lurek.camera.newRig()
     rig:setPosition("main", 400, 300)
@@ -724,7 +633,6 @@ do
 end
 
 --@api-stub: LCameraRig:getViewport
--- Returns a named camera's viewport (has flag + x, y, w, h).
 do
     local rig = lurek.camera.newRig()
     rig:setPosition("left", 0, 0)
@@ -734,7 +642,6 @@ do
 end
 
 --@api-stub: LCameraRig:names
--- Returns all camera names in this rig.
 do
     local rig = lurek.camera.newRig()
     rig:setPosition("p1", 0, 0)
@@ -743,7 +650,6 @@ do
 end
 
 --@api-stub: LCameraRig:remove
--- Removes a named camera from the rig.
 do
     local rig = lurek.camera.newRig()
     rig:setPosition("temp", 0, 0)
@@ -752,7 +658,6 @@ do
 end
 
 --@api-stub: LCameraRig:has
--- Returns whether this rig contains a named camera.
 do
     local rig = lurek.camera.newRig()
     rig:setPosition("x", 0, 0)
@@ -760,14 +665,12 @@ do
 end
 
 --@api-stub: LCameraRig:type
--- Returns the type name ("LCameraRig").
 do
     local rig = lurek.camera.newRig()
     print("type = " .. rig:type())
 end
 
 --@api-stub: LCameraRig:typeOf
--- Checks whether this object matches a given type name.
 do
     local rig = lurek.camera.newRig()
     print("is LCameraRig = " .. tostring(rig:typeOf("LCameraRig")))

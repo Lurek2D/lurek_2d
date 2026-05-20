@@ -73,6 +73,22 @@
             "command": "${workspaceFolder}/build/release/lurek2d",
             "problemMatcher": []
         },
+        {
+            "label": "▶ Run: Examples Sweep (Debug)",
+            "detail": "▶️ Build debug, then run every content/examples/*.lua file sequentially through lurek2d. PASS means the engine completed without runtime/Lua errors.",
+            "type": "shell",
+            "command": "python tools/dev/parallel_cargo.py build debug ; python tools/demos/smoke_sweep.py --kind example --report logs/reports/examples_smoke_debug.json",
+            "group": "build",
+            "problemMatcher": ["$rustc"]
+        },
+        {
+            "label": "▶ Run: Examples Sweep (Release)",
+            "detail": "▶️ Build release, then run every content/examples/*.lua file sequentially through the release binary. Writes a sweep report under logs/reports/.",
+            "type": "shell",
+            "command": "python tools/dev/parallel_cargo.py build release ; python tools/demos/smoke_sweep.py --kind example --binary build/release/lurek2d.exe --report logs/reports/examples_smoke_release.json",
+            "group": "build",
+            "problemMatcher": ["$rustc"]
+        },
 
         // ─── 🧪 TEST ──────────────────────────────────────────────────────────
         // Test: All runs Rust (parallel) + Lua in sequence — the default test task.

@@ -7719,6 +7719,17 @@ do
     local target = { x = 0.0 }
     local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear")
     print("duration=" .. tw:getDuration())
+    print("easing=" .. tw:getEasingName())
+    print("elapsed=" .. tw:getElapsed())
+    print("progress=" .. tw:getProgress())
+    print("remaining=" .. tw:getRemaining())
+    print("active=" .. tostring(tw:isActive()))
+    tw:onComplete(function() print("tween_complete") end)
+    tw:setRelative(false)
+    print("type=" .. tw:type())
+    print("typeOf=" .. tostring(tw:typeOf("LTween")))
+    tw:await()
+    tw:cancel()
 end
 ```
 
@@ -7746,7 +7757,18 @@ Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
 do
     local target = { x = 0.0 }
     local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear")
+    print("duration=" .. tw:getDuration())
     print("easing=" .. tw:getEasingName())
+    print("elapsed=" .. tw:getElapsed())
+    print("progress=" .. tw:getProgress())
+    print("remaining=" .. tw:getRemaining())
+    print("active=" .. tostring(tw:isActive()))
+    tw:onComplete(function() print("tween_complete") end)
+    tw:setRelative(false)
+    print("type=" .. tw:type())
+    print("typeOf=" .. tostring(tw:typeOf("LTween")))
+    tw:await()
+    tw:cancel()
 end
 ```
 
@@ -8012,7 +8034,18 @@ Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
 do
     local target = { x = 0.0 }
     local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear")
+    print("duration=" .. tw:getDuration())
+    print("easing=" .. tw:getEasingName())
+    print("elapsed=" .. tw:getElapsed())
+    print("progress=" .. tw:getProgress())
+    print("remaining=" .. tw:getRemaining())
+    print("active=" .. tostring(tw:isActive()))
+    tw:onComplete(function() print("tween_complete") end)
+    tw:setRelative(false)
     print("type=" .. tw:type())
+    print("typeOf=" .. tostring(tw:typeOf("LTween")))
+    tw:await()
+    tw:cancel()
 end
 ```
 
@@ -8045,7 +8078,18 @@ Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
 do
     local target = { x = 0.0 }
     local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear")
+    print("duration=" .. tw:getDuration())
+    print("easing=" .. tw:getEasingName())
+    print("elapsed=" .. tw:getElapsed())
+    print("progress=" .. tw:getProgress())
+    print("remaining=" .. tw:getRemaining())
+    print("active=" .. tostring(tw:isActive()))
+    tw:onComplete(function() print("tween_complete") end)
+    tw:setRelative(false)
+    print("type=" .. tw:type())
     print("typeOf=" .. tostring(tw:typeOf("LTween")))
+    tw:await()
+    tw:cancel()
 end
 ```
 

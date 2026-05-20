@@ -23,6 +23,13 @@ python tools/dev/parallel_cargo.py build release  # → build/release/lurek2d (~
 
 The build output directory is `build/` (not `target/`) — configured via `.cargo/config.toml`.
 
+Rust/build config files are split into two buckets:
+
+- **Fixed-location files** required by tooling: `Cargo.toml`, `build.rs`, `rust-toolchain.toml`, `Cargo.lock`, and `.cargo/config.toml` stay where Cargo/rustup expect them.
+- **Cargo-discovered support config** also lives under `.cargo/`; for example, `cargo-nextest` reads `.cargo/nextest.toml`.
+
+Do **not** move the fixed-location files into a custom `config/` folder — Cargo and rustup will stop discovering them.
+
 ---
 
 ## Quality Gates
@@ -44,6 +51,8 @@ python tools/dev/parallel_cargo.py test target <module>_tests  # one Rust test s
 python tools/dev/parallel_cargo.py test lua                     # Lua test suite
 python tools/dev/parallel_cargo.py clippy --deny-warnings       # strict lint
 ```
+
+If you use `cargo nextest`, the repository config is at `.cargo/nextest.toml`.
 
 ---
 
@@ -102,6 +111,7 @@ Examples are single-file documentation scripts — one per `lurek.*` module.
 - One script, one module, one concept. Keep it under ~80 lines where possible.
 - No external assets unless strictly necessary.
 - Must be runnable: `python tools/dev/parallel_cargo.py run debug -- content/examples/<module>.lua`.
+- Batch-run all examples through the real engine with `python tools/demos/smoke_sweep.py --kind example` or the `▶ Run: Examples Sweep (Debug)` VS Code task.
 - Add a line to `content/examples/README.md` describing what it demonstrates.
 
 ### Lua Libraries (`library/`)

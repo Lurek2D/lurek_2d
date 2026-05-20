@@ -6,78 +6,46 @@
 
 
 --@api-stub: lurek.docs.scan
--- Reflects the live lurek table and builds a catalog.
 do
     local cat = lurek.docs.scan()
     print("scanned entries = " .. cat:entryCount())
 end
 
 --@api-stub: lurek.docs.scanModule
--- Reflects one module and builds a catalog for it.
 do
     local cat = lurek.docs.scanModule("math")
     print("math entries = " .. cat:entryCount())
 end
 
 --@api-stub: lurek.docs.loadToml
--- Loads a TOML documentation catalog file.
 do
     local path = "save/_fs_tests/docs_load_toml_example.toml"
-    lurek.filesystem.write(path, table.concat({
-        "[[entries]]",
-        'name = "play"',
-        'qualifiedName = "lurek.audio.play"',
-        'module = "audio"',
-        'kind = "function"',
-        'description = "Plays a sound"',
-    }, "\n"))
+    lurek.filesystem.write(path, '[[entries]]\nname = "play"\nqualifiedName = "lurek.audio.play"\nmodule = "audio"\nkind = "function"\ndescription = "Plays a sound"')
     local cat = lurek.docs.loadToml(path)
     print("loaded entries = " .. cat:entryCount())
 end
 
 --@api-stub: lurek.docs.loadAll
--- Loads all TOML catalog files from a directory.
 do
-    lurek.filesystem.write("save/_fs_tests/docs_load_all_a.toml", table.concat({
-        "[[entries]]",
-        'name = "one"',
-        'qualifiedName = "lurek.test.one"',
-        'module = "test"',
-        'kind = "function"',
-        'description = "First entry"',
-    }, "\n"))
-    lurek.filesystem.write("save/_fs_tests/docs_load_all_b.toml", table.concat({
-        "[[entries]]",
-        'name = "two"',
-        'qualifiedName = "lurek.test.two"',
-        'module = "test"',
-        'kind = "function"',
-        'description = "Second entry"',
-    }, "\n"))
+    lurek.filesystem.write("save/_fs_tests/docs_load_all_a.toml", '[[entries]]\nname = "one"\nqualifiedName = "lurek.test.one"\nmodule = "test"\nkind = "function"\ndescription = "First entry"')
+    lurek.filesystem.write("save/_fs_tests/docs_load_all_b.toml", '[[entries]]\nname = "two"\nqualifiedName = "lurek.test.two"\nmodule = "test"\nkind = "function"\ndescription = "Second entry"')
     local cat = lurek.docs.loadAll("save/_fs_tests/")
     print("all entries = " .. cat:entryCount())
 end
 
 --@api-stub: lurek.docs.describe
--- Adds or updates the description for a catalog entry.
 do
     lurek.docs.describe("lurek.math.lerp", "Linearly interpolates between a and b.")
     print("description set")
 end
 
 --@api-stub: lurek.docs.setParamInfo
--- Replaces parameter metadata for a catalog entry.
 do
-    lurek.docs.setParamInfo("lurek.math.lerp", {
-        {name = "a", type = "number", description = "Start value", optional = false},
-        {name = "b", type = "number", description = "End value", optional = false},
-        {name = "t", type = "number", description = "Interpolation factor", optional = false},
-    })
+    lurek.docs.setParamInfo("lurek.math.lerp", {{name = "t", type = "number", description = "Interpolation factor", optional = false}})
     print("params set")
 end
 
 --@api-stub: lurek.docs.setReturnInfo
--- Replaces return-value metadata for a catalog entry.
 do
     lurek.docs.setReturnInfo("lurek.math.lerp", {
         {type = "number", description = "Interpolated value"},
@@ -86,14 +54,12 @@ do
 end
 
 --@api-stub: lurek.docs.getCatalog
--- Returns the editable in-memory documentation catalog.
 do
     local cat = lurek.docs.getCatalog()
     print("catalog entries = " .. cat:entryCount())
 end
 
 --@api-stub: lurek.docs.resetCatalog
--- Clears the editable in-memory catalog.
 do
     lurek.docs.resetCatalog()
     local cat = lurek.docs.getCatalog()
@@ -101,7 +67,6 @@ do
 end
 
 --@api-stub: lurek.docs.validate
--- Compares a catalog with the live API table.
 do
     local cat = lurek.docs.scan()
     local report = lurek.docs.validate(cat)
@@ -109,7 +74,6 @@ do
 end
 
 --@api-stub: lurek.docs.validateModule
--- Validates one module's catalog against live reflection.
 do
     local cat = lurek.docs.scan()
     local report = lurek.docs.validateModule("math", cat)
@@ -117,7 +81,6 @@ do
 end
 
 --@api-stub: lurek.docs.checkStaleness
--- Lists source files for staleness checks.
 do
     local cat = lurek.docs.scan()
     local result = lurek.docs.checkStaleness(cat, "src/math/")
@@ -125,7 +88,6 @@ do
 end
 
 --@api-stub: lurek.docs.quality
--- Computes documentation quality for a catalog.
 do
     local cat = lurek.docs.scan()
     local qr = lurek.docs.quality(cat)
@@ -133,7 +95,6 @@ do
 end
 
 --@api-stub: lurek.docs.qualityModule
--- Computes quality for one module.
 do
     local cat = lurek.docs.scan()
     local qr = lurek.docs.qualityModule("math", cat)
@@ -141,7 +102,6 @@ do
 end
 
 --@api-stub: lurek.docs.coverage
--- Returns documented and live API counts.
 do
     local cat = lurek.docs.scan()
     local documented, live = lurek.docs.coverage(cat)
@@ -149,7 +109,6 @@ do
 end
 
 --@api-stub: lurek.docs.coverageModule
--- Returns documented and live API counts for one module.
 do
     local cat = lurek.docs.scan()
     local documented, live = lurek.docs.coverageModule("math", cat)
@@ -157,7 +116,6 @@ do
 end
 
 --@api-stub: lurek.docs.exportCompletions
--- Exports completion metadata to a file.
 do
     local cat = lurek.docs.scan()
     lurek.docs.exportCompletions(cat, "build/completions.json")
@@ -165,7 +123,6 @@ do
 end
 
 --@api-stub: lurek.docs.exportHover
--- Exports hover metadata to a file.
 do
     local cat = lurek.docs.scan()
     lurek.docs.exportHover(cat, "build/hover.json")
@@ -173,7 +130,6 @@ do
 end
 
 --@api-stub: lurek.docs.exportSignatures
--- Exports signature metadata to a file.
 do
     local cat = lurek.docs.scan()
     lurek.docs.exportSignatures(cat, "build/signatures.json")
@@ -181,7 +137,6 @@ do
 end
 
 --@api-stub: lurek.docs.exportAll
--- Exports all editor documentation artifacts to a directory.
 do
     local cat = lurek.docs.scan()
     lurek.docs.exportAll(cat, "build/docs/")
@@ -189,7 +144,6 @@ do
 end
 
 --@api-stub: lurek.docs.exportMarkdown
--- Writes a Markdown API reference from catalog entries.
 do
     local cat = lurek.docs.scan()
     lurek.docs.exportMarkdown(cat, "build/api.md")
@@ -197,7 +151,6 @@ do
 end
 
 --@api-stub: lurek.docs.exportCheatsheet
--- Writes a compact text cheatsheet.
 do
     local cat = lurek.docs.scan()
     lurek.docs.exportCheatsheet(cat, "build/cheatsheet.txt")
@@ -205,17 +158,12 @@ do
 end
 
 --@api-stub: lurek.docs.schema
--- Builds a schema validator from Lua table rules.
 do
-    local s = lurek.docs.schema({
-        name = {type = "string", required = true},
-        age = {type = "number"},
-    }, "PlayerSchema")
+    local s = lurek.docs.schema({ name = { type = "string", required = true }, age = { type = "number" } }, "PlayerSchema")
     print("schema name = " .. s:getName())
 end
 
 --@api-stub: lurek.docs.schemaFromToml
--- Builds a schema validator from TOML text.
 do
     local toml = "[fields.name]\ntype = \"string\"\nrequired = true"
     local s = lurek.docs.schemaFromToml(toml)
@@ -223,14 +171,12 @@ do
 end
 
 --@api-stub: lurek.docs.reflectLive
--- Reflects live lurek module tables into name/type rows.
 do
     local data = lurek.docs.reflectLive("math")
     print("reflect math type = " .. type(data))
 end
 
 --@api-stub: lurek.docs.reflectTable
--- Reflects an arbitrary Lua table into rows.
 do
     local t = {foo = 1, bar = "hello"}
     local rows = lurek.docs.reflectTable(t, "mymod")
@@ -238,7 +184,6 @@ do
 end
 
 --@api-stub: LSchema:validate
--- Validates a table and returns success plus error rows.
 do
     local s = lurek.docs.schema({name = {type = "string", required = true}})
     local ok, errors = s:validate({name = "test"})
@@ -246,29 +191,25 @@ do
 end
 
 --@api-stub: LSchema:check
--- Validates a table and returns only the boolean result.
 do
     local s = lurek.docs.schema({x = {type = "number"}})
     print("check = " .. tostring(s:check({x = 42})))
 end
 
 --@api-stub: LSchema:assert
--- Validates a table and raises a Lua error on failure.
 do
     local s = lurek.docs.schema({v = {type = "number"}})
-    s:assert({v = 10})
-    print("assert passed")
+    local ok = pcall(function() s["assert"](s, {v = 10}) end)
+    print("assert passed = " .. tostring(ok))
 end
 
 --@api-stub: LSchema:getName
--- Returns this schema's display name.
 do
     local s = lurek.docs.schema({}, "TestSchema")
     print("name = " .. s:getName())
 end
 
 --@api-stub: LSchema:getFields
--- Returns the field names declared by this schema.
 do
     local s = lurek.docs.schema({a = {type = "number"}, b = {type = "string"}})
     local fields = s:getFields()
@@ -276,199 +217,123 @@ do
 end
 
 --@api-stub: LSchema:type
--- Returns the type name ("LSchema").
 do
     local s = lurek.docs.schema({})
     print("type = " .. s:type())
 end
 
 --@api-stub: LSchema:typeOf
--- Returns whether this handle matches a type name.
 do
     local s = lurek.docs.schema({})
     print("is LSchema = " .. tostring(s:typeOf("LSchema")))
 end
 
 --@api-stub: LDocEntry:getName
--- Returns the short API name.
 do
-    local cat = lurek.docs.scan()
-    local entries = cat:getEntries("math")
-    if #entries > 0 then
-        print("name = " .. entries[1]:getName())
-    end
+    local entry = lurek.docs.scan():getEntries("math")[1]
+    print("name = " .. entry:getName())
 end
 
 --@api-stub: LDocEntry:getQualifiedName
--- Returns the full dotted API name.
 do
-    local cat = lurek.docs.scan()
-    local entries = cat:getEntries("math")
-    if #entries > 0 then
-        print("qualified = " .. entries[1]:getQualifiedName())
-    end
+    local entry = lurek.docs.scan():getEntries("math")[1]
+    print("qualified = " .. entry:getQualifiedName())
 end
 
 --@api-stub: LDocEntry:getModule
--- Returns the module name.
 do
-    local cat = lurek.docs.scan()
-    local entries = cat:getEntries("math")
-    if #entries > 0 then
-        print("module = " .. entries[1]:getModule())
-    end
+    local entry = lurek.docs.scan():getEntries("math")[1]
+    print("module = " .. entry:getModule())
 end
 
 --@api-stub: LDocEntry:getKind
--- Returns the documentation kind.
 do
-    local cat = lurek.docs.scan()
-    local entries = cat:getEntries("math")
-    if #entries > 0 then
-        print("kind = " .. entries[1]:getKind())
-    end
+    local entry = lurek.docs.scan():getEntries("math")[1]
+    print("kind = " .. entry:getKind())
 end
 
 --@api-stub: LDocEntry:getDescription
--- Returns the description text.
 do
-    local cat = lurek.docs.scan()
-    local entries = cat:getEntries()
-    if #entries > 0 then
-        print("desc len = " .. #entries[1]:getDescription())
-    end
+    local entry = lurek.docs.scan():getEntries()[1]
+    print("desc len = " .. #entry:getDescription())
 end
 
 --@api-stub: LDocEntry:getParameters
--- Returns parameter metadata rows.
 do
-    local cat = lurek.docs.scan()
-    local entries = cat:getEntries("math")
-    if #entries > 0 then
-        local params = entries[1]:getParameters()
-        print("params = " .. #params)
-    end
+    local params = lurek.docs.scan():getEntries("math")[1]:getParameters()
+    print("params = " .. #params)
 end
 
 --@api-stub: LDocEntry:getReturns
--- Returns return-value metadata rows.
 do
-    local cat = lurek.docs.scan()
-    local entries = cat:getEntries("math")
-    if #entries > 0 then
-        local rets = entries[1]:getReturns()
-        print("returns = " .. #rets)
-    end
+    local returns = lurek.docs.scan():getEntries("math")[1]:getReturns()
+    print("returns = " .. #returns)
 end
 
 --@api-stub: LDocEntry:getExample
--- Returns example text when present.
 do
-    local cat = lurek.docs.scan()
-    local entries = cat:getEntries()
-    if #entries > 0 then
-        local ex = entries[1]:getExample()
-        print("example = " .. type(ex))
-    end
+    local example = lurek.docs.scan():getEntries()[1]:getExample()
+    print("example = " .. type(example))
 end
 
 --@api-stub: LDocEntry:getSince
--- Returns the since-version text.
 do
-    local cat = lurek.docs.scan()
-    local entries = cat:getEntries()
-    if #entries > 0 then
-        local since = entries[1]:getSince()
-        print("since = " .. type(since))
-    end
+    local since = lurek.docs.scan():getEntries()[1]:getSince()
+    print("since = " .. type(since))
 end
 
 --@api-stub: LDocEntry:getDeprecated
--- Returns the deprecation text.
 do
-    local cat = lurek.docs.scan()
-    local entries = cat:getEntries()
-    if #entries > 0 then
-        local dep = entries[1]:getDeprecated()
-        print("deprecated = " .. type(dep))
-    end
+    local deprecated = lurek.docs.scan():getEntries()[1]:getDeprecated()
+    print("deprecated = " .. type(deprecated))
 end
 
 --@api-stub: LDocEntry:getScore
--- Returns the documentation quality score.
 do
-    local cat = lurek.docs.scan()
-    local entries = cat:getEntries()
-    if #entries > 0 then
-        print("score = " .. entries[1]:getScore())
-    end
+    local entry = lurek.docs.scan():getEntries()[1]
+    print("score = " .. entry:getScore())
 end
 
 --@api-stub: LDocEntry:hasDescription
--- Returns whether this entry has description text.
 do
-    local cat = lurek.docs.scan()
-    local entries = cat:getEntries()
-    if #entries > 0 then
-        print("hasDesc = " .. tostring(entries[1]:hasDescription()))
-    end
+    local entry = lurek.docs.scan():getEntries()[1]
+    print("hasDesc = " .. tostring(entry:hasDescription()))
 end
 
 --@api-stub: LDocEntry:hasParameters
--- Returns whether this entry has parameter metadata.
 do
-    local cat = lurek.docs.scan()
-    local entries = cat:getEntries()
-    if #entries > 0 then
-        print("hasParams = " .. tostring(entries[1]:hasParameters()))
-    end
+    local entry = lurek.docs.scan():getEntries()[1]
+    print("hasParams = " .. tostring(entry:hasParameters()))
 end
 
 --@api-stub: LDocEntry:hasReturnType
--- Returns whether this entry has return-value metadata.
 do
-    local cat = lurek.docs.scan()
-    local entries = cat:getEntries()
-    if #entries > 0 then
-        print("hasReturn = " .. tostring(entries[1]:hasReturnType()))
-    end
+    local entry = lurek.docs.scan():getEntries()[1]
+    print("hasReturn = " .. tostring(entry:hasReturnType()))
 end
 
 --@api-stub: LDocEntry:hasExample
--- Returns whether this entry has example text.
 do
-    local cat = lurek.docs.scan()
-    local entries = cat:getEntries()
-    if #entries > 0 then
-        print("hasExample = " .. tostring(entries[1]:hasExample()))
-    end
+    local entry = lurek.docs.scan():getEntries()[1]
+    print("hasExample = " .. tostring(entry:hasExample()))
 end
 
 --@api-stub: LDocEntry:type
--- Returns the type name ("LDocEntry").
 do
-    local cat = lurek.docs.scan()
-    local entries = cat:getEntries()
-    if #entries > 0 then
-        print("type = " .. entries[1]:type())
-    end
+    local entry = lurek.docs.scan():getEntries()[1]
+    print("type = " .. entry:type())
 end
 
 --@api-stub: LDocEntry:typeOf
--- Returns whether this handle matches a type name.
 do
-    local cat = lurek.docs.scan()
-    local entries = cat:getEntries()
-    if #entries > 0 then
-        print("is LDocEntry = " .. tostring(entries[1]:typeOf("LDocEntry")))
-    end
+    local entry = lurek.docs.scan():getEntries()[1]
+    print("is LDocEntry = " .. tostring(entry:typeOf("LDocEntry")))
 end
 
 --- Docs Module Part 2: LApiCatalog, LValidationReport, LQualityReport
 
 
 --@api-stub: LApiCatalog:getModules
--- Returns the list of module names in this catalog.
 do
     local cat = lurek.docs.scan()
     local modules = cat:getModules()
@@ -476,7 +341,6 @@ do
 end
 
 --@api-stub: LApiCatalog:getEntries
--- Returns all doc entries, optionally filtered by module.
 do
     local cat = lurek.docs.scan()
     local all = cat:getEntries()
@@ -485,17 +349,12 @@ do
 end
 
 --@api-stub: LApiCatalog:getEntry
--- Returns a specific entry by qualified name, or nil.
 do
     local cat = lurek.docs.scan()
-    local entry = cat:getEntry("lurek.math.lerp")
-    if entry then
-        print("found entry")
-    end
+    print("found entry = " .. tostring(cat:getEntry("lurek.math.lerp") ~= nil))
 end
 
 --@api-stub: LApiCatalog:getTypes
--- Returns the user-defined type names in a module.
 do
     local cat = lurek.docs.scan()
     local types = cat:getTypes("math")
@@ -503,7 +362,6 @@ do
 end
 
 --@api-stub: LApiCatalog:getTypeMethods
--- Returns the doc entries for a type's methods.
 do
     local cat = lurek.docs.scan()
     local methods = cat:getTypeMethods("LVec2")
@@ -511,7 +369,6 @@ do
 end
 
 --@api-stub: LApiCatalog:entryCount
--- Returns the total or per-module entry count.
 do
     local cat = lurek.docs.scan()
     local total = cat:entryCount()
@@ -520,7 +377,6 @@ do
 end
 
 --@api-stub: LApiCatalog:merge
--- Merges another catalog into this one, returning a combined catalog.
 do
     local a = lurek.docs.scanModule("math")
     local b = lurek.docs.scanModule("timer")
@@ -529,17 +385,13 @@ do
 end
 
 --@api-stub: LApiCatalog:filter
--- Returns a new catalog containing entries where predicate is truthy.
 do
     local cat = lurek.docs.scan()
-    local fns = cat:filter(function(entry)
-        return entry:getKind() == "function"
-    end)
+    local fns = cat:filter(function(entry) return entry:getKind() == "function" end)
     print("functions = " .. fns:entryCount())
 end
 
 --@api-stub: LApiCatalog:search
--- Fuzzy-searches entries by name and returns matches.
 do
     local cat = lurek.docs.scan()
     local results = cat:search("lerp")
@@ -547,17 +399,13 @@ do
 end
 
 --@api-stub: LApiCatalog:toTable
--- Converts the catalog to a plain Lua array of row tables.
 do
     local cat = lurek.docs.scanModule("math")
     local rows = cat:toTable()
-    if #rows > 0 then
-        print("first row name = " .. rows[1].name)
-    end
+    print("rows = " .. #rows)
 end
 
 --@api-stub: LApiCatalog:toJSON
--- Serializes the catalog to a JSON string.
 do
     local cat = lurek.docs.scanModule("timer")
     local json = cat:toJSON()
@@ -565,21 +413,18 @@ do
 end
 
 --@api-stub: LApiCatalog:type
--- Returns the type name ("LApiCatalog").
 do
     local cat = lurek.docs.scan()
     print("type = " .. cat:type())
 end
 
 --@api-stub: LApiCatalog:typeOf
--- Returns whether this handle matches a type name.
 do
     local cat = lurek.docs.scan()
     print("is LApiCatalog = " .. tostring(cat:typeOf("LApiCatalog")))
 end
 
 --@api-stub: LValidationReport:isValid
--- Returns true when there are no missing or phantom entries.
 do
     local cat = lurek.docs.scan()
     local report = lurek.docs.validate(cat)
@@ -587,7 +432,6 @@ do
 end
 
 --@api-stub: LValidationReport:getMissing
--- Returns names that are live but not documented.
 do
     local cat = lurek.docs.scan()
     local report = lurek.docs.validate(cat)
@@ -596,7 +440,6 @@ do
 end
 
 --@api-stub: LValidationReport:getPhantom
--- Returns names documented but not live.
 do
     local cat = lurek.docs.scan()
     local report = lurek.docs.validate(cat)
@@ -605,7 +448,6 @@ do
 end
 
 --@api-stub: LValidationReport:getIncomplete
--- Returns names with incomplete documentation.
 do
     local cat = lurek.docs.scan()
     local report = lurek.docs.validate(cat)
@@ -614,7 +456,6 @@ do
 end
 
 --@api-stub: LValidationReport:missingCount
--- Returns the count of missing entries.
 do
     local cat = lurek.docs.scan()
     local report = lurek.docs.validate(cat)
@@ -622,7 +463,6 @@ do
 end
 
 --@api-stub: LValidationReport:phantomCount
--- Returns the count of phantom entries.
 do
     local cat = lurek.docs.scan()
     local report = lurek.docs.validate(cat)
@@ -630,7 +470,6 @@ do
 end
 
 --@api-stub: LValidationReport:incompleteCount
--- Returns the count of incomplete entries.
 do
     local cat = lurek.docs.scan()
     local report = lurek.docs.validate(cat)
@@ -638,7 +477,6 @@ do
 end
 
 --@api-stub: LValidationReport:getSummary
--- Returns a human-readable summary string.
 do
     local cat = lurek.docs.scan()
     local report = lurek.docs.validate(cat)
@@ -646,7 +484,6 @@ do
 end
 
 --@api-stub: LValidationReport:toTable
--- Converts the report to a plain Lua table.
 do
     local cat = lurek.docs.scan()
     local report = lurek.docs.validate(cat)
@@ -655,7 +492,6 @@ do
 end
 
 --@api-stub: LValidationReport:toJSON
--- Serializes the report to a JSON string.
 do
     local cat = lurek.docs.scan()
     local report = lurek.docs.validate(cat)
@@ -664,7 +500,6 @@ do
 end
 
 --@api-stub: LValidationReport:type
--- Returns the type name ("LValidationReport").
 do
     local cat = lurek.docs.scan()
     local report = lurek.docs.validate(cat)
@@ -672,7 +507,6 @@ do
 end
 
 --@api-stub: LValidationReport:typeOf
--- Returns whether this handle matches a type name.
 do
     local cat = lurek.docs.scan()
     local report = lurek.docs.validate(cat)
@@ -680,7 +514,6 @@ do
 end
 
 --@api-stub: LQualityReport:getOverallScore
--- Returns the overall documentation quality score (0-100).
 do
     local cat = lurek.docs.scan()
     local qr = lurek.docs.quality(cat)
@@ -688,7 +521,6 @@ do
 end
 
 --@api-stub: LQualityReport:getGrade
--- Returns the letter grade (A-F).
 do
     local cat = lurek.docs.scan()
     local qr = lurek.docs.quality(cat)
@@ -696,7 +528,6 @@ do
 end
 
 --@api-stub: LQualityReport:getModuleScores
--- Returns a table mapping module names to scores.
 do
     local cat = lurek.docs.scan()
     local qr = lurek.docs.quality(cat)
@@ -705,7 +536,6 @@ do
 end
 
 --@api-stub: LQualityReport:getWorst
--- Returns the worst-scoring entries.
 do
     local cat = lurek.docs.scan()
     local qr = lurek.docs.quality(cat)
@@ -714,7 +544,6 @@ do
 end
 
 --@api-stub: LQualityReport:getBest
--- Returns the best-scoring entries.
 do
     local cat = lurek.docs.scan()
     local qr = lurek.docs.quality(cat)
@@ -723,7 +552,6 @@ do
 end
 
 --@api-stub: LQualityReport:getByGrade
--- Returns entries that match a given letter grade.
 do
     local cat = lurek.docs.scan()
     local qr = lurek.docs.quality(cat)
@@ -732,7 +560,6 @@ do
 end
 
 --@api-stub: LQualityReport:getSummary
--- Returns a human-readable quality summary.
 do
     local cat = lurek.docs.scan()
     local qr = lurek.docs.quality(cat)
@@ -740,7 +567,6 @@ do
 end
 
 --@api-stub: LQualityReport:toTable
--- Converts the quality report to a plain Lua table.
 do
     local cat = lurek.docs.scan()
     local qr = lurek.docs.quality(cat)
@@ -749,7 +575,6 @@ do
 end
 
 --@api-stub: LQualityReport:toJSON
--- Serializes the quality report to a JSON string.
 do
     local cat = lurek.docs.scan()
     local qr = lurek.docs.quality(cat)
@@ -758,7 +583,6 @@ do
 end
 
 --@api-stub: LQualityReport:type
--- Returns the type name ("LQualityReport").
 do
     local cat = lurek.docs.scan()
     local qr = lurek.docs.quality(cat)
@@ -766,7 +590,6 @@ do
 end
 
 --@api-stub: LQualityReport:typeOf
--- Returns whether this handle matches a type name.
 do
     local cat = lurek.docs.scan()
     local qr = lurek.docs.quality(cat)

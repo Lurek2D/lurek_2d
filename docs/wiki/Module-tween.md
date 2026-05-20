@@ -161,8 +161,12 @@ Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
 do
     local target = { v = 0.0 }
     lurek.tween.to(target, { v = 1 }, 2.0, "linear")
+    print("active=" .. lurek.tween.getActiveCount())
     lurek.tween.cancelAll()
     print("active_after=" .. lurek.tween.getActiveCount())
+
+    local names = lurek.tween.getEasingNames()
+    print("easing_count=" .. #names)
 end
 ```
 
@@ -214,6 +218,8 @@ do
     lurek.tween.tween(1.0, a, { x = 10 })
     lurek.tween.tween(2.0, b, { y = 20 })
     print("active count = " .. lurek.tween.getActiveCount())
+    lurek.tween.cancelAll()
+    print("after cancelAll = " .. lurek.tween.getActiveCount())
 end
 ```
 
@@ -231,6 +237,12 @@ Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
 
 ```lua
 do
+    local target = { v = 0.0 }
+    lurek.tween.to(target, { v = 1 }, 2.0, "linear")
+    print("active=" .. lurek.tween.getActiveCount())
+    lurek.tween.cancelAll()
+    print("active_after=" .. lurek.tween.getActiveCount())
+
     local names = lurek.tween.getEasingNames()
     print("easing_count=" .. #names)
 end
@@ -358,6 +370,21 @@ do
     print("after step 1: x=" .. obj.x .. " y=" .. obj.y)
     lurek.tween.update(0.5)
     print("after step 2: x=" .. obj.x .. " y=" .. obj.y)
+
+    -- Delay step with its own callback.
+    local obj = { v = 0 }
+    ---@type LTweenSequence
+    local seq = lurek.tween.sequence()
+    seq:tween(0.5, obj, { v = 50 })
+    seq:delay(1.0, function()
+        print("  delay elapsed, v=" .. obj.v)
+    end)
+    seq:tween(0.5, obj, { v = 100 })
+    seq:start()
+    lurek.tween.update(0.5)
+    lurek.tween.update(1.0)
+    lurek.tween.update(0.5)
+    print("final v=" .. obj.v)
 end
 ```
 
@@ -767,7 +794,13 @@ do
     local obj = { size = 50 }
     ---@type LSpring
     local spring = lurek.tween.spring(obj, { size = 100 })
+    spring:setStiffness(300)
+    spring:setDamping(20)
     for i = 1, 30 do spring:update(1 / 60) end
+    print("size = " .. string.format("%.1f", obj.size))
+    spring:setTarget({ size = 0 })
+    for i = 1, 60 do spring:update(1 / 60) end
+    print("retargeted size = " .. string.format("%.1f", obj.size))
     local pos = spring:getPosition("size")
     print("getPosition = " .. tostring(pos))
 end
@@ -797,7 +830,10 @@ Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
 do
     local obj = {x = 0}
     local sp = lurek.tween.spring(obj, {x = 100}, {stiffness = 200, damping = 20})
-    print("spring active:", sp:isActive())
+    sp:update(0.016)
+    local active = sp:isActive()
+    local settled = sp:isSettled()
+    print("spring active:", active, "settled:", settled)
 end
 ```
 
@@ -826,7 +862,9 @@ do
     local obj = {x = 0}
     local sp = lurek.tween.spring(obj, {x = 100}, {stiffness = 200, damping = 20})
     sp:update(0.016)
-    print("settled:", sp:isSettled())
+    local active = sp:isActive()
+    local settled = sp:isSettled()
+    print("spring active:", active, "settled:", settled)
 end
 ```
 
@@ -857,9 +895,15 @@ do
     local obj = { size = 50 }
     ---@type LSpring
     local spring = lurek.tween.spring(obj, { size = 100 })
+    spring:setStiffness(300)
     spring:setDamping(20)
     for i = 1, 30 do spring:update(1 / 60) end
     print("size = " .. string.format("%.1f", obj.size))
+    spring:setTarget({ size = 0 })
+    for i = 1, 60 do spring:update(1 / 60) end
+    print("retargeted size = " .. string.format("%.1f", obj.size))
+    local pos = spring:getPosition("size")
+    print("getPosition = " .. tostring(pos))
 end
 ```
 
@@ -891,8 +935,14 @@ do
     ---@type LSpring
     local spring = lurek.tween.spring(obj, { size = 100 })
     spring:setStiffness(300)
+    spring:setDamping(20)
     for i = 1, 30 do spring:update(1 / 60) end
     print("size = " .. string.format("%.1f", obj.size))
+    spring:setTarget({ size = 0 })
+    for i = 1, 60 do spring:update(1 / 60) end
+    print("retargeted size = " .. string.format("%.1f", obj.size))
+    local pos = spring:getPosition("size")
+    print("getPosition = " .. tostring(pos))
 end
 ```
 
@@ -923,9 +973,15 @@ do
     local obj = { size = 50 }
     ---@type LSpring
     local spring = lurek.tween.spring(obj, { size = 100 })
+    spring:setStiffness(300)
+    spring:setDamping(20)
+    for i = 1, 30 do spring:update(1 / 60) end
+    print("size = " .. string.format("%.1f", obj.size))
     spring:setTarget({ size = 0 })
     for i = 1, 60 do spring:update(1 / 60) end
     print("retargeted size = " .. string.format("%.1f", obj.size))
+    local pos = spring:getPosition("size")
+    print("getPosition = " .. tostring(pos))
 end
 ```
 
@@ -953,7 +1009,9 @@ Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
 do
     local state = {v = 0}
     local sp = lurek.tween.spring(state, {v = 50}, {stiffness = 150, damping = 15})
-    print("spring type:", sp:type())
+    local t = sp:type()
+    local ok = sp:typeOf("LSpring")
+    print("spring type:", t, "typeOf:", ok)
 end
 ```
 
@@ -986,7 +1044,9 @@ Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
 do
     local state = {v = 0}
     local sp = lurek.tween.spring(state, {v = 50}, {stiffness = 150, damping = 15})
-    print("typeOf:", sp:typeOf("LSpring"))
+    local t = sp:type()
+    local ok = sp:typeOf("LSpring")
+    print("spring type:", t, "typeOf:", ok)
 end
 ```
 
@@ -1019,9 +1079,10 @@ Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
 do
     local obj = {x = 0}
     local sp = lurek.tween.spring(obj, {x = 100}, {stiffness = 200, damping = 20})
-    print("before:", obj.x)
     sp:update(0.016)
-    print("after:", obj.x)
+    local active = sp:isActive()
+    local settled = sp:isSettled()
+    print("spring active:", active, "settled:", settled)
 end
 ```
 
@@ -1046,7 +1107,18 @@ Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
 do
     local target = { x = 0.0 }
     local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear")
+    print("duration=" .. tw:getDuration())
+    print("easing=" .. tw:getEasingName())
+    print("elapsed=" .. tw:getElapsed())
+    print("progress=" .. tw:getProgress())
+    print("remaining=" .. tw:getRemaining())
+    print("active=" .. tostring(tw:isActive()))
+    tw:onComplete(function() print("tween_complete") end)
+    tw:setRelative(false)
+    print("type=" .. tw:type())
+    print("typeOf=" .. tostring(tw:typeOf("LTween")))
     tw:await()
+    tw:cancel()
 end
 ```
 
@@ -1106,6 +1178,17 @@ do
     local target = { x = 0.0 }
     local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear")
     print("duration=" .. tw:getDuration())
+    print("easing=" .. tw:getEasingName())
+    print("elapsed=" .. tw:getElapsed())
+    print("progress=" .. tw:getProgress())
+    print("remaining=" .. tw:getRemaining())
+    print("active=" .. tostring(tw:isActive()))
+    tw:onComplete(function() print("tween_complete") end)
+    tw:setRelative(false)
+    print("type=" .. tw:type())
+    print("typeOf=" .. tostring(tw:typeOf("LTween")))
+    tw:await()
+    tw:cancel()
 end
 ```
 
@@ -1133,7 +1216,18 @@ Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
 do
     local target = { x = 0.0 }
     local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear")
+    print("duration=" .. tw:getDuration())
+    print("easing=" .. tw:getEasingName())
     print("elapsed=" .. tw:getElapsed())
+    print("progress=" .. tw:getProgress())
+    print("remaining=" .. tw:getRemaining())
+    print("active=" .. tostring(tw:isActive()))
+    tw:onComplete(function() print("tween_complete") end)
+    tw:setRelative(false)
+    print("type=" .. tw:type())
+    print("typeOf=" .. tostring(tw:typeOf("LTween")))
+    tw:await()
+    tw:cancel()
 end
 ```
 
@@ -1191,7 +1285,18 @@ Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
 do
     local target = { x = 0.0 }
     local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear")
+    print("duration=" .. tw:getDuration())
+    print("easing=" .. tw:getEasingName())
+    print("elapsed=" .. tw:getElapsed())
     print("progress=" .. tw:getProgress())
+    print("remaining=" .. tw:getRemaining())
+    print("active=" .. tostring(tw:isActive()))
+    tw:onComplete(function() print("tween_complete") end)
+    tw:setRelative(false)
+    print("type=" .. tw:type())
+    print("typeOf=" .. tostring(tw:typeOf("LTween")))
+    tw:await()
+    tw:cancel()
 end
 ```
 
@@ -1219,7 +1324,18 @@ Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
 do
     local target = { x = 0.0 }
     local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear")
+    print("duration=" .. tw:getDuration())
+    print("easing=" .. tw:getEasingName())
+    print("elapsed=" .. tw:getElapsed())
+    print("progress=" .. tw:getProgress())
     print("remaining=" .. tw:getRemaining())
+    print("active=" .. tostring(tw:isActive()))
+    tw:onComplete(function() print("tween_complete") end)
+    tw:setRelative(false)
+    print("type=" .. tw:type())
+    print("typeOf=" .. tostring(tw:typeOf("LTween")))
+    tw:await()
+    tw:cancel()
 end
 ```
 
@@ -1247,7 +1363,18 @@ Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
 do
     local target = { x = 0.0 }
     local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear")
+    print("duration=" .. tw:getDuration())
+    print("easing=" .. tw:getEasingName())
+    print("elapsed=" .. tw:getElapsed())
+    print("progress=" .. tw:getProgress())
+    print("remaining=" .. tw:getRemaining())
     print("active=" .. tostring(tw:isActive()))
+    tw:onComplete(function() print("tween_complete") end)
+    tw:setRelative(false)
+    print("type=" .. tw:type())
+    print("typeOf=" .. tostring(tw:typeOf("LTween")))
+    tw:await()
+    tw:cancel()
 end
 ```
 
@@ -1318,7 +1445,18 @@ Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
 do
     local target = { x = 0.0 }
     local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear")
+    print("duration=" .. tw:getDuration())
+    print("easing=" .. tw:getEasingName())
+    print("elapsed=" .. tw:getElapsed())
+    print("progress=" .. tw:getProgress())
+    print("remaining=" .. tw:getRemaining())
+    print("active=" .. tostring(tw:isActive()))
     tw:onComplete(function() print("tween_complete") end)
+    tw:setRelative(false)
+    print("type=" .. tw:type())
+    print("typeOf=" .. tostring(tw:typeOf("LTween")))
+    tw:await()
+    tw:cancel()
 end
 ```
 
@@ -1483,8 +1621,18 @@ Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
 do
     local target = { x = 0.0 }
     local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear")
+    print("duration=" .. tw:getDuration())
+    print("easing=" .. tw:getEasingName())
+    print("elapsed=" .. tw:getElapsed())
+    print("progress=" .. tw:getProgress())
+    print("remaining=" .. tw:getRemaining())
+    print("active=" .. tostring(tw:isActive()))
+    tw:onComplete(function() print("tween_complete") end)
     tw:setRelative(false)
-    print("relative disabled")
+    print("type=" .. tw:type())
+    print("typeOf=" .. tostring(tw:typeOf("LTween")))
+    tw:await()
+    tw:cancel()
 end
 ```
 
@@ -1617,7 +1765,18 @@ Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
 do
     local target = { x = 0.0 }
     local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear")
+    print("duration=" .. tw:getDuration())
+    print("easing=" .. tw:getEasingName())
+    print("elapsed=" .. tw:getElapsed())
+    print("progress=" .. tw:getProgress())
+    print("remaining=" .. tw:getRemaining())
+    print("active=" .. tostring(tw:isActive()))
+    tw:onComplete(function() print("tween_complete") end)
+    tw:setRelative(false)
     print("type=" .. tw:type())
+    print("typeOf=" .. tostring(tw:typeOf("LTween")))
+    tw:await()
+    tw:cancel()
 end
 ```
 
@@ -1650,7 +1809,18 @@ Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
 do
     local target = { x = 0.0 }
     local tw = lurek.tween.to(target, { x = 100 }, 1.0, "linear")
+    print("duration=" .. tw:getDuration())
+    print("easing=" .. tw:getEasingName())
+    print("elapsed=" .. tw:getElapsed())
+    print("progress=" .. tw:getProgress())
+    print("remaining=" .. tw:getRemaining())
+    print("active=" .. tostring(tw:isActive()))
+    tw:onComplete(function() print("tween_complete") end)
+    tw:setRelative(false)
+    print("type=" .. tw:type())
     print("typeOf=" .. tostring(tw:typeOf("LTween")))
+    tw:await()
+    tw:cancel()
 end
 ```
 
@@ -1686,7 +1856,12 @@ do
     par:tween(0.5, b, { y = 20 }, "easeinquad")
     local tw_extra = lurek.tween.to({ z = 0.0 }, { z = 10 }, 0.3, "linear")
     par:add(tw_extra)
-    print("add ok")
+    par:onComplete(function() print("parallel_done") end)
+    print("par_active=" .. tostring(par:isActive()))
+    print("par_type=" .. par:type())
+    print("par_typeOf=" .. tostring(par:typeOf("LTweenParallel")))
+    par:start()
+    par:cancel()
 end
 ```
 
@@ -1752,7 +1927,12 @@ do
     par:tween(0.5, b, { y = 20 }, "easeinquad")
     local tw_extra = lurek.tween.to({ z = 0.0 }, { z = 10 }, 0.3, "linear")
     par:add(tw_extra)
+    par:onComplete(function() print("parallel_done") end)
     print("par_active=" .. tostring(par:isActive()))
+    print("par_type=" .. par:type())
+    print("par_typeOf=" .. tostring(par:typeOf("LTweenParallel")))
+    par:start()
+    par:cancel()
 end
 ```
 
@@ -1792,6 +1972,11 @@ do
     local tw_extra = lurek.tween.to({ z = 0.0 }, { z = 10 }, 0.3, "linear")
     par:add(tw_extra)
     par:onComplete(function() print("parallel_done") end)
+    print("par_active=" .. tostring(par:isActive()))
+    print("par_type=" .. par:type())
+    print("par_typeOf=" .. tostring(par:typeOf("LTweenParallel")))
+    par:start()
+    par:cancel()
 end
 ```
 
@@ -1824,8 +2009,12 @@ do
     par:tween(0.5, b, { y = 20 }, "easeinquad")
     local tw_extra = lurek.tween.to({ z = 0.0 }, { z = 10 }, 0.3, "linear")
     par:add(tw_extra)
+    par:onComplete(function() print("parallel_done") end)
+    print("par_active=" .. tostring(par:isActive()))
+    print("par_type=" .. par:type())
+    print("par_typeOf=" .. tostring(par:typeOf("LTweenParallel")))
     par:start()
-    print("start ok")
+    par:cancel()
 end
 ```
 
@@ -1863,9 +2052,18 @@ Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
 ```lua
 do
     local a = { x = 0.0 }
+    local b = { y = 0.0 }
     local par = lurek.tween.parallel()
     par:tween(1.0, a, { x = 50 }, "linear")
-    print("tween added")
+    par:tween(0.5, b, { y = 20 }, "easeinquad")
+    local tw_extra = lurek.tween.to({ z = 0.0 }, { z = 10 }, 0.3, "linear")
+    par:add(tw_extra)
+    par:onComplete(function() print("parallel_done") end)
+    print("par_active=" .. tostring(par:isActive()))
+    print("par_type=" .. par:type())
+    print("par_typeOf=" .. tostring(par:typeOf("LTweenParallel")))
+    par:start()
+    par:cancel()
 end
 ```
 
@@ -1891,8 +2089,19 @@ Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
 
 ```lua
 do
+    local a = { x = 0.0 }
+    local b = { y = 0.0 }
     local par = lurek.tween.parallel()
+    par:tween(1.0, a, { x = 50 }, "linear")
+    par:tween(0.5, b, { y = 20 }, "easeinquad")
+    local tw_extra = lurek.tween.to({ z = 0.0 }, { z = 10 }, 0.3, "linear")
+    par:add(tw_extra)
+    par:onComplete(function() print("parallel_done") end)
+    print("par_active=" .. tostring(par:isActive()))
     print("par_type=" .. par:type())
+    print("par_typeOf=" .. tostring(par:typeOf("LTweenParallel")))
+    par:start()
+    par:cancel()
 end
 ```
 
@@ -1923,8 +2132,19 @@ Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
 
 ```lua
 do
+    local a = { x = 0.0 }
+    local b = { y = 0.0 }
     local par = lurek.tween.parallel()
+    par:tween(1.0, a, { x = 50 }, "linear")
+    par:tween(0.5, b, { y = 20 }, "easeinquad")
+    local tw_extra = lurek.tween.to({ z = 0.0 }, { z = 10 }, 0.3, "linear")
+    par:add(tw_extra)
+    par:onComplete(function() print("parallel_done") end)
+    print("par_active=" .. tostring(par:isActive()))
+    print("par_type=" .. par:type())
     print("par_typeOf=" .. tostring(par:typeOf("LTweenParallel")))
+    par:start()
+    par:cancel()
 end
 ```
 
@@ -1950,7 +2170,15 @@ do
     local obj = { x = 0.0, alpha = 1.0 }
     local seq = lurek.tween.sequence()
     seq:tween(0.5, obj, { x = 100 }, "linear")
+    seq:delay(0.1, function() print("seq_delay_cb") end)
+    seq:tween(0.5, obj, { alpha = 0 }, "easeout")
+    seq:onComplete(function() print("seq_done") end)
+    print("seq_active=" .. tostring(seq:isActive()))
+    print("seq_type=" .. seq:type())
+    print("seq_typeOf=" .. tostring(seq:typeOf("LTweenSequence")))
+    seq:start()
     seq:await()
+    seq:cancel()
 end
 ```
 
@@ -2062,8 +2290,16 @@ Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
 do
     local obj = { x = 0.0, alpha = 1.0 }
     local seq = lurek.tween.sequence()
+    seq:tween(0.5, obj, { x = 100 }, "linear")
     seq:delay(0.1, function() print("seq_delay_cb") end)
-    print("delay added")
+    seq:tween(0.5, obj, { alpha = 0 }, "easeout")
+    seq:onComplete(function() print("seq_done") end)
+    print("seq_active=" .. tostring(seq:isActive()))
+    print("seq_type=" .. seq:type())
+    print("seq_typeOf=" .. tostring(seq:typeOf("LTweenSequence")))
+    seq:start()
+    seq:await()
+    seq:cancel()
 end
 ```
 
@@ -2127,7 +2363,15 @@ do
     local obj = { x = 0.0, alpha = 1.0 }
     local seq = lurek.tween.sequence()
     seq:tween(0.5, obj, { x = 100 }, "linear")
+    seq:delay(0.1, function() print("seq_delay_cb") end)
+    seq:tween(0.5, obj, { alpha = 0 }, "easeout")
+    seq:onComplete(function() print("seq_done") end)
     print("seq_active=" .. tostring(seq:isActive()))
+    print("seq_type=" .. seq:type())
+    print("seq_typeOf=" .. tostring(seq:typeOf("LTweenSequence")))
+    seq:start()
+    seq:await()
+    seq:cancel()
 end
 ```
 
@@ -2162,7 +2406,15 @@ do
     local obj = { x = 0.0, alpha = 1.0 }
     local seq = lurek.tween.sequence()
     seq:tween(0.5, obj, { x = 100 }, "linear")
+    seq:delay(0.1, function() print("seq_delay_cb") end)
+    seq:tween(0.5, obj, { alpha = 0 }, "easeout")
     seq:onComplete(function() print("seq_done") end)
+    print("seq_active=" .. tostring(seq:isActive()))
+    print("seq_type=" .. seq:type())
+    print("seq_typeOf=" .. tostring(seq:typeOf("LTweenSequence")))
+    seq:start()
+    seq:await()
+    seq:cancel()
 end
 ```
 
@@ -2191,8 +2443,15 @@ do
     local obj = { x = 0.0, alpha = 1.0 }
     local seq = lurek.tween.sequence()
     seq:tween(0.5, obj, { x = 100 }, "linear")
+    seq:delay(0.1, function() print("seq_delay_cb") end)
+    seq:tween(0.5, obj, { alpha = 0 }, "easeout")
+    seq:onComplete(function() print("seq_done") end)
+    print("seq_active=" .. tostring(seq:isActive()))
+    print("seq_type=" .. seq:type())
+    print("seq_typeOf=" .. tostring(seq:typeOf("LTweenSequence")))
     seq:start()
-    print("start ok")
+    seq:await()
+    seq:cancel()
 end
 ```
 
@@ -2229,10 +2488,18 @@ Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
 
 ```lua
 do
-    local obj = { x = 0.0 }
+    local obj = { x = 0.0, alpha = 1.0 }
     local seq = lurek.tween.sequence()
     seq:tween(0.5, obj, { x = 100 }, "linear")
-    print("tween added")
+    seq:delay(0.1, function() print("seq_delay_cb") end)
+    seq:tween(0.5, obj, { alpha = 0 }, "easeout")
+    seq:onComplete(function() print("seq_done") end)
+    print("seq_active=" .. tostring(seq:isActive()))
+    print("seq_type=" .. seq:type())
+    print("seq_typeOf=" .. tostring(seq:typeOf("LTweenSequence")))
+    seq:start()
+    seq:await()
+    seq:cancel()
 end
 ```
 
@@ -2258,8 +2525,18 @@ Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
 
 ```lua
 do
+    local obj = { x = 0.0, alpha = 1.0 }
     local seq = lurek.tween.sequence()
+    seq:tween(0.5, obj, { x = 100 }, "linear")
+    seq:delay(0.1, function() print("seq_delay_cb") end)
+    seq:tween(0.5, obj, { alpha = 0 }, "easeout")
+    seq:onComplete(function() print("seq_done") end)
+    print("seq_active=" .. tostring(seq:isActive()))
     print("seq_type=" .. seq:type())
+    print("seq_typeOf=" .. tostring(seq:typeOf("LTweenSequence")))
+    seq:start()
+    seq:await()
+    seq:cancel()
 end
 ```
 
@@ -2290,8 +2567,18 @@ Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
 
 ```lua
 do
+    local obj = { x = 0.0, alpha = 1.0 }
     local seq = lurek.tween.sequence()
+    seq:tween(0.5, obj, { x = 100 }, "linear")
+    seq:delay(0.1, function() print("seq_delay_cb") end)
+    seq:tween(0.5, obj, { alpha = 0 }, "easeout")
+    seq:onComplete(function() print("seq_done") end)
+    print("seq_active=" .. tostring(seq:isActive()))
+    print("seq_type=" .. seq:type())
     print("seq_typeOf=" .. tostring(seq:typeOf("LTweenSequence")))
+    seq:start()
+    seq:await()
+    seq:cancel()
 end
 ```
 
@@ -2318,8 +2605,12 @@ Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
 ```lua
 do
     local state = lurek.tween.newState(1.0, "linear")
-    state:tick(1.0)
+    state:tick(0.25)
+    print("t=" .. state:t())
+    print("lerp=" .. state:lerp(0, 100))
     print("complete=" .. tostring(state:isComplete()))
+    print("type=" .. state:type())
+    print("typeOf=" .. tostring(state:typeOf("LTweenState")))
 end
 ```
 
@@ -2354,7 +2645,11 @@ Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
 do
     local state = lurek.tween.newState(1.0, "linear")
     state:tick(0.25)
+    print("t=" .. state:t())
     print("lerp=" .. state:lerp(0, 100))
+    print("complete=" .. tostring(state:isComplete()))
+    print("type=" .. state:type())
+    print("typeOf=" .. tostring(state:typeOf("LTweenState")))
 end
 ```
 
@@ -2412,6 +2707,10 @@ do
     local state = lurek.tween.newState(1.0, "linear")
     state:tick(0.25)
     print("t=" .. state:t())
+    print("lerp=" .. state:lerp(0, 100))
+    print("complete=" .. tostring(state:isComplete()))
+    print("type=" .. state:type())
+    print("typeOf=" .. tostring(state:typeOf("LTweenState")))
 end
 ```
 
@@ -2443,9 +2742,12 @@ Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
 ```lua
 do
     local state = lurek.tween.newState(1.0, "linear")
-    print("before=" .. state:t())
     state:tick(0.25)
-    print("after=" .. state:t())
+    print("t=" .. state:t())
+    print("lerp=" .. state:lerp(0, 100))
+    print("complete=" .. tostring(state:isComplete()))
+    print("type=" .. state:type())
+    print("typeOf=" .. tostring(state:typeOf("LTweenState")))
 end
 ```
 
@@ -2472,7 +2774,12 @@ Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
 ```lua
 do
     local state = lurek.tween.newState(1.0, "linear")
+    state:tick(0.25)
+    print("t=" .. state:t())
+    print("lerp=" .. state:lerp(0, 100))
+    print("complete=" .. tostring(state:isComplete()))
     print("type=" .. state:type())
+    print("typeOf=" .. tostring(state:typeOf("LTweenState")))
 end
 ```
 
@@ -2504,6 +2811,11 @@ Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
 ```lua
 do
     local state = lurek.tween.newState(1.0, "linear")
+    state:tick(0.25)
+    print("t=" .. state:t())
+    print("lerp=" .. state:lerp(0, 100))
+    print("complete=" .. tostring(state:isComplete()))
+    print("type=" .. state:type())
     print("typeOf=" .. tostring(state:typeOf("LTweenState")))
 end
 ```

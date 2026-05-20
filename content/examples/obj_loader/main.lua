@@ -1,4 +1,4 @@
--- OBJ loader example for Lurek2D
+﻿-- OBJ loader example for Lurek2D
 -- Run: lurek2d.exe content/examples/obj_loader
 
 local model
@@ -8,7 +8,7 @@ local t = 0.0
 function lurek.init()
     lurek.window.setTitle("OBJ Loader Example")
     lurek.render.setBackgroundColor(0.08, 0.10, 0.14)
-    model = lurek.render.loadObj("../../games/retro/dungeon_crawler/assets/models/sectoid.obj")
+    model = lurek.render.loadObj("content/examples/assets/models/sample_sectoid.obj")
 end
 
 local function rebuild_mesh()
@@ -35,5 +35,7 @@ function lurek.draw()
         lurek.render.draw(mesh, 0, 0)
     end
     lurek.render.setColor(1, 1, 1, 1)
-    lurek.render.print("OBJ: sectoid.obj projected to 2D mesh", 8, 8)
+    lurek.render.print("OBJ: sample_sectoid.obj projected to 2D mesh", 8, 8)
 end
+
+

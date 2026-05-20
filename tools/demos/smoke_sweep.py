@@ -44,6 +44,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 import time
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
@@ -146,9 +147,15 @@ def discover(games_root: Path, examples_root: Path) -> list[Target]:
 
 
 def run_target(binary: Path, target: Target, frames: int, timeout: float) -> Result:
+    temp_example_dir: tempfile.TemporaryDirectory[str] | None = None
+    run_path = target.path
+    if target.kind == "example":
+        temp_example_dir = prepare_example_run_dir(target.path)
+        run_path = Path(temp_example_dir.name)
+
     cmd = [
         str(binary),
-        str(target.path),
+        str(run_path),
         f"--screenshot={target.screenshot}",
         f"--screenshot-frames={frames}",
     ]
@@ -229,6 +236,29 @@ def run_target(binary: Path, target: Target, frames: int, timeout: float) -> Res
         error_head=head,
         stderr_tail=tail,
     )
+
+
+def prepare_example_run_dir(example_path: Path) -> tempfile.TemporaryDirectory[str]:
+    """Create a temporary game directory for a single-file example.
+
+    The engine expects a directory containing `main.lua`, while the examples
+    corpus is stored as `content/examples/*.lua`. We mirror the example into a
+    temporary game root as `main.lua` and copy the shared examples asset pack
+    under `content/examples/assets/` so existing relative paths keep working.
+    """
+    temp_dir = tempfile.TemporaryDirectory(prefix=f"lurek-example-{example_path.stem}-")
+    root = Path(temp_dir.name)
+
+    shutil.copy2(example_path, root / "main.lua")
+
+    assets_src = REPO_ROOT / "content" / "examples" / "assets"
+    if assets_src.is_dir():
+        assets_dst = root / "content" / "examples" / "assets"
+        assets_dst.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copytree(assets_src, assets_dst, dirs_exist_ok=True)
+
+    (root / "save").mkdir(parents=True, exist_ok=True)
+    return temp_dir
 
 
 def write_reports(results: list[Result], report_path: Path) -> None:

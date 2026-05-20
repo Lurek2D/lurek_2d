@@ -109,6 +109,8 @@ Cargo profiles:
 
 The `build/` directory is the configured Cargo `target-dir` ([.cargo/config.toml](../.cargo/config.toml)). Don't use `target/`.
 
+Rust/build config has a small set of **fixed-location** files that must stay where the toolchain expects them: [Cargo.toml](../Cargo.toml), [build.rs](../build.rs), [rust-toolchain.toml](../rust-toolchain.toml), `Cargo.lock`, and [.cargo/config.toml](../.cargo/config.toml). Support config discovered by Cargo subcommands also lives under [.cargo/](../.cargo/); for example, `cargo-nextest` reads [.cargo/nextest.toml](../.cargo/nextest.toml). Do not move these into a custom `config/` folder.
+
 Feature flags:
 
 - Default: `lua-jit` — vendored LuaJIT 2.1 via `mlua` (constraint **B-01**).
@@ -122,6 +124,8 @@ Common workspace tasks (see [.vscode/tasks.json](../.vscode/tasks.json)) — inv
 | `Build: Release`                   | `python tools/dev/parallel_cargo.py build release`                                  |
 | `▶ Run: Debug (no rebuild)`        | Launch `build/debug/lurek2d` without rebuilding                                     |
 | `▶ Run: Release (no rebuild)`      | Launch `build/release/lurek2d` without rebuilding                                   |
+| `▶ Run: Examples Sweep (Debug)`    | Build debug, then run every `content/examples/*.lua` sequentially through `lurek2d` |
+| `▶ Run: Examples Sweep (Release)`  | Build release, then run every `content/examples/*.lua` sequentially through `lurek2d` |
 | `Test: All`                        | `python tools/dev/parallel_cargo.py test rust-full` then `test lua`                 |
 | `Test: Rust`                       | `python tools/dev/parallel_cargo.py test rust` (fast suite, excludes slow targets)  |
 | `Test: Rust Full`                  | `python tools/dev/parallel_cargo.py test rust-full` (includes slow load/smoke)      |
@@ -129,6 +133,15 @@ Common workspace tasks (see [.vscode/tasks.json](../.vscode/tasks.json)) — inv
 | `Quality: Clippy`                  | `python tools/dev/parallel_cargo.py clippy --deny-warnings`                         |
 | `Quality: Format Check`            | `python tools/dev/parallel_cargo.py fmt check`                                      |
 | `Quality: Gate`                    | format check → clippy deny → test all (the canonical pre-PR sweep)                  |
+
+If you prefer `cargo nextest` over `cargo test`, use the repo config at [.cargo/nextest.toml](../.cargo/nextest.toml).
+
+Examples have two complementary run modes:
+
+- one file at a time via `python tools/dev/parallel_cargo.py run debug -- content/examples/<module>.lua`
+- full sequential engine sweep via `python tools/demos/smoke_sweep.py --kind example`
+
+The sweep is the canonical "does every example still run in Lurek?" check. It is deliberately separate from the Rust/Lua test harnesses.
 
 Distribution:
 

@@ -540,6 +540,12 @@ do
         type = "info"
     })
     print("toast added")
+
+    local layout = lurek.ui.loadLayout({
+        type = "panel",
+        children = {}
+    })
+    print("layout=" .. tostring(layout ~= nil))
 end
 ```
 
@@ -924,7 +930,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 ```lua
 do
     local cnt = lurek.ui.getWidgetCount()
-    print("widgetCount:", cnt)
+    lurek.ui.keypressed("escape")
+    local layout = lurek.ui.loadLayoutFile("content/layouts/main_menu.toml")
+    lurek.ui.textinput("a")
+    print("widgetCount:", cnt, "loadLayoutFile ok; textinput ok")
 end
 ```
 
@@ -946,8 +955,11 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    local cnt = lurek.ui.getWidgetCount()
     lurek.ui.keypressed("escape")
-    print("keypressed forwarded")
+    local layout = lurek.ui.loadLayoutFile("content/layouts/main_menu.toml")
+    lurek.ui.textinput("a")
+    print("widgetCount:", cnt, "loadLayoutFile ok; textinput ok")
 end
 ```
 
@@ -969,6 +981,13 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    lurek.ui.addToast({
+        message = "File saved successfully",
+        duration = 3.0,
+        type = "info"
+    })
+    print("toast added")
+
     local layout = lurek.ui.loadLayout({
         type = "panel",
         children = {}
@@ -995,8 +1014,11 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    local cnt = lurek.ui.getWidgetCount()
+    lurek.ui.keypressed("escape")
     local layout = lurek.ui.loadLayoutFile("content/layouts/main_menu.toml")
-    print("layout loaded:", layout ~= nil)
+    lurek.ui.textinput("a")
+    print("widgetCount:", cnt, "loadLayoutFile ok; textinput ok")
 end
 ```
 
@@ -1269,10 +1291,15 @@ do
     print("mode:", cp:getColorMode())
     cp:setShowAlpha(true)
     print("show alpha:", cp:getShowAlpha())
+
+    -- Example usage for newColorPicker.
+    -- register a change callback on color picker
+    ---@type LColorPicker
+    local cp = lurek.ui.newColorPicker()
     cp:setOnChange(function(idx)
         print("color changed on widget:", idx)
     end)
-    cp:setColor(0.0, 1.0, 0.0, 1.0)
+    cp:setColor(0.0, 1.0, 0.0)
     print("green set, mode:", cp:getColorMode())
 end
 ```
@@ -1341,10 +1368,33 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    -- create a modal dialog with title, buttons, and close callback
     ---@type LDialog
     local dlg = lurek.ui.newDialog("Confirm Action")
+    dlg:setModal(true)
+    dlg:addButton("OK")
+    dlg:addButton("Cancel")
+    dlg:setOnClose(function(idx)
+        print("dialog closed, widget index:", idx)
+    end)
+    dlg:open()
     print("dialog title:", dlg:getTitle())
+    print("is modal:", dlg:isModal())
     print("is open:", dlg:isOpen())
+
+    -- Example usage for newDialog.
+    -- set a panel as dialog content widget
+    ---@type LDialog
+    local dlg = lurek.ui.newDialog("Settings")
+    ---@type LPanel
+    local panel = lurek.ui.newPanel()
+    panel:setSize(300, 200)
+    dlg:setContent(1)
+    print("dialog content index:", dlg:getContent())
+    dlg:setTitle("Advanced Settings")
+    print("new title:", dlg:getTitle())
+    dlg:close()
+    print("after close, is open:", dlg:isOpen())
 end
 ```
 
@@ -1396,6 +1446,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    -- create an image widget and configure scale mode and tint
     ---@type LImageWidget
     local img = lurek.ui.newImageWidget()
     img:setScaleMode("fit")
@@ -1403,6 +1454,18 @@ do
     img:setTint(1.0, 0.8, 0.6, 0.9)
     local r, g, b, a = img:getTint()
     print("tint:", r, g, b, a)
+
+    -- Example usage for newImageWidget.
+    -- test different scale modes on image widget
+    ---@type LImageWidget
+    local img = lurek.ui.newImageWidget()
+    img:setScaleMode("fill")
+    print("fill mode:", img:getScaleMode())
+    img:setScaleMode("stretch")
+    print("stretch mode:", img:getScaleMode())
+    img:setTint(0.5, 0.5, 1.0)
+    local r, g, b, a = img:getTint()
+    print("blue tint:", r, g, b, a)
 end
 ```
 
@@ -1563,6 +1626,8 @@ do
     local item = lurek.ui.newMenuItem("File")
     print("type = " .. item:type())
     print("text = " .. item:getText())
+    item:setShortcut("Ctrl+F")
+    print("shortcut = " .. item:getShortcut())
 end
 ```
 
@@ -1580,6 +1645,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    -- create a nine-patch widget with border insets
     ---@type LNinePatch
     local np = lurek.ui.newNinePatch()
     np:setImageDimensions(128, 128)
@@ -1588,6 +1654,17 @@ do
     print("image size:", w, h)
     local l, t, r, b = np:getInsets()
     print("insets:", l, t, r, b)
+
+    -- Example usage for newNinePatch.
+    -- retrieve computed slices from nine-patch
+    ---@type LNinePatch
+    local np = lurek.ui.newNinePatch()
+    np:setImageDimensions(64, 64)
+    np:setInsets(8, 8, 8, 8)
+    np:setSize(200, 100)
+    ---@type LNinePatchGetSlicesResult
+    local slices = np:getSlices()
+    print("slices retrieved:", slices ~= nil)
 end
 ```
 
@@ -1662,11 +1739,25 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    -- create a progress bar and track fill value
     ---@type LProgressBar
     local bar = lurek.ui.newProgressBar(0, 100)
     bar:setValue(35)
     print("value:", bar:getValue())
+    print("min:", bar:getMin())
+    print("max:", bar:getMax())
     print("progress (normalized):", bar:getProgress())
+
+    -- Example usage for newProgressBar.
+    -- change the progress bar range dynamically
+    ---@type LProgressBar
+    local bar = lurek.ui.newProgressBar(0, 50)
+    bar:setValue(25)
+    print("progress at 25/50:", bar:getProgress())
+    bar:setRange(0, 200)
+    bar:setValue(150)
+    print("progress at 150/200:", bar:getProgress())
+    print("new max:", bar:getMax())
 end
 ```
 
@@ -1808,12 +1899,23 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    -- create horizontal and vertical separators
     ---@type LSeparator
     local sep = lurek.ui.newSeparator(false)
     print("is vertical:", sep:isVertical())
     print("thickness:", sep:getThickness())
     sep:setThickness(2)
     print("new thickness:", sep:getThickness())
+
+    -- Example usage for newSeparator.
+    -- create a vertical separator and toggle orientation
+    ---@type LSeparator
+    local sep = lurek.ui.newSeparator(true)
+    print("vertical:", sep:isVertical())
+    sep:setVertical(false)
+    print("after toggle:", sep:isVertical())
+    sep:setThickness(3)
+    print("thickness:", sep:getThickness())
 end
 ```
 
@@ -1950,11 +2052,29 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    -- create a status bar with multiple sections
     ---@type LStatusBar
     local sb = lurek.ui.newStatusBar()
     sb:addSection("Ready", 150)
+    sb:addSection("Line: 1, Col: 1", 120)
+    sb:addSection("UTF-8", 80)
     print("section count:", sb:getSectionCount())
     print("section 1:", sb:getSectionText(1))
+    print("section 2:", sb:getSectionText(2))
+
+    -- Example usage for newStatusBar.
+    -- update status bar sections dynamically
+    ---@type LStatusBar
+    local sb = lurek.ui.newStatusBar()
+    sb:addSection("Idle")
+    sb:addSection("0 errors")
+    sb:setSectionText(1, "Building...")
+    sb:setSectionText(2, "3 warnings")
+    print("updated section 1:", sb:getSectionText(1))
+    print("updated section 2:", sb:getSectionText(2))
+    sb:setSectionCount(3)
+    sb:setSectionText(3, "Branch: main")
+    print("section count after expand:", sb:getSectionCount())
 end
 ```
 
@@ -2136,10 +2256,30 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    -- create a horizontal toolbar with buttons and separators
     ---@type LToolbar
     local tb = lurek.ui.newToolbar("horizontal")
     tb:addButton("save", "Save file")
+    tb:addButton("load", "Load file")
+    tb:addSeparator()
+    tb:addButton("undo", "Undo last action")
+    tb:addSpacer()
+    tb:addButton("settings", "Open settings")
     print("orientation:", tb:getOrientation())
+
+    -- Example usage for newToolbar.
+    -- toggle toolbar buttons and check state
+    ---@type LToolbar
+    local tb = lurek.ui.newToolbar("vertical")
+    tb:setOrientation("vertical")
+    tb:addButton("bold", "Bold text")
+    tb:addButton("italic", "Italic text")
+    tb:setButtonToggled("bold", true)
+    print("bold toggled:", tb:isButtonToggled("bold"))
+    tb:setButtonEnabled("italic", false)
+    ---@type LToolbarGetButtonResult
+    local info = tb:getButton("bold")
+    print("bold info - enabled:", info.enabled, "toggled:", info.toggled)
 end
 ```
 
@@ -2202,10 +2342,20 @@ do
     print("total nodes:", tree:getNodeCount())
     print("root text:", tree:getNodeText(root))
     print("src depth:", tree:getNodeDepth(src))
-    tree:expandNode(root)
-    print("expanded:", tree:isExpanded(root))
-    tree:collapseNode(root)
-    tree:setSelectedNode(src)
+
+    -- Example usage for newTreeView.
+    -- expand and collapse tree nodes
+    ---@type LTreeView
+    local tree = lurek.ui.newTreeView()
+    local folder = tree:addNode("Documents")
+    tree:addNode("readme.txt", folder)
+    tree:addNode("notes.md", folder)
+    tree:expandNode(folder)
+    print("expanded:", tree:isExpanded(folder))
+    tree:collapseNode(folder)
+    print("after collapse:", tree:isExpanded(folder))
+    tree:expandAll()
+    tree:setSelectedNode(folder)
     print("selected:", tree:getSelectedNode())
 end
 ```
@@ -2228,10 +2378,32 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    -- create a draggable, resizable GUI window
     ---@type LGuiWindow
     local win = lurek.ui.newWindow("Editor")
+    win:setDraggable(true)
+    win:setResizable(true)
+    win:setCloseable(true)
+    win:setOnClose(function(idx)
+        print("window closed, widget index:", idx)
+    end)
     print("window title:", win:getTitle())
     print("is draggable:", win:isDraggable())
+    print("is resizable:", win:isResizable())
+    print("is closeable:", win:isCloseable())
+
+    -- Example usage for newWindow.
+    -- change window title and toggle properties
+    ---@type LGuiWindow
+    local win = lurek.ui.newWindow("Inspector")
+    win:setTitle("Object Inspector")
+    print("title:", win:getTitle())
+    win:setDraggable(false)
+    print("draggable after disable:", win:isDraggable())
+    win:setResizable(false)
+    print("resizable after disable:", win:isResizable())
+    win:setCloseable(false)
+    print("closeable after disable:", win:isCloseable())
 end
 ```
 
@@ -2689,10 +2861,15 @@ do
     print("mode:", cp:getColorMode())
     cp:setShowAlpha(true)
     print("show alpha:", cp:getShowAlpha())
+
+    -- Example usage for newColorPicker.
+    -- register a change callback on color picker
+    ---@type LColorPicker
+    local cp = lurek.ui.newColorPicker()
     cp:setOnChange(function(idx)
         print("color changed on widget:", idx)
     end)
-    cp:setColor(0.0, 1.0, 0.0, 1.0)
+    cp:setColor(0.0, 1.0, 0.0)
     print("green set, mode:", cp:getColorMode())
 end
 ```
@@ -2740,10 +2917,33 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    -- create a modal dialog with title, buttons, and close callback
     ---@type LDialog
     local dlg = lurek.ui.newDialog("Confirm Action")
+    dlg:setModal(true)
+    dlg:addButton("OK")
+    dlg:addButton("Cancel")
+    dlg:setOnClose(function(idx)
+        print("dialog closed, widget index:", idx)
+    end)
+    dlg:open()
     print("dialog title:", dlg:getTitle())
+    print("is modal:", dlg:isModal())
     print("is open:", dlg:isOpen())
+
+    -- Example usage for newDialog.
+    -- set a panel as dialog content widget
+    ---@type LDialog
+    local dlg = lurek.ui.newDialog("Settings")
+    ---@type LPanel
+    local panel = lurek.ui.newPanel()
+    panel:setSize(300, 200)
+    dlg:setContent(1)
+    print("dialog content index:", dlg:getContent())
+    dlg:setTitle("Advanced Settings")
+    print("new title:", dlg:getTitle())
+    dlg:close()
+    print("after close, is open:", dlg:isOpen())
 end
 ```
 
@@ -2837,10 +3037,32 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    -- create a draggable, resizable GUI window
     ---@type LGuiWindow
     local win = lurek.ui.newWindow("Editor")
+    win:setDraggable(true)
+    win:setResizable(true)
+    win:setCloseable(true)
+    win:setOnClose(function(idx)
+        print("window closed, widget index:", idx)
+    end)
     print("window title:", win:getTitle())
     print("is draggable:", win:isDraggable())
+    print("is resizable:", win:isResizable())
+    print("is closeable:", win:isCloseable())
+
+    -- Example usage for newWindow.
+    -- change window title and toggle properties
+    ---@type LGuiWindow
+    local win = lurek.ui.newWindow("Inspector")
+    win:setTitle("Object Inspector")
+    print("title:", win:getTitle())
+    win:setDraggable(false)
+    print("draggable after disable:", win:isDraggable())
+    win:setResizable(false)
+    print("resizable after disable:", win:isResizable())
+    win:setCloseable(false)
+    print("closeable after disable:", win:isCloseable())
 end
 ```
 
@@ -2862,6 +3084,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    -- create an image widget and configure scale mode and tint
     ---@type LImageWidget
     local img = lurek.ui.newImageWidget()
     img:setScaleMode("fit")
@@ -2869,6 +3092,18 @@ do
     img:setTint(1.0, 0.8, 0.6, 0.9)
     local r, g, b, a = img:getTint()
     print("tint:", r, g, b, a)
+
+    -- Example usage for newImageWidget.
+    -- test different scale modes on image widget
+    ---@type LImageWidget
+    local img = lurek.ui.newImageWidget()
+    img:setScaleMode("fill")
+    print("fill mode:", img:getScaleMode())
+    img:setScaleMode("stretch")
+    print("stretch mode:", img:getScaleMode())
+    img:setTint(0.5, 0.5, 1.0)
+    local r, g, b, a = img:getTint()
+    print("blue tint:", r, g, b, a)
 end
 ```
 
@@ -3037,6 +3272,8 @@ do
     local item = lurek.ui.newMenuItem("File")
     print("type = " .. item:type())
     print("text = " .. item:getText())
+    item:setShortcut("Ctrl+F")
+    print("shortcut = " .. item:getShortcut())
 end
 ```
 
@@ -3058,6 +3295,7 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    -- create a nine-patch widget with border insets
     ---@type LNinePatch
     local np = lurek.ui.newNinePatch()
     np:setImageDimensions(128, 128)
@@ -3066,6 +3304,17 @@ do
     print("image size:", w, h)
     local l, t, r, b = np:getInsets()
     print("insets:", l, t, r, b)
+
+    -- Example usage for newNinePatch.
+    -- retrieve computed slices from nine-patch
+    ---@type LNinePatch
+    local np = lurek.ui.newNinePatch()
+    np:setImageDimensions(64, 64)
+    np:setInsets(8, 8, 8, 8)
+    np:setSize(200, 100)
+    ---@type LNinePatchGetSlicesResult
+    local slices = np:getSlices()
+    print("slices retrieved:", slices ~= nil)
 end
 ```
 
@@ -3141,11 +3390,25 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    -- create a progress bar and track fill value
     ---@type LProgressBar
     local bar = lurek.ui.newProgressBar(0, 100)
     bar:setValue(35)
     print("value:", bar:getValue())
+    print("min:", bar:getMin())
+    print("max:", bar:getMax())
     print("progress (normalized):", bar:getProgress())
+
+    -- Example usage for newProgressBar.
+    -- change the progress bar range dynamically
+    ---@type LProgressBar
+    local bar = lurek.ui.newProgressBar(0, 50)
+    bar:setValue(25)
+    print("progress at 25/50:", bar:getProgress())
+    bar:setRange(0, 200)
+    bar:setValue(150)
+    print("progress at 150/200:", bar:getProgress())
+    print("new max:", bar:getMax())
 end
 ```
 
@@ -3290,12 +3553,23 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    -- create horizontal and vertical separators
     ---@type LSeparator
     local sep = lurek.ui.newSeparator(false)
     print("is vertical:", sep:isVertical())
     print("thickness:", sep:getThickness())
     sep:setThickness(2)
     print("new thickness:", sep:getThickness())
+
+    -- Example usage for newSeparator.
+    -- create a vertical separator and toggle orientation
+    ---@type LSeparator
+    local sep = lurek.ui.newSeparator(true)
+    print("vertical:", sep:isVertical())
+    sep:setVertical(false)
+    print("after toggle:", sep:isVertical())
+    sep:setThickness(3)
+    print("thickness:", sep:getThickness())
 end
 ```
 
@@ -3406,11 +3680,29 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    -- create a status bar with multiple sections
     ---@type LStatusBar
     local sb = lurek.ui.newStatusBar()
     sb:addSection("Ready", 150)
+    sb:addSection("Line: 1, Col: 1", 120)
+    sb:addSection("UTF-8", 80)
     print("section count:", sb:getSectionCount())
     print("section 1:", sb:getSectionText(1))
+    print("section 2:", sb:getSectionText(2))
+
+    -- Example usage for newStatusBar.
+    -- update status bar sections dynamically
+    ---@type LStatusBar
+    local sb = lurek.ui.newStatusBar()
+    sb:addSection("Idle")
+    sb:addSection("0 errors")
+    sb:setSectionText(1, "Building...")
+    sb:setSectionText(2, "3 warnings")
+    print("updated section 1:", sb:getSectionText(1))
+    print("updated section 2:", sb:getSectionText(2))
+    sb:setSectionCount(3)
+    sb:setSectionText(3, "Branch: main")
+    print("section count after expand:", sb:getSectionCount())
 end
 ```
 
@@ -3573,10 +3865,30 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    -- create a horizontal toolbar with buttons and separators
     ---@type LToolbar
     local tb = lurek.ui.newToolbar("horizontal")
     tb:addButton("save", "Save file")
+    tb:addButton("load", "Load file")
+    tb:addSeparator()
+    tb:addButton("undo", "Undo last action")
+    tb:addSpacer()
+    tb:addButton("settings", "Open settings")
     print("orientation:", tb:getOrientation())
+
+    -- Example usage for newToolbar.
+    -- toggle toolbar buttons and check state
+    ---@type LToolbar
+    local tb = lurek.ui.newToolbar("vertical")
+    tb:setOrientation("vertical")
+    tb:addButton("bold", "Bold text")
+    tb:addButton("italic", "Italic text")
+    tb:setButtonToggled("bold", true)
+    print("bold toggled:", tb:isButtonToggled("bold"))
+    tb:setButtonEnabled("italic", false)
+    ---@type LToolbarGetButtonResult
+    local info = tb:getButton("bold")
+    print("bold info - enabled:", info.enabled, "toggled:", info.toggled)
 end
 ```
 
@@ -3643,10 +3955,20 @@ do
     print("total nodes:", tree:getNodeCount())
     print("root text:", tree:getNodeText(root))
     print("src depth:", tree:getNodeDepth(src))
-    tree:expandNode(root)
-    print("expanded:", tree:isExpanded(root))
-    tree:collapseNode(root)
-    tree:setSelectedNode(src)
+
+    -- Example usage for newTreeView.
+    -- expand and collapse tree nodes
+    ---@type LTreeView
+    local tree = lurek.ui.newTreeView()
+    local folder = tree:addNode("Documents")
+    tree:addNode("readme.txt", folder)
+    tree:addNode("notes.md", folder)
+    tree:expandNode(folder)
+    print("expanded:", tree:isExpanded(folder))
+    tree:collapseNode(folder)
+    print("after collapse:", tree:isExpanded(folder))
+    tree:expandAll()
+    tree:setSelectedNode(folder)
     print("selected:", tree:getSelectedNode())
 end
 ```
@@ -3925,7 +4247,10 @@ do
     local acc = lurek.ui.newAccordion()
     acc:addSection("Toggle me")
     local newState = acc:toggleSection(1)
-    print("toggled:", newState)
+    local badge = lurek.ui.newBadge(5)
+    local count = badge:getCount()
+    local disp = badge:getDisplayText()
+    print("toggled:", newState, "badge count:", count, "display:", disp)
 end
 ```
 
@@ -3961,10 +4286,12 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    local cb = lurek.ui.newCheckbox("old")
+    cb:setText("new label")
     local chart = lurek.ui.newAreaChart({width = 200, height = 100})
     chart:setYMax(100)
     chart:addLayer("series1", {10, 20, 30, 25, 15}, 1.0, 0.2, 0.2)
-    print("area chart type:", chart:type())
+    print("checkbox setText ok; addLayer, setYMax ok")
 end
 ```
 
@@ -4027,10 +4354,12 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    local cb = lurek.ui.newCheckbox("old")
+    cb:setText("new label")
     local chart = lurek.ui.newAreaChart({width = 200, height = 100})
     chart:setYMax(100)
     chart:addLayer("series1", {10, 20, 30, 25, 15}, 1.0, 0.2, 0.2)
-    print("area chart type:", chart:type())
+    print("checkbox setText ok; addLayer, setYMax ok")
 end
 ```
 
@@ -4131,9 +4460,13 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    local acc = lurek.ui.newAccordion()
+    acc:addSection("Toggle me")
+    local newState = acc:toggleSection(1)
     local badge = lurek.ui.newBadge(5)
     local count = badge:getCount()
-    print("badge count:", count)
+    local disp = badge:getDisplayText()
+    print("toggled:", newState, "badge count:", count, "display:", disp)
 end
 ```
 
@@ -4163,9 +4496,13 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    local acc = lurek.ui.newAccordion()
+    acc:addSection("Toggle me")
+    local newState = acc:toggleSection(1)
     local badge = lurek.ui.newBadge(5)
+    local count = badge:getCount()
     local disp = badge:getDisplayText()
-    print("display:", disp)
+    print("toggled:", newState, "badge count:", count, "display:", disp)
 end
 ```
 
@@ -4196,7 +4533,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 do
     local badge = lurek.ui.newBadge(0)
     badge:setCount(42)
-    print("badge count:", badge:getCount())
+    local btn = lurek.ui.newButton("Click me")
+    local t = btn:getText()
+    btn:setText("OK")
+    print("badge count:", badge:getCount(), "button text:", btn:getText())
 end
 ```
 
@@ -4404,9 +4744,12 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    local badge = lurek.ui.newBadge(0)
+    badge:setCount(42)
     local btn = lurek.ui.newButton("Click me")
     local t = btn:getText()
-    print("button text:", t)
+    btn:setText("OK")
+    print("badge count:", badge:getCount(), "button text:", btn:getText())
 end
 ```
 
@@ -4435,9 +4778,12 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    local badge = lurek.ui.newBadge(0)
+    badge:setCount(42)
     local btn = lurek.ui.newButton("Click me")
+    local t = btn:getText()
     btn:setText("OK")
-    print("button text:", btn:getText())
+    print("badge count:", badge:getCount(), "button text:", btn:getText())
 end
 ```
 
@@ -4569,7 +4915,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 do
     local cb = lurek.ui.newCheckbox("old")
     cb:setText("new label")
-    print("checkbox text:", cb:getText())
+    local chart = lurek.ui.newAreaChart({width = 200, height = 100})
+    chart:setYMax(100)
+    chart:addLayer("series1", {10, 20, 30, 25, 15}, 1.0, 0.2, 0.2)
+    print("checkbox setText ok; addLayer, setYMax ok")
 end
 ```
 
@@ -4816,7 +5165,12 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 do
     local cp = lurek.ui.newColorPicker()
     cp:setShowAlpha(false)
-    print("setShowAlpha:", cp:getShowAlpha())
+    local cb = lurek.ui.newComboBox()
+    cb:addItem("Option A")
+    cb:addItem("Option B")
+    cb:addItem("Option C")
+    cb:clearItems()
+    print("setShowAlpha ok; combo items cleared")
 end
 ```
 
@@ -4845,11 +5199,14 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    local cp = lurek.ui.newColorPicker()
+    cp:setShowAlpha(false)
     local cb = lurek.ui.newComboBox()
     cb:addItem("Option A")
     cb:addItem("Option B")
     cb:addItem("Option C")
-    print("itemCount:", cb:getItemCount())
+    cb:clearItems()
+    print("setShowAlpha ok; combo items cleared")
 end
 ```
 
@@ -4876,12 +5233,14 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    local cp = lurek.ui.newColorPicker()
+    cp:setShowAlpha(false)
     local cb = lurek.ui.newComboBox()
     cb:addItem("Option A")
     cb:addItem("Option B")
     cb:addItem("Option C")
     cb:clearItems()
-    print("itemCount:", cb:getItemCount())
+    print("setShowAlpha ok; combo items cleared")
 end
 ```
 
@@ -5449,7 +5808,10 @@ do
     local dlg = lurek.ui.newDialog("Old")
     dlg:setTitle("New Title")
     dlg:setOnClose(function(idx) print("closed", idx) end)
-    print("title:", dlg:getTitle())
+    local dp = lurek.ui.newDockPanel()
+    local btn = lurek.ui.newButton("Side")
+    -- Note: dock takes a widget index; using 1 as placeholder since it may vary
+    print("setTitle/setOnClose ok; DockPanel created")
 end
 ```
 
@@ -5481,7 +5843,10 @@ do
     local dlg = lurek.ui.newDialog("Old")
     dlg:setTitle("New Title")
     dlg:setOnClose(function(idx) print("closed", idx) end)
-    print("title:", dlg:getTitle())
+    local dp = lurek.ui.newDockPanel()
+    local btn = lurek.ui.newButton("Side")
+    -- Note: dock takes a widget index; using 1 as placeholder since it may vary
+    print("setTitle/setOnClose ok; DockPanel created")
 end
 ```
 
@@ -5512,11 +5877,13 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    local dlg = lurek.ui.newDialog("Old")
+    dlg:setTitle("New Title")
+    dlg:setOnClose(function(idx) print("closed", idx) end)
     local dp = lurek.ui.newDockPanel()
-    local child = lurek.ui.newPanel()
-    dp:addChild(child)
-    dp:dock(child._idx, "left")
-    print("docked:", dp:getDockedCount())
+    local btn = lurek.ui.newButton("Side")
+    -- Note: dock takes a widget index; using 1 as placeholder since it may vary
+    print("setTitle/setOnClose ok; DockPanel created")
 end
 ```
 
@@ -5652,8 +6019,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 do
     local dp = lurek.ui.newDockPanel()
     local dockedCount = dp:getDockedCount()
+    -- undock when empty just verifies the method exists
     dp:undock(0)
-    print("undock ok (dockedCount was:", dockedCount, ")")
+    local tbl = lurek.ui.newTable()
+    print("undock ok (dockedCount was:", dockedCount, "); newTable ok")
 end
 ```
 
@@ -5684,10 +6053,12 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    local dp = lurek.ui.newDockPanel()
+    local dockedCount = dp:getDockedCount()
+    -- undock when empty just verifies the method exists
+    dp:undock(0)
     local tbl = lurek.ui.newTable()
-    tbl:addColumn("Name", 100)
-    tbl:addColumn("Value", 80)
-    print("columns:", tbl:getColumnCount())
+    print("undock ok (dockedCount was:", dockedCount, "); newTable ok")
 end
 ```
 
@@ -5716,10 +6087,12 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    local dp = lurek.ui.newDockPanel()
+    local dockedCount = dp:getDockedCount()
+    -- undock when empty just verifies the method exists
+    dp:undock(0)
     local tbl = lurek.ui.newTable()
-    tbl:addColumn("Name", 100)
-    tbl:addRow({"Alice"})
-    print("rows:", tbl:getRowCount())
+    print("undock ok (dockedCount was:", dockedCount, "); newTable ok")
 end
 ```
 
@@ -6017,7 +6390,10 @@ do
     tbl:addRow({"row1"})
     tbl:setSelectedRow(1)
     local sel = tbl:getSelectedRow()
-    print("setSelectedRow:", sel)
+    tbl:setSortable(false)
+    local win = lurek.ui.newWindow("My Window")
+    local title = win:getTitle()
+    print("setSelectedRow:", sel, "setSortable ok, win title:", title)
 end
 ```
 
@@ -6050,8 +6426,11 @@ do
     tbl:addColumn("X")
     tbl:addRow({"row1"})
     tbl:setSelectedRow(1)
+    local sel = tbl:getSelectedRow()
     tbl:setSortable(false)
-    print("setSortable ok")
+    local win = lurek.ui.newWindow("My Window")
+    local title = win:getTitle()
+    print("setSelectedRow:", sel, "setSortable ok, win title:", title)
 end
 ```
 
@@ -6081,9 +6460,15 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    local tbl = lurek.ui.newTable()
+    tbl:addColumn("X")
+    tbl:addRow({"row1"})
+    tbl:setSelectedRow(1)
+    local sel = tbl:getSelectedRow()
+    tbl:setSortable(false)
     local win = lurek.ui.newWindow("My Window")
     local title = win:getTitle()
-    print("win title:", title)
+    print("setSelectedRow:", sel, "setSortable ok, win title:", title)
 end
 ```
 
@@ -6316,7 +6701,9 @@ do
     local win = lurek.ui.newWindow("Old")
     win:setResizable(false)
     win:setTitle("New Title")
-    print("resizable:", win:isResizable(), "title:", win:getTitle())
+    local iw = lurek.ui.newImageWidget()
+    local mode = iw:getScaleMode()
+    print("setResizable/setTitle ok; scaleMode:", mode)
 end
 ```
 
@@ -6348,7 +6735,9 @@ do
     local win = lurek.ui.newWindow("Old")
     win:setResizable(false)
     win:setTitle("New Title")
-    print("resizable:", win:isResizable(), "title:", win:getTitle())
+    local iw = lurek.ui.newImageWidget()
+    local mode = iw:getScaleMode()
+    print("setResizable/setTitle ok; scaleMode:", mode)
 end
 ```
 
@@ -6378,9 +6767,12 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    local win = lurek.ui.newWindow("Old")
+    win:setResizable(false)
+    win:setTitle("New Title")
     local iw = lurek.ui.newImageWidget()
     local mode = iw:getScaleMode()
-    print("scaleMode:", mode)
+    print("setResizable/setTitle ok; scaleMode:", mode)
 end
 ```
 
@@ -6521,7 +6913,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 do
     local lbl = lurek.ui.newLabel("Hello")
     lbl:setText("World")
-    print("label text:", lbl:getText())
+    local layout = lurek.ui.newLayout("horizontal")
+    local align = layout:getAlign()
+    print("label text:", lbl:getText(), "layout align:", align)
 end
 ```
 
@@ -6552,7 +6946,9 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 do
     local lbl = lurek.ui.newLabel("Hello")
     lbl:setText("World")
-    print("label text:", lbl:getText())
+    local layout = lurek.ui.newLayout("horizontal")
+    local align = layout:getAlign()
+    print("label text:", lbl:getText(), "layout align:", align)
 end
 ```
 
@@ -6582,9 +6978,11 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    local lbl = lurek.ui.newLabel("Hello")
+    lbl:setText("World")
     local layout = lurek.ui.newLayout("horizontal")
     local align = layout:getAlign()
-    print("layout align:", align)
+    print("label text:", lbl:getText(), "layout align:", align)
 end
 ```
 
@@ -6916,7 +7314,11 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 do
     local layout = lurek.ui.newLayout("horizontal")
     layout:setWrap(true)
-    print("wrap:", layout:getWrap())
+    local lc = lurek.ui.newLineChart({width = 200, height = 100})
+    lc:addSeries("speed", {{1,10},{2,20},{3,15}}, 0.2, 0.8, 0.4)
+    local img = lurek.image.newImageData(200, 100)
+    lc:drawToImage(img)
+    print("setWrap ok; addSeries/drawToImage ok")
 end
 ```
 
@@ -6952,9 +7354,13 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    local layout = lurek.ui.newLayout("horizontal")
+    layout:setWrap(true)
     local lc = lurek.ui.newLineChart({width = 200, height = 100})
     lc:addSeries("speed", {{1,10},{2,20},{3,15}}, 0.2, 0.8, 0.4)
-    print("line chart type:", lc:type())
+    local img = lurek.image.newImageData(200, 100)
+    lc:drawToImage(img)
+    print("setWrap ok; addSeries/drawToImage ok")
 end
 ```
 
@@ -6982,11 +7388,13 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    local layout = lurek.ui.newLayout("horizontal")
+    layout:setWrap(true)
     local lc = lurek.ui.newLineChart({width = 200, height = 100})
     lc:addSeries("speed", {{1,10},{2,20},{3,15}}, 0.2, 0.8, 0.4)
     local img = lurek.image.newImageData(200, 100)
     lc:drawToImage(img)
-    print("drawToImage ok")
+    print("setWrap ok; addSeries/drawToImage ok")
 end
 ```
 
@@ -7368,7 +7776,11 @@ do
     local lb = lurek.ui.newList()
     lb:setItemHeight(20)
     lb:addItem("Item")
-    print("selectedIndex:", lb:getSelectedIndex())
+    lb:setSelectedIndex(1)
+    local mb = lurek.ui.newMenuBar()
+    local mi = lurek.ui.newMenuItem("File")
+    local idx = mb:addMenu(mi._idx)
+    print("setItemHeight ok; addMenu idx:", idx)
 end
 ```
 
@@ -7401,7 +7813,10 @@ do
     lb:setItemHeight(20)
     lb:addItem("Item")
     lb:setSelectedIndex(1)
-    print("selectedIndex:", lb:getSelectedIndex())
+    local mb = lurek.ui.newMenuBar()
+    local mi = lurek.ui.newMenuItem("File")
+    local idx = mb:addMenu(mi._idx)
+    print("setItemHeight ok; addMenu idx:", idx)
 end
 ```
 
@@ -7430,10 +7845,14 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    local lb = lurek.ui.newList()
+    lb:setItemHeight(20)
+    lb:addItem("Item")
+    lb:setSelectedIndex(1)
     local mb = lurek.ui.newMenuBar()
     local mi = lurek.ui.newMenuItem("File")
     local idx = mb:addMenu(mi._idx)
-    print("addMenu idx:", idx)
+    print("setItemHeight ok; addMenu idx:", idx)
 end
 ```
 
@@ -8005,8 +8424,11 @@ do
     local np = lurek.ui.newNinePatch()
     np:setImageDimensions(32, 32)
     np:setInsets(4, 4, 4, 4)
-    local w, h = np:getImageDimensions()
-    print("imageDimensions:", w, h)
+    local l, t, r, b = np:getInsets()
+    local panel = lurek.ui.newPanel()
+    panel:setTitle("My Panel")
+    local title = panel:getTitle()
+    print("setInsets ok; panel title:", title)
 end
 ```
 
@@ -8045,7 +8467,10 @@ do
     np:setImageDimensions(32, 32)
     np:setInsets(4, 4, 4, 4)
     local l, t, r, b = np:getInsets()
-    print("insets:", l, t, r, b)
+    local panel = lurek.ui.newPanel()
+    panel:setTitle("My Panel")
+    local title = panel:getTitle()
+    print("setInsets ok; panel title:", title)
 end
 ```
 
@@ -8075,10 +8500,14 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    local np = lurek.ui.newNinePatch()
+    np:setImageDimensions(32, 32)
+    np:setInsets(4, 4, 4, 4)
+    local l, t, r, b = np:getInsets()
     local panel = lurek.ui.newPanel()
     panel:setTitle("My Panel")
     local title = panel:getTitle()
-    print("panel title:", title)
+    print("setInsets ok; panel title:", title)
 end
 ```
 
@@ -8110,7 +8539,11 @@ do
     local panel = lurek.ui.newPanel()
     panel:setScrollable(true)
     panel:setTitle("Data")
-    print("panel title:", panel:getTitle())
+    local pc = lurek.ui.newPieChart({width = 128, height = 128})
+    pc:addSegment("A", 30, 0.9, 0.2, 0.2)
+    pc:addSegment("B", 50, 0.2, 0.9, 0.2)
+    pc:addSegment("C", 20, 0.2, 0.2, 0.9)
+    print("panel scrollable ok; pie segments added")
 end
 ```
 
@@ -8142,7 +8575,11 @@ do
     local panel = lurek.ui.newPanel()
     panel:setScrollable(true)
     panel:setTitle("Data")
-    print("panel title:", panel:getTitle())
+    local pc = lurek.ui.newPieChart({width = 128, height = 128})
+    pc:addSegment("A", 30, 0.9, 0.2, 0.2)
+    pc:addSegment("B", 50, 0.2, 0.9, 0.2)
+    pc:addSegment("C", 20, 0.2, 0.2, 0.9)
+    print("panel scrollable ok; pie segments added")
 end
 ```
 
@@ -8178,11 +8615,14 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    local panel = lurek.ui.newPanel()
+    panel:setScrollable(true)
+    panel:setTitle("Data")
     local pc = lurek.ui.newPieChart({width = 128, height = 128})
     pc:addSegment("A", 30, 0.9, 0.2, 0.2)
     pc:addSegment("B", 50, 0.2, 0.9, 0.2)
     pc:addSegment("C", 20, 0.2, 0.2, 0.9)
-    print("pie chart type:", pc:type())
+    print("panel scrollable ok; pie segments added")
 end
 ```
 
@@ -9186,7 +9626,9 @@ do
     sb:setViewSize(200)
     sb:setScrollPosition(100)
     local pos = sb:getScrollPosition()
-    print("scrollPos:", pos)
+    local sp = lurek.ui.newScrollPanel()
+    local cw, ch = sp:getContentSize()
+    print("scrollPos:", pos, "panel contentSize:", cw, ch)
 end
 ```
 
@@ -9219,7 +9661,10 @@ do
     sb:setContentSize(800)
     sb:setViewSize(200)
     sb:setScrollPosition(100)
-    print("viewSize:", sb:getViewSize())
+    local pos = sb:getScrollPosition()
+    local sp = lurek.ui.newScrollPanel()
+    local cw, ch = sp:getContentSize()
+    print("scrollPos:", pos, "panel contentSize:", cw, ch)
 end
 ```
 
@@ -9250,9 +9695,14 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    local sb = lurek.ui.newScrollBar(true)
+    sb:setContentSize(800)
+    sb:setViewSize(200)
+    sb:setScrollPosition(100)
+    local pos = sb:getScrollPosition()
     local sp = lurek.ui.newScrollPanel()
     local cw, ch = sp:getContentSize()
-    print("panel contentSize:", cw, ch)
+    print("scrollPos:", pos, "panel contentSize:", cw, ch)
 end
 ```
 
@@ -9603,7 +10053,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 do
     local sep = lurek.ui.newSeparator(false)
     sep:setVertical(true)
-    print("separator vertical:", sep:isVertical())
+    local sl = lurek.ui.newSlider(0, 100)
+    local mn = sl:getMin()
+    local mx = sl:getMax()
+    print("separator setVertical ok; slider min:", mn, "max:", mx)
 end
 ```
 
@@ -9633,9 +10086,12 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    local sep = lurek.ui.newSeparator(false)
+    sep:setVertical(true)
     local sl = lurek.ui.newSlider(0, 100)
+    local mn = sl:getMin()
     local mx = sl:getMax()
-    print("slider max:", mx)
+    print("separator setVertical ok; slider min:", mn, "max:", mx)
 end
 ```
 
@@ -9665,9 +10121,12 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    local sep = lurek.ui.newSeparator(false)
+    sep:setVertical(true)
     local sl = lurek.ui.newSlider(0, 100)
     local mn = sl:getMin()
-    print("slider min:", mn)
+    local mx = sl:getMax()
+    print("separator setVertical ok; slider min:", mn, "max:", mx)
 end
 ```
 
@@ -9807,7 +10266,11 @@ do
     local sl = lurek.ui.newSlider(0, 10)
     sl:setValue(7)
     local v = sl:getValue()
-    print("slider value:", v)
+    local sb = lurek.ui.newSpinBox(0, 10)
+    sb:setValue(5)
+    sb:decrement()
+    local sv = sb:getValue()
+    print("slider value:", v, "spinbox after decrement:", sv)
 end
 ```
 
@@ -9834,11 +10297,14 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    local sl = lurek.ui.newSlider(0, 10)
+    sl:setValue(7)
+    local v = sl:getValue()
     local sb = lurek.ui.newSpinBox(0, 10)
     sb:setValue(5)
     sb:decrement()
     local sv = sb:getValue()
-    print("spinbox after decrement:", sv)
+    print("slider value:", v, "spinbox after decrement:", sv)
 end
 ```
 
@@ -9868,11 +10334,14 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    local sl = lurek.ui.newSlider(0, 10)
+    sl:setValue(7)
+    local v = sl:getValue()
     local sb = lurek.ui.newSpinBox(0, 10)
     sb:setValue(5)
     sb:decrement()
     local sv = sb:getValue()
-    print("spinbox value:", sv)
+    print("slider value:", v, "spinbox after decrement:", sv)
 end
 ```
 
@@ -10371,7 +10840,10 @@ do
     local sp = lurek.ui.newSplitPanel("horizontal")
     sp:setSplitPosition(200)
     local pos = sp:getSplitPosition()
-    print("splitPos:", pos)
+    local sb = lurek.ui.newStatusBar()
+    sb:addSection("Ready", 100)
+    local cnt = sb:getSectionCount()
+    print("splitPos:", pos, "statusBar sectionCount:", cnt)
 end
 ```
 
@@ -10402,10 +10874,13 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    local sp = lurek.ui.newSplitPanel("horizontal")
+    sp:setSplitPosition(200)
+    local pos = sp:getSplitPosition()
     local sb = lurek.ui.newStatusBar()
     sb:addSection("Ready", 100)
     local cnt = sb:getSectionCount()
-    print("statusBar sectionCount:", cnt)
+    print("splitPos:", pos, "statusBar sectionCount:", cnt)
 end
 ```
 
@@ -10435,10 +10910,13 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    local sp = lurek.ui.newSplitPanel("horizontal")
+    sp:setSplitPosition(200)
+    local pos = sp:getSplitPosition()
     local sb = lurek.ui.newStatusBar()
     sb:addSection("Ready", 100)
     local cnt = sb:getSectionCount()
-    print("statusBar sectionCount:", cnt)
+    print("splitPos:", pos, "statusBar sectionCount:", cnt)
 end
 ```
 
@@ -10583,7 +11061,10 @@ do
     sb:setSectionCount(2)
     local lbl = lurek.ui.newLabel("status")
     sb:setSectionWidget(1, lbl)
-    print("sectionWidget set ok")
+    local sw = lurek.ui.newSwitch(false)
+    local on = sw:isOn()
+    sw:setOn(true)
+    print("sectionWidget set ok; switch isOn:", sw:isOn())
 end
 ```
 
@@ -10613,8 +11094,14 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    local sb = lurek.ui.newStatusBar()
+    sb:setSectionCount(2)
+    local lbl = lurek.ui.newLabel("status")
+    sb:setSectionWidget(1, lbl)
     local sw = lurek.ui.newSwitch(false)
-    print("switch isOn:", sw:isOn())
+    local on = sw:isOn()
+    sw:setOn(true)
+    print("sectionWidget set ok; switch isOn:", sw:isOn())
 end
 ```
 
@@ -10643,9 +11130,14 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    local sb = lurek.ui.newStatusBar()
+    sb:setSectionCount(2)
+    local lbl = lurek.ui.newLabel("status")
+    sb:setSectionWidget(1, lbl)
     local sw = lurek.ui.newSwitch(false)
+    local on = sw:isOn()
     sw:setOn(true)
-    print("switch isOn:", sw:isOn())
+    print("sectionWidget set ok; switch isOn:", sw:isOn())
 end
 ```
 
@@ -10675,7 +11167,11 @@ do
     local sw = lurek.ui.newSwitch(false)
     sw:toggle()
     local on = sw:isOn()
-    print("switch after toggle:", on)
+    local tb = lurek.ui.newTabBar()
+    tb:addTab("Tab 1")
+    tb:addTab("Tab 2")
+    local active = tb:getActiveTab()
+    print("switch after toggle:", on, "activeTab:", active)
 end
 ```
 
@@ -10704,11 +11200,14 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    local sw = lurek.ui.newSwitch(false)
+    sw:toggle()
+    local on = sw:isOn()
     local tb = lurek.ui.newTabBar()
     tb:addTab("Tab 1")
     tb:addTab("Tab 2")
     local active = tb:getActiveTab()
-    print("activeTab:", active)
+    print("switch after toggle:", on, "activeTab:", active)
 end
 ```
 
@@ -10738,11 +11237,14 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    local sw = lurek.ui.newSwitch(false)
+    sw:toggle()
+    local on = sw:isOn()
     local tb = lurek.ui.newTabBar()
     tb:addTab("Tab 1")
     tb:addTab("Tab 2")
     local active = tb:getActiveTab()
-    print("activeTab:", active)
+    print("switch after toggle:", on, "activeTab:", active)
 end
 ```
 
@@ -11177,7 +11679,10 @@ do
     local ti = lurek.ui.newTextInput()
     ti:setText("sample input")
     local txt = ti:getText()
-    print("text:", txt)
+    local th = lurek.ui.newTheme()
+    th:setStyle("LButton", "normal", {bg_color = {0.2, 0.3, 0.8}})
+    local t = th:type()
+    print("text:", txt, "theme type:", t)
 end
 ```
 
@@ -11209,9 +11714,13 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    local ti = lurek.ui.newTextInput()
+    ti:setText("sample input")
+    local txt = ti:getText()
     local th = lurek.ui.newTheme()
     th:setStyle("LButton", "normal", {bg_color = {0.2, 0.3, 0.8}})
-    print("theme type:", th:type())
+    local t = th:type()
+    print("text:", txt, "theme type:", t)
 end
 ```
 
@@ -11237,10 +11746,13 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    local ti = lurek.ui.newTextInput()
+    ti:setText("sample input")
+    local txt = ti:getText()
     local th = lurek.ui.newTheme()
     th:setStyle("LButton", "normal", {bg_color = {0.2, 0.3, 0.8}})
     local t = th:type()
-    print("theme type:", t)
+    print("text:", txt, "theme type:", t)
 end
 ```
 
@@ -11273,7 +11785,10 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 do
     local th = lurek.ui.newTheme()
     local ok = th:typeOf("LTheme")
-    print("theme typeOf:", ok)
+    local toast = lurek.ui.newToast("Level up!", 3.0)
+    local dur = toast:getDuration()
+    local msg = toast:getMessage()
+    print("theme typeOf:", ok, "duration:", dur, "message:", msg)
 end
 ```
 
@@ -11303,9 +11818,12 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    local th = lurek.ui.newTheme()
+    local ok = th:typeOf("LTheme")
     local toast = lurek.ui.newToast("Level up!", 3.0)
     local dur = toast:getDuration()
-    print("duration:", dur)
+    local msg = toast:getMessage()
+    print("theme typeOf:", ok, "duration:", dur, "message:", msg)
 end
 ```
 
@@ -11335,9 +11853,12 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    local th = lurek.ui.newTheme()
+    local ok = th:typeOf("LTheme")
     local toast = lurek.ui.newToast("Level up!", 3.0)
+    local dur = toast:getDuration()
     local msg = toast:getMessage()
-    print("message:", msg)
+    print("theme typeOf:", ok, "duration:", dur, "message:", msg)
 end
 ```
 
@@ -11473,7 +11994,11 @@ do
     local toast = lurek.ui.newToast("old message", 2.0)
     toast:setMessage("new message")
     local msg = toast:getMessage()
-    print("toast:", msg)
+    local tb = lurek.ui.newToolbar("horizontal")
+    tb:addButton("save", "Save file")
+    tb:addSeparator()
+    tb:addButton("open", "Open file")
+    print("toast:", msg, "toolbar buttons added ok")
 end
 ```
 
@@ -11507,11 +12032,14 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    local toast = lurek.ui.newToast("old message", 2.0)
+    toast:setMessage("new message")
+    local msg = toast:getMessage()
     local tb = lurek.ui.newToolbar("horizontal")
     tb:addButton("save", "Save file")
     tb:addSeparator()
     tb:addButton("open", "Open file")
-    print("button:", tb:getButton("save"))
+    print("toast:", msg, "toolbar buttons added ok")
 end
 ```
 
@@ -11538,11 +12066,14 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    local toast = lurek.ui.newToast("old message", 2.0)
+    toast:setMessage("new message")
+    local msg = toast:getMessage()
     local tb = lurek.ui.newToolbar("horizontal")
     tb:addButton("save", "Save file")
     tb:addSeparator()
     tb:addButton("open", "Open file")
-    print("button:", tb:getButton("open"))
+    print("toast:", msg, "toolbar buttons added ok")
 end
 ```
 
@@ -11798,7 +12329,10 @@ do
     local tb = lurek.ui.newToolbar("horizontal")
     tb:setOrientation("vertical")
     local ori = tb:getOrientation()
-    print("orientation:", ori)
+    local tp = lurek.ui.newTooltipPanel("Hover help")
+    local delay = tp:getDelay()
+    local target = tp:getTarget()
+    print("orientation:", ori, "delay:", delay, "target:", target)
 end
 ```
 
@@ -11828,10 +12362,13 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    local tb = lurek.ui.newToolbar("horizontal")
+    tb:setOrientation("vertical")
+    local ori = tb:getOrientation()
     local tp = lurek.ui.newTooltipPanel("Hover help")
     local delay = tp:getDelay()
     local target = tp:getTarget()
-    print("delay:", delay, "target:", target)
+    print("orientation:", ori, "delay:", delay, "target:", target)
 end
 ```
 
@@ -11861,10 +12398,13 @@ Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
 
 ```lua
 do
+    local tb = lurek.ui.newToolbar("horizontal")
+    tb:setOrientation("vertical")
+    local ori = tb:getOrientation()
     local tp = lurek.ui.newTooltipPanel("Hover help")
     local delay = tp:getDelay()
     local target = tp:getTarget()
-    print("delay:", delay, "target:", target)
+    print("orientation:", ori, "delay:", delay, "target:", target)
 end
 ```
 

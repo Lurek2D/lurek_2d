@@ -14,6 +14,18 @@
 2. Search for `--@api-stub:` to jump to a specific callable.
 3. Copy the relevant snippet into your own `main.lua` and adapt it to your project.
 
+## Running Examples In Lurek
+
+- Run one example directly through the engine:
+	- `python tools/dev/parallel_cargo.py run debug -- content/examples/render.lua`
+- Run **all** examples sequentially through `lurek2d`:
+	- `python tools/demos/smoke_sweep.py --kind example`
+- In VS Code use the task labels:
+	- `▶ Run: Examples Sweep (Debug)`
+	- `▶ Run: Examples Sweep (Release)`
+
+The sweep command is the canonical way to verify that every `content/examples/*.lua` script still runs in the engine. It is not the same thing as the Rust/Lua test harnesses.
+
 ## What You Will Find Here
 
 | File | Focus |

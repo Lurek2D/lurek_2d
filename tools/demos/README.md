@@ -35,6 +35,12 @@ python tools/demos/gen_demo_screenshots.py --overwrite --force-window-size
 # Smoke-test all projects
 python tools/demos/smoke_sweep.py
 
+# Smoke-test only content/examples/*.lua sequentially through lurek2d
+python tools/demos/smoke_sweep.py --kind example
+
+# Smoke-test only playable demos under content/games/
+python tools/demos/smoke_sweep.py --kind game
+
 # Preview a generated README for one game (no file write)
 python tools/demos/gen_game_readmes.py --dry-run --game content/games/rpg/loot_rpg
 
@@ -45,6 +51,8 @@ python tools/demos/gen_game_readmes.py --all
 python tools/demos/gen_game_readmes.py --all --force
 ```
 Note: when `--binary` is omitted, auto-detection now prefers `build/debug/lurek2d(.exe)` first for capture stability.
+
+For `--kind example`, PASS means the example ran to completion through the real engine without detected runtime/Lua errors. Examples do not need to produce screenshots to pass.
 
 ## Window layout
 
