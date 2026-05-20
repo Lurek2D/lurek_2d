@@ -14,271 +14,799 @@
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
   - [lurek.math.aabbTree](#lurekmathaabbtree)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.abs](#lurekmathabs)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.acos](#lurekmathacos)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.angleBetween](#lurekmathanglebetween)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.applyEasing](#lurekmathapplyeasing)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.asin](#lurekmathasin)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.atan](#lurekmathatan)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.atan2](#lurekmathatan2)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.bresenham](#lurekmathbresenham)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.catmullRom](#lurekmathcatmullrom)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.ceil](#lurekmathceil)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.circleContainsPoint](#lurekmathcirclecontainspoint)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.circleIntersectsCircle](#lurekmathcircleintersectscircle)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.circleIntersectsLine](#lurekmathcircleintersectsline)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.circleIntersectsSegment](#lurekmathcircleintersectssegment)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.clamp](#lurekmathclamp)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.closestPointOnSegment](#lurekmathclosestpointonsegment)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.convexHull](#lurekmathconvexhull)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.cos](#lurekmathcos)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.deg](#lurekmathdeg)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.delaunayTriangulate](#lurekmathdelaunaytriangulate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.distance](#lurekmathdistance)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.distanceSq](#lurekmathdistancesq)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.exp](#lurekmathexp)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.fbm](#lurekmathfbm)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.floor](#lurekmathfloor)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.fmod](#lurekmathfmod)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.fromHex](#lurekmathfromhex)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.gammaToLinear](#lurekmathgammatolinear)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.hermite](#lurekmathhermite)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.hslToRgb](#lurekmathhsltorgb)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.inBack](#lurekmathinback)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.inBounce](#lurekmathinbounce)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.inCubic](#lurekmathincubic)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.inElastic](#lurekmathinelastic)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.inExpo](#lurekmathinexpo)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.inOutBack](#lurekmathinoutback)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.inOutBounce](#lurekmathinoutbounce)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.inOutCubic](#lurekmathinoutcubic)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.inOutElastic](#lurekmathinoutelastic)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.inOutExpo](#lurekmathinoutexpo)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.inOutQuad](#lurekmathinoutquad)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.inOutQuart](#lurekmathinoutquart)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.inOutSine](#lurekmathinoutsine)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.inQuad](#lurekmathinquad)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.inQuart](#lurekmathinquart)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.inSine](#lurekmathinsine)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.inverseLerp](#lurekmathinverselerp)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.isConvex](#lurekmathisconvex)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.lerp](#lurekmathlerp)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.linear](#lurekmathlinear)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.linearToGamma](#lurekmathlineartogamma)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.lineIntersect](#lurekmathlineintersect)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.log](#lurekmathlog)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.max](#lurekmathmax)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.min](#lurekmathmin)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.newBezierCurve](#lurekmathnewbeziercurve)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.newCircle](#lurekmathnewcircle)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.newNoiseGenerator](#lurekmathnewnoisegenerator)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.newRandomGenerator](#lurekmathnewrandomgenerator)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.newRectPacker](#lurekmathnewrectpacker)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.newSpatialHash](#lurekmathnewspatialhash)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.newTransform](#lurekmathnewtransform)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.newTween](#lurekmathnewtween)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.outBack](#lurekmathoutback)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.outBounce](#lurekmathoutbounce)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.outCubic](#lurekmathoutcubic)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.outElastic](#lurekmathoutelastic)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.outExpo](#lurekmathoutexpo)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.outQuad](#lurekmathoutquad)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.outQuart](#lurekmathoutquart)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.outSine](#lurekmathoutsine)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.perlin2d](#lurekmathperlin2d)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.perlin3d](#lurekmathperlin3d)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.pointInPolygon](#lurekmathpointinpolygon)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.polygonArea](#lurekmathpolygonarea)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.polygonCentroid](#lurekmathpolygoncentroid)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.polygonClip](#lurekmathpolygonclip)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.polygonDifference](#lurekmathpolygondifference)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.polygonIntersection](#lurekmathpolygonintersection)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.polygonUnion](#lurekmathpolygonunion)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.pow](#lurekmathpow)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.rad](#lurekmathrad)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.random](#lurekmathrandom)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.randomInt](#lurekmathrandomint)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.rectFromCenter](#lurekmathrectfromcenter)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.rectUnion](#lurekmathrectunion)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.remap](#lurekmathremap)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.rgbToHsl](#lurekmathrgbtohsl)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.round](#lurekmathround)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.segmentIntersectsSegment](#lurekmathsegmentintersectssegment)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.sign](#lurekmathsign)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.simplex2d](#lurekmathsimplex2d)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.simplexNoise](#lurekmathsimplexnoise)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.sin](#lurekmathsin)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.smoothstep](#lurekmathsmoothstep)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.sqrt](#lurekmathsqrt)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.tan](#lurekmathtan)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.triangulate](#lurekmathtriangulate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.vec2](#lurekmathvec2)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.vec3](#lurekmathvec3)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.math.voronoi](#lurekmathvoronoi)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔷 Module Types](#module-types)
   - [LAabbTree](#laabbtree)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBezierCurve](#lbeziercurve)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCatmullRom](#lcatmullrom)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCircle](#lcircle)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LHermite](#lhermite)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNoiseGenerator](#lnoisegenerator)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRandomGenerator](#lrandomgenerator)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRectPacker](#lrectpacker)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpatialHash](#lspatialhash)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTransform](#ltransform)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTween](#ltween)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVec2](#lvec2)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVec3](#lvec3)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
   - [LAabbTree:clear](#laabbtreeclear)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LAabbTree:contains](#laabbtreecontains)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LAabbTree:insert](#laabbtreeinsert)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LAabbTree:isEmpty](#laabbtreeisempty)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LAabbTree:len](#laabbtreelen)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LAabbTree:query](#laabbtreequery)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LAabbTree:queryPoint](#laabbtreequerypoint)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LAabbTree:remove](#laabbtreeremove)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LAabbTree:type](#laabbtreetype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LAabbTree:typeOf](#laabbtreetypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LAabbTree:update](#laabbtreeupdate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBezierCurve:evaluate](#lbeziercurveevaluate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBezierCurve:evaluateAtDistance](#lbeziercurveevaluateatdistance)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBezierCurve:getControlPoint](#lbeziercurvegetcontrolpoint)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBezierCurve:getControlPointCount](#lbeziercurvegetcontrolpointcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBezierCurve:getDerivative](#lbeziercurvegetderivative)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBezierCurve:insertControlPoint](#lbeziercurveinsertcontrolpoint)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBezierCurve:length](#lbeziercurvelength)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBezierCurve:removeControlPoint](#lbeziercurveremovecontrolpoint)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBezierCurve:render](#lbeziercurverender)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBezierCurve:rotate](#lbeziercurverotate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBezierCurve:scale](#lbeziercurvescale)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBezierCurve:setControlPoint](#lbeziercurvesetcontrolpoint)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBezierCurve:translate](#lbeziercurvetranslate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBezierCurve:type](#lbeziercurvetype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBezierCurve:typeOf](#lbeziercurvetypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCatmullRom:addPoint](#lcatmullromaddpoint)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCatmullRom:len](#lcatmullromlen)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCatmullRom:removePoint](#lcatmullromremovepoint)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCatmullRom:sample](#lcatmullromsample)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCatmullRom:sampleSegment](#lcatmullromsamplesegment)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCatmullRom:type](#lcatmullromtype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCatmullRom:typeOf](#lcatmullromtypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCircle:aabb](#lcircleaabb)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCircle:area](#lcirclearea)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCircle:contains](#lcirclecontains)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCircle:intersects](#lcircleintersects)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCircle:perimeter](#lcircleperimeter)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCircle:radius](#lcircleradius)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCircle:type](#lcircletype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCircle:typeOf](#lcircletypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCircle:x](#lcirclex)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCircle:y](#lcircley)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LHermite:sample](#lhermitesample)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LHermite:type](#lhermitetype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LHermite:typeOf](#lhermitetypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNoiseGenerator:fbm](#lnoisegeneratorfbm)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNoiseGenerator:generateMap](#lnoisegeneratorgeneratemap)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNoiseGenerator:generateMapCompute](#lnoisegeneratorgeneratemapcompute)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNoiseGenerator:getSeed](#lnoisegeneratorgetseed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNoiseGenerator:perlin1d](#lnoisegeneratorperlin1d)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNoiseGenerator:perlin2d](#lnoisegeneratorperlin2d)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNoiseGenerator:perlin3d](#lnoisegeneratorperlin3d)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNoiseGenerator:perlin4d](#lnoisegeneratorperlin4d)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNoiseGenerator:ridged](#lnoisegeneratorridged)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNoiseGenerator:setSeed](#lnoisegeneratorsetseed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNoiseGenerator:simplex1d](#lnoisegeneratorsimplex1d)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNoiseGenerator:simplex2d](#lnoisegeneratorsimplex2d)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNoiseGenerator:simplex3d](#lnoisegeneratorsimplex3d)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNoiseGenerator:turbulence](#lnoisegeneratorturbulence)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNoiseGenerator:type](#lnoisegeneratortype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNoiseGenerator:typeOf](#lnoisegeneratortypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNoiseGenerator:warpDomain](#lnoisegeneratorwarpdomain)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNoiseGenerator:worley2d](#lnoisegeneratorworley2d)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNoiseGenerator:worley3d](#lnoisegeneratorworley3d)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRandomGenerator:getSeed](#lrandomgeneratorgetseed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRandomGenerator:getState](#lrandomgeneratorgetstate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRandomGenerator:random](#lrandomgeneratorrandom)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRandomGenerator:randomFloat](#lrandomgeneratorrandomfloat)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRandomGenerator:randomInt](#lrandomgeneratorrandomint)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRandomGenerator:randomNormal](#lrandomgeneratorrandomnormal)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRandomGenerator:setSeed](#lrandomgeneratorsetseed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRandomGenerator:setState](#lrandomgeneratorsetstate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRandomGenerator:type](#lrandomgeneratortype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRandomGenerator:typeOf](#lrandomgeneratortypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRectPacker:clear](#lrectpackerclear)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRectPacker:getPacked](#lrectpackergetpacked)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRectPacker:occupancy](#lrectpackeroccupancy)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRectPacker:pack](#lrectpackerpack)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpatialHash:clear](#lspatialhashclear)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpatialHash:getCellSize](#lspatialhashgetcellsize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpatialHash:getItemCount](#lspatialhashgetitemcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpatialHash:insert](#lspatialhashinsert)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpatialHash:queryCircle](#lspatialhashquerycircle)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpatialHash:queryRect](#lspatialhashqueryrect)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpatialHash:querySegment](#lspatialhashquerysegment)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpatialHash:remove](#lspatialhashremove)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpatialHash:type](#lspatialhashtype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpatialHash:typeOf](#lspatialhashtypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpatialHash:update](#lspatialhashupdate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTransform:clone](#ltransformclone)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTransform:decompose](#ltransformdecompose)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTransform:getMatrix](#ltransformgetmatrix)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTransform:inverse](#ltransforminverse)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTransform:inverseTransformPoint](#ltransforminversetransformpoint)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTransform:reset](#ltransformreset)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTransform:rotate](#ltransformrotate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTransform:scale](#ltransformscale)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTransform:setTransformation](#ltransformsettransformation)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTransform:shear](#ltransformshear)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTransform:transformPoint](#ltransformtransformpoint)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTransform:translate](#ltransformtranslate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTransform:type](#ltransformtype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTransform:typeOf](#ltransformtypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTween:addValue](#ltweenaddvalue)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTween:getAllValues](#ltweengetallvalues)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTween:getClock](#ltweengetclock)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTween:getDuration](#ltweengetduration)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTween:getEasingName](#ltweengeteasingname)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTween:getTime](#ltweengettime)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTween:getValue](#ltweengetvalue)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTween:getValueCount](#ltweengetvaluecount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTween:isComplete](#ltweeniscomplete)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTween:reset](#ltweenreset)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTween:set](#ltweenset)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTween:setTime](#ltweensettime)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTween:type](#ltweentype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTween:typeOf](#ltweentypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTween:update](#ltweenupdate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVec2:angle](#lvec2angle)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVec2:cross](#lvec2cross)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVec2:distance](#lvec2distance)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVec2:dot](#lvec2dot)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVec2:fromAngle](#lvec2fromangle)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVec2:length](#lvec2length)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVec2:lengthSquared](#lvec2lengthsquared)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVec2:lerp](#lvec2lerp)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVec2:normalize](#lvec2normalize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVec2:normalized](#lvec2normalized)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVec2:perpendicular](#lvec2perpendicular)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVec2:reflect](#lvec2reflect)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVec2:rotate](#lvec2rotate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVec2:type](#lvec2type)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVec2:typeOf](#lvec2typeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVec2:x](#lvec2x)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVec2:y](#lvec2y)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVec3:add](#lvec3add)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVec3:cross](#lvec3cross)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVec3:distance](#lvec3distance)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVec3:dot](#lvec3dot)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVec3:length](#lvec3length)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVec3:lengthSquared](#lvec3lengthsquared)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVec3:lerp](#lvec3lerp)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVec3:normalize](#lvec3normalize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVec3:scale](#lvec3scale)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVec3:splat](#lvec3splat)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVec3:sub](#lvec3sub)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVec3:type](#lvec3type)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVec3:typeOf](#lvec3typeof)
+    - [Definition](#definition)
+    - [Description](#description)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -352,15 +880,23 @@ lurek.math.convexHull(pts: table) -> number[] -- Computes the convex hull for a 
 
 ### lurek.math.aabbTree
 
-`lurek.math.aabbTree() -> LAabbTree`
+#### Definition
+
+```lua
+--- Creates an empty AABB tree. This function is exposed to Lua scripts.
+---@return LAabbTree New AABB tree handle.
+lurek.math.aabbTree = function() end
+```
+
+#### Description
 
 Creates an empty AABB tree. This function is exposed to Lua scripts.
 
-**Returns**: `LAabbTree` - New AABB tree handle.
+Returns: `LAabbTree` - New AABB tree handle.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -374,19 +910,28 @@ end
 
 ### lurek.math.abs
 
-`lurek.math.abs(x: number) -> number`
+#### Definition
+
+```lua
+--- Returns absolute value. This function is exposed to Lua scripts.
+---@param x number Input value.
+---@return number Absolute value.
+lurek.math.abs = function(x) end
+```
+
+#### Description
 
 Returns absolute value. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `x` (`number`, required): Input value.
 
-**Returns**: `number` - Absolute value.
+Returns: `number` - Absolute value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -397,19 +942,28 @@ end
 
 ### lurek.math.acos
 
-`lurek.math.acos(x: number) -> number`
+#### Definition
+
+```lua
+--- Returns arccosine of a value. This function is exposed to Lua scripts.
+---@param x number Input value.
+---@return number Angle in radians.
+lurek.math.acos = function(x) end
+```
+
+#### Description
 
 Returns arccosine of a value. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `x` (`number`, required): Input value.
 
-**Returns**: `number` - Angle in radians.
+Returns: `number` - Angle in radians.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -420,22 +974,34 @@ end
 
 ### lurek.math.angleBetween
 
-`lurek.math.angleBetween(x1: number, y1: number, x2: number, y2: number) -> number`
+#### Definition
+
+```lua
+--- Returns the angle between two points.
+---@param x1 number First point x coordinate.
+---@param y1 number First point y coordinate.
+---@param x2 number Second point x coordinate.
+---@param y2 number Second point y coordinate.
+---@return number Angle between points.
+lurek.math.angleBetween = function(x1, y1, x2, y2) end
+```
+
+#### Description
 
 Returns the angle between two points.
 
-**Parameters**
+Parameters:
 
 - `x1` (`number`, required): First point x coordinate.
 - `y1` (`number`, required): First point y coordinate.
 - `x2` (`number`, required): Second point x coordinate.
 - `y2` (`number`, required): Second point y coordinate.
 
-**Returns**: `number` - Angle between points.
+Returns: `number` - Angle between points.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -448,20 +1014,30 @@ end
 
 ### lurek.math.applyEasing
 
-`lurek.math.applyEasing(name: string, t: number) -> number`
+#### Definition
+
+```lua
+--- Applies a named easing function to a normalized value.
+---@param name string Easing function name.
+---@param t number Normalized input value.
+---@return number Eased value.
+lurek.math.applyEasing = function(name, t) end
+```
+
+#### Description
 
 Applies a named easing function to a normalized value.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, required): Easing function name.
 - `t` (`number`, required): Normalized input value.
 
-**Returns**: `number` - Eased value.
+Returns: `number` - Eased value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -474,19 +1050,28 @@ end
 
 ### lurek.math.asin
 
-`lurek.math.asin(x: number) -> number`
+#### Definition
+
+```lua
+--- Returns arcsine of a value. This function is exposed to Lua scripts.
+---@param x number Input value.
+---@return number Angle in radians.
+lurek.math.asin = function(x) end
+```
+
+#### Description
 
 Returns arcsine of a value. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `x` (`number`, required): Input value.
 
-**Returns**: `number` - Angle in radians.
+Returns: `number` - Angle in radians.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -497,20 +1082,30 @@ end
 
 ### lurek.math.atan
 
-`lurek.math.atan(y: number, [x]: number) -> number`
+#### Definition
+
+```lua
+--- Returns arctangent or two-argument arctangent.
+---@param y number Input value or y coordinate.
+---@param x? number X coordinate for atan2 behavior.
+---@return number Angle in radians.
+lurek.math.atan = function(y, x) end
+```
+
+#### Description
 
 Returns arctangent or two-argument arctangent.
 
-**Parameters**
+Parameters:
 
 - `y` (`number`, required): Input value or y coordinate.
 - `x` (`number`, optional): X coordinate for atan2 behavior.
 
-**Returns**: `number` - Angle in radians.
+Returns: `number` - Angle in radians.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -521,20 +1116,30 @@ end
 
 ### lurek.math.atan2
 
-`lurek.math.atan2(y: number, x: number) -> number`
+#### Definition
+
+```lua
+--- Returns two-argument arctangent.
+---@param y number Y coordinate.
+---@param x number X coordinate.
+---@return number Angle in radians.
+lurek.math.atan2 = function(y, x) end
+```
+
+#### Description
 
 Returns two-argument arctangent.
 
-**Parameters**
+Parameters:
 
 - `y` (`number`, required): Y coordinate.
 - `x` (`number`, required): X coordinate.
 
-**Returns**: `number` - Angle in radians.
+Returns: `number` - Angle in radians.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -545,48 +1150,69 @@ end
 
 ### lurek.math.bresenham
 
-`lurek.math.bresenham(x1: integer, y1: integer, x2: integer, y2: integer) -> table`
+#### Definition
+
+```lua
+--- Returns integer grid points along a Bresenham line.
+---@param x1 number Start x coordinate.
+---@param y1 number Start y coordinate.
+---@param x2 number End x coordinate.
+---@param y2 number End y coordinate.
+---@return MathBresenhamResult Array table of `{x, y}` point tables.
+lurek.math.bresenham = function(x1, y1, x2, y2) end
+```
+
+#### Description
 
 Returns integer grid points along a Bresenham line.
 
-**Parameters**
+Parameters:
 
 - `x1` (`integer`, required): Start x coordinate.
 - `y1` (`integer`, required): Start y coordinate.
 - `x2` (`integer`, required): End x coordinate.
 - `y2` (`integer`, required): End y coordinate.
 
-**Returns**: `table` - Array table of `{x, y}` point tables.
+Returns: `table` - Array table of `{x, y}` point tables.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
     local pts = lurek.math.bresenham(0, 0, 5, 3)
     print("bresenham points = " .. #pts)
     for _, p in ipairs(pts) do
-        print("  " .. p.x .. "," .. p.y)
+        print("  " .. p[1] .. "," .. p[2])
     end
 end
 ```
 
 ### lurek.math.catmullRom
 
-`lurek.math.catmullRom(points: table) -> LCatmullRom`
+#### Definition
+
+```lua
+--- Creates a Catmull-Rom spline from point tables.
+---@param points table Array table of points with `x`/`y` fields or numeric indices.
+---@return LCatmullRom New spline handle.
+lurek.math.catmullRom = function(points) end
+```
+
+#### Description
 
 Creates a Catmull-Rom spline from point tables.
 
-**Parameters**
+Parameters:
 
 - `points` (`table`, required): Array table of points with `x`/`y` fields or numeric indices.
 
-**Returns**: `LCatmullRom` - New spline handle.
+Returns: `LCatmullRom` - New spline handle.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -598,19 +1224,28 @@ end
 
 ### lurek.math.ceil
 
-`lurek.math.ceil(x: number) -> number`
+#### Definition
+
+```lua
+--- Returns ceiling of a value. This function is exposed to Lua scripts.
+---@param x number Input value.
+---@return number Ceiling value.
+lurek.math.ceil = function(x) end
+```
+
+#### Description
 
 Returns ceiling of a value. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `x` (`number`, required): Input value.
 
-**Returns**: `number` - Ceiling value.
+Returns: `number` - Ceiling value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -621,11 +1256,24 @@ end
 
 ### lurek.math.circleContainsPoint
 
-`lurek.math.circleContainsPoint(cx: number, cy: number, r: number, px: number, py: number) -> boolean`
+#### Definition
+
+```lua
+--- Returns whether a circle contains a point.
+---@param cx number Circle center x coordinate.
+---@param cy number Circle center y coordinate.
+---@param r number Circle radius.
+---@param px number Point x coordinate.
+---@param py number Point y coordinate.
+---@return boolean True when the point is inside the circle.
+lurek.math.circleContainsPoint = function(cx, cy, r, px, py) end
+```
+
+#### Description
 
 Returns whether a circle contains a point.
 
-**Parameters**
+Parameters:
 
 - `cx` (`number`, required): Circle center x coordinate.
 - `cy` (`number`, required): Circle center y coordinate.
@@ -633,11 +1281,11 @@ Returns whether a circle contains a point.
 - `px` (`number`, required): Point x coordinate.
 - `py` (`number`, required): Point y coordinate.
 
-**Returns**: `boolean` - True when the point is inside the circle.
+Returns: `boolean` - True when the point is inside the circle.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -648,11 +1296,25 @@ end
 
 ### lurek.math.circleIntersectsCircle
 
-`lurek.math.circleIntersectsCircle(x1: number, y1: number, r1: number, x2: number, y2: number, r2: number) -> boolean`
+#### Definition
+
+```lua
+--- Returns whether two circles intersect.
+---@param x1 number First circle center x coordinate.
+---@param y1 number First circle center y coordinate.
+---@param r1 number First circle radius.
+---@param x2 number Second circle center x coordinate.
+---@param y2 number Second circle center y coordinate.
+---@param r2 number Second circle radius.
+---@return boolean True when the circles intersect.
+lurek.math.circleIntersectsCircle = function(x1, y1, r1, x2, y2, r2) end
+```
+
+#### Description
 
 Returns whether two circles intersect.
 
-**Parameters**
+Parameters:
 
 - `x1` (`number`, required): First circle center x coordinate.
 - `y1` (`number`, required): First circle center y coordinate.
@@ -661,11 +1323,11 @@ Returns whether two circles intersect.
 - `y2` (`number`, required): Second circle center y coordinate.
 - `r2` (`number`, required): Second circle radius.
 
-**Returns**: `boolean` - True when the circles intersect.
+Returns: `boolean` - True when the circles intersect.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -676,11 +1338,30 @@ end
 
 ### lurek.math.circleIntersectsLine
 
-`lurek.math.circleIntersectsLine(cx: number, cy: number, r: number, lx1: number, ly1: number, lx2: number, ly2: number) -> boolean`
+#### Definition
+
+```lua
+--- Returns circle-line intersection state and hit points when present.
+---@param cx number Circle center x coordinate.
+---@param cy number Circle center y coordinate.
+---@param r number Circle radius.
+---@param lx1 number Line start x coordinate.
+---@param ly1 number Line start y coordinate.
+---@param lx2 number Line end x coordinate.
+---@param ly2 number Line end y coordinate.
+---@return boolean a True when the line intersects the circle.
+---@return number b First hit x coordinate, or nil.
+---@return number c First hit y coordinate, or nil.
+---@return number d Second hit x coordinate, or nil.
+---@return number e Second hit y coordinate, or nil.
+lurek.math.circleIntersectsLine = function(cx, cy, r, lx1, ly1, lx2, ly2) end
+```
+
+#### Description
 
 Returns circle-line intersection state and hit points when present.
 
-**Parameters**
+Parameters:
 
 - `cx` (`number`, required): Circle center x coordinate.
 - `cy` (`number`, required): Circle center y coordinate.
@@ -690,11 +1371,11 @@ Returns circle-line intersection state and hit points when present.
 - `lx2` (`number`, required): Line end x coordinate.
 - `ly2` (`number`, required): Line end y coordinate.
 
-**Returns**: `boolean` - True when the line intersects the circle.
+Returns: `boolean` - True when the line intersects the circle.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -707,11 +1388,30 @@ end
 
 ### lurek.math.circleIntersectsSegment
 
-`lurek.math.circleIntersectsSegment(cx: number, cy: number, r: number, sx1: number, sy1: number, sx2: number, sy2: number) -> boolean`
+#### Definition
+
+```lua
+--- Returns circle-segment intersection state and hit points when present.
+---@param cx number Circle center x coordinate.
+---@param cy number Circle center y coordinate.
+---@param r number Circle radius.
+---@param sx1 number Segment start x coordinate.
+---@param sy1 number Segment start y coordinate.
+---@param sx2 number Segment end x coordinate.
+---@param sy2 number Segment end y coordinate.
+---@return boolean a True when the segment intersects the circle.
+---@return number b First hit x coordinate, or nil.
+---@return number c First hit y coordinate, or nil.
+---@return number d Second hit x coordinate, or nil.
+---@return number e Second hit y coordinate, or nil.
+lurek.math.circleIntersectsSegment = function(cx, cy, r, sx1, sy1, sx2, sy2) end
+```
+
+#### Description
 
 Returns circle-segment intersection state and hit points when present.
 
-**Parameters**
+Parameters:
 
 - `cx` (`number`, required): Circle center x coordinate.
 - `cy` (`number`, required): Circle center y coordinate.
@@ -721,11 +1421,11 @@ Returns circle-segment intersection state and hit points when present.
 - `sx2` (`number`, required): Segment end x coordinate.
 - `sy2` (`number`, required): Segment end y coordinate.
 
-**Returns**: `boolean` - True when the segment intersects the circle.
+Returns: `boolean` - True when the segment intersects the circle.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -739,21 +1439,32 @@ end
 
 ### lurek.math.clamp
 
-`lurek.math.clamp(v: number, min: number, max: number) -> number`
+#### Definition
+
+```lua
+--- Clamps a value to a range. This function is exposed to Lua scripts.
+---@param v number Input value.
+---@param min number Minimum value.
+---@param max number Maximum value.
+---@return number Clamped value.
+lurek.math.clamp = function(v, min, max) end
+```
+
+#### Description
 
 Clamps a value to a range. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `v` (`number`, required): Input value.
 - `min` (`number`, required): Minimum value.
 - `max` (`number`, required): Maximum value.
 
-**Returns**: `number` - Clamped value.
+Returns: `number` - Clamped value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -765,11 +1476,26 @@ end
 
 ### lurek.math.closestPointOnSegment
 
-`lurek.math.closestPointOnSegment(px: number, py: number, x1: number, y1: number, x2: number, y2: number) -> number`
+#### Definition
+
+```lua
+--- Returns the closest point on a segment to an input point.
+---@param px number Point x coordinate.
+---@param py number Point y coordinate.
+---@param x1 number Segment start x coordinate.
+---@param y1 number Segment start y coordinate.
+---@param x2 number Segment end x coordinate.
+---@param y2 number Segment end y coordinate.
+---@return number a Closest point x coordinate.
+---@return number b Closest point y coordinate.
+lurek.math.closestPointOnSegment = function(px, py, x1, y1, x2, y2) end
+```
+
+#### Description
 
 Returns the closest point on a segment to an input point.
 
-**Parameters**
+Parameters:
 
 - `px` (`number`, required): Point x coordinate.
 - `py` (`number`, required): Point y coordinate.
@@ -778,11 +1504,11 @@ Returns the closest point on a segment to an input point.
 - `x2` (`number`, required): Segment end x coordinate.
 - `y2` (`number`, required): Segment end y coordinate.
 
-**Returns**: `number` - Closest point x coordinate.
+Returns: `number` - Closest point x coordinate.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -793,19 +1519,28 @@ end
 
 ### lurek.math.convexHull
 
-`lurek.math.convexHull(pts: table) -> number[]`
+#### Definition
+
+```lua
+--- Computes the convex hull for a flat point table.
+---@param pts table Flat numeric point table.
+---@return number[] Flat numeric hull point table (x1,y1,x2,y2,...).
+lurek.math.convexHull = function(pts) end
+```
+
+#### Description
 
 Computes the convex hull for a flat point table.
 
-**Parameters**
+Parameters:
 
 - `pts` (`table`, required): Flat numeric point table.
 
-**Returns**: `number[]` - Flat numeric hull point table (x1,y1,x2,y2,...).
+Returns: `number[]` - Flat numeric hull point table (x1,y1,x2,y2,...).
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -817,19 +1552,28 @@ end
 
 ### lurek.math.cos
 
-`lurek.math.cos(x: number) -> number`
+#### Definition
+
+```lua
+--- Returns cosine of an angle. This function is exposed to Lua scripts.
+---@param x number Angle in radians.
+---@return number Cosine value.
+lurek.math.cos = function(x) end
+```
+
+#### Description
 
 Returns cosine of an angle. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `x` (`number`, required): Angle in radians.
 
-**Returns**: `number` - Cosine value.
+Returns: `number` - Cosine value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -840,19 +1584,28 @@ end
 
 ### lurek.math.deg
 
-`lurek.math.deg(rad: number) -> number`
+#### Definition
+
+```lua
+--- Converts radians to degrees. This function is exposed to Lua scripts.
+---@param rad number Angle in radians.
+---@return number Angle in degrees.
+lurek.math.deg = function(rad) end
+```
+
+#### Description
 
 Converts radians to degrees. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `rad` (`number`, required): Angle in radians.
 
-**Returns**: `number` - Angle in degrees.
+Returns: `number` - Angle in degrees.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -863,19 +1616,28 @@ end
 
 ### lurek.math.delaunayTriangulate
 
-`lurek.math.delaunayTriangulate(pts: table) -> table`
+#### Definition
+
+```lua
+--- Computes Delaunay triangles for a flat point table.
+---@param pts table Flat numeric point table.
+---@return table Array of triangle index tables; each entry is `{i1, i2, i3}` (1-based vertex indices).
+lurek.math.delaunayTriangulate = function(pts) end
+```
+
+#### Description
 
 Computes Delaunay triangles for a flat point table.
 
-**Parameters**
+Parameters:
 
 - `pts` (`table`, required): Flat numeric point table.
 
-**Returns**: `table` - Array of triangle index tables; each entry is `{i1, i2, i3}` (1-based vertex indices).
+Returns: `table` - Array of triangle index tables; each entry is `{i1, i2, i3}` (1-based vertex indices).
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -887,22 +1649,34 @@ end
 
 ### lurek.math.distance
 
-`lurek.math.distance(x1: number, y1: number, x2: number, y2: number) -> number`
+#### Definition
+
+```lua
+--- Returns Euclidean distance between two points.
+---@param x1 number First point x coordinate.
+---@param y1 number First point y coordinate.
+---@param x2 number Second point x coordinate.
+---@param y2 number Second point y coordinate.
+---@return number Distance.
+lurek.math.distance = function(x1, y1, x2, y2) end
+```
+
+#### Description
 
 Returns Euclidean distance between two points.
 
-**Parameters**
+Parameters:
 
 - `x1` (`number`, required): First point x coordinate.
 - `y1` (`number`, required): First point y coordinate.
 - `x2` (`number`, required): Second point x coordinate.
 - `y2` (`number`, required): Second point y coordinate.
 
-**Returns**: `number` - Distance.
+Returns: `number` - Distance.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -913,22 +1687,34 @@ end
 
 ### lurek.math.distanceSq
 
-`lurek.math.distanceSq(x1: number, y1: number, x2: number, y2: number) -> number`
+#### Definition
+
+```lua
+--- Returns squared Euclidean distance between two points.
+---@param x1 number First point x coordinate.
+---@param y1 number First point y coordinate.
+---@param x2 number Second point x coordinate.
+---@param y2 number Second point y coordinate.
+---@return number Squared distance.
+lurek.math.distanceSq = function(x1, y1, x2, y2) end
+```
+
+#### Description
 
 Returns squared Euclidean distance between two points.
 
-**Parameters**
+Parameters:
 
 - `x1` (`number`, required): First point x coordinate.
 - `y1` (`number`, required): First point y coordinate.
 - `x2` (`number`, required): Second point x coordinate.
 - `y2` (`number`, required): Second point y coordinate.
 
-**Returns**: `number` - Squared distance.
+Returns: `number` - Squared distance.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -939,19 +1725,28 @@ end
 
 ### lurek.math.exp
 
-`lurek.math.exp(x: number) -> number`
+#### Definition
+
+```lua
+--- Returns exponential of a value. This function is exposed to Lua scripts.
+---@param x number Input value.
+---@return number Exponential value.
+lurek.math.exp = function(x) end
+```
+
+#### Description
 
 Returns exponential of a value. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `x` (`number`, required): Input value.
 
-**Returns**: `number` - Exponential value.
+Returns: `number` - Exponential value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -962,11 +1757,25 @@ end
 
 ### lurek.math.fbm
 
-`lurek.math.fbm(x: number, y: number, [seed]: integer, [octaves]: integer, [lac]: number, [gain]: number) -> number`
+#### Definition
+
+```lua
+--- Samples stateless fractal Brownian motion noise.
+---@param x number X coordinate.
+---@param y number Y coordinate.
+---@param seed? number Seed value (default 0).
+---@param octaves? number Octave count (default 4).
+---@param lac? number Lacunarity (default 2.0).
+---@param gain? number Gain (default 0.5).
+---@return number Noise value.
+lurek.math.fbm = function(x, y, seed, octaves, lac, gain) end
+```
+
+#### Description
 
 Samples stateless fractal Brownian motion noise.
 
-**Parameters**
+Parameters:
 
 - `x` (`number`, required): X coordinate.
 - `y` (`number`, required): Y coordinate.
@@ -975,11 +1784,11 @@ Samples stateless fractal Brownian motion noise.
 - `lac` (`number`, optional): Lacunarity (default 2.0).
 - `gain` (`number`, optional): Gain (default 0.5).
 
-**Returns**: `number` - Noise value.
+Returns: `number` - Noise value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -991,19 +1800,28 @@ end
 
 ### lurek.math.floor
 
-`lurek.math.floor(x: number) -> number`
+#### Definition
+
+```lua
+--- Returns floor of a value. This function is exposed to Lua scripts.
+---@param x number Input value.
+---@return number Floored value.
+lurek.math.floor = function(x) end
+```
+
+#### Description
 
 Returns floor of a value. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `x` (`number`, required): Input value.
 
-**Returns**: `number` - Floored value.
+Returns: `number` - Floored value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -1014,20 +1832,30 @@ end
 
 ### lurek.math.fmod
 
-`lurek.math.fmod(x: number, y: number) -> number`
+#### Definition
+
+```lua
+--- Returns floating-point remainder.
+---@param x number Dividend.
+---@param y number Divisor.
+---@return number Remainder.
+lurek.math.fmod = function(x, y) end
+```
+
+#### Description
 
 Returns floating-point remainder.
 
-**Parameters**
+Parameters:
 
 - `x` (`number`, required): Dividend.
 - `y` (`number`, required): Divisor.
 
-**Returns**: `number` - Remainder.
+Returns: `number` - Remainder.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -1038,19 +1866,31 @@ end
 
 ### lurek.math.fromHex
 
-`lurek.math.fromHex(hex: string) -> number`
+#### Definition
+
+```lua
+--- Converts a hex color string to RGBA channels.
+---@param hex string Hex color string.
+---@return number a Red channel.
+---@return number b Green channel.
+---@return number c Blue channel.
+---@return number d Alpha channel.
+lurek.math.fromHex = function(hex) end
+```
+
+#### Description
 
 Converts a hex color string to RGBA channels.
 
-**Parameters**
+Parameters:
 
 - `hex` (`string`, required): Hex color string.
 
-**Returns**: `number` - Red channel.
+Returns: `number` - Red channel.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -1061,19 +1901,28 @@ end
 
 ### lurek.math.gammaToLinear
 
-`lurek.math.gammaToLinear(c: number) -> number`
+#### Definition
+
+```lua
+--- Converts a gamma-space channel to linear space.
+---@param c number Gamma-space channel value.
+---@return number Linear-space channel value.
+lurek.math.gammaToLinear = function(c) end
+```
+
+#### Description
 
 Converts a gamma-space channel to linear space.
 
-**Parameters**
+Parameters:
 
 - `c` (`number`, required): Gamma-space channel value.
 
-**Returns**: `number` - Linear-space channel value.
+Returns: `number` - Linear-space channel value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -1085,11 +1934,27 @@ end
 
 ### lurek.math.hermite
 
-`lurek.math.hermite(p0x: number, p0y: number, p1x: number, p1y: number, m0x: number, m0y: number, m1x: number, m1y: number) -> LHermite`
+#### Definition
+
+```lua
+--- Creates a Hermite spline from endpoints and tangents.
+---@param p0x number Start point x coordinate.
+---@param p0y number Start point y coordinate.
+---@param p1x number End point x coordinate.
+---@param p1y number End point y coordinate.
+---@param m0x number Start tangent x component.
+---@param m0y number Start tangent y component.
+---@param m1x number End tangent x component.
+---@param m1y number End tangent y component.
+---@return LHermite New Hermite spline handle.
+lurek.math.hermite = function(p0x, p0y, p1x, p1y, m0x, m0y, m1x, m1y) end
+```
+
+#### Description
 
 Creates a Hermite spline from endpoints and tangents.
 
-**Parameters**
+Parameters:
 
 - `p0x` (`number`, required): Start point x coordinate.
 - `p0y` (`number`, required): Start point y coordinate.
@@ -1100,11 +1965,11 @@ Creates a Hermite spline from endpoints and tangents.
 - `m1x` (`number`, required): End tangent x component.
 - `m1y` (`number`, required): End tangent y component.
 
-**Returns**: `LHermite` - New Hermite spline handle.
+Returns: `LHermite` - New Hermite spline handle.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -1117,21 +1982,35 @@ do
 
 ### lurek.math.hslToRgb
 
-`lurek.math.hslToRgb(h: number, s: number, l: number) -> number`
+#### Definition
+
+```lua
+--- Converts HSL color values to RGBA channels.
+---@param h number Hue value.
+---@param s number Saturation value.
+---@param l number Lightness value.
+---@return number a Red channel.
+---@return number b Green channel.
+---@return number c Blue channel.
+---@return number d Alpha channel.
+lurek.math.hslToRgb = function(h, s, l) end
+```
+
+#### Description
 
 Converts HSL color values to RGBA channels.
 
-**Parameters**
+Parameters:
 
 - `h` (`number`, required): Hue value.
 - `s` (`number`, required): Saturation value.
 - `l` (`number`, required): Lightness value.
 
-**Returns**: `number` - Red channel.
+Returns: `number` - Red channel.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -1144,19 +2023,28 @@ end
 
 ### lurek.math.inBack
 
-`lurek.math.inBack(t: number) -> number`
+#### Definition
+
+```lua
+--- Applies back ease-in. This function is exposed to Lua scripts.
+---@param t number Normalized input value.
+---@return number Eased value.
+lurek.math.inBack = function(t) end
+```
+
+#### Description
 
 Applies back ease-in. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `t` (`number`, required): Normalized input value.
 
-**Returns**: `number` - Eased value.
+Returns: `number` - Eased value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -1169,19 +2057,28 @@ end
 
 ### lurek.math.inBounce
 
-`lurek.math.inBounce(t: number) -> number`
+#### Definition
+
+```lua
+--- Applies bounce ease-in. This function is exposed to Lua scripts.
+---@param t number Normalized input value.
+---@return number Eased value.
+lurek.math.inBounce = function(t) end
+```
+
+#### Description
 
 Applies bounce ease-in. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `t` (`number`, required): Normalized input value.
 
-**Returns**: `number` - Eased value.
+Returns: `number` - Eased value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -1194,19 +2091,28 @@ end
 
 ### lurek.math.inCubic
 
-`lurek.math.inCubic(t: number) -> number`
+#### Definition
+
+```lua
+--- Applies cubic ease-in. This function is exposed to Lua scripts.
+---@param t number Normalized input value.
+---@return number Eased value.
+lurek.math.inCubic = function(t) end
+```
+
+#### Description
 
 Applies cubic ease-in. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `t` (`number`, required): Normalized input value.
 
-**Returns**: `number` - Eased value.
+Returns: `number` - Eased value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -1220,19 +2126,28 @@ end
 
 ### lurek.math.inElastic
 
-`lurek.math.inElastic(t: number) -> number`
+#### Definition
+
+```lua
+--- Applies elastic ease-in. This function is exposed to Lua scripts.
+---@param t number Normalized input value.
+---@return number Eased value.
+lurek.math.inElastic = function(t) end
+```
+
+#### Description
 
 Applies elastic ease-in. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `t` (`number`, required): Normalized input value.
 
-**Returns**: `number` - Eased value.
+Returns: `number` - Eased value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -1246,19 +2161,28 @@ end
 
 ### lurek.math.inExpo
 
-`lurek.math.inExpo(t: number) -> number`
+#### Definition
+
+```lua
+--- Applies exponential ease-in. This function is exposed to Lua scripts.
+---@param t number Normalized input value.
+---@return number Eased value.
+lurek.math.inExpo = function(t) end
+```
+
+#### Description
 
 Applies exponential ease-in. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `t` (`number`, required): Normalized input value.
 
-**Returns**: `number` - Eased value.
+Returns: `number` - Eased value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -1272,19 +2196,28 @@ end
 
 ### lurek.math.inOutBack
 
-`lurek.math.inOutBack(t: number) -> number`
+#### Definition
+
+```lua
+--- Applies back ease-in-out. This function is exposed to Lua scripts.
+---@param t number Normalized input value.
+---@return number Eased value.
+lurek.math.inOutBack = function(t) end
+```
+
+#### Description
 
 Applies back ease-in-out. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `t` (`number`, required): Normalized input value.
 
-**Returns**: `number` - Eased value.
+Returns: `number` - Eased value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -1298,19 +2231,28 @@ end
 
 ### lurek.math.inOutBounce
 
-`lurek.math.inOutBounce(t: number) -> number`
+#### Definition
+
+```lua
+--- Applies bounce ease-in-out. This function is exposed to Lua scripts.
+---@param t number Normalized input value.
+---@return number Eased value.
+lurek.math.inOutBounce = function(t) end
+```
+
+#### Description
 
 Applies bounce ease-in-out. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `t` (`number`, required): Normalized input value.
 
-**Returns**: `number` - Eased value.
+Returns: `number` - Eased value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -1324,19 +2266,28 @@ end
 
 ### lurek.math.inOutCubic
 
-`lurek.math.inOutCubic(t: number) -> number`
+#### Definition
+
+```lua
+--- Applies cubic ease-in-out. This function is exposed to Lua scripts.
+---@param t number Normalized input value.
+---@return number Eased value.
+lurek.math.inOutCubic = function(t) end
+```
+
+#### Description
 
 Applies cubic ease-in-out. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `t` (`number`, required): Normalized input value.
 
-**Returns**: `number` - Eased value.
+Returns: `number` - Eased value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -1350,19 +2301,28 @@ end
 
 ### lurek.math.inOutElastic
 
-`lurek.math.inOutElastic(t: number) -> number`
+#### Definition
+
+```lua
+--- Applies elastic ease-in-out. This function is exposed to Lua scripts.
+---@param t number Normalized input value.
+---@return number Eased value.
+lurek.math.inOutElastic = function(t) end
+```
+
+#### Description
 
 Applies elastic ease-in-out. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `t` (`number`, required): Normalized input value.
 
-**Returns**: `number` - Eased value.
+Returns: `number` - Eased value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -1376,19 +2336,28 @@ end
 
 ### lurek.math.inOutExpo
 
-`lurek.math.inOutExpo(t: number) -> number`
+#### Definition
+
+```lua
+--- Applies exponential ease-in-out.
+---@param t number Normalized input value.
+---@return number Eased value.
+lurek.math.inOutExpo = function(t) end
+```
+
+#### Description
 
 Applies exponential ease-in-out.
 
-**Parameters**
+Parameters:
 
 - `t` (`number`, required): Normalized input value.
 
-**Returns**: `number` - Eased value.
+Returns: `number` - Eased value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -1402,19 +2371,28 @@ end
 
 ### lurek.math.inOutQuad
 
-`lurek.math.inOutQuad(t: number) -> number`
+#### Definition
+
+```lua
+--- Applies quadratic ease-in-out. This function is exposed to Lua scripts.
+---@param t number Normalized input value.
+---@return number Eased value.
+lurek.math.inOutQuad = function(t) end
+```
+
+#### Description
 
 Applies quadratic ease-in-out. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `t` (`number`, required): Normalized input value.
 
-**Returns**: `number` - Eased value.
+Returns: `number` - Eased value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -1428,19 +2406,28 @@ end
 
 ### lurek.math.inOutQuart
 
-`lurek.math.inOutQuart(t: number) -> number`
+#### Definition
+
+```lua
+--- Applies quartic ease-in-out. This function is exposed to Lua scripts.
+---@param t number Normalized input value.
+---@return number Eased value.
+lurek.math.inOutQuart = function(t) end
+```
+
+#### Description
 
 Applies quartic ease-in-out. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `t` (`number`, required): Normalized input value.
 
-**Returns**: `number` - Eased value.
+Returns: `number` - Eased value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -1454,19 +2441,28 @@ end
 
 ### lurek.math.inOutSine
 
-`lurek.math.inOutSine(t: number) -> number`
+#### Definition
+
+```lua
+--- Applies sine ease-in-out. This function is exposed to Lua scripts.
+---@param t number Normalized input value.
+---@return number Eased value.
+lurek.math.inOutSine = function(t) end
+```
+
+#### Description
 
 Applies sine ease-in-out. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `t` (`number`, required): Normalized input value.
 
-**Returns**: `number` - Eased value.
+Returns: `number` - Eased value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -1480,19 +2476,28 @@ end
 
 ### lurek.math.inQuad
 
-`lurek.math.inQuad(t: number) -> number`
+#### Definition
+
+```lua
+--- Applies quadratic ease-in. This function is exposed to Lua scripts.
+---@param t number Normalized input value.
+---@return number Eased value.
+lurek.math.inQuad = function(t) end
+```
+
+#### Description
 
 Applies quadratic ease-in. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `t` (`number`, required): Normalized input value.
 
-**Returns**: `number` - Eased value.
+Returns: `number` - Eased value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -1506,19 +2511,28 @@ end
 
 ### lurek.math.inQuart
 
-`lurek.math.inQuart(t: number) -> number`
+#### Definition
+
+```lua
+--- Applies quartic ease-in. This function is exposed to Lua scripts.
+---@param t number Normalized input value.
+---@return number Eased value.
+lurek.math.inQuart = function(t) end
+```
+
+#### Description
 
 Applies quartic ease-in. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `t` (`number`, required): Normalized input value.
 
-**Returns**: `number` - Eased value.
+Returns: `number` - Eased value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -1532,19 +2546,28 @@ end
 
 ### lurek.math.inSine
 
-`lurek.math.inSine(t: number) -> number`
+#### Definition
+
+```lua
+--- Applies sine ease-in. This function is exposed to Lua scripts.
+---@param t number Normalized input value.
+---@return number Eased value.
+lurek.math.inSine = function(t) end
+```
+
+#### Description
 
 Applies sine ease-in. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `t` (`number`, required): Normalized input value.
 
-**Returns**: `number` - Eased value.
+Returns: `number` - Eased value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -1558,21 +2581,32 @@ end
 
 ### lurek.math.inverseLerp
 
-`lurek.math.inverseLerp(a: number, b: number, v: number) -> number`
+#### Definition
+
+```lua
+--- Returns the interpolation factor of a value between two bounds.
+---@param a number Start value.
+---@param b number End value.
+---@param v number Input value.
+---@return number Interpolation factor.
+lurek.math.inverseLerp = function(a, b, v) end
+```
+
+#### Description
 
 Returns the interpolation factor of a value between two bounds.
 
-**Parameters**
+Parameters:
 
 - `a` (`number`, required): Start value.
 - `b` (`number`, required): End value.
 - `v` (`number`, required): Input value.
 
-**Returns**: `number` - Interpolation factor.
+Returns: `number` - Interpolation factor.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -1583,19 +2617,28 @@ end
 
 ### lurek.math.isConvex
 
-`lurek.math.isConvex(pts: table) -> boolean`
+#### Definition
+
+```lua
+--- Returns whether a flat polygon point table is convex.
+---@param pts table Flat numeric table `{x1, y1, x2, y2, ...}`.
+---@return boolean True when the polygon is convex.
+lurek.math.isConvex = function(pts) end
+```
+
+#### Description
 
 Returns whether a flat polygon point table is convex.
 
-**Parameters**
+Parameters:
 
 - `pts` (`table`, required): Flat numeric table `{x1, y1, x2, y2, ...}`.
 
-**Returns**: `boolean` - True when the polygon is convex.
+Returns: `boolean` - True when the polygon is convex.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -1608,21 +2651,32 @@ end
 
 ### lurek.math.lerp
 
-`lurek.math.lerp(a: number, b: number, t: number) -> number`
+#### Definition
+
+```lua
+--- Linearly interpolates between two values.
+---@param a number Start value.
+---@param b number End value.
+---@param t number Interpolation factor.
+---@return number Interpolated value.
+lurek.math.lerp = function(a, b, t) end
+```
+
+#### Description
 
 Linearly interpolates between two values.
 
-**Parameters**
+Parameters:
 
 - `a` (`number`, required): Start value.
 - `b` (`number`, required): End value.
 - `t` (`number`, required): Interpolation factor.
 
-**Returns**: `number` - Interpolated value.
+Returns: `number` - Interpolated value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -1633,19 +2687,28 @@ end
 
 ### lurek.math.linear
 
-`lurek.math.linear(t: number) -> number`
+#### Definition
+
+```lua
+--- Applies linear easing. This function is exposed to Lua scripts.
+---@param t number Normalized input value.
+---@return number Eased value.
+lurek.math.linear = function(t) end
+```
+
+#### Description
 
 Applies linear easing. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `t` (`number`, required): Normalized input value.
 
-**Returns**: `number` - Eased value.
+Returns: `number` - Eased value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -1659,19 +2722,28 @@ end
 
 ### lurek.math.linearToGamma
 
-`lurek.math.linearToGamma(c: number) -> number`
+#### Definition
+
+```lua
+--- Converts a linear-space channel to gamma space.
+---@param c number Linear-space channel value.
+---@return number Gamma-space channel value.
+lurek.math.linearToGamma = function(c) end
+```
+
+#### Description
 
 Converts a linear-space channel to gamma space.
 
-**Parameters**
+Parameters:
 
 - `c` (`number`, required): Linear-space channel value.
 
-**Returns**: `number` - Gamma-space channel value.
+Returns: `number` - Gamma-space channel value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -1685,11 +2757,28 @@ end
 
 ### lurek.math.lineIntersect
 
-`lurek.math.lineIntersect(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number) -> number`
+#### Definition
+
+```lua
+--- Returns intersection point for two infinite lines when present.
+---@param x1 number First line start x coordinate.
+---@param y1 number First line start y coordinate.
+---@param x2 number First line end x coordinate.
+---@param y2 number First line end y coordinate.
+---@param x3 number Second line start x coordinate.
+---@param y3 number Second line start y coordinate.
+---@param x4 number Second line end x coordinate.
+---@param y4 number Second line end y coordinate.
+---@return number a Intersection x coordinate, or nil.
+---@return number b Intersection y coordinate, or nil.
+lurek.math.lineIntersect = function(x1, y1, x2, y2, x3, y3, x4, y4) end
+```
+
+#### Description
 
 Returns intersection point for two infinite lines when present.
 
-**Parameters**
+Parameters:
 
 - `x1` (`number`, required): First line start x coordinate.
 - `y1` (`number`, required): First line start y coordinate.
@@ -1700,11 +2789,11 @@ Returns intersection point for two infinite lines when present.
 - `x4` (`number`, required): Second line end x coordinate.
 - `y4` (`number`, required): Second line end y coordinate.
 
-**Returns**: `number` - Intersection x coordinate, or nil.
+Returns: `number` - Intersection x coordinate, or nil.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -1715,20 +2804,30 @@ end
 
 ### lurek.math.log
 
-`lurek.math.log(x: number, [b]: number) -> number`
+#### Definition
+
+```lua
+--- Returns natural logarithm or logarithm with a supplied base.
+---@param x number Input value.
+---@param b? number Logarithm base.
+---@return number Logarithm value.
+lurek.math.log = function(x, b) end
+```
+
+#### Description
 
 Returns natural logarithm or logarithm with a supplied base.
 
-**Parameters**
+Parameters:
 
 - `x` (`number`, required): Input value.
 - `b` (`number`, optional): Logarithm base.
 
-**Returns**: `number` - Logarithm value.
+Returns: `number` - Logarithm value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -1739,19 +2838,28 @@ end
 
 ### lurek.math.max
 
-`lurek.math.max(...: number) -> number`
+#### Definition
+
+```lua
+--- Returns the largest supplied value.
+---@param ... number One or more numeric values.
+---@return number Maximum value.
+lurek.math.max = function(...) end
+```
+
+#### Description
 
 Returns the largest supplied value.
 
-**Parameters**
+Parameters:
 
 - `...` (`number`, required): One or more numeric values.
 
-**Returns**: `number` - Maximum value.
+Returns: `number` - Maximum value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -1761,19 +2869,28 @@ end
 
 ### lurek.math.min
 
-`lurek.math.min(...: number) -> number`
+#### Definition
+
+```lua
+--- Returns the smallest supplied value.
+---@param ... number One or more numeric values.
+---@return number Minimum value.
+lurek.math.min = function(...) end
+```
+
+#### Description
 
 Returns the smallest supplied value.
 
-**Parameters**
+Parameters:
 
 - `...` (`number`, required): One or more numeric values.
 
-**Returns**: `number` - Minimum value.
+Returns: `number` - Minimum value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -1783,19 +2900,28 @@ end
 
 ### lurek.math.newBezierCurve
 
-`lurek.math.newBezierCurve(points: table) -> LBezierCurve`
+#### Definition
+
+```lua
+--- Creates a Bezier curve from a flat point table.
+---@param points table Flat numeric table `{x1, y1, x2, y2, ...}` with at least two points.
+---@return LBezierCurve New Bezier curve handle.
+lurek.math.newBezierCurve = function(points) end
+```
+
+#### Description
 
 Creates a Bezier curve from a flat point table.
 
-**Parameters**
+Parameters:
 
 - `points` (`table`, required): Flat numeric table `{x1, y1, x2, y2, ...}` with at least two points.
 
-**Returns**: `LBezierCurve` - New Bezier curve handle.
+Returns: `LBezierCurve` - New Bezier curve handle.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -1807,21 +2933,32 @@ end
 
 ### lurek.math.newCircle
 
-`lurek.math.newCircle(x: number, y: number, radius: number) -> LCircle`
+#### Definition
+
+```lua
+--- Creates a circle primitive. This function is exposed to Lua scripts.
+---@param x number Center x coordinate.
+---@param y number Center y coordinate.
+---@param radius number Circle radius.
+---@return LCircle New circle handle.
+lurek.math.newCircle = function(x, y, radius) end
+```
+
+#### Description
 
 Creates a circle primitive. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `x` (`number`, required): Center x coordinate.
 - `y` (`number`, required): Center y coordinate.
 - `radius` (`number`, required): Circle radius.
 
-**Returns**: `LCircle` - New circle handle.
+Returns: `LCircle` - New circle handle.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -1835,19 +2972,28 @@ end
 
 ### lurek.math.newNoiseGenerator
 
-`lurek.math.newNoiseGenerator([seed]: integer) -> LNoiseGenerator`
+#### Definition
+
+```lua
+--- Creates a procedural noise generator with an optional seed.
+---@param seed? number Seed value (default 0).
+---@return LNoiseGenerator New noise generator handle.
+lurek.math.newNoiseGenerator = function(seed) end
+```
+
+#### Description
 
 Creates a procedural noise generator with an optional seed.
 
-**Parameters**
+Parameters:
 
 - `seed` (`integer`, optional): Seed value (default 0).
 
-**Returns**: `LNoiseGenerator` - New noise generator handle.
+Returns: `LNoiseGenerator` - New noise generator handle.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -1859,19 +3005,28 @@ end
 
 ### lurek.math.newRandomGenerator
 
-`lurek.math.newRandomGenerator([seed]: integer) -> LRandomGenerator`
+#### Definition
+
+```lua
+--- Creates a deterministic random generator with an optional seed.
+---@param seed? number Seed value.
+---@return LRandomGenerator New random generator handle.
+lurek.math.newRandomGenerator = function(seed) end
+```
+
+#### Description
 
 Creates a deterministic random generator with an optional seed.
 
-**Parameters**
+Parameters:
 
 - `seed` (`integer`, optional): Seed value.
 
-**Returns**: `LRandomGenerator` - New random generator handle.
+Returns: `LRandomGenerator` - New random generator handle.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -1883,21 +3038,32 @@ end
 
 ### lurek.math.newRectPacker
 
-`lurek.math.newRectPacker(width: integer, height: integer, [padding]: integer) -> LRectPacker`
+#### Definition
+
+```lua
+--- Creates a rectangle packer. This function is exposed to Lua scripts.
+---@param width number Packer width.
+---@param height number Packer height.
+---@param padding? number Padding between rectangles (default 0).
+---@return LRectPacker New rectangle packer handle.
+lurek.math.newRectPacker = function(width, height, padding) end
+```
+
+#### Description
 
 Creates a rectangle packer. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `width` (`integer`, required): Packer width.
 - `height` (`integer`, required): Packer height.
 - `padding` (`integer`, optional): Padding between rectangles (default 0).
 
-**Returns**: `LRectPacker` - New rectangle packer handle.
+Returns: `LRectPacker` - New rectangle packer handle.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -1911,19 +3077,28 @@ end
 
 ### lurek.math.newSpatialHash
 
-`lurek.math.newSpatialHash(cell_size: number) -> LSpatialHash`
+#### Definition
+
+```lua
+--- Creates a spatial hash index with a cell size.
+---@param cell_size number Spatial hash cell size.
+---@return LSpatialHash New spatial hash handle.
+lurek.math.newSpatialHash = function(cell_size) end
+```
+
+#### Description
 
 Creates a spatial hash index with a cell size.
 
-**Parameters**
+Parameters:
 
 - `cell_size` (`number`, required): Spatial hash cell size.
 
-**Returns**: `LSpatialHash` - New spatial hash handle.
+Returns: `LSpatialHash` - New spatial hash handle.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -1937,11 +3112,28 @@ end
 
 ### lurek.math.newTransform
 
-`lurek.math.newTransform([x]: number, [y]: number, [angle]: number, [sx]: number, [sy]: number, [ox]: number, [oy]: number, [kx]: number, [ky]: number) -> LTransform`
+#### Definition
+
+```lua
+--- Creates a 2D transform. All components are optional; omitting all returns an identity transform.
+---@param x? number X translation (default 0).
+---@param y? number Y translation (default 0).
+---@param angle? number Rotation angle in radians (default 0).
+---@param sx? number X scale factor (default 1).
+---@param sy? number Y scale factor (defaults to `sx`).
+---@param ox? number X origin offset for rotation/scale (default 0).
+---@param oy? number Y origin offset for rotation/scale (default 0).
+---@param kx? number X shear factor (default 0).
+---@param ky? number Y shear factor (default 0).
+---@return LTransform New transform handle.
+lurek.math.newTransform = function(x, y, angle, sx, sy, ox, oy, kx, ky) end
+```
+
+#### Description
 
 Creates a 2D transform. All components are optional; omitting all returns an identity transform.
 
-**Parameters**
+Parameters:
 
 - `x` (`number`, optional): X translation (default 0).
 - `y` (`number`, optional): Y translation (default 0).
@@ -1953,11 +3145,11 @@ Creates a 2D transform. All components are optional; omitting all returns an ide
 - `kx` (`number`, optional): X shear factor (default 0).
 - `ky` (`number`, optional): Y shear factor (default 0).
 
-**Returns**: `LTransform` - New transform handle.
+Returns: `LTransform` - New transform handle.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -1970,20 +3162,30 @@ end
 
 ### lurek.math.newTween
 
-`lurek.math.newTween(duration: number, [easing_name]: string) -> LTween`
+#### Definition
+
+```lua
+--- Creates a tween with a duration and optional easing name.
+---@param duration number Tween duration in seconds.
+---@param easing_name? string Easing name (default `linear`).
+---@return LTween New tween handle.
+lurek.math.newTween = function(duration, easing_name) end
+```
+
+#### Description
 
 Creates a tween with a duration and optional easing name.
 
-**Parameters**
+Parameters:
 
 - `duration` (`number`, required): Tween duration in seconds.
 - `easing_name` (`string`, optional): Easing name (default `linear`).
 
-**Returns**: `LTween` - New tween handle.
+Returns: `LTween` - New tween handle.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -1996,19 +3198,28 @@ end
 
 ### lurek.math.outBack
 
-`lurek.math.outBack(t: number) -> number`
+#### Definition
+
+```lua
+--- Applies back ease-out. This function is exposed to Lua scripts.
+---@param t number Normalized input value.
+---@return number Eased value.
+lurek.math.outBack = function(t) end
+```
+
+#### Description
 
 Applies back ease-out. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `t` (`number`, required): Normalized input value.
 
-**Returns**: `number` - Eased value.
+Returns: `number` - Eased value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -2022,19 +3233,28 @@ end
 
 ### lurek.math.outBounce
 
-`lurek.math.outBounce(t: number) -> number`
+#### Definition
+
+```lua
+--- Applies bounce ease-out. This function is exposed to Lua scripts.
+---@param t number Normalized input value.
+---@return number Eased value.
+lurek.math.outBounce = function(t) end
+```
+
+#### Description
 
 Applies bounce ease-out. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `t` (`number`, required): Normalized input value.
 
-**Returns**: `number` - Eased value.
+Returns: `number` - Eased value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -2048,19 +3268,28 @@ end
 
 ### lurek.math.outCubic
 
-`lurek.math.outCubic(t: number) -> number`
+#### Definition
+
+```lua
+--- Applies cubic ease-out. This function is exposed to Lua scripts.
+---@param t number Normalized input value.
+---@return number Eased value.
+lurek.math.outCubic = function(t) end
+```
+
+#### Description
 
 Applies cubic ease-out. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `t` (`number`, required): Normalized input value.
 
-**Returns**: `number` - Eased value.
+Returns: `number` - Eased value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -2074,19 +3303,28 @@ end
 
 ### lurek.math.outElastic
 
-`lurek.math.outElastic(t: number) -> number`
+#### Definition
+
+```lua
+--- Applies elastic ease-out. This function is exposed to Lua scripts.
+---@param t number Normalized input value.
+---@return number Eased value.
+lurek.math.outElastic = function(t) end
+```
+
+#### Description
 
 Applies elastic ease-out. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `t` (`number`, required): Normalized input value.
 
-**Returns**: `number` - Eased value.
+Returns: `number` - Eased value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -2100,19 +3338,28 @@ end
 
 ### lurek.math.outExpo
 
-`lurek.math.outExpo(t: number) -> number`
+#### Definition
+
+```lua
+--- Applies exponential ease-out. This function is exposed to Lua scripts.
+---@param t number Normalized input value.
+---@return number Eased value.
+lurek.math.outExpo = function(t) end
+```
+
+#### Description
 
 Applies exponential ease-out. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `t` (`number`, required): Normalized input value.
 
-**Returns**: `number` - Eased value.
+Returns: `number` - Eased value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -2126,19 +3373,28 @@ end
 
 ### lurek.math.outQuad
 
-`lurek.math.outQuad(t: number) -> number`
+#### Definition
+
+```lua
+--- Applies quadratic ease-out. This function is exposed to Lua scripts.
+---@param t number Normalized input value.
+---@return number Eased value.
+lurek.math.outQuad = function(t) end
+```
+
+#### Description
 
 Applies quadratic ease-out. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `t` (`number`, required): Normalized input value.
 
-**Returns**: `number` - Eased value.
+Returns: `number` - Eased value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -2152,19 +3408,28 @@ end
 
 ### lurek.math.outQuart
 
-`lurek.math.outQuart(t: number) -> number`
+#### Definition
+
+```lua
+--- Applies quartic ease-out. This function is exposed to Lua scripts.
+---@param t number Normalized input value.
+---@return number Eased value.
+lurek.math.outQuart = function(t) end
+```
+
+#### Description
 
 Applies quartic ease-out. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `t` (`number`, required): Normalized input value.
 
-**Returns**: `number` - Eased value.
+Returns: `number` - Eased value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -2178,19 +3443,28 @@ end
 
 ### lurek.math.outSine
 
-`lurek.math.outSine(t: number) -> number`
+#### Definition
+
+```lua
+--- Applies sine ease-out. This function is exposed to Lua scripts.
+---@param t number Normalized input value.
+---@return number Eased value.
+lurek.math.outSine = function(t) end
+```
+
+#### Description
 
 Applies sine ease-out. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `t` (`number`, required): Normalized input value.
 
-**Returns**: `number` - Eased value.
+Returns: `number` - Eased value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -2204,21 +3478,32 @@ end
 
 ### lurek.math.perlin2d
 
-`lurek.math.perlin2d(x: number, y: number, [seed]: integer) -> number`
+#### Definition
+
+```lua
+--- Samples stateless 2D Perlin noise.
+---@param x number X coordinate.
+---@param y number Y coordinate.
+---@param seed? number Seed value (default 0).
+---@return number Noise value.
+lurek.math.perlin2d = function(x, y, seed) end
+```
+
+#### Description
 
 Samples stateless 2D Perlin noise.
 
-**Parameters**
+Parameters:
 
 - `x` (`number`, required): X coordinate.
 - `y` (`number`, required): Y coordinate.
 - `seed` (`integer`, optional): Seed value (default 0).
 
-**Returns**: `number` - Noise value.
+Returns: `number` - Noise value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -2230,22 +3515,34 @@ end
 
 ### lurek.math.perlin3d
 
-`lurek.math.perlin3d(x: number, y: number, z: number, [seed]: integer) -> number`
+#### Definition
+
+```lua
+--- Samples stateless 3D Perlin noise.
+---@param x number X coordinate.
+---@param y number Y coordinate.
+---@param z number Z coordinate.
+---@param seed? number Seed value (default 0).
+---@return number Noise value.
+lurek.math.perlin3d = function(x, y, z, seed) end
+```
+
+#### Description
 
 Samples stateless 3D Perlin noise.
 
-**Parameters**
+Parameters:
 
 - `x` (`number`, required): X coordinate.
 - `y` (`number`, required): Y coordinate.
 - `z` (`number`, required): Z coordinate.
 - `seed` (`integer`, optional): Seed value (default 0).
 
-**Returns**: `number` - Noise value.
+Returns: `number` - Noise value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -2259,21 +3556,32 @@ end
 
 ### lurek.math.pointInPolygon
 
-`lurek.math.pointInPolygon(pts: table, px: number, py: number) -> boolean`
+#### Definition
+
+```lua
+--- Returns whether a point lies inside a polygon.
+---@param pts table Flat numeric polygon point table.
+---@param px number Point x coordinate.
+---@param py number Point y coordinate.
+---@return boolean True when the point is inside the polygon.
+lurek.math.pointInPolygon = function(pts, px, py) end
+```
+
+#### Description
 
 Returns whether a point lies inside a polygon.
 
-**Parameters**
+Parameters:
 
 - `pts` (`table`, required): Flat numeric polygon point table.
 - `px` (`number`, required): Point x coordinate.
 - `py` (`number`, required): Point y coordinate.
 
-**Returns**: `boolean` - True when the point is inside the polygon.
+Returns: `boolean` - True when the point is inside the polygon.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -2286,19 +3594,28 @@ end
 
 ### lurek.math.polygonArea
 
-`lurek.math.polygonArea(pts: table) -> number`
+#### Definition
+
+```lua
+--- Computes signed area for a flat polygon point table.
+---@param pts table Flat numeric polygon point table.
+---@return number Polygon area.
+lurek.math.polygonArea = function(pts) end
+```
+
+#### Description
 
 Computes signed area for a flat polygon point table.
 
-**Parameters**
+Parameters:
 
 - `pts` (`table`, required): Flat numeric polygon point table.
 
-**Returns**: `number` - Polygon area.
+Returns: `number` - Polygon area.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -2310,19 +3627,29 @@ end
 
 ### lurek.math.polygonCentroid
 
-`lurek.math.polygonCentroid(pts: table) -> number`
+#### Definition
+
+```lua
+--- Computes the centroid for a flat polygon point table.
+---@param pts table Flat numeric polygon point table.
+---@return number a Centroid x coordinate.
+---@return number b Centroid y coordinate.
+lurek.math.polygonCentroid = function(pts) end
+```
+
+#### Description
 
 Computes the centroid for a flat polygon point table.
 
-**Parameters**
+Parameters:
 
 - `pts` (`table`, required): Flat numeric polygon point table.
 
-**Returns**: `number` - Centroid x coordinate.
+Returns: `number` - Centroid x coordinate.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -2334,22 +3661,34 @@ end
 
 ### lurek.math.polygonClip
 
-`lurek.math.polygonClip(pts: table, nx: number, ny: number, d: number) -> number[]`
+#### Definition
+
+```lua
+--- Clips a flat polygon point table against a plane.
+---@param pts table Flat numeric polygon point table.
+---@param nx number Plane normal x component.
+---@param ny number Plane normal y component.
+---@param d number Plane distance from origin.
+---@return number[] Flat numeric clipped polygon point table (x1,y1,x2,y2,...).
+lurek.math.polygonClip = function(pts, nx, ny, d) end
+```
+
+#### Description
 
 Clips a flat polygon point table against a plane.
 
-**Parameters**
+Parameters:
 
 - `pts` (`table`, required): Flat numeric polygon point table.
 - `nx` (`number`, required): Plane normal x component.
 - `ny` (`number`, required): Plane normal y component.
 - `d` (`number`, required): Plane distance from origin.
 
-**Returns**: `number[]` - Flat numeric clipped polygon point table (x1,y1,x2,y2,...).
+Returns: `number[]` - Flat numeric clipped polygon point table (x1,y1,x2,y2,...).
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -2361,25 +3700,35 @@ end
 
 ### lurek.math.polygonDifference
 
-`lurek.math.polygonDifference(a: table, b: table) -> number[]`
+#### Definition
+
+```lua
+--- Returns polygon difference points for two polygon tables.
+---@param a table First polygon table of `{x, y}` points.
+---@param b table Second polygon table of `{x, y}` points.
+---@return number[] Flat array of polygon difference result points (x1,y1,x2,y2,...).
+lurek.math.polygonDifference = function(a, b) end
+```
+
+#### Description
 
 Returns polygon difference points for two polygon tables.
 
-**Parameters**
+Parameters:
 
 - `a` (`table`, required): First polygon table of `{x, y}` points.
 - `b` (`table`, required): Second polygon table of `{x, y}` points.
 
-**Returns**: `number[]` - Flat array of polygon difference result points (x1,y1,x2,y2,...).
+Returns: `number[]` - Flat array of polygon difference result points (x1,y1,x2,y2,...).
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    local a = {0, 0, 10, 0, 10, 10, 0, 10}
-    local b = {5, 5, 15, 5, 15, 15, 5, 15}
+    local a = {{x = 0, y = 0}, {x = 10, y = 0}, {x = 10, y = 10}, {x = 0, y = 10}}
+    local b = {{x = 5, y = 5}, {x = 15, y = 5}, {x = 15, y = 15}, {x = 5, y = 15}}
     local result = lurek.math.polygonDifference(a, b)
     print("difference vertices = " .. #result / 2)
 end
@@ -2387,25 +3736,35 @@ end
 
 ### lurek.math.polygonIntersection
 
-`lurek.math.polygonIntersection(a: table, b: table) -> number[]`
+#### Definition
+
+```lua
+--- Returns polygon intersection points for two polygon tables.
+---@param a table First polygon table of `{x, y}` points.
+---@param b table Second polygon table of `{x, y}` points.
+---@return number[] Flat array of polygon intersection result points (x1,y1,x2,y2,...).
+lurek.math.polygonIntersection = function(a, b) end
+```
+
+#### Description
 
 Returns polygon intersection points for two polygon tables.
 
-**Parameters**
+Parameters:
 
 - `a` (`table`, required): First polygon table of `{x, y}` points.
 - `b` (`table`, required): Second polygon table of `{x, y}` points.
 
-**Returns**: `number[]` - Flat array of polygon intersection result points (x1,y1,x2,y2,...).
+Returns: `number[]` - Flat array of polygon intersection result points (x1,y1,x2,y2,...).
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    local a = {0, 0, 10, 0, 10, 10, 0, 10}
-    local b = {5, 5, 15, 5, 15, 15, 5, 15}
+    local a = {{x = 0, y = 0}, {x = 10, y = 0}, {x = 10, y = 10}, {x = 0, y = 10}}
+    local b = {{x = 5, y = 5}, {x = 15, y = 5}, {x = 15, y = 15}, {x = 5, y = 15}}
     local result = lurek.math.polygonIntersection(a, b)
     print("intersection vertices = " .. #result / 2)
 end
@@ -2413,46 +3772,66 @@ end
 
 ### lurek.math.polygonUnion
 
-`lurek.math.polygonUnion(a: table, b: table) -> number[]`
+#### Definition
+
+```lua
+--- Returns polygon union points for two polygon tables.
+---@param a table First polygon table of `{x, y}` points.
+---@param b table Second polygon table of `{x, y}` points.
+---@return number[] Flat array of polygon union result points (x1,y1,x2,y2,...).
+lurek.math.polygonUnion = function(a, b) end
+```
+
+#### Description
 
 Returns polygon union points for two polygon tables.
 
-**Parameters**
+Parameters:
 
 - `a` (`table`, required): First polygon table of `{x, y}` points.
 - `b` (`table`, required): Second polygon table of `{x, y}` points.
 
-**Returns**: `number[]` - Flat array of polygon union result points (x1,y1,x2,y2,...).
+Returns: `number[]` - Flat array of polygon union result points (x1,y1,x2,y2,...).
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    local a = {0, 0, 10, 0, 10, 10, 0, 10}
-    local b = {5, 5, 15, 5, 15, 15, 5, 15}
+    local a = {{x = 0, y = 0}, {x = 10, y = 0}, {x = 10, y = 10}, {x = 0, y = 10}}
+    local b = {{x = 5, y = 5}, {x = 15, y = 5}, {x = 15, y = 15}, {x = 5, y = 15}}
     local result = lurek.math.polygonUnion(a, b)
-    print("union vertices = " .. #result)
+    print("union vertices = " .. (#result / 2))
 end
 ```
 
 ### lurek.math.pow
 
-`lurek.math.pow(x: number, y: number) -> number`
+#### Definition
+
+```lua
+--- Raises a value to a power. This function is exposed to Lua scripts.
+---@param x number Base value.
+---@param y number Exponent value.
+---@return number Power result.
+lurek.math.pow = function(x, y) end
+```
+
+#### Description
 
 Raises a value to a power. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `x` (`number`, required): Base value.
 - `y` (`number`, required): Exponent value.
 
-**Returns**: `number` - Power result.
+Returns: `number` - Power result.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -2463,19 +3842,28 @@ end
 
 ### lurek.math.rad
 
-`lurek.math.rad(deg: number) -> number`
+#### Definition
+
+```lua
+--- Converts degrees to radians. This function is exposed to Lua scripts.
+---@param deg number Angle in degrees.
+---@return number Angle in radians.
+lurek.math.rad = function(deg) end
+```
+
+#### Description
 
 Converts degrees to radians. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `deg` (`number`, required): Angle in degrees.
 
-**Returns**: `number` - Angle in radians.
+Returns: `number` - Angle in radians.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -2486,20 +3874,30 @@ end
 
 ### lurek.math.random
 
-`lurek.math.random([a]: number, [b]: number) -> number`
+#### Definition
+
+```lua
+--- Returns a Lua math random value, optionally scaled to one or two bounds.
+---@param a? number Upper bound, or lower bound when `b` is given.
+---@param b? number Upper bound.
+---@return number Random value.
+lurek.math.random = function(a, b) end
+```
+
+#### Description
 
 Returns a Lua math random value, optionally scaled to one or two bounds.
 
-**Parameters**
+Parameters:
 
 - `a` (`number`, optional): Upper bound, or lower bound when `b` is given.
 - `b` (`number`, optional): Upper bound.
 
-**Returns**: `number` - Random value.
+Returns: `number` - Random value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -2512,20 +3910,30 @@ end
 
 ### lurek.math.randomInt
 
-`lurek.math.randomInt(lo: integer, hi: integer) -> integer`
+#### Definition
+
+```lua
+--- Returns a Lua math random integer in an inclusive range.
+---@param lo number Lower bound.
+---@param hi number Upper bound.
+---@return number Random integer.
+lurek.math.randomInt = function(lo, hi) end
+```
+
+#### Description
 
 Returns a Lua math random integer in an inclusive range.
 
-**Parameters**
+Parameters:
 
 - `lo` (`integer`, required): Lower bound.
 - `hi` (`integer`, required): Upper bound.
 
-**Returns**: `integer` - Random integer.
+Returns: `integer` - Random integer.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -2536,22 +3944,37 @@ end
 
 ### lurek.math.rectFromCenter
 
-`lurek.math.rectFromCenter(cx: number, cy: number, w: number, h: number) -> number`
+#### Definition
+
+```lua
+--- Creates a rectangle tuple from center coordinates and size.
+---@param cx number Center x coordinate.
+---@param cy number Center y coordinate.
+---@param w number Rectangle width.
+---@param h number Rectangle height.
+---@return number a Rectangle x coordinate.
+---@return number b Rectangle y coordinate.
+---@return number c Rectangle width.
+---@return number d Rectangle height.
+lurek.math.rectFromCenter = function(cx, cy, w, h) end
+```
+
+#### Description
 
 Creates a rectangle tuple from center coordinates and size.
 
-**Parameters**
+Parameters:
 
 - `cx` (`number`, required): Center x coordinate.
 - `cy` (`number`, required): Center y coordinate.
 - `w` (`number`, required): Rectangle width.
 - `h` (`number`, required): Rectangle height.
 
-**Returns**: `number` - Rectangle x coordinate.
+Returns: `number` - Rectangle x coordinate.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -2562,11 +3985,30 @@ end
 
 ### lurek.math.rectUnion
 
-`lurek.math.rectUnion(x1: number, y1: number, w1: number, h1: number, x2: number, y2: number, w2: number, h2: number) -> number`
+#### Definition
+
+```lua
+--- Returns the union rectangle for two rectangles.
+---@param x1 number First rectangle x coordinate.
+---@param y1 number First rectangle y coordinate.
+---@param w1 number First rectangle width.
+---@param h1 number First rectangle height.
+---@param x2 number Second rectangle x coordinate.
+---@param y2 number Second rectangle y coordinate.
+---@param w2 number Second rectangle width.
+---@param h2 number Second rectangle height.
+---@return number a Union x coordinate.
+---@return number b Union y coordinate.
+---@return number c Union width.
+---@return number d Union height.
+lurek.math.rectUnion = function(x1, y1, w1, h1, x2, y2, w2, h2) end
+```
+
+#### Description
 
 Returns the union rectangle for two rectangles.
 
-**Parameters**
+Parameters:
 
 - `x1` (`number`, required): First rectangle x coordinate.
 - `y1` (`number`, required): First rectangle y coordinate.
@@ -2577,11 +4019,11 @@ Returns the union rectangle for two rectangles.
 - `w2` (`number`, required): Second rectangle width.
 - `h2` (`number`, required): Second rectangle height.
 
-**Returns**: `number` - Union x coordinate.
+Returns: `number` - Union x coordinate.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -2592,11 +4034,24 @@ end
 
 ### lurek.math.remap
 
-`lurek.math.remap(v: number, in_min: number, in_max: number, out_min: number, out_max: number) -> number`
+#### Definition
+
+```lua
+--- Remaps a value from one range to another.
+---@param v number Input value.
+---@param in_min number Input range minimum.
+---@param in_max number Input range maximum.
+---@param out_min number Output range minimum.
+---@param out_max number Output range maximum.
+---@return number Remapped value.
+lurek.math.remap = function(v, in_min, in_max, out_min, out_max) end
+```
+
+#### Description
 
 Remaps a value from one range to another.
 
-**Parameters**
+Parameters:
 
 - `v` (`number`, required): Input value.
 - `in_min` (`number`, required): Input range minimum.
@@ -2604,11 +4059,11 @@ Remaps a value from one range to another.
 - `out_min` (`number`, required): Output range minimum.
 - `out_max` (`number`, required): Output range maximum.
 
-**Returns**: `number` - Remapped value.
+Returns: `number` - Remapped value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -2619,21 +4074,34 @@ end
 
 ### lurek.math.rgbToHsl
 
-`lurek.math.rgbToHsl(r: number, g: number, b: number) -> number`
+#### Definition
+
+```lua
+--- Converts RGB channels to HSL values.
+---@param r number Red channel value.
+---@param g number Green channel value.
+---@param b number Blue channel value.
+---@return number a Hue.
+---@return number b Saturation.
+---@return number c Lightness.
+lurek.math.rgbToHsl = function(r, g, b) end
+```
+
+#### Description
 
 Converts RGB channels to HSL values.
 
-**Parameters**
+Parameters:
 
 - `r` (`number`, required): Red channel value.
 - `g` (`number`, required): Green channel value.
 - `b` (`number`, required): Blue channel value.
 
-**Returns**: `number` - Hue.
+Returns: `number` - Hue.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -2647,19 +4115,28 @@ end
 
 ### lurek.math.round
 
-`lurek.math.round(x: number) -> number`
+#### Definition
+
+```lua
+--- Returns rounded value. This function is exposed to Lua scripts.
+---@param x number Input value.
+---@return number Rounded value.
+lurek.math.round = function(x) end
+```
+
+#### Description
 
 Returns rounded value. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `x` (`number`, required): Input value.
 
-**Returns**: `number` - Rounded value.
+Returns: `number` - Rounded value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -2670,11 +4147,29 @@ end
 
 ### lurek.math.segmentIntersectsSegment
 
-`lurek.math.segmentIntersectsSegment(x1: number, y1: number, x2: number, y2: number, x3: number, y3: number, x4: number, y4: number) -> boolean`
+#### Definition
+
+```lua
+--- Returns whether two segments intersect and their intersection point when present.
+---@param x1 number First segment start x coordinate.
+---@param y1 number First segment start y coordinate.
+---@param x2 number First segment end x coordinate.
+---@param y2 number First segment end y coordinate.
+---@param x3 number Second segment start x coordinate.
+---@param y3 number Second segment start y coordinate.
+---@param x4 number Second segment end x coordinate.
+---@param y4 number Second segment end y coordinate.
+---@return boolean a True when the segments intersect.
+---@return number b Intersection x coordinate, or nil.
+---@return number c Intersection y coordinate, or nil.
+lurek.math.segmentIntersectsSegment = function(x1, y1, x2, y2, x3, y3, x4, y4) end
+```
+
+#### Description
 
 Returns whether two segments intersect and their intersection point when present.
 
-**Parameters**
+Parameters:
 
 - `x1` (`number`, required): First segment start x coordinate.
 - `y1` (`number`, required): First segment start y coordinate.
@@ -2685,11 +4180,11 @@ Returns whether two segments intersect and their intersection point when present
 - `x4` (`number`, required): Second segment end x coordinate.
 - `y4` (`number`, required): Second segment end y coordinate.
 
-**Returns**: `boolean` - True when the segments intersect.
+Returns: `boolean` - True when the segments intersect.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -2744,19 +4239,28 @@ end
 
 ### lurek.math.sign
 
-`lurek.math.sign(v: number) -> number`
+#### Definition
+
+```lua
+--- Returns the sign of a value. This function is exposed to Lua scripts.
+---@param v number Input value.
+---@return number Sign value.
+lurek.math.sign = function(v) end
+```
+
+#### Description
 
 Returns the sign of a value. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `v` (`number`, required): Input value.
 
-**Returns**: `number` - Sign value.
+Returns: `number` - Sign value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -2768,21 +4272,32 @@ end
 
 ### lurek.math.simplex2d
 
-`lurek.math.simplex2d(x: number, y: number, [seed]: integer) -> number`
+#### Definition
+
+```lua
+--- Samples stateless 2D simplex noise.
+---@param x number X coordinate.
+---@param y number Y coordinate.
+---@param seed? number Seed value (default 0).
+---@return number Noise value.
+lurek.math.simplex2d = function(x, y, seed) end
+```
+
+#### Description
 
 Samples stateless 2D simplex noise.
 
-**Parameters**
+Parameters:
 
 - `x` (`number`, required): X coordinate.
 - `y` (`number`, required): Y coordinate.
 - `seed` (`integer`, optional): Seed value (default 0).
 
-**Returns**: `number` - Noise value.
+Returns: `number` - Noise value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -2794,21 +4309,32 @@ end
 
 ### lurek.math.simplexNoise
 
-`lurek.math.simplexNoise(x: number, y: number, [z]: number) -> number`
+#### Definition
+
+```lua
+--- Samples 2D or 3D simplex noise. This function is exposed to Lua scripts.
+---@param x number X coordinate.
+---@param y number Y coordinate.
+---@param z? number Z coordinate for 3D noise.
+---@return number Noise value.
+lurek.math.simplexNoise = function(x, y, z) end
+```
+
+#### Description
 
 Samples 2D or 3D simplex noise. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `x` (`number`, required): X coordinate.
 - `y` (`number`, required): Y coordinate.
 - `z` (`number`, optional): Z coordinate for 3D noise.
 
-**Returns**: `number` - Noise value.
+Returns: `number` - Noise value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -2822,19 +4348,28 @@ end
 
 ### lurek.math.sin
 
-`lurek.math.sin(x: number) -> number`
+#### Definition
+
+```lua
+--- Returns sine of an angle. This function is exposed to Lua scripts.
+---@param x number Angle in radians.
+---@return number Sine value.
+lurek.math.sin = function(x) end
+```
+
+#### Description
 
 Returns sine of an angle. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `x` (`number`, required): Angle in radians.
 
-**Returns**: `number` - Sine value.
+Returns: `number` - Sine value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -2845,21 +4380,32 @@ end
 
 ### lurek.math.smoothstep
 
-`lurek.math.smoothstep(edge0: number, edge1: number, x: number) -> number`
+#### Definition
+
+```lua
+--- Applies smoothstep interpolation between two edges.
+---@param edge0 number Lower edge.
+---@param edge1 number Upper edge.
+---@param x number Input value.
+---@return number Smoothstep value.
+lurek.math.smoothstep = function(edge0, edge1, x) end
+```
+
+#### Description
 
 Applies smoothstep interpolation between two edges.
 
-**Parameters**
+Parameters:
 
 - `edge0` (`number`, required): Lower edge.
 - `edge1` (`number`, required): Upper edge.
 - `x` (`number`, required): Input value.
 
-**Returns**: `number` - Smoothstep value.
+Returns: `number` - Smoothstep value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -2871,19 +4417,28 @@ end
 
 ### lurek.math.sqrt
 
-`lurek.math.sqrt(x: number) -> number`
+#### Definition
+
+```lua
+--- Returns square root of a value. This function is exposed to Lua scripts.
+---@param x number Input value.
+---@return number Square root.
+lurek.math.sqrt = function(x) end
+```
+
+#### Description
 
 Returns square root of a value. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `x` (`number`, required): Input value.
 
-**Returns**: `number` - Square root.
+Returns: `number` - Square root.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -2894,19 +4449,28 @@ end
 
 ### lurek.math.tan
 
-`lurek.math.tan(x: number) -> number`
+#### Definition
+
+```lua
+--- Returns tangent of an angle. This function is exposed to Lua scripts.
+---@param x number Angle in radians.
+---@return number Tangent value.
+lurek.math.tan = function(x) end
+```
+
+#### Description
 
 Returns tangent of an angle. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `x` (`number`, required): Angle in radians.
 
-**Returns**: `number` - Tangent value.
+Returns: `number` - Tangent value.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -2917,19 +4481,28 @@ end
 
 ### lurek.math.triangulate
 
-`lurek.math.triangulate(pts: table) -> table`
+#### Definition
+
+```lua
+--- Triangulates a flat polygon point table.
+---@param pts table Flat numeric table `{x1, y1, x2, y2, ...}` with at least three points.
+---@return table Array table of flat triangle point tables; each entry is `{x1,y1,x2,y2,x3,y3}`.
+lurek.math.triangulate = function(pts) end
+```
+
+#### Description
 
 Triangulates a flat polygon point table.
 
-**Parameters**
+Parameters:
 
 - `pts` (`table`, required): Flat numeric table `{x1, y1, x2, y2, ...}` with at least three points.
 
-**Returns**: `table` - Array table of flat triangle point tables; each entry is `{x1,y1,x2,y2,x3,y3}`.
+Returns: `table` - Array table of flat triangle point tables; each entry is `{x1,y1,x2,y2,x3,y3}`.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -2941,20 +4514,30 @@ end
 
 ### lurek.math.vec2
 
-`lurek.math.vec2(x: number, y: number) -> LVec2`
+#### Definition
+
+```lua
+--- Creates a 2D vector. This function is exposed to Lua scripts.
+---@param x number X component.
+---@param y number Y component.
+---@return LVec2 New vector handle.
+lurek.math.vec2 = function(x, y) end
+```
+
+#### Description
 
 Creates a 2D vector. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `x` (`number`, required): X component.
 - `y` (`number`, required): Y component.
 
-**Returns**: `LVec2` - New vector handle.
+Returns: `LVec2` - New vector handle.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -2966,21 +4549,32 @@ end
 
 ### lurek.math.vec3
 
-`lurek.math.vec3(x: number, y: number, z: number) -> LVec3`
+#### Definition
+
+```lua
+--- Creates a 3D vector. This function is exposed to Lua scripts.
+---@param x number X component.
+---@param y number Y component.
+---@param z number Z component.
+---@return LVec3 New vector handle.
+lurek.math.vec3 = function(x, y, z) end
+```
+
+#### Description
 
 Creates a 3D vector. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `x` (`number`, required): X component.
 - `y` (`number`, required): Y component.
 - `z` (`number`, required): Z component.
 
-**Returns**: `LVec3` - New vector handle.
+Returns: `LVec3` - New vector handle.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -2992,19 +4586,28 @@ end
 
 ### lurek.math.voronoi
 
-`lurek.math.voronoi(points: table) -> table`
+#### Definition
+
+```lua
+--- Builds Voronoi cells from a polygon-style point table.
+---@param points table Point table with `x` and `y` fields.
+---@return MathVoronoiResult Array table of cells with `site` and `vertices` fields.
+lurek.math.voronoi = function(points) end
+```
+
+#### Description
 
 Builds Voronoi cells from a polygon-style point table.
 
-**Parameters**
+Parameters:
 
 - `points` (`table`, required): Point table with `x` and `y` fields.
 
-**Returns**: `table` - Array table of cells with `site` and `vertices` fields.
+Returns: `table` - Array table of cells with `site` and `vertices` fields.
 
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -3023,9 +4626,7 @@ end
 
 ### LAabbTree
 
-Lua-side wrapper for an AABB tree spatial index.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side wrapper for an AABB tree spatial index.
@@ -3033,9 +4634,13 @@ Lua-side wrapper for an AABB tree spatial index.
 LAabbTree = {}
 ```
 
+#### Description
+
+Lua-side wrapper for an AABB tree spatial index.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -3049,9 +4654,7 @@ end
 
 ### LBezierCurve
 
-Lua-side wrapper for a Bezier curve.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side wrapper for a Bezier curve.
@@ -3059,9 +4662,13 @@ Lua-side wrapper for a Bezier curve.
 LBezierCurve = {}
 ```
 
+#### Description
+
+Lua-side wrapper for a Bezier curve.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -3073,9 +4680,7 @@ end
 
 ### LCatmullRom
 
-Lua-side wrapper for a Catmull-Rom spline.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side wrapper for a Catmull-Rom spline.
@@ -3083,9 +4688,13 @@ Lua-side wrapper for a Catmull-Rom spline.
 LCatmullRom = {}
 ```
 
+#### Description
+
+Lua-side wrapper for a Catmull-Rom spline.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -3097,9 +4706,7 @@ end
 
 ### LCircle
 
-Lua-side wrapper for a circle primitive.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side wrapper for a circle primitive.
@@ -3107,9 +4714,13 @@ Lua-side wrapper for a circle primitive.
 LCircle = {}
 ```
 
+#### Description
+
+Lua-side wrapper for a circle primitive.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -3123,9 +4734,7 @@ end
 
 ### LHermite
 
-Lua-side wrapper for a Hermite spline.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side wrapper for a Hermite spline.
@@ -3133,9 +4742,13 @@ Lua-side wrapper for a Hermite spline.
 LHermite = {}
 ```
 
+#### Description
+
+Lua-side wrapper for a Hermite spline.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -3148,9 +4761,7 @@ do
 
 ### LNoiseGenerator
 
-Lua-side wrapper for a procedural noise generator.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side wrapper for a procedural noise generator.
@@ -3158,9 +4769,13 @@ Lua-side wrapper for a procedural noise generator.
 LNoiseGenerator = {}
 ```
 
+#### Description
+
+Lua-side wrapper for a procedural noise generator.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -3172,9 +4787,7 @@ end
 
 ### LRandomGenerator
 
-Lua-side wrapper for a deterministic random generator.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side wrapper for a deterministic random generator.
@@ -3182,9 +4795,13 @@ Lua-side wrapper for a deterministic random generator.
 LRandomGenerator = {}
 ```
 
+#### Description
+
+Lua-side wrapper for a deterministic random generator.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -3196,9 +4813,7 @@ end
 
 ### LRectPacker
 
-Lua-side wrapper for a rectangle packer.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side wrapper for a rectangle packer.
@@ -3206,9 +4821,13 @@ Lua-side wrapper for a rectangle packer.
 LRectPacker = {}
 ```
 
+#### Description
+
+Lua-side wrapper for a rectangle packer.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -3222,9 +4841,7 @@ end
 
 ### LSpatialHash
 
-Lua-side wrapper for a spatial hash index.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side wrapper for a spatial hash index.
@@ -3232,9 +4849,13 @@ Lua-side wrapper for a spatial hash index.
 LSpatialHash = {}
 ```
 
+#### Description
+
+Lua-side wrapper for a spatial hash index.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -3248,9 +4869,7 @@ end
 
 ### LTransform
 
-Lua-side wrapper for a 2D transform matrix.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side wrapper for a 2D transform matrix.
@@ -3258,9 +4877,13 @@ Lua-side wrapper for a 2D transform matrix.
 LTransform = {}
 ```
 
+#### Description
+
+Lua-side wrapper for a 2D transform matrix.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -3273,9 +4896,7 @@ end
 
 ### LTween
 
-Lua-side wrapper for numeric tween state.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Creates and starts a property tween that smoothly interpolates numeric fields on the target table over the given duration.
@@ -3283,9 +4904,13 @@ Lua-side wrapper for numeric tween state.
 LTween = {}
 ```
 
+#### Description
+
+Lua-side wrapper for numeric tween state.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -3298,18 +4923,20 @@ end
 
 ### LVec2
 
-Represents the Lua-visible LVec2 object exposed by this module.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Represents the Lua-visible LVec2 object exposed by this module.
 ---@class LVec2
 ```
 
+#### Description
+
+Represents the Lua-visible LVec2 object exposed by this module.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -3321,18 +4948,20 @@ end
 
 ### LVec3
 
-Represents the Lua-visible LVec3 object exposed by this module.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Represents the Lua-visible LVec3 object exposed by this module.
 ---@class LVec3
 ```
 
+#### Description
+
+Represents the Lua-visible LVec3 object exposed by this module.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -3349,20 +4978,20 @@ end
 
 ### LAabbTree:clear
 
-`LAabbTree:clear()`
-
-Clears all items from the tree. This method is available to Lua scripts.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Clears all items from the tree. This method is available to Lua scripts.
 function LAabbTree:clear() end
 ```
 
+#### Description
+
+Clears all items from the tree. This method is available to Lua scripts.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -3376,17 +5005,7 @@ end
 
 ### LAabbTree:contains
 
-`LAabbTree:contains(id: integer) -> boolean`
-
-Returns whether the tree contains an id.
-
-**Parameters**
-
-- `id` (`integer`, required): Item id.
-
-**Returns**: `boolean` - True when the id exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether the tree contains an id.
@@ -3395,9 +5014,19 @@ Returns whether the tree contains an id.
 function LAabbTree:contains(id) end
 ```
 
+#### Description
+
+Returns whether the tree contains an id.
+
+Parameters:
+
+- `id` (`integer`, required): Item id.
+
+Returns: `boolean` - True when the id exists.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -3411,19 +5040,7 @@ end
 
 ### LAabbTree:insert
 
-`LAabbTree:insert(id: integer, min_x: number, min_y: number, max_x: number, max_y: number)`
-
-Inserts an AABB by id. This method is available to Lua scripts.
-
-**Parameters**
-
-- `id` (`integer`, required): Item id.
-- `min_x` (`number`, required): Minimum x coordinate.
-- `min_y` (`number`, required): Minimum y coordinate.
-- `max_x` (`number`, required): Maximum x coordinate.
-- `max_y` (`number`, required): Maximum y coordinate.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Inserts an AABB by id. This method is available to Lua scripts.
@@ -3435,9 +5052,21 @@ Inserts an AABB by id. This method is available to Lua scripts.
 function LAabbTree:insert(id, min_x, min_y, max_x, max_y) end
 ```
 
+#### Description
+
+Inserts an AABB by id. This method is available to Lua scripts.
+
+Parameters:
+
+- `id` (`integer`, required): Item id.
+- `min_x` (`number`, required): Minimum x coordinate.
+- `min_y` (`number`, required): Minimum y coordinate.
+- `max_x` (`number`, required): Maximum x coordinate.
+- `max_y` (`number`, required): Maximum y coordinate.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -3451,13 +5080,7 @@ end
 
 ### LAabbTree:isEmpty
 
-`LAabbTree:isEmpty() -> boolean`
-
-Returns whether the tree has no items.
-
-**Returns**: `boolean` - True when empty.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether the tree has no items.
@@ -3465,9 +5088,15 @@ Returns whether the tree has no items.
 function LAabbTree:isEmpty() end
 ```
 
+#### Description
+
+Returns whether the tree has no items.
+
+Returns: `boolean` - True when empty.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -3481,13 +5110,7 @@ end
 
 ### LAabbTree:len
 
-`LAabbTree:len() -> integer`
-
-Returns the number of items in the tree.
-
-**Returns**: `integer` - Item count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of items in the tree.
@@ -3495,9 +5118,15 @@ Returns the number of items in the tree.
 function LAabbTree:len() end
 ```
 
+#### Description
+
+Returns the number of items in the tree.
+
+Returns: `integer` - Item count.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -3511,20 +5140,7 @@ end
 
 ### LAabbTree:query
 
-`LAabbTree:query(min_x: number, min_y: number, max_x: number, max_y: number) -> integer[]`
-
-Queries ids intersecting an AABB. This method is available to Lua scripts.
-
-**Parameters**
-
-- `min_x` (`number`, required): Minimum x coordinate.
-- `min_y` (`number`, required): Minimum y coordinate.
-- `max_x` (`number`, required): Maximum x coordinate.
-- `max_y` (`number`, required): Maximum y coordinate.
-
-**Returns**: `integer[]` - Item ids.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Queries ids intersecting an AABB. This method is available to Lua scripts.
@@ -3536,9 +5152,22 @@ Queries ids intersecting an AABB. This method is available to Lua scripts.
 function LAabbTree:query(min_x, min_y, max_x, max_y) end
 ```
 
+#### Description
+
+Queries ids intersecting an AABB. This method is available to Lua scripts.
+
+Parameters:
+
+- `min_x` (`number`, required): Minimum x coordinate.
+- `min_y` (`number`, required): Minimum y coordinate.
+- `max_x` (`number`, required): Maximum x coordinate.
+- `max_y` (`number`, required): Maximum y coordinate.
+
+Returns: `integer[]` - Item ids.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -3552,18 +5181,7 @@ end
 
 ### LAabbTree:queryPoint
 
-`LAabbTree:queryPoint(x: number, y: number) -> integer[]`
-
-Queries ids containing a point. This method is available to Lua scripts.
-
-**Parameters**
-
-- `x` (`number`, required): Point x coordinate.
-- `y` (`number`, required): Point y coordinate.
-
-**Returns**: `integer[]` - Item ids.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Queries ids containing a point. This method is available to Lua scripts.
@@ -3573,9 +5191,20 @@ Queries ids containing a point. This method is available to Lua scripts.
 function LAabbTree:queryPoint(x, y) end
 ```
 
+#### Description
+
+Queries ids containing a point. This method is available to Lua scripts.
+
+Parameters:
+
+- `x` (`number`, required): Point x coordinate.
+- `y` (`number`, required): Point y coordinate.
+
+Returns: `integer[]` - Item ids.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -3589,17 +5218,7 @@ end
 
 ### LAabbTree:remove
 
-`LAabbTree:remove(id: integer) -> boolean`
-
-Removes an AABB by id. This method is available to Lua scripts.
-
-**Parameters**
-
-- `id` (`integer`, required): Item id.
-
-**Returns**: `boolean` - True when the item existed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes an AABB by id. This method is available to Lua scripts.
@@ -3608,9 +5227,19 @@ Removes an AABB by id. This method is available to Lua scripts.
 function LAabbTree:remove(id) end
 ```
 
+#### Description
+
+Removes an AABB by id. This method is available to Lua scripts.
+
+Parameters:
+
+- `id` (`integer`, required): Item id.
+
+Returns: `boolean` - True when the item existed.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -3624,13 +5253,7 @@ end
 
 ### LAabbTree:type
 
-`LAabbTree:type() -> string`
-
-Returns the Lua-visible type name for this AABB tree handle.
-
-**Returns**: `string` - The string `LAabbTree`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this AABB tree handle.
@@ -3638,9 +5261,15 @@ Returns the Lua-visible type name for this AABB tree handle.
 function LAabbTree:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this AABB tree handle.
+
+Returns: `string` - The string `LAabbTree`.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -3654,17 +5283,7 @@ end
 
 ### LAabbTree:typeOf
 
-`LAabbTree:typeOf(name: string) -> boolean`
-
-Returns whether this AABB tree handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LAabbTree` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this AABB tree handle matches a supported type name.
@@ -3673,9 +5292,19 @@ Returns whether this AABB tree handle matches a supported type name.
 function LAabbTree:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this AABB tree handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LAabbTree` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -3689,21 +5318,7 @@ end
 
 ### LAabbTree:update
 
-`LAabbTree:update(id: integer, min_x: number, min_y: number, max_x: number, max_y: number) -> boolean`
-
-Updates an AABB by id. This method is available to Lua scripts.
-
-**Parameters**
-
-- `id` (`integer`, required): Item id.
-- `min_x` (`number`, required): Minimum x coordinate.
-- `min_y` (`number`, required): Minimum y coordinate.
-- `max_x` (`number`, required): Maximum x coordinate.
-- `max_y` (`number`, required): Maximum y coordinate.
-
-**Returns**: `boolean` - True when the item existed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Updates an AABB by id. This method is available to Lua scripts.
@@ -3716,9 +5331,23 @@ Updates an AABB by id. This method is available to Lua scripts.
 function LAabbTree:update(id, min_x, min_y, max_x, max_y) end
 ```
 
+#### Description
+
+Updates an AABB by id. This method is available to Lua scripts.
+
+Parameters:
+
+- `id` (`integer`, required): Item id.
+- `min_x` (`number`, required): Minimum x coordinate.
+- `min_y` (`number`, required): Minimum y coordinate.
+- `max_x` (`number`, required): Maximum x coordinate.
+- `max_y` (`number`, required): Maximum y coordinate.
+
+Returns: `boolean` - True when the item existed.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -3732,17 +5361,7 @@ end
 
 ### LBezierCurve:evaluate
 
-`LBezierCurve:evaluate(t: number) -> number`
-
-Evaluates this curve at normalized parameter `t`.
-
-**Parameters**
-
-- `t` (`number`, required): Normalized curve parameter.
-
-**Returns**: `number` - Point x coordinate.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Evaluates this curve at normalized parameter `t`.
@@ -3752,9 +5371,19 @@ Evaluates this curve at normalized parameter `t`.
 function LBezierCurve:evaluate(t) end
 ```
 
+#### Description
+
+Evaluates this curve at normalized parameter `t`.
+
+Parameters:
+
+- `t` (`number`, required): Normalized curve parameter.
+
+Returns: `number` - Point x coordinate.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -3767,18 +5396,7 @@ end
 
 ### LBezierCurve:evaluateAtDistance
 
-`LBezierCurve:evaluateAtDistance(distance: number, [samples]: integer) -> number`
-
-Evaluates this curve at an approximate distance along the curve.
-
-**Parameters**
-
-- `distance` (`number`, required): Distance along the curve.
-- `samples` (`integer`, optional): Sample count (default 128).
-
-**Returns**: `number` - Point x coordinate.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Evaluates this curve at an approximate distance along the curve.
@@ -3789,9 +5407,20 @@ Evaluates this curve at an approximate distance along the curve.
 function LBezierCurve:evaluateAtDistance(distance, samples) end
 ```
 
+#### Description
+
+Evaluates this curve at an approximate distance along the curve.
+
+Parameters:
+
+- `distance` (`number`, required): Distance along the curve.
+- `samples` (`integer`, optional): Sample count (default 128).
+
+Returns: `number` - Point x coordinate.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -3805,17 +5434,7 @@ end
 
 ### LBezierCurve:getControlPoint
 
-`LBezierCurve:getControlPoint(index: integer) -> number`
-
-Returns a control point by one-based index.
-
-**Parameters**
-
-- `index` (`integer`, required): One-based control point index.
-
-**Returns**: `number` - X coordinate, or nil when out of range.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a control point by one-based index.
@@ -3825,9 +5444,19 @@ Returns a control point by one-based index.
 function LBezierCurve:getControlPoint(index) end
 ```
 
+#### Description
+
+Returns a control point by one-based index.
+
+Parameters:
+
+- `index` (`integer`, required): One-based control point index.
+
+Returns: `number` - X coordinate, or nil when out of range.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -3841,13 +5470,7 @@ end
 
 ### LBezierCurve:getControlPointCount
 
-`LBezierCurve:getControlPointCount() -> integer`
-
-Returns the number of control points in this curve.
-
-**Returns**: `integer` - Control point count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of control points in this curve.
@@ -3855,9 +5478,15 @@ Returns the number of control points in this curve.
 function LBezierCurve:getControlPointCount() end
 ```
 
+#### Description
+
+Returns the number of control points in this curve.
+
+Returns: `integer` - Control point count.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -3871,13 +5500,7 @@ end
 
 ### LBezierCurve:getDerivative
 
-`LBezierCurve:getDerivative() -> LBezierCurve`
-
-Returns the derivative curve for this Bezier curve.
-
-**Returns**: `LBezierCurve` - Derivative curve handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the derivative curve for this Bezier curve.
@@ -3885,9 +5508,15 @@ Returns the derivative curve for this Bezier curve.
 function LBezierCurve:getDerivative() end
 ```
 
+#### Description
+
+Returns the derivative curve for this Bezier curve.
+
+Returns: `LBezierCurve` - Derivative curve handle.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -3900,17 +5529,7 @@ end
 
 ### LBezierCurve:insertControlPoint
 
-`LBezierCurve:insertControlPoint(x: number, y: number, [index]: integer)`
-
-Inserts a control point, optionally before a one-based index.
-
-**Parameters**
-
-- `x` (`number`, required): Point x coordinate.
-- `y` (`number`, required): Point y coordinate.
-- `index` (`integer`, optional): One-based insertion index.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Inserts a control point, optionally before a one-based index.
@@ -3920,9 +5539,19 @@ Inserts a control point, optionally before a one-based index.
 function LBezierCurve:insertControlPoint(x, y, index) end
 ```
 
+#### Description
+
+Inserts a control point, optionally before a one-based index.
+
+Parameters:
+
+- `x` (`number`, required): Point x coordinate.
+- `y` (`number`, required): Point y coordinate.
+- `index` (`integer`, optional): One-based insertion index.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -3936,13 +5565,7 @@ end
 
 ### LBezierCurve:length
 
-`LBezierCurve:length() -> number`
-
-Returns the approximate curve length.
-
-**Returns**: `number` - Curve length.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the approximate curve length.
@@ -3950,9 +5573,15 @@ Returns the approximate curve length.
 function LBezierCurve:length() end
 ```
 
+#### Description
+
+Returns the approximate curve length.
+
+Returns: `number` - Curve length.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -3965,17 +5594,7 @@ end
 
 ### LBezierCurve:removeControlPoint
 
-`LBezierCurve:removeControlPoint(index: integer) -> boolean`
-
-Removes a control point by one-based index.
-
-**Parameters**
-
-- `index` (`integer`, required): One-based control point index.
-
-**Returns**: `boolean` - True when a control point was removed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes a control point by one-based index.
@@ -3984,9 +5603,19 @@ Removes a control point by one-based index.
 function LBezierCurve:removeControlPoint(index) end
 ```
 
+#### Description
+
+Removes a control point by one-based index.
+
+Parameters:
+
+- `index` (`integer`, required): One-based control point index.
+
+Returns: `boolean` - True when a control point was removed.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -4000,17 +5629,7 @@ end
 
 ### LBezierCurve:render
 
-`LBezierCurve:render(segments: integer) -> table`
-
-Returns sampled points along this curve.
-
-**Parameters**
-
-- `segments` (`integer`, required): Number of curve segments to sample.
-
-**Returns**: `table` - Array table of `{x, y}` point arrays.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns sampled points along this curve.
@@ -4019,9 +5638,19 @@ Returns sampled points along this curve.
 function LBezierCurve:render(segments) end
 ```
 
+#### Description
+
+Returns sampled points along this curve.
+
+Parameters:
+
+- `segments` (`integer`, required): Number of curve segments to sample.
+
+Returns: `table` - Array table of `{x, y}` point arrays.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -4034,17 +5663,7 @@ end
 
 ### LBezierCurve:rotate
 
-`LBezierCurve:rotate(angle: number, ox: number, oy: number)`
-
-Rotates all control points around an origin.
-
-**Parameters**
-
-- `angle` (`number`, required): Rotation angle.
-- `ox` (`number`, required): Origin x coordinate.
-- `oy` (`number`, required): Origin y coordinate.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Rotates all control points around an origin.
@@ -4054,9 +5673,19 @@ Rotates all control points around an origin.
 function LBezierCurve:rotate(angle, ox, oy) end
 ```
 
+#### Description
+
+Rotates all control points around an origin.
+
+Parameters:
+
+- `angle` (`number`, required): Rotation angle.
+- `ox` (`number`, required): Origin x coordinate.
+- `oy` (`number`, required): Origin y coordinate.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -4070,17 +5699,7 @@ end
 
 ### LBezierCurve:scale
 
-`LBezierCurve:scale(s: number, ox: number, oy: number)`
-
-Scales all control points around an origin.
-
-**Parameters**
-
-- `s` (`number`, required): Scale factor.
-- `ox` (`number`, required): Origin x coordinate.
-- `oy` (`number`, required): Origin y coordinate.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Scales all control points around an origin.
@@ -4090,9 +5709,19 @@ Scales all control points around an origin.
 function LBezierCurve:scale(s, ox, oy) end
 ```
 
+#### Description
+
+Scales all control points around an origin.
+
+Parameters:
+
+- `s` (`number`, required): Scale factor.
+- `ox` (`number`, required): Origin x coordinate.
+- `oy` (`number`, required): Origin y coordinate.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -4106,19 +5735,7 @@ end
 
 ### LBezierCurve:setControlPoint
 
-`LBezierCurve:setControlPoint(index: integer, x: number, y: number) -> boolean`
-
-Sets a control point by one-based index.
-
-**Parameters**
-
-- `index` (`integer`, required): One-based control point index.
-- `x` (`number`, required): New x coordinate.
-- `y` (`number`, required): New y coordinate.
-
-**Returns**: `boolean` - True when the control point exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets a control point by one-based index.
@@ -4129,9 +5746,21 @@ Sets a control point by one-based index.
 function LBezierCurve:setControlPoint(index, x, y) end
 ```
 
+#### Description
+
+Sets a control point by one-based index.
+
+Parameters:
+
+- `index` (`integer`, required): One-based control point index.
+- `x` (`number`, required): New x coordinate.
+- `y` (`number`, required): New y coordinate.
+
+Returns: `boolean` - True when the control point exists.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -4145,16 +5774,7 @@ end
 
 ### LBezierCurve:translate
 
-`LBezierCurve:translate(dx: number, dy: number)`
-
-Translates all control points. This method is available to Lua scripts.
-
-**Parameters**
-
-- `dx` (`number`, required): X translation.
-- `dy` (`number`, required): Y translation.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Translates all control points. This method is available to Lua scripts.
@@ -4163,9 +5783,18 @@ Translates all control points. This method is available to Lua scripts.
 function LBezierCurve:translate(dx, dy) end
 ```
 
+#### Description
+
+Translates all control points. This method is available to Lua scripts.
+
+Parameters:
+
+- `dx` (`number`, required): X translation.
+- `dy` (`number`, required): Y translation.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -4179,13 +5808,7 @@ end
 
 ### LBezierCurve:type
 
-`LBezierCurve:type() -> string`
-
-Returns the Lua-visible type name for this Bezier curve handle.
-
-**Returns**: `string` - The string `LBezierCurve`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this Bezier curve handle.
@@ -4193,9 +5816,15 @@ Returns the Lua-visible type name for this Bezier curve handle.
 function LBezierCurve:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this Bezier curve handle.
+
+Returns: `string` - The string `LBezierCurve`.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -4209,17 +5838,7 @@ end
 
 ### LBezierCurve:typeOf
 
-`LBezierCurve:typeOf(name: string) -> boolean`
-
-Returns whether this Bezier curve handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LBezierCurve` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this Bezier curve handle matches a supported type name.
@@ -4228,9 +5847,19 @@ Returns whether this Bezier curve handle matches a supported type name.
 function LBezierCurve:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this Bezier curve handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LBezierCurve` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -4244,16 +5873,7 @@ end
 
 ### LCatmullRom:addPoint
 
-`LCatmullRom:addPoint(x: number, y: number)`
-
-Adds a point to the spline. This method is available to Lua scripts.
-
-**Parameters**
-
-- `x` (`number`, required): Point x coordinate.
-- `y` (`number`, required): Point y coordinate.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a point to the spline. This method is available to Lua scripts.
@@ -4262,9 +5882,18 @@ Adds a point to the spline. This method is available to Lua scripts.
 function LCatmullRom:addPoint(x, y) end
 ```
 
+#### Description
+
+Adds a point to the spline. This method is available to Lua scripts.
+
+Parameters:
+
+- `x` (`number`, required): Point x coordinate.
+- `y` (`number`, required): Point y coordinate.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -4278,13 +5907,7 @@ end
 
 ### LCatmullRom:len
 
-`LCatmullRom:len() -> integer`
-
-Returns the number of points in the spline.
-
-**Returns**: `integer` - Point count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of points in the spline.
@@ -4292,9 +5915,15 @@ Returns the number of points in the spline.
 function LCatmullRom:len() end
 ```
 
+#### Description
+
+Returns the number of points in the spline.
+
+Returns: `integer` - Point count.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -4308,17 +5937,7 @@ end
 
 ### LCatmullRom:removePoint
 
-`LCatmullRom:removePoint(idx: integer) -> number`
-
-Removes a point by zero-based index and returns its coordinates.
-
-**Parameters**
-
-- `idx` (`integer`, required): Zero-based point index.
-
-**Returns**: `number` - Removed point x coordinate.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes a point by zero-based index and returns its coordinates.
@@ -4328,9 +5947,19 @@ Removes a point by zero-based index and returns its coordinates.
 function LCatmullRom:removePoint(idx) end
 ```
 
+#### Description
+
+Removes a point by zero-based index and returns its coordinates.
+
+Parameters:
+
+- `idx` (`integer`, required): Zero-based point index.
+
+Returns: `number` - Removed point x coordinate.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -4344,17 +5973,7 @@ end
 
 ### LCatmullRom:sample
 
-`LCatmullRom:sample(t: number) -> number`
-
-Samples the spline at normalized parameter `t`.
-
-**Parameters**
-
-- `t` (`number`, required): Normalized spline parameter.
-
-**Returns**: `number` - Sample x coordinate.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Samples the spline at normalized parameter `t`.
@@ -4364,9 +5983,19 @@ Samples the spline at normalized parameter `t`.
 function LCatmullRom:sample(t) end
 ```
 
+#### Description
+
+Samples the spline at normalized parameter `t`.
+
+Parameters:
+
+- `t` (`number`, required): Normalized spline parameter.
+
+Returns: `number` - Sample x coordinate.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -4379,18 +6008,7 @@ end
 
 ### LCatmullRom:sampleSegment
 
-`LCatmullRom:sampleSegment(seg: integer, t: number) -> number`
-
-Samples one spline segment at local parameter `t`.
-
-**Parameters**
-
-- `seg` (`integer`, required): Zero-based segment index.
-- `t` (`number`, required): Segment-local parameter.
-
-**Returns**: `number` - Sample x coordinate.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Samples one spline segment at local parameter `t`.
@@ -4401,9 +6019,20 @@ Samples one spline segment at local parameter `t`.
 function LCatmullRom:sampleSegment(seg, t) end
 ```
 
+#### Description
+
+Samples one spline segment at local parameter `t`.
+
+Parameters:
+
+- `seg` (`integer`, required): Zero-based segment index.
+- `t` (`number`, required): Segment-local parameter.
+
+Returns: `number` - Sample x coordinate.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -4416,13 +6045,7 @@ end
 
 ### LCatmullRom:type
 
-`LCatmullRom:type() -> string`
-
-Returns the Lua-visible type name for this spline handle.
-
-**Returns**: `string` - The string `LCatmullRom`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this spline handle.
@@ -4430,9 +6053,15 @@ Returns the Lua-visible type name for this spline handle.
 function LCatmullRom:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this spline handle.
+
+Returns: `string` - The string `LCatmullRom`.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -4446,17 +6075,7 @@ end
 
 ### LCatmullRom:typeOf
 
-`LCatmullRom:typeOf(name: string) -> boolean`
-
-Returns whether this spline handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LCatmullRom` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this spline handle matches a supported type name.
@@ -4465,9 +6084,19 @@ Returns whether this spline handle matches a supported type name.
 function LCatmullRom:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this spline handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LCatmullRom` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -4481,13 +6110,7 @@ end
 
 ### LCircle:aabb
 
-`LCircle:aabb() -> number`
-
-Returns this circle axis-aligned bounding box.
-
-**Returns**: `number` - Minimum x coordinate.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this circle axis-aligned bounding box.
@@ -4498,9 +6121,15 @@ Returns this circle axis-aligned bounding box.
 function LCircle:aabb() end
 ```
 
+#### Description
+
+Returns this circle axis-aligned bounding box.
+
+Returns: `number` - Minimum x coordinate.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -4514,13 +6143,7 @@ end
 
 ### LCircle:area
 
-`LCircle:area() -> number`
-
-Returns this circle area. This method is available to Lua scripts.
-
-**Returns**: `number` - Circle area.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this circle area. This method is available to Lua scripts.
@@ -4528,9 +6151,15 @@ Returns this circle area. This method is available to Lua scripts.
 function LCircle:area() end
 ```
 
+#### Description
+
+Returns this circle area. This method is available to Lua scripts.
+
+Returns: `number` - Circle area.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -4544,18 +6173,7 @@ end
 
 ### LCircle:contains
 
-`LCircle:contains(px: number, py: number) -> boolean`
-
-Returns whether this circle contains a point.
-
-**Parameters**
-
-- `px` (`number`, required): Point x coordinate.
-- `py` (`number`, required): Point y coordinate.
-
-**Returns**: `boolean` - True when the point is inside the circle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this circle contains a point.
@@ -4565,9 +6183,20 @@ Returns whether this circle contains a point.
 function LCircle:contains(px, py) end
 ```
 
+#### Description
+
+Returns whether this circle contains a point.
+
+Parameters:
+
+- `px` (`number`, required): Point x coordinate.
+- `py` (`number`, required): Point y coordinate.
+
+Returns: `boolean` - True when the point is inside the circle.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -4581,17 +6210,7 @@ end
 
 ### LCircle:intersects
 
-`LCircle:intersects(other: LCircle) -> boolean`
-
-Returns whether this circle intersects another circle.
-
-**Parameters**
-
-- `other` (`LCircle`, required): Other circle handle.
-
-**Returns**: `boolean` - True when the circles intersect.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this circle intersects another circle.
@@ -4600,9 +6219,19 @@ Returns whether this circle intersects another circle.
 function LCircle:intersects(other) end
 ```
 
+#### Description
+
+Returns whether this circle intersects another circle.
+
+Parameters:
+
+- `other` (`LCircle`, required): Other circle handle.
+
+Returns: `boolean` - True when the circles intersect.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -4616,13 +6245,7 @@ end
 
 ### LCircle:perimeter
 
-`LCircle:perimeter() -> number`
-
-Returns this circle perimeter. This method is available to Lua scripts.
-
-**Returns**: `number` - Circle perimeter.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this circle perimeter. This method is available to Lua scripts.
@@ -4630,9 +6253,15 @@ Returns this circle perimeter. This method is available to Lua scripts.
 function LCircle:perimeter() end
 ```
 
+#### Description
+
+Returns this circle perimeter. This method is available to Lua scripts.
+
+Returns: `number` - Circle perimeter.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -4646,13 +6275,7 @@ end
 
 ### LCircle:radius
 
-`LCircle:radius() -> number`
-
-Returns this circle radius. This method is available to Lua scripts.
-
-**Returns**: `number` - Radius.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this circle radius. This method is available to Lua scripts.
@@ -4660,9 +6283,15 @@ Returns this circle radius. This method is available to Lua scripts.
 function LCircle:radius() end
 ```
 
+#### Description
+
+Returns this circle radius. This method is available to Lua scripts.
+
+Returns: `number` - Radius.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -4676,13 +6305,7 @@ end
 
 ### LCircle:type
 
-`LCircle:type() -> string`
-
-Returns the Lua-visible type name for this circle handle.
-
-**Returns**: `string` - The string `LCircle`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this circle handle.
@@ -4690,9 +6313,15 @@ Returns the Lua-visible type name for this circle handle.
 function LCircle:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this circle handle.
+
+Returns: `string` - The string `LCircle`.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -4706,17 +6335,7 @@ end
 
 ### LCircle:typeOf
 
-`LCircle:typeOf(name: string) -> boolean`
-
-Returns whether this circle handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LCircle` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this circle handle matches a supported type name.
@@ -4725,9 +6344,19 @@ Returns whether this circle handle matches a supported type name.
 function LCircle:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this circle handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LCircle` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -4741,13 +6370,7 @@ end
 
 ### LCircle:x
 
-`LCircle:x() -> number`
-
-Returns this circle center x coordinate.
-
-**Returns**: `number` - Center x coordinate.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this circle center x coordinate.
@@ -4755,9 +6378,15 @@ Returns this circle center x coordinate.
 function LCircle:x() end
 ```
 
+#### Description
+
+Returns this circle center x coordinate.
+
+Returns: `number` - Center x coordinate.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -4771,13 +6400,7 @@ end
 
 ### LCircle:y
 
-`LCircle:y() -> number`
-
-Returns this circle center y coordinate.
-
-**Returns**: `number` - Center y coordinate.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this circle center y coordinate.
@@ -4785,9 +6408,15 @@ Returns this circle center y coordinate.
 function LCircle:y() end
 ```
 
+#### Description
+
+Returns this circle center y coordinate.
+
+Returns: `number` - Center y coordinate.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -4801,17 +6430,7 @@ end
 
 ### LHermite:sample
 
-`LHermite:sample(t: number) -> number`
-
-Samples the spline at normalized parameter `t`.
-
-**Parameters**
-
-- `t` (`number`, required): Normalized spline parameter.
-
-**Returns**: `number` - Sample x coordinate.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Samples the spline at normalized parameter `t`.
@@ -4821,9 +6440,19 @@ Samples the spline at normalized parameter `t`.
 function LHermite:sample(t) end
 ```
 
+#### Description
+
+Samples the spline at normalized parameter `t`.
+
+Parameters:
+
+- `t` (`number`, required): Normalized spline parameter.
+
+Returns: `number` - Sample x coordinate.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -4837,13 +6466,7 @@ end
 
 ### LHermite:type
 
-`LHermite:type() -> string`
-
-Returns the Lua-visible type name for this spline handle.
-
-**Returns**: `string` - The string `LHermite`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this spline handle.
@@ -4851,9 +6474,15 @@ Returns the Lua-visible type name for this spline handle.
 function LHermite:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this spline handle.
+
+Returns: `string` - The string `LHermite`.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -4867,17 +6496,7 @@ end
 
 ### LHermite:typeOf
 
-`LHermite:typeOf(name: string) -> boolean`
-
-Returns whether this spline handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LHermite` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this spline handle matches a supported type name.
@@ -4886,9 +6505,19 @@ Returns whether this spline handle matches a supported type name.
 function LHermite:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this spline handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LHermite` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -4902,22 +6531,7 @@ end
 
 ### LNoiseGenerator:fbm
 
-`LNoiseGenerator:fbm(x: number, y: number, [octaves]: integer, [lac]: number, [pers]: number, [kind]: string) -> number`
-
-Samples fractal Brownian motion noise.
-
-**Parameters**
-
-- `x` (`number`, required): X coordinate.
-- `y` (`number`, required): Y coordinate.
-- `octaves` (`integer`, optional): Octave count (default 4).
-- `lac` (`number`, optional): Lacunarity (default 2.0).
-- `pers` (`number`, optional): Persistence (default 0.5).
-- `kind` (`string`, optional): Noise kind name (default `"perlin"`).
-
-**Returns**: `number` - Noise value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Samples fractal Brownian motion noise.
@@ -4931,9 +6545,24 @@ Samples fractal Brownian motion noise.
 function LNoiseGenerator:fbm(x, y, octaves, lac, pers, kind) end
 ```
 
+#### Description
+
+Samples fractal Brownian motion noise.
+
+Parameters:
+
+- `x` (`number`, required): X coordinate.
+- `y` (`number`, required): Y coordinate.
+- `octaves` (`integer`, optional): Octave count (default 4).
+- `lac` (`number`, optional): Lacunarity (default 2.0).
+- `pers` (`number`, optional): Persistence (default 0.5).
+- `kind` (`string`, optional): Noise kind name (default `"perlin"`).
+
+Returns: `number` - Noise value.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -4947,19 +6576,7 @@ end
 
 ### LNoiseGenerator:generateMap
 
-`LNoiseGenerator:generateMap(w: integer, h: integer, [opts]: table) -> number[]`
-
-Generates a noise map and returns it as a flat array table.
-
-**Parameters**
-
-- `w` (`integer`, required): Map width.
-- `h` (`integer`, required): Map height.
-- `opts` (`table`, optional): Generation options including scale, octaves, kind, fractal, offset, and backend.
-
-**Returns**: `number[]` - Noise values.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Generates a noise map and returns it as a flat array table.
@@ -4970,9 +6587,21 @@ Generates a noise map and returns it as a flat array table.
 function LNoiseGenerator:generateMap(w, h, opts) end
 ```
 
+#### Description
+
+Generates a noise map and returns it as a flat array table.
+
+Parameters:
+
+- `w` (`integer`, required): Map width.
+- `h` (`integer`, required): Map height.
+- `opts` (`table`, optional): Generation options including scale, octaves, kind, fractal, offset, and backend.
+
+Returns: `number[]` - Noise values.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -4985,19 +6614,7 @@ end
 
 ### LNoiseGenerator:generateMapCompute
 
-`LNoiseGenerator:generateMapCompute(w: integer, h: integer, [opts]: table) -> number[]`
-
-Generates a noise map through the compute backend and returns it as a flat array table.
-
-**Parameters**
-
-- `w` (`integer`, required): Map width.
-- `h` (`integer`, required): Map height.
-- `opts` (`table`, optional): Generation options including scale, octaves, kind, fractal, and offset.
-
-**Returns**: `number[]` - Noise values.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Generates a noise map through the compute backend and returns it as a flat array table.
@@ -5008,9 +6625,21 @@ Generates a noise map through the compute backend and returns it as a flat array
 function LNoiseGenerator:generateMapCompute(w, h, opts) end
 ```
 
+#### Description
+
+Generates a noise map through the compute backend and returns it as a flat array table.
+
+Parameters:
+
+- `w` (`integer`, required): Map width.
+- `h` (`integer`, required): Map height.
+- `opts` (`table`, optional): Generation options including scale, octaves, kind, fractal, and offset.
+
+Returns: `number[]` - Noise values.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -5023,13 +6652,7 @@ end
 
 ### LNoiseGenerator:getSeed
 
-`LNoiseGenerator:getSeed() -> integer`
-
-Returns this noise generator seed.
-
-**Returns**: `integer` - Seed value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this noise generator seed.
@@ -5037,9 +6660,15 @@ Returns this noise generator seed.
 function LNoiseGenerator:getSeed() end
 ```
 
+#### Description
+
+Returns this noise generator seed.
+
+Returns: `integer` - Seed value.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -5052,17 +6681,7 @@ end
 
 ### LNoiseGenerator:perlin1d
 
-`LNoiseGenerator:perlin1d(x: number) -> number`
-
-Samples 1D Perlin noise. This method is available to Lua scripts.
-
-**Parameters**
-
-- `x` (`number`, required): X coordinate.
-
-**Returns**: `number` - Noise value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Samples 1D Perlin noise. This method is available to Lua scripts.
@@ -5071,9 +6690,19 @@ Samples 1D Perlin noise. This method is available to Lua scripts.
 function LNoiseGenerator:perlin1d(x) end
 ```
 
+#### Description
+
+Samples 1D Perlin noise. This method is available to Lua scripts.
+
+Parameters:
+
+- `x` (`number`, required): X coordinate.
+
+Returns: `number` - Noise value.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -5087,18 +6716,7 @@ end
 
 ### LNoiseGenerator:perlin2d
 
-`LNoiseGenerator:perlin2d(x: number, y: number) -> number`
-
-Samples 2D Perlin noise. This method is available to Lua scripts.
-
-**Parameters**
-
-- `x` (`number`, required): X coordinate.
-- `y` (`number`, required): Y coordinate.
-
-**Returns**: `number` - Noise value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Samples 2D Perlin noise. This method is available to Lua scripts.
@@ -5108,9 +6726,20 @@ Samples 2D Perlin noise. This method is available to Lua scripts.
 function LNoiseGenerator:perlin2d(x, y) end
 ```
 
+#### Description
+
+Samples 2D Perlin noise. This method is available to Lua scripts.
+
+Parameters:
+
+- `x` (`number`, required): X coordinate.
+- `y` (`number`, required): Y coordinate.
+
+Returns: `number` - Noise value.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -5124,19 +6753,7 @@ end
 
 ### LNoiseGenerator:perlin3d
 
-`LNoiseGenerator:perlin3d(x: number, y: number, z: number) -> number`
-
-Samples 3D Perlin noise. This method is available to Lua scripts.
-
-**Parameters**
-
-- `x` (`number`, required): X coordinate.
-- `y` (`number`, required): Y coordinate.
-- `z` (`number`, required): Z coordinate.
-
-**Returns**: `number` - Noise value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Samples 3D Perlin noise. This method is available to Lua scripts.
@@ -5147,9 +6764,21 @@ Samples 3D Perlin noise. This method is available to Lua scripts.
 function LNoiseGenerator:perlin3d(x, y, z) end
 ```
 
+#### Description
+
+Samples 3D Perlin noise. This method is available to Lua scripts.
+
+Parameters:
+
+- `x` (`number`, required): X coordinate.
+- `y` (`number`, required): Y coordinate.
+- `z` (`number`, required): Z coordinate.
+
+Returns: `number` - Noise value.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -5163,20 +6792,7 @@ end
 
 ### LNoiseGenerator:perlin4d
 
-`LNoiseGenerator:perlin4d(x: number, y: number, z: number, w: number) -> number`
-
-Samples 4D Perlin noise. This method is available to Lua scripts.
-
-**Parameters**
-
-- `x` (`number`, required): X coordinate.
-- `y` (`number`, required): Y coordinate.
-- `z` (`number`, required): Z coordinate.
-- `w` (`number`, required): W coordinate.
-
-**Returns**: `number` - Noise value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Samples 4D Perlin noise. This method is available to Lua scripts.
@@ -5188,9 +6804,22 @@ Samples 4D Perlin noise. This method is available to Lua scripts.
 function LNoiseGenerator:perlin4d(x, y, z, w) end
 ```
 
+#### Description
+
+Samples 4D Perlin noise. This method is available to Lua scripts.
+
+Parameters:
+
+- `x` (`number`, required): X coordinate.
+- `y` (`number`, required): Y coordinate.
+- `z` (`number`, required): Z coordinate.
+- `w` (`number`, required): W coordinate.
+
+Returns: `number` - Noise value.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -5204,22 +6833,7 @@ end
 
 ### LNoiseGenerator:ridged
 
-`LNoiseGenerator:ridged(x: number, y: number, [octaves]: integer, [lac]: number, [pers]: number, [kind]: string) -> number`
-
-Samples ridged fractal noise. This method is available to Lua scripts.
-
-**Parameters**
-
-- `x` (`number`, required): X coordinate.
-- `y` (`number`, required): Y coordinate.
-- `octaves` (`integer`, optional): Octave count (default 4).
-- `lac` (`number`, optional): Lacunarity (default 2.0).
-- `pers` (`number`, optional): Persistence (default 0.5).
-- `kind` (`string`, optional): Noise kind name (default `"perlin"`).
-
-**Returns**: `number` - Noise value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Samples ridged fractal noise. This method is available to Lua scripts.
@@ -5233,9 +6847,24 @@ Samples ridged fractal noise. This method is available to Lua scripts.
 function LNoiseGenerator:ridged(x, y, octaves, lac, pers, kind) end
 ```
 
+#### Description
+
+Samples ridged fractal noise. This method is available to Lua scripts.
+
+Parameters:
+
+- `x` (`number`, required): X coordinate.
+- `y` (`number`, required): Y coordinate.
+- `octaves` (`integer`, optional): Octave count (default 4).
+- `lac` (`number`, optional): Lacunarity (default 2.0).
+- `pers` (`number`, optional): Persistence (default 0.5).
+- `kind` (`string`, optional): Noise kind name (default `"perlin"`).
+
+Returns: `number` - Noise value.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -5249,15 +6878,7 @@ end
 
 ### LNoiseGenerator:setSeed
 
-`LNoiseGenerator:setSeed(seed: integer)`
-
-Sets this noise generator seed. This method is available to Lua scripts.
-
-**Parameters**
-
-- `seed` (`integer`, required): Seed value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets this noise generator seed. This method is available to Lua scripts.
@@ -5265,9 +6886,17 @@ Sets this noise generator seed. This method is available to Lua scripts.
 function LNoiseGenerator:setSeed(seed) end
 ```
 
+#### Description
+
+Sets this noise generator seed. This method is available to Lua scripts.
+
+Parameters:
+
+- `seed` (`integer`, required): Seed value.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -5280,17 +6909,7 @@ end
 
 ### LNoiseGenerator:simplex1d
 
-`LNoiseGenerator:simplex1d(x: number) -> number`
-
-Samples 1D simplex noise. This method is available to Lua scripts.
-
-**Parameters**
-
-- `x` (`number`, required): X coordinate.
-
-**Returns**: `number` - Noise value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Samples 1D simplex noise. This method is available to Lua scripts.
@@ -5299,9 +6918,19 @@ Samples 1D simplex noise. This method is available to Lua scripts.
 function LNoiseGenerator:simplex1d(x) end
 ```
 
+#### Description
+
+Samples 1D simplex noise. This method is available to Lua scripts.
+
+Parameters:
+
+- `x` (`number`, required): X coordinate.
+
+Returns: `number` - Noise value.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -5315,18 +6944,7 @@ end
 
 ### LNoiseGenerator:simplex2d
 
-`LNoiseGenerator:simplex2d(x: number, y: number) -> number`
-
-Samples 2D simplex noise. This method is available to Lua scripts.
-
-**Parameters**
-
-- `x` (`number`, required): X coordinate.
-- `y` (`number`, required): Y coordinate.
-
-**Returns**: `number` - Noise value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Samples 2D simplex noise. This method is available to Lua scripts.
@@ -5336,9 +6954,20 @@ Samples 2D simplex noise. This method is available to Lua scripts.
 function LNoiseGenerator:simplex2d(x, y) end
 ```
 
+#### Description
+
+Samples 2D simplex noise. This method is available to Lua scripts.
+
+Parameters:
+
+- `x` (`number`, required): X coordinate.
+- `y` (`number`, required): Y coordinate.
+
+Returns: `number` - Noise value.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -5352,19 +6981,7 @@ end
 
 ### LNoiseGenerator:simplex3d
 
-`LNoiseGenerator:simplex3d(x: number, y: number, z: number) -> number`
-
-Samples 3D simplex noise. This method is available to Lua scripts.
-
-**Parameters**
-
-- `x` (`number`, required): X coordinate.
-- `y` (`number`, required): Y coordinate.
-- `z` (`number`, required): Z coordinate.
-
-**Returns**: `number` - Noise value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Samples 3D simplex noise. This method is available to Lua scripts.
@@ -5375,9 +6992,21 @@ Samples 3D simplex noise. This method is available to Lua scripts.
 function LNoiseGenerator:simplex3d(x, y, z) end
 ```
 
+#### Description
+
+Samples 3D simplex noise. This method is available to Lua scripts.
+
+Parameters:
+
+- `x` (`number`, required): X coordinate.
+- `y` (`number`, required): Y coordinate.
+- `z` (`number`, required): Z coordinate.
+
+Returns: `number` - Noise value.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -5391,22 +7020,7 @@ end
 
 ### LNoiseGenerator:turbulence
 
-`LNoiseGenerator:turbulence(x: number, y: number, [octaves]: integer, [lac]: number, [pers]: number, [kind]: string) -> number`
-
-Samples turbulence fractal noise.
-
-**Parameters**
-
-- `x` (`number`, required): X coordinate.
-- `y` (`number`, required): Y coordinate.
-- `octaves` (`integer`, optional): Octave count (default 4).
-- `lac` (`number`, optional): Lacunarity (default 2.0).
-- `pers` (`number`, optional): Persistence (default 0.5).
-- `kind` (`string`, optional): Noise kind name (default `"perlin"`).
-
-**Returns**: `number` - Noise value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Samples turbulence fractal noise.
@@ -5420,9 +7034,24 @@ Samples turbulence fractal noise.
 function LNoiseGenerator:turbulence(x, y, octaves, lac, pers, kind) end
 ```
 
+#### Description
+
+Samples turbulence fractal noise.
+
+Parameters:
+
+- `x` (`number`, required): X coordinate.
+- `y` (`number`, required): Y coordinate.
+- `octaves` (`integer`, optional): Octave count (default 4).
+- `lac` (`number`, optional): Lacunarity (default 2.0).
+- `pers` (`number`, optional): Persistence (default 0.5).
+- `kind` (`string`, optional): Noise kind name (default `"perlin"`).
+
+Returns: `number` - Noise value.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -5436,13 +7065,7 @@ end
 
 ### LNoiseGenerator:type
 
-`LNoiseGenerator:type() -> string`
-
-Returns the Lua-visible type name for this noise generator handle.
-
-**Returns**: `string` - The string `LNoiseGenerator`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this noise generator handle.
@@ -5450,9 +7073,15 @@ Returns the Lua-visible type name for this noise generator handle.
 function LNoiseGenerator:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this noise generator handle.
+
+Returns: `string` - The string `LNoiseGenerator`.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -5466,17 +7095,7 @@ end
 
 ### LNoiseGenerator:typeOf
 
-`LNoiseGenerator:typeOf(name: string) -> boolean`
-
-Returns whether this noise generator handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LNoiseGenerator` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this noise generator handle matches a supported type name.
@@ -5485,9 +7104,19 @@ Returns whether this noise generator handle matches a supported type name.
 function LNoiseGenerator:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this noise generator handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LNoiseGenerator` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -5501,19 +7130,7 @@ end
 
 ### LNoiseGenerator:warpDomain
 
-`LNoiseGenerator:warpDomain(x: number, y: number, strength: number) -> number`
-
-Samples domain-warped noise coordinates.
-
-**Parameters**
-
-- `x` (`number`, required): X coordinate.
-- `y` (`number`, required): Y coordinate.
-- `strength` (`number`, required): Warp strength.
-
-**Returns**: `number` - Warped noise value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Samples domain-warped noise coordinates.
@@ -5524,9 +7141,21 @@ Samples domain-warped noise coordinates.
 function LNoiseGenerator:warpDomain(x, y, strength) end
 ```
 
+#### Description
+
+Samples domain-warped noise coordinates.
+
+Parameters:
+
+- `x` (`number`, required): X coordinate.
+- `y` (`number`, required): Y coordinate.
+- `strength` (`number`, required): Warp strength.
+
+Returns: `number` - Warped noise value.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -5539,20 +7168,7 @@ end
 
 ### LNoiseGenerator:worley2d
 
-`LNoiseGenerator:worley2d(x: number, y: number, [dist_name]: string, [f2]: boolean) -> number`
-
-Samples 2D Worley noise. This method is available to Lua scripts.
-
-**Parameters**
-
-- `x` (`number`, required): X coordinate.
-- `y` (`number`, required): Y coordinate.
-- `dist_name` (`string`, optional): Distance type name (default `"euclidean"`).
-- `f2` (`boolean`, optional): Second-feature flag (default false).
-
-**Returns**: `number` - Noise value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Samples 2D Worley noise. This method is available to Lua scripts.
@@ -5564,9 +7180,22 @@ Samples 2D Worley noise. This method is available to Lua scripts.
 function LNoiseGenerator:worley2d(x, y, dist_name, f2) end
 ```
 
+#### Description
+
+Samples 2D Worley noise. This method is available to Lua scripts.
+
+Parameters:
+
+- `x` (`number`, required): X coordinate.
+- `y` (`number`, required): Y coordinate.
+- `dist_name` (`string`, optional): Distance type name (default `"euclidean"`).
+- `f2` (`boolean`, optional): Second-feature flag (default false).
+
+Returns: `number` - Noise value.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -5580,21 +7209,7 @@ end
 
 ### LNoiseGenerator:worley3d
 
-`LNoiseGenerator:worley3d(x: number, y: number, z: number, [dist_name]: string, [f2]: boolean) -> number`
-
-Samples 3D Worley noise. This method is available to Lua scripts.
-
-**Parameters**
-
-- `x` (`number`, required): X coordinate.
-- `y` (`number`, required): Y coordinate.
-- `z` (`number`, required): Z coordinate.
-- `dist_name` (`string`, optional): Distance type name (default `"euclidean"`).
-- `f2` (`boolean`, optional): Second-feature flag (default false).
-
-**Returns**: `number` - Noise value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Samples 3D Worley noise. This method is available to Lua scripts.
@@ -5607,9 +7222,23 @@ Samples 3D Worley noise. This method is available to Lua scripts.
 function LNoiseGenerator:worley3d(x, y, z, dist_name, f2) end
 ```
 
+#### Description
+
+Samples 3D Worley noise. This method is available to Lua scripts.
+
+Parameters:
+
+- `x` (`number`, required): X coordinate.
+- `y` (`number`, required): Y coordinate.
+- `z` (`number`, required): Z coordinate.
+- `dist_name` (`string`, optional): Distance type name (default `"euclidean"`).
+- `f2` (`boolean`, optional): Second-feature flag (default false).
+
+Returns: `number` - Noise value.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -5623,13 +7252,7 @@ end
 
 ### LRandomGenerator:getSeed
 
-`LRandomGenerator:getSeed() -> integer`
-
-Returns this generator seed. This method is available to Lua scripts.
-
-**Returns**: `integer` - Seed value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this generator seed. This method is available to Lua scripts.
@@ -5637,9 +7260,15 @@ Returns this generator seed. This method is available to Lua scripts.
 function LRandomGenerator:getSeed() end
 ```
 
+#### Description
+
+Returns this generator seed. This method is available to Lua scripts.
+
+Returns: `integer` - Seed value.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -5653,13 +7282,7 @@ end
 
 ### LRandomGenerator:getState
 
-`LRandomGenerator:getState() -> string`
-
-Returns this generator serialized state string.
-
-**Returns**: `string` - Generator state.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this generator serialized state string.
@@ -5667,9 +7290,15 @@ Returns this generator serialized state string.
 function LRandomGenerator:getState() end
 ```
 
+#### Description
+
+Returns this generator serialized state string.
+
+Returns: `string` - Generator state.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -5683,13 +7312,7 @@ end
 
 ### LRandomGenerator:random
 
-`LRandomGenerator:random() -> number`
-
-Returns a random floating-point value from the generator.
-
-**Returns**: `number` - Random value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a random floating-point value from the generator.
@@ -5697,9 +7320,15 @@ Returns a random floating-point value from the generator.
 function LRandomGenerator:random() end
 ```
 
+#### Description
+
+Returns a random floating-point value from the generator.
+
+Returns: `number` - Random value.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -5713,18 +7342,7 @@ end
 
 ### LRandomGenerator:randomFloat
 
-`LRandomGenerator:randomFloat(min: number, max: number) -> number`
-
-Returns a random floating-point value in a range.
-
-**Parameters**
-
-- `min` (`number`, required): Minimum value.
-- `max` (`number`, required): Maximum value.
-
-**Returns**: `number` - Random value in range.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a random floating-point value in a range.
@@ -5734,9 +7352,20 @@ Returns a random floating-point value in a range.
 function LRandomGenerator:randomFloat(min, max) end
 ```
 
+#### Description
+
+Returns a random floating-point value in a range.
+
+Parameters:
+
+- `min` (`number`, required): Minimum value.
+- `max` (`number`, required): Maximum value.
+
+Returns: `number` - Random value in range.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -5750,18 +7379,7 @@ end
 
 ### LRandomGenerator:randomInt
 
-`LRandomGenerator:randomInt(min: integer, max: integer) -> integer`
-
-Returns a random integer in a range.
-
-**Parameters**
-
-- `min` (`integer`, required): Minimum value.
-- `max` (`integer`, required): Maximum value.
-
-**Returns**: `integer` - Random integer in range.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a random integer in a range.
@@ -5771,9 +7389,20 @@ Returns a random integer in a range.
 function LRandomGenerator:randomInt(min, max) end
 ```
 
+#### Description
+
+Returns a random integer in a range.
+
+Parameters:
+
+- `min` (`integer`, required): Minimum value.
+- `max` (`integer`, required): Maximum value.
+
+Returns: `integer` - Random integer in range.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -5787,18 +7416,7 @@ end
 
 ### LRandomGenerator:randomNormal
 
-`LRandomGenerator:randomNormal([stddev]: number, [mean]: number) -> number`
-
-Returns a normally distributed random value.
-
-**Parameters**
-
-- `stddev` (`number`, optional): Standard deviation (default 1.0).
-- `mean` (`number`, optional): Mean value (default 0.0).
-
-**Returns**: `number` - Random normal value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a normally distributed random value.
@@ -5808,9 +7426,20 @@ Returns a normally distributed random value.
 function LRandomGenerator:randomNormal(stddev, mean) end
 ```
 
+#### Description
+
+Returns a normally distributed random value.
+
+Parameters:
+
+- `stddev` (`number`, optional): Standard deviation (default 1.0).
+- `mean` (`number`, optional): Mean value (default 0.0).
+
+Returns: `number` - Random normal value.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -5824,15 +7453,7 @@ end
 
 ### LRandomGenerator:setSeed
 
-`LRandomGenerator:setSeed(seed: integer)`
-
-Resets this generator to a seed value.
-
-**Parameters**
-
-- `seed` (`integer`, required): Seed value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Resets this generator to a seed value.
@@ -5840,9 +7461,17 @@ Resets this generator to a seed value.
 function LRandomGenerator:setSeed(seed) end
 ```
 
+#### Description
+
+Resets this generator to a seed value.
+
+Parameters:
+
+- `seed` (`integer`, required): Seed value.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -5856,15 +7485,7 @@ end
 
 ### LRandomGenerator:setState
 
-`LRandomGenerator:setState(state: string)`
-
-Restores this generator from a serialized state string.
-
-**Parameters**
-
-- `state` (`string`, required): Generator state string.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Restores this generator from a serialized state string.
@@ -5872,9 +7493,17 @@ Restores this generator from a serialized state string.
 function LRandomGenerator:setState(state) end
 ```
 
+#### Description
+
+Restores this generator from a serialized state string.
+
+Parameters:
+
+- `state` (`string`, required): Generator state string.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -5888,13 +7517,7 @@ end
 
 ### LRandomGenerator:type
 
-`LRandomGenerator:type() -> string`
-
-Returns the Lua-visible type name for this random generator handle.
-
-**Returns**: `string` - The string `LRandomGenerator`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this random generator handle.
@@ -5902,9 +7525,15 @@ Returns the Lua-visible type name for this random generator handle.
 function LRandomGenerator:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this random generator handle.
+
+Returns: `string` - The string `LRandomGenerator`.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -5918,17 +7547,7 @@ end
 
 ### LRandomGenerator:typeOf
 
-`LRandomGenerator:typeOf(name: string) -> boolean`
-
-Returns whether this random generator handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LRandomGenerator` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this random generator handle matches a supported type name.
@@ -5937,9 +7556,19 @@ Returns whether this random generator handle matches a supported type name.
 function LRandomGenerator:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this random generator handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LRandomGenerator` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -5953,20 +7582,20 @@ end
 
 ### LRectPacker:clear
 
-`LRectPacker:clear()`
-
-Clears packed rectangles from this packer.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Clears packed rectangles from this packer.
 function LRectPacker:clear() end
 ```
 
+#### Description
+
+Clears packed rectangles from this packer.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -5980,13 +7609,7 @@ end
 
 ### LRectPacker:getPacked
 
-`LRectPacker:getPacked() -> table`
-
-Returns packed rectangle records.
-
-**Returns**: `table` - Array table with `x`, `y`, `w`, `h`, and optional `id` fields.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns packed rectangle records.
@@ -5994,9 +7617,15 @@ Returns packed rectangle records.
 function LRectPacker:getPacked() end
 ```
 
+#### Description
+
+Returns packed rectangle records.
+
+Returns: `table` - Array table with `x`, `y`, `w`, `h`, and optional `id` fields.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -6010,13 +7639,7 @@ end
 
 ### LRectPacker:occupancy
 
-`LRectPacker:occupancy() -> number`
-
-Returns occupied area ratio. This method is available to Lua scripts.
-
-**Returns**: `number` - Occupancy ratio.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns occupied area ratio. This method is available to Lua scripts.
@@ -6024,9 +7647,15 @@ Returns occupied area ratio. This method is available to Lua scripts.
 function LRectPacker:occupancy() end
 ```
 
+#### Description
+
+Returns occupied area ratio. This method is available to Lua scripts.
+
+Returns: `number` - Occupancy ratio.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -6040,19 +7669,7 @@ end
 
 ### LRectPacker:pack
 
-`LRectPacker:pack(w: integer, h: integer, [id]: string) -> integer`
-
-Attempts to pack a rectangle and returns its placement coordinates.
-
-**Parameters**
-
-- `w` (`integer`, required): Rectangle width.
-- `h` (`integer`, required): Rectangle height.
-- `id` (`string`, optional): Rectangle id.
-
-**Returns**: `integer` - X coordinate, or nil when packing fails.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Attempts to pack a rectangle and returns its placement coordinates.
@@ -6064,9 +7681,21 @@ Attempts to pack a rectangle and returns its placement coordinates.
 function LRectPacker:pack(w, h, id) end
 ```
 
+#### Description
+
+Attempts to pack a rectangle and returns its placement coordinates.
+
+Parameters:
+
+- `w` (`integer`, required): Rectangle width.
+- `h` (`integer`, required): Rectangle height.
+- `id` (`string`, optional): Rectangle id.
+
+Returns: `integer` - X coordinate, or nil when packing fails.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -6080,20 +7709,20 @@ end
 
 ### LSpatialHash:clear
 
-`LSpatialHash:clear()`
-
-Clears all items from the spatial hash.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Clears all items from the spatial hash.
 function LSpatialHash:clear() end
 ```
 
+#### Description
+
+Clears all items from the spatial hash.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -6107,13 +7736,7 @@ end
 
 ### LSpatialHash:getCellSize
 
-`LSpatialHash:getCellSize() -> number`
-
-Returns the spatial hash cell size.
-
-**Returns**: `number` - Cell size.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the spatial hash cell size.
@@ -6121,9 +7744,15 @@ Returns the spatial hash cell size.
 function LSpatialHash:getCellSize() end
 ```
 
+#### Description
+
+Returns the spatial hash cell size.
+
+Returns: `number` - Cell size.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -6137,13 +7766,7 @@ end
 
 ### LSpatialHash:getItemCount
 
-`LSpatialHash:getItemCount() -> integer`
-
-Returns the number of items in the spatial hash.
-
-**Returns**: `integer` - Item count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of items in the spatial hash.
@@ -6151,9 +7774,15 @@ Returns the number of items in the spatial hash.
 function LSpatialHash:getItemCount() end
 ```
 
+#### Description
+
+Returns the number of items in the spatial hash.
+
+Returns: `integer` - Item count.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -6167,19 +7796,7 @@ end
 
 ### LSpatialHash:insert
 
-`LSpatialHash:insert(id: string, x: number, y: number, w: number, h: number)`
-
-Inserts an item rectangle into the spatial hash.
-
-**Parameters**
-
-- `id` (`string`, required): Item id.
-- `x` (`number`, required): Rectangle x coordinate.
-- `y` (`number`, required): Rectangle y coordinate.
-- `w` (`number`, required): Rectangle width.
-- `h` (`number`, required): Rectangle height.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Inserts an item rectangle into the spatial hash.
@@ -6191,9 +7808,21 @@ Inserts an item rectangle into the spatial hash.
 function LSpatialHash:insert(id, x, y, w, h) end
 ```
 
+#### Description
+
+Inserts an item rectangle into the spatial hash.
+
+Parameters:
+
+- `id` (`string`, required): Item id.
+- `x` (`number`, required): Rectangle x coordinate.
+- `y` (`number`, required): Rectangle y coordinate.
+- `w` (`number`, required): Rectangle width.
+- `h` (`number`, required): Rectangle height.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -6207,19 +7836,7 @@ end
 
 ### LSpatialHash:queryCircle
 
-`LSpatialHash:queryCircle(cx: number, cy: number, radius: number) -> integer[]`
-
-Returns ids intersecting a query circle.
-
-**Parameters**
-
-- `cx` (`number`, required): Circle center x coordinate.
-- `cy` (`number`, required): Circle center y coordinate.
-- `radius` (`number`, required): Circle radius.
-
-**Returns**: `integer[]` - Item ids.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns ids intersecting a query circle.
@@ -6230,9 +7847,21 @@ Returns ids intersecting a query circle.
 function LSpatialHash:queryCircle(cx, cy, radius) end
 ```
 
+#### Description
+
+Returns ids intersecting a query circle.
+
+Parameters:
+
+- `cx` (`number`, required): Circle center x coordinate.
+- `cy` (`number`, required): Circle center y coordinate.
+- `radius` (`number`, required): Circle radius.
+
+Returns: `integer[]` - Item ids.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -6246,20 +7875,7 @@ end
 
 ### LSpatialHash:queryRect
 
-`LSpatialHash:queryRect(x: number, y: number, w: number, h: number) -> integer[]`
-
-Returns ids intersecting a query rectangle.
-
-**Parameters**
-
-- `x` (`number`, required): Query x coordinate.
-- `y` (`number`, required): Query y coordinate.
-- `w` (`number`, required): Query width.
-- `h` (`number`, required): Query height.
-
-**Returns**: `integer[]` - Item ids.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns ids intersecting a query rectangle.
@@ -6271,9 +7887,22 @@ Returns ids intersecting a query rectangle.
 function LSpatialHash:queryRect(x, y, w, h) end
 ```
 
+#### Description
+
+Returns ids intersecting a query rectangle.
+
+Parameters:
+
+- `x` (`number`, required): Query x coordinate.
+- `y` (`number`, required): Query y coordinate.
+- `w` (`number`, required): Query width.
+- `h` (`number`, required): Query height.
+
+Returns: `integer[]` - Item ids.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -6287,20 +7916,7 @@ end
 
 ### LSpatialHash:querySegment
 
-`LSpatialHash:querySegment(x1: number, y1: number, x2: number, y2: number) -> integer[]`
-
-Returns ids intersecting a query line segment.
-
-**Parameters**
-
-- `x1` (`number`, required): Segment start x coordinate.
-- `y1` (`number`, required): Segment start y coordinate.
-- `x2` (`number`, required): Segment end x coordinate.
-- `y2` (`number`, required): Segment end y coordinate.
-
-**Returns**: `integer[]` - Item ids.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns ids intersecting a query line segment.
@@ -6312,9 +7928,22 @@ Returns ids intersecting a query line segment.
 function LSpatialHash:querySegment(x1, y1, x2, y2) end
 ```
 
+#### Description
+
+Returns ids intersecting a query line segment.
+
+Parameters:
+
+- `x1` (`number`, required): Segment start x coordinate.
+- `y1` (`number`, required): Segment start y coordinate.
+- `x2` (`number`, required): Segment end x coordinate.
+- `y2` (`number`, required): Segment end y coordinate.
+
+Returns: `integer[]` - Item ids.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -6328,15 +7957,7 @@ end
 
 ### LSpatialHash:remove
 
-`LSpatialHash:remove(id: string)`
-
-Removes an item from the spatial hash.
-
-**Parameters**
-
-- `id` (`string`, required): Item id.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes an item from the spatial hash.
@@ -6344,9 +7965,17 @@ Removes an item from the spatial hash.
 function LSpatialHash:remove(id) end
 ```
 
+#### Description
+
+Removes an item from the spatial hash.
+
+Parameters:
+
+- `id` (`string`, required): Item id.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -6360,13 +7989,7 @@ end
 
 ### LSpatialHash:type
 
-`LSpatialHash:type() -> string`
-
-Returns the Lua-visible type name for this spatial hash handle.
-
-**Returns**: `string` - The string `LSpatialHash`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this spatial hash handle.
@@ -6374,9 +7997,15 @@ Returns the Lua-visible type name for this spatial hash handle.
 function LSpatialHash:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this spatial hash handle.
+
+Returns: `string` - The string `LSpatialHash`.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -6390,17 +8019,7 @@ end
 
 ### LSpatialHash:typeOf
 
-`LSpatialHash:typeOf(name: string) -> boolean`
-
-Returns whether this spatial hash handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LSpatialHash` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this spatial hash handle matches a supported type name.
@@ -6409,9 +8028,19 @@ Returns whether this spatial hash handle matches a supported type name.
 function LSpatialHash:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this spatial hash handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LSpatialHash` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -6425,19 +8054,7 @@ end
 
 ### LSpatialHash:update
 
-`LSpatialHash:update(id: string, x: number, y: number, w: number, h: number)`
-
-Updates an item rectangle in the spatial hash.
-
-**Parameters**
-
-- `id` (`string`, required): Item id.
-- `x` (`number`, required): Rectangle x coordinate.
-- `y` (`number`, required): Rectangle y coordinate.
-- `w` (`number`, required): Rectangle width.
-- `h` (`number`, required): Rectangle height.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Updates an item rectangle in the spatial hash.
@@ -6449,9 +8066,21 @@ Updates an item rectangle in the spatial hash.
 function LSpatialHash:update(id, x, y, w, h) end
 ```
 
+#### Description
+
+Updates an item rectangle in the spatial hash.
+
+Parameters:
+
+- `id` (`string`, required): Item id.
+- `x` (`number`, required): Rectangle x coordinate.
+- `y` (`number`, required): Rectangle y coordinate.
+- `w` (`number`, required): Rectangle width.
+- `h` (`number`, required): Rectangle height.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -6465,13 +8094,7 @@ end
 
 ### LTransform:clone
 
-`LTransform:clone() -> LTransform`
-
-Returns a copy of this transform. This method is available to Lua scripts.
-
-**Returns**: `LTransform` - Cloned transform handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a copy of this transform. This method is available to Lua scripts.
@@ -6479,9 +8102,15 @@ Returns a copy of this transform. This method is available to Lua scripts.
 function LTransform:clone() end
 ```
 
+#### Description
+
+Returns a copy of this transform. This method is available to Lua scripts.
+
+Returns: `LTransform` - Cloned transform handle.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -6495,13 +8124,7 @@ end
 
 ### LTransform:decompose
 
-`LTransform:decompose() -> number`
-
-Decomposes this transform into component values.
-
-**Returns**: `number` - X translation.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Decomposes this transform into component values.
@@ -6513,9 +8136,15 @@ Decomposes this transform into component values.
 function LTransform:decompose() end
 ```
 
+#### Description
+
+Decomposes this transform into component values.
+
+Returns: `number` - X translation.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -6528,13 +8157,7 @@ end
 
 ### LTransform:getMatrix
 
-`LTransform:getMatrix() -> number[]`
-
-Returns this transform matrix as a flat array table.
-
-**Returns**: `number[]` - Flat matrix values in row-major order.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this transform matrix as a flat array table.
@@ -6542,9 +8165,15 @@ Returns this transform matrix as a flat array table.
 function LTransform:getMatrix() end
 ```
 
+#### Description
+
+Returns this transform matrix as a flat array table.
+
+Returns: `number[]` - Flat matrix values in row-major order.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -6557,13 +8186,7 @@ end
 
 ### LTransform:inverse
 
-`LTransform:inverse() -> LTransform`
-
-Returns this transform's inverse.
-
-**Returns**: `LTransform` - Inverse transform handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this transform's inverse.
@@ -6571,9 +8194,15 @@ Returns this transform's inverse.
 function LTransform:inverse() end
 ```
 
+#### Description
+
+Returns this transform's inverse.
+
+Returns: `LTransform` - Inverse transform handle.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -6587,18 +8216,7 @@ end
 
 ### LTransform:inverseTransformPoint
 
-`LTransform:inverseTransformPoint(x: number, y: number) -> number`
-
-Transforms a point by this transform's inverse.
-
-**Parameters**
-
-- `x` (`number`, required): Input x coordinate.
-- `y` (`number`, required): Input y coordinate.
-
-**Returns**: `number` - Inverse-transformed x coordinate.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Transforms a point by this transform's inverse.
@@ -6609,9 +8227,20 @@ Transforms a point by this transform's inverse.
 function LTransform:inverseTransformPoint(x, y) end
 ```
 
+#### Description
+
+Transforms a point by this transform's inverse.
+
+Parameters:
+
+- `x` (`number`, required): Input x coordinate.
+- `y` (`number`, required): Input y coordinate.
+
+Returns: `number` - Inverse-transformed x coordinate.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -6625,20 +8254,20 @@ end
 
 ### LTransform:reset
 
-`LTransform:reset()`
-
-Resets this transform to identity.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Resets this transform to identity.
 function LTransform:reset() end
 ```
 
+#### Description
+
+Resets this transform to identity.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -6652,15 +8281,7 @@ end
 
 ### LTransform:rotate
 
-`LTransform:rotate(angle: number)`
-
-Applies a rotation to this transform.
-
-**Parameters**
-
-- `angle` (`number`, required): Rotation angle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Applies a rotation to this transform.
@@ -6668,9 +8289,17 @@ Applies a rotation to this transform.
 function LTransform:rotate(angle) end
 ```
 
+#### Description
+
+Applies a rotation to this transform.
+
+Parameters:
+
+- `angle` (`number`, required): Rotation angle.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -6684,16 +8313,7 @@ end
 
 ### LTransform:scale
 
-`LTransform:scale(sx: number, [sy]: number)`
-
-Applies scale to this transform. This method is available to Lua scripts.
-
-**Parameters**
-
-- `sx` (`number`, required): X scale.
-- `sy` (`number`, optional): Y scale (defaults to `sx`).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Applies scale to this transform. This method is available to Lua scripts.
@@ -6702,9 +8322,18 @@ Applies scale to this transform. This method is available to Lua scripts.
 function LTransform:scale(sx, sy) end
 ```
 
+#### Description
+
+Applies scale to this transform. This method is available to Lua scripts.
+
+Parameters:
+
+- `sx` (`number`, required): X scale.
+- `sy` (`number`, optional): Y scale (defaults to `sx`).
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -6718,23 +8347,7 @@ end
 
 ### LTransform:setTransformation
 
-`LTransform:setTransformation(x: number, y: number, [angle]: number, [sx]: number, [sy]: number, [ox]: number, [oy]: number, [kx]: number, [ky]: number)`
-
-Replaces this transform from position, rotation, scale, origin, and shear components.
-
-**Parameters**
-
-- `x` (`number`, required): X translation.
-- `y` (`number`, required): Y translation.
-- `angle` (`number`, optional): Rotation angle (default 0).
-- `sx` (`number`, optional): X scale (default 1).
-- `sy` (`number`, optional): Y scale (defaults to `sx`).
-- `ox` (`number`, optional): Origin x offset (default 0).
-- `oy` (`number`, optional): Origin y offset (default 0).
-- `kx` (`number`, optional): X shear (default 0).
-- `ky` (`number`, optional): Y shear (default 0).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Replaces this transform from position, rotation, scale, origin, and shear components.
@@ -6750,9 +8363,25 @@ Replaces this transform from position, rotation, scale, origin, and shear compon
 function LTransform:setTransformation(x, y, angle, sx, sy, ox, oy, kx, ky) end
 ```
 
+#### Description
+
+Replaces this transform from position, rotation, scale, origin, and shear components.
+
+Parameters:
+
+- `x` (`number`, required): X translation.
+- `y` (`number`, required): Y translation.
+- `angle` (`number`, optional): Rotation angle (default 0).
+- `sx` (`number`, optional): X scale (default 1).
+- `sy` (`number`, optional): Y scale (defaults to `sx`).
+- `ox` (`number`, optional): Origin x offset (default 0).
+- `oy` (`number`, optional): Origin y offset (default 0).
+- `kx` (`number`, optional): X shear (default 0).
+- `ky` (`number`, optional): Y shear (default 0).
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -6766,16 +8395,7 @@ end
 
 ### LTransform:shear
 
-`LTransform:shear(kx: number, ky: number)`
-
-Applies shear to this transform. This method is available to Lua scripts.
-
-**Parameters**
-
-- `kx` (`number`, required): X shear.
-- `ky` (`number`, required): Y shear.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Applies shear to this transform. This method is available to Lua scripts.
@@ -6784,9 +8404,18 @@ Applies shear to this transform. This method is available to Lua scripts.
 function LTransform:shear(kx, ky) end
 ```
 
+#### Description
+
+Applies shear to this transform. This method is available to Lua scripts.
+
+Parameters:
+
+- `kx` (`number`, required): X shear.
+- `ky` (`number`, required): Y shear.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -6800,18 +8429,7 @@ end
 
 ### LTransform:transformPoint
 
-`LTransform:transformPoint(x: number, y: number) -> number`
-
-Transforms a point by this transform.
-
-**Parameters**
-
-- `x` (`number`, required): Input x coordinate.
-- `y` (`number`, required): Input y coordinate.
-
-**Returns**: `number` - Transformed x coordinate.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Transforms a point by this transform.
@@ -6822,9 +8440,20 @@ Transforms a point by this transform.
 function LTransform:transformPoint(x, y) end
 ```
 
+#### Description
+
+Transforms a point by this transform.
+
+Parameters:
+
+- `x` (`number`, required): Input x coordinate.
+- `y` (`number`, required): Input y coordinate.
+
+Returns: `number` - Transformed x coordinate.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -6838,16 +8467,7 @@ end
 
 ### LTransform:translate
 
-`LTransform:translate(dx: number, dy: number)`
-
-Applies a translation to this transform.
-
-**Parameters**
-
-- `dx` (`number`, required): X translation.
-- `dy` (`number`, required): Y translation.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Applies a translation to this transform.
@@ -6856,9 +8476,18 @@ Applies a translation to this transform.
 function LTransform:translate(dx, dy) end
 ```
 
+#### Description
+
+Applies a translation to this transform.
+
+Parameters:
+
+- `dx` (`number`, required): X translation.
+- `dy` (`number`, required): Y translation.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -6872,13 +8501,7 @@ end
 
 ### LTransform:type
 
-`LTransform:type() -> string`
-
-Returns the Lua-visible type name for this transform handle.
-
-**Returns**: `string` - The string `LTransform`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this transform handle.
@@ -6886,9 +8509,15 @@ Returns the Lua-visible type name for this transform handle.
 function LTransform:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this transform handle.
+
+Returns: `string` - The string `LTransform`.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -6902,17 +8531,7 @@ end
 
 ### LTransform:typeOf
 
-`LTransform:typeOf(name: string) -> boolean`
-
-Returns whether this transform handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LTransform` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this transform handle matches a supported type name.
@@ -6921,9 +8540,19 @@ Returns whether this transform handle matches a supported type name.
 function LTransform:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this transform handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LTransform` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -6937,18 +8566,7 @@ end
 
 ### LTween:addValue
 
-`LTween:addValue(start: number, target: number) -> integer`
-
-Adds a value track to this tween. This method is available to Lua scripts.
-
-**Parameters**
-
-- `start` (`number`, required): Start value.
-- `target` (`number`, required): Target value.
-
-**Returns**: `integer` - One-based index of the new value track.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a value track to this tween. This method is available to Lua scripts.
@@ -6958,9 +8576,20 @@ Adds a value track to this tween. This method is available to Lua scripts.
 function LTween:addValue(start, target) end
 ```
 
+#### Description
+
+Adds a value track to this tween. This method is available to Lua scripts.
+
+Parameters:
+
+- `start` (`number`, required): Start value.
+- `target` (`number`, required): Target value.
+
+Returns: `integer` - One-based index of the new value track.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -6974,13 +8603,7 @@ end
 
 ### LTween:getAllValues
 
-`LTween:getAllValues() -> number[]`
-
-Returns all current tween values. This method is available to Lua scripts.
-
-**Returns**: `number[]` - Numeric tween values.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns all current tween values. This method is available to Lua scripts.
@@ -6988,9 +8611,15 @@ Returns all current tween values. This method is available to Lua scripts.
 function LTween:getAllValues() end
 ```
 
+#### Description
+
+Returns all current tween values. This method is available to Lua scripts.
+
+Returns: `number[]` - Numeric tween values.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -7004,13 +8633,7 @@ end
 
 ### LTween:getClock
 
-`LTween:getClock() -> number`
-
-Returns this tween clock time. This method is available to Lua scripts.
-
-**Returns**: `number` - Current time in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this tween clock time. This method is available to Lua scripts.
@@ -7018,9 +8641,15 @@ Returns this tween clock time. This method is available to Lua scripts.
 function LTween:getClock() end
 ```
 
+#### Description
+
+Returns this tween clock time. This method is available to Lua scripts.
+
+Returns: `number` - Current time in seconds.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -7034,13 +8663,7 @@ end
 
 ### LTween:getDuration
 
-`LTween:getDuration() -> number`
-
-Returns this tween duration. This method is available to Lua scripts.
-
-**Returns**: `number` - Duration in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the total duration of this tween in seconds.
@@ -7048,9 +8671,15 @@ Returns this tween duration. This method is available to Lua scripts.
 function LTween:getDuration() end
 ```
 
+#### Description
+
+Returns this tween duration. This method is available to Lua scripts.
+
+Returns: `number` - Duration in seconds.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -7064,13 +8693,7 @@ end
 
 ### LTween:getEasingName
 
-`LTween:getEasingName() -> string`
-
-Returns this tween easing function name.
-
-**Returns**: `string` - Easing function name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this tween easing function name.
@@ -7078,9 +8701,15 @@ Returns this tween easing function name.
 function LTween:getEasingName() end
 ```
 
+#### Description
+
+Returns this tween easing function name.
+
+Returns: `string` - Easing function name.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -7094,13 +8723,7 @@ end
 
 ### LTween:getTime
 
-`LTween:getTime() -> number`
-
-Returns this tween clock time. This method is available to Lua scripts.
-
-**Returns**: `number` - Current time in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this tween clock time. This method is available to Lua scripts.
@@ -7108,9 +8731,15 @@ Returns this tween clock time. This method is available to Lua scripts.
 function LTween:getTime() end
 ```
 
+#### Description
+
+Returns this tween clock time. This method is available to Lua scripts.
+
+Returns: `number` - Current time in seconds.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -7124,17 +8753,7 @@ end
 
 ### LTween:getValue
 
-`LTween:getValue([index]: integer) -> number`
-
-Returns one tween value by one-based index or all values when no index is provided.
-
-**Parameters**
-
-- `index` (`integer`, optional): One-based value index; omit to return all values as a table.
-
-**Returns**: `number` - Tween value at the given index, or a table of all values when index is omitted.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns one tween value by one-based index or all values when no index is provided.
@@ -7143,9 +8762,19 @@ Returns one tween value by one-based index or all values when no index is provid
 function LTween:getValue(index) end
 ```
 
+#### Description
+
+Returns one tween value by one-based index or all values when no index is provided.
+
+Parameters:
+
+- `index` (`integer`, optional): One-based value index; omit to return all values as a table.
+
+Returns: `number` - Tween value at the given index, or a table of all values when index is omitted.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -7159,13 +8788,7 @@ end
 
 ### LTween:getValueCount
 
-`LTween:getValueCount() -> integer`
-
-Returns the number of values animated by this tween.
-
-**Returns**: `integer` - Tween value count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of values animated by this tween.
@@ -7173,9 +8796,15 @@ Returns the number of values animated by this tween.
 function LTween:getValueCount() end
 ```
 
+#### Description
+
+Returns the number of values animated by this tween.
+
+Returns: `integer` - Tween value count.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -7189,13 +8818,7 @@ end
 
 ### LTween:isComplete
 
-`LTween:isComplete() -> boolean`
-
-Returns whether this tween is complete.
-
-**Returns**: `boolean` - True when complete.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this tween is complete.
@@ -7203,9 +8826,15 @@ Returns whether this tween is complete.
 function LTween:isComplete() end
 ```
 
+#### Description
+
+Returns whether this tween is complete.
+
+Returns: `boolean` - True when complete.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -7219,20 +8848,20 @@ end
 
 ### LTween:reset
 
-`LTween:reset()`
-
-Resets the tween clock to the beginning.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Resets the tween clock to the beginning.
 function LTween:reset() end
 ```
 
+#### Description
+
+Resets the tween clock to the beginning.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -7246,15 +8875,7 @@ end
 
 ### LTween:set
 
-`LTween:set(t: number)`
-
-Sets this tween clock time. This method is available to Lua scripts.
-
-**Parameters**
-
-- `t` (`number`, required): New time in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets this tween clock time. This method is available to Lua scripts.
@@ -7262,9 +8883,17 @@ Sets this tween clock time. This method is available to Lua scripts.
 function LTween:set(t) end
 ```
 
+#### Description
+
+Sets this tween clock time. This method is available to Lua scripts.
+
+Parameters:
+
+- `t` (`number`, required): New time in seconds.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -7278,15 +8907,7 @@ end
 
 ### LTween:setTime
 
-`LTween:setTime(t: number)`
-
-Sets this tween clock time. This method is available to Lua scripts.
-
-**Parameters**
-
-- `t` (`number`, required): New time in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets this tween clock time. This method is available to Lua scripts.
@@ -7294,9 +8915,17 @@ Sets this tween clock time. This method is available to Lua scripts.
 function LTween:setTime(t) end
 ```
 
+#### Description
+
+Sets this tween clock time. This method is available to Lua scripts.
+
+Parameters:
+
+- `t` (`number`, required): New time in seconds.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -7310,13 +8939,7 @@ end
 
 ### LTween:type
 
-`LTween:type() -> string`
-
-Returns the Lua-visible type name for this tween handle.
-
-**Returns**: `string` - The string `LTween`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this object.
@@ -7324,9 +8947,15 @@ Returns the Lua-visible type name for this tween handle.
 function LTween:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this tween handle.
+
+Returns: `string` - The string `LTween`.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -7340,17 +8969,7 @@ end
 
 ### LTween:typeOf
 
-`LTween:typeOf(name: string) -> boolean`
-
-Returns whether this tween handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LTween` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this object matches the given type name.
@@ -7359,9 +8978,19 @@ Returns whether this tween handle matches a supported type name.
 function LTween:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this tween handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LTween` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -7375,17 +9004,7 @@ end
 
 ### LTween:update
 
-`LTween:update(dt: number) -> boolean`
-
-Advances the tween clock and returns whether it is complete.
-
-**Parameters**
-
-- `dt` (`number`, required): Delta time in seconds.
-
-**Returns**: `boolean` - True when the tween is complete.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Advances the tween clock and returns whether it is complete.
@@ -7394,9 +9013,19 @@ Advances the tween clock and returns whether it is complete.
 function LTween:update(dt) end
 ```
 
+#### Description
+
+Advances the tween clock and returns whether it is complete.
+
+Parameters:
+
+- `dt` (`number`, required): Delta time in seconds.
+
+Returns: `boolean` - True when the tween is complete.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -7410,13 +9039,7 @@ end
 
 ### LVec2:angle
 
-`LVec2:angle() -> number`
-
-Returns this vector angle. This method is available to Lua scripts.
-
-**Returns**: `number` - Angle in radians.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this vector angle. This method is available to Lua scripts.
@@ -7424,9 +9047,15 @@ Returns this vector angle. This method is available to Lua scripts.
 function LVec2:angle() end
 ```
 
+#### Description
+
+Returns this vector angle. This method is available to Lua scripts.
+
+Returns: `number` - Angle in radians.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -7438,17 +9067,7 @@ end
 
 ### LVec2:cross
 
-`LVec2:cross(other: LVec2) -> number`
-
-Returns the scalar 2D cross product with another vector.
-
-**Parameters**
-
-- `other` (`LVec2`, required): Other vector handle.
-
-**Returns**: `number` - Cross product.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the scalar 2D cross product with another vector.
@@ -7457,9 +9076,19 @@ Returns the scalar 2D cross product with another vector.
 function LVec2:cross(other) end
 ```
 
+#### Description
+
+Returns the scalar 2D cross product with another vector.
+
+Parameters:
+
+- `other` (`LVec2`, required): Other vector handle.
+
+Returns: `number` - Cross product.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -7472,17 +9101,7 @@ end
 
 ### LVec2:distance
 
-`LVec2:distance(other: LVec2) -> number`
-
-Returns distance to another vector.
-
-**Parameters**
-
-- `other` (`LVec2`, required): Other vector handle.
-
-**Returns**: `number` - Distance.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns distance to another vector.
@@ -7491,9 +9110,19 @@ Returns distance to another vector.
 function LVec2:distance(other) end
 ```
 
+#### Description
+
+Returns distance to another vector.
+
+Parameters:
+
+- `other` (`LVec2`, required): Other vector handle.
+
+Returns: `number` - Distance.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -7507,17 +9136,7 @@ end
 
 ### LVec2:dot
 
-`LVec2:dot(other: LVec2) -> number`
-
-Returns the dot product with another vector.
-
-**Parameters**
-
-- `other` (`LVec2`, required): Other vector handle.
-
-**Returns**: `number` - Dot product.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the dot product with another vector.
@@ -7526,9 +9145,19 @@ Returns the dot product with another vector.
 function LVec2:dot(other) end
 ```
 
+#### Description
+
+Returns the dot product with another vector.
+
+Parameters:
+
+- `other` (`LVec2`, required): Other vector handle.
+
+Returns: `number` - Dot product.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -7541,18 +9170,7 @@ end
 
 ### LVec2:fromAngle
 
-`LVec2:fromAngle(self: LVec2, radians: number) -> LVec2`
-
-Creates a unit vector from an angle.
-
-**Parameters**
-
-- `self` (`LVec2`, required): The vector instance (ignored; static constructor).
-- `radians` (`number`, required): Angle in radians.
-
-**Returns**: `LVec2` - New vector handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Creates a unit vector from an angle.
@@ -7561,9 +9179,20 @@ Creates a unit vector from an angle.
 function LVec2:fromAngle(radians) end
 ```
 
+#### Description
+
+Creates a unit vector from an angle.
+
+Parameters:
+
+- `self` (`LVec2`, required): The vector instance (ignored; static constructor).
+- `radians` (`number`, required): Angle in radians.
+
+Returns: `LVec2` - New vector handle.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -7576,13 +9205,7 @@ end
 
 ### LVec2:length
 
-`LVec2:length() -> number`
-
-Returns this vector length. This method is available to Lua scripts.
-
-**Returns**: `number` - Vector length.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this vector length. This method is available to Lua scripts.
@@ -7590,9 +9213,15 @@ Returns this vector length. This method is available to Lua scripts.
 function LVec2:length() end
 ```
 
+#### Description
+
+Returns this vector length. This method is available to Lua scripts.
+
+Returns: `number` - Vector length.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -7605,13 +9234,7 @@ end
 
 ### LVec2:lengthSquared
 
-`LVec2:lengthSquared() -> number`
-
-Returns this vector squared length.
-
-**Returns**: `number` - Squared vector length.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this vector squared length.
@@ -7619,9 +9242,15 @@ Returns this vector squared length.
 function LVec2:lengthSquared() end
 ```
 
+#### Description
+
+Returns this vector squared length.
+
+Returns: `number` - Squared vector length.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -7634,18 +9263,7 @@ end
 
 ### LVec2:lerp
 
-`LVec2:lerp(other: LVec2, t: number) -> LVec2`
-
-Returns a vector interpolated toward another vector.
-
-**Parameters**
-
-- `other` (`LVec2`, required): Target vector handle.
-- `t` (`number`, required): Interpolation factor.
-
-**Returns**: `LVec2` - Interpolated vector handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a vector interpolated toward another vector.
@@ -7655,9 +9273,20 @@ Returns a vector interpolated toward another vector.
 function LVec2:lerp(other, t) end
 ```
 
+#### Description
+
+Returns a vector interpolated toward another vector.
+
+Parameters:
+
+- `other` (`LVec2`, required): Target vector handle.
+- `t` (`number`, required): Interpolation factor.
+
+Returns: `LVec2` - Interpolated vector handle.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -7670,13 +9299,7 @@ end
 
 ### LVec2:normalize
 
-`LVec2:normalize() -> LVec2`
-
-Returns a normalized copy of this vector.
-
-**Returns**: `LVec2` - Normalized vector handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a normalized copy of this vector.
@@ -7684,9 +9307,15 @@ Returns a normalized copy of this vector.
 function LVec2:normalize() end
 ```
 
+#### Description
+
+Returns a normalized copy of this vector.
+
+Returns: `LVec2` - Normalized vector handle.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -7700,13 +9329,7 @@ end
 
 ### LVec2:normalized
 
-`LVec2:normalized() -> LVec2`
-
-Returns a normalized copy of this vector.
-
-**Returns**: `LVec2` - Normalized vector handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a normalized copy of this vector.
@@ -7714,9 +9337,15 @@ Returns a normalized copy of this vector.
 function LVec2:normalized() end
 ```
 
+#### Description
+
+Returns a normalized copy of this vector.
+
+Returns: `LVec2` - Normalized vector handle.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -7730,13 +9359,7 @@ end
 
 ### LVec2:perpendicular
 
-`LVec2:perpendicular() -> LVec2`
-
-Returns a perpendicular vector. This method is available to Lua scripts.
-
-**Returns**: `LVec2` - Perpendicular vector handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a perpendicular vector. This method is available to Lua scripts.
@@ -7744,9 +9367,15 @@ Returns a perpendicular vector. This method is available to Lua scripts.
 function LVec2:perpendicular() end
 ```
 
+#### Description
+
+Returns a perpendicular vector. This method is available to Lua scripts.
+
+Returns: `LVec2` - Perpendicular vector handle.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -7759,17 +9388,7 @@ end
 
 ### LVec2:reflect
 
-`LVec2:reflect(normal: LVec2) -> LVec2`
-
-Returns this vector reflected around a normal vector.
-
-**Parameters**
-
-- `normal` (`LVec2`, required): Normal vector handle.
-
-**Returns**: `LVec2` - Reflected vector handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this vector reflected around a normal vector.
@@ -7778,9 +9397,19 @@ Returns this vector reflected around a normal vector.
 function LVec2:reflect(normal) end
 ```
 
+#### Description
+
+Returns this vector reflected around a normal vector.
+
+Parameters:
+
+- `normal` (`LVec2`, required): Normal vector handle.
+
+Returns: `LVec2` - Reflected vector handle.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -7793,17 +9422,7 @@ end
 
 ### LVec2:rotate
 
-`LVec2:rotate(angle: number) -> LVec2`
-
-Returns this vector rotated by an angle.
-
-**Parameters**
-
-- `angle` (`number`, required): Rotation angle in radians.
-
-**Returns**: `LVec2` - Rotated vector handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this vector rotated by an angle.
@@ -7812,9 +9431,19 @@ Returns this vector rotated by an angle.
 function LVec2:rotate(angle) end
 ```
 
+#### Description
+
+Returns this vector rotated by an angle.
+
+Parameters:
+
+- `angle` (`number`, required): Rotation angle in radians.
+
+Returns: `LVec2` - Rotated vector handle.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -7827,13 +9456,7 @@ end
 
 ### LVec2:type
 
-`LVec2:type() -> string`
-
-Returns the Lua-visible type name for this vector handle.
-
-**Returns**: `string` - The string `LVec2`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this vector handle.
@@ -7841,9 +9464,15 @@ Returns the Lua-visible type name for this vector handle.
 function LVec2:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this vector handle.
+
+Returns: `string` - The string `LVec2`.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -7854,17 +9483,7 @@ end
 
 ### LVec2:typeOf
 
-`LVec2:typeOf(name: string) -> boolean`
-
-Returns whether this vector handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LVec2` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this vector handle matches a supported type name.
@@ -7873,9 +9492,19 @@ Returns whether this vector handle matches a supported type name.
 function LVec2:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this vector handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LVec2` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -7886,13 +9515,7 @@ end
 
 ### LVec2:x
 
-`LVec2:x() -> number`
-
-Returns this vector x component. This method is available to Lua scripts.
-
-**Returns**: `number` - X component.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this vector x component. This method is available to Lua scripts.
@@ -7900,9 +9523,15 @@ Returns this vector x component. This method is available to Lua scripts.
 function LVec2:x() end
 ```
 
+#### Description
+
+Returns this vector x component. This method is available to Lua scripts.
+
+Returns: `number` - X component.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -7913,13 +9542,7 @@ end
 
 ### LVec2:y
 
-`LVec2:y() -> number`
-
-Returns this vector y component. This method is available to Lua scripts.
-
-**Returns**: `number` - Y component.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this vector y component. This method is available to Lua scripts.
@@ -7927,9 +9550,15 @@ Returns this vector y component. This method is available to Lua scripts.
 function LVec2:y() end
 ```
 
+#### Description
+
+Returns this vector y component. This method is available to Lua scripts.
+
+Returns: `number` - Y component.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -7940,17 +9569,7 @@ end
 
 ### LVec3:add
 
-`LVec3:add(other: LVec3) -> LVec3`
-
-Returns the sum with another vector.
-
-**Parameters**
-
-- `other` (`LVec3`, required): Other vector handle.
-
-**Returns**: `LVec3` - Sum vector handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the sum with another vector.
@@ -7959,33 +9578,32 @@ Returns the sum with another vector.
 function LVec3:add(other) end
 ```
 
+#### Description
+
+Returns the sum with another vector.
+
+Parameters:
+
+- `other` (`LVec3`, required): Other vector handle.
+
+Returns: `LVec3` - Sum vector handle.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    local a = lurek.math.vec3(1, 2, 3); local b = lurek.math.vec3(4, 5, 6)
-    local sum = a:add(b); local diff = a:sub(b)
-    local scaled = a:scale(2); print("add = " .. sum.x .. "," .. sum.y .. "," .. sum.z)
-    print("sub = " .. diff.x .. "," .. diff.y .. "," .. diff.z)
-    print("scale = " .. scaled.x .. "," .. scaled.y .. "," .. scaled.z)
+    local a = lurek.math.vec3(1, 2, 3)
+    local b = lurek.math.vec3(4, 5, 6)
+    local sum = a:add(b)
+    print("add = " .. sum.x .. "," .. sum.y .. "," .. sum.z)
 end
 ```
 
 ### LVec3:cross
 
-`LVec3:cross(other: LVec3) -> LVec3`
-
-Returns the 3D cross product with another vector.
-
-**Parameters**
-
-- `other` (`LVec3`, required): Other vector handle.
-
-**Returns**: `LVec3` - Cross product vector handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the 3D cross product with another vector.
@@ -7994,9 +9612,19 @@ Returns the 3D cross product with another vector.
 function LVec3:cross(other) end
 ```
 
+#### Description
+
+Returns the 3D cross product with another vector.
+
+Parameters:
+
+- `other` (`LVec3`, required): Other vector handle.
+
+Returns: `LVec3` - Cross product vector handle.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -8010,17 +9638,7 @@ end
 
 ### LVec3:distance
 
-`LVec3:distance(other: LVec3) -> number`
-
-Returns distance to another vector.
-
-**Parameters**
-
-- `other` (`LVec3`, required): Other vector handle.
-
-**Returns**: `number` - Distance.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns distance to another vector.
@@ -8029,33 +9647,31 @@ Returns distance to another vector.
 function LVec3:distance(other) end
 ```
 
+#### Description
+
+Returns distance to another vector.
+
+Parameters:
+
+- `other` (`LVec3`, required): Other vector handle.
+
+Returns: `number` - Distance.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
     local a = lurek.math.vec3(0, 0, 0)
     local b = lurek.math.vec3(3, 4, 0)
     print("distance = " .. a:distance(b))
-    local mid = a:lerp(b, 0.5)
-    print("lerp = " .. mid.x .. "," .. mid.y .. "," .. mid.z)
 end
 ```
 
 ### LVec3:dot
 
-`LVec3:dot(other: LVec3) -> number`
-
-Returns the dot product with another vector.
-
-**Parameters**
-
-- `other` (`LVec3`, required): Other vector handle.
-
-**Returns**: `number` - Dot product.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the dot product with another vector.
@@ -8064,9 +9680,19 @@ Returns the dot product with another vector.
 function LVec3:dot(other) end
 ```
 
+#### Description
+
+Returns the dot product with another vector.
+
+Parameters:
+
+- `other` (`LVec3`, required): Other vector handle.
+
+Returns: `number` - Dot product.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -8080,13 +9706,7 @@ end
 
 ### LVec3:length
 
-`LVec3:length() -> number`
-
-Returns this vector length. This method is available to Lua scripts.
-
-**Returns**: `number` - Vector length.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this vector length. This method is available to Lua scripts.
@@ -8094,9 +9714,15 @@ Returns this vector length. This method is available to Lua scripts.
 function LVec3:length() end
 ```
 
+#### Description
+
+Returns this vector length. This method is available to Lua scripts.
+
+Returns: `number` - Vector length.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -8109,13 +9735,7 @@ end
 
 ### LVec3:lengthSquared
 
-`LVec3:lengthSquared() -> number`
-
-Returns this vector squared length.
-
-**Returns**: `number` - Squared vector length.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this vector squared length.
@@ -8123,9 +9743,15 @@ Returns this vector squared length.
 function LVec3:lengthSquared() end
 ```
 
+#### Description
+
+Returns this vector squared length.
+
+Returns: `number` - Squared vector length.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -8138,18 +9764,7 @@ end
 
 ### LVec3:lerp
 
-`LVec3:lerp(other: LVec3, t: number) -> LVec3`
-
-Returns a vector interpolated toward another vector.
-
-**Parameters**
-
-- `other` (`LVec3`, required): Target vector handle.
-- `t` (`number`, required): Interpolation factor.
-
-**Returns**: `LVec3` - Interpolated vector handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a vector interpolated toward another vector.
@@ -8159,15 +9774,25 @@ Returns a vector interpolated toward another vector.
 function LVec3:lerp(other, t) end
 ```
 
+#### Description
+
+Returns a vector interpolated toward another vector.
+
+Parameters:
+
+- `other` (`LVec3`, required): Target vector handle.
+- `t` (`number`, required): Interpolation factor.
+
+Returns: `LVec3` - Interpolated vector handle.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
     local a = lurek.math.vec3(0, 0, 0)
     local b = lurek.math.vec3(3, 4, 0)
-    print("distance = " .. a:distance(b))
     local mid = a:lerp(b, 0.5)
     print("lerp = " .. mid.x .. "," .. mid.y .. "," .. mid.z)
 end
@@ -8175,13 +9800,7 @@ end
 
 ### LVec3:normalize
 
-`LVec3:normalize() -> LVec3`
-
-Returns a normalized copy of this vector.
-
-**Returns**: `LVec3` - Normalized vector handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a normalized copy of this vector.
@@ -8189,9 +9808,15 @@ Returns a normalized copy of this vector.
 function LVec3:normalize() end
 ```
 
+#### Description
+
+Returns a normalized copy of this vector.
+
+Returns: `LVec3` - Normalized vector handle.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -8204,17 +9829,7 @@ end
 
 ### LVec3:scale
 
-`LVec3:scale(s: number) -> LVec3`
-
-Returns this vector multiplied by a scalar.
-
-**Parameters**
-
-- `s` (`number`, required): Scale factor.
-
-**Returns**: `LVec3` - Scaled vector handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this vector multiplied by a scalar.
@@ -8223,34 +9838,31 @@ Returns this vector multiplied by a scalar.
 function LVec3:scale(s) end
 ```
 
+#### Description
+
+Returns this vector multiplied by a scalar.
+
+Parameters:
+
+- `s` (`number`, required): Scale factor.
+
+Returns: `LVec3` - Scaled vector handle.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    local a = lurek.math.vec3(1, 2, 3); local b = lurek.math.vec3(4, 5, 6)
-    local sum = a:add(b); local diff = a:sub(b)
-    local scaled = a:scale(2); print("add = " .. sum.x .. "," .. sum.y .. "," .. sum.z)
-    print("sub = " .. diff.x .. "," .. diff.y .. "," .. diff.z)
+    local a = lurek.math.vec3(1, 2, 3)
+    local scaled = a:scale(2)
     print("scale = " .. scaled.x .. "," .. scaled.y .. "," .. scaled.z)
 end
 ```
 
 ### LVec3:splat
 
-`LVec3:splat(self: LVec3, v: number) -> LVec3`
-
-Creates a vector with all components set to one value.
-
-**Parameters**
-
-- `self` (`LVec3`, required): The vector instance (ignored; static constructor).
-- `v` (`number`, required): Component value.
-
-**Returns**: `LVec3` - New vector handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Creates a vector with all components set to one value.
@@ -8259,9 +9871,20 @@ Creates a vector with all components set to one value.
 function LVec3:splat(v) end
 ```
 
+#### Description
+
+Creates a vector with all components set to one value.
+
+Parameters:
+
+- `self` (`LVec3`, required): The vector instance (ignored; static constructor).
+- `v` (`number`, required): Component value.
+
+Returns: `LVec3` - New vector handle.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -8274,17 +9897,7 @@ end
 
 ### LVec3:sub
 
-`LVec3:sub(other: LVec3) -> LVec3`
-
-Returns the difference from another vector.
-
-**Parameters**
-
-- `other` (`LVec3`, required): Other vector handle.
-
-**Returns**: `LVec3` - Difference vector handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the difference from another vector.
@@ -8293,29 +9906,32 @@ Returns the difference from another vector.
 function LVec3:sub(other) end
 ```
 
+#### Description
+
+Returns the difference from another vector.
+
+Parameters:
+
+- `other` (`LVec3`, required): Other vector handle.
+
+Returns: `LVec3` - Difference vector handle.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    local a = lurek.math.vec3(1, 2, 3); local b = lurek.math.vec3(4, 5, 6)
-    local sum = a:add(b); local diff = a:sub(b)
-    local scaled = a:scale(2); print("add = " .. sum.x .. "," .. sum.y .. "," .. sum.z)
+    local a = lurek.math.vec3(1, 2, 3)
+    local b = lurek.math.vec3(4, 5, 6)
+    local diff = a:sub(b)
     print("sub = " .. diff.x .. "," .. diff.y .. "," .. diff.z)
-    print("scale = " .. scaled.x .. "," .. scaled.y .. "," .. scaled.z)
 end
 ```
 
 ### LVec3:type
 
-`LVec3:type() -> string`
-
-Returns the Lua-visible type name for this vector handle.
-
-**Returns**: `string` - The string `LVec3`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this vector handle.
@@ -8323,9 +9939,15 @@ Returns the Lua-visible type name for this vector handle.
 function LVec3:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this vector handle.
+
+Returns: `string` - The string `LVec3`.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
@@ -8336,17 +9958,7 @@ end
 
 ### LVec3:typeOf
 
-`LVec3:typeOf(name: string) -> boolean`
-
-Returns whether this vector handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LVec3` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this vector handle matches a supported type name.
@@ -8355,17 +9967,52 @@ Returns whether this vector handle matches a supported type name.
 function LVec3:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this vector handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LVec3` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [math.lua](../blob/main/content/examples/math.lua):
+Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    local v = lurek.math.Vec3(1, 2, 3); print("length=" .. v:length()); print("lengthSq=" .. v:lengthSquared()); local v2 = lurek.math.Vec3(4, 5, 6); print("dot=" .. v:dot(v2))
-    local cv = v:cross(v2); print("cross type=" .. cv:type()); print("dist=" .. v:distance(v2)); local lv = v:lerp(v2, 0.5)
-    print("lerp=" .. lv:length()); local av = v:add(v2); print("add=" .. av:length()); local sv = v:sub(v2)
-    print("sub=" .. sv:length()); local sc = v:scale(2.0); print("scale=" .. sc:length()); v:normalize()
-    local sp = lurek.math.Vec3(0, 0, 0); sp:splat(1.0); print(v:type()); print(v:typeOf("LVec3"))
+    local v = lurek.math.Vec3(1, 2, 3)
+    print("length=" .. v:length())
+    print("lengthSq=" .. v:lengthSquared())
+
+    local v2 = lurek.math.Vec3(4, 5, 6)
+    print("dot=" .. v:dot(v2))
+
+    local cv = v:cross(v2)
+    print("cross type=" .. cv:type())
+    print("dist=" .. v:distance(v2))
+
+    local lv = v:lerp(v2, 0.5)
+    print("lerp=" .. lv:length())
+
+    local av = v:add(v2)
+    print("add=" .. av:length())
+
+    local sv = v:sub(v2)
+    print("sub=" .. sv:length())
+
+    local sc = v:scale(2.0)
+    print("scale=" .. sc:length())
+
+    local normalized = v:normalize()
+    print("normalized type=" .. normalized:type())
+
+    local sp = v:splat(1.0)
+    print("splat length=" .. sp:length())
+    print(v:type())
+    print(v:typeOf("LVec3"))
 end
 ```
 

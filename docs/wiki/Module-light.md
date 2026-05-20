@@ -14,107 +14,307 @@
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
   - [lurek.light.advanceFlickers](#lureklightadvanceflickers)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.light.clear](#lureklightclear)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.light.getAmbient](#lureklightgetambient)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.light.getGodRayHints](#lureklightgetgodrayhints)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.light.getGroupCount](#lureklightgetgroupcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.light.getLightCount](#lureklightgetlightcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.light.getMaxLights](#lureklightgetmaxlights)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.light.getNormalMapHints](#lureklightgetnormalmaphints)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.light.getOccluderCount](#lureklightgetoccludercount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.light.isEnabled](#lureklightisenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.light.newLight](#lureklightnewlight)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.light.newOccluder](#lureklightnewoccluder)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.light.setAmbient](#lureklightsetambient)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.light.setEnabled](#lureklightsetenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.light.setGroupColor](#lureklightsetgroupcolor)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.light.setGroupEnabled](#lureklightsetgroupenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.light.setGroupIntensity](#lureklightsetgroupintensity)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.light.setMaxLights](#lureklightsetmaxlights)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.light.syncAmbient](#lureklightsyncambient)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔷 Module Types](#module-types)
   - [LLight](#llight)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOccluder](#loccluder)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
   - [LLight:addFlicker](#llightaddflicker)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:clearCookie](#llightclearcookie)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:clearNormalMap](#llightclearnormalmap)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:getAttenuation](#llightgetattenuation)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:getBlendMode](#llightgetblendmode)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:getColor](#llightgetcolor)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:getCookie](#llightgetcookie)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:getDirection](#llightgetdirection)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:getEnergy](#llightgetenergy)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:getFalloff](#llightgetfalloff)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:getFlicker](#llightgetflicker)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:getGroupId](#llightgetgroupid)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:getInnerAngle](#llightgetinnerangle)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:getIntensity](#llightgetintensity)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:getLightMask](#llightgetlightmask)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:getLightType](#llightgetlighttype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:getNormalMap](#llightgetnormalmap)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:getNormalStrength](#llightgetnormalstrength)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:getOuterAngle](#llightgetouterangle)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:getPosition](#llightgetposition)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:getRadius](#llightgetradius)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:getShadowColor](#llightgetshadowcolor)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:getShadowFilter](#llightgetshadowfilter)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:getShadowMask](#llightgetshadowmask)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:getShadowSmooth](#llightgetshadowsmooth)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:getShadowSoftness](#llightgetshadowsoftness)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:isEnabled](#llightisenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:isFlickerEnabled](#llightisflickerenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:isShadowEnabled](#llightisshadowenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:isValid](#llightisvalid)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:isVolumetric](#llightisvolumetric)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:remove](#llightremove)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:setAttenuation](#llightsetattenuation)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:setBlendMode](#llightsetblendmode)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:setColor](#llightsetcolor)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:setCookie](#llightsetcookie)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:setDirection](#llightsetdirection)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:setEnabled](#llightsetenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:setEnergy](#llightsetenergy)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:setFalloff](#llightsetfalloff)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:setFlicker](#llightsetflicker)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:setFlickerEnabled](#llightsetflickerenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:setGroupId](#llightsetgroupid)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:setInnerAngle](#llightsetinnerangle)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:setIntensity](#llightsetintensity)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:setLightMask](#llightsetlightmask)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:setLightType](#llightsetlighttype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:setNormalMap](#llightsetnormalmap)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:setNormalStrength](#llightsetnormalstrength)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:setOuterAngle](#llightsetouterangle)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:setPosition](#llightsetposition)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:setRadius](#llightsetradius)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:setShadowColor](#llightsetshadowcolor)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:setShadowEnabled](#llightsetshadowenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:setShadowFilter](#llightsetshadowfilter)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:setShadowMask](#llightsetshadowmask)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:setShadowSmooth](#llightsetshadowsmooth)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:setShadowSoftness](#llightsetshadowsoftness)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:setVolumetric](#llightsetvolumetric)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:stopTransition](#llightstoptransition)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:transitionProgress](#llighttransitionprogress)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:transitionTo](#llighttransitionto)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:type](#llighttype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:typeOf](#llighttypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLight:updateTransition](#llightupdatetransition)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOccluder:getLightMask](#loccludergetlightmask)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOccluder:getOpacity](#loccludergetopacity)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOccluder:getPosition](#loccludergetposition)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOccluder:getVertices](#loccludergetvertices)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOccluder:isEnabled](#loccluderisenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOccluder:isValid](#loccluderisvalid)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOccluder:remove](#loccluderremove)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOccluder:setEnabled](#loccludersetenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOccluder:setLightMask](#loccludersetlightmask)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOccluder:setOpacity](#loccludersetopacity)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOccluder:setPosition](#loccludersetposition)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOccluder:setVertices](#loccludersetvertices)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOccluder:type](#loccludertype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOccluder:typeOf](#loccludertypeof)
+    - [Definition](#definition)
+    - [Description](#description)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -177,17 +377,25 @@ lurek.light.setMaxLights(n: integer) -- Sets the maximum configured light count,
 
 ### lurek.light.advanceFlickers
 
-`lurek.light.advanceFlickers(dt: number)`
+#### Definition
+
+```lua
+--- Advances flicker animation for all indexed flickering lights.
+---@param dt number Delta time in seconds.
+lurek.light.advanceFlickers = function(dt) end
+```
+
+#### Description
 
 Advances flicker animation for all indexed flickering lights.
 
-**Parameters**
+Parameters:
 
 - `dt` (`number`, required): Delta time in seconds.
 
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -201,13 +409,20 @@ end
 
 ### lurek.light.clear
 
-`lurek.light.clear()`
+#### Definition
+
+```lua
+--- Removes all lights and occluders from the light world.
+lurek.light.clear = function() end
+```
+
+#### Description
 
 Removes all lights and occluders from the light world.
 
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -219,15 +434,26 @@ end
 
 ### lurek.light.getAmbient
 
-`lurek.light.getAmbient() -> number`
+#### Definition
+
+```lua
+--- Returns global ambient light color.
+---@return number a Red channel.
+---@return number b Green channel.
+---@return number c Blue channel.
+---@return number d Alpha channel.
+lurek.light.getAmbient = function() end
+```
+
+#### Description
 
 Returns global ambient light color.
 
-**Returns**: `number` - Red channel.
+Returns: `number` - Red channel.
 
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -238,15 +464,23 @@ end
 
 ### lurek.light.getGodRayHints
 
-`lurek.light.getGodRayHints() -> table`
+#### Definition
+
+```lua
+--- Returns directional light hints for god-ray style effects.
+---@return LightGetGodRayHintsResult Array table of hint records with `x`, `y`, and `angle` fields.
+lurek.light.getGodRayHints = function() end
+```
+
+#### Description
 
 Returns directional light hints for god-ray style effects.
 
-**Returns**: `table` - Array table of hint records with `x`, `y`, and `angle` fields.
+Returns: `table` - Array table of hint records with `x`, `y`, and `angle` fields.
 
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -257,19 +491,28 @@ end
 
 ### lurek.light.getGroupCount
 
-`lurek.light.getGroupCount(group_id: integer) -> integer`
+#### Definition
+
+```lua
+--- Returns the number of lights in a group.
+---@param group_id number Light group id.
+---@return number Number of lights in the group.
+lurek.light.getGroupCount = function(group_id) end
+```
+
+#### Description
 
 Returns the number of lights in a group.
 
-**Parameters**
+Parameters:
 
 - `group_id` (`integer`, required): Light group id.
 
-**Returns**: `integer` - Number of lights in the group.
+Returns: `integer` - Number of lights in the group.
 
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -283,15 +526,23 @@ end
 
 ### lurek.light.getLightCount
 
-`lurek.light.getLightCount() -> integer`
+#### Definition
+
+```lua
+--- Returns the number of live lights. This function is exposed to Lua scripts.
+---@return number Light count.
+lurek.light.getLightCount = function() end
+```
+
+#### Description
 
 Returns the number of live lights. This function is exposed to Lua scripts.
 
-**Returns**: `integer` - Light count.
+Returns: `integer` - Light count.
 
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -304,15 +555,23 @@ end
 
 ### lurek.light.getMaxLights
 
-`lurek.light.getMaxLights() -> integer`
+#### Definition
+
+```lua
+--- Returns the maximum configured light count.
+---@return number Maximum light count.
+lurek.light.getMaxLights = function() end
+```
+
+#### Description
 
 Returns the maximum configured light count.
 
-**Returns**: `integer` - Maximum light count.
+Returns: `integer` - Maximum light count.
 
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -323,15 +582,23 @@ end
 
 ### lurek.light.getNormalMapHints
 
-`lurek.light.getNormalMapHints() -> table`
+#### Definition
+
+```lua
+--- Returns light hints that reference normal maps.
+---@return LightGetNormalMapHintsResult Array table of normal-map light hint records.
+lurek.light.getNormalMapHints = function() end
+```
+
+#### Description
 
 Returns light hints that reference normal maps.
 
-**Returns**: `table` - Array table of normal-map light hint records.
+Returns: `table` - Array table of normal-map light hint records.
 
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -342,15 +609,23 @@ end
 
 ### lurek.light.getOccluderCount
 
-`lurek.light.getOccluderCount() -> integer`
+#### Definition
+
+```lua
+--- Returns the number of live occluders.
+---@return number Occluder count.
+lurek.light.getOccluderCount = function() end
+```
+
+#### Description
 
 Returns the number of live occluders.
 
-**Returns**: `integer` - Occluder count.
+Returns: `integer` - Occluder count.
 
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -363,15 +638,23 @@ end
 
 ### lurek.light.isEnabled
 
-`lurek.light.isEnabled() -> boolean`
+#### Definition
+
+```lua
+--- Returns whether the shared light world is enabled.
+---@return boolean True when lighting is enabled.
+lurek.light.isEnabled = function() end
+```
+
+#### Description
 
 Returns whether the shared light world is enabled.
 
-**Returns**: `boolean` - True when lighting is enabled.
+Returns: `boolean` - True when lighting is enabled.
 
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -382,22 +665,34 @@ end
 
 ### lurek.light.newLight
 
-`lurek.light.newLight(x: number, y: number, radius: number, [opts]: table) -> LLight`
+#### Definition
+
+```lua
+--- Creates a light and applies optional light settings.
+---@param x number Light x coordinate.
+---@param y number Light y coordinate.
+---@param radius number Light radius.
+---@param opts? table Table of light settings.
+---@return LLight New light handle.
+lurek.light.newLight = function(x, y, radius, opts) end
+```
+
+#### Description
 
 Creates a light and applies optional light settings.
 
-**Parameters**
+Parameters:
 
 - `x` (`number`, required): Light x coordinate.
 - `y` (`number`, required): Light y coordinate.
 - `radius` (`number`, required): Light radius.
 - `opts` (`table`, optional): Table of light settings.
 
-**Returns**: `LLight` - New light handle.
+Returns: `LLight` - New light handle.
 
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -408,20 +703,30 @@ end
 
 ### lurek.light.newOccluder
 
-`lurek.light.newOccluder(vtbl: table, [opts]: table) -> LOccluder`
+#### Definition
+
+```lua
+--- Creates an occluder from a flat vertex coordinate table and optional settings.
+---@param vtbl table Flat numeric array `[x1, y1, x2, y2, ...]`.
+---@param opts? table Table of occluder settings.
+---@return LOccluder New occluder handle.
+lurek.light.newOccluder = function(vtbl, opts) end
+```
+
+#### Description
 
 Creates an occluder from a flat vertex coordinate table and optional settings.
 
-**Parameters**
+Parameters:
 
 - `vtbl` (`table`, required): Flat numeric array `[x1, y1, x2, y2, ...]`.
 - `opts` (`table`, optional): Table of occluder settings.
 
-**Returns**: `LOccluder` - New occluder handle.
+Returns: `LOccluder` - New occluder handle.
 
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -433,11 +738,22 @@ end
 
 ### lurek.light.setAmbient
 
-`lurek.light.setAmbient(r: number, g: number, b: number, [a]: number)`
+#### Definition
+
+```lua
+--- Sets global ambient light color. This function is exposed to Lua scripts.
+---@param r number Red channel.
+---@param g number Green channel.
+---@param b number Blue channel.
+---@param a? number Alpha channel, defaulting to 1.0.
+lurek.light.setAmbient = function(r, g, b, a) end
+```
+
+#### Description
 
 Sets global ambient light color. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `r` (`number`, required): Red channel.
 - `g` (`number`, required): Green channel.
@@ -446,7 +762,7 @@ Sets global ambient light color. This function is exposed to Lua scripts.
 
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -458,17 +774,25 @@ end
 
 ### lurek.light.setEnabled
 
-`lurek.light.setEnabled(enabled: boolean)`
+#### Definition
+
+```lua
+--- Enables or disables the shared light world.
+---@param enabled boolean New enabled flag.
+lurek.light.setEnabled = function(enabled) end
+```
+
+#### Description
 
 Enables or disables the shared light world.
 
-**Parameters**
+Parameters:
 
 - `enabled` (`boolean`, required): New enabled flag.
 
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -479,11 +803,23 @@ end
 
 ### lurek.light.setGroupColor
 
-`lurek.light.setGroupColor(group_id: integer, r: number, g: number, b: number, [a]: number)`
+#### Definition
+
+```lua
+--- Sets color for all lights in a group.
+---@param group_id number Light group id.
+---@param r number Red channel.
+---@param g number Green channel.
+---@param b number Blue channel.
+---@param a? number Alpha channel, defaulting to 1.0.
+lurek.light.setGroupColor = function(group_id, r, g, b, a) end
+```
+
+#### Description
 
 Sets color for all lights in a group.
 
-**Parameters**
+Parameters:
 
 - `group_id` (`integer`, required): Light group id.
 - `r` (`number`, required): Red channel.
@@ -493,7 +829,7 @@ Sets color for all lights in a group.
 
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -504,18 +840,27 @@ end
 
 ### lurek.light.setGroupEnabled
 
-`lurek.light.setGroupEnabled(group_id: integer, enabled: boolean)`
+#### Definition
+
+```lua
+--- Enables or disables all lights in a group.
+---@param group_id number Light group id.
+---@param enabled boolean New enabled flag for the group.
+lurek.light.setGroupEnabled = function(group_id, enabled) end
+```
+
+#### Description
 
 Enables or disables all lights in a group.
 
-**Parameters**
+Parameters:
 
 - `group_id` (`integer`, required): Light group id.
 - `enabled` (`boolean`, required): New enabled flag for the group.
 
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -526,18 +871,27 @@ end
 
 ### lurek.light.setGroupIntensity
 
-`lurek.light.setGroupIntensity(group_id: integer, intensity: number)`
+#### Definition
+
+```lua
+--- Sets intensity for all lights in a group.
+---@param group_id number Light group id.
+---@param intensity number New intensity value.
+lurek.light.setGroupIntensity = function(group_id, intensity) end
+```
+
+#### Description
 
 Sets intensity for all lights in a group.
 
-**Parameters**
+Parameters:
 
 - `group_id` (`integer`, required): Light group id.
 - `intensity` (`number`, required): New intensity value.
 
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -548,17 +902,25 @@ end
 
 ### lurek.light.setMaxLights
 
-`lurek.light.setMaxLights(n: integer)`
+#### Definition
+
+```lua
+--- Sets the maximum configured light count, clamped to 1 through 256.
+---@param n number Requested maximum light count.
+lurek.light.setMaxLights = function(n) end
+```
+
+#### Description
 
 Sets the maximum configured light count, clamped to 1 through 256.
 
-**Parameters**
+Parameters:
 
 - `n` (`integer`, required): Requested maximum light count.
 
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -569,15 +931,26 @@ end
 
 ### lurek.light.syncAmbient
 
-`lurek.light.syncAmbient() -> number`
+#### Definition
+
+```lua
+--- Returns the light world's ambient color hint.
+---@return number a Red channel.
+---@return number b Green channel.
+---@return number c Blue channel.
+---@return number d Alpha channel.
+lurek.light.syncAmbient = function() end
+```
+
+#### Description
 
 Returns the light world's ambient color hint.
 
-**Returns**: `number` - Red channel.
+Returns: `number` - Red channel.
 
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -593,9 +966,7 @@ end
 
 ### LLight
 
-Lua-side handle for a light stored in the shared light world.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side handle for a light stored in the shared light world.
@@ -603,9 +974,13 @@ Lua-side handle for a light stored in the shared light world.
 LLight = {}
 ```
 
+#### Description
+
+Lua-side handle for a light stored in the shared light world.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -616,9 +991,7 @@ end
 
 ### LOccluder
 
-Lua-side handle for an occluder stored in the shared light world.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side handle for an occluder stored in the shared light world.
@@ -626,9 +999,13 @@ Lua-side handle for an occluder stored in the shared light world.
 LOccluder = {}
 ```
 
+#### Description
+
+Lua-side handle for an occluder stored in the shared light world.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -645,17 +1022,7 @@ end
 
 ### LLight:addFlicker
 
-`LLight:addFlicker(min: number, max: number, hz: number)`
-
-Adds flicker from min/max intensity range and frequency.
-
-**Parameters**
-
-- `min` (`number`, required): Minimum flicker range value.
-- `max` (`number`, required): Maximum flicker range value.
-- `hz` (`number`, required): Flicker frequency in hertz.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds flicker from min/max intensity range and frequency.
@@ -665,9 +1032,19 @@ Adds flicker from min/max intensity range and frequency.
 function LLight:addFlicker(min, max, hz) end
 ```
 
+#### Description
+
+Adds flicker from min/max intensity range and frequency.
+
+Parameters:
+
+- `min` (`number`, required): Minimum flicker range value.
+- `max` (`number`, required): Maximum flicker range value.
+- `hz` (`number`, required): Flicker frequency in hertz.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -679,20 +1056,20 @@ end
 
 ### LLight:clearCookie
 
-`LLight:clearCookie()`
-
-Clears the cookie texture path stored on this Lua light handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Clears the cookie texture path stored on this Lua light handle.
 function LLight:clearCookie() end
 ```
 
+#### Description
+
+Clears the cookie texture path stored on this Lua light handle.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -705,20 +1082,20 @@ end
 
 ### LLight:clearNormalMap
 
-`LLight:clearNormalMap()`
-
-Clears the normal map path used by this light.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Clears the normal map path used by this light.
 function LLight:clearNormalMap() end
 ```
 
+#### Description
+
+Clears the normal map path used by this light.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -731,13 +1108,7 @@ end
 
 ### LLight:getAttenuation
 
-`LLight:getAttenuation() -> number`
-
-Returns this light attenuation coefficients.
-
-**Returns**: `number` - Constant coefficient.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this light attenuation coefficients.
@@ -747,9 +1118,15 @@ Returns this light attenuation coefficients.
 function LLight:getAttenuation() end
 ```
 
+#### Description
+
+Returns this light attenuation coefficients.
+
+Returns: `number` - Constant coefficient.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -762,13 +1139,7 @@ end
 
 ### LLight:getBlendMode
 
-`LLight:getBlendMode() -> string`
-
-Returns this light blend mode string.
-
-**Returns**: `string` - Blend mode `add`, `sub`, or `mix`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this light blend mode string.
@@ -776,9 +1147,15 @@ Returns this light blend mode string.
 function LLight:getBlendMode() end
 ```
 
+#### Description
+
+Returns this light blend mode string.
+
+Returns: `string` - Blend mode `add`, `sub`, or `mix`.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -790,13 +1167,7 @@ end
 
 ### LLight:getColor
 
-`LLight:getColor() -> number`
-
-Returns this light RGBA color. This method is available to Lua scripts.
-
-**Returns**: `number` - Red channel.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this light RGBA color. This method is available to Lua scripts.
@@ -807,9 +1178,15 @@ Returns this light RGBA color. This method is available to Lua scripts.
 function LLight:getColor() end
 ```
 
+#### Description
+
+Returns this light RGBA color. This method is available to Lua scripts.
+
+Returns: `number` - Red channel.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -822,13 +1199,7 @@ end
 
 ### LLight:getCookie
 
-`LLight:getCookie() -> string`
-
-Returns the cookie texture path stored on this Lua light handle.
-
-**Returns**: `string` - Cookie texture path, or nil when absent.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the cookie texture path stored on this Lua light handle.
@@ -836,9 +1207,15 @@ Returns the cookie texture path stored on this Lua light handle.
 function LLight:getCookie() end
 ```
 
+#### Description
+
+Returns the cookie texture path stored on this Lua light handle.
+
+Returns: `string` - Cookie texture path, or nil when absent.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -850,13 +1227,7 @@ end
 
 ### LLight:getDirection
 
-`LLight:getDirection() -> number`
-
-Returns this light direction angle.
-
-**Returns**: `number` - Direction angle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this light direction angle.
@@ -864,9 +1235,15 @@ Returns this light direction angle.
 function LLight:getDirection() end
 ```
 
+#### Description
+
+Returns this light direction angle.
+
+Returns: `number` - Direction angle.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -879,13 +1256,7 @@ end
 
 ### LLight:getEnergy
 
-`LLight:getEnergy() -> number`
-
-Returns this light energy value. This method is available to Lua scripts.
-
-**Returns**: `number` - Energy value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this light energy value. This method is available to Lua scripts.
@@ -893,9 +1264,15 @@ Returns this light energy value. This method is available to Lua scripts.
 function LLight:getEnergy() end
 ```
 
+#### Description
+
+Returns this light energy value. This method is available to Lua scripts.
+
+Returns: `number` - Energy value.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -907,13 +1284,7 @@ end
 
 ### LLight:getFalloff
 
-`LLight:getFalloff() -> string`
-
-Returns this light falloff mode string.
-
-**Returns**: `string` - Falloff mode `linear`, `smooth`, or `constant`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this light falloff mode string.
@@ -921,9 +1292,15 @@ Returns this light falloff mode string.
 function LLight:getFalloff() end
 ```
 
+#### Description
+
+Returns this light falloff mode string.
+
+Returns: `string` - Falloff mode `linear`, `smooth`, or `constant`.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -935,13 +1312,7 @@ end
 
 ### LLight:getFlicker
 
-`LLight:getFlicker() -> number`
-
-Returns this light flicker speed and strength.
-
-**Returns**: `number` - Flicker speed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this light flicker speed and strength.
@@ -950,9 +1321,15 @@ Returns this light flicker speed and strength.
 function LLight:getFlicker() end
 ```
 
+#### Description
+
+Returns this light flicker speed and strength.
+
+Returns: `number` - Flicker speed.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -965,13 +1342,7 @@ end
 
 ### LLight:getGroupId
 
-`LLight:getGroupId() -> integer`
-
-Returns this light group id. This method is available to Lua scripts.
-
-**Returns**: `integer` - Group id.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this light group id. This method is available to Lua scripts.
@@ -979,9 +1350,15 @@ Returns this light group id. This method is available to Lua scripts.
 function LLight:getGroupId() end
 ```
 
+#### Description
+
+Returns this light group id. This method is available to Lua scripts.
+
+Returns: `integer` - Group id.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -993,13 +1370,7 @@ end
 
 ### LLight:getInnerAngle
 
-`LLight:getInnerAngle() -> number`
-
-Returns this spot light inner cone angle.
-
-**Returns**: `number` - Inner angle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this spot light inner cone angle.
@@ -1007,9 +1378,15 @@ Returns this spot light inner cone angle.
 function LLight:getInnerAngle() end
 ```
 
+#### Description
+
+Returns this spot light inner cone angle.
+
+Returns: `number` - Inner angle.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -1023,13 +1400,7 @@ end
 
 ### LLight:getIntensity
 
-`LLight:getIntensity() -> number`
-
-Returns this light intensity. This method is available to Lua scripts.
-
-**Returns**: `number` - Intensity value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this light intensity. This method is available to Lua scripts.
@@ -1037,9 +1408,15 @@ Returns this light intensity. This method is available to Lua scripts.
 function LLight:getIntensity() end
 ```
 
+#### Description
+
+Returns this light intensity. This method is available to Lua scripts.
+
+Returns: `number` - Intensity value.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -1051,13 +1428,7 @@ end
 
 ### LLight:getLightMask
 
-`LLight:getLightMask() -> integer`
-
-Returns this light's inclusion mask.
-
-**Returns**: `integer` - Light mask bits.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this light's inclusion mask.
@@ -1065,9 +1436,15 @@ Returns this light's inclusion mask.
 function LLight:getLightMask() end
 ```
 
+#### Description
+
+Returns this light's inclusion mask.
+
+Returns: `integer` - Light mask bits.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -1079,13 +1456,7 @@ end
 
 ### LLight:getLightType
 
-`LLight:getLightType() -> string`
-
-Returns this light type string. This method is available to Lua scripts.
-
-**Returns**: `string` - Light type `point`, `directional`, or `spot`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this light type string. This method is available to Lua scripts.
@@ -1093,9 +1464,15 @@ Returns this light type string. This method is available to Lua scripts.
 function LLight:getLightType() end
 ```
 
+#### Description
+
+Returns this light type string. This method is available to Lua scripts.
+
+Returns: `string` - Light type `point`, `directional`, or `spot`.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -1107,13 +1484,7 @@ end
 
 ### LLight:getNormalMap
 
-`LLight:getNormalMap() -> string`
-
-Returns the normal map path used by this light.
-
-**Returns**: `string` - Normal map path, or nil when absent.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the normal map path used by this light.
@@ -1121,9 +1492,15 @@ Returns the normal map path used by this light.
 function LLight:getNormalMap() end
 ```
 
+#### Description
+
+Returns the normal map path used by this light.
+
+Returns: `string` - Normal map path, or nil when absent.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -1135,13 +1512,7 @@ end
 
 ### LLight:getNormalStrength
 
-`LLight:getNormalStrength() -> number`
-
-Returns this light's normal map strength.
-
-**Returns**: `number` - Normal map strength.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this light's normal map strength.
@@ -1149,9 +1520,15 @@ Returns this light's normal map strength.
 function LLight:getNormalStrength() end
 ```
 
+#### Description
+
+Returns this light's normal map strength.
+
+Returns: `number` - Normal map strength.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -1163,13 +1540,7 @@ end
 
 ### LLight:getOuterAngle
 
-`LLight:getOuterAngle() -> number`
-
-Returns this spot light outer cone angle.
-
-**Returns**: `number` - Outer angle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this spot light outer cone angle.
@@ -1177,9 +1548,15 @@ Returns this spot light outer cone angle.
 function LLight:getOuterAngle() end
 ```
 
+#### Description
+
+Returns this spot light outer cone angle.
+
+Returns: `number` - Outer angle.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -1193,13 +1570,7 @@ end
 
 ### LLight:getPosition
 
-`LLight:getPosition() -> number`
-
-Returns this light position. This method is available to Lua scripts.
-
-**Returns**: `number` - Light x coordinate.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this light position. This method is available to Lua scripts.
@@ -1208,9 +1579,15 @@ Returns this light position. This method is available to Lua scripts.
 function LLight:getPosition() end
 ```
 
+#### Description
+
+Returns this light position. This method is available to Lua scripts.
+
+Returns: `number` - Light x coordinate.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -1223,13 +1600,7 @@ end
 
 ### LLight:getRadius
 
-`LLight:getRadius() -> number`
-
-Returns this light radius. This method is available to Lua scripts.
-
-**Returns**: `number` - Radius value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this light radius. This method is available to Lua scripts.
@@ -1237,9 +1608,15 @@ Returns this light radius. This method is available to Lua scripts.
 function LLight:getRadius() end
 ```
 
+#### Description
+
+Returns this light radius. This method is available to Lua scripts.
+
+Returns: `number` - Radius value.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -1251,13 +1628,7 @@ end
 
 ### LLight:getShadowColor
 
-`LLight:getShadowColor() -> number`
-
-Returns this light shadow RGBA color.
-
-**Returns**: `number` - Red channel.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this light shadow RGBA color.
@@ -1268,9 +1639,15 @@ Returns this light shadow RGBA color.
 function LLight:getShadowColor() end
 ```
 
+#### Description
+
+Returns this light shadow RGBA color.
+
+Returns: `number` - Red channel.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -1284,13 +1661,7 @@ end
 
 ### LLight:getShadowFilter
 
-`LLight:getShadowFilter() -> string`
-
-Returns this light shadow filter string.
-
-**Returns**: `string` - Shadow filter `none`, `pcf5`, or `pcf13`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this light shadow filter string.
@@ -1298,9 +1669,15 @@ Returns this light shadow filter string.
 function LLight:getShadowFilter() end
 ```
 
+#### Description
+
+Returns this light shadow filter string.
+
+Returns: `string` - Shadow filter `none`, `pcf5`, or `pcf13`.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -1313,13 +1690,7 @@ end
 
 ### LLight:getShadowMask
 
-`LLight:getShadowMask() -> integer`
-
-Returns this light's shadow receiver mask.
-
-**Returns**: `integer` - Shadow mask bits.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this light's shadow receiver mask.
@@ -1327,9 +1698,15 @@ Returns this light's shadow receiver mask.
 function LLight:getShadowMask() end
 ```
 
+#### Description
+
+Returns this light's shadow receiver mask.
+
+Returns: `integer` - Shadow mask bits.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -1341,13 +1718,7 @@ end
 
 ### LLight:getShadowSmooth
 
-`LLight:getShadowSmooth() -> number`
-
-Returns this light shadow smoothing value.
-
-**Returns**: `number` - Shadow smoothing value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this light shadow smoothing value.
@@ -1355,9 +1726,15 @@ Returns this light shadow smoothing value.
 function LLight:getShadowSmooth() end
 ```
 
+#### Description
+
+Returns this light shadow smoothing value.
+
+Returns: `number` - Shadow smoothing value.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -1370,13 +1747,7 @@ end
 
 ### LLight:getShadowSoftness
 
-`LLight:getShadowSoftness() -> number`
-
-Returns this light shadow softness value.
-
-**Returns**: `number` - Shadow softness value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this light shadow softness value.
@@ -1384,9 +1755,15 @@ Returns this light shadow softness value.
 function LLight:getShadowSoftness() end
 ```
 
+#### Description
+
+Returns this light shadow softness value.
+
+Returns: `number` - Shadow softness value.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -1399,13 +1776,7 @@ end
 
 ### LLight:isEnabled
 
-`LLight:isEnabled() -> boolean`
-
-Returns whether this light is enabled.
-
-**Returns**: `boolean` - True when the light is enabled.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this light is enabled.
@@ -1413,9 +1784,15 @@ Returns whether this light is enabled.
 function LLight:isEnabled() end
 ```
 
+#### Description
+
+Returns whether this light is enabled.
+
+Returns: `boolean` - True when the light is enabled.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -1427,13 +1804,7 @@ end
 
 ### LLight:isFlickerEnabled
 
-`LLight:isFlickerEnabled() -> boolean`
-
-Returns whether this light flicker is enabled.
-
-**Returns**: `boolean` - True when flicker is enabled.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this light flicker is enabled.
@@ -1441,9 +1812,15 @@ Returns whether this light flicker is enabled.
 function LLight:isFlickerEnabled() end
 ```
 
+#### Description
+
+Returns whether this light flicker is enabled.
+
+Returns: `boolean` - True when flicker is enabled.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -1456,13 +1833,7 @@ end
 
 ### LLight:isShadowEnabled
 
-`LLight:isShadowEnabled() -> boolean`
-
-Returns whether this light casts shadows.
-
-**Returns**: `boolean` - True when shadows are enabled.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this light casts shadows.
@@ -1470,9 +1841,15 @@ Returns whether this light casts shadows.
 function LLight:isShadowEnabled() end
 ```
 
+#### Description
+
+Returns whether this light casts shadows.
+
+Returns: `boolean` - True when shadows are enabled.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -1484,13 +1861,7 @@ end
 
 ### LLight:isValid
 
-`LLight:isValid() -> boolean`
-
-Returns whether this light handle still points to a live light.
-
-**Returns**: `boolean` - True when the light still exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this light handle still points to a live light.
@@ -1498,9 +1869,15 @@ Returns whether this light handle still points to a live light.
 function LLight:isValid() end
 ```
 
+#### Description
+
+Returns whether this light handle still points to a live light.
+
+Returns: `boolean` - True when the light still exists.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -1513,13 +1890,7 @@ end
 
 ### LLight:isVolumetric
 
-`LLight:isVolumetric() -> boolean`
-
-Returns whether this light is volumetric.
-
-**Returns**: `boolean` - True when volumetric behavior is enabled.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this light is volumetric.
@@ -1527,9 +1898,15 @@ Returns whether this light is volumetric.
 function LLight:isVolumetric() end
 ```
 
+#### Description
+
+Returns whether this light is volumetric.
+
+Returns: `boolean` - True when volumetric behavior is enabled.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -1541,20 +1918,20 @@ end
 
 ### LLight:remove
 
-`LLight:remove()`
-
-Removes this light from the shared light world.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes this light from the shared light world.
 function LLight:remove() end
 ```
 
+#### Description
+
+Removes this light from the shared light world.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -1567,17 +1944,7 @@ end
 
 ### LLight:setAttenuation
 
-`LLight:setAttenuation(c: number, l: number, q: number)`
-
-Sets this light attenuation coefficients.
-
-**Parameters**
-
-- `c` (`number`, required): Constant coefficient.
-- `l` (`number`, required): Linear coefficient.
-- `q` (`number`, required): Quadratic coefficient.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets this light attenuation coefficients.
@@ -1587,9 +1954,19 @@ Sets this light attenuation coefficients.
 function LLight:setAttenuation(c, l, q) end
 ```
 
+#### Description
+
+Sets this light attenuation coefficients.
+
+Parameters:
+
+- `c` (`number`, required): Constant coefficient.
+- `l` (`number`, required): Linear coefficient.
+- `q` (`number`, required): Quadratic coefficient.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -1602,15 +1979,7 @@ end
 
 ### LLight:setBlendMode
 
-`LLight:setBlendMode(mode: string)`
-
-Sets this light blend mode. This method is available to Lua scripts.
-
-**Parameters**
-
-- `mode` (`string`, required): Blend mode `add`, `sub`, or `mix`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets this light blend mode. This method is available to Lua scripts.
@@ -1618,9 +1987,17 @@ Sets this light blend mode. This method is available to Lua scripts.
 function LLight:setBlendMode(mode) end
 ```
 
+#### Description
+
+Sets this light blend mode. This method is available to Lua scripts.
+
+Parameters:
+
+- `mode` (`string`, required): Blend mode `add`, `sub`, or `mix`.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -1632,18 +2009,7 @@ end
 
 ### LLight:setColor
 
-`LLight:setColor(r: number, g: number, b: number, [a]: number)`
-
-Sets this light RGBA color. This method is available to Lua scripts.
-
-**Parameters**
-
-- `r` (`number`, required): Red channel.
-- `g` (`number`, required): Green channel.
-- `b` (`number`, required): Blue channel.
-- `a` (`number`, optional): Alpha channel, defaulting to 1.0.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets this light RGBA color. This method is available to Lua scripts.
@@ -1654,9 +2020,20 @@ Sets this light RGBA color. This method is available to Lua scripts.
 function LLight:setColor(r, g, b, a) end
 ```
 
+#### Description
+
+Sets this light RGBA color. This method is available to Lua scripts.
+
+Parameters:
+
+- `r` (`number`, required): Red channel.
+- `g` (`number`, required): Green channel.
+- `b` (`number`, required): Blue channel.
+- `a` (`number`, optional): Alpha channel, defaulting to 1.0.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -1669,15 +2046,7 @@ end
 
 ### LLight:setCookie
 
-`LLight:setCookie(path: string)`
-
-Stores a cookie texture path on this Lua light handle.
-
-**Parameters**
-
-- `path` (`string`, required): Cookie texture path.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Stores a cookie texture path on this Lua light handle.
@@ -1685,9 +2054,17 @@ Stores a cookie texture path on this Lua light handle.
 function LLight:setCookie(path) end
 ```
 
+#### Description
+
+Stores a cookie texture path on this Lua light handle.
+
+Parameters:
+
+- `path` (`string`, required): Cookie texture path.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -1699,15 +2076,7 @@ end
 
 ### LLight:setDirection
 
-`LLight:setDirection(dir: number)`
-
-Sets this light direction angle. This method is available to Lua scripts.
-
-**Parameters**
-
-- `dir` (`number`, required): Direction angle in radians or engine units.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets this light direction angle. This method is available to Lua scripts.
@@ -1715,9 +2084,17 @@ Sets this light direction angle. This method is available to Lua scripts.
 function LLight:setDirection(dir) end
 ```
 
+#### Description
+
+Sets this light direction angle. This method is available to Lua scripts.
+
+Parameters:
+
+- `dir` (`number`, required): Direction angle in radians or engine units.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -1730,15 +2107,7 @@ end
 
 ### LLight:setEnabled
 
-`LLight:setEnabled(b: boolean)`
-
-Enables or disables this light. This method is available to Lua scripts.
-
-**Parameters**
-
-- `b` (`boolean`, required): New enabled flag.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Enables or disables this light. This method is available to Lua scripts.
@@ -1746,9 +2115,17 @@ Enables or disables this light. This method is available to Lua scripts.
 function LLight:setEnabled(b) end
 ```
 
+#### Description
+
+Enables or disables this light. This method is available to Lua scripts.
+
+Parameters:
+
+- `b` (`boolean`, required): New enabled flag.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -1760,15 +2137,7 @@ end
 
 ### LLight:setEnergy
 
-`LLight:setEnergy(e: number)`
-
-Sets this light energy value. This method is available to Lua scripts.
-
-**Parameters**
-
-- `e` (`number`, required): Energy value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets this light energy value. This method is available to Lua scripts.
@@ -1776,9 +2145,17 @@ Sets this light energy value. This method is available to Lua scripts.
 function LLight:setEnergy(e) end
 ```
 
+#### Description
+
+Sets this light energy value. This method is available to Lua scripts.
+
+Parameters:
+
+- `e` (`number`, required): Energy value.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -1790,15 +2167,7 @@ end
 
 ### LLight:setFalloff
 
-`LLight:setFalloff(mode: string)`
-
-Sets this light falloff mode. This method is available to Lua scripts.
-
-**Parameters**
-
-- `mode` (`string`, required): Falloff mode `linear`, `smooth`, or `constant`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets this light falloff mode. This method is available to Lua scripts.
@@ -1806,9 +2175,17 @@ Sets this light falloff mode. This method is available to Lua scripts.
 function LLight:setFalloff(mode) end
 ```
 
+#### Description
+
+Sets this light falloff mode. This method is available to Lua scripts.
+
+Parameters:
+
+- `mode` (`string`, required): Falloff mode `linear`, `smooth`, or `constant`.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -1820,16 +2197,7 @@ end
 
 ### LLight:setFlicker
 
-`LLight:setFlicker(speed: number, strength: number)`
-
-Configures flicker speed and strength for this light.
-
-**Parameters**
-
-- `speed` (`number`, required): Flicker speed.
-- `strength` (`number`, required): Flicker strength.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Configures flicker speed and strength for this light.
@@ -1838,9 +2206,18 @@ Configures flicker speed and strength for this light.
 function LLight:setFlicker(speed, strength) end
 ```
 
+#### Description
+
+Configures flicker speed and strength for this light.
+
+Parameters:
+
+- `speed` (`number`, required): Flicker speed.
+- `strength` (`number`, required): Flicker strength.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -1853,15 +2230,7 @@ end
 
 ### LLight:setFlickerEnabled
 
-`LLight:setFlickerEnabled(b: boolean)`
-
-Enables or disables this light flicker state.
-
-**Parameters**
-
-- `b` (`boolean`, required): New flicker enabled flag.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Enables or disables this light flicker state.
@@ -1869,9 +2238,17 @@ Enables or disables this light flicker state.
 function LLight:setFlickerEnabled(b) end
 ```
 
+#### Description
+
+Enables or disables this light flicker state.
+
+Parameters:
+
+- `b` (`boolean`, required): New flicker enabled flag.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -1884,15 +2261,7 @@ end
 
 ### LLight:setGroupId
 
-`LLight:setGroupId(id: integer)`
-
-Sets this light group id. This method is available to Lua scripts.
-
-**Parameters**
-
-- `id` (`integer`, required): Group id.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets this light group id. This method is available to Lua scripts.
@@ -1900,9 +2269,17 @@ Sets this light group id. This method is available to Lua scripts.
 function LLight:setGroupId(id) end
 ```
 
+#### Description
+
+Sets this light group id. This method is available to Lua scripts.
+
+Parameters:
+
+- `id` (`integer`, required): Group id.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -1914,15 +2291,7 @@ end
 
 ### LLight:setInnerAngle
 
-`LLight:setInnerAngle(a: number)`
-
-Sets this spot light inner cone angle.
-
-**Parameters**
-
-- `a` (`number`, required): Inner angle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets this spot light inner cone angle.
@@ -1930,9 +2299,17 @@ Sets this spot light inner cone angle.
 function LLight:setInnerAngle(a) end
 ```
 
+#### Description
+
+Sets this spot light inner cone angle.
+
+Parameters:
+
+- `a` (`number`, required): Inner angle.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -1946,15 +2323,7 @@ end
 
 ### LLight:setIntensity
 
-`LLight:setIntensity(i: number)`
-
-Sets this light intensity. This method is available to Lua scripts.
-
-**Parameters**
-
-- `i` (`number`, required): Intensity value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets this light intensity. This method is available to Lua scripts.
@@ -1962,9 +2331,17 @@ Sets this light intensity. This method is available to Lua scripts.
 function LLight:setIntensity(i) end
 ```
 
+#### Description
+
+Sets this light intensity. This method is available to Lua scripts.
+
+Parameters:
+
+- `i` (`number`, required): Intensity value.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -1976,15 +2353,7 @@ end
 
 ### LLight:setLightMask
 
-`LLight:setLightMask(mask: integer)`
-
-Sets this light's inclusion mask. This method is available to Lua scripts.
-
-**Parameters**
-
-- `mask` (`integer`, required): Light mask bits.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets this light's inclusion mask. This method is available to Lua scripts.
@@ -1992,9 +2361,17 @@ Sets this light's inclusion mask. This method is available to Lua scripts.
 function LLight:setLightMask(mask) end
 ```
 
+#### Description
+
+Sets this light's inclusion mask. This method is available to Lua scripts.
+
+Parameters:
+
+- `mask` (`integer`, required): Light mask bits.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -2006,15 +2383,7 @@ end
 
 ### LLight:setLightType
 
-`LLight:setLightType(t: string)`
-
-Sets this light type. This method is available to Lua scripts.
-
-**Parameters**
-
-- `t` (`string`, required): Light type `point`, `directional`, or `spot`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets this light type. This method is available to Lua scripts.
@@ -2022,9 +2391,17 @@ Sets this light type. This method is available to Lua scripts.
 function LLight:setLightType(t) end
 ```
 
+#### Description
+
+Sets this light type. This method is available to Lua scripts.
+
+Parameters:
+
+- `t` (`string`, required): Light type `point`, `directional`, or `spot`.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -2036,15 +2413,7 @@ end
 
 ### LLight:setNormalMap
 
-`LLight:setNormalMap(path: string)`
-
-Sets the normal map path used by this light.
-
-**Parameters**
-
-- `path` (`string`, required): Normal map path.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the normal map path used by this light.
@@ -2052,9 +2421,17 @@ Sets the normal map path used by this light.
 function LLight:setNormalMap(path) end
 ```
 
+#### Description
+
+Sets the normal map path used by this light.
+
+Parameters:
+
+- `path` (`string`, required): Normal map path.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -2066,15 +2443,7 @@ end
 
 ### LLight:setNormalStrength
 
-`LLight:setNormalStrength(strength: number)`
-
-Sets this light's normal map strength.
-
-**Parameters**
-
-- `strength` (`number`, required): Normal map strength.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets this light's normal map strength.
@@ -2082,9 +2451,17 @@ Sets this light's normal map strength.
 function LLight:setNormalStrength(strength) end
 ```
 
+#### Description
+
+Sets this light's normal map strength.
+
+Parameters:
+
+- `strength` (`number`, required): Normal map strength.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -2096,15 +2473,7 @@ end
 
 ### LLight:setOuterAngle
 
-`LLight:setOuterAngle(a: number)`
-
-Sets this spot light outer cone angle.
-
-**Parameters**
-
-- `a` (`number`, required): Outer angle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets this spot light outer cone angle.
@@ -2112,9 +2481,17 @@ Sets this spot light outer cone angle.
 function LLight:setOuterAngle(a) end
 ```
 
+#### Description
+
+Sets this spot light outer cone angle.
+
+Parameters:
+
+- `a` (`number`, required): Outer angle.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -2128,16 +2505,7 @@ end
 
 ### LLight:setPosition
 
-`LLight:setPosition(x: number, y: number)`
-
-Sets this light position. This method is available to Lua scripts.
-
-**Parameters**
-
-- `x` (`number`, required): Light x coordinate.
-- `y` (`number`, required): Light y coordinate.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets this light position. This method is available to Lua scripts.
@@ -2146,9 +2514,18 @@ Sets this light position. This method is available to Lua scripts.
 function LLight:setPosition(x, y) end
 ```
 
+#### Description
+
+Sets this light position. This method is available to Lua scripts.
+
+Parameters:
+
+- `x` (`number`, required): Light x coordinate.
+- `y` (`number`, required): Light y coordinate.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -2161,15 +2538,7 @@ end
 
 ### LLight:setRadius
 
-`LLight:setRadius(r: number)`
-
-Sets this light radius. This method is available to Lua scripts.
-
-**Parameters**
-
-- `r` (`number`, required): Radius value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets this light radius. This method is available to Lua scripts.
@@ -2177,9 +2546,17 @@ Sets this light radius. This method is available to Lua scripts.
 function LLight:setRadius(r) end
 ```
 
+#### Description
+
+Sets this light radius. This method is available to Lua scripts.
+
+Parameters:
+
+- `r` (`number`, required): Radius value.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -2191,18 +2568,7 @@ end
 
 ### LLight:setShadowColor
 
-`LLight:setShadowColor(r: number, g: number, b: number, [a]: number)`
-
-Sets this light shadow RGBA color. This method is available to Lua scripts.
-
-**Parameters**
-
-- `r` (`number`, required): Red channel.
-- `g` (`number`, required): Green channel.
-- `b` (`number`, required): Blue channel.
-- `a` (`number`, optional): Alpha channel, defaulting to 1.0.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets this light shadow RGBA color. This method is available to Lua scripts.
@@ -2213,9 +2579,20 @@ Sets this light shadow RGBA color. This method is available to Lua scripts.
 function LLight:setShadowColor(r, g, b, a) end
 ```
 
+#### Description
+
+Sets this light shadow RGBA color. This method is available to Lua scripts.
+
+Parameters:
+
+- `r` (`number`, required): Red channel.
+- `g` (`number`, required): Green channel.
+- `b` (`number`, required): Blue channel.
+- `a` (`number`, optional): Alpha channel, defaulting to 1.0.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -2229,15 +2606,7 @@ end
 
 ### LLight:setShadowEnabled
 
-`LLight:setShadowEnabled(b: boolean)`
-
-Enables or disables shadow casting for this light.
-
-**Parameters**
-
-- `b` (`boolean`, required): New shadow enabled flag.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Enables or disables shadow casting for this light.
@@ -2245,9 +2614,17 @@ Enables or disables shadow casting for this light.
 function LLight:setShadowEnabled(b) end
 ```
 
+#### Description
+
+Enables or disables shadow casting for this light.
+
+Parameters:
+
+- `b` (`boolean`, required): New shadow enabled flag.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -2259,15 +2636,7 @@ end
 
 ### LLight:setShadowFilter
 
-`LLight:setShadowFilter(filter: string)`
-
-Sets this light shadow filter. This method is available to Lua scripts.
-
-**Parameters**
-
-- `filter` (`string`, required): Shadow filter `none`, `pcf5`, or `pcf13`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets this light shadow filter. This method is available to Lua scripts.
@@ -2275,9 +2644,17 @@ Sets this light shadow filter. This method is available to Lua scripts.
 function LLight:setShadowFilter(filter) end
 ```
 
+#### Description
+
+Sets this light shadow filter. This method is available to Lua scripts.
+
+Parameters:
+
+- `filter` (`string`, required): Shadow filter `none`, `pcf5`, or `pcf13`.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -2290,15 +2667,7 @@ end
 
 ### LLight:setShadowMask
 
-`LLight:setShadowMask(mask: integer)`
-
-Sets this light's shadow receiver mask.
-
-**Parameters**
-
-- `mask` (`integer`, required): Shadow mask bits.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets this light's shadow receiver mask.
@@ -2306,9 +2675,17 @@ Sets this light's shadow receiver mask.
 function LLight:setShadowMask(mask) end
 ```
 
+#### Description
+
+Sets this light's shadow receiver mask.
+
+Parameters:
+
+- `mask` (`integer`, required): Shadow mask bits.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -2320,15 +2697,7 @@ end
 
 ### LLight:setShadowSmooth
 
-`LLight:setShadowSmooth(s: number)`
-
-Sets this light shadow smoothing value.
-
-**Parameters**
-
-- `s` (`number`, required): Shadow smoothing value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets this light shadow smoothing value.
@@ -2336,9 +2705,17 @@ Sets this light shadow smoothing value.
 function LLight:setShadowSmooth(s) end
 ```
 
+#### Description
+
+Sets this light shadow smoothing value.
+
+Parameters:
+
+- `s` (`number`, required): Shadow smoothing value.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -2351,15 +2728,7 @@ end
 
 ### LLight:setShadowSoftness
 
-`LLight:setShadowSoftness(softness: number)`
-
-Sets this light shadow softness value.
-
-**Parameters**
-
-- `softness` (`number`, required): Shadow softness value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets this light shadow softness value.
@@ -2367,9 +2736,17 @@ Sets this light shadow softness value.
 function LLight:setShadowSoftness(softness) end
 ```
 
+#### Description
+
+Sets this light shadow softness value.
+
+Parameters:
+
+- `softness` (`number`, required): Shadow softness value.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -2382,15 +2759,7 @@ end
 
 ### LLight:setVolumetric
 
-`LLight:setVolumetric(b: boolean)`
-
-Enables or disables volumetric behavior for this light.
-
-**Parameters**
-
-- `b` (`boolean`, required): New volumetric flag.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Enables or disables volumetric behavior for this light.
@@ -2398,9 +2767,17 @@ Enables or disables volumetric behavior for this light.
 function LLight:setVolumetric(b) end
 ```
 
+#### Description
+
+Enables or disables volumetric behavior for this light.
+
+Parameters:
+
+- `b` (`boolean`, required): New volumetric flag.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -2412,20 +2789,20 @@ end
 
 ### LLight:stopTransition
 
-`LLight:stopTransition()`
-
-Stops and clears this light's active transition.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Stops and clears this light's active transition.
 function LLight:stopTransition() end
 ```
 
+#### Description
+
+Stops and clears this light's active transition.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -2438,13 +2815,7 @@ end
 
 ### LLight:transitionProgress
 
-`LLight:transitionProgress() -> number`
-
-Returns active transition progress or 1.0 when no transition is active.
-
-**Returns**: `number` - Transition progress.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns active transition progress or 1.0 when no transition is active.
@@ -2452,9 +2823,15 @@ Returns active transition progress or 1.0 when no transition is active.
 function LLight:transitionProgress() end
 ```
 
+#### Description
+
+Returns active transition progress or 1.0 when no transition is active.
+
+Returns: `number` - Transition progress.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -2467,16 +2844,7 @@ end
 
 ### LLight:transitionTo
 
-`LLight:transitionTo(target: table, duration: number)`
-
-Starts a transition toward target color, intensity, and radius values.
-
-**Parameters**
-
-- `target` (`table`, required): Target table with optional `color`, `intensity`, and `radius` fields.
-- `duration` (`number`, required): Transition duration in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Starts a transition toward target color, intensity, and radius values.
@@ -2485,9 +2853,18 @@ Starts a transition toward target color, intensity, and radius values.
 function LLight:transitionTo(target, duration) end
 ```
 
+#### Description
+
+Starts a transition toward target color, intensity, and radius values.
+
+Parameters:
+
+- `target` (`table`, required): Target table with optional `color`, `intensity`, and `radius` fields.
+- `duration` (`number`, required): Transition duration in seconds.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -2500,13 +2877,7 @@ end
 
 ### LLight:type
 
-`LLight:type() -> string`
-
-Returns the Lua-visible type name for this light handle.
-
-**Returns**: `string` - The string `LLight`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this light handle.
@@ -2514,9 +2885,15 @@ Returns the Lua-visible type name for this light handle.
 function LLight:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this light handle.
+
+Returns: `string` - The string `LLight`.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -2528,17 +2905,7 @@ end
 
 ### LLight:typeOf
 
-`LLight:typeOf(name: string) -> boolean`
-
-Returns whether this light handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LLight` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this light handle matches a supported type name.
@@ -2547,9 +2914,19 @@ Returns whether this light handle matches a supported type name.
 function LLight:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this light handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LLight` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -2561,17 +2938,7 @@ end
 
 ### LLight:updateTransition
 
-`LLight:updateTransition(dt: number) -> boolean`
-
-Advances this light's active transition and applies interpolated values.
-
-**Parameters**
-
-- `dt` (`number`, required): Delta time in seconds.
-
-**Returns**: `boolean` - True when a transition value was applied.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Advances this light's active transition and applies interpolated values.
@@ -2580,9 +2947,19 @@ Advances this light's active transition and applies interpolated values.
 function LLight:updateTransition(dt) end
 ```
 
+#### Description
+
+Advances this light's active transition and applies interpolated values.
+
+Parameters:
+
+- `dt` (`number`, required): Delta time in seconds.
+
+Returns: `boolean` - True when a transition value was applied.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -2595,13 +2972,7 @@ end
 
 ### LOccluder:getLightMask
 
-`LOccluder:getLightMask() -> integer`
-
-Returns this occluder's light mask.
-
-**Returns**: `integer` - Light mask bits.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this occluder's light mask.
@@ -2609,9 +2980,15 @@ Returns this occluder's light mask.
 function LOccluder:getLightMask() end
 ```
 
+#### Description
+
+Returns this occluder's light mask.
+
+Returns: `integer` - Light mask bits.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -2623,13 +3000,7 @@ end
 
 ### LOccluder:getOpacity
 
-`LOccluder:getOpacity() -> number`
-
-Returns this occluder opacity. This method is available to Lua scripts.
-
-**Returns**: `number` - Opacity value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this occluder opacity. This method is available to Lua scripts.
@@ -2637,9 +3008,15 @@ Returns this occluder opacity. This method is available to Lua scripts.
 function LOccluder:getOpacity() end
 ```
 
+#### Description
+
+Returns this occluder opacity. This method is available to Lua scripts.
+
+Returns: `number` - Opacity value.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -2651,13 +3028,7 @@ end
 
 ### LOccluder:getPosition
 
-`LOccluder:getPosition() -> number`
-
-Returns this occluder position offset.
-
-**Returns**: `number` - X coordinate.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this occluder position offset.
@@ -2666,9 +3037,15 @@ Returns this occluder position offset.
 function LOccluder:getPosition() end
 ```
 
+#### Description
+
+Returns this occluder position offset.
+
+Returns: `number` - X coordinate.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -2681,13 +3058,7 @@ end
 
 ### LOccluder:getVertices
 
-`LOccluder:getVertices() -> number[]`
-
-Returns this occluder's flat vertex coordinate list.
-
-**Returns**: `number[]` - Flat numeric array `[x1, y1, x2, y2, ...]`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this occluder's flat vertex coordinate list.
@@ -2695,9 +3066,15 @@ Returns this occluder's flat vertex coordinate list.
 function LOccluder:getVertices() end
 ```
 
+#### Description
+
+Returns this occluder's flat vertex coordinate list.
+
+Returns: `number[]` - Flat numeric array `[x1, y1, x2, y2, ...]`.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -2710,13 +3087,7 @@ end
 
 ### LOccluder:isEnabled
 
-`LOccluder:isEnabled() -> boolean`
-
-Returns whether this occluder is enabled.
-
-**Returns**: `boolean` - True when enabled.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this occluder is enabled.
@@ -2724,9 +3095,15 @@ Returns whether this occluder is enabled.
 function LOccluder:isEnabled() end
 ```
 
+#### Description
+
+Returns whether this occluder is enabled.
+
+Returns: `boolean` - True when enabled.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -2738,13 +3115,7 @@ end
 
 ### LOccluder:isValid
 
-`LOccluder:isValid() -> boolean`
-
-Returns whether this occluder handle still points to a live occluder.
-
-**Returns**: `boolean` - True when the occluder still exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this occluder handle still points to a live occluder.
@@ -2752,9 +3123,15 @@ Returns whether this occluder handle still points to a live occluder.
 function LOccluder:isValid() end
 ```
 
+#### Description
+
+Returns whether this occluder handle still points to a live occluder.
+
+Returns: `boolean` - True when the occluder still exists.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -2767,20 +3144,20 @@ end
 
 ### LOccluder:remove
 
-`LOccluder:remove()`
-
-Removes this occluder from the shared light world.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes this occluder from the shared light world.
 function LOccluder:remove() end
 ```
 
+#### Description
+
+Removes this occluder from the shared light world.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -2794,15 +3171,7 @@ end
 
 ### LOccluder:setEnabled
 
-`LOccluder:setEnabled(b: boolean)`
-
-Enables or disables this occluder.
-
-**Parameters**
-
-- `b` (`boolean`, required): New enabled flag.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Enables or disables this occluder.
@@ -2810,9 +3179,17 @@ Enables or disables this occluder.
 function LOccluder:setEnabled(b) end
 ```
 
+#### Description
+
+Enables or disables this occluder.
+
+Parameters:
+
+- `b` (`boolean`, required): New enabled flag.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -2824,15 +3201,7 @@ end
 
 ### LOccluder:setLightMask
 
-`LOccluder:setLightMask(mask: integer)`
-
-Sets this occluder's light mask. This method is available to Lua scripts.
-
-**Parameters**
-
-- `mask` (`integer`, required): Light mask bits.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets this occluder's light mask. This method is available to Lua scripts.
@@ -2840,9 +3209,17 @@ Sets this occluder's light mask. This method is available to Lua scripts.
 function LOccluder:setLightMask(mask) end
 ```
 
+#### Description
+
+Sets this occluder's light mask. This method is available to Lua scripts.
+
+Parameters:
+
+- `mask` (`integer`, required): Light mask bits.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -2854,15 +3231,7 @@ end
 
 ### LOccluder:setOpacity
 
-`LOccluder:setOpacity(o: number)`
-
-Sets this occluder opacity. This method is available to Lua scripts.
-
-**Parameters**
-
-- `o` (`number`, required): Opacity value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets this occluder opacity. This method is available to Lua scripts.
@@ -2870,9 +3239,17 @@ Sets this occluder opacity. This method is available to Lua scripts.
 function LOccluder:setOpacity(o) end
 ```
 
+#### Description
+
+Sets this occluder opacity. This method is available to Lua scripts.
+
+Parameters:
+
+- `o` (`number`, required): Opacity value.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -2884,16 +3261,7 @@ end
 
 ### LOccluder:setPosition
 
-`LOccluder:setPosition(x: number, y: number)`
-
-Sets this occluder position offset.
-
-**Parameters**
-
-- `x` (`number`, required): X coordinate.
-- `y` (`number`, required): Y coordinate.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets this occluder position offset.
@@ -2902,9 +3270,18 @@ Sets this occluder position offset.
 function LOccluder:setPosition(x, y) end
 ```
 
+#### Description
+
+Sets this occluder position offset.
+
+Parameters:
+
+- `x` (`number`, required): X coordinate.
+- `y` (`number`, required): Y coordinate.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -2917,15 +3294,7 @@ end
 
 ### LOccluder:setVertices
 
-`LOccluder:setVertices(tbl: table)`
-
-Replaces this occluder's flat vertex coordinate list.
-
-**Parameters**
-
-- `tbl` (`table`, required): Flat numeric array `[x1, y1, x2, y2, ...]`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Replaces this occluder's flat vertex coordinate list.
@@ -2933,9 +3302,17 @@ Replaces this occluder's flat vertex coordinate list.
 function LOccluder:setVertices(tbl) end
 ```
 
+#### Description
+
+Replaces this occluder's flat vertex coordinate list.
+
+Parameters:
+
+- `tbl` (`table`, required): Flat numeric array `[x1, y1, x2, y2, ...]`.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -2948,13 +3325,7 @@ end
 
 ### LOccluder:type
 
-`LOccluder:type() -> string`
-
-Returns the Lua-visible type name for this occluder handle.
-
-**Returns**: `string` - The string `LOccluder`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this occluder handle.
@@ -2962,9 +3333,15 @@ Returns the Lua-visible type name for this occluder handle.
 function LOccluder:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this occluder handle.
+
+Returns: `string` - The string `LOccluder`.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do
@@ -2976,17 +3353,7 @@ end
 
 ### LOccluder:typeOf
 
-`LOccluder:typeOf(name: string) -> boolean`
-
-Returns whether this occluder handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LOccluder` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this occluder handle matches a supported type name.
@@ -2995,9 +3362,19 @@ Returns whether this occluder handle matches a supported type name.
 function LOccluder:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this occluder handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LOccluder` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [light.lua](../blob/main/content/examples/light.lua):
+Source: [light.lua](../blob/main/content/examples/light.lua)
 
 ```lua
 do

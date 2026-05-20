@@ -14,65 +14,181 @@
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
   - [lurek.mods.checkApiVersion](#lurekmodscheckapiversion)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.mods.newMod](#lurekmodsnewmod)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.mods.newModManager](#lurekmodsnewmodmanager)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.mods.newRegistry](#lurekmodsnewregistry)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔷 Module Types](#module-types)
   - [LContentRegistry](#lcontentregistry)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMod](#lmod)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LModManager](#lmodmanager)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
   - [LContentRegistry:get](#lcontentregistryget)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LContentRegistry:getAll](#lcontentregistrygetall)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LContentRegistry:getTypes](#lcontentregistrygettypes)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LContentRegistry:register](#lcontentregistryregister)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LContentRegistry:registerType](#lcontentregistryregistertype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LContentRegistry:type](#lcontentregistrytype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LContentRegistry:typeOf](#lcontentregistrytypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMod:getApiVersion](#lmodgetapiversion)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMod:getAuthor](#lmodgetauthor)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMod:getCapabilities](#lmodgetcapabilities)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMod:getConfig](#lmodgetconfig)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMod:getConfigSchema](#lmodgetconfigschema)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMod:getDependencies](#lmodgetdependencies)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMod:getDescription](#lmodgetdescription)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMod:getHook](#lmodgethook)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMod:getHookNames](#lmodgethooknames)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMod:getId](#lmodgetid)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMod:getName](#lmodgetname)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMod:getPriority](#lmodgetpriority)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMod:getVersion](#lmodgetversion)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMod:hasHook](#lmodhashook)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMod:isEnabled](#lmodisenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMod:isLoaded](#lmodisloaded)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMod:releaseRefs](#lmodreleaserefs)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMod:setApiVersion](#lmodsetapiversion)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMod:setCapabilities](#lmodsetcapabilities)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMod:setConfig](#lmodsetconfig)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMod:setConfigSchema](#lmodsetconfigschema)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMod:setEnabled](#lmodsetenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMod:setHook](#lmodsethook)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMod:type](#lmodtype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMod:typeOf](#lmodtypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LModManager:clearLoadOrder](#lmodmanagerclearloadorder)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LModManager:clearReloadQueue](#lmodmanagerclearreloadqueue)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LModManager:getAllMods](#lmodmanagergetallmods)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LModManager:getLoadOrder](#lmodmanagergetloadorder)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LModManager:getModCount](#lmodmanagergetmodcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LModManager:getModPath](#lmodmanagergetmodpath)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LModManager:getModsByCapability](#lmodmanagergetmodsbycapability)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LModManager:getReloadQueue](#lmodmanagergetreloadqueue)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LModManager:hasCircularDependencies](#lmodmanagerhascirculardependencies)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LModManager:hasMod](#lmodmanagerhasmod)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LModManager:markForReload](#lmodmanagermarkforreload)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LModManager:processReloadQueue](#lmodmanagerprocessreloadqueue)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LModManager:registerMod](#lmodmanagerregistermod)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LModManager:scanFolder](#lmodmanagerscanfolder)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LModManager:setLoadOrder](#lmodmanagersetloadorder)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LModManager:type](#lmodmanagertype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LModManager:typeOf](#lmodmanagertypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LModManager:unregisterMod](#lmodmanagerunregistermod)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LModManager:validateDependencies](#lmodmanagervalidatedependencies)
+    - [Definition](#definition)
+    - [Description](#description)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -121,20 +237,31 @@ lurek.mods.newRegistry() -> LContentRegistry -- Creates an empty content registr
 
 ### lurek.mods.checkApiVersion
 
-`lurek.mods.checkApiVersion(mod_ud: LMod, host_version: string) -> boolean`
+#### Definition
+
+```lua
+--- Checks whether a mod API version is compatible with a host version.
+---@param mod_ud LMod Mod handle.
+---@param host_version string Host API version string.
+---@return boolean a True when compatible.
+---@return string b Error message when incompatible, otherwise nil.
+lurek.mods.checkApiVersion = function(mod_ud, host_version) end
+```
+
+#### Description
 
 Checks whether a mod API version is compatible with a host version.
 
-**Parameters**
+Parameters:
 
 - `mod_ud` (`LMod`, required): Mod handle.
 - `host_version` (`string`, required): Host API version string.
 
-**Returns**: `boolean` - True when compatible.
+Returns: `boolean` - True when compatible.
 
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -148,19 +275,28 @@ end
 
 ### lurek.mods.newMod
 
-`lurek.mods.newMod(info: table) -> LMod`
+#### Definition
+
+```lua
+--- Creates a mod metadata handle from a Lua table.
+---@param info table Mod metadata table.
+---@return LMod New mod handle.
+lurek.mods.newMod = function(info) end
+```
+
+#### Description
 
 Creates a mod metadata handle from a Lua table.
 
-**Parameters**
+Parameters:
 
 - `info` (`table`, required): Mod metadata table.
 
-**Returns**: `LMod` - New mod handle.
+Returns: `LMod` - New mod handle.
 
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -172,15 +308,23 @@ end
 
 ### lurek.mods.newModManager
 
-`lurek.mods.newModManager() -> LModManager`
+#### Definition
+
+```lua
+--- Creates an empty mod manager. This function is exposed to Lua scripts.
+---@return LModManager New mod manager handle.
+lurek.mods.newModManager = function() end
+```
+
+#### Description
 
 Creates an empty mod manager. This function is exposed to Lua scripts.
 
-**Returns**: `LModManager` - New mod manager handle.
+Returns: `LModManager` - New mod manager handle.
 
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -192,15 +336,23 @@ end
 
 ### lurek.mods.newRegistry
 
-`lurek.mods.newRegistry() -> LContentRegistry`
+#### Definition
+
+```lua
+--- Creates an empty content registry.
+---@return LContentRegistry New content registry handle.
+lurek.mods.newRegistry = function() end
+```
+
+#### Description
 
 Creates an empty content registry.
 
-**Returns**: `LContentRegistry` - New content registry handle.
+Returns: `LContentRegistry` - New content registry handle.
 
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -217,9 +369,7 @@ end
 
 ### LContentRegistry
 
-Lua-side content registry for storing typed Lua values by id.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side content registry for storing typed Lua values by id.
@@ -227,9 +377,13 @@ Lua-side content registry for storing typed Lua values by id.
 LContentRegistry = {}
 ```
 
+#### Description
+
+Lua-side content registry for storing typed Lua values by id.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -241,9 +395,7 @@ end
 
 ### LMod
 
-Lua-side wrapper for mod metadata, hooks, and config references.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side wrapper for mod metadata, hooks, and config references.
@@ -251,9 +403,13 @@ Lua-side wrapper for mod metadata, hooks, and config references.
 LMod = {}
 ```
 
+#### Description
+
+Lua-side wrapper for mod metadata, hooks, and config references.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -265,9 +421,7 @@ end
 
 ### LModManager
 
-Lua-side wrapper for the mod manager.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side wrapper for the mod manager.
@@ -275,9 +429,13 @@ Lua-side wrapper for the mod manager.
 LModManager = {}
 ```
 
+#### Description
+
+Lua-side wrapper for the mod manager.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -294,18 +452,7 @@ end
 
 ### LContentRegistry:get
 
-`LContentRegistry:get(type_name: string, id: string) -> table`
-
-Returns one stored value by content type and id.
-
-**Parameters**
-
-- `type_name` (`string`, required): Content type name.
-- `id` (`string`, required): Entry id.
-
-**Returns**: `table` - Stored Lua value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns one stored value by content type and id.
@@ -316,9 +463,20 @@ Returns one stored value by content type and id.
 function LContentRegistry:get(type_name, id) end
 ```
 
+#### Description
+
+Returns one stored value by content type and id.
+
+Parameters:
+
+- `type_name` (`string`, required): Content type name.
+- `id` (`string`, required): Entry id.
+
+Returns: `table` - Stored Lua value.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -332,17 +490,7 @@ end
 
 ### LContentRegistry:getAll
 
-`LContentRegistry:getAll(type_name: string) -> table`
-
-Returns all stored values for a content type keyed by id.
-
-**Parameters**
-
-- `type_name` (`string`, required): Content type name.
-
-**Returns**: `table` - Table of stored values keyed by id.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns all stored values for a content type keyed by id.
@@ -351,9 +499,19 @@ Returns all stored values for a content type keyed by id.
 function LContentRegistry:getAll(type_name) end
 ```
 
+#### Description
+
+Returns all stored values for a content type keyed by id.
+
+Parameters:
+
+- `type_name` (`string`, required): Content type name.
+
+Returns: `table` - Table of stored values keyed by id.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -366,13 +524,7 @@ end
 
 ### LContentRegistry:getTypes
 
-`LContentRegistry:getTypes() -> string[]`
-
-Returns registered content type names.
-
-**Returns**: `string[]` - Content type names.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns registered content type names.
@@ -380,9 +532,15 @@ Returns registered content type names.
 function LContentRegistry:getTypes() end
 ```
 
+#### Description
+
+Returns registered content type names.
+
+Returns: `string[]` - Content type names.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -394,17 +552,7 @@ end
 
 ### LContentRegistry:register
 
-`LContentRegistry:register(type_name: string, id: string, obj: table)`
-
-Stores a Lua value under a registered content type and id.
-
-**Parameters**
-
-- `type_name` (`string`, required): Content type name.
-- `id` (`string`, required): Entry id.
-- `obj` (`table`, required): Lua value to store.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Stores a Lua value under a registered content type and id.
@@ -414,9 +562,19 @@ Stores a Lua value under a registered content type and id.
 function LContentRegistry:register(type_name, id, obj) end
 ```
 
+#### Description
+
+Stores a Lua value under a registered content type and id.
+
+Parameters:
+
+- `type_name` (`string`, required): Content type name.
+- `id` (`string`, required): Entry id.
+- `obj` (`table`, required): Lua value to store.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -429,15 +587,7 @@ end
 
 ### LContentRegistry:registerType
 
-`LContentRegistry:registerType(type_name: string)`
-
-Registers a content type name. This method is available to Lua scripts.
-
-**Parameters**
-
-- `type_name` (`string`, required): Content type name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Registers a content type name. This method is available to Lua scripts.
@@ -445,9 +595,17 @@ Registers a content type name. This method is available to Lua scripts.
 function LContentRegistry:registerType(type_name) end
 ```
 
+#### Description
+
+Registers a content type name. This method is available to Lua scripts.
+
+Parameters:
+
+- `type_name` (`string`, required): Content type name.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -460,13 +618,7 @@ end
 
 ### LContentRegistry:type
 
-`LContentRegistry:type() -> string`
-
-Returns the Lua-visible type name for this content registry handle.
-
-**Returns**: `string` - The string `LContentRegistry`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this content registry handle.
@@ -474,9 +626,15 @@ Returns the Lua-visible type name for this content registry handle.
 function LContentRegistry:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this content registry handle.
+
+Returns: `string` - The string `LContentRegistry`.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -487,17 +645,7 @@ end
 
 ### LContentRegistry:typeOf
 
-`LContentRegistry:typeOf(name: string) -> boolean`
-
-Returns whether this content registry handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LContentRegistry` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this content registry handle matches a supported type name.
@@ -506,9 +654,19 @@ Returns whether this content registry handle matches a supported type name.
 function LContentRegistry:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this content registry handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LContentRegistry` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -519,13 +677,7 @@ end
 
 ### LMod:getApiVersion
 
-`LMod:getApiVersion() -> string`
-
-Returns the optional required API version.
-
-**Returns**: `string` - API version string, or nil when unset.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the optional required API version.
@@ -533,9 +685,15 @@ Returns the optional required API version.
 function LMod:getApiVersion() end
 ```
 
+#### Description
+
+Returns the optional required API version.
+
+Returns: `string` - API version string, or nil when unset.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -548,13 +706,7 @@ end
 
 ### LMod:getAuthor
 
-`LMod:getAuthor() -> string`
-
-Returns the mod author. This method is available to Lua scripts.
-
-**Returns**: `string` - Mod author.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the mod author. This method is available to Lua scripts.
@@ -562,9 +714,15 @@ Returns the mod author. This method is available to Lua scripts.
 function LMod:getAuthor() end
 ```
 
+#### Description
+
+Returns the mod author. This method is available to Lua scripts.
+
+Returns: `string` - Mod author.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -575,13 +733,7 @@ end
 
 ### LMod:getCapabilities
 
-`LMod:getCapabilities() -> string[]`
-
-Returns capability names declared by the mod.
-
-**Returns**: `string[]` - Capability names.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns capability names declared by the mod.
@@ -589,9 +741,15 @@ Returns capability names declared by the mod.
 function LMod:getCapabilities() end
 ```
 
+#### Description
+
+Returns capability names declared by the mod.
+
+Returns: `string[]` - Capability names.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -605,13 +763,7 @@ end
 
 ### LMod:getConfig
 
-`LMod:getConfig() -> table`
-
-Returns the stored Lua config value.
-
-**Returns**: `table` - Stored config value, or nil when unset.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the stored Lua config value.
@@ -619,9 +771,15 @@ Returns the stored Lua config value.
 function LMod:getConfig() end
 ```
 
+#### Description
+
+Returns the stored Lua config value.
+
+Returns: `table` - Stored config value, or nil when unset.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -635,13 +793,7 @@ end
 
 ### LMod:getConfigSchema
 
-`LMod:getConfigSchema() -> table`
-
-Returns config schema entries. This method is available to Lua scripts.
-
-**Returns**: `table` - Array of schema entries with `key`, `type`, and `default` fields.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns config schema entries. This method is available to Lua scripts.
@@ -649,9 +801,15 @@ Returns config schema entries. This method is available to Lua scripts.
 function LMod:getConfigSchema() end
 ```
 
+#### Description
+
+Returns config schema entries. This method is available to Lua scripts.
+
+Returns: `table` - Array of schema entries with `key`, `type`, and `default` fields.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -665,13 +823,7 @@ end
 
 ### LMod:getDependencies
 
-`LMod:getDependencies() -> integer[]`
-
-Returns mod dependency ids. This method is available to Lua scripts.
-
-**Returns**: `integer[]` - Array table of dependency ids.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns mod dependency ids. This method is available to Lua scripts.
@@ -679,9 +831,15 @@ Returns mod dependency ids. This method is available to Lua scripts.
 function LMod:getDependencies() end
 ```
 
+#### Description
+
+Returns mod dependency ids. This method is available to Lua scripts.
+
+Returns: `integer[]` - Array table of dependency ids.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -694,13 +852,7 @@ end
 
 ### LMod:getDescription
 
-`LMod:getDescription() -> string`
-
-Returns the mod description. This method is available to Lua scripts.
-
-**Returns**: `string` - Mod description.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the mod description. This method is available to Lua scripts.
@@ -708,9 +860,15 @@ Returns the mod description. This method is available to Lua scripts.
 function LMod:getDescription() end
 ```
 
+#### Description
+
+Returns the mod description. This method is available to Lua scripts.
+
+Returns: `string` - Mod description.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -721,17 +879,7 @@ end
 
 ### LMod:getHook
 
-`LMod:getHook(name: string) -> function`
-
-Returns a stored hook function by name.
-
-**Parameters**
-
-- `name` (`string`, required): Hook name.
-
-**Returns**: `function` - Hook callback, or nil when missing.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a stored hook function by name.
@@ -740,9 +888,19 @@ Returns a stored hook function by name.
 function LMod:getHook(name) end
 ```
 
+#### Description
+
+Returns a stored hook function by name.
+
+Parameters:
+
+- `name` (`string`, required): Hook name.
+
+Returns: `function` - Hook callback, or nil when missing.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -756,13 +914,7 @@ end
 
 ### LMod:getHookNames
 
-`LMod:getHookNames() -> string[]`
-
-Returns registered hook names. This method is available to Lua scripts.
-
-**Returns**: `string[]` - Hook names.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns registered hook names. This method is available to Lua scripts.
@@ -770,9 +922,15 @@ Returns registered hook names. This method is available to Lua scripts.
 function LMod:getHookNames() end
 ```
 
+#### Description
+
+Returns registered hook names. This method is available to Lua scripts.
+
+Returns: `string[]` - Hook names.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -786,13 +944,7 @@ end
 
 ### LMod:getId
 
-`LMod:getId() -> string`
-
-Returns the mod id. This method is available to Lua scripts.
-
-**Returns**: `string` - Mod id.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the mod id. This method is available to Lua scripts.
@@ -800,9 +952,15 @@ Returns the mod id. This method is available to Lua scripts.
 function LMod:getId() end
 ```
 
+#### Description
+
+Returns the mod id. This method is available to Lua scripts.
+
+Returns: `string` - Mod id.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -813,13 +971,7 @@ end
 
 ### LMod:getName
 
-`LMod:getName() -> string`
-
-Returns the mod display name. This method is available to Lua scripts.
-
-**Returns**: `string` - Mod name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the mod display name. This method is available to Lua scripts.
@@ -827,9 +979,15 @@ Returns the mod display name. This method is available to Lua scripts.
 function LMod:getName() end
 ```
 
+#### Description
+
+Returns the mod display name. This method is available to Lua scripts.
+
+Returns: `string` - Mod name.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -840,13 +998,7 @@ end
 
 ### LMod:getPriority
 
-`LMod:getPriority() -> integer`
-
-Returns the mod priority. This method is available to Lua scripts.
-
-**Returns**: `integer` - Mod priority.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the mod priority. This method is available to Lua scripts.
@@ -854,9 +1006,15 @@ Returns the mod priority. This method is available to Lua scripts.
 function LMod:getPriority() end
 ```
 
+#### Description
+
+Returns the mod priority. This method is available to Lua scripts.
+
+Returns: `integer` - Mod priority.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -867,13 +1025,7 @@ end
 
 ### LMod:getVersion
 
-`LMod:getVersion() -> string`
-
-Returns the mod version. This method is available to Lua scripts.
-
-**Returns**: `string` - Mod version.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the mod version. This method is available to Lua scripts.
@@ -881,9 +1033,15 @@ Returns the mod version. This method is available to Lua scripts.
 function LMod:getVersion() end
 ```
 
+#### Description
+
+Returns the mod version. This method is available to Lua scripts.
+
+Returns: `string` - Mod version.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -894,17 +1052,7 @@ end
 
 ### LMod:hasHook
 
-`LMod:hasHook(name: string) -> boolean`
-
-Returns whether a hook name is registered.
-
-**Parameters**
-
-- `name` (`string`, required): Hook name.
-
-**Returns**: `boolean` - True when the hook exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether a hook name is registered.
@@ -913,9 +1061,19 @@ Returns whether a hook name is registered.
 function LMod:hasHook(name) end
 ```
 
+#### Description
+
+Returns whether a hook name is registered.
+
+Parameters:
+
+- `name` (`string`, required): Hook name.
+
+Returns: `boolean` - True when the hook exists.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -928,13 +1086,7 @@ end
 
 ### LMod:isEnabled
 
-`LMod:isEnabled() -> boolean`
-
-Returns whether the mod is enabled.
-
-**Returns**: `boolean` - True when enabled.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether the mod is enabled.
@@ -942,9 +1094,15 @@ Returns whether the mod is enabled.
 function LMod:isEnabled() end
 ```
 
+#### Description
+
+Returns whether the mod is enabled.
+
+Returns: `boolean` - True when enabled.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -957,13 +1115,7 @@ end
 
 ### LMod:isLoaded
 
-`LMod:isLoaded() -> boolean`
-
-Returns whether the mod is loaded. This method is available to Lua scripts.
-
-**Returns**: `boolean` - True when loaded.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether the mod is loaded. This method is available to Lua scripts.
@@ -971,9 +1123,15 @@ Returns whether the mod is loaded. This method is available to Lua scripts.
 function LMod:isLoaded() end
 ```
 
+#### Description
+
+Returns whether the mod is loaded. This method is available to Lua scripts.
+
+Returns: `boolean` - True when loaded.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -985,20 +1143,20 @@ end
 
 ### LMod:releaseRefs
 
-`LMod:releaseRefs()`
-
-Releases stored Lua registry references for hooks and config.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Releases stored Lua registry references for hooks and config.
 function LMod:releaseRefs() end
 ```
 
+#### Description
+
+Releases stored Lua registry references for hooks and config.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -1012,15 +1170,7 @@ end
 
 ### LMod:setApiVersion
 
-`LMod:setApiVersion(api_version: string)`
-
-Sets the required API version string.
-
-**Parameters**
-
-- `api_version` (`string`, required): API version string.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the required API version string.
@@ -1028,9 +1178,17 @@ Sets the required API version string.
 function LMod:setApiVersion(api_version) end
 ```
 
+#### Description
+
+Sets the required API version string.
+
+Parameters:
+
+- `api_version` (`string`, required): API version string.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -1043,15 +1201,7 @@ end
 
 ### LMod:setCapabilities
 
-`LMod:setCapabilities(caps: table)`
-
-Sets capability names from an array table.
-
-**Parameters**
-
-- `caps` (`table`, required): Array table of capability names.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets capability names from an array table.
@@ -1059,9 +1209,17 @@ Sets capability names from an array table.
 function LMod:setCapabilities(caps) end
 ```
 
+#### Description
+
+Sets capability names from an array table.
+
+Parameters:
+
+- `caps` (`table`, required): Array table of capability names.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -1074,15 +1232,7 @@ end
 
 ### LMod:setConfig
 
-`LMod:setConfig(value: table)`
-
-Stores a Lua config value for this mod.
-
-**Parameters**
-
-- `value` (`table`, required): Config value to store (table, number, string, or boolean).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Stores a Lua config value for this mod.
@@ -1090,9 +1240,17 @@ Stores a Lua config value for this mod.
 function LMod:setConfig(value) end
 ```
 
+#### Description
+
+Stores a Lua config value for this mod.
+
+Parameters:
+
+- `value` (`table`, required): Config value to store (table, number, string, or boolean).
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -1105,15 +1263,7 @@ end
 
 ### LMod:setConfigSchema
 
-`LMod:setConfigSchema(schema: table)`
-
-Sets config schema entries from a Lua table.
-
-**Parameters**
-
-- `schema` (`table`, required): Array table of schema entries.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets config schema entries from a Lua table.
@@ -1121,9 +1271,17 @@ Sets config schema entries from a Lua table.
 function LMod:setConfigSchema(schema) end
 ```
 
+#### Description
+
+Sets config schema entries from a Lua table.
+
+Parameters:
+
+- `schema` (`table`, required): Array table of schema entries.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -1136,15 +1294,7 @@ end
 
 ### LMod:setEnabled
 
-`LMod:setEnabled(enabled: boolean)`
-
-Sets whether the mod is enabled. This method is available to Lua scripts.
-
-**Parameters**
-
-- `enabled` (`boolean`, required): Enabled flag.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets whether the mod is enabled. This method is available to Lua scripts.
@@ -1152,9 +1302,17 @@ Sets whether the mod is enabled. This method is available to Lua scripts.
 function LMod:setEnabled(enabled) end
 ```
 
+#### Description
+
+Sets whether the mod is enabled. This method is available to Lua scripts.
+
+Parameters:
+
+- `enabled` (`boolean`, required): Enabled flag.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -1167,16 +1325,7 @@ end
 
 ### LMod:setHook
 
-`LMod:setHook(name: string, func: function)`
-
-Stores a Lua hook function by name. This method is available to Lua scripts.
-
-**Parameters**
-
-- `name` (`string`, required): Hook name.
-- `func` (`function`, required): Hook callback function.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Stores a Lua hook function by name. This method is available to Lua scripts.
@@ -1185,9 +1334,18 @@ Stores a Lua hook function by name. This method is available to Lua scripts.
 function LMod:setHook(name, func) end
 ```
 
+#### Description
+
+Stores a Lua hook function by name. This method is available to Lua scripts.
+
+Parameters:
+
+- `name` (`string`, required): Hook name.
+- `func` (`function`, required): Hook callback function.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -1200,13 +1358,7 @@ end
 
 ### LMod:type
 
-`LMod:type() -> string`
-
-Returns the Lua-visible type name for this mod handle.
-
-**Returns**: `string` - The string `LMod`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this mod handle.
@@ -1214,9 +1366,15 @@ Returns the Lua-visible type name for this mod handle.
 function LMod:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this mod handle.
+
+Returns: `string` - The string `LMod`.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -1227,17 +1385,7 @@ end
 
 ### LMod:typeOf
 
-`LMod:typeOf(name: string) -> boolean`
-
-Returns whether this mod handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LMod` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this mod handle matches a supported type name.
@@ -1246,9 +1394,19 @@ Returns whether this mod handle matches a supported type name.
 function LMod:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this mod handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LMod` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -1259,20 +1417,20 @@ end
 
 ### LModManager:clearLoadOrder
 
-`LModManager:clearLoadOrder()`
-
-Clears explicit load order. This method is available to Lua scripts.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Clears explicit load order. This method is available to Lua scripts.
 function LModManager:clearLoadOrder() end
 ```
 
+#### Description
+
+Clears explicit load order. This method is available to Lua scripts.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -1286,20 +1444,20 @@ end
 
 ### LModManager:clearReloadQueue
 
-`LModManager:clearReloadQueue()`
-
-Clears the reload queue. This method is available to Lua scripts.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Clears the reload queue. This method is available to Lua scripts.
 function LModManager:clearReloadQueue() end
 ```
 
+#### Description
+
+Clears the reload queue. This method is available to Lua scripts.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -1313,13 +1471,7 @@ end
 
 ### LModManager:getAllMods
 
-`LModManager:getAllMods() -> table`
-
-Returns metadata for all registered mods.
-
-**Returns**: `table` - Array table of mod metadata tables.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns metadata for all registered mods.
@@ -1327,9 +1479,15 @@ Returns metadata for all registered mods.
 function LModManager:getAllMods() end
 ```
 
+#### Description
+
+Returns metadata for all registered mods.
+
+Returns: `table` - Array table of mod metadata tables.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -1343,13 +1501,7 @@ end
 
 ### LModManager:getLoadOrder
 
-`LModManager:getLoadOrder() -> table`
-
-Returns the resolved load order. This method is available to Lua scripts.
-
-**Returns**: `table` - Array table of mod metadata tables.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the resolved load order. This method is available to Lua scripts.
@@ -1357,9 +1509,15 @@ Returns the resolved load order. This method is available to Lua scripts.
 function LModManager:getLoadOrder() end
 ```
 
+#### Description
+
+Returns the resolved load order. This method is available to Lua scripts.
+
+Returns: `table` - Array table of mod metadata tables.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -1373,13 +1531,7 @@ end
 
 ### LModManager:getModCount
 
-`LModManager:getModCount() -> integer`
-
-Returns the number of registered mods.
-
-**Returns**: `integer` - Mod count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of registered mods.
@@ -1387,9 +1539,15 @@ Returns the number of registered mods.
 function LModManager:getModCount() end
 ```
 
+#### Description
+
+Returns the number of registered mods.
+
+Returns: `integer` - Mod count.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -1402,17 +1560,7 @@ end
 
 ### LModManager:getModPath
 
-`LModManager:getModPath(mod_id: string) -> string`
-
-Returns the filesystem path for a registered mod.
-
-**Parameters**
-
-- `mod_id` (`string`, required): Mod id.
-
-**Returns**: `string` - Mod path, or nil when unknown.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the filesystem path for a registered mod.
@@ -1421,9 +1569,19 @@ Returns the filesystem path for a registered mod.
 function LModManager:getModPath(mod_id) end
 ```
 
+#### Description
+
+Returns the filesystem path for a registered mod.
+
+Parameters:
+
+- `mod_id` (`string`, required): Mod id.
+
+Returns: `string` - Mod path, or nil when unknown.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -1437,17 +1595,7 @@ end
 
 ### LModManager:getModsByCapability
 
-`LModManager:getModsByCapability(capability: string) -> table`
-
-Returns metadata for mods declaring a capability.
-
-**Parameters**
-
-- `capability` (`string`, required): Capability name.
-
-**Returns**: `table` - Array table of mod metadata tables.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns metadata for mods declaring a capability.
@@ -1456,9 +1604,19 @@ Returns metadata for mods declaring a capability.
 function LModManager:getModsByCapability(capability) end
 ```
 
+#### Description
+
+Returns metadata for mods declaring a capability.
+
+Parameters:
+
+- `capability` (`string`, required): Capability name.
+
+Returns: `table` - Array table of mod metadata tables.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -1472,13 +1630,7 @@ end
 
 ### LModManager:getReloadQueue
 
-`LModManager:getReloadQueue() -> integer[]`
-
-Returns mod ids waiting for reload.
-
-**Returns**: `integer[]` - Array table of mod ids.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns mod ids waiting for reload.
@@ -1486,9 +1638,15 @@ Returns mod ids waiting for reload.
 function LModManager:getReloadQueue() end
 ```
 
+#### Description
+
+Returns mod ids waiting for reload.
+
+Returns: `integer[]` - Array table of mod ids.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -1501,13 +1659,7 @@ end
 
 ### LModManager:hasCircularDependencies
 
-`LModManager:hasCircularDependencies() -> boolean`
-
-Returns whether registered mods have circular dependencies.
-
-**Returns**: `boolean` - True when a cycle exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether registered mods have circular dependencies.
@@ -1515,9 +1667,15 @@ Returns whether registered mods have circular dependencies.
 function LModManager:hasCircularDependencies() end
 ```
 
+#### Description
+
+Returns whether registered mods have circular dependencies.
+
+Returns: `boolean` - True when a cycle exists.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -1530,17 +1688,7 @@ end
 
 ### LModManager:hasMod
 
-`LModManager:hasMod(mod_id: string) -> boolean`
-
-Returns whether a mod id is registered.
-
-**Parameters**
-
-- `mod_id` (`string`, required): Mod id.
-
-**Returns**: `boolean` - True when the mod exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether a mod id is registered.
@@ -1549,9 +1697,19 @@ Returns whether a mod id is registered.
 function LModManager:hasMod(mod_id) end
 ```
 
+#### Description
+
+Returns whether a mod id is registered.
+
+Parameters:
+
+- `mod_id` (`string`, required): Mod id.
+
+Returns: `boolean` - True when the mod exists.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -1564,17 +1722,7 @@ end
 
 ### LModManager:markForReload
 
-`LModManager:markForReload(mod_id: string) -> boolean`
-
-Marks a mod id for reload. This method is available to Lua scripts.
-
-**Parameters**
-
-- `mod_id` (`string`, required): Mod id.
-
-**Returns**: `boolean` - True when the mod was marked.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Marks a mod id for reload. This method is available to Lua scripts.
@@ -1583,9 +1731,19 @@ Marks a mod id for reload. This method is available to Lua scripts.
 function LModManager:markForReload(mod_id) end
 ```
 
+#### Description
+
+Marks a mod id for reload. This method is available to Lua scripts.
+
+Parameters:
+
+- `mod_id` (`string`, required): Mod id.
+
+Returns: `boolean` - True when the mod was marked.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -1598,13 +1756,7 @@ end
 
 ### LModManager:processReloadQueue
 
-`LModManager:processReloadQueue() -> integer[]`
-
-Processes and clears the reload queue.
-
-**Returns**: `integer[]` - Array table of processed mod ids.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Processes and clears the reload queue.
@@ -1612,9 +1764,15 @@ Processes and clears the reload queue.
 function LModManager:processReloadQueue() end
 ```
 
+#### Description
+
+Processes and clears the reload queue.
+
+Returns: `integer[]` - Array table of processed mod ids.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -1628,15 +1786,7 @@ end
 
 ### LModManager:registerMod
 
-`LModManager:registerMod(ud: LMod)`
-
-Registers a mod with the manager. This method is available to Lua scripts.
-
-**Parameters**
-
-- `ud` (`LMod`, required): Mod handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Registers a mod with the manager. This method is available to Lua scripts.
@@ -1644,9 +1794,17 @@ Registers a mod with the manager. This method is available to Lua scripts.
 function LModManager:registerMod(ud) end
 ```
 
+#### Description
+
+Registers a mod with the manager. This method is available to Lua scripts.
+
+Parameters:
+
+- `ud` (`LMod`, required): Mod handle.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -1659,17 +1817,7 @@ end
 
 ### LModManager:scanFolder
 
-`LModManager:scanFolder(path: string) -> table`
-
-Scans a folder for mod metadata. This method is available to Lua scripts.
-
-**Parameters**
-
-- `path` (`string`, required): Folder path.
-
-**Returns**: `table` - Array table of discovered mod metadata tables.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Scans a folder for mod metadata. This method is available to Lua scripts.
@@ -1678,9 +1826,19 @@ Scans a folder for mod metadata. This method is available to Lua scripts.
 function LModManager:scanFolder(path) end
 ```
 
+#### Description
+
+Scans a folder for mod metadata. This method is available to Lua scripts.
+
+Parameters:
+
+- `path` (`string`, required): Folder path.
+
+Returns: `table` - Array table of discovered mod metadata tables.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -1692,15 +1850,7 @@ end
 
 ### LModManager:setLoadOrder
 
-`LModManager:setLoadOrder(order_table: table)`
-
-Sets explicit load order from an array of mod ids.
-
-**Parameters**
-
-- `order_table` (`table`, required): Array table of mod ids.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets explicit load order from an array of mod ids.
@@ -1708,9 +1858,17 @@ Sets explicit load order from an array of mod ids.
 function LModManager:setLoadOrder(order_table) end
 ```
 
+#### Description
+
+Sets explicit load order from an array of mod ids.
+
+Parameters:
+
+- `order_table` (`table`, required): Array table of mod ids.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -1724,13 +1882,7 @@ end
 
 ### LModManager:type
 
-`LModManager:type() -> string`
-
-Returns the Lua-visible type name for this mod manager handle.
-
-**Returns**: `string` - The string `LModManager`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this mod manager handle.
@@ -1738,9 +1890,15 @@ Returns the Lua-visible type name for this mod manager handle.
 function LModManager:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this mod manager handle.
+
+Returns: `string` - The string `LModManager`.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -1751,17 +1909,7 @@ end
 
 ### LModManager:typeOf
 
-`LModManager:typeOf(name: string) -> boolean`
-
-Returns whether this mod manager handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LModManager` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this mod manager handle matches a supported type name.
@@ -1770,9 +1918,19 @@ Returns whether this mod manager handle matches a supported type name.
 function LModManager:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this mod manager handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LModManager` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -1783,17 +1941,7 @@ end
 
 ### LModManager:unregisterMod
 
-`LModManager:unregisterMod(mod_id: string) -> boolean`
-
-Unregisters a mod by id. This method is available to Lua scripts.
-
-**Parameters**
-
-- `mod_id` (`string`, required): Mod id.
-
-**Returns**: `boolean` - True when a mod was removed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Unregisters a mod by id. This method is available to Lua scripts.
@@ -1802,9 +1950,19 @@ Unregisters a mod by id. This method is available to Lua scripts.
 function LModManager:unregisterMod(mod_id) end
 ```
 
+#### Description
+
+Unregisters a mod by id. This method is available to Lua scripts.
+
+Parameters:
+
+- `mod_id` (`string`, required): Mod id.
+
+Returns: `boolean` - True when a mod was removed.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do
@@ -1818,13 +1976,7 @@ end
 
 ### LModManager:validateDependencies
 
-`LModManager:validateDependencies() -> string[]`
-
-Returns dependency validation messages.
-
-**Returns**: `string[]` - Validation message strings.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns dependency validation messages.
@@ -1832,9 +1984,15 @@ Returns dependency validation messages.
 function LModManager:validateDependencies() end
 ```
 
+#### Description
+
+Returns dependency validation messages.
+
+Returns: `string[]` - Validation message strings.
+
 #### Example
 
-Exact example from [mods.lua](../blob/main/content/examples/mods.lua):
+Source: [mods.lua](../blob/main/content/examples/mods.lua)
 
 ```lua
 do

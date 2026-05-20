@@ -14,114 +14,328 @@
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
   - [lurek.image.fromScreen](#lurekimagefromscreen)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.image.isCompressed](#lurekimageiscompressed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.image.loadImage](#lurekimageloadimage)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.image.loadLayered](#lurekimageloadlayered)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.image.newCompressedData](#lurekimagenewcompresseddata)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.image.newImageData](#lurekimagenewimagedata)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.image.newImageDataFromBytes](#lurekimagenewimagedatafrombytes)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.image.newLayeredImage](#lurekimagenewlayeredimage)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.image.newPaletteLut](#lurekimagenewpalettelut)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.image.newProvinceGrid](#lurekimagenewprovincegrid)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.image.saveImage](#lurekimagesaveimage)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.image.savePNG](#lurekimagesavepng)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔷 Module Types](#module-types)
   - [LCompressedImageData](#lcompressedimagedata)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData](#limagedata)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLayeredImage](#llayeredimage)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPaletteLUT](#lpalettelut)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LProvinceGrid](#lprovincegrid)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
   - [LCompressedImageData:getDimensions](#lcompressedimagedatagetdimensions)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCompressedImageData:getFormat](#lcompressedimagedatagetformat)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCompressedImageData:getHeight](#lcompressedimagedatagetheight)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCompressedImageData:getMipmapCount](#lcompressedimagedatagetmipmapcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCompressedImageData:getWidth](#lcompressedimagedatagetwidth)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCompressedImageData:type](#lcompressedimagedatatype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCompressedImageData:typeOf](#lcompressedimagedatatypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:alphaMask](#limagedataalphamask)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:applyPaletteLut](#limagedataapplypalettelut)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:blit](#limagedatablit)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:blur](#limagedatablur)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:brightness](#limagedatabrightness)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:contrast](#limagedatacontrast)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:convolve](#limagedataconvolve)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:crop](#limagedatacrop)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:diff](#limagedatadiff)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:drawCircle](#limagedatadrawcircle)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:drawLine](#limagedatadrawline)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:drawNineSlice](#limagedatadrawnineslice)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:drawRect](#limagedatadrawrect)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:encode](#limagedataencode)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:fill](#limagedatafill)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:flipHorizontal](#limagedatafliphorizontal)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:flipVertical](#limagedataflipvertical)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:gamma](#limagedatagamma)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:getDimensions](#limagedatagetdimensions)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:getHeight](#limagedatagetheight)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:getPixel](#limagedatagetpixel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:getRawBytes](#limagedatagetrawbytes)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:getRegion](#limagedatagetregion)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:getString](#limagedatagetstring)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:getWidth](#limagedatagetwidth)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:grayscale](#limagedatagrayscale)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:invert](#limagedatainvert)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:mapPixel](#limagedatamappixel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:mapPixels](#limagedatamappixels)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:noise](#limagedatanoise)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:paste](#limagedatapaste)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:posterize](#limagedataposterize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:resize](#limagedataresize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:resizeNearest](#limagedataresizenearest)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:rotate90cw](#limagedatarotate90cw)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:saturation](#limagedatasaturation)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:sepia](#limagedatasepia)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:setPixel](#limagedatasetpixel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:setRawData](#limagedatasetrawdata)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:sharpen](#limagedatasharpen)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:threshold](#limagedatathreshold)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:tint](#limagedatatint)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:type](#limagedatatype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageData:typeOf](#limagedatatypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLayeredImage:addLayer](#llayeredimageaddlayer)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLayeredImage:getHeight](#llayeredimagegetheight)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLayeredImage:getLayer](#llayeredimagegetlayer)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLayeredImage:getName](#llayeredimagegetname)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLayeredImage:getOpacity](#llayeredimagegetopacity)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLayeredImage:getWidth](#llayeredimagegetwidth)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLayeredImage:isVisible](#llayeredimageisvisible)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLayeredImage:layerCount](#llayeredimagelayercount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLayeredImage:merge](#llayeredimagemerge)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLayeredImage:moveLayer](#llayeredimagemovelayer)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLayeredImage:removeLayer](#llayeredimageremovelayer)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLayeredImage:save](#llayeredimagesave)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLayeredImage:setLayer](#llayeredimagesetlayer)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLayeredImage:setName](#llayeredimagesetname)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLayeredImage:setOpacity](#llayeredimagesetopacity)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLayeredImage:setVisible](#llayeredimagesetvisible)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLayeredImage:swapLayers](#llayeredimageswaplayers)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLayeredImage:type](#llayeredimagetype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLayeredImage:typeOf](#llayeredimagetypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPaletteLUT:clear](#lpalettelutclear)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPaletteLUT:cycle](#lpalettelutcycle)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPaletteLUT:getColorCount](#lpalettelutgetcolorcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPaletteLUT:setColor](#lpalettelutsetcolor)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPaletteLUT:type](#lpaletteluttype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPaletteLUT:typeOf](#lpaletteluttypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LProvinceGrid:adjacencies](#lprovincegridadjacencies)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LProvinceGrid:borderSegments](#lprovincegridbordersegments)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LProvinceGrid:deserializeShapeData](#lprovincegriddeserializeshapedata)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LProvinceGrid:drawShapes](#lprovincegriddrawshapes)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LProvinceGrid:getAt](#lprovincegridgetat)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LProvinceGrid:getHeight](#lprovincegridgetheight)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LProvinceGrid:getPolygons](#lprovincegridgetpolygons)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LProvinceGrid:getPolygonsSimplified](#lprovincegridgetpolygonssimplified)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LProvinceGrid:getWidth](#lprovincegridgetwidth)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LProvinceGrid:provinceCount](#lprovincegridprovincecount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LProvinceGrid:provinceSpans](#lprovincegridprovincespans)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LProvinceGrid:serializeShapeData](#lprovincegridserializeshapedata)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LProvinceGrid:type](#lprovincegridtype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LProvinceGrid:typeOf](#lprovincegridtypeof)
+    - [Definition](#definition)
+    - [Description](#description)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -180,15 +394,23 @@ lurek.image.savePNG(img_ud: LImageData, filename: string) -- Encodes image data 
 
 ### lurek.image.fromScreen
 
-`lurek.image.fromScreen() -> LImageData|nil`
+#### Definition
+
+```lua
+--- Returns a completed screen capture image or requests one for a future call.
+---@return LImageData nil | `LImageData` when capture data is ready, or nil after requesting capture.
+lurek.image.fromScreen = function() end
+```
+
+#### Description
 
 Returns a completed screen capture image or requests one for a future call.
 
-**Returns**: `LImageData|nil` - `LImageData` when capture data is ready, or nil after requesting capture.
+Returns: `LImageData|nil` - `LImageData` when capture data is ready, or nil after requesting capture.
 
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -200,19 +422,28 @@ end
 
 ### lurek.image.isCompressed
 
-`lurek.image.isCompressed(filename: string) -> boolean`
+#### Definition
+
+```lua
+--- Returns whether a GameFS image file begins with DDS compressed image magic bytes.
+---@param filename string GameFS path to inspect.
+---@return boolean True when the file appears to be DDS compressed data.
+lurek.image.isCompressed = function(filename) end
+```
+
+#### Description
 
 Returns whether a GameFS image file begins with DDS compressed image magic bytes.
 
-**Parameters**
+Parameters:
 
 - `filename` (`string`, required): GameFS path to inspect.
 
-**Returns**: `boolean` - True when the file appears to be DDS compressed data.
+Returns: `boolean` - True when the file appears to be DDS compressed data.
 
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -223,42 +454,63 @@ end
 
 ### lurek.image.loadImage
 
-`lurek.image.loadImage(filename: string) -> LImageData`
+#### Definition
+
+```lua
+--- Loads and decodes image data from GameFS.
+---@param filename string GameFS path to an encoded image.
+---@return LImageData Loaded image data handle.
+lurek.image.loadImage = function(filename) end
+```
+
+#### Description
 
 Loads and decodes image data from GameFS.
 
-**Parameters**
+Parameters:
 
 - `filename` (`string`, required): GameFS path to an encoded image.
 
-**Returns**: `LImageData` - Loaded image data handle.
+Returns: `LImageData` - Loaded image data handle.
 
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
-    local img = lurek.image.loadImage("assets/textures/province_map.png")
+    local src = lurek.image.newImageData(8, 8)
+    src:fill(1, 0, 0, 1)
+    lurek.image.saveImage(src, "save/sample_image.limg")
+    local img = lurek.image.loadImage("save/sample_image.limg")
     print("loaded image " .. img:getWidth() .. "x" .. img:getHeight())
 end
 ```
 
 ### lurek.image.loadLayered
 
-`lurek.image.loadLayered(filename: string) -> LLayeredImage`
+#### Definition
+
+```lua
+--- Loads a serialized layered image stack from GameFS.
+---@param filename string GameFS path to the layered image file.
+---@return LLayeredImage Loaded layered image handle.
+lurek.image.loadLayered = function(filename) end
+```
+
+#### Description
 
 Loads a serialized layered image stack from GameFS.
 
-**Parameters**
+Parameters:
 
 - `filename` (`string`, required): GameFS path to the layered image file.
 
-**Returns**: `LLayeredImage` - Loaded layered image handle.
+Returns: `LLayeredImage` - Loaded layered image handle.
 
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -273,7 +525,7 @@ end
 
 --@api-stub: lurek.image.newProvinceGrid
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/images/sample_province_map.png")
     print("grid " .. grid:getWidth() .. "x" .. grid:getHeight())
     print("provinces = " .. grid:provinceCount())
 end
@@ -313,19 +565,28 @@ do
 
 ### lurek.image.newCompressedData
 
-`lurek.image.newCompressedData(filename: string) -> LCompressedImageData`
+#### Definition
+
+```lua
+--- Loads DDS compressed image data from GameFS.
+---@param filename string GameFS path to a DDS file.
+---@return LCompressedImageData New compressed image data handle.
+lurek.image.newCompressedData = function(filename) end
+```
+
+#### Description
 
 Loads DDS compressed image data from GameFS.
 
-**Parameters**
+Parameters:
 
 - `filename` (`string`, required): GameFS path to a DDS file.
 
-**Returns**: `LCompressedImageData` - New compressed image data handle.
+Returns: `LCompressedImageData` - New compressed image data handle.
 
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -338,20 +599,30 @@ end
 
 ### lurek.image.newImageData
 
-`lurek.image.newImageData(width_or_filename: integer|string, [height]: integer) -> LImageData`
+#### Definition
+
+```lua
+--- Creates empty image data from dimensions or decodes image data from a GameFS filename.
+---@param width_or_filename number|string Width in pixels for a blank canvas, or a GameFS filename string to load from disk.
+---@param height? number Height in pixels; required when the first argument is a width integer. Omit when loading from filename.
+---@return LImageData New image data handle.
+lurek.image.newImageData = function(width_or_filename, height) end
+```
+
+#### Description
 
 Creates empty image data from dimensions or decodes image data from a GameFS filename.
 
-**Parameters**
+Parameters:
 
 - `width_or_filename` (`integer|string`, required): Width in pixels for a blank canvas, or a GameFS filename string to load from disk.
 - `height` (`integer`, optional): Height in pixels; required when the first argument is a width integer. Omit when loading from filename.
 
-**Returns**: `LImageData` - New image data handle.
+Returns: `LImageData` - New image data handle.
 
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -362,21 +633,32 @@ end
 
 ### lurek.image.newImageDataFromBytes
 
-`lurek.image.newImageDataFromBytes(w: integer, h: integer, bytes: string) -> LImageData`
+#### Definition
+
+```lua
+--- Creates image data from raw RGBA bytes and explicit dimensions.
+---@param w number Width in pixels.
+---@param h number Height in pixels.
+---@param bytes string Raw RGBA byte string.
+---@return LImageData New image data handle.
+lurek.image.newImageDataFromBytes = function(w, h, bytes) end
+```
+
+#### Description
 
 Creates image data from raw RGBA bytes and explicit dimensions.
 
-**Parameters**
+Parameters:
 
 - `w` (`integer`, required): Width in pixels.
 - `h` (`integer`, required): Height in pixels.
 - `bytes` (`string`, required): Raw RGBA byte string.
 
-**Returns**: `LImageData` - New image data handle.
+Returns: `LImageData` - New image data handle.
 
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -388,20 +670,30 @@ end
 
 ### lurek.image.newLayeredImage
 
-`lurek.image.newLayeredImage(width: integer, height: integer) -> LLayeredImage`
+#### Definition
+
+```lua
+--- Creates a layered image stack with one or more blank layers.
+---@param width number Width in pixels.
+---@param height number Height in pixels.
+---@return LLayeredImage New layered image handle.
+lurek.image.newLayeredImage = function(width, height) end
+```
+
+#### Description
 
 Creates a layered image stack with one or more blank layers.
 
-**Parameters**
+Parameters:
 
 - `width` (`integer`, required): Width in pixels.
 - `height` (`integer`, required): Height in pixels.
 
-**Returns**: `LLayeredImage` - New layered image handle.
+Returns: `LLayeredImage` - New layered image handle.
 
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -413,15 +705,23 @@ end
 
 ### lurek.image.newPaletteLut
 
-`lurek.image.newPaletteLut() -> LPaletteLUT`
+#### Definition
+
+```lua
+--- Creates an empty palette lookup table.
+---@return LPaletteLUT New palette lookup table handle.
+lurek.image.newPaletteLut = function() end
+```
+
+#### Description
 
 Creates an empty palette lookup table.
 
-**Returns**: `LPaletteLUT` - New palette lookup table handle.
+Returns: `LPaletteLUT` - New palette lookup table handle.
 
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -432,23 +732,32 @@ end
 
 ### lurek.image.newProvinceGrid
 
-`lurek.image.newProvinceGrid(filename: string) -> LProvinceGrid`
+#### Definition
+
+```lua
+--- Loads a province id grid from an image file under the current game directory.
+---@param filename string Province map image filename relative to game directory.
+---@return LProvinceGrid New province grid handle.
+lurek.image.newProvinceGrid = function(filename) end
+```
+
+#### Description
 
 Loads a province id grid from an image file under the current game directory.
 
-**Parameters**
+Parameters:
 
 - `filename` (`string`, required): Province map image filename relative to game directory.
 
-**Returns**: `LProvinceGrid` - New province grid handle.
+Returns: `LProvinceGrid` - New province grid handle.
 
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/images/sample_province_map.png")
     print("grid " .. grid:getWidth() .. "x" .. grid:getHeight())
     print("provinces = " .. grid:provinceCount())
 end
@@ -456,18 +765,27 @@ end
 
 ### lurek.image.saveImage
 
-`lurek.image.saveImage(img_ud: LImageData, filename: string)`
+#### Definition
+
+```lua
+--- Saves an image data object to a path under the current game directory.
+---@param img_ud LImageData Image data handle to save.
+---@param filename string Output filename relative to game directory.
+lurek.image.saveImage = function(img_ud, filename) end
+```
+
+#### Description
 
 Saves an image data object to a path under the current game directory.
 
-**Parameters**
+Parameters:
 
 - `img_ud` (`LImageData`, required): Image data handle to save.
 - `filename` (`string`, required): Output filename relative to game directory.
 
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -480,18 +798,27 @@ end
 
 ### lurek.image.savePNG
 
-`lurek.image.savePNG(img_ud: LImageData, filename: string)`
+#### Definition
+
+```lua
+--- Encodes image data as PNG and writes it under the current game directory.
+---@param img_ud LImageData Image data handle to encode.
+---@param filename string Output filename relative to game directory.
+lurek.image.savePNG = function(img_ud, filename) end
+```
+
+#### Description
 
 Encodes image data as PNG and writes it under the current game directory.
 
-**Parameters**
+Parameters:
 
 - `img_ud` (`LImageData`, required): Image data handle to encode.
 - `filename` (`string`, required): Output filename relative to game directory.
 
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -509,9 +836,7 @@ end
 
 ### LCompressedImageData
 
-Lua-side handle for compressed DDS image metadata and mipmap data.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side handle for compressed DDS image metadata and mipmap data.
@@ -519,9 +844,13 @@ Lua-side handle for compressed DDS image metadata and mipmap data.
 LCompressedImageData = {}
 ```
 
+#### Description
+
+Lua-side handle for compressed DDS image metadata and mipmap data.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -534,9 +863,7 @@ end
 
 ### LImageData
 
-Provides Lua methods for reading, editing, filtering, drawing, and encoding image data.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Raw pixel buffer for CPU-side image manipulation before uploading to a GPU texture.
@@ -544,9 +871,13 @@ Provides Lua methods for reading, editing, filtering, drawing, and encoding imag
 LImageData = {}
 ```
 
+#### Description
+
+Provides Lua methods for reading, editing, filtering, drawing, and encoding image data.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -558,9 +889,7 @@ end
 
 ### LLayeredImage
 
-Lua-side handle for multiple image layers with visibility, opacity, and ordering.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side handle for multiple image layers with visibility, opacity, and ordering.
@@ -568,9 +897,13 @@ Lua-side handle for multiple image layers with visibility, opacity, and ordering
 LLayeredImage = {}
 ```
 
+#### Description
+
+Lua-side handle for multiple image layers with visibility, opacity, and ordering.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -585,7 +918,7 @@ end
 
 --@api-stub: lurek.image.newProvinceGrid
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/images/sample_province_map.png")
     print("grid " .. grid:getWidth() .. "x" .. grid:getHeight())
     print("provinces = " .. grid:provinceCount())
 end
@@ -625,9 +958,7 @@ do
 
 ### LPaletteLUT
 
-Lua-side handle for palette color remapping.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side handle for palette color remapping.
@@ -635,9 +966,13 @@ Lua-side handle for palette color remapping.
 LPaletteLUT = {}
 ```
 
+#### Description
+
+Lua-side handle for palette color remapping.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -648,9 +983,7 @@ end
 
 ### LProvinceGrid
 
-Lua-side handle for a province id grid decoded from an image.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side handle for a province id grid decoded from an image.
@@ -658,13 +991,17 @@ Lua-side handle for a province id grid decoded from an image.
 LProvinceGrid = {}
 ```
 
+#### Description
+
+Lua-side handle for a province id grid decoded from an image.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/images/sample_province_map.png")
     print("grid " .. grid:getWidth() .. "x" .. grid:getHeight())
     print("provinces = " .. grid:provinceCount())
 end
@@ -677,13 +1014,7 @@ end
 
 ### LCompressedImageData:getDimensions
 
-`LCompressedImageData:getDimensions() -> integer`
-
-Returns compressed image dimensions.
-
-**Returns**: `integer` - Width in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns compressed image dimensions.
@@ -692,9 +1023,15 @@ Returns compressed image dimensions.
 function LCompressedImageData:getDimensions() end
 ```
 
+#### Description
+
+Returns compressed image dimensions.
+
+Returns: `integer` - Width in pixels.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -706,13 +1043,7 @@ end
 
 ### LCompressedImageData:getFormat
 
-`LCompressedImageData:getFormat() -> string`
-
-Returns the compressed image format name.
-
-**Returns**: `string` - Format name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the compressed image format name.
@@ -720,9 +1051,15 @@ Returns the compressed image format name.
 function LCompressedImageData:getFormat() end
 ```
 
+#### Description
+
+Returns the compressed image format name.
+
+Returns: `string` - Format name.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -733,13 +1070,7 @@ end
 
 ### LCompressedImageData:getHeight
 
-`LCompressedImageData:getHeight() -> integer`
-
-Returns compressed image height. This method is available to Lua scripts.
-
-**Returns**: `integer` - Height in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns compressed image height. This method is available to Lua scripts.
@@ -747,9 +1078,15 @@ Returns compressed image height. This method is available to Lua scripts.
 function LCompressedImageData:getHeight() end
 ```
 
+#### Description
+
+Returns compressed image height. This method is available to Lua scripts.
+
+Returns: `integer` - Height in pixels.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -763,13 +1100,7 @@ end
 
 ### LCompressedImageData:getMipmapCount
 
-`LCompressedImageData:getMipmapCount() -> integer`
-
-Returns the number of mipmap levels in this compressed image.
-
-**Returns**: `integer` - Mipmap level count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of mipmap levels in this compressed image.
@@ -777,9 +1108,15 @@ Returns the number of mipmap levels in this compressed image.
 function LCompressedImageData:getMipmapCount() end
 ```
 
+#### Description
+
+Returns the number of mipmap levels in this compressed image.
+
+Returns: `integer` - Mipmap level count.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -790,13 +1127,7 @@ end
 
 ### LCompressedImageData:getWidth
 
-`LCompressedImageData:getWidth() -> integer`
-
-Returns compressed image width. This method is available to Lua scripts.
-
-**Returns**: `integer` - Width in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns compressed image width. This method is available to Lua scripts.
@@ -804,9 +1135,15 @@ Returns compressed image width. This method is available to Lua scripts.
 function LCompressedImageData:getWidth() end
 ```
 
+#### Description
+
+Returns compressed image width. This method is available to Lua scripts.
+
+Returns: `integer` - Width in pixels.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -820,13 +1157,7 @@ end
 
 ### LCompressedImageData:type
 
-`LCompressedImageData:type() -> string`
-
-Returns the Lua-visible type name for this compressed image handle.
-
-**Returns**: `string` - The string `LCompressedImageData`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this compressed image handle.
@@ -834,9 +1165,15 @@ Returns the Lua-visible type name for this compressed image handle.
 function LCompressedImageData:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this compressed image handle.
+
+Returns: `string` - The string `LCompressedImageData`.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -848,17 +1185,7 @@ end
 
 ### LCompressedImageData:typeOf
 
-`LCompressedImageData:typeOf(name: string) -> boolean`
-
-Returns whether this compressed image handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LCompressedImageData` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this compressed image handle matches a supported type name.
@@ -867,9 +1194,19 @@ Returns whether this compressed image handle matches a supported type name.
 function LCompressedImageData:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this compressed image handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LCompressedImageData` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -881,15 +1218,7 @@ end
 
 ### LImageData:alphaMask
 
-`LImageData:alphaMask(factor: number)`
-
-Multiplies this image alpha channel by a factor in place.
-
-**Parameters**
-
-- `factor` (`number`, required): Alpha multiplier.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Multiplies this image alpha channel by a factor in place.
@@ -897,9 +1226,17 @@ Multiplies this image alpha channel by a factor in place.
 function LImageData:alphaMask(factor) end
 ```
 
+#### Description
+
+Multiplies this image alpha channel by a factor in place.
+
+Parameters:
+
+- `factor` (`number`, required): Alpha multiplier.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -913,15 +1250,7 @@ end
 
 ### LImageData:applyPaletteLut
 
-`LImageData:applyPaletteLut(lut_ud: LPaletteLUT)`
-
-Applies a palette lookup table to this image in place.
-
-**Parameters**
-
-- `lut_ud` (`LPaletteLUT`, required): Palette lookup table handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Applies a palette lookup table to this image in place.
@@ -929,9 +1258,17 @@ Applies a palette lookup table to this image in place.
 function LImageData:applyPaletteLut(lut_ud) end
 ```
 
+#### Description
+
+Applies a palette lookup table to this image in place.
+
+Parameters:
+
+- `lut_ud` (`LPaletteLUT`, required): Palette lookup table handle.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -945,17 +1282,7 @@ end
 
 ### LImageData:blit
 
-`LImageData:blit(src_ud: LImageData, dst_x: integer, dst_y: integer)`
-
-Copies a source image into this image at a destination coordinate.
-
-**Parameters**
-
-- `src_ud` (`LImageData`, required): Source image data handle.
-- `dst_x` (`integer`, required): Destination x coordinate.
-- `dst_y` (`integer`, required): Destination y coordinate.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Copies pixel data from another ImageData onto this one at the specified position.
@@ -965,9 +1292,19 @@ Copies a source image into this image at a destination coordinate.
 function LImageData:blit(source, dstX, dstY) end
 ```
 
+#### Description
+
+Copies a source image into this image at a destination coordinate.
+
+Parameters:
+
+- `src_ud` (`LImageData`, required): Source image data handle.
+- `dst_x` (`integer`, required): Destination x coordinate.
+- `dst_y` (`integer`, required): Destination y coordinate.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -981,17 +1318,7 @@ end
 
 ### LImageData:blur
 
-`LImageData:blur(radius: integer) -> LImageData`
-
-Returns a blurred copy of this image.
-
-**Parameters**
-
-- `radius` (`integer`, required): Blur radius.
-
-**Returns**: `LImageData` - Blurred image data handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a blurred copy of this image.
@@ -1000,9 +1327,19 @@ Returns a blurred copy of this image.
 function LImageData:blur(radius) end
 ```
 
+#### Description
+
+Returns a blurred copy of this image.
+
+Parameters:
+
+- `radius` (`integer`, required): Blur radius.
+
+Returns: `LImageData` - Blurred image data handle.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -1015,15 +1352,7 @@ end
 
 ### LImageData:brightness
 
-`LImageData:brightness(factor: number)`
-
-Applies a brightness factor to this image in place.
-
-**Parameters**
-
-- `factor` (`number`, required): Brightness multiplier or adjustment factor.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Applies a brightness factor to this image in place.
@@ -1031,9 +1360,17 @@ Applies a brightness factor to this image in place.
 function LImageData:brightness(factor) end
 ```
 
+#### Description
+
+Applies a brightness factor to this image in place.
+
+Parameters:
+
+- `factor` (`number`, required): Brightness multiplier or adjustment factor.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -1046,15 +1383,7 @@ end
 
 ### LImageData:contrast
 
-`LImageData:contrast(factor: number)`
-
-Applies a contrast factor to this image in place.
-
-**Parameters**
-
-- `factor` (`number`, required): Contrast factor.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Applies a contrast factor to this image in place.
@@ -1062,9 +1391,17 @@ Applies a contrast factor to this image in place.
 function LImageData:contrast(factor) end
 ```
 
+#### Description
+
+Applies a contrast factor to this image in place.
+
+Parameters:
+
+- `factor` (`number`, required): Contrast factor.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -1077,18 +1414,7 @@ end
 
 ### LImageData:convolve
 
-`LImageData:convolve(kernel_t: table, ksize: integer) -> LImageData`
-
-Applies a convolution kernel and returns the filtered image.
-
-**Parameters**
-
-- `kernel_t` (`table`, required): Array table of numeric kernel weights.
-- `ksize` (`integer`, required): Kernel width and height.
-
-**Returns**: `LImageData` - Convolved image data handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Applies a convolution kernel and returns the filtered image.
@@ -1098,9 +1424,20 @@ Applies a convolution kernel and returns the filtered image.
 function LImageData:convolve(kernel_t, ksize) end
 ```
 
+#### Description
+
+Applies a convolution kernel and returns the filtered image.
+
+Parameters:
+
+- `kernel_t` (`table`, required): Array table of numeric kernel weights.
+- `ksize` (`integer`, required): Kernel width and height.
+
+Returns: `LImageData` - Convolved image data handle.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -1113,20 +1450,7 @@ end
 
 ### LImageData:crop
 
-`LImageData:crop(x: integer, y: integer, w: integer, h: integer) -> LImageData`
-
-Returns a cropped image region. This method is available to Lua scripts.
-
-**Parameters**
-
-- `x` (`integer`, required): Source x coordinate.
-- `y` (`integer`, required): Source y coordinate.
-- `w` (`integer`, required): Crop width.
-- `h` (`integer`, required): Crop height.
-
-**Returns**: `LImageData` - Cropped image data handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a cropped image region. This method is available to Lua scripts.
@@ -1138,9 +1462,22 @@ Returns a cropped image region. This method is available to Lua scripts.
 function LImageData:crop(x, y, w, h) end
 ```
 
+#### Description
+
+Returns a cropped image region. This method is available to Lua scripts.
+
+Parameters:
+
+- `x` (`integer`, required): Source x coordinate.
+- `y` (`integer`, required): Source y coordinate.
+- `w` (`integer`, required): Crop width.
+- `h` (`integer`, required): Crop height.
+
+Returns: `LImageData` - Cropped image data handle.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -1152,17 +1489,7 @@ end
 
 ### LImageData:diff
 
-`LImageData:diff(other_ud: LImageData) -> number`
-
-Computes a difference metric against another image.
-
-**Parameters**
-
-- `other_ud` (`LImageData`, required): Image data handle to compare with this image.
-
-**Returns**: `number` - Difference score.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Computes a numeric difference score between this image and another of the same size.
@@ -1171,9 +1498,19 @@ Computes a difference metric against another image.
 function LImageData:diff(other) end
 ```
 
+#### Description
+
+Computes a difference metric against another image.
+
+Parameters:
+
+- `other_ud` (`LImageData`, required): Image data handle to compare with this image.
+
+Returns: `number` - Difference score.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -1187,21 +1524,7 @@ end
 
 ### LImageData:drawCircle
 
-`LImageData:drawCircle(cx: integer, cy: integer, radius: integer, r: integer, g: integer, b: integer, a: integer)`
-
-Draws a filled circle into this image.
-
-**Parameters**
-
-- `cx` (`integer`, required): Circle center x coordinate.
-- `cy` (`integer`, required): Circle center y coordinate.
-- `radius` (`integer`, required): Circle radius.
-- `r` (`integer`, required): Red channel.
-- `g` (`integer`, required): Green channel.
-- `b` (`integer`, required): Blue channel.
-- `a` (`integer`, required): Alpha channel.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Draws a filled circle into this image.
@@ -1215,9 +1538,23 @@ Draws a filled circle into this image.
 function LImageData:drawCircle(cx, cy, radius, r, g, b, a) end
 ```
 
+#### Description
+
+Draws a filled circle into this image.
+
+Parameters:
+
+- `cx` (`integer`, required): Circle center x coordinate.
+- `cy` (`integer`, required): Circle center y coordinate.
+- `radius` (`integer`, required): Circle radius.
+- `r` (`integer`, required): Red channel.
+- `g` (`integer`, required): Green channel.
+- `b` (`integer`, required): Blue channel.
+- `a` (`integer`, required): Alpha channel.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -1229,22 +1566,7 @@ end
 
 ### LImageData:drawLine
 
-`LImageData:drawLine(x0: integer, y0: integer, x1: integer, y1: integer, r: integer, g: integer, b: integer, a: integer)`
-
-Draws a line into this image. This method is available to Lua scripts.
-
-**Parameters**
-
-- `x0` (`integer`, required): Start x coordinate.
-- `y0` (`integer`, required): Start y coordinate.
-- `x1` (`integer`, required): End x coordinate.
-- `y1` (`integer`, required): End y coordinate.
-- `r` (`integer`, required): Red channel.
-- `g` (`integer`, required): Green channel.
-- `b` (`integer`, required): Blue channel.
-- `a` (`integer`, required): Alpha channel.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Draws a line into this image. This method is available to Lua scripts.
@@ -1259,9 +1581,24 @@ Draws a line into this image. This method is available to Lua scripts.
 function LImageData:drawLine(x0, y0, x1, y1, r, g, b, a) end
 ```
 
+#### Description
+
+Draws a line into this image. This method is available to Lua scripts.
+
+Parameters:
+
+- `x0` (`integer`, required): Start x coordinate.
+- `y0` (`integer`, required): Start y coordinate.
+- `x1` (`integer`, required): End x coordinate.
+- `y1` (`integer`, required): End y coordinate.
+- `r` (`integer`, required): Red channel.
+- `g` (`integer`, required): Green channel.
+- `b` (`integer`, required): Blue channel.
+- `a` (`integer`, required): Alpha channel.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -1273,27 +1610,7 @@ end
 
 ### LImageData:drawNineSlice
 
-`LImageData:drawNineSlice(src_ud: LImageData, src_x: integer, src_y: integer, src_w: integer, src_h: integer, dst_x: integer, dst_y: integer, dst_w: integer, dst_h: integer, inset_left: integer, inset_right: integer, inset_top: integer, inset_bottom: integer)`
-
-Draws a nine-slice region from a source image into this image.
-
-**Parameters**
-
-- `src_ud` (`LImageData`, required): Source image data handle.
-- `src_x` (`integer`, required): Source region x coordinate.
-- `src_y` (`integer`, required): Source region y coordinate.
-- `src_w` (`integer`, required): Source region width.
-- `src_h` (`integer`, required): Source region height.
-- `dst_x` (`integer`, required): Destination x coordinate.
-- `dst_y` (`integer`, required): Destination y coordinate.
-- `dst_w` (`integer`, required): Destination width.
-- `dst_h` (`integer`, required): Destination height.
-- `inset_left` (`integer`, required): Left inset width.
-- `inset_right` (`integer`, required): Right inset width.
-- `inset_top` (`integer`, required): Top inset height.
-- `inset_bottom` (`integer`, required): Bottom inset height.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Draws a nine-slice region from a source image into this image.
@@ -1313,9 +1630,29 @@ Draws a nine-slice region from a source image into this image.
 function LImageData:drawNineSlice(src_ud, src_x, src_y, src_w, src_h, dst_x, dst_y, dst_w, dst_h, inset_left, inset_right, inset_top, inset_bottom) end
 ```
 
+#### Description
+
+Draws a nine-slice region from a source image into this image.
+
+Parameters:
+
+- `src_ud` (`LImageData`, required): Source image data handle.
+- `src_x` (`integer`, required): Source region x coordinate.
+- `src_y` (`integer`, required): Source region y coordinate.
+- `src_w` (`integer`, required): Source region width.
+- `src_h` (`integer`, required): Source region height.
+- `dst_x` (`integer`, required): Destination x coordinate.
+- `dst_y` (`integer`, required): Destination y coordinate.
+- `dst_w` (`integer`, required): Destination width.
+- `dst_h` (`integer`, required): Destination height.
+- `inset_left` (`integer`, required): Left inset width.
+- `inset_right` (`integer`, required): Right inset width.
+- `inset_top` (`integer`, required): Top inset height.
+- `inset_bottom` (`integer`, required): Bottom inset height.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -1329,22 +1666,7 @@ end
 
 ### LImageData:drawRect
 
-`LImageData:drawRect(x: integer, y: integer, w: integer, h: integer, r: integer, g: integer, b: integer, a: integer)`
-
-Draws a filled rectangle into this image.
-
-**Parameters**
-
-- `x` (`integer`, required): Rectangle x coordinate.
-- `y` (`integer`, required): Rectangle y coordinate.
-- `w` (`integer`, required): Rectangle width.
-- `h` (`integer`, required): Rectangle height.
-- `r` (`integer`, required): Red channel.
-- `g` (`integer`, required): Green channel.
-- `b` (`integer`, required): Blue channel.
-- `a` (`integer`, required): Alpha channel.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Draws a filled rectangle into this image.
@@ -1359,9 +1681,24 @@ Draws a filled rectangle into this image.
 function LImageData:drawRect(x, y, w, h, r, g, b, a) end
 ```
 
+#### Description
+
+Draws a filled rectangle into this image.
+
+Parameters:
+
+- `x` (`integer`, required): Rectangle x coordinate.
+- `y` (`integer`, required): Rectangle y coordinate.
+- `w` (`integer`, required): Rectangle width.
+- `h` (`integer`, required): Rectangle height.
+- `r` (`integer`, required): Red channel.
+- `g` (`integer`, required): Green channel.
+- `b` (`integer`, required): Blue channel.
+- `a` (`integer`, required): Alpha channel.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -1373,17 +1710,7 @@ end
 
 ### LImageData:encode
 
-`LImageData:encode(format: string) -> string`
-
-Encodes image data in a supported format.
-
-**Parameters**
-
-- `format` (`string`, required): Format name; currently `png`.
-
-**Returns**: `string` - Encoded image bytes.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Encodes image data in a supported format.
@@ -1392,9 +1719,19 @@ Encodes image data in a supported format.
 function LImageData:encode(format) end
 ```
 
+#### Description
+
+Encodes image data in a supported format.
+
+Parameters:
+
+- `format` (`string`, required): Format name; currently `png`.
+
+Returns: `string` - Encoded image bytes.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -1407,18 +1744,7 @@ end
 
 ### LImageData:fill
 
-`LImageData:fill(r: integer, g: integer, b: integer, a: integer)`
-
-Fills the whole image with one RGBA color.
-
-**Parameters**
-
-- `r` (`integer`, required): Red channel.
-- `g` (`integer`, required): Green channel.
-- `b` (`integer`, required): Blue channel.
-- `a` (`integer`, required): Alpha channel.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Fills the whole image with one RGBA color.
@@ -1429,9 +1755,20 @@ Fills the whole image with one RGBA color.
 function LImageData:fill(r, g, b, a) end
 ```
 
+#### Description
+
+Fills the whole image with one RGBA color.
+
+Parameters:
+
+- `r` (`integer`, required): Red channel.
+- `g` (`integer`, required): Green channel.
+- `b` (`integer`, required): Blue channel.
+- `a` (`integer`, required): Alpha channel.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -1443,20 +1780,20 @@ end
 
 ### LImageData:flipHorizontal
 
-`LImageData:flipHorizontal()`
-
-Flips this image horizontally in place.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Flips this image horizontally in place.
 function LImageData:flipHorizontal() end
 ```
 
+#### Description
+
+Flips this image horizontally in place.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -1470,20 +1807,20 @@ end
 
 ### LImageData:flipVertical
 
-`LImageData:flipVertical()`
-
-Flips this image vertically in place.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Flips this image vertically in place.
 function LImageData:flipVertical() end
 ```
 
+#### Description
+
+Flips this image vertically in place.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -1497,15 +1834,7 @@ end
 
 ### LImageData:gamma
 
-`LImageData:gamma(gamma: number)`
-
-Applies gamma correction to this image in place.
-
-**Parameters**
-
-- `gamma` (`number`, required): Gamma value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Applies gamma correction to this image in place.
@@ -1513,9 +1842,17 @@ Applies gamma correction to this image in place.
 function LImageData:gamma(gamma) end
 ```
 
+#### Description
+
+Applies gamma correction to this image in place.
+
+Parameters:
+
+- `gamma` (`number`, required): Gamma value.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -1528,13 +1865,7 @@ end
 
 ### LImageData:getDimensions
 
-`LImageData:getDimensions() -> integer`
-
-Returns image dimensions. This method is available to Lua scripts.
-
-**Returns**: `integer` - Width in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns image dimensions. This method is available to Lua scripts.
@@ -1543,9 +1874,15 @@ Returns image dimensions. This method is available to Lua scripts.
 function LImageData:getDimensions() end
 ```
 
+#### Description
+
+Returns image dimensions. This method is available to Lua scripts.
+
+Returns: `integer` - Width in pixels.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -1557,13 +1894,7 @@ end
 
 ### LImageData:getHeight
 
-`LImageData:getHeight() -> integer`
-
-Returns image height. This method is available to Lua scripts.
-
-**Returns**: `integer` - Height in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the height of this image data in pixels.
@@ -1571,9 +1902,15 @@ Returns image height. This method is available to Lua scripts.
 function LImageData:getHeight() end
 ```
 
+#### Description
+
+Returns image height. This method is available to Lua scripts.
+
+Returns: `integer` - Height in pixels.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -1584,18 +1921,7 @@ end
 
 ### LImageData:getPixel
 
-`LImageData:getPixel(x: integer, y: integer) -> integer`
-
-Returns RGBA channels at a pixel coordinate.
-
-**Parameters**
-
-- `x` (`integer`, required): X coordinate.
-- `y` (`integer`, required): Y coordinate.
-
-**Returns**: `integer` - Red channel.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns RGBA channels at a pixel coordinate.
@@ -1608,9 +1934,20 @@ Returns RGBA channels at a pixel coordinate.
 function LImageData:getPixel(x, y) end
 ```
 
+#### Description
+
+Returns RGBA channels at a pixel coordinate.
+
+Parameters:
+
+- `x` (`integer`, required): X coordinate.
+- `y` (`integer`, required): Y coordinate.
+
+Returns: `integer` - Red channel.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -1623,13 +1960,7 @@ end
 
 ### LImageData:getRawBytes
 
-`LImageData:getRawBytes() -> string`
-
-Returns raw image bytes as a Lua string.
-
-**Returns**: `string` - Raw image byte string.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns raw image bytes as a Lua string.
@@ -1637,9 +1968,15 @@ Returns raw image bytes as a Lua string.
 function LImageData:getRawBytes() end
 ```
 
+#### Description
+
+Returns raw image bytes as a Lua string.
+
+Returns: `string` - Raw image byte string.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -1651,20 +1988,7 @@ end
 
 ### LImageData:getRegion
 
-`LImageData:getRegion(x: integer, y: integer, w: integer, h: integer) -> LImageData|nil`
-
-Returns an image region when the requested rectangle is inside bounds.
-
-**Parameters**
-
-- `x` (`integer`, required): Region x coordinate.
-- `y` (`integer`, required): Region y coordinate.
-- `w` (`integer`, required): Region width.
-- `h` (`integer`, required): Region height.
-
-**Returns**: `LImageData|nil` - `LImageData` handle, or nil when the region is out of bounds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Extracts a rectangular sub-region as a new ImageData.
@@ -1676,9 +2000,22 @@ Returns an image region when the requested rectangle is inside bounds.
 function LImageData:getRegion(x, y, w, h) end
 ```
 
+#### Description
+
+Returns an image region when the requested rectangle is inside bounds.
+
+Parameters:
+
+- `x` (`integer`, required): Region x coordinate.
+- `y` (`integer`, required): Region y coordinate.
+- `w` (`integer`, required): Region width.
+- `h` (`integer`, required): Region height.
+
+Returns: `LImageData|nil` - `LImageData` handle, or nil when the region is out of bounds.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -1692,13 +2029,7 @@ end
 
 ### LImageData:getString
 
-`LImageData:getString() -> string`
-
-Returns raw image bytes as a Lua string.
-
-**Returns**: `string` - Raw image byte string.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns raw image bytes as a Lua string.
@@ -1706,9 +2037,15 @@ Returns raw image bytes as a Lua string.
 function LImageData:getString() end
 ```
 
+#### Description
+
+Returns raw image bytes as a Lua string.
+
+Returns: `string` - Raw image byte string.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -1720,13 +2057,7 @@ end
 
 ### LImageData:getWidth
 
-`LImageData:getWidth() -> integer`
-
-Returns image width. This method is available to Lua scripts.
-
-**Returns**: `integer` - Width in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the width of this image data in pixels.
@@ -1734,9 +2065,15 @@ Returns image width. This method is available to Lua scripts.
 function LImageData:getWidth() end
 ```
 
+#### Description
+
+Returns image width. This method is available to Lua scripts.
+
+Returns: `integer` - Width in pixels.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -1747,20 +2084,20 @@ end
 
 ### LImageData:grayscale
 
-`LImageData:grayscale()`
-
-Converts this image to grayscale in place.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Converts this image to grayscale in place.
 function LImageData:grayscale() end
 ```
 
+#### Description
+
+Converts this image to grayscale in place.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -1774,20 +2111,20 @@ end
 
 ### LImageData:invert
 
-`LImageData:invert()`
-
-Inverts image color channels in place.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Inverts image color channels in place.
 function LImageData:invert() end
 ```
 
+#### Description
+
+Inverts image color channels in place.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -1801,15 +2138,7 @@ end
 
 ### LImageData:mapPixel
 
-`LImageData:mapPixel(func: function)`
-
-Applies a Lua callback to every pixel and replaces each pixel with returned RGBA values.
-
-**Parameters**
-
-- `func` (`function`, required): Callback receiving `(x, y, r, g, b, a)` and returning replacement channels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Applies a Lua callback to every pixel and replaces each pixel with returned RGBA values.
@@ -1817,9 +2146,17 @@ Applies a Lua callback to every pixel and replaces each pixel with returned RGBA
 function LImageData:mapPixel(func) end
 ```
 
+#### Description
+
+Applies a Lua callback to every pixel and replaces each pixel with returned RGBA values.
+
+Parameters:
+
+- `func` (`function`, required): Callback receiving `(x, y, r, g, b, a)` and returning replacement channels.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -1832,15 +2169,7 @@ end
 
 ### LImageData:mapPixels
 
-`LImageData:mapPixels(func: function)`
-
-Applies a Lua callback to every pixel and replaces each pixel with returned RGBA values.
-
-**Parameters**
-
-- `func` (`function`, required): Callback receiving `(x, y, r, g, b, a)` and returning replacement channels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Iterates over every pixel and replaces its color with the return value of the callback.
@@ -1848,9 +2177,17 @@ Applies a Lua callback to every pixel and replaces each pixel with returned RGBA
 function LImageData:mapPixels(callback) end
 ```
 
+#### Description
+
+Applies a Lua callback to every pixel and replaces each pixel with returned RGBA values.
+
+Parameters:
+
+- `func` (`function`, required): Callback receiving `(x, y, r, g, b, a)` and returning replacement channels.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -1862,15 +2199,7 @@ end
 
 ### LImageData:noise
 
-`LImageData:noise(amount: integer)`
-
-Adds noise to this image in place. This method is available to Lua scripts.
-
-**Parameters**
-
-- `amount` (`integer`, required): Noise amount.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds noise to this image in place. This method is available to Lua scripts.
@@ -1878,9 +2207,17 @@ Adds noise to this image in place. This method is available to Lua scripts.
 function LImageData:noise(amount) end
 ```
 
+#### Description
+
+Adds noise to this image in place. This method is available to Lua scripts.
+
+Parameters:
+
+- `amount` (`integer`, required): Noise amount.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -1893,17 +2230,7 @@ end
 
 ### LImageData:paste
 
-`LImageData:paste(src_ud: LImageData, dx: integer, dy: integer)`
-
-Pastes a source image into this image at unsigned destination coordinates.
-
-**Parameters**
-
-- `src_ud` (`LImageData`, required): Source image data handle.
-- `dx` (`integer`, required): Destination x coordinate.
-- `dy` (`integer`, required): Destination y coordinate.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Pastes a source image into this image at unsigned destination coordinates.
@@ -1913,9 +2240,19 @@ Pastes a source image into this image at unsigned destination coordinates.
 function LImageData:paste(src_ud, dx, dy) end
 ```
 
+#### Description
+
+Pastes a source image into this image at unsigned destination coordinates.
+
+Parameters:
+
+- `src_ud` (`LImageData`, required): Source image data handle.
+- `dx` (`integer`, required): Destination x coordinate.
+- `dy` (`integer`, required): Destination y coordinate.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -1929,15 +2266,7 @@ end
 
 ### LImageData:posterize
 
-`LImageData:posterize(levels: integer)`
-
-Reduces image colors to a fixed number of levels in place.
-
-**Parameters**
-
-- `levels` (`integer`, required): Number of posterization levels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Reduces image colors to a fixed number of levels in place.
@@ -1945,9 +2274,17 @@ Reduces image colors to a fixed number of levels in place.
 function LImageData:posterize(levels) end
 ```
 
+#### Description
+
+Reduces image colors to a fixed number of levels in place.
+
+Parameters:
+
+- `levels` (`integer`, required): Number of posterization levels.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -1960,19 +2297,7 @@ end
 
 ### LImageData:resize
 
-`LImageData:resize(width: integer, height: integer, filter: string) -> LImageData|nil`
-
-Returns a resized image using an optional named filter.
-
-**Parameters**
-
-- `width` (`integer`, required): Output width.
-- `height` (`integer`, required): Output height.
-- `filter` (`string`, required): Optional filter name, defaulting to `bilinear`.
-
-**Returns**: `LImageData|nil` - Resized `LImageData` handle, or nil when resizing fails.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Creates a new ImageData resized to the given dimensions using bilinear sampling.
@@ -1982,9 +2307,21 @@ Returns a resized image using an optional named filter.
 function LImageData:resize(w, h) end
 ```
 
+#### Description
+
+Returns a resized image using an optional named filter.
+
+Parameters:
+
+- `width` (`integer`, required): Output width.
+- `height` (`integer`, required): Output height.
+- `filter` (`string`, required): Optional filter name, defaulting to `bilinear`.
+
+Returns: `LImageData|nil` - Resized `LImageData` handle, or nil when resizing fails.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -1996,18 +2333,7 @@ end
 
 ### LImageData:resizeNearest
 
-`LImageData:resizeNearest(new_w: integer, new_h: integer) -> LImageData`
-
-Returns a resized image using nearest-neighbor sampling.
-
-**Parameters**
-
-- `new_w` (`integer`, required): Output width.
-- `new_h` (`integer`, required): Output height.
-
-**Returns**: `LImageData` - Resized image data handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a resized image using nearest-neighbor sampling.
@@ -2017,9 +2343,20 @@ Returns a resized image using nearest-neighbor sampling.
 function LImageData:resizeNearest(new_w, new_h) end
 ```
 
+#### Description
+
+Returns a resized image using nearest-neighbor sampling.
+
+Parameters:
+
+- `new_w` (`integer`, required): Output width.
+- `new_h` (`integer`, required): Output height.
+
+Returns: `LImageData` - Resized image data handle.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -2031,13 +2368,7 @@ end
 
 ### LImageData:rotate90cw
 
-`LImageData:rotate90cw() -> LImageData`
-
-Returns a new image rotated ninety degrees clockwise.
-
-**Returns**: `LImageData` - Rotated image data handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a new image rotated ninety degrees clockwise.
@@ -2045,9 +2376,15 @@ Returns a new image rotated ninety degrees clockwise.
 function LImageData:rotate90cw() end
 ```
 
+#### Description
+
+Returns a new image rotated ninety degrees clockwise.
+
+Returns: `LImageData` - Rotated image data handle.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -2059,15 +2396,7 @@ end
 
 ### LImageData:saturation
 
-`LImageData:saturation(factor: number)`
-
-Applies a saturation factor to this image in place.
-
-**Parameters**
-
-- `factor` (`number`, required): Saturation factor.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Applies a saturation factor to this image in place.
@@ -2075,9 +2404,17 @@ Applies a saturation factor to this image in place.
 function LImageData:saturation(factor) end
 ```
 
+#### Description
+
+Applies a saturation factor to this image in place.
+
+Parameters:
+
+- `factor` (`number`, required): Saturation factor.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -2090,20 +2427,20 @@ end
 
 ### LImageData:sepia
 
-`LImageData:sepia()`
-
-Applies a sepia filter to this image in place.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Applies a sepia filter to this image in place.
 function LImageData:sepia() end
 ```
 
+#### Description
+
+Applies a sepia filter to this image in place.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -2116,20 +2453,7 @@ end
 
 ### LImageData:setPixel
 
-`LImageData:setPixel(x: integer, y: integer, r: integer, g: integer, b: integer, a: integer)`
-
-Sets RGBA channels at a pixel coordinate.
-
-**Parameters**
-
-- `x` (`integer`, required): X coordinate.
-- `y` (`integer`, required): Y coordinate.
-- `r` (`integer`, required): Red channel.
-- `g` (`integer`, required): Green channel.
-- `b` (`integer`, required): Blue channel.
-- `a` (`integer`, required): Alpha channel.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets RGBA channels at a pixel coordinate.
@@ -2142,9 +2466,22 @@ Sets RGBA channels at a pixel coordinate.
 function LImageData:setPixel(x, y, r, g, b, a) end
 ```
 
+#### Description
+
+Sets RGBA channels at a pixel coordinate.
+
+Parameters:
+
+- `x` (`integer`, required): X coordinate.
+- `y` (`integer`, required): Y coordinate.
+- `r` (`integer`, required): Red channel.
+- `g` (`integer`, required): Green channel.
+- `b` (`integer`, required): Blue channel.
+- `a` (`integer`, required): Alpha channel.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -2157,15 +2494,7 @@ end
 
 ### LImageData:setRawData
 
-`LImageData:setRawData(bytes: string)`
-
-Replaces the image byte buffer with raw bytes.
-
-**Parameters**
-
-- `bytes` (`string`, required): Raw byte string matching the image storage size.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Replaces the image byte buffer with raw bytes.
@@ -2173,9 +2502,17 @@ Replaces the image byte buffer with raw bytes.
 function LImageData:setRawData(bytes) end
 ```
 
+#### Description
+
+Replaces the image byte buffer with raw bytes.
+
+Parameters:
+
+- `bytes` (`string`, required): Raw byte string matching the image storage size.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -2188,13 +2525,7 @@ end
 
 ### LImageData:sharpen
 
-`LImageData:sharpen() -> LImageData`
-
-Returns a sharpened copy of this image.
-
-**Returns**: `LImageData` - Sharpened image data handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a sharpened copy of this image.
@@ -2202,9 +2533,15 @@ Returns a sharpened copy of this image.
 function LImageData:sharpen() end
 ```
 
+#### Description
+
+Returns a sharpened copy of this image.
+
+Returns: `LImageData` - Sharpened image data handle.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -2217,15 +2554,7 @@ end
 
 ### LImageData:threshold
 
-`LImageData:threshold(value: integer)`
-
-Applies a threshold filter to this image in place.
-
-**Parameters**
-
-- `value` (`integer`, required): Threshold channel value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Applies a threshold filter to this image in place.
@@ -2233,9 +2562,17 @@ Applies a threshold filter to this image in place.
 function LImageData:threshold(value) end
 ```
 
+#### Description
+
+Applies a threshold filter to this image in place.
+
+Parameters:
+
+- `value` (`integer`, required): Threshold channel value.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -2248,18 +2585,7 @@ end
 
 ### LImageData:tint
 
-`LImageData:tint(tr: integer, tg: integer, tb: integer, factor: number)`
-
-Blends this image toward a tint color in place.
-
-**Parameters**
-
-- `tr` (`integer`, required): Tint red channel.
-- `tg` (`integer`, required): Tint green channel.
-- `tb` (`integer`, required): Tint blue channel.
-- `factor` (`number`, required): Tint blend factor.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Blends this image toward a tint color in place.
@@ -2270,9 +2596,20 @@ Blends this image toward a tint color in place.
 function LImageData:tint(tr, tg, tb, factor) end
 ```
 
+#### Description
+
+Blends this image toward a tint color in place.
+
+Parameters:
+
+- `tr` (`integer`, required): Tint red channel.
+- `tg` (`integer`, required): Tint green channel.
+- `tb` (`integer`, required): Tint blue channel.
+- `factor` (`number`, required): Tint blend factor.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -2285,13 +2622,7 @@ end
 
 ### LImageData:type
 
-`LImageData:type() -> string`
-
-Returns the Lua-visible type name for this image data handle.
-
-**Returns**: `string` - The string `LImageData`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this object.
@@ -2299,9 +2630,15 @@ Returns the Lua-visible type name for this image data handle.
 function LImageData:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this image data handle.
+
+Returns: `string` - The string `LImageData`.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -2312,17 +2649,7 @@ end
 
 ### LImageData:typeOf
 
-`LImageData:typeOf(name: string) -> boolean`
-
-Returns whether this image data handle matches the `LImageData` type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LImageData` or `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this object matches the given type name.
@@ -2331,9 +2658,19 @@ Returns whether this image data handle matches the `LImageData` type name.
 function LImageData:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this image data handle matches the `LImageData` type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LImageData` or `Object`.
+
+Returns: `boolean` - True when the supplied type name matches.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -2344,17 +2681,7 @@ end
 
 ### LLayeredImage:addLayer
 
-`LLayeredImage:addLayer([name]: string) -> integer`
-
-Adds a blank layer with an optional name.
-
-**Parameters**
-
-- `name` (`string`, optional): Optional layer name.
-
-**Returns**: `integer` - One-based index of the new layer.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a blank layer with an optional name.
@@ -2363,9 +2690,19 @@ Adds a blank layer with an optional name.
 function LLayeredImage:addLayer(name) end
 ```
 
+#### Description
+
+Adds a blank layer with an optional name.
+
+Parameters:
+
+- `name` (`string`, optional): Optional layer name.
+
+Returns: `integer` - One-based index of the new layer.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -2378,13 +2715,7 @@ end
 
 ### LLayeredImage:getHeight
 
-`LLayeredImage:getHeight() -> integer`
-
-Returns the layered image height. This method is available to Lua scripts.
-
-**Returns**: `integer` - Height in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the layered image height. This method is available to Lua scripts.
@@ -2392,9 +2723,15 @@ Returns the layered image height. This method is available to Lua scripts.
 function LLayeredImage:getHeight() end
 ```
 
+#### Description
+
+Returns the layered image height. This method is available to Lua scripts.
+
+Returns: `integer` - Height in pixels.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -2405,17 +2742,7 @@ end
 
 ### LLayeredImage:getLayer
 
-`LLayeredImage:getLayer(index: integer) -> LImageData`
-
-Returns image data for a layer by one-based index.
-
-**Parameters**
-
-- `index` (`integer`, required): One-based layer index.
-
-**Returns**: `LImageData` - Layer image data handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns image data for a layer by one-based index.
@@ -2424,9 +2751,19 @@ Returns image data for a layer by one-based index.
 function LLayeredImage:getLayer(index) end
 ```
 
+#### Description
+
+Returns image data for a layer by one-based index.
+
+Parameters:
+
+- `index` (`integer`, required): One-based layer index.
+
+Returns: `LImageData` - Layer image data handle.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -2439,17 +2776,7 @@ end
 
 ### LLayeredImage:getName
 
-`LLayeredImage:getName(index: integer) -> string`
-
-Returns a layer name by one-based index.
-
-**Parameters**
-
-- `index` (`integer`, required): One-based layer index.
-
-**Returns**: `string` - Layer name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a layer name by one-based index.
@@ -2458,9 +2785,19 @@ Returns a layer name by one-based index.
 function LLayeredImage:getName(index) end
 ```
 
+#### Description
+
+Returns a layer name by one-based index.
+
+Parameters:
+
+- `index` (`integer`, required): One-based layer index.
+
+Returns: `string` - Layer name.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -2473,17 +2810,7 @@ end
 
 ### LLayeredImage:getOpacity
 
-`LLayeredImage:getOpacity(index: integer) -> number`
-
-Returns a layer opacity by one-based index.
-
-**Parameters**
-
-- `index` (`integer`, required): One-based layer index.
-
-**Returns**: `number` - Layer opacity.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a layer opacity by one-based index.
@@ -2492,9 +2819,19 @@ Returns a layer opacity by one-based index.
 function LLayeredImage:getOpacity(index) end
 ```
 
+#### Description
+
+Returns a layer opacity by one-based index.
+
+Parameters:
+
+- `index` (`integer`, required): One-based layer index.
+
+Returns: `number` - Layer opacity.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -2506,13 +2843,7 @@ end
 
 ### LLayeredImage:getWidth
 
-`LLayeredImage:getWidth() -> integer`
-
-Returns the layered image width. This method is available to Lua scripts.
-
-**Returns**: `integer` - Width in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the layered image width. This method is available to Lua scripts.
@@ -2520,9 +2851,15 @@ Returns the layered image width. This method is available to Lua scripts.
 function LLayeredImage:getWidth() end
 ```
 
+#### Description
+
+Returns the layered image width. This method is available to Lua scripts.
+
+Returns: `integer` - Width in pixels.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -2533,17 +2870,7 @@ end
 
 ### LLayeredImage:isVisible
 
-`LLayeredImage:isVisible(index: integer) -> boolean`
-
-Returns layer visibility by one-based index.
-
-**Parameters**
-
-- `index` (`integer`, required): One-based layer index.
-
-**Returns**: `boolean` - True when the layer is visible.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns layer visibility by one-based index.
@@ -2552,9 +2879,19 @@ Returns layer visibility by one-based index.
 function LLayeredImage:isVisible(index) end
 ```
 
+#### Description
+
+Returns layer visibility by one-based index.
+
+Parameters:
+
+- `index` (`integer`, required): One-based layer index.
+
+Returns: `boolean` - True when the layer is visible.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -2566,13 +2903,7 @@ end
 
 ### LLayeredImage:layerCount
 
-`LLayeredImage:layerCount() -> integer`
-
-Returns the number of layers in the stack.
-
-**Returns**: `integer` - Layer count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of layers in the stack.
@@ -2580,9 +2911,15 @@ Returns the number of layers in the stack.
 function LLayeredImage:layerCount() end
 ```
 
+#### Description
+
+Returns the number of layers in the stack.
+
+Returns: `integer` - Layer count.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -2593,13 +2930,7 @@ end
 
 ### LLayeredImage:merge
 
-`LLayeredImage:merge() -> LImageData`
-
-Merges visible layers into a single image data object.
-
-**Returns**: `LImageData` - Merged image data handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Merges visible layers into a single image data object.
@@ -2607,9 +2938,15 @@ Merges visible layers into a single image data object.
 function LLayeredImage:merge() end
 ```
 
+#### Description
+
+Merges visible layers into a single image data object.
+
+Returns: `LImageData` - Merged image data handle.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -2622,18 +2959,7 @@ end
 
 ### LLayeredImage:moveLayer
 
-`LLayeredImage:moveLayer(from_idx: integer, to_idx: integer) -> boolean`
-
-Moves a layer from one one-based index to another.
-
-**Parameters**
-
-- `from_idx` (`integer`, required): Source one-based layer index.
-- `to_idx` (`integer`, required): Destination one-based layer index.
-
-**Returns**: `boolean` - True when the move succeeds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Moves a layer from one one-based index to another.
@@ -2643,9 +2969,20 @@ Moves a layer from one one-based index to another.
 function LLayeredImage:moveLayer(from_idx, to_idx) end
 ```
 
+#### Description
+
+Moves a layer from one one-based index to another.
+
+Parameters:
+
+- `from_idx` (`integer`, required): Source one-based layer index.
+- `to_idx` (`integer`, required): Destination one-based layer index.
+
+Returns: `boolean` - True when the move succeeds.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -2659,17 +2996,7 @@ end
 
 ### LLayeredImage:removeLayer
 
-`LLayeredImage:removeLayer(index: integer) -> boolean`
-
-Removes a layer by one-based index.
-
-**Parameters**
-
-- `index` (`integer`, required): One-based layer index.
-
-**Returns**: `boolean` - True when a layer was removed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes a layer by one-based index.
@@ -2678,9 +3005,19 @@ Removes a layer by one-based index.
 function LLayeredImage:removeLayer(index) end
 ```
 
+#### Description
+
+Removes a layer by one-based index.
+
+Parameters:
+
+- `index` (`integer`, required): One-based layer index.
+
+Returns: `boolean` - True when a layer was removed.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -2693,15 +3030,7 @@ end
 
 ### LLayeredImage:save
 
-`LLayeredImage:save(path: string)`
-
-Saves the layered image stack to a file.
-
-**Parameters**
-
-- `path` (`string`, required): Output path.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Saves the layered image stack to a file.
@@ -2709,9 +3038,17 @@ Saves the layered image stack to a file.
 function LLayeredImage:save(path) end
 ```
 
+#### Description
+
+Saves the layered image stack to a file.
+
+Parameters:
+
+- `path` (`string`, required): Output path.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -2724,18 +3061,7 @@ end
 
 ### LLayeredImage:setLayer
 
-`LLayeredImage:setLayer(index: integer, img: LImageData) -> boolean`
-
-Replaces a layer's image data by one-based index.
-
-**Parameters**
-
-- `index` (`integer`, required): One-based layer index.
-- `img` (`LImageData`, required): Image data assigned to the layer.
-
-**Returns**: `boolean` - True when the layer was replaced.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Replaces a layer's image data by one-based index.
@@ -2745,9 +3071,20 @@ Replaces a layer's image data by one-based index.
 function LLayeredImage:setLayer(index, img) end
 ```
 
+#### Description
+
+Replaces a layer's image data by one-based index.
+
+Parameters:
+
+- `index` (`integer`, required): One-based layer index.
+- `img` (`LImageData`, required): Image data assigned to the layer.
+
+Returns: `boolean` - True when the layer was replaced.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -2760,18 +3097,7 @@ end
 
 ### LLayeredImage:setName
 
-`LLayeredImage:setName(index: integer, name: string) -> boolean`
-
-Sets a layer name by one-based index.
-
-**Parameters**
-
-- `index` (`integer`, required): One-based layer index.
-- `name` (`string`, required): New layer name.
-
-**Returns**: `boolean` - True when the layer exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets a layer name by one-based index.
@@ -2781,9 +3107,20 @@ Sets a layer name by one-based index.
 function LLayeredImage:setName(index, name) end
 ```
 
+#### Description
+
+Sets a layer name by one-based index.
+
+Parameters:
+
+- `index` (`integer`, required): One-based layer index.
+- `name` (`string`, required): New layer name.
+
+Returns: `boolean` - True when the layer exists.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -2796,18 +3133,7 @@ end
 
 ### LLayeredImage:setOpacity
 
-`LLayeredImage:setOpacity(index: integer, opacity: number) -> boolean`
-
-Sets a layer opacity by one-based index.
-
-**Parameters**
-
-- `index` (`integer`, required): One-based layer index.
-- `opacity` (`number`, required): New layer opacity.
-
-**Returns**: `boolean` - True when the layer exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets a layer opacity by one-based index.
@@ -2817,9 +3143,20 @@ Sets a layer opacity by one-based index.
 function LLayeredImage:setOpacity(index, opacity) end
 ```
 
+#### Description
+
+Sets a layer opacity by one-based index.
+
+Parameters:
+
+- `index` (`integer`, required): One-based layer index.
+- `opacity` (`number`, required): New layer opacity.
+
+Returns: `boolean` - True when the layer exists.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -2832,18 +3169,7 @@ end
 
 ### LLayeredImage:setVisible
 
-`LLayeredImage:setVisible(index: integer, visible: boolean) -> boolean`
-
-Sets layer visibility by one-based index.
-
-**Parameters**
-
-- `index` (`integer`, required): One-based layer index.
-- `visible` (`boolean`, required): New visibility flag.
-
-**Returns**: `boolean` - True when the layer exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets layer visibility by one-based index.
@@ -2853,9 +3179,20 @@ Sets layer visibility by one-based index.
 function LLayeredImage:setVisible(index, visible) end
 ```
 
+#### Description
+
+Sets layer visibility by one-based index.
+
+Parameters:
+
+- `index` (`integer`, required): One-based layer index.
+- `visible` (`boolean`, required): New visibility flag.
+
+Returns: `boolean` - True when the layer exists.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -2868,18 +3205,7 @@ end
 
 ### LLayeredImage:swapLayers
 
-`LLayeredImage:swapLayers(a: integer, b: integer) -> boolean`
-
-Swaps two layers by one-based indices.
-
-**Parameters**
-
-- `a` (`integer`, required): First one-based layer index.
-- `b` (`integer`, required): Second one-based layer index.
-
-**Returns**: `boolean` - True when both layers exist.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Swaps two layers by one-based indices.
@@ -2889,9 +3215,20 @@ Swaps two layers by one-based indices.
 function LLayeredImage:swapLayers(a, b) end
 ```
 
+#### Description
+
+Swaps two layers by one-based indices.
+
+Parameters:
+
+- `a` (`integer`, required): First one-based layer index.
+- `b` (`integer`, required): Second one-based layer index.
+
+Returns: `boolean` - True when both layers exist.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -2905,13 +3242,7 @@ end
 
 ### LLayeredImage:type
 
-`LLayeredImage:type() -> string`
-
-Returns the Lua-visible type name for this layered image handle.
-
-**Returns**: `string` - The string `LLayeredImage`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this layered image handle.
@@ -2919,9 +3250,15 @@ Returns the Lua-visible type name for this layered image handle.
 function LLayeredImage:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this layered image handle.
+
+Returns: `string` - The string `LLayeredImage`.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -2933,17 +3270,7 @@ end
 
 ### LLayeredImage:typeOf
 
-`LLayeredImage:typeOf(name: string) -> boolean`
-
-Returns whether this layered image handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LLayeredImage` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this layered image handle matches a supported type name.
@@ -2952,9 +3279,19 @@ Returns whether this layered image handle matches a supported type name.
 function LLayeredImage:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this layered image handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LLayeredImage` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -2966,20 +3303,20 @@ end
 
 ### LPaletteLUT:clear
 
-`LPaletteLUT:clear()`
-
-Removes every color mapping from this palette lookup table.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes every color mapping from this palette lookup table.
 function LPaletteLUT:clear() end
 ```
 
+#### Description
+
+Removes every color mapping from this palette lookup table.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -2992,15 +3329,7 @@ end
 
 ### LPaletteLUT:cycle
 
-`LPaletteLUT:cycle(offset: integer)`
-
-Cycles palette mappings by an offset.
-
-**Parameters**
-
-- `offset` (`integer`, required): Mapping offset.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Cycles palette mappings by an offset.
@@ -3008,9 +3337,17 @@ Cycles palette mappings by an offset.
 function LPaletteLUT:cycle(offset) end
 ```
 
+#### Description
+
+Cycles palette mappings by an offset.
+
+Parameters:
+
+- `offset` (`integer`, required): Mapping offset.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -3024,13 +3361,7 @@ end
 
 ### LPaletteLUT:getColorCount
 
-`LPaletteLUT:getColorCount() -> integer`
-
-Returns the number of color mappings in this palette lookup table.
-
-**Returns**: `integer` - Color mapping count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of color mappings in this palette lookup table.
@@ -3038,9 +3369,15 @@ Returns the number of color mappings in this palette lookup table.
 function LPaletteLUT:getColorCount() end
 ```
 
+#### Description
+
+Returns the number of color mappings in this palette lookup table.
+
+Returns: `integer` - Color mapping count.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -3052,22 +3389,7 @@ end
 
 ### LPaletteLUT:setColor
 
-`LPaletteLUT:setColor(fr: integer, fg: integer, fb: integer, fa: integer, tr: integer, tg: integer, tb: integer, ta: integer)`
-
-Adds a color mapping from source RGBA channels to destination RGBA channels.
-
-**Parameters**
-
-- `fr` (`integer`, required): Source red channel.
-- `fg` (`integer`, required): Source green channel.
-- `fb` (`integer`, required): Source blue channel.
-- `fa` (`integer`, required): Source alpha channel.
-- `tr` (`integer`, required): Destination red channel.
-- `tg` (`integer`, required): Destination green channel.
-- `tb` (`integer`, required): Destination blue channel.
-- `ta` (`integer`, required): Destination alpha channel.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a color mapping from source RGBA channels to destination RGBA channels.
@@ -3082,9 +3404,24 @@ Adds a color mapping from source RGBA channels to destination RGBA channels.
 function LPaletteLUT:setColor(fr, fg, fb, fa, tr, tg, tb, ta) end
 ```
 
+#### Description
+
+Adds a color mapping from source RGBA channels to destination RGBA channels.
+
+Parameters:
+
+- `fr` (`integer`, required): Source red channel.
+- `fg` (`integer`, required): Source green channel.
+- `fb` (`integer`, required): Source blue channel.
+- `fa` (`integer`, required): Source alpha channel.
+- `tr` (`integer`, required): Destination red channel.
+- `tg` (`integer`, required): Destination green channel.
+- `tb` (`integer`, required): Destination blue channel.
+- `ta` (`integer`, required): Destination alpha channel.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -3096,13 +3433,7 @@ end
 
 ### LPaletteLUT:type
 
-`LPaletteLUT:type() -> string`
-
-Returns the Lua-visible type name for this palette lookup table handle.
-
-**Returns**: `string` - The string `LPaletteLUT`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this palette lookup table handle.
@@ -3110,9 +3441,15 @@ Returns the Lua-visible type name for this palette lookup table handle.
 function LPaletteLUT:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this palette lookup table handle.
+
+Returns: `string` - The string `LPaletteLUT`.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -3124,17 +3461,7 @@ end
 
 ### LPaletteLUT:typeOf
 
-`LPaletteLUT:typeOf(name: string) -> boolean`
-
-Returns whether this palette lookup table handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LPaletteLUT` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this palette lookup table handle matches a supported type name.
@@ -3143,9 +3470,19 @@ Returns whether this palette lookup table handle matches a supported type name.
 function LPaletteLUT:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this palette lookup table handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LPaletteLUT` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
@@ -3157,13 +3494,7 @@ end
 
 ### LProvinceGrid:adjacencies
 
-`LProvinceGrid:adjacencies() -> table`
-
-Returns province adjacency records and shared border pixel counts.
-
-**Returns**: `table` - Array table with `province_a`, `province_b`, and `border_pixels` fields.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns province adjacency records and shared border pixel counts.
@@ -3171,13 +3502,19 @@ Returns province adjacency records and shared border pixel counts.
 function LProvinceGrid:adjacencies() end
 ```
 
+#### Description
+
+Returns province adjacency records and shared border pixel counts.
+
+Returns: `table` - Array table with `province_a`, `province_b`, and `border_pixels` fields.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/images/sample_province_map.png")
     local adj = grid:adjacencies()
     print("adjacency records = " .. #adj)
 end
@@ -3185,13 +3522,7 @@ end
 
 ### LProvinceGrid:borderSegments
 
-`LProvinceGrid:borderSegments() -> table`
-
-Returns border line segments between neighboring provinces.
-
-**Returns**: `table` - Array table with province ids and segment coordinates.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns border line segments between neighboring provinces.
@@ -3199,13 +3530,19 @@ Returns border line segments between neighboring provinces.
 function LProvinceGrid:borderSegments() end
 ```
 
+#### Description
+
+Returns border line segments between neighboring provinces.
+
+Returns: `table` - Array table with province ids and segment coordinates.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/images/sample_province_map.png")
     local segs = grid:borderSegments()
     print("border segments = " .. #segs)
 end
@@ -3213,17 +3550,7 @@ end
 
 ### LProvinceGrid:deserializeShapeData
 
-`LProvinceGrid:deserializeShapeData(bytes: string) -> LuaValue`
-
-Decodes serialized province shape data into span and segment tables.
-
-**Parameters**
-
-- `bytes` (`string`, required): Serialized shape data bytes.
-
-**Returns**: `LuaValue` - Table with `spans` and `segments`, or nil when decoding fails.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Decodes serialized province shape data into span and segment tables.
@@ -3232,13 +3559,23 @@ Decodes serialized province shape data into span and segment tables.
 function LProvinceGrid:deserializeShapeData(bytes) end
 ```
 
+#### Description
+
+Decodes serialized province shape data into span and segment tables.
+
+Parameters:
+
+- `bytes` (`string`, required): Serialized shape data bytes.
+
+Returns: `LuaValue` - Table with `spans` and `segments`, or nil when decoding fails.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/images/sample_province_map.png")
     local data = grid:serializeShapeData()
     print("serialized " .. #data .. " bytes")
     grid:deserializeShapeData(data)
@@ -3248,20 +3585,7 @@ end
 
 ### LProvinceGrid:drawShapes
 
-`LProvinceGrid:drawShapes([x]: number, [y]: number, [w]: number, [h]: number) -> integer`
-
-Queues filled polygon draw commands for province shapes, optionally culled to a viewport rect.
-
-**Parameters**
-
-- `x` (`number`, optional): Viewport left edge (required if providing a viewport).
-- `y` (`number`, optional): Viewport top edge (required if providing a viewport).
-- `w` (`number`, optional): Viewport width (required if providing a viewport).
-- `h` (`number`, optional): Viewport height (required if providing a viewport).
-
-**Returns**: `integer` - Number of polygons emitted to the render command queue.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Queues filled polygon draw commands for province shapes, optionally culled to a viewport rect.
@@ -3273,13 +3597,26 @@ Queues filled polygon draw commands for province shapes, optionally culled to a 
 function LProvinceGrid:drawShapes(x, y, w, h) end
 ```
 
+#### Description
+
+Queues filled polygon draw commands for province shapes, optionally culled to a viewport rect.
+
+Parameters:
+
+- `x` (`number`, optional): Viewport left edge (required if providing a viewport).
+- `y` (`number`, optional): Viewport top edge (required if providing a viewport).
+- `w` (`number`, optional): Viewport width (required if providing a viewport).
+- `h` (`number`, optional): Viewport height (required if providing a viewport).
+
+Returns: `integer` - Number of polygons emitted to the render command queue.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/images/sample_province_map.png")
     local count = grid:drawShapes(0, 0, 800, 600)
     print("drew " .. count .. " polygons")
 end
@@ -3287,18 +3624,7 @@ end
 
 ### LProvinceGrid:getAt
 
-`LProvinceGrid:getAt(x: integer, y: integer) -> integer`
-
-Returns the province id stored at grid coordinates.
-
-**Parameters**
-
-- `x` (`integer`, required): X coordinate.
-- `y` (`integer`, required): Y coordinate.
-
-**Returns**: `integer` - Province id at the pixel.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the province id stored at grid coordinates.
@@ -3308,13 +3634,24 @@ Returns the province id stored at grid coordinates.
 function LProvinceGrid:getAt(x, y) end
 ```
 
+#### Description
+
+Returns the province id stored at grid coordinates.
+
+Parameters:
+
+- `x` (`integer`, required): X coordinate.
+- `y` (`integer`, required): Y coordinate.
+
+Returns: `integer` - Province id at the pixel.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/images/sample_province_map.png")
     local id = grid:getAt(10, 10)
     print("province at (10,10) = " .. id)
 end
@@ -3322,13 +3659,7 @@ end
 
 ### LProvinceGrid:getHeight
 
-`LProvinceGrid:getHeight() -> integer`
-
-Returns the province grid height. This method is available to Lua scripts.
-
-**Returns**: `integer` - Grid height in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the province grid height. This method is available to Lua scripts.
@@ -3336,26 +3667,26 @@ Returns the province grid height. This method is available to Lua scripts.
 function LProvinceGrid:getHeight() end
 ```
 
+#### Description
+
+Returns the province grid height. This method is available to Lua scripts.
+
+Returns: `integer` - Grid height in pixels.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/images/sample_province_map.png")
     print("grid = " .. grid:getWidth() .. "x" .. grid:getHeight())
 end
 ```
 
 ### LProvinceGrid:getPolygons
 
-`LProvinceGrid:getPolygons() -> table`
-
-Returns polygon rings for every province.
-
-**Returns**: `table` - Array table of province polygon records with `province_id` and `rings` fields.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns polygon rings for every province.
@@ -3363,13 +3694,19 @@ Returns polygon rings for every province.
 function LProvinceGrid:getPolygons() end
 ```
 
+#### Description
+
+Returns polygon rings for every province.
+
+Returns: `table` - Array table of province polygon records with `province_id` and `rings` fields.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/images/sample_province_map.png")
     local polys = grid:getPolygons()
     print("polygon records = " .. #polys)
 end
@@ -3377,13 +3714,7 @@ end
 
 ### LProvinceGrid:getPolygonsSimplified
 
-`LProvinceGrid:getPolygonsSimplified() -> table`
-
-Returns simplified polygon rings for every province.
-
-**Returns**: `table` - Array table of simplified province polygon records with `province_id` and `rings` fields.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns simplified polygon rings for every province.
@@ -3391,13 +3722,19 @@ Returns simplified polygon rings for every province.
 function LProvinceGrid:getPolygonsSimplified() end
 ```
 
+#### Description
+
+Returns simplified polygon rings for every province.
+
+Returns: `table` - Array table of simplified province polygon records with `province_id` and `rings` fields.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/images/sample_province_map.png")
     local polys = grid:getPolygonsSimplified()
     print("simplified records = " .. #polys)
 end
@@ -3405,13 +3742,7 @@ end
 
 ### LProvinceGrid:getWidth
 
-`LProvinceGrid:getWidth() -> integer`
-
-Returns the province grid width. This method is available to Lua scripts.
-
-**Returns**: `integer` - Grid width in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the province grid width. This method is available to Lua scripts.
@@ -3419,26 +3750,26 @@ Returns the province grid width. This method is available to Lua scripts.
 function LProvinceGrid:getWidth() end
 ```
 
+#### Description
+
+Returns the province grid width. This method is available to Lua scripts.
+
+Returns: `integer` - Grid width in pixels.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/images/sample_province_map.png")
     print("grid = " .. grid:getWidth() .. "x" .. grid:getHeight())
 end
 ```
 
 ### LProvinceGrid:provinceCount
 
-`LProvinceGrid:provinceCount() -> integer`
-
-Returns the number of distinct provinces in the grid.
-
-**Returns**: `integer` - Province count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of distinct provinces in the grid.
@@ -3446,26 +3777,26 @@ Returns the number of distinct provinces in the grid.
 function LProvinceGrid:provinceCount() end
 ```
 
+#### Description
+
+Returns the number of distinct provinces in the grid.
+
+Returns: `integer` - Province count.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/images/sample_province_map.png")
     print("provinces = " .. grid:provinceCount())
 end
 ```
 
 ### LProvinceGrid:provinceSpans
 
-`LProvinceGrid:provinceSpans() -> table`
-
-Returns horizontal province spans by row.
-
-**Returns**: `table` - Array table with `province_id`, `y`, `x0`, and `x1` fields.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns horizontal province spans by row.
@@ -3473,13 +3804,19 @@ Returns horizontal province spans by row.
 function LProvinceGrid:provinceSpans() end
 ```
 
+#### Description
+
+Returns horizontal province spans by row.
+
+Returns: `table` - Array table with `province_id`, `y`, `x0`, and `x1` fields.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/images/sample_province_map.png")
     local spans = grid:provinceSpans()
     print("total spans = " .. #spans)
 end
@@ -3487,13 +3824,7 @@ end
 
 ### LProvinceGrid:serializeShapeData
 
-`LProvinceGrid:serializeShapeData() -> string`
-
-Serializes province span and border shape data into a binary Lua string.
-
-**Returns**: `string` - Serialized shape data bytes.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Serializes province span and border shape data into a binary Lua string.
@@ -3501,13 +3832,19 @@ Serializes province span and border shape data into a binary Lua string.
 function LProvinceGrid:serializeShapeData() end
 ```
 
+#### Description
+
+Serializes province span and border shape data into a binary Lua string.
+
+Returns: `string` - Serialized shape data bytes.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/images/sample_province_map.png")
     local data = grid:serializeShapeData()
     print("serialized " .. #data .. " bytes")
     grid:deserializeShapeData(data)
@@ -3517,13 +3854,7 @@ end
 
 ### LProvinceGrid:type
 
-`LProvinceGrid:type() -> string`
-
-Returns the Lua-visible type name for this province grid handle.
-
-**Returns**: `string` - The string `LProvinceGrid`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this province grid handle.
@@ -3531,13 +3862,19 @@ Returns the Lua-visible type name for this province grid handle.
 function LProvinceGrid:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this province grid handle.
+
+Returns: `string` - The string `LProvinceGrid`.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/images/sample_province_map.png")
     print("type = " .. grid:type())
     print("is ProvinceGrid = " .. tostring(grid:typeOf("ProvinceGrid")))
 end
@@ -3545,17 +3882,7 @@ end
 
 ### LProvinceGrid:typeOf
 
-`LProvinceGrid:typeOf(name: string) -> boolean`
-
-Returns whether this province grid handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LProvinceGrid` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this province grid handle matches a supported type name.
@@ -3564,13 +3891,23 @@ Returns whether this province grid handle matches a supported type name.
 function LProvinceGrid:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this province grid handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LProvinceGrid` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [image.lua](../blob/main/content/examples/image.lua):
+Source: [image.lua](../blob/main/content/examples/image.lua)
 
 ```lua
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/images/sample_province_map.png")
     print("type = " .. grid:type())
     print("is ProvinceGrid = " .. tostring(grid:typeOf("ProvinceGrid")))
 end

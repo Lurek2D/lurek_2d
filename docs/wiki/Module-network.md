@@ -14,70 +14,196 @@
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
   - [lurek.network.createLobby](#lureknetworkcreatelobby)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.network.createRoom](#lureknetworkcreateroom)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.network.discoverLobbies](#lureknetworkdiscoverlobbies)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.network.joinRoom](#lureknetworkjoinroom)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.network.leaveRoom](#lureknetworkleaveroom)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.network.listRooms](#lureknetworklistrooms)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.network.makePunchProbe](#lureknetworkmakepunchprobe)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.network.newClient](#lureknetworknewclient)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.network.newHost](#lureknetworknewhost)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.network.newRelayTicket](#lureknetworknewrelayticket)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.network.newRuntime](#lureknetworknewruntime)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.network.newServer](#lureknetworknewserver)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.network.pack](#lureknetworkpack)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.network.parsePunchProbe](#lureknetworkparsepunchprobe)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.network.parseRelayTicket](#lureknetworkparserelayticket)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.network.predictLinear](#lureknetworkpredictlinear)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.network.reconcileSnapshot](#lureknetworkreconcilesnapshot)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.network.syncEntity](#lureknetworksyncentity)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.network.unpack](#lureknetworkunpack)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔷 Module Types](#module-types)
   - [LNetworkHost](#lnetworkhost)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNetworkRuntime](#lnetworkruntime)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
   - [LNetworkHost:broadcast](#lnetworkhostbroadcast)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNetworkHost:connect](#lnetworkhostconnect)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNetworkHost:destroy](#lnetworkhostdestroy)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNetworkHost:disconnect](#lnetworkhostdisconnect)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNetworkHost:disconnectLater](#lnetworkhostdisconnectlater)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNetworkHost:disconnectNow](#lnetworkhostdisconnectnow)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNetworkHost:flush](#lnetworkhostflush)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNetworkHost:getAddress](#lnetworkhostgetaddress)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNetworkHost:getBandwidthLimit](#lnetworkhostgetbandwidthlimit)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNetworkHost:getChannelLimit](#lnetworkhostgetchannellimit)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNetworkHost:getConnectedPeerCount](#lnetworkhostgetconnectedpeercount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNetworkHost:getConnectedPeerIds](#lnetworkhostgetconnectedpeerids)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNetworkHost:getPeerAddress](#lnetworkhostgetpeeraddress)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNetworkHost:getPeerLimit](#lnetworkhostgetpeerlimit)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNetworkHost:getPeerState](#lnetworkhostgetpeerstate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNetworkHost:getPeerStats](#lnetworkhostgetpeerstats)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNetworkHost:getRole](#lnetworkhostgetrole)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNetworkHost:getRoundTripTime](#lnetworkhostgetroundtriptime)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNetworkHost:isClient](#lnetworkhostisclient)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNetworkHost:isDestroyed](#lnetworkhostisdestroyed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNetworkHost:isServer](#lnetworkhostisserver)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNetworkHost:ping](#lnetworkhostping)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNetworkHost:resetPeer](#lnetworkhostresetpeer)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNetworkHost:send](#lnetworkhostsend)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNetworkHost:service](#lnetworkhostservice)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNetworkHost:setBandwidthLimit](#lnetworkhostsetbandwidthlimit)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNetworkHost:setChannelLimit](#lnetworkhostsetchannellimit)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNetworkHost:type](#lnetworkhosttype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNetworkHost:typeOf](#lnetworkhosttypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNetworkRuntime:httpGet](#lnetworkruntimehttpget)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNetworkRuntime:httpPost](#lnetworkruntimehttppost)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNetworkRuntime:httpRequest](#lnetworkruntimehttprequest)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNetworkRuntime:poll](#lnetworkruntimepoll)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNetworkRuntime:shutdown](#lnetworkruntimeshutdown)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNetworkRuntime:tcpClose](#lnetworkruntimetcpclose)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNetworkRuntime:tcpConnect](#lnetworkruntimetcpconnect)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNetworkRuntime:tcpSend](#lnetworkruntimetcpsend)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNetworkRuntime:type](#lnetworkruntimetype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNetworkRuntime:typeOf](#lnetworkruntimetypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNetworkRuntime:wsClose](#lnetworkruntimewsclose)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNetworkRuntime:wsConnect](#lnetworkruntimewsconnect)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNetworkRuntime:wsSend](#lnetworkruntimewssend)
+    - [Definition](#definition)
+    - [Description](#description)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -140,22 +266,34 @@ lurek.network.syncEntity(host_ud: LNetworkHost, entity_id: integer, data_tbl: ta
 
 ### lurek.network.createLobby
 
-`lurek.network.createLobby(name: string, port: integer, [player_count]: integer, [max_players]: integer) -> table`
+#### Definition
+
+```lua
+--- Broadcasts lobby information and returns it as a table.
+---@param name string Lobby name.
+---@param port number Lobby port.
+---@param player_count? number Optional current player count, defaulting to 1.
+---@param max_players? number Optional maximum players, defaulting to 8.
+---@return NetworkCreateLobbyResult Lobby info table.
+lurek.network.createLobby = function(name, port, player_count, max_players) end
+```
+
+#### Description
 
 Broadcasts lobby information and returns it as a table.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, required): Lobby name.
 - `port` (`integer`, required): Lobby port.
 - `player_count` (`integer`, optional): Optional current player count, defaulting to 1.
 - `max_players` (`integer`, optional): Optional maximum players, defaulting to 8.
 
-**Returns**: `table` - Lobby info table.
+Returns: `table` - Lobby info table.
 
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -168,21 +306,32 @@ end
 
 ### lurek.network.createRoom
 
-`lurek.network.createRoom(name: string, host: string, [max_players]: integer) -> table`
+#### Definition
+
+```lua
+--- Creates a local room record. This function is exposed to Lua scripts.
+---@param name string Room name.
+---@param host string Host string.
+---@param max_players? number Optional maximum players, defaulting to 8.
+---@return NetworkCreateRoomResult Room info table.
+lurek.network.createRoom = function(name, host, max_players) end
+```
+
+#### Description
 
 Creates a local room record. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, required): Room name.
 - `host` (`string`, required): Host string.
 - `max_players` (`integer`, optional): Optional maximum players, defaulting to 8.
 
-**Returns**: `table` - Room info table.
+Returns: `table` - Room info table.
 
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -195,19 +344,28 @@ end
 
 ### lurek.network.discoverLobbies
 
-`lurek.network.discoverLobbies([timeout_ms]: integer) -> table`
+#### Definition
+
+```lua
+--- Discovers broadcast lobbies. This function is exposed to Lua scripts.
+---@param timeout_ms? number Optional timeout in milliseconds, defaulting to 500.
+---@return NetworkDiscoverLobbiesResult Array table of lobby info tables.
+lurek.network.discoverLobbies = function(timeout_ms) end
+```
+
+#### Description
 
 Discovers broadcast lobbies. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `timeout_ms` (`integer`, optional): Optional timeout in milliseconds, defaulting to 500.
 
-**Returns**: `table` - Array table of lobby info tables.
+Returns: `table` - Array table of lobby info tables.
 
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -218,19 +376,28 @@ end
 
 ### lurek.network.joinRoom
 
-`lurek.network.joinRoom(id: string) -> table`
+#### Definition
+
+```lua
+--- Joins a room by id when available. This function is exposed to Lua scripts.
+---@param id string Room id.
+---@return NetworkJoinRoomResult Room info table, or nil when missing.
+lurek.network.joinRoom = function(id) end
+```
+
+#### Description
 
 Joins a room by id when available. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `id` (`string`, required): Room id.
 
-**Returns**: `table` - Room info table, or nil when missing.
+Returns: `table` - Room info table, or nil when missing.
 
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -240,19 +407,28 @@ end
 
 ### lurek.network.leaveRoom
 
-`lurek.network.leaveRoom(id: string) -> table`
+#### Definition
+
+```lua
+--- Leaves a room by id when available. This function is exposed to Lua scripts.
+---@param id string Room id.
+---@return NetworkLeaveRoomResult Room info table, or nil when missing.
+lurek.network.leaveRoom = function(id) end
+```
+
+#### Description
 
 Leaves a room by id when available. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `id` (`string`, required): Room id.
 
-**Returns**: `table` - Room info table, or nil when missing.
+Returns: `table` - Room info table, or nil when missing.
 
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -262,15 +438,23 @@ end
 
 ### lurek.network.listRooms
 
-`lurek.network.listRooms() -> table`
+#### Definition
+
+```lua
+--- Lists known local room records. This function is exposed to Lua scripts.
+---@return NetworkListRoomsResult Array table of room info tables.
+lurek.network.listRooms = function() end
+```
+
+#### Description
 
 Lists known local room records. This function is exposed to Lua scripts.
 
-**Returns**: `table` - Array table of room info tables.
+Returns: `table` - Array table of room info tables.
 
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -281,19 +465,28 @@ end
 
 ### lurek.network.makePunchProbe
 
-`lurek.network.makePunchProbe(peer_id: string) -> string`
+#### Definition
+
+```lua
+--- Creates a relay punch probe payload for a peer id.
+---@param peer_id string Peer id.
+---@return string Probe payload.
+lurek.network.makePunchProbe = function(peer_id) end
+```
+
+#### Description
 
 Creates a relay punch probe payload for a peer id.
 
-**Parameters**
+Parameters:
 
 - `peer_id` (`string`, required): Peer id.
 
-**Returns**: `string` - Probe payload.
+Returns: `string` - Probe payload.
 
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -304,19 +497,28 @@ end
 
 ### lurek.network.newClient
 
-`lurek.network.newClient(opts: table) -> LNetworkHost`
+#### Definition
+
+```lua
+--- Creates a client host and connects to an address.
+---@param opts table Options with required `addr`, optional `channels`, and `data`.
+---@return LNetworkHost New client host handle.
+lurek.network.newClient = function(opts) end
+```
+
+#### Description
 
 Creates a client host and connects to an address.
 
-**Parameters**
+Parameters:
 
 - `opts` (`table`, required): Options with required `addr`, optional `channels`, and `data`.
 
-**Returns**: `LNetworkHost` - New client host handle.
+Returns: `LNetworkHost` - New client host handle.
 
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -329,19 +531,28 @@ end
 
 ### lurek.network.newHost
 
-`lurek.network.newHost(opts: table) -> LNetworkHost`
+#### Definition
+
+```lua
+--- Creates a network host from an options table.
+---@param opts table Options with `addr`, optional `maxPeers`/`peers`, `channels`, `inBandwidth`, and `outBandwidth`.
+---@return LNetworkHost New network host handle.
+lurek.network.newHost = function(opts) end
+```
+
+#### Description
 
 Creates a network host from an options table.
 
-**Parameters**
+Parameters:
 
 - `opts` (`table`, required): Options with `addr`, optional `maxPeers`/`peers`, `channels`, `inBandwidth`, and `outBandwidth`.
 
-**Returns**: `LNetworkHost` - New network host handle.
+Returns: `LNetworkHost` - New network host handle.
 
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -354,20 +565,30 @@ end
 
 ### lurek.network.newRelayTicket
 
-`lurek.network.newRelayTicket(room_id: string, peer_id: string) -> string`
+#### Definition
+
+```lua
+--- Creates an encoded relay ticket. This function is exposed to Lua scripts.
+---@param room_id string Room id.
+---@param peer_id string Peer id.
+---@return string Encoded relay ticket.
+lurek.network.newRelayTicket = function(room_id, peer_id) end
+```
+
+#### Description
 
 Creates an encoded relay ticket. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `room_id` (`string`, required): Room id.
 - `peer_id` (`string`, required): Peer id.
 
-**Returns**: `string` - Encoded relay ticket.
+Returns: `string` - Encoded relay ticket.
 
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -378,15 +599,23 @@ end
 
 ### lurek.network.newRuntime
 
-`lurek.network.newRuntime() -> LNetworkRuntime`
+#### Definition
+
+```lua
+--- Creates a background network runtime.
+---@return LNetworkRuntime New network runtime handle.
+lurek.network.newRuntime = function() end
+```
+
+#### Description
 
 Creates a background network runtime.
 
-**Returns**: `LNetworkRuntime` - New network runtime handle.
+Returns: `LNetworkRuntime` - New network runtime handle.
 
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -399,19 +628,28 @@ end
 
 ### lurek.network.newServer
 
-`lurek.network.newServer(opts: table) -> LNetworkHost`
+#### Definition
+
+```lua
+--- Creates a server host from an options table.
+---@param opts table Options with required `port`, optional `maxPeers`/`peers`, and `channels`.
+---@return LNetworkHost New server host handle.
+lurek.network.newServer = function(opts) end
+```
+
+#### Description
 
 Creates a server host from an options table.
 
-**Parameters**
+Parameters:
 
 - `opts` (`table`, required): Options with required `port`, optional `maxPeers`/`peers`, and `channels`.
 
-**Returns**: `LNetworkHost` - New server host handle.
+Returns: `LNetworkHost` - New server host handle.
 
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -424,19 +662,28 @@ end
 
 ### lurek.network.pack
 
-`lurek.network.pack(value: table) -> string`
+#### Definition
+
+```lua
+--- Packs a supported Lua value into a binary network message string.
+---@param value table Lua value to pack (table, number, string, or boolean).
+---@return string Binary packed message.
+lurek.network.pack = function(value) end
+```
+
+#### Description
 
 Packs a supported Lua value into a binary network message string.
 
-**Parameters**
+Parameters:
 
 - `value` (`table`, required): Lua value to pack (table, number, string, or boolean).
 
-**Returns**: `string` - Binary packed message.
+Returns: `string` - Binary packed message.
 
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -450,19 +697,28 @@ end
 
 ### lurek.network.parsePunchProbe
 
-`lurek.network.parsePunchProbe(payload: string) -> string`
+#### Definition
+
+```lua
+--- Parses a relay punch probe payload.
+---@param payload string Probe payload.
+---@return string Parsed peer id, or nil when invalid.
+lurek.network.parsePunchProbe = function(payload) end
+```
+
+#### Description
 
 Parses a relay punch probe payload.
 
-**Parameters**
+Parameters:
 
 - `payload` (`string`, required): Probe payload.
 
-**Returns**: `string` - Parsed peer id, or nil when invalid.
+Returns: `string` - Parsed peer id, or nil when invalid.
 
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -475,19 +731,28 @@ end
 
 ### lurek.network.parseRelayTicket
 
-`lurek.network.parseRelayTicket(token: string) -> table`
+#### Definition
+
+```lua
+--- Parses an encoded relay ticket. This function is exposed to Lua scripts.
+---@param token string Encoded relay ticket.
+---@return NetworkParseRelayTicketResult Ticket table, or nil when invalid.
+lurek.network.parseRelayTicket = function(token) end
+```
+
+#### Description
 
 Parses an encoded relay ticket. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `token` (`string`, required): Encoded relay ticket.
 
-**Returns**: `table` - Ticket table, or nil when invalid.
+Returns: `table` - Ticket table, or nil when invalid.
 
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -500,20 +765,30 @@ end
 
 ### lurek.network.predictLinear
 
-`lurek.network.predictLinear(snapshot: table, dt: number) -> table`
+#### Definition
+
+```lua
+--- Predicts an entity snapshot forward by linear velocity.
+---@param snapshot table Snapshot table with `id`, `tick`, `x`, `y`, `vx`, and `vy`.
+---@param dt number Prediction delta time.
+---@return NetworkPredictLinearResult Predicted snapshot table.
+lurek.network.predictLinear = function(snapshot, dt) end
+```
+
+#### Description
 
 Predicts an entity snapshot forward by linear velocity.
 
-**Parameters**
+Parameters:
 
 - `snapshot` (`table`, required): Snapshot table with `id`, `tick`, `x`, `y`, `vx`, and `vy`.
 - `dt` (`number`, required): Prediction delta time.
 
-**Returns**: `table` - Predicted snapshot table.
+Returns: `table` - Predicted snapshot table.
 
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -525,21 +800,32 @@ end
 
 ### lurek.network.reconcileSnapshot
 
-`lurek.network.reconcileSnapshot(pred: table, auth: table, alpha: number) -> table`
+#### Definition
+
+```lua
+--- Reconciles a predicted snapshot toward an authoritative snapshot.
+---@param pred table Predicted snapshot table.
+---@param auth table Authoritative snapshot table.
+---@param alpha number Blend factor.
+---@return NetworkReconcileSnapshotResult Reconciled snapshot table.
+lurek.network.reconcileSnapshot = function(pred, auth, alpha) end
+```
+
+#### Description
 
 Reconciles a predicted snapshot toward an authoritative snapshot.
 
-**Parameters**
+Parameters:
 
 - `pred` (`table`, required): Predicted snapshot table.
 - `auth` (`table`, required): Authoritative snapshot table.
 - `alpha` (`number`, required): Blend factor.
 
-**Returns**: `table` - Reconciled snapshot table.
+Returns: `table` - Reconciled snapshot table.
 
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -552,11 +838,23 @@ end
 
 ### lurek.network.syncEntity
 
-`lurek.network.syncEntity(host_ud: LNetworkHost, entity_id: integer, data_tbl: table, [channel]: integer, [reliable]: boolean)`
+#### Definition
+
+```lua
+--- Broadcasts a packed entity sync payload through a network host.
+---@param host_ud LNetworkHost Network host handle.
+---@param entity_id number Entity id.
+---@param data_tbl table Entity field table.
+---@param channel? number Optional channel id, defaulting to 0.
+---@param reliable? boolean Optional reliable flag, defaulting to false.
+lurek.network.syncEntity = function(host_ud, entity_id, data_tbl, channel, reliable) end
+```
+
+#### Description
 
 Broadcasts a packed entity sync payload through a network host.
 
-**Parameters**
+Parameters:
 
 - `host_ud` (`LNetworkHost`, required): Network host handle.
 - `entity_id` (`integer`, required): Entity id.
@@ -566,7 +864,7 @@ Broadcasts a packed entity sync payload through a network host.
 
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -580,19 +878,28 @@ end
 
 ### lurek.network.unpack
 
-`lurek.network.unpack(data: string) -> table`
+#### Definition
+
+```lua
+--- Unpacks a binary network message string into a Lua value.
+---@param data string Binary packed message.
+---@return NetworkUnpackResult Unpacked Lua value.
+lurek.network.unpack = function(data) end
+```
+
+#### Description
 
 Unpacks a binary network message string into a Lua value.
 
-**Parameters**
+Parameters:
 
 - `data` (`string`, required): Binary packed message.
 
-**Returns**: `table` - Unpacked Lua value.
+Returns: `table` - Unpacked Lua value.
 
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -609,9 +916,7 @@ end
 
 ### LNetworkHost
 
-Lua-side wrapper for a network host.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side wrapper for a network host.
@@ -619,9 +924,13 @@ Lua-side wrapper for a network host.
 LNetworkHost = {}
 ```
 
+#### Description
+
+Lua-side wrapper for a network host.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -634,9 +943,7 @@ end
 
 ### LNetworkRuntime
 
-Lua-side wrapper for the background network runtime.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side wrapper for the background network runtime.
@@ -644,9 +951,13 @@ Lua-side wrapper for the background network runtime.
 LNetworkRuntime = {}
 ```
 
+#### Description
+
+Lua-side wrapper for the background network runtime.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -664,17 +975,7 @@ end
 
 ### LNetworkHost:broadcast
 
-`LNetworkHost:broadcast(channel_id: integer, data: string, [reliable]: boolean)`
-
-Broadcasts bytes to all connected peers on a channel.
-
-**Parameters**
-
-- `channel_id` (`integer`, required): Channel id.
-- `data` (`string`, required): Binary payload string.
-- `reliable` (`boolean`, optional): Optional reliable flag, defaulting to true.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Broadcasts bytes to all connected peers on a channel.
@@ -684,9 +985,19 @@ Broadcasts bytes to all connected peers on a channel.
 function LNetworkHost:broadcast(channel_id, data, reliable) end
 ```
 
+#### Description
+
+Broadcasts bytes to all connected peers on a channel.
+
+Parameters:
+
+- `channel_id` (`integer`, required): Channel id.
+- `data` (`string`, required): Binary payload string.
+- `reliable` (`boolean`, optional): Optional reliable flag, defaulting to true.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -699,19 +1010,7 @@ end
 
 ### LNetworkHost:connect
 
-`LNetworkHost:connect(addr_str: string, [channels]: integer, [data]: integer) -> integer`
-
-Connects to a remote address. This method is available to Lua scripts.
-
-**Parameters**
-
-- `addr_str` (`string`, required): Remote socket address.
-- `channels` (`integer`, optional): Optional channel count, defaulting to 1.
-- `data` (`integer`, optional): Optional connection data, defaulting to 0.
-
-**Returns**: `integer` - Peer id.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Connects to a remote address. This method is available to Lua scripts.
@@ -722,9 +1021,21 @@ Connects to a remote address. This method is available to Lua scripts.
 function LNetworkHost:connect(addr_str, channels, data) end
 ```
 
+#### Description
+
+Connects to a remote address. This method is available to Lua scripts.
+
+Parameters:
+
+- `addr_str` (`string`, required): Remote socket address.
+- `channels` (`integer`, optional): Optional channel count, defaulting to 1.
+- `data` (`integer`, optional): Optional connection data, defaulting to 0.
+
+Returns: `integer` - Peer id.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -738,20 +1049,20 @@ end
 
 ### LNetworkHost:destroy
 
-`LNetworkHost:destroy()`
-
-Destroys the network host and releases resources.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Destroys the network host and releases resources.
 function LNetworkHost:destroy() end
 ```
 
+#### Description
+
+Destroys the network host and releases resources.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -763,16 +1074,7 @@ end
 
 ### LNetworkHost:disconnect
 
-`LNetworkHost:disconnect(peer_id: integer, [data]: integer)`
-
-Requests a graceful peer disconnect.
-
-**Parameters**
-
-- `peer_id` (`integer`, required): Peer id.
-- `data` (`integer`, optional): Optional disconnect data.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Requests a graceful peer disconnect.
@@ -781,9 +1083,18 @@ Requests a graceful peer disconnect.
 function LNetworkHost:disconnect(peer_id, data) end
 ```
 
+#### Description
+
+Requests a graceful peer disconnect.
+
+Parameters:
+
+- `peer_id` (`integer`, required): Peer id.
+- `data` (`integer`, optional): Optional disconnect data.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -796,16 +1107,7 @@ end
 
 ### LNetworkHost:disconnectLater
 
-`LNetworkHost:disconnectLater(peer_id: integer, [data]: integer)`
-
-Schedules a peer disconnect after pending packets.
-
-**Parameters**
-
-- `peer_id` (`integer`, required): Peer id.
-- `data` (`integer`, optional): Optional disconnect data.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Schedules a peer disconnect after pending packets.
@@ -814,9 +1116,18 @@ Schedules a peer disconnect after pending packets.
 function LNetworkHost:disconnectLater(peer_id, data) end
 ```
 
+#### Description
+
+Schedules a peer disconnect after pending packets.
+
+Parameters:
+
+- `peer_id` (`integer`, required): Peer id.
+- `data` (`integer`, optional): Optional disconnect data.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -829,16 +1140,7 @@ end
 
 ### LNetworkHost:disconnectNow
 
-`LNetworkHost:disconnectNow(peer_id: integer, [data]: integer)`
-
-Disconnects a peer immediately. This method is available to Lua scripts.
-
-**Parameters**
-
-- `peer_id` (`integer`, required): Peer id.
-- `data` (`integer`, optional): Optional disconnect data.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Disconnects a peer immediately. This method is available to Lua scripts.
@@ -847,9 +1149,18 @@ Disconnects a peer immediately. This method is available to Lua scripts.
 function LNetworkHost:disconnectNow(peer_id, data) end
 ```
 
+#### Description
+
+Disconnects a peer immediately. This method is available to Lua scripts.
+
+Parameters:
+
+- `peer_id` (`integer`, required): Peer id.
+- `data` (`integer`, optional): Optional disconnect data.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -862,20 +1173,20 @@ end
 
 ### LNetworkHost:flush
 
-`LNetworkHost:flush()`
-
-Flushes queued outgoing network packets.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Flushes queued outgoing network packets.
 function LNetworkHost:flush() end
 ```
 
+#### Description
+
+Flushes queued outgoing network packets.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -889,13 +1200,7 @@ end
 
 ### LNetworkHost:getAddress
 
-`LNetworkHost:getAddress() -> string`
-
-Returns local host socket address.
-
-**Returns**: `string` - Local socket address.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns local host socket address.
@@ -903,9 +1208,15 @@ Returns local host socket address.
 function LNetworkHost:getAddress() end
 ```
 
+#### Description
+
+Returns local host socket address.
+
+Returns: `string` - Local socket address.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -917,13 +1228,7 @@ end
 
 ### LNetworkHost:getBandwidthLimit
 
-`LNetworkHost:getBandwidthLimit() -> table`
-
-Returns incoming and outgoing bandwidth limits.
-
-**Returns**: `table` - Table with `incoming` and `outgoing` fields.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns incoming and outgoing bandwidth limits.
@@ -931,9 +1236,15 @@ Returns incoming and outgoing bandwidth limits.
 function LNetworkHost:getBandwidthLimit() end
 ```
 
+#### Description
+
+Returns incoming and outgoing bandwidth limits.
+
+Returns: `table` - Table with `incoming` and `outgoing` fields.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -947,13 +1258,7 @@ end
 
 ### LNetworkHost:getChannelLimit
 
-`LNetworkHost:getChannelLimit() -> integer`
-
-Returns configured channel limit.
-
-**Returns**: `integer` - Channel limit.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns configured channel limit.
@@ -961,9 +1266,15 @@ Returns configured channel limit.
 function LNetworkHost:getChannelLimit() end
 ```
 
+#### Description
+
+Returns configured channel limit.
+
+Returns: `integer` - Channel limit.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -975,13 +1286,7 @@ end
 
 ### LNetworkHost:getConnectedPeerCount
 
-`LNetworkHost:getConnectedPeerCount() -> integer`
-
-Returns the number of currently connected peers.
-
-**Returns**: `integer` - Connected peer count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of currently connected peers.
@@ -989,9 +1294,15 @@ Returns the number of currently connected peers.
 function LNetworkHost:getConnectedPeerCount() end
 ```
 
+#### Description
+
+Returns the number of currently connected peers.
+
+Returns: `integer` - Connected peer count.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -1004,13 +1315,7 @@ end
 
 ### LNetworkHost:getConnectedPeerIds
 
-`LNetworkHost:getConnectedPeerIds() -> integer[]`
-
-Returns an array of ids for all connected peers.
-
-**Returns**: `integer[]` - Array table of peer ids.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns an array of ids for all connected peers.
@@ -1018,9 +1323,15 @@ Returns an array of ids for all connected peers.
 function LNetworkHost:getConnectedPeerIds() end
 ```
 
+#### Description
+
+Returns an array of ids for all connected peers.
+
+Returns: `integer[]` - Array table of peer ids.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -1034,17 +1345,7 @@ end
 
 ### LNetworkHost:getPeerAddress
 
-`LNetworkHost:getPeerAddress(peer_id: integer) -> string`
-
-Returns peer socket address when available.
-
-**Parameters**
-
-- `peer_id` (`integer`, required): Peer id.
-
-**Returns**: `string` - Peer address, or nil when unavailable.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns peer socket address when available.
@@ -1053,9 +1354,19 @@ Returns peer socket address when available.
 function LNetworkHost:getPeerAddress(peer_id) end
 ```
 
+#### Description
+
+Returns peer socket address when available.
+
+Parameters:
+
+- `peer_id` (`integer`, required): Peer id.
+
+Returns: `string` - Peer address, or nil when unavailable.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -1068,13 +1379,7 @@ end
 
 ### LNetworkHost:getPeerLimit
 
-`LNetworkHost:getPeerLimit() -> integer`
-
-Returns configured peer limit. This method is available to Lua scripts.
-
-**Returns**: `integer` - Peer limit.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns configured peer limit. This method is available to Lua scripts.
@@ -1082,9 +1387,15 @@ Returns configured peer limit. This method is available to Lua scripts.
 function LNetworkHost:getPeerLimit() end
 ```
 
+#### Description
+
+Returns configured peer limit. This method is available to Lua scripts.
+
+Returns: `integer` - Peer limit.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -1096,17 +1407,7 @@ end
 
 ### LNetworkHost:getPeerState
 
-`LNetworkHost:getPeerState(peer_id: integer) -> string`
-
-Returns peer connection state. This method is available to Lua scripts.
-
-**Parameters**
-
-- `peer_id` (`integer`, required): Peer id.
-
-**Returns**: `string` - Peer state string.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns peer connection state. This method is available to Lua scripts.
@@ -1115,9 +1416,19 @@ Returns peer connection state. This method is available to Lua scripts.
 function LNetworkHost:getPeerState(peer_id) end
 ```
 
+#### Description
+
+Returns peer connection state. This method is available to Lua scripts.
+
+Parameters:
+
+- `peer_id` (`integer`, required): Peer id.
+
+Returns: `string` - Peer state string.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -1130,17 +1441,7 @@ end
 
 ### LNetworkHost:getPeerStats
 
-`LNetworkHost:getPeerStats(peer_id: integer) -> table`
-
-Returns statistics for a peer. This method is available to Lua scripts.
-
-**Parameters**
-
-- `peer_id` (`integer`, required): Peer id.
-
-**Returns**: `table` - Peer statistics table.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns statistics for a peer. This method is available to Lua scripts.
@@ -1149,9 +1450,19 @@ Returns statistics for a peer. This method is available to Lua scripts.
 function LNetworkHost:getPeerStats(peer_id) end
 ```
 
+#### Description
+
+Returns statistics for a peer. This method is available to Lua scripts.
+
+Parameters:
+
+- `peer_id` (`integer`, required): Peer id.
+
+Returns: `table` - Peer statistics table.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -1164,13 +1475,7 @@ end
 
 ### LNetworkHost:getRole
 
-`LNetworkHost:getRole() -> string`
-
-Returns host role string. This method is available to Lua scripts.
-
-**Returns**: `string` - Role string.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns host role string. This method is available to Lua scripts.
@@ -1178,9 +1483,15 @@ Returns host role string. This method is available to Lua scripts.
 function LNetworkHost:getRole() end
 ```
 
+#### Description
+
+Returns host role string. This method is available to Lua scripts.
+
+Returns: `string` - Role string.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -1192,17 +1503,7 @@ end
 
 ### LNetworkHost:getRoundTripTime
 
-`LNetworkHost:getRoundTripTime(peer_id: integer) -> number`
-
-Returns peer round trip time in milliseconds.
-
-**Parameters**
-
-- `peer_id` (`integer`, required): Peer id.
-
-**Returns**: `number` - Round trip time in milliseconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns peer round trip time in milliseconds.
@@ -1211,9 +1512,19 @@ Returns peer round trip time in milliseconds.
 function LNetworkHost:getRoundTripTime(peer_id) end
 ```
 
+#### Description
+
+Returns peer round trip time in milliseconds.
+
+Parameters:
+
+- `peer_id` (`integer`, required): Peer id.
+
+Returns: `number` - Round trip time in milliseconds.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -1226,13 +1537,7 @@ end
 
 ### LNetworkHost:isClient
 
-`LNetworkHost:isClient() -> boolean`
-
-Returns whether this host has client role.
-
-**Returns**: `boolean` - True when role is client.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this host has client role.
@@ -1240,9 +1545,15 @@ Returns whether this host has client role.
 function LNetworkHost:isClient() end
 ```
 
+#### Description
+
+Returns whether this host has client role.
+
+Returns: `boolean` - True when role is client.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -1254,13 +1565,7 @@ end
 
 ### LNetworkHost:isDestroyed
 
-`LNetworkHost:isDestroyed() -> boolean`
-
-Returns whether the network host is destroyed.
-
-**Returns**: `boolean` - True when destroyed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether the network host is destroyed.
@@ -1268,9 +1573,15 @@ Returns whether the network host is destroyed.
 function LNetworkHost:isDestroyed() end
 ```
 
+#### Description
+
+Returns whether the network host is destroyed.
+
+Returns: `boolean` - True when destroyed.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -1282,13 +1593,7 @@ end
 
 ### LNetworkHost:isServer
 
-`LNetworkHost:isServer() -> boolean`
-
-Returns whether this host has server role.
-
-**Returns**: `boolean` - True when role is server.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this host has server role.
@@ -1296,9 +1601,15 @@ Returns whether this host has server role.
 function LNetworkHost:isServer() end
 ```
 
+#### Description
+
+Returns whether this host has server role.
+
+Returns: `boolean` - True when role is server.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -1310,15 +1621,7 @@ end
 
 ### LNetworkHost:ping
 
-`LNetworkHost:ping(peer_id: integer)`
-
-Sends a ping to a peer. This method is available to Lua scripts.
-
-**Parameters**
-
-- `peer_id` (`integer`, required): Peer id.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sends a ping to a peer. This method is available to Lua scripts.
@@ -1326,9 +1629,17 @@ Sends a ping to a peer. This method is available to Lua scripts.
 function LNetworkHost:ping(peer_id) end
 ```
 
+#### Description
+
+Sends a ping to a peer. This method is available to Lua scripts.
+
+Parameters:
+
+- `peer_id` (`integer`, required): Peer id.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -1341,15 +1652,7 @@ end
 
 ### LNetworkHost:resetPeer
 
-`LNetworkHost:resetPeer(peer_id: integer)`
-
-Resets a peer connection. This method is available to Lua scripts.
-
-**Parameters**
-
-- `peer_id` (`integer`, required): Peer id.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Resets a peer connection. This method is available to Lua scripts.
@@ -1357,9 +1660,17 @@ Resets a peer connection. This method is available to Lua scripts.
 function LNetworkHost:resetPeer(peer_id) end
 ```
 
+#### Description
+
+Resets a peer connection. This method is available to Lua scripts.
+
+Parameters:
+
+- `peer_id` (`integer`, required): Peer id.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -1372,18 +1683,7 @@ end
 
 ### LNetworkHost:send
 
-`LNetworkHost:send(peer_id: integer, channel_id: integer, data: string, [reliable]: boolean)`
-
-Sends bytes to a peer on a channel. This method is available to Lua scripts.
-
-**Parameters**
-
-- `peer_id` (`integer`, required): Peer id.
-- `channel_id` (`integer`, required): Channel id.
-- `data` (`string`, required): Binary payload string.
-- `reliable` (`boolean`, optional): Optional reliable flag, defaulting to true.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sends bytes to a peer on a channel. This method is available to Lua scripts.
@@ -1394,9 +1694,20 @@ Sends bytes to a peer on a channel. This method is available to Lua scripts.
 function LNetworkHost:send(peer_id, channel_id, data, reliable) end
 ```
 
+#### Description
+
+Sends bytes to a peer on a channel. This method is available to Lua scripts.
+
+Parameters:
+
+- `peer_id` (`integer`, required): Peer id.
+- `channel_id` (`integer`, required): Channel id.
+- `data` (`string`, required): Binary payload string.
+- `reliable` (`boolean`, optional): Optional reliable flag, defaulting to true.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -1409,13 +1720,7 @@ end
 
 ### LNetworkHost:service
 
-`LNetworkHost:service() -> table`
-
-Polls the host for one network event.
-
-**Returns**: `table` - Event table, or nil when no event is available.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Polls the host for one network event.
@@ -1423,9 +1728,15 @@ Polls the host for one network event.
 function LNetworkHost:service() end
 ```
 
+#### Description
+
+Polls the host for one network event.
+
+Returns: `table` - Event table, or nil when no event is available.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -1439,16 +1750,7 @@ end
 
 ### LNetworkHost:setBandwidthLimit
 
-`LNetworkHost:setBandwidthLimit([incoming]: integer, [outgoing]: integer)`
-
-Sets incoming and outgoing bandwidth limits.
-
-**Parameters**
-
-- `incoming` (`integer`, optional): Optional incoming bandwidth limit.
-- `outgoing` (`integer`, optional): Optional outgoing bandwidth limit.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets incoming and outgoing bandwidth limits.
@@ -1457,9 +1759,18 @@ Sets incoming and outgoing bandwidth limits.
 function LNetworkHost:setBandwidthLimit(incoming, outgoing) end
 ```
 
+#### Description
+
+Sets incoming and outgoing bandwidth limits.
+
+Parameters:
+
+- `incoming` (`integer`, optional): Optional incoming bandwidth limit.
+- `outgoing` (`integer`, optional): Optional outgoing bandwidth limit.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -1473,15 +1784,7 @@ end
 
 ### LNetworkHost:setChannelLimit
 
-`LNetworkHost:setChannelLimit(limit: integer)`
-
-Sets channel limit. This method is available to Lua scripts.
-
-**Parameters**
-
-- `limit` (`integer`, required): Channel limit.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets channel limit. This method is available to Lua scripts.
@@ -1489,9 +1792,17 @@ Sets channel limit. This method is available to Lua scripts.
 function LNetworkHost:setChannelLimit(limit) end
 ```
 
+#### Description
+
+Sets channel limit. This method is available to Lua scripts.
+
+Parameters:
+
+- `limit` (`integer`, required): Channel limit.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -1505,13 +1816,7 @@ end
 
 ### LNetworkHost:type
 
-`LNetworkHost:type() -> string`
-
-Returns the Lua-visible type name for this network host handle.
-
-**Returns**: `string` - The string `LNetworkHost`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this network host handle.
@@ -1519,9 +1824,15 @@ Returns the Lua-visible type name for this network host handle.
 function LNetworkHost:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this network host handle.
+
+Returns: `string` - The string `LNetworkHost`.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -1533,17 +1844,7 @@ end
 
 ### LNetworkHost:typeOf
 
-`LNetworkHost:typeOf(name: string) -> boolean`
-
-Returns whether this network host handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LNetworkHost` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this network host handle matches a supported type name.
@@ -1552,9 +1853,19 @@ Returns whether this network host handle matches a supported type name.
 function LNetworkHost:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this network host handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LNetworkHost` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -1566,18 +1877,7 @@ end
 
 ### LNetworkRuntime:httpGet
 
-`LNetworkRuntime:httpGet(url: string, [headers]: table) -> integer`
-
-Starts an HTTP GET request. This method is available to Lua scripts.
-
-**Parameters**
-
-- `url` (`string`, required): Request URL.
-- `headers` (`table`, optional): Optional headers table.
-
-**Returns**: `integer` - Request id.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Starts an HTTP GET request. This method is available to Lua scripts.
@@ -1587,9 +1887,20 @@ Starts an HTTP GET request. This method is available to Lua scripts.
 function LNetworkRuntime:httpGet(url, headers) end
 ```
 
+#### Description
+
+Starts an HTTP GET request. This method is available to Lua scripts.
+
+Parameters:
+
+- `url` (`string`, required): Request URL.
+- `headers` (`table`, optional): Optional headers table.
+
+Returns: `integer` - Request id.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -1603,19 +1914,7 @@ end
 
 ### LNetworkRuntime:httpPost
 
-`LNetworkRuntime:httpPost(url: string, body: string, [headers]: table) -> integer`
-
-Starts an HTTP POST request. This method is available to Lua scripts.
-
-**Parameters**
-
-- `url` (`string`, required): Request URL.
-- `body` (`string`, required): Request body.
-- `headers` (`table`, optional): Optional headers table.
-
-**Returns**: `integer` - Request id.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Starts an HTTP POST request. This method is available to Lua scripts.
@@ -1626,9 +1925,21 @@ Starts an HTTP POST request. This method is available to Lua scripts.
 function LNetworkRuntime:httpPost(url, body, headers) end
 ```
 
+#### Description
+
+Starts an HTTP POST request. This method is available to Lua scripts.
+
+Parameters:
+
+- `url` (`string`, required): Request URL.
+- `body` (`string`, required): Request body.
+- `headers` (`table`, optional): Optional headers table.
+
+Returns: `integer` - Request id.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -1642,17 +1953,7 @@ end
 
 ### LNetworkRuntime:httpRequest
 
-`LNetworkRuntime:httpRequest(opts: table) -> integer`
-
-Starts an HTTP request from an options table and returns its request id.
-
-**Parameters**
-
-- `opts` (`table`, required): Options table with `url`, optional `method`, `headers`, `body`, and `timeout`.
-
-**Returns**: `integer` - Request id.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Starts an HTTP request from an options table and returns its request id.
@@ -1661,9 +1962,19 @@ Starts an HTTP request from an options table and returns its request id.
 function LNetworkRuntime:httpRequest(opts) end
 ```
 
+#### Description
+
+Starts an HTTP request from an options table and returns its request id.
+
+Parameters:
+
+- `opts` (`table`, required): Options table with `url`, optional `method`, `headers`, `body`, and `timeout`.
+
+Returns: `integer` - Request id.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -1677,13 +1988,7 @@ end
 
 ### LNetworkRuntime:poll
 
-`LNetworkRuntime:poll() -> table`
-
-Polls runtime responses for HTTP, TCP, and WebSocket operations.
-
-**Returns**: `table` - Array table of response/event tables.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Polls runtime responses for HTTP, TCP, and WebSocket operations.
@@ -1691,9 +1996,15 @@ Polls runtime responses for HTTP, TCP, and WebSocket operations.
 function LNetworkRuntime:poll() end
 ```
 
+#### Description
+
+Polls runtime responses for HTTP, TCP, and WebSocket operations.
+
+Returns: `table` - Array table of response/event tables.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -1707,20 +2018,20 @@ end
 
 ### LNetworkRuntime:shutdown
 
-`LNetworkRuntime:shutdown()`
-
-Shuts down the network runtime and cancels pending requests.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Shuts down the network runtime and cancels pending requests.
 function LNetworkRuntime:shutdown() end
 ```
 
+#### Description
+
+Shuts down the network runtime and cancels pending requests.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -1733,15 +2044,7 @@ end
 
 ### LNetworkRuntime:tcpClose
 
-`LNetworkRuntime:tcpClose(id: integer)`
-
-Closes a TCP connection. This method is available to Lua scripts.
-
-**Parameters**
-
-- `id` (`integer`, required): Connection id.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Closes a TCP connection. This method is available to Lua scripts.
@@ -1749,9 +2052,17 @@ Closes a TCP connection. This method is available to Lua scripts.
 function LNetworkRuntime:tcpClose(id) end
 ```
 
+#### Description
+
+Closes a TCP connection. This method is available to Lua scripts.
+
+Parameters:
+
+- `id` (`integer`, required): Connection id.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -1765,17 +2076,7 @@ end
 
 ### LNetworkRuntime:tcpConnect
 
-`LNetworkRuntime:tcpConnect(addr: string) -> integer`
-
-Opens a TCP connection. This method is available to Lua scripts.
-
-**Parameters**
-
-- `addr` (`string`, required): Remote address.
-
-**Returns**: `integer` - Connection id.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Opens a TCP connection. This method is available to Lua scripts.
@@ -1784,9 +2085,19 @@ Opens a TCP connection. This method is available to Lua scripts.
 function LNetworkRuntime:tcpConnect(addr) end
 ```
 
+#### Description
+
+Opens a TCP connection. This method is available to Lua scripts.
+
+Parameters:
+
+- `addr` (`string`, required): Remote address.
+
+Returns: `integer` - Connection id.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -1800,16 +2111,7 @@ end
 
 ### LNetworkRuntime:tcpSend
 
-`LNetworkRuntime:tcpSend(id: integer, data: string)`
-
-Sends bytes over a TCP connection. This method is available to Lua scripts.
-
-**Parameters**
-
-- `id` (`integer`, required): Connection id.
-- `data` (`string`, required): Binary payload string.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sends bytes over a TCP connection. This method is available to Lua scripts.
@@ -1818,9 +2120,18 @@ Sends bytes over a TCP connection. This method is available to Lua scripts.
 function LNetworkRuntime:tcpSend(id, data) end
 ```
 
+#### Description
+
+Sends bytes over a TCP connection. This method is available to Lua scripts.
+
+Parameters:
+
+- `id` (`integer`, required): Connection id.
+- `data` (`string`, required): Binary payload string.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -1834,13 +2145,7 @@ end
 
 ### LNetworkRuntime:type
 
-`LNetworkRuntime:type() -> string`
-
-Returns the Lua-visible type name for this network runtime handle.
-
-**Returns**: `string` - The string `LNetworkRuntime`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this network runtime handle.
@@ -1848,9 +2153,15 @@ Returns the Lua-visible type name for this network runtime handle.
 function LNetworkRuntime:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this network runtime handle.
+
+Returns: `string` - The string `LNetworkRuntime`.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -1863,17 +2174,7 @@ end
 
 ### LNetworkRuntime:typeOf
 
-`LNetworkRuntime:typeOf(name: string) -> boolean`
-
-Returns whether this network runtime handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LNetworkRuntime` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this network runtime handle matches a supported type name.
@@ -1882,9 +2183,19 @@ Returns whether this network runtime handle matches a supported type name.
 function LNetworkRuntime:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this network runtime handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LNetworkRuntime` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -1897,15 +2208,7 @@ end
 
 ### LNetworkRuntime:wsClose
 
-`LNetworkRuntime:wsClose(id: integer)`
-
-Closes a WebSocket connection. This method is available to Lua scripts.
-
-**Parameters**
-
-- `id` (`integer`, required): Connection id.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Closes a WebSocket connection. This method is available to Lua scripts.
@@ -1913,9 +2216,17 @@ Closes a WebSocket connection. This method is available to Lua scripts.
 function LNetworkRuntime:wsClose(id) end
 ```
 
+#### Description
+
+Closes a WebSocket connection. This method is available to Lua scripts.
+
+Parameters:
+
+- `id` (`integer`, required): Connection id.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -1929,17 +2240,7 @@ end
 
 ### LNetworkRuntime:wsConnect
 
-`LNetworkRuntime:wsConnect(url: string) -> integer`
-
-Opens a WebSocket connection. This method is available to Lua scripts.
-
-**Parameters**
-
-- `url` (`string`, required): WebSocket URL.
-
-**Returns**: `integer` - Connection id.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Opens a WebSocket connection. This method is available to Lua scripts.
@@ -1948,9 +2249,19 @@ Opens a WebSocket connection. This method is available to Lua scripts.
 function LNetworkRuntime:wsConnect(url) end
 ```
 
+#### Description
+
+Opens a WebSocket connection. This method is available to Lua scripts.
+
+Parameters:
+
+- `url` (`string`, required): WebSocket URL.
+
+Returns: `integer` - Connection id.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do
@@ -1964,16 +2275,7 @@ end
 
 ### LNetworkRuntime:wsSend
 
-`LNetworkRuntime:wsSend(id: integer, data: string)`
-
-Sends text over a WebSocket connection.
-
-**Parameters**
-
-- `id` (`integer`, required): Connection id.
-- `data` (`string`, required): Text payload.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sends text over a WebSocket connection.
@@ -1982,9 +2284,18 @@ Sends text over a WebSocket connection.
 function LNetworkRuntime:wsSend(id, data) end
 ```
 
+#### Description
+
+Sends text over a WebSocket connection.
+
+Parameters:
+
+- `id` (`integer`, required): Connection id.
+- `data` (`string`, required): Text payload.
+
 #### Example
 
-Exact example from [network.lua](../blob/main/content/examples/network.lua):
+Source: [network.lua](../blob/main/content/examples/network.lua)
 
 ```lua
 do

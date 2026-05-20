@@ -14,98 +14,280 @@
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
   - [lurek.docs.checkStaleness](#lurekdocscheckstaleness)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.docs.coverage](#lurekdocscoverage)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.docs.coverageModule](#lurekdocscoveragemodule)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.docs.describe](#lurekdocsdescribe)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.docs.exportAll](#lurekdocsexportall)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.docs.exportCheatsheet](#lurekdocsexportcheatsheet)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.docs.exportCompletions](#lurekdocsexportcompletions)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.docs.exportHover](#lurekdocsexporthover)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.docs.exportMarkdown](#lurekdocsexportmarkdown)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.docs.exportSignatures](#lurekdocsexportsignatures)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.docs.getCatalog](#lurekdocsgetcatalog)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.docs.loadAll](#lurekdocsloadall)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.docs.loadToml](#lurekdocsloadtoml)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.docs.quality](#lurekdocsquality)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.docs.qualityModule](#lurekdocsqualitymodule)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.docs.reflectLive](#lurekdocsreflectlive)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.docs.reflectTable](#lurekdocsreflecttable)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.docs.resetCatalog](#lurekdocsresetcatalog)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.docs.scan](#lurekdocsscan)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.docs.scanModule](#lurekdocsscanmodule)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.docs.schema](#lurekdocsschema)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.docs.schemaFromToml](#lurekdocsschemafromtoml)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.docs.setParamInfo](#lurekdocssetparaminfo)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.docs.setReturnInfo](#lurekdocssetreturninfo)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.docs.validate](#lurekdocsvalidate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.docs.validateModule](#lurekdocsvalidatemodule)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔷 Module Types](#module-types)
   - [LApiCatalog](#lapicatalog)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDocEntry](#ldocentry)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LQualityReport](#lqualityreport)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSchema](#lschema)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LValidationReport](#lvalidationreport)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
   - [LApiCatalog:entryCount](#lapicatalogentrycount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LApiCatalog:filter](#lapicatalogfilter)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LApiCatalog:getEntries](#lapicataloggetentries)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LApiCatalog:getEntry](#lapicataloggetentry)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LApiCatalog:getModules](#lapicataloggetmodules)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LApiCatalog:getTypeMethods](#lapicataloggettypemethods)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LApiCatalog:getTypes](#lapicataloggettypes)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LApiCatalog:merge](#lapicatalogmerge)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LApiCatalog:search](#lapicatalogsearch)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LApiCatalog:toJSON](#lapicatalogtojson)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LApiCatalog:toTable](#lapicatalogtotable)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LApiCatalog:type](#lapicatalogtype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LApiCatalog:typeOf](#lapicatalogtypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDocEntry:getDeprecated](#ldocentrygetdeprecated)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDocEntry:getDescription](#ldocentrygetdescription)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDocEntry:getExample](#ldocentrygetexample)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDocEntry:getKind](#ldocentrygetkind)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDocEntry:getModule](#ldocentrygetmodule)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDocEntry:getName](#ldocentrygetname)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDocEntry:getParameters](#ldocentrygetparameters)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDocEntry:getQualifiedName](#ldocentrygetqualifiedname)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDocEntry:getReturns](#ldocentrygetreturns)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDocEntry:getScore](#ldocentrygetscore)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDocEntry:getSince](#ldocentrygetsince)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDocEntry:hasDescription](#ldocentryhasdescription)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDocEntry:hasExample](#ldocentryhasexample)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDocEntry:hasParameters](#ldocentryhasparameters)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDocEntry:hasReturnType](#ldocentryhasreturntype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDocEntry:type](#ldocentrytype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDocEntry:typeOf](#ldocentrytypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LQualityReport:getBest](#lqualityreportgetbest)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LQualityReport:getByGrade](#lqualityreportgetbygrade)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LQualityReport:getGrade](#lqualityreportgetgrade)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LQualityReport:getModuleScores](#lqualityreportgetmodulescores)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LQualityReport:getOverallScore](#lqualityreportgetoverallscore)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LQualityReport:getSummary](#lqualityreportgetsummary)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LQualityReport:getWorst](#lqualityreportgetworst)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LQualityReport:toJSON](#lqualityreporttojson)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LQualityReport:toTable](#lqualityreporttotable)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LQualityReport:type](#lqualityreporttype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LQualityReport:typeOf](#lqualityreporttypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSchema:assert](#lschemaassert)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSchema:check](#lschemacheck)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSchema:getFields](#lschemagetfields)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSchema:getName](#lschemagetname)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSchema:type](#lschematype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSchema:typeOf](#lschematypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSchema:validate](#lschemavalidate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LValidationReport:getIncomplete](#lvalidationreportgetincomplete)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LValidationReport:getMissing](#lvalidationreportgetmissing)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LValidationReport:getPhantom](#lvalidationreportgetphantom)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LValidationReport:getSummary](#lvalidationreportgetsummary)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LValidationReport:incompleteCount](#lvalidationreportincompletecount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LValidationReport:isValid](#lvalidationreportisvalid)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LValidationReport:missingCount](#lvalidationreportmissingcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LValidationReport:phantomCount](#lvalidationreportphantomcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LValidationReport:toJSON](#lvalidationreporttojson)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LValidationReport:toTable](#lvalidationreporttotable)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LValidationReport:type](#lvalidationreporttype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LValidationReport:typeOf](#lvalidationreporttypeof)
+    - [Definition](#definition)
+    - [Description](#description)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -171,20 +353,30 @@ lurek.docs.resetCatalog() -- Clears the editable in-memory documentation catalog
 
 ### lurek.docs.checkStaleness
 
-`lurek.docs.checkStaleness(catalog_ud: LApiCatalog, source_dir: string) -> table`
+#### Definition
+
+```lua
+--- Lists source files in a directory for simple documentation staleness checks.
+---@param catalog_ud LApiCatalog Catalog argument accepted for API symmetry with validation helpers.
+---@param source_dir string Directory scanned for `.rs` and `.lua` source files.
+---@return DocsCheckStalenessResult Table with stale, current, and missing arrays.
+lurek.docs.checkStaleness = function(catalog_ud, source_dir) end
+```
+
+#### Description
 
 Lists source files in a directory for simple documentation staleness checks.
 
-**Parameters**
+Parameters:
 
 - `catalog_ud` (`LApiCatalog`, required): Catalog argument accepted for API symmetry with validation helpers.
 - `source_dir` (`string`, required): Directory scanned for `.rs` and `.lua` source files.
 
-**Returns**: `table` - Table with stale, current, and missing arrays.
+Returns: `table` - Table with stale, current, and missing arrays.
 
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -196,19 +388,29 @@ end
 
 ### lurek.docs.coverage
 
-`lurek.docs.coverage([catalog_ud]: LApiCatalog) -> integer`
+#### Definition
+
+```lua
+--- Returns documented and live API counts for the full `lurek` table.
+---@param catalog_ud? LApiCatalog Optional catalog used for documented entry count.
+---@return number a Number of catalog entries supplied as documented.
+---@return number b Number of live APIs found by reflection.
+lurek.docs.coverage = function(catalog_ud) end
+```
+
+#### Description
 
 Returns documented and live API counts for the full `lurek` table.
 
-**Parameters**
+Parameters:
 
 - `catalog_ud` (`LApiCatalog`, optional): Optional catalog used for documented entry count.
 
-**Returns**: `integer` - Number of catalog entries supplied as documented.
+Returns: `integer` - Number of catalog entries supplied as documented.
 
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -220,20 +422,31 @@ end
 
 ### lurek.docs.coverageModule
 
-`lurek.docs.coverageModule(module_name: string, [catalog_ud]: LApiCatalog) -> integer`
+#### Definition
+
+```lua
+--- Returns documented and live API counts for one module.
+---@param module_name string Module name under the `lurek` table.
+---@param catalog_ud? LApiCatalog Optional catalog used for documented entry count.
+---@return number a Number of catalog entries for the module.
+---@return number b Number of live APIs found in the module.
+lurek.docs.coverageModule = function(module_name, catalog_ud) end
+```
+
+#### Description
 
 Returns documented and live API counts for one module.
 
-**Parameters**
+Parameters:
 
 - `module_name` (`string`, required): Module name under the `lurek` table.
 - `catalog_ud` (`LApiCatalog`, optional): Optional catalog used for documented entry count.
 
-**Returns**: `integer` - Number of catalog entries for the module.
+Returns: `integer` - Number of catalog entries for the module.
 
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -245,18 +458,27 @@ end
 
 ### lurek.docs.describe
 
-`lurek.docs.describe(qualified_name: string, description: string)`
+#### Definition
+
+```lua
+--- Adds or updates the description for one editable catalog entry.
+---@param qualified_name string Full dotted API name to update or create.
+---@param description string Description text stored on the catalog entry.
+lurek.docs.describe = function(qualified_name, description) end
+```
+
+#### Description
 
 Adds or updates the description for one editable catalog entry.
 
-**Parameters**
+Parameters:
 
 - `qualified_name` (`string`, required): Full dotted API name to update or create.
 - `description` (`string`, required): Description text stored on the catalog entry.
 
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -267,18 +489,27 @@ end
 
 ### lurek.docs.exportAll
 
-`lurek.docs.exportAll(catalog_ud: LApiCatalog, output_dir: string)`
+#### Definition
+
+```lua
+--- Exports all editor documentation artifacts for a catalog into a directory.
+---@param catalog_ud LApiCatalog Catalog whose entries are exported.
+---@param output_dir string Directory that receives all generated artifacts.
+lurek.docs.exportAll = function(catalog_ud, output_dir) end
+```
+
+#### Description
 
 Exports all editor documentation artifacts for a catalog into a directory.
 
-**Parameters**
+Parameters:
 
 - `catalog_ud` (`LApiCatalog`, required): Catalog whose entries are exported.
 - `output_dir` (`string`, required): Directory that receives all generated artifacts.
 
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -290,18 +521,27 @@ end
 
 ### lurek.docs.exportCheatsheet
 
-`lurek.docs.exportCheatsheet(catalog_ud: LApiCatalog, path: string)`
+#### Definition
+
+```lua
+--- Writes a compact text cheatsheet from catalog entries.
+---@param catalog_ud LApiCatalog Catalog whose entries are written.
+---@param path string Output cheatsheet file path.
+lurek.docs.exportCheatsheet = function(catalog_ud, path) end
+```
+
+#### Description
 
 Writes a compact text cheatsheet from catalog entries.
 
-**Parameters**
+Parameters:
 
 - `catalog_ud` (`LApiCatalog`, required): Catalog whose entries are written.
 - `path` (`string`, required): Output cheatsheet file path.
 
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -313,18 +553,27 @@ end
 
 ### lurek.docs.exportCompletions
 
-`lurek.docs.exportCompletions(catalog_ud: LApiCatalog, path: string)`
+#### Definition
+
+```lua
+--- Exports catalog completion metadata to a file.
+---@param catalog_ud LApiCatalog Catalog whose entries are exported.
+---@param path string Output file path for completion data.
+lurek.docs.exportCompletions = function(catalog_ud, path) end
+```
+
+#### Description
 
 Exports catalog completion metadata to a file.
 
-**Parameters**
+Parameters:
 
 - `catalog_ud` (`LApiCatalog`, required): Catalog whose entries are exported.
 - `path` (`string`, required): Output file path for completion data.
 
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -336,18 +585,27 @@ end
 
 ### lurek.docs.exportHover
 
-`lurek.docs.exportHover(catalog_ud: LApiCatalog, path: string)`
+#### Definition
+
+```lua
+--- Exports catalog hover metadata to a file.
+---@param catalog_ud LApiCatalog Catalog whose entries are exported.
+---@param path string Output file path for hover data.
+lurek.docs.exportHover = function(catalog_ud, path) end
+```
+
+#### Description
 
 Exports catalog hover metadata to a file.
 
-**Parameters**
+Parameters:
 
 - `catalog_ud` (`LApiCatalog`, required): Catalog whose entries are exported.
 - `path` (`string`, required): Output file path for hover data.
 
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -359,18 +617,27 @@ end
 
 ### lurek.docs.exportMarkdown
 
-`lurek.docs.exportMarkdown(catalog_ud: LApiCatalog, path: string)`
+#### Definition
+
+```lua
+--- Writes a Markdown API reference from catalog entries.
+---@param catalog_ud LApiCatalog Catalog whose entries are written.
+---@param path string Output Markdown file path.
+lurek.docs.exportMarkdown = function(catalog_ud, path) end
+```
+
+#### Description
 
 Writes a Markdown API reference from catalog entries.
 
-**Parameters**
+Parameters:
 
 - `catalog_ud` (`LApiCatalog`, required): Catalog whose entries are written.
 - `path` (`string`, required): Output Markdown file path.
 
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -382,18 +649,27 @@ end
 
 ### lurek.docs.exportSignatures
 
-`lurek.docs.exportSignatures(catalog_ud: LApiCatalog, path: string)`
+#### Definition
+
+```lua
+--- Exports catalog signature metadata to a file.
+---@param catalog_ud LApiCatalog Catalog whose entries are exported.
+---@param path string Output file path for signature data.
+lurek.docs.exportSignatures = function(catalog_ud, path) end
+```
+
+#### Description
 
 Exports catalog signature metadata to a file.
 
-**Parameters**
+Parameters:
 
 - `catalog_ud` (`LApiCatalog`, required): Catalog whose entries are exported.
 - `path` (`string`, required): Output file path for signature data.
 
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -405,15 +681,23 @@ end
 
 ### lurek.docs.getCatalog
 
-`lurek.docs.getCatalog() -> LApiCatalog`
+#### Definition
+
+```lua
+--- Returns the editable in-memory documentation catalog.
+---@return LApiCatalog Catalog containing entries built by the editing functions.
+lurek.docs.getCatalog = function() end
+```
+
+#### Description
 
 Returns the editable in-memory documentation catalog.
 
-**Returns**: `LApiCatalog` - Catalog containing entries built by the editing functions.
+Returns: `LApiCatalog` - Catalog containing entries built by the editing functions.
 
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -424,19 +708,28 @@ end
 
 ### lurek.docs.loadAll
 
-`lurek.docs.loadAll(directory: string) -> LApiCatalog`
+#### Definition
+
+```lua
+--- Loads all TOML documentation catalog files from a directory and combines their entries.
+---@param directory string Directory scanned for `.toml` catalog files.
+---@return LApiCatalog Catalog containing entries parsed from every readable TOML file.
+lurek.docs.loadAll = function(directory) end
+```
+
+#### Description
 
 Loads all TOML documentation catalog files from a directory and combines their entries.
 
-**Parameters**
+Parameters:
 
 - `directory` (`string`, required): Directory scanned for `.toml` catalog files.
 
-**Returns**: `LApiCatalog` - Catalog containing entries parsed from every readable TOML file.
+Returns: `LApiCatalog` - Catalog containing entries parsed from every readable TOML file.
 
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -491,19 +784,28 @@ end
 
 ### lurek.docs.loadToml
 
-`lurek.docs.loadToml(path: string) -> LApiCatalog`
+#### Definition
+
+```lua
+--- Loads a TOML documentation catalog file and converts its entries into an API catalog.
+---@param path string Path to a TOML file containing an `entries` table.
+---@return LApiCatalog Catalog loaded from the TOML file.
+lurek.docs.loadToml = function(path) end
+```
+
+#### Description
 
 Loads a TOML documentation catalog file and converts its entries into an API catalog.
 
-**Parameters**
+Parameters:
 
 - `path` (`string`, required): Path to a TOML file containing an `entries` table.
 
-**Returns**: `LApiCatalog` - Catalog loaded from the TOML file.
+Returns: `LApiCatalog` - Catalog loaded from the TOML file.
 
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -557,19 +859,28 @@ end
 
 ### lurek.docs.quality
 
-`lurek.docs.quality([catalog_ud]: LApiCatalog) -> LQualityReport`
+#### Definition
+
+```lua
+--- Computes documentation quality for a supplied catalog or the editable in-memory catalog.
+---@param catalog_ud? LApiCatalog Optional catalog to score; omitted scores the editable catalog.
+---@return LQualityReport Quality report with overall and module-level scores.
+lurek.docs.quality = function(catalog_ud) end
+```
+
+#### Description
 
 Computes documentation quality for a supplied catalog or the editable in-memory catalog.
 
-**Parameters**
+Parameters:
 
 - `catalog_ud` (`LApiCatalog`, optional): Optional catalog to score; omitted scores the editable catalog.
 
-**Returns**: `LQualityReport` - Quality report with overall and module-level scores.
+Returns: `LQualityReport` - Quality report with overall and module-level scores.
 
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -581,20 +892,30 @@ end
 
 ### lurek.docs.qualityModule
 
-`lurek.docs.qualityModule(module_name: string, [catalog_ud]: LApiCatalog) -> LQualityReport`
+#### Definition
+
+```lua
+--- Computes documentation quality for entries belonging to one module.
+---@param module_name string Module name used to filter entries before scoring.
+---@param catalog_ud? LApiCatalog Optional catalog to score; omitted scores the editable catalog.
+---@return LQualityReport Quality report for the filtered module entries.
+lurek.docs.qualityModule = function(module_name, catalog_ud) end
+```
+
+#### Description
 
 Computes documentation quality for entries belonging to one module.
 
-**Parameters**
+Parameters:
 
 - `module_name` (`string`, required): Module name used to filter entries before scoring.
 - `catalog_ud` (`LApiCatalog`, optional): Optional catalog to score; omitted scores the editable catalog.
 
-**Returns**: `LQualityReport` - Quality report for the filtered module entries.
+Returns: `LQualityReport` - Quality report for the filtered module entries.
 
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -606,19 +927,28 @@ end
 
 ### lurek.docs.reflectLive
 
-`lurek.docs.reflectLive([ns]: string) -> table`
+#### Definition
+
+```lua
+--- Reflects live `lurek` module tables into plain name and type rows.
+---@param ns? string Optional module name to reflect; omitted reflects every table-valued module.
+---@return table Reflection table keyed by module name or containing the requested module entry.
+lurek.docs.reflectLive = function(ns) end
+```
+
+#### Description
 
 Reflects live `lurek` module tables into plain name and type rows.
 
-**Parameters**
+Parameters:
 
 - `ns` (`string`, optional): Optional module name to reflect; omitted reflects every table-valued module.
 
-**Returns**: `table` - Reflection table keyed by module name or containing the requested module entry.
+Returns: `table` - Reflection table keyed by module name or containing the requested module entry.
 
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -629,20 +959,30 @@ end
 
 ### lurek.docs.reflectTable
 
-`lurek.docs.reflectTable(tbl: table, [name]: string) -> table`
+#### Definition
+
+```lua
+--- Reflects an arbitrary Lua table into name, qualifiedName, and type rows.
+---@param tbl table Lua table to inspect without recursion.
+---@param name? string Optional prefix used to build qualifiedName values.
+---@return DocsReflectTableResult Array table of reflected item rows.
+lurek.docs.reflectTable = function(tbl, name) end
+```
+
+#### Description
 
 Reflects an arbitrary Lua table into name, qualifiedName, and type rows.
 
-**Parameters**
+Parameters:
 
 - `tbl` (`table`, required): Lua table to inspect without recursion.
 - `name` (`string`, optional): Optional prefix used to build qualifiedName values.
 
-**Returns**: `table` - Array table of reflected item rows.
+Returns: `table` - Array table of reflected item rows.
 
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -654,13 +994,20 @@ end
 
 ### lurek.docs.resetCatalog
 
-`lurek.docs.resetCatalog()`
+#### Definition
+
+```lua
+--- Clears the editable in-memory documentation catalog.
+lurek.docs.resetCatalog = function() end
+```
+
+#### Description
 
 Clears the editable in-memory documentation catalog.
 
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -672,19 +1019,28 @@ end
 
 ### lurek.docs.scan
 
-`lurek.docs.scan([opts]: table) -> LApiCatalog`
+#### Definition
+
+```lua
+--- Reflects the live `lurek` table and builds a catalog of callable APIs.
+---@param opts? table Optional scan options table reserved for future filters.
+---@return LApiCatalog Catalog populated from the currently registered `lurek` table.
+lurek.docs.scan = function(opts) end
+```
+
+#### Description
 
 Reflects the live `lurek` table and builds a catalog of callable APIs.
 
-**Parameters**
+Parameters:
 
 - `opts` (`table`, optional): Optional scan options table reserved for future filters.
 
-**Returns**: `LApiCatalog` - Catalog populated from the currently registered `lurek` table.
+Returns: `LApiCatalog` - Catalog populated from the currently registered `lurek` table.
 
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -695,19 +1051,28 @@ end
 
 ### lurek.docs.scanModule
 
-`lurek.docs.scanModule(module_name: string) -> LApiCatalog`
+#### Definition
+
+```lua
+--- Reflects one live `lurek.<module>` table and builds a catalog for that module.
+---@param module_name string Module name under the `lurek` table.
+---@return LApiCatalog Catalog populated from the live module table.
+lurek.docs.scanModule = function(module_name) end
+```
+
+#### Description
 
 Reflects one live `lurek.<module>` table and builds a catalog for that module.
 
-**Parameters**
+Parameters:
 
 - `module_name` (`string`, required): Module name under the `lurek` table.
 
-**Returns**: `LApiCatalog` - Catalog populated from the live module table.
+Returns: `LApiCatalog` - Catalog populated from the live module table.
 
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -718,20 +1083,30 @@ end
 
 ### lurek.docs.schema
 
-`lurek.docs.schema(rules: table, [name]: string) -> LSchema`
+#### Definition
+
+```lua
+--- Builds a schema validator from Lua table rules.
+---@param rules table Rule table keyed by field name; `__strict` enables strict validation.
+---@param name? string Optional schema name; defaults to `schema`.
+---@return LSchema Schema handle that can validate Lua tables.
+lurek.docs.schema = function(rules, name) end
+```
+
+#### Description
 
 Builds a schema validator from Lua table rules.
 
-**Parameters**
+Parameters:
 
 - `rules` (`table`, required): Rule table keyed by field name; `__strict` enables strict validation.
 - `name` (`string`, optional): Optional schema name; defaults to `schema`.
 
-**Returns**: `LSchema` - Schema handle that can validate Lua tables.
+Returns: `LSchema` - Schema handle that can validate Lua tables.
 
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -742,19 +1117,28 @@ end
 
 ### lurek.docs.schemaFromToml
 
-`lurek.docs.schemaFromToml(toml_text: string) -> LSchema`
+#### Definition
+
+```lua
+--- Builds a schema validator from TOML schema text.
+---@param toml_text string TOML text parsed by the docs schema backend.
+---@return LSchema Schema handle parsed from the TOML text.
+lurek.docs.schemaFromToml = function(toml_text) end
+```
+
+#### Description
 
 Builds a schema validator from TOML schema text.
 
-**Parameters**
+Parameters:
 
 - `toml_text` (`string`, required): TOML text parsed by the docs schema backend.
 
-**Returns**: `LSchema` - Schema handle parsed from the TOML text.
+Returns: `LSchema` - Schema handle parsed from the TOML text.
 
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -766,18 +1150,27 @@ end
 
 ### lurek.docs.setParamInfo
 
-`lurek.docs.setParamInfo(qualified_name: string, params: table)`
+#### Definition
+
+```lua
+--- Replaces parameter metadata for one editable catalog entry.
+---@param qualified_name string Full dotted API name whose parameters are updated.
+---@param params table Array table of parameter rows with name, type, description, optional, and optional default fields.
+lurek.docs.setParamInfo = function(qualified_name, params) end
+```
+
+#### Description
 
 Replaces parameter metadata for one editable catalog entry.
 
-**Parameters**
+Parameters:
 
 - `qualified_name` (`string`, required): Full dotted API name whose parameters are updated.
 - `params` (`table`, required): Array table of parameter rows with name, type, description, optional, and optional default fields.
 
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -788,18 +1181,27 @@ end
 
 ### lurek.docs.setReturnInfo
 
-`lurek.docs.setReturnInfo(qualified_name: string, returns: table)`
+#### Definition
+
+```lua
+--- Replaces return-value metadata for one editable catalog entry.
+---@param qualified_name string Full dotted API name whose return metadata is updated.
+---@param returns table Array table of return rows with type and description fields.
+lurek.docs.setReturnInfo = function(qualified_name, returns) end
+```
+
+#### Description
 
 Replaces return-value metadata for one editable catalog entry.
 
-**Parameters**
+Parameters:
 
 - `qualified_name` (`string`, required): Full dotted API name whose return metadata is updated.
 - `returns` (`table`, required): Array table of return rows with type and description fields.
 
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -812,19 +1214,28 @@ end
 
 ### lurek.docs.validate
 
-`lurek.docs.validate([catalog_ud]: LApiCatalog) -> LValidationReport`
+#### Definition
+
+```lua
+--- Compares a documentation catalog with the live reflected `lurek` API table.
+---@param catalog_ud? LApiCatalog Optional catalog to validate against live reflection; omitted validates an empty catalog.
+---@return LValidationReport Report containing missing, phantom, and incomplete API names.
+lurek.docs.validate = function(catalog_ud) end
+```
+
+#### Description
 
 Compares a documentation catalog with the live reflected `lurek` API table.
 
-**Parameters**
+Parameters:
 
 - `catalog_ud` (`LApiCatalog`, optional): Optional catalog to validate against live reflection; omitted validates an empty catalog.
 
-**Returns**: `LValidationReport` - Report containing missing, phantom, and incomplete API names.
+Returns: `LValidationReport` - Report containing missing, phantom, and incomplete API names.
 
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -836,20 +1247,30 @@ end
 
 ### lurek.docs.validateModule
 
-`lurek.docs.validateModule(module_name: string, [catalog_ud]: LApiCatalog) -> LValidationReport`
+#### Definition
+
+```lua
+--- Compares one module's documentation catalog entries with the live reflected module table.
+---@param module_name string Module name under the `lurek` table.
+---@param catalog_ud? LApiCatalog Optional catalog whose entries are filtered to the module.
+---@return LValidationReport Report containing missing, phantom, and incomplete API names for the module.
+lurek.docs.validateModule = function(module_name, catalog_ud) end
+```
+
+#### Description
 
 Compares one module's documentation catalog entries with the live reflected module table.
 
-**Parameters**
+Parameters:
 
 - `module_name` (`string`, required): Module name under the `lurek` table.
 - `catalog_ud` (`LApiCatalog`, optional): Optional catalog whose entries are filtered to the module.
 
-**Returns**: `LValidationReport` - Report containing missing, phantom, and incomplete API names for the module.
+Returns: `LValidationReport` - Report containing missing, phantom, and incomplete API names for the module.
 
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -866,9 +1287,7 @@ end
 
 ### LApiCatalog
 
-Provides Lua methods for querying, merging, filtering, and exporting catalog data.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Provides Lua methods for querying, merging, filtering, and exporting catalog data.
@@ -876,9 +1295,13 @@ Provides Lua methods for querying, merging, filtering, and exporting catalog dat
 LApiCatalog = {}
 ```
 
+#### Description
+
+Provides Lua methods for querying, merging, filtering, and exporting catalog data.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -889,9 +1312,7 @@ end
 
 ### LDocEntry
 
-Provides Lua accessors for documentation entry metadata.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Provides Lua accessors for documentation entry metadata.
@@ -899,9 +1320,13 @@ Provides Lua accessors for documentation entry metadata.
 LDocEntry = {}
 ```
 
+#### Description
+
+Provides Lua accessors for documentation entry metadata.
+
 #### Example
 
-Module-level example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 --- Docs Module Part 1: Scanning, Catalog, Schema, DocEntry, Validation, Quality, Export
@@ -955,9 +1380,7 @@ do
 
 ### LQualityReport
 
-Provides Lua accessors for documentation quality scoring results.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Provides Lua accessors for documentation quality scoring results.
@@ -965,9 +1388,13 @@ Provides Lua accessors for documentation quality scoring results.
 LQualityReport = {}
 ```
 
+#### Description
+
+Provides Lua accessors for documentation quality scoring results.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -979,9 +1406,7 @@ end
 
 ### LSchema
 
-Lua-side schema validator built from docs field rules.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side schema validator built from docs field rules.
@@ -989,9 +1414,13 @@ Lua-side schema validator built from docs field rules.
 LSchema = {}
 ```
 
+#### Description
+
+Lua-side schema validator built from docs field rules.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -1002,9 +1431,7 @@ end
 
 ### LValidationReport
 
-Provides Lua accessors for documentation validation results.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Provides Lua accessors for documentation validation results.
@@ -1012,9 +1439,13 @@ Provides Lua accessors for documentation validation results.
 LValidationReport = {}
 ```
 
+#### Description
+
+Provides Lua accessors for documentation validation results.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -1031,17 +1462,7 @@ end
 
 ### LApiCatalog:entryCount
 
-`LApiCatalog:entryCount([module]: string) -> integer`
-
-Counts entries in the catalog, optionally for one module.
-
-**Parameters**
-
-- `module` (`string`, optional): Optional module name used to limit the count.
-
-**Returns**: `integer` - Number of matching entries.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Counts entries in the catalog, optionally for one module.
@@ -1050,9 +1471,19 @@ Counts entries in the catalog, optionally for one module.
 function LApiCatalog:entryCount(module) end
 ```
 
+#### Description
+
+Counts entries in the catalog, optionally for one module.
+
+Parameters:
+
+- `module` (`string`, optional): Optional module name used to limit the count.
+
+Returns: `integer` - Number of matching entries.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -1065,17 +1496,7 @@ end
 
 ### LApiCatalog:filter
 
-`LApiCatalog:filter(predicate: function) -> LApiCatalog`
-
-Builds a new catalog containing entries accepted by a Lua predicate.
-
-**Parameters**
-
-- `predicate` (`function`, required): Callback called with each `LDocEntry`; truthy return keeps the entry.
-
-**Returns**: `LApiCatalog` - New catalog containing only entries accepted by the predicate.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Builds a new catalog containing entries accepted by a Lua predicate.
@@ -1084,9 +1505,19 @@ Builds a new catalog containing entries accepted by a Lua predicate.
 function LApiCatalog:filter(predicate) end
 ```
 
+#### Description
+
+Builds a new catalog containing entries accepted by a Lua predicate.
+
+Parameters:
+
+- `predicate` (`function`, required): Callback called with each `LDocEntry`; truthy return keeps the entry.
+
+Returns: `LApiCatalog` - New catalog containing only entries accepted by the predicate.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -1141,17 +1572,7 @@ do
 
 ### LApiCatalog:getEntries
 
-`LApiCatalog:getEntries([module]: string) -> LDocEntry[]`
-
-Returns catalog entries, optionally limited to one module.
-
-**Parameters**
-
-- `module` (`string`, optional): Optional module name used to filter entries.
-
-**Returns**: `LDocEntry[]` - `LDocEntry` handles.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns catalog entries, optionally limited to one module.
@@ -1160,9 +1581,19 @@ Returns catalog entries, optionally limited to one module.
 function LApiCatalog:getEntries(module) end
 ```
 
+#### Description
+
+Returns catalog entries, optionally limited to one module.
+
+Parameters:
+
+- `module` (`string`, optional): Optional module name used to filter entries.
+
+Returns: `LDocEntry[]` - `LDocEntry` handles.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -1175,17 +1606,7 @@ end
 
 ### LApiCatalog:getEntry
 
-`LApiCatalog:getEntry(qualified_name: string) -> LuaValue`
-
-Returns one catalog entry by qualified API name.
-
-**Parameters**
-
-- `qualified_name` (`string`, required): Full dotted API name to find.
-
-**Returns**: `LuaValue` - `LDocEntry` when found, or nil when the catalog has no match.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns one catalog entry by qualified API name.
@@ -1194,9 +1615,19 @@ Returns one catalog entry by qualified API name.
 function LApiCatalog:getEntry(qualified_name) end
 ```
 
+#### Description
+
+Returns one catalog entry by qualified API name.
+
+Parameters:
+
+- `qualified_name` (`string`, required): Full dotted API name to find.
+
+Returns: `LuaValue` - `LDocEntry` when found, or nil when the catalog has no match.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -1207,13 +1638,7 @@ end
 
 ### LApiCatalog:getModules
 
-`LApiCatalog:getModules() -> string[]`
-
-Returns every module represented in this catalog.
-
-**Returns**: `string[]` - Sorted array table of module names.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns every module represented in this catalog.
@@ -1221,9 +1646,15 @@ Returns every module represented in this catalog.
 function LApiCatalog:getModules() end
 ```
 
+#### Description
+
+Returns every module represented in this catalog.
+
+Returns: `string[]` - Sorted array table of module names.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -1235,17 +1666,7 @@ end
 
 ### LApiCatalog:getTypeMethods
 
-`LApiCatalog:getTypeMethods(qualified_name: string) -> LDocEntry[]`
-
-Returns method entries associated with a qualified type name.
-
-**Parameters**
-
-- `qualified_name` (`string`, required): Qualified type name used as the method prefix.
-
-**Returns**: `LDocEntry[]` - `LDocEntry` method entries.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns method entries associated with a qualified type name.
@@ -1254,9 +1675,19 @@ Returns method entries associated with a qualified type name.
 function LApiCatalog:getTypeMethods(qualified_name) end
 ```
 
+#### Description
+
+Returns method entries associated with a qualified type name.
+
+Parameters:
+
+- `qualified_name` (`string`, required): Qualified type name used as the method prefix.
+
+Returns: `LDocEntry[]` - `LDocEntry` method entries.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -1268,17 +1699,7 @@ end
 
 ### LApiCatalog:getTypes
 
-`LApiCatalog:getTypes(module_name: string) -> string[]`
-
-Returns type names documented for one module.
-
-**Parameters**
-
-- `module_name` (`string`, required): Module name to inspect.
-
-**Returns**: `string[]` - Documented type names.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns type names documented for one module.
@@ -1287,9 +1708,19 @@ Returns type names documented for one module.
 function LApiCatalog:getTypes(module_name) end
 ```
 
+#### Description
+
+Returns type names documented for one module.
+
+Parameters:
+
+- `module_name` (`string`, required): Module name to inspect.
+
+Returns: `string[]` - Documented type names.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -1301,17 +1732,7 @@ end
 
 ### LApiCatalog:merge
 
-`LApiCatalog:merge(other: LApiCatalog) -> LApiCatalog`
-
-Merges another catalog into this catalog and returns a new catalog value.
-
-**Parameters**
-
-- `other` (`LApiCatalog`, required): Catalog whose entries replace matching qualified names or append new entries.
-
-**Returns**: `LApiCatalog` - New catalog containing merged entries.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Merges another catalog into this catalog and returns a new catalog value.
@@ -1320,9 +1741,19 @@ Merges another catalog into this catalog and returns a new catalog value.
 function LApiCatalog:merge(other) end
 ```
 
+#### Description
+
+Merges another catalog into this catalog and returns a new catalog value.
+
+Parameters:
+
+- `other` (`LApiCatalog`, required): Catalog whose entries replace matching qualified names or append new entries.
+
+Returns: `LApiCatalog` - New catalog containing merged entries.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -1335,17 +1766,7 @@ end
 
 ### LApiCatalog:search
 
-`LApiCatalog:search(query: string) -> LDocEntry[]`
-
-Searches names, qualified names, and descriptions with a case-insensitive substring query.
-
-**Parameters**
-
-- `query` (`string`, required): Search text matched against catalog metadata.
-
-**Returns**: `LDocEntry[]` - Matching `LDocEntry` handles.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Searches names, qualified names, and descriptions with a case-insensitive substring query.
@@ -1354,9 +1775,19 @@ Searches names, qualified names, and descriptions with a case-insensitive substr
 function LApiCatalog:search(query) end
 ```
 
+#### Description
+
+Searches names, qualified names, and descriptions with a case-insensitive substring query.
+
+Parameters:
+
+- `query` (`string`, required): Search text matched against catalog metadata.
+
+Returns: `LDocEntry[]` - Matching `LDocEntry` handles.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -1368,13 +1799,7 @@ end
 
 ### LApiCatalog:toJSON
 
-`LApiCatalog:toJSON() -> string`
-
-Serializes this catalog to formatted JSON.
-
-**Returns**: `string` - Pretty-printed JSON array of catalog entries.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Serializes this catalog to formatted JSON.
@@ -1382,9 +1807,15 @@ Serializes this catalog to formatted JSON.
 function LApiCatalog:toJSON() end
 ```
 
+#### Description
+
+Serializes this catalog to formatted JSON.
+
+Returns: `string` - Pretty-printed JSON array of catalog entries.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -1396,13 +1827,7 @@ end
 
 ### LApiCatalog:toTable
 
-`LApiCatalog:toTable() -> table`
-
-Converts this catalog into plain Lua tables for lightweight inspection.
-
-**Returns**: `table` - Array of rows with name, qualifiedName, module, kind, description, and score fields.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Converts this catalog into plain Lua tables for lightweight inspection.
@@ -1410,9 +1835,15 @@ Converts this catalog into plain Lua tables for lightweight inspection.
 function LApiCatalog:toTable() end
 ```
 
+#### Description
+
+Converts this catalog into plain Lua tables for lightweight inspection.
+
+Returns: `table` - Array of rows with name, qualifiedName, module, kind, description, and score fields.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -1424,13 +1855,7 @@ end
 
 ### LApiCatalog:type
 
-`LApiCatalog:type() -> string`
-
-Returns the Lua-visible type name for this API catalog handle.
-
-**Returns**: `string` - The string `LApiCatalog`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this API catalog handle.
@@ -1438,9 +1863,15 @@ Returns the Lua-visible type name for this API catalog handle.
 function LApiCatalog:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this API catalog handle.
+
+Returns: `string` - The string `LApiCatalog`.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -1451,17 +1882,7 @@ end
 
 ### LApiCatalog:typeOf
 
-`LApiCatalog:typeOf(name: string) -> boolean`
-
-Returns whether this API catalog handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LApiCatalog` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this API catalog handle matches a supported type name.
@@ -1470,9 +1891,19 @@ Returns whether this API catalog handle matches a supported type name.
 function LApiCatalog:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this API catalog handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LApiCatalog` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -1483,13 +1914,7 @@ end
 
 ### LDocEntry:getDeprecated
 
-`LDocEntry:getDeprecated() -> LuaValue`
-
-Returns this entry's deprecation text when one was recorded.
-
-**Returns**: `LuaValue` - Deprecation string, or nil when the entry is not marked deprecated.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this entry's deprecation text when one was recorded.
@@ -1497,9 +1922,15 @@ Returns this entry's deprecation text when one was recorded.
 function LDocEntry:getDeprecated() end
 ```
 
+#### Description
+
+Returns this entry's deprecation text when one was recorded.
+
+Returns: `LuaValue` - Deprecation string, or nil when the entry is not marked deprecated.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -1510,13 +1941,7 @@ end
 
 ### LDocEntry:getDescription
 
-`LDocEntry:getDescription() -> string`
-
-Returns the prose description recorded for this entry.
-
-**Returns**: `string` - Documentation description text.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the prose description recorded for this entry.
@@ -1524,9 +1949,15 @@ Returns the prose description recorded for this entry.
 function LDocEntry:getDescription() end
 ```
 
+#### Description
+
+Returns the prose description recorded for this entry.
+
+Returns: `string` - Documentation description text.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -1537,13 +1968,7 @@ end
 
 ### LDocEntry:getExample
 
-`LDocEntry:getExample() -> LuaValue`
-
-Returns this entry's example text when one was recorded.
-
-**Returns**: `LuaValue` - Example string, or nil when no example exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this entry's example text when one was recorded.
@@ -1551,9 +1976,15 @@ Returns this entry's example text when one was recorded.
 function LDocEntry:getExample() end
 ```
 
+#### Description
+
+Returns this entry's example text when one was recorded.
+
+Returns: `LuaValue` - Example string, or nil when no example exists.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -1564,13 +1995,7 @@ end
 
 ### LDocEntry:getKind
 
-`LDocEntry:getKind() -> string`
-
-Returns the documentation kind recorded for this entry.
-
-**Returns**: `string` - Entry kind such as `function`, `method`, `type`, or `value`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the documentation kind recorded for this entry.
@@ -1578,9 +2003,15 @@ Returns the documentation kind recorded for this entry.
 function LDocEntry:getKind() end
 ```
 
+#### Description
+
+Returns the documentation kind recorded for this entry.
+
+Returns: `string` - Entry kind such as `function`, `method`, `type`, or `value`.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -1591,13 +2022,7 @@ end
 
 ### LDocEntry:getModule
 
-`LDocEntry:getModule() -> string`
-
-Returns the module name associated with this documentation entry.
-
-**Returns**: `string` - Module name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the module name associated with this documentation entry.
@@ -1605,9 +2030,15 @@ Returns the module name associated with this documentation entry.
 function LDocEntry:getModule() end
 ```
 
+#### Description
+
+Returns the module name associated with this documentation entry.
+
+Returns: `string` - Module name.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -1618,13 +2049,7 @@ end
 
 ### LDocEntry:getName
 
-`LDocEntry:getName() -> string`
-
-Returns the short API name stored by this documentation entry.
-
-**Returns**: `string` - Entry name without module prefix.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the short API name stored by this documentation entry.
@@ -1632,9 +2057,15 @@ Returns the short API name stored by this documentation entry.
 function LDocEntry:getName() end
 ```
 
+#### Description
+
+Returns the short API name stored by this documentation entry.
+
+Returns: `string` - Entry name without module prefix.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -1645,13 +2076,7 @@ end
 
 ### LDocEntry:getParameters
 
-`LDocEntry:getParameters() -> table`
-
-Returns parameter metadata recorded for this entry.
-
-**Returns**: `table` - Array of parameter rows with name, type, description, optional, and optional default fields.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns parameter metadata recorded for this entry.
@@ -1659,9 +2084,15 @@ Returns parameter metadata recorded for this entry.
 function LDocEntry:getParameters() end
 ```
 
+#### Description
+
+Returns parameter metadata recorded for this entry.
+
+Returns: `table` - Array of parameter rows with name, type, description, optional, and optional default fields.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -1672,13 +2103,7 @@ end
 
 ### LDocEntry:getQualifiedName
 
-`LDocEntry:getQualifiedName() -> string`
-
-Returns the full dotted API name stored by this documentation entry.
-
-**Returns**: `string` - Qualified API name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the full dotted API name stored by this documentation entry.
@@ -1686,9 +2111,15 @@ Returns the full dotted API name stored by this documentation entry.
 function LDocEntry:getQualifiedName() end
 ```
 
+#### Description
+
+Returns the full dotted API name stored by this documentation entry.
+
+Returns: `string` - Qualified API name.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -1699,13 +2130,7 @@ end
 
 ### LDocEntry:getReturns
 
-`LDocEntry:getReturns() -> table`
-
-Returns return-value metadata recorded for this entry.
-
-**Returns**: `table` - Array table of return rows with type and description fields.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns return-value metadata recorded for this entry.
@@ -1713,9 +2138,15 @@ Returns return-value metadata recorded for this entry.
 function LDocEntry:getReturns() end
 ```
 
+#### Description
+
+Returns return-value metadata recorded for this entry.
+
+Returns: `table` - Array table of return rows with type and description fields.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -1726,13 +2157,7 @@ end
 
 ### LDocEntry:getScore
 
-`LDocEntry:getScore() -> number`
-
-Returns the documentation quality score calculated for this entry.
-
-**Returns**: `number` - Quality score in the range used by the docs scoring backend.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the documentation quality score calculated for this entry.
@@ -1740,9 +2165,15 @@ Returns the documentation quality score calculated for this entry.
 function LDocEntry:getScore() end
 ```
 
+#### Description
+
+Returns the documentation quality score calculated for this entry.
+
+Returns: `number` - Quality score in the range used by the docs scoring backend.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -1753,13 +2184,7 @@ end
 
 ### LDocEntry:getSince
 
-`LDocEntry:getSince() -> LuaValue`
-
-Returns this entry's since-version text when one was recorded.
-
-**Returns**: `LuaValue` - Since-version string, or nil when no value exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this entry's since-version text when one was recorded.
@@ -1767,9 +2192,15 @@ Returns this entry's since-version text when one was recorded.
 function LDocEntry:getSince() end
 ```
 
+#### Description
+
+Returns this entry's since-version text when one was recorded.
+
+Returns: `LuaValue` - Since-version string, or nil when no value exists.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -1780,13 +2211,7 @@ end
 
 ### LDocEntry:hasDescription
 
-`LDocEntry:hasDescription() -> boolean`
-
-Returns whether this entry has non-empty description text.
-
-**Returns**: `boolean` - True when the description is present.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this entry has non-empty description text.
@@ -1794,9 +2219,15 @@ Returns whether this entry has non-empty description text.
 function LDocEntry:hasDescription() end
 ```
 
+#### Description
+
+Returns whether this entry has non-empty description text.
+
+Returns: `boolean` - True when the description is present.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -1807,13 +2238,7 @@ end
 
 ### LDocEntry:hasExample
 
-`LDocEntry:hasExample() -> boolean`
-
-Returns whether this entry has example text.
-
-**Returns**: `boolean` - True when an example is recorded.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this entry has example text.
@@ -1821,9 +2246,15 @@ Returns whether this entry has example text.
 function LDocEntry:hasExample() end
 ```
 
+#### Description
+
+Returns whether this entry has example text.
+
+Returns: `boolean` - True when an example is recorded.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -1834,13 +2265,7 @@ end
 
 ### LDocEntry:hasParameters
 
-`LDocEntry:hasParameters() -> boolean`
-
-Returns whether this entry has parameter metadata.
-
-**Returns**: `boolean` - True when at least one parameter is recorded.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this entry has parameter metadata.
@@ -1848,9 +2273,15 @@ Returns whether this entry has parameter metadata.
 function LDocEntry:hasParameters() end
 ```
 
+#### Description
+
+Returns whether this entry has parameter metadata.
+
+Returns: `boolean` - True when at least one parameter is recorded.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -1861,13 +2292,7 @@ end
 
 ### LDocEntry:hasReturnType
 
-`LDocEntry:hasReturnType() -> boolean`
-
-Returns whether this entry has return-value metadata.
-
-**Returns**: `boolean` - True when at least one return row is recorded.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this entry has return-value metadata.
@@ -1875,9 +2300,15 @@ Returns whether this entry has return-value metadata.
 function LDocEntry:hasReturnType() end
 ```
 
+#### Description
+
+Returns whether this entry has return-value metadata.
+
+Returns: `boolean` - True when at least one return row is recorded.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -1888,13 +2319,7 @@ end
 
 ### LDocEntry:type
 
-`LDocEntry:type() -> string`
-
-Returns the Lua-visible type name for this documentation entry handle.
-
-**Returns**: `string` - The string `LDocEntry`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this documentation entry handle.
@@ -1902,9 +2327,15 @@ Returns the Lua-visible type name for this documentation entry handle.
 function LDocEntry:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this documentation entry handle.
+
+Returns: `string` - The string `LDocEntry`.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -1915,17 +2346,7 @@ end
 
 ### LDocEntry:typeOf
 
-`LDocEntry:typeOf(name: string) -> boolean`
-
-Returns whether this documentation entry handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LDocEntry` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this documentation entry handle matches a supported type name.
@@ -1934,9 +2355,19 @@ Returns whether this documentation entry handle matches a supported type name.
 function LDocEntry:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this documentation entry handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LDocEntry` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -1947,17 +2378,7 @@ end
 
 ### LQualityReport:getBest
 
-`LQualityReport:getBest([count]: integer) -> LDocEntry[]`
-
-Returns the highest-scoring documentation entries.
-
-**Parameters**
-
-- `count` (`integer`, optional): Optional maximum number of entries to return; defaults to 10.
-
-**Returns**: `LDocEntry[]` - Best-scoring `LDocEntry` handles.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the highest-scoring documentation entries.
@@ -1966,9 +2387,19 @@ Returns the highest-scoring documentation entries.
 function LQualityReport:getBest(count) end
 ```
 
+#### Description
+
+Returns the highest-scoring documentation entries.
+
+Parameters:
+
+- `count` (`integer`, optional): Optional maximum number of entries to return; defaults to 10.
+
+Returns: `LDocEntry[]` - Best-scoring `LDocEntry` handles.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -1981,17 +2412,7 @@ end
 
 ### LQualityReport:getByGrade
 
-`LQualityReport:getByGrade(grade: string) -> LDocEntry[]`
-
-Returns documentation entries whose calculated grade matches a grade string.
-
-**Parameters**
-
-- `grade` (`string`, required): Grade string produced by the docs quality backend.
-
-**Returns**: `LDocEntry[]` - Matching `LDocEntry` handles.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns documentation entries whose calculated grade matches a grade string.
@@ -2000,9 +2421,19 @@ Returns documentation entries whose calculated grade matches a grade string.
 function LQualityReport:getByGrade(grade) end
 ```
 
+#### Description
+
+Returns documentation entries whose calculated grade matches a grade string.
+
+Parameters:
+
+- `grade` (`string`, required): Grade string produced by the docs quality backend.
+
+Returns: `LDocEntry[]` - Matching `LDocEntry` handles.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -2015,13 +2446,7 @@ end
 
 ### LQualityReport:getGrade
 
-`LQualityReport:getGrade() -> string`
-
-Returns the letter grade derived from the aggregate documentation score.
-
-**Returns**: `string` - Quality grade text.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the letter grade derived from the aggregate documentation score.
@@ -2029,9 +2454,15 @@ Returns the letter grade derived from the aggregate documentation score.
 function LQualityReport:getGrade() end
 ```
 
+#### Description
+
+Returns the letter grade derived from the aggregate documentation score.
+
+Returns: `string` - Quality grade text.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -2043,13 +2474,7 @@ end
 
 ### LQualityReport:getModuleScores
 
-`LQualityReport:getModuleScores() -> table`
-
-Returns per-module documentation quality scores.
-
-**Returns**: `table` - Map table keyed by module name with numeric scores.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns per-module documentation quality scores.
@@ -2057,9 +2482,15 @@ Returns per-module documentation quality scores.
 function LQualityReport:getModuleScores() end
 ```
 
+#### Description
+
+Returns per-module documentation quality scores.
+
+Returns: `table` - Map table keyed by module name with numeric scores.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -2072,13 +2503,7 @@ end
 
 ### LQualityReport:getOverallScore
 
-`LQualityReport:getOverallScore() -> number`
-
-Returns the aggregate documentation quality score.
-
-**Returns**: `number` - Overall score in the range used by the docs scoring backend.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the aggregate documentation quality score.
@@ -2086,9 +2511,15 @@ Returns the aggregate documentation quality score.
 function LQualityReport:getOverallScore() end
 ```
 
+#### Description
+
+Returns the aggregate documentation quality score.
+
+Returns: `number` - Overall score in the range used by the docs scoring backend.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -2100,13 +2531,7 @@ end
 
 ### LQualityReport:getSummary
 
-`LQualityReport:getSummary() -> string`
-
-Returns a human-readable summary of overall and per-module quality scores.
-
-**Returns**: `string` - Multiline quality summary text.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a human-readable summary of overall and per-module quality scores.
@@ -2114,9 +2539,15 @@ Returns a human-readable summary of overall and per-module quality scores.
 function LQualityReport:getSummary() end
 ```
 
+#### Description
+
+Returns a human-readable summary of overall and per-module quality scores.
+
+Returns: `string` - Multiline quality summary text.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -2128,17 +2559,7 @@ end
 
 ### LQualityReport:getWorst
 
-`LQualityReport:getWorst([count]: integer) -> LDocEntry[]`
-
-Returns the lowest-scoring documentation entries.
-
-**Parameters**
-
-- `count` (`integer`, optional): Optional maximum number of entries to return; defaults to 10.
-
-**Returns**: `LDocEntry[]` - Worst-scoring `LDocEntry` handles.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the lowest-scoring documentation entries.
@@ -2147,9 +2568,19 @@ Returns the lowest-scoring documentation entries.
 function LQualityReport:getWorst(count) end
 ```
 
+#### Description
+
+Returns the lowest-scoring documentation entries.
+
+Parameters:
+
+- `count` (`integer`, optional): Optional maximum number of entries to return; defaults to 10.
+
+Returns: `LDocEntry[]` - Worst-scoring `LDocEntry` handles.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -2162,13 +2593,7 @@ end
 
 ### LQualityReport:toJSON
 
-`LQualityReport:toJSON() -> string`
-
-Serializes this quality report to formatted JSON.
-
-**Returns**: `string` - Pretty-printed JSON object for the quality report.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Serializes this quality report to formatted JSON.
@@ -2176,9 +2601,15 @@ Serializes this quality report to formatted JSON.
 function LQualityReport:toJSON() end
 ```
 
+#### Description
+
+Serializes this quality report to formatted JSON.
+
+Returns: `string` - Pretty-printed JSON object for the quality report.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -2191,13 +2622,7 @@ end
 
 ### LQualityReport:toTable
 
-`LQualityReport:toTable() -> table`
-
-Converts this quality report into a plain Lua table.
-
-**Returns**: `table` - Table with overallScore, grade, and moduleScores fields.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Converts this quality report into a plain Lua table.
@@ -2205,9 +2630,15 @@ Converts this quality report into a plain Lua table.
 function LQualityReport:toTable() end
 ```
 
+#### Description
+
+Converts this quality report into a plain Lua table.
+
+Returns: `table` - Table with overallScore, grade, and moduleScores fields.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -2220,13 +2651,7 @@ end
 
 ### LQualityReport:type
 
-`LQualityReport:type() -> string`
-
-Returns the Lua-visible type name for this quality report handle.
-
-**Returns**: `string` - The string `LQualityReport`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this quality report handle.
@@ -2234,9 +2659,15 @@ Returns the Lua-visible type name for this quality report handle.
 function LQualityReport:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this quality report handle.
+
+Returns: `string` - The string `LQualityReport`.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -2248,17 +2679,7 @@ end
 
 ### LQualityReport:typeOf
 
-`LQualityReport:typeOf(name: string) -> boolean`
-
-Returns whether this quality report handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LQualityReport` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this quality report handle matches a supported type name.
@@ -2267,9 +2688,19 @@ Returns whether this quality report handle matches a supported type name.
 function LQualityReport:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this quality report handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LQualityReport` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -2281,15 +2712,7 @@ end
 
 ### LSchema:assert
 
-`LSchema:assert(data: table)`
-
-Validates a Lua table and raises a Lua error when schema checks fail.
-
-**Parameters**
-
-- `data` (`table`, required): Table whose fields are checked against this schema.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Validates a Lua table and raises a Lua error when schema checks fail.
@@ -2297,9 +2720,17 @@ Validates a Lua table and raises a Lua error when schema checks fail.
 function LSchema:assert(data) end
 ```
 
+#### Description
+
+Validates a Lua table and raises a Lua error when schema checks fail.
+
+Parameters:
+
+- `data` (`table`, required): Table whose fields are checked against this schema.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -2311,17 +2742,7 @@ end
 
 ### LSchema:check
 
-`LSchema:check(data: table) -> boolean`
-
-Validates a Lua table and returns only the boolean result.
-
-**Parameters**
-
-- `data` (`table`, required): Table whose fields are checked against this schema.
-
-**Returns**: `boolean` - True when the table satisfies the schema rules.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Validates a Lua table and returns only the boolean result.
@@ -2330,9 +2751,19 @@ Validates a Lua table and returns only the boolean result.
 function LSchema:check(data) end
 ```
 
+#### Description
+
+Validates a Lua table and returns only the boolean result.
+
+Parameters:
+
+- `data` (`table`, required): Table whose fields are checked against this schema.
+
+Returns: `boolean` - True when the table satisfies the schema rules.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -2343,13 +2774,7 @@ end
 
 ### LSchema:getFields
 
-`LSchema:getFields() -> string[]`
-
-Returns the field names declared by this schema.
-
-**Returns**: `string[]` - Sorted array table of field names.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the field names declared by this schema.
@@ -2357,9 +2782,15 @@ Returns the field names declared by this schema.
 function LSchema:getFields() end
 ```
 
+#### Description
+
+Returns the field names declared by this schema.
+
+Returns: `string[]` - Sorted array table of field names.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -2371,13 +2802,7 @@ end
 
 ### LSchema:getName
 
-`LSchema:getName() -> string`
-
-Returns this schema's display name.
-
-**Returns**: `string` - Schema name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this schema's display name.
@@ -2385,9 +2810,15 @@ Returns this schema's display name.
 function LSchema:getName() end
 ```
 
+#### Description
+
+Returns this schema's display name.
+
+Returns: `string` - Schema name.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -2398,13 +2829,7 @@ end
 
 ### LSchema:type
 
-`LSchema:type() -> string`
-
-Returns the Lua-visible type name for this schema handle.
-
-**Returns**: `string` - The string `LSchema`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this schema handle.
@@ -2412,9 +2837,15 @@ Returns the Lua-visible type name for this schema handle.
 function LSchema:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this schema handle.
+
+Returns: `string` - The string `LSchema`.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -2425,17 +2856,7 @@ end
 
 ### LSchema:typeOf
 
-`LSchema:typeOf(name: string) -> boolean`
-
-Returns whether this schema handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LSchema` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this schema handle matches a supported type name.
@@ -2444,9 +2865,19 @@ Returns whether this schema handle matches a supported type name.
 function LSchema:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this schema handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LSchema` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -2457,17 +2888,7 @@ end
 
 ### LSchema:validate
 
-`LSchema:validate(data: table) -> boolean`
-
-Validates a Lua table and returns a success flag plus structured error rows.
-
-**Parameters**
-
-- `data` (`table`, required): Table whose fields are checked against this schema.
-
-**Returns**: `boolean` - True when every provided field satisfies the schema rules.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Validates a Lua table and returns a success flag plus structured error rows.
@@ -2477,9 +2898,19 @@ Validates a Lua table and returns a success flag plus structured error rows.
 function LSchema:validate(data) end
 ```
 
+#### Description
+
+Validates a Lua table and returns a success flag plus structured error rows.
+
+Parameters:
+
+- `data` (`table`, required): Table whose fields are checked against this schema.
+
+Returns: `boolean` - True when every provided field satisfies the schema rules.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -2491,13 +2922,7 @@ end
 
 ### LValidationReport:getIncomplete
 
-`LValidationReport:getIncomplete() -> string[]`
-
-Returns catalog APIs whose documentation was incomplete.
-
-**Returns**: `string[]` - Incomplete qualified names.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns catalog APIs whose documentation was incomplete.
@@ -2505,9 +2930,15 @@ Returns catalog APIs whose documentation was incomplete.
 function LValidationReport:getIncomplete() end
 ```
 
+#### Description
+
+Returns catalog APIs whose documentation was incomplete.
+
+Returns: `string[]` - Incomplete qualified names.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -2520,13 +2951,7 @@ end
 
 ### LValidationReport:getMissing
 
-`LValidationReport:getMissing() -> string[]`
-
-Returns live APIs that were missing from the checked catalog.
-
-**Returns**: `string[]` - Missing qualified names.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns live APIs that were missing from the checked catalog.
@@ -2534,9 +2959,15 @@ Returns live APIs that were missing from the checked catalog.
 function LValidationReport:getMissing() end
 ```
 
+#### Description
+
+Returns live APIs that were missing from the checked catalog.
+
+Returns: `string[]` - Missing qualified names.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -2549,13 +2980,7 @@ end
 
 ### LValidationReport:getPhantom
 
-`LValidationReport:getPhantom() -> string[]`
-
-Returns catalog APIs that were not present in the live Lua table.
-
-**Returns**: `string[]` - Phantom qualified names.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns catalog APIs that were not present in the live Lua table.
@@ -2563,9 +2988,15 @@ Returns catalog APIs that were not present in the live Lua table.
 function LValidationReport:getPhantom() end
 ```
 
+#### Description
+
+Returns catalog APIs that were not present in the live Lua table.
+
+Returns: `string[]` - Phantom qualified names.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -2578,13 +3009,7 @@ end
 
 ### LValidationReport:getSummary
 
-`LValidationReport:getSummary() -> string`
-
-Returns a compact text summary of missing, phantom, and incomplete counts.
-
-**Returns**: `string` - Human-readable validation summary.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a compact text summary of missing, phantom, and incomplete counts.
@@ -2592,9 +3017,15 @@ Returns a compact text summary of missing, phantom, and incomplete counts.
 function LValidationReport:getSummary() end
 ```
 
+#### Description
+
+Returns a compact text summary of missing, phantom, and incomplete counts.
+
+Returns: `string` - Human-readable validation summary.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -2606,13 +3037,7 @@ end
 
 ### LValidationReport:incompleteCount
 
-`LValidationReport:incompleteCount() -> integer`
-
-Returns the number of catalog APIs with incomplete documentation.
-
-**Returns**: `integer` - Incomplete API count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of catalog APIs with incomplete documentation.
@@ -2620,9 +3045,15 @@ Returns the number of catalog APIs with incomplete documentation.
 function LValidationReport:incompleteCount() end
 ```
 
+#### Description
+
+Returns the number of catalog APIs with incomplete documentation.
+
+Returns: `integer` - Incomplete API count.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -2634,13 +3065,7 @@ end
 
 ### LValidationReport:isValid
 
-`LValidationReport:isValid() -> boolean`
-
-Returns whether the validation report has no missing live APIs.
-
-**Returns**: `boolean` - True when no live APIs are missing from the catalog.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether the validation report has no missing live APIs.
@@ -2648,9 +3073,15 @@ Returns whether the validation report has no missing live APIs.
 function LValidationReport:isValid() end
 ```
 
+#### Description
+
+Returns whether the validation report has no missing live APIs.
+
+Returns: `boolean` - True when no live APIs are missing from the catalog.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -2662,13 +3093,7 @@ end
 
 ### LValidationReport:missingCount
 
-`LValidationReport:missingCount() -> integer`
-
-Returns the number of live APIs missing from the catalog.
-
-**Returns**: `integer` - Missing API count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of live APIs missing from the catalog.
@@ -2676,9 +3101,15 @@ Returns the number of live APIs missing from the catalog.
 function LValidationReport:missingCount() end
 ```
 
+#### Description
+
+Returns the number of live APIs missing from the catalog.
+
+Returns: `integer` - Missing API count.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -2690,13 +3121,7 @@ end
 
 ### LValidationReport:phantomCount
 
-`LValidationReport:phantomCount() -> integer`
-
-Returns the number of catalog APIs absent from live reflection.
-
-**Returns**: `integer` - Phantom API count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of catalog APIs absent from live reflection.
@@ -2704,9 +3129,15 @@ Returns the number of catalog APIs absent from live reflection.
 function LValidationReport:phantomCount() end
 ```
 
+#### Description
+
+Returns the number of catalog APIs absent from live reflection.
+
+Returns: `integer` - Phantom API count.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -2718,13 +3149,7 @@ end
 
 ### LValidationReport:toJSON
 
-`LValidationReport:toJSON() -> string`
-
-Serializes this validation report to formatted JSON.
-
-**Returns**: `string` - Pretty-printed JSON object for the report.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Serializes this validation report to formatted JSON.
@@ -2732,9 +3157,15 @@ Serializes this validation report to formatted JSON.
 function LValidationReport:toJSON() end
 ```
 
+#### Description
+
+Serializes this validation report to formatted JSON.
+
+Returns: `string` - Pretty-printed JSON object for the report.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -2747,13 +3178,7 @@ end
 
 ### LValidationReport:toTable
 
-`LValidationReport:toTable() -> table`
-
-Converts this validation report into a plain Lua table.
-
-**Returns**: `table` - Table with missing, phantom, and incomplete array fields.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Converts this validation report into a plain Lua table.
@@ -2761,9 +3186,15 @@ Converts this validation report into a plain Lua table.
 function LValidationReport:toTable() end
 ```
 
+#### Description
+
+Converts this validation report into a plain Lua table.
+
+Returns: `table` - Table with missing, phantom, and incomplete array fields.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -2776,13 +3207,7 @@ end
 
 ### LValidationReport:type
 
-`LValidationReport:type() -> string`
-
-Returns the Lua-visible type name for this validation report handle.
-
-**Returns**: `string` - The string `LValidationReport`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this validation report handle.
@@ -2790,9 +3215,15 @@ Returns the Lua-visible type name for this validation report handle.
 function LValidationReport:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this validation report handle.
+
+Returns: `string` - The string `LValidationReport`.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do
@@ -2804,17 +3235,7 @@ end
 
 ### LValidationReport:typeOf
 
-`LValidationReport:typeOf(name: string) -> boolean`
-
-Returns whether this validation report handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LValidationReport` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this validation report handle matches a supported type name.
@@ -2823,9 +3244,19 @@ Returns whether this validation report handle matches a supported type name.
 function LValidationReport:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this validation report handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LValidationReport` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [docs.lua](../blob/main/content/examples/docs.lua):
+Source: [docs.lua](../blob/main/content/examples/docs.lua)
 
 ```lua
 do

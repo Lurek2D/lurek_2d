@@ -14,81 +14,229 @@
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
   - [lurek.tween.cancelAll](#lurektweencancelall)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.tween.delay](#lurektweendelay)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.tween.getActiveCount](#lurektweengetactivecount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.tween.getEasingNames](#lurektweengeteasingnames)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.tween.newState](#lurektweennewstate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.tween.parallel](#lurektweenparallel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.tween.registerEasing](#lurektweenregistereasing)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.tween.sequence](#lurektweensequence)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.tween.spring](#lurektweenspring)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.tween.to](#lurektweento)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.tween.tween](#lurektweentween)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.tween.tweenChain](#lurektweentweenchain)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.tween.tweenColor](#lurektweentweencolor)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.tween.update](#lurektweenupdate)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔷 Module Types](#module-types)
   - [LSpring](#lspring)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTween](#ltween)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTweenParallel](#ltweenparallel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTweenSequence](#ltweensequence)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTweenState](#ltweenstate)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
   - [LSpring:cancel](#lspringcancel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpring:getPosition](#lspringgetposition)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpring:isActive](#lspringisactive)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpring:isSettled](#lspringissettled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpring:setDamping](#lspringsetdamping)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpring:setStiffness](#lspringsetstiffness)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpring:setTarget](#lspringsettarget)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpring:type](#lspringtype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpring:typeOf](#lspringtypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpring:update](#lspringupdate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTween:await](#ltweenawait)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTween:cancel](#ltweencancel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTween:getDuration](#ltweengetduration)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTween:getElapsed](#ltweengetelapsed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTween:getFields](#ltweengetfields)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTween:getProgress](#ltweengetprogress)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTween:getRemaining](#ltweengetremaining)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTween:isActive](#ltweenisactive)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTween:onCancel](#ltweenoncancel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTween:onComplete](#ltweenoncomplete)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTween:onUpdate](#ltweenonupdate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTween:pause](#ltweenpause)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTween:relative](#ltweenrelative)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTween:resume](#ltweenresume)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTween:setRelative](#ltweensetrelative)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTween:setRepeat](#ltweensetrepeat)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTween:setYoyo](#ltweensetyoyo)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTween:type](#ltweentype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTween:typeOf](#ltweentypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTweenParallel:add](#ltweenparalleladd)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTweenParallel:cancel](#ltweenparallelcancel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTweenParallel:isActive](#ltweenparallelisactive)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTweenParallel:onComplete](#ltweenparalleloncomplete)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTweenParallel:start](#ltweenparallelstart)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTweenParallel:tween](#ltweenparalleltween)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTweenParallel:type](#ltweenparalleltype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTweenParallel:typeOf](#ltweenparalleltypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTweenSequence:await](#ltweensequenceawait)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTweenSequence:callback](#ltweensequencecallback)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTweenSequence:cancel](#ltweensequencecancel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTweenSequence:delay](#ltweensequencedelay)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTweenSequence:getProgress](#ltweensequencegetprogress)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTweenSequence:isActive](#ltweensequenceisactive)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTweenSequence:onComplete](#ltweensequenceoncomplete)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTweenSequence:start](#ltweensequencestart)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTweenSequence:tween](#ltweensequencetween)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTweenSequence:type](#ltweensequencetype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTweenSequence:typeOf](#ltweensequencetypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTweenState:isComplete](#ltweenstateiscomplete)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTweenState:lerp](#ltweenstatelerp)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTweenState:reset](#ltweenstatereset)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTweenState:t](#ltweenstatet)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTweenState:tick](#ltweenstatetick)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTweenState:type](#ltweenstatetype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTweenState:typeOf](#ltweenstatetypeof)
+    - [Definition](#definition)
+    - [Description](#description)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -149,13 +297,20 @@ lurek.tween.update(dt: number) -- Advances all active tweens, sequences, paralle
 
 ### lurek.tween.cancelAll
 
-`lurek.tween.cancelAll()`
+#### Definition
+
+```lua
+--- Immediately cancels all active tweens, sequences, parallels, and springs managed by the tween engine.
+lurek.tween.cancelAll = function() end
+```
+
+#### Description
 
 Immediately cancels all active tweens, sequences, parallels, and springs managed by the tween engine.
 
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -169,20 +324,30 @@ end
 
 ### lurek.tween.delay
 
-`lurek.tween.delay(seconds: number, [cb]: function) -> LTweenSequence`
+#### Definition
+
+```lua
+--- Creates a one-shot delay. After the specified seconds elapse, the optional callback is invoked.
+---@param seconds number Duration to wait in seconds.
+---@param cb? function Optional callback fired when the delay completes.
+---@return LTweenSequence A sequence handle representing the delay.
+lurek.tween.delay = function(seconds, cb) end
+```
+
+#### Description
 
 Creates a one-shot delay. After the specified seconds elapse, the optional callback is invoked.
 
-**Parameters**
+Parameters:
 
 - `seconds` (`number`, required): Duration to wait in seconds.
 - `cb` (`function`, optional): Optional callback fired when the delay completes.
 
-**Returns**: `LTweenSequence` - A sequence handle representing the delay.
+Returns: `LTweenSequence` - A sequence handle representing the delay.
 
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -195,15 +360,23 @@ end
 
 ### lurek.tween.getActiveCount
 
-`lurek.tween.getActiveCount() -> number`
+#### Definition
+
+```lua
+--- Returns the total number of currently active tweens, sequences, and parallels.
+---@return number Count of active tween objects.
+lurek.tween.getActiveCount = function() end
+```
+
+#### Description
 
 Returns the total number of currently active tweens, sequences, and parallels.
 
-**Returns**: `number` - Count of active tween objects.
+Returns: `number` - Count of active tween objects.
 
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -217,15 +390,23 @@ end
 
 ### lurek.tween.getEasingNames
 
-`lurek.tween.getEasingNames() -> string[]`
+#### Definition
+
+```lua
+--- Returns an array of all available easing function names, including both built-in and custom-registered easings.
+---@return string[] Easing name strings.
+lurek.tween.getEasingNames = function() end
+```
+
+#### Description
 
 Returns an array of all available easing function names, including both built-in and custom-registered easings.
 
-**Returns**: `string[]` - Easing name strings.
+Returns: `string[]` - Easing name strings.
 
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -239,20 +420,30 @@ end
 
 ### lurek.tween.newState
 
-`lurek.tween.newState(duration: number, [easing]: string) -> LTweenState`
+#### Definition
+
+```lua
+--- Creates a standalone tween state for manual interpolation. Useful when you need eased progress without automatic property updates.
+---@param duration number Duration in seconds.
+---@param easing? string Easing function name (default `"linear"`).
+---@return LTweenState The new tween state handle.
+lurek.tween.newState = function(duration, easing) end
+```
+
+#### Description
 
 Creates a standalone tween state for manual interpolation. Useful when you need eased progress without automatic property updates.
 
-**Parameters**
+Parameters:
 
 - `duration` (`number`, required): Duration in seconds.
 - `easing` (`string`, optional): Easing function name (default `"linear"`).
 
-**Returns**: `LTweenState` - The new tween state handle.
+Returns: `LTweenState` - The new tween state handle.
 
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -266,15 +457,23 @@ end
 
 ### lurek.tween.parallel
 
-`lurek.tween.parallel() -> LTweenParallel`
+#### Definition
+
+```lua
+--- Creates a new empty parallel tween group. Add tweens with `:tween()` or `:add()`, then call `:start()` to run them simultaneously.
+---@return LTweenParallel The new parallel group handle.
+lurek.tween.parallel = function() end
+```
+
+#### Description
 
 Creates a new empty parallel tween group. Add tweens with `:tween()` or `:add()`, then call `:start()` to run them simultaneously.
 
-**Returns**: `LTweenParallel` - The new parallel group handle.
+Returns: `LTweenParallel` - The new parallel group handle.
 
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -288,18 +487,27 @@ end
 
 ### lurek.tween.registerEasing
 
-`lurek.tween.registerEasing(name: string, f: function)`
+#### Definition
+
+```lua
+--- Registers a custom easing function by name. The function receives a progress value (0..1) and must return an eased value.
+---@param name string Unique name for the custom easing.
+---@param f function Easing function `f(t) -> number` where t is 0..1.
+lurek.tween.registerEasing = function(name, f) end
+```
+
+#### Description
 
 Registers a custom easing function by name. The function receives a progress value (0..1) and must return an eased value.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, required): Unique name for the custom easing.
 - `f` (`function`, required): Easing function `f(t) -> number` where t is 0..1.
 
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -313,15 +521,23 @@ end
 
 ### lurek.tween.sequence
 
-`lurek.tween.sequence() -> LTweenSequence`
+#### Definition
+
+```lua
+--- Creates a new empty tween sequence. Chain `.tween()`, `.delay()`, and `.callback()` steps, then call `:start()`.
+---@return LTweenSequence The new sequence handle.
+lurek.tween.sequence = function() end
+```
+
+#### Description
 
 Creates a new empty tween sequence. Chain `.tween()`, `.delay()`, and `.callback()` steps, then call `:start()`.
 
-**Returns**: `LTweenSequence` - The new sequence handle.
+Returns: `LTweenSequence` - The new sequence handle.
 
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -335,21 +551,32 @@ end
 
 ### lurek.tween.spring
 
-`lurek.tween.spring(target: table, fields: table, [opts]: table) -> LSpring`
+#### Definition
+
+```lua
+--- Creates a spring-physics animation that smoothly drives table fields toward target values with bounce and settle behavior.
+---@param target table The table whose fields will be animated by the spring.
+---@param fields table Key-value pairs mapping field names to their spring target values.
+---@param opts? table Optional settings: `stiffness` (default 100), `damping` (default 10), `precision` (default 0.001).
+---@return LSpring The active spring handle.
+lurek.tween.spring = function(target, fields, opts) end
+```
+
+#### Description
 
 Creates a spring-physics animation that smoothly drives table fields toward target values with bounce and settle behavior.
 
-**Parameters**
+Parameters:
 
 - `target` (`table`, required): The table whose fields will be animated by the spring.
 - `fields` (`table`, required): Key-value pairs mapping field names to their spring target values.
 - `opts` (`table`, optional): Optional settings: `stiffness` (default 100), `damping` (default 10), `precision` (default 0.001).
 
-**Returns**: `LSpring` - The active spring handle.
+Returns: `LSpring` - The active spring handle.
 
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -363,22 +590,34 @@ end
 
 ### lurek.tween.to
 
-`lurek.tween.to(target: table, fields: table, duration: number, [easing]: string) -> LTween`
+#### Definition
+
+```lua
+--- Creates and starts a property tween with a different parameter order: target first, then fields, duration, easing.
+---@param target table The table whose fields will be animated.
+---@param fields table Key-value pairs mapping field names to their target end values.
+---@param duration number Duration in seconds.
+---@param easing? string Easing function name (default `"linear"`).
+---@return LTween The active tween handle.
+lurek.tween.to = function(target, fields, duration, easing) end
+```
+
+#### Description
 
 Creates and starts a property tween with a different parameter order: target first, then fields, duration, easing.
 
-**Parameters**
+Parameters:
 
 - `target` (`table`, required): The table whose fields will be animated.
 - `fields` (`table`, required): Key-value pairs mapping field names to their target end values.
 - `duration` (`number`, required): Duration in seconds.
 - `easing` (`string`, optional): Easing function name (default `"linear"`).
 
-**Returns**: `LTween` - The active tween handle.
+Returns: `LTween` - The active tween handle.
 
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -391,22 +630,34 @@ end
 
 ### lurek.tween.tween
 
-`lurek.tween.tween(duration: number, target: table, fields: table, [easing]: string) -> LTween`
+#### Definition
+
+```lua
+--- Creates and starts a property tween that smoothly interpolates numeric fields on the target table over the given duration.
+---@param duration number Duration in seconds for the tween.
+---@param target table The table whose fields will be animated.
+---@param fields table Key-value pairs mapping field names to their target end values.
+---@param easing? string Easing function name (default `"linear"`).
+---@return LTween The active tween handle.
+lurek.tween.tween = function(duration, target, fields, easing) end
+```
+
+#### Description
 
 Creates and starts a property tween that smoothly interpolates numeric fields on the target table over the given duration.
 
-**Parameters**
+Parameters:
 
 - `duration` (`number`, required): Duration in seconds for the tween.
 - `target` (`table`, required): The table whose fields will be animated.
 - `fields` (`table`, required): Key-value pairs mapping field names to their target end values.
 - `easing` (`string`, optional): Easing function name (default `"linear"`).
 
-**Returns**: `LTween` - The active tween handle.
+Returns: `LTween` - The active tween handle.
 
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -420,19 +671,28 @@ end
 
 ### lurek.tween.tweenChain
 
-`lurek.tween.tweenChain(steps: table) -> LTweenSequence`
+#### Definition
+
+```lua
+--- Creates a sequence from a table of step descriptors. Each step is a table with `duration`, `target`, `fields`, optional `easing`, optional `callback`, or a `delay` key for pauses.
+---@param steps table Array of step tables describing the chain.
+---@return LTweenSequence The active sequence handle.
+lurek.tween.tweenChain = function(steps) end
+```
+
+#### Description
 
 Creates a sequence from a table of step descriptors. Each step is a table with `duration`, `target`, `fields`, optional `easing`, optional `callback`, or a `delay` key for pauses.
 
-**Parameters**
+Parameters:
 
 - `steps` (`table`, required): Array of step tables describing the chain.
 
-**Returns**: `LTweenSequence` - The active sequence handle.
+Returns: `LTweenSequence` - The active sequence handle.
 
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -445,22 +705,34 @@ end
 
 ### lurek.tween.tweenColor
 
-`lurek.tween.tweenColor(duration: number, target: table, color: table, [easing]: string) -> LTween`
+#### Definition
+
+```lua
+--- Creates and starts a color tween that smoothly interpolates r, g, b, and/or a fields on the target table.
+---@param duration number Duration in seconds.
+---@param target table The table containing color fields (`r`, `g`, `b`, `a`).
+---@param color table Target color values as `{r=, g=, b=, a=}`. Only present keys are tweened.
+---@param easing? string Easing function name (default `"linear"`).
+---@return LTween The active tween handle.
+lurek.tween.tweenColor = function(duration, target, color, easing) end
+```
+
+#### Description
 
 Creates and starts a color tween that smoothly interpolates r, g, b, and/or a fields on the target table.
 
-**Parameters**
+Parameters:
 
 - `duration` (`number`, required): Duration in seconds.
 - `target` (`table`, required): The table containing color fields (`r`, `g`, `b`, `a`).
 - `color` (`table`, required): Target color values as `{r=, g=, b=, a=}`. Only present keys are tweened.
 - `easing` (`string`, optional): Easing function name (default `"linear"`).
 
-**Returns**: `LTween` - The active tween handle.
+Returns: `LTween` - The active tween handle.
 
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -473,17 +745,25 @@ do
 
 ### lurek.tween.update
 
-`lurek.tween.update(dt: number)`
+#### Definition
+
+```lua
+--- Advances all active tweens, sequences, parallels, and springs by the given delta time. Call once per frame.
+---@param dt number Delta time in seconds since the last frame.
+lurek.tween.update = function(dt) end
+```
+
+#### Description
 
 Advances all active tweens, sequences, parallels, and springs by the given delta time. Call once per frame.
 
-**Parameters**
+Parameters:
 
 - `dt` (`number`, required): Delta time in seconds since the last frame.
 
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -501,9 +781,7 @@ end
 
 ### LSpring
 
-Lua-exposed spring physics simulation that smoothly animates table fields toward target values with configurable stiffness and damping.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-exposed spring physics simulation that smoothly animates table fields toward target values with configurable stiffness and damping.
@@ -511,9 +789,13 @@ Lua-exposed spring physics simulation that smoothly animates table fields toward
 LSpring = {}
 ```
 
+#### Description
+
+Lua-exposed spring physics simulation that smoothly animates table fields toward target values with configurable stiffness and damping.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -527,9 +809,7 @@ end
 
 ### LTween
 
-Creates and starts a property tween that smoothly interpolates numeric fields on the target table over the given duration.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Creates and starts a property tween that smoothly interpolates numeric fields on the target table over the given duration.
@@ -537,9 +817,13 @@ Creates and starts a property tween that smoothly interpolates numeric fields on
 LTween = {}
 ```
 
+#### Description
+
+Creates and starts a property tween that smoothly interpolates numeric fields on the target table over the given duration.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -552,9 +836,7 @@ end
 
 ### LTweenParallel
 
-Creates a new empty parallel tween group. Add tweens with `:tween()` or `:add()`, then call `:start()` to run them simultaneously.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Creates a new empty parallel tween group. Add tweens with `:tween()` or `:add()`, then call `:start()` to run them simultaneously.
@@ -562,9 +844,13 @@ Creates a new empty parallel tween group. Add tweens with `:tween()` or `:add()`
 LTweenParallel = {}
 ```
 
+#### Description
+
+Creates a new empty parallel tween group. Add tweens with `:tween()` or `:add()`, then call `:start()` to run them simultaneously.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -578,9 +864,7 @@ end
 
 ### LTweenSequence
 
-Creates a new empty tween sequence. Chain `.tween()`, `.delay()`, and `.callback()` steps, then call `:start()`.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Creates a new empty tween sequence. Chain `.tween()`, `.delay()`, and `.callback()` steps, then call `:start()`.
@@ -588,9 +872,13 @@ Creates a new empty tween sequence. Chain `.tween()`, `.delay()`, and `.callback
 LTweenSequence = {}
 ```
 
+#### Description
+
+Creates a new empty tween sequence. Chain `.tween()`, `.delay()`, and `.callback()` steps, then call `:start()`.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -603,18 +891,20 @@ end
 
 ### LTweenState
 
-Lua-exposed standalone tween state for manual interpolation without automatic property updates.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-exposed standalone tween state for manual interpolation without automatic property updates.
 ---@class LTweenState
 ```
 
+#### Description
+
+Lua-exposed standalone tween state for manual interpolation without automatic property updates.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -633,20 +923,20 @@ end
 
 ### LSpring:cancel
 
-`LSpring:cancel()`
-
-Cancels this spring animation and cleans up the on-settle callback if one was registered.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Cancels this spring animation and cleans up the on-settle callback if one was registered.
 function LSpring:cancel() end
 ```
 
+#### Description
+
+Cancels this spring animation and cleans up the on-settle callback if one was registered.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -660,17 +950,7 @@ end
 
 ### LSpring:getPosition
 
-`LSpring:getPosition(field: string) -> LuaValue`
-
-Returns the current position of the given spring axis, or `nil` if the axis does not exist.
-
-**Parameters**
-
-- `field` (`string`, required): Name of the axis to query.
-
-**Returns**: `LuaValue` - Current position value, or nil when the axis does not exist.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current position of the given spring axis, or `nil` if the axis does not exist.
@@ -679,9 +959,19 @@ Returns the current position of the given spring axis, or `nil` if the axis does
 function LSpring:getPosition(field) end
 ```
 
+#### Description
+
+Returns the current position of the given spring axis, or `nil` if the axis does not exist.
+
+Parameters:
+
+- `field` (`string`, required): Name of the axis to query.
+
+Returns: `LuaValue` - Current position value, or nil when the axis does not exist.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -695,13 +985,7 @@ end
 
 ### LSpring:isActive
 
-`LSpring:isActive() -> boolean`
-
-Returns whether this spring is still actively animating.
-
-**Returns**: `boolean` - `true` if active.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this spring is still actively animating.
@@ -709,9 +993,15 @@ Returns whether this spring is still actively animating.
 function LSpring:isActive() end
 ```
 
+#### Description
+
+Returns whether this spring is still actively animating.
+
+Returns: `boolean` - `true` if active.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -725,13 +1015,7 @@ end
 
 ### LSpring:isSettled
 
-`LSpring:isSettled() -> boolean`
-
-Returns whether all spring axes have reached their targets within the precision threshold.
-
-**Returns**: `boolean` - `true` if the spring has settled.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether all spring axes have reached their targets within the precision threshold.
@@ -739,9 +1023,15 @@ Returns whether all spring axes have reached their targets within the precision 
 function LSpring:isSettled() end
 ```
 
+#### Description
+
+Returns whether all spring axes have reached their targets within the precision threshold.
+
+Returns: `boolean` - `true` if the spring has settled.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -755,15 +1045,7 @@ end
 
 ### LSpring:setDamping
 
-`LSpring:setDamping(value: number)`
-
-Sets the spring damping for all axes. Higher values reduce oscillation and overshoot.
-
-**Parameters**
-
-- `value` (`number`, required): Damping coefficient (default 10).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the spring damping for all axes. Higher values reduce oscillation and overshoot.
@@ -771,9 +1053,17 @@ Sets the spring damping for all axes. Higher values reduce oscillation and overs
 function LSpring:setDamping(value) end
 ```
 
+#### Description
+
+Sets the spring damping for all axes. Higher values reduce oscillation and overshoot.
+
+Parameters:
+
+- `value` (`number`, required): Damping coefficient (default 10).
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -787,15 +1077,7 @@ end
 
 ### LSpring:setStiffness
 
-`LSpring:setStiffness(value: number)`
-
-Sets the spring stiffness for all axes. Higher values make the spring snap faster.
-
-**Parameters**
-
-- `value` (`number`, required): Stiffness coefficient (default 100).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the spring stiffness for all axes. Higher values make the spring snap faster.
@@ -803,9 +1085,17 @@ Sets the spring stiffness for all axes. Higher values make the spring snap faste
 function LSpring:setStiffness(value) end
 ```
 
+#### Description
+
+Sets the spring stiffness for all axes. Higher values make the spring snap faster.
+
+Parameters:
+
+- `value` (`number`, required): Stiffness coefficient (default 100).
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -819,15 +1109,7 @@ end
 
 ### LSpring:setTarget
 
-`LSpring:setTarget(fields: table)`
-
-Changes the spring target values for one or more axes. Re-activates the spring if it was settled.
-
-**Parameters**
-
-- `fields` (`table`, required): Key-value pairs mapping axis names to new target values.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Changes the spring target values for one or more axes. Re-activates the spring if it was settled.
@@ -835,9 +1117,17 @@ Changes the spring target values for one or more axes. Re-activates the spring i
 function LSpring:setTarget(fields) end
 ```
 
+#### Description
+
+Changes the spring target values for one or more axes. Re-activates the spring if it was settled.
+
+Parameters:
+
+- `fields` (`table`, required): Key-value pairs mapping axis names to new target values.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -851,13 +1141,7 @@ end
 
 ### LSpring:type
 
-`LSpring:type() -> string`
-
-Returns the type name of this object.
-
-**Returns**: `string` - Always `"LSpring"`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this object.
@@ -865,9 +1149,15 @@ Returns the type name of this object.
 function LSpring:type() end
 ```
 
+#### Description
+
+Returns the type name of this object.
+
+Returns: `string` - Always `"LSpring"`.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -881,17 +1171,7 @@ end
 
 ### LSpring:typeOf
 
-`LSpring:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to check against (`"LSpring"` or `"Object"`).
-
-**Returns**: `boolean` - `true` if the name matches.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this object matches the given type name.
@@ -900,9 +1180,19 @@ Checks whether this object matches the given type name.
 function LSpring:typeOf(name) end
 ```
 
+#### Description
+
+Checks whether this object matches the given type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to check against (`"LSpring"` or `"Object"`).
+
+Returns: `boolean` - `true` if the name matches.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -916,17 +1206,7 @@ end
 
 ### LSpring:update
 
-`LSpring:update(dt: number) -> boolean`
-
-Manually advances this spring by the given delta time and writes updated positions to the target table. Returns `true` if still animating, `false` if settled.
-
-**Parameters**
-
-- `dt` (`number`, required): Delta time in seconds.
-
-**Returns**: `boolean` - `true` if the spring is still moving, `false` if settled.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Manually advances this spring by the given delta time and writes updated positions to the target table. Returns `true` if still animating, `false` if settled.
@@ -935,9 +1215,19 @@ Manually advances this spring by the given delta time and writes updated positio
 function LSpring:update(dt) end
 ```
 
+#### Description
+
+Manually advances this spring by the given delta time and writes updated positions to the target table. Returns `true` if still animating, `false` if settled.
+
+Parameters:
+
+- `dt` (`number`, required): Delta time in seconds.
+
+Returns: `boolean` - `true` if the spring is still moving, `false` if settled.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -951,20 +1241,20 @@ end
 
 ### LTween:await
 
-`LTween:await()`
-
-Yields the current coroutine until this tween completes or is cancelled. Must be called from inside a coroutine.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Yields the current coroutine until this tween completes or is cancelled. Must be called from inside a coroutine.
 function LTween:await() end
 ```
 
+#### Description
+
+Yields the current coroutine until this tween completes or is cancelled. Must be called from inside a coroutine.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -978,20 +1268,20 @@ end
 
 ### LTween:cancel
 
-`LTween:cancel()`
-
-Cancels this tween immediately, fires the onCancel callback if set, and resumes any coroutines waiting on it.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Cancels this tween immediately, fires the onCancel callback if set, and resumes any coroutines waiting on it.
 function LTween:cancel() end
 ```
 
+#### Description
+
+Cancels this tween immediately, fires the onCancel callback if set, and resumes any coroutines waiting on it.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -1005,13 +1295,7 @@ end
 
 ### LTween:getDuration
 
-`LTween:getDuration() -> number`
-
-Returns the total duration of this tween in seconds.
-
-**Returns**: `number` - Total duration.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the total duration of this tween in seconds.
@@ -1019,9 +1303,15 @@ Returns the total duration of this tween in seconds.
 function LTween:getDuration() end
 ```
 
+#### Description
+
+Returns the total duration of this tween in seconds.
+
+Returns: `number` - Total duration.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -1035,13 +1325,7 @@ end
 
 ### LTween:getElapsed
 
-`LTween:getElapsed() -> number`
-
-Returns the number of seconds that have elapsed since the tween started.
-
-**Returns**: `number` - Elapsed time in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of seconds that have elapsed since the tween started.
@@ -1049,9 +1333,15 @@ Returns the number of seconds that have elapsed since the tween started.
 function LTween:getElapsed() end
 ```
 
+#### Description
+
+Returns the number of seconds that have elapsed since the tween started.
+
+Returns: `number` - Elapsed time in seconds.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -1065,13 +1355,7 @@ end
 
 ### LTween:getFields
 
-`LTween:getFields() -> string[]`
-
-Returns an array of field names being tweened on the target table.
-
-**Returns**: `string[]` - Field name strings.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns an array of field names being tweened on the target table.
@@ -1079,9 +1363,15 @@ Returns an array of field names being tweened on the target table.
 function LTween:getFields() end
 ```
 
+#### Description
+
+Returns an array of field names being tweened on the target table.
+
+Returns: `string[]` - Field name strings.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -1095,13 +1385,7 @@ end
 
 ### LTween:getProgress
 
-`LTween:getProgress() -> number`
-
-Returns the eased progress of this tween as a value from 0.0 to 1.0.
-
-**Returns**: `number` - Eased progress ratio.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the eased progress of this tween as a value from 0.0 to 1.0.
@@ -1109,9 +1393,15 @@ Returns the eased progress of this tween as a value from 0.0 to 1.0.
 function LTween:getProgress() end
 ```
 
+#### Description
+
+Returns the eased progress of this tween as a value from 0.0 to 1.0.
+
+Returns: `number` - Eased progress ratio.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -1125,13 +1415,7 @@ end
 
 ### LTween:getRemaining
 
-`LTween:getRemaining() -> number`
-
-Returns the number of seconds remaining until this tween completes.
-
-**Returns**: `number` - Remaining time in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of seconds remaining until this tween completes.
@@ -1139,9 +1423,15 @@ Returns the number of seconds remaining until this tween completes.
 function LTween:getRemaining() end
 ```
 
+#### Description
+
+Returns the number of seconds remaining until this tween completes.
+
+Returns: `number` - Remaining time in seconds.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -1155,13 +1445,7 @@ end
 
 ### LTween:isActive
 
-`LTween:isActive() -> boolean`
-
-Returns whether this tween is still running (not cancelled or completed).
-
-**Returns**: `boolean` - `true` if the tween is active.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this tween is still running (not cancelled or completed).
@@ -1169,9 +1453,15 @@ Returns whether this tween is still running (not cancelled or completed).
 function LTween:isActive() end
 ```
 
+#### Description
+
+Returns whether this tween is still running (not cancelled or completed).
+
+Returns: `boolean` - `true` if the tween is active.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -1185,17 +1475,7 @@ end
 
 ### LTween:onCancel
 
-`LTween:onCancel(f: function) -> LTween`
-
-Sets a callback to fire when the tween is cancelled. Returns the tween for chaining.
-
-**Parameters**
-
-- `f` (`function`, required): Callback fired when the tween is cancelled.
-
-**Returns**: `LTween` - The same tween handle for chaining.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets a callback to fire when the tween is cancelled. Returns the tween for chaining.
@@ -1204,9 +1484,19 @@ Sets a callback to fire when the tween is cancelled. Returns the tween for chain
 function LTween:onCancel(f) end
 ```
 
+#### Description
+
+Sets a callback to fire when the tween is cancelled. Returns the tween for chaining.
+
+Parameters:
+
+- `f` (`function`, required): Callback fired when the tween is cancelled.
+
+Returns: `LTween` - The same tween handle for chaining.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -1219,18 +1509,7 @@ end
 
 ### LTween:onComplete
 
-`LTween:onComplete(self: LTween, f: function) -> LTween`
-
-Sets a callback to fire when the tween completes. Returns the tween for chaining.
-
-**Parameters**
-
-- `self` (`LTween`, required): The tween instance.
-- `f` (`function`, required): Callback fired when the tween finishes.
-
-**Returns**: `LTween` - The same tween handle for chaining.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets a callback to fire when the tween completes. Returns the tween for chaining.
@@ -1239,9 +1518,20 @@ Sets a callback to fire when the tween completes. Returns the tween for chaining
 function LTween:onComplete(f) end
 ```
 
+#### Description
+
+Sets a callback to fire when the tween completes. Returns the tween for chaining.
+
+Parameters:
+
+- `self` (`LTween`, required): The tween instance.
+- `f` (`function`, required): Callback fired when the tween finishes.
+
+Returns: `LTween` - The same tween handle for chaining.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -1255,17 +1545,7 @@ end
 
 ### LTween:onUpdate
 
-`LTween:onUpdate(f: function) -> LTween`
-
-Sets a callback to fire every frame while the tween is active. Returns the tween for chaining.
-
-**Parameters**
-
-- `f` (`function`, required): Callback fired each frame with the current progress `t` (0..1).
-
-**Returns**: `LTween` - The same tween handle for chaining.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets a callback to fire every frame while the tween is active. Returns the tween for chaining.
@@ -1274,9 +1554,19 @@ Sets a callback to fire every frame while the tween is active. Returns the tween
 function LTween:onUpdate(f) end
 ```
 
+#### Description
+
+Sets a callback to fire every frame while the tween is active. Returns the tween for chaining.
+
+Parameters:
+
+- `f` (`function`, required): Callback fired each frame with the current progress `t` (0..1).
+
+Returns: `LTween` - The same tween handle for chaining.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -1289,20 +1579,20 @@ end
 
 ### LTween:pause
 
-`LTween:pause()`
-
-Pauses this tween so it stops advancing until resumed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Pauses this tween so it stops advancing until resumed.
 function LTween:pause() end
 ```
 
+#### Description
+
+Pauses this tween so it stops advancing until resumed.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -1316,17 +1606,7 @@ end
 
 ### LTween:relative
 
-`LTween:relative(enabled: boolean) -> LTween`
-
-Chainable version of `setRelative`. Returns the tween for fluent API usage.
-
-**Parameters**
-
-- `enabled` (`boolean`, required): `true` for relative mode, `false` for absolute.
-
-**Returns**: `LTween` - The same tween handle for chaining.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Chainable version of `setRelative`. Returns the tween for fluent API usage.
@@ -1335,9 +1615,19 @@ Chainable version of `setRelative`. Returns the tween for fluent API usage.
 function LTween:relative(enabled) end
 ```
 
+#### Description
+
+Chainable version of `setRelative`. Returns the tween for fluent API usage.
+
+Parameters:
+
+- `enabled` (`boolean`, required): `true` for relative mode, `false` for absolute.
+
+Returns: `LTween` - The same tween handle for chaining.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -1351,20 +1641,20 @@ end
 
 ### LTween:resume
 
-`LTween:resume()`
-
-Resumes a paused tween so it continues advancing.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Resumes a paused tween so it continues advancing.
 function LTween:resume() end
 ```
 
+#### Description
+
+Resumes a paused tween so it continues advancing.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -1378,15 +1668,7 @@ end
 
 ### LTween:setRelative
 
-`LTween:setRelative(enabled: boolean)`
-
-Sets whether the tween end values are relative to the start values instead of absolute.
-
-**Parameters**
-
-- `enabled` (`boolean`, required): `true` for relative mode, `false` for absolute.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets whether the tween end values are relative to the start values instead of absolute.
@@ -1394,9 +1676,17 @@ Sets whether the tween end values are relative to the start values instead of ab
 function LTween:setRelative(enabled) end
 ```
 
+#### Description
+
+Sets whether the tween end values are relative to the start values instead of absolute.
+
+Parameters:
+
+- `enabled` (`boolean`, required): `true` for relative mode, `false` for absolute.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -1410,15 +1700,7 @@ end
 
 ### LTween:setRepeat
 
-`LTween:setRepeat(n: integer)`
-
-Sets how many times the tween should repeat after the first play. Use -1 for infinite repeat.
-
-**Parameters**
-
-- `n` (`integer`, required): Number of additional repeats (0 = play once, -1 = infinite).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets how many times the tween should repeat after the first play. Use -1 for infinite repeat.
@@ -1426,9 +1708,17 @@ Sets how many times the tween should repeat after the first play. Use -1 for inf
 function LTween:setRepeat(n) end
 ```
 
+#### Description
+
+Sets how many times the tween should repeat after the first play. Use -1 for infinite repeat.
+
+Parameters:
+
+- `n` (`integer`, required): Number of additional repeats (0 = play once, -1 = infinite).
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -1478,15 +1768,7 @@ end
 
 ### LTween:setYoyo
 
-`LTween:setYoyo(enabled: boolean)`
-
-Enables or disables yoyo mode, which reverses the tween direction on each repeat cycle.
-
-**Parameters**
-
-- `enabled` (`boolean`, required): `true` to enable yoyo, `false` to disable.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Enables or disables yoyo mode, which reverses the tween direction on each repeat cycle.
@@ -1494,9 +1776,17 @@ Enables or disables yoyo mode, which reverses the tween direction on each repeat
 function LTween:setYoyo(enabled) end
 ```
 
+#### Description
+
+Enables or disables yoyo mode, which reverses the tween direction on each repeat cycle.
+
+Parameters:
+
+- `enabled` (`boolean`, required): `true` to enable yoyo, `false` to disable.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -1510,13 +1800,7 @@ end
 
 ### LTween:type
 
-`LTween:type() -> string`
-
-Returns the type name of this object.
-
-**Returns**: `string` - Always `"LTween"`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this object.
@@ -1524,9 +1808,15 @@ Returns the type name of this object.
 function LTween:type() end
 ```
 
+#### Description
+
+Returns the type name of this object.
+
+Returns: `string` - Always `"LTween"`.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -1540,17 +1830,7 @@ end
 
 ### LTween:typeOf
 
-`LTween:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to check against (`"LTween"` or `"Object"`).
-
-**Returns**: `boolean` - `true` if the name matches.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this object matches the given type name.
@@ -1559,9 +1839,19 @@ Checks whether this object matches the given type name.
 function LTween:typeOf(name) end
 ```
 
+#### Description
+
+Checks whether this object matches the given type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to check against (`"LTween"` or `"Object"`).
+
+Returns: `boolean` - `true` if the name matches.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -1575,16 +1865,7 @@ end
 
 ### LTweenParallel:add
 
-`LTweenParallel:add(self: LTweenParallel, tw_ud: LTween)`
-
-Adds an existing tween handle to this parallel group. The tween becomes owned by the group.
-
-**Parameters**
-
-- `self` (`LTweenParallel`, required): The parallel group instance.
-- `tw_ud` (`LTween`, required): The tween handle returned by `lurek.tween.tween()` to add to this group.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds an existing tween handle to this parallel group. The tween becomes owned by the group.
@@ -1592,9 +1873,18 @@ Adds an existing tween handle to this parallel group. The tween becomes owned by
 function LTweenParallel:add(tw_ud) end
 ```
 
+#### Description
+
+Adds an existing tween handle to this parallel group. The tween becomes owned by the group.
+
+Parameters:
+
+- `self` (`LTweenParallel`, required): The parallel group instance.
+- `tw_ud` (`LTween`, required): The tween handle returned by `lurek.tween.tween()` to add to this group.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -1608,20 +1898,20 @@ end
 
 ### LTweenParallel:cancel
 
-`LTweenParallel:cancel()`
-
-Cancels all tweens in this parallel group immediately.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Cancels all tweens in this parallel group immediately.
 function LTweenParallel:cancel() end
 ```
 
+#### Description
+
+Cancels all tweens in this parallel group immediately.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -1635,13 +1925,7 @@ end
 
 ### LTweenParallel:isActive
 
-`LTweenParallel:isActive() -> boolean`
-
-Returns whether this parallel group is still running.
-
-**Returns**: `boolean` - `true` if any tween in the group is still active.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this parallel group is still running.
@@ -1649,9 +1933,15 @@ Returns whether this parallel group is still running.
 function LTweenParallel:isActive() end
 ```
 
+#### Description
+
+Returns whether this parallel group is still running.
+
+Returns: `boolean` - `true` if any tween in the group is still active.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -1665,18 +1955,7 @@ end
 
 ### LTweenParallel:onComplete
 
-`LTweenParallel:onComplete(self: LTweenParallel, f: function) -> LTweenParallel`
-
-Sets a callback to fire when all tweens in this parallel group have finished. Returns the group for chaining.
-
-**Parameters**
-
-- `self` (`LTweenParallel`, required): The parallel group instance.
-- `f` (`function`, required): Function to call when all tweens in the group complete.
-
-**Returns**: `LTweenParallel` - This parallel group for chaining.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets a callback to fire when all tweens in this parallel group have finished. Returns the group for chaining.
@@ -1685,9 +1964,20 @@ Sets a callback to fire when all tweens in this parallel group have finished. Re
 function LTweenParallel:onComplete(f) end
 ```
 
+#### Description
+
+Sets a callback to fire when all tweens in this parallel group have finished. Returns the group for chaining.
+
+Parameters:
+
+- `self` (`LTweenParallel`, required): The parallel group instance.
+- `f` (`function`, required): Function to call when all tweens in the group complete.
+
+Returns: `LTweenParallel` - This parallel group for chaining.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -1701,13 +1991,7 @@ end
 
 ### LTweenParallel:start
 
-`LTweenParallel:start() -> LTweenParallel`
-
-Starts all tweens in this parallel group simultaneously.
-
-**Returns**: `LTweenParallel` - This parallel group for chaining.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Starts all tweens in this parallel group simultaneously.
@@ -1715,9 +1999,15 @@ Starts all tweens in this parallel group simultaneously.
 function LTweenParallel:start() end
 ```
 
+#### Description
+
+Starts all tweens in this parallel group simultaneously.
+
+Returns: `LTweenParallel` - This parallel group for chaining.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -1731,20 +2021,7 @@ end
 
 ### LTweenParallel:tween
 
-`LTweenParallel:tween(duration: number, target: table, fields: table, [easing]: string) -> LTweenParallel`
-
-Creates and adds a new tween step directly to this parallel group.
-
-**Parameters**
-
-- `duration` (`number`, required): Duration in seconds.
-- `target` (`table`, required): The table whose fields will be animated.
-- `fields` (`table`, required): Key-value pairs mapping field names to target end values.
-- `easing` (`string`, optional): Easing function name (default `"linear"`).
-
-**Returns**: `LTweenParallel` - This parallel group for chaining.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Creates and adds a new tween step directly to this parallel group.
@@ -1756,9 +2033,22 @@ Creates and adds a new tween step directly to this parallel group.
 function LTweenParallel:tween(duration, target, fields, easing) end
 ```
 
+#### Description
+
+Creates and adds a new tween step directly to this parallel group.
+
+Parameters:
+
+- `duration` (`number`, required): Duration in seconds.
+- `target` (`table`, required): The table whose fields will be animated.
+- `fields` (`table`, required): Key-value pairs mapping field names to target end values.
+- `easing` (`string`, optional): Easing function name (default `"linear"`).
+
+Returns: `LTweenParallel` - This parallel group for chaining.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -1772,13 +2062,7 @@ end
 
 ### LTweenParallel:type
 
-`LTweenParallel:type() -> string`
-
-Returns the type name of this object.
-
-**Returns**: `string` - Always `"LTweenParallel"`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this object.
@@ -1786,9 +2070,15 @@ Returns the type name of this object.
 function LTweenParallel:type() end
 ```
 
+#### Description
+
+Returns the type name of this object.
+
+Returns: `string` - Always `"LTweenParallel"`.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -1802,17 +2092,7 @@ end
 
 ### LTweenParallel:typeOf
 
-`LTweenParallel:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to check against (`"LTweenParallel"` or `"Object"`).
-
-**Returns**: `boolean` - `true` if the name matches.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this object matches the given type name.
@@ -1821,9 +2101,19 @@ Checks whether this object matches the given type name.
 function LTweenParallel:typeOf(name) end
 ```
 
+#### Description
+
+Checks whether this object matches the given type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to check against (`"LTweenParallel"` or `"Object"`).
+
+Returns: `boolean` - `true` if the name matches.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -1837,20 +2127,20 @@ end
 
 ### LTweenSequence:await
 
-`LTweenSequence:await()`
-
-Yields the current coroutine until this sequence completes or is cancelled. Must be called from inside a coroutine.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Yields the current coroutine until this sequence completes or is cancelled. Must be called from inside a coroutine.
 function LTweenSequence:await() end
 ```
 
+#### Description
+
+Yields the current coroutine until this sequence completes or is cancelled. Must be called from inside a coroutine.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -1864,17 +2154,7 @@ end
 
 ### LTweenSequence:callback
 
-`LTweenSequence:callback(f: function) -> LTweenSequence`
-
-Appends a callback step to this sequence that fires when reached during playback.
-
-**Parameters**
-
-- `f` (`function`, required): Function called when this step is reached during playback.
-
-**Returns**: `LTweenSequence` - This sequence for chaining.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Appends a callback step to this sequence that fires when reached during playback.
@@ -1883,9 +2163,19 @@ Appends a callback step to this sequence that fires when reached during playback
 function LTweenSequence:callback(f) end
 ```
 
+#### Description
+
+Appends a callback step to this sequence that fires when reached during playback.
+
+Parameters:
+
+- `f` (`function`, required): Function called when this step is reached during playback.
+
+Returns: `LTweenSequence` - This sequence for chaining.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -1899,20 +2189,20 @@ end
 
 ### LTweenSequence:cancel
 
-`LTweenSequence:cancel()`
-
-Cancels this sequence immediately and resumes any coroutines waiting on it.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Cancels this sequence immediately and resumes any coroutines waiting on it.
 function LTweenSequence:cancel() end
 ```
 
+#### Description
+
+Cancels this sequence immediately and resumes any coroutines waiting on it.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -1926,19 +2216,7 @@ end
 
 ### LTweenSequence:delay
 
-`LTweenSequence:delay(self: LTweenSequence, seconds: number, [cb]: function) -> LTweenSequence`
-
-Appends a delay step to this sequence. Optionally fires a callback when the delay elapses.
-
-**Parameters**
-
-- `self` (`LTweenSequence`, required): The sequence instance.
-- `seconds` (`number`, required): Duration to wait in seconds.
-- `cb` (`function`, optional): Optional callback fired when the delay elapses.
-
-**Returns**: `LTweenSequence` - This sequence for chaining.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Appends a delay step to this sequence. Optionally fires a callback when the delay elapses.
@@ -1948,9 +2226,21 @@ Appends a delay step to this sequence. Optionally fires a callback when the dela
 function LTweenSequence:delay(seconds, cb) end
 ```
 
+#### Description
+
+Appends a delay step to this sequence. Optionally fires a callback when the delay elapses.
+
+Parameters:
+
+- `self` (`LTweenSequence`, required): The sequence instance.
+- `seconds` (`number`, required): Duration to wait in seconds.
+- `cb` (`function`, optional): Optional callback fired when the delay elapses.
+
+Returns: `LTweenSequence` - This sequence for chaining.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -1964,13 +2254,7 @@ end
 
 ### LTweenSequence:getProgress
 
-`LTweenSequence:getProgress() -> number`
-
-Returns the overall progress ratio of this sequence from 0.0 to 1.0.
-
-**Returns**: `number` - Progress ratio.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the overall progress ratio of this sequence from 0.0 to 1.0.
@@ -1978,9 +2262,15 @@ Returns the overall progress ratio of this sequence from 0.0 to 1.0.
 function LTweenSequence:getProgress() end
 ```
 
+#### Description
+
+Returns the overall progress ratio of this sequence from 0.0 to 1.0.
+
+Returns: `number` - Progress ratio.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -1994,13 +2284,7 @@ end
 
 ### LTweenSequence:isActive
 
-`LTweenSequence:isActive() -> boolean`
-
-Returns whether this sequence is still running.
-
-**Returns**: `boolean` - `true` if the sequence is active.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this sequence is still running.
@@ -2008,9 +2292,15 @@ Returns whether this sequence is still running.
 function LTweenSequence:isActive() end
 ```
 
+#### Description
+
+Returns whether this sequence is still running.
+
+Returns: `boolean` - `true` if the sequence is active.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -2024,18 +2314,7 @@ end
 
 ### LTweenSequence:onComplete
 
-`LTweenSequence:onComplete(self: LTweenSequence, f: function) -> LTweenSequence`
-
-Sets a callback to fire when the sequence finishes all steps. Returns the sequence for chaining.
-
-**Parameters**
-
-- `self` (`LTweenSequence`, required): The sequence instance.
-- `f` (`function`, required): Function to call when the sequence completes.
-
-**Returns**: `LTweenSequence` - This sequence for chaining.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets a callback to fire when the sequence finishes all steps. Returns the sequence for chaining.
@@ -2044,9 +2323,20 @@ Sets a callback to fire when the sequence finishes all steps. Returns the sequen
 function LTweenSequence:onComplete(f) end
 ```
 
+#### Description
+
+Sets a callback to fire when the sequence finishes all steps. Returns the sequence for chaining.
+
+Parameters:
+
+- `self` (`LTweenSequence`, required): The sequence instance.
+- `f` (`function`, required): Function to call when the sequence completes.
+
+Returns: `LTweenSequence` - This sequence for chaining.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -2060,13 +2350,7 @@ end
 
 ### LTweenSequence:start
 
-`LTweenSequence:start() -> LTweenSequence`
-
-Starts playback of this sequence from the first step.
-
-**Returns**: `LTweenSequence` - This sequence for chaining.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Starts playback of this sequence from the first step.
@@ -2074,9 +2358,15 @@ Starts playback of this sequence from the first step.
 function LTweenSequence:start() end
 ```
 
+#### Description
+
+Starts playback of this sequence from the first step.
+
+Returns: `LTweenSequence` - This sequence for chaining.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -2090,20 +2380,7 @@ end
 
 ### LTweenSequence:tween
 
-`LTweenSequence:tween(duration: number, target: table, fields: table, [easing]: string) -> LTweenSequence`
-
-Appends a tween step to this sequence that animates numeric fields on the target table.
-
-**Parameters**
-
-- `duration` (`number`, required): Duration in seconds.
-- `target` (`table`, required): The table whose fields will be animated.
-- `fields` (`table`, required): Key-value pairs mapping field names to target end values.
-- `easing` (`string`, optional): Easing function name (default `"linear"`).
-
-**Returns**: `LTweenSequence` - This sequence for chaining.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Appends a tween step to this sequence that animates numeric fields on the target table.
@@ -2115,9 +2392,22 @@ Appends a tween step to this sequence that animates numeric fields on the target
 function LTweenSequence:tween(duration, target, fields, easing) end
 ```
 
+#### Description
+
+Appends a tween step to this sequence that animates numeric fields on the target table.
+
+Parameters:
+
+- `duration` (`number`, required): Duration in seconds.
+- `target` (`table`, required): The table whose fields will be animated.
+- `fields` (`table`, required): Key-value pairs mapping field names to target end values.
+- `easing` (`string`, optional): Easing function name (default `"linear"`).
+
+Returns: `LTweenSequence` - This sequence for chaining.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -2131,13 +2421,7 @@ end
 
 ### LTweenSequence:type
 
-`LTweenSequence:type() -> string`
-
-Returns the type name of this object.
-
-**Returns**: `string` - Always `"LTweenSequence"`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this object.
@@ -2145,9 +2429,15 @@ Returns the type name of this object.
 function LTweenSequence:type() end
 ```
 
+#### Description
+
+Returns the type name of this object.
+
+Returns: `string` - Always `"LTweenSequence"`.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -2161,17 +2451,7 @@ end
 
 ### LTweenSequence:typeOf
 
-`LTweenSequence:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to check against (`"LTweenSequence"` or `"Object"`).
-
-**Returns**: `boolean` - `true` if the name matches.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this object matches the given type name.
@@ -2180,9 +2460,19 @@ Checks whether this object matches the given type name.
 function LTweenSequence:typeOf(name) end
 ```
 
+#### Description
+
+Checks whether this object matches the given type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to check against (`"LTweenSequence"` or `"Object"`).
+
+Returns: `boolean` - `true` if the name matches.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -2196,13 +2486,7 @@ end
 
 ### LTweenState:isComplete
 
-`LTweenState:isComplete() -> boolean`
-
-Returns whether this tween state has finished its full duration.
-
-**Returns**: `boolean` - `true` if the tween has reached its end.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this tween state has finished its full duration.
@@ -2210,9 +2494,15 @@ Returns whether this tween state has finished its full duration.
 function LTweenState:isComplete() end
 ```
 
+#### Description
+
+Returns whether this tween state has finished its full duration.
+
+Returns: `boolean` - `true` if the tween has reached its end.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -2226,18 +2516,7 @@ end
 
 ### LTweenState:lerp
 
-`LTweenState:lerp(start: number, finish: number) -> number`
-
-Linearly interpolates between two values using the current eased progress.
-
-**Parameters**
-
-- `start` (`number`, required): Value at progress 0.
-- `finish` (`number`, required): Value at progress 1.
-
-**Returns**: `number` - Interpolated value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Linearly interpolates between two values using the current eased progress.
@@ -2247,9 +2526,20 @@ Linearly interpolates between two values using the current eased progress.
 function LTweenState:lerp(start, finish) end
 ```
 
+#### Description
+
+Linearly interpolates between two values using the current eased progress.
+
+Parameters:
+
+- `start` (`number`, required): Value at progress 0.
+- `finish` (`number`, required): Value at progress 1.
+
+Returns: `number` - Interpolated value.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -2263,20 +2553,20 @@ end
 
 ### LTweenState:reset
 
-`LTweenState:reset()`
-
-Resets the tween state to the beginning so it can be replayed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Resets the tween state to the beginning so it can be replayed.
 function LTweenState:reset() end
 ```
 
+#### Description
+
+Resets the tween state to the beginning so it can be replayed.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -2290,13 +2580,7 @@ end
 
 ### LTweenState:t
 
-`LTweenState:t() -> number`
-
-Returns the raw (un-eased) progress value from 0.0 to 1.0.
-
-**Returns**: `number` - Linear progress ratio.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the raw (un-eased) progress value from 0.0 to 1.0.
@@ -2304,9 +2588,15 @@ Returns the raw (un-eased) progress value from 0.0 to 1.0.
 function LTweenState:t() end
 ```
 
+#### Description
+
+Returns the raw (un-eased) progress value from 0.0 to 1.0.
+
+Returns: `number` - Linear progress ratio.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -2320,17 +2610,7 @@ end
 
 ### LTweenState:tick
 
-`LTweenState:tick(dt: number) -> number`
-
-Advances the tween state by the given delta time and returns the eased interpolation value (0..1).
-
-**Parameters**
-
-- `dt` (`number`, required): Delta time in seconds to advance.
-
-**Returns**: `number` - Eased value between 0 and 1.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Advances the tween state by the given delta time and returns the eased interpolation value (0..1).
@@ -2339,9 +2619,19 @@ Advances the tween state by the given delta time and returns the eased interpola
 function LTweenState:tick(dt) end
 ```
 
+#### Description
+
+Advances the tween state by the given delta time and returns the eased interpolation value (0..1).
+
+Parameters:
+
+- `dt` (`number`, required): Delta time in seconds to advance.
+
+Returns: `number` - Eased value between 0 and 1.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -2355,13 +2645,7 @@ end
 
 ### LTweenState:type
 
-`LTweenState:type() -> string`
-
-Returns the type name of this object.
-
-**Returns**: `string` - Always `"LTweenState"`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this object.
@@ -2369,9 +2653,15 @@ Returns the type name of this object.
 function LTweenState:type() end
 ```
 
+#### Description
+
+Returns the type name of this object.
+
+Returns: `string` - Always `"LTweenState"`.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do
@@ -2385,17 +2675,7 @@ end
 
 ### LTweenState:typeOf
 
-`LTweenState:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to check against (`"LTweenState"` or `"Object"`).
-
-**Returns**: `boolean` - `true` if the name matches.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this object matches the given type name.
@@ -2404,9 +2684,19 @@ Checks whether this object matches the given type name.
 function LTweenState:typeOf(name) end
 ```
 
+#### Description
+
+Checks whether this object matches the given type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to check against (`"LTweenState"` or `"Object"`).
+
+Returns: `boolean` - `true` if the name matches.
+
 #### Example
 
-Exact example from [tween.lua](../blob/main/content/examples/tween.lua):
+Source: [tween.lua](../blob/main/content/examples/tween.lua)
 
 ```lua
 do

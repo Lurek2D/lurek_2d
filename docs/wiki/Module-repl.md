@@ -14,16 +14,34 @@
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
   - [lurek.repl.new](#lurekreplnew)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔷 Module Types](#module-types)
   - [LReplSession](#lreplsession)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
   - [LReplSession:clear](#lreplsessionclear)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LReplSession:complete](#lreplsessioncomplete)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LReplSession:eval](#lreplsessioneval)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LReplSession:history](#lreplsessionhistory)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LReplSession:len](#lreplsessionlen)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LReplSession:type](#lreplsessiontype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LReplSession:typeOf](#lreplsessiontypeof)
+    - [Definition](#definition)
+    - [Description](#description)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -67,19 +85,28 @@ lurek.repl.new([max_history]: integer) -> LReplSession -- Creates a release-safe
 
 ### lurek.repl.new
 
-`lurek.repl.new([max_history]: integer) -> LReplSession`
+#### Definition
+
+```lua
+--- Creates a release-safe REPL session with bounded command history.
+---@param max_history? number Maximum number of history entries; defaults to 200.
+---@return LReplSession REPL session handle for eval, history, and completion.
+lurek.repl.new = function(max_history) end
+```
+
+#### Description
 
 Creates a release-safe REPL session with bounded command history.
 
-**Parameters**
+Parameters:
 
 - `max_history` (`integer`, optional): Maximum number of history entries; defaults to 200.
 
-**Returns**: `LReplSession` - REPL session handle for eval, history, and completion.
+Returns: `LReplSession` - REPL session handle for eval, history, and completion.
 
 #### Example
 
-Exact example from [repl.lua](../blob/main/content/examples/repl.lua):
+Source: [repl.lua](../blob/main/content/examples/repl.lua)
 
 ```lua
 do
@@ -97,9 +124,7 @@ end
 
 ### LReplSession
 
-Lua-side REPL session handle with bounded history.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side REPL session handle with bounded history.
@@ -107,9 +132,13 @@ Lua-side REPL session handle with bounded history.
 LReplSession = {}
 ```
 
+#### Description
+
+Lua-side REPL session handle with bounded history.
+
 #### Example
 
-Exact example from [repl.lua](../blob/main/content/examples/repl.lua):
+Source: [repl.lua](../blob/main/content/examples/repl.lua)
 
 ```lua
 do
@@ -127,20 +156,20 @@ end
 
 ### LReplSession:clear
 
-`LReplSession:clear()`
-
-Clears all entries from this REPL session history.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Clears all entries from this REPL session history.
 function LReplSession:clear() end
 ```
 
+#### Description
+
+Clears all entries from this REPL session history.
+
 #### Example
 
-Exact example from [repl.lua](../blob/main/content/examples/repl.lua):
+Source: [repl.lua](../blob/main/content/examples/repl.lua)
 
 ```lua
 do
@@ -153,17 +182,7 @@ end
 
 ### LReplSession:complete
 
-`LReplSession:complete(prefix: string) -> string[]`
-
-Returns completion candidates that begin with the supplied prefix.
-
-**Parameters**
-
-- `prefix` (`string`, required): Prefix text to complete.
-
-**Returns**: `string[]` - Matching completion strings.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns completion candidates that begin with the supplied prefix.
@@ -172,9 +191,19 @@ Returns completion candidates that begin with the supplied prefix.
 function LReplSession:complete(prefix) end
 ```
 
+#### Description
+
+Returns completion candidates that begin with the supplied prefix.
+
+Parameters:
+
+- `prefix` (`string`, required): Prefix text to complete.
+
+Returns: `string[]` - Matching completion strings.
+
 #### Example
 
-Exact example from [repl.lua](../blob/main/content/examples/repl.lua):
+Source: [repl.lua](../blob/main/content/examples/repl.lua)
 
 ```lua
 do
@@ -188,17 +217,7 @@ end
 
 ### LReplSession:eval
 
-`LReplSession:eval(code: string) -> string`
-
-Evaluates Lua code and records the input in this REPL history.
-
-**Parameters**
-
-- `code` (`string`, required): Lua expression, statement, or REPL command to evaluate.
-
-**Returns**: `string` - Display text for the result, command, or error.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Evaluates Lua code and records the input in this REPL history.
@@ -207,9 +226,19 @@ Evaluates Lua code and records the input in this REPL history.
 function LReplSession:eval(code) end
 ```
 
+#### Description
+
+Evaluates Lua code and records the input in this REPL history.
+
+Parameters:
+
+- `code` (`string`, required): Lua expression, statement, or REPL command to evaluate.
+
+Returns: `string` - Display text for the result, command, or error.
+
 #### Example
 
-Exact example from [repl.lua](../blob/main/content/examples/repl.lua):
+Source: [repl.lua](../blob/main/content/examples/repl.lua)
 
 ```lua
 do
@@ -222,13 +251,7 @@ end
 
 ### LReplSession:history
 
-`LReplSession:history() -> string[]`
-
-Returns the recorded REPL input history in oldest-first order.
-
-**Returns**: `string[]` - History entry strings.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the recorded REPL input history in oldest-first order.
@@ -236,9 +259,15 @@ Returns the recorded REPL input history in oldest-first order.
 function LReplSession:history() end
 ```
 
+#### Description
+
+Returns the recorded REPL input history in oldest-first order.
+
+Returns: `string[]` - History entry strings.
+
 #### Example
 
-Exact example from [repl.lua](../blob/main/content/examples/repl.lua):
+Source: [repl.lua](../blob/main/content/examples/repl.lua)
 
 ```lua
 do
@@ -251,13 +280,7 @@ end
 
 ### LReplSession:len
 
-`LReplSession:len() -> integer`
-
-Returns the number of entries stored in this REPL history.
-
-**Returns**: `integer` - History entry count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of entries stored in this REPL history.
@@ -265,9 +288,15 @@ Returns the number of entries stored in this REPL history.
 function LReplSession:len() end
 ```
 
+#### Description
+
+Returns the number of entries stored in this REPL history.
+
+Returns: `integer` - History entry count.
+
 #### Example
 
-Exact example from [repl.lua](../blob/main/content/examples/repl.lua):
+Source: [repl.lua](../blob/main/content/examples/repl.lua)
 
 ```lua
 do
@@ -281,13 +310,7 @@ end
 
 ### LReplSession:type
 
-`LReplSession:type() -> string`
-
-Returns the Lua-visible type name for this REPL session handle.
-
-**Returns**: `string` - The string `LReplSession`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this REPL session handle.
@@ -295,9 +318,15 @@ Returns the Lua-visible type name for this REPL session handle.
 function LReplSession:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this REPL session handle.
+
+Returns: `string` - The string `LReplSession`.
+
 #### Example
 
-Exact example from [repl.lua](../blob/main/content/examples/repl.lua):
+Source: [repl.lua](../blob/main/content/examples/repl.lua)
 
 ```lua
 do
@@ -309,17 +338,7 @@ end
 
 ### LReplSession:typeOf
 
-`LReplSession:typeOf(name: string) -> boolean`
-
-Returns whether this REPL session handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LReplSession` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this REPL session handle matches a supported type name.
@@ -328,9 +347,19 @@ Returns whether this REPL session handle matches a supported type name.
 function LReplSession:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this REPL session handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LReplSession` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [repl.lua](../blob/main/content/examples/repl.lua):
+Source: [repl.lua](../blob/main/content/examples/repl.lua)
 
 ```lua
 do

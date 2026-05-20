@@ -14,207 +14,607 @@
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
   - [lurek.tilemap.fromLDtk](#lurektilemapfromldtk)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.tilemap.fromScreenHex](#lurektilemapfromscreenhex)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.tilemap.fromScreenIso](#lurektilemapfromscreeniso)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.tilemap.hexArea](#lurektilemaphexarea)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.tilemap.hexDistance](#lurektilemaphexdistance)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.tilemap.hexLine](#lurektilemaphexline)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.tilemap.hexNeighbors](#lurektilemaphexneighbors)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.tilemap.hexReflect](#lurektilemaphexreflect)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.tilemap.hexRing](#lurektilemaphexring)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.tilemap.hexRotate](#lurektilemaphexrotate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.tilemap.hexRound](#lurektilemaphexround)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.tilemap.hexSpiral](#lurektilemaphexspiral)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.tilemap.isoDirectionFromAngle](#lurektilemapisodirectionfromangle)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.tilemap.isoDirectionName](#lurektilemapisodirectionname)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.tilemap.isoRotate](#lurektilemapisorotate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.tilemap.loadTMX](#lurektilemaploadtmx)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.tilemap.newAutoTileSheet](#lurektilemapnewautotilesheet)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.tilemap.newChunkMap](#lurektilemapnewchunkmap)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.tilemap.newIsoMap](#lurektilemapnewisomap)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.tilemap.newLargeMapRenderer](#lurektilemapnewlargemaprenderer)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.tilemap.newMapBlock](#lurektilemapnewmapblock)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.tilemap.newMapGen](#lurektilemapnewmapgen)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.tilemap.newMapGroup](#lurektilemapnewmapgroup)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.tilemap.newMapScript](#lurektilemapnewmapscript)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.tilemap.newTileMap](#lurektilemapnewtilemap)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.tilemap.newTileSet](#lurektilemapnewtileset)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.tilemap.toScreenHex](#lurektilemaptoscreenhex)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.tilemap.toScreenIso](#lurektilemaptoscreeniso)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔷 Module Types](#module-types)
   - [LAutoTileSheet](#lautotilesheet)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LChunkMap](#lchunkmap)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LIsoMap](#lisomap)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLargeMapRenderer](#llargemaprenderer)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMapBlock](#lmapblock)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMapGen](#lmapgen)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMapGroup](#lmapgroup)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMapScript](#lmapscript)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap](#ltilemap)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileSet](#ltileset)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
   - [LAutoTileSheet:applyToTileSet](#lautotilesheetapplytotileset)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LAutoTileSheet:getBitmaskForTile](#lautotilesheetgetbitmaskfortile)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LAutoTileSheet:getLayout](#lautotilesheetgetlayout)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LAutoTileSheet:getQuad](#lautotilesheetgetquad)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LAutoTileSheet:getTileCount](#lautotilesheetgettilecount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LAutoTileSheet:getTileForBitmask](#lautotilesheetgettileforbitmask)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LAutoTileSheet:getTileHeight](#lautotilesheetgettileheight)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LAutoTileSheet:getTileWidth](#lautotilesheetgettilewidth)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LAutoTileSheet:type](#lautotilesheettype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LAutoTileSheet:typeOf](#lautotilesheettypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LChunkMap:chunkTileRange](#lchunkmapchunktilerange)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LChunkMap:clearTile](#lchunkmapcleartile)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LChunkMap:fillRect](#lchunkmapfillrect)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LChunkMap:getChunksInView](#lchunkmapgetchunksinview)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LChunkMap:getChunkSize](#lchunkmapgetchunksize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LChunkMap:getLoadedChunks](#lchunkmapgetloadedchunks)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LChunkMap:getTile](#lchunkmapgettile)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LChunkMap:loadChunk](#lchunkmaploadchunk)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LChunkMap:setTile](#lchunkmapsettile)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LChunkMap:type](#lchunkmaptype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LChunkMap:typeOf](#lchunkmaptypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LChunkMap:unloadChunk](#lchunkmapunloadchunk)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LIsoMap:addLevel](#lisomapaddlevel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LIsoMap:fillLevel](#lisomapfilllevel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LIsoMap:getHeight](#lisomapgetheight)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LIsoMap:getLevelCount](#lisomapgetlevelcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LIsoMap:getLevelHeight](#lisomapgetlevelheight)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LIsoMap:getPartCount](#lisomapgetpartcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LIsoMap:getPartOrder](#lisomapgetpartorder)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LIsoMap:getTileHeight](#lisomapgettileheight)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LIsoMap:getTilePart](#lisomapgettilepart)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LIsoMap:getTileWidth](#lisomapgettilewidth)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LIsoMap:getWidth](#lisomapgetwidth)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LIsoMap:isLevelVisible](#lisomapislevelvisible)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LIsoMap:screenToTile](#lisomapscreentotile)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LIsoMap:setLevelVisible](#lisomapsetlevelvisible)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LIsoMap:setOrigin](#lisomapsetorigin)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LIsoMap:setPartOrder](#lisomapsetpartorder)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LIsoMap:setTilePart](#lisomapsettilepart)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LIsoMap:tileToScreen](#lisomaptiletoscreen)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LIsoMap:type](#lisomaptype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LIsoMap:typeOf](#lisomaptypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLargeMapRenderer:getChunkSize](#llargemaprenderergetchunksize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLargeMapRenderer:getMapSize](#llargemaprenderergetmapsize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLargeMapRenderer:getTile](#llargemaprenderergettile)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLargeMapRenderer:getTilesetColumns](#llargemaprenderergettilesetcolumns)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLargeMapRenderer:getTotalChunks](#llargemaprenderergettotalchunks)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLargeMapRenderer:getVisibleChunks](#llargemaprenderergetvisiblechunks)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLargeMapRenderer:invalidateAll](#llargemaprendererinvalidateall)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLargeMapRenderer:invalidateChunk](#llargemaprendererinvalidatechunk)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLargeMapRenderer:isLodEnabled](#llargemaprendererislodenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLargeMapRenderer:setCamera](#llargemaprenderersetcamera)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLargeMapRenderer:setChunkSize](#llargemaprenderersetchunksize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLargeMapRenderer:setLodEnabled](#llargemaprenderersetlodenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLargeMapRenderer:setLodThresholds](#llargemaprenderersetlodthresholds)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLargeMapRenderer:setMapData](#llargemaprenderersetmapdata)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLargeMapRenderer:setTile](#llargemaprenderersettile)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLargeMapRenderer:setTilesetColumns](#llargemaprenderersettilesetcolumns)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLargeMapRenderer:setViewport](#llargemaprenderersetviewport)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLargeMapRenderer:type](#llargemaprenderertype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLargeMapRenderer:typeOf](#llargemaprenderertypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMapBlock:getDimensions](#lmapblockgetdimensions)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMapBlock:getHeight](#lmapblockgetheight)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMapBlock:getHeightInSegments](#lmapblockgetheightinsegments)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMapBlock:getLayerCount](#lmapblockgetlayercount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMapBlock:getName](#lmapblockgetname)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMapBlock:getSegmentSize](#lmapblockgetsegmentsize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMapBlock:getSide](#lmapblockgetside)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMapBlock:getTile](#lmapblockgettile)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMapBlock:getWeight](#lmapblockgetweight)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMapBlock:getWidth](#lmapblockgetwidth)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMapBlock:getWidthInSegments](#lmapblockgetwidthinsegments)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMapBlock:setName](#lmapblocksetname)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMapBlock:setSide](#lmapblocksetside)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMapBlock:setTile](#lmapblocksettile)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMapBlock:setWeight](#lmapblocksetweight)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMapBlock:type](#lmapblocktype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMapBlock:typeOf](#lmapblocktypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMapGen:generate](#lmapgengenerate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMapGen:type](#lmapgentype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMapGen:typeOf](#lmapgentypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMapGroup:addBlock](#lmapgroupaddblock)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMapGroup:addScript](#lmapgroupaddscript)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMapGroup:getBlockCount](#lmapgroupgetblockcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMapGroup:getName](#lmapgroupgetname)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMapGroup:getScriptCount](#lmapgroupgetscriptcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMapGroup:removeBlock](#lmapgroupremoveblock)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMapGroup:type](#lmapgrouptype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMapGroup:typeOf](#lmapgrouptypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMapScript:addStep](#lmapscriptaddstep)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMapScript:getStepCount](#lmapscriptgetstepcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMapScript:type](#lmapscripttype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMapScript:typeOf](#lmapscripttypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:addLayer](#ltilemapaddlayer)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:addTileSet](#ltilemapaddtileset)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:applyAutoTile](#ltilemapapplyautotile)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:applyAutoTile8](#ltilemapapplyautotile8)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:applyAutoTile8At](#ltilemapapplyautotile8at)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:applyAutoTileAt](#ltilemapapplyautotileat)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:checkEntities](#ltilemapcheckentities)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:clearTile](#ltilemapcleartile)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:drawToImage](#ltilemapdrawtoimage)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:fill](#ltilemapfill)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:findTilesByGid](#ltilemapfindtilesbygid)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:fireTileExit](#ltilemapfiretileexit)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:fireTileStep](#ltilemapfiretilestep)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:getChunkSize](#ltilemapgetchunksize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:getLayerColor](#ltilemapgetlayercolor)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:getLayerCount](#ltilemapgetlayercount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:getLayerName](#ltilemapgetlayername)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:getLayerOffset](#ltilemapgetlayeroffset)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:getLayerParallax](#ltilemapgetlayerparallax)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:getLayerVisible](#ltilemapgetlayervisible)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:getOrientation](#ltilemapgetorientation)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:getTile](#ltilemapgettile)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:getTileDimensions](#ltilemapgettiledimensions)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:getTileHeight](#ltilemapgettileheight)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:getTileSet](#ltilemapgettileset)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:getTileSetCount](#ltilemapgettilesetcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:getTileWidth](#ltilemapgettilewidth)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:getViewport](#ltilemapgetviewport)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:isSolid](#ltilemapissolid)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:onTileEnter](#ltilemapontileenter)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:onTileExit](#ltilemapontileexit)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:onTileStep](#ltilemapontilestep)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:rectOverlapsSolid](#ltilemaprectoverlapssolid)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:render](#ltilemaprender)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:setLayerColor](#ltilemapsetlayercolor)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:setLayerOffset](#ltilemapsetlayeroffset)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:setLayerParallax](#ltilemapsetlayerparallax)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:setLayerVisible](#ltilemapsetlayervisible)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:setOrientation](#ltilemapsetorientation)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:setTile](#ltilemapsettile)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:setTileTint](#ltilemapsettiletint)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:setViewport](#ltilemapsetviewport)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:sweepRect](#ltilemapsweeprect)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:tileToWorld](#ltilemaptiletoworld)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:tileTypeIndex](#ltilemaptiletypeindex)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:toNavGrid](#ltilemaptonavgrid)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:type](#ltilemaptype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:typeOf](#ltilemaptypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:update](#ltilemapupdate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileMap:worldToTile](#ltilemapworldtotile)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileSet:getAnimation](#ltilesetgetanimation)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileSet:getAutoTileId](#ltilesetgetautotileid)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileSet:getAutoTileId8](#ltilesetgetautotileid8)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileSet:getColumns](#ltilesetgetcolumns)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileSet:getFirstGid](#ltilesetgetfirstgid)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileSet:getMargin](#ltilesetgetmargin)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileSet:getQuad](#ltilesetgetquad)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileSet:getSpacing](#ltilesetgetspacing)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileSet:getTileCount](#ltilesetgettilecount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileSet:getTileDimensions](#ltilesetgettiledimensions)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileSet:getTileHeight](#ltilesetgettileheight)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileSet:getTileWidth](#ltilesetgettilewidth)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileSet:isSolid](#ltilesetissolid)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileSet:setAnimation](#ltilesetsetanimation)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileSet:setAutoTileRule](#ltilesetsetautotilerule)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileSet:setAutoTileRule8](#ltilesetsetautotilerule8)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileSet:setSolid](#ltilesetsetsolid)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileSet:type](#ltilesettype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTileSet:typeOf](#ltilesettypeof)
+    - [Definition](#definition)
+    - [Description](#description)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -285,20 +685,30 @@ lurek.tilemap.newChunkMap([chunkSize]: integer) -> LChunkMap -- Creates a new in
 
 ### lurek.tilemap.fromLDtk
 
-`lurek.tilemap.fromLDtk(jsonStr: string, [levelName]: string) -> LTileMap`
+#### Definition
+
+```lua
+--- Loads a tilemap from an LDtk JSON string, optionally targeting a specific level.
+---@param jsonStr string Raw LDtk JSON content.
+---@param levelName? string Level name to load, or nil for the first level.
+---@return LTileMap Loaded tilemap.
+lurek.tilemap.fromLDtk = function(jsonStr, levelName) end
+```
+
+#### Description
 
 Loads a tilemap from an LDtk JSON string, optionally targeting a specific level.
 
-**Parameters**
+Parameters:
 
 - `jsonStr` (`string`, required): Raw LDtk JSON content.
 - `levelName` (`string`, optional): Level name to load, or nil for the first level.
 
-**Returns**: `LTileMap` - Loaded tilemap.
+Returns: `LTileMap` - Loaded tilemap.
 
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -312,21 +722,33 @@ end
 
 ### lurek.tilemap.fromScreenHex
 
-`lurek.tilemap.fromScreenHex(sx: number, sy: number, size: number) -> integer`
+#### Definition
+
+```lua
+--- Converts screen-space pixel coordinates to axial hex coordinates.
+---@param sx number Screen X.
+---@param sy number Screen Y.
+---@param size number Hex cell size in pixels.
+---@return number a Axial Q.
+---@return number b Axial R.
+lurek.tilemap.fromScreenHex = function(sx, sy, size) end
+```
+
+#### Description
 
 Converts screen-space pixel coordinates to axial hex coordinates.
 
-**Parameters**
+Parameters:
 
 - `sx` (`number`, required): Screen X.
 - `sy` (`number`, required): Screen Y.
 - `size` (`number`, required): Hex cell size in pixels.
 
-**Returns**: `integer` - Axial Q.
+Returns: `integer` - Axial Q.
 
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -337,22 +759,35 @@ end
 
 ### lurek.tilemap.fromScreenIso
 
-`lurek.tilemap.fromScreenIso(sx: number, sy: number, tw: number, th: number) -> number`
+#### Definition
+
+```lua
+--- Converts screen-space coordinates back to tile coordinates for isometric projection.
+---@param sx number Screen X.
+---@param sy number Screen Y.
+---@param tw number Tile width in pixels.
+---@param th number Tile height in pixels.
+---@return number a Tile X.
+---@return number b Tile Y.
+lurek.tilemap.fromScreenIso = function(sx, sy, tw, th) end
+```
+
+#### Description
 
 Converts screen-space coordinates back to tile coordinates for isometric projection.
 
-**Parameters**
+Parameters:
 
 - `sx` (`number`, required): Screen X.
 - `sy` (`number`, required): Screen Y.
 - `tw` (`number`, required): Tile width in pixels.
 - `th` (`number`, required): Tile height in pixels.
 
-**Returns**: `number` - Tile X.
+Returns: `number` - Tile X.
 
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -363,21 +798,32 @@ end
 
 ### lurek.tilemap.hexArea
 
-`lurek.tilemap.hexArea(q: integer, r: integer, radius: integer) -> table`
+#### Definition
+
+```lua
+--- Returns all hex cells within a filled area of a given radius.
+---@param q number Center Q.
+---@param r number Center R.
+---@param radius number Area radius.
+---@return TilemapHexAreaResult Array of `{q, r}` pairs inside the area.
+lurek.tilemap.hexArea = function(q, r, radius) end
+```
+
+#### Description
 
 Returns all hex cells within a filled area of a given radius.
 
-**Parameters**
+Parameters:
 
 - `q` (`integer`, required): Center Q.
 - `r` (`integer`, required): Center R.
 - `radius` (`integer`, required): Area radius.
 
-**Returns**: `table` - Array of `{q, r}` pairs inside the area.
+Returns: `table` - Array of `{q, r}` pairs inside the area.
 
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -390,22 +836,34 @@ end
 
 ### lurek.tilemap.hexDistance
 
-`lurek.tilemap.hexDistance(q1: integer, r1: integer, q2: integer, r2: integer) -> integer`
+#### Definition
+
+```lua
+--- Computes the hex grid distance between two axial coordinates.
+---@param q1 number First Q.
+---@param r1 number First R.
+---@param q2 number Second Q.
+---@param r2 number Second R.
+---@return number Distance in hex steps.
+lurek.tilemap.hexDistance = function(q1, r1, q2, r2) end
+```
+
+#### Description
 
 Computes the hex grid distance between two axial coordinates.
 
-**Parameters**
+Parameters:
 
 - `q1` (`integer`, required): First Q.
 - `r1` (`integer`, required): First R.
 - `q2` (`integer`, required): Second Q.
 - `r2` (`integer`, required): Second R.
 
-**Returns**: `integer` - Distance in hex steps.
+Returns: `integer` - Distance in hex steps.
 
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -419,22 +877,34 @@ end
 
 ### lurek.tilemap.hexLine
 
-`lurek.tilemap.hexLine(q1: integer, r1: integer, q2: integer, r2: integer) -> table`
+#### Definition
+
+```lua
+--- Returns all hex cells along a line between two axial coordinates.
+---@param q1 number Start Q.
+---@param r1 number Start R.
+---@param q2 number End Q.
+---@param r2 number End R.
+---@return TilemapHexLineResult Array of `{q, r}` pairs along the line.
+lurek.tilemap.hexLine = function(q1, r1, q2, r2) end
+```
+
+#### Description
 
 Returns all hex cells along a line between two axial coordinates.
 
-**Parameters**
+Parameters:
 
 - `q1` (`integer`, required): Start Q.
 - `r1` (`integer`, required): Start R.
 - `q2` (`integer`, required): End Q.
 - `r2` (`integer`, required): End R.
 
-**Returns**: `table` - Array of `{q, r}` pairs along the line.
+Returns: `table` - Array of `{q, r}` pairs along the line.
 
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -448,20 +918,30 @@ end
 
 ### lurek.tilemap.hexNeighbors
 
-`lurek.tilemap.hexNeighbors(q: integer, r: integer) -> table`
+#### Definition
+
+```lua
+--- Returns the six neighboring hex cells of a given axial coordinate.
+---@param q number Axial Q.
+---@param r number Axial R.
+---@return TilemapHexNeighborsResult Array of `{q=number, r=number}` neighbor cells.
+lurek.tilemap.hexNeighbors = function(q, r) end
+```
+
+#### Description
 
 Returns the six neighboring hex cells of a given axial coordinate.
 
-**Parameters**
+Parameters:
 
 - `q` (`integer`, required): Axial Q.
 - `r` (`integer`, required): Axial R.
 
-**Returns**: `table` - Array of `{q=number, r=number}` neighbor cells.
+Returns: `table` - Array of `{q=number, r=number}` neighbor cells.
 
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -475,11 +955,25 @@ end
 
 ### lurek.tilemap.hexReflect
 
-`lurek.tilemap.hexReflect(q: integer, r: integer, centerQ: integer, centerR: integer, axis: string) -> integer`
+#### Definition
+
+```lua
+--- Reflects a hex cell across an axis through a center point.
+---@param q number Cell Q.
+---@param r number Cell R.
+---@param centerQ number Pivot Q.
+---@param centerR number Pivot R.
+---@param axis string Reflection axis name.
+---@return number a Reflected Q.
+---@return number b Reflected R.
+lurek.tilemap.hexReflect = function(q, r, centerQ, centerR, axis) end
+```
+
+#### Description
 
 Reflects a hex cell across an axis through a center point.
 
-**Parameters**
+Parameters:
 
 - `q` (`integer`, required): Cell Q.
 - `r` (`integer`, required): Cell R.
@@ -487,11 +981,11 @@ Reflects a hex cell across an axis through a center point.
 - `centerR` (`integer`, required): Pivot R.
 - `axis` (`string`, required): Reflection axis name.
 
-**Returns**: `integer` - Reflected Q.
+Returns: `integer` - Reflected Q.
 
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -504,21 +998,32 @@ end
 
 ### lurek.tilemap.hexRing
 
-`lurek.tilemap.hexRing(q: integer, r: integer, radius: integer) -> table`
+#### Definition
+
+```lua
+--- Returns all hex cells forming a ring at a given radius around a center.
+---@param q number Center Q.
+---@param r number Center R.
+---@param radius number Ring radius in hex steps.
+---@return TilemapHexRingResult Array of `{q, r}` pairs on the ring.
+lurek.tilemap.hexRing = function(q, r, radius) end
+```
+
+#### Description
 
 Returns all hex cells forming a ring at a given radius around a center.
 
-**Parameters**
+Parameters:
 
 - `q` (`integer`, required): Center Q.
 - `r` (`integer`, required): Center R.
 - `radius` (`integer`, required): Ring radius in hex steps.
 
-**Returns**: `table` - Array of `{q, r}` pairs on the ring.
+Returns: `table` - Array of `{q, r}` pairs on the ring.
 
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -532,11 +1037,25 @@ end
 
 ### lurek.tilemap.hexRotate
 
-`lurek.tilemap.hexRotate(q: integer, r: integer, centerQ: integer, centerR: integer, steps: integer) -> integer`
+#### Definition
+
+```lua
+--- Rotates a hex cell around a center point by a number of 60-degree steps.
+---@param q number Cell Q.
+---@param r number Cell R.
+---@param centerQ number Pivot Q.
+---@param centerR number Pivot R.
+---@param steps number Number of 60-degree rotation steps (positive = clockwise).
+---@return number a Rotated Q.
+---@return number b Rotated R.
+lurek.tilemap.hexRotate = function(q, r, centerQ, centerR, steps) end
+```
+
+#### Description
 
 Rotates a hex cell around a center point by a number of 60-degree steps.
 
-**Parameters**
+Parameters:
 
 - `q` (`integer`, required): Cell Q.
 - `r` (`integer`, required): Cell R.
@@ -544,11 +1063,11 @@ Rotates a hex cell around a center point by a number of 60-degree steps.
 - `centerR` (`integer`, required): Pivot R.
 - `steps` (`integer`, required): Number of 60-degree rotation steps (positive = clockwise).
 
-**Returns**: `integer` - Rotated Q.
+Returns: `integer` - Rotated Q.
 
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -561,20 +1080,31 @@ end
 
 ### lurek.tilemap.hexRound
 
-`lurek.tilemap.hexRound(q: number, r: number) -> integer`
+#### Definition
+
+```lua
+--- Rounds fractional axial hex coordinates to the nearest integer hex cell.
+---@param q number Fractional Q.
+---@param r number Fractional R.
+---@return number a Rounded Q.
+---@return number b Rounded R.
+lurek.tilemap.hexRound = function(q, r) end
+```
+
+#### Description
 
 Rounds fractional axial hex coordinates to the nearest integer hex cell.
 
-**Parameters**
+Parameters:
 
 - `q` (`number`, required): Fractional Q.
 - `r` (`number`, required): Fractional R.
 
-**Returns**: `integer` - Rounded Q.
+Returns: `integer` - Rounded Q.
 
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -587,21 +1117,32 @@ end
 
 ### lurek.tilemap.hexSpiral
 
-`lurek.tilemap.hexSpiral(q: integer, r: integer, radius: integer) -> table`
+#### Definition
+
+```lua
+--- Returns all hex cells in a spiral pattern out to a given radius.
+---@param q number Center Q.
+---@param r number Center R.
+---@param radius number Maximum radius.
+---@return TilemapHexSpiralResult Array of `{q, r}` pairs in spiral order.
+lurek.tilemap.hexSpiral = function(q, r, radius) end
+```
+
+#### Description
 
 Returns all hex cells in a spiral pattern out to a given radius.
 
-**Parameters**
+Parameters:
 
 - `q` (`integer`, required): Center Q.
 - `r` (`integer`, required): Center R.
 - `radius` (`integer`, required): Maximum radius.
 
-**Returns**: `table` - Array of `{q, r}` pairs in spiral order.
+Returns: `table` - Array of `{q, r}` pairs in spiral order.
 
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -613,19 +1154,28 @@ end
 
 ### lurek.tilemap.isoDirectionFromAngle
 
-`lurek.tilemap.isoDirectionFromAngle(angle: number) -> integer`
+#### Definition
+
+```lua
+--- Converts an angle in degrees to the nearest isometric direction index.
+---@param angle number Angle in degrees.
+---@return number Direction index.
+lurek.tilemap.isoDirectionFromAngle = function(angle) end
+```
+
+#### Description
 
 Converts an angle in degrees to the nearest isometric direction index.
 
-**Parameters**
+Parameters:
 
 - `angle` (`number`, required): Angle in degrees.
 
-**Returns**: `integer` - Direction index.
+Returns: `integer` - Direction index.
 
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -636,19 +1186,28 @@ end
 
 ### lurek.tilemap.isoDirectionName
 
-`lurek.tilemap.isoDirectionName(direction: integer) -> string`
+#### Definition
+
+```lua
+--- Returns a human-readable name for an isometric direction index.
+---@param direction number Direction index.
+---@return string Direction name (e.g. `"north"`, `"east"`, `"south"`, `"west"`).
+lurek.tilemap.isoDirectionName = function(direction) end
+```
+
+#### Description
 
 Returns a human-readable name for an isometric direction index.
 
-**Parameters**
+Parameters:
 
 - `direction` (`integer`, required): Direction index.
 
-**Returns**: `string` - Direction name (e.g. `"north"`, `"east"`, `"south"`, `"west"`).
+Returns: `string` - Direction name (e.g. `"north"`, `"east"`, `"south"`, `"west"`).
 
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -659,20 +1218,30 @@ end
 
 ### lurek.tilemap.isoRotate
 
-`lurek.tilemap.isoRotate(direction: integer, steps: integer) -> integer`
+#### Definition
+
+```lua
+--- Rotates an isometric direction index by a number of 90-degree steps.
+---@param direction number Current direction (0..3).
+---@param steps number Number of 90-degree steps.
+---@return number Rotated direction.
+lurek.tilemap.isoRotate = function(direction, steps) end
+```
+
+#### Description
 
 Rotates an isometric direction index by a number of 90-degree steps.
 
-**Parameters**
+Parameters:
 
 - `direction` (`integer`, required): Current direction (0..3).
 - `steps` (`integer`, required): Number of 90-degree steps.
 
-**Returns**: `integer` - Rotated direction.
+Returns: `integer` - Rotated direction.
 
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -683,19 +1252,28 @@ end
 
 ### lurek.tilemap.loadTMX
 
-`lurek.tilemap.loadTMX(xml: string) -> table`
+#### Definition
+
+```lua
+--- Parses a TMX (Tiled XML) string and returns a table describing the map structure.
+---@param xml string Raw TMX XML content.
+---@return TilemapLoadTMXResult Parsed map with `width`, `height`, `tileWidth`, `tileHeight`, `orientation`, and `layers`.
+lurek.tilemap.loadTMX = function(xml) end
+```
+
+#### Description
 
 Parses a TMX (Tiled XML) string and returns a table describing the map structure.
 
-**Parameters**
+Parameters:
 
 - `xml` (`string`, required): Raw TMX XML content.
 
-**Returns**: `table` - Parsed map with `width`, `height`, `tileWidth`, `tileHeight`, `orientation`, and `layers`.
+Returns: `table` - Parsed map with `width`, `height`, `tileWidth`, `tileHeight`, `orientation`, and `layers`.
 
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -709,21 +1287,32 @@ end
 
 ### lurek.tilemap.newAutoTileSheet
 
-`lurek.tilemap.newAutoTileSheet(tileW: integer, tileH: integer, layout: string) -> LAutoTileSheet`
+#### Definition
+
+```lua
+--- Creates an auto-tile sheet with a given tile size and layout.
+---@param tileW number Tile width in pixels.
+---@param tileH number Tile height in pixels.
+---@param layout string Layout type: `"blob47"`, `"composite48"`, or `"minimal16"`.
+---@return LAutoTileSheet New auto-tile sheet.
+lurek.tilemap.newAutoTileSheet = function(tileW, tileH, layout) end
+```
+
+#### Description
 
 Creates an auto-tile sheet with a given tile size and layout.
 
-**Parameters**
+Parameters:
 
 - `tileW` (`integer`, required): Tile width in pixels.
 - `tileH` (`integer`, required): Tile height in pixels.
 - `layout` (`string`, required): Layout type: `"blob47"`, `"composite48"`, or `"minimal16"`.
 
-**Returns**: `LAutoTileSheet` - New auto-tile sheet.
+Returns: `LAutoTileSheet` - New auto-tile sheet.
 
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -737,19 +1326,28 @@ end
 
 ### lurek.tilemap.newChunkMap
 
-`lurek.tilemap.newChunkMap([chunkSize]: integer) -> LChunkMap`
+#### Definition
+
+```lua
+--- Creates a new infinite chunk-based tile map.
+---@param chunkSize? number Tiles per chunk side (default 16).
+---@return LChunkMap New chunk map.
+lurek.tilemap.newChunkMap = function(chunkSize) end
+```
+
+#### Description
 
 Creates a new infinite chunk-based tile map.
 
-**Parameters**
+Parameters:
 
 - `chunkSize` (`integer`, optional): Tiles per chunk side (default 16).
 
-**Returns**: `LChunkMap` - New chunk map.
+Returns: `LChunkMap` - New chunk map.
 
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -762,11 +1360,25 @@ end
 
 ### lurek.tilemap.newIsoMap
 
-`lurek.tilemap.newIsoMap(width: integer, height: integer, tileW: integer, tileH: integer, levelHeight: integer, [partCount]: integer) -> LIsoMap`
+#### Definition
+
+```lua
+--- Creates a new isometric map with the given dimensions and tile geometry.
+---@param width number Map width in tiles.
+---@param height number Map height in tiles.
+---@param tileW number Tile width in pixels.
+---@param tileH number Tile height in pixels.
+---@param levelHeight number Vertical pixel offset between levels.
+---@param partCount? number Number of tile parts per cell (default 4).
+---@return LIsoMap New isometric map.
+lurek.tilemap.newIsoMap = function(width, height, tileW, tileH, levelHeight, partCount) end
+```
+
+#### Description
 
 Creates a new isometric map with the given dimensions and tile geometry.
 
-**Parameters**
+Parameters:
 
 - `width` (`integer`, required): Map width in tiles.
 - `height` (`integer`, required): Map height in tiles.
@@ -775,11 +1387,11 @@ Creates a new isometric map with the given dimensions and tile geometry.
 - `levelHeight` (`integer`, required): Vertical pixel offset between levels.
 - `partCount` (`integer`, optional): Number of tile parts per cell (default 4).
 
-**Returns**: `LIsoMap` - New isometric map.
+Returns: `LIsoMap` - New isometric map.
 
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -793,20 +1405,30 @@ end
 
 ### lurek.tilemap.newLargeMapRenderer
 
-`lurek.tilemap.newLargeMapRenderer(tileW: integer, tileH: integer) -> LLargeMapRenderer`
+#### Definition
+
+```lua
+--- Creates a chunk-based large-map renderer for efficient rendering of very large maps.
+---@param tileW number Tile width in pixels.
+---@param tileH number Tile height in pixels.
+---@return LLargeMapRenderer New large-map renderer.
+lurek.tilemap.newLargeMapRenderer = function(tileW, tileH) end
+```
+
+#### Description
 
 Creates a chunk-based large-map renderer for efficient rendering of very large maps.
 
-**Parameters**
+Parameters:
 
 - `tileW` (`integer`, required): Tile width in pixels.
 - `tileH` (`integer`, required): Tile height in pixels.
 
-**Returns**: `LLargeMapRenderer` - New large-map renderer.
+Returns: `LLargeMapRenderer` - New large-map renderer.
 
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -819,22 +1441,34 @@ end
 
 ### lurek.tilemap.newMapBlock
 
-`lurek.tilemap.newMapBlock(width: integer, height: integer, [layers]: integer, [segmentSize]: integer) -> LMapBlock`
+#### Definition
+
+```lua
+--- Creates a new procedural map block with the given dimensions.
+---@param width number Block width in tiles.
+---@param height number Block height in tiles.
+---@param layers? number Number of tile layers (default 1).
+---@param segmentSize? number Edge segment size in tiles (default 1).
+---@return LMapBlock New map block.
+lurek.tilemap.newMapBlock = function(width, height, layers, segmentSize) end
+```
+
+#### Description
 
 Creates a new procedural map block with the given dimensions.
 
-**Parameters**
+Parameters:
 
 - `width` (`integer`, required): Block width in tiles.
 - `height` (`integer`, required): Block height in tiles.
 - `layers` (`integer`, optional): Number of tile layers (default 1).
 - `segmentSize` (`integer`, optional): Edge segment size in tiles (default 1).
 
-**Returns**: `LMapBlock` - New map block.
+Returns: `LMapBlock` - New map block.
 
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -848,22 +1482,34 @@ end
 
 ### lurek.tilemap.newMapGen
 
-`lurek.tilemap.newMapGen(group: LMapGroup, presetOrWidth: string|integer, segmentSizeOrHeight: integer, [segmentSize]: integer) -> LMapGen`
+#### Definition
+
+```lua
+--- Creates a procedural map generator from a group and either a size preset or explicit dimensions.
+---@param group LMapGroup Block group to generate from.
+---@param presetOrWidth string|number Size preset (`"small"`, `"medium"`, `"large"`) or width in tiles.
+---@param segmentSizeOrHeight number Segment size (if preset) or height in tiles.
+---@param segmentSize? number Segment size when using explicit dimensions.
+---@return LMapGen New map generator.
+lurek.tilemap.newMapGen = function(group, presetOrWidth, segmentSizeOrHeight, segmentSize) end
+```
+
+#### Description
 
 Creates a procedural map generator from a group and either a size preset or explicit dimensions.
 
-**Parameters**
+Parameters:
 
 - `group` (`LMapGroup`, required): Block group to generate from.
 - `presetOrWidth` (`string|integer`, required): Size preset (`"small"`, `"medium"`, `"large"`) or width in tiles.
 - `segmentSizeOrHeight` (`integer`, required): Segment size (if preset) or height in tiles.
 - `segmentSize` (`integer`, optional): Segment size when using explicit dimensions.
 
-**Returns**: `LMapGen` - New map generator.
+Returns: `LMapGen` - New map generator.
 
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -877,19 +1523,28 @@ end
 
 ### lurek.tilemap.newMapGroup
 
-`lurek.tilemap.newMapGroup(name: string) -> LMapGroup`
+#### Definition
+
+```lua
+--- Creates a new map group to hold blocks and generation scripts.
+---@param name string Group name.
+---@return LMapGroup New map group.
+lurek.tilemap.newMapGroup = function(name) end
+```
+
+#### Description
 
 Creates a new map group to hold blocks and generation scripts.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, required): Group name.
 
-**Returns**: `LMapGroup` - New map group.
+Returns: `LMapGroup` - New map group.
 
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -903,15 +1558,23 @@ end
 
 ### lurek.tilemap.newMapScript
 
-`lurek.tilemap.newMapScript() -> LMapScript`
+#### Definition
+
+```lua
+--- Creates a new empty map-generation script.
+---@return LMapScript New script.
+lurek.tilemap.newMapScript = function() end
+```
+
+#### Description
 
 Creates a new empty map-generation script.
 
-**Returns**: `LMapScript` - New script.
+Returns: `LMapScript` - New script.
 
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -925,21 +1588,32 @@ end
 
 ### lurek.tilemap.newTileMap
 
-`lurek.tilemap.newTileMap(tileWidth: integer, tileHeight: integer, [chunkSize]: integer) -> LTileMap`
+#### Definition
+
+```lua
+--- Creates a new empty tilemap with the given tile dimensions.
+---@param tileWidth number Tile width in pixels.
+---@param tileHeight number Tile height in pixels.
+---@param chunkSize? number Internal chunk size in tiles (default 16).
+---@return LTileMap New tilemap.
+lurek.tilemap.newTileMap = function(tileWidth, tileHeight, chunkSize) end
+```
+
+#### Description
 
 Creates a new empty tilemap with the given tile dimensions.
 
-**Parameters**
+Parameters:
 
 - `tileWidth` (`integer`, required): Tile width in pixels.
 - `tileHeight` (`integer`, required): Tile height in pixels.
 - `chunkSize` (`integer`, optional): Internal chunk size in tiles (default 16).
 
-**Returns**: `LTileMap` - New tilemap.
+Returns: `LTileMap` - New tilemap.
 
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -953,11 +1627,26 @@ end
 
 ### lurek.tilemap.newTileSet
 
-`lurek.tilemap.newTileSet(firstGid: integer, tileCount: integer, columns: integer, tileWidth: integer, tileHeight: integer, [spacing]: integer, [margin]: integer) -> LTileSet`
+#### Definition
+
+```lua
+--- Creates a new tileset from atlas parameters.
+---@param firstGid number First global tile ID.
+---@param tileCount number Total tiles in the set.
+---@param columns number Columns in the atlas image.
+---@param tileWidth number Tile width in pixels.
+---@param tileHeight number Tile height in pixels.
+---@param spacing? number Pixel spacing between tiles (default 0).
+---@param margin? number Pixel margin around the atlas edge (default 0).
+---@return LTileSet New tileset.
+lurek.tilemap.newTileSet = function(firstGid, tileCount, columns, tileWidth, tileHeight, spacing, margin) end
+```
+
+#### Description
 
 Creates a new tileset from atlas parameters.
 
-**Parameters**
+Parameters:
 
 - `firstGid` (`integer`, required): First global tile ID.
 - `tileCount` (`integer`, required): Total tiles in the set.
@@ -967,11 +1656,11 @@ Creates a new tileset from atlas parameters.
 - `spacing` (`integer`, optional): Pixel spacing between tiles (default 0).
 - `margin` (`integer`, optional): Pixel margin around the atlas edge (default 0).
 
-**Returns**: `LTileSet` - New tileset.
+Returns: `LTileSet` - New tileset.
 
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -985,21 +1674,33 @@ end
 
 ### lurek.tilemap.toScreenHex
 
-`lurek.tilemap.toScreenHex(q: integer, r: integer, size: number) -> number`
+#### Definition
+
+```lua
+--- Converts axial hex coordinates to screen-space pixel position.
+---@param q number Axial Q coordinate.
+---@param r number Axial R coordinate.
+---@param size number Hex cell size in pixels.
+---@return number a Screen X.
+---@return number b Screen Y.
+lurek.tilemap.toScreenHex = function(q, r, size) end
+```
+
+#### Description
 
 Converts axial hex coordinates to screen-space pixel position.
 
-**Parameters**
+Parameters:
 
 - `q` (`integer`, required): Axial Q coordinate.
 - `r` (`integer`, required): Axial R coordinate.
 - `size` (`number`, required): Hex cell size in pixels.
 
-**Returns**: `number` - Screen X.
+Returns: `number` - Screen X.
 
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -1010,22 +1711,35 @@ end
 
 ### lurek.tilemap.toScreenIso
 
-`lurek.tilemap.toScreenIso(tx: number, ty: number, tw: number, th: number) -> number`
+#### Definition
+
+```lua
+--- Converts tile coordinates to screen-space position for isometric projection.
+---@param tx number Tile X.
+---@param ty number Tile Y.
+---@param tw number Tile width in pixels.
+---@param th number Tile height in pixels.
+---@return number a Screen X.
+---@return number b Screen Y.
+lurek.tilemap.toScreenIso = function(tx, ty, tw, th) end
+```
+
+#### Description
 
 Converts tile coordinates to screen-space position for isometric projection.
 
-**Parameters**
+Parameters:
 
 - `tx` (`number`, required): Tile X.
 - `ty` (`number`, required): Tile Y.
 - `tw` (`number`, required): Tile width in pixels.
 - `th` (`number`, required): Tile height in pixels.
 
-**Returns**: `number` - Screen X.
+Returns: `number` - Screen X.
 
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -1041,9 +1755,7 @@ end
 
 ### LAutoTileSheet
 
-Lua-side handle wrapping an `AutoTileSheet` that maps bitmasks to tile quads for auto-tiling.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side handle wrapping an `AutoTileSheet` that maps bitmasks to tile quads for auto-tiling.
@@ -1051,9 +1763,13 @@ Lua-side handle wrapping an `AutoTileSheet` that maps bitmasks to tile quads for
 LAutoTileSheet = {}
 ```
 
+#### Description
+
+Lua-side handle wrapping an `AutoTileSheet` that maps bitmasks to tile quads for auto-tiling.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -1067,9 +1783,7 @@ end
 
 ### LChunkMap
 
-Lua-side handle wrapping a `ChunkMap` for infinite or very large tile grids stored in dynamically loaded chunks.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side handle wrapping a `ChunkMap` for infinite or very large tile grids stored in dynamically loaded chunks.
@@ -1077,9 +1791,13 @@ Lua-side handle wrapping a `ChunkMap` for infinite or very large tile grids stor
 LChunkMap = {}
 ```
 
+#### Description
+
+Lua-side handle wrapping a `ChunkMap` for infinite or very large tile grids stored in dynamically loaded chunks.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -1092,9 +1810,7 @@ end
 
 ### LIsoMap
 
-Lua-side handle wrapping an `IsoMap` for isometric tile rendering with multi-level support and configurable part ordering.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side handle wrapping an `IsoMap` for isometric tile rendering with multi-level support and configurable part ordering.
@@ -1102,9 +1818,13 @@ Lua-side handle wrapping an `IsoMap` for isometric tile rendering with multi-lev
 LIsoMap = {}
 ```
 
+#### Description
+
+Lua-side handle wrapping an `IsoMap` for isometric tile rendering with multi-level support and configurable part ordering.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -1118,9 +1838,7 @@ end
 
 ### LLargeMapRenderer
 
-Lua-side handle wrapping a `LargeMapRenderer` for chunk-based rendering of very large tile maps with LOD support.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side handle wrapping a `LargeMapRenderer` for chunk-based rendering of very large tile maps with LOD support.
@@ -1128,9 +1846,13 @@ Lua-side handle wrapping a `LargeMapRenderer` for chunk-based rendering of very 
 LLargeMapRenderer = {}
 ```
 
+#### Description
+
+Lua-side handle wrapping a `LargeMapRenderer` for chunk-based rendering of very large tile maps with LOD support.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -1143,9 +1865,7 @@ end
 
 ### LMapBlock
 
-Lua-side handle wrapping a `MapBlock` used for procedural map generation. A block is a tile grid with edge-matching sides.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side handle wrapping a `MapBlock` used for procedural map generation. A block is a tile grid with edge-matching sides.
@@ -1153,9 +1873,13 @@ Lua-side handle wrapping a `MapBlock` used for procedural map generation. A bloc
 LMapBlock = {}
 ```
 
+#### Description
+
+Lua-side handle wrapping a `MapBlock` used for procedural map generation. A block is a tile grid with edge-matching sides.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -1169,9 +1893,7 @@ end
 
 ### LMapGen
 
-Lua-side handle wrapping a `MapGen` procedural map generator that assembles blocks into a tilemap.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side handle wrapping a `MapGen` procedural map generator that assembles blocks into a tilemap.
@@ -1179,9 +1901,13 @@ Lua-side handle wrapping a `MapGen` procedural map generator that assembles bloc
 LMapGen = {}
 ```
 
+#### Description
+
+Lua-side handle wrapping a `MapGen` procedural map generator that assembles blocks into a tilemap.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -1195,9 +1921,7 @@ end
 
 ### LMapGroup
 
-Lua-side handle wrapping a `MapGroup` that holds a collection of map blocks and generation scripts.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side handle wrapping a `MapGroup` that holds a collection of map blocks and generation scripts.
@@ -1205,9 +1929,13 @@ Lua-side handle wrapping a `MapGroup` that holds a collection of map blocks and 
 LMapGroup = {}
 ```
 
+#### Description
+
+Lua-side handle wrapping a `MapGroup` that holds a collection of map blocks and generation scripts.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -1221,9 +1949,7 @@ end
 
 ### LMapScript
 
-Lua-side handle wrapping a `MapScript` that defines a sequence of procedural generation steps.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side handle wrapping a `MapScript` that defines a sequence of procedural generation steps.
@@ -1231,9 +1957,13 @@ Lua-side handle wrapping a `MapScript` that defines a sequence of procedural gen
 LMapScript = {}
 ```
 
+#### Description
+
+Lua-side handle wrapping a `MapScript` that defines a sequence of procedural generation steps.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -1247,9 +1977,7 @@ end
 
 ### LTileMap
 
-Lua-side handle wrapping a `TileMap` with layers, tile data, collision, viewports, auto-tiling, and tile callbacks.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side handle wrapping a `TileMap` with layers, tile data, collision, viewports, auto-tiling, and tile callbacks.
@@ -1257,9 +1985,13 @@ Lua-side handle wrapping a `TileMap` with layers, tile data, collision, viewport
 LTileMap = {}
 ```
 
+#### Description
+
+Lua-side handle wrapping a `TileMap` with layers, tile data, collision, viewports, auto-tiling, and tile callbacks.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -1273,9 +2005,7 @@ end
 
 ### LTileSet
 
-Lua-side handle wrapping a `TileSet` for defining tile atlases, animations, solidity, and auto-tile rules.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side handle wrapping a `TileSet` for defining tile atlases, animations, solidity, and auto-tile rules.
@@ -1283,9 +2013,13 @@ Lua-side handle wrapping a `TileSet` for defining tile atlases, animations, soli
 LTileSet = {}
 ```
 
+#### Description
+
+Lua-side handle wrapping a `TileSet` for defining tile atlases, animations, solidity, and auto-tile rules.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -1304,17 +2038,7 @@ end
 
 ### LAutoTileSheet:applyToTileSet
 
-`LAutoTileSheet:applyToTileSet(tileSet: LTileSet, typeName: string, [startGid]: integer)`
-
-Writes the auto-tile bitmask-to-tile rules from this sheet into a tileset.
-
-**Parameters**
-
-- `tileSet` (`LTileSet`, required): Target tileset to receive the rules.
-- `typeName` (`string`, required): Logical tile type name to register under.
-- `startGid` (`integer`, optional): Optional first GID offset.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Writes the auto-tile bitmask-to-tile rules from this sheet into a tileset.
@@ -1324,9 +2048,19 @@ Writes the auto-tile bitmask-to-tile rules from this sheet into a tileset.
 function LAutoTileSheet:applyToTileSet(tileSet, typeName, startGid) end
 ```
 
+#### Description
+
+Writes the auto-tile bitmask-to-tile rules from this sheet into a tileset.
+
+Parameters:
+
+- `tileSet` (`LTileSet`, required): Target tileset to receive the rules.
+- `typeName` (`string`, required): Logical tile type name to register under.
+- `startGid` (`integer`, optional): Optional first GID offset.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -1340,17 +2074,7 @@ end
 
 ### LAutoTileSheet:getBitmaskForTile
 
-`LAutoTileSheet:getBitmaskForTile(tileId: integer) -> integer`
-
-Returns the bitmask associated with a tile in this auto-tile sheet.
-
-**Parameters**
-
-- `tileId` (`integer`, required): Tile ID (1-based).
-
-**Returns**: `integer` - Bitmask value, or nil if not found.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the bitmask associated with a tile in this auto-tile sheet.
@@ -1359,9 +2083,19 @@ Returns the bitmask associated with a tile in this auto-tile sheet.
 function LAutoTileSheet:getBitmaskForTile(tileId) end
 ```
 
+#### Description
+
+Returns the bitmask associated with a tile in this auto-tile sheet.
+
+Parameters:
+
+- `tileId` (`integer`, required): Tile ID (1-based).
+
+Returns: `integer` - Bitmask value, or nil if not found.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -1374,13 +2108,7 @@ end
 
 ### LAutoTileSheet:getLayout
 
-`LAutoTileSheet:getLayout() -> string`
-
-Returns the auto-tile layout type as a string.
-
-**Returns**: `string` - One of `"blob47"`, `"composite48"`, `"minimal16"`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the auto-tile layout type as a string.
@@ -1388,9 +2116,15 @@ Returns the auto-tile layout type as a string.
 function LAutoTileSheet:getLayout() end
 ```
 
+#### Description
+
+Returns the auto-tile layout type as a string.
+
+Returns: `string` - One of `"blob47"`, `"composite48"`, `"minimal16"`.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -1402,17 +2136,7 @@ end
 
 ### LAutoTileSheet:getQuad
 
-`LAutoTileSheet:getQuad(tileId: integer) -> integer`
-
-Returns the source rectangle for a tile in the auto-tile sheet.
-
-**Parameters**
-
-- `tileId` (`integer`, required): Tile ID (1-based).
-
-**Returns**: `integer` - X offset in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the source rectangle for a tile in the auto-tile sheet.
@@ -1424,9 +2148,19 @@ Returns the source rectangle for a tile in the auto-tile sheet.
 function LAutoTileSheet:getQuad(tileId) end
 ```
 
+#### Description
+
+Returns the source rectangle for a tile in the auto-tile sheet.
+
+Parameters:
+
+- `tileId` (`integer`, required): Tile ID (1-based).
+
+Returns: `integer` - X offset in pixels.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -1440,13 +2174,7 @@ end
 
 ### LAutoTileSheet:getTileCount
 
-`LAutoTileSheet:getTileCount() -> integer`
-
-Returns the total number of tiles in this auto-tile sheet.
-
-**Returns**: `integer` - Tile count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the total number of tiles in this auto-tile sheet.
@@ -1454,9 +2182,15 @@ Returns the total number of tiles in this auto-tile sheet.
 function LAutoTileSheet:getTileCount() end
 ```
 
+#### Description
+
+Returns the total number of tiles in this auto-tile sheet.
+
+Returns: `integer` - Tile count.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -1468,17 +2202,7 @@ end
 
 ### LAutoTileSheet:getTileForBitmask
 
-`LAutoTileSheet:getTileForBitmask(bitmask: integer) -> integer`
-
-Looks up which tile corresponds to a given bitmask value.
-
-**Parameters**
-
-- `bitmask` (`integer`, required): Bitmask to resolve.
-
-**Returns**: `integer` - Tile ID (1-based), or nil if no tile matches.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Looks up which tile corresponds to a given bitmask value.
@@ -1487,9 +2211,19 @@ Looks up which tile corresponds to a given bitmask value.
 function LAutoTileSheet:getTileForBitmask(bitmask) end
 ```
 
+#### Description
+
+Looks up which tile corresponds to a given bitmask value.
+
+Parameters:
+
+- `bitmask` (`integer`, required): Bitmask to resolve.
+
+Returns: `integer` - Tile ID (1-based), or nil if no tile matches.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -1502,13 +2236,7 @@ end
 
 ### LAutoTileSheet:getTileHeight
 
-`LAutoTileSheet:getTileHeight() -> integer`
-
-Returns the height of each tile in the auto-tile sheet, in pixels.
-
-**Returns**: `integer` - Tile height.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the height of each tile in the auto-tile sheet, in pixels.
@@ -1516,9 +2244,15 @@ Returns the height of each tile in the auto-tile sheet, in pixels.
 function LAutoTileSheet:getTileHeight() end
 ```
 
+#### Description
+
+Returns the height of each tile in the auto-tile sheet, in pixels.
+
+Returns: `integer` - Tile height.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -1530,13 +2264,7 @@ end
 
 ### LAutoTileSheet:getTileWidth
 
-`LAutoTileSheet:getTileWidth() -> integer`
-
-Returns the width of each tile in the auto-tile sheet, in pixels.
-
-**Returns**: `integer` - Tile width.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the width of each tile in the auto-tile sheet, in pixels.
@@ -1544,9 +2272,15 @@ Returns the width of each tile in the auto-tile sheet, in pixels.
 function LAutoTileSheet:getTileWidth() end
 ```
 
+#### Description
+
+Returns the width of each tile in the auto-tile sheet, in pixels.
+
+Returns: `integer` - Tile width.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -1558,13 +2292,7 @@ end
 
 ### LAutoTileSheet:type
 
-`LAutoTileSheet:type() -> string`
-
-Returns the type name of this userdata.
-
-**Returns**: `string` - Always `"LAutoTileSheet"`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this userdata.
@@ -1572,9 +2300,15 @@ Returns the type name of this userdata.
 function LAutoTileSheet:type() end
 ```
 
+#### Description
+
+Returns the type name of this userdata.
+
+Returns: `string` - Always `"LAutoTileSheet"`.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -1586,17 +2320,7 @@ end
 
 ### LAutoTileSheet:typeOf
 
-`LAutoTileSheet:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to check against.
-
-**Returns**: `boolean` - True if `name` is `"LAutoTileSheet"` or `"Object"`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this object matches the given type name.
@@ -1605,9 +2329,19 @@ Checks whether this object matches the given type name.
 function LAutoTileSheet:typeOf(name) end
 ```
 
+#### Description
+
+Checks whether this object matches the given type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to check against.
+
+Returns: `boolean` - True if `name` is `"LAutoTileSheet"` or `"Object"`.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -1619,18 +2353,7 @@ end
 
 ### LChunkMap:chunkTileRange
 
-`LChunkMap:chunkTileRange(cx: integer, cy: integer) -> integer`
-
-Returns the tile-coordinate range covered by a specific chunk.
-
-**Parameters**
-
-- `cx` (`integer`, required): Chunk X coordinate.
-- `cy` (`integer`, required): Chunk Y coordinate.
-
-**Returns**: `integer` - Minimum tile X.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the tile-coordinate range covered by a specific chunk.
@@ -1643,9 +2366,20 @@ Returns the tile-coordinate range covered by a specific chunk.
 function LChunkMap:chunkTileRange(cx, cy) end
 ```
 
+#### Description
+
+Returns the tile-coordinate range covered by a specific chunk.
+
+Parameters:
+
+- `cx` (`integer`, required): Chunk X coordinate.
+- `cy` (`integer`, required): Chunk Y coordinate.
+
+Returns: `integer` - Minimum tile X.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -1659,16 +2393,7 @@ end
 
 ### LChunkMap:clearTile
 
-`LChunkMap:clearTile(x: integer, y: integer)`
-
-Removes the tile at the given world-tile coordinate.
-
-**Parameters**
-
-- `x` (`integer`, required): Tile X coordinate.
-- `y` (`integer`, required): Tile Y coordinate.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes the tile at the given world-tile coordinate.
@@ -1677,9 +2402,18 @@ Removes the tile at the given world-tile coordinate.
 function LChunkMap:clearTile(x, y) end
 ```
 
+#### Description
+
+Removes the tile at the given world-tile coordinate.
+
+Parameters:
+
+- `x` (`integer`, required): Tile X coordinate.
+- `y` (`integer`, required): Tile Y coordinate.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -1693,19 +2427,7 @@ end
 
 ### LChunkMap:fillRect
 
-`LChunkMap:fillRect(x0: integer, y0: integer, x1: integer, y1: integer, gid: integer)`
-
-Fills a rectangular region of tiles with a given GID.
-
-**Parameters**
-
-- `x0` (`integer`, required): Left tile coordinate.
-- `y0` (`integer`, required): Top tile coordinate.
-- `x1` (`integer`, required): Right tile coordinate (inclusive).
-- `y1` (`integer`, required): Bottom tile coordinate (inclusive).
-- `gid` (`integer`, required): Global tile ID to fill with.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Fills a rectangular region of tiles with a given GID.
@@ -1717,9 +2439,21 @@ Fills a rectangular region of tiles with a given GID.
 function LChunkMap:fillRect(x0, y0, x1, y1, gid) end
 ```
 
+#### Description
+
+Fills a rectangular region of tiles with a given GID.
+
+Parameters:
+
+- `x0` (`integer`, required): Left tile coordinate.
+- `y0` (`integer`, required): Top tile coordinate.
+- `x1` (`integer`, required): Right tile coordinate (inclusive).
+- `y1` (`integer`, required): Bottom tile coordinate (inclusive).
+- `gid` (`integer`, required): Global tile ID to fill with.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -1733,22 +2467,7 @@ end
 
 ### LChunkMap:getChunksInView
 
-`LChunkMap:getChunksInView(vx: number, vy: number, vw: number, vh: number, tw: number, th: number) -> table`
-
-Returns chunk coordinates that overlap a viewport region, given tile dimensions.
-
-**Parameters**
-
-- `vx` (`number`, required): Viewport left edge in world pixels.
-- `vy` (`number`, required): Viewport top edge in world pixels.
-- `vw` (`number`, required): Viewport width in pixels.
-- `vh` (`number`, required): Viewport height in pixels.
-- `tw` (`number`, required): Tile width in pixels.
-- `th` (`number`, required): Tile height in pixels.
-
-**Returns**: `table` - Array of `{cx, cy}` pairs.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns chunk coordinates that overlap a viewport region, given tile dimensions.
@@ -1762,9 +2481,24 @@ Returns chunk coordinates that overlap a viewport region, given tile dimensions.
 function LChunkMap:getChunksInView(vx, vy, vw, vh, tw, th) end
 ```
 
+#### Description
+
+Returns chunk coordinates that overlap a viewport region, given tile dimensions.
+
+Parameters:
+
+- `vx` (`number`, required): Viewport left edge in world pixels.
+- `vy` (`number`, required): Viewport top edge in world pixels.
+- `vw` (`number`, required): Viewport width in pixels.
+- `vh` (`number`, required): Viewport height in pixels.
+- `tw` (`number`, required): Tile width in pixels.
+- `th` (`number`, required): Tile height in pixels.
+
+Returns: `table` - Array of `{cx, cy}` pairs.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -1777,13 +2511,7 @@ end
 
 ### LChunkMap:getChunkSize
 
-`LChunkMap:getChunkSize() -> integer`
-
-Returns the size of each chunk in tiles per side.
-
-**Returns**: `integer` - Chunk size.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the size of each chunk in tiles per side.
@@ -1791,9 +2519,15 @@ Returns the size of each chunk in tiles per side.
 function LChunkMap:getChunkSize() end
 ```
 
+#### Description
+
+Returns the size of each chunk in tiles per side.
+
+Returns: `integer` - Chunk size.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -1805,13 +2539,7 @@ end
 
 ### LChunkMap:getLoadedChunks
 
-`LChunkMap:getLoadedChunks() -> table`
-
-Returns a list of all currently loaded chunk coordinates.
-
-**Returns**: `table` - Array of `{cx, cy}` pairs.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a list of all currently loaded chunk coordinates.
@@ -1819,9 +2547,15 @@ Returns a list of all currently loaded chunk coordinates.
 function LChunkMap:getLoadedChunks() end
 ```
 
+#### Description
+
+Returns a list of all currently loaded chunk coordinates.
+
+Returns: `table` - Array of `{cx, cy}` pairs.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -1835,18 +2569,7 @@ end
 
 ### LChunkMap:getTile
 
-`LChunkMap:getTile(x: integer, y: integer) -> integer`
-
-Returns the tile GID at the given world-tile coordinate.
-
-**Parameters**
-
-- `x` (`integer`, required): Tile X coordinate.
-- `y` (`integer`, required): Tile Y coordinate.
-
-**Returns**: `integer` - Global tile ID.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the tile GID at the given world-tile coordinate.
@@ -1856,9 +2579,20 @@ Returns the tile GID at the given world-tile coordinate.
 function LChunkMap:getTile(x, y) end
 ```
 
+#### Description
+
+Returns the tile GID at the given world-tile coordinate.
+
+Parameters:
+
+- `x` (`integer`, required): Tile X coordinate.
+- `y` (`integer`, required): Tile Y coordinate.
+
+Returns: `integer` - Global tile ID.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -1872,16 +2606,7 @@ end
 
 ### LChunkMap:loadChunk
 
-`LChunkMap:loadChunk(cx: integer, cy: integer)`
-
-Loads a chunk into memory at the given chunk coordinates.
-
-**Parameters**
-
-- `cx` (`integer`, required): Chunk X coordinate.
-- `cy` (`integer`, required): Chunk Y coordinate.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Loads a chunk into memory at the given chunk coordinates.
@@ -1890,9 +2615,18 @@ Loads a chunk into memory at the given chunk coordinates.
 function LChunkMap:loadChunk(cx, cy) end
 ```
 
+#### Description
+
+Loads a chunk into memory at the given chunk coordinates.
+
+Parameters:
+
+- `cx` (`integer`, required): Chunk X coordinate.
+- `cy` (`integer`, required): Chunk Y coordinate.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -1906,17 +2640,7 @@ end
 
 ### LChunkMap:setTile
 
-`LChunkMap:setTile(x: integer, y: integer, gid: integer)`
-
-Sets the tile GID at the given world-tile coordinate.
-
-**Parameters**
-
-- `x` (`integer`, required): Tile X coordinate.
-- `y` (`integer`, required): Tile Y coordinate.
-- `gid` (`integer`, required): Global tile ID to place.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the tile GID at the given world-tile coordinate.
@@ -1926,9 +2650,19 @@ Sets the tile GID at the given world-tile coordinate.
 function LChunkMap:setTile(x, y, gid) end
 ```
 
+#### Description
+
+Sets the tile GID at the given world-tile coordinate.
+
+Parameters:
+
+- `x` (`integer`, required): Tile X coordinate.
+- `y` (`integer`, required): Tile Y coordinate.
+- `gid` (`integer`, required): Global tile ID to place.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -1942,13 +2676,7 @@ end
 
 ### LChunkMap:type
 
-`LChunkMap:type() -> string`
-
-Returns the type name of this userdata.
-
-**Returns**: `string` - Always `"LChunkMap"`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this userdata.
@@ -1956,9 +2684,15 @@ Returns the type name of this userdata.
 function LChunkMap:type() end
 ```
 
+#### Description
+
+Returns the type name of this userdata.
+
+Returns: `string` - Always `"LChunkMap"`.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -1970,17 +2704,7 @@ end
 
 ### LChunkMap:typeOf
 
-`LChunkMap:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to check against.
-
-**Returns**: `boolean` - True if `name` is `"LChunkMap"` or `"Object"`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this object matches the given type name.
@@ -1989,9 +2713,19 @@ Checks whether this object matches the given type name.
 function LChunkMap:typeOf(name) end
 ```
 
+#### Description
+
+Checks whether this object matches the given type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to check against.
+
+Returns: `boolean` - True if `name` is `"LChunkMap"` or `"Object"`.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -2003,16 +2737,7 @@ end
 
 ### LChunkMap:unloadChunk
 
-`LChunkMap:unloadChunk(cx: integer, cy: integer)`
-
-Unloads a chunk from memory at the given chunk coordinates.
-
-**Parameters**
-
-- `cx` (`integer`, required): Chunk X coordinate.
-- `cy` (`integer`, required): Chunk Y coordinate.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Unloads a chunk from memory at the given chunk coordinates.
@@ -2021,9 +2746,18 @@ Unloads a chunk from memory at the given chunk coordinates.
 function LChunkMap:unloadChunk(cx, cy) end
 ```
 
+#### Description
+
+Unloads a chunk from memory at the given chunk coordinates.
+
+Parameters:
+
+- `cx` (`integer`, required): Chunk X coordinate.
+- `cy` (`integer`, required): Chunk Y coordinate.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -2037,13 +2771,7 @@ end
 
 ### LIsoMap:addLevel
 
-`LIsoMap:addLevel() -> integer`
-
-Adds a new vertical level to the isometric map and returns its index.
-
-**Returns**: `integer` - Index of the new level (1-based).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a new vertical level to the isometric map and returns its index.
@@ -2051,9 +2779,15 @@ Adds a new vertical level to the isometric map and returns its index.
 function LIsoMap:addLevel() end
 ```
 
+#### Description
+
+Adds a new vertical level to the isometric map and returns its index.
+
+Returns: `integer` - Index of the new level (1-based).
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -2066,17 +2800,7 @@ end
 
 ### LIsoMap:fillLevel
 
-`LIsoMap:fillLevel(z: integer, part: integer, gid: integer)`
-
-Fills all tiles on a level for a given part with a single GID.
-
-**Parameters**
-
-- `z` (`integer`, required): Level index (1-based).
-- `part` (`integer`, required): Part index to fill.
-- `gid` (`integer`, required): Global tile ID to fill with.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Fills all tiles on a level for a given part with a single GID.
@@ -2086,9 +2810,19 @@ Fills all tiles on a level for a given part with a single GID.
 function LIsoMap:fillLevel(z, part, gid) end
 ```
 
+#### Description
+
+Fills all tiles on a level for a given part with a single GID.
+
+Parameters:
+
+- `z` (`integer`, required): Level index (1-based).
+- `part` (`integer`, required): Part index to fill.
+- `gid` (`integer`, required): Global tile ID to fill with.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -2102,13 +2836,7 @@ end
 
 ### LIsoMap:getHeight
 
-`LIsoMap:getHeight() -> integer`
-
-Returns the map height in tiles. This method is available to Lua scripts.
-
-**Returns**: `integer` - Height.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the map height in tiles. This method is available to Lua scripts.
@@ -2116,9 +2844,15 @@ Returns the map height in tiles. This method is available to Lua scripts.
 function LIsoMap:getHeight() end
 ```
 
+#### Description
+
+Returns the map height in tiles. This method is available to Lua scripts.
+
+Returns: `integer` - Height.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -2130,13 +2864,7 @@ end
 
 ### LIsoMap:getLevelCount
 
-`LIsoMap:getLevelCount() -> integer`
-
-Returns the number of vertical levels in the isometric map.
-
-**Returns**: `integer` - Level count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of vertical levels in the isometric map.
@@ -2144,9 +2872,15 @@ Returns the number of vertical levels in the isometric map.
 function LIsoMap:getLevelCount() end
 ```
 
+#### Description
+
+Returns the number of vertical levels in the isometric map.
+
+Returns: `integer` - Level count.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -2159,13 +2893,7 @@ end
 
 ### LIsoMap:getLevelHeight
 
-`LIsoMap:getLevelHeight() -> integer`
-
-Returns the vertical pixel offset between levels.
-
-**Returns**: `integer` - Level height in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the vertical pixel offset between levels.
@@ -2173,9 +2901,15 @@ Returns the vertical pixel offset between levels.
 function LIsoMap:getLevelHeight() end
 ```
 
+#### Description
+
+Returns the vertical pixel offset between levels.
+
+Returns: `integer` - Level height in pixels.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -2187,13 +2921,7 @@ end
 
 ### LIsoMap:getPartCount
 
-`LIsoMap:getPartCount() -> integer`
-
-Returns the number of tile parts per cell.
-
-**Returns**: `integer` - Part count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of tile parts per cell.
@@ -2201,9 +2929,15 @@ Returns the number of tile parts per cell.
 function LIsoMap:getPartCount() end
 ```
 
+#### Description
+
+Returns the number of tile parts per cell.
+
+Returns: `integer` - Part count.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -2215,13 +2949,7 @@ end
 
 ### LIsoMap:getPartOrder
 
-`LIsoMap:getPartOrder() -> integer[]`
-
-Returns the rendering order of tile parts as an array of part indices.
-
-**Returns**: `integer[]` - Part index values.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the rendering order of tile parts as an array of part indices.
@@ -2229,9 +2957,15 @@ Returns the rendering order of tile parts as an array of part indices.
 function LIsoMap:getPartOrder() end
 ```
 
+#### Description
+
+Returns the rendering order of tile parts as an array of part indices.
+
+Returns: `integer[]` - Part index values.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -2245,13 +2979,7 @@ end
 
 ### LIsoMap:getTileHeight
 
-`LIsoMap:getTileHeight() -> integer`
-
-Returns the height of an isometric tile in pixels.
-
-**Returns**: `integer` - Tile height.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the height of an isometric tile in pixels.
@@ -2259,9 +2987,15 @@ Returns the height of an isometric tile in pixels.
 function LIsoMap:getTileHeight() end
 ```
 
+#### Description
+
+Returns the height of an isometric tile in pixels.
+
+Returns: `integer` - Tile height.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -2273,20 +3007,7 @@ end
 
 ### LIsoMap:getTilePart
 
-`LIsoMap:getTilePart(z: integer, x: integer, y: integer, part: integer) -> integer`
-
-Returns the GID for a specific part of a tile at a given position and level.
-
-**Parameters**
-
-- `z` (`integer`, required): Level index (1-based).
-- `x` (`integer`, required): Column (1-based).
-- `y` (`integer`, required): Row (1-based).
-- `part` (`integer`, required): Part index.
-
-**Returns**: `integer` - Global tile ID.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the GID for a specific part of a tile at a given position and level.
@@ -2298,9 +3019,22 @@ Returns the GID for a specific part of a tile at a given position and level.
 function LIsoMap:getTilePart(z, x, y, part) end
 ```
 
+#### Description
+
+Returns the GID for a specific part of a tile at a given position and level.
+
+Parameters:
+
+- `z` (`integer`, required): Level index (1-based).
+- `x` (`integer`, required): Column (1-based).
+- `y` (`integer`, required): Row (1-based).
+- `part` (`integer`, required): Part index.
+
+Returns: `integer` - Global tile ID.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -2314,13 +3048,7 @@ end
 
 ### LIsoMap:getTileWidth
 
-`LIsoMap:getTileWidth() -> integer`
-
-Returns the width of an isometric tile in pixels.
-
-**Returns**: `integer` - Tile width.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the width of an isometric tile in pixels.
@@ -2328,9 +3056,15 @@ Returns the width of an isometric tile in pixels.
 function LIsoMap:getTileWidth() end
 ```
 
+#### Description
+
+Returns the width of an isometric tile in pixels.
+
+Returns: `integer` - Tile width.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -2342,13 +3076,7 @@ end
 
 ### LIsoMap:getWidth
 
-`LIsoMap:getWidth() -> integer`
-
-Returns the map width in tiles. This method is available to Lua scripts.
-
-**Returns**: `integer` - Width.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the map width in tiles. This method is available to Lua scripts.
@@ -2356,9 +3084,15 @@ Returns the map width in tiles. This method is available to Lua scripts.
 function LIsoMap:getWidth() end
 ```
 
+#### Description
+
+Returns the map width in tiles. This method is available to Lua scripts.
+
+Returns: `integer` - Width.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -2370,17 +3104,7 @@ end
 
 ### LIsoMap:isLevelVisible
 
-`LIsoMap:isLevelVisible(z: integer) -> boolean`
-
-Returns whether a vertical level is currently visible.
-
-**Parameters**
-
-- `z` (`integer`, required): Level index (1-based).
-
-**Returns**: `boolean` - True if the level is visible.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether a vertical level is currently visible.
@@ -2389,9 +3113,19 @@ Returns whether a vertical level is currently visible.
 function LIsoMap:isLevelVisible(z) end
 ```
 
+#### Description
+
+Returns whether a vertical level is currently visible.
+
+Parameters:
+
+- `z` (`integer`, required): Level index (1-based).
+
+Returns: `boolean` - True if the level is visible.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -2404,18 +3138,7 @@ end
 
 ### LIsoMap:screenToTile
 
-`LIsoMap:screenToTile(sx: number, sy: number) -> number`
-
-Converts screen-space pixel coordinates to tile-grid coordinates (ignoring Z).
-
-**Parameters**
-
-- `sx` (`number`, required): Screen X.
-- `sy` (`number`, required): Screen Y.
-
-**Returns**: `number` - Tile X.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Converts screen-space pixel coordinates to tile-grid coordinates (ignoring Z).
@@ -2426,9 +3149,20 @@ Converts screen-space pixel coordinates to tile-grid coordinates (ignoring Z).
 function LIsoMap:screenToTile(sx, sy) end
 ```
 
+#### Description
+
+Converts screen-space pixel coordinates to tile-grid coordinates (ignoring Z).
+
+Parameters:
+
+- `sx` (`number`, required): Screen X.
+- `sy` (`number`, required): Screen Y.
+
+Returns: `number` - Tile X.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -2442,16 +3176,7 @@ end
 
 ### LIsoMap:setLevelVisible
 
-`LIsoMap:setLevelVisible(z: integer, visible: boolean)`
-
-Sets whether a vertical level is drawn during rendering.
-
-**Parameters**
-
-- `z` (`integer`, required): Level index (1-based).
-- `visible` (`boolean`, required): True to show, false to hide.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets whether a vertical level is drawn during rendering.
@@ -2460,9 +3185,18 @@ Sets whether a vertical level is drawn during rendering.
 function LIsoMap:setLevelVisible(z, visible) end
 ```
 
+#### Description
+
+Sets whether a vertical level is drawn during rendering.
+
+Parameters:
+
+- `z` (`integer`, required): Level index (1-based).
+- `visible` (`boolean`, required): True to show, false to hide.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -2476,16 +3210,7 @@ end
 
 ### LIsoMap:setOrigin
 
-`LIsoMap:setOrigin(x: number, y: number)`
-
-Sets the screen-space origin (top-left anchor) for isometric rendering.
-
-**Parameters**
-
-- `x` (`number`, required): Origin X in pixels.
-- `y` (`number`, required): Origin Y in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the screen-space origin (top-left anchor) for isometric rendering.
@@ -2494,9 +3219,18 @@ Sets the screen-space origin (top-left anchor) for isometric rendering.
 function LIsoMap:setOrigin(x, y) end
 ```
 
+#### Description
+
+Sets the screen-space origin (top-left anchor) for isometric rendering.
+
+Parameters:
+
+- `x` (`number`, required): Origin X in pixels.
+- `y` (`number`, required): Origin Y in pixels.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -2509,15 +3243,7 @@ end
 
 ### LIsoMap:setPartOrder
 
-`LIsoMap:setPartOrder(order: table)`
-
-Overrides the rendering order of tile parts.
-
-**Parameters**
-
-- `order` (`table`, required): Array of part indices in desired draw order.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Overrides the rendering order of tile parts.
@@ -2525,9 +3251,17 @@ Overrides the rendering order of tile parts.
 function LIsoMap:setPartOrder(order) end
 ```
 
+#### Description
+
+Overrides the rendering order of tile parts.
+
+Parameters:
+
+- `order` (`table`, required): Array of part indices in desired draw order.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -2541,19 +3275,7 @@ end
 
 ### LIsoMap:setTilePart
 
-`LIsoMap:setTilePart(z: integer, x: integer, y: integer, part: integer, gid: integer)`
-
-Sets the GID for a specific part of a tile at a given position and level.
-
-**Parameters**
-
-- `z` (`integer`, required): Level index (1-based).
-- `x` (`integer`, required): Column (1-based).
-- `y` (`integer`, required): Row (1-based).
-- `part` (`integer`, required): Part index (e.g. floor, wall, object).
-- `gid` (`integer`, required): Global tile ID to place.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the GID for a specific part of a tile at a given position and level.
@@ -2565,9 +3287,21 @@ Sets the GID for a specific part of a tile at a given position and level.
 function LIsoMap:setTilePart(z, x, y, part, gid) end
 ```
 
+#### Description
+
+Sets the GID for a specific part of a tile at a given position and level.
+
+Parameters:
+
+- `z` (`integer`, required): Level index (1-based).
+- `x` (`integer`, required): Column (1-based).
+- `y` (`integer`, required): Row (1-based).
+- `part` (`integer`, required): Part index (e.g. floor, wall, object).
+- `gid` (`integer`, required): Global tile ID to place.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -2581,19 +3315,7 @@ end
 
 ### LIsoMap:tileToScreen
 
-`LIsoMap:tileToScreen(tx: number, ty: number, tz: number) -> number`
-
-Converts tile-grid coordinates to screen-space pixel position.
-
-**Parameters**
-
-- `tx` (`number`, required): Tile X.
-- `ty` (`number`, required): Tile Y.
-- `tz` (`number`, required): Tile Z (level).
-
-**Returns**: `number` - Screen X.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Converts tile-grid coordinates to screen-space pixel position.
@@ -2605,9 +3327,21 @@ Converts tile-grid coordinates to screen-space pixel position.
 function LIsoMap:tileToScreen(tx, ty, tz) end
 ```
 
+#### Description
+
+Converts tile-grid coordinates to screen-space pixel position.
+
+Parameters:
+
+- `tx` (`number`, required): Tile X.
+- `ty` (`number`, required): Tile Y.
+- `tz` (`number`, required): Tile Z (level).
+
+Returns: `number` - Screen X.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -2621,13 +3355,7 @@ end
 
 ### LIsoMap:type
 
-`LIsoMap:type() -> string`
-
-Returns the type name of this userdata.
-
-**Returns**: `string` - Always `"LIsoMap"`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this userdata.
@@ -2635,9 +3363,15 @@ Returns the type name of this userdata.
 function LIsoMap:type() end
 ```
 
+#### Description
+
+Returns the type name of this userdata.
+
+Returns: `string` - Always `"LIsoMap"`.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -2649,17 +3383,7 @@ end
 
 ### LIsoMap:typeOf
 
-`LIsoMap:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to check against.
-
-**Returns**: `boolean` - True if `name` is `"LIsoMap"` or `"Object"`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this object matches the given type name.
@@ -2668,9 +3392,19 @@ Checks whether this object matches the given type name.
 function LIsoMap:typeOf(name) end
 ```
 
+#### Description
+
+Checks whether this object matches the given type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to check against.
+
+Returns: `boolean` - True if `name` is `"LIsoMap"` or `"Object"`.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -2682,13 +3416,7 @@ end
 
 ### LLargeMapRenderer:getChunkSize
 
-`LLargeMapRenderer:getChunkSize() -> integer`
-
-Returns the current chunk size. This method is available to Lua scripts.
-
-**Returns**: `integer` - Chunk size in tiles per side.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current chunk size. This method is available to Lua scripts.
@@ -2696,9 +3424,15 @@ Returns the current chunk size. This method is available to Lua scripts.
 function LLargeMapRenderer:getChunkSize() end
 ```
 
+#### Description
+
+Returns the current chunk size. This method is available to Lua scripts.
+
+Returns: `integer` - Chunk size in tiles per side.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -2710,13 +3444,7 @@ end
 
 ### LLargeMapRenderer:getMapSize
 
-`LLargeMapRenderer:getMapSize() -> integer`
-
-Returns the map dimensions in tiles.
-
-**Returns**: `integer` - Width in tiles.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the map dimensions in tiles.
@@ -2725,9 +3453,15 @@ Returns the map dimensions in tiles.
 function LLargeMapRenderer:getMapSize() end
 ```
 
+#### Description
+
+Returns the map dimensions in tiles.
+
+Returns: `integer` - Width in tiles.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -2741,18 +3475,7 @@ end
 
 ### LLargeMapRenderer:getTile
 
-`LLargeMapRenderer:getTile(x: integer, y: integer) -> integer`
-
-Returns the tile GID at a given position.
-
-**Parameters**
-
-- `x` (`integer`, required): Column.
-- `y` (`integer`, required): Row.
-
-**Returns**: `integer` - Tile GID.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the tile GID at a given position.
@@ -2762,9 +3485,20 @@ Returns the tile GID at a given position.
 function LLargeMapRenderer:getTile(x, y) end
 ```
 
+#### Description
+
+Returns the tile GID at a given position.
+
+Parameters:
+
+- `x` (`integer`, required): Column.
+- `y` (`integer`, required): Row.
+
+Returns: `integer` - Tile GID.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -2778,13 +3512,7 @@ end
 
 ### LLargeMapRenderer:getTilesetColumns
 
-`LLargeMapRenderer:getTilesetColumns() -> integer`
-
-Returns the tileset column count used for UV calculation.
-
-**Returns**: `integer` - Column count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the tileset column count used for UV calculation.
@@ -2792,9 +3520,15 @@ Returns the tileset column count used for UV calculation.
 function LLargeMapRenderer:getTilesetColumns() end
 ```
 
+#### Description
+
+Returns the tileset column count used for UV calculation.
+
+Returns: `integer` - Column count.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -2806,13 +3540,7 @@ end
 
 ### LLargeMapRenderer:getTotalChunks
 
-`LLargeMapRenderer:getTotalChunks() -> integer`
-
-Returns the total number of chunks in the map.
-
-**Returns**: `integer` - Total chunk count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the total number of chunks in the map.
@@ -2820,9 +3548,15 @@ Returns the total number of chunks in the map.
 function LLargeMapRenderer:getTotalChunks() end
 ```
 
+#### Description
+
+Returns the total number of chunks in the map.
+
+Returns: `integer` - Total chunk count.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -2836,13 +3570,7 @@ end
 
 ### LLargeMapRenderer:getVisibleChunks
 
-`LLargeMapRenderer:getVisibleChunks() -> integer`
-
-Returns the number of chunks currently visible in the viewport.
-
-**Returns**: `integer` - Visible chunk count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of chunks currently visible in the viewport.
@@ -2850,9 +3578,15 @@ Returns the number of chunks currently visible in the viewport.
 function LLargeMapRenderer:getVisibleChunks() end
 ```
 
+#### Description
+
+Returns the number of chunks currently visible in the viewport.
+
+Returns: `integer` - Visible chunk count.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -2866,20 +3600,20 @@ end
 
 ### LLargeMapRenderer:invalidateAll
 
-`LLargeMapRenderer:invalidateAll()`
-
-Marks all chunks as dirty, forcing a full rebuild on the next render.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Marks all chunks as dirty, forcing a full rebuild on the next render.
 function LLargeMapRenderer:invalidateAll() end
 ```
 
+#### Description
+
+Marks all chunks as dirty, forcing a full rebuild on the next render.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -2893,16 +3627,7 @@ end
 
 ### LLargeMapRenderer:invalidateChunk
 
-`LLargeMapRenderer:invalidateChunk(cx: integer, cy: integer)`
-
-Marks a specific chunk as dirty so it will be rebuilt on the next render.
-
-**Parameters**
-
-- `cx` (`integer`, required): Chunk X index.
-- `cy` (`integer`, required): Chunk Y index.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Marks a specific chunk as dirty so it will be rebuilt on the next render.
@@ -2911,9 +3636,18 @@ Marks a specific chunk as dirty so it will be rebuilt on the next render.
 function LLargeMapRenderer:invalidateChunk(cx, cy) end
 ```
 
+#### Description
+
+Marks a specific chunk as dirty so it will be rebuilt on the next render.
+
+Parameters:
+
+- `cx` (`integer`, required): Chunk X index.
+- `cy` (`integer`, required): Chunk Y index.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -2927,13 +3661,7 @@ end
 
 ### LLargeMapRenderer:isLodEnabled
 
-`LLargeMapRenderer:isLodEnabled() -> boolean`
-
-Returns whether LOD rendering is currently enabled.
-
-**Returns**: `boolean` - True if LOD is enabled.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether LOD rendering is currently enabled.
@@ -2941,9 +3669,15 @@ Returns whether LOD rendering is currently enabled.
 function LLargeMapRenderer:isLodEnabled() end
 ```
 
+#### Description
+
+Returns whether LOD rendering is currently enabled.
+
+Returns: `boolean` - True if LOD is enabled.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -2957,17 +3691,7 @@ end
 
 ### LLargeMapRenderer:setCamera
 
-`LLargeMapRenderer:setCamera(x: number, y: number, zoom: number)`
-
-Sets the camera position and zoom level for determining visible chunks.
-
-**Parameters**
-
-- `x` (`number`, required): Camera center X in world pixels.
-- `y` (`number`, required): Camera center Y in world pixels.
-- `zoom` (`number`, required): Zoom factor (1.0 = normal).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the camera position and zoom level for determining visible chunks.
@@ -2977,9 +3701,19 @@ Sets the camera position and zoom level for determining visible chunks.
 function LLargeMapRenderer:setCamera(x, y, zoom) end
 ```
 
+#### Description
+
+Sets the camera position and zoom level for determining visible chunks.
+
+Parameters:
+
+- `x` (`number`, required): Camera center X in world pixels.
+- `y` (`number`, required): Camera center Y in world pixels.
+- `zoom` (`number`, required): Zoom factor (1.0 = normal).
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -2993,15 +3727,7 @@ end
 
 ### LLargeMapRenderer:setChunkSize
 
-`LLargeMapRenderer:setChunkSize(size: integer)`
-
-Sets the chunk size used for rendering subdivision.
-
-**Parameters**
-
-- `size` (`integer`, required): Chunk size in tiles per side.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the chunk size used for rendering subdivision.
@@ -3009,9 +3735,17 @@ Sets the chunk size used for rendering subdivision.
 function LLargeMapRenderer:setChunkSize(size) end
 ```
 
+#### Description
+
+Sets the chunk size used for rendering subdivision.
+
+Parameters:
+
+- `size` (`integer`, required): Chunk size in tiles per side.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -3025,15 +3759,7 @@ end
 
 ### LLargeMapRenderer:setLodEnabled
 
-`LLargeMapRenderer:setLodEnabled(enabled: boolean)`
-
-Enables or disables level-of-detail rendering for distant chunks.
-
-**Parameters**
-
-- `enabled` (`boolean`, required): True to enable LOD.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Enables or disables level-of-detail rendering for distant chunks.
@@ -3041,9 +3767,17 @@ Enables or disables level-of-detail rendering for distant chunks.
 function LLargeMapRenderer:setLodEnabled(enabled) end
 ```
 
+#### Description
+
+Enables or disables level-of-detail rendering for distant chunks.
+
+Parameters:
+
+- `enabled` (`boolean`, required): True to enable LOD.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -3057,15 +3791,7 @@ end
 
 ### LLargeMapRenderer:setLodThresholds
 
-`LLargeMapRenderer:setLodThresholds(levels: table)`
-
-Sets the zoom thresholds at which LOD levels change.
-
-**Parameters**
-
-- `levels` (`table`, required): Array of zoom threshold values.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the zoom thresholds at which LOD levels change.
@@ -3073,9 +3799,17 @@ Sets the zoom thresholds at which LOD levels change.
 function LLargeMapRenderer:setLodThresholds(levels) end
 ```
 
+#### Description
+
+Sets the zoom thresholds at which LOD levels change.
+
+Parameters:
+
+- `levels` (`table`, required): Array of zoom threshold values.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -3089,17 +3823,7 @@ end
 
 ### LLargeMapRenderer:setMapData
 
-`LLargeMapRenderer:setMapData(data: table, width: integer, height: integer)`
-
-Replaces all tile data with a flat array of GIDs for the given dimensions.
-
-**Parameters**
-
-- `data` (`table`, required): Flat array of tile GIDs (row-major order).
-- `width` (`integer`, required): Map width in tiles.
-- `height` (`integer`, required): Map height in tiles.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Replaces all tile data with a flat array of GIDs for the given dimensions.
@@ -3109,9 +3833,19 @@ Replaces all tile data with a flat array of GIDs for the given dimensions.
 function LLargeMapRenderer:setMapData(data, width, height) end
 ```
 
+#### Description
+
+Replaces all tile data with a flat array of GIDs for the given dimensions.
+
+Parameters:
+
+- `data` (`table`, required): Flat array of tile GIDs (row-major order).
+- `width` (`integer`, required): Map width in tiles.
+- `height` (`integer`, required): Map height in tiles.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -3125,17 +3859,7 @@ end
 
 ### LLargeMapRenderer:setTile
 
-`LLargeMapRenderer:setTile(x: integer, y: integer, tileId: integer)`
-
-Sets a single tile GID at a given position.
-
-**Parameters**
-
-- `x` (`integer`, required): Column.
-- `y` (`integer`, required): Row.
-- `tileId` (`integer`, required): Tile GID to place.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets a single tile GID at a given position.
@@ -3145,9 +3869,19 @@ Sets a single tile GID at a given position.
 function LLargeMapRenderer:setTile(x, y, tileId) end
 ```
 
+#### Description
+
+Sets a single tile GID at a given position.
+
+Parameters:
+
+- `x` (`integer`, required): Column.
+- `y` (`integer`, required): Row.
+- `tileId` (`integer`, required): Tile GID to place.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -3161,15 +3895,7 @@ end
 
 ### LLargeMapRenderer:setTilesetColumns
 
-`LLargeMapRenderer:setTilesetColumns(cols: integer)`
-
-Sets the column count of the associated tileset atlas for UV calculation.
-
-**Parameters**
-
-- `cols` (`integer`, required): Number of columns in the tileset image.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the column count of the associated tileset atlas for UV calculation.
@@ -3177,9 +3903,17 @@ Sets the column count of the associated tileset atlas for UV calculation.
 function LLargeMapRenderer:setTilesetColumns(cols) end
 ```
 
+#### Description
+
+Sets the column count of the associated tileset atlas for UV calculation.
+
+Parameters:
+
+- `cols` (`integer`, required): Number of columns in the tileset image.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -3193,16 +3927,7 @@ end
 
 ### LLargeMapRenderer:setViewport
 
-`LLargeMapRenderer:setViewport(w: number, h: number)`
-
-Sets the viewport dimensions for visibility calculations.
-
-**Parameters**
-
-- `w` (`number`, required): Viewport width in pixels.
-- `h` (`number`, required): Viewport height in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the viewport dimensions for visibility calculations.
@@ -3211,9 +3936,18 @@ Sets the viewport dimensions for visibility calculations.
 function LLargeMapRenderer:setViewport(w, h) end
 ```
 
+#### Description
+
+Sets the viewport dimensions for visibility calculations.
+
+Parameters:
+
+- `w` (`number`, required): Viewport width in pixels.
+- `h` (`number`, required): Viewport height in pixels.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -3227,13 +3961,7 @@ end
 
 ### LLargeMapRenderer:type
 
-`LLargeMapRenderer:type() -> string`
-
-Returns the type name of this userdata.
-
-**Returns**: `string` - Always `"LLargeMapRenderer"`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this userdata.
@@ -3241,9 +3969,15 @@ Returns the type name of this userdata.
 function LLargeMapRenderer:type() end
 ```
 
+#### Description
+
+Returns the type name of this userdata.
+
+Returns: `string` - Always `"LLargeMapRenderer"`.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -3255,17 +3989,7 @@ end
 
 ### LLargeMapRenderer:typeOf
 
-`LLargeMapRenderer:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to check against.
-
-**Returns**: `boolean` - True if `name` is `"LLargeMapRenderer"` or `"Object"`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this object matches the given type name.
@@ -3274,9 +3998,19 @@ Checks whether this object matches the given type name.
 function LLargeMapRenderer:typeOf(name) end
 ```
 
+#### Description
+
+Checks whether this object matches the given type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to check against.
+
+Returns: `boolean` - True if `name` is `"LLargeMapRenderer"` or `"Object"`.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -3288,13 +4022,7 @@ end
 
 ### LMapBlock:getDimensions
 
-`LMapBlock:getDimensions() -> integer`
-
-Returns both width and height of the block in tiles.
-
-**Returns**: `integer` - Width.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns both width and height of the block in tiles.
@@ -3303,9 +4031,15 @@ Returns both width and height of the block in tiles.
 function LMapBlock:getDimensions() end
 ```
 
+#### Description
+
+Returns both width and height of the block in tiles.
+
+Returns: `integer` - Width.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -3317,13 +4051,7 @@ end
 
 ### LMapBlock:getHeight
 
-`LMapBlock:getHeight() -> integer`
-
-Returns the block height in tiles. This method is available to Lua scripts.
-
-**Returns**: `integer` - Height.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the block height in tiles. This method is available to Lua scripts.
@@ -3331,9 +4059,15 @@ Returns the block height in tiles. This method is available to Lua scripts.
 function LMapBlock:getHeight() end
 ```
 
+#### Description
+
+Returns the block height in tiles. This method is available to Lua scripts.
+
+Returns: `integer` - Height.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -3345,13 +4079,7 @@ end
 
 ### LMapBlock:getHeightInSegments
 
-`LMapBlock:getHeightInSegments() -> integer`
-
-Returns the block height measured in segments.
-
-**Returns**: `integer` - Height in segments.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the block height measured in segments.
@@ -3359,9 +4087,15 @@ Returns the block height measured in segments.
 function LMapBlock:getHeightInSegments() end
 ```
 
+#### Description
+
+Returns the block height measured in segments.
+
+Returns: `integer` - Height in segments.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -3373,13 +4107,7 @@ end
 
 ### LMapBlock:getLayerCount
 
-`LMapBlock:getLayerCount() -> integer`
-
-Returns the number of tile layers in this block.
-
-**Returns**: `integer` - Layer count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of tile layers in this block.
@@ -3387,9 +4115,15 @@ Returns the number of tile layers in this block.
 function LMapBlock:getLayerCount() end
 ```
 
+#### Description
+
+Returns the number of tile layers in this block.
+
+Returns: `integer` - Layer count.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -3401,13 +4135,7 @@ end
 
 ### LMapBlock:getName
 
-`LMapBlock:getName() -> string`
-
-Returns the block's name. This method is available to Lua scripts.
-
-**Returns**: `string` - Block name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the block's name. This method is available to Lua scripts.
@@ -3415,9 +4143,15 @@ Returns the block's name. This method is available to Lua scripts.
 function LMapBlock:getName() end
 ```
 
+#### Description
+
+Returns the block's name. This method is available to Lua scripts.
+
+Returns: `string` - Block name.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -3430,13 +4164,7 @@ end
 
 ### LMapBlock:getSegmentSize
 
-`LMapBlock:getSegmentSize() -> integer`
-
-Returns the segment size used for edge matching.
-
-**Returns**: `integer` - Segment size in tiles.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the segment size used for edge matching.
@@ -3444,9 +4172,15 @@ Returns the segment size used for edge matching.
 function LMapBlock:getSegmentSize() end
 ```
 
+#### Description
+
+Returns the segment size used for edge matching.
+
+Returns: `integer` - Segment size in tiles.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -3458,18 +4192,7 @@ end
 
 ### LMapBlock:getSide
 
-`LMapBlock:getSide(edge: string, segment: integer) -> integer`
-
-Returns the side ID for an edge segment.
-
-**Parameters**
-
-- `edge` (`string`, required): Edge direction: `"north"`, `"east"`, `"south"`, or `"west"`.
-- `segment` (`integer`, required): Segment index along the edge (1-based).
-
-**Returns**: `integer` - Side identifier.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the side ID for an edge segment.
@@ -3479,9 +4202,20 @@ Returns the side ID for an edge segment.
 function LMapBlock:getSide(edge, segment) end
 ```
 
+#### Description
+
+Returns the side ID for an edge segment.
+
+Parameters:
+
+- `edge` (`string`, required): Edge direction: `"north"`, `"east"`, `"south"`, or `"west"`.
+- `segment` (`integer`, required): Segment index along the edge (1-based).
+
+Returns: `integer` - Side identifier.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -3495,19 +4229,7 @@ end
 
 ### LMapBlock:getTile
 
-`LMapBlock:getTile(layer: integer, x: integer, y: integer) -> integer`
-
-Returns the tile GID at a position within the block.
-
-**Parameters**
-
-- `layer` (`integer`, required): Layer index (1-based).
-- `x` (`integer`, required): Column (1-based).
-- `y` (`integer`, required): Row (1-based).
-
-**Returns**: `integer` - Global tile ID.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the tile GID at a position within the block.
@@ -3518,9 +4240,21 @@ Returns the tile GID at a position within the block.
 function LMapBlock:getTile(layer, x, y) end
 ```
 
+#### Description
+
+Returns the tile GID at a position within the block.
+
+Parameters:
+
+- `layer` (`integer`, required): Layer index (1-based).
+- `x` (`integer`, required): Column (1-based).
+- `y` (`integer`, required): Row (1-based).
+
+Returns: `integer` - Global tile ID.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -3534,13 +4268,7 @@ end
 
 ### LMapBlock:getWeight
 
-`LMapBlock:getWeight() -> number`
-
-Returns the current selection weight.
-
-**Returns**: `number` - Weight value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current selection weight.
@@ -3548,9 +4276,15 @@ Returns the current selection weight.
 function LMapBlock:getWeight() end
 ```
 
+#### Description
+
+Returns the current selection weight.
+
+Returns: `number` - Weight value.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -3563,13 +4297,7 @@ end
 
 ### LMapBlock:getWidth
 
-`LMapBlock:getWidth() -> integer`
-
-Returns the block width in tiles. This method is available to Lua scripts.
-
-**Returns**: `integer` - Width.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the block width in tiles. This method is available to Lua scripts.
@@ -3577,9 +4305,15 @@ Returns the block width in tiles. This method is available to Lua scripts.
 function LMapBlock:getWidth() end
 ```
 
+#### Description
+
+Returns the block width in tiles. This method is available to Lua scripts.
+
+Returns: `integer` - Width.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -3591,13 +4325,7 @@ end
 
 ### LMapBlock:getWidthInSegments
 
-`LMapBlock:getWidthInSegments() -> integer`
-
-Returns the block width measured in segments.
-
-**Returns**: `integer` - Width in segments.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the block width measured in segments.
@@ -3605,9 +4333,15 @@ Returns the block width measured in segments.
 function LMapBlock:getWidthInSegments() end
 ```
 
+#### Description
+
+Returns the block width measured in segments.
+
+Returns: `integer` - Width in segments.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -3619,15 +4353,7 @@ end
 
 ### LMapBlock:setName
 
-`LMapBlock:setName(name: string)`
-
-Sets the block's name for identification during map generation.
-
-**Parameters**
-
-- `name` (`string`, required): Block name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the block's name for identification during map generation.
@@ -3635,9 +4361,17 @@ Sets the block's name for identification during map generation.
 function LMapBlock:setName(name) end
 ```
 
+#### Description
+
+Sets the block's name for identification during map generation.
+
+Parameters:
+
+- `name` (`string`, required): Block name.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -3650,17 +4384,7 @@ end
 
 ### LMapBlock:setSide
 
-`LMapBlock:setSide(edge: string, segment: integer, sideId: integer)`
-
-Sets the side ID for an edge segment, used for edge matching in map generation.
-
-**Parameters**
-
-- `edge` (`string`, required): Edge direction: `"north"`, `"east"`, `"south"`, or `"west"`.
-- `segment` (`integer`, required): Segment index along the edge (1-based).
-- `sideId` (`integer`, required): Side identifier for matching.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the side ID for an edge segment, used for edge matching in map generation.
@@ -3670,9 +4394,19 @@ Sets the side ID for an edge segment, used for edge matching in map generation.
 function LMapBlock:setSide(edge, segment, sideId) end
 ```
 
+#### Description
+
+Sets the side ID for an edge segment, used for edge matching in map generation.
+
+Parameters:
+
+- `edge` (`string`, required): Edge direction: `"north"`, `"east"`, `"south"`, or `"west"`.
+- `segment` (`integer`, required): Segment index along the edge (1-based).
+- `sideId` (`integer`, required): Side identifier for matching.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -3686,18 +4420,7 @@ end
 
 ### LMapBlock:setTile
 
-`LMapBlock:setTile(layer: integer, x: integer, y: integer, gid: integer)`
-
-Sets a tile GID at a position within the block.
-
-**Parameters**
-
-- `layer` (`integer`, required): Layer index (1-based).
-- `x` (`integer`, required): Column (1-based).
-- `y` (`integer`, required): Row (1-based).
-- `gid` (`integer`, required): Global tile ID.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets a tile GID at a position within the block.
@@ -3708,9 +4431,20 @@ Sets a tile GID at a position within the block.
 function LMapBlock:setTile(layer, x, y, gid) end
 ```
 
+#### Description
+
+Sets a tile GID at a position within the block.
+
+Parameters:
+
+- `layer` (`integer`, required): Layer index (1-based).
+- `x` (`integer`, required): Column (1-based).
+- `y` (`integer`, required): Row (1-based).
+- `gid` (`integer`, required): Global tile ID.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -3724,15 +4458,7 @@ end
 
 ### LMapBlock:setWeight
 
-`LMapBlock:setWeight(weight: number)`
-
-Sets the selection weight for this block during random placement.
-
-**Parameters**
-
-- `weight` (`number`, required): Relative weight (higher = more likely to be chosen).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the selection weight for this block during random placement.
@@ -3740,9 +4466,17 @@ Sets the selection weight for this block during random placement.
 function LMapBlock:setWeight(weight) end
 ```
 
+#### Description
+
+Sets the selection weight for this block during random placement.
+
+Parameters:
+
+- `weight` (`number`, required): Relative weight (higher = more likely to be chosen).
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -3755,13 +4489,7 @@ end
 
 ### LMapBlock:type
 
-`LMapBlock:type() -> string`
-
-Returns the type name of this userdata.
-
-**Returns**: `string` - Always `"LMapBlock"`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this userdata.
@@ -3769,9 +4497,15 @@ Returns the type name of this userdata.
 function LMapBlock:type() end
 ```
 
+#### Description
+
+Returns the type name of this userdata.
+
+Returns: `string` - Always `"LMapBlock"`.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -3783,17 +4517,7 @@ end
 
 ### LMapBlock:typeOf
 
-`LMapBlock:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to check against.
-
-**Returns**: `boolean` - True if `name` is `"LMapBlock"` or `"Object"`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this object matches the given type name.
@@ -3802,9 +4526,19 @@ Checks whether this object matches the given type name.
 function LMapBlock:typeOf(name) end
 ```
 
+#### Description
+
+Checks whether this object matches the given type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to check against.
+
+Returns: `boolean` - True if `name` is `"LMapBlock"` or `"Object"`.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -3817,19 +4551,7 @@ end
 
 ### LMapGen:generate
 
-`LMapGen:generate([scriptIdx]: integer, [seed]: integer, [layerName]: string) -> LTileMap`
-
-Runs the map generator, optionally using a specific script, seed, and layer name, returning a new tilemap.
-
-**Parameters**
-
-- `scriptIdx` (`integer`, optional): Script index in the group (1-based), or nil for default.
-- `seed` (`integer`, optional): Random seed, or nil for random.
-- `layerName` (`string`, optional): Output layer name (default `"main"`).
-
-**Returns**: `LTileMap` - Generated tilemap.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Runs the map generator, optionally using a specific script, seed, and layer name, returning a new tilemap.
@@ -3840,9 +4562,21 @@ Runs the map generator, optionally using a specific script, seed, and layer name
 function LMapGen:generate(scriptIdx, seed, layerName) end
 ```
 
+#### Description
+
+Runs the map generator, optionally using a specific script, seed, and layer name, returning a new tilemap.
+
+Parameters:
+
+- `scriptIdx` (`integer`, optional): Script index in the group (1-based), or nil for default.
+- `seed` (`integer`, optional): Random seed, or nil for random.
+- `layerName` (`string`, optional): Output layer name (default `"main"`).
+
+Returns: `LTileMap` - Generated tilemap.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -3856,13 +4590,7 @@ end
 
 ### LMapGen:type
 
-`LMapGen:type() -> string`
-
-Returns the type name of this userdata.
-
-**Returns**: `string` - Always `"LMapGen"`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this userdata.
@@ -3870,9 +4598,15 @@ Returns the type name of this userdata.
 function LMapGen:type() end
 ```
 
+#### Description
+
+Returns the type name of this userdata.
+
+Returns: `string` - Always `"LMapGen"`.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -3886,17 +4620,7 @@ end
 
 ### LMapGen:typeOf
 
-`LMapGen:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to check against.
-
-**Returns**: `boolean` - True if `name` is `"LMapGen"` or `"Object"`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this object matches the given type name.
@@ -3905,9 +4629,19 @@ Checks whether this object matches the given type name.
 function LMapGen:typeOf(name) end
 ```
 
+#### Description
+
+Checks whether this object matches the given type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to check against.
+
+Returns: `boolean` - True if `name` is `"LMapGen"` or `"Object"`.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -3921,15 +4655,7 @@ end
 
 ### LMapGroup:addBlock
 
-`LMapGroup:addBlock(block: LMapBlock)`
-
-Adds a map block to this group for use in generation.
-
-**Parameters**
-
-- `block` (`LMapBlock`, required): Block to add.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a map block to this group for use in generation.
@@ -3937,9 +4663,17 @@ Adds a map block to this group for use in generation.
 function LMapGroup:addBlock(block) end
 ```
 
+#### Description
+
+Adds a map block to this group for use in generation.
+
+Parameters:
+
+- `block` (`LMapBlock`, required): Block to add.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -3952,15 +4686,7 @@ end
 
 ### LMapGroup:addScript
 
-`LMapGroup:addScript(script: LMapScript)`
-
-Attaches a map-generation script to this group.
-
-**Parameters**
-
-- `script` (`LMapScript`, required): Script to add.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Attaches a map-generation script to this group.
@@ -3968,9 +4694,17 @@ Attaches a map-generation script to this group.
 function LMapGroup:addScript(script) end
 ```
 
+#### Description
+
+Attaches a map-generation script to this group.
+
+Parameters:
+
+- `script` (`LMapScript`, required): Script to add.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -3984,13 +4718,7 @@ end
 
 ### LMapGroup:getBlockCount
 
-`LMapGroup:getBlockCount() -> integer`
-
-Returns how many blocks are in this group.
-
-**Returns**: `integer` - Block count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns how many blocks are in this group.
@@ -3998,9 +4726,15 @@ Returns how many blocks are in this group.
 function LMapGroup:getBlockCount() end
 ```
 
+#### Description
+
+Returns how many blocks are in this group.
+
+Returns: `integer` - Block count.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -4014,13 +4748,7 @@ end
 
 ### LMapGroup:getName
 
-`LMapGroup:getName() -> string`
-
-Returns the group name. This method is available to Lua scripts.
-
-**Returns**: `string` - Group name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the group name. This method is available to Lua scripts.
@@ -4028,9 +4756,15 @@ Returns the group name. This method is available to Lua scripts.
 function LMapGroup:getName() end
 ```
 
+#### Description
+
+Returns the group name. This method is available to Lua scripts.
+
+Returns: `string` - Group name.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -4044,13 +4778,7 @@ end
 
 ### LMapGroup:getScriptCount
 
-`LMapGroup:getScriptCount() -> integer`
-
-Returns how many scripts are attached to this group.
-
-**Returns**: `integer` - Script count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns how many scripts are attached to this group.
@@ -4058,9 +4786,15 @@ Returns how many scripts are attached to this group.
 function LMapGroup:getScriptCount() end
 ```
 
+#### Description
+
+Returns how many scripts are attached to this group.
+
+Returns: `integer` - Script count.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -4074,15 +4808,7 @@ end
 
 ### LMapGroup:removeBlock
 
-`LMapGroup:removeBlock(idx: integer)`
-
-Removes a block from the group by index.
-
-**Parameters**
-
-- `idx` (`integer`, required): Block index (1-based).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes a block from the group by index.
@@ -4090,9 +4816,17 @@ Removes a block from the group by index.
 function LMapGroup:removeBlock(idx) end
 ```
 
+#### Description
+
+Removes a block from the group by index.
+
+Parameters:
+
+- `idx` (`integer`, required): Block index (1-based).
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -4106,13 +4840,7 @@ end
 
 ### LMapGroup:type
 
-`LMapGroup:type() -> string`
-
-Returns the type name of this userdata.
-
-**Returns**: `string` - Always `"LMapGroup"`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this userdata.
@@ -4120,9 +4848,15 @@ Returns the type name of this userdata.
 function LMapGroup:type() end
 ```
 
+#### Description
+
+Returns the type name of this userdata.
+
+Returns: `string` - Always `"LMapGroup"`.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -4136,17 +4870,7 @@ end
 
 ### LMapGroup:typeOf
 
-`LMapGroup:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to check against.
-
-**Returns**: `boolean` - True if `name` is `"LMapGroup"` or `"Object"`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this object matches the given type name.
@@ -4155,9 +4879,19 @@ Checks whether this object matches the given type name.
 function LMapGroup:typeOf(name) end
 ```
 
+#### Description
+
+Checks whether this object matches the given type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to check against.
+
+Returns: `boolean` - True if `name` is `"LMapGroup"` or `"Object"`.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -4169,15 +4903,7 @@ end
 
 ### LMapScript:addStep
 
-`LMapScript:addStep(stepDef: table)`
-
-Appends a generation step. The step table must have a `type` field and optional parameters.
-
-**Parameters**
-
-- `stepDef` (`table`, required): Step definition with `type` and parameters like `x`, `y`, `w`, `h`, `gid`, `chance`, etc.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Appends a generation step. The step table must have a `type` field and optional parameters.
@@ -4185,9 +4911,17 @@ Appends a generation step. The step table must have a `type` field and optional 
 function LMapScript:addStep(stepDef) end
 ```
 
+#### Description
+
+Appends a generation step. The step table must have a `type` field and optional parameters.
+
+Parameters:
+
+- `stepDef` (`table`, required): Step definition with `type` and parameters like `x`, `y`, `w`, `h`, `gid`, `chance`, etc.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -4200,13 +4934,7 @@ end
 
 ### LMapScript:getStepCount
 
-`LMapScript:getStepCount() -> integer`
-
-Returns the number of generation steps in this script.
-
-**Returns**: `integer` - Step count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of generation steps in this script.
@@ -4214,9 +4942,15 @@ Returns the number of generation steps in this script.
 function LMapScript:getStepCount() end
 ```
 
+#### Description
+
+Returns the number of generation steps in this script.
+
+Returns: `integer` - Step count.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -4230,13 +4964,7 @@ end
 
 ### LMapScript:type
 
-`LMapScript:type() -> string`
-
-Returns the type name of this userdata.
-
-**Returns**: `string` - Always `"LMapScript"`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this userdata.
@@ -4244,9 +4972,15 @@ Returns the type name of this userdata.
 function LMapScript:type() end
 ```
 
+#### Description
+
+Returns the type name of this userdata.
+
+Returns: `string` - Always `"LMapScript"`.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -4258,17 +4992,7 @@ end
 
 ### LMapScript:typeOf
 
-`LMapScript:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to check against.
-
-**Returns**: `boolean` - True if `name` is `"LMapScript"` or `"Object"`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this object matches the given type name.
@@ -4277,9 +5001,19 @@ Checks whether this object matches the given type name.
 function LMapScript:typeOf(name) end
 ```
 
+#### Description
+
+Checks whether this object matches the given type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to check against.
+
+Returns: `boolean` - True if `name` is `"LMapScript"` or `"Object"`.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -4291,19 +5025,7 @@ end
 
 ### LTileMap:addLayer
 
-`LTileMap:addLayer(name: string, w: integer, h: integer) -> integer`
-
-Creates a new tile layer with the given name and dimensions.
-
-**Parameters**
-
-- `name` (`string`, required): Layer name.
-- `w` (`integer`, required): Width in tiles.
-- `h` (`integer`, required): Height in tiles.
-
-**Returns**: `integer` - Index of the new layer (1-based).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Creates a new tile layer with the given name and dimensions.
@@ -4314,9 +5036,21 @@ Creates a new tile layer with the given name and dimensions.
 function LTileMap:addLayer(name, w, h) end
 ```
 
+#### Description
+
+Creates a new tile layer with the given name and dimensions.
+
+Parameters:
+
+- `name` (`string`, required): Layer name.
+- `w` (`integer`, required): Width in tiles.
+- `h` (`integer`, required): Height in tiles.
+
+Returns: `integer` - Index of the new layer (1-based).
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -4329,15 +5063,7 @@ end
 
 ### LTileMap:addTileSet
 
-`LTileMap:addTileSet(tileSet: LTileSet)`
-
-Attaches a tileset to this map for tile rendering.
-
-**Parameters**
-
-- `tileSet` (`LTileSet`, required): Tileset to add.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Attaches a tileset to this map for tile rendering.
@@ -4345,9 +5071,17 @@ Attaches a tileset to this map for tile rendering.
 function LTileMap:addTileSet(tileSet) end
 ```
 
+#### Description
+
+Attaches a tileset to this map for tile rendering.
+
+Parameters:
+
+- `tileSet` (`LTileSet`, required): Tileset to add.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -4361,16 +5095,7 @@ end
 
 ### LTileMap:applyAutoTile
 
-`LTileMap:applyAutoTile(layer: integer, typeName: string)`
-
-Runs 4-bit auto-tiling on an entire layer, replacing tiles according to registered rules.
-
-**Parameters**
-
-- `layer` (`integer`, required): Layer index (1-based).
-- `typeName` (`string`, required): Tile type name whose rules to apply.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Runs 4-bit auto-tiling on an entire layer, replacing tiles according to registered rules.
@@ -4379,9 +5104,18 @@ Runs 4-bit auto-tiling on an entire layer, replacing tiles according to register
 function LTileMap:applyAutoTile(layer, typeName) end
 ```
 
+#### Description
+
+Runs 4-bit auto-tiling on an entire layer, replacing tiles according to registered rules.
+
+Parameters:
+
+- `layer` (`integer`, required): Layer index (1-based).
+- `typeName` (`string`, required): Tile type name whose rules to apply.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -4395,16 +5129,7 @@ end
 
 ### LTileMap:applyAutoTile8
 
-`LTileMap:applyAutoTile8(layer: integer, typeName: string)`
-
-Runs 8-bit auto-tiling on an entire layer, considering diagonal neighbors.
-
-**Parameters**
-
-- `layer` (`integer`, required): Layer index (1-based).
-- `typeName` (`string`, required): Tile type name whose rules to apply.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Runs 8-bit auto-tiling on an entire layer, considering diagonal neighbors.
@@ -4413,9 +5138,18 @@ Runs 8-bit auto-tiling on an entire layer, considering diagonal neighbors.
 function LTileMap:applyAutoTile8(layer, typeName) end
 ```
 
+#### Description
+
+Runs 8-bit auto-tiling on an entire layer, considering diagonal neighbors.
+
+Parameters:
+
+- `layer` (`integer`, required): Layer index (1-based).
+- `typeName` (`string`, required): Tile type name whose rules to apply.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -4429,18 +5163,7 @@ end
 
 ### LTileMap:applyAutoTile8At
 
-`LTileMap:applyAutoTile8At(layer: integer, x: integer, y: integer, typeName: string)`
-
-Runs 8-bit auto-tiling at a single tile position and updates it and its neighbors.
-
-**Parameters**
-
-- `layer` (`integer`, required): Layer index (1-based).
-- `x` (`integer`, required): Column (1-based).
-- `y` (`integer`, required): Row (1-based).
-- `typeName` (`string`, required): Tile type name whose rules to apply.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Runs 8-bit auto-tiling at a single tile position and updates it and its neighbors.
@@ -4451,9 +5174,20 @@ Runs 8-bit auto-tiling at a single tile position and updates it and its neighbor
 function LTileMap:applyAutoTile8At(layer, x, y, typeName) end
 ```
 
+#### Description
+
+Runs 8-bit auto-tiling at a single tile position and updates it and its neighbors.
+
+Parameters:
+
+- `layer` (`integer`, required): Layer index (1-based).
+- `x` (`integer`, required): Column (1-based).
+- `y` (`integer`, required): Row (1-based).
+- `typeName` (`string`, required): Tile type name whose rules to apply.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -4467,18 +5201,7 @@ end
 
 ### LTileMap:applyAutoTileAt
 
-`LTileMap:applyAutoTileAt(layer: integer, x: integer, y: integer, typeName: string)`
-
-Runs 4-bit auto-tiling at a single tile position and updates it and its neighbors.
-
-**Parameters**
-
-- `layer` (`integer`, required): Layer index (1-based).
-- `x` (`integer`, required): Column (1-based).
-- `y` (`integer`, required): Row (1-based).
-- `typeName` (`string`, required): Tile type name whose rules to apply.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Runs 4-bit auto-tiling at a single tile position and updates it and its neighbors.
@@ -4489,9 +5212,20 @@ Runs 4-bit auto-tiling at a single tile position and updates it and its neighbor
 function LTileMap:applyAutoTileAt(layer, x, y, typeName) end
 ```
 
+#### Description
+
+Runs 4-bit auto-tiling at a single tile position and updates it and its neighbors.
+
+Parameters:
+
+- `layer` (`integer`, required): Layer index (1-based).
+- `x` (`integer`, required): Column (1-based).
+- `y` (`integer`, required): Row (1-based).
+- `typeName` (`string`, required): Tile type name whose rules to apply.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -4505,16 +5239,7 @@ end
 
 ### LTileMap:checkEntities
 
-`LTileMap:checkEntities(layer: integer, entities: table)`
-
-Checks a list of entities against registered tile-enter callbacks on a layer.
-
-**Parameters**
-
-- `layer` (`integer`, required): Layer index (1-based).
-- `entities` (`table`, required): Array of entity tables, each with `x`/`y` or `[1]`/`[2]` fields.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks a list of entities against registered tile-enter callbacks on a layer.
@@ -4523,9 +5248,18 @@ Checks a list of entities against registered tile-enter callbacks on a layer.
 function LTileMap:checkEntities(layer, entities) end
 ```
 
+#### Description
+
+Checks a list of entities against registered tile-enter callbacks on a layer.
+
+Parameters:
+
+- `layer` (`integer`, required): Layer index (1-based).
+- `entities` (`table`, required): Array of entity tables, each with `x`/`y` or `[1]`/`[2]` fields.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -4539,17 +5273,7 @@ end
 
 ### LTileMap:clearTile
 
-`LTileMap:clearTile(layer: integer, x: integer, y: integer)`
-
-Removes the tile at a specific grid position, setting it to empty (GID 0).
-
-**Parameters**
-
-- `layer` (`integer`, required): Layer index (1-based).
-- `x` (`integer`, required): Column (1-based).
-- `y` (`integer`, required): Row (1-based).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes the tile at a specific grid position, setting it to empty (GID 0).
@@ -4559,9 +5283,19 @@ Removes the tile at a specific grid position, setting it to empty (GID 0).
 function LTileMap:clearTile(layer, x, y) end
 ```
 
+#### Description
+
+Removes the tile at a specific grid position, setting it to empty (GID 0).
+
+Parameters:
+
+- `layer` (`integer`, required): Layer index (1-based).
+- `x` (`integer`, required): Column (1-based).
+- `y` (`integer`, required): Row (1-based).
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -4575,17 +5309,7 @@ end
 
 ### LTileMap:drawToImage
 
-`LTileMap:drawToImage(tileSize: integer) -> LImage`
-
-Rasterizes the map into an image using the given tile size, returning an image handle.
-
-**Parameters**
-
-- `tileSize` (`integer`, required): Pixel size of each tile in the output image.
-
-**Returns**: `LImage` - Rasterized image of the map.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Rasterizes the map into an image using the given tile size, returning an image handle.
@@ -4594,9 +5318,19 @@ Rasterizes the map into an image using the given tile size, returning an image h
 function LTileMap:drawToImage(tileSize) end
 ```
 
+#### Description
+
+Rasterizes the map into an image using the given tile size, returning an image handle.
+
+Parameters:
+
+- `tileSize` (`integer`, required): Pixel size of each tile in the output image.
+
+Returns: `LImage` - Rasterized image of the map.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -4610,16 +5344,7 @@ end
 
 ### LTileMap:fill
 
-`LTileMap:fill(layer: integer, gid: integer)`
-
-Fills every cell of a layer with the given GID.
-
-**Parameters**
-
-- `layer` (`integer`, required): Layer index (1-based).
-- `gid` (`integer`, required): Global tile ID to fill with.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Fills every cell of a layer with the given GID.
@@ -4628,9 +5353,18 @@ Fills every cell of a layer with the given GID.
 function LTileMap:fill(layer, gid) end
 ```
 
+#### Description
+
+Fills every cell of a layer with the given GID.
+
+Parameters:
+
+- `layer` (`integer`, required): Layer index (1-based).
+- `gid` (`integer`, required): Global tile ID to fill with.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -4644,18 +5378,7 @@ end
 
 ### LTileMap:findTilesByGid
 
-`LTileMap:findTilesByGid(layer: integer, gid: integer) -> table`
-
-Returns all positions on a layer that contain a specific GID.
-
-**Parameters**
-
-- `layer` (`integer`, required): Layer index (1-based).
-- `gid` (`integer`, required): Global tile ID to search for.
-
-**Returns**: `table` - Array of `{x=number, y=number}` positions.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns all positions on a layer that contain a specific GID.
@@ -4665,9 +5388,20 @@ Returns all positions on a layer that contain a specific GID.
 function LTileMap:findTilesByGid(layer, gid) end
 ```
 
+#### Description
+
+Returns all positions on a layer that contain a specific GID.
+
+Parameters:
+
+- `layer` (`integer`, required): Layer index (1-based).
+- `gid` (`integer`, required): Global tile ID to search for.
+
+Returns: `table` - Array of `{x=number, y=number}` positions.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -4681,18 +5415,7 @@ end
 
 ### LTileMap:fireTileExit
 
-`LTileMap:fireTileExit(gid: integer, entity: table, tx: integer, ty: integer)`
-
-Manually fires the tile-exit callback for a specific GID and entity at a tile position.
-
-**Parameters**
-
-- `gid` (`integer`, required): Global tile ID.
-- `entity` (`table`, required): Entity table to pass to the callback.
-- `tx` (`integer`, required): Tile column.
-- `ty` (`integer`, required): Tile row.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Manually fires the tile-exit callback for a specific GID and entity at a tile position.
@@ -4703,9 +5426,20 @@ Manually fires the tile-exit callback for a specific GID and entity at a tile po
 function LTileMap:fireTileExit(gid, entity, tx, ty) end
 ```
 
+#### Description
+
+Manually fires the tile-exit callback for a specific GID and entity at a tile position.
+
+Parameters:
+
+- `gid` (`integer`, required): Global tile ID.
+- `entity` (`table`, required): Entity table to pass to the callback.
+- `tx` (`integer`, required): Tile column.
+- `ty` (`integer`, required): Tile row.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -4719,18 +5453,7 @@ end
 
 ### LTileMap:fireTileStep
 
-`LTileMap:fireTileStep(gid: integer, entity: table, tx: integer, ty: integer)`
-
-Manually fires the tile-step callback for a specific GID and entity at a tile position.
-
-**Parameters**
-
-- `gid` (`integer`, required): Global tile ID.
-- `entity` (`table`, required): Entity table to pass to the callback.
-- `tx` (`integer`, required): Tile column.
-- `ty` (`integer`, required): Tile row.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Manually fires the tile-step callback for a specific GID and entity at a tile position.
@@ -4741,9 +5464,20 @@ Manually fires the tile-step callback for a specific GID and entity at a tile po
 function LTileMap:fireTileStep(gid, entity, tx, ty) end
 ```
 
+#### Description
+
+Manually fires the tile-step callback for a specific GID and entity at a tile position.
+
+Parameters:
+
+- `gid` (`integer`, required): Global tile ID.
+- `entity` (`table`, required): Entity table to pass to the callback.
+- `tx` (`integer`, required): Tile column.
+- `ty` (`integer`, required): Tile row.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -4757,13 +5491,7 @@ end
 
 ### LTileMap:getChunkSize
 
-`LTileMap:getChunkSize() -> integer`
-
-Returns the chunk size used for internal tile storage.
-
-**Returns**: `integer` - Chunk size in tiles per side.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the chunk size used for internal tile storage.
@@ -4771,9 +5499,15 @@ Returns the chunk size used for internal tile storage.
 function LTileMap:getChunkSize() end
 ```
 
+#### Description
+
+Returns the chunk size used for internal tile storage.
+
+Returns: `integer` - Chunk size in tiles per side.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -4785,17 +5519,7 @@ end
 
 ### LTileMap:getLayerColor
 
-`LTileMap:getLayerColor(idx: integer) -> number`
-
-Returns the tint color of a layer as four RGBA components.
-
-**Parameters**
-
-- `idx` (`integer`, required): Layer index (1-based).
-
-**Returns**: `number` - Red (0..1).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the tint color of a layer as four RGBA components.
@@ -4807,9 +5531,19 @@ Returns the tint color of a layer as four RGBA components.
 function LTileMap:getLayerColor(idx) end
 ```
 
+#### Description
+
+Returns the tint color of a layer as four RGBA components.
+
+Parameters:
+
+- `idx` (`integer`, required): Layer index (1-based).
+
+Returns: `number` - Red (0..1).
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -4823,13 +5557,7 @@ end
 
 ### LTileMap:getLayerCount
 
-`LTileMap:getLayerCount() -> integer`
-
-Returns the total number of layers in this map.
-
-**Returns**: `integer` - Layer count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the total number of layers in this map.
@@ -4837,9 +5565,15 @@ Returns the total number of layers in this map.
 function LTileMap:getLayerCount() end
 ```
 
+#### Description
+
+Returns the total number of layers in this map.
+
+Returns: `integer` - Layer count.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -4852,17 +5586,7 @@ end
 
 ### LTileMap:getLayerName
 
-`LTileMap:getLayerName(idx: integer) -> string`
-
-Returns the name of a layer by index.
-
-**Parameters**
-
-- `idx` (`integer`, required): Layer index (1-based).
-
-**Returns**: `string` - Layer name, or nil if index is out of range.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the name of a layer by index.
@@ -4871,9 +5595,19 @@ Returns the name of a layer by index.
 function LTileMap:getLayerName(idx) end
 ```
 
+#### Description
+
+Returns the name of a layer by index.
+
+Parameters:
+
+- `idx` (`integer`, required): Layer index (1-based).
+
+Returns: `string` - Layer name, or nil if index is out of range.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -4886,17 +5620,7 @@ end
 
 ### LTileMap:getLayerOffset
 
-`LTileMap:getLayerOffset(idx: integer) -> number`
-
-Returns the pixel offset of a layer.
-
-**Parameters**
-
-- `idx` (`integer`, required): Layer index (1-based).
-
-**Returns**: `number` - Horizontal offset.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the pixel offset of a layer.
@@ -4906,9 +5630,19 @@ Returns the pixel offset of a layer.
 function LTileMap:getLayerOffset(idx) end
 ```
 
+#### Description
+
+Returns the pixel offset of a layer.
+
+Parameters:
+
+- `idx` (`integer`, required): Layer index (1-based).
+
+Returns: `number` - Horizontal offset.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -4922,17 +5656,7 @@ end
 
 ### LTileMap:getLayerParallax
 
-`LTileMap:getLayerParallax(idx: integer) -> number`
-
-Returns the parallax scroll factor of a layer.
-
-**Parameters**
-
-- `idx` (`integer`, required): Layer index (1-based).
-
-**Returns**: `number` - Horizontal parallax factor.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the parallax scroll factor of a layer.
@@ -4942,9 +5666,19 @@ Returns the parallax scroll factor of a layer.
 function LTileMap:getLayerParallax(idx) end
 ```
 
+#### Description
+
+Returns the parallax scroll factor of a layer.
+
+Parameters:
+
+- `idx` (`integer`, required): Layer index (1-based).
+
+Returns: `number` - Horizontal parallax factor.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -4958,17 +5692,7 @@ end
 
 ### LTileMap:getLayerVisible
 
-`LTileMap:getLayerVisible(idx: integer) -> boolean`
-
-Returns whether a layer is currently visible.
-
-**Parameters**
-
-- `idx` (`integer`, required): Layer index (1-based).
-
-**Returns**: `boolean` - True if the layer is visible.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether a layer is currently visible.
@@ -4977,9 +5701,19 @@ Returns whether a layer is currently visible.
 function LTileMap:getLayerVisible(idx) end
 ```
 
+#### Description
+
+Returns whether a layer is currently visible.
+
+Parameters:
+
+- `idx` (`integer`, required): Layer index (1-based).
+
+Returns: `boolean` - True if the layer is visible.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -4992,13 +5726,7 @@ end
 
 ### LTileMap:getOrientation
 
-`LTileMap:getOrientation() -> string`
-
-Returns the current map orientation as a string.
-
-**Returns**: `string` - One of `"topdown"`, `"sideview"`, `"isometric"`, `"hexagonal"`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current map orientation as a string.
@@ -5006,9 +5734,15 @@ Returns the current map orientation as a string.
 function LTileMap:getOrientation() end
 ```
 
+#### Description
+
+Returns the current map orientation as a string.
+
+Returns: `string` - One of `"topdown"`, `"sideview"`, `"isometric"`, `"hexagonal"`.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -5021,19 +5755,7 @@ end
 
 ### LTileMap:getTile
 
-`LTileMap:getTile(layer: integer, x: integer, y: integer) -> integer`
-
-Returns the tile GID at a specific grid position on a layer.
-
-**Parameters**
-
-- `layer` (`integer`, required): Layer index (1-based).
-- `x` (`integer`, required): Column (1-based).
-- `y` (`integer`, required): Row (1-based).
-
-**Returns**: `integer` - Global tile ID at that position.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the tile GID at a specific grid position on a layer.
@@ -5044,9 +5766,21 @@ Returns the tile GID at a specific grid position on a layer.
 function LTileMap:getTile(layer, x, y) end
 ```
 
+#### Description
+
+Returns the tile GID at a specific grid position on a layer.
+
+Parameters:
+
+- `layer` (`integer`, required): Layer index (1-based).
+- `x` (`integer`, required): Column (1-based).
+- `y` (`integer`, required): Row (1-based).
+
+Returns: `integer` - Global tile ID at that position.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -5060,13 +5794,7 @@ end
 
 ### LTileMap:getTileDimensions
 
-`LTileMap:getTileDimensions() -> integer`
-
-Returns both tile width and height in pixels.
-
-**Returns**: `integer` - Tile width.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns both tile width and height in pixels.
@@ -5075,9 +5803,15 @@ Returns both tile width and height in pixels.
 function LTileMap:getTileDimensions() end
 ```
 
+#### Description
+
+Returns both tile width and height in pixels.
+
+Returns: `integer` - Tile width.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -5089,13 +5823,7 @@ end
 
 ### LTileMap:getTileHeight
 
-`LTileMap:getTileHeight() -> integer`
-
-Returns the height of a single tile in pixels for this map.
-
-**Returns**: `integer` - Tile height in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the height of a single tile in pixels for this map.
@@ -5103,9 +5831,15 @@ Returns the height of a single tile in pixels for this map.
 function LTileMap:getTileHeight() end
 ```
 
+#### Description
+
+Returns the height of a single tile in pixels for this map.
+
+Returns: `integer` - Tile height in pixels.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -5117,17 +5851,7 @@ end
 
 ### LTileMap:getTileSet
 
-`LTileMap:getTileSet(idx: integer) -> LTileSet`
-
-Returns the tileset at the given index.
-
-**Parameters**
-
-- `idx` (`integer`, required): Tileset index (1-based).
-
-**Returns**: `LTileSet` - The tileset, or nil if index is out of range.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the tileset at the given index.
@@ -5136,9 +5860,19 @@ Returns the tileset at the given index.
 function LTileMap:getTileSet(idx) end
 ```
 
+#### Description
+
+Returns the tileset at the given index.
+
+Parameters:
+
+- `idx` (`integer`, required): Tileset index (1-based).
+
+Returns: `LTileSet` - The tileset, or nil if index is out of range.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -5152,13 +5886,7 @@ end
 
 ### LTileMap:getTileSetCount
 
-`LTileMap:getTileSetCount() -> integer`
-
-Returns how many tilesets are attached to this map.
-
-**Returns**: `integer` - Tileset count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns how many tilesets are attached to this map.
@@ -5166,9 +5894,15 @@ Returns how many tilesets are attached to this map.
 function LTileMap:getTileSetCount() end
 ```
 
+#### Description
+
+Returns how many tilesets are attached to this map.
+
+Returns: `integer` - Tileset count.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -5182,13 +5916,7 @@ end
 
 ### LTileMap:getTileWidth
 
-`LTileMap:getTileWidth() -> integer`
-
-Returns the width of a single tile in pixels for this map.
-
-**Returns**: `integer` - Tile width in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the width of a single tile in pixels for this map.
@@ -5196,9 +5924,15 @@ Returns the width of a single tile in pixels for this map.
 function LTileMap:getTileWidth() end
 ```
 
+#### Description
+
+Returns the width of a single tile in pixels for this map.
+
+Returns: `integer` - Tile width in pixels.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -5210,13 +5944,7 @@ end
 
 ### LTileMap:getViewport
 
-`LTileMap:getViewport() -> number`
-
-Returns the current viewport rectangle, or nils if none is set.
-
-**Returns**: `number` - Left edge.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current viewport rectangle, or nils if none is set.
@@ -5227,9 +5955,15 @@ Returns the current viewport rectangle, or nils if none is set.
 function LTileMap:getViewport() end
 ```
 
+#### Description
+
+Returns the current viewport rectangle, or nils if none is set.
+
+Returns: `number` - Left edge.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -5243,19 +5977,7 @@ end
 
 ### LTileMap:isSolid
 
-`LTileMap:isSolid(layer: integer, x: integer, y: integer) -> boolean`
-
-Checks whether the tile at a given position on a layer is solid.
-
-**Parameters**
-
-- `layer` (`integer`, required): Layer index (1-based).
-- `x` (`integer`, required): Column (1-based).
-- `y` (`integer`, required): Row (1-based).
-
-**Returns**: `boolean` - True if the tile at that position is marked solid.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether the tile at a given position on a layer is solid.
@@ -5266,9 +5988,21 @@ Checks whether the tile at a given position on a layer is solid.
 function LTileMap:isSolid(layer, x, y) end
 ```
 
+#### Description
+
+Checks whether the tile at a given position on a layer is solid.
+
+Parameters:
+
+- `layer` (`integer`, required): Layer index (1-based).
+- `x` (`integer`, required): Column (1-based).
+- `y` (`integer`, required): Row (1-based).
+
+Returns: `boolean` - True if the tile at that position is marked solid.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -5282,16 +6016,7 @@ end
 
 ### LTileMap:onTileEnter
 
-`LTileMap:onTileEnter(gid: integer, func: function)`
-
-Registers a callback invoked when an entity enters a tile with the given GID.
-
-**Parameters**
-
-- `gid` (`integer`, required): Global tile ID to watch for.
-- `func` (`function`, required): Callback receiving `(wx, wy, tx, ty)`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Registers a callback invoked when an entity enters a tile with the given GID.
@@ -5300,9 +6025,18 @@ Registers a callback invoked when an entity enters a tile with the given GID.
 function LTileMap:onTileEnter(gid, func) end
 ```
 
+#### Description
+
+Registers a callback invoked when an entity enters a tile with the given GID.
+
+Parameters:
+
+- `gid` (`integer`, required): Global tile ID to watch for.
+- `func` (`function`, required): Callback receiving `(wx, wy, tx, ty)`.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -5316,16 +6050,7 @@ end
 
 ### LTileMap:onTileExit
 
-`LTileMap:onTileExit(gid: integer, func: function)`
-
-Registers a callback invoked when an entity leaves a tile with the given GID.
-
-**Parameters**
-
-- `gid` (`integer`, required): Global tile ID to watch for.
-- `func` (`function`, required): Callback receiving `(entity, tx, ty)`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Registers a callback invoked when an entity leaves a tile with the given GID.
@@ -5334,9 +6059,18 @@ Registers a callback invoked when an entity leaves a tile with the given GID.
 function LTileMap:onTileExit(gid, func) end
 ```
 
+#### Description
+
+Registers a callback invoked when an entity leaves a tile with the given GID.
+
+Parameters:
+
+- `gid` (`integer`, required): Global tile ID to watch for.
+- `func` (`function`, required): Callback receiving `(entity, tx, ty)`.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -5350,16 +6084,7 @@ end
 
 ### LTileMap:onTileStep
 
-`LTileMap:onTileStep(gid: integer, func: function)`
-
-Registers a callback invoked each frame an entity remains on a tile with the given GID.
-
-**Parameters**
-
-- `gid` (`integer`, required): Global tile ID to watch for.
-- `func` (`function`, required): Callback receiving `(entity, tx, ty)`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Registers a callback invoked each frame an entity remains on a tile with the given GID.
@@ -5368,9 +6093,18 @@ Registers a callback invoked each frame an entity remains on a tile with the giv
 function LTileMap:onTileStep(gid, func) end
 ```
 
+#### Description
+
+Registers a callback invoked each frame an entity remains on a tile with the given GID.
+
+Parameters:
+
+- `gid` (`integer`, required): Global tile ID to watch for.
+- `func` (`function`, required): Callback receiving `(entity, tx, ty)`.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -5384,21 +6118,7 @@ end
 
 ### LTileMap:rectOverlapsSolid
 
-`LTileMap:rectOverlapsSolid(layer: integer, x: number, y: number, w: number, h: number) -> boolean`
-
-Tests whether a world-space rectangle overlaps any solid tile on a layer.
-
-**Parameters**
-
-- `layer` (`integer`, required): Layer index (1-based).
-- `x` (`number`, required): Rectangle left edge in world pixels.
-- `y` (`number`, required): Rectangle top edge in world pixels.
-- `w` (`number`, required): Rectangle width in pixels.
-- `h` (`number`, required): Rectangle height in pixels.
-
-**Returns**: `boolean` - True if any solid tile is overlapped.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Tests whether a world-space rectangle overlaps any solid tile on a layer.
@@ -5411,9 +6131,23 @@ Tests whether a world-space rectangle overlaps any solid tile on a layer.
 function LTileMap:rectOverlapsSolid(layer, x, y, w, h) end
 ```
 
+#### Description
+
+Tests whether a world-space rectangle overlaps any solid tile on a layer.
+
+Parameters:
+
+- `layer` (`integer`, required): Layer index (1-based).
+- `x` (`number`, required): Rectangle left edge in world pixels.
+- `y` (`number`, required): Rectangle top edge in world pixels.
+- `w` (`number`, required): Rectangle width in pixels.
+- `h` (`number`, required): Rectangle height in pixels.
+
+Returns: `boolean` - True if any solid tile is overlapped.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -5427,16 +6161,7 @@ end
 
 ### LTileMap:render
 
-`LTileMap:render([ox]: number, [oy]: number)`
-
-Submits render commands for all visible tiles, optionally offset by a scroll position.
-
-**Parameters**
-
-- `ox` (`number`, optional): Horizontal scroll offset (default 0).
-- `oy` (`number`, optional): Vertical scroll offset (default 0).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Submits render commands for all visible tiles, optionally offset by a scroll position.
@@ -5445,9 +6170,18 @@ Submits render commands for all visible tiles, optionally offset by a scroll pos
 function LTileMap:render(ox, oy) end
 ```
 
+#### Description
+
+Submits render commands for all visible tiles, optionally offset by a scroll position.
+
+Parameters:
+
+- `ox` (`number`, optional): Horizontal scroll offset (default 0).
+- `oy` (`number`, optional): Vertical scroll offset (default 0).
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -5461,19 +6195,7 @@ end
 
 ### LTileMap:setLayerColor
 
-`LTileMap:setLayerColor(idx: integer, r: number, g: number, b: number, a: number)`
-
-Sets the tint color for an entire layer.
-
-**Parameters**
-
-- `idx` (`integer`, required): Layer index (1-based).
-- `r` (`number`, required): Red channel (0..1).
-- `g` (`number`, required): Green channel (0..1).
-- `b` (`number`, required): Blue channel (0..1).
-- `a` (`number`, required): Alpha channel (0..1).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the tint color for an entire layer.
@@ -5485,9 +6207,21 @@ Sets the tint color for an entire layer.
 function LTileMap:setLayerColor(idx, r, g, b, a) end
 ```
 
+#### Description
+
+Sets the tint color for an entire layer.
+
+Parameters:
+
+- `idx` (`integer`, required): Layer index (1-based).
+- `r` (`number`, required): Red channel (0..1).
+- `g` (`number`, required): Green channel (0..1).
+- `b` (`number`, required): Blue channel (0..1).
+- `a` (`number`, required): Alpha channel (0..1).
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -5501,17 +6235,7 @@ end
 
 ### LTileMap:setLayerOffset
 
-`LTileMap:setLayerOffset(idx: integer, ox: number, oy: number)`
-
-Sets the pixel offset for a layer, shifting all tiles during rendering.
-
-**Parameters**
-
-- `idx` (`integer`, required): Layer index (1-based).
-- `ox` (`number`, required): Horizontal offset in pixels.
-- `oy` (`number`, required): Vertical offset in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the pixel offset for a layer, shifting all tiles during rendering.
@@ -5521,9 +6245,19 @@ Sets the pixel offset for a layer, shifting all tiles during rendering.
 function LTileMap:setLayerOffset(idx, ox, oy) end
 ```
 
+#### Description
+
+Sets the pixel offset for a layer, shifting all tiles during rendering.
+
+Parameters:
+
+- `idx` (`integer`, required): Layer index (1-based).
+- `ox` (`number`, required): Horizontal offset in pixels.
+- `oy` (`number`, required): Vertical offset in pixels.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -5537,17 +6271,7 @@ end
 
 ### LTileMap:setLayerParallax
 
-`LTileMap:setLayerParallax(idx: integer, px: number, py: number)`
-
-Sets the parallax scroll factor for a layer. Values less than 1 scroll slower than the camera.
-
-**Parameters**
-
-- `idx` (`integer`, required): Layer index (1-based).
-- `px` (`number`, required): Horizontal parallax factor.
-- `py` (`number`, required): Vertical parallax factor.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the parallax scroll factor for a layer. Values less than 1 scroll slower than the camera.
@@ -5557,9 +6281,19 @@ Sets the parallax scroll factor for a layer. Values less than 1 scroll slower th
 function LTileMap:setLayerParallax(idx, px, py) end
 ```
 
+#### Description
+
+Sets the parallax scroll factor for a layer. Values less than 1 scroll slower than the camera.
+
+Parameters:
+
+- `idx` (`integer`, required): Layer index (1-based).
+- `px` (`number`, required): Horizontal parallax factor.
+- `py` (`number`, required): Vertical parallax factor.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -5573,16 +6307,7 @@ end
 
 ### LTileMap:setLayerVisible
 
-`LTileMap:setLayerVisible(idx: integer, visible: boolean)`
-
-Sets whether a layer is drawn during rendering.
-
-**Parameters**
-
-- `idx` (`integer`, required): Layer index (1-based).
-- `visible` (`boolean`, required): True to show, false to hide.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets whether a layer is drawn during rendering.
@@ -5591,9 +6316,18 @@ Sets whether a layer is drawn during rendering.
 function LTileMap:setLayerVisible(idx, visible) end
 ```
 
+#### Description
+
+Sets whether a layer is drawn during rendering.
+
+Parameters:
+
+- `idx` (`integer`, required): Layer index (1-based).
+- `visible` (`boolean`, required): True to show, false to hide.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -5607,15 +6341,7 @@ end
 
 ### LTileMap:setOrientation
 
-`LTileMap:setOrientation(orientation: string)`
-
-Sets the map orientation, affecting coordinate transforms and rendering.
-
-**Parameters**
-
-- `orientation` (`string`, required): One of `"topdown"`, `"sideview"`, `"isometric"`, `"hexagonal"`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the map orientation, affecting coordinate transforms and rendering.
@@ -5623,9 +6349,17 @@ Sets the map orientation, affecting coordinate transforms and rendering.
 function LTileMap:setOrientation(orientation) end
 ```
 
+#### Description
+
+Sets the map orientation, affecting coordinate transforms and rendering.
+
+Parameters:
+
+- `orientation` (`string`, required): One of `"topdown"`, `"sideview"`, `"isometric"`, `"hexagonal"`.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -5639,18 +6373,7 @@ end
 
 ### LTileMap:setTile
 
-`LTileMap:setTile(layer: integer, x: integer, y: integer, gid: integer)`
-
-Sets the tile GID at a specific grid position on a layer.
-
-**Parameters**
-
-- `layer` (`integer`, required): Layer index (1-based).
-- `x` (`integer`, required): Column (1-based).
-- `y` (`integer`, required): Row (1-based).
-- `gid` (`integer`, required): Global tile ID to place.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the tile GID at a specific grid position on a layer.
@@ -5661,9 +6384,20 @@ Sets the tile GID at a specific grid position on a layer.
 function LTileMap:setTile(layer, x, y, gid) end
 ```
 
+#### Description
+
+Sets the tile GID at a specific grid position on a layer.
+
+Parameters:
+
+- `layer` (`integer`, required): Layer index (1-based).
+- `x` (`integer`, required): Column (1-based).
+- `y` (`integer`, required): Row (1-based).
+- `gid` (`integer`, required): Global tile ID to place.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -5677,21 +6411,7 @@ end
 
 ### LTileMap:setTileTint
 
-`LTileMap:setTileTint(layer: integer, x: integer, y: integer, r: number, g: number, b: number, a: number)`
-
-Overrides the color tint for a single tile at a given position.
-
-**Parameters**
-
-- `layer` (`integer`, required): Layer index (1-based).
-- `x` (`integer`, required): Column (1-based).
-- `y` (`integer`, required): Row (1-based).
-- `r` (`number`, required): Red channel (0..1).
-- `g` (`number`, required): Green channel (0..1).
-- `b` (`number`, required): Blue channel (0..1).
-- `a` (`number`, required): Alpha channel (0..1).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Overrides the color tint for a single tile at a given position.
@@ -5705,9 +6425,23 @@ Overrides the color tint for a single tile at a given position.
 function LTileMap:setTileTint(layer, x, y, r, g, b, a) end
 ```
 
+#### Description
+
+Overrides the color tint for a single tile at a given position.
+
+Parameters:
+
+- `layer` (`integer`, required): Layer index (1-based).
+- `x` (`integer`, required): Column (1-based).
+- `y` (`integer`, required): Row (1-based).
+- `r` (`number`, required): Red channel (0..1).
+- `g` (`number`, required): Green channel (0..1).
+- `b` (`number`, required): Blue channel (0..1).
+- `a` (`number`, required): Alpha channel (0..1).
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -5721,18 +6455,7 @@ end
 
 ### LTileMap:setViewport
 
-`LTileMap:setViewport(x: number, y: number, w: number, h: number)`
-
-Sets the visible area of the map for culling during rendering.
-
-**Parameters**
-
-- `x` (`number`, required): Left edge in world pixels.
-- `y` (`number`, required): Top edge in world pixels.
-- `w` (`number`, required): Viewport width in pixels.
-- `h` (`number`, required): Viewport height in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the visible area of the map for culling during rendering.
@@ -5743,9 +6466,20 @@ Sets the visible area of the map for culling during rendering.
 function LTileMap:setViewport(x, y, w, h) end
 ```
 
+#### Description
+
+Sets the visible area of the map for culling during rendering.
+
+Parameters:
+
+- `x` (`number`, required): Left edge in world pixels.
+- `y` (`number`, required): Top edge in world pixels.
+- `w` (`number`, required): Viewport width in pixels.
+- `h` (`number`, required): Viewport height in pixels.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -5759,23 +6493,7 @@ end
 
 ### LTileMap:sweepRect
 
-`LTileMap:sweepRect(layer: integer, x: number, y: number, w: number, h: number, dx: number, dy: number) -> number`
-
-Performs a swept AABB collision test against solid tiles on a layer, returning the contact point and normal.
-
-**Parameters**
-
-- `layer` (`integer`, required): Layer index (1-based).
-- `x` (`number`, required): Rectangle left edge in world pixels.
-- `y` (`number`, required): Rectangle top edge in world pixels.
-- `w` (`number`, required): Rectangle width in pixels.
-- `h` (`number`, required): Rectangle height in pixels.
-- `dx` (`number`, required): Horizontal movement delta.
-- `dy` (`number`, required): Vertical movement delta.
-
-**Returns**: `number` - Contact X position.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Performs a swept AABB collision test against solid tiles on a layer, returning the contact point and normal.
@@ -5795,9 +6513,25 @@ Performs a swept AABB collision test against solid tiles on a layer, returning t
 function LTileMap:sweepRect(layer, x, y, w, h, dx, dy) end
 ```
 
+#### Description
+
+Performs a swept AABB collision test against solid tiles on a layer, returning the contact point and normal.
+
+Parameters:
+
+- `layer` (`integer`, required): Layer index (1-based).
+- `x` (`number`, required): Rectangle left edge in world pixels.
+- `y` (`number`, required): Rectangle top edge in world pixels.
+- `w` (`number`, required): Rectangle width in pixels.
+- `h` (`number`, required): Rectangle height in pixels.
+- `dx` (`number`, required): Horizontal movement delta.
+- `dy` (`number`, required): Vertical movement delta.
+
+Returns: `number` - Contact X position.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -5811,18 +6545,7 @@ end
 
 ### LTileMap:tileToWorld
 
-`LTileMap:tileToWorld(tx: integer, ty: integer) -> number`
-
-Converts tile-grid coordinates to world-space pixel coordinates (top-left corner of the tile).
-
-**Parameters**
-
-- `tx` (`integer`, required): Tile column (1-based).
-- `ty` (`integer`, required): Tile row (1-based).
-
-**Returns**: `number` - World X position in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Converts tile-grid coordinates to world-space pixel coordinates (top-left corner of the tile).
@@ -5833,9 +6556,20 @@ Converts tile-grid coordinates to world-space pixel coordinates (top-left corner
 function LTileMap:tileToWorld(tx, ty) end
 ```
 
+#### Description
+
+Converts tile-grid coordinates to world-space pixel coordinates (top-left corner of the tile).
+
+Parameters:
+
+- `tx` (`integer`, required): Tile column (1-based).
+- `ty` (`integer`, required): Tile row (1-based).
+
+Returns: `number` - World X position in pixels.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -5849,17 +6583,7 @@ end
 
 ### LTileMap:tileTypeIndex
 
-`LTileMap:tileTypeIndex(layer: integer) -> table`
-
-Builds an index mapping each GID present on a layer to an array of `{x, y}` positions.
-
-**Parameters**
-
-- `layer` (`integer`, required): Layer index (1-based).
-
-**Returns**: `table` - Table keyed by GID, each value an array of `{x=number, y=number}`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Builds an index mapping each GID present on a layer to an array of `{x, y}` positions.
@@ -5868,9 +6592,19 @@ Builds an index mapping each GID present on a layer to an array of `{x, y}` posi
 function LTileMap:tileTypeIndex(layer) end
 ```
 
+#### Description
+
+Builds an index mapping each GID present on a layer to an array of `{x, y}` positions.
+
+Parameters:
+
+- `layer` (`integer`, required): Layer index (1-based).
+
+Returns: `table` - Table keyed by GID, each value an array of `{x=number, y=number}`.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -5884,18 +6618,7 @@ end
 
 ### LTileMap:toNavGrid
 
-`LTileMap:toNavGrid(layer: integer, gids: table) -> boolean[]`
-
-Converts a layer into a 2D boolean grid for pathfinding. Tiles with GIDs in the given list are marked walkable.
-
-**Parameters**
-
-- `layer` (`integer`, required): Layer index (1-based).
-- `gids` (`table`, required): Array of walkable GIDs.
-
-**Returns**: `boolean[]` - Flat walkable grid (true = walkable), row-major order.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Converts a layer into a 2D boolean grid for pathfinding. Tiles with GIDs in the given list are marked walkable.
@@ -5905,9 +6628,20 @@ Converts a layer into a 2D boolean grid for pathfinding. Tiles with GIDs in the 
 function LTileMap:toNavGrid(layer, gids) end
 ```
 
+#### Description
+
+Converts a layer into a 2D boolean grid for pathfinding. Tiles with GIDs in the given list are marked walkable.
+
+Parameters:
+
+- `layer` (`integer`, required): Layer index (1-based).
+- `gids` (`table`, required): Array of walkable GIDs.
+
+Returns: `boolean[]` - Flat walkable grid (true = walkable), row-major order.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -5921,13 +6655,7 @@ end
 
 ### LTileMap:type
 
-`LTileMap:type() -> string`
-
-Returns the type name of this userdata.
-
-**Returns**: `string` - Always `"LTileMap"`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this userdata.
@@ -5935,9 +6663,15 @@ Returns the type name of this userdata.
 function LTileMap:type() end
 ```
 
+#### Description
+
+Returns the type name of this userdata.
+
+Returns: `string` - Always `"LTileMap"`.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -5948,17 +6682,7 @@ end
 
 ### LTileMap:typeOf
 
-`LTileMap:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to check against.
-
-**Returns**: `boolean` - True if `name` is `"LTileMap"` or `"Object"`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this object matches the given type name.
@@ -5967,9 +6691,19 @@ Checks whether this object matches the given type name.
 function LTileMap:typeOf(name) end
 ```
 
+#### Description
+
+Checks whether this object matches the given type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to check against.
+
+Returns: `boolean` - True if `name` is `"LTileMap"` or `"Object"`.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -5980,15 +6714,7 @@ end
 
 ### LTileMap:update
 
-`LTileMap:update(dt: number)`
-
-Advances tile animations by the given delta time.
-
-**Parameters**
-
-- `dt` (`number`, required): Time elapsed in seconds since last update.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Advances tile animations by the given delta time.
@@ -5996,9 +6722,17 @@ Advances tile animations by the given delta time.
 function LTileMap:update(dt) end
 ```
 
+#### Description
+
+Advances tile animations by the given delta time.
+
+Parameters:
+
+- `dt` (`number`, required): Time elapsed in seconds since last update.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -6012,18 +6746,7 @@ end
 
 ### LTileMap:worldToTile
 
-`LTileMap:worldToTile(wx: number, wy: number) -> integer`
-
-Converts world-space pixel coordinates to tile-grid coordinates.
-
-**Parameters**
-
-- `wx` (`number`, required): World X position in pixels.
-- `wy` (`number`, required): World Y position in pixels.
-
-**Returns**: `integer` - Tile column (1-based).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Converts world-space pixel coordinates to tile-grid coordinates.
@@ -6034,9 +6757,20 @@ Converts world-space pixel coordinates to tile-grid coordinates.
 function LTileMap:worldToTile(wx, wy) end
 ```
 
+#### Description
+
+Converts world-space pixel coordinates to tile-grid coordinates.
+
+Parameters:
+
+- `wx` (`number`, required): World X position in pixels.
+- `wy` (`number`, required): World Y position in pixels.
+
+Returns: `integer` - Tile column (1-based).
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -6050,17 +6784,7 @@ end
 
 ### LTileSet:getAnimation
 
-`LTileSet:getAnimation(tileId: integer) -> table`
-
-Returns the animation frames for a tile, or nil if none are set.
-
-**Parameters**
-
-- `tileId` (`integer`, required): Tile ID to query (1-based).
-
-**Returns**: `table` - Array of `{tileid=number, duration=number}` frames, or nil.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the animation frames for a tile, or nil if none are set.
@@ -6069,9 +6793,19 @@ Returns the animation frames for a tile, or nil if none are set.
 function LTileSet:getAnimation(tileId) end
 ```
 
+#### Description
+
+Returns the animation frames for a tile, or nil if none are set.
+
+Parameters:
+
+- `tileId` (`integer`, required): Tile ID to query (1-based).
+
+Returns: `table` - Array of `{tileid=number, duration=number}` frames, or nil.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -6085,18 +6819,7 @@ end
 
 ### LTileSet:getAutoTileId
 
-`LTileSet:getAutoTileId(typeName: string, bitmask: integer) -> integer`
-
-Looks up the tile ID for a 4-bit auto-tile bitmask and type name.
-
-**Parameters**
-
-- `typeName` (`string`, required): Logical tile type name.
-- `bitmask` (`integer`, required): 4-bit neighbor bitmask (0..15).
-
-**Returns**: `integer` - Resolved tile ID (1-based), or nil if no rule matches.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Looks up the tile ID for a 4-bit auto-tile bitmask and type name.
@@ -6106,9 +6829,20 @@ Looks up the tile ID for a 4-bit auto-tile bitmask and type name.
 function LTileSet:getAutoTileId(typeName, bitmask) end
 ```
 
+#### Description
+
+Looks up the tile ID for a 4-bit auto-tile bitmask and type name.
+
+Parameters:
+
+- `typeName` (`string`, required): Logical tile type name.
+- `bitmask` (`integer`, required): 4-bit neighbor bitmask (0..15).
+
+Returns: `integer` - Resolved tile ID (1-based), or nil if no rule matches.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -6122,18 +6856,7 @@ end
 
 ### LTileSet:getAutoTileId8
 
-`LTileSet:getAutoTileId8(typeName: string, bitmask: integer) -> integer`
-
-Looks up the tile ID for an 8-bit auto-tile bitmask and type name.
-
-**Parameters**
-
-- `typeName` (`string`, required): Logical tile type name.
-- `bitmask` (`integer`, required): 8-bit neighbor bitmask (0..255).
-
-**Returns**: `integer` - Resolved tile ID (1-based), or nil if no rule matches.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Looks up the tile ID for an 8-bit auto-tile bitmask and type name.
@@ -6143,9 +6866,20 @@ Looks up the tile ID for an 8-bit auto-tile bitmask and type name.
 function LTileSet:getAutoTileId8(typeName, bitmask) end
 ```
 
+#### Description
+
+Looks up the tile ID for an 8-bit auto-tile bitmask and type name.
+
+Parameters:
+
+- `typeName` (`string`, required): Logical tile type name.
+- `bitmask` (`integer`, required): 8-bit neighbor bitmask (0..255).
+
+Returns: `integer` - Resolved tile ID (1-based), or nil if no rule matches.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -6159,13 +6893,7 @@ end
 
 ### LTileSet:getColumns
 
-`LTileSet:getColumns() -> integer`
-
-Returns the number of columns in the tileset atlas image.
-
-**Returns**: `integer` - Column count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of columns in the tileset atlas image.
@@ -6173,9 +6901,15 @@ Returns the number of columns in the tileset atlas image.
 function LTileSet:getColumns() end
 ```
 
+#### Description
+
+Returns the number of columns in the tileset atlas image.
+
+Returns: `integer` - Column count.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -6187,13 +6921,7 @@ end
 
 ### LTileSet:getFirstGid
 
-`LTileSet:getFirstGid() -> integer`
-
-Returns the first global tile ID (GID) of this tileset.
-
-**Returns**: `integer` - First GID assigned to this tileset.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the first global tile ID (GID) of this tileset.
@@ -6201,9 +6929,15 @@ Returns the first global tile ID (GID) of this tileset.
 function LTileSet:getFirstGid() end
 ```
 
+#### Description
+
+Returns the first global tile ID (GID) of this tileset.
+
+Returns: `integer` - First GID assigned to this tileset.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -6215,13 +6949,7 @@ end
 
 ### LTileSet:getMargin
 
-`LTileSet:getMargin() -> integer`
-
-Returns the margin around the edge of the atlas image, in pixels.
-
-**Returns**: `integer` - Margin in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the margin around the edge of the atlas image, in pixels.
@@ -6229,9 +6957,15 @@ Returns the margin around the edge of the atlas image, in pixels.
 function LTileSet:getMargin() end
 ```
 
+#### Description
+
+Returns the margin around the edge of the atlas image, in pixels.
+
+Returns: `integer` - Margin in pixels.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -6243,17 +6977,7 @@ end
 
 ### LTileSet:getQuad
 
-`LTileSet:getQuad(tileId: integer) -> table`
-
-Returns the source rectangle (UV quad) for a tile in the atlas.
-
-**Parameters**
-
-- `tileId` (`integer`, required): Tile ID (1-based).
-
-**Returns**: `table` - Table with fields `x`, `y`, `width`, `height` in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the source rectangle (UV quad) for a tile in the atlas.
@@ -6262,9 +6986,19 @@ Returns the source rectangle (UV quad) for a tile in the atlas.
 function LTileSet:getQuad(tileId) end
 ```
 
+#### Description
+
+Returns the source rectangle (UV quad) for a tile in the atlas.
+
+Parameters:
+
+- `tileId` (`integer`, required): Tile ID (1-based).
+
+Returns: `table` - Table with fields `x`, `y`, `width`, `height` in pixels.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -6278,13 +7012,7 @@ end
 
 ### LTileSet:getSpacing
 
-`LTileSet:getSpacing() -> integer`
-
-Returns the spacing between tiles in the atlas image, in pixels.
-
-**Returns**: `integer` - Spacing in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the spacing between tiles in the atlas image, in pixels.
@@ -6292,9 +7020,15 @@ Returns the spacing between tiles in the atlas image, in pixels.
 function LTileSet:getSpacing() end
 ```
 
+#### Description
+
+Returns the spacing between tiles in the atlas image, in pixels.
+
+Returns: `integer` - Spacing in pixels.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -6306,13 +7040,7 @@ end
 
 ### LTileSet:getTileCount
 
-`LTileSet:getTileCount() -> integer`
-
-Returns the total number of tiles defined in this tileset.
-
-**Returns**: `integer` - Total tile count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the total number of tiles defined in this tileset.
@@ -6320,9 +7048,15 @@ Returns the total number of tiles defined in this tileset.
 function LTileSet:getTileCount() end
 ```
 
+#### Description
+
+Returns the total number of tiles defined in this tileset.
+
+Returns: `integer` - Total tile count.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -6334,13 +7068,7 @@ end
 
 ### LTileSet:getTileDimensions
 
-`LTileSet:getTileDimensions() -> integer`
-
-Returns both tile width and height in pixels.
-
-**Returns**: `integer` - Tile width in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns both tile width and height in pixels.
@@ -6349,9 +7077,15 @@ Returns both tile width and height in pixels.
 function LTileSet:getTileDimensions() end
 ```
 
+#### Description
+
+Returns both tile width and height in pixels.
+
+Returns: `integer` - Tile width in pixels.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -6364,13 +7098,7 @@ end
 
 ### LTileSet:getTileHeight
 
-`LTileSet:getTileHeight() -> integer`
-
-Returns the height of a single tile in pixels.
-
-**Returns**: `integer` - Tile height in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the height of a single tile in pixels.
@@ -6378,9 +7106,15 @@ Returns the height of a single tile in pixels.
 function LTileSet:getTileHeight() end
 ```
 
+#### Description
+
+Returns the height of a single tile in pixels.
+
+Returns: `integer` - Tile height in pixels.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -6392,13 +7126,7 @@ end
 
 ### LTileSet:getTileWidth
 
-`LTileSet:getTileWidth() -> integer`
-
-Returns the width of a single tile in pixels.
-
-**Returns**: `integer` - Tile width in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the width of a single tile in pixels.
@@ -6406,9 +7134,15 @@ Returns the width of a single tile in pixels.
 function LTileSet:getTileWidth() end
 ```
 
+#### Description
+
+Returns the width of a single tile in pixels.
+
+Returns: `integer` - Tile width in pixels.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -6420,17 +7154,7 @@ end
 
 ### LTileSet:isSolid
 
-`LTileSet:isSolid(tileId: integer) -> boolean`
-
-Checks whether a tile is marked as solid.
-
-**Parameters**
-
-- `tileId` (`integer`, required): Tile ID to check (1-based).
-
-**Returns**: `boolean` - True if the tile is solid.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether a tile is marked as solid.
@@ -6439,9 +7163,19 @@ Checks whether a tile is marked as solid.
 function LTileSet:isSolid(tileId) end
 ```
 
+#### Description
+
+Checks whether a tile is marked as solid.
+
+Parameters:
+
+- `tileId` (`integer`, required): Tile ID to check (1-based).
+
+Returns: `boolean` - True if the tile is solid.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -6455,16 +7189,7 @@ end
 
 ### LTileSet:setAnimation
 
-`LTileSet:setAnimation(tileId: integer, frames: table)`
-
-Assigns an animation sequence to a tile. Each frame references another tile ID and a duration.
-
-**Parameters**
-
-- `tileId` (`integer`, required): Tile ID to animate (1-based).
-- `frames` (`table`, required): Array of `{tileid=number, duration=number}` frame definitions.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Assigns an animation sequence to a tile. Each frame references another tile ID and a duration.
@@ -6473,9 +7198,18 @@ Assigns an animation sequence to a tile. Each frame references another tile ID a
 function LTileSet:setAnimation(tileId, frames) end
 ```
 
+#### Description
+
+Assigns an animation sequence to a tile. Each frame references another tile ID and a duration.
+
+Parameters:
+
+- `tileId` (`integer`, required): Tile ID to animate (1-based).
+- `frames` (`table`, required): Array of `{tileid=number, duration=number}` frame definitions.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -6489,17 +7223,7 @@ end
 
 ### LTileSet:setAutoTileRule
 
-`LTileSet:setAutoTileRule(typeName: string, bitmask: integer, tileId: integer)`
-
-Registers a 4-bit auto-tile rule mapping a bitmask to a tile ID for a named tile type.
-
-**Parameters**
-
-- `typeName` (`string`, required): Logical tile type name (e.g. "grass").
-- `bitmask` (`integer`, required): 4-bit neighbor bitmask (0..15).
-- `tileId` (`integer`, required): Tile ID to use for this bitmask (1-based).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Registers a 4-bit auto-tile rule mapping a bitmask to a tile ID for a named tile type.
@@ -6509,9 +7233,19 @@ Registers a 4-bit auto-tile rule mapping a bitmask to a tile ID for a named tile
 function LTileSet:setAutoTileRule(typeName, bitmask, tileId) end
 ```
 
+#### Description
+
+Registers a 4-bit auto-tile rule mapping a bitmask to a tile ID for a named tile type.
+
+Parameters:
+
+- `typeName` (`string`, required): Logical tile type name (e.g. "grass").
+- `bitmask` (`integer`, required): 4-bit neighbor bitmask (0..15).
+- `tileId` (`integer`, required): Tile ID to use for this bitmask (1-based).
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -6525,17 +7259,7 @@ end
 
 ### LTileSet:setAutoTileRule8
 
-`LTileSet:setAutoTileRule8(typeName: string, bitmask: integer, tileId: integer)`
-
-Registers an 8-bit auto-tile rule mapping a bitmask to a tile ID for a named tile type.
-
-**Parameters**
-
-- `typeName` (`string`, required): Logical tile type name.
-- `bitmask` (`integer`, required): 8-bit neighbor bitmask (0..255).
-- `tileId` (`integer`, required): Tile ID to use for this bitmask (1-based).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Registers an 8-bit auto-tile rule mapping a bitmask to a tile ID for a named tile type.
@@ -6545,9 +7269,19 @@ Registers an 8-bit auto-tile rule mapping a bitmask to a tile ID for a named til
 function LTileSet:setAutoTileRule8(typeName, bitmask, tileId) end
 ```
 
+#### Description
+
+Registers an 8-bit auto-tile rule mapping a bitmask to a tile ID for a named tile type.
+
+Parameters:
+
+- `typeName` (`string`, required): Logical tile type name.
+- `bitmask` (`integer`, required): 8-bit neighbor bitmask (0..255).
+- `tileId` (`integer`, required): Tile ID to use for this bitmask (1-based).
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -6561,16 +7295,7 @@ end
 
 ### LTileSet:setSolid
 
-`LTileSet:setSolid(tileId: integer, solid: boolean)`
-
-Marks a tile as solid or non-solid for collision queries.
-
-**Parameters**
-
-- `tileId` (`integer`, required): Tile ID to modify (1-based).
-- `solid` (`boolean`, required): Whether the tile blocks movement.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Marks a tile as solid or non-solid for collision queries.
@@ -6579,9 +7304,18 @@ Marks a tile as solid or non-solid for collision queries.
 function LTileSet:setSolid(tileId, solid) end
 ```
 
+#### Description
+
+Marks a tile as solid or non-solid for collision queries.
+
+Parameters:
+
+- `tileId` (`integer`, required): Tile ID to modify (1-based).
+- `solid` (`boolean`, required): Whether the tile blocks movement.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -6594,13 +7328,7 @@ end
 
 ### LTileSet:type
 
-`LTileSet:type() -> string`
-
-Returns the type name of this userdata.
-
-**Returns**: `string` - Always `"LTileSet"`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this userdata.
@@ -6608,9 +7336,15 @@ Returns the type name of this userdata.
 function LTileSet:type() end
 ```
 
+#### Description
+
+Returns the type name of this userdata.
+
+Returns: `string` - Always `"LTileSet"`.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do
@@ -6622,17 +7356,7 @@ end
 
 ### LTileSet:typeOf
 
-`LTileSet:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to check against.
-
-**Returns**: `boolean` - True if `name` is `"LTileSet"` or `"Object"`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this object matches the given type name.
@@ -6641,9 +7365,19 @@ Checks whether this object matches the given type name.
 function LTileSet:typeOf(name) end
 ```
 
+#### Description
+
+Checks whether this object matches the given type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to check against.
+
+Returns: `boolean` - True if `name` is `"LTileSet"` or `"Object"`.
+
 #### Example
 
-Exact example from [tilemap.lua](../blob/main/content/examples/tilemap.lua):
+Source: [tilemap.lua](../blob/main/content/examples/tilemap.lua)
 
 ```lua
 do

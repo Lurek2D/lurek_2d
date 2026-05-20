@@ -14,138 +14,400 @@
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
   - [lurek.graph.newGraph](#lurekgraphnewgraph)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔷 Module Types](#module-types)
   - [LGraph](#lgraph)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphEdge](#lgraphedge)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphItem](#lgraphitem)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode](#lgraphnode)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
   - [LGraph:addEdge](#lgraphaddedge)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraph:addItem](#lgraphadditem)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraph:addNode](#lgraphaddnode)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraph:astar](#lgraphastar)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraph:colorGraph](#lgraphcolorgraph)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraph:createItem](#lgraphcreateitem)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraph:findPath](#lgraphfindpath)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraph:findPathForItem](#lgraphfindpathforitem)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraph:getComponents](#lgraphgetcomponents)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraph:getDistance](#lgraphgetdistance)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraph:getEdgeBetween](#lgraphgetedgebetween)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraph:getEdgeCount](#lgraphgetedgecount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraph:getEdges](#lgraphgetedges)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraph:getItemCount](#lgraphgetitemcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraph:getItems](#lgraphgetitems)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraph:getNeighbors](#lgraphgetneighbors)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraph:getNodeCount](#lgraphgetnodecount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraph:getNodes](#lgraphgetnodes)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraph:getReachable](#lgraphgetreachable)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraph:getStats](#lgraphgetstats)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraph:hasCycle](#lgraphhascycle)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraph:hasEdge](#lgraphhasedge)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraph:hasItem](#lgraphhasitem)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraph:hasNode](#lgraphhasnode)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraph:isBipartite](#lgraphisbipartite)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraph:mst](#lgraphmst)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraph:on](#lgraphon)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraph:processDemand](#lgraphprocessdemand)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraph:removeEdge](#lgraphremoveedge)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraph:removeItem](#lgraphremoveitem)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraph:removeNode](#lgraphremovenode)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraph:sendItem](#lgraphsenditem)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraph:step](#lgraphstep)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraph:subgraph](#lgraphsubgraph)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraph:tickParallel](#lgraphtickparallel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraph:topologicalSort](#lgraphtopologicalsort)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraph:type](#lgraphtype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraph:typeOf](#lgraphtypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraph:update](#lgraphupdate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphEdge:addAllowedType](#lgraphedgeaddallowedtype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphEdge:clearAllowedTypes](#lgraphedgeclearallowedtypes)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphEdge:getCapacity](#lgraphedgegetcapacity)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphEdge:getCooldown](#lgraphedgegetcooldown)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphEdge:getFrom](#lgraphedgegetfrom)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphEdge:getItemsInTransit](#lgraphedgegetitemsintransit)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphEdge:getSpeedModifier](#lgraphedgegetspeedmodifier)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphEdge:getThroughput](#lgraphedgegetthroughput)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphEdge:getTo](#lgraphedgegetto)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphEdge:getTravelTime](#lgraphedgegettraveltime)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphEdge:getType](#lgraphedgegettype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphEdge:getWeight](#lgraphedgegetweight)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphEdge:isActive](#lgraphedgeisactive)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphEdge:isBidirectional](#lgraphedgeisbidirectional)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphEdge:isItemTypeAllowed](#lgraphedgeisitemtypeallowed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphEdge:isOnCooldown](#lgraphedgeisoncooldown)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphEdge:removeAllowedType](#lgraphedgeremoveallowedtype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphEdge:setActive](#lgraphedgesetactive)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphEdge:setBidirectional](#lgraphedgesetbidirectional)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphEdge:setCapacity](#lgraphedgesetcapacity)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphEdge:setCooldown](#lgraphedgesetcooldown)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphEdge:setSpeedModifier](#lgraphedgesetspeedmodifier)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphEdge:setThroughput](#lgraphedgesetthroughput)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphEdge:setTravelTime](#lgraphedgesettraveltime)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphEdge:setType](#lgraphedgesettype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphEdge:setWeight](#lgraphedgesetweight)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphEdge:type](#lgraphedgetype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphEdge:typeOf](#lgraphedgetypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphItem:getDecayTime](#lgraphitemgetdecaytime)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphItem:getPosition](#lgraphitemgetposition)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphItem:getPriority](#lgraphitemgetpriority)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphItem:getRemainingLife](#lgraphitemgetremaininglife)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphItem:getType](#lgraphitemgettype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphItem:isAlive](#lgraphitemisalive)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphItem:kill](#lgraphitemkill)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphItem:setDecayTime](#lgraphitemsetdecaytime)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphItem:setPriority](#lgraphitemsetpriority)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphItem:setType](#lgraphitemsettype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphItem:type](#lgraphitemtype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphItem:typeOf](#lgraphitemtypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:addDemand](#lgraphnodeadddemand)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:addSupply](#lgraphnodeaddsupply)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:addTag](#lgraphnodeaddtag)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:clearAllConversions](#lgraphnodeclearallconversions)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:clearConversion](#lgraphnodeclearconversion)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:clearDemands](#lgraphnodecleardemands)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:clearSupplies](#lgraphnodeclearsupplies)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:clearTags](#lgraphnodecleartags)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:dequeue](#lgraphnodedequeue)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:enqueue](#lgraphnodeenqueue)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:getCapacity](#lgraphnodegetcapacity)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:getEdges](#lgraphnodegetedges)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:getFlowMode](#lgraphnodegetflowmode)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:getItemCount](#lgraphnodegetitemcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:getItems](#lgraphnodegetitems)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:getOverflowPolicy](#lgraphnodegetoverflowpolicy)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:getProcessTime](#lgraphnodegetprocesstime)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:getPullFilter](#lgraphnodegetpullfilter)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:getPullRate](#lgraphnodegetpullrate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:getPushFilter](#lgraphnodegetpushfilter)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:getPushRate](#lgraphnodegetpushrate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:getQueueCapacity](#lgraphnodegetqueuecapacity)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:getQueueSize](#lgraphnodegetqueuesize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:getTags](#lgraphnodegettags)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:getType](#lgraphnodegettype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:hasTag](#lgraphnodehastag)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:isActive](#lgraphnodeisactive)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:isFull](#lgraphnodeisfull)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:isQueueEnabled](#lgraphnodeisqueueenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:removeDemand](#lgraphnoderemovedemand)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:removeSupply](#lgraphnoderemovesupply)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:removeTag](#lgraphnoderemovetag)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:setActive](#lgraphnodesetactive)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:setCapacity](#lgraphnodesetcapacity)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:setConversion](#lgraphnodesetconversion)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:setFlowMode](#lgraphnodesetflowmode)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:setOverflowPolicy](#lgraphnodesetoverflowpolicy)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:setProcessTime](#lgraphnodesetprocesstime)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:setPullFilter](#lgraphnodesetpullfilter)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:setPullRate](#lgraphnodesetpullrate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:setPushFilter](#lgraphnodesetpushfilter)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:setPushRate](#lgraphnodesetpushrate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:setQueueCapacity](#lgraphnodesetqueuecapacity)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:setQueueEnabled](#lgraphnodesetqueueenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:setType](#lgraphnodesettype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:type](#lgraphnodetype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGraphNode:typeOf](#lgraphnodetypeof)
+    - [Definition](#definition)
+    - [Description](#description)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -192,15 +454,23 @@ lurek.graph.newGraph() -> LGraph -- Creates an empty logistics graph with no nod
 
 ### lurek.graph.newGraph
 
-`lurek.graph.newGraph() -> LGraph`
+#### Definition
+
+```lua
+--- Creates an empty logistics graph with no nodes, edges, items, or callbacks.
+---@return LGraph New graph handle.
+lurek.graph.newGraph = function() end
+```
+
+#### Description
 
 Creates an empty logistics graph with no nodes, edges, items, or callbacks.
 
-**Returns**: `LGraph` - New graph handle.
+Returns: `LGraph` - New graph handle.
 
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -216,9 +486,7 @@ end
 
 ### LGraph
 
-Lua-side graph handle storing graph state and registered event callbacks.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side graph handle storing graph state and registered event callbacks.
@@ -226,9 +494,13 @@ Lua-side graph handle storing graph state and registered event callbacks.
 LGraph = {}
 ```
 
+#### Description
+
+Lua-side graph handle storing graph state and registered event callbacks.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -239,9 +511,7 @@ end
 
 ### LGraphEdge
 
-Lua-side edge handle referencing one edge id inside a graph.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side edge handle referencing one edge id inside a graph.
@@ -249,9 +519,13 @@ Lua-side edge handle referencing one edge id inside a graph.
 LGraphEdge = {}
 ```
 
+#### Description
+
+Lua-side edge handle referencing one edge id inside a graph.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -265,9 +539,7 @@ end
 
 ### LGraphItem
 
-Lua-side item handle referencing one item id inside a graph.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side item handle referencing one item id inside a graph.
@@ -275,9 +547,13 @@ Lua-side item handle referencing one item id inside a graph.
 LGraphItem = {}
 ```
 
+#### Description
+
+Lua-side item handle referencing one item id inside a graph.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -289,9 +565,7 @@ end
 
 ### LGraphNode
 
-Lua-side node handle referencing one node id inside a graph.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side node handle referencing one node id inside a graph.
@@ -299,9 +573,13 @@ Lua-side node handle referencing one node id inside a graph.
 LGraphNode = {}
 ```
 
+#### Description
+
+Lua-side node handle referencing one node id inside a graph.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -318,19 +596,7 @@ end
 
 ### LGraph:addEdge
 
-`LGraph:addEdge(from_ud: LGraphNode, to_ud: LGraphNode, [edge_type]: string) -> LGraphEdge`
-
-Creates an edge between two nodes with an optional edge type.
-
-**Parameters**
-
-- `from_ud` (`LGraphNode`, required): Source node handle.
-- `to_ud` (`LGraphNode`, required): Destination node handle.
-- `edge_type` (`string`, optional): Edge type.
-
-**Returns**: `LGraphEdge` - New edge handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Creates an edge between two nodes with an optional edge type.
@@ -341,9 +607,21 @@ Creates an edge between two nodes with an optional edge type.
 function LGraph:addEdge(from_ud, to_ud, edge_type) end
 ```
 
+#### Description
+
+Creates an edge between two nodes with an optional edge type.
+
+Parameters:
+
+- `from_ud` (`LGraphNode`, required): Source node handle.
+- `to_ud` (`LGraphNode`, required): Destination node handle.
+- `edge_type` (`string`, optional): Edge type.
+
+Returns: `LGraphEdge` - New edge handle.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -357,16 +635,7 @@ end
 
 ### LGraph:addItem
 
-`LGraph:addItem(item_ud: LGraphItem, node_ud: LGraphNode)`
-
-Places an item onto a destination node.
-
-**Parameters**
-
-- `item_ud` (`LGraphItem`, required): Item handle to place.
-- `node_ud` (`LGraphNode`, required): Destination node handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Places an item onto a destination node.
@@ -375,9 +644,18 @@ Places an item onto a destination node.
 function LGraph:addItem(item_ud, node_ud) end
 ```
 
+#### Description
+
+Places an item onto a destination node.
+
+Parameters:
+
+- `item_ud` (`LGraphItem`, required): Item handle to place.
+- `node_ud` (`LGraphNode`, required): Destination node handle.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -391,18 +669,7 @@ end
 
 ### LGraph:addNode
 
-`LGraph:addNode([node_type]: string, [capacity]: integer) -> LGraphNode`
-
-Creates a node with optional type and capacity.
-
-**Parameters**
-
-- `node_type` (`string`, optional): Node type, defaulting to `default`.
-- `capacity` (`integer`, optional): Capacity, defaulting to -1.
-
-**Returns**: `LGraphNode` - New node handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Creates a node with optional type and capacity.
@@ -412,9 +679,20 @@ Creates a node with optional type and capacity.
 function LGraph:addNode(node_type, capacity) end
 ```
 
+#### Description
+
+Creates a node with optional type and capacity.
+
+Parameters:
+
+- `node_type` (`string`, optional): Node type, defaulting to `default`.
+- `capacity` (`integer`, optional): Capacity, defaulting to -1.
+
+Returns: `LGraphNode` - New node handle.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -426,18 +704,7 @@ end
 
 ### LGraph:astar
 
-`LGraph:astar(from_node: LGraphNode, to_node: LGraphNode) -> LGraphNode[]`
-
-Runs A* pathfinding between two nodes.
-
-**Parameters**
-
-- `from_node` (`LGraphNode`, required): Start node handle.
-- `to_node` (`LGraphNode`, required): Target node handle.
-
-**Returns**: `LGraphNode[]` - `LGraphNode` handles along the path, or nil when no path exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Runs A* pathfinding between two nodes.
@@ -447,9 +714,20 @@ Runs A* pathfinding between two nodes.
 function LGraph:astar(from_node, to_node) end
 ```
 
+#### Description
+
+Runs A* pathfinding between two nodes.
+
+Parameters:
+
+- `from_node` (`LGraphNode`, required): Start node handle.
+- `to_node` (`LGraphNode`, required): Target node handle.
+
+Returns: `LGraphNode[]` - `LGraphNode` handles along the path, or nil when no path exists.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -463,13 +741,7 @@ end
 
 ### LGraph:colorGraph
 
-`LGraph:colorGraph() -> table`
-
-Computes graph coloring and returns color indices by node id.
-
-**Returns**: `table` - Map table from node id (integer key) to color index (integer).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Computes graph coloring and returns color indices by node id.
@@ -477,9 +749,15 @@ Computes graph coloring and returns color indices by node id.
 function LGraph:colorGraph() end
 ```
 
+#### Description
+
+Computes graph coloring and returns color indices by node id.
+
+Returns: `table` - Map table from node id (integer key) to color index (integer).
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -493,18 +771,7 @@ end
 
 ### LGraph:createItem
 
-`LGraph:createItem([item_type]: string, [decay_time]: number) -> LGraphItem`
-
-Creates an unplaced graph item with optional type and decay time.
-
-**Parameters**
-
-- `item_type` (`string`, optional): Item type, defaulting to `default`.
-- `decay_time` (`number`, optional): Decay lifetime, defaulting to -1.0.
-
-**Returns**: `LGraphItem` - New graph item handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Creates an unplaced graph item with optional type and decay time.
@@ -514,9 +781,20 @@ Creates an unplaced graph item with optional type and decay time.
 function LGraph:createItem(item_type, decay_time) end
 ```
 
+#### Description
+
+Creates an unplaced graph item with optional type and decay time.
+
+Parameters:
+
+- `item_type` (`string`, optional): Item type, defaulting to `default`.
+- `decay_time` (`number`, optional): Decay lifetime, defaulting to -1.0.
+
+Returns: `LGraphItem` - New graph item handle.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -528,18 +806,7 @@ end
 
 ### LGraph:findPath
 
-`LGraph:findPath(from_ud: LGraphNode, to_ud: LGraphNode) -> table`
-
-Finds a path between two graph nodes.
-
-**Parameters**
-
-- `from_ud` (`LGraphNode`, required): Start node handle.
-- `to_ud` (`LGraphNode`, required): Target node handle.
-
-**Returns**: `table` - Path result table with nodes, edges, and cost, or nil when no path exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Finds a path between two graph nodes.
@@ -549,9 +816,20 @@ Finds a path between two graph nodes.
 function LGraph:findPath(from_ud, to_ud) end
 ```
 
+#### Description
+
+Finds a path between two graph nodes.
+
+Parameters:
+
+- `from_ud` (`LGraphNode`, required): Start node handle.
+- `to_ud` (`LGraphNode`, required): Target node handle.
+
+Returns: `table` - Path result table with nodes, edges, and cost, or nil when no path exists.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -565,19 +843,7 @@ end
 
 ### LGraph:findPathForItem
 
-`LGraph:findPathForItem(item_ud: LGraphItem, from_ud: LGraphNode, to_ud: LGraphNode) -> table`
-
-Finds a path for a specific item between two nodes while respecting item constraints.
-
-**Parameters**
-
-- `item_ud` (`LGraphItem`, required): Item handle used for routing constraints.
-- `from_ud` (`LGraphNode`, required): Start node handle.
-- `to_ud` (`LGraphNode`, required): Target node handle.
-
-**Returns**: `table` - Path result table with nodes, edges, and cost, or nil when no path exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Finds a path for a specific item between two nodes while respecting item constraints.
@@ -588,9 +854,21 @@ Finds a path for a specific item between two nodes while respecting item constra
 function LGraph:findPathForItem(item_ud, from_ud, to_ud) end
 ```
 
+#### Description
+
+Finds a path for a specific item between two nodes while respecting item constraints.
+
+Parameters:
+
+- `item_ud` (`LGraphItem`, required): Item handle used for routing constraints.
+- `from_ud` (`LGraphNode`, required): Start node handle.
+- `to_ud` (`LGraphNode`, required): Target node handle.
+
+Returns: `table` - Path result table with nodes, edges, and cost, or nil when no path exists.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -604,13 +882,7 @@ end
 
 ### LGraph:getComponents
 
-`LGraph:getComponents() -> LGraphNode[]`
-
-Returns connected components as arrays of node handles.
-
-**Returns**: `LGraphNode[]` - Component tables containing `LGraphNode` handles.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns connected components as arrays of node handles.
@@ -618,9 +890,15 @@ Returns connected components as arrays of node handles.
 function LGraph:getComponents() end
 ```
 
+#### Description
+
+Returns connected components as arrays of node handles.
+
+Returns: `LGraphNode[]` - Component tables containing `LGraphNode` handles.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -634,18 +912,7 @@ end
 
 ### LGraph:getDistance
 
-`LGraph:getDistance(from_ud: LGraphNode, to_ud: LGraphNode) -> number`
-
-Returns graph distance between two nodes when reachable.
-
-**Parameters**
-
-- `from_ud` (`LGraphNode`, required): Start node handle.
-- `to_ud` (`LGraphNode`, required): Target node handle.
-
-**Returns**: `number` - Distance between the two nodes, or nil when no path connects the nodes.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns graph distance between two nodes when reachable.
@@ -655,9 +922,20 @@ Returns graph distance between two nodes when reachable.
 function LGraph:getDistance(from_ud, to_ud) end
 ```
 
+#### Description
+
+Returns graph distance between two nodes when reachable.
+
+Parameters:
+
+- `from_ud` (`LGraphNode`, required): Start node handle.
+- `to_ud` (`LGraphNode`, required): Target node handle.
+
+Returns: `number` - Distance between the two nodes, or nil when no path connects the nodes.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -671,18 +949,7 @@ end
 
 ### LGraph:getEdgeBetween
 
-`LGraph:getEdgeBetween(from_ud: LGraphNode, to_ud: LGraphNode) -> LGraphEdge`
-
-Returns the edge connecting two nodes when one exists.
-
-**Parameters**
-
-- `from_ud` (`LGraphNode`, required): Source node handle.
-- `to_ud` (`LGraphNode`, required): Destination node handle.
-
-**Returns**: `LGraphEdge` - Edge handle connecting the two nodes, or nil when no edge connects the nodes.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the edge connecting two nodes when one exists.
@@ -692,9 +959,20 @@ Returns the edge connecting two nodes when one exists.
 function LGraph:getEdgeBetween(from_ud, to_ud) end
 ```
 
+#### Description
+
+Returns the edge connecting two nodes when one exists.
+
+Parameters:
+
+- `from_ud` (`LGraphNode`, required): Source node handle.
+- `to_ud` (`LGraphNode`, required): Destination node handle.
+
+Returns: `LGraphEdge` - Edge handle connecting the two nodes, or nil when no edge connects the nodes.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -708,13 +986,7 @@ end
 
 ### LGraph:getEdgeCount
 
-`LGraph:getEdgeCount() -> integer`
-
-Returns the number of edges in this graph.
-
-**Returns**: `integer` - Edge count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of edges in this graph.
@@ -722,9 +994,15 @@ Returns the number of edges in this graph.
 function LGraph:getEdgeCount() end
 ```
 
+#### Description
+
+Returns the number of edges in this graph.
+
+Returns: `integer` - Edge count.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -738,13 +1016,7 @@ end
 
 ### LGraph:getEdges
 
-`LGraph:getEdges() -> LGraphEdge[]`
-
-Returns all edges in this logistics graph.
-
-**Returns**: `LGraphEdge[]` - `LGraphEdge` handles.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns all edges in this logistics graph.
@@ -752,9 +1024,15 @@ Returns all edges in this logistics graph.
 function LGraph:getEdges() end
 ```
 
+#### Description
+
+Returns all edges in this logistics graph.
+
+Returns: `LGraphEdge[]` - `LGraphEdge` handles.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -768,13 +1046,7 @@ end
 
 ### LGraph:getItemCount
 
-`LGraph:getItemCount() -> integer`
-
-Returns the number of items in this graph.
-
-**Returns**: `integer` - Item count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of items in this graph.
@@ -782,9 +1054,15 @@ Returns the number of items in this graph.
 function LGraph:getItemCount() end
 ```
 
+#### Description
+
+Returns the number of items in this graph.
+
+Returns: `integer` - Item count.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -797,13 +1075,7 @@ end
 
 ### LGraph:getItems
 
-`LGraph:getItems() -> LGraphItem[]`
-
-Returns all items in this logistics graph.
-
-**Returns**: `LGraphItem[]` - `LGraphItem` handles.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns all items in this logistics graph.
@@ -811,9 +1083,15 @@ Returns all items in this logistics graph.
 function LGraph:getItems() end
 ```
 
+#### Description
+
+Returns all items in this logistics graph.
+
+Returns: `LGraphItem[]` - `LGraphItem` handles.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -826,17 +1104,7 @@ end
 
 ### LGraph:getNeighbors
 
-`LGraph:getNeighbors(node_ud: LGraphNode) -> LGraphNode[]`
-
-Returns neighbor nodes connected to a node.
-
-**Parameters**
-
-- `node_ud` (`LGraphNode`, required): Node handle to inspect.
-
-**Returns**: `LGraphNode[]` - Neighboring `LGraphNode` handles.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns neighbor nodes connected to a node.
@@ -845,9 +1113,19 @@ Returns neighbor nodes connected to a node.
 function LGraph:getNeighbors(node_ud) end
 ```
 
+#### Description
+
+Returns neighbor nodes connected to a node.
+
+Parameters:
+
+- `node_ud` (`LGraphNode`, required): Node handle to inspect.
+
+Returns: `LGraphNode[]` - Neighboring `LGraphNode` handles.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -861,13 +1139,7 @@ end
 
 ### LGraph:getNodeCount
 
-`LGraph:getNodeCount() -> integer`
-
-Returns the number of nodes in this graph.
-
-**Returns**: `integer` - Node count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of nodes in this graph.
@@ -875,9 +1147,15 @@ Returns the number of nodes in this graph.
 function LGraph:getNodeCount() end
 ```
 
+#### Description
+
+Returns the number of nodes in this graph.
+
+Returns: `integer` - Node count.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -890,13 +1168,7 @@ end
 
 ### LGraph:getNodes
 
-`LGraph:getNodes() -> LGraphNode[]`
-
-Returns all nodes in this logistics graph.
-
-**Returns**: `LGraphNode[]` - `LGraphNode` handles.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns all nodes in this logistics graph.
@@ -904,9 +1176,15 @@ Returns all nodes in this logistics graph.
 function LGraph:getNodes() end
 ```
 
+#### Description
+
+Returns all nodes in this logistics graph.
+
+Returns: `LGraphNode[]` - `LGraphNode` handles.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -920,18 +1198,7 @@ end
 
 ### LGraph:getReachable
 
-`LGraph:getReachable(from_ud: LGraphNode, [max_dist]: number) -> LGraphNode[]`
-
-Returns nodes reachable from a start node within an optional maximum distance.
-
-**Parameters**
-
-- `from_ud` (`LGraphNode`, required): Start node handle.
-- `max_dist` (`number`, optional): Maximum distance.
-
-**Returns**: `LGraphNode[]` - Reachable `LGraphNode` handles.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns nodes reachable from a start node within an optional maximum distance.
@@ -941,9 +1208,20 @@ Returns nodes reachable from a start node within an optional maximum distance.
 function LGraph:getReachable(from_ud, max_dist) end
 ```
 
+#### Description
+
+Returns nodes reachable from a start node within an optional maximum distance.
+
+Parameters:
+
+- `from_ud` (`LGraphNode`, required): Start node handle.
+- `max_dist` (`number`, optional): Maximum distance.
+
+Returns: `LGraphNode[]` - Reachable `LGraphNode` handles.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -957,13 +1235,7 @@ end
 
 ### LGraph:getStats
 
-`LGraph:getStats() -> table`
-
-Returns graph counts and aggregate supply-demand statistics.
-
-**Returns**: `table` - Table with node, edge, item, activity, transit, demand, supply, and queue counts.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns graph counts and aggregate supply-demand statistics.
@@ -971,9 +1243,15 @@ Returns graph counts and aggregate supply-demand statistics.
 function LGraph:getStats() end
 ```
 
+#### Description
+
+Returns graph counts and aggregate supply-demand statistics.
+
+Returns: `table` - Table with node, edge, item, activity, transit, demand, supply, and queue counts.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -987,13 +1265,7 @@ end
 
 ### LGraph:hasCycle
 
-`LGraph:hasCycle() -> boolean`
-
-Returns whether this graph contains a cycle.
-
-**Returns**: `boolean` - True when the graph has a cycle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this graph contains a cycle.
@@ -1001,9 +1273,15 @@ Returns whether this graph contains a cycle.
 function LGraph:hasCycle() end
 ```
 
+#### Description
+
+Returns whether this graph contains a cycle.
+
+Returns: `boolean` - True when the graph has a cycle.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -1016,17 +1294,7 @@ end
 
 ### LGraph:hasEdge
 
-`LGraph:hasEdge(edge_ud: LGraphEdge) -> boolean`
-
-Returns whether an edge handle still exists in this graph.
-
-**Parameters**
-
-- `edge_ud` (`LGraphEdge`, required): Edge handle to check.
-
-**Returns**: `boolean` - True when the edge exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether an edge handle still exists in this graph.
@@ -1035,9 +1303,19 @@ Returns whether an edge handle still exists in this graph.
 function LGraph:hasEdge(edge_ud) end
 ```
 
+#### Description
+
+Returns whether an edge handle still exists in this graph.
+
+Parameters:
+
+- `edge_ud` (`LGraphEdge`, required): Edge handle to check.
+
+Returns: `boolean` - True when the edge exists.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -1051,17 +1329,7 @@ end
 
 ### LGraph:hasItem
 
-`LGraph:hasItem(item_ud: LGraphItem) -> boolean`
-
-Returns whether an item handle still exists in this graph.
-
-**Parameters**
-
-- `item_ud` (`LGraphItem`, required): Item handle to check.
-
-**Returns**: `boolean` - True when the item exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether an item handle still exists in this graph.
@@ -1070,9 +1338,19 @@ Returns whether an item handle still exists in this graph.
 function LGraph:hasItem(item_ud) end
 ```
 
+#### Description
+
+Returns whether an item handle still exists in this graph.
+
+Parameters:
+
+- `item_ud` (`LGraphItem`, required): Item handle to check.
+
+Returns: `boolean` - True when the item exists.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -1084,17 +1362,7 @@ end
 
 ### LGraph:hasNode
 
-`LGraph:hasNode(node_ud: LGraphNode) -> boolean`
-
-Returns whether a node handle still exists in this graph.
-
-**Parameters**
-
-- `node_ud` (`LGraphNode`, required): Node handle to check.
-
-**Returns**: `boolean` - True when the node exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether a node handle still exists in this graph.
@@ -1103,9 +1371,19 @@ Returns whether a node handle still exists in this graph.
 function LGraph:hasNode(node_ud) end
 ```
 
+#### Description
+
+Returns whether a node handle still exists in this graph.
+
+Parameters:
+
+- `node_ud` (`LGraphNode`, required): Node handle to check.
+
+Returns: `boolean` - True when the node exists.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -1117,13 +1395,7 @@ end
 
 ### LGraph:isBipartite
 
-`LGraph:isBipartite() -> boolean`
-
-Returns whether this graph is bipartite.
-
-**Returns**: `boolean` - True when the graph is bipartite.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this graph is bipartite.
@@ -1131,9 +1403,15 @@ Returns whether this graph is bipartite.
 function LGraph:isBipartite() end
 ```
 
+#### Description
+
+Returns whether this graph is bipartite.
+
+Returns: `boolean` - True when the graph is bipartite.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -1147,13 +1425,7 @@ end
 
 ### LGraph:mst
 
-`LGraph:mst() -> integer[]`
-
-Computes a minimum spanning tree using Kruskal and returns edge ids.
-
-**Returns**: `integer[]` - Array table of edge ids included in the tree.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Computes a minimum spanning tree using Kruskal and returns edge ids.
@@ -1161,9 +1433,15 @@ Computes a minimum spanning tree using Kruskal and returns edge ids.
 function LGraph:mst() end
 ```
 
+#### Description
+
+Computes a minimum spanning tree using Kruskal and returns edge ids.
+
+Returns: `integer[]` - Array table of edge ids included in the tree.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -1177,16 +1455,7 @@ end
 
 ### LGraph:on
 
-`LGraph:on(event_name: string, func: function)`
-
-Registers a callback for a named graph event generated during simulation.
-
-**Parameters**
-
-- `event_name` (`string`, required): Event name from the valid graph event list.
-- `func` (`function`, required): Lua callback invoked with event-specific handles and values.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Registers a callback for a named graph event generated during simulation.
@@ -1195,9 +1464,18 @@ Registers a callback for a named graph event generated during simulation.
 function LGraph:on(event_name, func) end
 ```
 
+#### Description
+
+Registers a callback for a named graph event generated during simulation.
+
+Parameters:
+
+- `event_name` (`string`, required): Event name from the valid graph event list.
+- `func` (`function`, required): Lua callback invoked with event-specific handles and values.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -1211,20 +1489,20 @@ end
 
 ### LGraph:processDemand
 
-`LGraph:processDemand()`
-
-Processes graph supply and demand once and dispatches generated callbacks.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Processes graph supply and demand once and dispatches generated callbacks.
 function LGraph:processDemand() end
 ```
 
+#### Description
+
+Processes graph supply and demand once and dispatches generated callbacks.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -1236,17 +1514,7 @@ end
 
 ### LGraph:removeEdge
 
-`LGraph:removeEdge(edge_ud: LGraphEdge) -> boolean`
-
-Removes an edge by handle on this object.
-
-**Parameters**
-
-- `edge_ud` (`LGraphEdge`, required): Edge handle to remove.
-
-**Returns**: `boolean` - True when the edge was removed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes an edge by handle on this object.
@@ -1255,9 +1523,19 @@ Removes an edge by handle on this object.
 function LGraph:removeEdge(edge_ud) end
 ```
 
+#### Description
+
+Removes an edge by handle on this object.
+
+Parameters:
+
+- `edge_ud` (`LGraphEdge`, required): Edge handle to remove.
+
+Returns: `boolean` - True when the edge was removed.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -1271,17 +1549,7 @@ end
 
 ### LGraph:removeItem
 
-`LGraph:removeItem(item_ud: LGraphItem) -> boolean`
-
-Removes an item from this logistics graph.
-
-**Parameters**
-
-- `item_ud` (`LGraphItem`, required): Item handle to remove.
-
-**Returns**: `boolean` - True when the item was removed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes an item from this logistics graph.
@@ -1290,9 +1558,19 @@ Removes an item from this logistics graph.
 function LGraph:removeItem(item_ud) end
 ```
 
+#### Description
+
+Removes an item from this logistics graph.
+
+Parameters:
+
+- `item_ud` (`LGraphItem`, required): Item handle to remove.
+
+Returns: `boolean` - True when the item was removed.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -1305,17 +1583,7 @@ end
 
 ### LGraph:removeNode
 
-`LGraph:removeNode(node_ud: LGraphNode) -> boolean`
-
-Removes a node and graph links associated with it.
-
-**Parameters**
-
-- `node_ud` (`LGraphNode`, required): Node handle to remove.
-
-**Returns**: `boolean` - True when the node was removed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes a node and graph links associated with it.
@@ -1324,9 +1592,19 @@ Removes a node and graph links associated with it.
 function LGraph:removeNode(node_ud) end
 ```
 
+#### Description
+
+Removes a node and graph links associated with it.
+
+Parameters:
+
+- `node_ud` (`LGraphNode`, required): Node handle to remove.
+
+Returns: `boolean` - True when the node was removed.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -1339,16 +1617,7 @@ end
 
 ### LGraph:sendItem
 
-`LGraph:sendItem(item_ud: LGraphItem, edge_ud: LGraphEdge)`
-
-Starts moving an item along an edge.
-
-**Parameters**
-
-- `item_ud` (`LGraphItem`, required): Item handle to send.
-- `edge_ud` (`LGraphEdge`, required): Edge handle to traverse.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Starts moving an item along an edge.
@@ -1357,9 +1626,18 @@ Starts moving an item along an edge.
 function LGraph:sendItem(item_ud, edge_ud) end
 ```
 
+#### Description
+
+Starts moving an item along an edge.
+
+Parameters:
+
+- `item_ud` (`LGraphItem`, required): Item handle to send.
+- `edge_ud` (`LGraphEdge`, required): Edge handle to traverse.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -1373,20 +1651,20 @@ end
 
 ### LGraph:step
 
-`LGraph:step()`
-
-Runs one discrete graph simulation step and dispatches generated callbacks.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Runs one discrete graph simulation step and dispatches generated callbacks.
 function LGraph:step() end
 ```
 
+#### Description
+
+Runs one discrete graph simulation step and dispatches generated callbacks.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -1398,17 +1676,7 @@ end
 
 ### LGraph:subgraph
 
-`LGraph:subgraph(nodes: table) -> LGraph`
-
-Creates a new graph containing a subset of nodes.
-
-**Parameters**
-
-- `nodes` (`table`, required): Array table of `LGraphNode` handles to include.
-
-**Returns**: `LGraph` - New subgraph handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Creates a new graph containing a subset of nodes.
@@ -1417,9 +1685,19 @@ Creates a new graph containing a subset of nodes.
 function LGraph:subgraph(nodes) end
 ```
 
+#### Description
+
+Creates a new graph containing a subset of nodes.
+
+Parameters:
+
+- `nodes` (`table`, required): Array table of `LGraphNode` handles to include.
+
+Returns: `LGraph` - New subgraph handle.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -1433,15 +1711,7 @@ end
 
 ### LGraph:tickParallel
 
-`LGraph:tickParallel(dt: number)`
-
-Advances graph simulation through the parallel update path and dispatches generated callbacks.
-
-**Parameters**
-
-- `dt` (`number`, required): Delta time in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Advances graph simulation through the parallel update path and dispatches generated callbacks.
@@ -1449,9 +1719,17 @@ Advances graph simulation through the parallel update path and dispatches genera
 function LGraph:tickParallel(dt) end
 ```
 
+#### Description
+
+Advances graph simulation through the parallel update path and dispatches generated callbacks.
+
+Parameters:
+
+- `dt` (`number`, required): Delta time in seconds.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -1463,13 +1741,7 @@ end
 
 ### LGraph:topologicalSort
 
-`LGraph:topologicalSort() -> LGraphNode[]`
-
-Returns nodes in topological order when the graph is acyclic.
-
-**Returns**: `LGraphNode[]` - `LGraphNode` handles in topological order, or nil when sorting is impossible due to cycles.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns nodes in topological order when the graph is acyclic.
@@ -1477,9 +1749,15 @@ Returns nodes in topological order when the graph is acyclic.
 function LGraph:topologicalSort() end
 ```
 
+#### Description
+
+Returns nodes in topological order when the graph is acyclic.
+
+Returns: `LGraphNode[]` - `LGraphNode` handles in topological order, or nil when sorting is impossible due to cycles.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -1493,13 +1771,7 @@ end
 
 ### LGraph:type
 
-`LGraph:type() -> string`
-
-Returns the Lua-visible type name for this graph handle.
-
-**Returns**: `string` - The string `LGraph`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this graph handle.
@@ -1507,9 +1779,15 @@ Returns the Lua-visible type name for this graph handle.
 function LGraph:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this graph handle.
+
+Returns: `string` - The string `LGraph`.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -1520,17 +1798,7 @@ end
 
 ### LGraph:typeOf
 
-`LGraph:typeOf(name: string) -> boolean`
-
-Returns whether this graph handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LGraph`, `Graph`, and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this graph handle matches a supported type name.
@@ -1539,9 +1807,19 @@ Returns whether this graph handle matches a supported type name.
 function LGraph:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this graph handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LGraph`, `Graph`, and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -1552,15 +1830,7 @@ end
 
 ### LGraph:update
 
-`LGraph:update(dt: number)`
-
-Advances graph simulation by delta time and dispatches generated callbacks.
-
-**Parameters**
-
-- `dt` (`number`, required): Delta time in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Advances graph simulation by delta time and dispatches generated callbacks.
@@ -1568,9 +1838,17 @@ Advances graph simulation by delta time and dispatches generated callbacks.
 function LGraph:update(dt) end
 ```
 
+#### Description
+
+Advances graph simulation by delta time and dispatches generated callbacks.
+
+Parameters:
+
+- `dt` (`number`, required): Delta time in seconds.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -1582,15 +1860,7 @@ end
 
 ### LGraphEdge:addAllowedType
 
-`LGraphEdge:addAllowedType(t: string)`
-
-Allows an item type to traverse this edge.
-
-**Parameters**
-
-- `t` (`string`, required): Item type to allow.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Allows an item type to traverse this edge.
@@ -1598,9 +1868,17 @@ Allows an item type to traverse this edge.
 function LGraphEdge:addAllowedType(t) end
 ```
 
+#### Description
+
+Allows an item type to traverse this edge.
+
+Parameters:
+
+- `t` (`string`, required): Item type to allow.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -1614,20 +1892,20 @@ end
 
 ### LGraphEdge:clearAllowedTypes
 
-`LGraphEdge:clearAllowedTypes()`
-
-Clears this edge's item type allow-list.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Clears this edge's item type allow-list.
 function LGraphEdge:clearAllowedTypes() end
 ```
 
+#### Description
+
+Clears this edge's item type allow-list.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -1641,13 +1919,7 @@ end
 
 ### LGraphEdge:getCapacity
 
-`LGraphEdge:getCapacity() -> integer`
-
-Returns this edge's maximum concurrent item capacity.
-
-**Returns**: `integer` - Edge capacity.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this edge's maximum concurrent item capacity.
@@ -1655,9 +1927,15 @@ Returns this edge's maximum concurrent item capacity.
 function LGraphEdge:getCapacity() end
 ```
 
+#### Description
+
+Returns this edge's maximum concurrent item capacity.
+
+Returns: `integer` - Edge capacity.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -1671,13 +1949,7 @@ end
 
 ### LGraphEdge:getCooldown
 
-`LGraphEdge:getCooldown() -> number`
-
-Returns this edge's cooldown timer value.
-
-**Returns**: `number` - Cooldown in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this edge's cooldown timer value.
@@ -1685,9 +1957,15 @@ Returns this edge's cooldown timer value.
 function LGraphEdge:getCooldown() end
 ```
 
+#### Description
+
+Returns this edge's cooldown timer value.
+
+Returns: `number` - Cooldown in seconds.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -1701,13 +1979,7 @@ end
 
 ### LGraphEdge:getFrom
 
-`LGraphEdge:getFrom() -> LGraphNode`
-
-Returns the source node for this edge.
-
-**Returns**: `LGraphNode` - Source node handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the source node for this edge.
@@ -1715,9 +1987,15 @@ Returns the source node for this edge.
 function LGraphEdge:getFrom() end
 ```
 
+#### Description
+
+Returns the source node for this edge.
+
+Returns: `LGraphNode` - Source node handle.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -1731,13 +2009,7 @@ end
 
 ### LGraphEdge:getItemsInTransit
 
-`LGraphEdge:getItemsInTransit() -> LGraphItem[]`
-
-Returns graph items currently traveling along this edge.
-
-**Returns**: `LGraphItem[]` - `LGraphItem` handles.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns graph items currently traveling along this edge.
@@ -1745,9 +2017,15 @@ Returns graph items currently traveling along this edge.
 function LGraphEdge:getItemsInTransit() end
 ```
 
+#### Description
+
+Returns graph items currently traveling along this edge.
+
+Returns: `LGraphItem[]` - `LGraphItem` handles.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -1761,13 +2039,7 @@ end
 
 ### LGraphEdge:getSpeedModifier
 
-`LGraphEdge:getSpeedModifier() -> number`
-
-Returns this edge's speed modifier.
-
-**Returns**: `number` - Speed modifier.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this edge's speed modifier.
@@ -1775,9 +2047,15 @@ Returns this edge's speed modifier.
 function LGraphEdge:getSpeedModifier() end
 ```
 
+#### Description
+
+Returns this edge's speed modifier.
+
+Returns: `number` - Speed modifier.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -1791,13 +2069,7 @@ end
 
 ### LGraphEdge:getThroughput
 
-`LGraphEdge:getThroughput() -> number`
-
-Returns this edge's throughput value.
-
-**Returns**: `number` - Current throughput.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this edge's throughput value.
@@ -1805,9 +2077,15 @@ Returns this edge's throughput value.
 function LGraphEdge:getThroughput() end
 ```
 
+#### Description
+
+Returns this edge's throughput value.
+
+Returns: `number` - Current throughput.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -1821,13 +2099,7 @@ end
 
 ### LGraphEdge:getTo
 
-`LGraphEdge:getTo() -> LGraphNode`
-
-Returns the destination node for this edge.
-
-**Returns**: `LGraphNode` - Destination node handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the destination node for this edge.
@@ -1835,9 +2107,15 @@ Returns the destination node for this edge.
 function LGraphEdge:getTo() end
 ```
 
+#### Description
+
+Returns the destination node for this edge.
+
+Returns: `LGraphNode` - Destination node handle.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -1851,13 +2129,7 @@ end
 
 ### LGraphEdge:getTravelTime
 
-`LGraphEdge:getTravelTime() -> number`
-
-Returns the travel time for items moving across this edge.
-
-**Returns**: `number` - Travel time in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the travel time for items moving across this edge.
@@ -1865,9 +2137,15 @@ Returns the travel time for items moving across this edge.
 function LGraphEdge:getTravelTime() end
 ```
 
+#### Description
+
+Returns the travel time for items moving across this edge.
+
+Returns: `number` - Travel time in seconds.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -1881,13 +2159,7 @@ end
 
 ### LGraphEdge:getType
 
-`LGraphEdge:getType() -> string`
-
-Returns the edge type string used by routing and filters.
-
-**Returns**: `string` - Current edge type.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the edge type string used by routing and filters.
@@ -1895,9 +2167,15 @@ Returns the edge type string used by routing and filters.
 function LGraphEdge:getType() end
 ```
 
+#### Description
+
+Returns the edge type string used by routing and filters.
+
+Returns: `string` - Current edge type.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -1911,13 +2189,7 @@ end
 
 ### LGraphEdge:getWeight
 
-`LGraphEdge:getWeight() -> number`
-
-Returns the pathfinding weight for this edge.
-
-**Returns**: `number` - Edge weight.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the pathfinding weight for this edge.
@@ -1925,9 +2197,15 @@ Returns the pathfinding weight for this edge.
 function LGraphEdge:getWeight() end
 ```
 
+#### Description
+
+Returns the pathfinding weight for this edge.
+
+Returns: `number` - Edge weight.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -1941,13 +2219,7 @@ end
 
 ### LGraphEdge:isActive
 
-`LGraphEdge:isActive() -> boolean`
-
-Returns whether this edge is active for routing and simulation.
-
-**Returns**: `boolean` - True when the edge is active.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this edge is active for routing and simulation.
@@ -1955,9 +2227,15 @@ Returns whether this edge is active for routing and simulation.
 function LGraphEdge:isActive() end
 ```
 
+#### Description
+
+Returns whether this edge is active for routing and simulation.
+
+Returns: `boolean` - True when the edge is active.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -1971,13 +2249,7 @@ end
 
 ### LGraphEdge:isBidirectional
 
-`LGraphEdge:isBidirectional() -> boolean`
-
-Returns whether this edge allows travel in both directions.
-
-**Returns**: `boolean` - True when the edge is bidirectional.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this edge allows travel in both directions.
@@ -1985,9 +2257,15 @@ Returns whether this edge allows travel in both directions.
 function LGraphEdge:isBidirectional() end
 ```
 
+#### Description
+
+Returns whether this edge allows travel in both directions.
+
+Returns: `boolean` - True when the edge is bidirectional.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -2001,17 +2279,7 @@ end
 
 ### LGraphEdge:isItemTypeAllowed
 
-`LGraphEdge:isItemTypeAllowed(t: string) -> boolean`
-
-Returns whether an item type may traverse this edge.
-
-**Parameters**
-
-- `t` (`string`, required): Item type to check.
-
-**Returns**: `boolean` - True when the item type is allowed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether an item type may traverse this edge.
@@ -2020,9 +2288,19 @@ Returns whether an item type may traverse this edge.
 function LGraphEdge:isItemTypeAllowed(t) end
 ```
 
+#### Description
+
+Returns whether an item type may traverse this edge.
+
+Parameters:
+
+- `t` (`string`, required): Item type to check.
+
+Returns: `boolean` - True when the item type is allowed.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -2036,13 +2314,7 @@ end
 
 ### LGraphEdge:isOnCooldown
 
-`LGraphEdge:isOnCooldown() -> boolean`
-
-Returns whether this edge is currently on cooldown.
-
-**Returns**: `boolean` - True when cooldown is active.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this edge is currently on cooldown.
@@ -2050,9 +2322,15 @@ Returns whether this edge is currently on cooldown.
 function LGraphEdge:isOnCooldown() end
 ```
 
+#### Description
+
+Returns whether this edge is currently on cooldown.
+
+Returns: `boolean` - True when cooldown is active.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -2066,17 +2344,7 @@ end
 
 ### LGraphEdge:removeAllowedType
 
-`LGraphEdge:removeAllowedType(t: string) -> boolean`
-
-Removes an item type from this edge's allow-list.
-
-**Parameters**
-
-- `t` (`string`, required): Item type to remove.
-
-**Returns**: `boolean` - True when the type was present.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes an item type from this edge's allow-list.
@@ -2085,9 +2353,19 @@ Removes an item type from this edge's allow-list.
 function LGraphEdge:removeAllowedType(t) end
 ```
 
+#### Description
+
+Removes an item type from this edge's allow-list.
+
+Parameters:
+
+- `t` (`string`, required): Item type to remove.
+
+Returns: `boolean` - True when the type was present.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -2101,15 +2379,7 @@ end
 
 ### LGraphEdge:setActive
 
-`LGraphEdge:setActive(a: boolean)`
-
-Enables or disables this edge for routing and simulation.
-
-**Parameters**
-
-- `a` (`boolean`, required): New active flag.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Enables or disables this edge for routing and simulation.
@@ -2117,9 +2387,17 @@ Enables or disables this edge for routing and simulation.
 function LGraphEdge:setActive(a) end
 ```
 
+#### Description
+
+Enables or disables this edge for routing and simulation.
+
+Parameters:
+
+- `a` (`boolean`, required): New active flag.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -2133,15 +2411,7 @@ end
 
 ### LGraphEdge:setBidirectional
 
-`LGraphEdge:setBidirectional(b: boolean)`
-
-Sets whether this edge allows travel in both directions.
-
-**Parameters**
-
-- `b` (`boolean`, required): New bidirectional flag.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets whether this edge allows travel in both directions.
@@ -2149,9 +2419,17 @@ Sets whether this edge allows travel in both directions.
 function LGraphEdge:setBidirectional(b) end
 ```
 
+#### Description
+
+Sets whether this edge allows travel in both directions.
+
+Parameters:
+
+- `b` (`boolean`, required): New bidirectional flag.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -2165,15 +2443,7 @@ end
 
 ### LGraphEdge:setCapacity
 
-`LGraphEdge:setCapacity(c: integer)`
-
-Sets this edge's maximum concurrent item capacity.
-
-**Parameters**
-
-- `c` (`integer`, required): New edge capacity.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets this edge's maximum concurrent item capacity.
@@ -2181,9 +2451,17 @@ Sets this edge's maximum concurrent item capacity.
 function LGraphEdge:setCapacity(c) end
 ```
 
+#### Description
+
+Sets this edge's maximum concurrent item capacity.
+
+Parameters:
+
+- `c` (`integer`, required): New edge capacity.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -2197,15 +2475,7 @@ end
 
 ### LGraphEdge:setCooldown
 
-`LGraphEdge:setCooldown(c: number)`
-
-Sets this edge's cooldown timer value.
-
-**Parameters**
-
-- `c` (`number`, required): Cooldown in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets this edge's cooldown timer value.
@@ -2213,9 +2483,17 @@ Sets this edge's cooldown timer value.
 function LGraphEdge:setCooldown(c) end
 ```
 
+#### Description
+
+Sets this edge's cooldown timer value.
+
+Parameters:
+
+- `c` (`number`, required): Cooldown in seconds.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -2229,15 +2507,7 @@ end
 
 ### LGraphEdge:setSpeedModifier
 
-`LGraphEdge:setSpeedModifier(m: number)`
-
-Sets this edge's speed modifier value.
-
-**Parameters**
-
-- `m` (`number`, required): Speed modifier.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets this edge's speed modifier value.
@@ -2245,9 +2515,17 @@ Sets this edge's speed modifier value.
 function LGraphEdge:setSpeedModifier(m) end
 ```
 
+#### Description
+
+Sets this edge's speed modifier value.
+
+Parameters:
+
+- `m` (`number`, required): Speed modifier.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -2261,15 +2539,7 @@ end
 
 ### LGraphEdge:setThroughput
 
-`LGraphEdge:setThroughput(t: number)`
-
-Sets this edge's throughput value.
-
-**Parameters**
-
-- `t` (`number`, required): New throughput.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets this edge's throughput value.
@@ -2277,9 +2547,17 @@ Sets this edge's throughput value.
 function LGraphEdge:setThroughput(t) end
 ```
 
+#### Description
+
+Sets this edge's throughput value.
+
+Parameters:
+
+- `t` (`number`, required): New throughput.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -2293,15 +2571,7 @@ end
 
 ### LGraphEdge:setTravelTime
 
-`LGraphEdge:setTravelTime(t: number)`
-
-Sets the travel time for items moving across this edge.
-
-**Parameters**
-
-- `t` (`number`, required): Travel time in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the travel time for items moving across this edge.
@@ -2309,9 +2579,17 @@ Sets the travel time for items moving across this edge.
 function LGraphEdge:setTravelTime(t) end
 ```
 
+#### Description
+
+Sets the travel time for items moving across this edge.
+
+Parameters:
+
+- `t` (`number`, required): Travel time in seconds.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -2325,15 +2603,7 @@ end
 
 ### LGraphEdge:setType
 
-`LGraphEdge:setType(t: string)`
-
-Sets the edge type string used by routing and filters.
-
-**Parameters**
-
-- `t` (`string`, required): New edge type.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the edge type string used by routing and filters.
@@ -2341,9 +2611,17 @@ Sets the edge type string used by routing and filters.
 function LGraphEdge:setType(t) end
 ```
 
+#### Description
+
+Sets the edge type string used by routing and filters.
+
+Parameters:
+
+- `t` (`string`, required): New edge type.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -2357,15 +2635,7 @@ end
 
 ### LGraphEdge:setWeight
 
-`LGraphEdge:setWeight(w: number)`
-
-Sets the pathfinding weight for this edge.
-
-**Parameters**
-
-- `w` (`number`, required): Edge weight.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the pathfinding weight for this edge.
@@ -2373,9 +2643,17 @@ Sets the pathfinding weight for this edge.
 function LGraphEdge:setWeight(w) end
 ```
 
+#### Description
+
+Sets the pathfinding weight for this edge.
+
+Parameters:
+
+- `w` (`number`, required): Edge weight.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -2389,13 +2667,7 @@ end
 
 ### LGraphEdge:type
 
-`LGraphEdge:type() -> string`
-
-Returns the Lua-visible type name for this graph edge handle.
-
-**Returns**: `string` - The string `LGraphEdge`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this graph edge handle.
@@ -2403,9 +2675,15 @@ Returns the Lua-visible type name for this graph edge handle.
 function LGraphEdge:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this graph edge handle.
+
+Returns: `string` - The string `LGraphEdge`.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -2419,17 +2697,7 @@ end
 
 ### LGraphEdge:typeOf
 
-`LGraphEdge:typeOf(name: string) -> boolean`
-
-Returns whether this graph edge handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LGraphEdge`, `GraphEdge`, and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this graph edge handle matches a supported type name.
@@ -2438,9 +2706,19 @@ Returns whether this graph edge handle matches a supported type name.
 function LGraphEdge:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this graph edge handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LGraphEdge`, `GraphEdge`, and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -2454,13 +2732,7 @@ end
 
 ### LGraphItem:getDecayTime
 
-`LGraphItem:getDecayTime() -> number`
-
-Returns the total decay lifetime configured for this item.
-
-**Returns**: `number` - Decay time in seconds, or the graph's sentinel for no decay.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the total decay lifetime configured for this item.
@@ -2468,9 +2740,15 @@ Returns the total decay lifetime configured for this item.
 function LGraphItem:getDecayTime() end
 ```
 
+#### Description
+
+Returns the total decay lifetime configured for this item.
+
+Returns: `number` - Decay time in seconds, or the graph's sentinel for no decay.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -2482,13 +2760,7 @@ end
 
 ### LGraphItem:getPosition
 
-`LGraphItem:getPosition() -> LGraphNode`
-
-Returns where this item is stored: a node, an edge plus progress, or no values when unplaced.
-
-**Returns**: `LGraphNode` - Node handle when the item is at a node.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns where this item is stored: a node, an edge plus progress, or no values when unplaced.
@@ -2498,9 +2770,15 @@ Returns where this item is stored: a node, an edge plus progress, or no values w
 function LGraphItem:getPosition() end
 ```
 
+#### Description
+
+Returns where this item is stored: a node, an edge plus progress, or no values when unplaced.
+
+Returns: `LGraphNode` - Node handle when the item is at a node.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -2512,13 +2790,7 @@ end
 
 ### LGraphItem:getPriority
 
-`LGraphItem:getPriority() -> integer`
-
-Returns this item's routing or queue priority.
-
-**Returns**: `integer` - Item priority.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this item's routing or queue priority.
@@ -2526,9 +2798,15 @@ Returns this item's routing or queue priority.
 function LGraphItem:getPriority() end
 ```
 
+#### Description
+
+Returns this item's routing or queue priority.
+
+Returns: `integer` - Item priority.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -2540,13 +2818,7 @@ end
 
 ### LGraphItem:getRemainingLife
 
-`LGraphItem:getRemainingLife() -> number`
-
-Returns this item's remaining lifetime before decay.
-
-**Returns**: `number` - Remaining lifetime in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this item's remaining lifetime before decay.
@@ -2554,9 +2826,15 @@ Returns this item's remaining lifetime before decay.
 function LGraphItem:getRemainingLife() end
 ```
 
+#### Description
+
+Returns this item's remaining lifetime before decay.
+
+Returns: `number` - Remaining lifetime in seconds.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -2568,13 +2846,7 @@ end
 
 ### LGraphItem:getType
 
-`LGraphItem:getType() -> string`
-
-Returns the item type string used by filters, conversions, supplies, and demands.
-
-**Returns**: `string` - Current item type.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the item type string used by filters, conversions, supplies, and demands.
@@ -2582,9 +2854,15 @@ Returns the item type string used by filters, conversions, supplies, and demands
 function LGraphItem:getType() end
 ```
 
+#### Description
+
+Returns the item type string used by filters, conversions, supplies, and demands.
+
+Returns: `string` - Current item type.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -2596,13 +2874,7 @@ end
 
 ### LGraphItem:isAlive
 
-`LGraphItem:isAlive() -> boolean`
-
-Returns whether this item is still alive in the graph simulation.
-
-**Returns**: `boolean` - True when the item has not decayed or been killed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this item is still alive in the graph simulation.
@@ -2610,9 +2882,15 @@ Returns whether this item is still alive in the graph simulation.
 function LGraphItem:isAlive() end
 ```
 
+#### Description
+
+Returns whether this item is still alive in the graph simulation.
+
+Returns: `boolean` - True when the item has not decayed or been killed.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -2624,20 +2902,20 @@ end
 
 ### LGraphItem:kill
 
-`LGraphItem:kill()`
-
-Marks this item as dead so graph processing can remove or ignore it.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Marks this item as dead so graph processing can remove or ignore it.
 function LGraphItem:kill() end
 ```
 
+#### Description
+
+Marks this item as dead so graph processing can remove or ignore it.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -2650,15 +2928,7 @@ end
 
 ### LGraphItem:setDecayTime
 
-`LGraphItem:setDecayTime(t: number)`
-
-Sets the total decay lifetime for this item.
-
-**Parameters**
-
-- `t` (`number`, required): Decay time in seconds, or the graph's sentinel for no decay.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the total decay lifetime for this item.
@@ -2666,9 +2936,17 @@ Sets the total decay lifetime for this item.
 function LGraphItem:setDecayTime(t) end
 ```
 
+#### Description
+
+Sets the total decay lifetime for this item.
+
+Parameters:
+
+- `t` (`number`, required): Decay time in seconds, or the graph's sentinel for no decay.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -2681,15 +2959,7 @@ end
 
 ### LGraphItem:setPriority
 
-`LGraphItem:setPriority(p: integer)`
-
-Sets this item's routing or queue priority.
-
-**Parameters**
-
-- `p` (`integer`, required): New item priority.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets this item's routing or queue priority.
@@ -2697,9 +2967,17 @@ Sets this item's routing or queue priority.
 function LGraphItem:setPriority(p) end
 ```
 
+#### Description
+
+Sets this item's routing or queue priority.
+
+Parameters:
+
+- `p` (`integer`, required): New item priority.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -2712,15 +2990,7 @@ end
 
 ### LGraphItem:setType
 
-`LGraphItem:setType(t: string)`
-
-Changes the item type string used by graph routing and processing rules.
-
-**Parameters**
-
-- `t` (`string`, required): New item type.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Changes the item type string used by graph routing and processing rules.
@@ -2728,9 +2998,17 @@ Changes the item type string used by graph routing and processing rules.
 function LGraphItem:setType(t) end
 ```
 
+#### Description
+
+Changes the item type string used by graph routing and processing rules.
+
+Parameters:
+
+- `t` (`string`, required): New item type.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -2743,13 +3021,7 @@ end
 
 ### LGraphItem:type
 
-`LGraphItem:type() -> string`
-
-Returns the Lua-visible type name for this graph item handle.
-
-**Returns**: `string` - The string `LGraphItem`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this graph item handle.
@@ -2757,9 +3029,15 @@ Returns the Lua-visible type name for this graph item handle.
 function LGraphItem:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this graph item handle.
+
+Returns: `string` - The string `LGraphItem`.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -2771,17 +3049,7 @@ end
 
 ### LGraphItem:typeOf
 
-`LGraphItem:typeOf(name: string) -> boolean`
-
-Returns whether this graph item handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LGraphItem`, `GraphItem`, and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this graph item handle matches a supported type name.
@@ -2790,9 +3058,19 @@ Returns whether this graph item handle matches a supported type name.
 function LGraphItem:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this graph item handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LGraphItem`, `GraphItem`, and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -2804,17 +3082,7 @@ end
 
 ### LGraphNode:addDemand
 
-`LGraphNode:addDemand(item_type: string, quantity: integer, [priority]: integer)`
-
-Adds demand quantity and optional priority for an item type on this node.
-
-**Parameters**
-
-- `item_type` (`string`, required): Item type demanded by the node.
-- `quantity` (`integer`, required): Demand quantity to add.
-- `priority` (`integer`, optional): Demand priority, defaulting to 0.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds demand quantity and optional priority for an item type on this node.
@@ -2824,9 +3092,19 @@ Adds demand quantity and optional priority for an item type on this node.
 function LGraphNode:addDemand(item_type, quantity, priority) end
 ```
 
+#### Description
+
+Adds demand quantity and optional priority for an item type on this node.
+
+Parameters:
+
+- `item_type` (`string`, required): Item type demanded by the node.
+- `quantity` (`integer`, required): Demand quantity to add.
+- `priority` (`integer`, optional): Demand priority, defaulting to 0.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -2839,16 +3117,7 @@ end
 
 ### LGraphNode:addSupply
 
-`LGraphNode:addSupply(item_type: string, quantity: integer)`
-
-Adds supply quantity for an item type on this node.
-
-**Parameters**
-
-- `item_type` (`string`, required): Item type supplied by the node.
-- `quantity` (`integer`, required): Supply quantity to add.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds supply quantity for an item type on this node.
@@ -2857,9 +3126,18 @@ Adds supply quantity for an item type on this node.
 function LGraphNode:addSupply(item_type, quantity) end
 ```
 
+#### Description
+
+Adds supply quantity for an item type on this node.
+
+Parameters:
+
+- `item_type` (`string`, required): Item type supplied by the node.
+- `quantity` (`integer`, required): Supply quantity to add.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -2872,15 +3150,7 @@ end
 
 ### LGraphNode:addTag
 
-`LGraphNode:addTag(tag: string)`
-
-Adds a tag to this node on this object.
-
-**Parameters**
-
-- `tag` (`string`, required): Tag to add.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a tag to this node on this object.
@@ -2888,9 +3158,17 @@ Adds a tag to this node on this object.
 function LGraphNode:addTag(tag) end
 ```
 
+#### Description
+
+Adds a tag to this node on this object.
+
+Parameters:
+
+- `tag` (`string`, required): Tag to add.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -2903,20 +3181,20 @@ end
 
 ### LGraphNode:clearAllConversions
 
-`LGraphNode:clearAllConversions()`
-
-Removes every conversion rule from this node.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes every conversion rule from this node.
 function LGraphNode:clearAllConversions() end
 ```
 
+#### Description
+
+Removes every conversion rule from this node.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -2930,17 +3208,7 @@ end
 
 ### LGraphNode:clearConversion
 
-`LGraphNode:clearConversion(in_type: string) -> boolean`
-
-Removes a conversion rule by input item type.
-
-**Parameters**
-
-- `in_type` (`string`, required): Input item type.
-
-**Returns**: `boolean` - True when a conversion rule was removed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes a conversion rule by input item type.
@@ -2949,9 +3217,19 @@ Removes a conversion rule by input item type.
 function LGraphNode:clearConversion(in_type) end
 ```
 
+#### Description
+
+Removes a conversion rule by input item type.
+
+Parameters:
+
+- `in_type` (`string`, required): Input item type.
+
+Returns: `boolean` - True when a conversion rule was removed.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -2965,20 +3243,20 @@ end
 
 ### LGraphNode:clearDemands
 
-`LGraphNode:clearDemands()`
-
-Removes every demand entry from this node.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes every demand entry from this node.
 function LGraphNode:clearDemands() end
 ```
 
+#### Description
+
+Removes every demand entry from this node.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -2992,20 +3270,20 @@ end
 
 ### LGraphNode:clearSupplies
 
-`LGraphNode:clearSupplies()`
-
-Removes every supply entry from this node.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes every supply entry from this node.
 function LGraphNode:clearSupplies() end
 ```
 
+#### Description
+
+Removes every supply entry from this node.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -3019,20 +3297,20 @@ end
 
 ### LGraphNode:clearTags
 
-`LGraphNode:clearTags()`
-
-Removes every tag from this graph node.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes every tag from this graph node.
 function LGraphNode:clearTags() end
 ```
 
+#### Description
+
+Removes every tag from this graph node.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -3046,13 +3324,7 @@ end
 
 ### LGraphNode:dequeue
 
-`LGraphNode:dequeue() -> LGraphItem`
-
-Removes and returns the next item from this node's explicit queue.
-
-**Returns**: `LGraphItem` - Item handle from the queue, or nil when the queue is empty.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes and returns the next item from this node's explicit queue.
@@ -3060,9 +3332,15 @@ Removes and returns the next item from this node's explicit queue.
 function LGraphNode:dequeue() end
 ```
 
+#### Description
+
+Removes and returns the next item from this node's explicit queue.
+
+Returns: `LGraphItem` - Item handle from the queue, or nil when the queue is empty.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -3076,17 +3354,7 @@ end
 
 ### LGraphNode:enqueue
 
-`LGraphNode:enqueue(item_ud: LGraphItem) -> boolean`
-
-Adds an item handle to this node's explicit queue.
-
-**Parameters**
-
-- `item_ud` (`LGraphItem`, required): Item handle to enqueue.
-
-**Returns**: `boolean` - True when the item was queued.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds an item handle to this node's explicit queue.
@@ -3095,9 +3363,19 @@ Adds an item handle to this node's explicit queue.
 function LGraphNode:enqueue(item_ud) end
 ```
 
+#### Description
+
+Adds an item handle to this node's explicit queue.
+
+Parameters:
+
+- `item_ud` (`LGraphItem`, required): Item handle to enqueue.
+
+Returns: `boolean` - True when the item was queued.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -3110,13 +3388,7 @@ end
 
 ### LGraphNode:getCapacity
 
-`LGraphNode:getCapacity() -> integer`
-
-Returns this node's item capacity.
-
-**Returns**: `integer` - Node capacity.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this node's item capacity.
@@ -3124,9 +3396,15 @@ Returns this node's item capacity.
 function LGraphNode:getCapacity() end
 ```
 
+#### Description
+
+Returns this node's item capacity.
+
+Returns: `integer` - Node capacity.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -3138,17 +3416,7 @@ end
 
 ### LGraphNode:getEdges
 
-`LGraphNode:getEdges([dir]: string) -> LGraphEdge[]`
-
-Returns edge handles connected to this node in the requested direction.
-
-**Parameters**
-
-- `dir` (`string`, optional): Direction string, defaulting to `both`.
-
-**Returns**: `LGraphEdge[]` - `LGraphEdge` handles.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns edge handles connected to this node in the requested direction.
@@ -3157,9 +3425,19 @@ Returns edge handles connected to this node in the requested direction.
 function LGraphNode:getEdges(dir) end
 ```
 
+#### Description
+
+Returns edge handles connected to this node in the requested direction.
+
+Parameters:
+
+- `dir` (`string`, optional): Direction string, defaulting to `both`.
+
+Returns: `LGraphEdge[]` - `LGraphEdge` handles.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -3173,13 +3451,7 @@ end
 
 ### LGraphNode:getFlowMode
 
-`LGraphNode:getFlowMode() -> string`
-
-Returns this node's flow mode name.
-
-**Returns**: `string` - Flow mode string.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this node's flow mode name.
@@ -3187,9 +3459,15 @@ Returns this node's flow mode name.
 function LGraphNode:getFlowMode() end
 ```
 
+#### Description
+
+Returns this node's flow mode name.
+
+Returns: `string` - Flow mode string.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -3201,13 +3479,7 @@ end
 
 ### LGraphNode:getItemCount
 
-`LGraphNode:getItemCount() -> integer`
-
-Returns the number of items currently stored on this node.
-
-**Returns**: `integer` - Item count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of items currently stored on this node.
@@ -3215,9 +3487,15 @@ Returns the number of items currently stored on this node.
 function LGraphNode:getItemCount() end
 ```
 
+#### Description
+
+Returns the number of items currently stored on this node.
+
+Returns: `integer` - Item count.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -3229,13 +3507,7 @@ end
 
 ### LGraphNode:getItems
 
-`LGraphNode:getItems() -> LGraphItem[]`
-
-Returns item handles currently stored on this node.
-
-**Returns**: `LGraphItem[]` - `LGraphItem` handles.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns item handles currently stored on this node.
@@ -3243,9 +3515,15 @@ Returns item handles currently stored on this node.
 function LGraphNode:getItems() end
 ```
 
+#### Description
+
+Returns item handles currently stored on this node.
+
+Returns: `LGraphItem[]` - `LGraphItem` handles.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -3259,13 +3537,7 @@ end
 
 ### LGraphNode:getOverflowPolicy
 
-`LGraphNode:getOverflowPolicy() -> string`
-
-Returns this node's overflow policy name.
-
-**Returns**: `string` - Overflow policy string.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this node's overflow policy name.
@@ -3273,9 +3545,15 @@ Returns this node's overflow policy name.
 function LGraphNode:getOverflowPolicy() end
 ```
 
+#### Description
+
+Returns this node's overflow policy name.
+
+Returns: `string` - Overflow policy string.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -3287,13 +3565,7 @@ end
 
 ### LGraphNode:getProcessTime
 
-`LGraphNode:getProcessTime() -> number`
-
-Returns the processing time used by this node's conversions.
-
-**Returns**: `number` - Processing time in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the processing time used by this node's conversions.
@@ -3301,9 +3573,15 @@ Returns the processing time used by this node's conversions.
 function LGraphNode:getProcessTime() end
 ```
 
+#### Description
+
+Returns the processing time used by this node's conversions.
+
+Returns: `number` - Processing time in seconds.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -3315,13 +3593,7 @@ end
 
 ### LGraphNode:getPullFilter
 
-`LGraphNode:getPullFilter() -> string`
-
-Returns this node's optional pull item-type filter.
-
-**Returns**: `string` - Filter string when a pull filter is set, or nil when no pull filter is set.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this node's optional pull item-type filter.
@@ -3329,9 +3601,15 @@ Returns this node's optional pull item-type filter.
 function LGraphNode:getPullFilter() end
 ```
 
+#### Description
+
+Returns this node's optional pull item-type filter.
+
+Returns: `string` - Filter string when a pull filter is set, or nil when no pull filter is set.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -3344,13 +3622,7 @@ end
 
 ### LGraphNode:getPullRate
 
-`LGraphNode:getPullRate() -> number`
-
-Returns this node's pull rate value.
-
-**Returns**: `number` - Pull rate.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this node's pull rate value.
@@ -3358,9 +3630,15 @@ Returns this node's pull rate value.
 function LGraphNode:getPullRate() end
 ```
 
+#### Description
+
+Returns this node's pull rate value.
+
+Returns: `number` - Pull rate.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -3372,13 +3650,7 @@ end
 
 ### LGraphNode:getPushFilter
 
-`LGraphNode:getPushFilter() -> string`
-
-Returns this node's optional push item-type filter.
-
-**Returns**: `string` - Filter string when a push filter is set, or nil when no push filter is set.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this node's optional push item-type filter.
@@ -3386,9 +3658,15 @@ Returns this node's optional push item-type filter.
 function LGraphNode:getPushFilter() end
 ```
 
+#### Description
+
+Returns this node's optional push item-type filter.
+
+Returns: `string` - Filter string when a push filter is set, or nil when no push filter is set.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -3401,13 +3679,7 @@ end
 
 ### LGraphNode:getPushRate
 
-`LGraphNode:getPushRate() -> number`
-
-Returns this node's push rate value.
-
-**Returns**: `number` - Push rate.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this node's push rate value.
@@ -3415,9 +3687,15 @@ Returns this node's push rate value.
 function LGraphNode:getPushRate() end
 ```
 
+#### Description
+
+Returns this node's push rate value.
+
+Returns: `number` - Push rate.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -3429,13 +3707,7 @@ end
 
 ### LGraphNode:getQueueCapacity
 
-`LGraphNode:getQueueCapacity() -> integer`
-
-Returns this node's queue capacity.
-
-**Returns**: `integer` - Queue capacity.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this node's queue capacity.
@@ -3443,9 +3715,15 @@ Returns this node's queue capacity.
 function LGraphNode:getQueueCapacity() end
 ```
 
+#### Description
+
+Returns this node's queue capacity.
+
+Returns: `integer` - Queue capacity.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -3457,13 +3735,7 @@ end
 
 ### LGraphNode:getQueueSize
 
-`LGraphNode:getQueueSize() -> integer`
-
-Returns the number of item ids currently queued at this node.
-
-**Returns**: `integer` - Queue size.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of item ids currently queued at this node.
@@ -3471,9 +3743,15 @@ Returns the number of item ids currently queued at this node.
 function LGraphNode:getQueueSize() end
 ```
 
+#### Description
+
+Returns the number of item ids currently queued at this node.
+
+Returns: `integer` - Queue size.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -3485,13 +3763,7 @@ end
 
 ### LGraphNode:getTags
 
-`LGraphNode:getTags() -> string[]`
-
-Returns all tags assigned to this node.
-
-**Returns**: `string[]` - Tag strings.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns all tags assigned to this node.
@@ -3499,9 +3771,15 @@ Returns all tags assigned to this node.
 function LGraphNode:getTags() end
 ```
 
+#### Description
+
+Returns all tags assigned to this node.
+
+Returns: `string[]` - Tag strings.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -3515,13 +3793,7 @@ end
 
 ### LGraphNode:getType
 
-`LGraphNode:getType() -> string`
-
-Returns this node's type classification string.
-
-**Returns**: `string` - Current node type.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this node's type classification string.
@@ -3529,9 +3801,15 @@ Returns this node's type classification string.
 function LGraphNode:getType() end
 ```
 
+#### Description
+
+Returns this node's type classification string.
+
+Returns: `string` - Current node type.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -3543,17 +3821,7 @@ end
 
 ### LGraphNode:hasTag
 
-`LGraphNode:hasTag(tag: string) -> boolean`
-
-Returns whether this node has a tag.
-
-**Parameters**
-
-- `tag` (`string`, required): Tag to check.
-
-**Returns**: `boolean` - True when the tag is present.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this node has a tag.
@@ -3562,9 +3830,19 @@ Returns whether this node has a tag.
 function LGraphNode:hasTag(tag) end
 ```
 
+#### Description
+
+Returns whether this node has a tag.
+
+Parameters:
+
+- `tag` (`string`, required): Tag to check.
+
+Returns: `boolean` - True when the tag is present.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -3577,13 +3855,7 @@ end
 
 ### LGraphNode:isActive
 
-`LGraphNode:isActive() -> boolean`
-
-Returns whether this node is active for graph simulation.
-
-**Returns**: `boolean` - True when the node is active.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this node is active for graph simulation.
@@ -3591,9 +3863,15 @@ Returns whether this node is active for graph simulation.
 function LGraphNode:isActive() end
 ```
 
+#### Description
+
+Returns whether this node is active for graph simulation.
+
+Returns: `boolean` - True when the node is active.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -3605,13 +3883,7 @@ end
 
 ### LGraphNode:isFull
 
-`LGraphNode:isFull() -> boolean`
-
-Returns whether this node has reached its item capacity.
-
-**Returns**: `boolean` - True when the node is full.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this node has reached its item capacity.
@@ -3619,9 +3891,15 @@ Returns whether this node has reached its item capacity.
 function LGraphNode:isFull() end
 ```
 
+#### Description
+
+Returns whether this node has reached its item capacity.
+
+Returns: `boolean` - True when the node is full.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -3633,13 +3911,7 @@ end
 
 ### LGraphNode:isQueueEnabled
 
-`LGraphNode:isQueueEnabled() -> boolean`
-
-Returns whether this node's explicit queue is enabled.
-
-**Returns**: `boolean` - True when queueing is enabled.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this node's explicit queue is enabled.
@@ -3647,9 +3919,15 @@ Returns whether this node's explicit queue is enabled.
 function LGraphNode:isQueueEnabled() end
 ```
 
+#### Description
+
+Returns whether this node's explicit queue is enabled.
+
+Returns: `boolean` - True when queueing is enabled.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -3661,17 +3939,7 @@ end
 
 ### LGraphNode:removeDemand
 
-`LGraphNode:removeDemand(item_type: string) -> boolean`
-
-Removes demand entry for an item type from this node.
-
-**Parameters**
-
-- `item_type` (`string`, required): Item type demand entry to remove.
-
-**Returns**: `boolean` - True when demand existed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes demand entry for an item type from this node.
@@ -3680,9 +3948,19 @@ Removes demand entry for an item type from this node.
 function LGraphNode:removeDemand(item_type) end
 ```
 
+#### Description
+
+Removes demand entry for an item type from this node.
+
+Parameters:
+
+- `item_type` (`string`, required): Item type demand entry to remove.
+
+Returns: `boolean` - True when demand existed.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -3696,17 +3974,7 @@ end
 
 ### LGraphNode:removeSupply
 
-`LGraphNode:removeSupply(item_type: string) -> boolean`
-
-Removes supply entry for an item type from this node.
-
-**Parameters**
-
-- `item_type` (`string`, required): Item type supply entry to remove.
-
-**Returns**: `boolean` - True when supply existed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes supply entry for an item type from this node.
@@ -3715,9 +3983,19 @@ Removes supply entry for an item type from this node.
 function LGraphNode:removeSupply(item_type) end
 ```
 
+#### Description
+
+Removes supply entry for an item type from this node.
+
+Parameters:
+
+- `item_type` (`string`, required): Item type supply entry to remove.
+
+Returns: `boolean` - True when supply existed.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -3731,17 +4009,7 @@ end
 
 ### LGraphNode:removeTag
 
-`LGraphNode:removeTag(tag: string) -> boolean`
-
-Removes a tag from this node on this object.
-
-**Parameters**
-
-- `tag` (`string`, required): Tag to remove.
-
-**Returns**: `boolean` - True when the tag was present.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes a tag from this node on this object.
@@ -3750,9 +4018,19 @@ Removes a tag from this node on this object.
 function LGraphNode:removeTag(tag) end
 ```
 
+#### Description
+
+Removes a tag from this node on this object.
+
+Parameters:
+
+- `tag` (`string`, required): Tag to remove.
+
+Returns: `boolean` - True when the tag was present.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -3766,15 +4044,7 @@ end
 
 ### LGraphNode:setActive
 
-`LGraphNode:setActive(a: boolean)`
-
-Enables or disables this node for graph simulation.
-
-**Parameters**
-
-- `a` (`boolean`, required): New active flag.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Enables or disables this node for graph simulation.
@@ -3782,9 +4052,17 @@ Enables or disables this node for graph simulation.
 function LGraphNode:setActive(a) end
 ```
 
+#### Description
+
+Enables or disables this node for graph simulation.
+
+Parameters:
+
+- `a` (`boolean`, required): New active flag.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -3797,15 +4075,7 @@ end
 
 ### LGraphNode:setCapacity
 
-`LGraphNode:setCapacity(c: integer)`
-
-Sets this node's item capacity value.
-
-**Parameters**
-
-- `c` (`integer`, required): New node capacity.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets this node's item capacity value.
@@ -3813,9 +4083,17 @@ Sets this node's item capacity value.
 function LGraphNode:setCapacity(c) end
 ```
 
+#### Description
+
+Sets this node's item capacity value.
+
+Parameters:
+
+- `c` (`integer`, required): New node capacity.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -3828,18 +4106,7 @@ end
 
 ### LGraphNode:setConversion
 
-`LGraphNode:setConversion(in_type: string, out_type: string, [in_count]: integer, [out_count]: integer)`
-
-Configures an item conversion rule on this node.
-
-**Parameters**
-
-- `in_type` (`string`, required): Input item type.
-- `out_type` (`string`, required): Output item type.
-- `in_count` (`integer`, optional): Input count, defaulting to 1.
-- `out_count` (`integer`, optional): Output count, defaulting to 1.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Configures an item conversion rule on this node.
@@ -3850,9 +4117,20 @@ Configures an item conversion rule on this node.
 function LGraphNode:setConversion(in_type, out_type, in_count, out_count) end
 ```
 
+#### Description
+
+Configures an item conversion rule on this node.
+
+Parameters:
+
+- `in_type` (`string`, required): Input item type.
+- `out_type` (`string`, required): Output item type.
+- `in_count` (`integer`, optional): Input count, defaulting to 1.
+- `out_count` (`integer`, optional): Output count, defaulting to 1.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -3865,15 +4143,7 @@ end
 
 ### LGraphNode:setFlowMode
 
-`LGraphNode:setFlowMode(m: string)`
-
-Sets this node's flow mode from a mode name.
-
-**Parameters**
-
-- `m` (`string`, required): Flow mode string.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets this node's flow mode from a mode name.
@@ -3881,9 +4151,17 @@ Sets this node's flow mode from a mode name.
 function LGraphNode:setFlowMode(m) end
 ```
 
+#### Description
+
+Sets this node's flow mode from a mode name.
+
+Parameters:
+
+- `m` (`string`, required): Flow mode string.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -3896,15 +4174,7 @@ end
 
 ### LGraphNode:setOverflowPolicy
 
-`LGraphNode:setOverflowPolicy(p: string)`
-
-Sets this node's overflow policy from a policy name.
-
-**Parameters**
-
-- `p` (`string`, required): Overflow policy string.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets this node's overflow policy from a policy name.
@@ -3912,9 +4182,17 @@ Sets this node's overflow policy from a policy name.
 function LGraphNode:setOverflowPolicy(p) end
 ```
 
+#### Description
+
+Sets this node's overflow policy from a policy name.
+
+Parameters:
+
+- `p` (`string`, required): Overflow policy string.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -3927,15 +4205,7 @@ end
 
 ### LGraphNode:setProcessTime
 
-`LGraphNode:setProcessTime(t: number)`
-
-Sets the processing time used by this node's conversions.
-
-**Parameters**
-
-- `t` (`number`, required): Processing time in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the processing time used by this node's conversions.
@@ -3943,9 +4213,17 @@ Sets the processing time used by this node's conversions.
 function LGraphNode:setProcessTime(t) end
 ```
 
+#### Description
+
+Sets the processing time used by this node's conversions.
+
+Parameters:
+
+- `t` (`number`, required): Processing time in seconds.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -3958,15 +4236,7 @@ end
 
 ### LGraphNode:setPullFilter
 
-`LGraphNode:setPullFilter([f]: string)`
-
-Sets or clears this node's pull item-type filter.
-
-**Parameters**
-
-- `f` (`string`, optional): Item type filter string.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets or clears this node's pull item-type filter.
@@ -3974,9 +4244,17 @@ Sets or clears this node's pull item-type filter.
 function LGraphNode:setPullFilter(f) end
 ```
 
+#### Description
+
+Sets or clears this node's pull item-type filter.
+
+Parameters:
+
+- `f` (`string`, optional): Item type filter string.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -3989,15 +4267,7 @@ end
 
 ### LGraphNode:setPullRate
 
-`LGraphNode:setPullRate(r: number)`
-
-Sets this node's pull rate for this object.
-
-**Parameters**
-
-- `r` (`number`, required): New pull rate.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets this node's pull rate for this object.
@@ -4005,9 +4275,17 @@ Sets this node's pull rate for this object.
 function LGraphNode:setPullRate(r) end
 ```
 
+#### Description
+
+Sets this node's pull rate for this object.
+
+Parameters:
+
+- `r` (`number`, required): New pull rate.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -4020,15 +4298,7 @@ end
 
 ### LGraphNode:setPushFilter
 
-`LGraphNode:setPushFilter([f]: string)`
-
-Sets or clears this node's push item-type filter.
-
-**Parameters**
-
-- `f` (`string`, optional): Item type filter string.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets or clears this node's push item-type filter.
@@ -4036,9 +4306,17 @@ Sets or clears this node's push item-type filter.
 function LGraphNode:setPushFilter(f) end
 ```
 
+#### Description
+
+Sets or clears this node's push item-type filter.
+
+Parameters:
+
+- `f` (`string`, optional): Item type filter string.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -4051,15 +4329,7 @@ end
 
 ### LGraphNode:setPushRate
 
-`LGraphNode:setPushRate(r: number)`
-
-Sets this node's push rate for this object.
-
-**Parameters**
-
-- `r` (`number`, required): New push rate.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets this node's push rate for this object.
@@ -4067,9 +4337,17 @@ Sets this node's push rate for this object.
 function LGraphNode:setPushRate(r) end
 ```
 
+#### Description
+
+Sets this node's push rate for this object.
+
+Parameters:
+
+- `r` (`number`, required): New push rate.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -4082,15 +4360,7 @@ end
 
 ### LGraphNode:setQueueCapacity
 
-`LGraphNode:setQueueCapacity(c: integer)`
-
-Sets this node's queue capacity value.
-
-**Parameters**
-
-- `c` (`integer`, required): Queue capacity.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets this node's queue capacity value.
@@ -4098,9 +4368,17 @@ Sets this node's queue capacity value.
 function LGraphNode:setQueueCapacity(c) end
 ```
 
+#### Description
+
+Sets this node's queue capacity value.
+
+Parameters:
+
+- `c` (`integer`, required): Queue capacity.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -4113,15 +4391,7 @@ end
 
 ### LGraphNode:setQueueEnabled
 
-`LGraphNode:setQueueEnabled(e: boolean)`
-
-Enables or disables this node's explicit queue.
-
-**Parameters**
-
-- `e` (`boolean`, required): New queue enabled flag.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Enables or disables this node's explicit queue.
@@ -4129,9 +4399,17 @@ Enables or disables this node's explicit queue.
 function LGraphNode:setQueueEnabled(e) end
 ```
 
+#### Description
+
+Enables or disables this node's explicit queue.
+
+Parameters:
+
+- `e` (`boolean`, required): New queue enabled flag.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -4144,15 +4422,7 @@ end
 
 ### LGraphNode:setType
 
-`LGraphNode:setType(t: string)`
-
-Sets this node's type string for this object.
-
-**Parameters**
-
-- `t` (`string`, required): New node type.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets this node's type string for this object.
@@ -4160,9 +4430,17 @@ Sets this node's type string for this object.
 function LGraphNode:setType(t) end
 ```
 
+#### Description
+
+Sets this node's type string for this object.
+
+Parameters:
+
+- `t` (`string`, required): New node type.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -4175,13 +4453,7 @@ end
 
 ### LGraphNode:type
 
-`LGraphNode:type() -> string`
-
-Returns the Lua-visible type name for this graph node handle.
-
-**Returns**: `string` - The string `LGraphNode`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this graph node handle.
@@ -4189,9 +4461,15 @@ Returns the Lua-visible type name for this graph node handle.
 function LGraphNode:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this graph node handle.
+
+Returns: `string` - The string `LGraphNode`.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do
@@ -4203,17 +4481,7 @@ end
 
 ### LGraphNode:typeOf
 
-`LGraphNode:typeOf(name: string) -> boolean`
-
-Returns whether this graph node handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LGraphNode`, `GraphNode`, and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this graph node handle matches a supported type name.
@@ -4222,9 +4490,19 @@ Returns whether this graph node handle matches a supported type name.
 function LGraphNode:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this graph node handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LGraphNode`, `GraphNode`, and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [graph.lua](../blob/main/content/examples/graph.lua):
+Source: [graph.lua](../blob/main/content/examples/graph.lua)
 
 ```lua
 do

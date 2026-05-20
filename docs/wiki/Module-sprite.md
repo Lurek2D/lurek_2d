@@ -14,33 +14,85 @@
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
   - [lurek.sprite.newAtlasSheet](#lurekspritenewatlassheet)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.sprite.newRPGMakerSheet](#lurekspritenewrpgmakersheet)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.sprite.newSheet](#lurekspritenewsheet)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.sprite.parseAsepriteAtlas](#lurekspriteparseasepriteatlas)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.sprite.parseAtlas](#lurekspriteparseatlas)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔷 Module Types](#module-types)
   - [LSpriteAtlas](#lspriteatlas)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpriteSheet](#lspritesheet)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
   - [LSpriteAtlas:entryCount](#lspriteatlasentrycount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpriteAtlas:entryNames](#lspriteatlasentrynames)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpriteAtlas:getByIndex](#lspriteatlasgetbyindex)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpriteAtlas:getEntry](#lspriteatlasgetentry)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpriteAtlas:getFlipped](#lspriteatlasgetflipped)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpriteAtlas:type](#lspriteatlastype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpriteAtlas:typeOf](#lspriteatlastypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpriteSheet:drawToImage](#lspritesheetdrawtoimage)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpriteSheet:getColumn](#lspritesheetgetcolumn)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpriteSheet:getFrame](#lspritesheetgetframe)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpriteSheet:getFrameCount](#lspritesheetgetframecount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpriteSheet:getFrameSize](#lspritesheetgetframesize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpriteSheet:getGridSize](#lspritesheetgetgridsize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpriteSheet:getGroupFrames](#lspritesheetgetgroupframes)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpriteSheet:getGroupNames](#lspritesheetgetgroupnames)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpriteSheet:getRow](#lspritesheetgetrow)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpriteSheet:nameGroup](#lspritesheetnamegroup)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpriteSheet:type](#lspritesheettype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpriteSheet:typeOf](#lspritesheettypeof)
+    - [Definition](#definition)
+    - [Description](#description)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -89,21 +141,32 @@ lurek.sprite.parseAtlas(json_str: string) -> LSpriteAtlas -- Parses a TexturePac
 
 ### lurek.sprite.newAtlasSheet
 
-`lurek.sprite.newAtlasSheet(atlas: LSpriteAtlas, sw: integer, sh: integer) -> LSpriteSheet`
+#### Definition
+
+```lua
+--- Creates a sprite sheet from an existing atlas, treating each atlas entry as a frame within the given sheet dimensions.
+---@param atlas LSpriteAtlas A previously parsed sprite atlas.
+---@param sw number Sheet texture width in pixels.
+---@param sh number Sheet texture height in pixels.
+---@return LSpriteSheet A new sprite sheet derived from the atlas entries.
+lurek.sprite.newAtlasSheet = function(atlas, sw, sh) end
+```
+
+#### Description
 
 Creates a sprite sheet from an existing atlas, treating each atlas entry as a frame within the given sheet dimensions.
 
-**Parameters**
+Parameters:
 
 - `atlas` (`LSpriteAtlas`, required): A previously parsed sprite atlas.
 - `sw` (`integer`, required): Sheet texture width in pixels.
 - `sh` (`integer`, required): Sheet texture height in pixels.
 
-**Returns**: `LSpriteSheet` - A new sprite sheet derived from the atlas entries.
+Returns: `LSpriteSheet` - A new sprite sheet derived from the atlas entries.
 
 #### Example
 
-Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
+Source: [sprite.lua](../blob/main/content/examples/sprite.lua)
 
 ```lua
 do
@@ -116,20 +179,30 @@ end
 
 ### lurek.sprite.newRPGMakerSheet
 
-`lurek.sprite.newRPGMakerSheet(tw: integer, th: integer) -> LSpriteSheet`
+#### Definition
+
+```lua
+--- Creates a sprite sheet using RPG Maker's standard character layout (4 columns × 4 rows per character block).
+---@param tw number Full texture width in pixels.
+---@param th number Full texture height in pixels.
+---@return LSpriteSheet A new sprite sheet configured for RPG Maker character sprites.
+lurek.sprite.newRPGMakerSheet = function(tw, th) end
+```
+
+#### Description
 
 Creates a sprite sheet using RPG Maker's standard character layout (4 columns × 4 rows per character block).
 
-**Parameters**
+Parameters:
 
 - `tw` (`integer`, required): Full texture width in pixels.
 - `th` (`integer`, required): Full texture height in pixels.
 
-**Returns**: `LSpriteSheet` - A new sprite sheet configured for RPG Maker character sprites.
+Returns: `LSpriteSheet` - A new sprite sheet configured for RPG Maker character sprites.
 
 #### Example
 
-Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
+Source: [sprite.lua](../blob/main/content/examples/sprite.lua)
 
 ```lua
 do
@@ -143,22 +216,34 @@ end
 
 ### lurek.sprite.newSheet
 
-`lurek.sprite.newSheet(tw: integer, th: integer, fw: integer, fh: integer) -> LSpriteSheet`
+#### Definition
+
+```lua
+--- Creates a new sprite sheet by dividing a texture of the given pixel size into a grid of equal-sized frames.
+---@param tw number Full texture width in pixels.
+---@param th number Full texture height in pixels.
+---@param fw number Single frame width in pixels.
+---@param fh number Single frame height in pixels.
+---@return LSpriteSheet A new sprite sheet object.
+lurek.sprite.newSheet = function(tw, th, fw, fh) end
+```
+
+#### Description
 
 Creates a new sprite sheet by dividing a texture of the given pixel size into a grid of equal-sized frames.
 
-**Parameters**
+Parameters:
 
 - `tw` (`integer`, required): Full texture width in pixels.
 - `th` (`integer`, required): Full texture height in pixels.
 - `fw` (`integer`, required): Single frame width in pixels.
 - `fh` (`integer`, required): Single frame height in pixels.
 
-**Returns**: `LSpriteSheet` - A new sprite sheet object.
+Returns: `LSpriteSheet` - A new sprite sheet object.
 
 #### Example
 
-Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
+Source: [sprite.lua](../blob/main/content/examples/sprite.lua)
 
 ```lua
 do
@@ -171,19 +256,28 @@ end
 
 ### lurek.sprite.parseAsepriteAtlas
 
-`lurek.sprite.parseAsepriteAtlas(json_str: string) -> LSpriteAtlas`
+#### Definition
+
+```lua
+--- Parses an Aseprite JSON atlas string and returns a sprite atlas object.
+---@param json_str string Raw JSON content of the Aseprite export atlas file.
+---@return LSpriteAtlas A new atlas with named sprite regions from Aseprite frames.
+lurek.sprite.parseAsepriteAtlas = function(json_str) end
+```
+
+#### Description
 
 Parses an Aseprite JSON atlas string and returns a sprite atlas object.
 
-**Parameters**
+Parameters:
 
 - `json_str` (`string`, required): Raw JSON content of the Aseprite export atlas file.
 
-**Returns**: `LSpriteAtlas` - A new atlas with named sprite regions from Aseprite frames.
+Returns: `LSpriteAtlas` - A new atlas with named sprite regions from Aseprite frames.
 
 #### Example
 
-Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
+Source: [sprite.lua](../blob/main/content/examples/sprite.lua)
 
 ```lua
 do
@@ -197,19 +291,28 @@ end
 
 ### lurek.sprite.parseAtlas
 
-`lurek.sprite.parseAtlas(json_str: string) -> LSpriteAtlas`
+#### Definition
+
+```lua
+--- Parses a TexturePacker JSON atlas string and returns a sprite atlas object.
+---@param json_str string Raw JSON content of the TexturePacker atlas file.
+---@return LSpriteAtlas A new atlas with named sprite regions.
+lurek.sprite.parseAtlas = function(json_str) end
+```
+
+#### Description
 
 Parses a TexturePacker JSON atlas string and returns a sprite atlas object.
 
-**Parameters**
+Parameters:
 
 - `json_str` (`string`, required): Raw JSON content of the TexturePacker atlas file.
 
-**Returns**: `LSpriteAtlas` - A new atlas with named sprite regions.
+Returns: `LSpriteAtlas` - A new atlas with named sprite regions.
 
 #### Example
 
-Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
+Source: [sprite.lua](../blob/main/content/examples/sprite.lua)
 
 ```lua
 do
@@ -228,9 +331,7 @@ end
 
 ### LSpriteAtlas
 
-Lua-visible wrapper around a SpriteAtlas, providing named region lookups.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-visible wrapper around a SpriteAtlas, providing named region lookups.
@@ -238,9 +339,13 @@ Lua-visible wrapper around a SpriteAtlas, providing named region lookups.
 LSpriteAtlas = {}
 ```
 
+#### Description
+
+Lua-visible wrapper around a SpriteAtlas, providing named region lookups.
+
 #### Example
 
-Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
+Source: [sprite.lua](../blob/main/content/examples/sprite.lua)
 
 ```lua
 do
@@ -254,9 +359,7 @@ end
 
 ### LSpriteSheet
 
-Lua-visible wrapper around a SpriteSheet, providing grid-based frame access,.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-visible wrapper around a SpriteSheet, providing grid-based frame access,.
@@ -264,9 +367,13 @@ Lua-visible wrapper around a SpriteSheet, providing grid-based frame access,.
 LSpriteSheet = {}
 ```
 
+#### Description
+
+Lua-visible wrapper around a SpriteSheet, providing grid-based frame access,.
+
 #### Example
 
-Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
+Source: [sprite.lua](../blob/main/content/examples/sprite.lua)
 
 ```lua
 do
@@ -284,13 +391,7 @@ end
 
 ### LSpriteAtlas:entryCount
 
-`LSpriteAtlas:entryCount() -> integer`
-
-Returns the total number of entries (sprite regions) in the atlas.
-
-**Returns**: `integer` - Entry count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the total number of entries (sprite regions) in the atlas.
@@ -298,9 +399,15 @@ Returns the total number of entries (sprite regions) in the atlas.
 function LSpriteAtlas:entryCount() end
 ```
 
+#### Description
+
+Returns the total number of entries (sprite regions) in the atlas.
+
+Returns: `integer` - Entry count.
+
 #### Example
 
-Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
+Source: [sprite.lua](../blob/main/content/examples/sprite.lua)
 
 ```lua
 do
@@ -312,13 +419,7 @@ end
 
 ### LSpriteAtlas:entryNames
 
-`LSpriteAtlas:entryNames() -> string[]`
-
-Returns an array of all entry names in the atlas.
-
-**Returns**: `string[]` - Name strings.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns an array of all entry names in the atlas.
@@ -326,9 +427,15 @@ Returns an array of all entry names in the atlas.
 function LSpriteAtlas:entryNames() end
 ```
 
+#### Description
+
+Returns an array of all entry names in the atlas.
+
+Returns: `string[]` - Name strings.
+
 #### Example
 
-Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
+Source: [sprite.lua](../blob/main/content/examples/sprite.lua)
 
 ```lua
 do
@@ -341,17 +448,7 @@ end
 
 ### LSpriteAtlas:getByIndex
 
-`LSpriteAtlas:getByIndex(index: integer) -> table`
-
-Returns a sprite region by its 1-based index in the atlas.
-
-**Parameters**
-
-- `index` (`integer`, required): 1-based entry index.
-
-**Returns**: `table` - Entry table `{name, x, y, w, h, rotated}`, or nil if the index is out of range.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a sprite region by its 1-based index in the atlas.
@@ -360,9 +457,19 @@ Returns a sprite region by its 1-based index in the atlas.
 function LSpriteAtlas:getByIndex(index) end
 ```
 
+#### Description
+
+Returns a sprite region by its 1-based index in the atlas.
+
+Parameters:
+
+- `index` (`integer`, required): 1-based entry index.
+
+Returns: `table` - Entry table `{name, x, y, w, h, rotated}`, or nil if the index is out of range.
+
 #### Example
 
-Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
+Source: [sprite.lua](../blob/main/content/examples/sprite.lua)
 
 ```lua
 do
@@ -375,17 +482,7 @@ end
 
 ### LSpriteAtlas:getEntry
 
-`LSpriteAtlas:getEntry(name: string) -> table`
-
-Looks up a named sprite region in the atlas by its original filename or tag.
-
-**Parameters**
-
-- `name` (`string`, required): Entry name (e.g. `"player_idle_0"`).
-
-**Returns**: `table` - Entry table `{name, x, y, w, h, rotated}`, or nil if the entry is not found.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Looks up a named sprite region in the atlas by its original filename or tag.
@@ -394,9 +491,19 @@ Looks up a named sprite region in the atlas by its original filename or tag.
 function LSpriteAtlas:getEntry(name) end
 ```
 
+#### Description
+
+Looks up a named sprite region in the atlas by its original filename or tag.
+
+Parameters:
+
+- `name` (`string`, required): Entry name (e.g. `"player_idle_0"`).
+
+Returns: `table` - Entry table `{name, x, y, w, h, rotated}`, or nil if the entry is not found.
+
 #### Example
 
-Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
+Source: [sprite.lua](../blob/main/content/examples/sprite.lua)
 
 ```lua
 do
@@ -410,19 +517,7 @@ end
 
 ### LSpriteAtlas:getFlipped
 
-`LSpriteAtlas:getFlipped(name: string, flip_x: boolean, flip_y: boolean) -> table`
-
-Returns a copy of a named atlas entry with the specified flip flags applied.
-
-**Parameters**
-
-- `name` (`string`, required): Entry name to look up.
-- `flip_x` (`boolean`, required): Mirror horizontally.
-- `flip_y` (`boolean`, required): Mirror vertically.
-
-**Returns**: `table` - Entry table with added `flip_x` and `flip_y` fields, or nil if the entry is not found.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a copy of a named atlas entry with the specified flip flags applied.
@@ -433,9 +528,21 @@ Returns a copy of a named atlas entry with the specified flip flags applied.
 function LSpriteAtlas:getFlipped(name, flip_x, flip_y) end
 ```
 
+#### Description
+
+Returns a copy of a named atlas entry with the specified flip flags applied.
+
+Parameters:
+
+- `name` (`string`, required): Entry name to look up.
+- `flip_x` (`boolean`, required): Mirror horizontally.
+- `flip_y` (`boolean`, required): Mirror vertically.
+
+Returns: `table` - Entry table with added `flip_x` and `flip_y` fields, or nil if the entry is not found.
+
 #### Example
 
-Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
+Source: [sprite.lua](../blob/main/content/examples/sprite.lua)
 
 ```lua
 do
@@ -449,13 +556,7 @@ end
 
 ### LSpriteAtlas:type
 
-`LSpriteAtlas:type() -> string`
-
-Returns the type name of this object.
-
-**Returns**: `string` - Always `"LSpriteAtlas"`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this object.
@@ -463,9 +564,15 @@ Returns the type name of this object.
 function LSpriteAtlas:type() end
 ```
 
+#### Description
+
+Returns the type name of this object.
+
+Returns: `string` - Always `"LSpriteAtlas"`.
+
 #### Example
 
-Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
+Source: [sprite.lua](../blob/main/content/examples/sprite.lua)
 
 ```lua
 do
@@ -477,17 +584,7 @@ end
 
 ### LSpriteAtlas:typeOf
 
-`LSpriteAtlas:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to check (e.g. `"LSpriteAtlas"` or `"Object"`).
-
-**Returns**: `boolean` - True if the object is the given type.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this object matches the given type name.
@@ -496,9 +593,19 @@ Checks whether this object matches the given type name.
 function LSpriteAtlas:typeOf(name) end
 ```
 
+#### Description
+
+Checks whether this object matches the given type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to check (e.g. `"LSpriteAtlas"` or `"Object"`).
+
+Returns: `boolean` - True if the object is the given type.
+
 #### Example
 
-Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
+Source: [sprite.lua](../blob/main/content/examples/sprite.lua)
 
 ```lua
 do
@@ -510,18 +617,7 @@ end
 
 ### LSpriteSheet:drawToImage
 
-`LSpriteSheet:drawToImage(w: integer, h: integer) -> LImage`
-
-Renders the sprite sheet grid into an LImage of the given size for debugging or previews.
-
-**Parameters**
-
-- `w` (`integer`, required): Output image width in pixels.
-- `h` (`integer`, required): Output image height in pixels.
-
-**Returns**: `LImage` - A new image containing the rendered sprite sheet.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Renders the sprite sheet grid into an LImage of the given size for debugging or previews.
@@ -531,9 +627,20 @@ Renders the sprite sheet grid into an LImage of the given size for debugging or 
 function LSpriteSheet:drawToImage(w, h) end
 ```
 
+#### Description
+
+Renders the sprite sheet grid into an LImage of the given size for debugging or previews.
+
+Parameters:
+
+- `w` (`integer`, required): Output image width in pixels.
+- `h` (`integer`, required): Output image height in pixels.
+
+Returns: `LImage` - A new image containing the rendered sprite sheet.
+
 #### Example
 
-Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
+Source: [sprite.lua](../blob/main/content/examples/sprite.lua)
 
 ```lua
 do
@@ -547,17 +654,7 @@ end
 
 ### LSpriteSheet:getColumn
 
-`LSpriteSheet:getColumn(col: integer) -> table`
-
-Returns all frame quads in the given column of the sprite sheet grid.
-
-**Parameters**
-
-- `col` (`integer`, required): 0-based column index.
-
-**Returns**: `table` - Array of quad tables `{x, y, w, h}`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns all frame quads in the given column of the sprite sheet grid.
@@ -566,9 +663,19 @@ Returns all frame quads in the given column of the sprite sheet grid.
 function LSpriteSheet:getColumn(col) end
 ```
 
+#### Description
+
+Returns all frame quads in the given column of the sprite sheet grid.
+
+Parameters:
+
+- `col` (`integer`, required): 0-based column index.
+
+Returns: `table` - Array of quad tables `{x, y, w, h}`.
+
 #### Example
 
-Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
+Source: [sprite.lua](../blob/main/content/examples/sprite.lua)
 
 ```lua
 do
@@ -581,17 +688,7 @@ end
 
 ### LSpriteSheet:getFrame
 
-`LSpriteSheet:getFrame(index: integer) -> table`
-
-Returns the UV quad for a single frame by its 1-based index.
-
-**Parameters**
-
-- `index` (`integer`, required): 1-based frame index in the sprite sheet.
-
-**Returns**: `table` - Quad table `{x, y, w, h}` with normalized UV coordinates, or nil if the index is out of range.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the UV quad for a single frame by its 1-based index.
@@ -600,9 +697,19 @@ Returns the UV quad for a single frame by its 1-based index.
 function LSpriteSheet:getFrame(index) end
 ```
 
+#### Description
+
+Returns the UV quad for a single frame by its 1-based index.
+
+Parameters:
+
+- `index` (`integer`, required): 1-based frame index in the sprite sheet.
+
+Returns: `table` - Quad table `{x, y, w, h}` with normalized UV coordinates, or nil if the index is out of range.
+
 #### Example
 
-Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
+Source: [sprite.lua](../blob/main/content/examples/sprite.lua)
 
 ```lua
 do
@@ -615,13 +722,7 @@ end
 
 ### LSpriteSheet:getFrameCount
 
-`LSpriteSheet:getFrameCount() -> integer`
-
-Returns the total number of frames in this sprite sheet.
-
-**Returns**: `integer` - Total frame count (columns × rows).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the total number of frames in this sprite sheet.
@@ -629,9 +730,15 @@ Returns the total number of frames in this sprite sheet.
 function LSpriteSheet:getFrameCount() end
 ```
 
+#### Description
+
+Returns the total number of frames in this sprite sheet.
+
+Returns: `integer` - Total frame count (columns × rows).
+
 #### Example
 
-Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
+Source: [sprite.lua](../blob/main/content/examples/sprite.lua)
 
 ```lua
 do
@@ -642,13 +749,7 @@ end
 
 ### LSpriteSheet:getFrameSize
 
-`LSpriteSheet:getFrameSize() -> integer`
-
-Returns the pixel dimensions of a single frame cell.
-
-**Returns**: `integer` - Frame width in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the pixel dimensions of a single frame cell.
@@ -657,9 +758,15 @@ Returns the pixel dimensions of a single frame cell.
 function LSpriteSheet:getFrameSize() end
 ```
 
+#### Description
+
+Returns the pixel dimensions of a single frame cell.
+
+Returns: `integer` - Frame width in pixels.
+
 #### Example
 
-Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
+Source: [sprite.lua](../blob/main/content/examples/sprite.lua)
 
 ```lua
 do
@@ -671,13 +778,7 @@ end
 
 ### LSpriteSheet:getGridSize
 
-`LSpriteSheet:getGridSize() -> integer`
-
-Returns the number of columns and rows in the sprite sheet grid.
-
-**Returns**: `integer` - Number of columns.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of columns and rows in the sprite sheet grid.
@@ -686,9 +787,15 @@ Returns the number of columns and rows in the sprite sheet grid.
 function LSpriteSheet:getGridSize() end
 ```
 
+#### Description
+
+Returns the number of columns and rows in the sprite sheet grid.
+
+Returns: `integer` - Number of columns.
+
 #### Example
 
-Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
+Source: [sprite.lua](../blob/main/content/examples/sprite.lua)
 
 ```lua
 do
@@ -700,17 +807,7 @@ end
 
 ### LSpriteSheet:getGroupFrames
 
-`LSpriteSheet:getGroupFrames(name: string) -> table`
-
-Returns the frame quads for a named animation group.
-
-**Parameters**
-
-- `name` (`string`, required): Name of the animation group (e.g. "walk", "idle").
-
-**Returns**: `table` - Array of quad tables for the group, or nil if the group does not exist.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the frame quads for a named animation group.
@@ -719,9 +816,19 @@ Returns the frame quads for a named animation group.
 function LSpriteSheet:getGroupFrames(name) end
 ```
 
+#### Description
+
+Returns the frame quads for a named animation group.
+
+Parameters:
+
+- `name` (`string`, required): Name of the animation group (e.g. "walk", "idle").
+
+Returns: `table` - Array of quad tables for the group, or nil if the group does not exist.
+
 #### Example
 
-Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
+Source: [sprite.lua](../blob/main/content/examples/sprite.lua)
 
 ```lua
 do
@@ -735,13 +842,7 @@ end
 
 ### LSpriteSheet:getGroupNames
 
-`LSpriteSheet:getGroupNames() -> string[]`
-
-Returns an array of all named animation group names defined on this sheet.
-
-**Returns**: `string[]` - Group name strings.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns an array of all named animation group names defined on this sheet.
@@ -749,9 +850,15 @@ Returns an array of all named animation group names defined on this sheet.
 function LSpriteSheet:getGroupNames() end
 ```
 
+#### Description
+
+Returns an array of all named animation group names defined on this sheet.
+
+Returns: `string[]` - Group name strings.
+
 #### Example
 
-Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
+Source: [sprite.lua](../blob/main/content/examples/sprite.lua)
 
 ```lua
 do
@@ -765,17 +872,7 @@ end
 
 ### LSpriteSheet:getRow
 
-`LSpriteSheet:getRow(row: integer) -> table`
-
-Returns all frame quads in the given row of the sprite sheet grid.
-
-**Parameters**
-
-- `row` (`integer`, required): 0-based row index.
-
-**Returns**: `table` - Array of quad tables `{x, y, w, h}`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns all frame quads in the given row of the sprite sheet grid.
@@ -784,9 +881,19 @@ Returns all frame quads in the given row of the sprite sheet grid.
 function LSpriteSheet:getRow(row) end
 ```
 
+#### Description
+
+Returns all frame quads in the given row of the sprite sheet grid.
+
+Parameters:
+
+- `row` (`integer`, required): 0-based row index.
+
+Returns: `table` - Array of quad tables `{x, y, w, h}`.
+
 #### Example
 
-Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
+Source: [sprite.lua](../blob/main/content/examples/sprite.lua)
 
 ```lua
 do
@@ -799,17 +906,7 @@ end
 
 ### LSpriteSheet:nameGroup
 
-`LSpriteSheet:nameGroup(name: string, start: integer, count: integer)`
-
-Defines a named animation group as a contiguous range of frames.
-
-**Parameters**
-
-- `name` (`string`, required): Name for the group (e.g. "attack").
-- `start` (`integer`, required): 1-based start frame index.
-- `count` (`integer`, required): Number of frames in the group.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Defines a named animation group as a contiguous range of frames.
@@ -819,9 +916,19 @@ Defines a named animation group as a contiguous range of frames.
 function LSpriteSheet:nameGroup(name, start, count) end
 ```
 
+#### Description
+
+Defines a named animation group as a contiguous range of frames.
+
+Parameters:
+
+- `name` (`string`, required): Name for the group (e.g. "attack").
+- `start` (`integer`, required): 1-based start frame index.
+- `count` (`integer`, required): Number of frames in the group.
+
 #### Example
 
-Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
+Source: [sprite.lua](../blob/main/content/examples/sprite.lua)
 
 ```lua
 do
@@ -834,13 +941,7 @@ end
 
 ### LSpriteSheet:type
 
-`LSpriteSheet:type() -> string`
-
-Returns the type name of this object.
-
-**Returns**: `string` - Always `"LSpriteSheet"`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this object.
@@ -848,9 +949,15 @@ Returns the type name of this object.
 function LSpriteSheet:type() end
 ```
 
+#### Description
+
+Returns the type name of this object.
+
+Returns: `string` - Always `"LSpriteSheet"`.
+
 #### Example
 
-Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
+Source: [sprite.lua](../blob/main/content/examples/sprite.lua)
 
 ```lua
 do
@@ -861,17 +968,7 @@ end
 
 ### LSpriteSheet:typeOf
 
-`LSpriteSheet:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to check (e.g. `"LSpriteSheet"` or `"Object"`).
-
-**Returns**: `boolean` - True if the object is the given type.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this object matches the given type name.
@@ -880,9 +977,19 @@ Checks whether this object matches the given type name.
 function LSpriteSheet:typeOf(name) end
 ```
 
+#### Description
+
+Checks whether this object matches the given type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to check (e.g. `"LSpriteSheet"` or `"Object"`).
+
+Returns: `boolean` - True if the object is the given type.
+
 #### Example
 
-Exact example from [sprite.lua](../blob/main/content/examples/sprite.lua):
+Source: [sprite.lua](../blob/main/content/examples/sprite.lua)
 
 ```lua
 do

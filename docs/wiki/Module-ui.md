@@ -14,436 +14,1294 @@
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
   - [lurek.ui.addToast](#lurekuiaddtoast)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.beginDrag](#lurekuibegindrag)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.clearFocus](#lurekuiclearfocus)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.draw](#lurekuidraw)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.drawToImage](#lurekuidrawtoimage)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.dropOn](#lurekuidropon)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.endDrag](#lurekuienddrag)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.flushCache](#lurekuiflushcache)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.focusNext](#lurekuifocusnext)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.focusPrev](#lurekuifocusprev)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.getActiveDrag](#lurekuigetactivedrag)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.getFocus](#lurekuigetfocus)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.getRoot](#lurekuigetroot)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.getTheme](#lurekuigettheme)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.getToastCount](#lurekuigettoastcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.getWidgetCount](#lurekuigetwidgetcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.keypressed](#lurekuikeypressed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.loadLayout](#lurekuiloadlayout)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.loadLayoutFile](#lurekuiloadlayoutfile)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.mousemoved](#lurekuimousemoved)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.mousepressed](#lurekuimousepressed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.mousereleased](#lurekuimousereleased)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.newAccordion](#lurekuinewaccordion)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.newAreaChart](#lurekuinewareachart)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.newBadge](#lurekuinewbadge)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.newBarChart](#lurekuinewbarchart)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.newButton](#lurekuinewbutton)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.newCheckbox](#lurekuinewcheckbox)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.newColorPicker](#lurekuinewcolorpicker)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.newComboBox](#lurekuinewcombobox)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.newCustomWidget](#lurekuinewcustomwidget)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.newDialog](#lurekuinewdialog)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.newDockPanel](#lurekuinewdockpanel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.newImageWidget](#lurekuinewimagewidget)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.newLabel](#lurekuinewlabel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.newLayout](#lurekuinewlayout)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.newLineChart](#lurekuinewlinechart)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.newList](#lurekuinewlist)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.newMenuBar](#lurekuinewmenubar)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.newMenuItem](#lurekuinewmenuitem)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.newNinePatch](#lurekuinewninepatch)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.newPanel](#lurekuinewpanel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.newPieChart](#lurekuinewpiechart)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.newProgressBar](#lurekuinewprogressbar)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.newRadioButton](#lurekuinewradiobutton)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.newScatterPlot](#lurekuinewscatterplot)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.newScrollBar](#lurekuinewscrollbar)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.newScrollPanel](#lurekuinewscrollpanel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.newSeparator](#lurekuinewseparator)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.newSlider](#lurekuinewslider)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.newSpacer](#lurekuinewspacer)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.newSpinBox](#lurekuinewspinbox)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.newSplitPanel](#lurekuinewsplitpanel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.newStatusBar](#lurekuinewstatusbar)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.newSwitch](#lurekuinewswitch)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.newTabBar](#lurekuinewtabbar)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.newTable](#lurekuinewtable)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.newTextInput](#lurekuinewtextinput)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.newTheme](#lurekuinewtheme)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.newToast](#lurekuinewtoast)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.newToolbar](#lurekuinewtoolbar)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.newTooltipPanel](#lurekuinewtooltippanel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.newTreeView](#lurekuinewtreeview)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.newWindow](#lurekuinewwindow)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.parseWidgetState](#lurekuiparsewidgetstate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.renderToImage](#lurekuirendertoimage)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.setDefaultTheme](#lurekuisetdefaulttheme)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.setFocus](#lurekuisetfocus)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.setTheme](#lurekuisettheme)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.setViewport](#lurekuisetviewport)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.textinput](#lurekuitextinput)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.update](#lurekuiupdate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.update_bindings](#lurekuiupdatebindings)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.ui.wheelmoved](#lurekuiwheelmoved)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔷 Module Types](#module-types)
   - [LAccordion](#laccordion)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LAreaChart](#lareachart)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBadge](#lbadge)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBarChart](#lbarchart)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LButton](#lbutton)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCheckbox](#lcheckbox)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LColorPicker](#lcolorpicker)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LComboBox](#lcombobox)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDialog](#ldialog)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDockPanel](#ldockpanel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGuiTable](#lguitable)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGuiWindow](#lguiwindow)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageWidget](#limagewidget)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLabel](#llabel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLayout](#llayout)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLineChart](#llinechart)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LListBox](#llistbox)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMenuBar](#lmenubar)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMenuItem](#lmenuitem)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNinePatch](#lninepatch)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPanel](#lpanel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPieChart](#lpiechart)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LProgressBar](#lprogressbar)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRadioButton](#lradiobutton)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScatterPlot](#lscatterplot)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScrollBar](#lscrollbar)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScrollPanel](#lscrollpanel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSeparator](#lseparator)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSlider](#lslider)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpinBox](#lspinbox)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSplitPanel](#lsplitpanel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LStatusBar](#lstatusbar)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSwitch](#lswitch)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTabBar](#ltabbar)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTextInput](#ltextinput)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTheme](#ltheme)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LToast](#ltoast)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LToolbar](#ltoolbar)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTooltipPanel](#ltooltippanel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTreeView](#ltreeview)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget](#luiwidget)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
   - [LAccordion:addSection](#laccordionaddsection)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LAccordion:getSectionCount](#laccordiongetsectioncount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LAccordion:getSectionTitle](#laccordiongetsectiontitle)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LAccordion:isExclusive](#laccordionisexclusive)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LAccordion:isSectionExpanded](#laccordionissectionexpanded)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LAccordion:setExclusive](#laccordionsetexclusive)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LAccordion:toggleSection](#laccordiontogglesection)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LAreaChart:addLayer](#lareachartaddlayer)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LAreaChart:drawToImage](#lareachartdrawtoimage)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LAreaChart:setYMax](#lareachartsetymax)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LAreaChart:type](#lareacharttype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LAreaChart:typeOf](#lareacharttypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBadge:getCount](#lbadgegetcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBadge:getDisplayText](#lbadgegetdisplaytext)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBadge:setCount](#lbadgesetcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBarChart:addCategory](#lbarchartaddcategory)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBarChart:addSeries](#lbarchartaddseries)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBarChart:drawToImage](#lbarchartdrawtoimage)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBarChart:type](#lbarcharttype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBarChart:typeOf](#lbarcharttypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LButton:getText](#lbuttongettext)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LButton:setText](#lbuttonsettext)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCheckbox:getText](#lcheckboxgettext)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCheckbox:isChecked](#lcheckboxischecked)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCheckbox:setChecked](#lcheckboxsetchecked)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCheckbox:setText](#lcheckboxsettext)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LColorPicker:getColor](#lcolorpickergetcolor)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LColorPicker:getColorMode](#lcolorpickergetcolormode)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LColorPicker:getShowAlpha](#lcolorpickergetshowalpha)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LColorPicker:setColor](#lcolorpickersetcolor)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LColorPicker:setColorMode](#lcolorpickersetcolormode)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LColorPicker:setOnChange](#lcolorpickersetonchange)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LColorPicker:setShowAlpha](#lcolorpickersetshowalpha)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LComboBox:addItem](#lcomboboxadditem)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LComboBox:clearItems](#lcomboboxclearitems)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LComboBox:getItem](#lcomboboxgetitem)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LComboBox:getItemCount](#lcomboboxgetitemcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LComboBox:getSelectedIndex](#lcomboboxgetselectedindex)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LComboBox:getSelectedItem](#lcomboboxgetselecteditem)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LComboBox:removeItem](#lcomboboxremoveitem)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LComboBox:setSelectedIndex](#lcomboboxsetselectedindex)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDialog:addButton](#ldialogaddbutton)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDialog:close](#ldialogclose)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDialog:getContent](#ldialoggetcontent)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDialog:getTitle](#ldialoggettitle)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDialog:isModal](#ldialogismodal)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDialog:isOpen](#ldialogisopen)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDialog:open](#ldialogopen)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDialog:setContent](#ldialogsetcontent)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDialog:setModal](#ldialogsetmodal)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDialog:setOnClose](#ldialogsetonclose)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDialog:setTitle](#ldialogsettitle)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDockPanel:dock](#ldockpaneldock)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDockPanel:getDockedCount](#ldockpanelgetdockedcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDockPanel:getSplitSize](#ldockpanelgetsplitsize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDockPanel:setSplitSize](#ldockpanelsetsplitsize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDockPanel:undock](#ldockpanelundock)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGuiTable:addColumn](#lguitableaddcolumn)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGuiTable:addRow](#lguitableaddrow)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGuiTable:getCell](#lguitablegetcell)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGuiTable:getColumnCount](#lguitablegetcolumncount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGuiTable:getRowCount](#lguitablegetrowcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGuiTable:getSelectedRow](#lguitablegetselectedrow)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGuiTable:isSortable](#lguitableissortable)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGuiTable:setCell](#lguitablesetcell)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGuiTable:setOnSelect](#lguitablesetonselect)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGuiTable:setSelectedRow](#lguitablesetselectedrow)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGuiTable:setSortable](#lguitablesetsortable)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGuiWindow:getTitle](#lguiwindowgettitle)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGuiWindow:isCloseable](#lguiwindowiscloseable)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGuiWindow:isDraggable](#lguiwindowisdraggable)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGuiWindow:isResizable](#lguiwindowisresizable)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGuiWindow:setCloseable](#lguiwindowsetcloseable)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGuiWindow:setDraggable](#lguiwindowsetdraggable)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGuiWindow:setOnClose](#lguiwindowsetonclose)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGuiWindow:setResizable](#lguiwindowsetresizable)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGuiWindow:setTitle](#lguiwindowsettitle)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageWidget:getScaleMode](#limagewidgetgetscalemode)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageWidget:getTint](#limagewidgetgettint)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageWidget:setScaleMode](#limagewidgetsetscalemode)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageWidget:setTint](#limagewidgetsettint)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLabel:getText](#llabelgettext)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLabel:setText](#llabelsettext)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLayout:getAlign](#llayoutgetalign)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLayout:getDirection](#llayoutgetdirection)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLayout:getJustify](#llayoutgetjustify)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLayout:getSpacing](#llayoutgetspacing)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLayout:getWrap](#llayoutgetwrap)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLayout:setAlign](#llayoutsetalign)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLayout:setColumns](#llayoutsetcolumns)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLayout:setDirection](#llayoutsetdirection)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLayout:setJustify](#llayoutsetjustify)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLayout:setSpacing](#llayoutsetspacing)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLayout:setWrap](#llayoutsetwrap)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLineChart:addSeries](#llinechartaddseries)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLineChart:drawToImage](#llinechartdrawtoimage)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLineChart:setXMax](#llinechartsetxmax)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLineChart:setYMax](#llinechartsetymax)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLineChart:type](#llinecharttype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLineChart:typeOf](#llinecharttypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LListBox:addItem](#llistboxadditem)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LListBox:clearItems](#llistboxclearitems)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LListBox:getItem](#llistboxgetitem)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LListBox:getItemCount](#llistboxgetitemcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LListBox:getSelectedIndex](#llistboxgetselectedindex)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LListBox:removeItem](#llistboxremoveitem)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LListBox:setItemHeight](#llistboxsetitemheight)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LListBox:setSelectedIndex](#llistboxsetselectedindex)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMenuBar:addMenu](#lmenubaraddmenu)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMenuBar:getMenuCount](#lmenubargetmenucount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMenuBar:getMenus](#lmenubargetmenus)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMenuBar:removeMenu](#lmenubarremovemenu)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMenuItem:addSubItem](#lmenuitemaddsubitem)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMenuItem:getShortcut](#lmenuitemgetshortcut)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMenuItem:getSubItems](#lmenuitemgetsubitems)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMenuItem:getText](#lmenuitemgettext)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMenuItem:isChecked](#lmenuitemischecked)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMenuItem:setChecked](#lmenuitemsetchecked)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMenuItem:setOnClick](#lmenuitemsetonclick)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMenuItem:setShortcut](#lmenuitemsetshortcut)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMenuItem:setText](#lmenuitemsettext)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNinePatch:getImageDimensions](#lninepatchgetimagedimensions)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNinePatch:getInsets](#lninepatchgetinsets)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNinePatch:getSlices](#lninepatchgetslices)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNinePatch:setImageDimensions](#lninepatchsetimagedimensions)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LNinePatch:setInsets](#lninepatchsetinsets)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPanel:getTitle](#lpanelgettitle)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPanel:setScrollable](#lpanelsetscrollable)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPanel:setTitle](#lpanelsettitle)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPieChart:addSegment](#lpiechartaddsegment)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPieChart:drawToImage](#lpiechartdrawtoimage)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPieChart:type](#lpiecharttype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPieChart:typeOf](#lpiecharttypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LProgressBar:getMax](#lprogressbargetmax)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LProgressBar:getMin](#lprogressbargetmin)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LProgressBar:getProgress](#lprogressbargetprogress)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LProgressBar:getValue](#lprogressbargetvalue)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LProgressBar:setRange](#lprogressbarsetrange)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LProgressBar:setValue](#lprogressbarsetvalue)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRadioButton:getGroup](#lradiobuttongetgroup)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRadioButton:getText](#lradiobuttongettext)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRadioButton:isSelected](#lradiobuttonisselected)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRadioButton:setGroup](#lradiobuttonsetgroup)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRadioButton:setOnChange](#lradiobuttonsetonchange)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRadioButton:setSelected](#lradiobuttonsetselected)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRadioButton:setText](#lradiobuttonsettext)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScatterPlot:addSeries](#lscatterplotaddseries)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScatterPlot:drawToImage](#lscatterplotdrawtoimage)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScatterPlot:setXRange](#lscatterplotsetxrange)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScatterPlot:setYRange](#lscatterplotsetyrange)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScatterPlot:type](#lscatterplottype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScatterPlot:typeOf](#lscatterplottypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScrollBar:getContentSize](#lscrollbargetcontentsize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScrollBar:getScrollPosition](#lscrollbargetscrollposition)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScrollBar:getViewSize](#lscrollbargetviewsize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScrollBar:isVertical](#lscrollbarisvertical)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScrollBar:setContentSize](#lscrollbarsetcontentsize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScrollBar:setOnChange](#lscrollbarsetonchange)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScrollBar:setScrollPosition](#lscrollbarsetscrollposition)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScrollBar:setViewSize](#lscrollbarsetviewsize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScrollPanel:getContentSize](#lscrollpanelgetcontentsize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScrollPanel:getMaxScroll](#lscrollpanelgetmaxscroll)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScrollPanel:getScrollPosition](#lscrollpanelgetscrollposition)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScrollPanel:getScrollSpeed](#lscrollpanelgetscrollspeed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScrollPanel:setContentSize](#lscrollpanelsetcontentsize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScrollPanel:setScrollPosition](#lscrollpanelsetscrollposition)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScrollPanel:setScrollSpeed](#lscrollpanelsetscrollspeed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSeparator:getThickness](#lseparatorgetthickness)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSeparator:isVertical](#lseparatorisvertical)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSeparator:setThickness](#lseparatorsetthickness)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSeparator:setVertical](#lseparatorsetvertical)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSlider:getMax](#lslidergetmax)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSlider:getMin](#lslidergetmin)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSlider:getValue](#lslidergetvalue)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSlider:setRange](#lslidersetrange)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSlider:setStep](#lslidersetstep)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSlider:setValue](#lslidersetvalue)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpinBox:decrement](#lspinboxdecrement)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpinBox:getValue](#lspinboxgetvalue)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpinBox:increment](#lspinboxincrement)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpinBox:setRange](#lspinboxsetrange)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpinBox:setStep](#lspinboxsetstep)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSpinBox:setValue](#lspinboxsetvalue)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSplitPanel:getFirstChild](#lsplitpanelgetfirstchild)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSplitPanel:getMinPanelSize](#lsplitpanelgetminpanelsize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSplitPanel:getOrientation](#lsplitpanelgetorientation)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSplitPanel:getSecondChild](#lsplitpanelgetsecondchild)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSplitPanel:getSplitPosition](#lsplitpanelgetsplitposition)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSplitPanel:setFirstChild](#lsplitpanelsetfirstchild)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSplitPanel:setMinPanelSize](#lsplitpanelsetminpanelsize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSplitPanel:setOrientation](#lsplitpanelsetorientation)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSplitPanel:setSecondChild](#lsplitpanelsetsecondchild)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSplitPanel:setSplitPosition](#lsplitpanelsetsplitposition)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LStatusBar:addSection](#lstatusbaraddsection)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LStatusBar:getSectionCount](#lstatusbargetsectioncount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LStatusBar:getSectionText](#lstatusbargetsectiontext)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LStatusBar:setSectionCount](#lstatusbarsetsectioncount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LStatusBar:setSectionText](#lstatusbarsetsectiontext)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LStatusBar:setSectionWidget](#lstatusbarsetsectionwidget)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSwitch:isOn](#lswitchison)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSwitch:setOn](#lswitchseton)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSwitch:toggle](#lswitchtoggle)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTabBar:addTab](#ltabbaraddtab)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTabBar:getActiveTab](#ltabbargetactivetab)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTabBar:getTab](#ltabbargettab)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTabBar:getTabCount](#ltabbargettabcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTabBar:removeTab](#ltabbarremovetab)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTabBar:setActiveTab](#ltabbarsetactivetab)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTextInput:getCursorPosition](#ltextinputgetcursorposition)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTextInput:getPlaceholder](#ltextinputgetplaceholder)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTextInput:getText](#ltextinputgettext)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTextInput:isFocused](#ltextinputisfocused)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTextInput:setMaxLength](#ltextinputsetmaxlength)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTextInput:setPlaceholder](#ltextinputsetplaceholder)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTextInput:setText](#ltextinputsettext)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTheme:setStyle](#lthemesetstyle)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTheme:type](#lthemetype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTheme:typeOf](#lthemetypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LToast:getDuration](#ltoastgetduration)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LToast:getMessage](#ltoastgetmessage)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LToast:getProgress](#ltoastgetprogress)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LToast:isExpired](#ltoastisexpired)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LToast:setDuration](#ltoastsetduration)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LToast:setMessage](#ltoastsetmessage)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LToolbar:addButton](#ltoolbaraddbutton)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LToolbar:addSeparator](#ltoolbaraddseparator)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LToolbar:addSpacer](#ltoolbaraddspacer)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LToolbar:getButton](#ltoolbargetbutton)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LToolbar:getOrientation](#ltoolbargetorientation)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LToolbar:isButtonToggled](#ltoolbarisbuttontoggled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LToolbar:setButtonEnabled](#ltoolbarsetbuttonenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LToolbar:setButtonToggled](#ltoolbarsetbuttontoggled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LToolbar:setOrientation](#ltoolbarsetorientation)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTooltipPanel:getDelay](#ltooltippanelgetdelay)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTooltipPanel:getTarget](#ltooltippanelgettarget)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTooltipPanel:getText](#ltooltippanelgettext)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTooltipPanel:setDelay](#ltooltippanelsetdelay)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTooltipPanel:setTarget](#ltooltippanelsettarget)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTooltipPanel:setText](#ltooltippanelsettext)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTreeView:addNode](#ltreeviewaddnode)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTreeView:clearNodes](#ltreeviewclearnodes)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTreeView:collapseAll](#ltreeviewcollapseall)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTreeView:collapseNode](#ltreeviewcollapsenode)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTreeView:expandAll](#ltreeviewexpandall)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTreeView:expandNode](#ltreeviewexpandnode)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTreeView:getChildNodes](#ltreeviewgetchildnodes)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTreeView:getNodeCount](#ltreeviewgetnodecount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTreeView:getNodeDepth](#ltreeviewgetnodedepth)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTreeView:getNodeText](#ltreeviewgetnodetext)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTreeView:getParentNode](#ltreeviewgetparentnode)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTreeView:getSelectedNode](#ltreeviewgetselectednode)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTreeView:isExpanded](#ltreeviewisexpanded)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTreeView:isNodeExpanded](#ltreeviewisnodeexpanded)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTreeView:removeNode](#ltreeviewremovenode)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTreeView:setNodeIcon](#ltreeviewsetnodeicon)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTreeView:setNodeText](#ltreeviewsetnodetext)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTreeView:setSelectedNode](#ltreeviewsetselectednode)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTreeView:toggleNode](#ltreeviewtogglenode)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:addChild](#luiwidgetaddchild)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:animateAlpha](#luiwidgetanimatealpha)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:animatePosition](#luiwidgetanimateposition)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:attachToEntity](#luiwidgetattachtoentity)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:bind](#luiwidgetbind)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:cancelAnimations](#luiwidgetcancelanimations)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:clearAnchor](#luiwidgetclearanchor)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:containsPoint](#luiwidgetcontainspoint)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:detachFromEntity](#luiwidgetdetachfromentity)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:fadeIn](#luiwidgetfadein)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:fadeOut](#luiwidgetfadeout)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:findById](#luiwidgetfindbyid)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:getAlpha](#luiwidgetgetalpha)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:getChildCount](#luiwidgetgetchildcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:getChildren](#luiwidgetgetchildren)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:getFlexGrow](#luiwidgetgetflexgrow)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:getFlexShrink](#luiwidgetgetflexshrink)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:getId](#luiwidgetgetid)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:getMargin](#luiwidgetgetmargin)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:getMaxSize](#luiwidgetgetmaxsize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:getMinSize](#luiwidgetgetminsize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:getPadding](#luiwidgetgetpadding)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:getPosition](#luiwidgetgetposition)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:getRect](#luiwidgetgetrect)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:getSize](#luiwidgetgetsize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:getState](#luiwidgetgetstate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:getTooltip](#luiwidgetgettooltip)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:getZOrder](#luiwidgetgetzorder)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:isAnimating](#luiwidgetisanimating)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:isEnabled](#luiwidgetisenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:isVisible](#luiwidgetisvisible)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:removeChild](#luiwidgetremovechild)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:setAlpha](#luiwidgetsetalpha)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:setAnchor](#luiwidgetsetanchor)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:setAnchorCenter](#luiwidgetsetanchorcenter)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:setEnabled](#luiwidgetsetenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:setFlexGrow](#luiwidgetsetflexgrow)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:setFlexShrink](#luiwidgetsetflexshrink)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:setId](#luiwidgetsetid)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:setMargin](#luiwidgetsetmargin)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:setMaxSize](#luiwidgetsetmaxsize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:setMinSize](#luiwidgetsetminsize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:setOnChange](#luiwidgetsetonchange)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:setOnClick](#luiwidgetsetonclick)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:setOnDraw](#luiwidgetsetondraw)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:setPadding](#luiwidgetsetpadding)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:setPosition](#luiwidgetsetposition)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:setSize](#luiwidgetsetsize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:setTooltip](#luiwidgetsettooltip)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:setVisible](#luiwidgetsetvisible)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:setZOrder](#luiwidgetsetzorder)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:slideIn](#luiwidgetslidein)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:slideOut](#luiwidgetslideout)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:type](#luiwidgettype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:typeOf](#luiwidgettypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUiWidget:unbind](#luiwidgetunbind)
+    - [Definition](#definition)
+    - [Description](#description)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -520,17 +1378,25 @@ lurek.ui.loadLayout(def: table) -> integer -- Loads a UI layout from a Lua table
 
 ### lurek.ui.addToast
 
-`lurek.ui.addToast(toast_table: table)`
+#### Definition
+
+```lua
+--- Adds a toast notification to the queue.
+---@param toast_table table Table with message (string) and optional duration (number).
+lurek.ui.addToast = function(toast_table) end
+```
+
+#### Description
 
 Adds a toast notification to the queue.
 
-**Parameters**
+Parameters:
 
 - `toast_table` (`table`, required): Table with message (string) and optional duration (number).
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -543,19 +1409,28 @@ end
 
 ### lurek.ui.beginDrag
 
-`lurek.ui.beginDrag(widget: table|number) -> boolean`
+#### Definition
+
+```lua
+--- Begins a drag operation on a widget.
+---@param widget table|number The widget table or widget index.
+---@return boolean True if the drag started.
+lurek.ui.beginDrag = function(widget) end
+```
+
+#### Description
 
 Begins a drag operation on a widget.
 
-**Parameters**
+Parameters:
 
 - `widget` (`table|number`, required): The widget table or widget index.
 
-**Returns**: `boolean` - True if the drag started.
+Returns: `boolean` - True if the drag started.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -569,13 +1444,20 @@ end
 
 ### lurek.ui.clearFocus
 
-`lurek.ui.clearFocus()`
+#### Definition
+
+```lua
+--- Clears keyboard focus from all widgets.
+lurek.ui.clearFocus = function() end
+```
+
+#### Description
 
 Clears keyboard focus from all widgets.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -589,13 +1471,20 @@ end
 
 ### lurek.ui.draw
 
-`lurek.ui.draw()`
+#### Definition
+
+```lua
+--- Invokes custom draw callbacks for all widgets that have one registered.
+lurek.ui.draw = function() end
+```
+
+#### Description
 
 Invokes custom draw callbacks for all widgets that have one registered.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -609,20 +1498,30 @@ end
 
 ### lurek.ui.drawToImage
 
-`lurek.ui.drawToImage(w: integer, h: integer) -> LImageData`
+#### Definition
+
+```lua
+--- Renders the entire UI to an image buffer.
+---@param w number Image width in pixels.
+---@param h number Image height in pixels.
+---@return LImageData The rendered image.
+lurek.ui.drawToImage = function(w, h) end
+```
+
+#### Description
 
 Renders the entire UI to an image buffer.
 
-**Parameters**
+Parameters:
 
 - `w` (`integer`, required): Image width in pixels.
 - `h` (`integer`, required): Image height in pixels.
 
-**Returns**: `LImageData` - The rendered image.
+Returns: `LImageData` - The rendered image.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -636,19 +1535,28 @@ end
 
 ### lurek.ui.dropOn
 
-`lurek.ui.dropOn(target: table|number) -> boolean`
+#### Definition
+
+```lua
+--- Drops the currently dragged widget onto a target widget.
+---@param target table|number The target widget table or widget index.
+---@return boolean True if the drop succeeded.
+lurek.ui.dropOn = function(target) end
+```
+
+#### Description
 
 Drops the currently dragged widget onto a target widget.
 
-**Parameters**
+Parameters:
 
 - `target` (`table|number`, required): The target widget table or widget index.
 
-**Returns**: `boolean` - True if the drop succeeded.
+Returns: `boolean` - True if the drop succeeded.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -662,15 +1570,23 @@ end
 
 ### lurek.ui.endDrag
 
-`lurek.ui.endDrag() -> integer`
+#### Definition
+
+```lua
+--- Ends the current drag operation without dropping.
+---@return number The widget index that was being dragged, or nil if no drag was active.
+lurek.ui.endDrag = function() end
+```
+
+#### Description
 
 Ends the current drag operation without dropping.
 
-**Returns**: `integer` - The widget index that was being dragged, or nil if no drag was active.
+Returns: `integer` - The widget index that was being dragged, or nil if no drag was active.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -684,15 +1600,23 @@ end
 
 ### lurek.ui.flushCache
 
-`lurek.ui.flushCache() -> boolean`
+#### Definition
+
+```lua
+--- Flushes internal UI layout and render caches.
+---@return boolean True if the cache was flushed.
+lurek.ui.flushCache = function() end
+```
+
+#### Description
 
 Flushes internal UI layout and render caches.
 
-**Returns**: `boolean` - True if the cache was flushed.
+Returns: `boolean` - True if the cache was flushed.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -706,13 +1630,20 @@ end
 
 ### lurek.ui.focusNext
 
-`lurek.ui.focusNext()`
+#### Definition
+
+```lua
+--- Moves keyboard focus to the next focusable widget.
+lurek.ui.focusNext = function() end
+```
+
+#### Description
 
 Moves keyboard focus to the next focusable widget.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -726,13 +1657,20 @@ end
 
 ### lurek.ui.focusPrev
 
-`lurek.ui.focusPrev()`
+#### Definition
+
+```lua
+--- Moves keyboard focus to the previous focusable widget.
+lurek.ui.focusPrev = function() end
+```
+
+#### Description
 
 Moves keyboard focus to the previous focusable widget.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -746,15 +1684,23 @@ end
 
 ### lurek.ui.getActiveDrag
 
-`lurek.ui.getActiveDrag() -> integer`
+#### Definition
+
+```lua
+--- Returns the widget index currently being dragged, or nil.
+---@return number The dragged widget index.
+lurek.ui.getActiveDrag = function() end
+```
+
+#### Description
 
 Returns the widget index currently being dragged, or nil.
 
-**Returns**: `integer` - The dragged widget index.
+Returns: `integer` - The dragged widget index.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -768,15 +1714,23 @@ end
 
 ### lurek.ui.getFocus
 
-`lurek.ui.getFocus() -> integer`
+#### Definition
+
+```lua
+--- Returns the index of the currently focused widget, or nil.
+---@return number The focused widget index.
+lurek.ui.getFocus = function() end
+```
+
+#### Description
 
 Returns the index of the currently focused widget, or nil.
 
-**Returns**: `integer` - The focused widget index.
+Returns: `integer` - The focused widget index.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -790,15 +1744,23 @@ end
 
 ### lurek.ui.getRoot
 
-`lurek.ui.getRoot() -> LPanel`
+#### Definition
+
+```lua
+--- Returns the root panel widget of the UI tree.
+---@return LPanel The root panel widget table.
+lurek.ui.getRoot = function() end
+```
+
+#### Description
 
 Returns the root panel widget of the UI tree.
 
-**Returns**: `LPanel` - The root panel widget table.
+Returns: `LPanel` - The root panel widget table.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -810,15 +1772,23 @@ end
 
 ### lurek.ui.getTheme
 
-`lurek.ui.getTheme() -> boolean`
+#### Definition
+
+```lua
+--- Returns whether a theme is currently set.
+---@return boolean True if a theme is active.
+lurek.ui.getTheme = function() end
+```
+
+#### Description
 
 Returns whether a theme is currently set.
 
-**Returns**: `boolean` - True if a theme is active.
+Returns: `boolean` - True if a theme is active.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -832,15 +1802,23 @@ end
 
 ### lurek.ui.getToastCount
 
-`lurek.ui.getToastCount() -> integer`
+#### Definition
+
+```lua
+--- Returns the number of active toast notifications.
+---@return number The toast count.
+lurek.ui.getToastCount = function() end
+```
+
+#### Description
 
 Returns the number of active toast notifications.
 
-**Returns**: `integer` - The toast count.
+Returns: `integer` - The toast count.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -854,15 +1832,23 @@ end
 
 ### lurek.ui.getWidgetCount
 
-`lurek.ui.getWidgetCount() -> integer`
+#### Definition
+
+```lua
+--- Returns the total number of widgets in the UI context.
+---@return number The widget count.
+lurek.ui.getWidgetCount = function() end
+```
+
+#### Description
 
 Returns the total number of widgets in the UI context.
 
-**Returns**: `integer` - The widget count.
+Returns: `integer` - The widget count.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -876,19 +1862,28 @@ end
 
 ### lurek.ui.keypressed
 
-`lurek.ui.keypressed(key: string) -> boolean`
+#### Definition
+
+```lua
+--- Delivers a key press event to the UI.
+---@param key string The key name.
+---@return boolean True if a widget consumed the event.
+lurek.ui.keypressed = function(key) end
+```
+
+#### Description
 
 Delivers a key press event to the UI.
 
-**Parameters**
+Parameters:
 
 - `key` (`string`, required): The key name.
 
-**Returns**: `boolean` - True if a widget consumed the event.
+Returns: `boolean` - True if a widget consumed the event.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -902,19 +1897,28 @@ end
 
 ### lurek.ui.loadLayout
 
-`lurek.ui.loadLayout(def: table) -> integer`
+#### Definition
+
+```lua
+--- Loads a UI layout from a Lua table definition.
+---@param def table The layout definition table.
+---@return number The root widget index.
+lurek.ui.loadLayout = function(def) end
+```
+
+#### Description
 
 Loads a UI layout from a Lua table definition.
 
-**Parameters**
+Parameters:
 
 - `def` (`table`, required): The layout definition table.
 
-**Returns**: `integer` - The root widget index.
+Returns: `integer` - The root widget index.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -927,19 +1931,28 @@ end
 
 ### lurek.ui.loadLayoutFile
 
-`lurek.ui.loadLayoutFile(path: string) -> integer`
+#### Definition
+
+```lua
+--- Loads a UI layout from a TOML layout file.
+---@param path string Path to the TOML layout file.
+---@return number The root widget index.
+lurek.ui.loadLayoutFile = function(path) end
+```
+
+#### Description
 
 Loads a UI layout from a TOML layout file.
 
-**Parameters**
+Parameters:
 
 - `path` (`string`, required): Path to the TOML layout file.
 
-**Returns**: `integer` - The root widget index.
+Returns: `integer` - The root widget index.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -953,20 +1966,30 @@ end
 
 ### lurek.ui.mousemoved
 
-`lurek.ui.mousemoved(x: number, y: number) -> boolean`
+#### Definition
+
+```lua
+--- Delivers a mouse move event to the UI.
+---@param x number Mouse X position.
+---@param y number Mouse Y position.
+---@return boolean True if a widget consumed the event.
+lurek.ui.mousemoved = function(x, y) end
+```
+
+#### Description
 
 Delivers a mouse move event to the UI.
 
-**Parameters**
+Parameters:
 
 - `x` (`number`, required): Mouse X position.
 - `y` (`number`, required): Mouse Y position.
 
-**Returns**: `boolean` - True if a widget consumed the event.
+Returns: `boolean` - True if a widget consumed the event.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -980,21 +2003,32 @@ end
 
 ### lurek.ui.mousepressed
 
-`lurek.ui.mousepressed(x: number, y: number, [btn]: integer) -> boolean`
+#### Definition
+
+```lua
+--- Delivers a mouse press event to the UI.
+---@param x number Mouse X position.
+---@param y number Mouse Y position.
+---@param btn? number Mouse button index (default 1).
+---@return boolean True if a widget consumed the event.
+lurek.ui.mousepressed = function(x, y, btn) end
+```
+
+#### Description
 
 Delivers a mouse press event to the UI.
 
-**Parameters**
+Parameters:
 
 - `x` (`number`, required): Mouse X position.
 - `y` (`number`, required): Mouse Y position.
 - `btn` (`integer`, optional): Mouse button index (default 1).
 
-**Returns**: `boolean` - True if a widget consumed the event.
+Returns: `boolean` - True if a widget consumed the event.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -1008,21 +2042,32 @@ end
 
 ### lurek.ui.mousereleased
 
-`lurek.ui.mousereleased(x: number, y: number, [btn]: integer) -> boolean`
+#### Definition
+
+```lua
+--- Delivers a mouse release event to the UI.
+---@param x number Mouse X position.
+---@param y number Mouse Y position.
+---@param btn? number Mouse button index (default 1).
+---@return boolean True if a widget consumed the event.
+lurek.ui.mousereleased = function(x, y, btn) end
+```
+
+#### Description
 
 Delivers a mouse release event to the UI.
 
-**Parameters**
+Parameters:
 
 - `x` (`number`, required): Mouse X position.
 - `y` (`number`, required): Mouse Y position.
 - `btn` (`integer`, optional): Mouse button index (default 1).
 
-**Returns**: `boolean` - True if a widget consumed the event.
+Returns: `boolean` - True if a widget consumed the event.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -1036,15 +2081,23 @@ end
 
 ### lurek.ui.newAccordion
 
-`lurek.ui.newAccordion() -> LAccordion`
+#### Definition
+
+```lua
+--- Creates a new accordion widget with collapsible sections.
+---@return LAccordion The new accordion widget table.
+lurek.ui.newAccordion = function() end
+```
+
+#### Description
 
 Creates a new accordion widget with collapsible sections.
 
-**Returns**: `LAccordion` - The new accordion widget table.
+Returns: `LAccordion` - The new accordion widget table.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -1057,19 +2110,28 @@ end
 
 ### lurek.ui.newAreaChart
 
-`lurek.ui.newAreaChart(opts: table) -> LAreaChart`
+#### Definition
+
+```lua
+--- Creates a new area chart for data visualization.
+---@param opts table Table with width, height, and optional title.
+---@return LAreaChart The new area chart userdata.
+lurek.ui.newAreaChart = function(opts) end
+```
+
+#### Description
 
 Creates a new area chart for data visualization.
 
-**Parameters**
+Parameters:
 
 - `opts` (`table`, required): Table with width, height, and optional title.
 
-**Returns**: `LAreaChart` - The new area chart userdata.
+Returns: `LAreaChart` - The new area chart userdata.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -1083,19 +2145,28 @@ end
 
 ### lurek.ui.newBadge
 
-`lurek.ui.newBadge([count]: integer) -> LBadge`
+#### Definition
+
+```lua
+--- Creates a new badge widget for displaying counts.
+---@param count? number Initial count (default 0).
+---@return LBadge The new badge widget table.
+lurek.ui.newBadge = function(count) end
+```
+
+#### Description
 
 Creates a new badge widget for displaying counts.
 
-**Parameters**
+Parameters:
 
 - `count` (`integer`, optional): Initial count (default 0).
 
-**Returns**: `LBadge` - The new badge widget table.
+Returns: `LBadge` - The new badge widget table.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -1109,19 +2180,28 @@ end
 
 ### lurek.ui.newBarChart
 
-`lurek.ui.newBarChart(opts: table) -> LBarChart`
+#### Definition
+
+```lua
+--- Creates a new bar chart for data visualization.
+---@param opts table Table with width, height, and optional title.
+---@return LBarChart The new bar chart userdata.
+lurek.ui.newBarChart = function(opts) end
+```
+
+#### Description
 
 Creates a new bar chart for data visualization.
 
-**Parameters**
+Parameters:
 
 - `opts` (`table`, required): Table with width, height, and optional title.
 
-**Returns**: `LBarChart` - The new bar chart userdata.
+Returns: `LBarChart` - The new bar chart userdata.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -1135,19 +2215,28 @@ end
 
 ### lurek.ui.newButton
 
-`lurek.ui.newButton([text]: string) -> LButton`
+#### Definition
+
+```lua
+--- Creates a new button widget with optional label text.
+---@param text? string The button label text.
+---@return LButton The new button widget table.
+lurek.ui.newButton = function(text) end
+```
+
+#### Description
 
 Creates a new button widget with optional label text.
 
-**Parameters**
+Parameters:
 
 - `text` (`string`, optional): The button label text.
 
-**Returns**: `LButton` - The new button widget table.
+Returns: `LButton` - The new button widget table.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -1160,19 +2249,28 @@ end
 
 ### lurek.ui.newCheckbox
 
-`lurek.ui.newCheckbox([text]: string) -> LCheckbox`
+#### Definition
+
+```lua
+--- Creates a new checkbox widget with optional label.
+---@param text? string The checkbox label text.
+---@return LCheckbox The new checkbox widget table.
+lurek.ui.newCheckbox = function(text) end
+```
+
+#### Description
 
 Creates a new checkbox widget with optional label.
 
-**Parameters**
+Parameters:
 
 - `text` (`string`, optional): The checkbox label text.
 
-**Returns**: `LCheckbox` - The new checkbox widget table.
+Returns: `LCheckbox` - The new checkbox widget table.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -1186,15 +2284,23 @@ end
 
 ### lurek.ui.newColorPicker
 
-`lurek.ui.newColorPicker() -> LColorPicker`
+#### Definition
+
+```lua
+--- Creates a new color picker widget for color selection.
+---@return LColorPicker The new color picker widget table.
+lurek.ui.newColorPicker = function() end
+```
+
+#### Description
 
 Creates a new color picker widget for color selection.
 
-**Returns**: `LColorPicker` - The new color picker widget table.
+Returns: `LColorPicker` - The new color picker widget table.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -1208,15 +2314,23 @@ end
 
 ### lurek.ui.newComboBox
 
-`lurek.ui.newComboBox() -> LComboBox`
+#### Definition
+
+```lua
+--- Creates a new combo box (drop-down) widget.
+---@return LComboBox The new combo box widget table.
+lurek.ui.newComboBox = function() end
+```
+
+#### Description
 
 Creates a new combo box (drop-down) widget.
 
-**Returns**: `LComboBox` - The new combo box widget table.
+Returns: `LComboBox` - The new combo box widget table.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -1229,19 +2343,28 @@ end
 
 ### lurek.ui.newCustomWidget
 
-`lurek.ui.newCustomWidget([config]: table) -> LUiWidget`
+#### Definition
+
+```lua
+--- Creates a new custom widget with optional initial configuration.
+---@param config? table Optional table with x, y, width, height, id, visible, enabled fields.
+---@return LUiWidget The new custom widget table.
+lurek.ui.newCustomWidget = function(config) end
+```
+
+#### Description
 
 Creates a new custom widget with optional initial configuration.
 
-**Parameters**
+Parameters:
 
 - `config` (`table`, optional): Optional table with x, y, width, height, id, visible, enabled fields.
 
-**Returns**: `LUiWidget` - The new custom widget table.
+Returns: `LUiWidget` - The new custom widget table.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -1254,19 +2377,28 @@ end
 
 ### lurek.ui.newDialog
 
-`lurek.ui.newDialog([title]: string) -> LDialog`
+#### Definition
+
+```lua
+--- Creates a new dialog widget with an optional title.
+---@param title? string The dialog title.
+---@return LDialog The new dialog widget table.
+lurek.ui.newDialog = function(title) end
+```
+
+#### Description
 
 Creates a new dialog widget with an optional title.
 
-**Parameters**
+Parameters:
 
 - `title` (`string`, optional): The dialog title.
 
-**Returns**: `LDialog` - The new dialog widget table.
+Returns: `LDialog` - The new dialog widget table.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -1299,15 +2431,23 @@ end
 
 ### lurek.ui.newDockPanel
 
-`lurek.ui.newDockPanel() -> LDockPanel`
+#### Definition
+
+```lua
+--- Creates a new dock panel widget for docking child widgets to sides.
+---@return LDockPanel The new dock panel widget table.
+lurek.ui.newDockPanel = function() end
+```
+
+#### Description
 
 Creates a new dock panel widget for docking child widgets to sides.
 
-**Returns**: `LDockPanel` - The new dock panel widget table.
+Returns: `LDockPanel` - The new dock panel widget table.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -1321,15 +2461,23 @@ end
 
 ### lurek.ui.newImageWidget
 
-`lurek.ui.newImageWidget() -> LImageWidget`
+#### Definition
+
+```lua
+--- Creates a new image display widget.
+---@return LImageWidget The new image widget table.
+lurek.ui.newImageWidget = function() end
+```
+
+#### Description
 
 Creates a new image display widget.
 
-**Returns**: `LImageWidget` - The new image widget table.
+Returns: `LImageWidget` - The new image widget table.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -1343,19 +2491,28 @@ end
 
 ### lurek.ui.newLabel
 
-`lurek.ui.newLabel([text]: string) -> LLabel`
+#### Definition
+
+```lua
+--- Creates a new label widget for displaying text.
+---@param text? string The label text.
+---@return LLabel The new label widget table.
+lurek.ui.newLabel = function(text) end
+```
+
+#### Description
 
 Creates a new label widget for displaying text.
 
-**Parameters**
+Parameters:
 
 - `text` (`string`, optional): The label text.
 
-**Returns**: `LLabel` - The new label widget table.
+Returns: `LLabel` - The new label widget table.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -1369,19 +2526,28 @@ end
 
 ### lurek.ui.newLayout
 
-`lurek.ui.newLayout([direction]: string) -> LLayout`
+#### Definition
+
+```lua
+--- Creates a new layout container widget.
+---@param direction? string Layout direction: "vertical" or "horizontal" (default "vertical").
+---@return LLayout The new layout widget table.
+lurek.ui.newLayout = function(direction) end
+```
+
+#### Description
 
 Creates a new layout container widget.
 
-**Parameters**
+Parameters:
 
 - `direction` (`string`, optional): Layout direction: "vertical" or "horizontal" (default "vertical").
 
-**Returns**: `LLayout` - The new layout widget table.
+Returns: `LLayout` - The new layout widget table.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -1395,19 +2561,28 @@ end
 
 ### lurek.ui.newLineChart
 
-`lurek.ui.newLineChart(opts: table) -> LLineChart`
+#### Definition
+
+```lua
+--- Creates a new line chart for data visualization.
+---@param opts table Table with width, height, and optional title.
+---@return LLineChart The new line chart userdata.
+lurek.ui.newLineChart = function(opts) end
+```
+
+#### Description
 
 Creates a new line chart for data visualization.
 
-**Parameters**
+Parameters:
 
 - `opts` (`table`, required): Table with width, height, and optional title.
 
-**Returns**: `LLineChart` - The new line chart userdata.
+Returns: `LLineChart` - The new line chart userdata.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -1421,15 +2596,23 @@ end
 
 ### lurek.ui.newList
 
-`lurek.ui.newList() -> LListBox`
+#### Definition
+
+```lua
+--- Creates a new list box widget for item selection.
+---@return LListBox The new list box widget table.
+lurek.ui.newList = function() end
+```
+
+#### Description
 
 Creates a new list box widget for item selection.
 
-**Returns**: `LListBox` - The new list box widget table.
+Returns: `LListBox` - The new list box widget table.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -1442,15 +2625,23 @@ end
 
 ### lurek.ui.newMenuBar
 
-`lurek.ui.newMenuBar() -> LMenuBar`
+#### Definition
+
+```lua
+--- Creates a new menu bar widget for top-level menus.
+---@return LMenuBar The new menu bar widget table.
+lurek.ui.newMenuBar = function() end
+```
+
+#### Description
 
 Creates a new menu bar widget for top-level menus.
 
-**Returns**: `LMenuBar` - The new menu bar widget table.
+Returns: `LMenuBar` - The new menu bar widget table.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -1463,19 +2654,28 @@ end
 
 ### lurek.ui.newMenuItem
 
-`lurek.ui.newMenuItem([text]: string) -> LMenuItem`
+#### Definition
+
+```lua
+--- Creates a new menu item widget with optional text.
+---@param text? string The menu item text.
+---@return LMenuItem The new menu item widget table.
+lurek.ui.newMenuItem = function(text) end
+```
+
+#### Description
 
 Creates a new menu item widget with optional text.
 
-**Parameters**
+Parameters:
 
 - `text` (`string`, optional): The menu item text.
 
-**Returns**: `LMenuItem` - The new menu item widget table.
+Returns: `LMenuItem` - The new menu item widget table.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -1489,15 +2689,23 @@ end
 
 ### lurek.ui.newNinePatch
 
-`lurek.ui.newNinePatch() -> LNinePatch`
+#### Definition
+
+```lua
+--- Creates a new nine-patch widget for scalable bordered images.
+---@return LNinePatch The new nine-patch widget table.
+lurek.ui.newNinePatch = function() end
+```
+
+#### Description
 
 Creates a new nine-patch widget for scalable bordered images.
 
-**Returns**: `LNinePatch` - The new nine-patch widget table.
+Returns: `LNinePatch` - The new nine-patch widget table.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -1511,15 +2719,23 @@ end
 
 ### lurek.ui.newPanel
 
-`lurek.ui.newPanel() -> LPanel`
+#### Definition
+
+```lua
+--- Creates a new panel widget (container).
+---@return LPanel The new panel widget table.
+lurek.ui.newPanel = function() end
+```
+
+#### Description
 
 Creates a new panel widget (container).
 
-**Returns**: `LPanel` - The new panel widget table.
+Returns: `LPanel` - The new panel widget table.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -1533,19 +2749,28 @@ end
 
 ### lurek.ui.newPieChart
 
-`lurek.ui.newPieChart(opts: table) -> LPieChart`
+#### Definition
+
+```lua
+--- Creates a new pie chart for data visualization.
+---@param opts table Table with width, height, and optional title.
+---@return LPieChart The new pie chart userdata.
+lurek.ui.newPieChart = function(opts) end
+```
+
+#### Description
 
 Creates a new pie chart for data visualization.
 
-**Parameters**
+Parameters:
 
 - `opts` (`table`, required): Table with width, height, and optional title.
 
-**Returns**: `LPieChart` - The new pie chart userdata.
+Returns: `LPieChart` - The new pie chart userdata.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -1559,20 +2784,30 @@ end
 
 ### lurek.ui.newProgressBar
 
-`lurek.ui.newProgressBar([min]: number, [max]: number) -> LProgressBar`
+#### Definition
+
+```lua
+--- Creates a new progress bar widget with min and max.
+---@param min? number Minimum value (default 0).
+---@param max? number Maximum value (default 100).
+---@return LProgressBar The new progress bar widget table.
+lurek.ui.newProgressBar = function(min, max) end
+```
+
+#### Description
 
 Creates a new progress bar widget with min and max.
 
-**Parameters**
+Parameters:
 
 - `min` (`number`, optional): Minimum value (default 0).
 - `max` (`number`, optional): Maximum value (default 100).
 
-**Returns**: `LProgressBar` - The new progress bar widget table.
+Returns: `LProgressBar` - The new progress bar widget table.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -1585,20 +2820,30 @@ end
 
 ### lurek.ui.newRadioButton
 
-`lurek.ui.newRadioButton([text]: string, [group]: string) -> LRadioButton`
+#### Definition
+
+```lua
+--- Creates a new radio button widget in a named group.
+---@param text? string The radio button label.
+---@param group? string The radio group name.
+---@return LRadioButton The new radio button widget table.
+lurek.ui.newRadioButton = function(text, group) end
+```
+
+#### Description
 
 Creates a new radio button widget in a named group.
 
-**Parameters**
+Parameters:
 
 - `text` (`string`, optional): The radio button label.
 - `group` (`string`, optional): The radio group name.
 
-**Returns**: `LRadioButton` - The new radio button widget table.
+Returns: `LRadioButton` - The new radio button widget table.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -1612,19 +2857,28 @@ end
 
 ### lurek.ui.newScatterPlot
 
-`lurek.ui.newScatterPlot(opts: table) -> LScatterPlot`
+#### Definition
+
+```lua
+--- Creates a new scatter plot for data visualization.
+---@param opts table Table with width, height, and optional title.
+---@return LScatterPlot The new scatter plot userdata.
+lurek.ui.newScatterPlot = function(opts) end
+```
+
+#### Description
 
 Creates a new scatter plot for data visualization.
 
-**Parameters**
+Parameters:
 
 - `opts` (`table`, required): Table with width, height, and optional title.
 
-**Returns**: `LScatterPlot` - The new scatter plot userdata.
+Returns: `LScatterPlot` - The new scatter plot userdata.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -1638,19 +2892,28 @@ end
 
 ### lurek.ui.newScrollBar
 
-`lurek.ui.newScrollBar([vertical]: boolean) -> LScrollBar`
+#### Definition
+
+```lua
+--- Creates a new scroll bar widget for content scrolling.
+---@param vertical? boolean True for vertical (default true).
+---@return LScrollBar The new scroll bar widget table.
+lurek.ui.newScrollBar = function(vertical) end
+```
+
+#### Description
 
 Creates a new scroll bar widget for content scrolling.
 
-**Parameters**
+Parameters:
 
 - `vertical` (`boolean`, optional): True for vertical (default true).
 
-**Returns**: `LScrollBar` - The new scroll bar widget table.
+Returns: `LScrollBar` - The new scroll bar widget table.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -1663,15 +2926,23 @@ end
 
 ### lurek.ui.newScrollPanel
 
-`lurek.ui.newScrollPanel() -> LScrollPanel`
+#### Definition
+
+```lua
+--- Creates a new scrollable panel widget.
+---@return LScrollPanel The new scroll panel widget table.
+lurek.ui.newScrollPanel = function() end
+```
+
+#### Description
 
 Creates a new scrollable panel widget.
 
-**Returns**: `LScrollPanel` - The new scroll panel widget table.
+Returns: `LScrollPanel` - The new scroll panel widget table.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -1685,19 +2956,28 @@ end
 
 ### lurek.ui.newSeparator
 
-`lurek.ui.newSeparator([vertical]: boolean) -> LSeparator`
+#### Definition
+
+```lua
+--- Creates a new separator widget for visual division.
+---@param vertical? boolean True for vertical separator (default false).
+---@return LSeparator The new separator widget table.
+lurek.ui.newSeparator = function(vertical) end
+```
+
+#### Description
 
 Creates a new separator widget for visual division.
 
-**Parameters**
+Parameters:
 
 - `vertical` (`boolean`, optional): True for vertical separator (default false).
 
-**Returns**: `LSeparator` - The new separator widget table.
+Returns: `LSeparator` - The new separator widget table.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -1710,20 +2990,30 @@ end
 
 ### lurek.ui.newSlider
 
-`lurek.ui.newSlider([min]: number, [max]: number) -> LSlider`
+#### Definition
+
+```lua
+--- Creates a new slider widget with adjustable range.
+---@param min? number Minimum value (default 0).
+---@param max? number Maximum value (default 100).
+---@return LSlider The new slider widget table.
+lurek.ui.newSlider = function(min, max) end
+```
+
+#### Description
 
 Creates a new slider widget with adjustable range.
 
-**Parameters**
+Parameters:
 
 - `min` (`number`, optional): Minimum value (default 0).
 - `max` (`number`, optional): Maximum value (default 100).
 
-**Returns**: `LSlider` - The new slider widget table.
+Returns: `LSlider` - The new slider widget table.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -1737,20 +3027,30 @@ end
 
 ### lurek.ui.newSpacer
 
-`lurek.ui.newSpacer([w]: number, [h]: number) -> LSpacer`
+#### Definition
+
+```lua
+--- Creates a new spacer widget for spacing between other widgets.
+---@param w? number The width.
+---@param h? number The height.
+---@return LSpacer The new spacer widget table.
+lurek.ui.newSpacer = function(w, h) end
+```
+
+#### Description
 
 Creates a new spacer widget for spacing between other widgets.
 
-**Parameters**
+Parameters:
 
 - `w` (`number`, optional): The width.
 - `h` (`number`, optional): The height.
 
-**Returns**: `LSpacer` - The new spacer widget table.
+Returns: `LSpacer` - The new spacer widget table.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -1763,20 +3063,30 @@ end
 
 ### lurek.ui.newSpinBox
 
-`lurek.ui.newSpinBox([min]: number, [max]: number) -> LSpinBox`
+#### Definition
+
+```lua
+--- Creates a new spin box (numeric stepper) widget.
+---@param min? number Minimum value (default 0).
+---@param max? number Maximum value (default 100).
+---@return LSpinBox The new spin box widget table.
+lurek.ui.newSpinBox = function(min, max) end
+```
+
+#### Description
 
 Creates a new spin box (numeric stepper) widget.
 
-**Parameters**
+Parameters:
 
 - `min` (`number`, optional): Minimum value (default 0).
 - `max` (`number`, optional): Maximum value (default 100).
 
-**Returns**: `LSpinBox` - The new spin box widget table.
+Returns: `LSpinBox` - The new spin box widget table.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -1790,19 +3100,28 @@ end
 
 ### lurek.ui.newSplitPanel
 
-`lurek.ui.newSplitPanel([orientation]: string) -> LSplitPanel`
+#### Definition
+
+```lua
+--- Creates a new split panel widget with two resizable sub-panels.
+---@param orientation? string "horizontal" or "vertical" (default "horizontal").
+---@return LSplitPanel The new split panel widget table.
+lurek.ui.newSplitPanel = function(orientation) end
+```
+
+#### Description
 
 Creates a new split panel widget with two resizable sub-panels.
 
-**Parameters**
+Parameters:
 
 - `orientation` (`string`, optional): "horizontal" or "vertical" (default "horizontal").
 
-**Returns**: `LSplitPanel` - The new split panel widget table.
+Returns: `LSplitPanel` - The new split panel widget table.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -1816,15 +3135,23 @@ end
 
 ### lurek.ui.newStatusBar
 
-`lurek.ui.newStatusBar() -> LStatusBar`
+#### Definition
+
+```lua
+--- Creates a new status bar widget for app-level info.
+---@return LStatusBar The new status bar widget table.
+lurek.ui.newStatusBar = function() end
+```
+
+#### Description
 
 Creates a new status bar widget for app-level info.
 
-**Returns**: `LStatusBar` - The new status bar widget table.
+Returns: `LStatusBar` - The new status bar widget table.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -1837,19 +3164,28 @@ end
 
 ### lurek.ui.newSwitch
 
-`lurek.ui.newSwitch([on]: boolean) -> LSwitch`
+#### Definition
+
+```lua
+--- Creates a new toggle switch widget.
+---@param on? boolean Initial on/off state (default false).
+---@return LSwitch The new switch widget table.
+lurek.ui.newSwitch = function(on) end
+```
+
+#### Description
 
 Creates a new toggle switch widget.
 
-**Parameters**
+Parameters:
 
 - `on` (`boolean`, optional): Initial on/off state (default false).
 
-**Returns**: `LSwitch` - The new switch widget table.
+Returns: `LSwitch` - The new switch widget table.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -1862,15 +3198,23 @@ end
 
 ### lurek.ui.newTabBar
 
-`lurek.ui.newTabBar() -> LTabBar`
+#### Definition
+
+```lua
+--- Creates a new tab bar widget for tabbed navigation.
+---@return LTabBar The new tab bar widget table.
+lurek.ui.newTabBar = function() end
+```
+
+#### Description
 
 Creates a new tab bar widget for tabbed navigation.
 
-**Returns**: `LTabBar` - The new tab bar widget table.
+Returns: `LTabBar` - The new tab bar widget table.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -1883,15 +3227,23 @@ end
 
 ### lurek.ui.newTable
 
-`lurek.ui.newTable() -> LGuiTable`
+#### Definition
+
+```lua
+--- Creates a new table widget for tabular data display.
+---@return LGuiTable The new table widget.
+lurek.ui.newTable = function() end
+```
+
+#### Description
 
 Creates a new table widget for tabular data display.
 
-**Returns**: `LGuiTable` - The new table widget.
+Returns: `LGuiTable` - The new table widget.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -1905,15 +3257,23 @@ end
 
 ### lurek.ui.newTextInput
 
-`lurek.ui.newTextInput() -> LTextInput`
+#### Definition
+
+```lua
+--- Creates a new text input widget for user entry.
+---@return LTextInput The new text input widget table.
+lurek.ui.newTextInput = function() end
+```
+
+#### Description
 
 Creates a new text input widget for user entry.
 
-**Returns**: `LTextInput` - The new text input widget table.
+Returns: `LTextInput` - The new text input widget table.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -1927,15 +3287,23 @@ end
 
 ### lurek.ui.newTheme
 
-`lurek.ui.newTheme() -> LTheme`
+#### Definition
+
+```lua
+--- Creates a new UI theme for styling widgets.
+---@return LTheme The new theme userdata.
+lurek.ui.newTheme = function() end
+```
+
+#### Description
 
 Creates a new UI theme for styling widgets.
 
-**Returns**: `LTheme` - The new theme userdata.
+Returns: `LTheme` - The new theme userdata.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -1949,20 +3317,30 @@ end
 
 ### lurek.ui.newToast
 
-`lurek.ui.newToast([message]: string, [duration]: number) -> LToast`
+#### Definition
+
+```lua
+--- Creates a new toast notification widget.
+---@param message? string The toast message.
+---@param duration? number Display duration in seconds (default 3).
+---@return LToast The new toast widget table.
+lurek.ui.newToast = function(message, duration) end
+```
+
+#### Description
 
 Creates a new toast notification widget.
 
-**Parameters**
+Parameters:
 
 - `message` (`string`, optional): The toast message.
 - `duration` (`number`, optional): Display duration in seconds (default 3).
 
-**Returns**: `LToast` - The new toast widget table.
+Returns: `LToast` - The new toast widget table.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -1976,19 +3354,28 @@ end
 
 ### lurek.ui.newToolbar
 
-`lurek.ui.newToolbar([orientation]: string) -> LToolbar`
+#### Definition
+
+```lua
+--- Creates a new toolbar widget for action buttons.
+---@param orientation? string "horizontal" or "vertical" (default "horizontal").
+---@return LToolbar The new toolbar widget table.
+lurek.ui.newToolbar = function(orientation) end
+```
+
+#### Description
 
 Creates a new toolbar widget for action buttons.
 
-**Parameters**
+Parameters:
 
 - `orientation` (`string`, optional): "horizontal" or "vertical" (default "horizontal").
 
-**Returns**: `LToolbar` - The new toolbar widget table.
+Returns: `LToolbar` - The new toolbar widget table.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -2000,19 +3387,28 @@ end
 
 ### lurek.ui.newTooltipPanel
 
-`lurek.ui.newTooltipPanel([text]: string) -> LTooltipPanel`
+#### Definition
+
+```lua
+--- Creates a new tooltip panel widget.
+---@param text? string The tooltip text.
+---@return LTooltipPanel The new tooltip panel widget table.
+lurek.ui.newTooltipPanel = function(text) end
+```
+
+#### Description
 
 Creates a new tooltip panel widget.
 
-**Parameters**
+Parameters:
 
 - `text` (`string`, optional): The tooltip text.
 
-**Returns**: `LTooltipPanel` - The new tooltip panel widget table.
+Returns: `LTooltipPanel` - The new tooltip panel widget table.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -2026,15 +3422,23 @@ end
 
 ### lurek.ui.newTreeView
 
-`lurek.ui.newTreeView() -> LTreeView`
+#### Definition
+
+```lua
+--- Creates a new tree view widget for hierarchical data.
+---@return LTreeView The new tree view widget table.
+lurek.ui.newTreeView = function() end
+```
+
+#### Description
 
 Creates a new tree view widget for hierarchical data.
 
-**Returns**: `LTreeView` - The new tree view widget table.
+Returns: `LTreeView` - The new tree view widget table.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -2048,19 +3452,28 @@ end
 
 ### lurek.ui.newWindow
 
-`lurek.ui.newWindow([title]: string) -> LGuiWindow`
+#### Definition
+
+```lua
+--- Creates a new GUI window widget with an optional title.
+---@param title? string The window title.
+---@return LGuiWindow The new window widget table.
+lurek.ui.newWindow = function(title) end
+```
+
+#### Description
 
 Creates a new GUI window widget with an optional title.
 
-**Parameters**
+Parameters:
 
 - `title` (`string`, optional): The window title.
 
-**Returns**: `LGuiWindow` - The new window widget table.
+Returns: `LGuiWindow` - The new window widget table.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -2092,19 +3505,28 @@ end
 
 ### lurek.ui.parseWidgetState
 
-`lurek.ui.parseWidgetState(state: string) -> string`
+#### Definition
+
+```lua
+--- Validates and normalizes a widget state string.
+---@param state string The state name to parse (e.g. "normal", "hovered").
+---@return string The normalized state string, or nil if invalid.
+lurek.ui.parseWidgetState = function(state) end
+```
+
+#### Description
 
 Validates and normalizes a widget state string.
 
-**Parameters**
+Parameters:
 
 - `state` (`string`, required): The state name to parse (e.g. "normal", "hovered").
 
-**Returns**: `string` - The normalized state string, or nil if invalid.
+Returns: `string` - The normalized state string, or nil if invalid.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -2117,11 +3539,21 @@ end
 
 ### lurek.ui.renderToImage
 
-`lurek.ui.renderToImage(width: integer, height: integer, path: string)`
+#### Definition
+
+```lua
+--- Renders the entire UI to a PNG image file.
+---@param width number Image width in pixels.
+---@param height number Image height in pixels.
+---@param path string Output file path.
+lurek.ui.renderToImage = function(width, height, path) end
+```
+
+#### Description
 
 Renders the entire UI to a PNG image file.
 
-**Parameters**
+Parameters:
 
 - `width` (`integer`, required): Image width in pixels.
 - `height` (`integer`, required): Image height in pixels.
@@ -2129,7 +3561,7 @@ Renders the entire UI to a PNG image file.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -2142,13 +3574,20 @@ end
 
 ### lurek.ui.setDefaultTheme
 
-`lurek.ui.setDefaultTheme()`
+#### Definition
+
+```lua
+--- Applies the built-in default theme to the UI context.
+lurek.ui.setDefaultTheme = function() end
+```
+
+#### Description
 
 Applies the built-in default theme to the UI context.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -2162,17 +3601,25 @@ end
 
 ### lurek.ui.setFocus
 
-`lurek.ui.setFocus([widget]: table)`
+#### Definition
+
+```lua
+--- Sets keyboard focus to a widget, or clears focus if nil.
+---@param widget? table The widget table to focus, or nil to clear.
+lurek.ui.setFocus = function(widget) end
+```
+
+#### Description
 
 Sets keyboard focus to a widget, or clears focus if nil.
 
-**Parameters**
+Parameters:
 
 - `widget` (`table`, optional): The widget table to focus, or nil to clear.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -2186,17 +3633,25 @@ end
 
 ### lurek.ui.setTheme
 
-`lurek.ui.setTheme(theme_ud: LTheme)`
+#### Definition
+
+```lua
+--- Applies a theme to the entire UI context.
+---@param theme_ud LTheme The theme userdata to apply.
+lurek.ui.setTheme = function(theme_ud) end
+```
+
+#### Description
 
 Applies a theme to the entire UI context.
 
-**Parameters**
+Parameters:
 
 - `theme_ud` (`LTheme`, required): The theme userdata to apply.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -2210,18 +3665,27 @@ end
 
 ### lurek.ui.setViewport
 
-`lurek.ui.setViewport(w: number, h: number)`
+#### Definition
+
+```lua
+--- Sets the viewport size for the UI context.
+---@param w number Viewport width.
+---@param h number Viewport height.
+lurek.ui.setViewport = function(w, h) end
+```
+
+#### Description
 
 Sets the viewport size for the UI context.
 
-**Parameters**
+Parameters:
 
 - `w` (`number`, required): Viewport width.
 - `h` (`number`, required): Viewport height.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -2235,19 +3699,28 @@ end
 
 ### lurek.ui.textinput
 
-`lurek.ui.textinput(text: string) -> boolean`
+#### Definition
+
+```lua
+--- Delivers a text input event to the UI.
+---@param text string The input text.
+---@return boolean True if a widget consumed the event.
+lurek.ui.textinput = function(text) end
+```
+
+#### Description
 
 Delivers a text input event to the UI.
 
-**Parameters**
+Parameters:
 
 - `text` (`string`, required): The input text.
 
-**Returns**: `boolean` - True if a widget consumed the event.
+Returns: `boolean` - True if a widget consumed the event.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -2261,17 +3734,25 @@ end
 
 ### lurek.ui.update
 
-`lurek.ui.update(dt: number)`
+#### Definition
+
+```lua
+--- Updates the UI context and dispatches pending events to callbacks.
+---@param dt number Delta time in seconds.
+lurek.ui.update = function(dt) end
+```
+
+#### Description
 
 Updates the UI context and dispatches pending events to callbacks.
 
-**Parameters**
+Parameters:
 
 - `dt` (`number`, required): Delta time in seconds.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -2283,17 +3764,25 @@ end
 
 ### lurek.ui.update_bindings
 
-`lurek.ui.update_bindings(data: table)`
+#### Definition
+
+```lua
+--- Updates data bindings for widgets that reference binding keys.
+---@param data table A table mapping binding keys to values.
+lurek.ui.update_bindings = function(data) end
+```
+
+#### Description
 
 Updates data bindings for widgets that reference binding keys.
 
-**Parameters**
+Parameters:
 
 - `data` (`table`, required): A table mapping binding keys to values.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -2307,20 +3796,30 @@ end
 
 ### lurek.ui.wheelmoved
 
-`lurek.ui.wheelmoved(x: number, y: number) -> boolean`
+#### Definition
+
+```lua
+--- Delivers a mouse wheel event to the UI.
+---@param x number Horizontal scroll delta.
+---@param y number Vertical scroll delta.
+---@return boolean True if a widget consumed the event.
+lurek.ui.wheelmoved = function(x, y) end
+```
+
+#### Description
 
 Delivers a mouse wheel event to the UI.
 
-**Parameters**
+Parameters:
 
 - `x` (`number`, required): Horizontal scroll delta.
 - `y` (`number`, required): Vertical scroll delta.
 
-**Returns**: `boolean` - True if a widget consumed the event.
+Returns: `boolean` - True if a widget consumed the event.
 
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -2339,9 +3838,7 @@ end
 
 ### LAccordion
 
-Adds accordion-specific methods to an accordion widget table.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Adds accordion-specific methods to an accordion widget table.
@@ -2349,9 +3846,13 @@ Adds accordion-specific methods to an accordion widget table.
 LAccordion = {}
 ```
 
+#### Description
+
+Adds accordion-specific methods to an accordion widget table.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -2364,9 +3865,7 @@ end
 
 ### LAreaChart
 
-Lua-exposed area chart for data visualization.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-exposed area chart for data visualization.
@@ -2374,9 +3873,13 @@ Lua-exposed area chart for data visualization.
 LAreaChart = {}
 ```
 
+#### Description
+
+Lua-exposed area chart for data visualization.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -2390,9 +3893,7 @@ end
 
 ### LBadge
 
-Adds badge-specific methods to a notification badge widget table.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Adds badge-specific methods to a notification badge widget table.
@@ -2400,9 +3901,13 @@ Adds badge-specific methods to a notification badge widget table.
 LBadge = {}
 ```
 
+#### Description
+
+Adds badge-specific methods to a notification badge widget table.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -2416,9 +3921,7 @@ end
 
 ### LBarChart
 
-Lua-exposed bar chart for data visualization.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-exposed bar chart for data visualization.
@@ -2426,9 +3929,13 @@ Lua-exposed bar chart for data visualization.
 LBarChart = {}
 ```
 
+#### Description
+
+Lua-exposed bar chart for data visualization.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -2442,9 +3949,7 @@ end
 
 ### LButton
 
-Adds button-specific methods (setText, getText) to a button widget table.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Adds button-specific methods (setText, getText) to a button widget table.
@@ -2452,9 +3957,13 @@ Adds button-specific methods (setText, getText) to a button widget table.
 LButton = {}
 ```
 
+#### Description
+
+Adds button-specific methods (setText, getText) to a button widget table.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -2467,9 +3976,7 @@ end
 
 ### LCheckbox
 
-Adds checkbox-specific methods to a checkbox widget table.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Adds checkbox-specific methods to a checkbox widget table.
@@ -2477,9 +3984,13 @@ Adds checkbox-specific methods to a checkbox widget table.
 LCheckbox = {}
 ```
 
+#### Description
+
+Adds checkbox-specific methods to a checkbox widget table.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -2493,9 +4004,7 @@ end
 
 ### LColorPicker
 
-Adds color-picker-specific methods to a color picker widget table.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Adds color-picker-specific methods to a color picker widget table.
@@ -2503,9 +4012,13 @@ Adds color-picker-specific methods to a color picker widget table.
 LColorPicker = {}
 ```
 
+#### Description
+
+Adds color-picker-specific methods to a color picker widget table.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -2519,9 +4032,7 @@ end
 
 ### LComboBox
 
-Adds combo-box-specific methods to a combo box widget table.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Adds combo-box-specific methods to a combo box widget table.
@@ -2529,9 +4040,13 @@ Adds combo-box-specific methods to a combo box widget table.
 LComboBox = {}
 ```
 
+#### Description
+
+Adds combo-box-specific methods to a combo box widget table.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -2544,9 +4059,7 @@ end
 
 ### LDialog
 
-Adds dialog-specific methods to a dialog widget table.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Adds dialog-specific methods to a dialog widget table.
@@ -2554,9 +4067,13 @@ Adds dialog-specific methods to a dialog widget table.
 LDialog = {}
 ```
 
+#### Description
+
+Adds dialog-specific methods to a dialog widget table.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -2589,9 +4106,7 @@ end
 
 ### LDockPanel
 
-Adds dock-panel-specific methods to a dock panel widget table.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Adds dock-panel-specific methods to a dock panel widget table.
@@ -2599,9 +4114,13 @@ Adds dock-panel-specific methods to a dock panel widget table.
 LDockPanel = {}
 ```
 
+#### Description
+
+Adds dock-panel-specific methods to a dock panel widget table.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -2615,9 +4134,7 @@ end
 
 ### LGuiTable
 
-Adds GUI-table-specific methods to a table widget.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Adds GUI-table-specific methods to a table widget.
@@ -2625,9 +4142,13 @@ Adds GUI-table-specific methods to a table widget.
 LGuiTable = {}
 ```
 
+#### Description
+
+Adds GUI-table-specific methods to a table widget.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -2641,9 +4162,7 @@ end
 
 ### LGuiWindow
 
-Adds GUI-window-specific methods to a window widget table.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Adds GUI-window-specific methods to a window widget table.
@@ -2651,9 +4170,13 @@ Adds GUI-window-specific methods to a window widget table.
 LGuiWindow = {}
 ```
 
+#### Description
+
+Adds GUI-window-specific methods to a window widget table.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -2685,9 +4208,7 @@ end
 
 ### LImageWidget
 
-Adds image-widget-specific methods to an image widget table.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Adds image-widget-specific methods to an image widget table.
@@ -2695,9 +4216,13 @@ Adds image-widget-specific methods to an image widget table.
 LImageWidget = {}
 ```
 
+#### Description
+
+Adds image-widget-specific methods to an image widget table.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -2711,9 +4236,7 @@ end
 
 ### LLabel
 
-Adds label-specific methods (setText, getText) to a label widget table.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Adds label-specific methods (setText, getText) to a label widget table.
@@ -2721,9 +4244,13 @@ Adds label-specific methods (setText, getText) to a label widget table.
 LLabel = {}
 ```
 
+#### Description
+
+Adds label-specific methods (setText, getText) to a label widget table.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -2737,9 +4264,7 @@ end
 
 ### LLayout
 
-Adds layout-specific methods to a layout container widget table.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Adds layout-specific methods to a layout container widget table.
@@ -2747,9 +4272,13 @@ Adds layout-specific methods to a layout container widget table.
 LLayout = {}
 ```
 
+#### Description
+
+Adds layout-specific methods to a layout container widget table.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -2763,9 +4292,7 @@ end
 
 ### LLineChart
 
-Lua-exposed line chart for data visualization.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-exposed line chart for data visualization.
@@ -2773,9 +4300,13 @@ Lua-exposed line chart for data visualization.
 LLineChart = {}
 ```
 
+#### Description
+
+Lua-exposed line chart for data visualization.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -2789,9 +4320,7 @@ end
 
 ### LListBox
 
-Adds list-box-specific methods to a list box widget table.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Adds list-box-specific methods to a list box widget table.
@@ -2799,9 +4328,13 @@ Adds list-box-specific methods to a list box widget table.
 LListBox = {}
 ```
 
+#### Description
+
+Adds list-box-specific methods to a list box widget table.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -2814,9 +4347,7 @@ end
 
 ### LMenuBar
 
-Adds menu-bar-specific methods to a menu bar widget table.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Adds menu-bar-specific methods to a menu bar widget table.
@@ -2824,9 +4355,13 @@ Adds menu-bar-specific methods to a menu bar widget table.
 LMenuBar = {}
 ```
 
+#### Description
+
+Adds menu-bar-specific methods to a menu bar widget table.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -2839,9 +4374,7 @@ end
 
 ### LMenuItem
 
-Adds menu-item-specific methods to a menu item widget table.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Adds menu-item-specific methods to a menu item widget table.
@@ -2849,9 +4382,13 @@ Adds menu-item-specific methods to a menu item widget table.
 LMenuItem = {}
 ```
 
+#### Description
+
+Adds menu-item-specific methods to a menu item widget table.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -2865,9 +4402,7 @@ end
 
 ### LNinePatch
 
-Adds nine-patch-specific methods to a nine-patch widget table.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Adds nine-patch-specific methods to a nine-patch widget table.
@@ -2875,9 +4410,13 @@ Adds nine-patch-specific methods to a nine-patch widget table.
 LNinePatch = {}
 ```
 
+#### Description
+
+Adds nine-patch-specific methods to a nine-patch widget table.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -2891,9 +4430,7 @@ end
 
 ### LPanel
 
-Adds panel-specific methods (setTitle, getTitle, setScrollable) to a panel widget table.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Adds panel-specific methods (setTitle, getTitle, setScrollable) to a panel widget table.
@@ -2901,9 +4438,13 @@ Adds panel-specific methods (setTitle, getTitle, setScrollable) to a panel widge
 LPanel = {}
 ```
 
+#### Description
+
+Adds panel-specific methods (setTitle, getTitle, setScrollable) to a panel widget table.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -2915,9 +4456,7 @@ end
 
 ### LPieChart
 
-Lua-exposed pie chart for data visualization.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-exposed pie chart for data visualization.
@@ -2925,9 +4464,13 @@ Lua-exposed pie chart for data visualization.
 LPieChart = {}
 ```
 
+#### Description
+
+Lua-exposed pie chart for data visualization.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -2941,9 +4484,7 @@ end
 
 ### LProgressBar
 
-Adds progress-bar-specific methods to a progress bar widget table.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Adds progress-bar-specific methods to a progress bar widget table.
@@ -2951,9 +4492,13 @@ Adds progress-bar-specific methods to a progress bar widget table.
 LProgressBar = {}
 ```
 
+#### Description
+
+Adds progress-bar-specific methods to a progress bar widget table.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -2966,9 +4511,7 @@ end
 
 ### LRadioButton
 
-Adds radio-button-specific methods to a radio button widget table.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Adds radio-button-specific methods to a radio button widget table.
@@ -2976,9 +4519,13 @@ Adds radio-button-specific methods to a radio button widget table.
 LRadioButton = {}
 ```
 
+#### Description
+
+Adds radio-button-specific methods to a radio button widget table.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -2992,9 +4539,7 @@ end
 
 ### LScatterPlot
 
-Lua-exposed scatter plot for data visualization.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-exposed scatter plot for data visualization.
@@ -3002,9 +4547,13 @@ Lua-exposed scatter plot for data visualization.
 LScatterPlot = {}
 ```
 
+#### Description
+
+Lua-exposed scatter plot for data visualization.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -3018,9 +4567,7 @@ end
 
 ### LScrollBar
 
-Adds scroll-bar-specific methods to a scroll bar widget table.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Adds scroll-bar-specific methods to a scroll bar widget table.
@@ -3028,9 +4575,13 @@ Adds scroll-bar-specific methods to a scroll bar widget table.
 LScrollBar = {}
 ```
 
+#### Description
+
+Adds scroll-bar-specific methods to a scroll bar widget table.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -3043,9 +4594,7 @@ end
 
 ### LScrollPanel
 
-Adds scroll-panel-specific methods to a scroll panel widget table.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Adds scroll-panel-specific methods to a scroll panel widget table.
@@ -3053,9 +4602,13 @@ Adds scroll-panel-specific methods to a scroll panel widget table.
 LScrollPanel = {}
 ```
 
+#### Description
+
+Adds scroll-panel-specific methods to a scroll panel widget table.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -3069,9 +4622,7 @@ end
 
 ### LSeparator
 
-Adds separator-specific methods to a separator widget table.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Adds separator-specific methods to a separator widget table.
@@ -3079,9 +4630,13 @@ Adds separator-specific methods to a separator widget table.
 LSeparator = {}
 ```
 
+#### Description
+
+Adds separator-specific methods to a separator widget table.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -3094,9 +4649,7 @@ end
 
 ### LSlider
 
-Adds slider-specific methods to a slider widget table.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Adds slider-specific methods to a slider widget table.
@@ -3104,9 +4657,13 @@ Adds slider-specific methods to a slider widget table.
 LSlider = {}
 ```
 
+#### Description
+
+Adds slider-specific methods to a slider widget table.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -3120,9 +4677,7 @@ end
 
 ### LSpinBox
 
-Adds spin-box-specific methods to a spin box widget table.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Adds spin-box-specific methods to a spin box widget table.
@@ -3130,9 +4685,13 @@ Adds spin-box-specific methods to a spin box widget table.
 LSpinBox = {}
 ```
 
+#### Description
+
+Adds spin-box-specific methods to a spin box widget table.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -3146,9 +4705,7 @@ end
 
 ### LSplitPanel
 
-Adds split-panel-specific methods to a split panel widget table.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Adds split-panel-specific methods to a split panel widget table.
@@ -3156,9 +4713,13 @@ Adds split-panel-specific methods to a split panel widget table.
 LSplitPanel = {}
 ```
 
+#### Description
+
+Adds split-panel-specific methods to a split panel widget table.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -3172,9 +4733,7 @@ end
 
 ### LStatusBar
 
-Adds status-bar-specific methods to a status bar widget table.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Adds status-bar-specific methods to a status bar widget table.
@@ -3182,9 +4741,13 @@ Adds status-bar-specific methods to a status bar widget table.
 LStatusBar = {}
 ```
 
+#### Description
+
+Adds status-bar-specific methods to a status bar widget table.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -3197,9 +4760,7 @@ end
 
 ### LSwitch
 
-Adds switch-specific methods (setOn, isOn, toggle) to a switch widget table.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Adds switch-specific methods (setOn, isOn, toggle) to a switch widget table.
@@ -3207,9 +4768,13 @@ Adds switch-specific methods (setOn, isOn, toggle) to a switch widget table.
 LSwitch = {}
 ```
 
+#### Description
+
+Adds switch-specific methods (setOn, isOn, toggle) to a switch widget table.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -3222,9 +4787,7 @@ end
 
 ### LTabBar
 
-Adds tab-bar-specific methods to a tab bar widget table.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Adds tab-bar-specific methods to a tab bar widget table.
@@ -3232,9 +4795,13 @@ Adds tab-bar-specific methods to a tab bar widget table.
 LTabBar = {}
 ```
 
+#### Description
+
+Adds tab-bar-specific methods to a tab bar widget table.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -3247,9 +4814,7 @@ end
 
 ### LTextInput
 
-Adds text-input-specific methods to a text input widget table.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Adds text-input-specific methods to a text input widget table.
@@ -3257,9 +4822,13 @@ Adds text-input-specific methods to a text input widget table.
 LTextInput = {}
 ```
 
+#### Description
+
+Adds text-input-specific methods to a text input widget table.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -3273,9 +4842,7 @@ end
 
 ### LTheme
 
-Lua-exposed wrapper around a GUI theme for styling widgets.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-exposed wrapper around a GUI theme for styling widgets.
@@ -3283,9 +4850,13 @@ Lua-exposed wrapper around a GUI theme for styling widgets.
 LTheme = {}
 ```
 
+#### Description
+
+Lua-exposed wrapper around a GUI theme for styling widgets.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -3299,9 +4870,7 @@ end
 
 ### LToast
 
-Adds toast-specific methods to a toast notification widget table.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Adds toast-specific methods to a toast notification widget table.
@@ -3309,9 +4878,13 @@ Adds toast-specific methods to a toast notification widget table.
 LToast = {}
 ```
 
+#### Description
+
+Adds toast-specific methods to a toast notification widget table.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -3325,9 +4898,7 @@ end
 
 ### LToolbar
 
-Adds toolbar-specific methods to a toolbar widget table.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Adds toolbar-specific methods to a toolbar widget table.
@@ -3335,9 +4906,13 @@ Adds toolbar-specific methods to a toolbar widget table.
 LToolbar = {}
 ```
 
+#### Description
+
+Adds toolbar-specific methods to a toolbar widget table.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -3349,9 +4924,7 @@ end
 
 ### LTooltipPanel
 
-Adds tooltip-panel-specific methods to a tooltip panel widget table.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Adds tooltip-panel-specific methods to a tooltip panel widget table.
@@ -3359,9 +4932,13 @@ Adds tooltip-panel-specific methods to a tooltip panel widget table.
 LTooltipPanel = {}
 ```
 
+#### Description
+
+Adds tooltip-panel-specific methods to a tooltip panel widget table.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -3375,9 +4952,7 @@ end
 
 ### LTreeView
 
-Registers tree-view-specific Lua methods on a widget method table.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Registers tree-view-specific Lua methods on a widget method table.
@@ -3385,9 +4960,13 @@ Registers tree-view-specific Lua methods on a widget method table.
 LTreeView = {}
 ```
 
+#### Description
+
+Registers tree-view-specific Lua methods on a widget method table.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -3401,18 +4980,20 @@ end
 
 ### LUiWidget
 
-Creates a Lua table representing a widget with all shared base methods common to every widget type.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Creates a Lua table representing a widget with all shared base methods common to every widget type.
 ---@class LUiWidget
 ```
 
+#### Description
+
+Creates a Lua table representing a widget with all shared base methods common to every widget type.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -3430,17 +5011,7 @@ end
 
 ### LAccordion:addSection
 
-`LAccordion:addSection(self: LAccordion, title: string, [content_idx]: integer)`
-
-Adds a collapsible section to this accordion.
-
-**Parameters**
-
-- `self` (`LAccordion`, required): The widget instance.
-- `title` (`string`, required): The section title.
-- `content_idx` (`integer`, optional): Optional widget index for the section content.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a collapsible section to this accordion.
@@ -3449,9 +5020,19 @@ Adds a collapsible section to this accordion.
 function LAccordion:addSection(title, content_idx) end
 ```
 
+#### Description
+
+Adds a collapsible section to this accordion.
+
+Parameters:
+
+- `self` (`LAccordion`, required): The widget instance.
+- `title` (`string`, required): The section title.
+- `content_idx` (`integer`, optional): Optional widget index for the section content.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -3465,17 +5046,7 @@ end
 
 ### LAccordion:getSectionCount
 
-`LAccordion:getSectionCount(self: LAccordion) -> integer`
-
-Returns the number of sections in this accordion.
-
-**Parameters**
-
-- `self` (`LAccordion`, required): The widget instance.
-
-**Returns**: `integer` - The section count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of sections in this accordion.
@@ -3483,9 +5054,19 @@ Returns the number of sections in this accordion.
 function LAccordion:getSectionCount() end
 ```
 
+#### Description
+
+Returns the number of sections in this accordion.
+
+Parameters:
+
+- `self` (`LAccordion`, required): The widget instance.
+
+Returns: `integer` - The section count.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -3499,18 +5080,7 @@ end
 
 ### LAccordion:getSectionTitle
 
-`LAccordion:getSectionTitle(self: LAccordion, section_idx: integer) -> string`
-
-Returns the title of an accordion section by its 1-based index.
-
-**Parameters**
-
-- `self` (`LAccordion`, required): The widget instance.
-- `section_idx` (`integer`, required): The 1-based section index.
-
-**Returns**: `string` - The section title, or nil if out of range.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the title of an accordion section by its 1-based index.
@@ -3519,9 +5089,20 @@ Returns the title of an accordion section by its 1-based index.
 function LAccordion:getSectionTitle(section_idx) end
 ```
 
+#### Description
+
+Returns the title of an accordion section by its 1-based index.
+
+Parameters:
+
+- `self` (`LAccordion`, required): The widget instance.
+- `section_idx` (`integer`, required): The 1-based section index.
+
+Returns: `string` - The section title, or nil if out of range.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -3535,17 +5116,7 @@ end
 
 ### LAccordion:isExclusive
 
-`LAccordion:isExclusive(self: LAccordion) -> boolean`
-
-Returns whether this accordion is in exclusive mode (only one section open at a time).
-
-**Parameters**
-
-- `self` (`LAccordion`, required): The widget instance.
-
-**Returns**: `boolean` - True if exclusive.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this accordion is in exclusive mode (only one section open at a time).
@@ -3553,9 +5124,19 @@ Returns whether this accordion is in exclusive mode (only one section open at a 
 function LAccordion:isExclusive() end
 ```
 
+#### Description
+
+Returns whether this accordion is in exclusive mode (only one section open at a time).
+
+Parameters:
+
+- `self` (`LAccordion`, required): The widget instance.
+
+Returns: `boolean` - True if exclusive.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -3569,18 +5150,7 @@ end
 
 ### LAccordion:isSectionExpanded
 
-`LAccordion:isSectionExpanded(self: LAccordion, section_idx: integer) -> boolean`
-
-Returns whether an accordion section is expanded.
-
-**Parameters**
-
-- `self` (`LAccordion`, required): The widget instance.
-- `section_idx` (`integer`, required): The 1-based section index.
-
-**Returns**: `boolean` - True if expanded.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether an accordion section is expanded.
@@ -3589,9 +5159,20 @@ Returns whether an accordion section is expanded.
 function LAccordion:isSectionExpanded(section_idx) end
 ```
 
+#### Description
+
+Returns whether an accordion section is expanded.
+
+Parameters:
+
+- `self` (`LAccordion`, required): The widget instance.
+- `section_idx` (`integer`, required): The 1-based section index.
+
+Returns: `boolean` - True if expanded.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -3605,16 +5186,7 @@ end
 
 ### LAccordion:setExclusive
 
-`LAccordion:setExclusive(self: LAccordion, v: boolean)`
-
-Sets exclusive mode. When true, expanding one section collapses all others.
-
-**Parameters**
-
-- `self` (`LAccordion`, required): The widget instance.
-- `v` (`boolean`, required): True for exclusive mode.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets exclusive mode. When true, expanding one section collapses all others.
@@ -3622,9 +5194,18 @@ Sets exclusive mode. When true, expanding one section collapses all others.
 function LAccordion:setExclusive(v) end
 ```
 
+#### Description
+
+Sets exclusive mode. When true, expanding one section collapses all others.
+
+Parameters:
+
+- `self` (`LAccordion`, required): The widget instance.
+- `v` (`boolean`, required): True for exclusive mode.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -3638,18 +5219,7 @@ end
 
 ### LAccordion:toggleSection
 
-`LAccordion:toggleSection(self: LAccordion, section_idx: integer) -> boolean`
-
-Toggles the expanded state of an accordion section by its 1-based index.
-
-**Parameters**
-
-- `self` (`LAccordion`, required): The widget instance.
-- `section_idx` (`integer`, required): The 1-based section index.
-
-**Returns**: `boolean` - The new expanded state.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Toggles the expanded state of an accordion section by its 1-based index.
@@ -3658,9 +5228,20 @@ Toggles the expanded state of an accordion section by its 1-based index.
 function LAccordion:toggleSection(section_idx) end
 ```
 
+#### Description
+
+Toggles the expanded state of an accordion section by its 1-based index.
+
+Parameters:
+
+- `self` (`LAccordion`, required): The widget instance.
+- `section_idx` (`integer`, required): The 1-based section index.
+
+Returns: `boolean` - The new expanded state.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -3674,19 +5255,7 @@ end
 
 ### LAreaChart:addLayer
 
-`LAreaChart:addLayer(name: string, vals_tbl: table, r: number, g: number, b: number)`
-
-Adds a data layer to this area chart.
-
-**Parameters**
-
-- `name` (`string`, required): The layer name.
-- `vals_tbl` (`table`, required): Array of numeric values.
-- `r` (`number`, required): Red color component.
-- `g` (`number`, required): Green color component.
-- `b` (`number`, required): Blue color component.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a data layer to this area chart.
@@ -3698,9 +5267,21 @@ Adds a data layer to this area chart.
 function LAreaChart:addLayer(name, vals_tbl, r, g, b) end
 ```
 
+#### Description
+
+Adds a data layer to this area chart.
+
+Parameters:
+
+- `name` (`string`, required): The layer name.
+- `vals_tbl` (`table`, required): Array of numeric values.
+- `r` (`number`, required): Red color component.
+- `g` (`number`, required): Green color component.
+- `b` (`number`, required): Blue color component.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -3714,15 +5295,7 @@ end
 
 ### LAreaChart:drawToImage
 
-`LAreaChart:drawToImage(target: LImageData)`
-
-Renders this area chart to an image buffer.
-
-**Parameters**
-
-- `target` (`LImageData`, required): The image to draw into.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Renders this area chart to an image buffer.
@@ -3730,9 +5303,17 @@ Renders this area chart to an image buffer.
 function LAreaChart:drawToImage(target) end
 ```
 
+#### Description
+
+Renders this area chart to an image buffer.
+
+Parameters:
+
+- `target` (`LImageData`, required): The image to draw into.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -3746,15 +5327,7 @@ end
 
 ### LAreaChart:setYMax
 
-`LAreaChart:setYMax(v: number)`
-
-Sets the maximum Y-axis value for this area chart.
-
-**Parameters**
-
-- `v` (`number`, required): The Y-axis maximum.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the maximum Y-axis value for this area chart.
@@ -3762,9 +5335,17 @@ Sets the maximum Y-axis value for this area chart.
 function LAreaChart:setYMax(v) end
 ```
 
+#### Description
+
+Sets the maximum Y-axis value for this area chart.
+
+Parameters:
+
+- `v` (`number`, required): The Y-axis maximum.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -3778,13 +5359,7 @@ end
 
 ### LAreaChart:type
 
-`LAreaChart:type() -> string`
-
-Returns the type name of this object.
-
-**Returns**: `string` - Always "LAreaChart".
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this object.
@@ -3792,9 +5367,15 @@ Returns the type name of this object.
 function LAreaChart:type() end
 ```
 
+#### Description
+
+Returns the type name of this object.
+
+Returns: `string` - Always "LAreaChart".
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -3808,17 +5389,7 @@ end
 
 ### LAreaChart:typeOf
 
-`LAreaChart:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to check.
-
-**Returns**: `boolean` - True if the name matches this userdata type.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this object matches the given type name.
@@ -3827,9 +5398,19 @@ Checks whether this object matches the given type name.
 function LAreaChart:typeOf(name) end
 ```
 
+#### Description
+
+Checks whether this object matches the given type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to check.
+
+Returns: `boolean` - True if the name matches this userdata type.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -3843,17 +5424,7 @@ end
 
 ### LBadge:getCount
 
-`LBadge:getCount(self: LBadge) -> integer`
-
-Returns the current notification count of this badge.
-
-**Parameters**
-
-- `self` (`LBadge`, required): The widget instance.
-
-**Returns**: `integer` - The badge count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current notification count of this badge.
@@ -3861,9 +5432,19 @@ Returns the current notification count of this badge.
 function LBadge:getCount() end
 ```
 
+#### Description
+
+Returns the current notification count of this badge.
+
+Parameters:
+
+- `self` (`LBadge`, required): The widget instance.
+
+Returns: `integer` - The badge count.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -3877,17 +5458,7 @@ end
 
 ### LBadge:getDisplayText
 
-`LBadge:getDisplayText(self: LBadge) -> string`
-
-Returns the formatted display text of this badge (e.g. "99+" when count exceeds the maximum).
-
-**Parameters**
-
-- `self` (`LBadge`, required): The widget instance.
-
-**Returns**: `string` - The display text.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the formatted display text of this badge (e.g. "99+" when count exceeds the maximum).
@@ -3895,9 +5466,19 @@ Returns the formatted display text of this badge (e.g. "99+" when count exceeds 
 function LBadge:getDisplayText() end
 ```
 
+#### Description
+
+Returns the formatted display text of this badge (e.g. "99+" when count exceeds the maximum).
+
+Parameters:
+
+- `self` (`LBadge`, required): The widget instance.
+
+Returns: `string` - The display text.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -3911,16 +5492,7 @@ end
 
 ### LBadge:setCount
 
-`LBadge:setCount(self: LBadge, count: integer)`
-
-Sets the notification count displayed by this badge.
-
-**Parameters**
-
-- `self` (`LBadge`, required): The widget instance.
-- `count` (`integer`, required): The notification count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the notification count displayed by this badge.
@@ -3928,9 +5500,18 @@ Sets the notification count displayed by this badge.
 function LBadge:setCount(count) end
 ```
 
+#### Description
+
+Sets the notification count displayed by this badge.
+
+Parameters:
+
+- `self` (`LBadge`, required): The widget instance.
+- `count` (`integer`, required): The notification count.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -3944,16 +5525,7 @@ end
 
 ### LBarChart:addCategory
 
-`LBarChart:addCategory(label: string, vals_tbl: table)`
-
-Adds a category with values for each series.
-
-**Parameters**
-
-- `label` (`string`, required): The category label.
-- `vals_tbl` (`table`, required): Array of values, one per series.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a category with values for each series.
@@ -3962,9 +5534,18 @@ Adds a category with values for each series.
 function LBarChart:addCategory(label, vals_tbl) end
 ```
 
+#### Description
+
+Adds a category with values for each series.
+
+Parameters:
+
+- `label` (`string`, required): The category label.
+- `vals_tbl` (`table`, required): Array of values, one per series.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -3978,18 +5559,7 @@ end
 
 ### LBarChart:addSeries
 
-`LBarChart:addSeries(name: string, r: number, g: number, b: number)`
-
-Adds a named series to this bar chart.
-
-**Parameters**
-
-- `name` (`string`, required): The series name.
-- `r` (`number`, required): Red color component.
-- `g` (`number`, required): Green color component.
-- `b` (`number`, required): Blue color component.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a named series to this bar chart.
@@ -4000,9 +5570,20 @@ Adds a named series to this bar chart.
 function LBarChart:addSeries(name, r, g, b) end
 ```
 
+#### Description
+
+Adds a named series to this bar chart.
+
+Parameters:
+
+- `name` (`string`, required): The series name.
+- `r` (`number`, required): Red color component.
+- `g` (`number`, required): Green color component.
+- `b` (`number`, required): Blue color component.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -4016,15 +5597,7 @@ end
 
 ### LBarChart:drawToImage
 
-`LBarChart:drawToImage(target: LImageData)`
-
-Renders this bar chart to an image buffer.
-
-**Parameters**
-
-- `target` (`LImageData`, required): The image to draw into.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Renders this bar chart to an image buffer.
@@ -4032,9 +5605,17 @@ Renders this bar chart to an image buffer.
 function LBarChart:drawToImage(target) end
 ```
 
+#### Description
+
+Renders this bar chart to an image buffer.
+
+Parameters:
+
+- `target` (`LImageData`, required): The image to draw into.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -4048,13 +5629,7 @@ end
 
 ### LBarChart:type
 
-`LBarChart:type() -> string`
-
-Returns the type name of this object.
-
-**Returns**: `string` - Always "LBarChart".
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this object.
@@ -4062,9 +5637,15 @@ Returns the type name of this object.
 function LBarChart:type() end
 ```
 
+#### Description
+
+Returns the type name of this object.
+
+Returns: `string` - Always "LBarChart".
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -4078,17 +5659,7 @@ end
 
 ### LBarChart:typeOf
 
-`LBarChart:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to check.
-
-**Returns**: `boolean` - True if the name matches this userdata type.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this object matches the given type name.
@@ -4097,9 +5668,19 @@ Checks whether this object matches the given type name.
 function LBarChart:typeOf(name) end
 ```
 
+#### Description
+
+Checks whether this object matches the given type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to check.
+
+Returns: `boolean` - True if the name matches this userdata type.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -4113,17 +5694,7 @@ end
 
 ### LButton:getText
 
-`LButton:getText(self: LButton) -> string`
-
-Returns the current display text of this button.
-
-**Parameters**
-
-- `self` (`LButton`, required): The widget instance.
-
-**Returns**: `string` - The button label.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current display text of this button.
@@ -4131,9 +5702,19 @@ Returns the current display text of this button.
 function LButton:getText() end
 ```
 
+#### Description
+
+Returns the current display text of this button.
+
+Parameters:
+
+- `self` (`LButton`, required): The widget instance.
+
+Returns: `string` - The button label.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -4147,16 +5728,7 @@ end
 
 ### LButton:setText
 
-`LButton:setText(self: LButton, text: string)`
-
-Sets the display text on this button.
-
-**Parameters**
-
-- `self` (`LButton`, required): The widget instance.
-- `text` (`string`, required): The button label text.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the display text on this button.
@@ -4164,9 +5736,18 @@ Sets the display text on this button.
 function LButton:setText(text) end
 ```
 
+#### Description
+
+Sets the display text on this button.
+
+Parameters:
+
+- `self` (`LButton`, required): The widget instance.
+- `text` (`string`, required): The button label text.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -4180,17 +5761,7 @@ end
 
 ### LCheckbox:getText
 
-`LCheckbox:getText(self: LCheckbox) -> string`
-
-Returns the label text of this checkbox.
-
-**Parameters**
-
-- `self` (`LCheckbox`, required): The widget instance.
-
-**Returns**: `string` - The checkbox label.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the label text of this checkbox.
@@ -4198,9 +5769,19 @@ Returns the label text of this checkbox.
 function LCheckbox:getText() end
 ```
 
+#### Description
+
+Returns the label text of this checkbox.
+
+Parameters:
+
+- `self` (`LCheckbox`, required): The widget instance.
+
+Returns: `string` - The checkbox label.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -4214,17 +5795,7 @@ end
 
 ### LCheckbox:isChecked
 
-`LCheckbox:isChecked(self: LCheckbox) -> boolean`
-
-Returns whether this checkbox is currently checked.
-
-**Parameters**
-
-- `self` (`LCheckbox`, required): The widget instance.
-
-**Returns**: `boolean` - True if checked.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this checkbox is currently checked.
@@ -4232,9 +5803,19 @@ Returns whether this checkbox is currently checked.
 function LCheckbox:isChecked() end
 ```
 
+#### Description
+
+Returns whether this checkbox is currently checked.
+
+Parameters:
+
+- `self` (`LCheckbox`, required): The widget instance.
+
+Returns: `boolean` - True if checked.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -4248,16 +5829,7 @@ end
 
 ### LCheckbox:setChecked
 
-`LCheckbox:setChecked(self: LCheckbox, checked: boolean)`
-
-Sets the checked state of this checkbox.
-
-**Parameters**
-
-- `self` (`LCheckbox`, required): The widget instance.
-- `checked` (`boolean`, required): True to check, false to uncheck.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the checked state of this checkbox.
@@ -4265,9 +5837,18 @@ Sets the checked state of this checkbox.
 function LCheckbox:setChecked(checked) end
 ```
 
+#### Description
+
+Sets the checked state of this checkbox.
+
+Parameters:
+
+- `self` (`LCheckbox`, required): The widget instance.
+- `checked` (`boolean`, required): True to check, false to uncheck.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -4281,16 +5862,7 @@ end
 
 ### LCheckbox:setText
 
-`LCheckbox:setText(self: LCheckbox, text: string)`
-
-Sets the label text displayed next to this checkbox.
-
-**Parameters**
-
-- `self` (`LCheckbox`, required): The widget instance.
-- `text` (`string`, required): The checkbox label.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the label text displayed next to this checkbox.
@@ -4298,9 +5870,18 @@ Sets the label text displayed next to this checkbox.
 function LCheckbox:setText(text) end
 ```
 
+#### Description
+
+Sets the label text displayed next to this checkbox.
+
+Parameters:
+
+- `self` (`LCheckbox`, required): The widget instance.
+- `text` (`string`, required): The checkbox label.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -4314,17 +5895,7 @@ end
 
 ### LColorPicker:getColor
 
-`LColorPicker:getColor(self: LColorPicker) -> number`
-
-Returns the current color as RGBA components (0.0 to 1.0).
-
-**Parameters**
-
-- `self` (`LColorPicker`, required): The widget instance.
-
-**Returns**: `number` - Red component.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current color as RGBA components (0.0 to 1.0).
@@ -4335,9 +5906,19 @@ Returns the current color as RGBA components (0.0 to 1.0).
 function LColorPicker:getColor() end
 ```
 
+#### Description
+
+Returns the current color as RGBA components (0.0 to 1.0).
+
+Parameters:
+
+- `self` (`LColorPicker`, required): The widget instance.
+
+Returns: `number` - Red component.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -4351,17 +5932,7 @@ end
 
 ### LColorPicker:getColorMode
 
-`LColorPicker:getColorMode(self: LColorPicker) -> string`
-
-Returns the color mode of this picker (e.g. "rgb", "hsv").
-
-**Parameters**
-
-- `self` (`LColorPicker`, required): The widget instance.
-
-**Returns**: `string` - The color mode.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the color mode of this picker (e.g. "rgb", "hsv").
@@ -4369,9 +5940,19 @@ Returns the color mode of this picker (e.g. "rgb", "hsv").
 function LColorPicker:getColorMode() end
 ```
 
+#### Description
+
+Returns the color mode of this picker (e.g. "rgb", "hsv").
+
+Parameters:
+
+- `self` (`LColorPicker`, required): The widget instance.
+
+Returns: `string` - The color mode.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -4385,17 +5966,7 @@ end
 
 ### LColorPicker:getShowAlpha
 
-`LColorPicker:getShowAlpha(self: LColorPicker) -> boolean`
-
-Returns whether the alpha channel slider is visible.
-
-**Parameters**
-
-- `self` (`LColorPicker`, required): The widget instance.
-
-**Returns**: `boolean` - True if the alpha slider is shown.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether the alpha channel slider is visible.
@@ -4403,9 +5974,19 @@ Returns whether the alpha channel slider is visible.
 function LColorPicker:getShowAlpha() end
 ```
 
+#### Description
+
+Returns whether the alpha channel slider is visible.
+
+Parameters:
+
+- `self` (`LColorPicker`, required): The widget instance.
+
+Returns: `boolean` - True if the alpha slider is shown.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -4419,19 +6000,7 @@ end
 
 ### LColorPicker:setColor
 
-`LColorPicker:setColor(self: LColorPicker, r: number, g: number, b: number, [a]: number)`
-
-Sets the current color as RGBA components.
-
-**Parameters**
-
-- `self` (`LColorPicker`, required): The widget instance.
-- `r` (`number`, required): Red (0.0 to 1.0).
-- `g` (`number`, required): Green (0.0 to 1.0).
-- `b` (`number`, required): Blue (0.0 to 1.0).
-- `a` (`number`, optional): Alpha (0.0 to 1.0), keeps current if omitted.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the current color as RGBA components.
@@ -4442,9 +6011,21 @@ Sets the current color as RGBA components.
 function LColorPicker:setColor(r, g, b, a) end
 ```
 
+#### Description
+
+Sets the current color as RGBA components.
+
+Parameters:
+
+- `self` (`LColorPicker`, required): The widget instance.
+- `r` (`number`, required): Red (0.0 to 1.0).
+- `g` (`number`, required): Green (0.0 to 1.0).
+- `b` (`number`, required): Blue (0.0 to 1.0).
+- `a` (`number`, optional): Alpha (0.0 to 1.0), keeps current if omitted.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -4458,16 +6039,7 @@ end
 
 ### LColorPicker:setColorMode
 
-`LColorPicker:setColorMode(self: LColorPicker, mode: string)`
-
-Sets the color mode of this picker (e.g. "rgb", "hsv").
-
-**Parameters**
-
-- `self` (`LColorPicker`, required): The widget instance.
-- `mode` (`string`, required): The color mode.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the color mode of this picker (e.g. "rgb", "hsv").
@@ -4475,9 +6047,18 @@ Sets the color mode of this picker (e.g. "rgb", "hsv").
 function LColorPicker:setColorMode(mode) end
 ```
 
+#### Description
+
+Sets the color mode of this picker (e.g. "rgb", "hsv").
+
+Parameters:
+
+- `self` (`LColorPicker`, required): The widget instance.
+- `mode` (`string`, required): The color mode.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -4491,16 +6072,7 @@ end
 
 ### LColorPicker:setOnChange
 
-`LColorPicker:setOnChange(self: LColorPicker, f: function)`
-
-Registers a callback invoked when this color picker's value changes.
-
-**Parameters**
-
-- `self` (`LColorPicker`, required): The widget instance.
-- `f` (`function`, required): Callback receiving the widget index.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Registers a callback invoked when this color picker's value changes.
@@ -4508,9 +6080,18 @@ Registers a callback invoked when this color picker's value changes.
 function LColorPicker:setOnChange(f) end
 ```
 
+#### Description
+
+Registers a callback invoked when this color picker's value changes.
+
+Parameters:
+
+- `self` (`LColorPicker`, required): The widget instance.
+- `f` (`function`, required): Callback receiving the widget index.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -4524,16 +6105,7 @@ end
 
 ### LColorPicker:setShowAlpha
 
-`LColorPicker:setShowAlpha(self: LColorPicker, v: boolean)`
-
-Sets whether the alpha channel slider is visible.
-
-**Parameters**
-
-- `self` (`LColorPicker`, required): The widget instance.
-- `v` (`boolean`, required): True to show the alpha slider.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets whether the alpha channel slider is visible.
@@ -4541,9 +6113,18 @@ Sets whether the alpha channel slider is visible.
 function LColorPicker:setShowAlpha(v) end
 ```
 
+#### Description
+
+Sets whether the alpha channel slider is visible.
+
+Parameters:
+
+- `self` (`LColorPicker`, required): The widget instance.
+- `v` (`boolean`, required): True to show the alpha slider.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -4557,16 +6138,7 @@ end
 
 ### LComboBox:addItem
 
-`LComboBox:addItem(self: LComboBox, text: string)`
-
-Appends a new text item to this combo box's dropdown list.
-
-**Parameters**
-
-- `self` (`LComboBox`, required): The widget instance.
-- `text` (`string`, required): The item label to add.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Appends a new text item to this combo box's dropdown list.
@@ -4574,9 +6146,18 @@ Appends a new text item to this combo box's dropdown list.
 function LComboBox:addItem(text) end
 ```
 
+#### Description
+
+Appends a new text item to this combo box's dropdown list.
+
+Parameters:
+
+- `self` (`LComboBox`, required): The widget instance.
+- `text` (`string`, required): The item label to add.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -4590,24 +6171,24 @@ end
 
 ### LComboBox:clearItems
 
-`LComboBox:clearItems(self: LComboBox)`
-
-Removes all items from this combo box.
-
-**Parameters**
-
-- `self` (`LComboBox`, required): The widget instance.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes all items from this combo box.
 function LComboBox:clearItems() end
 ```
 
+#### Description
+
+Removes all items from this combo box.
+
+Parameters:
+
+- `self` (`LComboBox`, required): The widget instance.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -4621,18 +6202,7 @@ end
 
 ### LComboBox:getItem
 
-`LComboBox:getItem(self: LComboBox, index: integer) -> string`
-
-Returns the text of the item at the given 1-based index.
-
-**Parameters**
-
-- `self` (`LComboBox`, required): The widget instance.
-- `index` (`integer`, required): The 1-based item index.
-
-**Returns**: `string` - The item text, or nil if out of range.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the text of the item at the given 1-based index.
@@ -4641,9 +6211,20 @@ Returns the text of the item at the given 1-based index.
 function LComboBox:getItem(index) end
 ```
 
+#### Description
+
+Returns the text of the item at the given 1-based index.
+
+Parameters:
+
+- `self` (`LComboBox`, required): The widget instance.
+- `index` (`integer`, required): The 1-based item index.
+
+Returns: `string` - The item text, or nil if out of range.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -4657,17 +6238,7 @@ end
 
 ### LComboBox:getItemCount
 
-`LComboBox:getItemCount(self: LComboBox) -> integer`
-
-Returns the number of items in this combo box.
-
-**Parameters**
-
-- `self` (`LComboBox`, required): The widget instance.
-
-**Returns**: `integer` - The item count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of items in this combo box.
@@ -4675,9 +6246,19 @@ Returns the number of items in this combo box.
 function LComboBox:getItemCount() end
 ```
 
+#### Description
+
+Returns the number of items in this combo box.
+
+Parameters:
+
+- `self` (`LComboBox`, required): The widget instance.
+
+Returns: `integer` - The item count.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -4691,17 +6272,7 @@ end
 
 ### LComboBox:getSelectedIndex
 
-`LComboBox:getSelectedIndex(self: LComboBox) -> integer`
-
-Returns the 1-based index of the currently selected item, or 0 if none is selected.
-
-**Parameters**
-
-- `self` (`LComboBox`, required): The widget instance.
-
-**Returns**: `integer` - The selected index.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the 1-based index of the currently selected item, or 0 if none is selected.
@@ -4709,9 +6280,19 @@ Returns the 1-based index of the currently selected item, or 0 if none is select
 function LComboBox:getSelectedIndex() end
 ```
 
+#### Description
+
+Returns the 1-based index of the currently selected item, or 0 if none is selected.
+
+Parameters:
+
+- `self` (`LComboBox`, required): The widget instance.
+
+Returns: `integer` - The selected index.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -4725,17 +6306,7 @@ end
 
 ### LComboBox:getSelectedItem
 
-`LComboBox:getSelectedItem(self: LComboBox) -> string`
-
-Returns the text of the currently selected item, or nil if none is selected.
-
-**Parameters**
-
-- `self` (`LComboBox`, required): The widget instance.
-
-**Returns**: `string` - The selected item text.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the text of the currently selected item, or nil if none is selected.
@@ -4743,9 +6314,19 @@ Returns the text of the currently selected item, or nil if none is selected.
 function LComboBox:getSelectedItem() end
 ```
 
+#### Description
+
+Returns the text of the currently selected item, or nil if none is selected.
+
+Parameters:
+
+- `self` (`LComboBox`, required): The widget instance.
+
+Returns: `string` - The selected item text.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -4759,18 +6340,7 @@ end
 
 ### LComboBox:removeItem
 
-`LComboBox:removeItem(self: LComboBox, index: integer) -> boolean`
-
-Removes the item at the given 1-based index from this combo box.
-
-**Parameters**
-
-- `self` (`LComboBox`, required): The widget instance.
-- `index` (`integer`, required): The 1-based index of the item to remove.
-
-**Returns**: `boolean` - True if the item was removed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes the item at the given 1-based index from this combo box.
@@ -4779,9 +6349,20 @@ Removes the item at the given 1-based index from this combo box.
 function LComboBox:removeItem(index) end
 ```
 
+#### Description
+
+Removes the item at the given 1-based index from this combo box.
+
+Parameters:
+
+- `self` (`LComboBox`, required): The widget instance.
+- `index` (`integer`, required): The 1-based index of the item to remove.
+
+Returns: `boolean` - True if the item was removed.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -4795,16 +6376,7 @@ end
 
 ### LComboBox:setSelectedIndex
 
-`LComboBox:setSelectedIndex(self: LComboBox, index: integer)`
-
-Sets the selected item by 1-based index.
-
-**Parameters**
-
-- `self` (`LComboBox`, required): The widget instance.
-- `index` (`integer`, required): The 1-based index of the item to select.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the selected item by 1-based index.
@@ -4812,9 +6384,18 @@ Sets the selected item by 1-based index.
 function LComboBox:setSelectedIndex(index) end
 ```
 
+#### Description
+
+Sets the selected item by 1-based index.
+
+Parameters:
+
+- `self` (`LComboBox`, required): The widget instance.
+- `index` (`integer`, required): The 1-based index of the item to select.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -4828,19 +6409,7 @@ end
 
 ### LDialog:addButton
 
-`LDialog:addButton(self: LDialog, text: string, [cb]: function) -> integer`
-
-Adds a footer button to this dialog and returns its 1-based index.
-
-**Parameters**
-
-- `self` (`LDialog`, required): The widget instance.
-- `text` (`string`, required): The button label.
-- `cb` (`function`, optional): Optional click callback (reserved for future use).
-
-**Returns**: `integer` - The 1-based button index.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a footer button to this dialog and returns its 1-based index.
@@ -4850,9 +6419,21 @@ Adds a footer button to this dialog and returns its 1-based index.
 function LDialog:addButton(text, cb) end
 ```
 
+#### Description
+
+Adds a footer button to this dialog and returns its 1-based index.
+
+Parameters:
+
+- `self` (`LDialog`, required): The widget instance.
+- `text` (`string`, required): The button label.
+- `cb` (`function`, optional): Optional click callback (reserved for future use).
+
+Returns: `integer` - The 1-based button index.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -4866,24 +6447,24 @@ end
 
 ### LDialog:close
 
-`LDialog:close(self: LDialog)`
-
-Closes this dialog and fires the onClose callback if it was open.
-
-**Parameters**
-
-- `self` (`LDialog`, required): The widget instance.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Closes this dialog and fires the onClose callback if it was open.
 function LDialog:close() end
 ```
 
+#### Description
+
+Closes this dialog and fires the onClose callback if it was open.
+
+Parameters:
+
+- `self` (`LDialog`, required): The widget instance.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -4897,17 +6478,7 @@ end
 
 ### LDialog:getContent
 
-`LDialog:getContent(self: LDialog) -> integer`
-
-Returns the widget index of this dialog's content, or nil if not set.
-
-**Parameters**
-
-- `self` (`LDialog`, required): The widget instance.
-
-**Returns**: `integer` - The content widget index.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the widget index of this dialog's content, or nil if not set.
@@ -4915,9 +6486,19 @@ Returns the widget index of this dialog's content, or nil if not set.
 function LDialog:getContent() end
 ```
 
+#### Description
+
+Returns the widget index of this dialog's content, or nil if not set.
+
+Parameters:
+
+- `self` (`LDialog`, required): The widget instance.
+
+Returns: `integer` - The content widget index.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -4931,17 +6512,7 @@ end
 
 ### LDialog:getTitle
 
-`LDialog:getTitle(self: LDialog) -> string`
-
-Returns the title text of this dialog.
-
-**Parameters**
-
-- `self` (`LDialog`, required): The widget instance.
-
-**Returns**: `string` - The dialog title.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the title text of this dialog.
@@ -4949,9 +6520,19 @@ Returns the title text of this dialog.
 function LDialog:getTitle() end
 ```
 
+#### Description
+
+Returns the title text of this dialog.
+
+Parameters:
+
+- `self` (`LDialog`, required): The widget instance.
+
+Returns: `string` - The dialog title.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -4965,17 +6546,7 @@ end
 
 ### LDialog:isModal
 
-`LDialog:isModal(self: LDialog) -> boolean`
-
-Returns whether this dialog is modal (blocks interaction with other widgets).
-
-**Parameters**
-
-- `self` (`LDialog`, required): The widget instance.
-
-**Returns**: `boolean` - True if modal.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this dialog is modal (blocks interaction with other widgets).
@@ -4983,9 +6554,19 @@ Returns whether this dialog is modal (blocks interaction with other widgets).
 function LDialog:isModal() end
 ```
 
+#### Description
+
+Returns whether this dialog is modal (blocks interaction with other widgets).
+
+Parameters:
+
+- `self` (`LDialog`, required): The widget instance.
+
+Returns: `boolean` - True if modal.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -4999,17 +6580,7 @@ end
 
 ### LDialog:isOpen
 
-`LDialog:isOpen(self: LDialog) -> boolean`
-
-Returns whether this dialog is currently open and visible.
-
-**Parameters**
-
-- `self` (`LDialog`, required): The widget instance.
-
-**Returns**: `boolean` - True if open.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this dialog is currently open and visible.
@@ -5017,9 +6588,19 @@ Returns whether this dialog is currently open and visible.
 function LDialog:isOpen() end
 ```
 
+#### Description
+
+Returns whether this dialog is currently open and visible.
+
+Parameters:
+
+- `self` (`LDialog`, required): The widget instance.
+
+Returns: `boolean` - True if open.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -5033,24 +6614,24 @@ end
 
 ### LDialog:open
 
-`LDialog:open(self: LDialog)`
-
-Opens this dialog, making it visible.
-
-**Parameters**
-
-- `self` (`LDialog`, required): The widget instance.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Opens this dialog, making it visible.
 function LDialog:open() end
 ```
 
+#### Description
+
+Opens this dialog, making it visible.
+
+Parameters:
+
+- `self` (`LDialog`, required): The widget instance.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -5064,16 +6645,7 @@ end
 
 ### LDialog:setContent
 
-`LDialog:setContent(self: LDialog, [content_idx]: integer)`
-
-Sets the content widget for this dialog.
-
-**Parameters**
-
-- `self` (`LDialog`, required): The widget instance.
-- `content_idx` (`integer`, optional): The widget index to show as content, or nil to clear.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the content widget for this dialog.
@@ -5081,9 +6653,18 @@ Sets the content widget for this dialog.
 function LDialog:setContent(content_idx) end
 ```
 
+#### Description
+
+Sets the content widget for this dialog.
+
+Parameters:
+
+- `self` (`LDialog`, required): The widget instance.
+- `content_idx` (`integer`, optional): The widget index to show as content, or nil to clear.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -5097,16 +6678,7 @@ end
 
 ### LDialog:setModal
 
-`LDialog:setModal(self: LDialog, v: boolean)`
-
-Sets whether this dialog widget is modal.
-
-**Parameters**
-
-- `self` (`LDialog`, required): The widget instance.
-- `v` (`boolean`, required): True to make modal.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets whether this dialog widget is modal.
@@ -5114,9 +6686,18 @@ Sets whether this dialog widget is modal.
 function LDialog:setModal(v) end
 ```
 
+#### Description
+
+Sets whether this dialog widget is modal.
+
+Parameters:
+
+- `self` (`LDialog`, required): The widget instance.
+- `v` (`boolean`, required): True to make modal.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -5130,16 +6711,7 @@ end
 
 ### LDialog:setOnClose
 
-`LDialog:setOnClose(self: LDialog, f: function)`
-
-Registers a callback invoked when this dialog is closed.
-
-**Parameters**
-
-- `self` (`LDialog`, required): The widget instance.
-- `f` (`function`, required): Callback receiving the widget index.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Registers a callback invoked when this dialog is closed.
@@ -5147,9 +6719,18 @@ Registers a callback invoked when this dialog is closed.
 function LDialog:setOnClose(f) end
 ```
 
+#### Description
+
+Registers a callback invoked when this dialog is closed.
+
+Parameters:
+
+- `self` (`LDialog`, required): The widget instance.
+- `f` (`function`, required): Callback receiving the widget index.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -5163,16 +6744,7 @@ end
 
 ### LDialog:setTitle
 
-`LDialog:setTitle(self: LDialog, title: string)`
-
-Sets the title text of this dialog widget.
-
-**Parameters**
-
-- `self` (`LDialog`, required): The widget instance.
-- `title` (`string`, required): The dialog title.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the title text of this dialog widget.
@@ -5180,9 +6752,18 @@ Sets the title text of this dialog widget.
 function LDialog:setTitle(title) end
 ```
 
+#### Description
+
+Sets the title text of this dialog widget.
+
+Parameters:
+
+- `self` (`LDialog`, required): The widget instance.
+- `title` (`string`, required): The dialog title.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -5196,17 +6777,7 @@ end
 
 ### LDockPanel:dock
 
-`LDockPanel:dock(self: LDockPanel, child_idx: integer, side: string)`
-
-Docks a child widget to the specified side of this dock panel.
-
-**Parameters**
-
-- `self` (`LDockPanel`, required): The widget instance.
-- `child_idx` (`integer`, required): The widget index to dock.
-- `side` (`string`, required): The dock side ("left", "right", "top", "bottom", "center").
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Docks a child widget to the specified side of this dock panel.
@@ -5215,9 +6786,19 @@ Docks a child widget to the specified side of this dock panel.
 function LDockPanel:dock(child_idx, side) end
 ```
 
+#### Description
+
+Docks a child widget to the specified side of this dock panel.
+
+Parameters:
+
+- `self` (`LDockPanel`, required): The widget instance.
+- `child_idx` (`integer`, required): The widget index to dock.
+- `side` (`string`, required): The dock side ("left", "right", "top", "bottom", "center").
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -5231,17 +6812,7 @@ end
 
 ### LDockPanel:getDockedCount
 
-`LDockPanel:getDockedCount(self: LDockPanel) -> integer`
-
-Returns the number of widgets docked in this dock panel.
-
-**Parameters**
-
-- `self` (`LDockPanel`, required): The widget instance.
-
-**Returns**: `integer` - The docked widget count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of widgets docked in this dock panel.
@@ -5249,9 +6820,19 @@ Returns the number of widgets docked in this dock panel.
 function LDockPanel:getDockedCount() end
 ```
 
+#### Description
+
+Returns the number of widgets docked in this dock panel.
+
+Parameters:
+
+- `self` (`LDockPanel`, required): The widget instance.
+
+Returns: `integer` - The docked widget count.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -5265,18 +6846,7 @@ end
 
 ### LDockPanel:getSplitSize
 
-`LDockPanel:getSplitSize(self: LDockPanel, side: string) -> number`
-
-Returns the size configured for a dock panel side region.
-
-**Parameters**
-
-- `self` (`LDockPanel`, required): The widget instance.
-- `side` (`string`, required): The dock side.
-
-**Returns**: `number` - The size in pixels, or nil if not set.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the size configured for a dock panel side region.
@@ -5285,9 +6855,20 @@ Returns the size configured for a dock panel side region.
 function LDockPanel:getSplitSize(side) end
 ```
 
+#### Description
+
+Returns the size configured for a dock panel side region.
+
+Parameters:
+
+- `self` (`LDockPanel`, required): The widget instance.
+- `side` (`string`, required): The dock side.
+
+Returns: `number` - The size in pixels, or nil if not set.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -5301,17 +6882,7 @@ end
 
 ### LDockPanel:setSplitSize
 
-`LDockPanel:setSplitSize(self: LDockPanel, side: string, size: number)`
-
-Sets the size of a dock panel side region.
-
-**Parameters**
-
-- `self` (`LDockPanel`, required): The widget instance.
-- `side` (`string`, required): The dock side ("left", "right", "top", "bottom").
-- `size` (`number`, required): The size in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the size of a dock panel side region.
@@ -5320,9 +6891,19 @@ Sets the size of a dock panel side region.
 function LDockPanel:setSplitSize(side, size) end
 ```
 
+#### Description
+
+Sets the size of a dock panel side region.
+
+Parameters:
+
+- `self` (`LDockPanel`, required): The widget instance.
+- `side` (`string`, required): The dock side ("left", "right", "top", "bottom").
+- `size` (`number`, required): The size in pixels.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -5336,16 +6917,7 @@ end
 
 ### LDockPanel:undock
 
-`LDockPanel:undock(self: LDockPanel, child_idx: integer)`
-
-Removes a child widget from this dock panel.
-
-**Parameters**
-
-- `self` (`LDockPanel`, required): The widget instance.
-- `child_idx` (`integer`, required): The widget index to undock.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes a child widget from this dock panel.
@@ -5353,9 +6925,18 @@ Removes a child widget from this dock panel.
 function LDockPanel:undock(child_idx) end
 ```
 
+#### Description
+
+Removes a child widget from this dock panel.
+
+Parameters:
+
+- `self` (`LDockPanel`, required): The widget instance.
+- `child_idx` (`integer`, required): The widget index to undock.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -5369,17 +6950,7 @@ end
 
 ### LGuiTable:addColumn
 
-`LGuiTable:addColumn(self: LGuiTable, header: string, [width]: number)`
-
-Adds a new column to this table widget.
-
-**Parameters**
-
-- `self` (`LGuiTable`, required): The widget instance.
-- `header` (`string`, required): The column header text.
-- `width` (`number`, optional): The column width in pixels (default 100).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a new column to this table widget.
@@ -5388,9 +6959,19 @@ Adds a new column to this table widget.
 function LGuiTable:addColumn(header, width) end
 ```
 
+#### Description
+
+Adds a new column to this table widget.
+
+Parameters:
+
+- `self` (`LGuiTable`, required): The widget instance.
+- `header` (`string`, required): The column header text.
+- `width` (`number`, optional): The column width in pixels (default 100).
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -5404,16 +6985,7 @@ end
 
 ### LGuiTable:addRow
 
-`LGuiTable:addRow(self: LGuiTable, cells: table)`
-
-Adds a row of data to this table widget.
-
-**Parameters**
-
-- `self` (`LGuiTable`, required): The widget instance.
-- `cells` (`table`, required): Array of cell text values.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a row of data to this table widget.
@@ -5421,9 +6993,18 @@ Adds a row of data to this table widget.
 function LGuiTable:addRow(cells) end
 ```
 
+#### Description
+
+Adds a row of data to this table widget.
+
+Parameters:
+
+- `self` (`LGuiTable`, required): The widget instance.
+- `cells` (`table`, required): Array of cell text values.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -5437,19 +7018,7 @@ end
 
 ### LGuiTable:getCell
 
-`LGuiTable:getCell(self: LGuiTable, row: integer, col: integer) -> string`
-
-Returns the text of a cell at the given 1-based row and column.
-
-**Parameters**
-
-- `self` (`LGuiTable`, required): The widget instance.
-- `row` (`integer`, required): The 1-based row index.
-- `col` (`integer`, required): The 1-based column index.
-
-**Returns**: `string` - The cell text, or nil if out of range.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the text of a cell at the given 1-based row and column.
@@ -5459,9 +7028,21 @@ Returns the text of a cell at the given 1-based row and column.
 function LGuiTable:getCell(row, col) end
 ```
 
+#### Description
+
+Returns the text of a cell at the given 1-based row and column.
+
+Parameters:
+
+- `self` (`LGuiTable`, required): The widget instance.
+- `row` (`integer`, required): The 1-based row index.
+- `col` (`integer`, required): The 1-based column index.
+
+Returns: `string` - The cell text, or nil if out of range.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -5475,17 +7056,7 @@ end
 
 ### LGuiTable:getColumnCount
 
-`LGuiTable:getColumnCount(self: LGuiTable) -> integer`
-
-Returns the number of columns in this table widget.
-
-**Parameters**
-
-- `self` (`LGuiTable`, required): The widget instance.
-
-**Returns**: `integer` - The column count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of columns in this table widget.
@@ -5493,9 +7064,19 @@ Returns the number of columns in this table widget.
 function LGuiTable:getColumnCount() end
 ```
 
+#### Description
+
+Returns the number of columns in this table widget.
+
+Parameters:
+
+- `self` (`LGuiTable`, required): The widget instance.
+
+Returns: `integer` - The column count.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -5509,17 +7090,7 @@ end
 
 ### LGuiTable:getRowCount
 
-`LGuiTable:getRowCount(self: LGuiTable) -> integer`
-
-Returns the number of rows in this table widget.
-
-**Parameters**
-
-- `self` (`LGuiTable`, required): The widget instance.
-
-**Returns**: `integer` - The row count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of rows in this table widget.
@@ -5527,9 +7098,19 @@ Returns the number of rows in this table widget.
 function LGuiTable:getRowCount() end
 ```
 
+#### Description
+
+Returns the number of rows in this table widget.
+
+Parameters:
+
+- `self` (`LGuiTable`, required): The widget instance.
+
+Returns: `integer` - The row count.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -5543,17 +7124,7 @@ end
 
 ### LGuiTable:getSelectedRow
 
-`LGuiTable:getSelectedRow(self: LGuiTable) -> integer`
-
-Returns the 1-based index of the currently selected row, or nil.
-
-**Parameters**
-
-- `self` (`LGuiTable`, required): The widget instance.
-
-**Returns**: `integer` - The selected row index.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the 1-based index of the currently selected row, or nil.
@@ -5561,9 +7132,19 @@ Returns the 1-based index of the currently selected row, or nil.
 function LGuiTable:getSelectedRow() end
 ```
 
+#### Description
+
+Returns the 1-based index of the currently selected row, or nil.
+
+Parameters:
+
+- `self` (`LGuiTable`, required): The widget instance.
+
+Returns: `integer` - The selected row index.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -5577,17 +7158,7 @@ end
 
 ### LGuiTable:isSortable
 
-`LGuiTable:isSortable(self: LGuiTable) -> boolean`
-
-Returns whether columns in this table can be sorted by clicking headers.
-
-**Parameters**
-
-- `self` (`LGuiTable`, required): The widget instance.
-
-**Returns**: `boolean` - True if sortable.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether columns in this table can be sorted by clicking headers.
@@ -5595,9 +7166,19 @@ Returns whether columns in this table can be sorted by clicking headers.
 function LGuiTable:isSortable() end
 ```
 
+#### Description
+
+Returns whether columns in this table can be sorted by clicking headers.
+
+Parameters:
+
+- `self` (`LGuiTable`, required): The widget instance.
+
+Returns: `boolean` - True if sortable.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -5611,18 +7192,7 @@ end
 
 ### LGuiTable:setCell
 
-`LGuiTable:setCell(self: LGuiTable, row: integer, col: integer, text: string)`
-
-Sets the text of a cell at the given 1-based row and column.
-
-**Parameters**
-
-- `self` (`LGuiTable`, required): The widget instance.
-- `row` (`integer`, required): The 1-based row index.
-- `col` (`integer`, required): The 1-based column index.
-- `text` (`string`, required): The new cell text.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the text of a cell at the given 1-based row and column.
@@ -5632,9 +7202,20 @@ Sets the text of a cell at the given 1-based row and column.
 function LGuiTable:setCell(row, col, text) end
 ```
 
+#### Description
+
+Sets the text of a cell at the given 1-based row and column.
+
+Parameters:
+
+- `self` (`LGuiTable`, required): The widget instance.
+- `row` (`integer`, required): The 1-based row index.
+- `col` (`integer`, required): The 1-based column index.
+- `text` (`string`, required): The new cell text.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -5648,16 +7229,7 @@ end
 
 ### LGuiTable:setOnSelect
 
-`LGuiTable:setOnSelect(self: LGuiTable, f: function)`
-
-Registers a callback invoked when a table row is selected.
-
-**Parameters**
-
-- `self` (`LGuiTable`, required): The widget instance.
-- `f` (`function`, required): Callback receiving the widget index.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Registers a callback invoked when a table row is selected.
@@ -5665,9 +7237,18 @@ Registers a callback invoked when a table row is selected.
 function LGuiTable:setOnSelect(f) end
 ```
 
+#### Description
+
+Registers a callback invoked when a table row is selected.
+
+Parameters:
+
+- `self` (`LGuiTable`, required): The widget instance.
+- `f` (`function`, required): Callback receiving the widget index.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -5681,16 +7262,7 @@ end
 
 ### LGuiTable:setSelectedRow
 
-`LGuiTable:setSelectedRow(self: LGuiTable, [row]: integer)`
-
-Sets the selected row by its 1-based index, or nil to deselect.
-
-**Parameters**
-
-- `self` (`LGuiTable`, required): The widget instance.
-- `row` (`integer`, optional): The 1-based row index, or nil.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the selected row by its 1-based index, or nil to deselect.
@@ -5698,9 +7270,18 @@ Sets the selected row by its 1-based index, or nil to deselect.
 function LGuiTable:setSelectedRow(row) end
 ```
 
+#### Description
+
+Sets the selected row by its 1-based index, or nil to deselect.
+
+Parameters:
+
+- `self` (`LGuiTable`, required): The widget instance.
+- `row` (`integer`, optional): The 1-based row index, or nil.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -5714,16 +7295,7 @@ end
 
 ### LGuiTable:setSortable
 
-`LGuiTable:setSortable(self: LGuiTable, v: boolean)`
-
-Sets whether columns in this table can be sorted by clicking headers.
-
-**Parameters**
-
-- `self` (`LGuiTable`, required): The widget instance.
-- `v` (`boolean`, required): True to enable sorting.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets whether columns in this table can be sorted by clicking headers.
@@ -5731,9 +7303,18 @@ Sets whether columns in this table can be sorted by clicking headers.
 function LGuiTable:setSortable(v) end
 ```
 
+#### Description
+
+Sets whether columns in this table can be sorted by clicking headers.
+
+Parameters:
+
+- `self` (`LGuiTable`, required): The widget instance.
+- `v` (`boolean`, required): True to enable sorting.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -5747,17 +7328,7 @@ end
 
 ### LGuiWindow:getTitle
 
-`LGuiWindow:getTitle(self: LGuiWindow) -> string`
-
-Returns the title bar text of this GUI window.
-
-**Parameters**
-
-- `self` (`LGuiWindow`, required): The widget instance.
-
-**Returns**: `string` - The window title.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the title bar text of this GUI window.
@@ -5765,9 +7336,19 @@ Returns the title bar text of this GUI window.
 function LGuiWindow:getTitle() end
 ```
 
+#### Description
+
+Returns the title bar text of this GUI window.
+
+Parameters:
+
+- `self` (`LGuiWindow`, required): The widget instance.
+
+Returns: `string` - The window title.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -5781,17 +7362,7 @@ end
 
 ### LGuiWindow:isCloseable
 
-`LGuiWindow:isCloseable(self: LGuiWindow) -> boolean`
-
-Returns whether this window shows a close button.
-
-**Parameters**
-
-- `self` (`LGuiWindow`, required): The widget instance.
-
-**Returns**: `boolean` - True if closeable.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this window shows a close button.
@@ -5799,9 +7370,19 @@ Returns whether this window shows a close button.
 function LGuiWindow:isCloseable() end
 ```
 
+#### Description
+
+Returns whether this window shows a close button.
+
+Parameters:
+
+- `self` (`LGuiWindow`, required): The widget instance.
+
+Returns: `boolean` - True if closeable.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -5815,17 +7396,7 @@ end
 
 ### LGuiWindow:isDraggable
 
-`LGuiWindow:isDraggable(self: LGuiWindow) -> boolean`
-
-Returns whether this window can be dragged by its title bar.
-
-**Parameters**
-
-- `self` (`LGuiWindow`, required): The widget instance.
-
-**Returns**: `boolean` - True if draggable.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this window can be dragged by its title bar.
@@ -5833,9 +7404,19 @@ Returns whether this window can be dragged by its title bar.
 function LGuiWindow:isDraggable() end
 ```
 
+#### Description
+
+Returns whether this window can be dragged by its title bar.
+
+Parameters:
+
+- `self` (`LGuiWindow`, required): The widget instance.
+
+Returns: `boolean` - True if draggable.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -5849,17 +7430,7 @@ end
 
 ### LGuiWindow:isResizable
 
-`LGuiWindow:isResizable(self: LGuiWindow) -> boolean`
-
-Returns whether this window can be resized by dragging its edges.
-
-**Parameters**
-
-- `self` (`LGuiWindow`, required): The widget instance.
-
-**Returns**: `boolean` - True if resizable.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this window can be resized by dragging its edges.
@@ -5867,9 +7438,19 @@ Returns whether this window can be resized by dragging its edges.
 function LGuiWindow:isResizable() end
 ```
 
+#### Description
+
+Returns whether this window can be resized by dragging its edges.
+
+Parameters:
+
+- `self` (`LGuiWindow`, required): The widget instance.
+
+Returns: `boolean` - True if resizable.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -5883,16 +7464,7 @@ end
 
 ### LGuiWindow:setCloseable
 
-`LGuiWindow:setCloseable(self: LGuiWindow, v: boolean)`
-
-Sets whether this window shows a close button.
-
-**Parameters**
-
-- `self` (`LGuiWindow`, required): The widget instance.
-- `v` (`boolean`, required): True to show the close button.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets whether this window shows a close button.
@@ -5900,9 +7472,18 @@ Sets whether this window shows a close button.
 function LGuiWindow:setCloseable(v) end
 ```
 
+#### Description
+
+Sets whether this window shows a close button.
+
+Parameters:
+
+- `self` (`LGuiWindow`, required): The widget instance.
+- `v` (`boolean`, required): True to show the close button.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -5916,16 +7497,7 @@ end
 
 ### LGuiWindow:setDraggable
 
-`LGuiWindow:setDraggable(self: LGuiWindow, v: boolean)`
-
-Sets whether this window can be dragged by its title bar.
-
-**Parameters**
-
-- `self` (`LGuiWindow`, required): The widget instance.
-- `v` (`boolean`, required): True to allow dragging.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets whether this window can be dragged by its title bar.
@@ -5933,9 +7505,18 @@ Sets whether this window can be dragged by its title bar.
 function LGuiWindow:setDraggable(v) end
 ```
 
+#### Description
+
+Sets whether this window can be dragged by its title bar.
+
+Parameters:
+
+- `self` (`LGuiWindow`, required): The widget instance.
+- `v` (`boolean`, required): True to allow dragging.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -5949,16 +7530,7 @@ end
 
 ### LGuiWindow:setOnClose
 
-`LGuiWindow:setOnClose(self: LGuiWindow, f: function)`
-
-Registers a callback invoked when this window is closed.
-
-**Parameters**
-
-- `self` (`LGuiWindow`, required): The widget instance.
-- `f` (`function`, required): Callback receiving the widget index.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Registers a callback invoked when this window is closed.
@@ -5966,9 +7538,18 @@ Registers a callback invoked when this window is closed.
 function LGuiWindow:setOnClose(f) end
 ```
 
+#### Description
+
+Registers a callback invoked when this window is closed.
+
+Parameters:
+
+- `self` (`LGuiWindow`, required): The widget instance.
+- `f` (`function`, required): Callback receiving the widget index.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -5982,16 +7563,7 @@ end
 
 ### LGuiWindow:setResizable
 
-`LGuiWindow:setResizable(self: LGuiWindow, v: boolean)`
-
-Sets whether this window can be resized.
-
-**Parameters**
-
-- `self` (`LGuiWindow`, required): The widget instance.
-- `v` (`boolean`, required): True to allow resizing.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets whether this window can be resized.
@@ -5999,9 +7571,18 @@ Sets whether this window can be resized.
 function LGuiWindow:setResizable(v) end
 ```
 
+#### Description
+
+Sets whether this window can be resized.
+
+Parameters:
+
+- `self` (`LGuiWindow`, required): The widget instance.
+- `v` (`boolean`, required): True to allow resizing.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -6015,16 +7596,7 @@ end
 
 ### LGuiWindow:setTitle
 
-`LGuiWindow:setTitle(self: LGuiWindow, title: string)`
-
-Sets the title bar text of this GUI window.
-
-**Parameters**
-
-- `self` (`LGuiWindow`, required): The widget instance.
-- `title` (`string`, required): The window title.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the title bar text of this GUI window.
@@ -6032,9 +7604,18 @@ Sets the title bar text of this GUI window.
 function LGuiWindow:setTitle(title) end
 ```
 
+#### Description
+
+Sets the title bar text of this GUI window.
+
+Parameters:
+
+- `self` (`LGuiWindow`, required): The widget instance.
+- `title` (`string`, required): The window title.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -6048,17 +7629,7 @@ end
 
 ### LImageWidget:getScaleMode
 
-`LImageWidget:getScaleMode(self: LImageWidget) -> string`
-
-Returns the image scaling mode (e.g. "fit", "fill", "stretch").
-
-**Parameters**
-
-- `self` (`LImageWidget`, required): The widget instance.
-
-**Returns**: `string` - The scale mode.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the image scaling mode (e.g. "fit", "fill", "stretch").
@@ -6066,9 +7637,19 @@ Returns the image scaling mode (e.g. "fit", "fill", "stretch").
 function LImageWidget:getScaleMode() end
 ```
 
+#### Description
+
+Returns the image scaling mode (e.g. "fit", "fill", "stretch").
+
+Parameters:
+
+- `self` (`LImageWidget`, required): The widget instance.
+
+Returns: `string` - The scale mode.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -6082,17 +7663,7 @@ end
 
 ### LImageWidget:getTint
 
-`LImageWidget:getTint(self: LImageWidget) -> number`
-
-Returns the tint color of this image widget as RGBA components.
-
-**Parameters**
-
-- `self` (`LImageWidget`, required): The widget instance.
-
-**Returns**: `number` - Red component.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the tint color of this image widget as RGBA components.
@@ -6103,9 +7674,19 @@ Returns the tint color of this image widget as RGBA components.
 function LImageWidget:getTint() end
 ```
 
+#### Description
+
+Returns the tint color of this image widget as RGBA components.
+
+Parameters:
+
+- `self` (`LImageWidget`, required): The widget instance.
+
+Returns: `number` - Red component.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -6119,16 +7700,7 @@ end
 
 ### LImageWidget:setScaleMode
 
-`LImageWidget:setScaleMode(self: LImageWidget, mode: string)`
-
-Sets the image scaling mode (e.g. "fit", "fill", "stretch").
-
-**Parameters**
-
-- `self` (`LImageWidget`, required): The widget instance.
-- `mode` (`string`, required): The scale mode.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the image scaling mode (e.g. "fit", "fill", "stretch").
@@ -6136,9 +7708,18 @@ Sets the image scaling mode (e.g. "fit", "fill", "stretch").
 function LImageWidget:setScaleMode(mode) end
 ```
 
+#### Description
+
+Sets the image scaling mode (e.g. "fit", "fill", "stretch").
+
+Parameters:
+
+- `self` (`LImageWidget`, required): The widget instance.
+- `mode` (`string`, required): The scale mode.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -6152,19 +7733,7 @@ end
 
 ### LImageWidget:setTint
 
-`LImageWidget:setTint(self: LImageWidget, r: number, g: number, b: number, [a]: number)`
-
-Sets the tint color of this image widget as RGBA components.
-
-**Parameters**
-
-- `self` (`LImageWidget`, required): The widget instance.
-- `r` (`number`, required): Red (0.0 to 1.0).
-- `g` (`number`, required): Green (0.0 to 1.0).
-- `b` (`number`, required): Blue (0.0 to 1.0).
-- `a` (`number`, optional): Alpha (0.0 to 1.0), defaults to 1.0.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the tint color of this image widget as RGBA components.
@@ -6175,9 +7744,21 @@ Sets the tint color of this image widget as RGBA components.
 function LImageWidget:setTint(r, g, b, a) end
 ```
 
+#### Description
+
+Sets the tint color of this image widget as RGBA components.
+
+Parameters:
+
+- `self` (`LImageWidget`, required): The widget instance.
+- `r` (`number`, required): Red (0.0 to 1.0).
+- `g` (`number`, required): Green (0.0 to 1.0).
+- `b` (`number`, required): Blue (0.0 to 1.0).
+- `a` (`number`, optional): Alpha (0.0 to 1.0), defaults to 1.0.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -6191,17 +7772,7 @@ end
 
 ### LLabel:getText
 
-`LLabel:getText(self: LLabel) -> string`
-
-Returns the current display text of this label.
-
-**Parameters**
-
-- `self` (`LLabel`, required): The widget instance.
-
-**Returns**: `string` - The label text.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current display text of this label.
@@ -6209,9 +7780,19 @@ Returns the current display text of this label.
 function LLabel:getText() end
 ```
 
+#### Description
+
+Returns the current display text of this label.
+
+Parameters:
+
+- `self` (`LLabel`, required): The widget instance.
+
+Returns: `string` - The label text.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -6225,16 +7806,7 @@ end
 
 ### LLabel:setText
 
-`LLabel:setText(self: LLabel, text: string)`
-
-Sets the display text on this label.
-
-**Parameters**
-
-- `self` (`LLabel`, required): The widget instance.
-- `text` (`string`, required): The label text.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the display text on this label.
@@ -6242,9 +7814,18 @@ Sets the display text on this label.
 function LLabel:setText(text) end
 ```
 
+#### Description
+
+Sets the display text on this label.
+
+Parameters:
+
+- `self` (`LLabel`, required): The widget instance.
+- `text` (`string`, required): The label text.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -6258,17 +7839,7 @@ end
 
 ### LLayout:getAlign
 
-`LLayout:getAlign(self: LLayout) -> string`
-
-Returns the current cross-axis alignment mode.
-
-**Parameters**
-
-- `self` (`LLayout`, required): The widget instance.
-
-**Returns**: `string` - The alignment mode.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current cross-axis alignment mode.
@@ -6276,9 +7847,19 @@ Returns the current cross-axis alignment mode.
 function LLayout:getAlign() end
 ```
 
+#### Description
+
+Returns the current cross-axis alignment mode.
+
+Parameters:
+
+- `self` (`LLayout`, required): The widget instance.
+
+Returns: `string` - The alignment mode.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -6292,17 +7873,7 @@ end
 
 ### LLayout:getDirection
 
-`LLayout:getDirection(self: LLayout) -> string`
-
-Returns the current layout direction.
-
-**Parameters**
-
-- `self` (`LLayout`, required): The widget instance.
-
-**Returns**: `string` - The direction name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current layout direction.
@@ -6310,9 +7881,19 @@ Returns the current layout direction.
 function LLayout:getDirection() end
 ```
 
+#### Description
+
+Returns the current layout direction.
+
+Parameters:
+
+- `self` (`LLayout`, required): The widget instance.
+
+Returns: `string` - The direction name.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -6326,17 +7907,7 @@ end
 
 ### LLayout:getJustify
 
-`LLayout:getJustify(self: LLayout) -> string`
-
-Returns the current main-axis justification mode.
-
-**Parameters**
-
-- `self` (`LLayout`, required): The widget instance.
-
-**Returns**: `string` - The justification mode.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current main-axis justification mode.
@@ -6344,9 +7915,19 @@ Returns the current main-axis justification mode.
 function LLayout:getJustify() end
 ```
 
+#### Description
+
+Returns the current main-axis justification mode.
+
+Parameters:
+
+- `self` (`LLayout`, required): The widget instance.
+
+Returns: `string` - The justification mode.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -6360,17 +7941,7 @@ end
 
 ### LLayout:getSpacing
 
-`LLayout:getSpacing(self: LLayout) -> number`
-
-Returns the current spacing between children.
-
-**Parameters**
-
-- `self` (`LLayout`, required): The widget instance.
-
-**Returns**: `number` - The spacing in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current spacing between children.
@@ -6378,9 +7949,19 @@ Returns the current spacing between children.
 function LLayout:getSpacing() end
 ```
 
+#### Description
+
+Returns the current spacing between children.
+
+Parameters:
+
+- `self` (`LLayout`, required): The widget instance.
+
+Returns: `number` - The spacing in pixels.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -6394,17 +7975,7 @@ end
 
 ### LLayout:getWrap
 
-`LLayout:getWrap(self: LLayout) -> boolean`
-
-Returns whether wrapping is enabled for this layout.
-
-**Parameters**
-
-- `self` (`LLayout`, required): The widget instance.
-
-**Returns**: `boolean` - True if wrapping is on.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether wrapping is enabled for this layout.
@@ -6412,9 +7983,19 @@ Returns whether wrapping is enabled for this layout.
 function LLayout:getWrap() end
 ```
 
+#### Description
+
+Returns whether wrapping is enabled for this layout.
+
+Parameters:
+
+- `self` (`LLayout`, required): The widget instance.
+
+Returns: `boolean` - True if wrapping is on.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -6428,16 +8009,7 @@ end
 
 ### LLayout:setAlign
 
-`LLayout:setAlign(self: LLayout, align: string)`
-
-Sets the cross-axis alignment for children (e.g. "start", "center", "end", "stretch").
-
-**Parameters**
-
-- `self` (`LLayout`, required): The widget instance.
-- `align` (`string`, required): The alignment mode.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the cross-axis alignment for children (e.g. "start", "center", "end", "stretch").
@@ -6445,9 +8017,18 @@ Sets the cross-axis alignment for children (e.g. "start", "center", "end", "stre
 function LLayout:setAlign(align) end
 ```
 
+#### Description
+
+Sets the cross-axis alignment for children (e.g. "start", "center", "end", "stretch").
+
+Parameters:
+
+- `self` (`LLayout`, required): The widget instance.
+- `align` (`string`, required): The alignment mode.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -6461,16 +8042,7 @@ end
 
 ### LLayout:setColumns
 
-`LLayout:setColumns(self: LLayout, n: integer)`
-
-Sets the number of columns for grid layout mode (minimum 1).
-
-**Parameters**
-
-- `self` (`LLayout`, required): The widget instance.
-- `n` (`integer`, required): Column count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the number of columns for grid layout mode (minimum 1).
@@ -6478,9 +8050,18 @@ Sets the number of columns for grid layout mode (minimum 1).
 function LLayout:setColumns(n) end
 ```
 
+#### Description
+
+Sets the number of columns for grid layout mode (minimum 1).
+
+Parameters:
+
+- `self` (`LLayout`, required): The widget instance.
+- `n` (`integer`, required): Column count.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -6494,16 +8075,7 @@ end
 
 ### LLayout:setDirection
 
-`LLayout:setDirection(self: LLayout, dir: string)`
-
-Sets the layout direction for child arrangement ("horizontal", "vertical", or "grid").
-
-**Parameters**
-
-- `self` (`LLayout`, required): The widget instance.
-- `dir` (`string`, required): The layout direction.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the layout direction for child arrangement ("horizontal", "vertical", or "grid").
@@ -6511,9 +8083,18 @@ Sets the layout direction for child arrangement ("horizontal", "vertical", or "g
 function LLayout:setDirection(dir) end
 ```
 
+#### Description
+
+Sets the layout direction for child arrangement ("horizontal", "vertical", or "grid").
+
+Parameters:
+
+- `self` (`LLayout`, required): The widget instance.
+- `dir` (`string`, required): The layout direction.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -6527,16 +8108,7 @@ end
 
 ### LLayout:setJustify
 
-`LLayout:setJustify(self: LLayout, justify: string)`
-
-Sets the main-axis justification for children (e.g. "start", "center", "end", "space-between").
-
-**Parameters**
-
-- `self` (`LLayout`, required): The widget instance.
-- `justify` (`string`, required): The justification mode.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the main-axis justification for children (e.g. "start", "center", "end", "space-between").
@@ -6544,9 +8116,18 @@ Sets the main-axis justification for children (e.g. "start", "center", "end", "s
 function LLayout:setJustify(justify) end
 ```
 
+#### Description
+
+Sets the main-axis justification for children (e.g. "start", "center", "end", "space-between").
+
+Parameters:
+
+- `self` (`LLayout`, required): The widget instance.
+- `justify` (`string`, required): The justification mode.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -6560,16 +8141,7 @@ end
 
 ### LLayout:setSpacing
 
-`LLayout:setSpacing(self: LLayout, spacing: number)`
-
-Sets the spacing in pixels between child widgets in this layout.
-
-**Parameters**
-
-- `self` (`LLayout`, required): The widget instance.
-- `spacing` (`number`, required): Gap between children in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the spacing in pixels between child widgets in this layout.
@@ -6577,9 +8149,18 @@ Sets the spacing in pixels between child widgets in this layout.
 function LLayout:setSpacing(spacing) end
 ```
 
+#### Description
+
+Sets the spacing in pixels between child widgets in this layout.
+
+Parameters:
+
+- `self` (`LLayout`, required): The widget instance.
+- `spacing` (`number`, required): Gap between children in pixels.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -6593,16 +8174,7 @@ end
 
 ### LLayout:setWrap
 
-`LLayout:setWrap(self: LLayout, wrap: boolean)`
-
-Enables or disables wrapping of children to the next row/column when they overflow.
-
-**Parameters**
-
-- `self` (`LLayout`, required): The widget instance.
-- `wrap` (`boolean`, required): True to enable wrapping.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Enables or disables wrapping of children to the next row/column when they overflow.
@@ -6610,9 +8182,18 @@ Enables or disables wrapping of children to the next row/column when they overfl
 function LLayout:setWrap(wrap) end
 ```
 
+#### Description
+
+Enables or disables wrapping of children to the next row/column when they overflow.
+
+Parameters:
+
+- `self` (`LLayout`, required): The widget instance.
+- `wrap` (`boolean`, required): True to enable wrapping.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -6626,19 +8207,7 @@ end
 
 ### LLineChart:addSeries
 
-`LLineChart:addSeries(name: string, pts_tbl: table, r: number, g: number, b: number)`
-
-Adds a named series of points to this line chart.
-
-**Parameters**
-
-- `name` (`string`, required): The series name.
-- `pts_tbl` (`table`, required): Array of `{x, y}` point tables.
-- `r` (`number`, required): Red color component.
-- `g` (`number`, required): Green color component.
-- `b` (`number`, required): Blue color component.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a named series of points to this line chart.
@@ -6650,9 +8219,21 @@ Adds a named series of points to this line chart.
 function LLineChart:addSeries(name, pts_tbl, r, g, b) end
 ```
 
+#### Description
+
+Adds a named series of points to this line chart.
+
+Parameters:
+
+- `name` (`string`, required): The series name.
+- `pts_tbl` (`table`, required): Array of `{x, y}` point tables.
+- `r` (`number`, required): Red color component.
+- `g` (`number`, required): Green color component.
+- `b` (`number`, required): Blue color component.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -6666,15 +8247,7 @@ end
 
 ### LLineChart:drawToImage
 
-`LLineChart:drawToImage(target: LImageData)`
-
-Renders this line chart to an image buffer.
-
-**Parameters**
-
-- `target` (`LImageData`, required): The image to draw into.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Renders this line chart to an image buffer.
@@ -6682,9 +8255,17 @@ Renders this line chart to an image buffer.
 function LLineChart:drawToImage(target) end
 ```
 
+#### Description
+
+Renders this line chart to an image buffer.
+
+Parameters:
+
+- `target` (`LImageData`, required): The image to draw into.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -6698,15 +8279,7 @@ end
 
 ### LLineChart:setXMax
 
-`LLineChart:setXMax(v: number)`
-
-Sets the maximum X-axis value for this line chart.
-
-**Parameters**
-
-- `v` (`number`, required): The X-axis maximum.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the maximum X-axis value for this line chart.
@@ -6714,9 +8287,17 @@ Sets the maximum X-axis value for this line chart.
 function LLineChart:setXMax(v) end
 ```
 
+#### Description
+
+Sets the maximum X-axis value for this line chart.
+
+Parameters:
+
+- `v` (`number`, required): The X-axis maximum.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -6730,15 +8311,7 @@ end
 
 ### LLineChart:setYMax
 
-`LLineChart:setYMax(v: number)`
-
-Sets the maximum Y-axis value for this line chart.
-
-**Parameters**
-
-- `v` (`number`, required): The Y-axis maximum.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the maximum Y-axis value for this line chart.
@@ -6746,9 +8319,17 @@ Sets the maximum Y-axis value for this line chart.
 function LLineChart:setYMax(v) end
 ```
 
+#### Description
+
+Sets the maximum Y-axis value for this line chart.
+
+Parameters:
+
+- `v` (`number`, required): The Y-axis maximum.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -6762,13 +8343,7 @@ end
 
 ### LLineChart:type
 
-`LLineChart:type() -> string`
-
-Returns the type name of this object.
-
-**Returns**: `string` - Always "LLineChart".
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this object.
@@ -6776,9 +8351,15 @@ Returns the type name of this object.
 function LLineChart:type() end
 ```
 
+#### Description
+
+Returns the type name of this object.
+
+Returns: `string` - Always "LLineChart".
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -6792,17 +8373,7 @@ end
 
 ### LLineChart:typeOf
 
-`LLineChart:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to check.
-
-**Returns**: `boolean` - True if the name matches this userdata type.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this object matches the given type name.
@@ -6811,9 +8382,19 @@ Checks whether this object matches the given type name.
 function LLineChart:typeOf(name) end
 ```
 
+#### Description
+
+Checks whether this object matches the given type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to check.
+
+Returns: `boolean` - True if the name matches this userdata type.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -6826,16 +8407,7 @@ end
 
 ### LListBox:addItem
 
-`LListBox:addItem(self: LListBox, text: string)`
-
-Appends a new text item to this list box.
-
-**Parameters**
-
-- `self` (`LListBox`, required): The widget instance.
-- `text` (`string`, required): The item text to add.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Appends a new text item to this list box.
@@ -6843,9 +8415,18 @@ Appends a new text item to this list box.
 function LListBox:addItem(text) end
 ```
 
+#### Description
+
+Appends a new text item to this list box.
+
+Parameters:
+
+- `self` (`LListBox`, required): The widget instance.
+- `text` (`string`, required): The item text to add.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -6859,24 +8440,24 @@ end
 
 ### LListBox:clearItems
 
-`LListBox:clearItems(self: LListBox)`
-
-Removes all items from this list box.
-
-**Parameters**
-
-- `self` (`LListBox`, required): The widget instance.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes all items from this list box.
 function LListBox:clearItems() end
 ```
 
+#### Description
+
+Removes all items from this list box.
+
+Parameters:
+
+- `self` (`LListBox`, required): The widget instance.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -6890,18 +8471,7 @@ end
 
 ### LListBox:getItem
 
-`LListBox:getItem(self: LListBox, index: integer) -> string`
-
-Returns the text of the item at the given 1-based index.
-
-**Parameters**
-
-- `self` (`LListBox`, required): The widget instance.
-- `index` (`integer`, required): The 1-based item index.
-
-**Returns**: `string` - The item text, or empty string if out of range.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the text of the item at the given 1-based index.
@@ -6910,9 +8480,20 @@ Returns the text of the item at the given 1-based index.
 function LListBox:getItem(index) end
 ```
 
+#### Description
+
+Returns the text of the item at the given 1-based index.
+
+Parameters:
+
+- `self` (`LListBox`, required): The widget instance.
+- `index` (`integer`, required): The 1-based item index.
+
+Returns: `string` - The item text, or empty string if out of range.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -6926,17 +8507,7 @@ end
 
 ### LListBox:getItemCount
 
-`LListBox:getItemCount(self: LListBox) -> integer`
-
-Returns the number of items in this list box.
-
-**Parameters**
-
-- `self` (`LListBox`, required): The widget instance.
-
-**Returns**: `integer` - The item count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of items in this list box.
@@ -6944,9 +8515,19 @@ Returns the number of items in this list box.
 function LListBox:getItemCount() end
 ```
 
+#### Description
+
+Returns the number of items in this list box.
+
+Parameters:
+
+- `self` (`LListBox`, required): The widget instance.
+
+Returns: `integer` - The item count.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -6960,17 +8541,7 @@ end
 
 ### LListBox:getSelectedIndex
 
-`LListBox:getSelectedIndex(self: LListBox) -> integer`
-
-Returns the 1-based index of the currently selected item, or 0 if none.
-
-**Parameters**
-
-- `self` (`LListBox`, required): The widget instance.
-
-**Returns**: `integer` - The selected index.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the 1-based index of the currently selected item, or 0 if none.
@@ -6978,9 +8549,19 @@ Returns the 1-based index of the currently selected item, or 0 if none.
 function LListBox:getSelectedIndex() end
 ```
 
+#### Description
+
+Returns the 1-based index of the currently selected item, or 0 if none.
+
+Parameters:
+
+- `self` (`LListBox`, required): The widget instance.
+
+Returns: `integer` - The selected index.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -6994,16 +8575,7 @@ end
 
 ### LListBox:removeItem
 
-`LListBox:removeItem(self: LListBox, index: integer)`
-
-Removes the item at the given 1-based index from this list box.
-
-**Parameters**
-
-- `self` (`LListBox`, required): The widget instance.
-- `index` (`integer`, required): The 1-based index to remove.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes the item at the given 1-based index from this list box.
@@ -7011,9 +8583,18 @@ Removes the item at the given 1-based index from this list box.
 function LListBox:removeItem(index) end
 ```
 
+#### Description
+
+Removes the item at the given 1-based index from this list box.
+
+Parameters:
+
+- `self` (`LListBox`, required): The widget instance.
+- `index` (`integer`, required): The 1-based index to remove.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -7027,16 +8608,7 @@ end
 
 ### LListBox:setItemHeight
 
-`LListBox:setItemHeight(self: LListBox, h: number)`
-
-Sets the pixel height of each item row in this list box.
-
-**Parameters**
-
-- `self` (`LListBox`, required): The widget instance.
-- `h` (`number`, required): Row height in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the pixel height of each item row in this list box.
@@ -7044,9 +8616,18 @@ Sets the pixel height of each item row in this list box.
 function LListBox:setItemHeight(h) end
 ```
 
+#### Description
+
+Sets the pixel height of each item row in this list box.
+
+Parameters:
+
+- `self` (`LListBox`, required): The widget instance.
+- `h` (`number`, required): Row height in pixels.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -7060,16 +8641,7 @@ end
 
 ### LListBox:setSelectedIndex
 
-`LListBox:setSelectedIndex(self: LListBox, index: integer)`
-
-Sets the selected item by 1-based index.
-
-**Parameters**
-
-- `self` (`LListBox`, required): The widget instance.
-- `index` (`integer`, required): The 1-based index of the item to select.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the selected item by 1-based index.
@@ -7077,9 +8649,18 @@ Sets the selected item by 1-based index.
 function LListBox:setSelectedIndex(index) end
 ```
 
+#### Description
+
+Sets the selected item by 1-based index.
+
+Parameters:
+
+- `self` (`LListBox`, required): The widget instance.
+- `index` (`integer`, required): The 1-based index of the item to select.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -7093,16 +8674,7 @@ end
 
 ### LMenuBar:addMenu
 
-`LMenuBar:addMenu(self: LMenuBar, menu_idx: integer)`
-
-Adds a menu (by its widget index) to this menu bar.
-
-**Parameters**
-
-- `self` (`LMenuBar`, required): The widget instance.
-- `menu_idx` (`integer`, required): The widget index of the menu to add.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a menu (by its widget index) to this menu bar.
@@ -7110,9 +8682,18 @@ Adds a menu (by its widget index) to this menu bar.
 function LMenuBar:addMenu(menu_idx) end
 ```
 
+#### Description
+
+Adds a menu (by its widget index) to this menu bar.
+
+Parameters:
+
+- `self` (`LMenuBar`, required): The widget instance.
+- `menu_idx` (`integer`, required): The widget index of the menu to add.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -7126,17 +8707,7 @@ end
 
 ### LMenuBar:getMenuCount
 
-`LMenuBar:getMenuCount(self: LMenuBar) -> integer`
-
-Returns the number of menus in this menu bar.
-
-**Parameters**
-
-- `self` (`LMenuBar`, required): The widget instance.
-
-**Returns**: `integer` - The menu count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of menus in this menu bar.
@@ -7144,9 +8715,19 @@ Returns the number of menus in this menu bar.
 function LMenuBar:getMenuCount() end
 ```
 
+#### Description
+
+Returns the number of menus in this menu bar.
+
+Parameters:
+
+- `self` (`LMenuBar`, required): The widget instance.
+
+Returns: `integer` - The menu count.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -7160,17 +8741,7 @@ end
 
 ### LMenuBar:getMenus
 
-`LMenuBar:getMenus(self: LMenuBar) -> integer[]`
-
-Returns a table of widget indices for all menus in this menu bar.
-
-**Parameters**
-
-- `self` (`LMenuBar`, required): The widget instance.
-
-**Returns**: `integer[]` - Menu widget indices.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a table of widget indices for all menus in this menu bar.
@@ -7178,9 +8749,19 @@ Returns a table of widget indices for all menus in this menu bar.
 function LMenuBar:getMenus() end
 ```
 
+#### Description
+
+Returns a table of widget indices for all menus in this menu bar.
+
+Parameters:
+
+- `self` (`LMenuBar`, required): The widget instance.
+
+Returns: `integer[]` - Menu widget indices.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -7194,18 +8775,7 @@ end
 
 ### LMenuBar:removeMenu
 
-`LMenuBar:removeMenu(self: LMenuBar, menu_idx: integer) -> boolean`
-
-Removes a menu from this menu bar by its widget index.
-
-**Parameters**
-
-- `self` (`LMenuBar`, required): The widget instance.
-- `menu_idx` (`integer`, required): The widget index of the menu to remove.
-
-**Returns**: `boolean` - True if the menu was found and removed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes a menu from this menu bar by its widget index.
@@ -7214,9 +8784,20 @@ Removes a menu from this menu bar by its widget index.
 function LMenuBar:removeMenu(menu_idx) end
 ```
 
+#### Description
+
+Removes a menu from this menu bar by its widget index.
+
+Parameters:
+
+- `self` (`LMenuBar`, required): The widget instance.
+- `menu_idx` (`integer`, required): The widget index of the menu to remove.
+
+Returns: `boolean` - True if the menu was found and removed.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -7230,16 +8811,7 @@ end
 
 ### LMenuItem:addSubItem
 
-`LMenuItem:addSubItem(self: LMenuItem, child_idx: integer)`
-
-Adds a sub-item to this menu item for building nested menus.
-
-**Parameters**
-
-- `self` (`LMenuItem`, required): The widget instance.
-- `child_idx` (`integer`, required): The widget index of the sub-item to add.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a sub-item to this menu item for building nested menus.
@@ -7247,9 +8819,18 @@ Adds a sub-item to this menu item for building nested menus.
 function LMenuItem:addSubItem(child_idx) end
 ```
 
+#### Description
+
+Adds a sub-item to this menu item for building nested menus.
+
+Parameters:
+
+- `self` (`LMenuItem`, required): The widget instance.
+- `child_idx` (`integer`, required): The widget index of the sub-item to add.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -7263,17 +8844,7 @@ end
 
 ### LMenuItem:getShortcut
 
-`LMenuItem:getShortcut(self: LMenuItem) -> string`
-
-Returns the keyboard shortcut string associated with this menu item.
-
-**Parameters**
-
-- `self` (`LMenuItem`, required): The widget instance.
-
-**Returns**: `string` - The shortcut text.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the keyboard shortcut string associated with this menu item.
@@ -7281,9 +8852,19 @@ Returns the keyboard shortcut string associated with this menu item.
 function LMenuItem:getShortcut() end
 ```
 
+#### Description
+
+Returns the keyboard shortcut string associated with this menu item.
+
+Parameters:
+
+- `self` (`LMenuItem`, required): The widget instance.
+
+Returns: `string` - The shortcut text.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -7297,17 +8878,7 @@ end
 
 ### LMenuItem:getSubItems
 
-`LMenuItem:getSubItems(self: LMenuItem) -> integer[]`
-
-Returns a table of widget indices for all sub-items of this menu item.
-
-**Parameters**
-
-- `self` (`LMenuItem`, required): The widget instance.
-
-**Returns**: `integer[]` - Sub-item widget indices.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a table of widget indices for all sub-items of this menu item.
@@ -7315,9 +8886,19 @@ Returns a table of widget indices for all sub-items of this menu item.
 function LMenuItem:getSubItems() end
 ```
 
+#### Description
+
+Returns a table of widget indices for all sub-items of this menu item.
+
+Parameters:
+
+- `self` (`LMenuItem`, required): The widget instance.
+
+Returns: `integer[]` - Sub-item widget indices.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -7331,17 +8912,7 @@ end
 
 ### LMenuItem:getText
 
-`LMenuItem:getText(self: LMenuItem) -> string`
-
-Returns the display text of this menu item.
-
-**Parameters**
-
-- `self` (`LMenuItem`, required): The widget instance.
-
-**Returns**: `string` - The menu item text.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the display text of this menu item.
@@ -7349,9 +8920,19 @@ Returns the display text of this menu item.
 function LMenuItem:getText() end
 ```
 
+#### Description
+
+Returns the display text of this menu item.
+
+Parameters:
+
+- `self` (`LMenuItem`, required): The widget instance.
+
+Returns: `string` - The menu item text.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -7365,17 +8946,7 @@ end
 
 ### LMenuItem:isChecked
 
-`LMenuItem:isChecked(self: LMenuItem) -> boolean`
-
-Returns whether this menu item is checked (for checkable menu items).
-
-**Parameters**
-
-- `self` (`LMenuItem`, required): The widget instance.
-
-**Returns**: `boolean` - True if checked.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this menu item is checked (for checkable menu items).
@@ -7383,9 +8954,19 @@ Returns whether this menu item is checked (for checkable menu items).
 function LMenuItem:isChecked() end
 ```
 
+#### Description
+
+Returns whether this menu item is checked (for checkable menu items).
+
+Parameters:
+
+- `self` (`LMenuItem`, required): The widget instance.
+
+Returns: `boolean` - True if checked.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -7399,16 +8980,7 @@ end
 
 ### LMenuItem:setChecked
 
-`LMenuItem:setChecked(self: LMenuItem, v: boolean)`
-
-Sets the checked state of this menu item.
-
-**Parameters**
-
-- `self` (`LMenuItem`, required): The widget instance.
-- `v` (`boolean`, required): True to check.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the checked state of this menu item.
@@ -7416,9 +8988,18 @@ Sets the checked state of this menu item.
 function LMenuItem:setChecked(v) end
 ```
 
+#### Description
+
+Sets the checked state of this menu item.
+
+Parameters:
+
+- `self` (`LMenuItem`, required): The widget instance.
+- `v` (`boolean`, required): True to check.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -7432,16 +9013,7 @@ end
 
 ### LMenuItem:setOnClick
 
-`LMenuItem:setOnClick(self: LMenuItem, f: function)`
-
-Registers a callback invoked when this menu item is clicked.
-
-**Parameters**
-
-- `self` (`LMenuItem`, required): The widget instance.
-- `f` (`function`, required): Callback receiving the widget index.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Registers a callback invoked when this menu item is clicked.
@@ -7449,9 +9021,18 @@ Registers a callback invoked when this menu item is clicked.
 function LMenuItem:setOnClick(f) end
 ```
 
+#### Description
+
+Registers a callback invoked when this menu item is clicked.
+
+Parameters:
+
+- `self` (`LMenuItem`, required): The widget instance.
+- `f` (`function`, required): Callback receiving the widget index.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -7465,16 +9046,7 @@ end
 
 ### LMenuItem:setShortcut
 
-`LMenuItem:setShortcut(self: LMenuItem, shortcut: string)`
-
-Sets the keyboard shortcut text displayed next to this menu item.
-
-**Parameters**
-
-- `self` (`LMenuItem`, required): The widget instance.
-- `shortcut` (`string`, required): The shortcut text (e.g. "Ctrl+S").
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the keyboard shortcut text displayed next to this menu item.
@@ -7482,9 +9054,18 @@ Sets the keyboard shortcut text displayed next to this menu item.
 function LMenuItem:setShortcut(shortcut) end
 ```
 
+#### Description
+
+Sets the keyboard shortcut text displayed next to this menu item.
+
+Parameters:
+
+- `self` (`LMenuItem`, required): The widget instance.
+- `shortcut` (`string`, required): The shortcut text (e.g. "Ctrl+S").
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -7498,16 +9079,7 @@ end
 
 ### LMenuItem:setText
 
-`LMenuItem:setText(self: LMenuItem, text: string)`
-
-Sets the display text of this menu item.
-
-**Parameters**
-
-- `self` (`LMenuItem`, required): The widget instance.
-- `text` (`string`, required): The menu item text.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the display text of this menu item.
@@ -7515,9 +9087,18 @@ Sets the display text of this menu item.
 function LMenuItem:setText(text) end
 ```
 
+#### Description
+
+Sets the display text of this menu item.
+
+Parameters:
+
+- `self` (`LMenuItem`, required): The widget instance.
+- `text` (`string`, required): The menu item text.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -7531,17 +9112,7 @@ end
 
 ### LNinePatch:getImageDimensions
 
-`LNinePatch:getImageDimensions(self: LNinePatch) -> integer, integer`
-
-Returns the original image dimensions of this nine-patch.
-
-**Parameters**
-
-- `self` (`LNinePatch`, required): The widget instance.
-
-**Returns**: `integer, integer` - Image width and height.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the original image dimensions of this nine-patch.
@@ -7550,9 +9121,19 @@ Returns the original image dimensions of this nine-patch.
 function LNinePatch:getImageDimensions() end
 ```
 
+#### Description
+
+Returns the original image dimensions of this nine-patch.
+
+Parameters:
+
+- `self` (`LNinePatch`, required): The widget instance.
+
+Returns: `integer, integer` - Image width and height.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -7566,17 +9147,7 @@ end
 
 ### LNinePatch:getInsets
 
-`LNinePatch:getInsets(self: LNinePatch) -> integer, integer, integer, integer`
-
-Returns the border insets of this nine-patch.
-
-**Parameters**
-
-- `self` (`LNinePatch`, required): The widget instance.
-
-**Returns**: `integer, integer, integer, integer` - Left, top, right, and bottom insets.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the border insets of this nine-patch.
@@ -7587,9 +9158,19 @@ Returns the border insets of this nine-patch.
 function LNinePatch:getInsets() end
 ```
 
+#### Description
+
+Returns the border insets of this nine-patch.
+
+Parameters:
+
+- `self` (`LNinePatch`, required): The widget instance.
+
+Returns: `integer, integer, integer, integer` - Left, top, right, and bottom insets.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -7603,17 +9184,7 @@ end
 
 ### LNinePatch:getSlices
 
-`LNinePatch:getSlices(self: LNinePatch) -> table`
-
-Returns the computed nine-patch slices as a table of source/dest rectangles for rendering.
-
-**Parameters**
-
-- `self` (`LNinePatch`, required): The widget instance.
-
-**Returns**: `table` - Array of slice tables with sx, sy, sw, sh, dx, dy, dw, dh fields, or nil.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the computed nine-patch slices as a table of source/dest rectangles for rendering.
@@ -7621,9 +9192,19 @@ Returns the computed nine-patch slices as a table of source/dest rectangles for 
 function LNinePatch:getSlices() end
 ```
 
+#### Description
+
+Returns the computed nine-patch slices as a table of source/dest rectangles for rendering.
+
+Parameters:
+
+- `self` (`LNinePatch`, required): The widget instance.
+
+Returns: `table` - Array of slice tables with sx, sy, sw, sh, dx, dy, dw, dh fields, or nil.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -7637,17 +9218,7 @@ end
 
 ### LNinePatch:setImageDimensions
 
-`LNinePatch:setImageDimensions(self: LNinePatch, w: integer, h: integer)`
-
-Sets the original image dimensions used for nine-patch slice calculations.
-
-**Parameters**
-
-- `self` (`LNinePatch`, required): The widget instance.
-- `w` (`integer`, required): Image width in pixels.
-- `h` (`integer`, required): Image height in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the original image dimensions used for nine-patch slice calculations.
@@ -7656,9 +9227,19 @@ Sets the original image dimensions used for nine-patch slice calculations.
 function LNinePatch:setImageDimensions(w, h) end
 ```
 
+#### Description
+
+Sets the original image dimensions used for nine-patch slice calculations.
+
+Parameters:
+
+- `self` (`LNinePatch`, required): The widget instance.
+- `w` (`integer`, required): Image width in pixels.
+- `h` (`integer`, required): Image height in pixels.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -7672,19 +9253,7 @@ end
 
 ### LNinePatch:setInsets
 
-`LNinePatch:setInsets(self: LNinePatch, left: integer, top: integer, right: integer, bottom: integer)`
-
-Sets the border insets defining the stretchable center region of the nine-patch image.
-
-**Parameters**
-
-- `self` (`LNinePatch`, required): The widget instance.
-- `left` (`integer`, required): Left inset in pixels.
-- `top` (`integer`, required): Top inset in pixels.
-- `right` (`integer`, required): Right inset in pixels.
-- `bottom` (`integer`, required): Bottom inset in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the border insets defining the stretchable center region of the nine-patch image.
@@ -7695,9 +9264,21 @@ Sets the border insets defining the stretchable center region of the nine-patch 
 function LNinePatch:setInsets(left, top, right, bottom) end
 ```
 
+#### Description
+
+Sets the border insets defining the stretchable center region of the nine-patch image.
+
+Parameters:
+
+- `self` (`LNinePatch`, required): The widget instance.
+- `left` (`integer`, required): Left inset in pixels.
+- `top` (`integer`, required): Top inset in pixels.
+- `right` (`integer`, required): Right inset in pixels.
+- `bottom` (`integer`, required): Bottom inset in pixels.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -7711,17 +9292,7 @@ end
 
 ### LPanel:getTitle
 
-`LPanel:getTitle(self: LPanel) -> string`
-
-Returns the title text of this panel.
-
-**Parameters**
-
-- `self` (`LPanel`, required): The widget instance.
-
-**Returns**: `string` - The panel title.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the title text of this panel.
@@ -7729,9 +9300,19 @@ Returns the title text of this panel.
 function LPanel:getTitle() end
 ```
 
+#### Description
+
+Returns the title text of this panel.
+
+Parameters:
+
+- `self` (`LPanel`, required): The widget instance.
+
+Returns: `string` - The panel title.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -7745,16 +9326,7 @@ end
 
 ### LPanel:setScrollable
 
-`LPanel:setScrollable(self: LPanel, scrollable: boolean)`
-
-Enables or disables scrolling within this panel.
-
-**Parameters**
-
-- `self` (`LPanel`, required): The widget instance.
-- `scrollable` (`boolean`, required): True to enable scrolling.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Enables or disables scrolling within this panel.
@@ -7762,9 +9334,18 @@ Enables or disables scrolling within this panel.
 function LPanel:setScrollable(scrollable) end
 ```
 
+#### Description
+
+Enables or disables scrolling within this panel.
+
+Parameters:
+
+- `self` (`LPanel`, required): The widget instance.
+- `scrollable` (`boolean`, required): True to enable scrolling.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -7778,16 +9359,7 @@ end
 
 ### LPanel:setTitle
 
-`LPanel:setTitle(self: LPanel, title: string)`
-
-Sets the title text displayed on this panel's header.
-
-**Parameters**
-
-- `self` (`LPanel`, required): The widget instance.
-- `title` (`string`, required): The panel title.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the title text displayed on this panel's header.
@@ -7795,9 +9367,18 @@ Sets the title text displayed on this panel's header.
 function LPanel:setTitle(title) end
 ```
 
+#### Description
+
+Sets the title text displayed on this panel's header.
+
+Parameters:
+
+- `self` (`LPanel`, required): The widget instance.
+- `title` (`string`, required): The panel title.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -7811,19 +9392,7 @@ end
 
 ### LPieChart:addSegment
 
-`LPieChart:addSegment(label: string, value: number, r: number, g: number, b: number)`
-
-Adds a labeled segment to this pie chart widget.
-
-**Parameters**
-
-- `label` (`string`, required): The segment label.
-- `value` (`number`, required): The segment value.
-- `r` (`number`, required): Red color component.
-- `g` (`number`, required): Green color component.
-- `b` (`number`, required): Blue color component.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a labeled segment to this pie chart widget.
@@ -7835,9 +9404,21 @@ Adds a labeled segment to this pie chart widget.
 function LPieChart:addSegment(label, value, r, g, b) end
 ```
 
+#### Description
+
+Adds a labeled segment to this pie chart widget.
+
+Parameters:
+
+- `label` (`string`, required): The segment label.
+- `value` (`number`, required): The segment value.
+- `r` (`number`, required): Red color component.
+- `g` (`number`, required): Green color component.
+- `b` (`number`, required): Blue color component.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -7851,15 +9432,7 @@ end
 
 ### LPieChart:drawToImage
 
-`LPieChart:drawToImage(target: LImageData)`
-
-Renders this pie chart to an image buffer.
-
-**Parameters**
-
-- `target` (`LImageData`, required): The image to draw into.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Renders this pie chart to an image buffer.
@@ -7867,9 +9440,17 @@ Renders this pie chart to an image buffer.
 function LPieChart:drawToImage(target) end
 ```
 
+#### Description
+
+Renders this pie chart to an image buffer.
+
+Parameters:
+
+- `target` (`LImageData`, required): The image to draw into.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -7883,13 +9464,7 @@ end
 
 ### LPieChart:type
 
-`LPieChart:type() -> string`
-
-Returns the type name of this object.
-
-**Returns**: `string` - Always "LPieChart".
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this object.
@@ -7897,9 +9472,15 @@ Returns the type name of this object.
 function LPieChart:type() end
 ```
 
+#### Description
+
+Returns the type name of this object.
+
+Returns: `string` - Always "LPieChart".
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -7913,17 +9494,7 @@ end
 
 ### LPieChart:typeOf
 
-`LPieChart:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to check.
-
-**Returns**: `boolean` - True if the name matches this userdata type.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this object matches the given type name.
@@ -7932,9 +9503,19 @@ Checks whether this object matches the given type name.
 function LPieChart:typeOf(name) end
 ```
 
+#### Description
+
+Checks whether this object matches the given type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to check.
+
+Returns: `boolean` - True if the name matches this userdata type.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -7948,17 +9529,7 @@ end
 
 ### LProgressBar:getMax
 
-`LProgressBar:getMax(self: LProgressBar) -> number`
-
-Returns the maximum value of this progress bar's range.
-
-**Parameters**
-
-- `self` (`LProgressBar`, required): The widget instance.
-
-**Returns**: `number` - The maximum value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the maximum value of this progress bar's range.
@@ -7966,9 +9537,19 @@ Returns the maximum value of this progress bar's range.
 function LProgressBar:getMax() end
 ```
 
+#### Description
+
+Returns the maximum value of this progress bar's range.
+
+Parameters:
+
+- `self` (`LProgressBar`, required): The widget instance.
+
+Returns: `number` - The maximum value.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -7982,17 +9563,7 @@ end
 
 ### LProgressBar:getMin
 
-`LProgressBar:getMin(self: LProgressBar) -> number`
-
-Returns the minimum value of this progress bar's range.
-
-**Parameters**
-
-- `self` (`LProgressBar`, required): The widget instance.
-
-**Returns**: `number` - The minimum value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the minimum value of this progress bar's range.
@@ -8000,9 +9571,19 @@ Returns the minimum value of this progress bar's range.
 function LProgressBar:getMin() end
 ```
 
+#### Description
+
+Returns the minimum value of this progress bar's range.
+
+Parameters:
+
+- `self` (`LProgressBar`, required): The widget instance.
+
+Returns: `number` - The minimum value.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -8016,17 +9597,7 @@ end
 
 ### LProgressBar:getProgress
 
-`LProgressBar:getProgress(self: LProgressBar) -> number`
-
-Returns the normalized progress as a fraction (0.0 to 1.0) of the current range.
-
-**Parameters**
-
-- `self` (`LProgressBar`, required): The widget instance.
-
-**Returns**: `number` - The normalized progress.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the normalized progress as a fraction (0.0 to 1.0) of the current range.
@@ -8034,9 +9605,19 @@ Returns the normalized progress as a fraction (0.0 to 1.0) of the current range.
 function LProgressBar:getProgress() end
 ```
 
+#### Description
+
+Returns the normalized progress as a fraction (0.0 to 1.0) of the current range.
+
+Parameters:
+
+- `self` (`LProgressBar`, required): The widget instance.
+
+Returns: `number` - The normalized progress.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -8050,17 +9631,7 @@ end
 
 ### LProgressBar:getValue
 
-`LProgressBar:getValue(self: LProgressBar) -> number`
-
-Returns the current value of this progress bar.
-
-**Parameters**
-
-- `self` (`LProgressBar`, required): The widget instance.
-
-**Returns**: `number` - The progress value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current value of this progress bar.
@@ -8068,9 +9639,19 @@ Returns the current value of this progress bar.
 function LProgressBar:getValue() end
 ```
 
+#### Description
+
+Returns the current value of this progress bar.
+
+Parameters:
+
+- `self` (`LProgressBar`, required): The widget instance.
+
+Returns: `number` - The progress value.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -8084,17 +9665,7 @@ end
 
 ### LProgressBar:setRange
 
-`LProgressBar:setRange(self: LProgressBar, min: number, max: number)`
-
-Sets the minimum and maximum bounds for this progress bar.
-
-**Parameters**
-
-- `self` (`LProgressBar`, required): The widget instance.
-- `min` (`number`, required): Minimum value.
-- `max` (`number`, required): Maximum value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the minimum and maximum bounds for this progress bar.
@@ -8103,9 +9674,19 @@ Sets the minimum and maximum bounds for this progress bar.
 function LProgressBar:setRange(min, max) end
 ```
 
+#### Description
+
+Sets the minimum and maximum bounds for this progress bar.
+
+Parameters:
+
+- `self` (`LProgressBar`, required): The widget instance.
+- `min` (`number`, required): Minimum value.
+- `max` (`number`, required): Maximum value.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -8119,16 +9700,7 @@ end
 
 ### LProgressBar:setValue
 
-`LProgressBar:setValue(self: LProgressBar, v: number)`
-
-Sets the current fill value of this progress bar, clamped to its range.
-
-**Parameters**
-
-- `self` (`LProgressBar`, required): The widget instance.
-- `v` (`number`, required): The progress value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the current fill value of this progress bar, clamped to its range.
@@ -8136,9 +9708,18 @@ Sets the current fill value of this progress bar, clamped to its range.
 function LProgressBar:setValue(v) end
 ```
 
+#### Description
+
+Sets the current fill value of this progress bar, clamped to its range.
+
+Parameters:
+
+- `self` (`LProgressBar`, required): The widget instance.
+- `v` (`number`, required): The progress value.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -8152,17 +9733,7 @@ end
 
 ### LRadioButton:getGroup
 
-`LRadioButton:getGroup(self: LRadioButton) -> string`
-
-Returns the radio button group name. Buttons in the same group are mutually exclusive.
-
-**Parameters**
-
-- `self` (`LRadioButton`, required): The widget instance.
-
-**Returns**: `string` - The group name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the radio button group name. Buttons in the same group are mutually exclusive.
@@ -8170,9 +9741,19 @@ Returns the radio button group name. Buttons in the same group are mutually excl
 function LRadioButton:getGroup() end
 ```
 
+#### Description
+
+Returns the radio button group name. Buttons in the same group are mutually exclusive.
+
+Parameters:
+
+- `self` (`LRadioButton`, required): The widget instance.
+
+Returns: `string` - The group name.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -8186,17 +9767,7 @@ end
 
 ### LRadioButton:getText
 
-`LRadioButton:getText(self: LRadioButton) -> string`
-
-Returns the label text of this radio button.
-
-**Parameters**
-
-- `self` (`LRadioButton`, required): The widget instance.
-
-**Returns**: `string` - The radio button label.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the label text of this radio button.
@@ -8204,9 +9775,19 @@ Returns the label text of this radio button.
 function LRadioButton:getText() end
 ```
 
+#### Description
+
+Returns the label text of this radio button.
+
+Parameters:
+
+- `self` (`LRadioButton`, required): The widget instance.
+
+Returns: `string` - The radio button label.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -8220,17 +9801,7 @@ end
 
 ### LRadioButton:isSelected
 
-`LRadioButton:isSelected(self: LRadioButton) -> boolean`
-
-Returns whether this radio button is currently selected.
-
-**Parameters**
-
-- `self` (`LRadioButton`, required): The widget instance.
-
-**Returns**: `boolean` - True if selected.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this radio button is currently selected.
@@ -8238,9 +9809,19 @@ Returns whether this radio button is currently selected.
 function LRadioButton:isSelected() end
 ```
 
+#### Description
+
+Returns whether this radio button is currently selected.
+
+Parameters:
+
+- `self` (`LRadioButton`, required): The widget instance.
+
+Returns: `boolean` - True if selected.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -8254,16 +9835,7 @@ end
 
 ### LRadioButton:setGroup
 
-`LRadioButton:setGroup(self: LRadioButton, group: string)`
-
-Sets the radio button group name. Buttons in the same group are mutually exclusive.
-
-**Parameters**
-
-- `self` (`LRadioButton`, required): The widget instance.
-- `group` (`string`, required): The group name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the radio button group name. Buttons in the same group are mutually exclusive.
@@ -8271,9 +9843,18 @@ Sets the radio button group name. Buttons in the same group are mutually exclusi
 function LRadioButton:setGroup(group) end
 ```
 
+#### Description
+
+Sets the radio button group name. Buttons in the same group are mutually exclusive.
+
+Parameters:
+
+- `self` (`LRadioButton`, required): The widget instance.
+- `group` (`string`, required): The group name.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -8287,16 +9868,7 @@ end
 
 ### LRadioButton:setOnChange
 
-`LRadioButton:setOnChange(self: LRadioButton, f: function)`
-
-Registers a callback invoked when this radio button's selection changes.
-
-**Parameters**
-
-- `self` (`LRadioButton`, required): The widget instance.
-- `f` (`function`, required): Callback receiving the widget index.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Registers a callback invoked when this radio button's selection changes.
@@ -8304,9 +9876,18 @@ Registers a callback invoked when this radio button's selection changes.
 function LRadioButton:setOnChange(f) end
 ```
 
+#### Description
+
+Registers a callback invoked when this radio button's selection changes.
+
+Parameters:
+
+- `self` (`LRadioButton`, required): The widget instance.
+- `f` (`function`, required): Callback receiving the widget index.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -8320,16 +9901,7 @@ end
 
 ### LRadioButton:setSelected
 
-`LRadioButton:setSelected(self: LRadioButton, v: boolean)`
-
-Sets the selected state of this radio button.
-
-**Parameters**
-
-- `self` (`LRadioButton`, required): The widget instance.
-- `v` (`boolean`, required): True to select.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the selected state of this radio button.
@@ -8337,9 +9909,18 @@ Sets the selected state of this radio button.
 function LRadioButton:setSelected(v) end
 ```
 
+#### Description
+
+Sets the selected state of this radio button.
+
+Parameters:
+
+- `self` (`LRadioButton`, required): The widget instance.
+- `v` (`boolean`, required): True to select.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -8353,16 +9934,7 @@ end
 
 ### LRadioButton:setText
 
-`LRadioButton:setText(self: LRadioButton, text: string)`
-
-Sets the label text of this radio button.
-
-**Parameters**
-
-- `self` (`LRadioButton`, required): The widget instance.
-- `text` (`string`, required): The radio button label.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the label text of this radio button.
@@ -8370,9 +9942,18 @@ Sets the label text of this radio button.
 function LRadioButton:setText(text) end
 ```
 
+#### Description
+
+Sets the label text of this radio button.
+
+Parameters:
+
+- `self` (`LRadioButton`, required): The widget instance.
+- `text` (`string`, required): The radio button label.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -8384,19 +9965,7 @@ end
 
 ### LScatterPlot:addSeries
 
-`LScatterPlot:addSeries(name: string, pts_tbl: table, r: number, g: number, b: number)`
-
-Adds a data series to this scatter plot.
-
-**Parameters**
-
-- `name` (`string`, required): The series name.
-- `pts_tbl` (`table`, required): Array of {x, y} point tables.
-- `r` (`number`, required): Red color component.
-- `g` (`number`, required): Green color component.
-- `b` (`number`, required): Blue color component.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a data series to this scatter plot.
@@ -8408,9 +9977,21 @@ Adds a data series to this scatter plot.
 function LScatterPlot:addSeries(name, pts_tbl, r, g, b) end
 ```
 
+#### Description
+
+Adds a data series to this scatter plot.
+
+Parameters:
+
+- `name` (`string`, required): The series name.
+- `pts_tbl` (`table`, required): Array of {x, y} point tables.
+- `r` (`number`, required): Red color component.
+- `g` (`number`, required): Green color component.
+- `b` (`number`, required): Blue color component.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -8424,15 +10005,7 @@ end
 
 ### LScatterPlot:drawToImage
 
-`LScatterPlot:drawToImage(target: LImageData)`
-
-Renders this scatter plot to an image buffer.
-
-**Parameters**
-
-- `target` (`LImageData`, required): The image to draw into.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Renders this scatter plot to an image buffer.
@@ -8440,9 +10013,17 @@ Renders this scatter plot to an image buffer.
 function LScatterPlot:drawToImage(target) end
 ```
 
+#### Description
+
+Renders this scatter plot to an image buffer.
+
+Parameters:
+
+- `target` (`LImageData`, required): The image to draw into.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -8456,16 +10037,7 @@ end
 
 ### LScatterPlot:setXRange
 
-`LScatterPlot:setXRange(mn: number, mx: number)`
-
-Sets the X-axis range for this scatter plot.
-
-**Parameters**
-
-- `mn` (`number`, required): Minimum X value.
-- `mx` (`number`, required): Maximum X value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the X-axis range for this scatter plot.
@@ -8474,9 +10046,18 @@ Sets the X-axis range for this scatter plot.
 function LScatterPlot:setXRange(mn, mx) end
 ```
 
+#### Description
+
+Sets the X-axis range for this scatter plot.
+
+Parameters:
+
+- `mn` (`number`, required): Minimum X value.
+- `mx` (`number`, required): Maximum X value.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -8490,16 +10071,7 @@ end
 
 ### LScatterPlot:setYRange
 
-`LScatterPlot:setYRange(mn: number, mx: number)`
-
-Sets the Y-axis range for this scatter plot.
-
-**Parameters**
-
-- `mn` (`number`, required): Minimum Y value.
-- `mx` (`number`, required): Maximum Y value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the Y-axis range for this scatter plot.
@@ -8508,9 +10080,18 @@ Sets the Y-axis range for this scatter plot.
 function LScatterPlot:setYRange(mn, mx) end
 ```
 
+#### Description
+
+Sets the Y-axis range for this scatter plot.
+
+Parameters:
+
+- `mn` (`number`, required): Minimum Y value.
+- `mx` (`number`, required): Maximum Y value.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -8524,13 +10105,7 @@ end
 
 ### LScatterPlot:type
 
-`LScatterPlot:type() -> string`
-
-Returns the type name of this object.
-
-**Returns**: `string` - Always "LScatterPlot".
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this object.
@@ -8538,9 +10113,15 @@ Returns the type name of this object.
 function LScatterPlot:type() end
 ```
 
+#### Description
+
+Returns the type name of this object.
+
+Returns: `string` - Always "LScatterPlot".
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -8554,17 +10135,7 @@ end
 
 ### LScatterPlot:typeOf
 
-`LScatterPlot:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to check.
-
-**Returns**: `boolean` - True if the name matches this userdata type.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this object matches the given type name.
@@ -8573,9 +10144,19 @@ Checks whether this object matches the given type name.
 function LScatterPlot:typeOf(name) end
 ```
 
+#### Description
+
+Checks whether this object matches the given type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to check.
+
+Returns: `boolean` - True if the name matches this userdata type.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -8589,17 +10170,7 @@ end
 
 ### LScrollBar:getContentSize
 
-`LScrollBar:getContentSize(self: LScrollBar) -> number`
-
-Returns the total content size tracked by this scroll bar.
-
-**Parameters**
-
-- `self` (`LScrollBar`, required): The widget instance.
-
-**Returns**: `number` - The content size.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the total content size tracked by this scroll bar.
@@ -8607,9 +10178,19 @@ Returns the total content size tracked by this scroll bar.
 function LScrollBar:getContentSize() end
 ```
 
+#### Description
+
+Returns the total content size tracked by this scroll bar.
+
+Parameters:
+
+- `self` (`LScrollBar`, required): The widget instance.
+
+Returns: `number` - The content size.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -8623,17 +10204,7 @@ end
 
 ### LScrollBar:getScrollPosition
 
-`LScrollBar:getScrollPosition(self: LScrollBar) -> number`
-
-Returns the current scroll position of this scroll bar.
-
-**Parameters**
-
-- `self` (`LScrollBar`, required): The widget instance.
-
-**Returns**: `number` - The scroll position.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current scroll position of this scroll bar.
@@ -8641,9 +10212,19 @@ Returns the current scroll position of this scroll bar.
 function LScrollBar:getScrollPosition() end
 ```
 
+#### Description
+
+Returns the current scroll position of this scroll bar.
+
+Parameters:
+
+- `self` (`LScrollBar`, required): The widget instance.
+
+Returns: `number` - The scroll position.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -8657,17 +10238,7 @@ end
 
 ### LScrollBar:getViewSize
 
-`LScrollBar:getViewSize(self: LScrollBar) -> number`
-
-Returns the visible viewport size tracked by this scroll bar.
-
-**Parameters**
-
-- `self` (`LScrollBar`, required): The widget instance.
-
-**Returns**: `number` - The view size.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the visible viewport size tracked by this scroll bar.
@@ -8675,9 +10246,19 @@ Returns the visible viewport size tracked by this scroll bar.
 function LScrollBar:getViewSize() end
 ```
 
+#### Description
+
+Returns the visible viewport size tracked by this scroll bar.
+
+Parameters:
+
+- `self` (`LScrollBar`, required): The widget instance.
+
+Returns: `number` - The view size.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -8691,17 +10272,7 @@ end
 
 ### LScrollBar:isVertical
 
-`LScrollBar:isVertical(self: LScrollBar) -> boolean`
-
-Returns whether this scroll bar is oriented vertically.
-
-**Parameters**
-
-- `self` (`LScrollBar`, required): The widget instance.
-
-**Returns**: `boolean` - True if vertical.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this scroll bar is oriented vertically.
@@ -8709,9 +10280,19 @@ Returns whether this scroll bar is oriented vertically.
 function LScrollBar:isVertical() end
 ```
 
+#### Description
+
+Returns whether this scroll bar is oriented vertically.
+
+Parameters:
+
+- `self` (`LScrollBar`, required): The widget instance.
+
+Returns: `boolean` - True if vertical.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -8725,16 +10306,7 @@ end
 
 ### LScrollBar:setContentSize
 
-`LScrollBar:setContentSize(self: LScrollBar, v: number)`
-
-Sets the total content size that this scroll bar represents.
-
-**Parameters**
-
-- `self` (`LScrollBar`, required): The widget instance.
-- `v` (`number`, required): The content size.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the total content size that this scroll bar represents.
@@ -8742,9 +10314,18 @@ Sets the total content size that this scroll bar represents.
 function LScrollBar:setContentSize(v) end
 ```
 
+#### Description
+
+Sets the total content size that this scroll bar represents.
+
+Parameters:
+
+- `self` (`LScrollBar`, required): The widget instance.
+- `v` (`number`, required): The content size.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -8758,16 +10339,7 @@ end
 
 ### LScrollBar:setOnChange
 
-`LScrollBar:setOnChange(self: LScrollBar, f: function)`
-
-Registers a callback invoked when this scroll bar's position changes.
-
-**Parameters**
-
-- `self` (`LScrollBar`, required): The widget instance.
-- `f` (`function`, required): Callback receiving the widget index.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Registers a callback invoked when this scroll bar's position changes.
@@ -8775,9 +10347,18 @@ Registers a callback invoked when this scroll bar's position changes.
 function LScrollBar:setOnChange(f) end
 ```
 
+#### Description
+
+Registers a callback invoked when this scroll bar's position changes.
+
+Parameters:
+
+- `self` (`LScrollBar`, required): The widget instance.
+- `f` (`function`, required): Callback receiving the widget index.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -8791,16 +10372,7 @@ end
 
 ### LScrollBar:setScrollPosition
 
-`LScrollBar:setScrollPosition(self: LScrollBar, v: number)`
-
-Sets the scroll position of this scroll bar, clamped to the valid range.
-
-**Parameters**
-
-- `self` (`LScrollBar`, required): The widget instance.
-- `v` (`number`, required): The scroll position.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the scroll position of this scroll bar, clamped to the valid range.
@@ -8808,9 +10380,18 @@ Sets the scroll position of this scroll bar, clamped to the valid range.
 function LScrollBar:setScrollPosition(v) end
 ```
 
+#### Description
+
+Sets the scroll position of this scroll bar, clamped to the valid range.
+
+Parameters:
+
+- `self` (`LScrollBar`, required): The widget instance.
+- `v` (`number`, required): The scroll position.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -8824,16 +10405,7 @@ end
 
 ### LScrollBar:setViewSize
 
-`LScrollBar:setViewSize(self: LScrollBar, v: number)`
-
-Sets the visible viewport size for this scroll bar.
-
-**Parameters**
-
-- `self` (`LScrollBar`, required): The widget instance.
-- `v` (`number`, required): The view size.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the visible viewport size for this scroll bar.
@@ -8841,9 +10413,18 @@ Sets the visible viewport size for this scroll bar.
 function LScrollBar:setViewSize(v) end
 ```
 
+#### Description
+
+Sets the visible viewport size for this scroll bar.
+
+Parameters:
+
+- `self` (`LScrollBar`, required): The widget instance.
+- `v` (`number`, required): The view size.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -8857,17 +10438,7 @@ end
 
 ### LScrollPanel:getContentSize
 
-`LScrollPanel:getContentSize(self: LScrollPanel) -> number, number`
-
-Returns the virtual content dimensions of this scroll panel.
-
-**Parameters**
-
-- `self` (`LScrollPanel`, required): The widget instance.
-
-**Returns**: `number, number` - Content width and height in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the virtual content dimensions of this scroll panel.
@@ -8876,9 +10447,19 @@ Returns the virtual content dimensions of this scroll panel.
 function LScrollPanel:getContentSize() end
 ```
 
+#### Description
+
+Returns the virtual content dimensions of this scroll panel.
+
+Parameters:
+
+- `self` (`LScrollPanel`, required): The widget instance.
+
+Returns: `number, number` - Content width and height in pixels.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -8892,17 +10473,7 @@ end
 
 ### LScrollPanel:getMaxScroll
 
-`LScrollPanel:getMaxScroll(self: LScrollPanel) -> number, number`
-
-Returns the maximum scroll offset allowed in each axis.
-
-**Parameters**
-
-- `self` (`LScrollPanel`, required): The widget instance.
-
-**Returns**: `number, number` - Maximum horizontal and vertical scroll values.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the maximum scroll offset allowed in each axis.
@@ -8911,9 +10482,19 @@ Returns the maximum scroll offset allowed in each axis.
 function LScrollPanel:getMaxScroll() end
 ```
 
+#### Description
+
+Returns the maximum scroll offset allowed in each axis.
+
+Parameters:
+
+- `self` (`LScrollPanel`, required): The widget instance.
+
+Returns: `number, number` - Maximum horizontal and vertical scroll values.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -8927,17 +10508,7 @@ end
 
 ### LScrollPanel:getScrollPosition
 
-`LScrollPanel:getScrollPosition(self: LScrollPanel) -> number, number`
-
-Returns the current scroll offset of this scroll panel.
-
-**Parameters**
-
-- `self` (`LScrollPanel`, required): The widget instance.
-
-**Returns**: `number, number` - Horizontal and vertical scroll offsets.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current scroll offset of this scroll panel.
@@ -8946,9 +10517,19 @@ Returns the current scroll offset of this scroll panel.
 function LScrollPanel:getScrollPosition() end
 ```
 
+#### Description
+
+Returns the current scroll offset of this scroll panel.
+
+Parameters:
+
+- `self` (`LScrollPanel`, required): The widget instance.
+
+Returns: `number, number` - Horizontal and vertical scroll offsets.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -8962,17 +10543,7 @@ end
 
 ### LScrollPanel:getScrollSpeed
 
-`LScrollPanel:getScrollSpeed(self: LScrollPanel) -> number`
-
-Returns the current scroll speed multiplier.
-
-**Parameters**
-
-- `self` (`LScrollPanel`, required): The widget instance.
-
-**Returns**: `number` - The scroll speed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current scroll speed multiplier.
@@ -8980,9 +10551,19 @@ Returns the current scroll speed multiplier.
 function LScrollPanel:getScrollSpeed() end
 ```
 
+#### Description
+
+Returns the current scroll speed multiplier.
+
+Parameters:
+
+- `self` (`LScrollPanel`, required): The widget instance.
+
+Returns: `number` - The scroll speed.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -8996,17 +10577,7 @@ end
 
 ### LScrollPanel:setContentSize
 
-`LScrollPanel:setContentSize(self: LScrollPanel, w: number, h: number)`
-
-Sets the virtual content dimensions of this scroll panel.
-
-**Parameters**
-
-- `self` (`LScrollPanel`, required): The widget instance.
-- `w` (`number`, required): Content width in pixels.
-- `h` (`number`, required): Content height in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the virtual content dimensions of this scroll panel.
@@ -9015,9 +10586,19 @@ Sets the virtual content dimensions of this scroll panel.
 function LScrollPanel:setContentSize(w, h) end
 ```
 
+#### Description
+
+Sets the virtual content dimensions of this scroll panel.
+
+Parameters:
+
+- `self` (`LScrollPanel`, required): The widget instance.
+- `w` (`number`, required): Content width in pixels.
+- `h` (`number`, required): Content height in pixels.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -9031,17 +10612,7 @@ end
 
 ### LScrollPanel:setScrollPosition
 
-`LScrollPanel:setScrollPosition(self: LScrollPanel, x: number, y: number)`
-
-Sets the scroll offset position of this scroll panel.
-
-**Parameters**
-
-- `self` (`LScrollPanel`, required): The widget instance.
-- `x` (`number`, required): Horizontal scroll offset.
-- `y` (`number`, required): Vertical scroll offset.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the scroll offset position of this scroll panel.
@@ -9050,9 +10621,19 @@ Sets the scroll offset position of this scroll panel.
 function LScrollPanel:setScrollPosition(x, y) end
 ```
 
+#### Description
+
+Sets the scroll offset position of this scroll panel.
+
+Parameters:
+
+- `self` (`LScrollPanel`, required): The widget instance.
+- `x` (`number`, required): Horizontal scroll offset.
+- `y` (`number`, required): Vertical scroll offset.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -9066,16 +10647,7 @@ end
 
 ### LScrollPanel:setScrollSpeed
 
-`LScrollPanel:setScrollSpeed(self: LScrollPanel, speed: number)`
-
-Sets the scroll speed multiplier for mouse wheel scrolling.
-
-**Parameters**
-
-- `self` (`LScrollPanel`, required): The widget instance.
-- `speed` (`number`, required): Scroll speed in pixels per scroll tick.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the scroll speed multiplier for mouse wheel scrolling.
@@ -9083,9 +10655,18 @@ Sets the scroll speed multiplier for mouse wheel scrolling.
 function LScrollPanel:setScrollSpeed(speed) end
 ```
 
+#### Description
+
+Sets the scroll speed multiplier for mouse wheel scrolling.
+
+Parameters:
+
+- `self` (`LScrollPanel`, required): The widget instance.
+- `speed` (`number`, required): Scroll speed in pixels per scroll tick.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -9099,17 +10680,7 @@ end
 
 ### LSeparator:getThickness
 
-`LSeparator:getThickness(self: LSeparator) -> number`
-
-Returns the line thickness of this separator.
-
-**Parameters**
-
-- `self` (`LSeparator`, required): The widget instance.
-
-**Returns**: `number` - The thickness in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the line thickness of this separator.
@@ -9117,9 +10688,19 @@ Returns the line thickness of this separator.
 function LSeparator:getThickness() end
 ```
 
+#### Description
+
+Returns the line thickness of this separator.
+
+Parameters:
+
+- `self` (`LSeparator`, required): The widget instance.
+
+Returns: `number` - The thickness in pixels.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -9133,17 +10714,7 @@ end
 
 ### LSeparator:isVertical
 
-`LSeparator:isVertical(self: LSeparator) -> boolean`
-
-Returns whether this separator is oriented vertically.
-
-**Parameters**
-
-- `self` (`LSeparator`, required): The widget instance.
-
-**Returns**: `boolean` - True if vertical.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this separator is oriented vertically.
@@ -9151,9 +10722,19 @@ Returns whether this separator is oriented vertically.
 function LSeparator:isVertical() end
 ```
 
+#### Description
+
+Returns whether this separator is oriented vertically.
+
+Parameters:
+
+- `self` (`LSeparator`, required): The widget instance.
+
+Returns: `boolean` - True if vertical.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -9167,16 +10748,7 @@ end
 
 ### LSeparator:setThickness
 
-`LSeparator:setThickness(self: LSeparator, thickness: number)`
-
-Sets the line thickness of this separator in pixels.
-
-**Parameters**
-
-- `self` (`LSeparator`, required): The widget instance.
-- `thickness` (`number`, required): Thickness in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the line thickness of this separator in pixels.
@@ -9184,9 +10756,18 @@ Sets the line thickness of this separator in pixels.
 function LSeparator:setThickness(thickness) end
 ```
 
+#### Description
+
+Sets the line thickness of this separator in pixels.
+
+Parameters:
+
+- `self` (`LSeparator`, required): The widget instance.
+- `thickness` (`number`, required): Thickness in pixels.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -9200,16 +10781,7 @@ end
 
 ### LSeparator:setVertical
 
-`LSeparator:setVertical(self: LSeparator, v: boolean)`
-
-Sets whether this separator draws vertically or horizontally.
-
-**Parameters**
-
-- `self` (`LSeparator`, required): The widget instance.
-- `v` (`boolean`, required): True for vertical, false for horizontal.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets whether this separator draws vertically or horizontally.
@@ -9217,9 +10789,18 @@ Sets whether this separator draws vertically or horizontally.
 function LSeparator:setVertical(v) end
 ```
 
+#### Description
+
+Sets whether this separator draws vertically or horizontally.
+
+Parameters:
+
+- `self` (`LSeparator`, required): The widget instance.
+- `v` (`boolean`, required): True for vertical, false for horizontal.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -9233,17 +10814,7 @@ end
 
 ### LSlider:getMax
 
-`LSlider:getMax(self: LSlider) -> number`
-
-Returns the maximum value of this slider's range.
-
-**Parameters**
-
-- `self` (`LSlider`, required): The widget instance.
-
-**Returns**: `number` - The maximum value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the maximum value of this slider's range.
@@ -9251,9 +10822,19 @@ Returns the maximum value of this slider's range.
 function LSlider:getMax() end
 ```
 
+#### Description
+
+Returns the maximum value of this slider's range.
+
+Parameters:
+
+- `self` (`LSlider`, required): The widget instance.
+
+Returns: `number` - The maximum value.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -9267,17 +10848,7 @@ end
 
 ### LSlider:getMin
 
-`LSlider:getMin(self: LSlider) -> number`
-
-Returns the minimum value of this slider's range.
-
-**Parameters**
-
-- `self` (`LSlider`, required): The widget instance.
-
-**Returns**: `number` - The minimum value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the minimum value of this slider's range.
@@ -9285,9 +10856,19 @@ Returns the minimum value of this slider's range.
 function LSlider:getMin() end
 ```
 
+#### Description
+
+Returns the minimum value of this slider's range.
+
+Parameters:
+
+- `self` (`LSlider`, required): The widget instance.
+
+Returns: `number` - The minimum value.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -9301,17 +10882,7 @@ end
 
 ### LSlider:getValue
 
-`LSlider:getValue(self: LSlider) -> number`
-
-Returns the current value of this slider.
-
-**Parameters**
-
-- `self` (`LSlider`, required): The widget instance.
-
-**Returns**: `number` - The slider value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current value of this slider.
@@ -9319,9 +10890,19 @@ Returns the current value of this slider.
 function LSlider:getValue() end
 ```
 
+#### Description
+
+Returns the current value of this slider.
+
+Parameters:
+
+- `self` (`LSlider`, required): The widget instance.
+
+Returns: `number` - The slider value.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -9335,17 +10916,7 @@ end
 
 ### LSlider:setRange
 
-`LSlider:setRange(self: LSlider, min: number, max: number)`
-
-Sets the minimum and maximum bounds for this slider.
-
-**Parameters**
-
-- `self` (`LSlider`, required): The widget instance.
-- `min` (`number`, required): Minimum value.
-- `max` (`number`, required): Maximum value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the minimum and maximum bounds for this slider.
@@ -9354,9 +10925,19 @@ Sets the minimum and maximum bounds for this slider.
 function LSlider:setRange(min, max) end
 ```
 
+#### Description
+
+Sets the minimum and maximum bounds for this slider.
+
+Parameters:
+
+- `self` (`LSlider`, required): The widget instance.
+- `min` (`number`, required): Minimum value.
+- `max` (`number`, required): Maximum value.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -9370,16 +10951,7 @@ end
 
 ### LSlider:setStep
 
-`LSlider:setStep(self: LSlider, step: number)`
-
-Sets the step increment for this slider's value snapping.
-
-**Parameters**
-
-- `self` (`LSlider`, required): The widget instance.
-- `step` (`number`, required): The step size.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the step increment for this slider's value snapping.
@@ -9387,9 +10959,18 @@ Sets the step increment for this slider's value snapping.
 function LSlider:setStep(step) end
 ```
 
+#### Description
+
+Sets the step increment for this slider's value snapping.
+
+Parameters:
+
+- `self` (`LSlider`, required): The widget instance.
+- `step` (`number`, required): The step size.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -9403,16 +10984,7 @@ end
 
 ### LSlider:setValue
 
-`LSlider:setValue(self: LSlider, v: number)`
-
-Sets the current value of this slider, clamped to its range.
-
-**Parameters**
-
-- `self` (`LSlider`, required): The widget instance.
-- `v` (`number`, required): The value to set.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the current value of this slider, clamped to its range.
@@ -9420,9 +10992,18 @@ Sets the current value of this slider, clamped to its range.
 function LSlider:setValue(v) end
 ```
 
+#### Description
+
+Sets the current value of this slider, clamped to its range.
+
+Parameters:
+
+- `self` (`LSlider`, required): The widget instance.
+- `v` (`number`, required): The value to set.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -9436,24 +11017,24 @@ end
 
 ### LSpinBox:decrement
 
-`LSpinBox:decrement(self: LSpinBox)`
-
-Decreases this spin box's value by one step.
-
-**Parameters**
-
-- `self` (`LSpinBox`, required): The widget instance.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Decreases this spin box's value by one step.
 function LSpinBox:decrement() end
 ```
 
+#### Description
+
+Decreases this spin box's value by one step.
+
+Parameters:
+
+- `self` (`LSpinBox`, required): The widget instance.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -9467,17 +11048,7 @@ end
 
 ### LSpinBox:getValue
 
-`LSpinBox:getValue(self: LSpinBox) -> number`
-
-Returns the current numeric value of this spin box.
-
-**Parameters**
-
-- `self` (`LSpinBox`, required): The widget instance.
-
-**Returns**: `number` - The spin box value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current numeric value of this spin box.
@@ -9485,9 +11056,19 @@ Returns the current numeric value of this spin box.
 function LSpinBox:getValue() end
 ```
 
+#### Description
+
+Returns the current numeric value of this spin box.
+
+Parameters:
+
+- `self` (`LSpinBox`, required): The widget instance.
+
+Returns: `number` - The spin box value.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -9501,24 +11082,24 @@ end
 
 ### LSpinBox:increment
 
-`LSpinBox:increment(self: LSpinBox)`
-
-Increases this spin box's value by one step.
-
-**Parameters**
-
-- `self` (`LSpinBox`, required): The widget instance.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Increases this spin box's value by one step.
 function LSpinBox:increment() end
 ```
 
+#### Description
+
+Increases this spin box's value by one step.
+
+Parameters:
+
+- `self` (`LSpinBox`, required): The widget instance.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -9532,17 +11113,7 @@ end
 
 ### LSpinBox:setRange
 
-`LSpinBox:setRange(self: LSpinBox, min: number, max: number)`
-
-Sets the minimum and maximum bounds for this spin box.
-
-**Parameters**
-
-- `self` (`LSpinBox`, required): The widget instance.
-- `min` (`number`, required): Minimum value.
-- `max` (`number`, required): Maximum value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the minimum and maximum bounds for this spin box.
@@ -9551,9 +11122,19 @@ Sets the minimum and maximum bounds for this spin box.
 function LSpinBox:setRange(min, max) end
 ```
 
+#### Description
+
+Sets the minimum and maximum bounds for this spin box.
+
+Parameters:
+
+- `self` (`LSpinBox`, required): The widget instance.
+- `min` (`number`, required): Minimum value.
+- `max` (`number`, required): Maximum value.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -9567,16 +11148,7 @@ end
 
 ### LSpinBox:setStep
 
-`LSpinBox:setStep(self: LSpinBox, step: number)`
-
-Sets the step increment for this spin box.
-
-**Parameters**
-
-- `self` (`LSpinBox`, required): The widget instance.
-- `step` (`number`, required): The step size (minimum 1e-9).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the step increment for this spin box.
@@ -9584,9 +11156,18 @@ Sets the step increment for this spin box.
 function LSpinBox:setStep(step) end
 ```
 
+#### Description
+
+Sets the step increment for this spin box.
+
+Parameters:
+
+- `self` (`LSpinBox`, required): The widget instance.
+- `step` (`number`, required): The step size (minimum 1e-9).
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -9600,16 +11181,7 @@ end
 
 ### LSpinBox:setValue
 
-`LSpinBox:setValue(self: LSpinBox, v: number)`
-
-Sets the numeric value of this spin box, clamped to its range.
-
-**Parameters**
-
-- `self` (`LSpinBox`, required): The widget instance.
-- `v` (`number`, required): The value to set.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the numeric value of this spin box, clamped to its range.
@@ -9617,9 +11189,18 @@ Sets the numeric value of this spin box, clamped to its range.
 function LSpinBox:setValue(v) end
 ```
 
+#### Description
+
+Sets the numeric value of this spin box, clamped to its range.
+
+Parameters:
+
+- `self` (`LSpinBox`, required): The widget instance.
+- `v` (`number`, required): The value to set.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -9633,17 +11214,7 @@ end
 
 ### LSplitPanel:getFirstChild
 
-`LSplitPanel:getFirstChild(self: LSplitPanel) -> integer`
-
-Returns the widget index of the first (left/top) child panel.
-
-**Parameters**
-
-- `self` (`LSplitPanel`, required): The widget instance.
-
-**Returns**: `integer` - The widget index, or nil if not set.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the widget index of the first (left/top) child panel.
@@ -9651,9 +11222,19 @@ Returns the widget index of the first (left/top) child panel.
 function LSplitPanel:getFirstChild() end
 ```
 
+#### Description
+
+Returns the widget index of the first (left/top) child panel.
+
+Parameters:
+
+- `self` (`LSplitPanel`, required): The widget instance.
+
+Returns: `integer` - The widget index, or nil if not set.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -9667,17 +11248,7 @@ end
 
 ### LSplitPanel:getMinPanelSize
 
-`LSplitPanel:getMinPanelSize(self: LSplitPanel) -> number`
-
-Returns the minimum pixel size of each split sub-panel.
-
-**Parameters**
-
-- `self` (`LSplitPanel`, required): The widget instance.
-
-**Returns**: `number` - The minimum size in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the minimum pixel size of each split sub-panel.
@@ -9685,9 +11256,19 @@ Returns the minimum pixel size of each split sub-panel.
 function LSplitPanel:getMinPanelSize() end
 ```
 
+#### Description
+
+Returns the minimum pixel size of each split sub-panel.
+
+Parameters:
+
+- `self` (`LSplitPanel`, required): The widget instance.
+
+Returns: `number` - The minimum size in pixels.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -9701,17 +11282,7 @@ end
 
 ### LSplitPanel:getOrientation
 
-`LSplitPanel:getOrientation(self: LSplitPanel) -> string`
-
-Returns the orientation of this split panel ("horizontal" or "vertical").
-
-**Parameters**
-
-- `self` (`LSplitPanel`, required): The widget instance.
-
-**Returns**: `string` - The orientation.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the orientation of this split panel ("horizontal" or "vertical").
@@ -9719,9 +11290,19 @@ Returns the orientation of this split panel ("horizontal" or "vertical").
 function LSplitPanel:getOrientation() end
 ```
 
+#### Description
+
+Returns the orientation of this split panel ("horizontal" or "vertical").
+
+Parameters:
+
+- `self` (`LSplitPanel`, required): The widget instance.
+
+Returns: `string` - The orientation.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -9735,17 +11316,7 @@ end
 
 ### LSplitPanel:getSecondChild
 
-`LSplitPanel:getSecondChild(self: LSplitPanel) -> integer`
-
-Returns the widget index of the second (right/bottom) child panel.
-
-**Parameters**
-
-- `self` (`LSplitPanel`, required): The widget instance.
-
-**Returns**: `integer` - The widget index, or nil if not set.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the widget index of the second (right/bottom) child panel.
@@ -9753,9 +11324,19 @@ Returns the widget index of the second (right/bottom) child panel.
 function LSplitPanel:getSecondChild() end
 ```
 
+#### Description
+
+Returns the widget index of the second (right/bottom) child panel.
+
+Parameters:
+
+- `self` (`LSplitPanel`, required): The widget instance.
+
+Returns: `integer` - The widget index, or nil if not set.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -9769,17 +11350,7 @@ end
 
 ### LSplitPanel:getSplitPosition
 
-`LSplitPanel:getSplitPosition(self: LSplitPanel) -> number`
-
-Returns the split position as a fraction (0.0 to 1.0) of the panel's total size.
-
-**Parameters**
-
-- `self` (`LSplitPanel`, required): The widget instance.
-
-**Returns**: `number` - The split fraction.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the split position as a fraction (0.0 to 1.0) of the panel's total size.
@@ -9787,9 +11358,19 @@ Returns the split position as a fraction (0.0 to 1.0) of the panel's total size.
 function LSplitPanel:getSplitPosition() end
 ```
 
+#### Description
+
+Returns the split position as a fraction (0.0 to 1.0) of the panel's total size.
+
+Parameters:
+
+- `self` (`LSplitPanel`, required): The widget instance.
+
+Returns: `number` - The split fraction.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -9803,16 +11384,7 @@ end
 
 ### LSplitPanel:setFirstChild
 
-`LSplitPanel:setFirstChild(self: LSplitPanel, child_idx: integer)`
-
-Sets the widget index for the first (left/top) panel.
-
-**Parameters**
-
-- `self` (`LSplitPanel`, required): The widget instance.
-- `child_idx` (`integer`, required): The widget index.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the widget index for the first (left/top) panel.
@@ -9820,9 +11392,18 @@ Sets the widget index for the first (left/top) panel.
 function LSplitPanel:setFirstChild(child_idx) end
 ```
 
+#### Description
+
+Sets the widget index for the first (left/top) panel.
+
+Parameters:
+
+- `self` (`LSplitPanel`, required): The widget instance.
+- `child_idx` (`integer`, required): The widget index.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -9836,16 +11417,7 @@ end
 
 ### LSplitPanel:setMinPanelSize
 
-`LSplitPanel:setMinPanelSize(self: LSplitPanel, v: number)`
-
-Sets the minimum pixel size of each split sub-panel.
-
-**Parameters**
-
-- `self` (`LSplitPanel`, required): The widget instance.
-- `v` (`number`, required): The minimum size in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the minimum pixel size of each split sub-panel.
@@ -9853,9 +11425,18 @@ Sets the minimum pixel size of each split sub-panel.
 function LSplitPanel:setMinPanelSize(v) end
 ```
 
+#### Description
+
+Sets the minimum pixel size of each split sub-panel.
+
+Parameters:
+
+- `self` (`LSplitPanel`, required): The widget instance.
+- `v` (`number`, required): The minimum size in pixels.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -9869,16 +11450,7 @@ end
 
 ### LSplitPanel:setOrientation
 
-`LSplitPanel:setOrientation(self: LSplitPanel, v: string)`
-
-Sets the orientation of this split panel ("horizontal" or "vertical").
-
-**Parameters**
-
-- `self` (`LSplitPanel`, required): The widget instance.
-- `v` (`string`, required): The orientation.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the orientation of this split panel ("horizontal" or "vertical").
@@ -9886,9 +11458,18 @@ Sets the orientation of this split panel ("horizontal" or "vertical").
 function LSplitPanel:setOrientation(v) end
 ```
 
+#### Description
+
+Sets the orientation of this split panel ("horizontal" or "vertical").
+
+Parameters:
+
+- `self` (`LSplitPanel`, required): The widget instance.
+- `v` (`string`, required): The orientation.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -9902,16 +11483,7 @@ end
 
 ### LSplitPanel:setSecondChild
 
-`LSplitPanel:setSecondChild(self: LSplitPanel, child_idx: integer)`
-
-Sets the widget index for the second (right/bottom) panel.
-
-**Parameters**
-
-- `self` (`LSplitPanel`, required): The widget instance.
-- `child_idx` (`integer`, required): The widget index.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the widget index for the second (right/bottom) panel.
@@ -9919,9 +11491,18 @@ Sets the widget index for the second (right/bottom) panel.
 function LSplitPanel:setSecondChild(child_idx) end
 ```
 
+#### Description
+
+Sets the widget index for the second (right/bottom) panel.
+
+Parameters:
+
+- `self` (`LSplitPanel`, required): The widget instance.
+- `child_idx` (`integer`, required): The widget index.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -9935,16 +11516,7 @@ end
 
 ### LSplitPanel:setSplitPosition
 
-`LSplitPanel:setSplitPosition(self: LSplitPanel, v: number)`
-
-Sets the split position as a fraction (0.0 to 1.0).
-
-**Parameters**
-
-- `self` (`LSplitPanel`, required): The widget instance.
-- `v` (`number`, required): The split fraction.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the split position as a fraction (0.0 to 1.0).
@@ -9952,9 +11524,18 @@ Sets the split position as a fraction (0.0 to 1.0).
 function LSplitPanel:setSplitPosition(v) end
 ```
 
+#### Description
+
+Sets the split position as a fraction (0.0 to 1.0).
+
+Parameters:
+
+- `self` (`LSplitPanel`, required): The widget instance.
+- `v` (`number`, required): The split fraction.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -9968,17 +11549,7 @@ end
 
 ### LStatusBar:addSection
 
-`LStatusBar:addSection(self: LStatusBar, text: string, [width]: number)`
-
-Adds a labeled section to this status bar.
-
-**Parameters**
-
-- `self` (`LStatusBar`, required): The widget instance.
-- `text` (`string`, required): The section display text.
-- `width` (`number`, optional): The section width in pixels (default 100).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a labeled section to this status bar.
@@ -9987,9 +11558,19 @@ Adds a labeled section to this status bar.
 function LStatusBar:addSection(text, width) end
 ```
 
+#### Description
+
+Adds a labeled section to this status bar.
+
+Parameters:
+
+- `self` (`LStatusBar`, required): The widget instance.
+- `text` (`string`, required): The section display text.
+- `width` (`number`, optional): The section width in pixels (default 100).
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -10003,17 +11584,7 @@ end
 
 ### LStatusBar:getSectionCount
 
-`LStatusBar:getSectionCount(self: LStatusBar) -> integer`
-
-Returns the number of sections in this status bar.
-
-**Parameters**
-
-- `self` (`LStatusBar`, required): The widget instance.
-
-**Returns**: `integer` - The section count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of sections in this status bar.
@@ -10021,9 +11592,19 @@ Returns the number of sections in this status bar.
 function LStatusBar:getSectionCount() end
 ```
 
+#### Description
+
+Returns the number of sections in this status bar.
+
+Parameters:
+
+- `self` (`LStatusBar`, required): The widget instance.
+
+Returns: `integer` - The section count.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -10037,18 +11618,7 @@ end
 
 ### LStatusBar:getSectionText
 
-`LStatusBar:getSectionText(self: LStatusBar, section_idx: integer) -> string`
-
-Returns the text of a status bar section by its 1-based index.
-
-**Parameters**
-
-- `self` (`LStatusBar`, required): The widget instance.
-- `section_idx` (`integer`, required): The 1-based section index.
-
-**Returns**: `string` - The section text, or nil if out of range.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the text of a status bar section by its 1-based index.
@@ -10057,9 +11627,20 @@ Returns the text of a status bar section by its 1-based index.
 function LStatusBar:getSectionText(section_idx) end
 ```
 
+#### Description
+
+Returns the text of a status bar section by its 1-based index.
+
+Parameters:
+
+- `self` (`LStatusBar`, required): The widget instance.
+- `section_idx` (`integer`, required): The 1-based section index.
+
+Returns: `string` - The section text, or nil if out of range.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -10073,16 +11654,7 @@ end
 
 ### LStatusBar:setSectionCount
 
-`LStatusBar:setSectionCount(self: LStatusBar, count: integer)`
-
-Sets the number of sections, truncating or adding empty sections as needed.
-
-**Parameters**
-
-- `self` (`LStatusBar`, required): The widget instance.
-- `count` (`integer`, required): The desired section count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the number of sections, truncating or adding empty sections as needed.
@@ -10090,9 +11662,18 @@ Sets the number of sections, truncating or adding empty sections as needed.
 function LStatusBar:setSectionCount(count) end
 ```
 
+#### Description
+
+Sets the number of sections, truncating or adding empty sections as needed.
+
+Parameters:
+
+- `self` (`LStatusBar`, required): The widget instance.
+- `count` (`integer`, required): The desired section count.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -10106,17 +11687,7 @@ end
 
 ### LStatusBar:setSectionText
 
-`LStatusBar:setSectionText(self: LStatusBar, section_idx: integer, text: string)`
-
-Sets the text of a status bar section by its 1-based index.
-
-**Parameters**
-
-- `self` (`LStatusBar`, required): The widget instance.
-- `section_idx` (`integer`, required): The 1-based section index.
-- `text` (`string`, required): The new section text.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the text of a status bar section by its 1-based index.
@@ -10125,9 +11696,19 @@ Sets the text of a status bar section by its 1-based index.
 function LStatusBar:setSectionText(section_idx, text) end
 ```
 
+#### Description
+
+Sets the text of a status bar section by its 1-based index.
+
+Parameters:
+
+- `self` (`LStatusBar`, required): The widget instance.
+- `section_idx` (`integer`, required): The 1-based section index.
+- `text` (`string`, required): The new section text.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -10141,17 +11722,7 @@ end
 
 ### LStatusBar:setSectionWidget
 
-`LStatusBar:setSectionWidget(self: LStatusBar, section_idx: integer, [widget]: table)`
-
-Associates a widget with a status bar section (reserved for future use).
-
-**Parameters**
-
-- `self` (`LStatusBar`, required): The widget instance.
-- `section_idx` (`integer`, required): The 1-based section index.
-- `widget` (`table`, optional): The widget table to associate, or nil to clear.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Associates a widget with a status bar section (reserved for future use).
@@ -10160,9 +11731,19 @@ Associates a widget with a status bar section (reserved for future use).
 function LStatusBar:setSectionWidget(section_idx, widget) end
 ```
 
+#### Description
+
+Associates a widget with a status bar section (reserved for future use).
+
+Parameters:
+
+- `self` (`LStatusBar`, required): The widget instance.
+- `section_idx` (`integer`, required): The 1-based section index.
+- `widget` (`table`, optional): The widget table to associate, or nil to clear.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -10176,17 +11757,7 @@ end
 
 ### LSwitch:isOn
 
-`LSwitch:isOn(self: LSwitch) -> boolean`
-
-Returns whether this switch is currently in the on state.
-
-**Parameters**
-
-- `self` (`LSwitch`, required): The widget instance.
-
-**Returns**: `boolean` - True if the switch is on.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this switch is currently in the on state.
@@ -10194,9 +11765,19 @@ Returns whether this switch is currently in the on state.
 function LSwitch:isOn() end
 ```
 
+#### Description
+
+Returns whether this switch is currently in the on state.
+
+Parameters:
+
+- `self` (`LSwitch`, required): The widget instance.
+
+Returns: `boolean` - True if the switch is on.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -10210,16 +11791,7 @@ end
 
 ### LSwitch:setOn
 
-`LSwitch:setOn(self: LSwitch, on: boolean)`
-
-Sets the on/off state of this toggle switch.
-
-**Parameters**
-
-- `self` (`LSwitch`, required): The widget instance.
-- `on` (`boolean`, required): True to turn on, false to turn off.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the on/off state of this toggle switch.
@@ -10227,9 +11799,18 @@ Sets the on/off state of this toggle switch.
 function LSwitch:setOn(on) end
 ```
 
+#### Description
+
+Sets the on/off state of this toggle switch.
+
+Parameters:
+
+- `self` (`LSwitch`, required): The widget instance.
+- `on` (`boolean`, required): True to turn on, false to turn off.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -10243,24 +11824,24 @@ end
 
 ### LSwitch:toggle
 
-`LSwitch:toggle(self: LSwitch)`
-
-Toggles this switch between on and off states.
-
-**Parameters**
-
-- `self` (`LSwitch`, required): The widget instance.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Toggles this switch between on and off states.
 function LSwitch:toggle() end
 ```
 
+#### Description
+
+Toggles this switch between on and off states.
+
+Parameters:
+
+- `self` (`LSwitch`, required): The widget instance.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -10274,16 +11855,7 @@ end
 
 ### LTabBar:addTab
 
-`LTabBar:addTab(self: LTabBar, label: string)`
-
-Adds a new tab with the given label to this tab bar.
-
-**Parameters**
-
-- `self` (`LTabBar`, required): The widget instance.
-- `label` (`string`, required): The tab label text.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a new tab with the given label to this tab bar.
@@ -10291,9 +11863,18 @@ Adds a new tab with the given label to this tab bar.
 function LTabBar:addTab(label) end
 ```
 
+#### Description
+
+Adds a new tab with the given label to this tab bar.
+
+Parameters:
+
+- `self` (`LTabBar`, required): The widget instance.
+- `label` (`string`, required): The tab label text.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -10307,17 +11888,7 @@ end
 
 ### LTabBar:getActiveTab
 
-`LTabBar:getActiveTab(self: LTabBar) -> integer`
-
-Returns the 1-based index of the currently active tab.
-
-**Parameters**
-
-- `self` (`LTabBar`, required): The widget instance.
-
-**Returns**: `integer` - The active tab index.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the 1-based index of the currently active tab.
@@ -10325,9 +11896,19 @@ Returns the 1-based index of the currently active tab.
 function LTabBar:getActiveTab() end
 ```
 
+#### Description
+
+Returns the 1-based index of the currently active tab.
+
+Parameters:
+
+- `self` (`LTabBar`, required): The widget instance.
+
+Returns: `integer` - The active tab index.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -10341,18 +11922,7 @@ end
 
 ### LTabBar:getTab
 
-`LTabBar:getTab(self: LTabBar, index: integer) -> string`
-
-Returns the label of the tab at the given 1-based index.
-
-**Parameters**
-
-- `self` (`LTabBar`, required): The widget instance.
-- `index` (`integer`, required): The 1-based tab index.
-
-**Returns**: `string` - The tab label, or nil if out of range.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the label of the tab at the given 1-based index.
@@ -10361,9 +11931,20 @@ Returns the label of the tab at the given 1-based index.
 function LTabBar:getTab(index) end
 ```
 
+#### Description
+
+Returns the label of the tab at the given 1-based index.
+
+Parameters:
+
+- `self` (`LTabBar`, required): The widget instance.
+- `index` (`integer`, required): The 1-based tab index.
+
+Returns: `string` - The tab label, or nil if out of range.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -10377,17 +11958,7 @@ end
 
 ### LTabBar:getTabCount
 
-`LTabBar:getTabCount(self: LTabBar) -> integer`
-
-Returns the total number of tabs in this tab bar.
-
-**Parameters**
-
-- `self` (`LTabBar`, required): The widget instance.
-
-**Returns**: `integer` - The tab count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the total number of tabs in this tab bar.
@@ -10395,9 +11966,19 @@ Returns the total number of tabs in this tab bar.
 function LTabBar:getTabCount() end
 ```
 
+#### Description
+
+Returns the total number of tabs in this tab bar.
+
+Parameters:
+
+- `self` (`LTabBar`, required): The widget instance.
+
+Returns: `integer` - The tab count.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -10411,18 +11992,7 @@ end
 
 ### LTabBar:removeTab
 
-`LTabBar:removeTab(self: LTabBar, index: integer) -> boolean`
-
-Removes the tab at the given 1-based index.
-
-**Parameters**
-
-- `self` (`LTabBar`, required): The widget instance.
-- `index` (`integer`, required): The 1-based tab index.
-
-**Returns**: `boolean` - True if the tab was removed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes the tab at the given 1-based index.
@@ -10431,9 +12001,20 @@ Removes the tab at the given 1-based index.
 function LTabBar:removeTab(index) end
 ```
 
+#### Description
+
+Removes the tab at the given 1-based index.
+
+Parameters:
+
+- `self` (`LTabBar`, required): The widget instance.
+- `index` (`integer`, required): The 1-based tab index.
+
+Returns: `boolean` - True if the tab was removed.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -10447,16 +12028,7 @@ end
 
 ### LTabBar:setActiveTab
 
-`LTabBar:setActiveTab(self: LTabBar, index: integer)`
-
-Sets the active (selected) tab by 1-based index.
-
-**Parameters**
-
-- `self` (`LTabBar`, required): The widget instance.
-- `index` (`integer`, required): The 1-based tab index to activate.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the active (selected) tab by 1-based index.
@@ -10464,9 +12036,18 @@ Sets the active (selected) tab by 1-based index.
 function LTabBar:setActiveTab(index) end
 ```
 
+#### Description
+
+Sets the active (selected) tab by 1-based index.
+
+Parameters:
+
+- `self` (`LTabBar`, required): The widget instance.
+- `index` (`integer`, required): The 1-based tab index to activate.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -10521,17 +12102,7 @@ do
 
 ### LTextInput:getCursorPosition
 
-`LTextInput:getCursorPosition(self: LTextInput) -> integer`
-
-Returns the current cursor position (character index) within the text input.
-
-**Parameters**
-
-- `self` (`LTextInput`, required): The widget instance.
-
-**Returns**: `integer` - The zero-based cursor position.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current cursor position (character index) within the text input.
@@ -10539,9 +12110,19 @@ Returns the current cursor position (character index) within the text input.
 function LTextInput:getCursorPosition() end
 ```
 
+#### Description
+
+Returns the current cursor position (character index) within the text input.
+
+Parameters:
+
+- `self` (`LTextInput`, required): The widget instance.
+
+Returns: `integer` - The zero-based cursor position.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -10555,17 +12136,7 @@ end
 
 ### LTextInput:getPlaceholder
 
-`LTextInput:getPlaceholder(self: LTextInput) -> string`
-
-Returns the placeholder text of this text input.
-
-**Parameters**
-
-- `self` (`LTextInput`, required): The widget instance.
-
-**Returns**: `string` - The placeholder text.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the placeholder text of this text input.
@@ -10573,9 +12144,19 @@ Returns the placeholder text of this text input.
 function LTextInput:getPlaceholder() end
 ```
 
+#### Description
+
+Returns the placeholder text of this text input.
+
+Parameters:
+
+- `self` (`LTextInput`, required): The widget instance.
+
+Returns: `string` - The placeholder text.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -10589,17 +12170,7 @@ end
 
 ### LTextInput:getText
 
-`LTextInput:getText(self: LTextInput) -> string`
-
-Returns the current text content of this text input field.
-
-**Parameters**
-
-- `self` (`LTextInput`, required): The widget instance.
-
-**Returns**: `string` - The input text.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current text content of this text input field.
@@ -10607,9 +12178,19 @@ Returns the current text content of this text input field.
 function LTextInput:getText() end
 ```
 
+#### Description
+
+Returns the current text content of this text input field.
+
+Parameters:
+
+- `self` (`LTextInput`, required): The widget instance.
+
+Returns: `string` - The input text.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -10623,17 +12204,7 @@ end
 
 ### LTextInput:isFocused
 
-`LTextInput:isFocused(self: LTextInput) -> boolean`
-
-Returns whether this text input currently has keyboard focus.
-
-**Parameters**
-
-- `self` (`LTextInput`, required): The widget instance.
-
-**Returns**: `boolean` - True if focused.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this text input currently has keyboard focus.
@@ -10641,9 +12212,19 @@ Returns whether this text input currently has keyboard focus.
 function LTextInput:isFocused() end
 ```
 
+#### Description
+
+Returns whether this text input currently has keyboard focus.
+
+Parameters:
+
+- `self` (`LTextInput`, required): The widget instance.
+
+Returns: `boolean` - True if focused.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -10657,16 +12238,7 @@ end
 
 ### LTextInput:setMaxLength
 
-`LTextInput:setMaxLength(self: LTextInput, n: integer)`
-
-Sets the maximum number of characters allowed in this text input.
-
-**Parameters**
-
-- `self` (`LTextInput`, required): The widget instance.
-- `n` (`integer`, required): Maximum character count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the maximum number of characters allowed in this text input.
@@ -10674,9 +12246,18 @@ Sets the maximum number of characters allowed in this text input.
 function LTextInput:setMaxLength(n) end
 ```
 
+#### Description
+
+Sets the maximum number of characters allowed in this text input.
+
+Parameters:
+
+- `self` (`LTextInput`, required): The widget instance.
+- `n` (`integer`, required): Maximum character count.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -10690,16 +12271,7 @@ end
 
 ### LTextInput:setPlaceholder
 
-`LTextInput:setPlaceholder(self: LTextInput, text: string)`
-
-Sets the placeholder text shown when the input is empty.
-
-**Parameters**
-
-- `self` (`LTextInput`, required): The widget instance.
-- `text` (`string`, required): The placeholder text.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the placeholder text shown when the input is empty.
@@ -10707,9 +12279,18 @@ Sets the placeholder text shown when the input is empty.
 function LTextInput:setPlaceholder(text) end
 ```
 
+#### Description
+
+Sets the placeholder text shown when the input is empty.
+
+Parameters:
+
+- `self` (`LTextInput`, required): The widget instance.
+- `text` (`string`, required): The placeholder text.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -10723,16 +12304,7 @@ end
 
 ### LTextInput:setText
 
-`LTextInput:setText(self: LTextInput, text: string)`
-
-Sets the text content of this text input field and moves the cursor to the end.
-
-**Parameters**
-
-- `self` (`LTextInput`, required): The widget instance.
-- `text` (`string`, required): The text to set.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the text content of this text input field and moves the cursor to the end.
@@ -10740,9 +12312,18 @@ Sets the text content of this text input field and moves the cursor to the end.
 function LTextInput:setText(text) end
 ```
 
+#### Description
+
+Sets the text content of this text input field and moves the cursor to the end.
+
+Parameters:
+
+- `self` (`LTextInput`, required): The widget instance.
+- `text` (`string`, required): The text to set.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -10756,17 +12337,7 @@ end
 
 ### LTheme:setStyle
 
-`LTheme:setStyle(widget_type: string, state: string, style_table: table)`
-
-Sets a style entry for the given widget type and state.
-
-**Parameters**
-
-- `widget_type` (`string`, required): The widget type name (e.g. "button").
-- `state` (`string`, required): The widget state (e.g. "normal", "hovered").
-- `style_table` (`table`, required): A table of style properties.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets a style entry for the given widget type and state.
@@ -10776,9 +12347,19 @@ Sets a style entry for the given widget type and state.
 function LTheme:setStyle(widget_type, state, style_table) end
 ```
 
+#### Description
+
+Sets a style entry for the given widget type and state.
+
+Parameters:
+
+- `widget_type` (`string`, required): The widget type name (e.g. "button").
+- `state` (`string`, required): The widget state (e.g. "normal", "hovered").
+- `style_table` (`table`, required): A table of style properties.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -10792,13 +12373,7 @@ end
 
 ### LTheme:type
 
-`LTheme:type() -> string`
-
-Returns the type name of this object.
-
-**Returns**: `string` - Always "LTheme".
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this object.
@@ -10806,9 +12381,15 @@ Returns the type name of this object.
 function LTheme:type() end
 ```
 
+#### Description
+
+Returns the type name of this object.
+
+Returns: `string` - Always "LTheme".
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -10822,17 +12403,7 @@ end
 
 ### LTheme:typeOf
 
-`LTheme:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to check.
-
-**Returns**: `boolean` - True if the name matches this userdata type.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this object matches the given type name.
@@ -10841,9 +12412,19 @@ Checks whether this object matches the given type name.
 function LTheme:typeOf(name) end
 ```
 
+#### Description
+
+Checks whether this object matches the given type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to check.
+
+Returns: `boolean` - True if the name matches this userdata type.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -10857,17 +12438,7 @@ end
 
 ### LToast:getDuration
 
-`LToast:getDuration(self: LToast) -> number`
-
-Returns the display duration of this toast in seconds.
-
-**Parameters**
-
-- `self` (`LToast`, required): The widget instance.
-
-**Returns**: `number` - The duration.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the display duration of this toast in seconds.
@@ -10875,9 +12446,19 @@ Returns the display duration of this toast in seconds.
 function LToast:getDuration() end
 ```
 
+#### Description
+
+Returns the display duration of this toast in seconds.
+
+Parameters:
+
+- `self` (`LToast`, required): The widget instance.
+
+Returns: `number` - The duration.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -10891,17 +12472,7 @@ end
 
 ### LToast:getMessage
 
-`LToast:getMessage(self: LToast) -> string`
-
-Returns the message text of this toast.
-
-**Parameters**
-
-- `self` (`LToast`, required): The widget instance.
-
-**Returns**: `string` - The toast message.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the message text of this toast.
@@ -10909,9 +12480,19 @@ Returns the message text of this toast.
 function LToast:getMessage() end
 ```
 
+#### Description
+
+Returns the message text of this toast.
+
+Parameters:
+
+- `self` (`LToast`, required): The widget instance.
+
+Returns: `string` - The toast message.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -10925,17 +12506,7 @@ end
 
 ### LToast:getProgress
 
-`LToast:getProgress(self: LToast) -> number`
-
-Returns the elapsed fraction (0.0 to 1.0) of this toast's lifetime.
-
-**Parameters**
-
-- `self` (`LToast`, required): The widget instance.
-
-**Returns**: `number` - The progress fraction.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the elapsed fraction (0.0 to 1.0) of this toast's lifetime.
@@ -10943,9 +12514,19 @@ Returns the elapsed fraction (0.0 to 1.0) of this toast's lifetime.
 function LToast:getProgress() end
 ```
 
+#### Description
+
+Returns the elapsed fraction (0.0 to 1.0) of this toast's lifetime.
+
+Parameters:
+
+- `self` (`LToast`, required): The widget instance.
+
+Returns: `number` - The progress fraction.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -10959,17 +12540,7 @@ end
 
 ### LToast:isExpired
 
-`LToast:isExpired(self: LToast) -> boolean`
-
-Returns whether this toast has exceeded its display duration.
-
-**Parameters**
-
-- `self` (`LToast`, required): The widget instance.
-
-**Returns**: `boolean` - True if expired.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this toast has exceeded its display duration.
@@ -10977,9 +12548,19 @@ Returns whether this toast has exceeded its display duration.
 function LToast:isExpired() end
 ```
 
+#### Description
+
+Returns whether this toast has exceeded its display duration.
+
+Parameters:
+
+- `self` (`LToast`, required): The widget instance.
+
+Returns: `boolean` - True if expired.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -10993,16 +12574,7 @@ end
 
 ### LToast:setDuration
 
-`LToast:setDuration(self: LToast, d: number)`
-
-Sets how long this toast is displayed in seconds.
-
-**Parameters**
-
-- `self` (`LToast`, required): The widget instance.
-- `d` (`number`, required): Duration in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets how long this toast is displayed in seconds.
@@ -11010,9 +12582,18 @@ Sets how long this toast is displayed in seconds.
 function LToast:setDuration(d) end
 ```
 
+#### Description
+
+Sets how long this toast is displayed in seconds.
+
+Parameters:
+
+- `self` (`LToast`, required): The widget instance.
+- `d` (`number`, required): Duration in seconds.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -11026,16 +12607,7 @@ end
 
 ### LToast:setMessage
 
-`LToast:setMessage(self: LToast, msg: string)`
-
-Sets the message text displayed by this toast notification.
-
-**Parameters**
-
-- `self` (`LToast`, required): The widget instance.
-- `msg` (`string`, required): The toast message.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the message text displayed by this toast notification.
@@ -11043,9 +12615,18 @@ Sets the message text displayed by this toast notification.
 function LToast:setMessage(msg) end
 ```
 
+#### Description
+
+Sets the message text displayed by this toast notification.
+
+Parameters:
+
+- `self` (`LToast`, required): The widget instance.
+- `msg` (`string`, required): The toast message.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -11059,19 +12640,7 @@ end
 
 ### LToolbar:addButton
 
-`LToolbar:addButton(self: LToolbar, id: string, [tooltip]: string) -> integer`
-
-Adds a new button to this toolbar and returns its 1-based index.
-
-**Parameters**
-
-- `self` (`LToolbar`, required): The widget instance.
-- `id` (`string`, required): The button identifier.
-- `tooltip` (`string`, optional): Optional tooltip text for the button.
-
-**Returns**: `integer` - The 1-based index of the added button.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a new button to this toolbar and returns its 1-based index.
@@ -11081,9 +12650,21 @@ Adds a new button to this toolbar and returns its 1-based index.
 function LToolbar:addButton(id, tooltip) end
 ```
 
+#### Description
+
+Adds a new button to this toolbar and returns its 1-based index.
+
+Parameters:
+
+- `self` (`LToolbar`, required): The widget instance.
+- `id` (`string`, required): The button identifier.
+- `tooltip` (`string`, optional): Optional tooltip text for the button.
+
+Returns: `integer` - The 1-based index of the added button.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -11097,24 +12678,24 @@ end
 
 ### LToolbar:addSeparator
 
-`LToolbar:addSeparator(self: LToolbar)`
-
-Adds a visual separator to this toolbar.
-
-**Parameters**
-
-- `self` (`LToolbar`, required): The widget instance.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a visual separator to this toolbar.
 function LToolbar:addSeparator() end
 ```
 
+#### Description
+
+Adds a visual separator to this toolbar.
+
+Parameters:
+
+- `self` (`LToolbar`, required): The widget instance.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -11128,16 +12709,7 @@ end
 
 ### LToolbar:addSpacer
 
-`LToolbar:addSpacer(self: LToolbar, [_size]: number)`
-
-Adds a flexible spacer to this toolbar.
-
-**Parameters**
-
-- `self` (`LToolbar`, required): The widget instance.
-- `_size` (`number`, optional): Optional size hint (reserved for future use).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a flexible spacer to this toolbar.
@@ -11145,9 +12717,18 @@ Adds a flexible spacer to this toolbar.
 function LToolbar:addSpacer(_size) end
 ```
 
+#### Description
+
+Adds a flexible spacer to this toolbar.
+
+Parameters:
+
+- `self` (`LToolbar`, required): The widget instance.
+- `_size` (`number`, optional): Optional size hint (reserved for future use).
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -11161,18 +12742,7 @@ end
 
 ### LToolbar:getButton
 
-`LToolbar:getButton(self: LToolbar, id: string) -> table`
-
-Returns a table describing the toolbar button with the given ID.
-
-**Parameters**
-
-- `self` (`LToolbar`, required): The widget instance.
-- `id` (`string`, required): The button identifier.
-
-**Returns**: `table` - Table with id, tooltip, enabled, toggled fields, or nil if not found.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a table describing the toolbar button with the given ID.
@@ -11181,9 +12751,20 @@ Returns a table describing the toolbar button with the given ID.
 function LToolbar:getButton(id) end
 ```
 
+#### Description
+
+Returns a table describing the toolbar button with the given ID.
+
+Parameters:
+
+- `self` (`LToolbar`, required): The widget instance.
+- `id` (`string`, required): The button identifier.
+
+Returns: `table` - Table with id, tooltip, enabled, toggled fields, or nil if not found.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -11197,17 +12778,7 @@ end
 
 ### LToolbar:getOrientation
 
-`LToolbar:getOrientation(self: LToolbar) -> string`
-
-Returns the toolbar orientation ("horizontal" or "vertical").
-
-**Parameters**
-
-- `self` (`LToolbar`, required): The widget instance.
-
-**Returns**: `string` - The orientation.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the toolbar orientation ("horizontal" or "vertical").
@@ -11215,9 +12786,19 @@ Returns the toolbar orientation ("horizontal" or "vertical").
 function LToolbar:getOrientation() end
 ```
 
+#### Description
+
+Returns the toolbar orientation ("horizontal" or "vertical").
+
+Parameters:
+
+- `self` (`LToolbar`, required): The widget instance.
+
+Returns: `string` - The orientation.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -11231,18 +12812,7 @@ end
 
 ### LToolbar:isButtonToggled
 
-`LToolbar:isButtonToggled(self: LToolbar, id: string) -> boolean`
-
-Returns whether a toolbar button is toggled on.
-
-**Parameters**
-
-- `self` (`LToolbar`, required): The widget instance.
-- `id` (`string`, required): The button identifier.
-
-**Returns**: `boolean` - True if toggled, nil if not found.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether a toolbar button is toggled on.
@@ -11251,9 +12821,20 @@ Returns whether a toolbar button is toggled on.
 function LToolbar:isButtonToggled(id) end
 ```
 
+#### Description
+
+Returns whether a toolbar button is toggled on.
+
+Parameters:
+
+- `self` (`LToolbar`, required): The widget instance.
+- `id` (`string`, required): The button identifier.
+
+Returns: `boolean` - True if toggled, nil if not found.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -11267,19 +12848,7 @@ end
 
 ### LToolbar:setButtonEnabled
 
-`LToolbar:setButtonEnabled(self: LToolbar, id: string, enabled: boolean) -> boolean`
-
-Enables or disables a toolbar button by its ID.
-
-**Parameters**
-
-- `self` (`LToolbar`, required): The widget instance.
-- `id` (`string`, required): The button identifier.
-- `enabled` (`boolean`, required): True to enable.
-
-**Returns**: `boolean` - True if the button was found.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Enables or disables a toolbar button by its ID.
@@ -11289,9 +12858,21 @@ Enables or disables a toolbar button by its ID.
 function LToolbar:setButtonEnabled(id, enabled) end
 ```
 
+#### Description
+
+Enables or disables a toolbar button by its ID.
+
+Parameters:
+
+- `self` (`LToolbar`, required): The widget instance.
+- `id` (`string`, required): The button identifier.
+- `enabled` (`boolean`, required): True to enable.
+
+Returns: `boolean` - True if the button was found.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -11305,19 +12886,7 @@ end
 
 ### LToolbar:setButtonToggled
 
-`LToolbar:setButtonToggled(self: LToolbar, id: string, toggled: boolean) -> boolean`
-
-Sets the toggle state of a toolbar button by its ID.
-
-**Parameters**
-
-- `self` (`LToolbar`, required): The widget instance.
-- `id` (`string`, required): The button identifier.
-- `toggled` (`boolean`, required): True to toggle on.
-
-**Returns**: `boolean` - True if the button was found.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the toggle state of a toolbar button by its ID.
@@ -11327,9 +12896,21 @@ Sets the toggle state of a toolbar button by its ID.
 function LToolbar:setButtonToggled(id, toggled) end
 ```
 
+#### Description
+
+Sets the toggle state of a toolbar button by its ID.
+
+Parameters:
+
+- `self` (`LToolbar`, required): The widget instance.
+- `id` (`string`, required): The button identifier.
+- `toggled` (`boolean`, required): True to toggle on.
+
+Returns: `boolean` - True if the button was found.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -11343,16 +12924,7 @@ end
 
 ### LToolbar:setOrientation
 
-`LToolbar:setOrientation(self: LToolbar, v: string)`
-
-Sets the toolbar orientation ("horizontal" or "vertical").
-
-**Parameters**
-
-- `self` (`LToolbar`, required): The widget instance.
-- `v` (`string`, required): The orientation.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the toolbar orientation ("horizontal" or "vertical").
@@ -11360,9 +12932,18 @@ Sets the toolbar orientation ("horizontal" or "vertical").
 function LToolbar:setOrientation(v) end
 ```
 
+#### Description
+
+Sets the toolbar orientation ("horizontal" or "vertical").
+
+Parameters:
+
+- `self` (`LToolbar`, required): The widget instance.
+- `v` (`string`, required): The orientation.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -11376,17 +12957,7 @@ end
 
 ### LTooltipPanel:getDelay
 
-`LTooltipPanel:getDelay(self: LTooltipPanel) -> number`
-
-Returns the delay in seconds before this tooltip appears.
-
-**Parameters**
-
-- `self` (`LTooltipPanel`, required): The widget instance.
-
-**Returns**: `number` - The delay in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the delay in seconds before this tooltip appears.
@@ -11394,9 +12965,19 @@ Returns the delay in seconds before this tooltip appears.
 function LTooltipPanel:getDelay() end
 ```
 
+#### Description
+
+Returns the delay in seconds before this tooltip appears.
+
+Parameters:
+
+- `self` (`LTooltipPanel`, required): The widget instance.
+
+Returns: `number` - The delay in seconds.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -11410,17 +12991,7 @@ end
 
 ### LTooltipPanel:getTarget
 
-`LTooltipPanel:getTarget(self: LTooltipPanel) -> integer`
-
-Returns the widget index that this tooltip is attached to.
-
-**Parameters**
-
-- `self` (`LTooltipPanel`, required): The widget instance.
-
-**Returns**: `integer` - The target widget index, or nil if unset.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the widget index that this tooltip is attached to.
@@ -11428,9 +12999,19 @@ Returns the widget index that this tooltip is attached to.
 function LTooltipPanel:getTarget() end
 ```
 
+#### Description
+
+Returns the widget index that this tooltip is attached to.
+
+Parameters:
+
+- `self` (`LTooltipPanel`, required): The widget instance.
+
+Returns: `integer` - The target widget index, or nil if unset.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -11444,17 +13025,7 @@ end
 
 ### LTooltipPanel:getText
 
-`LTooltipPanel:getText(self: LTooltipPanel) -> string`
-
-Returns the current tooltip display text.
-
-**Parameters**
-
-- `self` (`LTooltipPanel`, required): The widget instance.
-
-**Returns**: `string` - The tooltip text.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current tooltip display text.
@@ -11462,9 +13033,19 @@ Returns the current tooltip display text.
 function LTooltipPanel:getText() end
 ```
 
+#### Description
+
+Returns the current tooltip display text.
+
+Parameters:
+
+- `self` (`LTooltipPanel`, required): The widget instance.
+
+Returns: `string` - The tooltip text.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -11478,16 +13059,7 @@ end
 
 ### LTooltipPanel:setDelay
 
-`LTooltipPanel:setDelay(self: LTooltipPanel, v: number)`
-
-Sets the delay in seconds before this tooltip appears.
-
-**Parameters**
-
-- `self` (`LTooltipPanel`, required): The widget instance.
-- `v` (`number`, required): The delay in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the delay in seconds before this tooltip appears.
@@ -11495,9 +13067,18 @@ Sets the delay in seconds before this tooltip appears.
 function LTooltipPanel:setDelay(v) end
 ```
 
+#### Description
+
+Sets the delay in seconds before this tooltip appears.
+
+Parameters:
+
+- `self` (`LTooltipPanel`, required): The widget instance.
+- `v` (`number`, required): The delay in seconds.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -11511,16 +13092,7 @@ end
 
 ### LTooltipPanel:setTarget
 
-`LTooltipPanel:setTarget(self: LTooltipPanel, [target]: integer)`
-
-Sets the widget index that this tooltip is attached to.
-
-**Parameters**
-
-- `self` (`LTooltipPanel`, required): The widget instance.
-- `target` (`integer`, optional): The target widget index, or nil to detach.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the widget index that this tooltip is attached to.
@@ -11528,9 +13100,18 @@ Sets the widget index that this tooltip is attached to.
 function LTooltipPanel:setTarget(target) end
 ```
 
+#### Description
+
+Sets the widget index that this tooltip is attached to.
+
+Parameters:
+
+- `self` (`LTooltipPanel`, required): The widget instance.
+- `target` (`integer`, optional): The target widget index, or nil to detach.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -11544,16 +13125,7 @@ end
 
 ### LTooltipPanel:setText
 
-`LTooltipPanel:setText(self: LTooltipPanel, text: string)`
-
-Sets the tooltip panel display text content.
-
-**Parameters**
-
-- `self` (`LTooltipPanel`, required): The widget instance.
-- `text` (`string`, required): The tooltip text.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the tooltip panel display text content.
@@ -11561,9 +13133,18 @@ Sets the tooltip panel display text content.
 function LTooltipPanel:setText(text) end
 ```
 
+#### Description
+
+Sets the tooltip panel display text content.
+
+Parameters:
+
+- `self` (`LTooltipPanel`, required): The widget instance.
+- `text` (`string`, required): The tooltip text.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -11577,19 +13158,7 @@ end
 
 ### LTreeView:addNode
 
-`LTreeView:addNode(self: LTreeView, text: string, [parent_index]: integer) -> integer`
-
-Adds a new node to this tree view, optionally under a parent node.
-
-**Parameters**
-
-- `self` (`LTreeView`, required): The widget instance.
-- `text` (`string`, required): The node label text.
-- `parent_index` (`integer`, optional): The 1-based parent node index, or nil for a root node.
-
-**Returns**: `integer` - The 1-based index of the newly added node.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a new node to this tree view, optionally under a parent node.
@@ -11599,9 +13168,21 @@ Adds a new node to this tree view, optionally under a parent node.
 function LTreeView:addNode(text, parent_index) end
 ```
 
+#### Description
+
+Adds a new node to this tree view, optionally under a parent node.
+
+Parameters:
+
+- `self` (`LTreeView`, required): The widget instance.
+- `text` (`string`, required): The node label text.
+- `parent_index` (`integer`, optional): The 1-based parent node index, or nil for a root node.
+
+Returns: `integer` - The 1-based index of the newly added node.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -11615,24 +13196,24 @@ end
 
 ### LTreeView:clearNodes
 
-`LTreeView:clearNodes(self: LTreeView)`
-
-Removes all nodes from this tree view.
-
-**Parameters**
-
-- `self` (`LTreeView`, required): The widget instance.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes all nodes from this tree view.
 function LTreeView:clearNodes() end
 ```
 
+#### Description
+
+Removes all nodes from this tree view.
+
+Parameters:
+
+- `self` (`LTreeView`, required): The widget instance.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -11646,24 +13227,24 @@ end
 
 ### LTreeView:collapseAll
 
-`LTreeView:collapseAll(self: LTreeView)`
-
-Collapses all nodes in this tree view.
-
-**Parameters**
-
-- `self` (`LTreeView`, required): The widget instance.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Collapses all nodes in this tree view.
 function LTreeView:collapseAll() end
 ```
 
+#### Description
+
+Collapses all nodes in this tree view.
+
+Parameters:
+
+- `self` (`LTreeView`, required): The widget instance.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -11677,18 +13258,7 @@ end
 
 ### LTreeView:collapseNode
 
-`LTreeView:collapseNode(self: LTreeView, index: integer) -> boolean`
-
-Collapses the node at the given 1-based index to hide its children.
-
-**Parameters**
-
-- `self` (`LTreeView`, required): The widget instance.
-- `index` (`integer`, required): The 1-based node index.
-
-**Returns**: `boolean` - True if the node was collapsed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Collapses the node at the given 1-based index to hide its children.
@@ -11697,9 +13267,20 @@ Collapses the node at the given 1-based index to hide its children.
 function LTreeView:collapseNode(index) end
 ```
 
+#### Description
+
+Collapses the node at the given 1-based index to hide its children.
+
+Parameters:
+
+- `self` (`LTreeView`, required): The widget instance.
+- `index` (`integer`, required): The 1-based node index.
+
+Returns: `boolean` - True if the node was collapsed.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -11713,24 +13294,24 @@ end
 
 ### LTreeView:expandAll
 
-`LTreeView:expandAll(self: LTreeView)`
-
-Expands all nodes in this tree view.
-
-**Parameters**
-
-- `self` (`LTreeView`, required): The widget instance.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Expands all nodes in this tree view.
 function LTreeView:expandAll() end
 ```
 
+#### Description
+
+Expands all nodes in this tree view.
+
+Parameters:
+
+- `self` (`LTreeView`, required): The widget instance.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -11744,18 +13325,7 @@ end
 
 ### LTreeView:expandNode
 
-`LTreeView:expandNode(self: LTreeView, index: integer) -> boolean`
-
-Expands the node at the given 1-based index to show its children.
-
-**Parameters**
-
-- `self` (`LTreeView`, required): The widget instance.
-- `index` (`integer`, required): The 1-based node index.
-
-**Returns**: `boolean` - True if the node was expanded.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Expands the node at the given 1-based index to show its children.
@@ -11764,9 +13334,20 @@ Expands the node at the given 1-based index to show its children.
 function LTreeView:expandNode(index) end
 ```
 
+#### Description
+
+Expands the node at the given 1-based index to show its children.
+
+Parameters:
+
+- `self` (`LTreeView`, required): The widget instance.
+- `index` (`integer`, required): The 1-based node index.
+
+Returns: `boolean` - True if the node was expanded.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -11780,18 +13361,7 @@ end
 
 ### LTreeView:getChildNodes
 
-`LTreeView:getChildNodes(self: LTreeView, index: integer) -> integer[]`
-
-Returns a table of 1-based child node indices for the node at the given index.
-
-**Parameters**
-
-- `self` (`LTreeView`, required): The widget instance.
-- `index` (`integer`, required): The 1-based parent node index.
-
-**Returns**: `integer[]` - 1-based child indices.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a table of 1-based child node indices for the node at the given index.
@@ -11800,9 +13370,20 @@ Returns a table of 1-based child node indices for the node at the given index.
 function LTreeView:getChildNodes(index) end
 ```
 
+#### Description
+
+Returns a table of 1-based child node indices for the node at the given index.
+
+Parameters:
+
+- `self` (`LTreeView`, required): The widget instance.
+- `index` (`integer`, required): The 1-based parent node index.
+
+Returns: `integer[]` - 1-based child indices.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -11816,17 +13397,7 @@ end
 
 ### LTreeView:getNodeCount
 
-`LTreeView:getNodeCount(self: LTreeView) -> integer`
-
-Returns the total number of nodes in this tree view.
-
-**Parameters**
-
-- `self` (`LTreeView`, required): The widget instance.
-
-**Returns**: `integer` - The node count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the total number of nodes in this tree view.
@@ -11834,9 +13405,19 @@ Returns the total number of nodes in this tree view.
 function LTreeView:getNodeCount() end
 ```
 
+#### Description
+
+Returns the total number of nodes in this tree view.
+
+Parameters:
+
+- `self` (`LTreeView`, required): The widget instance.
+
+Returns: `integer` - The node count.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -11850,18 +13431,7 @@ end
 
 ### LTreeView:getNodeDepth
 
-`LTreeView:getNodeDepth(self: LTreeView, index: integer) -> integer`
-
-Returns the nesting depth of the node at the given index (0 for root nodes).
-
-**Parameters**
-
-- `self` (`LTreeView`, required): The widget instance.
-- `index` (`integer`, required): The 1-based node index.
-
-**Returns**: `integer` - The depth, or nil if index is invalid.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the nesting depth of the node at the given index (0 for root nodes).
@@ -11870,9 +13440,20 @@ Returns the nesting depth of the node at the given index (0 for root nodes).
 function LTreeView:getNodeDepth(index) end
 ```
 
+#### Description
+
+Returns the nesting depth of the node at the given index (0 for root nodes).
+
+Parameters:
+
+- `self` (`LTreeView`, required): The widget instance.
+- `index` (`integer`, required): The 1-based node index.
+
+Returns: `integer` - The depth, or nil if index is invalid.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -11886,18 +13467,7 @@ end
 
 ### LTreeView:getNodeText
 
-`LTreeView:getNodeText(self: LTreeView, index: integer) -> string`
-
-Returns the text of the node at the given 1-based index.
-
-**Parameters**
-
-- `self` (`LTreeView`, required): The widget instance.
-- `index` (`integer`, required): The 1-based node index.
-
-**Returns**: `string` - The node text, or nil if the index is invalid.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the text of the node at the given 1-based index.
@@ -11906,9 +13476,20 @@ Returns the text of the node at the given 1-based index.
 function LTreeView:getNodeText(index) end
 ```
 
+#### Description
+
+Returns the text of the node at the given 1-based index.
+
+Parameters:
+
+- `self` (`LTreeView`, required): The widget instance.
+- `index` (`integer`, required): The 1-based node index.
+
+Returns: `string` - The node text, or nil if the index is invalid.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -11922,18 +13503,7 @@ end
 
 ### LTreeView:getParentNode
 
-`LTreeView:getParentNode(self: LTreeView, index: integer) -> integer`
-
-Returns the 1-based index of the parent of the node at the given index.
-
-**Parameters**
-
-- `self` (`LTreeView`, required): The widget instance.
-- `index` (`integer`, required): The 1-based node index.
-
-**Returns**: `integer` - The parent node index, or nil for root nodes.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the 1-based index of the parent of the node at the given index.
@@ -11942,9 +13512,20 @@ Returns the 1-based index of the parent of the node at the given index.
 function LTreeView:getParentNode(index) end
 ```
 
+#### Description
+
+Returns the 1-based index of the parent of the node at the given index.
+
+Parameters:
+
+- `self` (`LTreeView`, required): The widget instance.
+- `index` (`integer`, required): The 1-based node index.
+
+Returns: `integer` - The parent node index, or nil for root nodes.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -11958,17 +13539,7 @@ end
 
 ### LTreeView:getSelectedNode
 
-`LTreeView:getSelectedNode(self: LTreeView) -> integer`
-
-Returns the 1-based index of the currently selected node.
-
-**Parameters**
-
-- `self` (`LTreeView`, required): The widget instance.
-
-**Returns**: `integer` - The selected node index, or nil if none.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the 1-based index of the currently selected node.
@@ -11976,9 +13547,19 @@ Returns the 1-based index of the currently selected node.
 function LTreeView:getSelectedNode() end
 ```
 
+#### Description
+
+Returns the 1-based index of the currently selected node.
+
+Parameters:
+
+- `self` (`LTreeView`, required): The widget instance.
+
+Returns: `integer` - The selected node index, or nil if none.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -11992,18 +13573,7 @@ end
 
 ### LTreeView:isExpanded
 
-`LTreeView:isExpanded(self: LTreeView, index: integer) -> boolean`
-
-Returns whether the node at the given 1-based index is currently expanded.
-
-**Parameters**
-
-- `self` (`LTreeView`, required): The widget instance.
-- `index` (`integer`, required): The 1-based node index.
-
-**Returns**: `boolean` - True if expanded.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether the node at the given 1-based index is currently expanded.
@@ -12012,9 +13582,20 @@ Returns whether the node at the given 1-based index is currently expanded.
 function LTreeView:isExpanded(index) end
 ```
 
+#### Description
+
+Returns whether the node at the given 1-based index is currently expanded.
+
+Parameters:
+
+- `self` (`LTreeView`, required): The widget instance.
+- `index` (`integer`, required): The 1-based node index.
+
+Returns: `boolean` - True if expanded.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -12028,18 +13609,7 @@ end
 
 ### LTreeView:isNodeExpanded
 
-`LTreeView:isNodeExpanded(self: LTreeView, index: integer) -> boolean`
-
-Returns whether the node at the given 1-based index is expanded. Returns nil if the index is invalid.
-
-**Parameters**
-
-- `self` (`LTreeView`, required): The widget instance.
-- `index` (`integer`, required): The 1-based node index.
-
-**Returns**: `boolean` - True if expanded, false if collapsed, nil if invalid.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether the node at the given 1-based index is expanded. Returns nil if the index is invalid.
@@ -12048,9 +13618,20 @@ Returns whether the node at the given 1-based index is expanded. Returns nil if 
 function LTreeView:isNodeExpanded(index) end
 ```
 
+#### Description
+
+Returns whether the node at the given 1-based index is expanded. Returns nil if the index is invalid.
+
+Parameters:
+
+- `self` (`LTreeView`, required): The widget instance.
+- `index` (`integer`, required): The 1-based node index.
+
+Returns: `boolean` - True if expanded, false if collapsed, nil if invalid.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -12064,18 +13645,7 @@ end
 
 ### LTreeView:removeNode
 
-`LTreeView:removeNode(self: LTreeView, index: integer) -> boolean`
-
-Removes the node at the given 1-based index from this tree view.
-
-**Parameters**
-
-- `self` (`LTreeView`, required): The widget instance.
-- `index` (`integer`, required): The 1-based node index.
-
-**Returns**: `boolean` - True if the node was removed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes the node at the given 1-based index from this tree view.
@@ -12084,9 +13654,20 @@ Removes the node at the given 1-based index from this tree view.
 function LTreeView:removeNode(index) end
 ```
 
+#### Description
+
+Removes the node at the given 1-based index from this tree view.
+
+Parameters:
+
+- `self` (`LTreeView`, required): The widget instance.
+- `index` (`integer`, required): The 1-based node index.
+
+Returns: `boolean` - True if the node was removed.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -12100,19 +13681,7 @@ end
 
 ### LTreeView:setNodeIcon
 
-`LTreeView:setNodeIcon(self: LTreeView, index: integer, icon: string) -> boolean`
-
-Sets the icon of the node at the given 1-based index.
-
-**Parameters**
-
-- `self` (`LTreeView`, required): The widget instance.
-- `index` (`integer`, required): The 1-based node index.
-- `icon` (`string`, required): The icon identifier string.
-
-**Returns**: `boolean` - True if the icon was set.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the icon of the node at the given 1-based index.
@@ -12122,9 +13691,21 @@ Sets the icon of the node at the given 1-based index.
 function LTreeView:setNodeIcon(index, icon) end
 ```
 
+#### Description
+
+Sets the icon of the node at the given 1-based index.
+
+Parameters:
+
+- `self` (`LTreeView`, required): The widget instance.
+- `index` (`integer`, required): The 1-based node index.
+- `icon` (`string`, required): The icon identifier string.
+
+Returns: `boolean` - True if the icon was set.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -12138,19 +13719,7 @@ end
 
 ### LTreeView:setNodeText
 
-`LTreeView:setNodeText(self: LTreeView, index: integer, text: string) -> boolean`
-
-Sets the text of the node at the given 1-based index.
-
-**Parameters**
-
-- `self` (`LTreeView`, required): The widget instance.
-- `index` (`integer`, required): The 1-based node index.
-- `text` (`string`, required): The new node text.
-
-**Returns**: `boolean` - True if the node text was set.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the text of the node at the given 1-based index.
@@ -12160,9 +13729,21 @@ Sets the text of the node at the given 1-based index.
 function LTreeView:setNodeText(index, text) end
 ```
 
+#### Description
+
+Sets the text of the node at the given 1-based index.
+
+Parameters:
+
+- `self` (`LTreeView`, required): The widget instance.
+- `index` (`integer`, required): The 1-based node index.
+- `text` (`string`, required): The new node text.
+
+Returns: `boolean` - True if the node text was set.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -12176,18 +13757,7 @@ end
 
 ### LTreeView:setSelectedNode
 
-`LTreeView:setSelectedNode(self: LTreeView, index: integer) -> boolean`
-
-Sets the selected node by 1-based index.
-
-**Parameters**
-
-- `self` (`LTreeView`, required): The widget instance.
-- `index` (`integer`, required): The 1-based node index.
-
-**Returns**: `boolean` - True if the node was selected.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the selected node by 1-based index.
@@ -12196,9 +13766,20 @@ Sets the selected node by 1-based index.
 function LTreeView:setSelectedNode(index) end
 ```
 
+#### Description
+
+Sets the selected node by 1-based index.
+
+Parameters:
+
+- `self` (`LTreeView`, required): The widget instance.
+- `index` (`integer`, required): The 1-based node index.
+
+Returns: `boolean` - True if the node was selected.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -12212,18 +13793,7 @@ end
 
 ### LTreeView:toggleNode
 
-`LTreeView:toggleNode(self: LTreeView, index: integer) -> boolean`
-
-Toggles the expanded/collapsed state of the node at the given 1-based index.
-
-**Parameters**
-
-- `self` (`LTreeView`, required): The widget instance.
-- `index` (`integer`, required): The 1-based node index.
-
-**Returns**: `boolean` - True if the node is now expanded, false if collapsed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Toggles the expanded/collapsed state of the node at the given 1-based index.
@@ -12232,9 +13802,20 @@ Toggles the expanded/collapsed state of the node at the given 1-based index.
 function LTreeView:toggleNode(index) end
 ```
 
+#### Description
+
+Toggles the expanded/collapsed state of the node at the given 1-based index.
+
+Parameters:
+
+- `self` (`LTreeView`, required): The widget instance.
+- `index` (`integer`, required): The 1-based node index.
+
+Returns: `boolean` - True if the node is now expanded, false if collapsed.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -12248,16 +13829,7 @@ end
 
 ### LUiWidget:addChild
 
-`LUiWidget:addChild(self: LUiWidget, child: LUiWidget|integer)`
-
-Adds a child widget to this widget's hierarchy.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-- `child` (`LUiWidget|integer`, required): The child widget table or widget index to add.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a child widget to this widget's hierarchy.
@@ -12265,9 +13837,18 @@ Adds a child widget to this widget's hierarchy.
 function LUiWidget:addChild(child) end
 ```
 
+#### Description
+
+Adds a child widget to this widget's hierarchy.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+- `child` (`LUiWidget|integer`, required): The child widget table or widget index to add.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -12281,20 +13862,7 @@ end
 
 ### LUiWidget:animateAlpha
 
-`LUiWidget:animateAlpha(self: LUiWidget, target: number, [duration]: number, [hide_on_complete]: boolean) -> table`
-
-Smoothly animates this widget's opacity toward a target value over the given duration.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-- `target` (`number`, required): Target alpha value (0.0 to 1.0).
-- `duration` (`number`, optional): Animation duration in seconds. Defaults to 0.2.
-- `hide_on_complete` (`boolean`, optional): If true, hides the widget when alpha reaches 0.
-
-**Returns**: `table` - Table result returned by this call.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Smoothly animates this widget's opacity toward a target value over the given duration.
@@ -12305,9 +13873,22 @@ Smoothly animates this widget's opacity toward a target value over the given dur
 function LUiWidget:animateAlpha(target, duration, hide_on_complete) end
 ```
 
+#### Description
+
+Smoothly animates this widget's opacity toward a target value over the given duration.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+- `target` (`number`, required): Target alpha value (0.0 to 1.0).
+- `duration` (`number`, optional): Animation duration in seconds. Defaults to 0.2.
+- `hide_on_complete` (`boolean`, optional): If true, hides the widget when alpha reaches 0.
+
+Returns: `table` - Table result returned by this call.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -12321,20 +13902,7 @@ end
 
 ### LUiWidget:animatePosition
 
-`LUiWidget:animatePosition(self: LUiWidget, x: number, y: number, [duration]: number) -> table`
-
-Smoothly animates this widget's position toward the target coordinates.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-- `x` (`number`, required): Target x position.
-- `y` (`number`, required): Target y position.
-- `duration` (`number`, optional): Animation duration in seconds. Defaults to 0.2.
-
-**Returns**: `table` - Table result returned by this call.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Smoothly animates this widget's position toward the target coordinates.
@@ -12345,9 +13913,22 @@ Smoothly animates this widget's position toward the target coordinates.
 function LUiWidget:animatePosition(x, y, duration) end
 ```
 
+#### Description
+
+Smoothly animates this widget's position toward the target coordinates.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+- `x` (`number`, required): Target x position.
+- `y` (`number`, required): Target y position.
+- `duration` (`number`, optional): Animation duration in seconds. Defaults to 0.2.
+
+Returns: `table` - Table result returned by this call.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -12361,16 +13942,7 @@ end
 
 ### LUiWidget:attachToEntity
 
-`LUiWidget:attachToEntity(self: LUiWidget, entity_id: integer)`
-
-Attaches this widget to a game entity so it follows the entity's position on screen.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-- `entity_id` (`integer`, required): The entity ID to attach to.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Attaches this widget to a game entity so it follows the entity's position on screen.
@@ -12378,9 +13950,18 @@ Attaches this widget to a game entity so it follows the entity's position on scr
 function LUiWidget:attachToEntity(entity_id) end
 ```
 
+#### Description
+
+Attaches this widget to a game entity so it follows the entity's position on screen.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+- `entity_id` (`integer`, required): The entity ID to attach to.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -12394,16 +13975,7 @@ end
 
 ### LUiWidget:bind
 
-`LUiWidget:bind(self: LUiWidget, key: string)`
-
-Binds this widget to a data key for use with update_bindings.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-- `key` (`string`, required): The binding key name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Binds this widget to a data key for use with update_bindings.
@@ -12411,9 +13983,18 @@ Binds this widget to a data key for use with update_bindings.
 function LUiWidget:bind(key) end
 ```
 
+#### Description
+
+Binds this widget to a data key for use with update_bindings.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+- `key` (`string`, required): The binding key name.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -12427,17 +14008,7 @@ end
 
 ### LUiWidget:cancelAnimations
 
-`LUiWidget:cancelAnimations(self: LUiWidget) -> boolean`
-
-Cancels all active animations on this widget, leaving it at its current state.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-
-**Returns**: `boolean` - True if any animations were cancelled.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Cancels all active animations on this widget, leaving it at its current state.
@@ -12445,9 +14016,19 @@ Cancels all active animations on this widget, leaving it at its current state.
 function LUiWidget:cancelAnimations() end
 ```
 
+#### Description
+
+Cancels all active animations on this widget, leaving it at its current state.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+
+Returns: `boolean` - True if any animations were cancelled.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -12461,24 +14042,24 @@ end
 
 ### LUiWidget:clearAnchor
 
-`LUiWidget:clearAnchor(self: LUiWidget)`
-
-Removes all anchor constraints from this widget.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes all anchor constraints from this widget.
 function LUiWidget:clearAnchor() end
 ```
 
+#### Description
+
+Removes all anchor constraints from this widget.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -12492,19 +14073,7 @@ end
 
 ### LUiWidget:containsPoint
 
-`LUiWidget:containsPoint(self: LUiWidget, x: number, y: number) -> boolean`
-
-Tests whether the given screen-space point is inside this widget's bounds.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-- `x` (`number`, required): X coordinate in screen pixels.
-- `y` (`number`, required): Y coordinate in screen pixels.
-
-**Returns**: `boolean` - True if the point is within the widget.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Tests whether the given screen-space point is inside this widget's bounds.
@@ -12514,9 +14083,21 @@ Tests whether the given screen-space point is inside this widget's bounds.
 function LUiWidget:containsPoint(x, y) end
 ```
 
+#### Description
+
+Tests whether the given screen-space point is inside this widget's bounds.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+- `x` (`number`, required): X coordinate in screen pixels.
+- `y` (`number`, required): Y coordinate in screen pixels.
+
+Returns: `boolean` - True if the point is within the widget.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -12530,24 +14111,24 @@ end
 
 ### LUiWidget:detachFromEntity
 
-`LUiWidget:detachFromEntity(self: LUiWidget)`
-
-Detaches this widget from any previously attached entity.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Detaches this widget from any previously attached entity.
 function LUiWidget:detachFromEntity() end
 ```
 
+#### Description
+
+Detaches this widget from any previously attached entity.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -12561,24 +14142,24 @@ end
 
 ### LUiWidget:fadeIn
 
-`LUiWidget:fadeIn(self: LUiWidget)`
-
-Instantly makes this widget fully opaque and visible.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Instantly makes this widget fully opaque and visible.
 function LUiWidget:fadeIn() end
 ```
 
+#### Description
+
+Instantly makes this widget fully opaque and visible.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -12592,24 +14173,24 @@ end
 
 ### LUiWidget:fadeOut
 
-`LUiWidget:fadeOut(self: LUiWidget)`
-
-Instantly makes this widget fully transparent and hidden.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Instantly makes this widget fully transparent and hidden.
 function LUiWidget:fadeOut() end
 ```
 
+#### Description
+
+Instantly makes this widget fully transparent and hidden.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -12623,18 +14204,7 @@ end
 
 ### LUiWidget:findById
 
-`LUiWidget:findById(self: LUiWidget, id: string) -> LWidget`
-
-Searches this widget's subtree for a child with the given ID.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-- `id` (`string`, required): The widget ID to search for.
-
-**Returns**: `LWidget` - The found widget table, or nil if not found.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Searches this widget's subtree for a child with the given ID.
@@ -12643,9 +14213,20 @@ Searches this widget's subtree for a child with the given ID.
 function LUiWidget:findById(id) end
 ```
 
+#### Description
+
+Searches this widget's subtree for a child with the given ID.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+- `id` (`string`, required): The widget ID to search for.
+
+Returns: `LWidget` - The found widget table, or nil if not found.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -12659,17 +14240,7 @@ end
 
 ### LUiWidget:getAlpha
 
-`LUiWidget:getAlpha(self: LUiWidget) -> number`
-
-Returns the current opacity of this widget.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-
-**Returns**: `number` - The alpha value between 0.0 and 1.0.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current opacity of this widget.
@@ -12677,9 +14248,19 @@ Returns the current opacity of this widget.
 function LUiWidget:getAlpha() end
 ```
 
+#### Description
+
+Returns the current opacity of this widget.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+
+Returns: `number` - The alpha value between 0.0 and 1.0.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -12693,17 +14274,7 @@ end
 
 ### LUiWidget:getChildCount
 
-`LUiWidget:getChildCount(self: LUiWidget) -> integer`
-
-Returns the number of direct child widgets attached to this widget.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-
-**Returns**: `integer` - The child count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of direct child widgets attached to this widget.
@@ -12711,9 +14282,19 @@ Returns the number of direct child widgets attached to this widget.
 function LUiWidget:getChildCount() end
 ```
 
+#### Description
+
+Returns the number of direct child widgets attached to this widget.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+
+Returns: `integer` - The child count.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -12727,17 +14308,7 @@ end
 
 ### LUiWidget:getChildren
 
-`LUiWidget:getChildren(self: LUiWidget) -> table`
-
-Returns a table of lightweight child widget references, each containing an _idx field.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-
-**Returns**: `table` - Array of child widget tables.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a table of lightweight child widget references, each containing an _idx field.
@@ -12745,9 +14316,19 @@ Returns a table of lightweight child widget references, each containing an _idx 
 function LUiWidget:getChildren() end
 ```
 
+#### Description
+
+Returns a table of lightweight child widget references, each containing an _idx field.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+
+Returns: `table` - Array of child widget tables.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -12761,17 +14342,7 @@ end
 
 ### LUiWidget:getFlexGrow
 
-`LUiWidget:getFlexGrow(self: LUiWidget) -> number`
-
-Returns the flex-grow factor of this widget.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-
-**Returns**: `number` - The grow factor.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the flex-grow factor of this widget.
@@ -12779,9 +14350,19 @@ Returns the flex-grow factor of this widget.
 function LUiWidget:getFlexGrow() end
 ```
 
+#### Description
+
+Returns the flex-grow factor of this widget.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+
+Returns: `number` - The grow factor.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -12795,17 +14376,7 @@ end
 
 ### LUiWidget:getFlexShrink
 
-`LUiWidget:getFlexShrink(self: LUiWidget) -> number`
-
-Returns the flex-shrink factor of this widget.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-
-**Returns**: `number` - The shrink factor.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the flex-shrink factor of this widget.
@@ -12813,9 +14384,19 @@ Returns the flex-shrink factor of this widget.
 function LUiWidget:getFlexShrink() end
 ```
 
+#### Description
+
+Returns the flex-shrink factor of this widget.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+
+Returns: `number` - The shrink factor.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -12829,17 +14410,7 @@ end
 
 ### LUiWidget:getId
 
-`LUiWidget:getId(self: LUiWidget) -> string`
-
-Returns the string identifier assigned to this widget.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-
-**Returns**: `string` - The widget ID, or an empty string if none was set.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the string identifier assigned to this widget.
@@ -12847,9 +14418,19 @@ Returns the string identifier assigned to this widget.
 function LUiWidget:getId() end
 ```
 
+#### Description
+
+Returns the string identifier assigned to this widget.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+
+Returns: `string` - The widget ID, or an empty string if none was set.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -12863,17 +14444,7 @@ end
 
 ### LUiWidget:getMargin
 
-`LUiWidget:getMargin(self: LUiWidget) -> number, number, number, number`
-
-Returns the outer margin of this widget.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-
-**Returns**: `number, number, number, number` - Top, right, bottom, and left margin in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the outer margin of this widget.
@@ -12884,9 +14455,19 @@ Returns the outer margin of this widget.
 function LUiWidget:getMargin() end
 ```
 
+#### Description
+
+Returns the outer margin of this widget.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+
+Returns: `number, number, number, number` - Top, right, bottom, and left margin in pixels.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -12900,17 +14481,7 @@ end
 
 ### LUiWidget:getMaxSize
 
-`LUiWidget:getMaxSize(self: LUiWidget) -> number, number`
-
-Returns the maximum width and height of this widget.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-
-**Returns**: `number, number` - Maximum width and height in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the maximum width and height of this widget.
@@ -12919,9 +14490,19 @@ Returns the maximum width and height of this widget.
 function LUiWidget:getMaxSize() end
 ```
 
+#### Description
+
+Returns the maximum width and height of this widget.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+
+Returns: `number, number` - Maximum width and height in pixels.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -12935,17 +14516,7 @@ end
 
 ### LUiWidget:getMinSize
 
-`LUiWidget:getMinSize(self: LUiWidget) -> number, number`
-
-Returns the minimum width and height of this widget.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-
-**Returns**: `number, number` - Minimum width and height in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the minimum width and height of this widget.
@@ -12954,9 +14525,19 @@ Returns the minimum width and height of this widget.
 function LUiWidget:getMinSize() end
 ```
 
+#### Description
+
+Returns the minimum width and height of this widget.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+
+Returns: `number, number` - Minimum width and height in pixels.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -12970,17 +14551,7 @@ end
 
 ### LUiWidget:getPadding
 
-`LUiWidget:getPadding(self: LUiWidget) -> number, number, number, number`
-
-Returns the inner padding of this widget.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-
-**Returns**: `number, number, number, number` - Top, right, bottom, and left padding in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the inner padding of this widget.
@@ -12991,9 +14562,19 @@ Returns the inner padding of this widget.
 function LUiWidget:getPadding() end
 ```
 
+#### Description
+
+Returns the inner padding of this widget.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+
+Returns: `number, number, number, number` - Top, right, bottom, and left padding in pixels.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -13007,17 +14588,7 @@ end
 
 ### LUiWidget:getPosition
 
-`LUiWidget:getPosition(self: LUiWidget) -> number, number`
-
-Returns the local position of this widget relative to its parent.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-
-**Returns**: `number, number` - The x and y coordinates in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the local position of this widget relative to its parent.
@@ -13026,9 +14597,19 @@ Returns the local position of this widget relative to its parent.
 function LUiWidget:getPosition() end
 ```
 
+#### Description
+
+Returns the local position of this widget relative to its parent.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+
+Returns: `number, number` - The x and y coordinates in pixels.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -13042,17 +14623,7 @@ end
 
 ### LUiWidget:getRect
 
-`LUiWidget:getRect(self: LUiWidget) -> number, number, number, number`
-
-Returns the computed bounding rectangle of this widget in screen coordinates after layout.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-
-**Returns**: `number, number, number, number` - The x, y, width, and height of the computed rect.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the computed bounding rectangle of this widget in screen coordinates after layout.
@@ -13063,9 +14634,19 @@ Returns the computed bounding rectangle of this widget in screen coordinates aft
 function LUiWidget:getRect() end
 ```
 
+#### Description
+
+Returns the computed bounding rectangle of this widget in screen coordinates after layout.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+
+Returns: `number, number, number, number` - The x, y, width, and height of the computed rect.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -13079,17 +14660,7 @@ end
 
 ### LUiWidget:getSize
 
-`LUiWidget:getSize(self: LUiWidget) -> number, number`
-
-Returns the width and height of this widget.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-
-**Returns**: `number, number` - The width and height in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the width and height of this widget.
@@ -13098,9 +14669,19 @@ Returns the width and height of this widget.
 function LUiWidget:getSize() end
 ```
 
+#### Description
+
+Returns the width and height of this widget.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+
+Returns: `number, number` - The width and height in pixels.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -13114,17 +14695,7 @@ end
 
 ### LUiWidget:getState
 
-`LUiWidget:getState(self: LUiWidget) -> string`
-
-Returns the current interaction state of this widget (e.g. "normal", "hovered", "pressed", "disabled").
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-
-**Returns**: `string` - The widget state name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current interaction state of this widget (e.g. "normal", "hovered", "pressed", "disabled").
@@ -13132,9 +14703,19 @@ Returns the current interaction state of this widget (e.g. "normal", "hovered", 
 function LUiWidget:getState() end
 ```
 
+#### Description
+
+Returns the current interaction state of this widget (e.g. "normal", "hovered", "pressed", "disabled").
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+
+Returns: `string` - The widget state name.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -13148,17 +14729,7 @@ end
 
 ### LUiWidget:getTooltip
 
-`LUiWidget:getTooltip(self: LUiWidget) -> string`
-
-Returns the tooltip text of this widget.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-
-**Returns**: `string` - The tooltip text, or an empty string if none is set.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the tooltip text of this widget.
@@ -13166,9 +14737,19 @@ Returns the tooltip text of this widget.
 function LUiWidget:getTooltip() end
 ```
 
+#### Description
+
+Returns the tooltip text of this widget.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+
+Returns: `string` - The tooltip text, or an empty string if none is set.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -13182,17 +14763,7 @@ end
 
 ### LUiWidget:getZOrder
 
-`LUiWidget:getZOrder(self: LUiWidget) -> integer`
-
-Returns the z-order (draw priority) of this widget.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-
-**Returns**: `integer` - The z-order value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the z-order (draw priority) of this widget.
@@ -13200,9 +14771,19 @@ Returns the z-order (draw priority) of this widget.
 function LUiWidget:getZOrder() end
 ```
 
+#### Description
+
+Returns the z-order (draw priority) of this widget.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+
+Returns: `integer` - The z-order value.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -13216,17 +14797,7 @@ end
 
 ### LUiWidget:isAnimating
 
-`LUiWidget:isAnimating(self: LUiWidget) -> boolean`
-
-Returns whether this widget currently has an active animation.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-
-**Returns**: `boolean` - True if an animation is in progress.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this widget currently has an active animation.
@@ -13234,9 +14805,19 @@ Returns whether this widget currently has an active animation.
 function LUiWidget:isAnimating() end
 ```
 
+#### Description
+
+Returns whether this widget currently has an active animation.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+
+Returns: `boolean` - True if an animation is in progress.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -13250,17 +14831,7 @@ end
 
 ### LUiWidget:isEnabled
 
-`LUiWidget:isEnabled(self: LUiWidget) -> boolean`
-
-Returns whether this widget is currently enabled and can receive input.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-
-**Returns**: `boolean` - True if the widget is enabled.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this widget is currently enabled and can receive input.
@@ -13268,9 +14839,19 @@ Returns whether this widget is currently enabled and can receive input.
 function LUiWidget:isEnabled() end
 ```
 
+#### Description
+
+Returns whether this widget is currently enabled and can receive input.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+
+Returns: `boolean` - True if the widget is enabled.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -13284,17 +14865,7 @@ end
 
 ### LUiWidget:isVisible
 
-`LUiWidget:isVisible(self: LUiWidget) -> boolean`
-
-Returns whether this widget is currently visible.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-
-**Returns**: `boolean` - True if the widget is visible.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this widget is currently visible.
@@ -13302,9 +14873,19 @@ Returns whether this widget is currently visible.
 function LUiWidget:isVisible() end
 ```
 
+#### Description
+
+Returns whether this widget is currently visible.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+
+Returns: `boolean` - True if the widget is visible.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -13318,16 +14899,7 @@ end
 
 ### LUiWidget:removeChild
 
-`LUiWidget:removeChild(self: LUiWidget, child: LUiWidget|integer)`
-
-Removes a child widget from this widget's hierarchy.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-- `child` (`LUiWidget|integer`, required): The child widget table or widget index to remove.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes a child widget from this widget's hierarchy.
@@ -13335,9 +14907,18 @@ Removes a child widget from this widget's hierarchy.
 function LUiWidget:removeChild(child) end
 ```
 
+#### Description
+
+Removes a child widget from this widget's hierarchy.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+- `child` (`LUiWidget|integer`, required): The child widget table or widget index to remove.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -13351,16 +14932,7 @@ end
 
 ### LUiWidget:setAlpha
 
-`LUiWidget:setAlpha(self: LUiWidget, alpha: number)`
-
-Sets the opacity of this widget, clamped to 0.0 (fully transparent) through 1.0 (fully opaque).
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-- `alpha` (`number`, required): The opacity value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the opacity of this widget, clamped to 0.0 (fully transparent) through 1.0 (fully opaque).
@@ -13368,9 +14940,18 @@ Sets the opacity of this widget, clamped to 0.0 (fully transparent) through 1.0 
 function LUiWidget:setAlpha(alpha) end
 ```
 
+#### Description
+
+Sets the opacity of this widget, clamped to 0.0 (fully transparent) through 1.0 (fully opaque).
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+- `alpha` (`number`, required): The opacity value.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -13384,19 +14965,7 @@ end
 
 ### LUiWidget:setAnchor
 
-`LUiWidget:setAnchor(self: LUiWidget, [left]: number, [top]: number, [right]: number, [bottom]: number)`
-
-Anchors this widget to its parent's edges. Pass nil for any side to leave it unanchored.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-- `left` (`number`, optional): Distance from parent's left edge, or nil.
-- `top` (`number`, optional): Distance from parent's top edge, or nil.
-- `right` (`number`, optional): Distance from parent's right edge, or nil.
-- `bottom` (`number`, optional): Distance from parent's bottom edge, or nil.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Anchors this widget to its parent's edges. Pass nil for any side to leave it unanchored.
@@ -13407,9 +14976,21 @@ Anchors this widget to its parent's edges. Pass nil for any side to leave it una
 function LUiWidget:setAnchor(left, top, right, bottom) end
 ```
 
+#### Description
+
+Anchors this widget to its parent's edges. Pass nil for any side to leave it unanchored.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+- `left` (`number`, optional): Distance from parent's left edge, or nil.
+- `top` (`number`, optional): Distance from parent's top edge, or nil.
+- `right` (`number`, optional): Distance from parent's right edge, or nil.
+- `bottom` (`number`, optional): Distance from parent's bottom edge, or nil.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -13423,17 +15004,7 @@ end
 
 ### LUiWidget:setAnchorCenter
 
-`LUiWidget:setAnchorCenter(self: LUiWidget, [cx]: number, [cy]: number)`
-
-Centers this widget within its parent using proportional anchor offsets (0.0 to 1.0).
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-- `cx` (`number`, optional): Horizontal center fraction (0.5 = centered).
-- `cy` (`number`, optional): Vertical center fraction (0.5 = centered).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Centers this widget within its parent using proportional anchor offsets (0.0 to 1.0).
@@ -13442,9 +15013,19 @@ Centers this widget within its parent using proportional anchor offsets (0.0 to 
 function LUiWidget:setAnchorCenter(cx, cy) end
 ```
 
+#### Description
+
+Centers this widget within its parent using proportional anchor offsets (0.0 to 1.0).
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+- `cx` (`number`, optional): Horizontal center fraction (0.5 = centered).
+- `cy` (`number`, optional): Vertical center fraction (0.5 = centered).
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -13458,16 +15039,7 @@ end
 
 ### LUiWidget:setEnabled
 
-`LUiWidget:setEnabled(self: LUiWidget, v: boolean)`
-
-Enables or disables this widget. Disabled widgets appear grayed out and ignore input.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-- `v` (`boolean`, required): True to enable, false to disable.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Enables or disables this widget. Disabled widgets appear grayed out and ignore input.
@@ -13475,9 +15047,18 @@ Enables or disables this widget. Disabled widgets appear grayed out and ignore i
 function LUiWidget:setEnabled(v) end
 ```
 
+#### Description
+
+Enables or disables this widget. Disabled widgets appear grayed out and ignore input.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+- `v` (`boolean`, required): True to enable, false to disable.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -13491,16 +15072,7 @@ end
 
 ### LUiWidget:setFlexGrow
 
-`LUiWidget:setFlexGrow(self: LUiWidget, grow: number)`
-
-Sets the flex-grow factor controlling how much extra space this widget receives in a layout.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-- `grow` (`number`, required): The grow factor (0 = no growth).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the flex-grow factor controlling how much extra space this widget receives in a layout.
@@ -13508,9 +15080,18 @@ Sets the flex-grow factor controlling how much extra space this widget receives 
 function LUiWidget:setFlexGrow(grow) end
 ```
 
+#### Description
+
+Sets the flex-grow factor controlling how much extra space this widget receives in a layout.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+- `grow` (`number`, required): The grow factor (0 = no growth).
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -13524,16 +15105,7 @@ end
 
 ### LUiWidget:setFlexShrink
 
-`LUiWidget:setFlexShrink(self: LUiWidget, shrink: number)`
-
-Sets the flex-shrink factor controlling how much this widget shrinks when layout space is insufficient.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-- `shrink` (`number`, required): The shrink factor (0 = no shrinkage).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the flex-shrink factor controlling how much this widget shrinks when layout space is insufficient.
@@ -13541,9 +15113,18 @@ Sets the flex-shrink factor controlling how much this widget shrinks when layout
 function LUiWidget:setFlexShrink(shrink) end
 ```
 
+#### Description
+
+Sets the flex-shrink factor controlling how much this widget shrinks when layout space is insufficient.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+- `shrink` (`number`, required): The shrink factor (0 = no shrinkage).
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -13557,16 +15138,7 @@ end
 
 ### LUiWidget:setId
 
-`LUiWidget:setId(self: LUiWidget, id: string)`
-
-Assigns a string identifier to this widget for lookup with findById.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-- `id` (`string`, required): A unique identifier string.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Assigns a string identifier to this widget for lookup with findById.
@@ -13574,9 +15146,18 @@ Assigns a string identifier to this widget for lookup with findById.
 function LUiWidget:setId(id) end
 ```
 
+#### Description
+
+Assigns a string identifier to this widget for lookup with findById.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+- `id` (`string`, required): A unique identifier string.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -13590,19 +15171,7 @@ end
 
 ### LUiWidget:setMargin
 
-`LUiWidget:setMargin(self: LUiWidget, top: number, [right]: number, [bottom]: number, [left]: number)`
-
-Sets the outer margin of this widget. Accepts 1 to 4 values (top, right?, bottom?, left?) following CSS shorthand rules.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-- `top` (`number`, required): Top margin in pixels (also used as default for other sides).
-- `right` (`number`, optional): Right margin. Defaults to top.
-- `bottom` (`number`, optional): Bottom margin. Defaults to top.
-- `left` (`number`, optional): Left margin. Defaults to right.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the outer margin of this widget. Accepts 1 to 4 values (top, right?, bottom?, left?) following CSS shorthand rules.
@@ -13613,9 +15182,21 @@ Sets the outer margin of this widget. Accepts 1 to 4 values (top, right?, bottom
 function LUiWidget:setMargin(top, right, bottom, left) end
 ```
 
+#### Description
+
+Sets the outer margin of this widget. Accepts 1 to 4 values (top, right?, bottom?, left?) following CSS shorthand rules.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+- `top` (`number`, required): Top margin in pixels (also used as default for other sides).
+- `right` (`number`, optional): Right margin. Defaults to top.
+- `bottom` (`number`, optional): Bottom margin. Defaults to top.
+- `left` (`number`, optional): Left margin. Defaults to right.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -13629,17 +15210,7 @@ end
 
 ### LUiWidget:setMaxSize
 
-`LUiWidget:setMaxSize(self: LUiWidget, w: number, h: number)`
-
-Sets the maximum allowed width and height for this widget during layout.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-- `w` (`number`, required): Maximum width in pixels.
-- `h` (`number`, required): Maximum height in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the maximum allowed width and height for this widget during layout.
@@ -13648,9 +15219,19 @@ Sets the maximum allowed width and height for this widget during layout.
 function LUiWidget:setMaxSize(w, h) end
 ```
 
+#### Description
+
+Sets the maximum allowed width and height for this widget during layout.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+- `w` (`number`, required): Maximum width in pixels.
+- `h` (`number`, required): Maximum height in pixels.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -13664,17 +15245,7 @@ end
 
 ### LUiWidget:setMinSize
 
-`LUiWidget:setMinSize(self: LUiWidget, w: number, h: number)`
-
-Sets the minimum allowed width and height for this widget during layout.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-- `w` (`number`, required): Minimum width in pixels.
-- `h` (`number`, required): Minimum height in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the minimum allowed width and height for this widget during layout.
@@ -13683,9 +15254,19 @@ Sets the minimum allowed width and height for this widget during layout.
 function LUiWidget:setMinSize(w, h) end
 ```
 
+#### Description
+
+Sets the minimum allowed width and height for this widget during layout.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+- `w` (`number`, required): Minimum width in pixels.
+- `h` (`number`, required): Minimum height in pixels.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -13699,16 +15280,7 @@ end
 
 ### LUiWidget:setOnChange
 
-`LUiWidget:setOnChange(self: LUiWidget, f: function)`
-
-Registers a callback function invoked when this widget's value changes.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-- `f` (`function`, required): Callback receiving the widget index as argument.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Registers a callback function invoked when this widget's value changes.
@@ -13716,9 +15288,18 @@ Registers a callback function invoked when this widget's value changes.
 function LUiWidget:setOnChange(f) end
 ```
 
+#### Description
+
+Registers a callback function invoked when this widget's value changes.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+- `f` (`function`, required): Callback receiving the widget index as argument.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -13732,16 +15313,7 @@ end
 
 ### LUiWidget:setOnClick
 
-`LUiWidget:setOnClick(self: LUiWidget, f: function)`
-
-Registers a callback function invoked when this widget is clicked.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-- `f` (`function`, required): Callback receiving the widget index as argument.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Registers a callback function invoked when this widget is clicked.
@@ -13749,9 +15321,18 @@ Registers a callback function invoked when this widget is clicked.
 function LUiWidget:setOnClick(f) end
 ```
 
+#### Description
+
+Registers a callback function invoked when this widget is clicked.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+- `f` (`function`, required): Callback receiving the widget index as argument.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -13765,16 +15346,7 @@ end
 
 ### LUiWidget:setOnDraw
 
-`LUiWidget:setOnDraw(self: LUiWidget, f: function)`
-
-Registers a custom draw callback for this widget, invoked each frame during the draw pass.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-- `f` (`function`, required): Callback receiving a rect table {x, y, w, h} with the computed bounds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Registers a custom draw callback for this widget, invoked each frame during the draw pass.
@@ -13782,9 +15354,18 @@ Registers a custom draw callback for this widget, invoked each frame during the 
 function LUiWidget:setOnDraw(f) end
 ```
 
+#### Description
+
+Registers a custom draw callback for this widget, invoked each frame during the draw pass.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+- `f` (`function`, required): Callback receiving a rect table {x, y, w, h} with the computed bounds.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -13798,19 +15379,7 @@ end
 
 ### LUiWidget:setPadding
 
-`LUiWidget:setPadding(self: LUiWidget, top: number, [right]: number, [bottom]: number, [left]: number)`
-
-Sets the inner padding of this widget. Accepts 1 to 4 values (top, right?, bottom?, left?) following CSS shorthand rules.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-- `top` (`number`, required): Top padding in pixels (also used as default for other sides).
-- `right` (`number`, optional): Right padding. Defaults to top.
-- `bottom` (`number`, optional): Bottom padding. Defaults to top.
-- `left` (`number`, optional): Left padding. Defaults to right.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the inner padding of this widget. Accepts 1 to 4 values (top, right?, bottom?, left?) following CSS shorthand rules.
@@ -13821,9 +15390,21 @@ Sets the inner padding of this widget. Accepts 1 to 4 values (top, right?, botto
 function LUiWidget:setPadding(top, right, bottom, left) end
 ```
 
+#### Description
+
+Sets the inner padding of this widget. Accepts 1 to 4 values (top, right?, bottom?, left?) following CSS shorthand rules.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+- `top` (`number`, required): Top padding in pixels (also used as default for other sides).
+- `right` (`number`, optional): Right padding. Defaults to top.
+- `bottom` (`number`, optional): Bottom padding. Defaults to top.
+- `left` (`number`, optional): Left padding. Defaults to right.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -13837,17 +15418,7 @@ end
 
 ### LUiWidget:setPosition
 
-`LUiWidget:setPosition(self: LUiWidget, x: number, y: number)`
-
-Sets the local position of this widget relative to its parent.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-- `x` (`number`, required): Horizontal position in pixels.
-- `y` (`number`, required): Vertical position in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the local position of this widget relative to its parent.
@@ -13856,9 +15427,19 @@ Sets the local position of this widget relative to its parent.
 function LUiWidget:setPosition(x, y) end
 ```
 
+#### Description
+
+Sets the local position of this widget relative to its parent.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+- `x` (`number`, required): Horizontal position in pixels.
+- `y` (`number`, required): Vertical position in pixels.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -13872,17 +15453,7 @@ end
 
 ### LUiWidget:setSize
 
-`LUiWidget:setSize(self: LUiWidget, w: number, h: number)`
-
-Sets the width and height of this widget in pixels.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-- `w` (`number`, required): Width in pixels.
-- `h` (`number`, required): Height in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the width and height of this widget in pixels.
@@ -13891,9 +15462,19 @@ Sets the width and height of this widget in pixels.
 function LUiWidget:setSize(w, h) end
 ```
 
+#### Description
+
+Sets the width and height of this widget in pixels.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+- `w` (`number`, required): Width in pixels.
+- `h` (`number`, required): Height in pixels.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -13907,16 +15488,7 @@ end
 
 ### LUiWidget:setTooltip
 
-`LUiWidget:setTooltip(self: LUiWidget, text: string)`
-
-Sets the tooltip text shown when the user hovers over this widget.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-- `text` (`string`, required): The tooltip message.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the tooltip text shown when the user hovers over this widget.
@@ -13924,9 +15496,18 @@ Sets the tooltip text shown when the user hovers over this widget.
 function LUiWidget:setTooltip(text) end
 ```
 
+#### Description
+
+Sets the tooltip text shown when the user hovers over this widget.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+- `text` (`string`, required): The tooltip message.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -13940,16 +15521,7 @@ end
 
 ### LUiWidget:setVisible
 
-`LUiWidget:setVisible(self: LUiWidget, v: boolean)`
-
-Shows or hides this widget. Hidden widgets are not drawn and do not receive input.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-- `v` (`boolean`, required): True to show, false to hide.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Shows or hides this widget. Hidden widgets are not drawn and do not receive input.
@@ -13957,9 +15529,18 @@ Shows or hides this widget. Hidden widgets are not drawn and do not receive inpu
 function LUiWidget:setVisible(v) end
 ```
 
+#### Description
+
+Shows or hides this widget. Hidden widgets are not drawn and do not receive input.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+- `v` (`boolean`, required): True to show, false to hide.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -13973,16 +15554,7 @@ end
 
 ### LUiWidget:setZOrder
 
-`LUiWidget:setZOrder(self: LUiWidget, z: integer)`
-
-Sets the z-order (draw priority) of this widget. Higher values draw on top.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-- `z` (`integer`, required): The z-order integer value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the z-order (draw priority) of this widget. Higher values draw on top.
@@ -13990,9 +15562,18 @@ Sets the z-order (draw priority) of this widget. Higher values draw on top.
 function LUiWidget:setZOrder(z) end
 ```
 
+#### Description
+
+Sets the z-order (draw priority) of this widget. Higher values draw on top.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+- `z` (`integer`, required): The z-order integer value.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -14006,17 +15587,7 @@ end
 
 ### LUiWidget:slideIn
 
-`LUiWidget:slideIn(self: LUiWidget, x: number, y: number)`
-
-Moves this widget to the given position and makes it visible.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-- `x` (`number`, required): Target x position.
-- `y` (`number`, required): Target y position.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Moves this widget to the given position and makes it visible.
@@ -14025,9 +15596,19 @@ Moves this widget to the given position and makes it visible.
 function LUiWidget:slideIn(x, y) end
 ```
 
+#### Description
+
+Moves this widget to the given position and makes it visible.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+- `x` (`number`, required): Target x position.
+- `y` (`number`, required): Target y position.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -14041,17 +15622,7 @@ end
 
 ### LUiWidget:slideOut
 
-`LUiWidget:slideOut(self: LUiWidget, x: number, y: number)`
-
-Moves this widget to the given position and hides it.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-- `x` (`number`, required): Target x position.
-- `y` (`number`, required): Target y position.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Moves this widget to the given position and hides it.
@@ -14060,9 +15631,19 @@ Moves this widget to the given position and hides it.
 function LUiWidget:slideOut(x, y) end
 ```
 
+#### Description
+
+Moves this widget to the given position and hides it.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+- `x` (`number`, required): Target x position.
+- `y` (`number`, required): Target y position.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -14076,17 +15657,7 @@ end
 
 ### LUiWidget:type
 
-`LUiWidget:type(self: LUiWidget) -> string`
-
-Returns the type name string of this widget (e.g. "LButton", "LSlider").
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-
-**Returns**: `string` - The widget type name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name string of this widget (e.g. "LButton", "LSlider").
@@ -14094,9 +15665,19 @@ Returns the type name string of this widget (e.g. "LButton", "LSlider").
 function LUiWidget:type() end
 ```
 
+#### Description
+
+Returns the type name string of this widget (e.g. "LButton", "LSlider").
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+
+Returns: `string` - The widget type name.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -14110,18 +15691,7 @@ end
 
 ### LUiWidget:typeOf
 
-`LUiWidget:typeOf(self: LUiWidget, name: string) -> boolean`
-
-Checks whether this widget matches the given type name, including base types "LWidget" and "Object".
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-- `name` (`string`, required): The type name to check against.
-
-**Returns**: `boolean` - True if the widget is of the given type.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this widget matches the given type name, including base types "LWidget" and "Object".
@@ -14130,9 +15700,20 @@ Checks whether this widget matches the given type name, including base types "LW
 function LUiWidget:typeOf(name) end
 ```
 
+#### Description
+
+Checks whether this widget matches the given type name, including base types "LWidget" and "Object".
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+- `name` (`string`, required): The type name to check against.
+
+Returns: `boolean` - True if the widget is of the given type.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do
@@ -14146,24 +15727,24 @@ end
 
 ### LUiWidget:unbind
 
-`LUiWidget:unbind(self: LUiWidget)`
-
-Removes the data binding from this widget.
-
-**Parameters**
-
-- `self` (`LUiWidget`, required): The widget instance.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes the data binding from this widget.
 function LUiWidget:unbind() end
 ```
 
+#### Description
+
+Removes the data binding from this widget.
+
+Parameters:
+
+- `self` (`LUiWidget`, required): The widget instance.
+
 #### Example
 
-Exact example from [ui.lua](../blob/main/content/examples/ui.lua):
+Source: [ui.lua](../blob/main/content/examples/ui.lua)
 
 ```lua
 do

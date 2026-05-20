@@ -14,83 +14,235 @@
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
   - [lurek.data.compress](#lurekdatacompress)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.data.compressChunks](#lurekdatacompresschunks)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.data.crc32](#lurekdatacrc32)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.data.decode](#lurekdatadecode)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.data.decompress](#lurekdatadecompress)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.data.decompressChunks](#lurekdatadecompresschunks)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.data.encode](#lurekdataencode)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.data.encodeToml](#lurekdataencodetoml)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.data.fromMsgPack](#lurekdatafrommsgpack)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.data.getPackedSize](#lurekdatagetpackedsize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.data.hash](#lurekdatahash)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.data.newByteData](#lurekdatanewbytedata)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.data.newDataView](#lurekdatanewdataview)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.data.newRingBuffer](#lurekdatanewringbuffer)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.data.newWriter](#lurekdatanewwriter)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.data.pack](#lurekdatapack)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.data.parseToml](#lurekdataparsetoml)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.data.read](#lurekdataread)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.data.size](#lurekdatasize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.data.toMsgPack](#lurekdatatomsgpack)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.data.unpack](#lurekdataunpack)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.data.write](#lurekdatawrite)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔷 Module Types](#module-types)
   - [LByteData](#lbytedata)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataView](#ldataview)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataWriter](#ldatawriter)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRingBuffer](#lringbuffer)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
   - [LByteData:clone](#lbytedataclone)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LByteData:getBit](#lbytedatagetbit)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LByteData:getByte](#lbytedatagetbyte)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LByteData:getSize](#lbytedatagetsize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LByteData:getString](#lbytedatagetstring)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LByteData:readBits](#lbytedatareadbits)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LByteData:setBit](#lbytedatasetbit)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LByteData:setByte](#lbytedatasetbyte)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LByteData:type](#lbytedatatype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LByteData:typeOf](#lbytedatatypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataView:getDouble](#ldataviewgetdouble)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataView:getFloat](#ldataviewgetfloat)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataView:getInt16](#ldataviewgetint16)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataView:getInt32](#ldataviewgetint32)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataView:getInt8](#ldataviewgetint8)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataView:getSize](#ldataviewgetsize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataView:getUInt16](#ldataviewgetuint16)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataView:getUInt32](#ldataviewgetuint32)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataView:getUInt8](#ldataviewgetuint8)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataView:type](#ldataviewtype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataView:typeOf](#ldataviewtypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataWriter:len](#ldatawriterlen)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataWriter:seek](#ldatawriterseek)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataWriter:tell](#ldatawritertell)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataWriter:toBytes](#ldatawritertobytes)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataWriter:type](#ldatawritertype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataWriter:typeOf](#ldatawritertypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataWriter:writeBytes](#ldatawriterwritebytes)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataWriter:writeF32LE](#ldatawriterwritef32le)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataWriter:writeF64LE](#ldatawriterwritef64le)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataWriter:writeI16LE](#ldatawriterwritei16le)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataWriter:writeI32LE](#ldatawriterwritei32le)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataWriter:writeI8](#ldatawriterwritei8)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataWriter:writeString](#ldatawriterwritestring)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataWriter:writeU16BE](#ldatawriterwriteu16be)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataWriter:writeU16LE](#ldatawriterwriteu16le)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataWriter:writeU32LE](#ldatawriterwriteu32le)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataWriter:writeU8](#ldatawriterwriteu8)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRingBuffer:capacity](#lringbuffercapacity)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRingBuffer:clear](#lringbufferclear)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRingBuffer:isEmpty](#lringbufferisempty)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRingBuffer:isFull](#lringbufferisfull)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRingBuffer:len](#lringbufferlen)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRingBuffer:peek](#lringbufferpeek)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRingBuffer:peekNewest](#lringbufferpeeknewest)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRingBuffer:pop](#lringbufferpop)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRingBuffer:push](#lringbufferpush)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRingBuffer:toTable](#lringbuffertotable)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRingBuffer:type](#lringbuffertype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRingBuffer:typeOf](#lringbuffertypeof)
+    - [Definition](#definition)
+    - [Description](#description)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -155,21 +307,32 @@ lurek.data.read(fmt: string, raw: string, [offset]: integer) -> LuaValue -- Read
 
 ### lurek.data.compress
 
-`lurek.data.compress(format_str: string, raw_data: string, [level]: integer) -> string`
+#### Definition
+
+```lua
+--- Compresses a binary string using a named compression format.
+---@param format_str string Compression format name.
+---@param raw_data string Raw binary data to compress.
+---@param level? number Optional compression level; defaults to 6.
+---@return string Compressed binary byte string.
+lurek.data.compress = function(format_str, raw_data, level) end
+```
+
+#### Description
 
 Compresses a binary string using a named compression format.
 
-**Parameters**
+Parameters:
 
 - `format_str` (`string`, required): Compression format name.
 - `raw_data` (`string`, required): Raw binary data to compress.
 - `level` (`integer`, optional): Optional compression level; defaults to 6.
 
-**Returns**: `string` - Compressed binary byte string.
+Returns: `string` - Compressed binary byte string.
 
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -181,21 +344,32 @@ end
 
 ### lurek.data.compressChunks
 
-`lurek.data.compressChunks(format_str: string, chunks: any, [level]: integer) -> string`
+#### Definition
+
+```lua
+--- Compresses a string or table of strings as a chunked byte stream.
+---@param format_str string Compression format name.
+---@param chunks any Binary string or array table of binary strings.
+---@param level? number Optional compression level; defaults to 6.
+---@return string Compressed binary byte string.
+lurek.data.compressChunks = function(format_str, chunks, level) end
+```
+
+#### Description
 
 Compresses a string or table of strings as a chunked byte stream.
 
-**Parameters**
+Parameters:
 
 - `format_str` (`string`, required): Compression format name.
 - `chunks` (`any`, required): Binary string or array table of binary strings.
 - `level` (`integer`, optional): Optional compression level; defaults to 6.
 
-**Returns**: `string` - Compressed binary byte string.
+Returns: `string` - Compressed binary byte string.
 
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -207,19 +381,28 @@ end
 
 ### lurek.data.crc32
 
-`lurek.data.crc32(raw_data: string) -> integer`
+#### Definition
+
+```lua
+--- Computes CRC32 for a binary string.
+---@param raw_data string Raw binary data to checksum.
+---@return number CRC32 checksum value.
+lurek.data.crc32 = function(raw_data) end
+```
+
+#### Description
 
 Computes CRC32 for a binary string.
 
-**Parameters**
+Parameters:
 
 - `raw_data` (`string`, required): Raw binary data to checksum.
 
-**Returns**: `integer` - CRC32 checksum value.
+Returns: `integer` - CRC32 checksum value.
 
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -230,20 +413,30 @@ end
 
 ### lurek.data.decode
 
-`lurek.data.decode(format_str: string, encoded: string) -> string`
+#### Definition
+
+```lua
+--- Decodes a string using a named text encoding format.
+---@param format_str string Encoding format name.
+---@param encoded string Encoded string to decode.
+---@return string Decoded binary byte string.
+lurek.data.decode = function(format_str, encoded) end
+```
+
+#### Description
 
 Decodes a string using a named text encoding format.
 
-**Parameters**
+Parameters:
 
 - `format_str` (`string`, required): Encoding format name.
 - `encoded` (`string`, required): Encoded string to decode.
 
-**Returns**: `string` - Decoded binary byte string.
+Returns: `string` - Decoded binary byte string.
 
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -255,20 +448,30 @@ end
 
 ### lurek.data.decompress
 
-`lurek.data.decompress(format_str: string, compressed: string) -> string`
+#### Definition
+
+```lua
+--- Decompresses a binary string using a named compression format.
+---@param format_str string Compression format name.
+---@param compressed string Compressed binary data.
+---@return string Decompressed binary byte string.
+lurek.data.decompress = function(format_str, compressed) end
+```
+
+#### Description
 
 Decompresses a binary string using a named compression format.
 
-**Parameters**
+Parameters:
 
 - `format_str` (`string`, required): Compression format name.
 - `compressed` (`string`, required): Compressed binary data.
 
-**Returns**: `string` - Decompressed binary byte string.
+Returns: `string` - Decompressed binary byte string.
 
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -281,20 +484,30 @@ end
 
 ### lurek.data.decompressChunks
 
-`lurek.data.decompressChunks(format_str: string, chunks: any) -> string`
+#### Definition
+
+```lua
+--- Decompresses a string or table of strings as a chunked byte stream.
+---@param format_str string Compression format name.
+---@param chunks any Binary string or array table of binary strings.
+---@return string Decompressed binary byte string.
+lurek.data.decompressChunks = function(format_str, chunks) end
+```
+
+#### Description
 
 Decompresses a string or table of strings as a chunked byte stream.
 
-**Parameters**
+Parameters:
 
 - `format_str` (`string`, required): Compression format name.
 - `chunks` (`any`, required): Binary string or array table of binary strings.
 
-**Returns**: `string` - Decompressed binary byte string.
+Returns: `string` - Decompressed binary byte string.
 
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -307,20 +520,30 @@ end
 
 ### lurek.data.encode
 
-`lurek.data.encode(format_str: string, raw_data: string) -> string`
+#### Definition
+
+```lua
+--- Encodes a binary string using a named text encoding format.
+---@param format_str string Encoding format name.
+---@param raw_data string Raw binary data to encode.
+---@return string Encoded string.
+lurek.data.encode = function(format_str, raw_data) end
+```
+
+#### Description
 
 Encodes a binary string using a named text encoding format.
 
-**Parameters**
+Parameters:
 
 - `format_str` (`string`, required): Encoding format name.
 - `raw_data` (`string`, required): Raw binary data to encode.
 
-**Returns**: `string` - Encoded string.
+Returns: `string` - Encoded string.
 
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -331,19 +554,28 @@ end
 
 ### lurek.data.encodeToml
 
-`lurek.data.encodeToml(tbl: table) -> string`
+#### Definition
+
+```lua
+--- Encodes a Lua table into a TOML document string.
+---@param tbl table Lua table to encode as TOML.
+---@return string TOML document text.
+lurek.data.encodeToml = function(tbl) end
+```
+
+#### Description
 
 Encodes a Lua table into a TOML document string.
 
-**Parameters**
+Parameters:
 
 - `tbl` (`table`, required): Lua table to encode as TOML.
 
-**Returns**: `string` - TOML document text.
+Returns: `string` - TOML document text.
 
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -355,19 +587,28 @@ end
 
 ### lurek.data.fromMsgPack
 
-`lurek.data.fromMsgPack(bytes: string) -> LuaValue`
+#### Definition
+
+```lua
+--- Decodes a structured binary interchange payload back into Lua values.
+---@param bytes string Encoded binary payload.
+---@return LuaValue Decoded Lua value.
+lurek.data.fromMsgPack = function(bytes) end
+```
+
+#### Description
 
 Decodes a structured binary interchange payload back into Lua values.
 
-**Parameters**
+Parameters:
 
 - `bytes` (`string`, required): Encoded binary payload.
 
-**Returns**: `LuaValue` - Decoded Lua value.
+Returns: `LuaValue` - Decoded Lua value.
 
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -380,20 +621,30 @@ end
 
 ### lurek.data.getPackedSize
 
-`lurek.data.getPackedSize(fmt: string, ...: any) -> integer`
+#### Definition
+
+```lua
+--- Computes the packed byte size for values and a format string.
+---@param fmt string Binary pack format string.
+---@param ... any Values measured according to the format.
+---@return number Packed byte size.
+lurek.data.getPackedSize = function(fmt, ...) end
+```
+
+#### Description
 
 Computes the packed byte size for values and a format string.
 
-**Parameters**
+Parameters:
 
 - `fmt` (`string`, required): Binary pack format string.
 - `...` (`any`, required): Values measured according to the format.
 
-**Returns**: `integer` - Packed byte size.
+Returns: `integer` - Packed byte size.
 
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -404,20 +655,30 @@ end
 
 ### lurek.data.hash
 
-`lurek.data.hash(algo_str: string, raw_data: string) -> string`
+#### Definition
+
+```lua
+--- Hashes a binary string with a named algorithm.
+---@param algo_str string Hash algorithm name.
+---@param raw_data string Raw binary data to hash.
+---@return string Hash digest string.
+lurek.data.hash = function(algo_str, raw_data) end
+```
+
+#### Description
 
 Hashes a binary string with a named algorithm.
 
-**Parameters**
+Parameters:
 
 - `algo_str` (`string`, required): Hash algorithm name.
 - `raw_data` (`string`, required): Raw binary data to hash.
 
-**Returns**: `string` - Hash digest string.
+Returns: `string` - Hash digest string.
 
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -428,19 +689,28 @@ end
 
 ### lurek.data.newByteData
 
-`lurek.data.newByteData(value: any) -> LByteData`
+#### Definition
+
+```lua
+--- Creates ByteData from a size or string.
+---@param value any Integer size for zeroed bytes, or string used as initial bytes.
+---@return LByteData New LByteData userdata.
+lurek.data.newByteData = function(value) end
+```
+
+#### Description
 
 Creates ByteData from a size or string.
 
-**Parameters**
+Parameters:
 
 - `value` (`any`, required): Integer size for zeroed bytes, or string used as initial bytes.
 
-**Returns**: `LByteData` - New LByteData userdata.
+Returns: `LByteData` - New LByteData userdata.
 
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -451,21 +721,32 @@ end
 
 ### lurek.data.newDataView
 
-`lurek.data.newDataView(raw: string, [offset]: integer, [size]: integer) -> LDataView`
+#### Definition
+
+```lua
+--- Creates a DataView over a binary string slice.
+---@param raw string Binary byte string backing the view.
+---@param offset? number Optional zero-based start offset; defaults to zero.
+---@param size? number Optional view size in bytes; defaults to the remaining bytes.
+---@return LDataView New data view handle.
+lurek.data.newDataView = function(raw, offset, size) end
+```
+
+#### Description
 
 Creates a DataView over a binary string slice.
 
-**Parameters**
+Parameters:
 
 - `raw` (`string`, required): Binary byte string backing the view.
 - `offset` (`integer`, optional): Optional zero-based start offset; defaults to zero.
 - `size` (`integer`, optional): Optional view size in bytes; defaults to the remaining bytes.
 
-**Returns**: `LDataView` - New data view handle.
+Returns: `LDataView` - New data view handle.
 
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -477,19 +758,28 @@ end
 
 ### lurek.data.newRingBuffer
 
-`lurek.data.newRingBuffer(capacity: integer) -> LRingBuffer`
+#### Definition
+
+```lua
+--- Creates a fixed-capacity ring buffer for Lua values.
+---@param capacity number Maximum value count; must be greater than zero.
+---@return LRingBuffer New ring buffer handle.
+lurek.data.newRingBuffer = function(capacity) end
+```
+
+#### Description
 
 Creates a fixed-capacity ring buffer for Lua values.
 
-**Parameters**
+Parameters:
 
 - `capacity` (`integer`, required): Maximum value count; must be greater than zero.
 
-**Returns**: `LRingBuffer` - New ring buffer handle.
+Returns: `LRingBuffer` - New ring buffer handle.
 
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -500,15 +790,23 @@ end
 
 ### lurek.data.newWriter
 
-`lurek.data.newWriter() -> LDataWriter`
+#### Definition
+
+```lua
+--- Creates an empty binary data writer.
+---@return LDataWriter New data writer handle.
+lurek.data.newWriter = function() end
+```
+
+#### Description
 
 Creates an empty binary data writer.
 
-**Returns**: `LDataWriter` - New data writer handle.
+Returns: `LDataWriter` - New data writer handle.
 
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -519,20 +817,30 @@ end
 
 ### lurek.data.pack
 
-`lurek.data.pack(fmt: string, ...: any) -> string`
+#### Definition
+
+```lua
+--- Packs Lua values into a binary string using a format string.
+---@param fmt string Binary pack format string.
+---@param ... any Values to pack according to the format.
+---@return string Packed binary byte string.
+lurek.data.pack = function(fmt, ...) end
+```
+
+#### Description
 
 Packs Lua values into a binary string using a format string.
 
-**Parameters**
+Parameters:
 
 - `fmt` (`string`, required): Binary pack format string.
 - `...` (`any`, required): Values to pack according to the format.
 
-**Returns**: `string` - Packed binary byte string.
+Returns: `string` - Packed binary byte string.
 
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -543,19 +851,28 @@ end
 
 ### lurek.data.parseToml
 
-`lurek.data.parseToml(text: string) -> table`
+#### Definition
+
+```lua
+--- Parses TOML text into Lua tables and scalar values.
+---@param text string TOML document text.
+---@return table Lua representation of the TOML document.
+lurek.data.parseToml = function(text) end
+```
+
+#### Description
 
 Parses TOML text into Lua tables and scalar values.
 
-**Parameters**
+Parameters:
 
 - `text` (`string`, required): TOML document text.
 
-**Returns**: `table` - Lua representation of the TOML document.
+Returns: `table` - Lua representation of the TOML document.
 
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -567,21 +884,32 @@ end
 
 ### lurek.data.read
 
-`lurek.data.read(fmt: string, raw: string, [offset]: integer) -> LuaValue`
+#### Definition
+
+```lua
+--- Reads binary values from a byte string using a format string.
+---@param fmt string Binary reader format string.
+---@param raw string Binary byte string to read.
+---@param offset? number Optional zero-based byte offset; defaults to zero.
+---@return LuaValue Values read from the byte string.
+lurek.data.read = function(fmt, raw, offset) end
+```
+
+#### Description
 
 Reads binary values from a byte string using a format string.
 
-**Parameters**
+Parameters:
 
 - `fmt` (`string`, required): Binary reader format string.
 - `raw` (`string`, required): Binary byte string to read.
 - `offset` (`integer`, optional): Optional zero-based byte offset; defaults to zero.
 
-**Returns**: `LuaValue` - Values read from the byte string.
+Returns: `LuaValue` - Values read from the byte string.
 
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -593,19 +921,28 @@ end
 
 ### lurek.data.size
 
-`lurek.data.size(fmt: string) -> integer`
+#### Definition
+
+```lua
+--- Measures fixed byte size for a binary format string.
+---@param fmt string Binary format string to measure.
+---@return number Fixed byte size for the format.
+lurek.data.size = function(fmt) end
+```
+
+#### Description
 
 Measures fixed byte size for a binary format string.
 
-**Parameters**
+Parameters:
 
 - `fmt` (`string`, required): Binary format string to measure.
 
-**Returns**: `integer` - Fixed byte size for the format.
+Returns: `integer` - Fixed byte size for the format.
 
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -616,19 +953,28 @@ end
 
 ### lurek.data.toMsgPack
 
-`lurek.data.toMsgPack(value: table) -> string`
+#### Definition
+
+```lua
+--- Encodes a Lua value into the current structured binary interchange payload.
+---@param value table Lua value to encode through the serial table converter.
+---@return string Encoded binary payload.
+lurek.data.toMsgPack = function(value) end
+```
+
+#### Description
 
 Encodes a Lua value into the current structured binary interchange payload.
 
-**Parameters**
+Parameters:
 
 - `value` (`table`, required): Lua value to encode through the serial table converter.
 
-**Returns**: `string` - Encoded binary payload.
+Returns: `string` - Encoded binary payload.
 
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -640,21 +986,32 @@ end
 
 ### lurek.data.unpack
 
-`lurek.data.unpack(fmt: string, raw: string, [offset]: integer) -> LuaValue`
+#### Definition
+
+```lua
+--- Unpacks values from a binary string using a format string.
+---@param fmt string Binary unpack format string.
+---@param raw string Binary byte string to unpack.
+---@param offset? number Optional zero-based byte offset; defaults to zero.
+---@return LuaValue Unpacked values followed by the next byte offset.
+lurek.data.unpack = function(fmt, raw, offset) end
+```
+
+#### Description
 
 Unpacks values from a binary string using a format string.
 
-**Parameters**
+Parameters:
 
 - `fmt` (`string`, required): Binary unpack format string.
 - `raw` (`string`, required): Binary byte string to unpack.
 - `offset` (`integer`, optional): Optional zero-based byte offset; defaults to zero.
 
-**Returns**: `LuaValue` - Unpacked values followed by the next byte offset.
+Returns: `LuaValue` - Unpacked values followed by the next byte offset.
 
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -666,20 +1023,30 @@ end
 
 ### lurek.data.write
 
-`lurek.data.write(fmt: string, ...: any) -> string`
+#### Definition
+
+```lua
+--- Writes binary values into a byte string using a format string.
+---@param fmt string Binary writer format string.
+---@param ... any Values to write according to the format.
+---@return string Binary byte string containing written values.
+lurek.data.write = function(fmt, ...) end
+```
+
+#### Description
 
 Writes binary values into a byte string using a format string.
 
-**Parameters**
+Parameters:
 
 - `fmt` (`string`, required): Binary writer format string.
 - `...` (`any`, required): Values to write according to the format.
 
-**Returns**: `string` - Binary byte string containing written values.
+Returns: `string` - Binary byte string containing written values.
 
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -695,9 +1062,7 @@ end
 
 ### LByteData
 
-Exposes byte-buffer inspection and bit editing methods to Lua.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Exposes byte-buffer inspection and bit editing methods to Lua.
@@ -705,9 +1070,13 @@ Exposes byte-buffer inspection and bit editing methods to Lua.
 LByteData = {}
 ```
 
+#### Description
+
+Exposes byte-buffer inspection and bit editing methods to Lua.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -718,9 +1087,7 @@ end
 
 ### LDataView
 
-Creates a DataView over a binary string slice.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Creates a DataView over a binary string slice.
@@ -728,9 +1095,13 @@ Creates a DataView over a binary string slice.
 LDataView = {}
 ```
 
+#### Description
+
+Creates a DataView over a binary string slice.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -742,9 +1113,7 @@ end
 
 ### LDataWriter
 
-Lua-side binary writer for sequential byte construction.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side binary writer for sequential byte construction.
@@ -752,9 +1121,13 @@ Lua-side binary writer for sequential byte construction.
 LDataWriter = {}
 ```
 
+#### Description
+
+Lua-side binary writer for sequential byte construction.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -765,9 +1138,7 @@ end
 
 ### LRingBuffer
 
-Lua-side fixed-capacity FIFO buffer that stores registry-protected Lua values.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side fixed-capacity FIFO buffer that stores registry-protected Lua values.
@@ -775,9 +1146,13 @@ Lua-side fixed-capacity FIFO buffer that stores registry-protected Lua values.
 LRingBuffer = {}
 ```
 
+#### Description
+
+Lua-side fixed-capacity FIFO buffer that stores registry-protected Lua values.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -793,13 +1168,7 @@ end
 
 ### LByteData:clone
 
-`LByteData:clone() -> LByteData`
-
-Returns a deep copy of the entire byte buffer.
-
-**Returns**: `LByteData` - New LByteData userdata containing copied bytes.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a deep copy of the entire byte buffer.
@@ -807,9 +1176,15 @@ Returns a deep copy of the entire byte buffer.
 function LByteData:clone() end
 ```
 
+#### Description
+
+Returns a deep copy of the entire byte buffer.
+
+Returns: `LByteData` - New LByteData userdata containing copied bytes.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -822,18 +1197,7 @@ end
 
 ### LByteData:getBit
 
-`LByteData:getBit(byte_offset: integer, bit_offset: integer) -> boolean`
-
-Reads one bit inside a byte at the given offsets.
-
-**Parameters**
-
-- `byte_offset` (`integer`, required): Zero-based byte offset.
-- `bit_offset` (`integer`, required): Bit offset from 0 to 7 inside the byte.
-
-**Returns**: `boolean` - True when the bit is set.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Reads one bit inside a byte at the given offsets.
@@ -843,9 +1207,20 @@ Reads one bit inside a byte at the given offsets.
 function LByteData:getBit(byte_offset, bit_offset) end
 ```
 
+#### Description
+
+Reads one bit inside a byte at the given offsets.
+
+Parameters:
+
+- `byte_offset` (`integer`, required): Zero-based byte offset.
+- `bit_offset` (`integer`, required): Bit offset from 0 to 7 inside the byte.
+
+Returns: `boolean` - True when the bit is set.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -857,17 +1232,7 @@ end
 
 ### LByteData:getByte
 
-`LByteData:getByte(offset: integer) -> integer`
-
-Reads one byte at a zero-based offset.
-
-**Parameters**
-
-- `offset` (`integer`, required): Zero-based byte offset.
-
-**Returns**: `integer` - Byte value from 0 to 255.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Reads one byte at a zero-based offset.
@@ -876,9 +1241,19 @@ Reads one byte at a zero-based offset.
 function LByteData:getByte(offset) end
 ```
 
+#### Description
+
+Reads one byte at a zero-based offset.
+
+Parameters:
+
+- `offset` (`integer`, required): Zero-based byte offset.
+
+Returns: `integer` - Byte value from 0 to 255.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -889,13 +1264,7 @@ end
 
 ### LByteData:getSize
 
-`LByteData:getSize() -> integer`
-
-Returns the byte buffer length in bytes.
-
-**Returns**: `integer` - Buffer length in bytes.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the byte buffer length in bytes.
@@ -903,9 +1272,15 @@ Returns the byte buffer length in bytes.
 function LByteData:getSize() end
 ```
 
+#### Description
+
+Returns the byte buffer length in bytes.
+
+Returns: `integer` - Buffer length in bytes.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -916,13 +1291,7 @@ end
 
 ### LByteData:getString
 
-`LByteData:getString() -> string`
-
-Returns the byte buffer as a string.
-
-**Returns**: `string` - Byte buffer contents as a Lua string.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the byte buffer as a string.
@@ -930,9 +1299,15 @@ Returns the byte buffer as a string.
 function LByteData:getString() end
 ```
 
+#### Description
+
+Returns the byte buffer as a string.
+
+Returns: `string` - Byte buffer contents as a Lua string.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -943,19 +1318,7 @@ end
 
 ### LByteData:readBits
 
-`LByteData:readBits(byte_offset: integer, bit_offset: integer, count: integer) -> integer`
-
-Reads up to 32 bits starting at a byte and bit offset.
-
-**Parameters**
-
-- `byte_offset` (`integer`, required): Zero-based byte offset.
-- `bit_offset` (`integer`, required): Bit offset from 0 to 7 inside the starting byte.
-- `count` (`integer`, required): Number of bits to read, from 1 to 32.
-
-**Returns**: `integer` - Unsigned integer containing the requested bits.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Reads up to 32 bits starting at a byte and bit offset.
@@ -966,9 +1329,21 @@ Reads up to 32 bits starting at a byte and bit offset.
 function LByteData:readBits(byte_offset, bit_offset, count) end
 ```
 
+#### Description
+
+Reads up to 32 bits starting at a byte and bit offset.
+
+Parameters:
+
+- `byte_offset` (`integer`, required): Zero-based byte offset.
+- `bit_offset` (`integer`, required): Bit offset from 0 to 7 inside the starting byte.
+- `count` (`integer`, required): Number of bits to read, from 1 to 32.
+
+Returns: `integer` - Unsigned integer containing the requested bits.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -982,17 +1357,7 @@ end
 
 ### LByteData:setBit
 
-`LByteData:setBit(byte_offset: integer, bit_offset: integer, value: boolean)`
-
-Sets or clears one bit inside a byte at the given offset.
-
-**Parameters**
-
-- `byte_offset` (`integer`, required): Zero-based byte offset.
-- `bit_offset` (`integer`, required): Bit offset from 0 to 7 inside the byte.
-- `value` (`boolean`, required): True to set the bit, false to clear it.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets or clears one bit inside a byte at the given offset.
@@ -1002,9 +1367,19 @@ Sets or clears one bit inside a byte at the given offset.
 function LByteData:setBit(byte_offset, bit_offset, value) end
 ```
 
+#### Description
+
+Sets or clears one bit inside a byte at the given offset.
+
+Parameters:
+
+- `byte_offset` (`integer`, required): Zero-based byte offset.
+- `bit_offset` (`integer`, required): Bit offset from 0 to 7 inside the byte.
+- `value` (`boolean`, required): True to set the bit, false to clear it.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -1017,16 +1392,7 @@ end
 
 ### LByteData:setByte
 
-`LByteData:setByte(offset: integer, value: integer)`
-
-Writes one byte at a zero-based offset inside the buffer.
-
-**Parameters**
-
-- `offset` (`integer`, required): Zero-based byte offset.
-- `value` (`integer`, required): Byte value from 0 to 255.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Writes one byte at a zero-based offset inside the buffer.
@@ -1035,9 +1401,18 @@ Writes one byte at a zero-based offset inside the buffer.
 function LByteData:setByte(offset, value) end
 ```
 
+#### Description
+
+Writes one byte at a zero-based offset inside the buffer.
+
+Parameters:
+
+- `offset` (`integer`, required): Zero-based byte offset.
+- `value` (`integer`, required): Byte value from 0 to 255.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -1049,13 +1424,7 @@ end
 
 ### LByteData:type
 
-`LByteData:type() -> string`
-
-Returns the type name of this object for runtime type-checking.
-
-**Returns**: `string` - Always returns "LByteData".
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this object for runtime type-checking.
@@ -1063,9 +1432,15 @@ Returns the type name of this object for runtime type-checking.
 function LByteData:type() end
 ```
 
+#### Description
+
+Returns the type name of this object for runtime type-checking.
+
+Returns: `string` - Always returns "LByteData".
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -1076,17 +1451,7 @@ end
 
 ### LByteData:typeOf
 
-`LByteData:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to check (e.g. "LByteData" or "Object").
-
-**Returns**: `boolean` - True if this object matches the given type.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this object matches the given type name.
@@ -1095,9 +1460,19 @@ Checks whether this object matches the given type name.
 function LByteData:typeOf(name) end
 ```
 
+#### Description
+
+Checks whether this object matches the given type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to check (e.g. "LByteData" or "Object").
+
+Returns: `boolean` - True if this object matches the given type.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -1108,17 +1483,7 @@ end
 
 ### LDataView:getDouble
 
-`LDataView:getDouble(offset: integer) -> number`
-
-Reads a 64-bit float at a byte offset.
-
-**Parameters**
-
-- `offset` (`integer`, required): Zero-based byte offset inside the view.
-
-**Returns**: `number` - 64-bit float value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Reads a 64-bit float at a byte offset.
@@ -1127,9 +1492,19 @@ Reads a 64-bit float at a byte offset.
 function LDataView:getDouble(offset) end
 ```
 
+#### Description
+
+Reads a 64-bit float at a byte offset.
+
+Parameters:
+
+- `offset` (`integer`, required): Zero-based byte offset inside the view.
+
+Returns: `number` - 64-bit float value.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -1141,17 +1516,7 @@ end
 
 ### LDataView:getFloat
 
-`LDataView:getFloat(offset: integer) -> number`
-
-Reads a 32-bit float at a byte offset.
-
-**Parameters**
-
-- `offset` (`integer`, required): Zero-based byte offset inside the view.
-
-**Returns**: `number` - 32-bit float value converted to Lua number.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Reads a 32-bit float at a byte offset.
@@ -1160,9 +1525,19 @@ Reads a 32-bit float at a byte offset.
 function LDataView:getFloat(offset) end
 ```
 
+#### Description
+
+Reads a 32-bit float at a byte offset.
+
+Parameters:
+
+- `offset` (`integer`, required): Zero-based byte offset inside the view.
+
+Returns: `number` - 32-bit float value converted to Lua number.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -1174,17 +1549,7 @@ end
 
 ### LDataView:getInt16
 
-`LDataView:getInt16(offset: integer) -> integer`
-
-Reads a signed 16-bit integer at a byte offset.
-
-**Parameters**
-
-- `offset` (`integer`, required): Zero-based byte offset inside the view.
-
-**Returns**: `integer` - Signed 16-bit value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Reads a signed 16-bit integer at a byte offset.
@@ -1193,9 +1558,19 @@ Reads a signed 16-bit integer at a byte offset.
 function LDataView:getInt16(offset) end
 ```
 
+#### Description
+
+Reads a signed 16-bit integer at a byte offset.
+
+Parameters:
+
+- `offset` (`integer`, required): Zero-based byte offset inside the view.
+
+Returns: `integer` - Signed 16-bit value.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -1207,17 +1582,7 @@ end
 
 ### LDataView:getInt32
 
-`LDataView:getInt32(offset: integer) -> integer`
-
-Reads a signed 32-bit integer at a byte offset.
-
-**Parameters**
-
-- `offset` (`integer`, required): Zero-based byte offset inside the view.
-
-**Returns**: `integer` - Signed 32-bit value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Reads a signed 32-bit integer at a byte offset.
@@ -1226,9 +1591,19 @@ Reads a signed 32-bit integer at a byte offset.
 function LDataView:getInt32(offset) end
 ```
 
+#### Description
+
+Reads a signed 32-bit integer at a byte offset.
+
+Parameters:
+
+- `offset` (`integer`, required): Zero-based byte offset inside the view.
+
+Returns: `integer` - Signed 32-bit value.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -1240,17 +1615,7 @@ end
 
 ### LDataView:getInt8
 
-`LDataView:getInt8(offset: integer) -> integer`
-
-Reads a signed 8-bit integer at a byte offset.
-
-**Parameters**
-
-- `offset` (`integer`, required): Zero-based byte offset inside the view.
-
-**Returns**: `integer` - Signed 8-bit value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Reads a signed 8-bit integer at a byte offset.
@@ -1259,9 +1624,19 @@ Reads a signed 8-bit integer at a byte offset.
 function LDataView:getInt8(offset) end
 ```
 
+#### Description
+
+Reads a signed 8-bit integer at a byte offset.
+
+Parameters:
+
+- `offset` (`integer`, required): Zero-based byte offset inside the view.
+
+Returns: `integer` - Signed 8-bit value.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -1273,13 +1648,7 @@ end
 
 ### LDataView:getSize
 
-`LDataView:getSize() -> integer`
-
-Returns this data view size in bytes.
-
-**Returns**: `integer` - View size in bytes.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this data view size in bytes.
@@ -1287,9 +1656,15 @@ Returns this data view size in bytes.
 function LDataView:getSize() end
 ```
 
+#### Description
+
+Returns this data view size in bytes.
+
+Returns: `integer` - View size in bytes.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -1301,17 +1676,7 @@ end
 
 ### LDataView:getUInt16
 
-`LDataView:getUInt16(offset: integer) -> integer`
-
-Reads an unsigned 16-bit integer at a byte offset.
-
-**Parameters**
-
-- `offset` (`integer`, required): Zero-based byte offset inside the view.
-
-**Returns**: `integer` - Unsigned 16-bit value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Reads an unsigned 16-bit integer at a byte offset.
@@ -1320,9 +1685,19 @@ Reads an unsigned 16-bit integer at a byte offset.
 function LDataView:getUInt16(offset) end
 ```
 
+#### Description
+
+Reads an unsigned 16-bit integer at a byte offset.
+
+Parameters:
+
+- `offset` (`integer`, required): Zero-based byte offset inside the view.
+
+Returns: `integer` - Unsigned 16-bit value.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -1334,17 +1709,7 @@ end
 
 ### LDataView:getUInt32
 
-`LDataView:getUInt32(offset: integer) -> integer`
-
-Reads an unsigned 32-bit integer at a byte offset.
-
-**Parameters**
-
-- `offset` (`integer`, required): Zero-based byte offset inside the view.
-
-**Returns**: `integer` - Unsigned 32-bit value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Reads an unsigned 32-bit integer at a byte offset.
@@ -1353,9 +1718,19 @@ Reads an unsigned 32-bit integer at a byte offset.
 function LDataView:getUInt32(offset) end
 ```
 
+#### Description
+
+Reads an unsigned 32-bit integer at a byte offset.
+
+Parameters:
+
+- `offset` (`integer`, required): Zero-based byte offset inside the view.
+
+Returns: `integer` - Unsigned 32-bit value.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -1367,17 +1742,7 @@ end
 
 ### LDataView:getUInt8
 
-`LDataView:getUInt8(offset: integer) -> integer`
-
-Reads an unsigned 8-bit integer at a byte offset.
-
-**Parameters**
-
-- `offset` (`integer`, required): Zero-based byte offset inside the view.
-
-**Returns**: `integer` - Unsigned 8-bit value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Reads an unsigned 8-bit integer at a byte offset.
@@ -1386,9 +1751,19 @@ Reads an unsigned 8-bit integer at a byte offset.
 function LDataView:getUInt8(offset) end
 ```
 
+#### Description
+
+Reads an unsigned 8-bit integer at a byte offset.
+
+Parameters:
+
+- `offset` (`integer`, required): Zero-based byte offset inside the view.
+
+Returns: `integer` - Unsigned 8-bit value.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -1400,13 +1775,7 @@ end
 
 ### LDataView:type
 
-`LDataView:type() -> string`
-
-Returns the Lua-visible type name for this data view handle.
-
-**Returns**: `string` - The string `LDataView`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this data view handle.
@@ -1414,9 +1783,15 @@ Returns the Lua-visible type name for this data view handle.
 function LDataView:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this data view handle.
+
+Returns: `string` - The string `LDataView`.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -1427,17 +1802,7 @@ end
 
 ### LDataView:typeOf
 
-`LDataView:typeOf(name: string) -> boolean`
-
-Returns whether this data view handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LDataView` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this data view handle matches a supported type name.
@@ -1446,9 +1811,19 @@ Returns whether this data view handle matches a supported type name.
 function LDataView:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this data view handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LDataView` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -1459,13 +1834,7 @@ end
 
 ### LDataWriter:len
 
-`LDataWriter:len() -> integer`
-
-Returns the current length of the writer buffer.
-
-**Returns**: `integer` - Buffer length in bytes.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current length of the writer buffer.
@@ -1473,9 +1842,15 @@ Returns the current length of the writer buffer.
 function LDataWriter:len() end
 ```
 
+#### Description
+
+Returns the current length of the writer buffer.
+
+Returns: `integer` - Buffer length in bytes.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -1488,15 +1863,7 @@ end
 
 ### LDataWriter:seek
 
-`LDataWriter:seek(pos: integer)`
-
-Moves the writer cursor to a specific byte position.
-
-**Parameters**
-
-- `pos` (`integer`, required): New cursor position in bytes.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Moves the writer cursor to a specific byte position.
@@ -1504,9 +1871,17 @@ Moves the writer cursor to a specific byte position.
 function LDataWriter:seek(pos) end
 ```
 
+#### Description
+
+Moves the writer cursor to a specific byte position.
+
+Parameters:
+
+- `pos` (`integer`, required): New cursor position in bytes.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -1561,13 +1936,7 @@ do
 
 ### LDataWriter:tell
 
-`LDataWriter:tell() -> integer`
-
-Returns the writer cursor position.
-
-**Returns**: `integer` - Current cursor position in bytes.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the writer cursor position.
@@ -1575,9 +1944,15 @@ Returns the writer cursor position.
 function LDataWriter:tell() end
 ```
 
+#### Description
+
+Returns the writer cursor position.
+
+Returns: `integer` - Current cursor position in bytes.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -1590,13 +1965,7 @@ end
 
 ### LDataWriter:toBytes
 
-`LDataWriter:toBytes() -> string`
-
-Returns the writer buffer as a binary string.
-
-**Returns**: `string` - Binary byte string containing writer contents.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the writer buffer as a binary string.
@@ -1604,9 +1973,15 @@ Returns the writer buffer as a binary string.
 function LDataWriter:toBytes() end
 ```
 
+#### Description
+
+Returns the writer buffer as a binary string.
+
+Returns: `string` - Binary byte string containing writer contents.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -1620,13 +1995,7 @@ end
 
 ### LDataWriter:type
 
-`LDataWriter:type() -> string`
-
-Returns the Lua-visible type name for this data writer handle.
-
-**Returns**: `string` - The string `LDataWriter`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this data writer handle.
@@ -1634,9 +2003,15 @@ Returns the Lua-visible type name for this data writer handle.
 function LDataWriter:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this data writer handle.
+
+Returns: `string` - The string `LDataWriter`.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -1647,17 +2022,7 @@ end
 
 ### LDataWriter:typeOf
 
-`LDataWriter:typeOf(name: string) -> boolean`
-
-Returns whether this data writer handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LDataWriter` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this data writer handle matches a supported type name.
@@ -1666,9 +2031,19 @@ Returns whether this data writer handle matches a supported type name.
 function LDataWriter:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this data writer handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LDataWriter` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -1679,15 +2054,7 @@ end
 
 ### LDataWriter:writeBytes
 
-`LDataWriter:writeBytes(s: string)`
-
-Appends raw bytes from a Lua string to the writer buffer.
-
-**Parameters**
-
-- `s` (`string`, required): Raw byte string to write.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Appends raw bytes from a Lua string to the writer buffer.
@@ -1695,9 +2062,17 @@ Appends raw bytes from a Lua string to the writer buffer.
 function LDataWriter:writeBytes(s) end
 ```
 
+#### Description
+
+Appends raw bytes from a Lua string to the writer buffer.
+
+Parameters:
+
+- `s` (`string`, required): Raw byte string to write.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -1709,15 +2084,7 @@ end
 
 ### LDataWriter:writeF32LE
 
-`LDataWriter:writeF32LE(v: number)`
-
-Appends a 32-bit float value in little-endian byte order.
-
-**Parameters**
-
-- `v` (`number`, required): Value to write.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Appends a 32-bit float value in little-endian byte order.
@@ -1725,9 +2092,17 @@ Appends a 32-bit float value in little-endian byte order.
 function LDataWriter:writeF32LE(v) end
 ```
 
+#### Description
+
+Appends a 32-bit float value in little-endian byte order.
+
+Parameters:
+
+- `v` (`number`, required): Value to write.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -1739,15 +2114,7 @@ end
 
 ### LDataWriter:writeF64LE
 
-`LDataWriter:writeF64LE(v: number)`
-
-Appends a 64-bit float value in little-endian byte order.
-
-**Parameters**
-
-- `v` (`number`, required): Value to write.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Appends a 64-bit float value in little-endian byte order.
@@ -1755,9 +2122,17 @@ Appends a 64-bit float value in little-endian byte order.
 function LDataWriter:writeF64LE(v) end
 ```
 
+#### Description
+
+Appends a 64-bit float value in little-endian byte order.
+
+Parameters:
+
+- `v` (`number`, required): Value to write.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -1769,15 +2144,7 @@ end
 
 ### LDataWriter:writeI16LE
 
-`LDataWriter:writeI16LE(v: integer)`
-
-Appends a signed 16-bit integer in little-endian byte order.
-
-**Parameters**
-
-- `v` (`integer`, required): Value to write.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Appends a signed 16-bit integer in little-endian byte order.
@@ -1785,9 +2152,17 @@ Appends a signed 16-bit integer in little-endian byte order.
 function LDataWriter:writeI16LE(v) end
 ```
 
+#### Description
+
+Appends a signed 16-bit integer in little-endian byte order.
+
+Parameters:
+
+- `v` (`integer`, required): Value to write.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -1799,15 +2174,7 @@ end
 
 ### LDataWriter:writeI32LE
 
-`LDataWriter:writeI32LE(v: integer)`
-
-Appends a signed 32-bit integer in little-endian byte order.
-
-**Parameters**
-
-- `v` (`integer`, required): Value to write.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Appends a signed 32-bit integer in little-endian byte order.
@@ -1815,9 +2182,17 @@ Appends a signed 32-bit integer in little-endian byte order.
 function LDataWriter:writeI32LE(v) end
 ```
 
+#### Description
+
+Appends a signed 32-bit integer in little-endian byte order.
+
+Parameters:
+
+- `v` (`integer`, required): Value to write.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -1829,15 +2204,7 @@ end
 
 ### LDataWriter:writeI8
 
-`LDataWriter:writeI8(v: integer)`
-
-Appends a signed 8-bit integer to the writer buffer.
-
-**Parameters**
-
-- `v` (`integer`, required): Value to write.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Appends a signed 8-bit integer to the writer buffer.
@@ -1845,9 +2212,17 @@ Appends a signed 8-bit integer to the writer buffer.
 function LDataWriter:writeI8(v) end
 ```
 
+#### Description
+
+Appends a signed 8-bit integer to the writer buffer.
+
+Parameters:
+
+- `v` (`integer`, required): Value to write.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -1859,15 +2234,7 @@ end
 
 ### LDataWriter:writeString
 
-`LDataWriter:writeString(s: string)`
-
-Appends a UTF-8 encoded string to the writer buffer.
-
-**Parameters**
-
-- `s` (`string`, required): String contents to write.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Appends a UTF-8 encoded string to the writer buffer.
@@ -1875,9 +2242,17 @@ Appends a UTF-8 encoded string to the writer buffer.
 function LDataWriter:writeString(s) end
 ```
 
+#### Description
+
+Appends a UTF-8 encoded string to the writer buffer.
+
+Parameters:
+
+- `s` (`string`, required): String contents to write.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -1889,15 +2264,7 @@ end
 
 ### LDataWriter:writeU16BE
 
-`LDataWriter:writeU16BE(v: integer)`
-
-Appends an unsigned 16-bit integer in big-endian byte order.
-
-**Parameters**
-
-- `v` (`integer`, required): Value to write.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Appends an unsigned 16-bit integer in big-endian byte order.
@@ -1905,9 +2272,17 @@ Appends an unsigned 16-bit integer in big-endian byte order.
 function LDataWriter:writeU16BE(v) end
 ```
 
+#### Description
+
+Appends an unsigned 16-bit integer in big-endian byte order.
+
+Parameters:
+
+- `v` (`integer`, required): Value to write.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -1919,15 +2294,7 @@ end
 
 ### LDataWriter:writeU16LE
 
-`LDataWriter:writeU16LE(v: integer)`
-
-Appends an unsigned 16-bit integer in little-endian byte order.
-
-**Parameters**
-
-- `v` (`integer`, required): Value to write.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Appends an unsigned 16-bit integer in little-endian byte order.
@@ -1935,9 +2302,17 @@ Appends an unsigned 16-bit integer in little-endian byte order.
 function LDataWriter:writeU16LE(v) end
 ```
 
+#### Description
+
+Appends an unsigned 16-bit integer in little-endian byte order.
+
+Parameters:
+
+- `v` (`integer`, required): Value to write.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -1949,15 +2324,7 @@ end
 
 ### LDataWriter:writeU32LE
 
-`LDataWriter:writeU32LE(v: integer)`
-
-Appends an unsigned 32-bit integer in little-endian byte order.
-
-**Parameters**
-
-- `v` (`integer`, required): Value to write.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Appends an unsigned 32-bit integer in little-endian byte order.
@@ -1965,9 +2332,17 @@ Appends an unsigned 32-bit integer in little-endian byte order.
 function LDataWriter:writeU32LE(v) end
 ```
 
+#### Description
+
+Appends an unsigned 32-bit integer in little-endian byte order.
+
+Parameters:
+
+- `v` (`integer`, required): Value to write.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -1979,15 +2354,7 @@ end
 
 ### LDataWriter:writeU8
 
-`LDataWriter:writeU8(v: integer)`
-
-Appends an unsigned 8-bit integer to the writer buffer.
-
-**Parameters**
-
-- `v` (`integer`, required): Value to write.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Appends an unsigned 8-bit integer to the writer buffer.
@@ -1995,9 +2362,17 @@ Appends an unsigned 8-bit integer to the writer buffer.
 function LDataWriter:writeU8(v) end
 ```
 
+#### Description
+
+Appends an unsigned 8-bit integer to the writer buffer.
+
+Parameters:
+
+- `v` (`integer`, required): Value to write.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -2009,13 +2384,7 @@ end
 
 ### LRingBuffer:capacity
 
-`LRingBuffer:capacity() -> integer`
-
-Returns the maximum capacity of the ring buffer.
-
-**Returns**: `integer` - Maximum number of stored values.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the maximum capacity of the ring buffer.
@@ -2023,9 +2392,15 @@ Returns the maximum capacity of the ring buffer.
 function LRingBuffer:capacity() end
 ```
 
+#### Description
+
+Returns the maximum capacity of the ring buffer.
+
+Returns: `integer` - Maximum number of stored values.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -2036,20 +2411,20 @@ end
 
 ### LRingBuffer:clear
 
-`LRingBuffer:clear()`
-
-Removes every stored value and releases their registry keys.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes every stored value and releases their registry keys.
 function LRingBuffer:clear() end
 ```
 
+#### Description
+
+Removes every stored value and releases their registry keys.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -2063,13 +2438,7 @@ end
 
 ### LRingBuffer:isEmpty
 
-`LRingBuffer:isEmpty() -> boolean`
-
-Returns whether the ring buffer has no values.
-
-**Returns**: `boolean` - True when the buffer is empty.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether the ring buffer has no values.
@@ -2077,9 +2446,15 @@ Returns whether the ring buffer has no values.
 function LRingBuffer:isEmpty() end
 ```
 
+#### Description
+
+Returns whether the ring buffer has no values.
+
+Returns: `boolean` - True when the buffer is empty.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -2090,13 +2465,7 @@ end
 
 ### LRingBuffer:isFull
 
-`LRingBuffer:isFull() -> boolean`
-
-Returns whether the ring buffer is at capacity.
-
-**Returns**: `boolean` - True when the buffer length is at least its capacity.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether the ring buffer is at capacity.
@@ -2104,9 +2473,15 @@ Returns whether the ring buffer is at capacity.
 function LRingBuffer:isFull() end
 ```
 
+#### Description
+
+Returns whether the ring buffer is at capacity.
+
+Returns: `boolean` - True when the buffer length is at least its capacity.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -2119,13 +2494,7 @@ end
 
 ### LRingBuffer:len
 
-`LRingBuffer:len() -> integer`
-
-Returns the number of values currently stored.
-
-**Returns**: `integer` - Current buffer length.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of values currently stored.
@@ -2133,9 +2502,15 @@ Returns the number of values currently stored.
 function LRingBuffer:len() end
 ```
 
+#### Description
+
+Returns the number of values currently stored.
+
+Returns: `integer` - Current buffer length.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -2148,13 +2523,7 @@ end
 
 ### LRingBuffer:peek
 
-`LRingBuffer:peek() -> LuaValue`
-
-Returns the oldest stored value without removing it from the ring buffer.
-
-**Returns**: `LuaValue` - Oldest stored value, or nil when the buffer is empty.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the oldest stored value without removing it from the ring buffer.
@@ -2162,9 +2531,15 @@ Returns the oldest stored value without removing it from the ring buffer.
 function LRingBuffer:peek() end
 ```
 
+#### Description
+
+Returns the oldest stored value without removing it from the ring buffer.
+
+Returns: `LuaValue` - Oldest stored value, or nil when the buffer is empty.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -2177,13 +2552,7 @@ end
 
 ### LRingBuffer:peekNewest
 
-`LRingBuffer:peekNewest() -> LuaValue`
-
-Returns the newest stored value without removing it from the ring buffer.
-
-**Returns**: `LuaValue` - Newest stored value, or nil when the buffer is empty.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the newest stored value without removing it from the ring buffer.
@@ -2191,9 +2560,15 @@ Returns the newest stored value without removing it from the ring buffer.
 function LRingBuffer:peekNewest() end
 ```
 
+#### Description
+
+Returns the newest stored value without removing it from the ring buffer.
+
+Returns: `LuaValue` - Newest stored value, or nil when the buffer is empty.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -2206,13 +2581,7 @@ end
 
 ### LRingBuffer:pop
 
-`LRingBuffer:pop() -> LuaValue`
-
-Removes and returns the oldest stored value from the ring buffer.
-
-**Returns**: `LuaValue` - Oldest stored value, or nil when the buffer is empty.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes and returns the oldest stored value from the ring buffer.
@@ -2220,9 +2589,15 @@ Removes and returns the oldest stored value from the ring buffer.
 function LRingBuffer:pop() end
 ```
 
+#### Description
+
+Removes and returns the oldest stored value from the ring buffer.
+
+Returns: `LuaValue` - Oldest stored value, or nil when the buffer is empty.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -2236,17 +2611,7 @@ end
 
 ### LRingBuffer:push
 
-`LRingBuffer:push(value: any) -> boolean`
-
-Pushes a value into the ring buffer and evicts the oldest value when full.
-
-**Parameters**
-
-- `value` (`any`, required): Lua value to store in the buffer.
-
-**Returns**: `boolean` - True when the push evicted an older value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Pushes a value into the ring buffer and evicts the oldest value when full.
@@ -2255,9 +2620,19 @@ Pushes a value into the ring buffer and evicts the oldest value when full.
 function LRingBuffer:push(value) end
 ```
 
+#### Description
+
+Pushes a value into the ring buffer and evicts the oldest value when full.
+
+Parameters:
+
+- `value` (`any`, required): Lua value to store in the buffer.
+
+Returns: `boolean` - True when the push evicted an older value.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -2271,13 +2646,7 @@ end
 
 ### LRingBuffer:toTable
 
-`LRingBuffer:toTable() -> number[]`
-
-Returns stored values in oldest-to-newest order.
-
-**Returns**: `number[]` - Array table of stored values.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns stored values in oldest-to-newest order.
@@ -2285,9 +2654,15 @@ Returns stored values in oldest-to-newest order.
 function LRingBuffer:toTable() end
 ```
 
+#### Description
+
+Returns stored values in oldest-to-newest order.
+
+Returns: `number[]` - Array table of stored values.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -2301,13 +2676,7 @@ end
 
 ### LRingBuffer:type
 
-`LRingBuffer:type() -> string`
-
-Returns the Lua-visible type name for this ring buffer handle.
-
-**Returns**: `string` - The string `LRingBuffer`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this ring buffer handle.
@@ -2315,9 +2684,15 @@ Returns the Lua-visible type name for this ring buffer handle.
 function LRingBuffer:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this ring buffer handle.
+
+Returns: `string` - The string `LRingBuffer`.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do
@@ -2328,17 +2703,7 @@ end
 
 ### LRingBuffer:typeOf
 
-`LRingBuffer:typeOf(name: string) -> boolean`
-
-Returns whether this ring buffer handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LRingBuffer` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this ring buffer handle matches a supported type name.
@@ -2347,9 +2712,19 @@ Returns whether this ring buffer handle matches a supported type name.
 function LRingBuffer:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this ring buffer handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LRingBuffer` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [data.lua](../blob/main/content/examples/data.lua):
+Source: [data.lua](../blob/main/content/examples/data.lua)
 
 ```lua
 do

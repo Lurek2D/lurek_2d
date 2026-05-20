@@ -14,234 +14,688 @@
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
   - [lurek.audio.add_effect](#lurekaudioaddeffect)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.applyBandpass](#lurekaudioapplybandpass)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.applyGain](#lurekaudioapplygain)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.applyHighpass](#lurekaudioapplyhighpass)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.applyLowpass](#lurekaudioapplylowpass)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.clearFilter](#lurekaudioclearfilter)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.clearMidiSoundFont](#lurekaudioclearmidisoundfont)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.clearRandomPitch](#lurekaudioclearrandompitch)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.clone](#lurekaudioclone)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.create_bus](#lurekaudiocreatebus)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.crossfade](#lurekaudiocrossfade)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.fadeIn](#lurekaudiofadein)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.getActiveSourceCount](#lurekaudiogetactivesourcecount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.getBusPeak](#lurekaudiogetbuspeak)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.getBusRms](#lurekaudiogetbusrms)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.getDistanceModel](#lurekaudiogetdistancemodel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.getDopplerScale](#lurekaudiogetdopplerscale)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.getDuration](#lurekaudiogetduration)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.getFadeIn](#lurekaudiogetfadein)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.getFreeBufferCount](#lurekaudiogetfreebuffercount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.getHighpass](#lurekaudiogethighpass)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.getListener](#lurekaudiogetlistener)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.getListener2D](#lurekaudiogetlistener2d)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.getLowpass](#lurekaudiogetlowpass)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.getMasterVolume](#lurekaudiogetmastervolume)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.getMaxSources](#lurekaudiogetmaxsources)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.getMeter](#lurekaudiogetmeter)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.getOrientation](#lurekaudiogetorientation)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.getPan](#lurekaudiogetpan)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.getPitch](#lurekaudiogetpitch)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.getPlaybackDevice](#lurekaudiogetplaybackdevice)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.getPlaybackDevices](#lurekaudiogetplaybackdevices)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.getPosition](#lurekaudiogetposition)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.getSourceBus](#lurekaudiogetsourcebus)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.getSourceCount](#lurekaudiogetsourcecount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.getSourceType](#lurekaudiogetsourcetype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.getStereoWidth](#lurekaudiogetstereowidth)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.getVelocity](#lurekaudiogetvelocity)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.getVolume](#lurekaudiogetvolume)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.hasMidiSoundFont](#lurekaudiohasmidisoundfont)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.isLooping](#lurekaudioislooping)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.isPaused](#lurekaudioispaused)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.isPlaying](#lurekaudioisplaying)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.isStopped](#lurekaudioisstopped)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.mixInto](#lurekaudiomixinto)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.newBus](#lurekaudionewbus)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.newDecoder](#lurekaudionewdecoder)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.newMidiPlayer](#lurekaudionewmidiplayer)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.newPool](#lurekaudionewpool)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.newQueueableSource](#lurekaudionewqueueablesource)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.newSawtoothWave](#lurekaudionewsawtoothwave)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.newSineWave](#lurekaudionewsinewave)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.newSoundData](#lurekaudionewsounddata)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.newSource](#lurekaudionewsource)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.newSquareWave](#lurekaudionewsquarewave)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.newTriangleWave](#lurekaudionewtrianglewave)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.newWhiteNoise](#lurekaudionewwhitenoise)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.normalizeFile](#lurekaudionormalizefile)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.pause](#lurekaudiopause)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.pauseAll](#lurekaudiopauseall)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.play](#lurekaudioplay)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.playLooping](#lurekaudioplaylooping)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.playQueueable](#lurekaudioplayqueueable)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.processOffline](#lurekaudioprocessoffline)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.queueSource](#lurekaudioqueuesource)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.release](#lurekaudiorelease)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.remove_effect](#lurekaudioremoveeffect)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.resume](#lurekaudioresume)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.resumeAll](#lurekaudioresumeall)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.saveWAV](#lurekaudiosavewav)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.seek](#lurekaudioseek)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.set_bus_volume](#lurekaudiosetbusvolume)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.set_effect_param](#lurekaudioseteffectparam)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.setDistanceModel](#lurekaudiosetdistancemodel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.setDopplerScale](#lurekaudiosetdopplerscale)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.setHighpass](#lurekaudiosethighpass)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.setListener](#lurekaudiosetlistener)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.setListener2D](#lurekaudiosetlistener2d)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.setLooping](#lurekaudiosetlooping)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.setLowpass](#lurekaudiosetlowpass)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.setMasterVolume](#lurekaudiosetmastervolume)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.setMeter](#lurekaudiosetmeter)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.setMidiSoundFont](#lurekaudiosetmidisoundfont)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.setOrientation](#lurekaudiosetorientation)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.setPan](#lurekaudiosetpan)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.setPitch](#lurekaudiosetpitch)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.setPlaybackDevice](#lurekaudiosetplaybackdevice)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.setPosition](#lurekaudiosetposition)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.setRandomPitch](#lurekaudiosetrandompitch)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.setSourceBus](#lurekaudiosetsourcebus)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.setStereoWidth](#lurekaudiosetstereowidth)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.setVelocity](#lurekaudiosetvelocity)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.setVolume](#lurekaudiosetvolume)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.spectrogramToPng](#lurekaudiospectrogramtopng)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.stop](#lurekaudiostop)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.stopAll](#lurekaudiostopall)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.stopQueueable](#lurekaudiostopqueueable)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.tell](#lurekaudiotell)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.audio.waveformToPng](#lurekaudiowaveformtopng)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔷 Module Types](#module-types)
   - [LBus](#lbus)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDecoder](#ldecoder)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer](#lmidiplayer)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSoundData](#lsounddata)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSoundPool](#lsoundpool)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSource](#lsource)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
   - [LBus:clearDuck](#lbusclearduck)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBus:getName](#lbusgetname)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBus:getPeak](#lbusgetpeak)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBus:getPitch](#lbusgetpitch)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBus:getVolume](#lbusgetvolume)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBus:isPaused](#lbusispaused)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBus:pause](#lbuspause)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBus:resume](#lbusresume)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBus:setDuckTarget](#lbussetducktarget)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBus:setPitch](#lbussetpitch)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBus:setVolume](#lbussetvolume)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBus:type](#lbustype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBus:typeOf](#lbustypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDecoder:decode](#ldecoderdecode)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDecoder:getBitDepth](#ldecodergetbitdepth)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDecoder:getChannelCount](#ldecodergetchannelcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDecoder:getDuration](#ldecodergetduration)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDecoder:getSampleRate](#ldecodergetsamplerate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDecoder:isSeekable](#ldecoderisseekable)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDecoder:release](#ldecoderrelease)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDecoder:rewind](#ldecoderrewind)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDecoder:seek](#ldecoderseek)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDecoder:tell](#ldecodertell)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDecoder:type](#ldecodertype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDecoder:typeOf](#ldecodertypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:getBus](#lmidiplayergetbus)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:getChannelCount](#lmidiplayergetchannelcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:getChannelInstrument](#lmidiplayergetchannelinstrument)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:getChannels](#lmidiplayergetchannels)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:getChannelVolume](#lmidiplayergetchannelvolume)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:getDuration](#lmidiplayergetduration)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:getFilePath](#lmidiplayergetfilepath)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:getNoteCount](#lmidiplayergetnotecount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:getOriginalTempo](#lmidiplayergetoriginaltempo)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:getSampleRate](#lmidiplayergetsamplerate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:getSoundFontPath](#lmidiplayergetsoundfontpath)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:getTempo](#lmidiplayergettempo)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:getTempoScale](#lmidiplayergettemposcale)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:getTicksPerBeat](#lmidiplayergetticksperbeat)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:getTrackCount](#lmidiplayergettrackcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:getTrackName](#lmidiplayergettrackname)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:getVolume](#lmidiplayergetvolume)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:isChannelMuted](#lmidiplayerischannelmuted)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:isLoaded](#lmidiplayerisloaded)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:isLooping](#lmidiplayerislooping)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:isPaused](#lmidiplayerispaused)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:isPlaying](#lmidiplayerisplaying)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:isTrackMuted](#lmidiplayeristrackmuted)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:load](#lmidiplayerload)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:loadData](#lmidiplayerloaddata)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:pause](#lmidiplayerpause)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:play](#lmidiplayerplay)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:seek](#lmidiplayerseek)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:setBus](#lmidiplayersetbus)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:setChannelInstrument](#lmidiplayersetchannelinstrument)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:setChannelMuted](#lmidiplayersetchannelmuted)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:setChannels](#lmidiplayersetchannels)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:setChannelVolume](#lmidiplayersetchannelvolume)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:setLooping](#lmidiplayersetlooping)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:setOnEnd](#lmidiplayersetonend)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:setOnNoteOff](#lmidiplayersetonnoteoff)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:setOnNoteOn](#lmidiplayersetonnoteon)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:setSampleRate](#lmidiplayersetsamplerate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:setSoundFont](#lmidiplayersetsoundfont)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:setTempo](#lmidiplayersettempo)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:setTempoScale](#lmidiplayersettemposcale)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:setTrackMuted](#lmidiplayersettrackmuted)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:setVolume](#lmidiplayersetvolume)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:soloChannel](#lmidiplayersolochannel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:stop](#lmidiplayerstop)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:tell](#lmidiplayertell)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:type](#lmidiplayertype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:typeOf](#lmidiplayertypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:unsoloAll](#lmidiplayerunsoloall)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMidiPlayer:useDefaultSoundFont](#lmidiplayerusedefaultsoundfont)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSoundData:drawWaveform](#lsounddatadrawwaveform)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSoundData:getBitDepth](#lsounddatagetbitdepth)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSoundData:getChannelCount](#lsounddatagetchannelcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSoundData:getDuration](#lsounddatagetduration)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSoundData:getSample](#lsounddatagetsample)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSoundData:getSampleCount](#lsounddatagetsamplecount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSoundData:getSampleRate](#lsounddatagetsamplerate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSoundData:setSample](#lsounddatasetsample)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSoundData:type](#lsounddatatype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSoundData:typeOf](#lsounddatatypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSoundPool:getVoiceCount](#lsoundpoolgetvoicecount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSoundPool:play](#lsoundpoolplay)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSoundPool:release](#lsoundpoolrelease)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSoundPool:setBus](#lsoundpoolsetbus)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSoundPool:setVolume](#lsoundpoolsetvolume)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSoundPool:stopAll](#lsoundpoolstopall)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSoundPool:type](#lsoundpooltype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSoundPool:typeOf](#lsoundpooltypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSource:clearFilter](#lsourceclearfilter)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSource:clone](#lsourceclone)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSource:fadeIn](#lsourcefadein)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSource:getDuration](#lsourcegetduration)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSource:getFadeIn](#lsourcegetfadein)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSource:getHighpass](#lsourcegethighpass)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSource:getLowpass](#lsourcegetlowpass)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSource:getPan](#lsourcegetpan)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSource:getPitch](#lsourcegetpitch)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSource:getType](#lsourcegettype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSource:getVolume](#lsourcegetvolume)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSource:isLooping](#lsourceislooping)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSource:isPaused](#lsourceispaused)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSource:isPlaying](#lsourceisplaying)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSource:isStopped](#lsourceisstopped)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSource:pause](#lsourcepause)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSource:play](#lsourceplay)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSource:resume](#lsourceresume)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSource:seek](#lsourceseek)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSource:setHighpass](#lsourcesethighpass)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSource:setLooping](#lsourcesetlooping)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSource:setLowpass](#lsourcesetlowpass)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSource:setPan](#lsourcesetpan)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSource:setPitch](#lsourcesetpitch)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSource:setVolume](#lsourcesetvolume)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSource:stop](#lsourcestop)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSource:tell](#lsourcetell)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSource:type](#lsourcetype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSource:typeOf](#lsourcetypeof)
+    - [Definition](#definition)
+    - [Description](#description)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -308,21 +762,32 @@ lurek.audio.getDuration(source: LSource|integer) -> number -- Returns the total 
 
 ### lurek.audio.add_effect
 
-`lurek.audio.add_effect(bus_name: string, effect_type_str: string, [params]: table) -> integer`
+#### Definition
+
+```lua
+--- Adds an effect to a named audio bus and returns its effect ID.
+---@param bus_name string Name of the audio bus.
+---@param effect_type_str string Effect type identifier (e.g. `"lowpass"`, `"highpass"`, `"reverb"`).
+---@param params? table Optional parameters table; may include a `value` field.
+---@return number Numeric effect ID handle for use with `remove_effect` and `set_effect_param`.
+lurek.audio.add_effect = function(bus_name, effect_type_str, params) end
+```
+
+#### Description
 
 Adds an effect to a named audio bus and returns its effect ID.
 
-**Parameters**
+Parameters:
 
 - `bus_name` (`string`, required): Name of the audio bus.
 - `effect_type_str` (`string`, required): Effect type identifier (e.g. `"lowpass"`, `"highpass"`, `"reverb"`).
 - `params` (`table`, optional): Optional parameters table; may include a `value` field.
 
-**Returns**: `integer` - Numeric effect ID handle for use with `remove_effect` and `set_effect_param`.
+Returns: `integer` - Numeric effect ID handle for use with `remove_effect` and `set_effect_param`.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -334,11 +799,21 @@ end
 
 ### lurek.audio.applyBandpass
 
-`lurek.audio.applyBandpass(sd_ud: LSoundData, low_hz: number, high_hz: number)`
+#### Definition
+
+```lua
+--- Applies a bandpass filter in-place to the sound data.
+---@param sd_ud LSoundData The sound data to process.
+---@param low_hz number Lower cutoff frequency in Hz.
+---@param high_hz number Upper cutoff frequency in Hz.
+lurek.audio.applyBandpass = function(sd_ud, low_hz, high_hz) end
+```
+
+#### Description
 
 Applies a bandpass filter in-place to the sound data.
 
-**Parameters**
+Parameters:
 
 - `sd_ud` (`LSoundData`, required): The sound data to process.
 - `low_hz` (`number`, required): Lower cutoff frequency in Hz.
@@ -346,7 +821,7 @@ Applies a bandpass filter in-place to the sound data.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -358,18 +833,27 @@ end
 
 ### lurek.audio.applyGain
 
-`lurek.audio.applyGain(sd_ud: LSoundData, gain: number)`
+#### Definition
+
+```lua
+--- Applies a gain multiplier in-place to the sound data.
+---@param sd_ud LSoundData The sound data to process.
+---@param gain number Gain multiplier (1.0 = unity, >1.0 = louder, <1.0 = quieter).
+lurek.audio.applyGain = function(sd_ud, gain) end
+```
+
+#### Description
 
 Applies a gain multiplier in-place to the sound data.
 
-**Parameters**
+Parameters:
 
 - `sd_ud` (`LSoundData`, required): The sound data to process.
 - `gain` (`number`, required): Gain multiplier (1.0 = unity, >1.0 = louder, <1.0 = quieter).
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -381,18 +865,27 @@ end
 
 ### lurek.audio.applyHighpass
 
-`lurek.audio.applyHighpass(sd_ud: LSoundData, cutoff_hz: number)`
+#### Definition
+
+```lua
+--- Applies a highpass filter in-place to the sound data.
+---@param sd_ud LSoundData The sound data to process.
+---@param cutoff_hz number Highpass cutoff frequency in Hz.
+lurek.audio.applyHighpass = function(sd_ud, cutoff_hz) end
+```
+
+#### Description
 
 Applies a highpass filter in-place to the sound data.
 
-**Parameters**
+Parameters:
 
 - `sd_ud` (`LSoundData`, required): The sound data to process.
 - `cutoff_hz` (`number`, required): Highpass cutoff frequency in Hz.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -404,18 +897,27 @@ end
 
 ### lurek.audio.applyLowpass
 
-`lurek.audio.applyLowpass(sd_ud: LSoundData, cutoff_hz: number)`
+#### Definition
+
+```lua
+--- Applies a lowpass filter in-place to the sound data.
+---@param sd_ud LSoundData The sound data to process.
+---@param cutoff_hz number Lowpass cutoff frequency in Hz.
+lurek.audio.applyLowpass = function(sd_ud, cutoff_hz) end
+```
+
+#### Description
 
 Applies a lowpass filter in-place to the sound data.
 
-**Parameters**
+Parameters:
 
 - `sd_ud` (`LSoundData`, required): The sound data to process.
 - `cutoff_hz` (`number`, required): Lowpass cutoff frequency in Hz.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -427,17 +929,25 @@ end
 
 ### lurek.audio.clearFilter
 
-`lurek.audio.clearFilter(source: LSource|integer)`
+#### Definition
+
+```lua
+--- Removes all frequency filters from a source.
+---@param source LSource|number Audio source or numeric source ID.
+lurek.audio.clearFilter = function(source) end
+```
+
+#### Description
 
 Removes all frequency filters from a source.
 
-**Parameters**
+Parameters:
 
 - `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -451,13 +961,20 @@ end
 
 ### lurek.audio.clearMidiSoundFont
 
-`lurek.audio.clearMidiSoundFont()`
+#### Definition
+
+```lua
+--- Clears the loaded SoundFont and reverts MIDI synthesis to default.
+lurek.audio.clearMidiSoundFont = function() end
+```
+
+#### Description
 
 Clears the loaded SoundFont and reverts MIDI synthesis to default.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -468,17 +985,25 @@ end
 
 ### lurek.audio.clearRandomPitch
 
-`lurek.audio.clearRandomPitch(src_ud: LSource)`
+#### Definition
+
+```lua
+--- Clears any random pitch range previously set on the source.
+---@param src_ud LSource The audio source to reset.
+lurek.audio.clearRandomPitch = function(src_ud) end
+```
+
+#### Description
 
 Clears any random pitch range previously set on the source.
 
-**Parameters**
+Parameters:
 
 - `src_ud` (`LSource`, required): The audio source to reset.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -492,19 +1017,28 @@ end
 
 ### lurek.audio.clone
 
-`lurek.audio.clone(source: LSource|integer) -> LSource`
+#### Definition
+
+```lua
+--- Creates an independent copy of a source sharing the same audio data.
+---@param source LSource|number Audio source or numeric source ID to clone.
+---@return LSource A new source instance with identical settings.
+lurek.audio.clone = function(source) end
+```
+
+#### Description
 
 Creates an independent copy of a source sharing the same audio data.
 
-**Parameters**
+Parameters:
 
 - `source` (`LSource|integer`, required): Audio source or numeric source ID to clone.
 
-**Returns**: `LSource` - A new source instance with identical settings.
+Returns: `LSource` - A new source instance with identical settings.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -518,18 +1052,27 @@ end
 
 ### lurek.audio.create_bus
 
-`lurek.audio.create_bus(name: string, [parent_name]: string)`
+#### Definition
+
+```lua
+--- Creates a named audio bus, optionally parented to another bus.
+---@param name string Unique name for the new bus.
+---@param parent_name? string Name of the parent bus, or nil for a root bus.
+lurek.audio.create_bus = function(name, parent_name) end
+```
+
+#### Description
 
 Creates a named audio bus, optionally parented to another bus.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, required): Unique name for the new bus.
 - `parent_name` (`string`, optional): Name of the parent bus, or nil for a root bus.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -540,11 +1083,21 @@ end
 
 ### lurek.audio.crossfade
 
-`lurek.audio.crossfade(from_ud: LSource, to_ud: LSource, duration: number)`
+#### Definition
+
+```lua
+--- Crossfades from one audio source to another over the given duration.
+---@param from_ud LSource The source to fade out.
+---@param to_ud LSource The source to fade in.
+---@param duration number Crossfade duration in seconds.
+lurek.audio.crossfade = function(from_ud, to_ud, duration) end
+```
+
+#### Description
 
 Crossfades from one audio source to another over the given duration.
 
-**Parameters**
+Parameters:
 
 - `from_ud` (`LSource`, required): The source to fade out.
 - `to_ud` (`LSource`, required): The source to fade in.
@@ -552,7 +1105,7 @@ Crossfades from one audio source to another over the given duration.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -566,18 +1119,27 @@ end
 
 ### lurek.audio.fadeIn
 
-`lurek.audio.fadeIn(source: LSource|integer, dur: number)`
+#### Definition
+
+```lua
+--- Sets the fade-in duration for a source so it ramps from silence on play.
+---@param source LSource|number Audio source or numeric source ID.
+---@param dur number Fade-in duration in seconds.
+lurek.audio.fadeIn = function(source, dur) end
+```
+
+#### Description
 
 Sets the fade-in duration for a source so it ramps from silence on play.
 
-**Parameters**
+Parameters:
 
 - `source` (`LSource|integer`, required): Audio source or numeric source ID.
 - `dur` (`number`, required): Fade-in duration in seconds.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -590,15 +1152,23 @@ end
 
 ### lurek.audio.getActiveSourceCount
 
-`lurek.audio.getActiveSourceCount() -> integer`
+#### Definition
+
+```lua
+--- Returns the number of sources currently playing audio.
+---@return number Count of active (playing) sources.
+lurek.audio.getActiveSourceCount = function() end
+```
+
+#### Description
 
 Returns the number of sources currently playing audio.
 
-**Returns**: `integer` - Count of active (playing) sources.
+Returns: `integer` - Count of active (playing) sources.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -609,19 +1179,28 @@ end
 
 ### lurek.audio.getBusPeak
 
-`lurek.audio.getBusPeak(bus_name: string) -> number`
+#### Definition
+
+```lua
+--- Returns the peak amplitude of the named audio bus over the last processing frame.
+---@param bus_name string Name of the audio bus to query.
+---@return number Peak amplitude in the range [0.0, 1.0+].
+lurek.audio.getBusPeak = function(bus_name) end
+```
+
+#### Description
 
 Returns the peak amplitude of the named audio bus over the last processing frame.
 
-**Parameters**
+Parameters:
 
 - `bus_name` (`string`, required): Name of the audio bus to query.
 
-**Returns**: `number` - Peak amplitude in the range [0.0, 1.0+].
+Returns: `number` - Peak amplitude in the range [0.0, 1.0+].
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -633,19 +1212,28 @@ end
 
 ### lurek.audio.getBusRms
 
-`lurek.audio.getBusRms(bus_name: string) -> number`
+#### Definition
+
+```lua
+--- Returns the RMS (root mean square) amplitude of the named audio bus over the last processing frame.
+---@param bus_name string Name of the audio bus to query.
+---@return number RMS amplitude in the range [0.0, 1.0+].
+lurek.audio.getBusRms = function(bus_name) end
+```
+
+#### Description
 
 Returns the RMS (root mean square) amplitude of the named audio bus over the last processing frame.
 
-**Parameters**
+Parameters:
 
 - `bus_name` (`string`, required): Name of the audio bus to query.
 
-**Returns**: `number` - RMS amplitude in the range [0.0, 1.0+].
+Returns: `number` - RMS amplitude in the range [0.0, 1.0+].
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -657,15 +1245,23 @@ end
 
 ### lurek.audio.getDistanceModel
 
-`lurek.audio.getDistanceModel() -> string`
+#### Definition
+
+```lua
+--- Returns the current distance attenuation model name.
+---@return string Distance model name.
+lurek.audio.getDistanceModel = function() end
+```
+
+#### Description
 
 Returns the current distance attenuation model name.
 
-**Returns**: `string` - Distance model name.
+Returns: `string` - Distance model name.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -677,15 +1273,23 @@ end
 
 ### lurek.audio.getDopplerScale
 
-`lurek.audio.getDopplerScale() -> number`
+#### Definition
+
+```lua
+--- Returns the current global Doppler effect scale.
+---@return number Doppler scale factor.
+lurek.audio.getDopplerScale = function() end
+```
+
+#### Description
 
 Returns the current global Doppler effect scale.
 
-**Returns**: `number` - Doppler scale factor.
+Returns: `number` - Doppler scale factor.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -697,19 +1301,28 @@ end
 
 ### lurek.audio.getDuration
 
-`lurek.audio.getDuration(source: LSource|integer) -> number`
+#### Definition
+
+```lua
+--- Returns the total duration of a source in seconds.
+---@param source LSource|number Audio source or numeric source ID.
+---@return number Duration in seconds.
+lurek.audio.getDuration = function(source) end
+```
+
+#### Description
 
 Returns the total duration of a source in seconds.
 
-**Parameters**
+Parameters:
 
 - `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
-**Returns**: `number` - Duration in seconds.
+Returns: `number` - Duration in seconds.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -722,19 +1335,28 @@ end
 
 ### lurek.audio.getFadeIn
 
-`lurek.audio.getFadeIn(source: LSource|integer) -> number`
+#### Definition
+
+```lua
+--- Returns the configured fade-in duration of a source.
+---@param source LSource|number Audio source or numeric source ID.
+---@return number Fade-in duration in seconds.
+lurek.audio.getFadeIn = function(source) end
+```
+
+#### Description
 
 Returns the configured fade-in duration of a source.
 
-**Parameters**
+Parameters:
 
 - `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
-**Returns**: `number` - Fade-in duration in seconds.
+Returns: `number` - Fade-in duration in seconds.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -748,19 +1370,28 @@ end
 
 ### lurek.audio.getFreeBufferCount
 
-`lurek.audio.getFreeBufferCount(qsource_id: integer) -> integer`
+#### Definition
+
+```lua
+--- Returns the number of free (available) buffer slots on a queueable source.
+---@param qsource_id number Queueable source handle returned by `newQueueableSource`.
+---@return number Number of free buffer slots available for queuing.
+lurek.audio.getFreeBufferCount = function(qsource_id) end
+```
+
+#### Description
 
 Returns the number of free (available) buffer slots on a queueable source.
 
-**Parameters**
+Parameters:
 
 - `qsource_id` (`integer`, required): Queueable source handle returned by `newQueueableSource`.
 
-**Returns**: `integer` - Number of free buffer slots available for queuing.
+Returns: `integer` - Number of free buffer slots available for queuing.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -772,19 +1403,28 @@ end
 
 ### lurek.audio.getHighpass
 
-`lurek.audio.getHighpass(source: LSource|integer) -> integer`
+#### Definition
+
+```lua
+--- Returns the current highpass filter cutoff of a source.
+---@param source LSource|number Audio source or numeric source ID.
+---@return number Cutoff frequency in Hz, or 0 if not set.
+lurek.audio.getHighpass = function(source) end
+```
+
+#### Description
 
 Returns the current highpass filter cutoff of a source.
 
-**Parameters**
+Parameters:
 
 - `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
-**Returns**: `integer` - Cutoff frequency in Hz, or 0 if not set.
+Returns: `integer` - Cutoff frequency in Hz, or 0 if not set.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -798,15 +1438,25 @@ end
 
 ### lurek.audio.getListener
 
-`lurek.audio.getListener() -> number, number, number`
+#### Definition
+
+```lua
+--- Returns the current 3D listener position.
+---@return number a X, Y, and Z position of the listener.
+---@return number b X, Y, and Z position of the listener.
+---@return number c X, Y, and Z position of the listener.
+lurek.audio.getListener = function() end
+```
+
+#### Description
 
 Returns the current 3D listener position.
 
-**Returns**: `number, number, number` - X, Y, and Z position of the listener.
+Returns: `number, number, number` - X, Y, and Z position of the listener.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -818,15 +1468,24 @@ end
 
 ### lurek.audio.getListener2D
 
-`lurek.audio.getListener2D() -> number, number`
+#### Definition
+
+```lua
+--- Returns the current 2D listener position.
+---@return number a X and Y position of the listener.
+---@return number b X and Y position of the listener.
+lurek.audio.getListener2D = function() end
+```
+
+#### Description
 
 Returns the current 2D listener position.
 
-**Returns**: `number, number` - X and Y position of the listener.
+Returns: `number, number` - X and Y position of the listener.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -838,19 +1497,28 @@ end
 
 ### lurek.audio.getLowpass
 
-`lurek.audio.getLowpass(source: LSource|integer) -> integer`
+#### Definition
+
+```lua
+--- Returns the current lowpass filter cutoff of a source.
+---@param source LSource|number Audio source or numeric source ID.
+---@return number Cutoff frequency in Hz, or 0 if not set.
+lurek.audio.getLowpass = function(source) end
+```
+
+#### Description
 
 Returns the current lowpass filter cutoff of a source.
 
-**Parameters**
+Parameters:
 
 - `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
-**Returns**: `integer` - Cutoff frequency in Hz, or 0 if not set.
+Returns: `integer` - Cutoff frequency in Hz, or 0 if not set.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -864,15 +1532,23 @@ end
 
 ### lurek.audio.getMasterVolume
 
-`lurek.audio.getMasterVolume() -> number`
+#### Definition
+
+```lua
+--- Returns the current global master volume level.
+---@return number Master volume multiplier.
+lurek.audio.getMasterVolume = function() end
+```
+
+#### Description
 
 Returns the current global master volume level.
 
-**Returns**: `number` - Master volume multiplier.
+Returns: `number` - Master volume multiplier.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -884,15 +1560,23 @@ end
 
 ### lurek.audio.getMaxSources
 
-`lurek.audio.getMaxSources() -> integer`
+#### Definition
+
+```lua
+--- Returns the maximum number of simultaneous audio sources supported.
+---@return number Maximum source count (64).
+lurek.audio.getMaxSources = function() end
+```
+
+#### Description
 
 Returns the maximum number of simultaneous audio sources supported.
 
-**Returns**: `integer` - Maximum source count (64).
+Returns: `integer` - Maximum source count (64).
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -903,15 +1587,23 @@ end
 
 ### lurek.audio.getMeter
 
-`lurek.audio.getMeter() -> number`
+#### Definition
+
+```lua
+--- Returns the current master peak level for VU-meter displays.
+---@return number Peak level from 0.0 to 1.0.
+lurek.audio.getMeter = function() end
+```
+
+#### Description
 
 Returns the current master peak level for VU-meter displays.
 
-**Returns**: `number` - Peak level from 0.0 to 1.0.
+Returns: `number` - Peak level from 0.0 to 1.0.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -923,19 +1615,33 @@ end
 
 ### lurek.audio.getOrientation
 
-`lurek.audio.getOrientation(source: LSource|integer) -> number, number, number, number, number, number`
+#### Definition
+
+```lua
+--- Returns the orientation vectors of a source.
+---@param source LSource|number Audio source or numeric source ID.
+---@return number a Forward (fx,fy,fz) and up (ux,uy,uz) vectors.
+---@return number b Forward (fx,fy,fz) and up (ux,uy,uz) vectors.
+---@return number c Forward (fx,fy,fz) and up (ux,uy,uz) vectors.
+---@return number d Forward (fx,fy,fz) and up (ux,uy,uz) vectors.
+---@return number e Forward (fx,fy,fz) and up (ux,uy,uz) vectors.
+---@return number f Forward (fx,fy,fz) and up (ux,uy,uz) vectors.
+lurek.audio.getOrientation = function(source) end
+```
+
+#### Description
 
 Returns the orientation vectors of a source.
 
-**Parameters**
+Parameters:
 
 - `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
-**Returns**: `number, number, number, number, number, number` - Forward (fx,fy,fz) and up (ux,uy,uz) vectors.
+Returns: `number, number, number, number, number, number` - Forward (fx,fy,fz) and up (ux,uy,uz) vectors.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -949,19 +1655,28 @@ end
 
 ### lurek.audio.getPan
 
-`lurek.audio.getPan(source: LSource|integer) -> number`
+#### Definition
+
+```lua
+--- Returns the current stereo pan position of a source.
+---@param source LSource|number Audio source or numeric source ID.
+---@return number Pan value from -1.0 (left) to 1.0 (right).
+lurek.audio.getPan = function(source) end
+```
+
+#### Description
 
 Returns the current stereo pan position of a source.
 
-**Parameters**
+Parameters:
 
 - `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
-**Returns**: `number` - Pan value from -1.0 (left) to 1.0 (right).
+Returns: `number` - Pan value from -1.0 (left) to 1.0 (right).
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -975,19 +1690,28 @@ end
 
 ### lurek.audio.getPitch
 
-`lurek.audio.getPitch(source: LSource|integer) -> number`
+#### Definition
+
+```lua
+--- Returns the current pitch multiplier of a source.
+---@param source LSource|number Audio source or numeric source ID.
+---@return number Current pitch multiplier.
+lurek.audio.getPitch = function(source) end
+```
+
+#### Description
 
 Returns the current pitch multiplier of a source.
 
-**Parameters**
+Parameters:
 
 - `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
-**Returns**: `number` - Current pitch multiplier.
+Returns: `number` - Current pitch multiplier.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -1001,15 +1725,23 @@ end
 
 ### lurek.audio.getPlaybackDevice
 
-`lurek.audio.getPlaybackDevice() -> string`
+#### Definition
+
+```lua
+--- Returns the name of the currently active audio playback device.
+---@return string Current playback device name.
+lurek.audio.getPlaybackDevice = function() end
+```
+
+#### Description
 
 Returns the name of the currently active audio playback device.
 
-**Returns**: `string` - Current playback device name.
+Returns: `string` - Current playback device name.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -1020,15 +1752,23 @@ end
 
 ### lurek.audio.getPlaybackDevices
 
-`lurek.audio.getPlaybackDevices() -> string[]`
+#### Definition
+
+```lua
+--- Returns a list of available audio playback device names.
+---@return string[] Device name strings.
+lurek.audio.getPlaybackDevices = function() end
+```
+
+#### Description
 
 Returns a list of available audio playback device names.
 
-**Returns**: `string[]` - Device name strings.
+Returns: `string[]` - Device name strings.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -1039,19 +1779,30 @@ end
 
 ### lurek.audio.getPosition
 
-`lurek.audio.getPosition(source: LSource|integer) -> number, number, number`
+#### Definition
+
+```lua
+--- Returns the 3D position of a source.
+---@param source LSource|number Audio source or numeric source ID.
+---@return number a X, Y, and Z position.
+---@return number b X, Y, and Z position.
+---@return number c X, Y, and Z position.
+lurek.audio.getPosition = function(source) end
+```
+
+#### Description
 
 Returns the 3D position of a source.
 
-**Parameters**
+Parameters:
 
 - `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
-**Returns**: `number, number, number` - X, Y, and Z position.
+Returns: `number, number, number` - X, Y, and Z position.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -1065,19 +1816,28 @@ end
 
 ### lurek.audio.getSourceBus
 
-`lurek.audio.getSourceBus(source: LSource|integer) -> LBus`
+#### Definition
+
+```lua
+--- Returns the bus a source is routed through.
+---@param source LSource|number Audio source or numeric source ID.
+---@return LBus The assigned bus, or nil if using direct output.
+lurek.audio.getSourceBus = function(source) end
+```
+
+#### Description
 
 Returns the bus a source is routed through.
 
-**Parameters**
+Parameters:
 
 - `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
-**Returns**: `LBus` - The assigned bus, or nil if using direct output.
+Returns: `LBus` - The assigned bus, or nil if using direct output.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -1091,15 +1851,23 @@ end
 
 ### lurek.audio.getSourceCount
 
-`lurek.audio.getSourceCount() -> integer`
+#### Definition
+
+```lua
+--- Returns the total number of loaded audio sources (playing or idle).
+---@return number Total source count.
+lurek.audio.getSourceCount = function() end
+```
+
+#### Description
 
 Returns the total number of loaded audio sources (playing or idle).
 
-**Returns**: `integer` - Total source count.
+Returns: `integer` - Total source count.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -1110,19 +1878,28 @@ end
 
 ### lurek.audio.getSourceType
 
-`lurek.audio.getSourceType(source: LSource|integer) -> string`
+#### Definition
+
+```lua
+--- Returns whether a source is static or streaming.
+---@param source LSource|number Audio source or numeric source ID.
+---@return string Either "static" or "stream".
+lurek.audio.getSourceType = function(source) end
+```
+
+#### Description
 
 Returns whether a source is static or streaming.
 
-**Parameters**
+Parameters:
 
 - `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
-**Returns**: `string` - Either "static" or "stream".
+Returns: `string` - Either "static" or "stream".
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -1135,19 +1912,28 @@ end
 
 ### lurek.audio.getStereoWidth
 
-`lurek.audio.getStereoWidth(src_ud: LSource) -> number`
+#### Definition
+
+```lua
+--- Returns the current stereo width factor of an audio source.
+---@param src_ud LSource The audio source to query.
+---@return number Stereo width factor (0.0 = mono, 1.0 = full stereo).
+lurek.audio.getStereoWidth = function(src_ud) end
+```
+
+#### Description
 
 Returns the current stereo width factor of an audio source.
 
-**Parameters**
+Parameters:
 
 - `src_ud` (`LSource`, required): The audio source to query.
 
-**Returns**: `number` - Stereo width factor (0.0 = mono, 1.0 = full stereo).
+Returns: `number` - Stereo width factor (0.0 = mono, 1.0 = full stereo).
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -1161,19 +1947,30 @@ end
 
 ### lurek.audio.getVelocity
 
-`lurek.audio.getVelocity(source: LSource|integer) -> number, number, number`
+#### Definition
+
+```lua
+--- Returns the velocity vector of a source.
+---@param source LSource|number Audio source or numeric source ID.
+---@return number a X, Y, and Z velocity components.
+---@return number b X, Y, and Z velocity components.
+---@return number c X, Y, and Z velocity components.
+lurek.audio.getVelocity = function(source) end
+```
+
+#### Description
 
 Returns the velocity vector of a source.
 
-**Parameters**
+Parameters:
 
 - `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
-**Returns**: `number, number, number` - X, Y, and Z velocity components.
+Returns: `number, number, number` - X, Y, and Z velocity components.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -1187,19 +1984,28 @@ end
 
 ### lurek.audio.getVolume
 
-`lurek.audio.getVolume(source: LSource|integer) -> number`
+#### Definition
+
+```lua
+--- Returns the current volume of a source.
+---@param source LSource|number Audio source or numeric source ID.
+---@return number Current volume multiplier.
+lurek.audio.getVolume = function(source) end
+```
+
+#### Description
 
 Returns the current volume of a source.
 
-**Parameters**
+Parameters:
 
 - `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
-**Returns**: `number` - Current volume multiplier.
+Returns: `number` - Current volume multiplier.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -1213,15 +2019,23 @@ end
 
 ### lurek.audio.hasMidiSoundFont
 
-`lurek.audio.hasMidiSoundFont() -> boolean`
+#### Definition
+
+```lua
+--- Returns whether a SoundFont file has been loaded for MIDI synthesis.
+---@return boolean True if a SoundFont is loaded.
+lurek.audio.hasMidiSoundFont = function() end
+```
+
+#### Description
 
 Returns whether a SoundFont file has been loaded for MIDI synthesis.
 
-**Returns**: `boolean` - True if a SoundFont is loaded.
+Returns: `boolean` - True if a SoundFont is loaded.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -1232,19 +2046,28 @@ end
 
 ### lurek.audio.isLooping
 
-`lurek.audio.isLooping(source: LSource|integer) -> boolean`
+#### Definition
+
+```lua
+--- Returns whether a source has looping enabled.
+---@param source LSource|number Audio source or numeric source ID.
+---@return boolean True if looping is enabled.
+lurek.audio.isLooping = function(source) end
+```
+
+#### Description
 
 Returns whether a source has looping enabled.
 
-**Parameters**
+Parameters:
 
 - `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
-**Returns**: `boolean` - True if looping is enabled.
+Returns: `boolean` - True if looping is enabled.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -1257,19 +2080,28 @@ end
 
 ### lurek.audio.isPaused
 
-`lurek.audio.isPaused(source: LSource|integer) -> boolean`
+#### Definition
+
+```lua
+--- Returns whether a source is currently paused.
+---@param source LSource|number Audio source or numeric source ID.
+---@return boolean True if the source is paused.
+lurek.audio.isPaused = function(source) end
+```
+
+#### Description
 
 Returns whether a source is currently paused.
 
-**Parameters**
+Parameters:
 
 - `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
-**Returns**: `boolean` - True if the source is paused.
+Returns: `boolean` - True if the source is paused.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -1283,19 +2115,28 @@ end
 
 ### lurek.audio.isPlaying
 
-`lurek.audio.isPlaying(source: LSource|integer) -> boolean`
+#### Definition
+
+```lua
+--- Returns whether a source is currently playing.
+---@param source LSource|number Audio source or numeric source ID.
+---@return boolean True if the source is playing.
+lurek.audio.isPlaying = function(source) end
+```
+
+#### Description
 
 Returns whether a source is currently playing.
 
-**Parameters**
+Parameters:
 
 - `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
-**Returns**: `boolean` - True if the source is playing.
+Returns: `boolean` - True if the source is playing.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -1308,19 +2149,28 @@ end
 
 ### lurek.audio.isStopped
 
-`lurek.audio.isStopped(source: LSource|integer) -> boolean`
+#### Definition
+
+```lua
+--- Returns whether a source is currently stopped.
+---@param source LSource|number Audio source or numeric source ID.
+---@return boolean True if the source is stopped.
+lurek.audio.isStopped = function(source) end
+```
+
+#### Description
 
 Returns whether a source is currently stopped.
 
-**Parameters**
+Parameters:
 
 - `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
-**Returns**: `boolean` - True if the source is stopped.
+Returns: `boolean` - True if the source is stopped.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -1332,18 +2182,27 @@ end
 
 ### lurek.audio.mixInto
 
-`lurek.audio.mixInto(dest_ud: LSoundData, src_ud: LSoundData)`
+#### Definition
+
+```lua
+--- Mixes the samples of `src` into `dest` in-place (both must have the same format).
+---@param dest_ud LSoundData Destination sound data to mix into.
+---@param src_ud LSoundData Source sound data to mix from.
+lurek.audio.mixInto = function(dest_ud, src_ud) end
+```
+
+#### Description
 
 Mixes the samples of `src` into `dest` in-place (both must have the same format).
 
-**Parameters**
+Parameters:
 
 - `dest_ud` (`LSoundData`, required): Destination sound data to mix into.
 - `src_ud` (`LSoundData`, required): Source sound data to mix from.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -1356,19 +2215,28 @@ end
 
 ### lurek.audio.newBus
 
-`lurek.audio.newBus(name: string) -> LBus`
+#### Definition
+
+```lua
+--- Creates a new audio mixing bus for grouping and controlling sources.
+---@param name string Unique name for the bus (e.g. "music", "sfx").
+---@return LBus The new audio bus handle.
+lurek.audio.newBus = function(name) end
+```
+
+#### Description
 
 Creates a new audio mixing bus for grouping and controlling sources.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, required): Unique name for the bus (e.g. "music", "sfx").
 
-**Returns**: `LBus` - The new audio bus handle.
+Returns: `LBus` - The new audio bus handle.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -1379,20 +2247,30 @@ end
 
 ### lurek.audio.newDecoder
 
-`lurek.audio.newDecoder(source: string, [buffersize]: integer) -> LDecoder`
+#### Definition
+
+```lua
+--- Creates a streaming audio decoder for the given file. The file is opened relative to the game directory.
+---@param source string Relative path to the audio file (WAV, OGG, MP3, or FLAC).
+---@param buffersize? number Number of samples per decode chunk; defaults to 2048.
+---@return LDecoder A streaming decoder with `decode`, `seek`, `rewind`, and `getSampleRate` methods.
+lurek.audio.newDecoder = function(source, buffersize) end
+```
+
+#### Description
 
 Creates a streaming audio decoder for the given file. The file is opened relative to the game directory.
 
-**Parameters**
+Parameters:
 
 - `source` (`string`, required): Relative path to the audio file (WAV, OGG, MP3, or FLAC).
 - `buffersize` (`integer`, optional): Number of samples per decode chunk; defaults to 2048.
 
-**Returns**: `LDecoder` - A streaming decoder with `decode`, `seek`, `rewind`, and `getSampleRate` methods.
+Returns: `LDecoder` - A streaming decoder with `decode`, `seek`, `rewind`, and `getSampleRate` methods.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -1404,19 +2282,28 @@ end
 
 ### lurek.audio.newMidiPlayer
 
-`lurek.audio.newMidiPlayer([path]: string) -> LMidiPlayer`
+#### Definition
+
+```lua
+--- Creates a new MIDI player instance, optionally loading a file immediately.
+---@param path? string Optional relative path to a .mid file to load.
+---@return LMidiPlayer A new MIDI player ready for playback.
+lurek.audio.newMidiPlayer = function(path) end
+```
+
+#### Description
 
 Creates a new MIDI player instance, optionally loading a file immediately.
 
-**Parameters**
+Parameters:
 
 - `path` (`string`, optional): Optional relative path to a .mid file to load.
 
-**Returns**: `LMidiPlayer` - A new MIDI player ready for playback.
+Returns: `LMidiPlayer` - A new MIDI player ready for playback.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -1427,20 +2314,30 @@ end
 
 ### lurek.audio.newPool
 
-`lurek.audio.newPool(file_path: string, voice_count: integer) -> LSoundPool`
+#### Definition
+
+```lua
+--- Creates a polyphonic sound pool that allows the same audio file to play on multiple simultaneous voices.
+---@param file_path string Relative path to the audio file shared by all voices in the pool.
+---@param voice_count number Number of concurrent voices to pre-allocate.
+---@return LSoundPool A sound pool with `play`, `stopAll`, `setVolume`, `release`, and `getVoiceCount` methods.
+lurek.audio.newPool = function(file_path, voice_count) end
+```
+
+#### Description
 
 Creates a polyphonic sound pool that allows the same audio file to play on multiple simultaneous voices.
 
-**Parameters**
+Parameters:
 
 - `file_path` (`string`, required): Relative path to the audio file shared by all voices in the pool.
 - `voice_count` (`integer`, required): Number of concurrent voices to pre-allocate.
 
-**Returns**: `LSoundPool` - A sound pool with `play`, `stopAll`, `setVolume`, `release`, and `getVoiceCount` methods.
+Returns: `LSoundPool` - A sound pool with `play`, `stopAll`, `setVolume`, `release`, and `getVoiceCount` methods.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -1452,22 +2349,34 @@ end
 
 ### lurek.audio.newQueueableSource
 
-`lurek.audio.newQueueableSource(sample_rate: integer, bit_depth: integer, channels: integer, [buffer_count]: integer) -> integer`
+#### Definition
+
+```lua
+--- Creates a new queueable audio source for streaming PCM data buffer by buffer.
+---@param sample_rate number Sample rate in Hz (e.g. 44100).
+---@param bit_depth number Bit depth per sample (8 or 16).
+---@param channels number Channel count (1 = mono, 2 = stereo).
+---@param buffer_count? number Number of internal buffers to pre-allocate; defaults to 4.
+---@return number An opaque integer handle for use with `queueSource`, `playQueueable`, and `stopQueueable`.
+lurek.audio.newQueueableSource = function(sample_rate, bit_depth, channels, buffer_count) end
+```
+
+#### Description
 
 Creates a new queueable audio source for streaming PCM data buffer by buffer.
 
-**Parameters**
+Parameters:
 
 - `sample_rate` (`integer`, required): Sample rate in Hz (e.g. 44100).
 - `bit_depth` (`integer`, required): Bit depth per sample (8 or 16).
 - `channels` (`integer`, required): Channel count (1 = mono, 2 = stereo).
 - `buffer_count` (`integer`, optional): Number of internal buffers to pre-allocate; defaults to 4.
 
-**Returns**: `integer` - An opaque integer handle for use with `queueSource`, `playQueueable`, and `stopQueueable`.
+Returns: `integer` - An opaque integer handle for use with `queueSource`, `playQueueable`, and `stopQueueable`.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -1478,22 +2387,34 @@ end
 
 ### lurek.audio.newSawtoothWave
 
-`lurek.audio.newSawtoothWave(freq: number, duration: number, sample_rate: integer, amplitude: number) -> LSoundData`
+#### Definition
+
+```lua
+--- Generates a sawtooth wave as a `SoundData` buffer.
+---@param freq number Frequency in Hz.
+---@param duration number Duration in seconds.
+---@param sample_rate number Sample rate in Hz (e.g. 44100).
+---@param amplitude number Peak amplitude in the range [0.0, 1.0].
+---@return LSoundData A `SoundData` object containing the generated PCM samples.
+lurek.audio.newSawtoothWave = function(freq, duration, sample_rate, amplitude) end
+```
+
+#### Description
 
 Generates a sawtooth wave as a `SoundData` buffer.
 
-**Parameters**
+Parameters:
 
 - `freq` (`number`, required): Frequency in Hz.
 - `duration` (`number`, required): Duration in seconds.
 - `sample_rate` (`integer`, required): Sample rate in Hz (e.g. 44100).
 - `amplitude` (`number`, required): Peak amplitude in the range [0.0, 1.0].
 
-**Returns**: `LSoundData` - A `SoundData` object containing the generated PCM samples.
+Returns: `LSoundData` - A `SoundData` object containing the generated PCM samples.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -1504,22 +2425,34 @@ end
 
 ### lurek.audio.newSineWave
 
-`lurek.audio.newSineWave(freq: number, duration: number, sample_rate: integer, amplitude: number) -> LSoundData`
+#### Definition
+
+```lua
+--- Generates a sine wave as a `SoundData` buffer.
+---@param freq number Frequency in Hz (e.g. 440.0 for concert A).
+---@param duration number Duration in seconds.
+---@param sample_rate number Sample rate in Hz (e.g. 44100).
+---@param amplitude number Peak amplitude in the range [0.0, 1.0].
+---@return LSoundData A `SoundData` object containing the generated PCM samples.
+lurek.audio.newSineWave = function(freq, duration, sample_rate, amplitude) end
+```
+
+#### Description
 
 Generates a sine wave as a `SoundData` buffer.
 
-**Parameters**
+Parameters:
 
 - `freq` (`number`, required): Frequency in Hz (e.g. 440.0 for concert A).
 - `duration` (`number`, required): Duration in seconds.
 - `sample_rate` (`integer`, required): Sample rate in Hz (e.g. 44100).
 - `amplitude` (`number`, required): Peak amplitude in the range [0.0, 1.0].
 
-**Returns**: `LSoundData` - A `SoundData` object containing the generated PCM samples.
+Returns: `LSoundData` - A `SoundData` object containing the generated PCM samples.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -1530,21 +2463,32 @@ end
 
 ### lurek.audio.newSoundData
 
-`lurek.audio.newSoundData(pathOrCount: string|integer, sampleRate: integer, [channels]: integer) -> LSoundData`
+#### Definition
+
+```lua
+--- Creates a new SoundData object from a file path or blank buffer for procedural audio.
+---@param pathOrCount string|number File path to decode, or sample count for blank buffer.
+---@param sampleRate number Sample rate in Hz (e.g. 44100, 48000).
+---@param channels? number Channel count (1 = mono, 2 = stereo), defaults to 1.
+---@return LSoundData Raw PCM sample data for manipulation or playback.
+lurek.audio.newSoundData = function(pathOrCount, sampleRate, channels) end
+```
+
+#### Description
 
 Creates a new SoundData object from a file path or blank buffer for procedural audio.
 
-**Parameters**
+Parameters:
 
 - `pathOrCount` (`string|integer`, required): File path to decode, or sample count for blank buffer.
 - `sampleRate` (`integer`, required): Sample rate in Hz (e.g. 44100, 48000).
 - `channels` (`integer`, optional): Channel count (1 = mono, 2 = stereo), defaults to 1.
 
-**Returns**: `LSoundData` - Raw PCM sample data for manipulation or playback.
+Returns: `LSoundData` - Raw PCM sample data for manipulation or playback.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -1555,20 +2499,30 @@ end
 
 ### lurek.audio.newSource
 
-`lurek.audio.newSource(path: string, [sourceType]: string) -> LSource`
+#### Definition
+
+```lua
+--- Creates a new audio source from a file path, either fully loaded or streaming.
+---@param path string Relative path to the audio file (WAV, OGG, MP3, FLAC).
+---@param sourceType? string "static" to load fully into memory, or "stream" (default) for streaming.
+---@return LSource A new audio source ready for playback.
+lurek.audio.newSource = function(path, sourceType) end
+```
+
+#### Description
 
 Creates a new audio source from a file path, either fully loaded or streaming.
 
-**Parameters**
+Parameters:
 
 - `path` (`string`, required): Relative path to the audio file (WAV, OGG, MP3, FLAC).
 - `sourceType` (`string`, optional): "static" to load fully into memory, or "stream" (default) for streaming.
 
-**Returns**: `LSource` - A new audio source ready for playback.
+Returns: `LSource` - A new audio source ready for playback.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -1580,22 +2534,34 @@ end
 
 ### lurek.audio.newSquareWave
 
-`lurek.audio.newSquareWave(freq: number, duration: number, sample_rate: integer, amplitude: number) -> LSoundData`
+#### Definition
+
+```lua
+--- Generates a square wave as a `SoundData` buffer.
+---@param freq number Frequency in Hz.
+---@param duration number Duration in seconds.
+---@param sample_rate number Sample rate in Hz (e.g. 44100).
+---@param amplitude number Peak amplitude in the range [0.0, 1.0].
+---@return LSoundData A `SoundData` object containing the generated PCM samples.
+lurek.audio.newSquareWave = function(freq, duration, sample_rate, amplitude) end
+```
+
+#### Description
 
 Generates a square wave as a `SoundData` buffer.
 
-**Parameters**
+Parameters:
 
 - `freq` (`number`, required): Frequency in Hz.
 - `duration` (`number`, required): Duration in seconds.
 - `sample_rate` (`integer`, required): Sample rate in Hz (e.g. 44100).
 - `amplitude` (`number`, required): Peak amplitude in the range [0.0, 1.0].
 
-**Returns**: `LSoundData` - A `SoundData` object containing the generated PCM samples.
+Returns: `LSoundData` - A `SoundData` object containing the generated PCM samples.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -1606,22 +2572,34 @@ end
 
 ### lurek.audio.newTriangleWave
 
-`lurek.audio.newTriangleWave(freq: number, duration: number, sample_rate: integer, amplitude: number) -> LSoundData`
+#### Definition
+
+```lua
+--- Generates a triangle wave as a `SoundData` buffer.
+---@param freq number Frequency in Hz.
+---@param duration number Duration in seconds.
+---@param sample_rate number Sample rate in Hz (e.g. 44100).
+---@param amplitude number Peak amplitude in the range [0.0, 1.0].
+---@return LSoundData A `SoundData` object containing the generated PCM samples.
+lurek.audio.newTriangleWave = function(freq, duration, sample_rate, amplitude) end
+```
+
+#### Description
 
 Generates a triangle wave as a `SoundData` buffer.
 
-**Parameters**
+Parameters:
 
 - `freq` (`number`, required): Frequency in Hz.
 - `duration` (`number`, required): Duration in seconds.
 - `sample_rate` (`integer`, required): Sample rate in Hz (e.g. 44100).
 - `amplitude` (`number`, required): Peak amplitude in the range [0.0, 1.0].
 
-**Returns**: `LSoundData` - A `SoundData` object containing the generated PCM samples.
+Returns: `LSoundData` - A `SoundData` object containing the generated PCM samples.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -1632,22 +2610,34 @@ end
 
 ### lurek.audio.newWhiteNoise
 
-`lurek.audio.newWhiteNoise(duration: number, sample_rate: integer, amplitude: number, seed: integer) -> LSoundData`
+#### Definition
+
+```lua
+--- Generates white noise as a `SoundData` buffer using a deterministic seed.
+---@param duration number Duration in seconds.
+---@param sample_rate number Sample rate in Hz (e.g. 44100).
+---@param amplitude number Peak amplitude in the range [0.0, 1.0].
+---@param seed number Seed value for the noise generator (same seed produces identical output).
+---@return LSoundData A `SoundData` object containing the generated PCM samples.
+lurek.audio.newWhiteNoise = function(duration, sample_rate, amplitude, seed) end
+```
+
+#### Description
 
 Generates white noise as a `SoundData` buffer using a deterministic seed.
 
-**Parameters**
+Parameters:
 
 - `duration` (`number`, required): Duration in seconds.
 - `sample_rate` (`integer`, required): Sample rate in Hz (e.g. 44100).
 - `amplitude` (`number`, required): Peak amplitude in the range [0.0, 1.0].
 - `seed` (`integer`, required): Seed value for the noise generator (same seed produces identical output).
 
-**Returns**: `LSoundData` - A `SoundData` object containing the generated PCM samples.
+Returns: `LSoundData` - A `SoundData` object containing the generated PCM samples.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -1658,11 +2648,21 @@ end
 
 ### lurek.audio.normalizeFile
 
-`lurek.audio.normalizeFile(input: string, output: string, target: number)`
+#### Definition
+
+```lua
+--- Normalizes an audio file to a target peak amplitude and saves the result.
+---@param input string Relative path to the input audio file.
+---@param output string Relative path for the output WAV file.
+---@param target number Target peak amplitude (e.g. 0.9 for headroom).
+lurek.audio.normalizeFile = function(input, output, target) end
+```
+
+#### Description
 
 Normalizes an audio file to a target peak amplitude and saves the result.
 
-**Parameters**
+Parameters:
 
 - `input` (`string`, required): Relative path to the input audio file.
 - `output` (`string`, required): Relative path for the output WAV file.
@@ -1670,7 +2670,7 @@ Normalizes an audio file to a target peak amplitude and saves the result.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -1683,17 +2683,25 @@ end
 
 ### lurek.audio.pause
 
-`lurek.audio.pause(source: LSource|integer)`
+#### Definition
+
+```lua
+--- Pauses playback of a source at its current position.
+---@param source LSource|number Audio source or numeric source ID.
+lurek.audio.pause = function(source) end
+```
+
+#### Description
 
 Pauses playback of a source at its current position.
 
-**Parameters**
+Parameters:
 
 - `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -1707,13 +2715,20 @@ end
 
 ### lurek.audio.pauseAll
 
-`lurek.audio.pauseAll()`
+#### Definition
+
+```lua
+--- Pauses all currently playing audio sources.
+lurek.audio.pauseAll = function() end
+```
+
+#### Description
 
 Pauses all currently playing audio sources.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -1724,20 +2739,30 @@ end
 
 ### lurek.audio.play
 
-`lurek.audio.play(source: LSource|integer, [options]: table) -> integer`
+#### Definition
+
+```lua
+--- Starts playback of a source by handle, optionally routing through a named bus.
+---@param source LSource|number Audio source or numeric source ID.
+---@param options? table Optional table with "bus" field for bus routing.
+---@return number Numeric source ID of the playing source.
+lurek.audio.play = function(source, options) end
+```
+
+#### Description
 
 Starts playback of a source by handle, optionally routing through a named bus.
 
-**Parameters**
+Parameters:
 
 - `source` (`LSource|integer`, required): Audio source or numeric source ID.
 - `options` (`table`, optional): Optional table with "bus" field for bus routing.
 
-**Returns**: `integer` - Numeric source ID of the playing source.
+Returns: `integer` - Numeric source ID of the playing source.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -1750,17 +2775,25 @@ end
 
 ### lurek.audio.playLooping
 
-`lurek.audio.playLooping(source: LSource|integer)`
+#### Definition
+
+```lua
+--- Starts playback of a source with looping enabled in one call.
+---@param source LSource|number Audio source or numeric source ID.
+lurek.audio.playLooping = function(source) end
+```
+
+#### Description
 
 Starts playback of a source with looping enabled in one call.
 
-**Parameters**
+Parameters:
 
 - `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -1773,17 +2806,25 @@ end
 
 ### lurek.audio.playQueueable
 
-`lurek.audio.playQueueable(qsource_id: integer)`
+#### Definition
+
+```lua
+--- Starts playback of a queueable audio source.
+---@param qsource_id number Queueable source handle returned by newQueueableSource.
+lurek.audio.playQueueable = function(qsource_id) end
+```
+
+#### Description
 
 Starts playback of a queueable audio source.
 
-**Parameters**
+Parameters:
 
 - `qsource_id` (`integer`, required): Queueable source handle returned by newQueueableSource.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -1797,11 +2838,21 @@ end
 
 ### lurek.audio.processOffline
 
-`lurek.audio.processOffline(input: string, output: string, effects_tbl: table)`
+#### Definition
+
+```lua
+--- Processes an audio file offline through a chain of effects and writes the result to an output file.
+---@param input string Relative path to the input audio file.
+---@param output string Relative path for the output WAV file.
+---@param effects_tbl table Array of effect tables; each has `type` (string) and optional `p1`, `p2`, `p3` (number) fields.
+lurek.audio.processOffline = function(input, output, effects_tbl) end
+```
+
+#### Description
 
 Processes an audio file offline through a chain of effects and writes the result to an output file.
 
-**Parameters**
+Parameters:
 
 - `input` (`string`, required): Relative path to the input audio file.
 - `output` (`string`, required): Relative path for the output WAV file.
@@ -1809,7 +2860,7 @@ Processes an audio file offline through a chain of effects and writes the result
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -1823,18 +2874,27 @@ end
 
 ### lurek.audio.queueSource
 
-`lurek.audio.queueSource(qsource_id: integer, sd: LSoundData)`
+#### Definition
+
+```lua
+--- Queues a decoded audio chunk for playback on a queueable source.
+---@param qsource_id number Queueable source handle returned by `newQueueableSource`.
+---@param sd LSoundData Sound data chunk to enqueue for playback.
+lurek.audio.queueSource = function(qsource_id, sd) end
+```
+
+#### Description
 
 Queues a decoded audio chunk for playback on a queueable source.
 
-**Parameters**
+Parameters:
 
 - `qsource_id` (`integer`, required): Queueable source handle returned by `newQueueableSource`.
 - `sd` (`LSoundData`, required): Sound data chunk to enqueue for playback.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -1847,19 +2907,28 @@ end
 
 ### lurek.audio.release
 
-`lurek.audio.release(source: LSource|integer) -> boolean`
+#### Definition
+
+```lua
+--- Releases an audio source, freeing its memory and stopping playback.
+---@param source LSource|number Audio source or numeric source ID to release.
+---@return boolean True if the source was successfully released.
+lurek.audio.release = function(source) end
+```
+
+#### Description
 
 Releases an audio source, freeing its memory and stopping playback.
 
-**Parameters**
+Parameters:
 
 - `source` (`LSource|integer`, required): Audio source or numeric source ID to release.
 
-**Returns**: `boolean` - True if the source was successfully released.
+Returns: `boolean` - True if the source was successfully released.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -1872,20 +2941,30 @@ end
 
 ### lurek.audio.remove_effect
 
-`lurek.audio.remove_effect(bus_name: string, effect_id: integer) -> boolean`
+#### Definition
+
+```lua
+--- Removes an effect from a named audio bus by effect ID.
+---@param bus_name string Name of the audio bus.
+---@param effect_id number Effect ID returned by add_effect.
+---@return boolean True if the effect was successfully removed.
+lurek.audio.remove_effect = function(bus_name, effect_id) end
+```
+
+#### Description
 
 Removes an effect from a named audio bus by effect ID.
 
-**Parameters**
+Parameters:
 
 - `bus_name` (`string`, required): Name of the audio bus.
 - `effect_id` (`integer`, required): Effect ID returned by add_effect.
 
-**Returns**: `boolean` - True if the effect was successfully removed.
+Returns: `boolean` - True if the effect was successfully removed.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -1898,17 +2977,25 @@ end
 
 ### lurek.audio.resume
 
-`lurek.audio.resume(source: LSource|integer)`
+#### Definition
+
+```lua
+--- Resumes playback of a paused source.
+---@param source LSource|number Audio source or numeric source ID.
+lurek.audio.resume = function(source) end
+```
+
+#### Description
 
 Resumes playback of a paused source.
 
-**Parameters**
+Parameters:
 
 - `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -1922,13 +3009,20 @@ end
 
 ### lurek.audio.resumeAll
 
-`lurek.audio.resumeAll()`
+#### Definition
+
+```lua
+--- Resumes all paused audio sources. This function is exposed to Lua scripts.
+lurek.audio.resumeAll = function() end
+```
+
+#### Description
 
 Resumes all paused audio sources. This function is exposed to Lua scripts.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -1939,18 +3033,27 @@ end
 
 ### lurek.audio.saveWAV
 
-`lurek.audio.saveWAV(sd_ud: LSoundData, filename: string)`
+#### Definition
+
+```lua
+--- Encodes the sound data as a WAV file and saves it to the given path (relative to game dir).
+---@param sd_ud LSoundData The sound data to encode and save.
+---@param filename string Relative output path for the WAV file.
+lurek.audio.saveWAV = function(sd_ud, filename) end
+```
+
+#### Description
 
 Encodes the sound data as a WAV file and saves it to the given path (relative to game dir).
 
-**Parameters**
+Parameters:
 
 - `sd_ud` (`LSoundData`, required): The sound data to encode and save.
 - `filename` (`string`, required): Relative output path for the WAV file.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -1962,18 +3065,27 @@ end
 
 ### lurek.audio.seek
 
-`lurek.audio.seek(source: LSource|integer, pos: number)`
+#### Definition
+
+```lua
+--- Seeks a source to a specific position in seconds.
+---@param source LSource|number Audio source or numeric source ID.
+---@param pos number Target position in seconds.
+lurek.audio.seek = function(source, pos) end
+```
+
+#### Description
 
 Seeks a source to a specific position in seconds.
 
-**Parameters**
+Parameters:
 
 - `source` (`LSource|integer`, required): Audio source or numeric source ID.
 - `pos` (`number`, required): Target position in seconds.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -1987,18 +3099,27 @@ end
 
 ### lurek.audio.set_bus_volume
 
-`lurek.audio.set_bus_volume(name: string, volume: number)`
+#### Definition
+
+```lua
+--- Sets the volume of a named audio bus.
+---@param name string Name of the audio bus.
+---@param volume number Volume level (0.0 = silent, 1.0 = full, >1.0 = boost).
+lurek.audio.set_bus_volume = function(name, volume) end
+```
+
+#### Description
 
 Sets the volume of a named audio bus.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, required): Name of the audio bus.
 - `volume` (`number`, required): Volume level (0.0 = silent, 1.0 = full, >1.0 = boost).
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -2010,22 +3131,34 @@ end
 
 ### lurek.audio.set_effect_param
 
-`lurek.audio.set_effect_param(bus_name: string, effect_id: integer, param_name: string, value: number) -> boolean`
+#### Definition
+
+```lua
+--- Sets a parameter value on an effect attached to a named audio bus.
+---@param bus_name string Name of the audio bus.
+---@param effect_id number Effect ID returned by add_effect.
+---@param param_name string Name of the effect parameter to set.
+---@param value number New value for the parameter.
+---@return boolean True if the parameter was set successfully.
+lurek.audio.set_effect_param = function(bus_name, effect_id, param_name, value) end
+```
+
+#### Description
 
 Sets a parameter value on an effect attached to a named audio bus.
 
-**Parameters**
+Parameters:
 
 - `bus_name` (`string`, required): Name of the audio bus.
 - `effect_id` (`integer`, required): Effect ID returned by add_effect.
 - `param_name` (`string`, required): Name of the effect parameter to set.
 - `value` (`number`, required): New value for the parameter.
 
-**Returns**: `boolean` - True if the parameter was set successfully.
+Returns: `boolean` - True if the parameter was set successfully.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -2038,17 +3171,25 @@ end
 
 ### lurek.audio.setDistanceModel
 
-`lurek.audio.setDistanceModel(model: string)`
+#### Definition
+
+```lua
+--- Sets the distance attenuation model for spatial audio.
+---@param model string Model name (e.g. "inverse", "linear", "exponent", "none").
+lurek.audio.setDistanceModel = function(model) end
+```
+
+#### Description
 
 Sets the distance attenuation model for spatial audio.
 
-**Parameters**
+Parameters:
 
 - `model` (`string`, required): Model name (e.g. "inverse", "linear", "exponent", "none").
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -2059,17 +3200,25 @@ end
 
 ### lurek.audio.setDopplerScale
 
-`lurek.audio.setDopplerScale(scale: number)`
+#### Definition
+
+```lua
+--- Sets the global Doppler effect intensity multiplier.
+---@param scale number Doppler scale (0 = disabled, 1.0 = realistic).
+lurek.audio.setDopplerScale = function(scale) end
+```
+
+#### Description
 
 Sets the global Doppler effect intensity multiplier.
 
-**Parameters**
+Parameters:
 
 - `scale` (`number`, required): Doppler scale (0 = disabled, 1.0 = realistic).
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -2080,18 +3229,27 @@ end
 
 ### lurek.audio.setHighpass
 
-`lurek.audio.setHighpass(source: LSource|integer, cutoff_hz: integer)`
+#### Definition
+
+```lua
+--- Applies a highpass filter to a source, attenuating low frequencies.
+---@param source LSource|number Audio source or numeric source ID.
+---@param cutoff_hz number Cutoff frequency in Hertz.
+lurek.audio.setHighpass = function(source, cutoff_hz) end
+```
+
+#### Description
 
 Applies a highpass filter to a source, attenuating low frequencies.
 
-**Parameters**
+Parameters:
 
 - `source` (`LSource|integer`, required): Audio source or numeric source ID.
 - `cutoff_hz` (`integer`, required): Cutoff frequency in Hertz.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -2104,11 +3262,21 @@ end
 
 ### lurek.audio.setListener
 
-`lurek.audio.setListener(x: number, y: number, [z]: number)`
+#### Definition
+
+```lua
+--- Sets the 3D listener position for spatial audio (Z defaults to 0 for 2D games).
+---@param x number Listener X position.
+---@param y number Listener Y position.
+---@param z? number Listener Z position (defaults to 0).
+lurek.audio.setListener = function(x, y, z) end
+```
+
+#### Description
 
 Sets the 3D listener position for spatial audio (Z defaults to 0 for 2D games).
 
-**Parameters**
+Parameters:
 
 - `x` (`number`, required): Listener X position.
 - `y` (`number`, required): Listener Y position.
@@ -2116,7 +3284,7 @@ Sets the 3D listener position for spatial audio (Z defaults to 0 for 2D games).
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -2128,18 +3296,27 @@ end
 
 ### lurek.audio.setListener2D
 
-`lurek.audio.setListener2D(x: number, y: number)`
+#### Definition
+
+```lua
+--- Sets the 2D listener position for spatial audio calculations.
+---@param x number Listener X position in world units.
+---@param y number Listener Y position in world units.
+lurek.audio.setListener2D = function(x, y) end
+```
+
+#### Description
 
 Sets the 2D listener position for spatial audio calculations.
 
-**Parameters**
+Parameters:
 
 - `x` (`number`, required): Listener X position in world units.
 - `y` (`number`, required): Listener Y position in world units.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -2151,18 +3328,27 @@ end
 
 ### lurek.audio.setLooping
 
-`lurek.audio.setLooping(source: LSource|integer, looping: boolean)`
+#### Definition
+
+```lua
+--- Enables or disables looping for a source.
+---@param source LSource|number Audio source or numeric source ID.
+---@param looping boolean True to loop, false to play once.
+lurek.audio.setLooping = function(source, looping) end
+```
+
+#### Description
 
 Enables or disables looping for a source.
 
-**Parameters**
+Parameters:
 
 - `source` (`LSource|integer`, required): Audio source or numeric source ID.
 - `looping` (`boolean`, required): True to loop, false to play once.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -2175,18 +3361,27 @@ end
 
 ### lurek.audio.setLowpass
 
-`lurek.audio.setLowpass(source: LSource|integer, cutoff_hz: integer)`
+#### Definition
+
+```lua
+--- Applies a lowpass filter to a source, attenuating high frequencies.
+---@param source LSource|number Audio source or numeric source ID.
+---@param cutoff_hz number Cutoff frequency in Hertz.
+lurek.audio.setLowpass = function(source, cutoff_hz) end
+```
+
+#### Description
 
 Applies a lowpass filter to a source, attenuating high frequencies.
 
-**Parameters**
+Parameters:
 
 - `source` (`LSource|integer`, required): Audio source or numeric source ID.
 - `cutoff_hz` (`integer`, required): Cutoff frequency in Hertz.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -2199,17 +3394,25 @@ end
 
 ### lurek.audio.setMasterVolume
 
-`lurek.audio.setMasterVolume(vol: number)`
+#### Definition
+
+```lua
+--- Sets the global master volume affecting all audio output.
+---@param vol number Master volume multiplier (0.0 = silent, 1.0 = normal).
+lurek.audio.setMasterVolume = function(vol) end
+```
+
+#### Description
 
 Sets the global master volume affecting all audio output.
 
-**Parameters**
+Parameters:
 
 - `vol` (`number`, required): Master volume multiplier (0.0 = silent, 1.0 = normal).
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -2220,17 +3423,25 @@ end
 
 ### lurek.audio.setMeter
 
-`lurek.audio.setMeter(level: number)`
+#### Definition
+
+```lua
+--- Sets the master peak level for metering purposes.
+---@param level number Peak level clamped to 0.0-1.0.
+lurek.audio.setMeter = function(level) end
+```
+
+#### Description
 
 Sets the master peak level for metering purposes.
 
-**Parameters**
+Parameters:
 
 - `level` (`number`, required): Peak level clamped to 0.0-1.0.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -2241,17 +3452,25 @@ end
 
 ### lurek.audio.setMidiSoundFont
 
-`lurek.audio.setMidiSoundFont(path: string)`
+#### Definition
+
+```lua
+--- Sets the SoundFont file used for MIDI synthesis.
+---@param path string Relative path to the .sf2 SoundFont file.
+lurek.audio.setMidiSoundFont = function(path) end
+```
+
+#### Description
 
 Sets the SoundFont file used for MIDI synthesis.
 
-**Parameters**
+Parameters:
 
 - `path` (`string`, required): Relative path to the .sf2 SoundFont file.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -2265,11 +3484,25 @@ end
 
 ### lurek.audio.setOrientation
 
-`lurek.audio.setOrientation(source: LSource|integer, fx: number, fy: number, fz: number, ux: number, uy: number, uz: number)`
+#### Definition
+
+```lua
+--- Sets the orientation of a source using forward and up vectors.
+---@param source LSource|number Audio source or numeric source ID.
+---@param fx number Forward vector X.
+---@param fy number Forward vector Y.
+---@param fz number Forward vector Z.
+---@param ux number Up vector X.
+---@param uy number Up vector Y.
+---@param uz number Up vector Z.
+lurek.audio.setOrientation = function(source, fx, fy, fz, ux, uy, uz) end
+```
+
+#### Description
 
 Sets the orientation of a source using forward and up vectors.
 
-**Parameters**
+Parameters:
 
 - `source` (`LSource|integer`, required): Audio source or numeric source ID.
 - `fx` (`number`, required): Forward vector X.
@@ -2281,7 +3514,7 @@ Sets the orientation of a source using forward and up vectors.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -2294,18 +3527,27 @@ end
 
 ### lurek.audio.setPan
 
-`lurek.audio.setPan(source: LSource|integer, pan: number)`
+#### Definition
+
+```lua
+--- Sets the stereo panning of a source.
+---@param source LSource|number Audio source or numeric source ID.
+---@param pan number Pan from -1.0 (left) to 1.0 (right), 0.0 is center.
+lurek.audio.setPan = function(source, pan) end
+```
+
+#### Description
 
 Sets the stereo panning of a source.
 
-**Parameters**
+Parameters:
 
 - `source` (`LSource|integer`, required): Audio source or numeric source ID.
 - `pan` (`number`, required): Pan from -1.0 (left) to 1.0 (right), 0.0 is center.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -2318,18 +3560,27 @@ end
 
 ### lurek.audio.setPitch
 
-`lurek.audio.setPitch(source: LSource|integer, pitch: number)`
+#### Definition
+
+```lua
+--- Sets the pitch multiplier of a source, affecting playback speed and tone.
+---@param source LSource|number Audio source or numeric source ID.
+---@param pitch number Pitch multiplier (1.0 = normal, 2.0 = octave up).
+lurek.audio.setPitch = function(source, pitch) end
+```
+
+#### Description
 
 Sets the pitch multiplier of a source, affecting playback speed and tone.
 
-**Parameters**
+Parameters:
 
 - `source` (`LSource|integer`, required): Audio source or numeric source ID.
 - `pitch` (`number`, required): Pitch multiplier (1.0 = normal, 2.0 = octave up).
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -2342,17 +3593,25 @@ end
 
 ### lurek.audio.setPlaybackDevice
 
-`lurek.audio.setPlaybackDevice(name: string)`
+#### Definition
+
+```lua
+--- Sets the active audio playback device by name.
+---@param name string Name of the playback device to activate.
+lurek.audio.setPlaybackDevice = function(name) end
+```
+
+#### Description
 
 Sets the active audio playback device by name.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, required): Name of the playback device to activate.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -2365,11 +3624,22 @@ end
 
 ### lurek.audio.setPosition
 
-`lurek.audio.setPosition(source: LSource|integer, x: number, y: number, [z]: number)`
+#### Definition
+
+```lua
+--- Sets the 3D position of a source for spatial audio panning and attenuation.
+---@param source LSource|number Audio source or numeric source ID.
+---@param x number X position in world units.
+---@param y number Y position in world units.
+---@param z? number Z position (defaults to 0).
+lurek.audio.setPosition = function(source, x, y, z) end
+```
+
+#### Description
 
 Sets the 3D position of a source for spatial audio panning and attenuation.
 
-**Parameters**
+Parameters:
 
 - `source` (`LSource|integer`, required): Audio source or numeric source ID.
 - `x` (`number`, required): X position in world units.
@@ -2378,7 +3648,7 @@ Sets the 3D position of a source for spatial audio panning and attenuation.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -2392,11 +3662,21 @@ end
 
 ### lurek.audio.setRandomPitch
 
-`lurek.audio.setRandomPitch(src_ud: LSource, min: number, max: number)`
+#### Definition
+
+```lua
+--- Sets a random pitch range for a source; each play picks a random pitch between min and max.
+---@param src_ud LSource The audio source to configure.
+---@param min number Minimum pitch multiplier.
+---@param max number Maximum pitch multiplier.
+lurek.audio.setRandomPitch = function(src_ud, min, max) end
+```
+
+#### Description
 
 Sets a random pitch range for a source; each play picks a random pitch between min and max.
 
-**Parameters**
+Parameters:
 
 - `src_ud` (`LSource`, required): The audio source to configure.
 - `min` (`number`, required): Minimum pitch multiplier.
@@ -2404,7 +3684,7 @@ Sets a random pitch range for a source; each play picks a random pitch between m
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -2417,18 +3697,27 @@ end
 
 ### lurek.audio.setSourceBus
 
-`lurek.audio.setSourceBus(source: LSource|integer, bus: LBus)`
+#### Definition
+
+```lua
+--- Routes a source through a specific audio bus for grouped mixing.
+---@param source LSource|number Audio source or numeric source ID.
+---@param bus LBus The bus to route through.
+lurek.audio.setSourceBus = function(source, bus) end
+```
+
+#### Description
 
 Routes a source through a specific audio bus for grouped mixing.
 
-**Parameters**
+Parameters:
 
 - `source` (`LSource|integer`, required): Audio source or numeric source ID.
 - `bus` (`LBus`, required): The bus to route through.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -2442,18 +3731,27 @@ end
 
 ### lurek.audio.setStereoWidth
 
-`lurek.audio.setStereoWidth(src_ud: LSource, width: number)`
+#### Definition
+
+```lua
+--- Sets the stereo width of an audio source (0.0 = mono, 1.0 = full stereo).
+---@param src_ud LSource The audio source to adjust.
+---@param width number Stereo width factor (0.0 = mono, 1.0 = full stereo).
+lurek.audio.setStereoWidth = function(src_ud, width) end
+```
+
+#### Description
 
 Sets the stereo width of an audio source (0.0 = mono, 1.0 = full stereo).
 
-**Parameters**
+Parameters:
 
 - `src_ud` (`LSource`, required): The audio source to adjust.
 - `width` (`number`, required): Stereo width factor (0.0 = mono, 1.0 = full stereo).
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -2466,11 +3764,22 @@ end
 
 ### lurek.audio.setVelocity
 
-`lurek.audio.setVelocity(source: LSource|integer, x: number, y: number, [z]: number)`
+#### Definition
+
+```lua
+--- Sets the velocity of a source for Doppler effect calculations.
+---@param source LSource|number Audio source or numeric source ID.
+---@param x number X velocity component.
+---@param y number Y velocity component.
+---@param z? number Z velocity component (defaults to 0).
+lurek.audio.setVelocity = function(source, x, y, z) end
+```
+
+#### Description
 
 Sets the velocity of a source for Doppler effect calculations.
 
-**Parameters**
+Parameters:
 
 - `source` (`LSource|integer`, required): Audio source or numeric source ID.
 - `x` (`number`, required): X velocity component.
@@ -2479,7 +3788,7 @@ Sets the velocity of a source for Doppler effect calculations.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -2493,18 +3802,27 @@ end
 
 ### lurek.audio.setVolume
 
-`lurek.audio.setVolume(source: LSource|integer, vol: number)`
+#### Definition
+
+```lua
+--- Sets the volume of a source by handle.
+---@param source LSource|number Audio source or numeric source ID.
+---@param vol number Volume multiplier (0.0 = silent, 1.0 = normal).
+lurek.audio.setVolume = function(source, vol) end
+```
+
+#### Description
 
 Sets the volume of a source by handle.
 
-**Parameters**
+Parameters:
 
 - `source` (`LSource|integer`, required): Audio source or numeric source ID.
 - `vol` (`number`, required): Volume multiplier (0.0 = silent, 1.0 = normal).
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -2517,11 +3835,22 @@ end
 
 ### lurek.audio.spectrogramToPng
 
-`lurek.audio.spectrogramToPng(input: string, output: string, width: integer, height: integer)`
+#### Definition
+
+```lua
+--- Renders a spectrogram visualization of an audio file and saves it as a PNG image.
+---@param input string Relative path to the input audio file.
+---@param output string Relative path for the output PNG file.
+---@param width number Image width in pixels.
+---@param height number Image height in pixels.
+lurek.audio.spectrogramToPng = function(input, output, width, height) end
+```
+
+#### Description
 
 Renders a spectrogram visualization of an audio file and saves it as a PNG image.
 
-**Parameters**
+Parameters:
 
 - `input` (`string`, required): Relative path to the input audio file.
 - `output` (`string`, required): Relative path for the output PNG file.
@@ -2530,7 +3859,7 @@ Renders a spectrogram visualization of an audio file and saves it as a PNG image
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -2543,17 +3872,25 @@ end
 
 ### lurek.audio.stop
 
-`lurek.audio.stop(source: LSource|integer)`
+#### Definition
+
+```lua
+--- Stops playback of a source and resets its position to the beginning.
+---@param source LSource|number Audio source or numeric source ID.
+lurek.audio.stop = function(source) end
+```
+
+#### Description
 
 Stops playback of a source and resets its position to the beginning.
 
-**Parameters**
+Parameters:
 
 - `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -2567,13 +3904,20 @@ end
 
 ### lurek.audio.stopAll
 
-`lurek.audio.stopAll()`
+#### Definition
+
+```lua
+--- Stops all audio sources and resets their positions.
+lurek.audio.stopAll = function() end
+```
+
+#### Description
 
 Stops all audio sources and resets their positions.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -2584,17 +3928,25 @@ end
 
 ### lurek.audio.stopQueueable
 
-`lurek.audio.stopQueueable(qsource_id: integer)`
+#### Definition
+
+```lua
+--- Stops playback of a queueable audio source.
+---@param qsource_id number Queueable source handle returned by newQueueableSource.
+lurek.audio.stopQueueable = function(qsource_id) end
+```
+
+#### Description
 
 Stops playback of a queueable audio source.
 
-**Parameters**
+Parameters:
 
 - `qsource_id` (`integer`, required): Queueable source handle returned by newQueueableSource.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -2606,19 +3958,28 @@ end
 
 ### lurek.audio.tell
 
-`lurek.audio.tell(source: LSource|integer) -> number`
+#### Definition
+
+```lua
+--- Returns the current playback position of a source in seconds.
+---@param source LSource|number Audio source or numeric source ID.
+---@return number Current position in seconds.
+lurek.audio.tell = function(source) end
+```
+
+#### Description
 
 Returns the current playback position of a source in seconds.
 
-**Parameters**
+Parameters:
 
 - `source` (`LSource|integer`, required): Audio source or numeric source ID.
 
-**Returns**: `number` - Current position in seconds.
+Returns: `number` - Current position in seconds.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -2632,11 +3993,22 @@ end
 
 ### lurek.audio.waveformToPng
 
-`lurek.audio.waveformToPng(input: string, output: string, width: integer, height: integer)`
+#### Definition
+
+```lua
+--- Renders a waveform visualization of an audio file and saves it as a PNG image.
+---@param input string Relative path to the input audio file.
+---@param output string Relative path for the output PNG file.
+---@param width number Image width in pixels.
+---@param height number Image height in pixels.
+lurek.audio.waveformToPng = function(input, output, width, height) end
+```
+
+#### Description
 
 Renders a waveform visualization of an audio file and saves it as a PNG image.
 
-**Parameters**
+Parameters:
 
 - `input` (`string`, required): Relative path to the input audio file.
 - `output` (`string`, required): Relative path for the output PNG file.
@@ -2645,7 +4017,7 @@ Renders a waveform visualization of an audio file and saves it as a PNG image.
 
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -2663,9 +4035,7 @@ end
 
 ### LBus
 
-Lua-side wrapper around an audio mixing bus for grouped volume and effect control.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side wrapper around an audio mixing bus for grouped volume and effect control.
@@ -2673,9 +4043,13 @@ Lua-side wrapper around an audio mixing bus for grouped volume and effect contro
 LBus = {}
 ```
 
+#### Description
+
+Lua-side wrapper around an audio mixing bus for grouped volume and effect control.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -2689,9 +4063,7 @@ end
 
 ### LDecoder
 
-Lua-side wrapper around a streaming audio decoder for incremental PCM extraction.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side wrapper around a streaming audio decoder for incremental PCM extraction.
@@ -2699,9 +4071,13 @@ Lua-side wrapper around a streaming audio decoder for incremental PCM extraction
 LDecoder = {}
 ```
 
+#### Description
+
+Lua-side wrapper around a streaming audio decoder for incremental PCM extraction.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -2713,9 +4089,7 @@ end
 
 ### LMidiPlayer
 
-Lua-side wrapper around a MIDI file player with per-channel control and tempo scaling.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side wrapper around a MIDI file player with per-channel control and tempo scaling.
@@ -2723,9 +4097,13 @@ Lua-side wrapper around a MIDI file player with per-channel control and tempo sc
 LMidiPlayer = {}
 ```
 
+#### Description
+
+Lua-side wrapper around a MIDI file player with per-channel control and tempo scaling.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -2736,9 +4114,7 @@ end
 
 ### LSoundData
 
-Represents the Lua-visible LSoundData object exposed by this module.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Represents the Lua-visible LSoundData object exposed by this module.
@@ -2746,9 +4122,13 @@ Represents the Lua-visible LSoundData object exposed by this module.
 LSoundData = {}
 ```
 
+#### Description
+
+Represents the Lua-visible LSoundData object exposed by this module.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -2759,9 +4139,7 @@ end
 
 ### LSoundPool
 
-Lua-side wrapper around a pre-allocated pool of identical sound voices for rapid fire effects.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side wrapper around a pre-allocated pool of identical sound voices for rapid fire effects.
@@ -2769,9 +4147,13 @@ Lua-side wrapper around a pre-allocated pool of identical sound voices for rapid
 LSoundPool = {}
 ```
 
+#### Description
+
+Lua-side wrapper around a pre-allocated pool of identical sound voices for rapid fire effects.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -2783,9 +4165,7 @@ end
 
 ### LSource
 
-Lua-side wrapper around a loaded audio source (sound effect or music stream).
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side wrapper around a loaded audio source (sound effect or music stream).
@@ -2793,9 +4173,13 @@ Lua-side wrapper around a loaded audio source (sound effect or music stream).
 LSource = {}
 ```
 
+#### Description
+
+Lua-side wrapper around a loaded audio source (sound effect or music stream).
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -2814,20 +4198,20 @@ end
 
 ### LBus:clearDuck
 
-`LBus:clearDuck()`
-
-Removes the ducking configuration from this bus.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes the ducking configuration from this bus.
 function LBus:clearDuck() end
 ```
 
+#### Description
+
+Removes the ducking configuration from this bus.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -2840,13 +4224,7 @@ end
 
 ### LBus:getName
 
-`LBus:getName() -> string`
-
-Returns the name of this audio bus. This method is available to Lua scripts.
-
-**Returns**: `string` - Bus name as registered during creation.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the name of this audio bus. This method is available to Lua scripts.
@@ -2854,9 +4232,15 @@ Returns the name of this audio bus. This method is available to Lua scripts.
 function LBus:getName() end
 ```
 
+#### Description
+
+Returns the name of this audio bus. This method is available to Lua scripts.
+
+Returns: `string` - Bus name as registered during creation.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -2867,13 +4251,7 @@ end
 
 ### LBus:getPeak
 
-`LBus:getPeak() -> number`
-
-Returns the current peak amplitude level of this bus for VU-meter displays.
-
-**Returns**: `number` - Peak level from 0.0 to 1.0.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current peak amplitude level of this bus for VU-meter displays.
@@ -2881,9 +4259,15 @@ Returns the current peak amplitude level of this bus for VU-meter displays.
 function LBus:getPeak() end
 ```
 
+#### Description
+
+Returns the current peak amplitude level of this bus for VU-meter displays.
+
+Returns: `number` - Peak level from 0.0 to 1.0.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -2895,13 +4279,7 @@ end
 
 ### LBus:getPitch
 
-`LBus:getPitch() -> number`
-
-Returns the current pitch multiplier of this bus.
-
-**Returns**: `number` - Current pitch multiplier (defaults to 1.0).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current pitch multiplier of this bus.
@@ -2909,9 +4287,15 @@ Returns the current pitch multiplier of this bus.
 function LBus:getPitch() end
 ```
 
+#### Description
+
+Returns the current pitch multiplier of this bus.
+
+Returns: `number` - Current pitch multiplier (defaults to 1.0).
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -2924,13 +4308,7 @@ end
 
 ### LBus:getVolume
 
-`LBus:getVolume() -> number`
-
-Returns the current volume multiplier of this bus.
-
-**Returns**: `number` - Volume multiplier (defaults to 1.0).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current volume multiplier of this bus.
@@ -2938,9 +4316,15 @@ Returns the current volume multiplier of this bus.
 function LBus:getVolume() end
 ```
 
+#### Description
+
+Returns the current volume multiplier of this bus.
+
+Returns: `number` - Volume multiplier (defaults to 1.0).
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -2953,13 +4337,7 @@ end
 
 ### LBus:isPaused
 
-`LBus:isPaused() -> boolean`
-
-Returns whether this bus is currently paused.
-
-**Returns**: `boolean` - True if the bus is paused.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this bus is currently paused.
@@ -2967,9 +4345,15 @@ Returns whether this bus is currently paused.
 function LBus:isPaused() end
 ```
 
+#### Description
+
+Returns whether this bus is currently paused.
+
+Returns: `boolean` - True if the bus is paused.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -2981,20 +4365,20 @@ end
 
 ### LBus:pause
 
-`LBus:pause()`
-
-Pauses all sources routed through this bus.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Pauses all sources routed through this bus.
 function LBus:pause() end
 ```
 
+#### Description
+
+Pauses all sources routed through this bus.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -3006,20 +4390,20 @@ end
 
 ### LBus:resume
 
-`LBus:resume()`
-
-Resumes all sources routed through this bus that were paused.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Resumes all sources routed through this bus that were paused.
 function LBus:resume() end
 ```
 
+#### Description
+
+Resumes all sources routed through this bus that were paused.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -3032,16 +4416,7 @@ end
 
 ### LBus:setDuckTarget
 
-`LBus:setDuckTarget(target_name: string, duck_vol: number)`
-
-Configures ducking so this bus lowers the volume of a target bus when active.
-
-**Parameters**
-
-- `target_name` (`string`, required): Name of the bus to duck.
-- `duck_vol` (`number`, required): Volume multiplier applied to the target when ducking (0.0-1.0).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Configures ducking so this bus lowers the volume of a target bus when active.
@@ -3050,9 +4425,18 @@ Configures ducking so this bus lowers the volume of a target bus when active.
 function LBus:setDuckTarget(target_name, duck_vol) end
 ```
 
+#### Description
+
+Configures ducking so this bus lowers the volume of a target bus when active.
+
+Parameters:
+
+- `target_name` (`string`, required): Name of the bus to duck.
+- `duck_vol` (`number`, required): Volume multiplier applied to the target when ducking (0.0-1.0).
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -3065,15 +4449,7 @@ end
 
 ### LBus:setPitch
 
-`LBus:setPitch(pitch: number)`
-
-Sets the pitch multiplier applied to all sources routed through this bus.
-
-**Parameters**
-
-- `pitch` (`number`, required): Pitch multiplier (1.0 = normal speed).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the pitch multiplier applied to all sources routed through this bus.
@@ -3081,9 +4457,17 @@ Sets the pitch multiplier applied to all sources routed through this bus.
 function LBus:setPitch(pitch) end
 ```
 
+#### Description
+
+Sets the pitch multiplier applied to all sources routed through this bus.
+
+Parameters:
+
+- `pitch` (`number`, required): Pitch multiplier (1.0 = normal speed).
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -3095,15 +4479,7 @@ end
 
 ### LBus:setVolume
 
-`LBus:setVolume(vol: number)`
-
-Sets the volume multiplier for all sources routed through this bus.
-
-**Parameters**
-
-- `vol` (`number`, required): Volume multiplier (0.0 = silent, 1.0 = normal).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the volume multiplier for all sources routed through this bus.
@@ -3111,9 +4487,17 @@ Sets the volume multiplier for all sources routed through this bus.
 function LBus:setVolume(vol) end
 ```
 
+#### Description
+
+Sets the volume multiplier for all sources routed through this bus.
+
+Parameters:
+
+- `vol` (`number`, required): Volume multiplier (0.0 = silent, 1.0 = normal).
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -3125,13 +4509,7 @@ end
 
 ### LBus:type
 
-`LBus:type() -> string`
-
-Returns the type name of this object for runtime type-checking.
-
-**Returns**: `string` - Always returns "LBus".
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this object for runtime type-checking.
@@ -3139,9 +4517,15 @@ Returns the type name of this object for runtime type-checking.
 function LBus:type() end
 ```
 
+#### Description
+
+Returns the type name of this object for runtime type-checking.
+
+Returns: `string` - Always returns "LBus".
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -3152,17 +4536,7 @@ end
 
 ### LBus:typeOf
 
-`LBus:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to check (e.g. "LBus", "Bus", or "Object").
-
-**Returns**: `boolean` - True if this object matches the given type.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this object matches the given type name.
@@ -3171,9 +4545,19 @@ Checks whether this object matches the given type name.
 function LBus:typeOf(name) end
 ```
 
+#### Description
+
+Checks whether this object matches the given type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to check (e.g. "LBus", "Bus", or "Object").
+
+Returns: `boolean` - True if this object matches the given type.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -3184,13 +4568,7 @@ end
 
 ### LDecoder:decode
 
-`LDecoder:decode() -> LSoundData`
-
-Decodes the next chunk of audio data and returns it as a LSoundData object.
-
-**Returns**: `LSoundData` - Decoded PCM data, or nil if end of stream reached.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Decodes the next chunk of audio data and returns it as a LSoundData object.
@@ -3198,9 +4576,15 @@ Decodes the next chunk of audio data and returns it as a LSoundData object.
 function LDecoder:decode() end
 ```
 
+#### Description
+
+Decodes the next chunk of audio data and returns it as a LSoundData object.
+
+Returns: `LSoundData` - Decoded PCM data, or nil if end of stream reached.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -3213,13 +4597,7 @@ end
 
 ### LDecoder:getBitDepth
 
-`LDecoder:getBitDepth() -> integer`
-
-Returns the bit depth of the source audio file.
-
-**Returns**: `integer` - Bits per sample (e.g. 16, 24).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the bit depth of the source audio file.
@@ -3227,9 +4605,15 @@ Returns the bit depth of the source audio file.
 function LDecoder:getBitDepth() end
 ```
 
+#### Description
+
+Returns the bit depth of the source audio file.
+
+Returns: `integer` - Bits per sample (e.g. 16, 24).
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -3242,13 +4626,7 @@ end
 
 ### LDecoder:getChannelCount
 
-`LDecoder:getChannelCount() -> integer`
-
-Returns the number of audio channels in the source file.
-
-**Returns**: `integer` - Channel count (1 = mono, 2 = stereo).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of audio channels in the source file.
@@ -3256,9 +4634,15 @@ Returns the number of audio channels in the source file.
 function LDecoder:getChannelCount() end
 ```
 
+#### Description
+
+Returns the number of audio channels in the source file.
+
+Returns: `integer` - Channel count (1 = mono, 2 = stereo).
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -3271,13 +4655,7 @@ end
 
 ### LDecoder:getDuration
 
-`LDecoder:getDuration() -> number`
-
-Returns the total duration of the source audio file in seconds.
-
-**Returns**: `number` - Duration in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the total duration of the source audio file in seconds.
@@ -3285,9 +4663,15 @@ Returns the total duration of the source audio file in seconds.
 function LDecoder:getDuration() end
 ```
 
+#### Description
+
+Returns the total duration of the source audio file in seconds.
+
+Returns: `number` - Duration in seconds.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -3300,13 +4684,7 @@ end
 
 ### LDecoder:getSampleRate
 
-`LDecoder:getSampleRate() -> integer`
-
-Returns the sample rate of the source audio file.
-
-**Returns**: `integer` - Sample rate in Hz.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the sample rate of the source audio file.
@@ -3314,9 +4692,15 @@ Returns the sample rate of the source audio file.
 function LDecoder:getSampleRate() end
 ```
 
+#### Description
+
+Returns the sample rate of the source audio file.
+
+Returns: `integer` - Sample rate in Hz.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -3329,13 +4713,7 @@ end
 
 ### LDecoder:isSeekable
 
-`LDecoder:isSeekable() -> boolean`
-
-Returns whether this decoder supports seeking.
-
-**Returns**: `boolean` - True if seek operations are supported.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this decoder supports seeking.
@@ -3343,9 +4721,15 @@ Returns whether this decoder supports seeking.
 function LDecoder:isSeekable() end
 ```
 
+#### Description
+
+Returns whether this decoder supports seeking.
+
+Returns: `boolean` - True if seek operations are supported.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -3357,20 +4741,20 @@ end
 
 ### LDecoder:release
 
-`LDecoder:release()`
-
-Releases decoder resources (no-op, kept for API symmetry).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Releases decoder resources (no-op, kept for API symmetry).
 function LDecoder:release() end
 ```
 
+#### Description
+
+Releases decoder resources (no-op, kept for API symmetry).
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -3383,20 +4767,20 @@ end
 
 ### LDecoder:rewind
 
-`LDecoder:rewind()`
-
-Rewinds the decoder back to the beginning of the audio stream.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Rewinds the decoder back to the beginning of the audio stream.
 function LDecoder:rewind() end
 ```
 
+#### Description
+
+Rewinds the decoder back to the beginning of the audio stream.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -3410,15 +4794,7 @@ end
 
 ### LDecoder:seek
 
-`LDecoder:seek(offset: number)`
-
-Seeks to a specific position in the audio stream.
-
-**Parameters**
-
-- `offset` (`number`, required): Target position in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Seeks to a specific position in the audio stream.
@@ -3426,9 +4802,17 @@ Seeks to a specific position in the audio stream.
 function LDecoder:seek(offset) end
 ```
 
+#### Description
+
+Seeks to a specific position in the audio stream.
+
+Parameters:
+
+- `offset` (`number`, required): Target position in seconds.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -3441,13 +4825,7 @@ end
 
 ### LDecoder:tell
 
-`LDecoder:tell() -> number`
-
-Returns the current read position in the audio stream in seconds.
-
-**Returns**: `number` - Current position in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current read position in the audio stream in seconds.
@@ -3455,9 +4833,15 @@ Returns the current read position in the audio stream in seconds.
 function LDecoder:tell() end
 ```
 
+#### Description
+
+Returns the current read position in the audio stream in seconds.
+
+Returns: `number` - Current position in seconds.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -3471,13 +4855,7 @@ end
 
 ### LDecoder:type
 
-`LDecoder:type() -> string`
-
-Returns the type name of this object for runtime type-checking.
-
-**Returns**: `string` - Always returns "LDecoder".
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this object for runtime type-checking.
@@ -3485,9 +4863,15 @@ Returns the type name of this object for runtime type-checking.
 function LDecoder:type() end
 ```
 
+#### Description
+
+Returns the type name of this object for runtime type-checking.
+
+Returns: `string` - Always returns "LDecoder".
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -3499,17 +4883,7 @@ end
 
 ### LDecoder:typeOf
 
-`LDecoder:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to check (e.g. "LDecoder" or "Object").
-
-**Returns**: `boolean` - True if this object matches the given type.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this object matches the given type name.
@@ -3518,9 +4892,19 @@ Checks whether this object matches the given type name.
 function LDecoder:typeOf(name) end
 ```
 
+#### Description
+
+Checks whether this object matches the given type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to check (e.g. "LDecoder" or "Object").
+
+Returns: `boolean` - True if this object matches the given type.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -3532,13 +4916,7 @@ end
 
 ### LMidiPlayer:getBus
 
-`LMidiPlayer:getBus() -> LBus`
-
-Returns the audio bus this MIDI player is routed through.
-
-**Returns**: `LBus` - The assigned bus, or nil if using direct output.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the audio bus this MIDI player is routed through.
@@ -3546,9 +4924,15 @@ Returns the audio bus this MIDI player is routed through.
 function LMidiPlayer:getBus() end
 ```
 
+#### Description
+
+Returns the audio bus this MIDI player is routed through.
+
+Returns: `LBus` - The assigned bus, or nil if using direct output.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -3562,13 +4946,7 @@ end
 
 ### LMidiPlayer:getChannelCount
 
-`LMidiPlayer:getChannelCount() -> integer`
-
-Returns the number of active MIDI channels in the loaded file.
-
-**Returns**: `integer` - Number of active channels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of active MIDI channels in the loaded file.
@@ -3576,9 +4954,15 @@ Returns the number of active MIDI channels in the loaded file.
 function LMidiPlayer:getChannelCount() end
 ```
 
+#### Description
+
+Returns the number of active MIDI channels in the loaded file.
+
+Returns: `integer` - Number of active channels.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -3591,17 +4975,7 @@ end
 
 ### LMidiPlayer:getChannelInstrument
 
-`LMidiPlayer:getChannelInstrument(ch: integer) -> integer`
-
-Returns the current GM instrument program for a channel.
-
-**Parameters**
-
-- `ch` (`integer`, required): Channel number (1-16).
-
-**Returns**: `integer` - GM instrument program number (0-127).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current GM instrument program for a channel.
@@ -3610,9 +4984,19 @@ Returns the current GM instrument program for a channel.
 function LMidiPlayer:getChannelInstrument(ch) end
 ```
 
+#### Description
+
+Returns the current GM instrument program for a channel.
+
+Parameters:
+
+- `ch` (`integer`, required): Channel number (1-16).
+
+Returns: `integer` - GM instrument program number (0-127).
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -3625,13 +5009,7 @@ end
 
 ### LMidiPlayer:getChannels
 
-`LMidiPlayer:getChannels() -> integer`
-
-Returns the number of output audio channels for MIDI synthesis.
-
-**Returns**: `integer` - Channel count (1 = mono, 2 = stereo).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of output audio channels for MIDI synthesis.
@@ -3639,9 +5017,15 @@ Returns the number of output audio channels for MIDI synthesis.
 function LMidiPlayer:getChannels() end
 ```
 
+#### Description
+
+Returns the number of output audio channels for MIDI synthesis.
+
+Returns: `integer` - Channel count (1 = mono, 2 = stereo).
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -3653,17 +5037,7 @@ end
 
 ### LMidiPlayer:getChannelVolume
 
-`LMidiPlayer:getChannelVolume(ch: integer) -> number`
-
-Returns the volume of a specific MIDI channel.
-
-**Parameters**
-
-- `ch` (`integer`, required): Channel number (1-16).
-
-**Returns**: `number` - Channel volume (0.0-1.0).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the volume of a specific MIDI channel.
@@ -3672,9 +5046,19 @@ Returns the volume of a specific MIDI channel.
 function LMidiPlayer:getChannelVolume(ch) end
 ```
 
+#### Description
+
+Returns the volume of a specific MIDI channel.
+
+Parameters:
+
+- `ch` (`integer`, required): Channel number (1-16).
+
+Returns: `number` - Channel volume (0.0-1.0).
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -3687,13 +5071,7 @@ end
 
 ### LMidiPlayer:getDuration
 
-`LMidiPlayer:getDuration() -> number`
-
-Returns the total duration of the loaded MIDI file in seconds.
-
-**Returns**: `number` - Duration in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the total duration of the loaded MIDI file in seconds.
@@ -3701,9 +5079,15 @@ Returns the total duration of the loaded MIDI file in seconds.
 function LMidiPlayer:getDuration() end
 ```
 
+#### Description
+
+Returns the total duration of the loaded MIDI file in seconds.
+
+Returns: `number` - Duration in seconds.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -3716,13 +5100,7 @@ end
 
 ### LMidiPlayer:getFilePath
 
-`LMidiPlayer:getFilePath() -> string`
-
-Returns the file path of the currently loaded MIDI file.
-
-**Returns**: `string` - File path string or nil if no file is loaded.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the file path of the currently loaded MIDI file.
@@ -3730,9 +5108,15 @@ Returns the file path of the currently loaded MIDI file.
 function LMidiPlayer:getFilePath() end
 ```
 
+#### Description
+
+Returns the file path of the currently loaded MIDI file.
+
+Returns: `string` - File path string or nil if no file is loaded.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -3744,13 +5128,7 @@ end
 
 ### LMidiPlayer:getNoteCount
 
-`LMidiPlayer:getNoteCount() -> integer`
-
-Returns the total number of note events in the loaded MIDI file.
-
-**Returns**: `integer` - Total note count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the total number of note events in the loaded MIDI file.
@@ -3758,9 +5136,15 @@ Returns the total number of note events in the loaded MIDI file.
 function LMidiPlayer:getNoteCount() end
 ```
 
+#### Description
+
+Returns the total number of note events in the loaded MIDI file.
+
+Returns: `integer` - Total note count.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -3773,13 +5157,7 @@ end
 
 ### LMidiPlayer:getOriginalTempo
 
-`LMidiPlayer:getOriginalTempo() -> number`
-
-Returns the original tempo of the MIDI file as authored.
-
-**Returns**: `number` - Original tempo in BPM.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the original tempo of the MIDI file as authored.
@@ -3787,9 +5165,15 @@ Returns the original tempo of the MIDI file as authored.
 function LMidiPlayer:getOriginalTempo() end
 ```
 
+#### Description
+
+Returns the original tempo of the MIDI file as authored.
+
+Returns: `number` - Original tempo in BPM.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -3802,13 +5186,7 @@ end
 
 ### LMidiPlayer:getSampleRate
 
-`LMidiPlayer:getSampleRate() -> integer`
-
-Returns the output sample rate used for MIDI synthesis.
-
-**Returns**: `integer` - Sample rate in Hz (e.g. 44100).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the output sample rate used for MIDI synthesis.
@@ -3816,9 +5194,15 @@ Returns the output sample rate used for MIDI synthesis.
 function LMidiPlayer:getSampleRate() end
 ```
 
+#### Description
+
+Returns the output sample rate used for MIDI synthesis.
+
+Returns: `integer` - Sample rate in Hz (e.g. 44100).
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -3830,13 +5214,7 @@ end
 
 ### LMidiPlayer:getSoundFontPath
 
-`LMidiPlayer:getSoundFontPath() -> string`
-
-Returns the path of the currently set SoundFont (stub, not yet implemented).
-
-**Returns**: `string` - SoundFont path or nil.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the path of the currently set SoundFont (stub, not yet implemented).
@@ -3844,9 +5222,15 @@ Returns the path of the currently set SoundFont (stub, not yet implemented).
 function LMidiPlayer:getSoundFontPath() end
 ```
 
+#### Description
+
+Returns the path of the currently set SoundFont (stub, not yet implemented).
+
+Returns: `string` - SoundFont path or nil.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -3860,13 +5244,7 @@ end
 
 ### LMidiPlayer:getTempo
 
-`LMidiPlayer:getTempo() -> number`
-
-Returns the current effective tempo in beats per minute.
-
-**Returns**: `number` - Current tempo in BPM.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current effective tempo in beats per minute.
@@ -3874,9 +5252,15 @@ Returns the current effective tempo in beats per minute.
 function LMidiPlayer:getTempo() end
 ```
 
+#### Description
+
+Returns the current effective tempo in beats per minute.
+
+Returns: `number` - Current tempo in BPM.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -3889,13 +5273,7 @@ end
 
 ### LMidiPlayer:getTempoScale
 
-`LMidiPlayer:getTempoScale() -> number`
-
-Returns the current tempo scale multiplier.
-
-**Returns**: `number` - Tempo scale factor.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current tempo scale multiplier.
@@ -3903,9 +5281,15 @@ Returns the current tempo scale multiplier.
 function LMidiPlayer:getTempoScale() end
 ```
 
+#### Description
+
+Returns the current tempo scale multiplier.
+
+Returns: `number` - Tempo scale factor.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -3918,13 +5302,7 @@ end
 
 ### LMidiPlayer:getTicksPerBeat
 
-`LMidiPlayer:getTicksPerBeat() -> integer`
-
-Returns the MIDI file's resolution in ticks per beat (PPQN).
-
-**Returns**: `integer` - Ticks per quarter note.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the MIDI file's resolution in ticks per beat (PPQN).
@@ -3932,9 +5310,15 @@ Returns the MIDI file's resolution in ticks per beat (PPQN).
 function LMidiPlayer:getTicksPerBeat() end
 ```
 
+#### Description
+
+Returns the MIDI file's resolution in ticks per beat (PPQN).
+
+Returns: `integer` - Ticks per quarter note.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -3947,13 +5331,7 @@ end
 
 ### LMidiPlayer:getTrackCount
 
-`LMidiPlayer:getTrackCount() -> integer`
-
-Returns the number of tracks in the loaded MIDI file.
-
-**Returns**: `integer` - Number of MIDI tracks.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of tracks in the loaded MIDI file.
@@ -3961,9 +5339,15 @@ Returns the number of tracks in the loaded MIDI file.
 function LMidiPlayer:getTrackCount() end
 ```
 
+#### Description
+
+Returns the number of tracks in the loaded MIDI file.
+
+Returns: `integer` - Number of MIDI tracks.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -3976,17 +5360,7 @@ end
 
 ### LMidiPlayer:getTrackName
 
-`LMidiPlayer:getTrackName(idx: integer) -> string`
-
-Returns the name of a MIDI track by 1-based index.
-
-**Parameters**
-
-- `idx` (`integer`, required): Track index (1-based).
-
-**Returns**: `string` - Track name or nil if not available.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the name of a MIDI track by 1-based index.
@@ -3995,9 +5369,19 @@ Returns the name of a MIDI track by 1-based index.
 function LMidiPlayer:getTrackName(idx) end
 ```
 
+#### Description
+
+Returns the name of a MIDI track by 1-based index.
+
+Parameters:
+
+- `idx` (`integer`, required): Track index (1-based).
+
+Returns: `string` - Track name or nil if not available.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -4010,13 +5394,7 @@ end
 
 ### LMidiPlayer:getVolume
 
-`LMidiPlayer:getVolume() -> number`
-
-Returns the current master volume of the MIDI player.
-
-**Returns**: `number` - Volume multiplier.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current master volume of the MIDI player.
@@ -4024,9 +5402,15 @@ Returns the current master volume of the MIDI player.
 function LMidiPlayer:getVolume() end
 ```
 
+#### Description
+
+Returns the current master volume of the MIDI player.
+
+Returns: `number` - Volume multiplier.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -4039,17 +5423,7 @@ end
 
 ### LMidiPlayer:isChannelMuted
 
-`LMidiPlayer:isChannelMuted(ch: integer) -> boolean`
-
-Returns whether a specific MIDI channel is muted.
-
-**Parameters**
-
-- `ch` (`integer`, required): Channel number (1-16).
-
-**Returns**: `boolean` - True if the channel is muted.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether a specific MIDI channel is muted.
@@ -4058,9 +5432,19 @@ Returns whether a specific MIDI channel is muted.
 function LMidiPlayer:isChannelMuted(ch) end
 ```
 
+#### Description
+
+Returns whether a specific MIDI channel is muted.
+
+Parameters:
+
+- `ch` (`integer`, required): Channel number (1-16).
+
+Returns: `boolean` - True if the channel is muted.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -4072,13 +5456,7 @@ end
 
 ### LMidiPlayer:isLoaded
 
-`LMidiPlayer:isLoaded() -> boolean`
-
-Returns whether a MIDI file is currently loaded and ready to play.
-
-**Returns**: `boolean` - True if a MIDI file is loaded.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether a MIDI file is currently loaded and ready to play.
@@ -4086,9 +5464,15 @@ Returns whether a MIDI file is currently loaded and ready to play.
 function LMidiPlayer:isLoaded() end
 ```
 
+#### Description
+
+Returns whether a MIDI file is currently loaded and ready to play.
+
+Returns: `boolean` - True if a MIDI file is loaded.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -4099,13 +5483,7 @@ end
 
 ### LMidiPlayer:isLooping
 
-`LMidiPlayer:isLooping() -> boolean`
-
-Returns whether MIDI looping is enabled.
-
-**Returns**: `boolean` - True if looping.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether MIDI looping is enabled.
@@ -4113,9 +5491,15 @@ Returns whether MIDI looping is enabled.
 function LMidiPlayer:isLooping() end
 ```
 
+#### Description
+
+Returns whether MIDI looping is enabled.
+
+Returns: `boolean` - True if looping.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -4128,13 +5512,7 @@ end
 
 ### LMidiPlayer:isPaused
 
-`LMidiPlayer:isPaused() -> boolean`
-
-Returns whether the MIDI player is currently paused.
-
-**Returns**: `boolean` - True if paused.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether the MIDI player is currently paused.
@@ -4142,9 +5520,15 @@ Returns whether the MIDI player is currently paused.
 function LMidiPlayer:isPaused() end
 ```
 
+#### Description
+
+Returns whether the MIDI player is currently paused.
+
+Returns: `boolean` - True if paused.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -4158,13 +5542,7 @@ end
 
 ### LMidiPlayer:isPlaying
 
-`LMidiPlayer:isPlaying() -> boolean`
-
-Returns whether the MIDI player is currently playing.
-
-**Returns**: `boolean` - True if playing.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether the MIDI player is currently playing.
@@ -4172,9 +5550,15 @@ Returns whether the MIDI player is currently playing.
 function LMidiPlayer:isPlaying() end
 ```
 
+#### Description
+
+Returns whether the MIDI player is currently playing.
+
+Returns: `boolean` - True if playing.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -4187,17 +5571,7 @@ end
 
 ### LMidiPlayer:isTrackMuted
 
-`LMidiPlayer:isTrackMuted(idx: integer) -> boolean`
-
-Returns whether a specific MIDI track is muted.
-
-**Parameters**
-
-- `idx` (`integer`, required): Track index (1-based).
-
-**Returns**: `boolean` - True if the track is muted.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether a specific MIDI track is muted.
@@ -4206,9 +5580,19 @@ Returns whether a specific MIDI track is muted.
 function LMidiPlayer:isTrackMuted(idx) end
 ```
 
+#### Description
+
+Returns whether a specific MIDI track is muted.
+
+Parameters:
+
+- `idx` (`integer`, required): Track index (1-based).
+
+Returns: `boolean` - True if the track is muted.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -4221,17 +5605,7 @@ end
 
 ### LMidiPlayer:load
 
-`LMidiPlayer:load(path: string) -> boolean`
-
-Loads a MIDI file from the given path relative to the game directory.
-
-**Parameters**
-
-- `path` (`string`, required): Relative path to the .mid file.
-
-**Returns**: `boolean` - True if the file was loaded successfully.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Loads a MIDI file from the given path relative to the game directory.
@@ -4240,9 +5614,19 @@ Loads a MIDI file from the given path relative to the game directory.
 function LMidiPlayer:load(path) end
 ```
 
+#### Description
+
+Loads a MIDI file from the given path relative to the game directory.
+
+Parameters:
+
+- `path` (`string`, required): Relative path to the .mid file.
+
+Returns: `boolean` - True if the file was loaded successfully.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -4255,17 +5639,7 @@ end
 
 ### LMidiPlayer:loadData
 
-`LMidiPlayer:loadData(data: string) -> boolean`
-
-Loads MIDI data from a raw byte string in memory.
-
-**Parameters**
-
-- `data` (`string`, required): Raw MIDI binary data.
-
-**Returns**: `boolean` - True if the data was parsed successfully.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Loads MIDI data from a raw byte string in memory.
@@ -4274,9 +5648,19 @@ Loads MIDI data from a raw byte string in memory.
 function LMidiPlayer:loadData(data) end
 ```
 
+#### Description
+
+Loads MIDI data from a raw byte string in memory.
+
+Parameters:
+
+- `data` (`string`, required): Raw MIDI binary data.
+
+Returns: `boolean` - True if the data was parsed successfully.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -4289,20 +5673,20 @@ end
 
 ### LMidiPlayer:pause
 
-`LMidiPlayer:pause()`
-
-Pauses MIDI playback at the current position.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Pauses MIDI playback at the current position.
 function LMidiPlayer:pause() end
 ```
 
+#### Description
+
+Pauses MIDI playback at the current position.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -4316,20 +5700,20 @@ end
 
 ### LMidiPlayer:play
 
-`LMidiPlayer:play()`
-
-Starts MIDI playback from the current position using the audio output stream.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Starts MIDI playback from the current position using the audio output stream.
 function LMidiPlayer:play() end
 ```
 
+#### Description
+
+Starts MIDI playback from the current position using the audio output stream.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -4342,15 +5726,7 @@ end
 
 ### LMidiPlayer:seek
 
-`LMidiPlayer:seek(secs: number)`
-
-Seeks to a specific position in the MIDI file.
-
-**Parameters**
-
-- `secs` (`number`, required): Target position in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Seeks to a specific position in the MIDI file.
@@ -4358,9 +5734,17 @@ Seeks to a specific position in the MIDI file.
 function LMidiPlayer:seek(secs) end
 ```
 
+#### Description
+
+Seeks to a specific position in the MIDI file.
+
+Parameters:
+
+- `secs` (`number`, required): Target position in seconds.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -4374,15 +5758,7 @@ end
 
 ### LMidiPlayer:setBus
 
-`LMidiPlayer:setBus([bus]: LBus)`
-
-Routes this MIDI player's output through the specified audio bus.
-
-**Parameters**
-
-- `bus` (`LBus`, optional): Bus to route through, or nil for direct output.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Routes this MIDI player's output through the specified audio bus.
@@ -4390,9 +5766,17 @@ Routes this MIDI player's output through the specified audio bus.
 function LMidiPlayer:setBus(bus) end
 ```
 
+#### Description
+
+Routes this MIDI player's output through the specified audio bus.
+
+Parameters:
+
+- `bus` (`LBus`, optional): Bus to route through, or nil for direct output.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -4405,16 +5789,7 @@ end
 
 ### LMidiPlayer:setChannelInstrument
 
-`LMidiPlayer:setChannelInstrument(ch: integer, inst: integer)`
-
-Sets the General MIDI instrument program for a channel.
-
-**Parameters**
-
-- `ch` (`integer`, required): Channel number (1-16).
-- `inst` (`integer`, required): GM instrument program number (0-127).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the General MIDI instrument program for a channel.
@@ -4423,9 +5798,18 @@ Sets the General MIDI instrument program for a channel.
 function LMidiPlayer:setChannelInstrument(ch, inst) end
 ```
 
+#### Description
+
+Sets the General MIDI instrument program for a channel.
+
+Parameters:
+
+- `ch` (`integer`, required): Channel number (1-16).
+- `inst` (`integer`, required): GM instrument program number (0-127).
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -4437,16 +5821,7 @@ end
 
 ### LMidiPlayer:setChannelMuted
 
-`LMidiPlayer:setChannelMuted(ch: integer, muted: boolean)`
-
-Mutes or unmutes a specific MIDI channel.
-
-**Parameters**
-
-- `ch` (`integer`, required): Channel number (1-16).
-- `muted` (`boolean`, required): True to mute, false to unmute.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Mutes or unmutes a specific MIDI channel.
@@ -4455,9 +5830,18 @@ Mutes or unmutes a specific MIDI channel.
 function LMidiPlayer:setChannelMuted(ch, muted) end
 ```
 
+#### Description
+
+Mutes or unmutes a specific MIDI channel.
+
+Parameters:
+
+- `ch` (`integer`, required): Channel number (1-16).
+- `muted` (`boolean`, required): True to mute, false to unmute.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -4469,15 +5853,7 @@ end
 
 ### LMidiPlayer:setChannels
 
-`LMidiPlayer:setChannels(channels: integer)`
-
-Sets the number of output audio channels for MIDI synthesis.
-
-**Parameters**
-
-- `channels` (`integer`, required): Channel count (1 = mono, 2 = stereo).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the number of output audio channels for MIDI synthesis.
@@ -4485,9 +5861,17 @@ Sets the number of output audio channels for MIDI synthesis.
 function LMidiPlayer:setChannels(channels) end
 ```
 
+#### Description
+
+Sets the number of output audio channels for MIDI synthesis.
+
+Parameters:
+
+- `channels` (`integer`, required): Channel count (1 = mono, 2 = stereo).
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -4499,16 +5883,7 @@ end
 
 ### LMidiPlayer:setChannelVolume
 
-`LMidiPlayer:setChannelVolume(ch: integer, vol: number)`
-
-Sets the volume for a specific MIDI channel (1-16).
-
-**Parameters**
-
-- `ch` (`integer`, required): Channel number (1-16).
-- `vol` (`number`, required): Volume multiplier (0.0-1.0).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the volume for a specific MIDI channel (1-16).
@@ -4517,9 +5892,18 @@ Sets the volume for a specific MIDI channel (1-16).
 function LMidiPlayer:setChannelVolume(ch, vol) end
 ```
 
+#### Description
+
+Sets the volume for a specific MIDI channel (1-16).
+
+Parameters:
+
+- `ch` (`integer`, required): Channel number (1-16).
+- `vol` (`number`, required): Volume multiplier (0.0-1.0).
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -4531,15 +5915,7 @@ end
 
 ### LMidiPlayer:setLooping
 
-`LMidiPlayer:setLooping(looping: boolean)`
-
-Enables or disables looping for MIDI playback.
-
-**Parameters**
-
-- `looping` (`boolean`, required): True to loop, false to play once.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Enables or disables looping for MIDI playback.
@@ -4547,9 +5923,17 @@ Enables or disables looping for MIDI playback.
 function LMidiPlayer:setLooping(looping) end
 ```
 
+#### Description
+
+Enables or disables looping for MIDI playback.
+
+Parameters:
+
+- `looping` (`boolean`, required): True to loop, false to play once.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -4562,15 +5946,7 @@ end
 
 ### LMidiPlayer:setOnEnd
 
-`LMidiPlayer:setOnEnd([cb]: function)`
-
-Registers a callback invoked when MIDI playback finishes (stub, not yet implemented).
-
-**Parameters**
-
-- `cb` (`function`, optional): Callback function or nil to clear.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Registers a callback invoked when MIDI playback finishes (stub, not yet implemented).
@@ -4578,9 +5954,17 @@ Registers a callback invoked when MIDI playback finishes (stub, not yet implemen
 function LMidiPlayer:setOnEnd(cb) end
 ```
 
+#### Description
+
+Registers a callback invoked when MIDI playback finishes (stub, not yet implemented).
+
+Parameters:
+
+- `cb` (`function`, optional): Callback function or nil to clear.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -4594,15 +5978,7 @@ end
 
 ### LMidiPlayer:setOnNoteOff
 
-`LMidiPlayer:setOnNoteOff([cb]: function)`
-
-Registers a callback for MIDI note-off events (stub, not yet implemented).
-
-**Parameters**
-
-- `cb` (`function`, optional): Callback function or nil to clear.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Registers a callback for MIDI note-off events (stub, not yet implemented).
@@ -4610,9 +5986,17 @@ Registers a callback for MIDI note-off events (stub, not yet implemented).
 function LMidiPlayer:setOnNoteOff(cb) end
 ```
 
+#### Description
+
+Registers a callback for MIDI note-off events (stub, not yet implemented).
+
+Parameters:
+
+- `cb` (`function`, optional): Callback function or nil to clear.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -4626,15 +6010,7 @@ end
 
 ### LMidiPlayer:setOnNoteOn
 
-`LMidiPlayer:setOnNoteOn([cb]: function)`
-
-Registers a callback for MIDI note-on events (stub, not yet implemented).
-
-**Parameters**
-
-- `cb` (`function`, optional): Callback function or nil to clear.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Registers a callback for MIDI note-on events (stub, not yet implemented).
@@ -4642,9 +6018,17 @@ Registers a callback for MIDI note-on events (stub, not yet implemented).
 function LMidiPlayer:setOnNoteOn(cb) end
 ```
 
+#### Description
+
+Registers a callback for MIDI note-on events (stub, not yet implemented).
+
+Parameters:
+
+- `cb` (`function`, optional): Callback function or nil to clear.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -4658,15 +6042,7 @@ end
 
 ### LMidiPlayer:setSampleRate
 
-`LMidiPlayer:setSampleRate(rate: integer)`
-
-Sets the output sample rate for MIDI synthesis.
-
-**Parameters**
-
-- `rate` (`integer`, required): Sample rate in Hz (e.g. 44100, 48000).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the output sample rate for MIDI synthesis.
@@ -4674,9 +6050,17 @@ Sets the output sample rate for MIDI synthesis.
 function LMidiPlayer:setSampleRate(rate) end
 ```
 
+#### Description
+
+Sets the output sample rate for MIDI synthesis.
+
+Parameters:
+
+- `rate` (`integer`, required): Sample rate in Hz (e.g. 44100, 48000).
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -4688,15 +6072,7 @@ end
 
 ### LMidiPlayer:setSoundFont
 
-`LMidiPlayer:setSoundFont(path: string)`
-
-Sets a custom SoundFont file for MIDI synthesis (stub, not yet implemented).
-
-**Parameters**
-
-- `path` (`string`, required): Relative path to the .sf2 file.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets a custom SoundFont file for MIDI synthesis (stub, not yet implemented).
@@ -4704,9 +6080,17 @@ Sets a custom SoundFont file for MIDI synthesis (stub, not yet implemented).
 function LMidiPlayer:setSoundFont(path) end
 ```
 
+#### Description
+
+Sets a custom SoundFont file for MIDI synthesis (stub, not yet implemented).
+
+Parameters:
+
+- `path` (`string`, required): Relative path to the .sf2 file.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -4719,15 +6103,7 @@ end
 
 ### LMidiPlayer:setTempo
 
-`LMidiPlayer:setTempo(bpm: number)`
-
-Sets the playback tempo in beats per minute.
-
-**Parameters**
-
-- `bpm` (`number`, required): Desired tempo in BPM.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the playback tempo in beats per minute.
@@ -4735,9 +6111,17 @@ Sets the playback tempo in beats per minute.
 function LMidiPlayer:setTempo(bpm) end
 ```
 
+#### Description
+
+Sets the playback tempo in beats per minute.
+
+Parameters:
+
+- `bpm` (`number`, required): Desired tempo in BPM.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -4749,15 +6133,7 @@ end
 
 ### LMidiPlayer:setTempoScale
 
-`LMidiPlayer:setTempoScale(scale: number)`
-
-Sets a tempo multiplier relative to the original speed.
-
-**Parameters**
-
-- `scale` (`number`, required): Tempo scale (1.0 = original, 2.0 = double speed).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets a tempo multiplier relative to the original speed.
@@ -4765,9 +6141,17 @@ Sets a tempo multiplier relative to the original speed.
 function LMidiPlayer:setTempoScale(scale) end
 ```
 
+#### Description
+
+Sets a tempo multiplier relative to the original speed.
+
+Parameters:
+
+- `scale` (`number`, required): Tempo scale (1.0 = original, 2.0 = double speed).
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -4779,16 +6163,7 @@ end
 
 ### LMidiPlayer:setTrackMuted
 
-`LMidiPlayer:setTrackMuted(idx: integer, muted: boolean)`
-
-Mutes or unmutes a specific MIDI track.
-
-**Parameters**
-
-- `idx` (`integer`, required): Track index (1-based).
-- `muted` (`boolean`, required): True to mute, false to unmute.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Mutes or unmutes a specific MIDI track.
@@ -4797,9 +6172,18 @@ Mutes or unmutes a specific MIDI track.
 function LMidiPlayer:setTrackMuted(idx, muted) end
 ```
 
+#### Description
+
+Mutes or unmutes a specific MIDI track.
+
+Parameters:
+
+- `idx` (`integer`, required): Track index (1-based).
+- `muted` (`boolean`, required): True to mute, false to unmute.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -4812,15 +6196,7 @@ end
 
 ### LMidiPlayer:setVolume
 
-`LMidiPlayer:setVolume(vol: number)`
-
-Sets the master volume for MIDI playback.
-
-**Parameters**
-
-- `vol` (`number`, required): Volume multiplier (0.0 = silent, 1.0 = normal).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the master volume for MIDI playback.
@@ -4828,9 +6204,17 @@ Sets the master volume for MIDI playback.
 function LMidiPlayer:setVolume(vol) end
 ```
 
+#### Description
+
+Sets the master volume for MIDI playback.
+
+Parameters:
+
+- `vol` (`number`, required): Volume multiplier (0.0 = silent, 1.0 = normal).
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -4842,15 +6226,7 @@ end
 
 ### LMidiPlayer:soloChannel
 
-`LMidiPlayer:soloChannel(ch: integer)`
-
-Solos a specific MIDI channel, muting all others.
-
-**Parameters**
-
-- `ch` (`integer`, required): Channel number (1-16) to solo.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Solos a specific MIDI channel, muting all others.
@@ -4858,9 +6234,17 @@ Solos a specific MIDI channel, muting all others.
 function LMidiPlayer:soloChannel(ch) end
 ```
 
+#### Description
+
+Solos a specific MIDI channel, muting all others.
+
+Parameters:
+
+- `ch` (`integer`, required): Channel number (1-16) to solo.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -4872,20 +6256,20 @@ end
 
 ### LMidiPlayer:stop
 
-`LMidiPlayer:stop()`
-
-Stops MIDI playback and resets position to the beginning.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Stops MIDI playback and resets position to the beginning.
 function LMidiPlayer:stop() end
 ```
 
+#### Description
+
+Stops MIDI playback and resets position to the beginning.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -4899,13 +6283,7 @@ end
 
 ### LMidiPlayer:tell
 
-`LMidiPlayer:tell() -> number`
-
-Returns the current playback position of the MIDI player in seconds.
-
-**Returns**: `number` - Current position in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current playback position of the MIDI player in seconds.
@@ -4913,9 +6291,15 @@ Returns the current playback position of the MIDI player in seconds.
 function LMidiPlayer:tell() end
 ```
 
+#### Description
+
+Returns the current playback position of the MIDI player in seconds.
+
+Returns: `number` - Current position in seconds.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -4929,13 +6313,7 @@ end
 
 ### LMidiPlayer:type
 
-`LMidiPlayer:type() -> string`
-
-Returns the type name of this object for runtime type-checking.
-
-**Returns**: `string` - Always returns "LMidiPlayer".
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this object for runtime type-checking.
@@ -4943,9 +6321,15 @@ Returns the type name of this object for runtime type-checking.
 function LMidiPlayer:type() end
 ```
 
+#### Description
+
+Returns the type name of this object for runtime type-checking.
+
+Returns: `string` - Always returns "LMidiPlayer".
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -4956,17 +6340,7 @@ end
 
 ### LMidiPlayer:typeOf
 
-`LMidiPlayer:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to check (e.g. "LMidiPlayer", "MidiPlayer", or "Object").
-
-**Returns**: `boolean` - True if this object matches the given type.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this object matches the given type name.
@@ -4975,9 +6349,19 @@ Checks whether this object matches the given type name.
 function LMidiPlayer:typeOf(name) end
 ```
 
+#### Description
+
+Checks whether this object matches the given type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to check (e.g. "LMidiPlayer", "MidiPlayer", or "Object").
+
+Returns: `boolean` - True if this object matches the given type.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -4988,20 +6372,20 @@ end
 
 ### LMidiPlayer:unsoloAll
 
-`LMidiPlayer:unsoloAll()`
-
-Removes solo from all channels, restoring normal playback.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes solo from all channels, restoring normal playback.
 function LMidiPlayer:unsoloAll() end
 ```
 
+#### Description
+
+Removes solo from all channels, restoring normal playback.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -5014,20 +6398,20 @@ end
 
 ### LMidiPlayer:useDefaultSoundFont
 
-`LMidiPlayer:useDefaultSoundFont()`
-
-Reverts to the built-in default SoundFont (stub, not yet implemented).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Reverts to the built-in default SoundFont (stub, not yet implemented).
 function LMidiPlayer:useDefaultSoundFont() end
 ```
 
+#### Description
+
+Reverts to the built-in default SoundFont (stub, not yet implemented).
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -5039,23 +6423,7 @@ end
 
 ### LSoundData:drawWaveform
 
-`LSoundData:drawWaveform(target: LImageData, x: integer, y: integer, w: integer, h: integer, r: integer, g: integer, b: integer, a: integer)`
-
-Draws this sound buffer as a waveform into an image buffer.
-
-**Parameters**
-
-- `target` (`LImageData`, required): Target image to draw into.
-- `x` (`integer`, required): Left pixel coordinate.
-- `y` (`integer`, required): Top pixel coordinate.
-- `w` (`integer`, required): Waveform width in pixels.
-- `h` (`integer`, required): Waveform height in pixels.
-- `r` (`integer`, required): Red channel from 0 to 255.
-- `g` (`integer`, required): Green channel from 0 to 255.
-- `b` (`integer`, required): Blue channel from 0 to 255.
-- `a` (`integer`, required): Alpha channel from 0 to 255.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Draws this sound buffer as a waveform into an image buffer.
@@ -5071,9 +6439,25 @@ Draws this sound buffer as a waveform into an image buffer.
 function LSoundData:drawWaveform(target, x, y, w, h, r, g, b, a) end
 ```
 
+#### Description
+
+Draws this sound buffer as a waveform into an image buffer.
+
+Parameters:
+
+- `target` (`LImageData`, required): Target image to draw into.
+- `x` (`integer`, required): Left pixel coordinate.
+- `y` (`integer`, required): Top pixel coordinate.
+- `w` (`integer`, required): Waveform width in pixels.
+- `h` (`integer`, required): Waveform height in pixels.
+- `r` (`integer`, required): Red channel from 0 to 255.
+- `g` (`integer`, required): Green channel from 0 to 255.
+- `b` (`integer`, required): Blue channel from 0 to 255.
+- `a` (`integer`, required): Alpha channel from 0 to 255.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -5086,13 +6470,7 @@ end
 
 ### LSoundData:getBitDepth
 
-`LSoundData:getBitDepth() -> integer`
-
-Returns the sample bit depth of this sound buffer.
-
-**Returns**: `integer` - Bit depth per sample.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the sample bit depth of this sound buffer.
@@ -5100,9 +6478,15 @@ Returns the sample bit depth of this sound buffer.
 function LSoundData:getBitDepth() end
 ```
 
+#### Description
+
+Returns the sample bit depth of this sound buffer.
+
+Returns: `integer` - Bit depth per sample.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -5114,13 +6498,7 @@ end
 
 ### LSoundData:getChannelCount
 
-`LSoundData:getChannelCount() -> integer`
-
-Returns the number of audio channels stored in this sound buffer.
-
-**Returns**: `integer` - Channel count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of audio channels stored in this sound buffer.
@@ -5128,9 +6506,15 @@ Returns the number of audio channels stored in this sound buffer.
 function LSoundData:getChannelCount() end
 ```
 
+#### Description
+
+Returns the number of audio channels stored in this sound buffer.
+
+Returns: `integer` - Channel count.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -5142,13 +6526,7 @@ end
 
 ### LSoundData:getDuration
 
-`LSoundData:getDuration() -> number`
-
-Returns the approximate playback duration of this sound buffer.
-
-**Returns**: `number` - Duration in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the approximate playback duration of this sound buffer.
@@ -5156,9 +6534,15 @@ Returns the approximate playback duration of this sound buffer.
 function LSoundData:getDuration() end
 ```
 
+#### Description
+
+Returns the approximate playback duration of this sound buffer.
+
+Returns: `number` - Duration in seconds.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -5170,17 +6554,7 @@ end
 
 ### LSoundData:getSample
 
-`LSoundData:getSample(index: integer) -> number`
-
-Returns the sample value at the given zero-based sample index.
-
-**Parameters**
-
-- `index` (`integer`, required): Zero-based sample index.
-
-**Returns**: `number` - Sample value at the requested index.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the sample value at the given zero-based sample index.
@@ -5189,9 +6563,19 @@ Returns the sample value at the given zero-based sample index.
 function LSoundData:getSample(index) end
 ```
 
+#### Description
+
+Returns the sample value at the given zero-based sample index.
+
+Parameters:
+
+- `index` (`integer`, required): Zero-based sample index.
+
+Returns: `number` - Sample value at the requested index.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -5203,13 +6587,7 @@ end
 
 ### LSoundData:getSampleCount
 
-`LSoundData:getSampleCount() -> integer`
-
-Returns the total number of samples stored in this sound buffer.
-
-**Returns**: `integer` - Total sample count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the total number of samples stored in this sound buffer.
@@ -5217,9 +6595,15 @@ Returns the total number of samples stored in this sound buffer.
 function LSoundData:getSampleCount() end
 ```
 
+#### Description
+
+Returns the total number of samples stored in this sound buffer.
+
+Returns: `integer` - Total sample count.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -5231,13 +6615,7 @@ end
 
 ### LSoundData:getSampleRate
 
-`LSoundData:getSampleRate() -> integer`
-
-Returns the playback sample rate of this sound buffer.
-
-**Returns**: `integer` - Sample rate in Hz.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the playback sample rate of this sound buffer.
@@ -5245,9 +6623,15 @@ Returns the playback sample rate of this sound buffer.
 function LSoundData:getSampleRate() end
 ```
 
+#### Description
+
+Returns the playback sample rate of this sound buffer.
+
+Returns: `integer` - Sample rate in Hz.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -5259,16 +6643,7 @@ end
 
 ### LSoundData:setSample
 
-`LSoundData:setSample(index: integer, value: number)`
-
-Overwrites the sample value at the given zero-based sample index.
-
-**Parameters**
-
-- `index` (`integer`, required): Zero-based sample index.
-- `value` (`number`, required): New sample value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Overwrites the sample value at the given zero-based sample index.
@@ -5277,9 +6652,18 @@ Overwrites the sample value at the given zero-based sample index.
 function LSoundData:setSample(index, value) end
 ```
 
+#### Description
+
+Overwrites the sample value at the given zero-based sample index.
+
+Parameters:
+
+- `index` (`integer`, required): Zero-based sample index.
+- `value` (`number`, required): New sample value.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -5292,13 +6676,7 @@ end
 
 ### LSoundData:type
 
-`LSoundData:type() -> string`
-
-Returns the type name of this object for runtime type-checking.
-
-**Returns**: `string` - Always returns "LSoundData".
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this object for runtime type-checking.
@@ -5306,9 +6684,15 @@ Returns the type name of this object for runtime type-checking.
 function LSoundData:type() end
 ```
 
+#### Description
+
+Returns the type name of this object for runtime type-checking.
+
+Returns: `string` - Always returns "LSoundData".
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -5319,17 +6703,7 @@ end
 
 ### LSoundData:typeOf
 
-`LSoundData:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to check (e.g. "LSoundData" or "Object").
-
-**Returns**: `boolean` - True if this object matches the given type.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this object matches the given type name.
@@ -5338,9 +6712,19 @@ Checks whether this object matches the given type name.
 function LSoundData:typeOf(name) end
 ```
 
+#### Description
+
+Checks whether this object matches the given type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to check (e.g. "LSoundData" or "Object").
+
+Returns: `boolean` - True if this object matches the given type.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -5351,13 +6735,7 @@ end
 
 ### LSoundPool:getVoiceCount
 
-`LSoundPool:getVoiceCount() -> integer`
-
-Returns the number of pre-allocated voices in this pool.
-
-**Returns**: `integer` - Voice count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of pre-allocated voices in this pool.
@@ -5365,9 +6743,15 @@ Returns the number of pre-allocated voices in this pool.
 function LSoundPool:getVoiceCount() end
 ```
 
+#### Description
+
+Returns the number of pre-allocated voices in this pool.
+
+Returns: `integer` - Voice count.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -5379,13 +6763,7 @@ end
 
 ### LSoundPool:play
 
-`LSoundPool:play() -> integer`
-
-Plays the next available voice from the pool in round-robin order.
-
-**Returns**: `integer` - Numeric source ID of the voice that started playing.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Plays the next available voice from the pool in round-robin order.
@@ -5393,9 +6771,15 @@ Plays the next available voice from the pool in round-robin order.
 function LSoundPool:play() end
 ```
 
+#### Description
+
+Plays the next available voice from the pool in round-robin order.
+
+Returns: `integer` - Numeric source ID of the voice that started playing.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -5408,20 +6792,20 @@ end
 
 ### LSoundPool:release
 
-`LSoundPool:release()`
-
-Releases all voices and frees audio resources held by this pool.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Releases all voices and frees audio resources held by this pool.
 function LSoundPool:release() end
 ```
 
+#### Description
+
+Releases all voices and frees audio resources held by this pool.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -5434,15 +6818,7 @@ end
 
 ### LSoundPool:setBus
 
-`LSoundPool:setBus(name: string)`
-
-Routes all voices in this pool through the named audio bus.
-
-**Parameters**
-
-- `name` (`string`, required): Name of the target bus.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Routes all voices in this pool through the named audio bus.
@@ -5450,9 +6826,17 @@ Routes all voices in this pool through the named audio bus.
 function LSoundPool:setBus(name) end
 ```
 
+#### Description
+
+Routes all voices in this pool through the named audio bus.
+
+Parameters:
+
+- `name` (`string`, required): Name of the target bus.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -5466,15 +6850,7 @@ end
 
 ### LSoundPool:setVolume
 
-`LSoundPool:setVolume(vol: number)`
-
-Sets the volume for all voices in this pool.
-
-**Parameters**
-
-- `vol` (`number`, required): Volume multiplier (0.0 = silent, 1.0 = normal).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the volume for all voices in this pool.
@@ -5482,9 +6858,17 @@ Sets the volume for all voices in this pool.
 function LSoundPool:setVolume(vol) end
 ```
 
+#### Description
+
+Sets the volume for all voices in this pool.
+
+Parameters:
+
+- `vol` (`number`, required): Volume multiplier (0.0 = silent, 1.0 = normal).
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -5497,20 +6881,20 @@ end
 
 ### LSoundPool:stopAll
 
-`LSoundPool:stopAll()`
-
-Stops all voices in this sound pool immediately.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Stops all voices in this sound pool immediately.
 function LSoundPool:stopAll() end
 ```
 
+#### Description
+
+Stops all voices in this sound pool immediately.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -5524,13 +6908,7 @@ end
 
 ### LSoundPool:type
 
-`LSoundPool:type() -> string`
-
-Returns the type name of this object for runtime type-checking.
-
-**Returns**: `string` - Always returns "LSoundPool".
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this object for runtime type-checking.
@@ -5538,9 +6916,15 @@ Returns the type name of this object for runtime type-checking.
 function LSoundPool:type() end
 ```
 
+#### Description
+
+Returns the type name of this object for runtime type-checking.
+
+Returns: `string` - Always returns "LSoundPool".
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -5552,17 +6936,7 @@ end
 
 ### LSoundPool:typeOf
 
-`LSoundPool:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to check (e.g. "LSoundPool" or "Object").
-
-**Returns**: `boolean` - True if this object matches the given type.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this object matches the given type name.
@@ -5571,9 +6945,19 @@ Checks whether this object matches the given type name.
 function LSoundPool:typeOf(name) end
 ```
 
+#### Description
+
+Checks whether this object matches the given type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to check (e.g. "LSoundPool" or "Object").
+
+Returns: `boolean` - True if this object matches the given type.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -5585,20 +6969,20 @@ end
 
 ### LSource:clearFilter
 
-`LSource:clearFilter()`
-
-Removes all frequency filters (lowpass and highpass) from this source.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes all frequency filters (lowpass and highpass) from this source.
 function LSource:clearFilter() end
 ```
 
+#### Description
+
+Removes all frequency filters (lowpass and highpass) from this source.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -5612,13 +6996,7 @@ end
 
 ### LSource:clone
 
-`LSource:clone() -> LSource`
-
-Creates an independent copy of this source sharing the same audio data.
-
-**Returns**: `LSource` - A new source instance with identical settings.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Creates an independent copy of this source sharing the same audio data.
@@ -5626,9 +7004,15 @@ Creates an independent copy of this source sharing the same audio data.
 function LSource:clone() end
 ```
 
+#### Description
+
+Creates an independent copy of this source sharing the same audio data.
+
+Returns: `LSource` - A new source instance with identical settings.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -5642,15 +7026,7 @@ end
 
 ### LSource:fadeIn
 
-`LSource:fadeIn(dur: number)`
-
-Sets the fade-in duration so the source ramps from silence to full volume on play.
-
-**Parameters**
-
-- `dur` (`number`, required): Fade-in duration in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the fade-in duration so the source ramps from silence to full volume on play.
@@ -5658,9 +7034,17 @@ Sets the fade-in duration so the source ramps from silence to full volume on pla
 function LSource:fadeIn(dur) end
 ```
 
+#### Description
+
+Sets the fade-in duration so the source ramps from silence to full volume on play.
+
+Parameters:
+
+- `dur` (`number`, required): Fade-in duration in seconds.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -5673,13 +7057,7 @@ end
 
 ### LSource:getDuration
 
-`LSource:getDuration() -> number`
-
-Returns the total duration of this audio source in seconds.
-
-**Returns**: `number` - Duration in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the total duration of this audio source in seconds.
@@ -5687,9 +7065,15 @@ Returns the total duration of this audio source in seconds.
 function LSource:getDuration() end
 ```
 
+#### Description
+
+Returns the total duration of this audio source in seconds.
+
+Returns: `number` - Duration in seconds.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -5702,13 +7086,7 @@ end
 
 ### LSource:getFadeIn
 
-`LSource:getFadeIn() -> number`
-
-Returns the configured fade-in duration for this source.
-
-**Returns**: `number` - Fade-in duration in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the configured fade-in duration for this source.
@@ -5716,9 +7094,15 @@ Returns the configured fade-in duration for this source.
 function LSource:getFadeIn() end
 ```
 
+#### Description
+
+Returns the configured fade-in duration for this source.
+
+Returns: `number` - Fade-in duration in seconds.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -5732,13 +7116,7 @@ end
 
 ### LSource:getHighpass
 
-`LSource:getHighpass() -> integer`
-
-Returns the current highpass filter cutoff frequency in Hertz.
-
-**Returns**: `integer` - Cutoff frequency in Hz, or 0 if no highpass is set.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current highpass filter cutoff frequency in Hertz.
@@ -5746,9 +7124,15 @@ Returns the current highpass filter cutoff frequency in Hertz.
 function LSource:getHighpass() end
 ```
 
+#### Description
+
+Returns the current highpass filter cutoff frequency in Hertz.
+
+Returns: `integer` - Cutoff frequency in Hz, or 0 if no highpass is set.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -5762,13 +7146,7 @@ end
 
 ### LSource:getLowpass
 
-`LSource:getLowpass() -> integer`
-
-Returns the current lowpass filter cutoff frequency in Hertz.
-
-**Returns**: `integer` - Cutoff frequency in Hz, or 0 if no lowpass is set.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current lowpass filter cutoff frequency in Hertz.
@@ -5776,9 +7154,15 @@ Returns the current lowpass filter cutoff frequency in Hertz.
 function LSource:getLowpass() end
 ```
 
+#### Description
+
+Returns the current lowpass filter cutoff frequency in Hertz.
+
+Returns: `integer` - Cutoff frequency in Hz, or 0 if no lowpass is set.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -5792,13 +7176,7 @@ end
 
 ### LSource:getPan
 
-`LSource:getPan() -> number`
-
-Returns the current stereo panning position of this source.
-
-**Returns**: `number` - Pan value from -1.0 (left) to 1.0 (right).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current stereo panning position of this source.
@@ -5806,9 +7184,15 @@ Returns the current stereo panning position of this source.
 function LSource:getPan() end
 ```
 
+#### Description
+
+Returns the current stereo panning position of this source.
+
+Returns: `number` - Pan value from -1.0 (left) to 1.0 (right).
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -5822,13 +7206,7 @@ end
 
 ### LSource:getPitch
 
-`LSource:getPitch() -> number`
-
-Returns the current pitch multiplier of this audio source.
-
-**Returns**: `number` - Current pitch multiplier.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current pitch multiplier of this audio source.
@@ -5836,9 +7214,15 @@ Returns the current pitch multiplier of this audio source.
 function LSource:getPitch() end
 ```
 
+#### Description
+
+Returns the current pitch multiplier of this audio source.
+
+Returns: `number` - Current pitch multiplier.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -5852,13 +7236,7 @@ end
 
 ### LSource:getType
 
-`LSource:getType() -> string`
-
-Returns whether this source was loaded as static (fully in memory) or streaming.
-
-**Returns**: `string` - Either "static" or "stream".
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this source was loaded as static (fully in memory) or streaming.
@@ -5866,9 +7244,15 @@ Returns whether this source was loaded as static (fully in memory) or streaming.
 function LSource:getType() end
 ```
 
+#### Description
+
+Returns whether this source was loaded as static (fully in memory) or streaming.
+
+Returns: `string` - Either "static" or "stream".
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -5880,13 +7264,7 @@ end
 
 ### LSource:getVolume
 
-`LSource:getVolume() -> number`
-
-Returns the current volume level of this audio source.
-
-**Returns**: `number` - Current volume multiplier.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current volume level of this audio source.
@@ -5894,9 +7272,15 @@ Returns the current volume level of this audio source.
 function LSource:getVolume() end
 ```
 
+#### Description
+
+Returns the current volume level of this audio source.
+
+Returns: `number` - Current volume multiplier.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -5910,13 +7294,7 @@ end
 
 ### LSource:isLooping
 
-`LSource:isLooping() -> boolean`
-
-Returns whether this source is set to loop continuously.
-
-**Returns**: `boolean` - True if looping is enabled.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this source is set to loop continuously.
@@ -5924,9 +7302,15 @@ Returns whether this source is set to loop continuously.
 function LSource:isLooping() end
 ```
 
+#### Description
+
+Returns whether this source is set to loop continuously.
+
+Returns: `boolean` - True if looping is enabled.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -5939,13 +7323,7 @@ end
 
 ### LSource:isPaused
 
-`LSource:isPaused() -> boolean`
-
-Returns whether this source is currently paused.
-
-**Returns**: `boolean` - True if the source is paused.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this source is currently paused.
@@ -5953,9 +7331,15 @@ Returns whether this source is currently paused.
 function LSource:isPaused() end
 ```
 
+#### Description
+
+Returns whether this source is currently paused.
+
+Returns: `boolean` - True if the source is paused.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -5969,13 +7353,7 @@ end
 
 ### LSource:isPlaying
 
-`LSource:isPlaying() -> boolean`
-
-Returns whether this source is currently playing audio.
-
-**Returns**: `boolean` - True if the source is actively playing.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this source is currently playing audio.
@@ -5983,9 +7361,15 @@ Returns whether this source is currently playing audio.
 function LSource:isPlaying() end
 ```
 
+#### Description
+
+Returns whether this source is currently playing audio.
+
+Returns: `boolean` - True if the source is actively playing.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -5998,13 +7382,7 @@ end
 
 ### LSource:isStopped
 
-`LSource:isStopped() -> boolean`
-
-Returns whether this source is currently stopped (not playing or paused).
-
-**Returns**: `boolean` - True if the source is stopped.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this source is currently stopped (not playing or paused).
@@ -6012,9 +7390,15 @@ Returns whether this source is currently stopped (not playing or paused).
 function LSource:isStopped() end
 ```
 
+#### Description
+
+Returns whether this source is currently stopped (not playing or paused).
+
+Returns: `boolean` - True if the source is stopped.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -6026,20 +7410,20 @@ end
 
 ### LSource:pause
 
-`LSource:pause()`
-
-Pauses playback at the current position, allowing later resumption.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Pauses playback at the current position, allowing later resumption.
 function LSource:pause() end
 ```
 
+#### Description
+
+Pauses playback at the current position, allowing later resumption.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -6053,20 +7437,20 @@ end
 
 ### LSource:play
 
-`LSource:play()`
-
-Starts playback of this audio source from the current position.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Starts playback of this audio source from the current position.
 function LSource:play() end
 ```
 
+#### Description
+
+Starts playback of this audio source from the current position.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -6079,20 +7463,20 @@ end
 
 ### LSource:resume
 
-`LSource:resume()`
-
-Resumes playback from the position where the source was paused.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Resumes playback from the position where the source was paused.
 function LSource:resume() end
 ```
 
+#### Description
+
+Resumes playback from the position where the source was paused.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -6106,15 +7490,7 @@ end
 
 ### LSource:seek
 
-`LSource:seek(pos: number)`
-
-Seeks to a specific position in seconds within this audio source.
-
-**Parameters**
-
-- `pos` (`number`, required): Target position in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Seeks to a specific position in seconds within this audio source.
@@ -6122,9 +7498,17 @@ Seeks to a specific position in seconds within this audio source.
 function LSource:seek(pos) end
 ```
 
+#### Description
+
+Seeks to a specific position in seconds within this audio source.
+
+Parameters:
+
+- `pos` (`number`, required): Target position in seconds.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -6138,15 +7522,7 @@ end
 
 ### LSource:setHighpass
 
-`LSource:setHighpass(cutoff_hz: integer)`
-
-Applies a highpass filter that attenuates frequencies below the cutoff.
-
-**Parameters**
-
-- `cutoff_hz` (`integer`, required): Cutoff frequency in Hertz.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Applies a highpass filter that attenuates frequencies below the cutoff.
@@ -6154,9 +7530,17 @@ Applies a highpass filter that attenuates frequencies below the cutoff.
 function LSource:setHighpass(cutoff_hz) end
 ```
 
+#### Description
+
+Applies a highpass filter that attenuates frequencies below the cutoff.
+
+Parameters:
+
+- `cutoff_hz` (`integer`, required): Cutoff frequency in Hertz.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -6169,15 +7553,7 @@ end
 
 ### LSource:setLooping
 
-`LSource:setLooping(looping: boolean)`
-
-Enables or disables looping so the source restarts automatically after finishing.
-
-**Parameters**
-
-- `looping` (`boolean`, required): True to loop continuously, false to play once.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Enables or disables looping so the source restarts automatically after finishing.
@@ -6185,9 +7561,17 @@ Enables or disables looping so the source restarts automatically after finishing
 function LSource:setLooping(looping) end
 ```
 
+#### Description
+
+Enables or disables looping so the source restarts automatically after finishing.
+
+Parameters:
+
+- `looping` (`boolean`, required): True to loop continuously, false to play once.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -6200,15 +7584,7 @@ end
 
 ### LSource:setLowpass
 
-`LSource:setLowpass(cutoff_hz: integer)`
-
-Applies a lowpass filter that attenuates frequencies above the cutoff.
-
-**Parameters**
-
-- `cutoff_hz` (`integer`, required): Cutoff frequency in Hertz.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Applies a lowpass filter that attenuates frequencies above the cutoff.
@@ -6216,9 +7592,17 @@ Applies a lowpass filter that attenuates frequencies above the cutoff.
 function LSource:setLowpass(cutoff_hz) end
 ```
 
+#### Description
+
+Applies a lowpass filter that attenuates frequencies above the cutoff.
+
+Parameters:
+
+- `cutoff_hz` (`integer`, required): Cutoff frequency in Hertz.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -6231,15 +7615,7 @@ end
 
 ### LSource:setPan
 
-`LSource:setPan(pan: number)`
-
-Sets the stereo panning position of this source.
-
-**Parameters**
-
-- `pan` (`number`, required): Pan value from -1.0 (full left) to 1.0 (full right), 0.0 is center.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the stereo panning position of this source.
@@ -6247,9 +7623,17 @@ Sets the stereo panning position of this source.
 function LSource:setPan(pan) end
 ```
 
+#### Description
+
+Sets the stereo panning position of this source.
+
+Parameters:
+
+- `pan` (`number`, required): Pan value from -1.0 (full left) to 1.0 (full right), 0.0 is center.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -6262,15 +7646,7 @@ end
 
 ### LSource:setPitch
 
-`LSource:setPitch(pitch: number)`
-
-Sets the playback speed multiplier, affecting both pitch and duration.
-
-**Parameters**
-
-- `pitch` (`number`, required): Pitch multiplier (1.0 = normal, 2.0 = double speed/octave up).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the playback speed multiplier, affecting both pitch and duration.
@@ -6278,9 +7654,17 @@ Sets the playback speed multiplier, affecting both pitch and duration.
 function LSource:setPitch(pitch) end
 ```
 
+#### Description
+
+Sets the playback speed multiplier, affecting both pitch and duration.
+
+Parameters:
+
+- `pitch` (`number`, required): Pitch multiplier (1.0 = normal, 2.0 = double speed/octave up).
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -6293,15 +7677,7 @@ end
 
 ### LSource:setVolume
 
-`LSource:setVolume(vol: number)`
-
-Sets the volume level of this source where 0.0 is silent and 1.0 is full volume.
-
-**Parameters**
-
-- `vol` (`number`, required): Volume multiplier (0.0 = silent, 1.0 = normal, >1.0 = amplified).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the volume level of this source where 0.0 is silent and 1.0 is full volume.
@@ -6309,9 +7685,17 @@ Sets the volume level of this source where 0.0 is silent and 1.0 is full volume.
 function LSource:setVolume(vol) end
 ```
 
+#### Description
+
+Sets the volume level of this source where 0.0 is silent and 1.0 is full volume.
+
+Parameters:
+
+- `vol` (`number`, required): Volume multiplier (0.0 = silent, 1.0 = normal, >1.0 = amplified).
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -6324,20 +7708,20 @@ end
 
 ### LSource:stop
 
-`LSource:stop()`
-
-Stops playback and resets the source position to the beginning.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Stops playback and resets the source position to the beginning.
 function LSource:stop() end
 ```
 
+#### Description
+
+Stops playback and resets the source position to the beginning.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -6351,13 +7735,7 @@ end
 
 ### LSource:tell
 
-`LSource:tell() -> number`
-
-Returns the current playback position of this source in seconds.
-
-**Returns**: `number` - Current position in seconds from the start.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current playback position of this source in seconds.
@@ -6365,9 +7743,15 @@ Returns the current playback position of this source in seconds.
 function LSource:tell() end
 ```
 
+#### Description
+
+Returns the current playback position of this source in seconds.
+
+Returns: `number` - Current position in seconds from the start.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -6381,13 +7765,7 @@ end
 
 ### LSource:type
 
-`LSource:type() -> string`
-
-Returns the type name of this object for runtime type-checking.
-
-**Returns**: `string` - Always returns "LSource".
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this object for runtime type-checking.
@@ -6395,9 +7773,15 @@ Returns the type name of this object for runtime type-checking.
 function LSource:type() end
 ```
 
+#### Description
+
+Returns the type name of this object for runtime type-checking.
+
+Returns: `string` - Always returns "LSource".
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do
@@ -6409,17 +7793,7 @@ end
 
 ### LSource:typeOf
 
-`LSource:typeOf(name: string) -> boolean`
-
-Checks whether this object is of the given type name or a parent type.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to check (e.g. "LSource" or "Object").
-
-**Returns**: `boolean` - True if this object matches the given type.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this object is of the given type name or a parent type.
@@ -6428,9 +7802,19 @@ Checks whether this object is of the given type name or a parent type.
 function LSource:typeOf(name) end
 ```
 
+#### Description
+
+Checks whether this object is of the given type name or a parent type.
+
+Parameters:
+
+- `name` (`string`, required): Type name to check (e.g. "LSource" or "Object").
+
+Returns: `boolean` - True if this object matches the given type.
+
 #### Example
 
-Exact example from [audio.lua](../blob/main/content/examples/audio.lua):
+Source: [audio.lua](../blob/main/content/examples/audio.lua)
 
 ```lua
 do

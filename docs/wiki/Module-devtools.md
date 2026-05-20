@@ -14,71 +14,199 @@
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
   - [lurek.devtools.clearLog](#lurekdevtoolsclearlog)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.clearWatches](#lurekdevtoolsclearwatches)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.debug](#lurekdevtoolsdebug)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.error](#lurekdevtoolserror)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.eval](#lurekdevtoolseval)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.exposeWatch](#lurekdevtoolsexposewatch)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.fatal](#lurekdevtoolsfatal)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.getCallStack](#lurekdevtoolsgetcallstack)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.getFrameHistory](#lurekdevtoolsgetframehistory)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.getFrameHistorySize](#lurekdevtoolsgetframehistorysize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.getFrameStats](#lurekdevtoolsgetframestats)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.getGpuFrameStats](#lurekdevtoolsgetgpuframestats)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.getLogConsole](#lurekdevtoolsgetlogconsole)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.getLogFile](#lurekdevtoolsgetlogfile)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.getLogHistory](#lurekdevtoolsgetloghistory)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.getLogLevel](#lurekdevtoolsgetloglevel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.getProfileData](#lurekdevtoolsgetprofiledata)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.getProfileFrameCount](#lurekdevtoolsgetprofileframecount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.getWatchedPaths](#lurekdevtoolsgetwatchedpaths)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.getWatches](#lurekdevtoolsgetwatches)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.getWatchInterval](#lurekdevtoolsgetwatchinterval)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.info](#lurekdevtoolsinfo)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.isConsoleOpen](#lurekdevtoolsisconsoleopen)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.isEntityInspectorOpen](#lurekdevtoolsisentityinspectoropen)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.isProfilingEnabled](#lurekdevtoolsisprofilingenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.log](#lurekdevtoolslog)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.newFileWatcher](#lurekdevtoolsnewfilewatcher)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.newRepl](#lurekdevtoolsnewrepl)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.openConsole](#lurekdevtoolsopenconsole)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.openEntityInspector](#lurekdevtoolsopenentityinspector)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.profileFrame](#lurekdevtoolsprofileframe)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.profilePop](#lurekdevtoolsprofilepop)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.profilePush](#lurekdevtoolsprofilepush)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.profilerReport](#lurekdevtoolsprofilerreport)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.recordFrameTime](#lurekdevtoolsrecordframetime)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.recordGpuFrameTime](#lurekdevtoolsrecordgpuframetime)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.removeWatch](#lurekdevtoolsremovewatch)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.resetProfile](#lurekdevtoolsresetprofile)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.scan](#lurekdevtoolsscan)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.setFrameHistorySize](#lurekdevtoolssetframehistorysize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.setLogConsole](#lurekdevtoolssetlogconsole)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.setLogFile](#lurekdevtoolssetlogfile)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.setLogLevel](#lurekdevtoolssetloglevel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.setProfilingEnabled](#lurekdevtoolssetprofilingenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.setWatchInterval](#lurekdevtoolssetwatchinterval)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.snapshot](#lurekdevtoolssnapshot)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.trace](#lurekdevtoolstrace)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.unwatch](#lurekdevtoolsunwatch)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.warn](#lurekdevtoolswarn)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.devtools.watch](#lurekdevtoolswatch)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔷 Module Types](#module-types)
   - [LFileWatcher](#lfilewatcher)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LReplConsole](#lreplconsole)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
   - [LFileWatcher:cancel](#lfilewatchercancel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LFileWatcher:check](#lfilewatchercheck)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LFileWatcher:getPath](#lfilewatchergetpath)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LFileWatcher:onChanged](#lfilewatcheronchanged)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LFileWatcher:type](#lfilewatchertype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LFileWatcher:typeOf](#lfilewatchertypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LReplConsole:clear](#lreplconsoleclear)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LReplConsole:eval](#lreplconsoleeval)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LReplConsole:history](#lreplconsolehistory)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LReplConsole:len](#lreplconsolelen)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LReplConsole:type](#lreplconsoletype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LReplConsole:typeOf](#lreplconsoletypeof)
+    - [Definition](#definition)
+    - [Description](#description)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -141,13 +269,20 @@ lurek.devtools.getProfileFrameCount() -> integer -- Returns how many profiling f
 
 ### lurek.devtools.clearLog
 
-`lurek.devtools.clearLog()`
+#### Definition
+
+```lua
+--- Clears all in-memory devtools log entries.
+lurek.devtools.clearLog = function() end
+```
+
+#### Description
 
 Clears all in-memory devtools log entries.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -159,13 +294,20 @@ end
 
 ### lurek.devtools.clearWatches
 
-`lurek.devtools.clearWatches()`
+#### Definition
+
+```lua
+--- Removes every path from the module-level file watcher.
+lurek.devtools.clearWatches = function() end
+```
+
+#### Description
 
 Removes every path from the module-level file watcher.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -177,17 +319,25 @@ end
 
 ### lurek.devtools.debug
 
-`lurek.devtools.debug(message: string)`
+#### Definition
+
+```lua
+--- Adds a debug-level diagnostic message to the devtools log.
+---@param message string Message text stored in the in-memory log history.
+lurek.devtools.debug = function(message) end
+```
+
+#### Description
 
 Adds a debug-level diagnostic message to the devtools log.
 
-**Parameters**
+Parameters:
 
 - `message` (`string`, required): Message text stored in the in-memory log history.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -198,40 +348,57 @@ end
 
 ### lurek.devtools.error
 
-`lurek.devtools.error(message: string)`
+#### Definition
+
+```lua
+--- Adds an error-level diagnostic message to the devtools log.
+---@param message string Message text stored in the in-memory log history.
+lurek.devtools.error = function(message) end
+```
+
+#### Description
 
 Adds an error-level diagnostic message to the devtools log.
 
-**Parameters**
+Parameters:
 
 - `message` (`string`, required): Message text stored in the in-memory log history.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
-    lurek.devtools.error("failed to load save file")
+    lurek.devtools.error("save file warning emitted")
     print("error logged")
 end
 ```
 
 ### lurek.devtools.eval
 
-`lurek.devtools.eval(code: string) -> LuaValue`
+#### Definition
+
+```lua
+--- Evaluates Lua code in the current state and returns success plus values or failure plus an error message.
+---@param code string Lua source code evaluated through the current Lua VM.
+---@return LuaValue Multi-return where the first value is a boolean success flag followed by result values or an error string.
+lurek.devtools.eval = function(code) end
+```
+
+#### Description
 
 Evaluates Lua code in the current state and returns success plus values or failure plus an error message.
 
-**Parameters**
+Parameters:
 
 - `code` (`string`, required): Lua source code evaluated through the current Lua VM.
 
-**Returns**: `LuaValue` - Multi-return where the first value is a boolean success flag followed by result values or an error string.
+Returns: `LuaValue` - Multi-return where the first value is a boolean success flag followed by result values or an error string.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -242,21 +409,32 @@ end
 
 ### lurek.devtools.exposeWatch
 
-`lurek.devtools.exposeWatch(name: string, getter: function, [category]: string) -> integer`
+#### Definition
+
+```lua
+--- Registers a watch expression callback for snapshots and watch panels.
+---@param name string Display name for the watch entry.
+---@param getter function Callback invoked with no arguments when watch values are collected.
+---@param category? string Optional category label used by devtools UIs.
+---@return number Numeric watch id that can be passed to `removeWatch`.
+lurek.devtools.exposeWatch = function(name, getter, category) end
+```
+
+#### Description
 
 Registers a watch expression callback for snapshots and watch panels.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, required): Display name for the watch entry.
 - `getter` (`function`, required): Callback invoked with no arguments when watch values are collected.
 - `category` (`string`, optional): Optional category label used by devtools UIs.
 
-**Returns**: `integer` - Numeric watch id that can be passed to `removeWatch`.
+Returns: `integer` - Numeric watch id that can be passed to `removeWatch`.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -267,17 +445,25 @@ end
 
 ### lurek.devtools.fatal
 
-`lurek.devtools.fatal(message: string)`
+#### Definition
+
+```lua
+--- Adds a fatal-level diagnostic message to the devtools log.
+---@param message string Message text stored in the in-memory log history.
+lurek.devtools.fatal = function(message) end
+```
+
+#### Description
 
 Adds a fatal-level diagnostic message to the devtools log.
 
-**Parameters**
+Parameters:
 
 - `message` (`string`, required): Message text stored in the in-memory log history.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -288,19 +474,28 @@ end
 
 ### lurek.devtools.getCallStack
 
-`lurek.devtools.getCallStack([max_depth]: integer) -> any[]`
+#### Definition
+
+```lua
+--- Returns Lua call stack frames using the Lua debug library.
+---@param max_depth? number Optional maximum number of frames to return; defaults to 20 and is capped at 100.
+---@return any[] Array of frame tables; each has source (string), line (integer), name (string), and what (string) fields.
+lurek.devtools.getCallStack = function(max_depth) end
+```
+
+#### Description
 
 Returns Lua call stack frames using the Lua debug library.
 
-**Parameters**
+Parameters:
 
 - `max_depth` (`integer`, optional): Optional maximum number of frames to return; defaults to 20 and is capped at 100.
 
-**Returns**: `any[]` - Array of frame tables; each has source (string), line (integer), name (string), and what (string) fields.
+Returns: `any[]` - Array of frame tables; each has source (string), line (integer), name (string), and what (string) fields.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -311,15 +506,23 @@ end
 
 ### lurek.devtools.getFrameHistory
 
-`lurek.devtools.getFrameHistory() -> number[]`
+#### Definition
+
+```lua
+--- Returns retained CPU frame duration samples in insertion order.
+---@return number[] Array table of CPU frame durations in seconds.
+lurek.devtools.getFrameHistory = function() end
+```
+
+#### Description
 
 Returns retained CPU frame duration samples in insertion order.
 
-**Returns**: `number[]` - Array table of CPU frame durations in seconds.
+Returns: `number[]` - Array table of CPU frame durations in seconds.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -331,15 +534,23 @@ end
 
 ### lurek.devtools.getFrameHistorySize
 
-`lurek.devtools.getFrameHistorySize() -> integer`
+#### Definition
+
+```lua
+--- Returns the current CPU frame history capacity.
+---@return number Maximum number of retained CPU frame duration samples.
+lurek.devtools.getFrameHistorySize = function() end
+```
+
+#### Description
 
 Returns the current CPU frame history capacity.
 
-**Returns**: `integer` - Maximum number of retained CPU frame duration samples.
+Returns: `integer` - Maximum number of retained CPU frame duration samples.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -349,15 +560,23 @@ end
 
 ### lurek.devtools.getFrameStats
 
-`lurek.devtools.getFrameStats() -> table`
+#### Definition
+
+```lua
+--- Returns aggregate CPU frame timing statistics from recorded samples.
+---@return DevtoolsGetFrameStatsResult Table containing fps, dt, avg, min, max, p50, p95, p99, and samples fields.
+lurek.devtools.getFrameStats = function() end
+```
+
+#### Description
 
 Returns aggregate CPU frame timing statistics from recorded samples.
 
-**Returns**: `table` - Table containing fps, dt, avg, min, max, p50, p95, p99, and samples fields.
+Returns: `table` - Table containing fps, dt, avg, min, max, p50, p95, p99, and samples fields.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -369,15 +588,23 @@ end
 
 ### lurek.devtools.getGpuFrameStats
 
-`lurek.devtools.getGpuFrameStats() -> table`
+#### Definition
+
+```lua
+--- Returns aggregate GPU frame timing statistics from recorded samples.
+---@return DevtoolsGetGpuFrameStatsResult Table containing fps, dt, avg, min, max, p50, p95, p99, and samples fields.
+lurek.devtools.getGpuFrameStats = function() end
+```
+
+#### Description
 
 Returns aggregate GPU frame timing statistics from recorded samples.
 
-**Returns**: `table` - Table containing fps, dt, avg, min, max, p50, p95, p99, and samples fields.
+Returns: `table` - Table containing fps, dt, avg, min, max, p50, p95, p99, and samples fields.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -389,15 +616,23 @@ end
 
 ### lurek.devtools.getLogConsole
 
-`lurek.devtools.getLogConsole() -> boolean`
+#### Definition
+
+```lua
+--- Returns whether devtools log entries are mirrored to the console.
+---@return boolean True when console logging is enabled.
+lurek.devtools.getLogConsole = function() end
+```
+
+#### Description
 
 Returns whether devtools log entries are mirrored to the console.
 
-**Returns**: `boolean` - True when console logging is enabled.
+Returns: `boolean` - True when console logging is enabled.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -407,15 +642,23 @@ end
 
 ### lurek.devtools.getLogFile
 
-`lurek.devtools.getLogFile() -> string`
+#### Definition
+
+```lua
+--- Returns the file path currently stored as the devtools log target.
+---@return string Current log file path.
+lurek.devtools.getLogFile = function() end
+```
+
+#### Description
 
 Returns the file path currently stored as the devtools log target.
 
-**Returns**: `string` - Current log file path.
+Returns: `string` - Current log file path.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -426,19 +669,28 @@ end
 
 ### lurek.devtools.getLogHistory
 
-`lurek.devtools.getLogHistory([count]: integer) -> table`
+#### Definition
+
+```lua
+--- Returns recent devtools log entries as structured tables.
+---@param count? number Optional number of newest entries to return; omitted returns the logger default.
+---@return DevtoolsGetLogHistoryResult Array table containing level, timestamp, message, source, line, and optional category fields.
+lurek.devtools.getLogHistory = function(count) end
+```
+
+#### Description
 
 Returns recent devtools log entries as structured tables.
 
-**Parameters**
+Parameters:
 
 - `count` (`integer`, optional): Optional number of newest entries to return; omitted returns the logger default.
 
-**Returns**: `table` - Array table containing level, timestamp, message, source, line, and optional category fields.
+Returns: `table` - Array table containing level, timestamp, message, source, line, and optional category fields.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -450,15 +702,23 @@ end
 
 ### lurek.devtools.getLogLevel
 
-`lurek.devtools.getLogLevel() -> string`
+#### Definition
+
+```lua
+--- Returns the minimum severity currently used by devtools log output.
+---@return string Current minimum log level name.
+lurek.devtools.getLogLevel = function() end
+```
+
+#### Description
 
 Returns the minimum severity currently used by devtools log output.
 
-**Returns**: `string` - Current minimum log level name.
+Returns: `string` - Current minimum log level name.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -469,19 +729,28 @@ end
 
 ### lurek.devtools.getProfileData
 
-`lurek.devtools.getProfileData([frame]: integer) -> table`
+#### Definition
+
+```lua
+--- Returns the profiler zone tree for a retained frame.
+---@param frame? number Optional frame index understood by the profiler; omitted reads the newest frame alias used by the backend.
+---@return DevtoolsGetProfileDataResult Array of profiler zones with name, time, selfTime, startTime, and children fields.
+lurek.devtools.getProfileData = function(frame) end
+```
+
+#### Description
 
 Returns the profiler zone tree for a retained frame.
 
-**Parameters**
+Parameters:
 
 - `frame` (`integer`, optional): Optional frame index understood by the profiler; omitted reads the newest frame alias used by the backend.
 
-**Returns**: `table` - Array of profiler zones with name, time, selfTime, startTime, and children fields.
+Returns: `table` - Array of profiler zones with name, time, selfTime, startTime, and children fields.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -492,15 +761,23 @@ end
 
 ### lurek.devtools.getProfileFrameCount
 
-`lurek.devtools.getProfileFrameCount() -> integer`
+#### Definition
+
+```lua
+--- Returns how many profiling frames are currently stored.
+---@return number Number of retained profiler frames.
+lurek.devtools.getProfileFrameCount = function() end
+```
+
+#### Description
 
 Returns how many profiling frames are currently stored.
 
-**Returns**: `integer` - Number of retained profiler frames.
+Returns: `integer` - Number of retained profiler frames.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -510,15 +787,23 @@ end
 
 ### lurek.devtools.getWatchedPaths
 
-`lurek.devtools.getWatchedPaths() -> string[]`
+#### Definition
+
+```lua
+--- Returns all paths currently watched by the module-level file watcher.
+---@return string[] Sorted array table of watched path strings.
+lurek.devtools.getWatchedPaths = function() end
+```
+
+#### Description
 
 Returns all paths currently watched by the module-level file watcher.
 
-**Returns**: `string[]` - Sorted array table of watched path strings.
+Returns: `string[]` - Sorted array table of watched path strings.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -530,15 +815,23 @@ end
 
 ### lurek.devtools.getWatches
 
-`lurek.devtools.getWatches() -> table`
+#### Definition
+
+```lua
+--- Evaluates exposed watch callbacks and returns their current values.
+---@return DevtoolsGetWatchesResult Array of watch rows with name, category, and value fields.
+lurek.devtools.getWatches = function() end
+```
+
+#### Description
 
 Evaluates exposed watch callbacks and returns their current values.
 
-**Returns**: `table` - Array of watch rows with name, category, and value fields.
+Returns: `table` - Array of watch rows with name, category, and value fields.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -550,15 +843,23 @@ end
 
 ### lurek.devtools.getWatchInterval
 
-`lurek.devtools.getWatchInterval() -> number`
+#### Definition
+
+```lua
+--- Returns the polling interval hint used by devtools watch UIs.
+---@return number Watch interval in seconds.
+lurek.devtools.getWatchInterval = function() end
+```
+
+#### Description
 
 Returns the polling interval hint used by devtools watch UIs.
 
-**Returns**: `number` - Watch interval in seconds.
+Returns: `number` - Watch interval in seconds.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -568,17 +869,25 @@ end
 
 ### lurek.devtools.info
 
-`lurek.devtools.info(message: string)`
+#### Definition
+
+```lua
+--- Adds an info-level diagnostic message to the devtools log.
+---@param message string Message text stored in the in-memory log history.
+lurek.devtools.info = function(message) end
+```
+
+#### Description
 
 Adds an info-level diagnostic message to the devtools log.
 
-**Parameters**
+Parameters:
 
 - `message` (`string`, required): Message text stored in the in-memory log history.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -589,15 +898,23 @@ end
 
 ### lurek.devtools.isConsoleOpen
 
-`lurek.devtools.isConsoleOpen() -> boolean`
+#### Definition
+
+```lua
+--- Returns whether the devtools console is marked open.
+---@return boolean True when the console-open flag is set.
+lurek.devtools.isConsoleOpen = function() end
+```
+
+#### Description
 
 Returns whether the devtools console is marked open.
 
-**Returns**: `boolean` - True when the console-open flag is set.
+Returns: `boolean` - True when the console-open flag is set.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -607,15 +924,23 @@ end
 
 ### lurek.devtools.isEntityInspectorOpen
 
-`lurek.devtools.isEntityInspectorOpen() -> boolean`
+#### Definition
+
+```lua
+--- Returns whether the devtools entity inspector is marked open.
+---@return boolean True when the entity-inspector-open flag is set.
+lurek.devtools.isEntityInspectorOpen = function() end
+```
+
+#### Description
 
 Returns whether the devtools entity inspector is marked open.
 
-**Returns**: `boolean` - True when the entity-inspector-open flag is set.
+Returns: `boolean` - True when the entity-inspector-open flag is set.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -625,15 +950,23 @@ end
 
 ### lurek.devtools.isProfilingEnabled
 
-`lurek.devtools.isProfilingEnabled() -> boolean`
+#### Definition
+
+```lua
+--- Returns whether CPU profiling zone collection is currently enabled.
+---@return boolean True when profiler recording is enabled.
+lurek.devtools.isProfilingEnabled = function() end
+```
+
+#### Description
 
 Returns whether CPU profiling zone collection is currently enabled.
 
-**Returns**: `boolean` - True when profiler recording is enabled.
+Returns: `boolean` - True when profiler recording is enabled.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -643,18 +976,27 @@ end
 
 ### lurek.devtools.log
 
-`lurek.devtools.log(level: string, message: string)`
+#### Definition
+
+```lua
+--- Adds a message to the devtools log using an explicit severity level.
+---@param level string Log level name such as `trace`, `debug`, `info`, `warn`, `error`, or `fatal`.
+---@param message string Message text stored in the in-memory log history.
+lurek.devtools.log = function(level, message) end
+```
+
+#### Description
 
 Adds a message to the devtools log using an explicit severity level.
 
-**Parameters**
+Parameters:
 
 - `level` (`string`, required): Log level name such as `trace`, `debug`, `info`, `warn`, `error`, or `fatal`.
 - `message` (`string`, required): Message text stored in the in-memory log history.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -665,19 +1007,28 @@ end
 
 ### lurek.devtools.newFileWatcher
 
-`lurek.devtools.newFileWatcher(path: string) -> LFileWatcher`
+#### Definition
+
+```lua
+--- Creates a dedicated file watcher userdata for one path.
+---@param path string File or directory path watched by the returned handle.
+---@return LFileWatcher File watcher handle with polling and callback methods.
+lurek.devtools.newFileWatcher = function(path) end
+```
+
+#### Description
 
 Creates a dedicated file watcher userdata for one path.
 
-**Parameters**
+Parameters:
 
 - `path` (`string`, required): File or directory path watched by the returned handle.
 
-**Returns**: `LFileWatcher` - File watcher handle with polling and callback methods.
+Returns: `LFileWatcher` - File watcher handle with polling and callback methods.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -688,19 +1039,28 @@ end
 
 ### lurek.devtools.newRepl
 
-`lurek.devtools.newRepl([max_history]: integer) -> LReplConsole`
+#### Definition
+
+```lua
+--- Creates a REPL console userdata with bounded command history.
+---@param max_history? number Optional maximum number of history entries; defaults to 200.
+---@return LReplConsole REPL console handle for eval and history management.
+lurek.devtools.newRepl = function(max_history) end
+```
+
+#### Description
 
 Creates a REPL console userdata with bounded command history.
 
-**Parameters**
+Parameters:
 
 - `max_history` (`integer`, optional): Optional maximum number of history entries; defaults to 200.
 
-**Returns**: `LReplConsole` - REPL console handle for eval and history management.
+Returns: `LReplConsole` - REPL console handle for eval and history management.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -711,15 +1071,23 @@ end
 
 ### lurek.devtools.openConsole
 
-`lurek.devtools.openConsole() -> boolean`
+#### Definition
+
+```lua
+--- Marks the devtools console as open for UI state tracking.
+---@return boolean Always returns true after setting the console-open flag.
+lurek.devtools.openConsole = function() end
+```
+
+#### Description
 
 Marks the devtools console as open for UI state tracking.
 
-**Returns**: `boolean` - Always returns true after setting the console-open flag.
+Returns: `boolean` - Always returns true after setting the console-open flag.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -730,15 +1098,23 @@ end
 
 ### lurek.devtools.openEntityInspector
 
-`lurek.devtools.openEntityInspector() -> boolean`
+#### Definition
+
+```lua
+--- Marks the devtools entity inspector as open for UI state tracking.
+---@return boolean Always returns true after setting the entity-inspector flag.
+lurek.devtools.openEntityInspector = function() end
+```
+
+#### Description
 
 Marks the devtools entity inspector as open for UI state tracking.
 
-**Returns**: `boolean` - Always returns true after setting the entity-inspector flag.
+Returns: `boolean` - Always returns true after setting the entity-inspector flag.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -749,13 +1125,20 @@ end
 
 ### lurek.devtools.profileFrame
 
-`lurek.devtools.profileFrame()`
+#### Definition
+
+```lua
+--- Closes the current profiling frame and stores its zone tree for later inspection.
+lurek.devtools.profileFrame = function() end
+```
+
+#### Description
 
 Closes the current profiling frame and stores its zone tree for later inspection.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -769,17 +1152,25 @@ end
 
 ### lurek.devtools.profilePop
 
-`lurek.devtools.profilePop([name]: string)`
+#### Definition
+
+```lua
+--- Ends the current profiling zone on the profiler stack.
+---@param name? string Optional zone name accepted for API compatibility and ignored by the profiler.
+lurek.devtools.profilePop = function(name) end
+```
+
+#### Description
 
 Ends the current profiling zone on the profiler stack.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, optional): Optional zone name accepted for API compatibility and ignored by the profiler.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -792,17 +1183,25 @@ end
 
 ### lurek.devtools.profilePush
 
-`lurek.devtools.profilePush(name: string)`
+#### Definition
+
+```lua
+--- Starts a named profiling zone on the current profiler stack.
+---@param name string Profiling zone name shown in reports and snapshots.
+lurek.devtools.profilePush = function(name) end
+```
+
+#### Description
 
 Starts a named profiling zone on the current profiler stack.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, required): Profiling zone name shown in reports and snapshots.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -814,15 +1213,23 @@ end
 
 ### lurek.devtools.profilerReport
 
-`lurek.devtools.profilerReport() -> table`
+#### Definition
+
+```lua
+--- Aggregates retained profiler frames into per-zone timing rows.
+---@return DevtoolsProfilerReportResult Array table with zone name, call count, total_ms, avg_ms, min_ms, max_ms, and self_ms fields.
+lurek.devtools.profilerReport = function() end
+```
+
+#### Description
 
 Aggregates retained profiler frames into per-zone timing rows.
 
-**Returns**: `table` - Array table with zone name, call count, total_ms, avg_ms, min_ms, max_ms, and self_ms fields.
+Returns: `table` - Array table with zone name, call count, total_ms, avg_ms, min_ms, max_ms, and self_ms fields.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -833,17 +1240,25 @@ end
 
 ### lurek.devtools.recordFrameTime
 
-`lurek.devtools.recordFrameTime(dt_val: number)`
+#### Definition
+
+```lua
+--- Records one CPU frame duration sample for devtools frame statistics.
+---@param dt_val number Frame duration in seconds.
+lurek.devtools.recordFrameTime = function(dt_val) end
+```
+
+#### Description
 
 Records one CPU frame duration sample for devtools frame statistics.
 
-**Parameters**
+Parameters:
 
 - `dt_val` (`number`, required): Frame duration in seconds.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -855,17 +1270,25 @@ end
 
 ### lurek.devtools.recordGpuFrameTime
 
-`lurek.devtools.recordGpuFrameTime(dt_val: number)`
+#### Definition
+
+```lua
+--- Records one GPU frame duration sample for devtools frame statistics.
+---@param dt_val number GPU frame duration in seconds.
+lurek.devtools.recordGpuFrameTime = function(dt_val) end
+```
+
+#### Description
 
 Records one GPU frame duration sample for devtools frame statistics.
 
-**Parameters**
+Parameters:
 
 - `dt_val` (`number`, required): GPU frame duration in seconds.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -876,19 +1299,28 @@ end
 
 ### lurek.devtools.removeWatch
 
-`lurek.devtools.removeWatch(id: integer) -> boolean`
+#### Definition
+
+```lua
+--- Removes a previously exposed watch expression by id.
+---@param id number Watch id returned by `exposeWatch`.
+---@return boolean True when a watch entry was removed.
+lurek.devtools.removeWatch = function(id) end
+```
+
+#### Description
 
 Removes a previously exposed watch expression by id.
 
-**Parameters**
+Parameters:
 
 - `id` (`integer`, required): Watch id returned by `exposeWatch`.
 
-**Returns**: `boolean` - True when a watch entry was removed.
+Returns: `boolean` - True when a watch entry was removed.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -900,13 +1332,20 @@ end
 
 ### lurek.devtools.resetProfile
 
-`lurek.devtools.resetProfile()`
+#### Definition
+
+```lua
+--- Clears profiler state, active zones, and retained profiling frames.
+lurek.devtools.resetProfile = function() end
+```
+
+#### Description
 
 Clears profiler state, active zones, and retained profiling frames.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -917,15 +1356,23 @@ end
 
 ### lurek.devtools.scan
 
-`lurek.devtools.scan() -> string[]`
+#### Definition
+
+```lua
+--- Polls module-level file watches and returns paths that changed since the previous scan.
+---@return string[] Changed path strings.
+lurek.devtools.scan = function() end
+```
+
+#### Description
 
 Polls module-level file watches and returns paths that changed since the previous scan.
 
-**Returns**: `string[]` - Changed path strings.
+Returns: `string[]` - Changed path strings.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -936,17 +1383,25 @@ end
 
 ### lurek.devtools.setFrameHistorySize
 
-`lurek.devtools.setFrameHistorySize(size: integer)`
+#### Definition
+
+```lua
+--- Sets the maximum number of CPU frame duration samples retained by devtools.
+---@param size number Maximum number of frame samples to keep.
+lurek.devtools.setFrameHistorySize = function(size) end
+```
+
+#### Description
 
 Sets the maximum number of CPU frame duration samples retained by devtools.
 
-**Parameters**
+Parameters:
 
 - `size` (`integer`, required): Maximum number of frame samples to keep.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -957,17 +1412,25 @@ end
 
 ### lurek.devtools.setLogConsole
 
-`lurek.devtools.setLogConsole(enabled: boolean)`
+#### Definition
+
+```lua
+--- Enables or disables mirroring devtools log entries to the console.
+---@param enabled boolean True to emit future log entries to console output.
+lurek.devtools.setLogConsole = function(enabled) end
+```
+
+#### Description
 
 Enables or disables mirroring devtools log entries to the console.
 
-**Parameters**
+Parameters:
 
 - `enabled` (`boolean`, required): True to emit future log entries to console output.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -978,17 +1441,25 @@ end
 
 ### lurek.devtools.setLogFile
 
-`lurek.devtools.setLogFile(path: string)`
+#### Definition
+
+```lua
+--- Sets the file path used by devtools file logging state.
+---@param path string File path recorded as the active devtools log target.
+lurek.devtools.setLogFile = function(path) end
+```
+
+#### Description
 
 Sets the file path used by devtools file logging state.
 
-**Parameters**
+Parameters:
 
 - `path` (`string`, required): File path recorded as the active devtools log target.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -999,17 +1470,25 @@ end
 
 ### lurek.devtools.setLogLevel
 
-`lurek.devtools.setLogLevel(level: string)`
+#### Definition
+
+```lua
+--- Sets the minimum severity that remains visible in devtools log output.
+---@param level string Log level name parsed by the devtools logger; unknown names are ignored.
+lurek.devtools.setLogLevel = function(level) end
+```
+
+#### Description
 
 Sets the minimum severity that remains visible in devtools log output.
 
-**Parameters**
+Parameters:
 
 - `level` (`string`, required): Log level name parsed by the devtools logger; unknown names are ignored.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -1020,17 +1499,25 @@ end
 
 ### lurek.devtools.setProfilingEnabled
 
-`lurek.devtools.setProfilingEnabled(enabled: boolean)`
+#### Definition
+
+```lua
+--- Enables or disables collection of CPU profiling zones.
+---@param enabled boolean True to record profiling zones into future profiler frames.
+lurek.devtools.setProfilingEnabled = function(enabled) end
+```
+
+#### Description
 
 Enables or disables collection of CPU profiling zones.
 
-**Parameters**
+Parameters:
 
 - `enabled` (`boolean`, required): True to record profiling zones into future profiler frames.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -1041,17 +1528,25 @@ end
 
 ### lurek.devtools.setWatchInterval
 
-`lurek.devtools.setWatchInterval(interval: number)`
+#### Definition
+
+```lua
+--- Sets the polling interval hint used by devtools watch UIs.
+---@param interval number Watch interval in seconds, clamped to at least 0.01.
+lurek.devtools.setWatchInterval = function(interval) end
+```
+
+#### Description
 
 Sets the polling interval hint used by devtools watch UIs.
 
-**Parameters**
+Parameters:
 
 - `interval` (`number`, required): Watch interval in seconds, clamped to at least 0.01.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -1062,15 +1557,23 @@ end
 
 ### lurek.devtools.snapshot
 
-`lurek.devtools.snapshot() -> table`
+#### Definition
+
+```lua
+--- Captures a combined devtools snapshot containing frame stats, watch values, profile data, and recent logs.
+---@return DevtoolsSnapshotResult Snapshot table with frameStats, watches, profile, log, and watchCount fields.
+lurek.devtools.snapshot = function() end
+```
+
+#### Description
 
 Captures a combined devtools snapshot containing frame stats, watch values, profile data, and recent logs.
 
-**Returns**: `table` - Snapshot table with frameStats, watches, profile, log, and watchCount fields.
+Returns: `table` - Snapshot table with frameStats, watches, profile, log, and watchCount fields.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -1081,17 +1584,25 @@ end
 
 ### lurek.devtools.trace
 
-`lurek.devtools.trace(message: string)`
+#### Definition
+
+```lua
+--- Adds a trace-level diagnostic message to the devtools log.
+---@param message string Message text stored in the in-memory log history.
+lurek.devtools.trace = function(message) end
+```
+
+#### Description
 
 Adds a trace-level diagnostic message to the devtools log.
 
-**Parameters**
+Parameters:
 
 - `message` (`string`, required): Message text stored in the in-memory log history.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -1102,19 +1613,28 @@ end
 
 ### lurek.devtools.unwatch
 
-`lurek.devtools.unwatch(path: string) -> boolean`
+#### Definition
+
+```lua
+--- Removes a path from the module-level devtools file watcher.
+---@param path string Previously watched file or directory path.
+---@return boolean True when the path was removed.
+lurek.devtools.unwatch = function(path) end
+```
+
+#### Description
 
 Removes a path from the module-level devtools file watcher.
 
-**Parameters**
+Parameters:
 
 - `path` (`string`, required): Previously watched file or directory path.
 
-**Returns**: `boolean` - True when the path was removed.
+Returns: `boolean` - True when the path was removed.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -1126,17 +1646,25 @@ end
 
 ### lurek.devtools.warn
 
-`lurek.devtools.warn(message: string)`
+#### Definition
+
+```lua
+--- Adds a warning-level diagnostic message to the devtools log.
+---@param message string Message text stored in the in-memory log history.
+lurek.devtools.warn = function(message) end
+```
+
+#### Description
 
 Adds a warning-level diagnostic message to the devtools log.
 
-**Parameters**
+Parameters:
 
 - `message` (`string`, required): Message text stored in the in-memory log history.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -1147,19 +1675,28 @@ end
 
 ### lurek.devtools.watch
 
-`lurek.devtools.watch(path: string) -> boolean`
+#### Definition
+
+```lua
+--- Adds a path to the module-level devtools file watcher.
+---@param path string File or directory path to poll for changes.
+---@return boolean True when the path was newly added; false when it was already watched.
+lurek.devtools.watch = function(path) end
+```
+
+#### Description
 
 Adds a path to the module-level devtools file watcher.
 
-**Parameters**
+Parameters:
 
 - `path` (`string`, required): File or directory path to poll for changes.
 
-**Returns**: `boolean` - True when the path was newly added; false when it was already watched.
+Returns: `boolean` - True when the path was newly added; false when it was already watched.
 
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -1175,9 +1712,7 @@ end
 
 ### LFileWatcher
 
-Lua-side file watcher with an optional change callback.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side file watcher with an optional change callback.
@@ -1185,9 +1720,13 @@ Lua-side file watcher with an optional change callback.
 LFileWatcher = {}
 ```
 
+#### Description
+
+Lua-side file watcher with an optional change callback.
+
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -1198,9 +1737,7 @@ end
 
 ### LReplConsole
 
-Lua-side REPL console handle with bounded history.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side REPL console handle with bounded history.
@@ -1208,9 +1745,13 @@ Lua-side REPL console handle with bounded history.
 LReplConsole = {}
 ```
 
+#### Description
+
+Lua-side REPL console handle with bounded history.
+
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -1226,20 +1767,20 @@ end
 
 ### LFileWatcher:cancel
 
-`LFileWatcher:cancel()`
-
-Cancels this watcher and removes its callback.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Cancels this watcher and removes its callback.
 function LFileWatcher:cancel() end
 ```
 
+#### Description
+
+Cancels this watcher and removes its callback.
+
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -1251,13 +1792,7 @@ end
 
 ### LFileWatcher:check
 
-`LFileWatcher:check() -> boolean`
-
-Polls the watcher and invokes the change callback when a change is found.
-
-**Returns**: `boolean` - True when at least one change was detected.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Polls the watcher and invokes the change callback when a change is found.
@@ -1265,9 +1800,15 @@ Polls the watcher and invokes the change callback when a change is found.
 function LFileWatcher:check() end
 ```
 
+#### Description
+
+Polls the watcher and invokes the change callback when a change is found.
+
+Returns: `boolean` - True when at least one change was detected.
+
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -1279,13 +1820,7 @@ end
 
 ### LFileWatcher:getPath
 
-`LFileWatcher:getPath() -> string`
-
-Returns the watched path. This method is available to Lua scripts.
-
-**Returns**: `string` - Watched path string.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the watched path. This method is available to Lua scripts.
@@ -1293,9 +1828,15 @@ Returns the watched path. This method is available to Lua scripts.
 function LFileWatcher:getPath() end
 ```
 
+#### Description
+
+Returns the watched path. This method is available to Lua scripts.
+
+Returns: `string` - Watched path string.
+
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -1306,15 +1847,7 @@ end
 
 ### LFileWatcher:onChanged
 
-`LFileWatcher:onChanged(func: function)`
-
-Sets the callback invoked when this watcher observes a change.
-
-**Parameters**
-
-- `func` (`function`, required): Callback called with no arguments after a change is detected.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the callback invoked when this watcher observes a change.
@@ -1322,9 +1855,17 @@ Sets the callback invoked when this watcher observes a change.
 function LFileWatcher:onChanged(func) end
 ```
 
+#### Description
+
+Sets the callback invoked when this watcher observes a change.
+
+Parameters:
+
+- `func` (`function`, required): Callback called with no arguments after a change is detected.
+
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -1338,13 +1879,7 @@ end
 
 ### LFileWatcher:type
 
-`LFileWatcher:type() -> string`
-
-Returns the Lua-visible type name for this file watcher handle.
-
-**Returns**: `string` - The string `LFileWatcher`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this file watcher handle.
@@ -1352,9 +1887,15 @@ Returns the Lua-visible type name for this file watcher handle.
 function LFileWatcher:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this file watcher handle.
+
+Returns: `string` - The string `LFileWatcher`.
+
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -1365,17 +1906,7 @@ end
 
 ### LFileWatcher:typeOf
 
-`LFileWatcher:typeOf(name: string) -> boolean`
-
-Returns whether this file watcher handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LFileWatcher` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this file watcher handle matches a supported type name.
@@ -1384,9 +1915,19 @@ Returns whether this file watcher handle matches a supported type name.
 function LFileWatcher:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this file watcher handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LFileWatcher` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -1397,20 +1938,20 @@ end
 
 ### LReplConsole:clear
 
-`LReplConsole:clear()`
-
-Clears this REPL console's command history.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Clears this REPL console's command history.
 function LReplConsole:clear() end
 ```
 
+#### Description
+
+Clears this REPL console's command history.
+
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -1423,17 +1964,7 @@ end
 
 ### LReplConsole:eval
 
-`LReplConsole:eval(code: string) -> LuaValue`
-
-Evaluates Lua code through this REPL console and records it in history.
-
-**Parameters**
-
-- `code` (`string`, required): Lua source code evaluated in the active Lua VM.
-
-**Returns**: `LuaValue` - Evaluation result shape produced by the devtools REPL backend.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Evaluates Lua code through this REPL console and records it in history.
@@ -1442,9 +1973,19 @@ Evaluates Lua code through this REPL console and records it in history.
 function LReplConsole:eval(code) end
 ```
 
+#### Description
+
+Evaluates Lua code through this REPL console and records it in history.
+
+Parameters:
+
+- `code` (`string`, required): Lua source code evaluated in the active Lua VM.
+
+Returns: `LuaValue` - Evaluation result shape produced by the devtools REPL backend.
+
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -1456,13 +1997,7 @@ end
 
 ### LReplConsole:history
 
-`LReplConsole:history() -> string[]`
-
-Returns this REPL console's recorded command history.
-
-**Returns**: `string[]` - History entry strings.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns this REPL console's recorded command history.
@@ -1470,9 +2005,15 @@ Returns this REPL console's recorded command history.
 function LReplConsole:history() end
 ```
 
+#### Description
+
+Returns this REPL console's recorded command history.
+
+Returns: `string[]` - History entry strings.
+
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -1486,13 +2027,7 @@ end
 
 ### LReplConsole:len
 
-`LReplConsole:len() -> integer`
-
-Returns the number of entries stored in this REPL console history.
-
-**Returns**: `integer` - History entry count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of entries stored in this REPL console history.
@@ -1500,9 +2035,15 @@ Returns the number of entries stored in this REPL console history.
 function LReplConsole:len() end
 ```
 
+#### Description
+
+Returns the number of entries stored in this REPL console history.
+
+Returns: `integer` - History entry count.
+
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -1515,13 +2056,7 @@ end
 
 ### LReplConsole:type
 
-`LReplConsole:type() -> string`
-
-Returns the Lua-visible type name for this REPL console handle.
-
-**Returns**: `string` - The string `LReplConsole`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this REPL console handle.
@@ -1529,9 +2064,15 @@ Returns the Lua-visible type name for this REPL console handle.
 function LReplConsole:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this REPL console handle.
+
+Returns: `string` - The string `LReplConsole`.
+
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do
@@ -1542,17 +2083,7 @@ end
 
 ### LReplConsole:typeOf
 
-`LReplConsole:typeOf(name: string) -> boolean`
-
-Returns whether this REPL console handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LReplConsole` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this REPL console handle matches a supported type name.
@@ -1561,9 +2092,19 @@ Returns whether this REPL console handle matches a supported type name.
 function LReplConsole:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this REPL console handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LReplConsole` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [devtools.lua](../blob/main/content/examples/devtools.lua):
+Source: [devtools.lua](../blob/main/content/examples/devtools.lua)
 
 ```lua
 do

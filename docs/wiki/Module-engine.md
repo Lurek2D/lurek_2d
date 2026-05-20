@@ -14,18 +14,44 @@
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
   - [lurek.engine.fps](#lurekenginefps)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.engine.frameCount](#lurekengineframecount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.engine.getConfigRevision](#lurekenginegetconfigrevision)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.engine.getFrameBudget](#lurekenginegetframebudget)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.engine.getFrameProfile](#lurekenginegetframeprofile)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.engine.getFrameProfileText](#lurekenginegetframeprofiletext)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.engine.getResourceStats](#lurekenginegetresourcestats)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.engine.getVersion](#lurekenginegetversion)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.engine.isDebug](#lurekengineisdebug)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.engine.memoryUsage](#lurekenginememoryusage)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.engine.platform](#lurekengineplatform)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.engine.setResourceBudget](#lurekenginesetresourcebudget)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.engine.uptime](#lurekengineuptime)
+    - [Definition](#definition)
+    - [Description](#description)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -78,15 +104,23 @@ lurek.engine.uptime() -> number -- Returns total engine runtime accumulated by t
 
 ### lurek.engine.fps
 
-`lurek.engine.fps() -> number`
+#### Definition
+
+```lua
+--- Returns the latest frames-per-second value stored by the runtime.
+---@return number Current FPS estimate.
+lurek.engine.fps = function() end
+```
+
+#### Description
 
 Returns the latest frames-per-second value stored by the runtime.
 
-**Returns**: `number` - Current FPS estimate.
+Returns: `number` - Current FPS estimate.
 
 #### Example
 
-Exact example from [engine.lua](../blob/main/content/examples/engine.lua):
+Source: [engine.lua](../blob/main/content/examples/engine.lua)
 
 ```lua
 do
@@ -97,15 +131,23 @@ end
 
 ### lurek.engine.frameCount
 
-`lurek.engine.frameCount() -> integer`
+#### Definition
+
+```lua
+--- Returns the number of frames counted by the shared runtime clock.
+---@return number Total frame count.
+lurek.engine.frameCount = function() end
+```
+
+#### Description
 
 Returns the number of frames counted by the shared runtime clock.
 
-**Returns**: `integer` - Total frame count.
+Returns: `integer` - Total frame count.
 
 #### Example
 
-Exact example from [engine.lua](../blob/main/content/examples/engine.lua):
+Source: [engine.lua](../blob/main/content/examples/engine.lua)
 
 ```lua
 do
@@ -116,15 +158,23 @@ end
 
 ### lurek.engine.getConfigRevision
 
-`lurek.engine.getConfigRevision() -> integer`
+#### Definition
+
+```lua
+--- Returns the configuration reload revision counter.
+---@return number Revision value incremented when runtime config reloads.
+lurek.engine.getConfigRevision = function() end
+```
+
+#### Description
 
 Returns the configuration reload revision counter.
 
-**Returns**: `integer` - Revision value incremented when runtime config reloads.
+Returns: `integer` - Revision value incremented when runtime config reloads.
 
 #### Example
 
-Exact example from [engine.lua](../blob/main/content/examples/engine.lua):
+Source: [engine.lua](../blob/main/content/examples/engine.lua)
 
 ```lua
 do
@@ -135,15 +185,23 @@ end
 
 ### lurek.engine.getFrameBudget
 
-`lurek.engine.getFrameBudget() -> number`
+#### Definition
+
+```lua
+--- Returns the target frame budget for a 60 FPS update loop.
+---@return number Frame budget in milliseconds.
+lurek.engine.getFrameBudget = function() end
+```
+
+#### Description
 
 Returns the target frame budget for a 60 FPS update loop.
 
-**Returns**: `number` - Frame budget in milliseconds.
+Returns: `number` - Frame budget in milliseconds.
 
 #### Example
 
-Exact example from [engine.lua](../blob/main/content/examples/engine.lua):
+Source: [engine.lua](../blob/main/content/examples/engine.lua)
 
 ```lua
 do
@@ -154,15 +212,23 @@ end
 
 ### lurek.engine.getFrameProfile
 
-`lurek.engine.getFrameProfile() -> table`
+#### Definition
+
+```lua
+--- Returns the latest frame timing profile split by engine phase.
+---@return EngineGetFrameProfileResult Table of frame phase timings in milliseconds.
+lurek.engine.getFrameProfile = function() end
+```
+
+#### Description
 
 Returns the latest frame timing profile split by engine phase.
 
-**Returns**: `table` - Table of frame phase timings in milliseconds.
+Returns: `table` - Table of frame phase timings in milliseconds.
 
 #### Example
 
-Exact example from [engine.lua](../blob/main/content/examples/engine.lua):
+Source: [engine.lua](../blob/main/content/examples/engine.lua)
 
 ```lua
 do
@@ -173,15 +239,23 @@ end
 
 ### lurek.engine.getFrameProfileText
 
-`lurek.engine.getFrameProfileText() -> string`
+#### Definition
+
+```lua
+--- Returns the latest frame timing profile formatted as one text line.
+---@return string Human-readable frame profile summary.
+lurek.engine.getFrameProfileText = function() end
+```
+
+#### Description
 
 Returns the latest frame timing profile formatted as one text line.
 
-**Returns**: `string` - Human-readable frame profile summary.
+Returns: `string` - Human-readable frame profile summary.
 
 #### Example
 
-Exact example from [engine.lua](../blob/main/content/examples/engine.lua):
+Source: [engine.lua](../blob/main/content/examples/engine.lua)
 
 ```lua
 do
@@ -192,15 +266,23 @@ end
 
 ### lurek.engine.getResourceStats
 
-`lurek.engine.getResourceStats() -> table`
+#### Definition
+
+```lua
+--- Returns current resource memory usage and object counts by resource kind.
+---@return EngineGetResourceStatsResult Table with byte totals, budget, and texture/font/canvas/shader counts.
+lurek.engine.getResourceStats = function() end
+```
+
+#### Description
 
 Returns current resource memory usage and object counts by resource kind.
 
-**Returns**: `table` - Table with byte totals, budget, and texture/font/canvas/shader counts.
+Returns: `table` - Table with byte totals, budget, and texture/font/canvas/shader counts.
 
 #### Example
 
-Exact example from [engine.lua](../blob/main/content/examples/engine.lua):
+Source: [engine.lua](../blob/main/content/examples/engine.lua)
 
 ```lua
 do
@@ -211,15 +293,23 @@ end
 
 ### lurek.engine.getVersion
 
-`lurek.engine.getVersion() -> string`
+#### Definition
+
+```lua
+--- Returns the engine crate version string embedded at build time.
+---@return string Engine version from Cargo package metadata.
+lurek.engine.getVersion = function() end
+```
+
+#### Description
 
 Returns the engine crate version string embedded at build time.
 
-**Returns**: `string` - Engine version from Cargo package metadata.
+Returns: `string` - Engine version from Cargo package metadata.
 
 #### Example
 
-Exact example from [engine.lua](../blob/main/content/examples/engine.lua):
+Source: [engine.lua](../blob/main/content/examples/engine.lua)
 
 ```lua
 do
@@ -230,15 +320,23 @@ end
 
 ### lurek.engine.isDebug
 
-`lurek.engine.isDebug() -> boolean`
+#### Definition
+
+```lua
+--- Returns whether the engine binary was built with debug assertions.
+---@return boolean True for debug builds, false for release builds.
+lurek.engine.isDebug = function() end
+```
+
+#### Description
 
 Returns whether the engine binary was built with debug assertions.
 
-**Returns**: `boolean` - True for debug builds, false for release builds.
+Returns: `boolean` - True for debug builds, false for release builds.
 
 #### Example
 
-Exact example from [engine.lua](../blob/main/content/examples/engine.lua):
+Source: [engine.lua](../blob/main/content/examples/engine.lua)
 
 ```lua
 do
@@ -249,15 +347,23 @@ end
 
 ### lurek.engine.memoryUsage
 
-`lurek.engine.memoryUsage() -> table`
+#### Definition
+
+```lua
+--- Returns Lua VM memory usage as bytes and rounded kilobytes.
+---@return EngineMemoryUsageResult Table with `lua_bytes` and `lua_kb` fields.
+lurek.engine.memoryUsage = function() end
+```
+
+#### Description
 
 Returns Lua VM memory usage as bytes and rounded kilobytes.
 
-**Returns**: `table` - Table with `lua_bytes` and `lua_kb` fields.
+Returns: `table` - Table with `lua_bytes` and `lua_kb` fields.
 
 #### Example
 
-Exact example from [engine.lua](../blob/main/content/examples/engine.lua):
+Source: [engine.lua](../blob/main/content/examples/engine.lua)
 
 ```lua
 do
@@ -268,15 +374,23 @@ end
 
 ### lurek.engine.platform
 
-`lurek.engine.platform() -> string`
+#### Definition
+
+```lua
+--- Returns the current desktop operating system name.
+---@return string `windows`, `linux`, `macos`, or `unknown`.
+lurek.engine.platform = function() end
+```
+
+#### Description
 
 Returns the current desktop operating system name.
 
-**Returns**: `string` - `windows`, `linux`, `macos`, or `unknown`.
+Returns: `string` - `windows`, `linux`, `macos`, or `unknown`.
 
 #### Example
 
-Exact example from [engine.lua](../blob/main/content/examples/engine.lua):
+Source: [engine.lua](../blob/main/content/examples/engine.lua)
 
 ```lua
 do
@@ -287,17 +401,25 @@ end
 
 ### lurek.engine.setResourceBudget
 
-`lurek.engine.setResourceBudget(budget_bytes: integer)`
+#### Definition
+
+```lua
+--- Sets the resource memory budget used by resource statistics reporting.
+---@param budget_bytes number Resource budget in bytes.
+lurek.engine.setResourceBudget = function(budget_bytes) end
+```
+
+#### Description
 
 Sets the resource memory budget used by resource statistics reporting.
 
-**Parameters**
+Parameters:
 
 - `budget_bytes` (`integer`, required): Resource budget in bytes.
 
 #### Example
 
-Exact example from [engine.lua](../blob/main/content/examples/engine.lua):
+Source: [engine.lua](../blob/main/content/examples/engine.lua)
 
 ```lua
 do
@@ -308,15 +430,23 @@ end
 
 ### lurek.engine.uptime
 
-`lurek.engine.uptime() -> number`
+#### Definition
+
+```lua
+--- Returns total engine runtime accumulated by the main loop.
+---@return number Uptime in seconds.
+lurek.engine.uptime = function() end
+```
+
+#### Description
 
 Returns total engine runtime accumulated by the main loop.
 
-**Returns**: `number` - Uptime in seconds.
+Returns: `number` - Uptime in seconds.
 
 #### Example
 
-Exact example from [engine.lua](../blob/main/content/examples/engine.lua):
+Source: [engine.lua](../blob/main/content/examples/engine.lua)
 
 ```lua
 do

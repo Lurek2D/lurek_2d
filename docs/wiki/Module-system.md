@@ -14,33 +14,89 @@
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
   - [lurek.runtime.errorSnapshot](#lurekruntimeerrorsnapshot)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.runtime.getArch](#lurekruntimegetarch)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.runtime.getArgs](#lurekruntimegetargs)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.runtime.getBatchResults](#lurekruntimegetbatchresults)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.runtime.getClipboardText](#lurekruntimegetclipboardtext)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.runtime.getConfig](#lurekruntimegetconfig)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.runtime.getDebugOverlay](#lurekruntimegetdebugoverlay)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.runtime.getEnv](#lurekruntimegetenv)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.runtime.getInfo](#lurekruntimegetinfo)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.runtime.getLastError](#lurekruntimegetlasterror)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.runtime.getLogLevel](#lurekruntimegetloglevel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.runtime.getMemorySize](#lurekruntimegetmemorysize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.runtime.getMessage](#lurekruntimegetmessage)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.runtime.getMessageCount](#lurekruntimegetmessagecount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.runtime.getOS](#lurekruntimegetos)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.runtime.getPowerInfo](#lurekruntimegetpowerinfo)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.runtime.getPreferredLocales](#lurekruntimegetpreferredlocales)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.runtime.getProcessorCount](#lurekruntimegetprocessorcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.runtime.getVersion](#lurekruntimegetversion)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.runtime.hasMessage](#lurekruntimehasmessage)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.runtime.log](#lurekruntimelog)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.runtime.openURL](#lurekruntimeopenurl)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.runtime.parseArgs](#lurekruntimeparseargs)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.runtime.reloadConfig](#lurekruntimereloadconfig)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.runtime.runBatch](#lurekruntimerunbatch)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.runtime.setClipboardText](#lurekruntimesetclipboardtext)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.runtime.setDebugOverlay](#lurekruntimesetdebugoverlay)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.runtime.setLogLevel](#lurekruntimesetloglevel)
+    - [Definition](#definition)
+    - [Description](#description)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -99,19 +155,28 @@ lurek.runtime.getProcessorCount() -> number -- Returns the number of logical pro
 
 ### lurek.runtime.errorSnapshot
 
-`lurek.runtime.errorSnapshot(msg: string) -> string`
+#### Definition
+
+```lua
+--- Creates a JSON-encoded error snapshot from a message string, useful for diagnostics and error reporting.
+---@param msg string The error message to capture.
+---@return string JSON string containing the error snapshot with stack and context information.
+lurek.runtime.errorSnapshot = function(msg) end
+```
+
+#### Description
 
 Creates a JSON-encoded error snapshot from a message string, useful for diagnostics and error reporting.
 
-**Parameters**
+Parameters:
 
 - `msg` (`string`, required): The error message to capture.
 
-**Returns**: `string` - JSON string containing the error snapshot with stack and context information.
+Returns: `string` - JSON string containing the error snapshot with stack and context information.
 
 #### Example
 
-Exact example from [system.lua](../blob/main/content/examples/system.lua):
+Source: [system.lua](../blob/main/content/examples/system.lua)
 
 ```lua
 do
@@ -125,15 +190,23 @@ end
 
 ### lurek.runtime.getArch
 
-`lurek.runtime.getArch() -> string`
+#### Definition
+
+```lua
+--- Returns the CPU architecture of the host system.
+---@return string Architecture identifier (e.g. `"x86_64"`, `"aarch64"`).
+lurek.runtime.getArch = function() end
+```
+
+#### Description
 
 Returns the CPU architecture of the host system.
 
-**Returns**: `string` - Architecture identifier (e.g. `"x86_64"`, `"aarch64"`).
+Returns: `string` - Architecture identifier (e.g. `"x86_64"`, `"aarch64"`).
 
 #### Example
 
-Exact example from [system.lua](../blob/main/content/examples/system.lua):
+Source: [system.lua](../blob/main/content/examples/system.lua)
 
 ```lua
 do
@@ -143,15 +216,23 @@ end
 
 ### lurek.runtime.getArgs
 
-`lurek.runtime.getArgs() -> string[]`
+#### Definition
+
+```lua
+--- Returns the command-line arguments passed to the engine as a 1-indexed table of strings.
+---@return string[] Argument strings.
+lurek.runtime.getArgs = function() end
+```
+
+#### Description
 
 Returns the command-line arguments passed to the engine as a 1-indexed table of strings.
 
-**Returns**: `string[]` - Argument strings.
+Returns: `string[]` - Argument strings.
 
 #### Example
 
-Exact example from [system.lua](../blob/main/content/examples/system.lua):
+Source: [system.lua](../blob/main/content/examples/system.lua)
 
 ```lua
 do
@@ -162,19 +243,30 @@ end
 
 ### lurek.runtime.getBatchResults
 
-`lurek.runtime.getBatchResults(results: table) -> number`
+#### Definition
+
+```lua
+--- Summarizes batch results by counting passed, failed, and skipped tasks.
+---@param results table The results table returned by `runBatch`.
+---@return number a Count of passed tasks.
+---@return number b Count of failed tasks.
+---@return number c Count of skipped tasks.
+lurek.runtime.getBatchResults = function(results) end
+```
+
+#### Description
 
 Summarizes batch results by counting passed, failed, and skipped tasks.
 
-**Parameters**
+Parameters:
 
 - `results` (`table`, required): The results table returned by `runBatch`.
 
-**Returns**: `number` - Count of passed tasks.
+Returns: `number` - Count of passed tasks.
 
 #### Example
 
-Exact example from [system.lua](../blob/main/content/examples/system.lua):
+Source: [system.lua](../blob/main/content/examples/system.lua)
 
 ```lua
 do
@@ -185,15 +277,23 @@ end
 
 ### lurek.runtime.getClipboardText
 
-`lurek.runtime.getClipboardText() -> string`
+#### Definition
+
+```lua
+--- Reads the current text content from the system clipboard. Returns an empty string if the clipboard is unavailable or contains no text.
+---@return string The clipboard text, or `""` on failure.
+lurek.runtime.getClipboardText = function() end
+```
+
+#### Description
 
 Reads the current text content from the system clipboard. Returns an empty string if the clipboard is unavailable or contains no text.
 
-**Returns**: `string` - The clipboard text, or `""` on failure.
+Returns: `string` - The clipboard text, or `""` on failure.
 
 #### Example
 
-Exact example from [system.lua](../blob/main/content/examples/system.lua):
+Source: [system.lua](../blob/main/content/examples/system.lua)
 
 ```lua
 do
@@ -205,15 +305,23 @@ end
 
 ### lurek.runtime.getConfig
 
-`lurek.runtime.getConfig() -> table`
+#### Definition
+
+```lua
+--- Returns a table containing the current engine runtime configuration values.
+---@return RuntimeGetConfigResult Table with fields: `runtime_mode` (string), `physics_tick_rate` (number), `fixed_update_tick_rate` (number?), `frame_budget_warn_ms` (number?), `lua_callback_timeout_ms` (number?), `vsync` (boolean), `log_level` (string), `config_reload_revision` (number).
+lurek.runtime.getConfig = function() end
+```
+
+#### Description
 
 Returns a table containing the current engine runtime configuration values.
 
-**Returns**: `table` - Table with fields: `runtime_mode` (string), `physics_tick_rate` (number), `fixed_update_tick_rate` (number?), `frame_budget_warn_ms` (number?), `lua_callback_timeout_ms` (number?), `vsync` (boolean), `log_level` (string), `config_reload_revision` (number).
+Returns: `table` - Table with fields: `runtime_mode` (string), `physics_tick_rate` (number), `fixed_update_tick_rate` (number?), `frame_budget_warn_ms` (number?), `lua_callback_timeout_ms` (number?), `vsync` (boolean), `log_level` (string), `config_reload_revision` (number).
 
 #### Example
 
-Exact example from [system.lua](../blob/main/content/examples/system.lua):
+Source: [system.lua](../blob/main/content/examples/system.lua)
 
 ```lua
 do
@@ -225,15 +333,23 @@ end
 
 ### lurek.runtime.getDebugOverlay
 
-`lurek.runtime.getDebugOverlay() -> boolean`
+#### Definition
+
+```lua
+--- Returns whether the on-screen debug overlay is currently enabled.
+---@return boolean `true` if the debug overlay is visible.
+lurek.runtime.getDebugOverlay = function() end
+```
+
+#### Description
 
 Returns whether the on-screen debug overlay is currently enabled.
 
-**Returns**: `boolean` - `true` if the debug overlay is visible.
+Returns: `boolean` - `true` if the debug overlay is visible.
 
 #### Example
 
-Exact example from [system.lua](../blob/main/content/examples/system.lua):
+Source: [system.lua](../blob/main/content/examples/system.lua)
 
 ```lua
 do
@@ -246,19 +362,28 @@ end
 
 ### lurek.runtime.getEnv
 
-`lurek.runtime.getEnv(name: string) -> string`
+#### Definition
+
+```lua
+--- Reads an environment variable by name. Returns `nil` if the variable is not set.
+---@param name string The environment variable name.
+---@return string The variable value. Returns `nil` when the variable is not set.
+lurek.runtime.getEnv = function(name) end
+```
+
+#### Description
 
 Reads an environment variable by name. Returns `nil` if the variable is not set.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, required): The environment variable name.
 
-**Returns**: `string` - The variable value. Returns `nil` when the variable is not set.
+Returns: `string` - The variable value. Returns `nil` when the variable is not set.
 
 #### Example
 
-Exact example from [system.lua](../blob/main/content/examples/system.lua):
+Source: [system.lua](../blob/main/content/examples/system.lua)
 
 ```lua
 do
@@ -270,15 +395,23 @@ end
 
 ### lurek.runtime.getInfo
 
-`lurek.runtime.getInfo() -> table`
+#### Definition
+
+```lua
+--- Returns a table with comprehensive engine and host information.
+---@return RuntimeGetInfoResult Table with fields: `engine` (string), `version` (string), `lua_version` (string), `renderer` (string), `os` (string), `processors` (number), `memory` (number).
+lurek.runtime.getInfo = function() end
+```
+
+#### Description
 
 Returns a table with comprehensive engine and host information.
 
-**Returns**: `table` - Table with fields: `engine` (string), `version` (string), `lua_version` (string), `renderer` (string), `os` (string), `processors` (number), `memory` (number).
+Returns: `table` - Table with fields: `engine` (string), `version` (string), `lua_version` (string), `renderer` (string), `os` (string), `processors` (number), `memory` (number).
 
 #### Example
 
-Exact example from [system.lua](../blob/main/content/examples/system.lua):
+Source: [system.lua](../blob/main/content/examples/system.lua)
 
 ```lua
 do
@@ -291,15 +424,23 @@ end
 
 ### lurek.runtime.getLastError
 
-`lurek.runtime.getLastError() -> table`
+#### Definition
+
+```lua
+--- Returns the last error for Lua scripts in this module.
+---@return RuntimeGetLastErrorResult Table result returned by this call.
+lurek.runtime.getLastError = function() end
+```
+
+#### Description
 
 Returns the last error for Lua scripts in this module.
 
-**Returns**: `table` - Table result returned by this call.
+Returns: `table` - Table result returned by this call.
 
 #### Example
 
-Exact example from [system.lua](../blob/main/content/examples/system.lua):
+Source: [system.lua](../blob/main/content/examples/system.lua)
 
 ```lua
 do
@@ -311,15 +452,23 @@ end
 
 ### lurek.runtime.getLogLevel
 
-`lurek.runtime.getLogLevel() -> string`
+#### Definition
+
+```lua
+--- Returns the current engine log verbosity level as a string.
+---@return string Current log level: `"error"`, `"warn"`, `"info"`, `"debug"`, or `"trace"`.
+lurek.runtime.getLogLevel = function() end
+```
+
+#### Description
 
 Returns the current engine log verbosity level as a string.
 
-**Returns**: `string` - Current log level: `"error"`, `"warn"`, `"info"`, `"debug"`, or `"trace"`.
+Returns: `string` - Current log level: `"error"`, `"warn"`, `"info"`, `"debug"`, or `"trace"`.
 
 #### Example
 
-Exact example from [system.lua](../blob/main/content/examples/system.lua):
+Source: [system.lua](../blob/main/content/examples/system.lua)
 
 ```lua
 do
@@ -329,15 +478,23 @@ end
 
 ### lurek.runtime.getMemorySize
 
-`lurek.runtime.getMemorySize() -> number`
+#### Definition
+
+```lua
+--- Returns the total physical memory of the host system in megabytes.
+---@return number Total RAM in MB.
+lurek.runtime.getMemorySize = function() end
+```
+
+#### Description
 
 Returns the total physical memory of the host system in megabytes.
 
-**Returns**: `number` - Total RAM in MB.
+Returns: `number` - Total RAM in MB.
 
 #### Example
 
-Exact example from [system.lua](../blob/main/content/examples/system.lua):
+Source: [system.lua](../blob/main/content/examples/system.lua)
 
 ```lua
 do
@@ -347,19 +504,28 @@ end
 
 ### lurek.runtime.getMessage
 
-`lurek.runtime.getMessage(id: string) -> string`
+#### Definition
+
+```lua
+--- Resolves a message string by its identifier from the engine message catalog.
+---@param id string The message identifier to look up.
+---@return string The resolved message text. Returns `nil` when the identifier is not found.
+lurek.runtime.getMessage = function(id) end
+```
+
+#### Description
 
 Resolves a message string by its identifier from the engine message catalog.
 
-**Parameters**
+Parameters:
 
 - `id` (`string`, required): The message identifier to look up.
 
-**Returns**: `string` - The resolved message text. Returns `nil` when the identifier is not found.
+Returns: `string` - The resolved message text. Returns `nil` when the identifier is not found.
 
 #### Example
 
-Exact example from [system.lua](../blob/main/content/examples/system.lua):
+Source: [system.lua](../blob/main/content/examples/system.lua)
 
 ```lua
 do
@@ -371,15 +537,23 @@ end
 
 ### lurek.runtime.getMessageCount
 
-`lurek.runtime.getMessageCount() -> number`
+#### Definition
+
+```lua
+--- Returns the total number of messages registered in the engine message catalog.
+---@return number Count of registered message identifiers.
+lurek.runtime.getMessageCount = function() end
+```
+
+#### Description
 
 Returns the total number of messages registered in the engine message catalog.
 
-**Returns**: `number` - Count of registered message identifiers.
+Returns: `number` - Count of registered message identifiers.
 
 #### Example
 
-Exact example from [system.lua](../blob/main/content/examples/system.lua):
+Source: [system.lua](../blob/main/content/examples/system.lua)
 
 ```lua
 do
@@ -389,15 +563,23 @@ end
 
 ### lurek.runtime.getOS
 
-`lurek.runtime.getOS() -> string`
+#### Definition
+
+```lua
+--- Returns the name of the host operating system as a string.
+---@return string Operating system name: `"Windows"`, `"Linux"`, `"macOS"`, `"Android"`, `"iOS"`, or `"Unknown"`.
+lurek.runtime.getOS = function() end
+```
+
+#### Description
 
 Returns the name of the host operating system as a string.
 
-**Returns**: `string` - Operating system name: `"Windows"`, `"Linux"`, `"macOS"`, `"Android"`, `"iOS"`, or `"Unknown"`.
+Returns: `string` - Operating system name: `"Windows"`, `"Linux"`, `"macOS"`, `"Android"`, `"iOS"`, or `"Unknown"`.
 
 #### Example
 
-Exact example from [system.lua](../blob/main/content/examples/system.lua):
+Source: [system.lua](../blob/main/content/examples/system.lua)
 
 ```lua
 do
@@ -407,15 +589,25 @@ end
 
 ### lurek.runtime.getPowerInfo
 
-`lurek.runtime.getPowerInfo() -> string`
+#### Definition
+
+```lua
+--- Returns the current power supply state, battery percentage, and estimated time remaining.
+---@return string a Power state: `"unknown"`, `"battery"`, `"nobattery"`, `"charging"`, or `"charged"`.
+---@return number b Battery charge percentage from 0 to 100. This value may be `nil` when the platform does not provide battery data.
+---@return number c Estimated battery life remaining in seconds. This value may be `nil` when the platform does not provide battery data.
+lurek.runtime.getPowerInfo = function() end
+```
+
+#### Description
 
 Returns the current power supply state, battery percentage, and estimated time remaining.
 
-**Returns**: `string` - Power state: `"unknown"`, `"battery"`, `"nobattery"`, `"charging"`, or `"charged"`.
+Returns: `string` - Power state: `"unknown"`, `"battery"`, `"nobattery"`, `"charging"`, or `"charged"`.
 
 #### Example
 
-Exact example from [system.lua](../blob/main/content/examples/system.lua):
+Source: [system.lua](../blob/main/content/examples/system.lua)
 
 ```lua
 do
@@ -428,15 +620,23 @@ end
 
 ### lurek.runtime.getPreferredLocales
 
-`lurek.runtime.getPreferredLocales() -> string[]`
+#### Definition
+
+```lua
+--- Returns a list of the user's preferred locale identifiers from the operating system.
+---@return string[] Locale strings (e.g. `{"en_US", "pl_PL"}`). Falls back to `{"en_US"}` if detection fails.
+lurek.runtime.getPreferredLocales = function() end
+```
+
+#### Description
 
 Returns a list of the user's preferred locale identifiers from the operating system.
 
-**Returns**: `string[]` - Locale strings (e.g. `{"en_US", "pl_PL"}`). Falls back to `{"en_US"}` if detection fails.
+Returns: `string[]` - Locale strings (e.g. `{"en_US", "pl_PL"}`). Falls back to `{"en_US"}` if detection fails.
 
 #### Example
 
-Exact example from [system.lua](../blob/main/content/examples/system.lua):
+Source: [system.lua](../blob/main/content/examples/system.lua)
 
 ```lua
 do
@@ -450,15 +650,23 @@ end
 
 ### lurek.runtime.getProcessorCount
 
-`lurek.runtime.getProcessorCount() -> number`
+#### Definition
+
+```lua
+--- Returns the number of logical processors available on the host machine.
+---@return number Logical processor count (minimum 1).
+lurek.runtime.getProcessorCount = function() end
+```
+
+#### Description
 
 Returns the number of logical processors available on the host machine.
 
-**Returns**: `number` - Logical processor count (minimum 1).
+Returns: `number` - Logical processor count (minimum 1).
 
 #### Example
 
-Exact example from [system.lua](../blob/main/content/examples/system.lua):
+Source: [system.lua](../blob/main/content/examples/system.lua)
 
 ```lua
 do
@@ -469,15 +677,23 @@ end
 
 ### lurek.runtime.getVersion
 
-`lurek.runtime.getVersion() -> string`
+#### Definition
+
+```lua
+--- Returns the semantic version string of the Lurek2D engine.
+---@return string Engine version in `"MAJOR.MINOR.PATCH"` format.
+lurek.runtime.getVersion = function() end
+```
+
+#### Description
 
 Returns the semantic version string of the Lurek2D engine.
 
-**Returns**: `string` - Engine version in `"MAJOR.MINOR.PATCH"` format.
+Returns: `string` - Engine version in `"MAJOR.MINOR.PATCH"` format.
 
 #### Example
 
-Exact example from [system.lua](../blob/main/content/examples/system.lua):
+Source: [system.lua](../blob/main/content/examples/system.lua)
 
 ```lua
 do
@@ -488,19 +704,28 @@ end
 
 ### lurek.runtime.hasMessage
 
-`lurek.runtime.hasMessage(id: string) -> boolean`
+#### Definition
+
+```lua
+--- Checks whether a message identifier exists in the engine message catalog.
+---@param id string The message identifier to check.
+---@return boolean `true` if the message identifier is registered.
+lurek.runtime.hasMessage = function(id) end
+```
+
+#### Description
 
 Checks whether a message identifier exists in the engine message catalog.
 
-**Parameters**
+Parameters:
 
 - `id` (`string`, required): The message identifier to check.
 
-**Returns**: `boolean` - `true` if the message identifier is registered.
+Returns: `boolean` - `true` if the message identifier is registered.
 
 #### Example
 
-Exact example from [system.lua](../blob/main/content/examples/system.lua):
+Source: [system.lua](../blob/main/content/examples/system.lua)
 
 ```lua
 do
@@ -510,18 +735,27 @@ end
 
 ### lurek.runtime.log
 
-`lurek.runtime.log(level: string, message: string)`
+#### Definition
+
+```lua
+--- Writes a message to the engine log at the specified severity level.
+---@param level string Log level: `"error"`, `"warn"`, `"info"`, `"debug"`, or `"trace"`. Defaults to `"info"` if unrecognized.
+---@param message string The message text to log.
+lurek.runtime.log = function(level, message) end
+```
+
+#### Description
 
 Writes a message to the engine log at the specified severity level.
 
-**Parameters**
+Parameters:
 
 - `level` (`string`, required): Log level: `"error"`, `"warn"`, `"info"`, `"debug"`, or `"trace"`. Defaults to `"info"` if unrecognized.
 - `message` (`string`, required): The message text to log.
 
 #### Example
 
-Exact example from [system.lua](../blob/main/content/examples/system.lua):
+Source: [system.lua](../blob/main/content/examples/system.lua)
 
 ```lua
 do
@@ -531,19 +765,28 @@ end
 
 ### lurek.runtime.openURL
 
-`lurek.runtime.openURL(url: string) -> boolean`
+#### Definition
+
+```lua
+--- Opens a URL in the default system browser. Only `http://`, `https://`, and `mailto:` schemes are permitted.
+---@param url string The URL to open.
+---@return boolean `true` if the URL was accepted and the open command launched successfully.
+lurek.runtime.openURL = function(url) end
+```
+
+#### Description
 
 Opens a URL in the default system browser. Only `http://`, `https://`, and `mailto:` schemes are permitted.
 
-**Parameters**
+Parameters:
 
 - `url` (`string`, required): The URL to open.
 
-**Returns**: `boolean` - `true` if the URL was accepted and the open command launched successfully.
+Returns: `boolean` - `true` if the URL was accepted and the open command launched successfully.
 
 #### Example
 
-Exact example from [system.lua](../blob/main/content/examples/system.lua):
+Source: [system.lua](../blob/main/content/examples/system.lua)
 
 ```lua
 do
@@ -556,19 +799,28 @@ end
 
 ### lurek.runtime.parseArgs
 
-`lurek.runtime.parseArgs([args]: table) -> table`
+#### Definition
+
+```lua
+--- Parses command-line arguments into structured flags, options, and positional values. Supports `--key=value`, `--key value`, `-flag`, and `--` end-of-options.
+---@param args? table Optional table of argument strings. Uses `os.args` if omitted.
+---@return RuntimeParseArgsResult Table with fields: `flags` (table of boolean), `options` (table of string), `positional` (array of string).
+lurek.runtime.parseArgs = function(args) end
+```
+
+#### Description
 
 Parses command-line arguments into structured flags, options, and positional values. Supports `--key=value`, `--key value`, `-flag`, and `--` end-of-options.
 
-**Parameters**
+Parameters:
 
 - `args` (`table`, optional): Optional table of argument strings. Uses `os.args` if omitted.
 
-**Returns**: `table` - Table with fields: `flags` (table of boolean), `options` (table of string), `positional` (array of string).
+Returns: `table` - Table with fields: `flags` (table of boolean), `options` (table of string), `positional` (array of string).
 
 #### Example
 
-Exact example from [system.lua](../blob/main/content/examples/system.lua):
+Source: [system.lua](../blob/main/content/examples/system.lua)
 
 ```lua
 do
@@ -581,13 +833,20 @@ end
 
 ### lurek.runtime.reloadConfig
 
-`lurek.runtime.reloadConfig()`
+#### Definition
+
+```lua
+--- Requests a reload of the engine configuration from `conf.lua`. The reload is deferred until the next frame.
+lurek.runtime.reloadConfig = function() end
+```
+
+#### Description
 
 Requests a reload of the engine configuration from `conf.lua`. The reload is deferred until the next frame.
 
 #### Example
 
-Exact example from [system.lua](../blob/main/content/examples/system.lua):
+Source: [system.lua](../blob/main/content/examples/system.lua)
 
 ```lua
 do
@@ -600,20 +859,30 @@ end
 
 ### lurek.runtime.runBatch
 
-`lurek.runtime.runBatch(tasks: table, [opts]: table) -> table`
+#### Definition
+
+```lua
+--- Executes a table of named task functions sequentially, collecting pass/fail results and elapsed time for each.
+---@param tasks table Table mapping task names (string) to task functions (function).
+---@param opts? table Options table. Set `stopOnError = true` to skip remaining tasks after the first failure.
+---@return RuntimeRunBatchResult Table mapping each task name to a result table.
+lurek.runtime.runBatch = function(tasks, opts) end
+```
+
+#### Description
 
 Executes a table of named task functions sequentially, collecting pass/fail results and elapsed time for each.
 
-**Parameters**
+Parameters:
 
 - `tasks` (`table`, required): Table mapping task names (string) to task functions (function).
 - `opts` (`table`, optional): Options table. Set `stopOnError = true` to skip remaining tasks after the first failure.
 
-**Returns**: `table` - Table mapping each task name to a result table.
+Returns: `table` - Table mapping each task name to a result table.
 
 #### Example
 
-Exact example from [system.lua](../blob/main/content/examples/system.lua):
+Source: [system.lua](../blob/main/content/examples/system.lua)
 
 ```lua
 do
@@ -625,17 +894,25 @@ end
 
 ### lurek.runtime.setClipboardText
 
-`lurek.runtime.setClipboardText(text: string)`
+#### Definition
+
+```lua
+--- Copies a string to the system clipboard. Logs a warning if the clipboard is unavailable or the write fails.
+---@param text string The text to place on the clipboard.
+lurek.runtime.setClipboardText = function(text) end
+```
+
+#### Description
 
 Copies a string to the system clipboard. Logs a warning if the clipboard is unavailable or the write fails.
 
-**Parameters**
+Parameters:
 
 - `text` (`string`, required): The text to place on the clipboard.
 
 #### Example
 
-Exact example from [system.lua](../blob/main/content/examples/system.lua):
+Source: [system.lua](../blob/main/content/examples/system.lua)
 
 ```lua
 do
@@ -646,17 +923,25 @@ end
 
 ### lurek.runtime.setDebugOverlay
 
-`lurek.runtime.setDebugOverlay(enabled: boolean)`
+#### Definition
+
+```lua
+--- Enables or disables the on-screen debug overlay that shows FPS, draw calls, and other diagnostics.
+---@param enabled boolean `true` to show the debug overlay, `false` to hide it.
+lurek.runtime.setDebugOverlay = function(enabled) end
+```
+
+#### Description
 
 Enables or disables the on-screen debug overlay that shows FPS, draw calls, and other diagnostics.
 
-**Parameters**
+Parameters:
 
 - `enabled` (`boolean`, required): `true` to show the debug overlay, `false` to hide it.
 
 #### Example
 
-Exact example from [system.lua](../blob/main/content/examples/system.lua):
+Source: [system.lua](../blob/main/content/examples/system.lua)
 
 ```lua
 do
@@ -670,17 +955,25 @@ end
 
 ### lurek.runtime.setLogLevel
 
-`lurek.runtime.setLogLevel(level: string)`
+#### Definition
+
+```lua
+--- Sets the engine-wide log verbosity level at runtime.
+---@param level string Log level: `"error"`, `"warn"`, `"info"`, `"debug"`, or `"trace"`.
+lurek.runtime.setLogLevel = function(level) end
+```
+
+#### Description
 
 Sets the engine-wide log verbosity level at runtime.
 
-**Parameters**
+Parameters:
 
 - `level` (`string`, required): Log level: `"error"`, `"warn"`, `"info"`, `"debug"`, or `"trace"`.
 
 #### Example
 
-Exact example from [system.lua](../blob/main/content/examples/system.lua):
+Source: [system.lua](../blob/main/content/examples/system.lua)
 
 ```lua
 do

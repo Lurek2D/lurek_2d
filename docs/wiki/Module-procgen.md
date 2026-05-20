@@ -14,36 +14,94 @@
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
   - [lurek.procgen.biomeColor](#lurekprocgenbiomecolor)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.procgen.bspDungeon](#lurekprocgenbspdungeon)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.procgen.bspDungeonWithPrefabs](#lurekprocgenbspdungeonwithprefabs)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.procgen.cellularAutomata](#lurekprocgencellularautomata)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.procgen.floodFill](#lurekprocgenfloodfill)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.procgen.generateName](#lurekprocgengeneratename)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.procgen.generateNames](#lurekprocgengeneratenames)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.procgen.heightmap](#lurekprocgenheightmap)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.procgen.heightmapFromCellular](#lurekprocgenheightmapfromcellular)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.procgen.lsystem](#lurekprocgenlsystem)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.procgen.lsystemSegments](#lurekprocgenlsystemsegments)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.procgen.newBiomeClassifier](#lurekprocgennewbiomeclassifier)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.procgen.noiseMap](#lurekprocgennoisemap)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.procgen.noiseMapParallel](#lurekprocgennoisemapparallel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.procgen.noiseMapParallelSeeded](#lurekprocgennoisemapparallelseeded)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.procgen.perlinNoise](#lurekprocgenperlinnoise)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.procgen.poissonDisk](#lurekprocgenpoissondisk)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.procgen.roomsDungeon](#lurekprocgenroomsdungeon)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.procgen.roomsDungeonWithPrefabs](#lurekprocgenroomsdungeonwithprefabs)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.procgen.simplex2d](#lurekprocgensimplex2d)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.procgen.simplex3d](#lurekprocgensimplex3d)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.procgen.voronoi](#lurekprocgenvoronoi)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.procgen.wfcGenerate](#lurekprocgenwfcgenerate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.procgen.worldGraph](#lurekprocgenworldgraph)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔷 Module Types](#module-types)
   - [BiomeClassifier](#biomeclassifier)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
   - [BiomeClassifier:classify](#biomeclassifierclassify)
+    - [Definition](#definition)
+    - [Description](#description)
   - [BiomeClassifier:classifyMap](#biomeclassifierclassifymap)
+    - [Definition](#definition)
+    - [Description](#description)
   - [BiomeClassifier:type](#biomeclassifiertype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [BiomeClassifier:typeOf](#biomeclassifiertypeof)
+    - [Definition](#definition)
+    - [Description](#description)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -105,19 +163,31 @@ lurek.procgen.roomsDungeon([opts]: table) -> table -- Generate a dungeon by plac
 
 ### lurek.procgen.biomeColor
 
-`lurek.procgen.biomeColor(name: string) -> number`
+#### Definition
+
+```lua
+--- Get the default RGBA display color for a biome type name. Useful for minimap or debug visualization.
+---@param name string Biome name (e.g. "ocean", "desert", "taiga").
+---@return number a Red component (0–255).
+---@return number b Green component (0–255).
+---@return number c Blue component (0–255).
+---@return number d Alpha component (0–255).
+lurek.procgen.biomeColor = function(name) end
+```
+
+#### Description
 
 Get the default RGBA display color for a biome type name. Useful for minimap or debug visualization.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, required): Biome name (e.g. "ocean", "desert", "taiga").
 
-**Returns**: `number` - Red component (0–255).
+Returns: `number` - Red component (0–255).
 
 #### Example
 
-Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
+Source: [procgen.lua](../blob/main/content/examples/procgen.lua)
 
 ```lua
 do
@@ -128,19 +198,28 @@ end
 
 ### lurek.procgen.bspDungeon
 
-`lurek.procgen.bspDungeon([opts]: table) -> table`
+#### Definition
+
+```lua
+--- Generate a dungeon layout using Binary Space Partitioning. Produces non-overlapping rooms connected by corridors.
+---@param opts? table Options: width, height, min_size (minimum leaf size), max_depth (BSP tree depth), seed, padding.
+---@return ProcgenBspDungeonResult Table with .rooms (array of {x,y,w,h}) and .corridors (array of {x1,y1,x2,y2}).
+lurek.procgen.bspDungeon = function(opts) end
+```
+
+#### Description
 
 Generate a dungeon layout using Binary Space Partitioning. Produces non-overlapping rooms connected by corridors.
 
-**Parameters**
+Parameters:
 
 - `opts` (`table`, optional): Options: width, height, min_size (minimum leaf size), max_depth (BSP tree depth), seed, padding.
 
-**Returns**: `table` - Table with .rooms (array of {x,y,w,h}) and .corridors (array of {x1,y1,x2,y2}).
+Returns: `table` - Table with .rooms (array of {x,y,w,h}) and .corridors (array of {x1,y1,x2,y2}).
 
 #### Example
 
-Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
+Source: [procgen.lua](../blob/main/content/examples/procgen.lua)
 
 ```lua
 do
@@ -152,20 +231,31 @@ end
 
 ### lurek.procgen.bspDungeonWithPrefabs
 
-`lurek.procgen.bspDungeonWithPrefabs([opts]: table, prefabs: table) -> table`
+#### Definition
+
+```lua
+--- Generate a BSP dungeon and stamp named prefab rooms into suitable leaves. Returns dungeon layout plus prefab placement info.
+---@param opts? table BSP options: width, height, min_size, max_depth, seed, padding.
+---@param prefabs table Array of prefab definitions: {name, width, height}.
+---@return ProcgenBspDungeonWithPrefabsResult a Dungeon table with .rooms and .corridors.
+---@return ProcgenBspDungeonWithPrefabsResult b Array of placed prefabs: {name, x, y, width, height}.
+lurek.procgen.bspDungeonWithPrefabs = function(opts, prefabs) end
+```
+
+#### Description
 
 Generate a BSP dungeon and stamp named prefab rooms into suitable leaves. Returns dungeon layout plus prefab placement info.
 
-**Parameters**
+Parameters:
 
 - `opts` (`table`, optional): BSP options: width, height, min_size, max_depth, seed, padding.
 - `prefabs` (`table`, required): Array of prefab definitions: {name, width, height}.
 
-**Returns**: `table` - Dungeon table with .rooms and .corridors.
+Returns: `table` - Dungeon table with .rooms and .corridors.
 
 #### Example
 
-Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
+Source: [procgen.lua](../blob/main/content/examples/procgen.lua)
 
 ```lua
 do
@@ -177,21 +267,32 @@ end
 
 ### lurek.procgen.cellularAutomata
 
-`lurek.procgen.cellularAutomata(width: integer, height: integer, [opts]: table) -> integer[]`
+#### Definition
+
+```lua
+--- Generate a cave or organic map using cellular automata rules.
+---@param width number Grid width in cells.
+---@param height number Grid height in cells.
+---@param opts? table Options: fill (0.0–1.0 initial fill ratio), iterations, birth threshold, survive threshold, seed.
+---@return number[] Flat array of cell values (0=empty, 1=wall) with length width×height.
+lurek.procgen.cellularAutomata = function(width, height, opts) end
+```
+
+#### Description
 
 Generate a cave or organic map using cellular automata rules.
 
-**Parameters**
+Parameters:
 
 - `width` (`integer`, required): Grid width in cells.
 - `height` (`integer`, required): Grid height in cells.
 - `opts` (`table`, optional): Options: fill (0.0–1.0 initial fill ratio), iterations, birth threshold, survive threshold, seed.
 
-**Returns**: `integer[]` - Flat array of cell values (0=empty, 1=wall) with length width×height.
+Returns: `integer[]` - Flat array of cell values (0=empty, 1=wall) with length width×height.
 
 #### Example
 
-Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
+Source: [procgen.lua](../blob/main/content/examples/procgen.lua)
 
 ```lua
 do
@@ -203,11 +304,26 @@ end
 
 ### lurek.procgen.floodFill
 
-`lurek.procgen.floodFill(data: table, width: number, height: number, startX: number, startY: number, [threshold]: number, [above]: boolean) -> integer[]`
+#### Definition
+
+```lua
+--- Flood-fill a grid from a starting cell, marking all connected cells that pass a threshold test.
+---@param data table Flat array of u8 cell values (length = width*height).
+---@param width number Grid width.
+---@param height number Grid height.
+---@param startX number Start column (0-based).
+---@param startY number Start row (0-based).
+---@param threshold? number Value threshold (default 128).
+---@param above? boolean If true, fill cells >= threshold; if false (default), fill cells < threshold.
+---@return number[] Flat array of fill values (1=filled, 0=not filled) with length width×height.
+lurek.procgen.floodFill = function(data, width, height, startX, startY, threshold, above) end
+```
+
+#### Description
 
 Flood-fill a grid from a starting cell, marking all connected cells that pass a threshold test.
 
-**Parameters**
+Parameters:
 
 - `data` (`table`, required): Flat array of u8 cell values (length = width*height).
 - `width` (`number`, required): Grid width.
@@ -217,11 +333,11 @@ Flood-fill a grid from a starting cell, marking all connected cells that pass a 
 - `threshold` (`number`, optional): Value threshold (default 128).
 - `above` (`boolean`, optional): If true, fill cells >= threshold; if false (default), fill cells < threshold.
 
-**Returns**: `integer[]` - Flat array of fill values (1=filled, 0=not filled) with length width×height.
+Returns: `integer[]` - Flat array of fill values (1=filled, 0=not filled) with length width×height.
 
 #### Example
 
-Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
+Source: [procgen.lua](../blob/main/content/examples/procgen.lua)
 
 ```lua
 do
@@ -232,22 +348,34 @@ end
 
 ### lurek.procgen.generateName
 
-`lurek.procgen.generateName(samples: table, [minLen]: number, [maxLen]: number, [seed]: number) -> string`
+#### Definition
+
+```lua
+--- Generate a single random name based on a Markov chain trained from sample names. Great for NPC names, place names, or item names.
+---@param samples table Array of example name strings to learn from.
+---@param minLen? number Minimum output length in characters (default 3).
+---@param maxLen? number Maximum output length in characters (default 10).
+---@param seed? number RNG seed (default 0).
+---@return string A generated name.
+lurek.procgen.generateName = function(samples, minLen, maxLen, seed) end
+```
+
+#### Description
 
 Generate a single random name based on a Markov chain trained from sample names. Great for NPC names, place names, or item names.
 
-**Parameters**
+Parameters:
 
 - `samples` (`table`, required): Array of example name strings to learn from.
 - `minLen` (`number`, optional): Minimum output length in characters (default 3).
 - `maxLen` (`number`, optional): Maximum output length in characters (default 10).
 - `seed` (`number`, optional): RNG seed (default 0).
 
-**Returns**: `string` - A generated name.
+Returns: `string` - A generated name.
 
 #### Example
 
-Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
+Source: [procgen.lua](../blob/main/content/examples/procgen.lua)
 
 ```lua
 do
@@ -258,11 +386,24 @@ end
 
 ### lurek.procgen.generateNames
 
-`lurek.procgen.generateNames(samples: table, count: number, [minLen]: number, [maxLen]: number, [seed]: number) -> string[]`
+#### Definition
+
+```lua
+--- Generate multiple random names in one call using Markov chains trained from sample data.
+---@param samples table Array of example name strings to learn from.
+---@param count number Number of names to generate.
+---@param minLen? number Minimum output length (default 3).
+---@param maxLen? number Maximum output length (default 10).
+---@param seed? number RNG seed (default 0).
+---@return string[] Generated name strings.
+lurek.procgen.generateNames = function(samples, count, minLen, maxLen, seed) end
+```
+
+#### Description
 
 Generate multiple random names in one call using Markov chains trained from sample data.
 
-**Parameters**
+Parameters:
 
 - `samples` (`table`, required): Array of example name strings to learn from.
 - `count` (`number`, required): Number of names to generate.
@@ -270,11 +411,11 @@ Generate multiple random names in one call using Markov chains trained from samp
 - `maxLen` (`number`, optional): Maximum output length (default 10).
 - `seed` (`number`, optional): RNG seed (default 0).
 
-**Returns**: `string[]` - Generated name strings.
+Returns: `string[]` - Generated name strings.
 
 #### Example
 
-Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
+Source: [procgen.lua](../blob/main/content/examples/procgen.lua)
 
 ```lua
 do
@@ -286,19 +427,28 @@ end
 
 ### lurek.procgen.heightmap
 
-`lurek.procgen.heightmap([opts]: table) -> table`
+#### Definition
+
+```lua
+--- Generate a fractal heightmap using multi-octave noise with optional hydraulic erosion.
+---@param opts? table Options: width, height, scale, octaves, lacunarity, persistence, seed, erosion_passes.
+---@return ProcgenHeightmapResult Table with .cells (flat f32 array 0.0–1.0), .width, .height.
+lurek.procgen.heightmap = function(opts) end
+```
+
+#### Description
 
 Generate a fractal heightmap using multi-octave noise with optional hydraulic erosion.
 
-**Parameters**
+Parameters:
 
 - `opts` (`table`, optional): Options: width, height, scale, octaves, lacunarity, persistence, seed, erosion_passes.
 
-**Returns**: `table` - Table with .cells (flat f32 array 0.0–1.0), .width, .height.
+Returns: `table` - Table with .cells (flat f32 array 0.0–1.0), .width, .height.
 
 #### Example
 
-Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
+Source: [procgen.lua](../blob/main/content/examples/procgen.lua)
 
 ```lua
 do
@@ -310,22 +460,34 @@ end
 
 ### lurek.procgen.heightmapFromCellular
 
-`lurek.procgen.heightmapFromCellular(width: integer, height: integer, cells: table, [floorValue]: number) -> table`
+#### Definition
+
+```lua
+--- Convert a cellular automata grid into a heightmap by distance-transforming the floor cells.
+---@param width number Grid width.
+---@param height number Grid height.
+---@param cells table Flat u8 array from cellularAutomata.
+---@param floorValue? number Cell value treated as open floor (default 0).
+---@return ProcgenHeightmapFromCellularResult Table with .cells (flat f32 array), .width, .height.
+lurek.procgen.heightmapFromCellular = function(width, height, cells, floorValue) end
+```
+
+#### Description
 
 Convert a cellular automata grid into a heightmap by distance-transforming the floor cells.
 
-**Parameters**
+Parameters:
 
 - `width` (`integer`, required): Grid width.
 - `height` (`integer`, required): Grid height.
 - `cells` (`table`, required): Flat u8 array from cellularAutomata.
 - `floorValue` (`number`, optional): Cell value treated as open floor (default 0).
 
-**Returns**: `table` - Table with .cells (flat f32 array), .width, .height.
+Returns: `table` - Table with .cells (flat f32 array), .width, .height.
 
 #### Example
 
-Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
+Source: [procgen.lua](../blob/main/content/examples/procgen.lua)
 
 ```lua
 do
@@ -338,19 +500,28 @@ end
 
 ### lurek.procgen.lsystem
 
-`lurek.procgen.lsystem(opts: table) -> string`
+#### Definition
+
+```lua
+--- Expand an L-system grammar and return the resulting string. Useful for generating branching structures like trees, rivers, or cave networks.
+---@param opts table Options: axiom (starting string), iterations (expansion count), rules (table mapping single-char keys to replacement strings).
+---@return string The fully expanded L-system string.
+lurek.procgen.lsystem = function(opts) end
+```
+
+#### Description
 
 Expand an L-system grammar and return the resulting string. Useful for generating branching structures like trees, rivers, or cave networks.
 
-**Parameters**
+Parameters:
 
 - `opts` (`table`, required): Options: axiom (starting string), iterations (expansion count), rules (table mapping single-char keys to replacement strings).
 
-**Returns**: `string` - The fully expanded L-system string.
+Returns: `string` - The fully expanded L-system string.
 
 #### Example
 
-Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
+Source: [procgen.lua](../blob/main/content/examples/procgen.lua)
 
 ```lua
 do
@@ -362,21 +533,32 @@ end
 
 ### lurek.procgen.lsystemSegments
 
-`lurek.procgen.lsystemSegments(opts: table, [angle]: number, [step]: number) -> table`
+#### Definition
+
+```lua
+--- Expand an L-system and interpret the result as turtle-graphics commands, returning line segments.
+---@param opts table L-system options: axiom, iterations, rules.
+---@param angle? number Turn angle in degrees (default 25).
+---@param step? number Forward step length (default 1.0).
+---@return ProcgenLsystemSegmentsResult Array of segment tables {x1, y1, x2, y2}.
+lurek.procgen.lsystemSegments = function(opts, angle, step) end
+```
+
+#### Description
 
 Expand an L-system and interpret the result as turtle-graphics commands, returning line segments.
 
-**Parameters**
+Parameters:
 
 - `opts` (`table`, required): L-system options: axiom, iterations, rules.
 - `angle` (`number`, optional): Turn angle in degrees (default 25).
 - `step` (`number`, optional): Forward step length (default 1.0).
 
-**Returns**: `table` - Array of segment tables {x1, y1, x2, y2}.
+Returns: `table` - Array of segment tables {x1, y1, x2, y2}.
 
 #### Example
 
-Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
+Source: [procgen.lua](../blob/main/content/examples/procgen.lua)
 
 ```lua
 do
@@ -388,19 +570,28 @@ end
 
 ### lurek.procgen.newBiomeClassifier
 
-`lurek.procgen.newBiomeClassifier([opts]: table) -> BiomeClassifier`
+#### Definition
+
+```lua
+--- Create a BiomeClassifier object with custom threshold rules for mapping height/moisture/temperature to biome types.
+---@param opts? table Optional rules: ocean_threshold, coast_threshold, mountain_threshold, ice_cap_threshold, cold_temperature, warm_temperature, dry_moisture, wet_moisture.
+---@return BiomeClassifier A classifier object with :classify() and :classifyMap() methods.
+lurek.procgen.newBiomeClassifier = function(opts) end
+```
+
+#### Description
 
 Create a BiomeClassifier object with custom threshold rules for mapping height/moisture/temperature to biome types.
 
-**Parameters**
+Parameters:
 
 - `opts` (`table`, optional): Optional rules: ocean_threshold, coast_threshold, mountain_threshold, ice_cap_threshold, cold_temperature, warm_temperature, dry_moisture, wet_moisture.
 
-**Returns**: `BiomeClassifier` - A classifier object with :classify() and :classifyMap() methods.
+Returns: `BiomeClassifier` - A classifier object with :classify() and :classifyMap() methods.
 
 #### Example
 
-Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
+Source: [procgen.lua](../blob/main/content/examples/procgen.lua)
 
 ```lua
 do
@@ -411,21 +602,32 @@ end
 
 ### lurek.procgen.noiseMap
 
-`lurek.procgen.noiseMap(width: integer, height: integer, [opts]: table) -> number[]`
+#### Definition
+
+```lua
+--- Generate a 2D noise map with configurable scale, octaves, and offsets. Runs on a single thread.
+---@param width number Map width in cells.
+---@param height number Map height in cells.
+---@param opts? table Options: scale_x, scale_y, octaves, lacunarity, persistence, offset_x, offset_y, seed.
+---@return number[] F64 noise values (length = width*height).
+lurek.procgen.noiseMap = function(width, height, opts) end
+```
+
+#### Description
 
 Generate a 2D noise map with configurable scale, octaves, and offsets. Runs on a single thread.
 
-**Parameters**
+Parameters:
 
 - `width` (`integer`, required): Map width in cells.
 - `height` (`integer`, required): Map height in cells.
 - `opts` (`table`, optional): Options: scale_x, scale_y, octaves, lacunarity, persistence, offset_x, offset_y, seed.
 
-**Returns**: `number[]` - F64 noise values (length = width*height).
+Returns: `number[]` - F64 noise values (length = width*height).
 
 #### Example
 
-Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
+Source: [procgen.lua](../blob/main/content/examples/procgen.lua)
 
 ```lua
 do
@@ -437,21 +639,32 @@ end
 
 ### lurek.procgen.noiseMapParallel
 
-`lurek.procgen.noiseMapParallel(width: integer, height: integer, [opts]: table) -> number[]`
+#### Definition
+
+```lua
+--- Generate a 2D noise map using multiple threads for faster computation on large maps. Uses seed 0.
+---@param width number Map width in cells.
+---@param height number Map height in cells.
+---@param opts? table Options: scale_x, scale_y, octaves, lacunarity, persistence, offset_x, offset_y.
+---@return number[] F64 noise values (length = width*height).
+lurek.procgen.noiseMapParallel = function(width, height, opts) end
+```
+
+#### Description
 
 Generate a 2D noise map using multiple threads for faster computation on large maps. Uses seed 0.
 
-**Parameters**
+Parameters:
 
 - `width` (`integer`, required): Map width in cells.
 - `height` (`integer`, required): Map height in cells.
 - `opts` (`table`, optional): Options: scale_x, scale_y, octaves, lacunarity, persistence, offset_x, offset_y.
 
-**Returns**: `number[]` - F64 noise values (length = width*height).
+Returns: `number[]` - F64 noise values (length = width*height).
 
 #### Example
 
-Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
+Source: [procgen.lua](../blob/main/content/examples/procgen.lua)
 
 ```lua
 do
@@ -462,21 +675,32 @@ end
 
 ### lurek.procgen.noiseMapParallelSeeded
 
-`lurek.procgen.noiseMapParallelSeeded(width: integer, height: integer, [opts]: table) -> number[]`
+#### Definition
+
+```lua
+--- Generate a 2D noise map using multiple threads with a specific seed for reproducible results.
+---@param width number Map width in cells.
+---@param height number Map height in cells.
+---@param opts? table Options: scale_x, scale_y, octaves, lacunarity, persistence, offset_x, offset_y, seed.
+---@return number[] F64 noise values (length = width*height).
+lurek.procgen.noiseMapParallelSeeded = function(width, height, opts) end
+```
+
+#### Description
 
 Generate a 2D noise map using multiple threads with a specific seed for reproducible results.
 
-**Parameters**
+Parameters:
 
 - `width` (`integer`, required): Map width in cells.
 - `height` (`integer`, required): Map height in cells.
 - `opts` (`table`, optional): Options: scale_x, scale_y, octaves, lacunarity, persistence, offset_x, offset_y, seed.
 
-**Returns**: `number[]` - F64 noise values (length = width*height).
+Returns: `number[]` - F64 noise values (length = width*height).
 
 #### Example
 
-Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
+Source: [procgen.lua](../blob/main/content/examples/procgen.lua)
 
 ```lua
 do
@@ -487,22 +711,34 @@ end
 
 ### lurek.procgen.perlinNoise
 
-`lurek.procgen.perlinNoise(x: number, y: number, periodX: number, periodY: number) -> number`
+#### Definition
+
+```lua
+--- Sample periodic 2D Perlin noise at a given coordinate.
+---@param x number X coordinate to sample.
+---@param y number Y coordinate to sample.
+---@param periodX number Horizontal period for tiling.
+---@param periodY number Vertical period for tiling.
+---@return number Noise value in the range [-1, 1].
+lurek.procgen.perlinNoise = function(x, y, periodX, periodY) end
+```
+
+#### Description
 
 Sample periodic 2D Perlin noise at a given coordinate.
 
-**Parameters**
+Parameters:
 
 - `x` (`number`, required): X coordinate to sample.
 - `y` (`number`, required): Y coordinate to sample.
 - `periodX` (`number`, required): Horizontal period for tiling.
 - `periodY` (`number`, required): Vertical period for tiling.
 
-**Returns**: `number` - Noise value in the range [-1, 1].
+Returns: `number` - Noise value in the range [-1, 1].
 
 #### Example
 
-Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
+Source: [procgen.lua](../blob/main/content/examples/procgen.lua)
 
 ```lua
 do
@@ -515,11 +751,24 @@ end
 
 ### lurek.procgen.poissonDisk
 
-`lurek.procgen.poissonDisk(width: number, height: number, minDist: number, [maxAttempts]: integer, [seed]: integer) -> table`
+#### Definition
+
+```lua
+--- Generate evenly-spaced random points using Poisson disk sampling. Useful for placing trees, NPCs, or loot without clustering.
+---@param width number Area width.
+---@param height number Area height.
+---@param minDist number Minimum distance between any two points.
+---@param maxAttempts? number Rejection attempts per active point (default 30). Higher = denser fill.
+---@param seed? number RNG seed (default 0).
+---@return ProcgenPoissonDiskResult Array of {x, y} tables representing generated points.
+lurek.procgen.poissonDisk = function(width, height, minDist, maxAttempts, seed) end
+```
+
+#### Description
 
 Generate evenly-spaced random points using Poisson disk sampling. Useful for placing trees, NPCs, or loot without clustering.
 
-**Parameters**
+Parameters:
 
 - `width` (`number`, required): Area width.
 - `height` (`number`, required): Area height.
@@ -527,11 +776,11 @@ Generate evenly-spaced random points using Poisson disk sampling. Useful for pla
 - `maxAttempts` (`integer`, optional): Rejection attempts per active point (default 30). Higher = denser fill.
 - `seed` (`integer`, optional): RNG seed (default 0).
 
-**Returns**: `table` - Array of {x, y} tables representing generated points.
+Returns: `table` - Array of {x, y} tables representing generated points.
 
 #### Example
 
-Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
+Source: [procgen.lua](../blob/main/content/examples/procgen.lua)
 
 ```lua
 do
@@ -545,19 +794,28 @@ end
 
 ### lurek.procgen.roomsDungeon
 
-`lurek.procgen.roomsDungeon([opts]: table) -> table`
+#### Definition
+
+```lua
+--- Generate a dungeon by placing random non-overlapping rooms and connecting them with corridors. Also returns a full tile grid.
+---@param opts? table Options: width, height, max_rooms, min_room_size, max_room_size, seed.
+---@return ProcgenRoomsDungeonResult Table with .rooms ({x,y,w,h}[]), .corridors ({x1,y1,x2,y2}[]), .grid (flat u8[]), .width, .height.
+lurek.procgen.roomsDungeon = function(opts) end
+```
+
+#### Description
 
 Generate a dungeon by placing random non-overlapping rooms and connecting them with corridors. Also returns a full tile grid.
 
-**Parameters**
+Parameters:
 
 - `opts` (`table`, optional): Options: width, height, max_rooms, min_room_size, max_room_size, seed.
 
-**Returns**: `table` - Table with .rooms ({x,y,w,h}[]), .corridors ({x1,y1,x2,y2}[]), .grid (flat u8[]), .width, .height.
+Returns: `table` - Table with .rooms ({x,y,w,h}[]), .corridors ({x1,y1,x2,y2}[]), .grid (flat u8[]), .width, .height.
 
 #### Example
 
-Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
+Source: [procgen.lua](../blob/main/content/examples/procgen.lua)
 
 ```lua
 do
@@ -569,21 +827,33 @@ end
 
 ### lurek.procgen.roomsDungeonWithPrefabs
 
-`lurek.procgen.roomsDungeonWithPrefabs([opts]: table, prefabs: table, [stampValue]: number) -> table`
+#### Definition
+
+```lua
+--- Generate a rooms-based dungeon and place named prefabs into qualifying rooms. Prefabs can have custom shape masks.
+---@param opts? table Room generation options: width, height, max_rooms, min_room_size, max_room_size, seed.
+---@param prefabs table Array of prefab definitions: {name, width, height, mask (optional flat u8[])}.
+---@param stampValue? number Tile value written for prefab cells in the grid (default 3).
+---@return ProcgenRoomsDungeonWithPrefabsResult a Dungeon table with .rooms, .corridors, .grid, .width, .height.
+---@return ProcgenRoomsDungeonWithPrefabsResult b Array of placed prefabs: {name, x, y, width, height}.
+lurek.procgen.roomsDungeonWithPrefabs = function(opts, prefabs, stampValue) end
+```
+
+#### Description
 
 Generate a rooms-based dungeon and place named prefabs into qualifying rooms. Prefabs can have custom shape masks.
 
-**Parameters**
+Parameters:
 
 - `opts` (`table`, optional): Room generation options: width, height, max_rooms, min_room_size, max_room_size, seed.
 - `prefabs` (`table`, required): Array of prefab definitions: {name, width, height, mask (optional flat u8[])}.
 - `stampValue` (`number`, optional): Tile value written for prefab cells in the grid (default 3).
 
-**Returns**: `table` - Dungeon table with .rooms, .corridors, .grid, .width, .height.
+Returns: `table` - Dungeon table with .rooms, .corridors, .grid, .width, .height.
 
 #### Example
 
-Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
+Source: [procgen.lua](../blob/main/content/examples/procgen.lua)
 
 ```lua
 do
@@ -596,20 +866,30 @@ end
 
 ### lurek.procgen.simplex2d
 
-`lurek.procgen.simplex2d(x: number, y: number) -> number`
+#### Definition
+
+```lua
+--- Sample 2D simplex noise at a point. Returns a value roughly in [-1, 1].
+---@param x number X coordinate.
+---@param y number Y coordinate.
+---@return number Simplex noise value.
+lurek.procgen.simplex2d = function(x, y) end
+```
+
+#### Description
 
 Sample 2D simplex noise at a point. Returns a value roughly in [-1, 1].
 
-**Parameters**
+Parameters:
 
 - `x` (`number`, required): X coordinate.
 - `y` (`number`, required): Y coordinate.
 
-**Returns**: `number` - Simplex noise value.
+Returns: `number` - Simplex noise value.
 
 #### Example
 
-Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
+Source: [procgen.lua](../blob/main/content/examples/procgen.lua)
 
 ```lua
 do
@@ -620,21 +900,32 @@ end
 
 ### lurek.procgen.simplex3d
 
-`lurek.procgen.simplex3d(x: number, y: number, z: number) -> number`
+#### Definition
+
+```lua
+--- Sample 3D simplex noise at a point. The third axis can be used for animation or layering.
+---@param x number X coordinate.
+---@param y number Y coordinate.
+---@param z number Z coordinate (often time or layer index).
+---@return number Simplex noise value.
+lurek.procgen.simplex3d = function(x, y, z) end
+```
+
+#### Description
 
 Sample 3D simplex noise at a point. The third axis can be used for animation or layering.
 
-**Parameters**
+Parameters:
 
 - `x` (`number`, required): X coordinate.
 - `y` (`number`, required): Y coordinate.
 - `z` (`number`, required): Z coordinate (often time or layer index).
 
-**Returns**: `number` - Simplex noise value.
+Returns: `number` - Simplex noise value.
 
 #### Example
 
-Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
+Source: [procgen.lua](../blob/main/content/examples/procgen.lua)
 
 ```lua
 do
@@ -645,22 +936,36 @@ end
 
 ### lurek.procgen.voronoi
 
-`lurek.procgen.voronoi(width: integer, height: integer, points: table, [opts]: table) -> integer[]`
+#### Definition
+
+```lua
+--- Compute a Voronoi diagram from a set of seed points. Returns region ownership, distance-to-nearest, and distance-to-second-nearest for each cell.
+---@param width number Grid width.
+---@param height number Grid height.
+---@param points table Array of {x, y} seed points.
+---@param opts? table Options: warp_scale, warp_strength, seed for domain warping.
+---@return number[] a 1-based region indices (length = width*height).
+---@return number[] b Flat array of distances to nearest seed.
+---@return number[] c Flat array of distances to second-nearest seed.
+lurek.procgen.voronoi = function(width, height, points, opts) end
+```
+
+#### Description
 
 Compute a Voronoi diagram from a set of seed points. Returns region ownership, distance-to-nearest, and distance-to-second-nearest for each cell.
 
-**Parameters**
+Parameters:
 
 - `width` (`integer`, required): Grid width.
 - `height` (`integer`, required): Grid height.
 - `points` (`table`, required): Array of {x, y} seed points.
 - `opts` (`table`, optional): Options: warp_scale, warp_strength, seed for domain warping.
 
-**Returns**: `integer[]` - 1-based region indices (length = width*height).
+Returns: `integer[]` - 1-based region indices (length = width*height).
 
 #### Example
 
-Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
+Source: [procgen.lua](../blob/main/content/examples/procgen.lua)
 
 ```lua
 do
@@ -673,19 +978,28 @@ end
 
 ### lurek.procgen.wfcGenerate
 
-`lurek.procgen.wfcGenerate(opts: table) -> table`
+#### Definition
+
+```lua
+--- Run Wave Function Collapse to generate a grid of tile IDs satisfying adjacency constraints.
+---@param opts table Options: width, height, seed, max_attempts, tiles (array of {id, weight}), adjacencies (map of tile_id -> allowed neighbor IDs[]).
+---@return ProcgenWfcGenerateResult Table with .cells (flat array of tile IDs, 0 if unsolved), .width, .height.
+lurek.procgen.wfcGenerate = function(opts) end
+```
+
+#### Description
 
 Run Wave Function Collapse to generate a grid of tile IDs satisfying adjacency constraints.
 
-**Parameters**
+Parameters:
 
 - `opts` (`table`, required): Options: width, height, seed, max_attempts, tiles (array of {id, weight}), adjacencies (map of tile_id -> allowed neighbor IDs[]).
 
-**Returns**: `table` - Table with .cells (flat array of tile IDs, 0 if unsolved), .width, .height.
+Returns: `table` - Table with .cells (flat array of tile IDs, 0 if unsolved), .width, .height.
 
 #### Example
 
-Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
+Source: [procgen.lua](../blob/main/content/examples/procgen.lua)
 
 ```lua
 do
@@ -697,22 +1011,34 @@ end
 
 ### lurek.procgen.worldGraph
 
-`lurek.procgen.worldGraph(width: number, height: number, regionCount: integer, [seed]: integer) -> table`
+#### Definition
+
+```lua
+--- Generate a connected world graph with named regions and weighted edges. Useful for overworld maps, trade routes, or quest connectivity.
+---@param width number World area width.
+---@param height number World area height.
+---@param regionCount number Number of regions to place.
+---@param seed? number RNG seed (default 0).
+---@return ProcgenWorldGraphResult Table with regions and edges arrays.
+lurek.procgen.worldGraph = function(width, height, regionCount, seed) end
+```
+
+#### Description
 
 Generate a connected world graph with named regions and weighted edges. Useful for overworld maps, trade routes, or quest connectivity.
 
-**Parameters**
+Parameters:
 
 - `width` (`number`, required): World area width.
 - `height` (`number`, required): World area height.
 - `regionCount` (`integer`, required): Number of regions to place.
 - `seed` (`integer`, optional): RNG seed (default 0).
 
-**Returns**: `table` - Table with regions and edges arrays.
+Returns: `table` - Table with regions and edges arrays.
 
 #### Example
 
-Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
+Source: [procgen.lua](../blob/main/content/examples/procgen.lua)
 
 ```lua
 do
@@ -729,9 +1055,7 @@ end
 
 ### BiomeClassifier
 
-Lua-visible wrapper around the biome classification engine, used to assign biome types based on height, moisture, and temperature.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-visible wrapper around the biome classification engine, used to assign biome types based on height, moisture, and temperature.
@@ -739,9 +1063,13 @@ Lua-visible wrapper around the biome classification engine, used to assign biome
 BiomeClassifier = {}
 ```
 
+#### Description
+
+Lua-visible wrapper around the biome classification engine, used to assign biome types based on height, moisture, and temperature.
+
 #### Example
 
-Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
+Source: [procgen.lua](../blob/main/content/examples/procgen.lua)
 
 ```lua
 do
@@ -757,19 +1085,7 @@ end
 
 ### BiomeClassifier:classify
 
-`BiomeClassifier:classify(height: number, moisture: number, temperature: number) -> string`
-
-Classify a single point into a biome type based on its environmental parameters.
-
-**Parameters**
-
-- `height` (`number`, required): Elevation value (0.0–1.0) of the terrain point.
-- `moisture` (`number`, required): Moisture level (0.0–1.0) at the point.
-- `temperature` (`number`, required): Temperature value (0.0–1.0) at the point.
-
-**Returns**: `string` - Biome name such as "ocean", "desert", "grassland", "taiga", etc.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Classify a single point into a biome type based on its environmental parameters.
@@ -780,9 +1096,21 @@ Classify a single point into a biome type based on its environmental parameters.
 function BiomeClassifier:classify(height, moisture, temperature) end
 ```
 
+#### Description
+
+Classify a single point into a biome type based on its environmental parameters.
+
+Parameters:
+
+- `height` (`number`, required): Elevation value (0.0–1.0) of the terrain point.
+- `moisture` (`number`, required): Moisture level (0.0–1.0) at the point.
+- `temperature` (`number`, required): Temperature value (0.0–1.0) at the point.
+
+Returns: `string` - Biome name such as "ocean", "desert", "grassland", "taiga", etc.
+
 #### Example
 
-Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
+Source: [procgen.lua](../blob/main/content/examples/procgen.lua)
 
 ```lua
 do
@@ -793,21 +1121,7 @@ end
 
 ### BiomeClassifier:classifyMap
 
-`BiomeClassifier:classifyMap(width: integer, height: integer, heights: table, moisture: table, [temperature]: table) -> string[]`
-
-Classify an entire grid of points into biome types in bulk.
-
-**Parameters**
-
-- `width` (`integer`, required): Grid width in cells.
-- `height` (`integer`, required): Grid height in cells.
-- `heights` (`table`, required): Flat array of height values (length = width*height).
-- `moisture` (`table`, required): Flat array of moisture values (length = width*height).
-- `temperature` (`table`, optional): Optional flat array of temperature values. If omitted, temperature is ignored.
-
-**Returns**: `string[]` - Biome name strings (length = width*height).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Classify an entire grid of points into biome types in bulk.
@@ -820,9 +1134,23 @@ Classify an entire grid of points into biome types in bulk.
 function BiomeClassifier:classifyMap(width, height, heights, moisture, temperature) end
 ```
 
+#### Description
+
+Classify an entire grid of points into biome types in bulk.
+
+Parameters:
+
+- `width` (`integer`, required): Grid width in cells.
+- `height` (`integer`, required): Grid height in cells.
+- `heights` (`table`, required): Flat array of height values (length = width*height).
+- `moisture` (`table`, required): Flat array of moisture values (length = width*height).
+- `temperature` (`table`, optional): Optional flat array of temperature values. If omitted, temperature is ignored.
+
+Returns: `string[]` - Biome name strings (length = width*height).
+
 #### Example
 
-Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
+Source: [procgen.lua](../blob/main/content/examples/procgen.lua)
 
 ```lua
 do
@@ -834,13 +1162,7 @@ end
 
 ### BiomeClassifier:type
 
-`BiomeClassifier:type() -> string`
-
-Returns the type name of this object.
-
-**Returns**: `string` - Always returns "BiomeClassifier".
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this object.
@@ -848,9 +1170,15 @@ Returns the type name of this object.
 function BiomeClassifier:type() end
 ```
 
+#### Description
+
+Returns the type name of this object.
+
+Returns: `string` - Always returns "BiomeClassifier".
+
 #### Example
 
-Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
+Source: [procgen.lua](../blob/main/content/examples/procgen.lua)
 
 ```lua
 do
@@ -861,17 +1189,7 @@ end
 
 ### BiomeClassifier:typeOf
 
-`BiomeClassifier:typeOf(name: string) -> boolean`
-
-Check whether this object matches a given type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to test (e.g. "BiomeClassifier" or "Object").
-
-**Returns**: `boolean` - True if the object is of the specified type.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Check whether this object matches a given type name.
@@ -880,9 +1198,19 @@ Check whether this object matches a given type name.
 function BiomeClassifier:typeOf(name) end
 ```
 
+#### Description
+
+Check whether this object matches a given type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to test (e.g. "BiomeClassifier" or "Object").
+
+Returns: `boolean` - True if the object is of the specified type.
+
 #### Example
 
-Exact example from [procgen.lua](../blob/main/content/examples/procgen.lua):
+Source: [procgen.lua](../blob/main/content/examples/procgen.lua)
 
 ```lua
 do

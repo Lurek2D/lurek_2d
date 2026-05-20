@@ -14,144 +14,418 @@
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
   - [lurek.dataframe.fromBinary](#lurekdataframefrombinary)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.dataframe.fromCSV](#lurekdataframefromcsv)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.dataframe.fromJSON](#lurekdataframefromjson)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.dataframe.fromRows](#lurekdataframefromrows)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.dataframe.fromTable](#lurekdataframefromtable)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.dataframe.fromVec](#lurekdataframefromvec)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.dataframe.newDatabase](#lurekdataframenewdatabase)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.dataframe.newDataFrame](#lurekdataframenewdataframe)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.dataframe.random](#lurekdataframerandom)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.dataframe.toVec](#lurekdataframetovec)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔷 Module Types](#module-types)
   - [LDatabase](#ldatabase)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame](#ldataframe)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGroupedFrame](#lgroupedframe)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLazyQuery](#llazyquery)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVecFrame](#lvecframe)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
   - [LDatabase:addTable](#ldatabaseaddtable)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDatabase:clear](#ldatabaseclear)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDatabase:getTable](#ldatabasegettable)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDatabase:hasTable](#ldatabasehastable)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDatabase:listTables](#ldatabaselisttables)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDatabase:merge](#ldatabasemerge)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDatabase:query](#ldatabasequery)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDatabase:removeTable](#ldatabaseremovetable)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDatabase:tableCount](#ldatabasetablecount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDatabase:toJSON](#ldatabasetojson)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDatabase:type](#ldatabasetype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDatabase:typeOf](#ldatabasetypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:addColumn](#ldataframeaddcolumn)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:addRow](#ldataframeaddrow)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:addRowBatch](#ldataframeaddrowbatch)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:apply](#ldataframeapply)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:clone](#ldataframeclone)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:columns](#ldataframecolumns)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:corr](#ldataframecorr)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:correlationMatrix](#ldataframecorrelationmatrix)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:count](#ldataframecount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:countBy](#ldataframecountby)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:describe](#ldataframedescribe)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:dropNil](#ldataframedropnil)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:entropy](#ldataframeentropy)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:fillNil](#ldataframefillnil)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:filter](#ldataframefilter)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:getColumn](#ldataframegetcolumn)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:getColumnAsF64](#ldataframegetcolumnasf64)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:getRow](#ldataframegetrow)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:getValue](#ldataframegetvalue)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:groupAgg](#ldataframegroupagg)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:groupBy](#ldataframegroupby)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:groupByObj](#ldataframegroupbyobj)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:head](#ldataframehead)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:join](#ldataframejoin)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:lazy](#ldataframelazy)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:max](#ldataframemax)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:mean](#ldataframemean)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:median](#ldataframemedian)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:merge](#ldataframemerge)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:min](#ldataframemin)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:modeVal](#ldataframemodeval)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:ncols](#ldataframencols)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:normalizeCol](#ldataframenormalizecol)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:nrows](#ldataframenrows)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:outliers](#ldataframeoutliers)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:pivot](#ldataframepivot)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:pivotTable](#ldataframepivottable)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:query](#ldataframequery)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:rank](#ldataframerank)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:removeColumn](#ldataframeremovecolumn)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:removeRow](#ldataframeremoverow)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:rename](#ldataframerename)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:rollingMean](#ldataframerollingmean)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:rollingSum](#ldataframerollingsum)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:rows](#ldataframerows)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:sample](#ldataframesample)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:select](#ldataframeselect)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:setColumnFromF64](#ldataframesetcolumnfromf64)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:setValue](#ldataframesetvalue)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:slice](#ldataframeslice)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:sort](#ldataframesort)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:stddev](#ldataframestddev)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:sum](#ldataframesum)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:tail](#ldataframetail)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:toBinary](#ldataframetobinary)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:toCSV](#ldataframetocsv)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:toJSON](#ldataframetojson)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:toString](#ldataframetostring)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:toTable](#ldataframetotable)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:type](#ldataframetype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:typeOf](#ldataframetypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:unique](#ldataframeunique)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:variance](#ldataframevariance)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:withCumsum](#ldataframewithcumsum)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:withEval](#ldataframewitheval)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:withPctChange](#ldataframewithpctchange)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:withRank](#ldataframewithrank)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:withRollingMax](#ldataframewithrollingmax)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:withRollingMean](#ldataframewithrollingmean)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:withRollingMin](#ldataframewithrollingmin)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:withRollingSum](#ldataframewithrollingsum)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDataFrame:zscoreCol](#ldataframezscorecol)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGroupedFrame:aggregate](#lgroupedframeaggregate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGroupedFrame:type](#lgroupedframetype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGroupedFrame:typeOf](#lgroupedframetypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLazyQuery:collect](#llazyquerycollect)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLazyQuery:dropNil](#llazyquerydropnil)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLazyQuery:filter](#llazyqueryfilter)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLazyQuery:head](#llazyqueryhead)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLazyQuery:limit](#llazyquerylimit)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLazyQuery:select](#llazyqueryselect)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLazyQuery:slice](#llazyqueryslice)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLazyQuery:sort](#llazyquerysort)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLazyQuery:tail](#llazyquerytail)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLazyQuery:type](#llazyquerytype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LLazyQuery:typeOf](#llazyquerytypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVecFrame:applyMask](#lvecframeapplymask)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVecFrame:colAbs](#lvecframecolabs)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVecFrame:colAdd](#lvecframecoladd)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVecFrame:colCast](#lvecframecolcast)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVecFrame:colCeil](#lvecframecolceil)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVecFrame:colClamp](#lvecframecolclamp)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVecFrame:colDiv](#lvecframecoldiv)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVecFrame:colFloor](#lvecframecolfloor)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVecFrame:colMul](#lvecframecolmul)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVecFrame:colNeg](#lvecframecolneg)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVecFrame:colOp](#lvecframecolop)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVecFrame:colSqrt](#lvecframecolsqrt)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVecFrame:colSub](#lvecframecolsub)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVecFrame:colType](#lvecframecoltype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVecFrame:columns](#lvecframecolumns)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVecFrame:filterMask](#lvecframefiltermask)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVecFrame:ncols](#lvecframencols)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVecFrame:nrows](#lvecframenrows)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVecFrame:parReduce](#lvecframeparreduce)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVecFrame:parScalarOp](#lvecframeparscalarop)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVecFrame:reduce](#lvecframereduce)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVecFrame:toDataFrame](#lvecframetodataframe)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVecFrame:type](#lvecframetype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LVecFrame:typeOf](#lvecframetypeof)
+    - [Definition](#definition)
+    - [Description](#description)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -208,19 +482,28 @@ lurek.dataframe.toVec(df: LDataFrame) -> LVecFrame -- Converts a dataframe to a 
 
 ### lurek.dataframe.fromBinary
 
-`lurek.dataframe.fromBinary(s: string) -> LDataFrame`
+#### Definition
+
+```lua
+--- Parses a dataframe from binary data.
+---@param s string Binary dataframe payload.
+---@return LDataFrame New dataframe handle.
+lurek.dataframe.fromBinary = function(s) end
+```
+
+#### Description
 
 Parses a dataframe from binary data.
 
-**Parameters**
+Parameters:
 
 - `s` (`string`, required): Binary dataframe payload.
 
-**Returns**: `LDataFrame` - New dataframe handle.
+Returns: `LDataFrame` - New dataframe handle.
 
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -233,19 +516,28 @@ end
 
 ### lurek.dataframe.fromCSV
 
-`lurek.dataframe.fromCSV(s: string) -> LDataFrame`
+#### Definition
+
+```lua
+--- Parses a dataframe from CSV text. This function is exposed to Lua scripts.
+---@param s string CSV text.
+---@return LDataFrame New dataframe handle.
+lurek.dataframe.fromCSV = function(s) end
+```
+
+#### Description
 
 Parses a dataframe from CSV text. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `s` (`string`, required): CSV text.
 
-**Returns**: `LDataFrame` - New dataframe handle.
+Returns: `LDataFrame` - New dataframe handle.
 
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -257,19 +549,28 @@ end
 
 ### lurek.dataframe.fromJSON
 
-`lurek.dataframe.fromJSON(s: string) -> LDataFrame`
+#### Definition
+
+```lua
+--- Parses a dataframe from JSON text. This function is exposed to Lua scripts.
+---@param s string JSON text.
+---@return LDataFrame New dataframe handle.
+lurek.dataframe.fromJSON = function(s) end
+```
+
+#### Description
 
 Parses a dataframe from JSON text. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `s` (`string`, required): JSON text.
 
-**Returns**: `LDataFrame` - New dataframe handle.
+Returns: `LDataFrame` - New dataframe handle.
 
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -281,20 +582,30 @@ end
 
 ### lurek.dataframe.fromRows
 
-`lurek.dataframe.fromRows(columns_tbl: table, rows_tbl: table) -> LDataFrame`
+#### Definition
+
+```lua
+--- Creates a dataframe from column names and array-style rows.
+---@param columns_tbl table Array table of column names.
+---@param rows_tbl table Array table of row arrays.
+---@return LDataFrame New dataframe handle.
+lurek.dataframe.fromRows = function(columns_tbl, rows_tbl) end
+```
+
+#### Description
 
 Creates a dataframe from column names and array-style rows.
 
-**Parameters**
+Parameters:
 
 - `columns_tbl` (`table`, required): Array table of column names.
 - `rows_tbl` (`table`, required): Array table of row arrays.
 
-**Returns**: `LDataFrame` - New dataframe handle.
+Returns: `LDataFrame` - New dataframe handle.
 
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -308,19 +619,28 @@ end
 
 ### lurek.dataframe.fromTable
 
-`lurek.dataframe.fromTable(rows: table) -> LDataFrame`
+#### Definition
+
+```lua
+--- Creates a dataframe from an array table of row tables.
+---@param rows table Array of row tables keyed by column name.
+---@return LDataFrame New dataframe handle.
+lurek.dataframe.fromTable = function(rows) end
+```
+
+#### Description
 
 Creates a dataframe from an array table of row tables.
 
-**Parameters**
+Parameters:
 
 - `rows` (`table`, required): Array of row tables keyed by column name.
 
-**Returns**: `LDataFrame` - New dataframe handle.
+Returns: `LDataFrame` - New dataframe handle.
 
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -334,19 +654,28 @@ end
 
 ### lurek.dataframe.fromVec
 
-`lurek.dataframe.fromVec(vf: LVecFrame) -> LDataFrame`
+#### Definition
+
+```lua
+--- Converts a vectorized frame to a dataframe.
+---@param vf LVecFrame Vectorized frame handle to convert.
+---@return LDataFrame New dataframe handle.
+lurek.dataframe.fromVec = function(vf) end
+```
+
+#### Description
 
 Converts a vectorized frame to a dataframe.
 
-**Parameters**
+Parameters:
 
 - `vf` (`LVecFrame`, required): Vectorized frame handle to convert.
 
-**Returns**: `LDataFrame` - New dataframe handle.
+Returns: `LDataFrame` - New dataframe handle.
 
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -359,15 +688,23 @@ end
 
 ### lurek.dataframe.newDatabase
 
-`lurek.dataframe.newDatabase() -> LDatabase`
+#### Definition
+
+```lua
+--- Creates an empty dataframe database.
+---@return LDatabase New database handle.
+lurek.dataframe.newDatabase = function() end
+```
+
+#### Description
 
 Creates an empty dataframe database.
 
-**Returns**: `LDatabase` - New database handle.
+Returns: `LDatabase` - New database handle.
 
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -378,15 +715,23 @@ end
 
 ### lurek.dataframe.newDataFrame
 
-`lurek.dataframe.newDataFrame() -> LDataFrame`
+#### Definition
+
+```lua
+--- Creates an empty dataframe. This function is exposed to Lua scripts.
+---@return LDataFrame New empty dataframe handle.
+lurek.dataframe.newDataFrame = function() end
+```
+
+#### Description
 
 Creates an empty dataframe. This function is exposed to Lua scripts.
 
-**Returns**: `LDataFrame` - New empty dataframe handle.
+Returns: `LDataFrame` - New empty dataframe handle.
 
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -397,21 +742,32 @@ end
 
 ### lurek.dataframe.random
 
-`lurek.dataframe.random(defs_tbl: table, n: integer, [seed]: integer) -> LDataFrame`
+#### Definition
+
+```lua
+--- Creates a random dataframe from column definitions.
+---@param defs_tbl table Array table of `{name, hint}` column definitions.
+---@param n number Number of rows to generate.
+---@param seed? number Optional random seed.
+---@return LDataFrame New random dataframe handle.
+lurek.dataframe.random = function(defs_tbl, n, seed) end
+```
+
+#### Description
 
 Creates a random dataframe from column definitions.
 
-**Parameters**
+Parameters:
 
 - `defs_tbl` (`table`, required): Array table of `{name, hint}` column definitions.
 - `n` (`integer`, required): Number of rows to generate.
 - `seed` (`integer`, optional): Optional random seed.
 
-**Returns**: `LDataFrame` - New random dataframe handle.
+Returns: `LDataFrame` - New random dataframe handle.
 
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -422,19 +778,28 @@ end
 
 ### lurek.dataframe.toVec
 
-`lurek.dataframe.toVec(df: LDataFrame) -> LVecFrame`
+#### Definition
+
+```lua
+--- Converts a dataframe to a vectorized frame.
+---@param df LDataFrame Dataframe handle to convert.
+---@return LVecFrame New vectorized frame handle.
+lurek.dataframe.toVec = function(df) end
+```
+
+#### Description
 
 Converts a dataframe to a vectorized frame.
 
-**Parameters**
+Parameters:
 
 - `df` (`LDataFrame`, required): Dataframe handle to convert.
 
-**Returns**: `LVecFrame` - New vectorized frame handle.
+Returns: `LVecFrame` - New vectorized frame handle.
 
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -451,9 +816,7 @@ end
 
 ### LDatabase
 
-Lua-side in-memory database containing named dataframes.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side in-memory database containing named dataframes.
@@ -461,9 +824,13 @@ Lua-side in-memory database containing named dataframes.
 LDatabase = {}
 ```
 
+#### Description
+
+Lua-side in-memory database containing named dataframes.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -474,9 +841,7 @@ end
 
 ### LDataFrame
 
-Lua-side dataframe handle for tabular data with named columns and typed cells.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side dataframe handle for tabular data with named columns and typed cells.
@@ -484,9 +849,13 @@ Lua-side dataframe handle for tabular data with named columns and typed cells.
 LDataFrame = {}
 ```
 
+#### Description
+
+Lua-side dataframe handle for tabular data with named columns and typed cells.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -499,9 +868,7 @@ end
 
 ### LGroupedFrame
 
-Lua-side grouped dataframe object containing group keys and subframes.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side grouped dataframe object containing group keys and subframes.
@@ -509,9 +876,13 @@ Lua-side grouped dataframe object containing group keys and subframes.
 LGroupedFrame = {}
 ```
 
+#### Description
+
+Lua-side grouped dataframe object containing group keys and subframes.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -525,9 +896,7 @@ end
 
 ### LLazyQuery
 
-Lua-side lazy dataframe query pipeline.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side lazy dataframe query pipeline.
@@ -535,9 +904,13 @@ Lua-side lazy dataframe query pipeline.
 LLazyQuery = {}
 ```
 
+#### Description
+
+Lua-side lazy dataframe query pipeline.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -549,9 +922,7 @@ end
 
 ### LVecFrame
 
-Lua-side vectorized dataframe handle for numeric column operations.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side vectorized dataframe handle for numeric column operations.
@@ -559,9 +930,13 @@ Lua-side vectorized dataframe handle for numeric column operations.
 LVecFrame = {}
 ```
 
+#### Description
+
+Lua-side vectorized dataframe handle for numeric column operations.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -578,16 +953,7 @@ end
 
 ### LDatabase:addTable
 
-`LDatabase:addTable(name: string, df_ud: LDataFrame)`
-
-Adds or replaces a named dataframe table in the database.
-
-**Parameters**
-
-- `name` (`string`, required): Table name.
-- `df_ud` (`LDataFrame`, required): Dataframe handle copied into the database.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds or replaces a named dataframe table in the database.
@@ -596,9 +962,18 @@ Adds or replaces a named dataframe table in the database.
 function LDatabase:addTable(name, df_ud) end
 ```
 
+#### Description
+
+Adds or replaces a named dataframe table in the database.
+
+Parameters:
+
+- `name` (`string`, required): Table name.
+- `df_ud` (`LDataFrame`, required): Dataframe handle copied into the database.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -611,20 +986,20 @@ end
 
 ### LDatabase:clear
 
-`LDatabase:clear()`
-
-Removes every table from the database.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes every table from the database.
 function LDatabase:clear() end
 ```
 
+#### Description
+
+Removes every table from the database.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -638,17 +1013,7 @@ end
 
 ### LDatabase:getTable
 
-`LDatabase:getTable(name: string) -> LDataFrame`
-
-Returns a copy of a named table when it exists.
-
-**Parameters**
-
-- `name` (`string`, required): Table name to retrieve.
-
-**Returns**: `LDataFrame` - Dataframe handle, or nil when no table has that name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a copy of a named table when it exists.
@@ -657,9 +1022,19 @@ Returns a copy of a named table when it exists.
 function LDatabase:getTable(name) end
 ```
 
+#### Description
+
+Returns a copy of a named table when it exists.
+
+Parameters:
+
+- `name` (`string`, required): Table name to retrieve.
+
+Returns: `LDataFrame` - Dataframe handle, or nil when no table has that name.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -673,17 +1048,7 @@ end
 
 ### LDatabase:hasTable
 
-`LDatabase:hasTable(name: string) -> boolean`
-
-Returns whether a named table exists.
-
-**Parameters**
-
-- `name` (`string`, required): Table name to check.
-
-**Returns**: `boolean` - True when the table exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether a named table exists.
@@ -692,9 +1057,19 @@ Returns whether a named table exists.
 function LDatabase:hasTable(name) end
 ```
 
+#### Description
+
+Returns whether a named table exists.
+
+Parameters:
+
+- `name` (`string`, required): Table name to check.
+
+Returns: `boolean` - True when the table exists.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -707,13 +1082,7 @@ end
 
 ### LDatabase:listTables
 
-`LDatabase:listTables() -> string[]`
-
-Returns all table names in the database.
-
-**Returns**: `string[]` - Table names.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns all table names in the database.
@@ -721,9 +1090,15 @@ Returns all table names in the database.
 function LDatabase:listTables() end
 ```
 
+#### Description
+
+Returns all table names in the database.
+
+Returns: `string[]` - Table names.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -737,15 +1112,7 @@ end
 
 ### LDatabase:merge
 
-`LDatabase:merge(other: LDatabase)`
-
-Merges another database into this database.
-
-**Parameters**
-
-- `other` (`LDatabase`, required): Database copied into this database.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Merges another database into this database.
@@ -753,9 +1120,17 @@ Merges another database into this database.
 function LDatabase:merge(other) end
 ```
 
+#### Description
+
+Merges another database into this database.
+
+Parameters:
+
+- `other` (`LDatabase`, required): Database copied into this database.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -769,17 +1144,7 @@ end
 
 ### LDatabase:query
 
-`LDatabase:query(sql_str: string) -> LDataFrame`
-
-Runs a SQL-style query against the database tables.
-
-**Parameters**
-
-- `sql_str` (`string`, required): SQL query text.
-
-**Returns**: `LDataFrame` - Query result dataframe.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Runs a SQL-style query against the database tables.
@@ -788,9 +1153,19 @@ Runs a SQL-style query against the database tables.
 function LDatabase:query(sql_str) end
 ```
 
+#### Description
+
+Runs a SQL-style query against the database tables.
+
+Parameters:
+
+- `sql_str` (`string`, required): SQL query text.
+
+Returns: `LDataFrame` - Query result dataframe.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -804,15 +1179,7 @@ end
 
 ### LDatabase:removeTable
 
-`LDatabase:removeTable(name: string)`
-
-Removes a named table from the database.
-
-**Parameters**
-
-- `name` (`string`, required): Table name to remove.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes a named table from the database.
@@ -820,9 +1187,17 @@ Removes a named table from the database.
 function LDatabase:removeTable(name) end
 ```
 
+#### Description
+
+Removes a named table from the database.
+
+Parameters:
+
+- `name` (`string`, required): Table name to remove.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -836,13 +1211,7 @@ end
 
 ### LDatabase:tableCount
 
-`LDatabase:tableCount() -> integer`
-
-Returns the number of tables in the database.
-
-**Returns**: `integer` - Table count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of tables in the database.
@@ -850,9 +1219,15 @@ Returns the number of tables in the database.
 function LDatabase:tableCount() end
 ```
 
+#### Description
+
+Returns the number of tables in the database.
+
+Returns: `integer` - Table count.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -865,13 +1240,7 @@ end
 
 ### LDatabase:toJSON
 
-`LDatabase:toJSON() -> string`
-
-Serializes the database to JSON text.
-
-**Returns**: `string` - JSON text.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Serializes the database to JSON text.
@@ -879,9 +1248,15 @@ Serializes the database to JSON text.
 function LDatabase:toJSON() end
 ```
 
+#### Description
+
+Serializes the database to JSON text.
+
+Returns: `string` - JSON text.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -895,13 +1270,7 @@ end
 
 ### LDatabase:type
 
-`LDatabase:type() -> string`
-
-Returns the Lua-visible type name for this database handle.
-
-**Returns**: `string` - The string `LDatabase`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this database handle.
@@ -909,9 +1278,15 @@ Returns the Lua-visible type name for this database handle.
 function LDatabase:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this database handle.
+
+Returns: `string` - The string `LDatabase`.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -922,17 +1297,7 @@ end
 
 ### LDatabase:typeOf
 
-`LDatabase:typeOf(name: string) -> boolean`
-
-Returns whether this database handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LDatabase`, `Database`, and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this database handle matches a supported type name.
@@ -941,9 +1306,19 @@ Returns whether this database handle matches a supported type name.
 function LDatabase:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this database handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LDatabase`, `Database`, and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -954,16 +1329,7 @@ end
 
 ### LDataFrame:addColumn
 
-`LDataFrame:addColumn(name: string, [default]: any)`
-
-Adds a column with an optional default value.
-
-**Parameters**
-
-- `name` (`string`, required): Column name to create.
-- `default` (`any`, optional): Default cell value for existing rows; nil uses empty cells.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a column with an optional default value.
@@ -972,9 +1338,18 @@ Adds a column with an optional default value.
 function LDataFrame:addColumn(name, default) end
 ```
 
+#### Description
+
+Adds a column with an optional default value.
+
+Parameters:
+
+- `name` (`string`, required): Column name to create.
+- `default` (`any`, optional): Default cell value for existing rows; nil uses empty cells.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -986,17 +1361,7 @@ end
 
 ### LDataFrame:addRow
 
-`LDataFrame:addRow([row_tbl]: table) -> integer`
-
-Adds a row from an optional map table and returns its one-based row index.
-
-**Parameters**
-
-- `row_tbl` (`table`, optional): Optional table mapping column names to cell values.
-
-**Returns**: `integer` - One-based index of the inserted row.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a row from an optional map table and returns its one-based row index.
@@ -1005,9 +1370,19 @@ Adds a row from an optional map table and returns its one-based row index.
 function LDataFrame:addRow(row_tbl) end
 ```
 
+#### Description
+
+Adds a row from an optional map table and returns its one-based row index.
+
+Parameters:
+
+- `row_tbl` (`table`, optional): Optional table mapping column names to cell values.
+
+Returns: `integer` - One-based index of the inserted row.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -1019,15 +1394,7 @@ end
 
 ### LDataFrame:addRowBatch
 
-`LDataFrame:addRowBatch(rows: table)`
-
-Appends multiple rows from array-style row tables.
-
-**Parameters**
-
-- `rows` (`table`, required): Array of row arrays matching the dataframe column order.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Appends multiple rows from array-style row tables.
@@ -1035,9 +1402,17 @@ Appends multiple rows from array-style row tables.
 function LDataFrame:addRowBatch(rows) end
 ```
 
+#### Description
+
+Appends multiple rows from array-style row tables.
+
+Parameters:
+
+- `rows` (`table`, required): Array of row arrays matching the dataframe column order.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -1049,16 +1424,7 @@ end
 
 ### LDataFrame:apply
 
-`LDataFrame:apply(col_val: string, func: function)`
-
-Applies a Lua function to each value in a column in place.
-
-**Parameters**
-
-- `col_val` (`string`, required): Column name string or one-based column index.
-- `func` (`function`, required): Function called with each cell value and returning a replacement value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Applies a Lua function to each value in a column in place.
@@ -1067,9 +1433,18 @@ Applies a Lua function to each value in a column in place.
 function LDataFrame:apply(col_val, func) end
 ```
 
+#### Description
+
+Applies a Lua function to each value in a column in place.
+
+Parameters:
+
+- `col_val` (`string`, required): Column name string or one-based column index.
+- `func` (`function`, required): Function called with each cell value and returning a replacement value.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -1081,13 +1456,7 @@ end
 
 ### LDataFrame:clone
 
-`LDataFrame:clone() -> LDataFrame`
-
-Returns a deep copy of this dataframe.
-
-**Returns**: `LDataFrame` - New dataframe containing copied data.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a deep copy of this dataframe.
@@ -1095,9 +1464,15 @@ Returns a deep copy of this dataframe.
 function LDataFrame:clone() end
 ```
 
+#### Description
+
+Returns a deep copy of this dataframe.
+
+Returns: `LDataFrame` - New dataframe containing copied data.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -1110,13 +1485,7 @@ end
 
 ### LDataFrame:columns
 
-`LDataFrame:columns() -> string[]`
-
-Returns all column names in order. This method is available to Lua scripts.
-
-**Returns**: `string[]` - Column names.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns all column names in order. This method is available to Lua scripts.
@@ -1124,9 +1493,15 @@ Returns all column names in order. This method is available to Lua scripts.
 function LDataFrame:columns() end
 ```
 
+#### Description
+
+Returns all column names in order. This method is available to Lua scripts.
+
+Returns: `string[]` - Column names.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -1138,18 +1513,7 @@ end
 
 ### LDataFrame:corr
 
-`LDataFrame:corr(col_a: string, col_b: string) -> number`
-
-Returns correlation between two numeric columns.
-
-**Parameters**
-
-- `col_a` (`string`, required): Column name string or one-based column index.
-- `col_b` (`string`, required): Column name string or one-based column index.
-
-**Returns**: `number` - Correlation value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns correlation between two numeric columns.
@@ -1159,9 +1523,20 @@ Returns correlation between two numeric columns.
 function LDataFrame:corr(col_a, col_b) end
 ```
 
+#### Description
+
+Returns correlation between two numeric columns.
+
+Parameters:
+
+- `col_a` (`string`, required): Column name string or one-based column index.
+- `col_b` (`string`, required): Column name string or one-based column index.
+
+Returns: `number` - Correlation value.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -1172,13 +1547,7 @@ end
 
 ### LDataFrame:correlationMatrix
 
-`LDataFrame:correlationMatrix() -> LDataFrame`
-
-Returns a correlation matrix for numeric columns.
-
-**Returns**: `LDataFrame` - Correlation matrix dataframe.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a correlation matrix for numeric columns.
@@ -1186,9 +1555,15 @@ Returns a correlation matrix for numeric columns.
 function LDataFrame:correlationMatrix() end
 ```
 
+#### Description
+
+Returns a correlation matrix for numeric columns.
+
+Returns: `LDataFrame` - Correlation matrix dataframe.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -1200,13 +1575,7 @@ end
 
 ### LDataFrame:count
 
-`LDataFrame:count() -> integer`
-
-Returns the row count for this dataframe.
-
-**Returns**: `integer` - Row count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the row count for this dataframe.
@@ -1214,9 +1583,15 @@ Returns the row count for this dataframe.
 function LDataFrame:count() end
 ```
 
+#### Description
+
+Returns the row count for this dataframe.
+
+Returns: `integer` - Row count.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -1227,17 +1602,7 @@ end
 
 ### LDataFrame:countBy
 
-`LDataFrame:countBy(col: string) -> LDataFrame`
-
-Counts occurrences of each value in a column.
-
-**Parameters**
-
-- `col` (`string`, required): Column name string or one-based column index.
-
-**Returns**: `LDataFrame` - New dataframe containing value counts.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Counts occurrences of each value in a column.
@@ -1246,9 +1611,19 @@ Counts occurrences of each value in a column.
 function LDataFrame:countBy(col) end
 ```
 
+#### Description
+
+Counts occurrences of each value in a column.
+
+Parameters:
+
+- `col` (`string`, required): Column name string or one-based column index.
+
+Returns: `LDataFrame` - New dataframe containing value counts.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -1260,13 +1635,7 @@ end
 
 ### LDataFrame:describe
 
-`LDataFrame:describe() -> LDataFrame`
-
-Returns summary statistics for numeric columns.
-
-**Returns**: `LDataFrame` - New dataframe containing descriptive statistics.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns summary statistics for numeric columns.
@@ -1274,9 +1643,15 @@ Returns summary statistics for numeric columns.
 function LDataFrame:describe() end
 ```
 
+#### Description
+
+Returns summary statistics for numeric columns.
+
+Returns: `LDataFrame` - New dataframe containing descriptive statistics.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -1288,17 +1663,7 @@ end
 
 ### LDataFrame:dropNil
 
-`LDataFrame:dropNil(col: string) -> LDataFrame`
-
-Returns rows where the chosen column is not nil.
-
-**Parameters**
-
-- `col` (`string`, required): Column name string or one-based column index.
-
-**Returns**: `LDataFrame` - New dataframe without nil rows for the column.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns rows where the chosen column is not nil.
@@ -1307,9 +1672,19 @@ Returns rows where the chosen column is not nil.
 function LDataFrame:dropNil(col) end
 ```
 
+#### Description
+
+Returns rows where the chosen column is not nil.
+
+Parameters:
+
+- `col` (`string`, required): Column name string or one-based column index.
+
+Returns: `LDataFrame` - New dataframe without nil rows for the column.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -1323,17 +1698,7 @@ end
 
 ### LDataFrame:entropy
 
-`LDataFrame:entropy(col: string) -> number`
-
-Returns entropy for a column. This method is available to Lua scripts.
-
-**Parameters**
-
-- `col` (`string`, required): Column name string or one-based column index.
-
-**Returns**: `number` - Entropy value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns entropy for a column. This method is available to Lua scripts.
@@ -1342,9 +1707,19 @@ Returns entropy for a column. This method is available to Lua scripts.
 function LDataFrame:entropy(col) end
 ```
 
+#### Description
+
+Returns entropy for a column. This method is available to Lua scripts.
+
+Parameters:
+
+- `col` (`string`, required): Column name string or one-based column index.
+
+Returns: `number` - Entropy value.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -1355,16 +1730,7 @@ end
 
 ### LDataFrame:fillNil
 
-`LDataFrame:fillNil(col: string, val: any)`
-
-Replaces nil cells in a column with a value.
-
-**Parameters**
-
-- `col` (`string`, required): Column name string or one-based column index.
-- `val` (`any`, required): Replacement cell value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Replaces nil cells in a column with a value.
@@ -1373,9 +1739,18 @@ Replaces nil cells in a column with a value.
 function LDataFrame:fillNil(col, val) end
 ```
 
+#### Description
+
+Replaces nil cells in a column with a value.
+
+Parameters:
+
+- `col` (`string`, required): Column name string or one-based column index.
+- `val` (`any`, required): Replacement cell value.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -1389,19 +1764,7 @@ end
 
 ### LDataFrame:filter
 
-`LDataFrame:filter(col: any, op: string, val: any) -> LDataFrame`
-
-Returns rows whose column value matches a comparison.
-
-**Parameters**
-
-- `col` (`any`, required): Column name string or one-based column index.
-- `op` (`string`, required): Comparison operator string.
-- `val` (`any`, required): Cell value used as the comparison target.
-
-**Returns**: `LDataFrame` - New filtered dataframe.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns rows whose column value matches a comparison.
@@ -1412,9 +1775,21 @@ Returns rows whose column value matches a comparison.
 function LDataFrame:filter(col, op, val) end
 ```
 
+#### Description
+
+Returns rows whose column value matches a comparison.
+
+Parameters:
+
+- `col` (`any`, required): Column name string or one-based column index.
+- `op` (`string`, required): Comparison operator string.
+- `val` (`any`, required): Cell value used as the comparison target.
+
+Returns: `LDataFrame` - New filtered dataframe.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -1426,17 +1801,7 @@ end
 
 ### LDataFrame:getColumn
 
-`LDataFrame:getColumn(col: any) -> number[]`
-
-Returns a column as an array table. This method is available to Lua scripts.
-
-**Parameters**
-
-- `col` (`any`, required): Column name string or one-based column index.
-
-**Returns**: `number[]` - Array table of column values.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a column as an array table. This method is available to Lua scripts.
@@ -1445,9 +1810,19 @@ Returns a column as an array table. This method is available to Lua scripts.
 function LDataFrame:getColumn(col) end
 ```
 
+#### Description
+
+Returns a column as an array table. This method is available to Lua scripts.
+
+Parameters:
+
+- `col` (`any`, required): Column name string or one-based column index.
+
+Returns: `number[]` - Array table of column values.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -1459,17 +1834,7 @@ end
 
 ### LDataFrame:getColumnAsF64
 
-`LDataFrame:getColumnAsF64(col: string) -> number[]`
-
-Returns a numeric column as an array of numbers.
-
-**Parameters**
-
-- `col` (`string`, required): Column name string or one-based column index.
-
-**Returns**: `number[]` - Numeric values.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a numeric column as an array of numbers.
@@ -1478,9 +1843,19 @@ Returns a numeric column as an array of numbers.
 function LDataFrame:getColumnAsF64(col) end
 ```
 
+#### Description
+
+Returns a numeric column as an array of numbers.
+
+Parameters:
+
+- `col` (`string`, required): Column name string or one-based column index.
+
+Returns: `number[]` - Numeric values.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -1492,17 +1867,7 @@ end
 
 ### LDataFrame:getRow
 
-`LDataFrame:getRow(row: integer) -> table`
-
-Returns a row as a table keyed by column name.
-
-**Parameters**
-
-- `row` (`integer`, required): One-based row index to read.
-
-**Returns**: `table` - Row table keyed by column name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a row as a table keyed by column name.
@@ -1511,9 +1876,19 @@ Returns a row as a table keyed by column name.
 function LDataFrame:getRow(row) end
 ```
 
+#### Description
+
+Returns a row as a table keyed by column name.
+
+Parameters:
+
+- `row` (`integer`, required): One-based row index to read.
+
+Returns: `table` - Row table keyed by column name.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -1525,18 +1900,7 @@ end
 
 ### LDataFrame:getValue
 
-`LDataFrame:getValue(row: integer, col: any) -> number|string|boolean|nil`
-
-Returns one cell value by one-based row and column reference.
-
-**Parameters**
-
-- `row` (`integer`, required): One-based row index.
-- `col` (`any`, required): Column name string or one-based column index.
-
-**Returns**: `number|string|boolean|nil` - Cell value at the requested row and column.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns one cell value by one-based row and column reference.
@@ -1546,9 +1910,20 @@ Returns one cell value by one-based row and column reference.
 function LDataFrame:getValue(row, col) end
 ```
 
+#### Description
+
+Returns one cell value by one-based row and column reference.
+
+Parameters:
+
+- `row` (`integer`, required): One-based row index.
+- `col` (`any`, required): Column name string or one-based column index.
+
+Returns: `number|string|boolean|nil` - Cell value at the requested row and column.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -1560,19 +1935,7 @@ end
 
 ### LDataFrame:groupAgg
 
-`LDataFrame:groupAgg(group_col: string, agg_col: string, fn_name: string) -> LDataFrame`
-
-Groups by one column and aggregates another column.
-
-**Parameters**
-
-- `group_col` (`string`, required): Column name string or one-based column index.
-- `agg_col` (`string`, required): Column name string or one-based column index.
-- `fn_name` (`string`, required): Aggregate function name.
-
-**Returns**: `LDataFrame` - New grouped aggregate dataframe.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Groups by one column and aggregates another column.
@@ -1583,9 +1946,21 @@ Groups by one column and aggregates another column.
 function LDataFrame:groupAgg(group_col, agg_col, fn_name) end
 ```
 
+#### Description
+
+Groups by one column and aggregates another column.
+
+Parameters:
+
+- `group_col` (`string`, required): Column name string or one-based column index.
+- `agg_col` (`string`, required): Column name string or one-based column index.
+- `fn_name` (`string`, required): Aggregate function name.
+
+Returns: `LDataFrame` - New grouped aggregate dataframe.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -1599,17 +1974,7 @@ end
 
 ### LDataFrame:groupBy
 
-`LDataFrame:groupBy(col: string) -> table`
-
-Groups rows by a column and returns a table from group key to dataframe.
-
-**Parameters**
-
-- `col` (`string`, required): Column name string or one-based column index.
-
-**Returns**: `table` - Table keyed by group values with dataframe handles as values.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Groups rows by a column and returns a table from group key to dataframe.
@@ -1618,9 +1983,19 @@ Groups rows by a column and returns a table from group key to dataframe.
 function LDataFrame:groupBy(col) end
 ```
 
+#### Description
+
+Groups rows by a column and returns a table from group key to dataframe.
+
+Parameters:
+
+- `col` (`string`, required): Column name string or one-based column index.
+
+Returns: `table` - Table keyed by group values with dataframe handles as values.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -1631,17 +2006,7 @@ end
 
 ### LDataFrame:groupByObj
 
-`LDataFrame:groupByObj(col: string) -> LGroupedFrame`
-
-Groups rows by a column and returns a grouped-frame object.
-
-**Parameters**
-
-- `col` (`string`, required): Column name string or one-based column index.
-
-**Returns**: `LGroupedFrame` - Grouped frame handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Groups rows by a column and returns a grouped-frame object.
@@ -1650,9 +2015,19 @@ Groups rows by a column and returns a grouped-frame object.
 function LDataFrame:groupByObj(col) end
 ```
 
+#### Description
+
+Groups rows by a column and returns a grouped-frame object.
+
+Parameters:
+
+- `col` (`string`, required): Column name string or one-based column index.
+
+Returns: `LGroupedFrame` - Grouped frame handle.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -1666,17 +2041,7 @@ end
 
 ### LDataFrame:head
 
-`LDataFrame:head([n]: integer) -> LDataFrame`
-
-Returns the first rows of this dataframe.
-
-**Parameters**
-
-- `n` (`integer`, optional): Number of rows to return; defaults to 5.
-
-**Returns**: `LDataFrame` - New dataframe containing the first rows.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the first rows of this dataframe.
@@ -1685,9 +2050,19 @@ Returns the first rows of this dataframe.
 function LDataFrame:head(n) end
 ```
 
+#### Description
+
+Returns the first rows of this dataframe.
+
+Parameters:
+
+- `n` (`integer`, optional): Number of rows to return; defaults to 5.
+
+Returns: `LDataFrame` - New dataframe containing the first rows.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -1699,20 +2074,7 @@ end
 
 ### LDataFrame:join
 
-`LDataFrame:join(other: LDataFrame, this_col: string, other_col: string, [jtype]: string) -> LDataFrame`
-
-Joins this dataframe with another dataframe by column references.
-
-**Parameters**
-
-- `other` (`LDataFrame`, required): Other dataframe to join.
-- `this_col` (`string`, required): Column name string or one-based column index.
-- `other_col` (`string`, required): Column name string or one-based column index.
-- `jtype` (`string`, optional): Join type string; defaults to `inner`.
-
-**Returns**: `LDataFrame` - New joined dataframe.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Joins this dataframe with another dataframe by column references.
@@ -1724,9 +2086,22 @@ Joins this dataframe with another dataframe by column references.
 function LDataFrame:join(other, this_col, other_col, jtype) end
 ```
 
+#### Description
+
+Joins this dataframe with another dataframe by column references.
+
+Parameters:
+
+- `other` (`LDataFrame`, required): Other dataframe to join.
+- `this_col` (`string`, required): Column name string or one-based column index.
+- `other_col` (`string`, required): Column name string or one-based column index.
+- `jtype` (`string`, optional): Join type string; defaults to `inner`.
+
+Returns: `LDataFrame` - New joined dataframe.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -1739,13 +2114,7 @@ end
 
 ### LDataFrame:lazy
 
-`LDataFrame:lazy() -> LLazyQuery`
-
-Starts a lazy query pipeline from this dataframe.
-
-**Returns**: `LLazyQuery` - New lazy query handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Starts a lazy query pipeline from this dataframe.
@@ -1753,9 +2122,15 @@ Starts a lazy query pipeline from this dataframe.
 function LDataFrame:lazy() end
 ```
 
+#### Description
+
+Starts a lazy query pipeline from this dataframe.
+
+Returns: `LLazyQuery` - New lazy query handle.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -1767,17 +2142,7 @@ end
 
 ### LDataFrame:max
 
-`LDataFrame:max(col: string) -> number|string|boolean|nil`
-
-Returns the maximum value of a column.
-
-**Parameters**
-
-- `col` (`string`, required): Column name string or one-based column index.
-
-**Returns**: `number|string|boolean|nil` - Maximum cell value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the maximum value of a column.
@@ -1786,9 +2151,19 @@ Returns the maximum value of a column.
 function LDataFrame:max(col) end
 ```
 
+#### Description
+
+Returns the maximum value of a column.
+
+Parameters:
+
+- `col` (`string`, required): Column name string or one-based column index.
+
+Returns: `number|string|boolean|nil` - Maximum cell value.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -1799,17 +2174,7 @@ end
 
 ### LDataFrame:mean
 
-`LDataFrame:mean(col: string) -> number`
-
-Returns the numeric mean of a column.
-
-**Parameters**
-
-- `col` (`string`, required): Column name string or one-based column index.
-
-**Returns**: `number` - Column mean.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the numeric mean of a column.
@@ -1818,9 +2183,19 @@ Returns the numeric mean of a column.
 function LDataFrame:mean(col) end
 ```
 
+#### Description
+
+Returns the numeric mean of a column.
+
+Parameters:
+
+- `col` (`string`, required): Column name string or one-based column index.
+
+Returns: `number` - Column mean.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -1831,17 +2206,7 @@ end
 
 ### LDataFrame:median
 
-`LDataFrame:median(col: string) -> number`
-
-Returns the numeric median of a column.
-
-**Parameters**
-
-- `col` (`string`, required): Column name string or one-based column index.
-
-**Returns**: `number` - Column median.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the numeric median of a column.
@@ -1850,9 +2215,19 @@ Returns the numeric median of a column.
 function LDataFrame:median(col) end
 ```
 
+#### Description
+
+Returns the numeric median of a column.
+
+Parameters:
+
+- `col` (`string`, required): Column name string or one-based column index.
+
+Returns: `number` - Column median.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -1863,15 +2238,7 @@ end
 
 ### LDataFrame:merge
 
-`LDataFrame:merge(other: LDataFrame)`
-
-Appends another dataframe into this dataframe in place.
-
-**Parameters**
-
-- `other` (`LDataFrame`, required): Dataframe whose rows are merged into this dataframe.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Appends another dataframe into this dataframe in place.
@@ -1879,9 +2246,17 @@ Appends another dataframe into this dataframe in place.
 function LDataFrame:merge(other) end
 ```
 
+#### Description
+
+Appends another dataframe into this dataframe in place.
+
+Parameters:
+
+- `other` (`LDataFrame`, required): Dataframe whose rows are merged into this dataframe.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -1894,17 +2269,7 @@ end
 
 ### LDataFrame:min
 
-`LDataFrame:min(col: string) -> number|string|boolean|nil`
-
-Returns the minimum value of a column.
-
-**Parameters**
-
-- `col` (`string`, required): Column name string or one-based column index.
-
-**Returns**: `number|string|boolean|nil` - Minimum cell value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the minimum value of a column.
@@ -1913,9 +2278,19 @@ Returns the minimum value of a column.
 function LDataFrame:min(col) end
 ```
 
+#### Description
+
+Returns the minimum value of a column.
+
+Parameters:
+
+- `col` (`string`, required): Column name string or one-based column index.
+
+Returns: `number|string|boolean|nil` - Minimum cell value.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -1926,17 +2301,7 @@ end
 
 ### LDataFrame:modeVal
 
-`LDataFrame:modeVal(col: string) -> number|string|boolean|nil`
-
-Returns the mode value of a column. This method is available to Lua scripts.
-
-**Parameters**
-
-- `col` (`string`, required): Column name string or one-based column index.
-
-**Returns**: `number|string|boolean|nil` - Most common cell value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the mode value of a column. This method is available to Lua scripts.
@@ -1945,9 +2310,19 @@ Returns the mode value of a column. This method is available to Lua scripts.
 function LDataFrame:modeVal(col) end
 ```
 
+#### Description
+
+Returns the mode value of a column. This method is available to Lua scripts.
+
+Parameters:
+
+- `col` (`string`, required): Column name string or one-based column index.
+
+Returns: `number|string|boolean|nil` - Most common cell value.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -1958,13 +2333,7 @@ end
 
 ### LDataFrame:ncols
 
-`LDataFrame:ncols() -> integer`
-
-Returns the number of columns in this dataframe.
-
-**Returns**: `integer` - Column count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of columns in this dataframe.
@@ -1972,9 +2341,15 @@ Returns the number of columns in this dataframe.
 function LDataFrame:ncols() end
 ```
 
+#### Description
+
+Returns the number of columns in this dataframe.
+
+Returns: `integer` - Column count.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -1985,18 +2360,7 @@ end
 
 ### LDataFrame:normalizeCol
 
-`LDataFrame:normalizeCol(col: string, out_min: number, out_max: number, name: string)`
-
-Adds a range-normalized column in place.
-
-**Parameters**
-
-- `col` (`string`, required): Column name string or one-based column index.
-- `out_min` (`number`, required): Output lower bound.
-- `out_max` (`number`, required): Output upper bound.
-- `name` (`string`, required): Output column name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a range-normalized column in place.
@@ -2007,9 +2371,20 @@ Adds a range-normalized column in place.
 function LDataFrame:normalizeCol(col, out_min, out_max, name) end
 ```
 
+#### Description
+
+Adds a range-normalized column in place.
+
+Parameters:
+
+- `col` (`string`, required): Column name string or one-based column index.
+- `out_min` (`number`, required): Output lower bound.
+- `out_max` (`number`, required): Output upper bound.
+- `name` (`string`, required): Output column name.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -2021,13 +2396,7 @@ end
 
 ### LDataFrame:nrows
 
-`LDataFrame:nrows() -> integer`
-
-Returns the number of rows in this dataframe.
-
-**Returns**: `integer` - Row count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of rows in this dataframe.
@@ -2035,9 +2404,15 @@ Returns the number of rows in this dataframe.
 function LDataFrame:nrows() end
 ```
 
+#### Description
+
+Returns the number of rows in this dataframe.
+
+Returns: `integer` - Row count.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -2048,18 +2423,7 @@ end
 
 ### LDataFrame:outliers
 
-`LDataFrame:outliers(col: string, [threshold]: number) -> LDataFrame`
-
-Returns rows considered outliers for a numeric column.
-
-**Parameters**
-
-- `col` (`string`, required): Column name string or one-based column index.
-- `threshold` (`number`, optional): Z-score threshold; defaults to 2.0.
-
-**Returns**: `LDataFrame` - New dataframe containing outlier rows.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns rows considered outliers for a numeric column.
@@ -2069,9 +2433,20 @@ Returns rows considered outliers for a numeric column.
 function LDataFrame:outliers(col, threshold) end
 ```
 
+#### Description
+
+Returns rows considered outliers for a numeric column.
+
+Parameters:
+
+- `col` (`string`, required): Column name string or one-based column index.
+- `threshold` (`number`, optional): Z-score threshold; defaults to 2.0.
+
+Returns: `LDataFrame` - New dataframe containing outlier rows.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -2083,19 +2458,7 @@ end
 
 ### LDataFrame:pivot
 
-`LDataFrame:pivot(row_col: string, col_col: string, val_col: string) -> LDataFrame`
-
-Pivots rows into columns using row, column, and value fields.
-
-**Parameters**
-
-- `row_col` (`string`, required): Column name string or one-based column index.
-- `col_col` (`string`, required): Column name string or one-based column index.
-- `val_col` (`string`, required): Column name string or one-based column index.
-
-**Returns**: `LDataFrame` - New pivoted dataframe.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Pivots rows into columns using row, column, and value fields.
@@ -2106,9 +2469,21 @@ Pivots rows into columns using row, column, and value fields.
 function LDataFrame:pivot(row_col, col_col, val_col) end
 ```
 
+#### Description
+
+Pivots rows into columns using row, column, and value fields.
+
+Parameters:
+
+- `row_col` (`string`, required): Column name string or one-based column index.
+- `col_col` (`string`, required): Column name string or one-based column index.
+- `val_col` (`string`, required): Column name string or one-based column index.
+
+Returns: `LDataFrame` - New pivoted dataframe.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -2119,20 +2494,7 @@ end
 
 ### LDataFrame:pivotTable
 
-`LDataFrame:pivotTable(row_key: string, col_key: string, value_key: string, [agg]: string) -> LDataFrame`
-
-Builds a pivot table using row key, column key, value column, and aggregate function.
-
-**Parameters**
-
-- `row_key` (`string`, required): Column name string or one-based column index.
-- `col_key` (`string`, required): Column name string or one-based column index.
-- `value_key` (`string`, required): Column name string or one-based column index.
-- `agg` (`string`, optional): Aggregate function name; defaults to `mean`.
-
-**Returns**: `LDataFrame` - New pivot table dataframe.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Builds a pivot table using row key, column key, value column, and aggregate function.
@@ -2144,9 +2506,22 @@ Builds a pivot table using row key, column key, value column, and aggregate func
 function LDataFrame:pivotTable(row_key, col_key, value_key, agg) end
 ```
 
+#### Description
+
+Builds a pivot table using row key, column key, value column, and aggregate function.
+
+Parameters:
+
+- `row_key` (`string`, required): Column name string or one-based column index.
+- `col_key` (`string`, required): Column name string or one-based column index.
+- `value_key` (`string`, required): Column name string or one-based column index.
+- `agg` (`string`, optional): Aggregate function name; defaults to `mean`.
+
+Returns: `LDataFrame` - New pivot table dataframe.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -2157,17 +2532,7 @@ end
 
 ### LDataFrame:query
 
-`LDataFrame:query(sql_str: string) -> LDataFrame`
-
-Runs a SQL-style query against this dataframe.
-
-**Parameters**
-
-- `sql_str` (`string`, required): SQL query text.
-
-**Returns**: `LDataFrame` - Query result dataframe.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Runs a SQL-style query against this dataframe.
@@ -2176,9 +2541,19 @@ Runs a SQL-style query against this dataframe.
 function LDataFrame:query(sql_str) end
 ```
 
+#### Description
+
+Runs a SQL-style query against this dataframe.
+
+Parameters:
+
+- `sql_str` (`string`, required): SQL query text.
+
+Returns: `LDataFrame` - Query result dataframe.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -2190,19 +2565,7 @@ end
 
 ### LDataFrame:rank
 
-`LDataFrame:rank(col: string, [order]: string, [result_col]: string) -> LDataFrame`
-
-Returns a dataframe with a rank column.
-
-**Parameters**
-
-- `col` (`string`, required): Column name string or one-based column index.
-- `order` (`string`, optional): Rank order string; defaults to `asc`.
-- `result_col` (`string`, optional): Output column name; defaults to `rank`.
-
-**Returns**: `LDataFrame` - New dataframe with the rank column.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a dataframe with a rank column.
@@ -2213,9 +2576,21 @@ Returns a dataframe with a rank column.
 function LDataFrame:rank(col, order, result_col) end
 ```
 
+#### Description
+
+Returns a dataframe with a rank column.
+
+Parameters:
+
+- `col` (`string`, required): Column name string or one-based column index.
+- `order` (`string`, optional): Rank order string; defaults to `asc`.
+- `result_col` (`string`, optional): Output column name; defaults to `rank`.
+
+Returns: `LDataFrame` - New dataframe with the rank column.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -2227,15 +2602,7 @@ end
 
 ### LDataFrame:removeColumn
 
-`LDataFrame:removeColumn(col: any)`
-
-Removes a column by name or one-based index.
-
-**Parameters**
-
-- `col` (`any`, required): Column name string or one-based column index.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes a column by name or one-based index.
@@ -2243,9 +2610,17 @@ Removes a column by name or one-based index.
 function LDataFrame:removeColumn(col) end
 ```
 
+#### Description
+
+Removes a column by name or one-based index.
+
+Parameters:
+
+- `col` (`any`, required): Column name string or one-based column index.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -2257,15 +2632,7 @@ end
 
 ### LDataFrame:removeRow
 
-`LDataFrame:removeRow(row: integer)`
-
-Removes a row by one-based index. This method is available to Lua scripts.
-
-**Parameters**
-
-- `row` (`integer`, required): One-based row index to remove.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes a row by one-based index. This method is available to Lua scripts.
@@ -2273,9 +2640,17 @@ Removes a row by one-based index. This method is available to Lua scripts.
 function LDataFrame:removeRow(row) end
 ```
 
+#### Description
+
+Removes a row by one-based index. This method is available to Lua scripts.
+
+Parameters:
+
+- `row` (`integer`, required): One-based row index to remove.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -2287,16 +2662,7 @@ end
 
 ### LDataFrame:rename
 
-`LDataFrame:rename(col: any, new_name: string)`
-
-Renames a column by name or one-based index.
-
-**Parameters**
-
-- `col` (`any`, required): Column name string or one-based column index.
-- `new_name` (`string`, required): New column name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Renames a column by name or one-based index.
@@ -2305,9 +2671,18 @@ Renames a column by name or one-based index.
 function LDataFrame:rename(col, new_name) end
 ```
 
+#### Description
+
+Renames a column by name or one-based index.
+
+Parameters:
+
+- `col` (`any`, required): Column name string or one-based column index.
+- `new_name` (`string`, required): New column name.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -2320,19 +2695,7 @@ end
 
 ### LDataFrame:rollingMean
 
-`LDataFrame:rollingMean(col: string, window: integer, [result_col]: string) -> LDataFrame`
-
-Returns a dataframe with a rolling mean column.
-
-**Parameters**
-
-- `col` (`string`, required): Column name string or one-based column index.
-- `window` (`integer`, required): Rolling window size.
-- `result_col` (`string`, optional): Output column name; defaults to `rolling_mean`.
-
-**Returns**: `LDataFrame` - New dataframe with the rolling mean column.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a dataframe with a rolling mean column.
@@ -2343,9 +2706,21 @@ Returns a dataframe with a rolling mean column.
 function LDataFrame:rollingMean(col, window, result_col) end
 ```
 
+#### Description
+
+Returns a dataframe with a rolling mean column.
+
+Parameters:
+
+- `col` (`string`, required): Column name string or one-based column index.
+- `window` (`integer`, required): Rolling window size.
+- `result_col` (`string`, optional): Output column name; defaults to `rolling_mean`.
+
+Returns: `LDataFrame` - New dataframe with the rolling mean column.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -2357,19 +2732,7 @@ end
 
 ### LDataFrame:rollingSum
 
-`LDataFrame:rollingSum(col: string, window: integer, [result_col]: string) -> LDataFrame`
-
-Returns a dataframe with a rolling sum column.
-
-**Parameters**
-
-- `col` (`string`, required): Column name string or one-based column index.
-- `window` (`integer`, required): Rolling window size.
-- `result_col` (`string`, optional): Output column name; defaults to `rolling_sum`.
-
-**Returns**: `LDataFrame` - New dataframe with the rolling sum column.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a dataframe with a rolling sum column.
@@ -2380,9 +2743,21 @@ Returns a dataframe with a rolling sum column.
 function LDataFrame:rollingSum(col, window, result_col) end
 ```
 
+#### Description
+
+Returns a dataframe with a rolling sum column.
+
+Parameters:
+
+- `col` (`string`, required): Column name string or one-based column index.
+- `window` (`integer`, required): Rolling window size.
+- `result_col` (`string`, optional): Output column name; defaults to `rolling_sum`.
+
+Returns: `LDataFrame` - New dataframe with the rolling sum column.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -2394,13 +2769,7 @@ end
 
 ### LDataFrame:rows
 
-`LDataFrame:rows() -> function`
-
-Returns an iterator function over one-based row index and row table pairs.
-
-**Returns**: `function` - Iterator function for Lua generic-for loops.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns an iterator function over one-based row index and row table pairs.
@@ -2408,9 +2777,15 @@ Returns an iterator function over one-based row index and row table pairs.
 function LDataFrame:rows() end
 ```
 
+#### Description
+
+Returns an iterator function over one-based row index and row table pairs.
+
+Returns: `function` - Iterator function for Lua generic-for loops.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -2423,18 +2798,7 @@ end
 
 ### LDataFrame:sample
 
-`LDataFrame:sample(n: integer, [seed]: integer) -> LDataFrame`
-
-Returns a sampled dataframe. This method is available to Lua scripts.
-
-**Parameters**
-
-- `n` (`integer`, required): Number of rows to sample.
-- `seed` (`integer`, optional): Optional random seed.
-
-**Returns**: `LDataFrame` - New sampled dataframe.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a sampled dataframe. This method is available to Lua scripts.
@@ -2444,9 +2808,20 @@ Returns a sampled dataframe. This method is available to Lua scripts.
 function LDataFrame:sample(n, seed) end
 ```
 
+#### Description
+
+Returns a sampled dataframe. This method is available to Lua scripts.
+
+Parameters:
+
+- `n` (`integer`, required): Number of rows to sample.
+- `seed` (`integer`, optional): Optional random seed.
+
+Returns: `LDataFrame` - New sampled dataframe.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -2458,17 +2833,7 @@ end
 
 ### LDataFrame:select
 
-`LDataFrame:select(...: any) -> LDataFrame`
-
-Returns a dataframe with selected columns.
-
-**Parameters**
-
-- `...` (`any`, required): Column name strings or one-based column indices to keep.
-
-**Returns**: `LDataFrame` - New dataframe containing selected columns.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a dataframe with selected columns.
@@ -2477,9 +2842,19 @@ Returns a dataframe with selected columns.
 function LDataFrame:select(...) end
 ```
 
+#### Description
+
+Returns a dataframe with selected columns.
+
+Parameters:
+
+- `...` (`any`, required): Column name strings or one-based column indices to keep.
+
+Returns: `LDataFrame` - New dataframe containing selected columns.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -2491,16 +2866,7 @@ end
 
 ### LDataFrame:setColumnFromF64
 
-`LDataFrame:setColumnFromF64(col: string, values: table)`
-
-Replaces a numeric column from an array table of numbers.
-
-**Parameters**
-
-- `col` (`string`, required): Column name string or one-based column index.
-- `values` (`table`, required): Array table of numeric values.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Replaces a numeric column from an array table of numbers.
@@ -2509,9 +2875,18 @@ Replaces a numeric column from an array table of numbers.
 function LDataFrame:setColumnFromF64(col, values) end
 ```
 
+#### Description
+
+Replaces a numeric column from an array table of numbers.
+
+Parameters:
+
+- `col` (`string`, required): Column name string or one-based column index.
+- `values` (`table`, required): Array table of numeric values.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -2523,17 +2898,7 @@ end
 
 ### LDataFrame:setValue
 
-`LDataFrame:setValue(row: integer, col: any, val: any)`
-
-Sets one cell value by one-based row and column reference.
-
-**Parameters**
-
-- `row` (`integer`, required): One-based row index.
-- `col` (`any`, required): Column name string or one-based column index.
-- `val` (`any`, required): Cell value to store.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets one cell value by one-based row and column reference.
@@ -2543,9 +2908,19 @@ Sets one cell value by one-based row and column reference.
 function LDataFrame:setValue(row, col, val) end
 ```
 
+#### Description
+
+Sets one cell value by one-based row and column reference.
+
+Parameters:
+
+- `row` (`integer`, required): One-based row index.
+- `col` (`any`, required): Column name string or one-based column index.
+- `val` (`any`, required): Cell value to store.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -2557,18 +2932,7 @@ end
 
 ### LDataFrame:slice
 
-`LDataFrame:slice(start: integer, end: integer) -> LDataFrame`
-
-Returns a one-based inclusive row slice.
-
-**Parameters**
-
-- `start` (`integer`, required): One-based start row.
-- `end` (`integer`, required): One-based end row.
-
-**Returns**: `LDataFrame` - New dataframe containing the row slice.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a one-based inclusive row slice.
@@ -2578,9 +2942,20 @@ Returns a one-based inclusive row slice.
 function LDataFrame:slice(start, end_) end
 ```
 
+#### Description
+
+Returns a one-based inclusive row slice.
+
+Parameters:
+
+- `start` (`integer`, required): One-based start row.
+- `end` (`integer`, required): One-based end row.
+
+Returns: `LDataFrame` - New dataframe containing the row slice.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -2592,18 +2967,7 @@ end
 
 ### LDataFrame:sort
 
-`LDataFrame:sort(col: any, [ascending]: boolean) -> LDataFrame`
-
-Returns rows sorted by a column. This method is available to Lua scripts.
-
-**Parameters**
-
-- `col` (`any`, required): Column name string or one-based column index.
-- `ascending` (`boolean`, optional): True for ascending order; defaults to true.
-
-**Returns**: `LDataFrame` - New sorted dataframe.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns rows sorted by a column. This method is available to Lua scripts.
@@ -2613,9 +2977,20 @@ Returns rows sorted by a column. This method is available to Lua scripts.
 function LDataFrame:sort(col, ascending) end
 ```
 
+#### Description
+
+Returns rows sorted by a column. This method is available to Lua scripts.
+
+Parameters:
+
+- `col` (`any`, required): Column name string or one-based column index.
+- `ascending` (`boolean`, optional): True for ascending order; defaults to true.
+
+Returns: `LDataFrame` - New sorted dataframe.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -2627,17 +3002,7 @@ end
 
 ### LDataFrame:stddev
 
-`LDataFrame:stddev(col: string) -> number`
-
-Returns the numeric standard deviation of a column.
-
-**Parameters**
-
-- `col` (`string`, required): Column name string or one-based column index.
-
-**Returns**: `number` - Column standard deviation.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the numeric standard deviation of a column.
@@ -2646,9 +3011,19 @@ Returns the numeric standard deviation of a column.
 function LDataFrame:stddev(col) end
 ```
 
+#### Description
+
+Returns the numeric standard deviation of a column.
+
+Parameters:
+
+- `col` (`string`, required): Column name string or one-based column index.
+
+Returns: `number` - Column standard deviation.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -2659,17 +3034,7 @@ end
 
 ### LDataFrame:sum
 
-`LDataFrame:sum(col: string) -> number`
-
-Returns the numeric sum of a column.
-
-**Parameters**
-
-- `col` (`string`, required): Column name string or one-based column index.
-
-**Returns**: `number` - Column sum.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the numeric sum of a column.
@@ -2678,9 +3043,19 @@ Returns the numeric sum of a column.
 function LDataFrame:sum(col) end
 ```
 
+#### Description
+
+Returns the numeric sum of a column.
+
+Parameters:
+
+- `col` (`string`, required): Column name string or one-based column index.
+
+Returns: `number` - Column sum.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -2691,17 +3066,7 @@ end
 
 ### LDataFrame:tail
 
-`LDataFrame:tail([n]: integer) -> LDataFrame`
-
-Returns the last rows of this dataframe.
-
-**Parameters**
-
-- `n` (`integer`, optional): Number of rows to return; defaults to 5.
-
-**Returns**: `LDataFrame` - New dataframe containing the last rows.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the last rows of this dataframe.
@@ -2710,9 +3075,19 @@ Returns the last rows of this dataframe.
 function LDataFrame:tail(n) end
 ```
 
+#### Description
+
+Returns the last rows of this dataframe.
+
+Parameters:
+
+- `n` (`integer`, optional): Number of rows to return; defaults to 5.
+
+Returns: `LDataFrame` - New dataframe containing the last rows.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -2724,13 +3099,7 @@ end
 
 ### LDataFrame:toBinary
 
-`LDataFrame:toBinary() -> string`
-
-Serializes this dataframe to binary data.
-
-**Returns**: `string` - Binary string containing serialized dataframe data.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Serializes this dataframe to binary data.
@@ -2738,9 +3107,15 @@ Serializes this dataframe to binary data.
 function LDataFrame:toBinary() end
 ```
 
+#### Description
+
+Serializes this dataframe to binary data.
+
+Returns: `string` - Binary string containing serialized dataframe data.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -2752,13 +3127,7 @@ end
 
 ### LDataFrame:toCSV
 
-`LDataFrame:toCSV() -> string`
-
-Serializes this dataframe to CSV text.
-
-**Returns**: `string` - CSV text.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Serializes this dataframe to CSV text.
@@ -2766,9 +3135,15 @@ Serializes this dataframe to CSV text.
 function LDataFrame:toCSV() end
 ```
 
+#### Description
+
+Serializes this dataframe to CSV text.
+
+Returns: `string` - CSV text.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -2780,13 +3155,7 @@ end
 
 ### LDataFrame:toJSON
 
-`LDataFrame:toJSON() -> string`
-
-Serializes this dataframe to JSON text.
-
-**Returns**: `string` - JSON text.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Serializes this dataframe to JSON text.
@@ -2794,9 +3163,15 @@ Serializes this dataframe to JSON text.
 function LDataFrame:toJSON() end
 ```
 
+#### Description
+
+Serializes this dataframe to JSON text.
+
+Returns: `string` - JSON text.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -2808,13 +3183,7 @@ end
 
 ### LDataFrame:toString
 
-`LDataFrame:toString() -> string`
-
-Formats this dataframe as a human-readable text table.
-
-**Returns**: `string` - Text table representation.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Formats this dataframe as a human-readable text table.
@@ -2822,9 +3191,15 @@ Formats this dataframe as a human-readable text table.
 function LDataFrame:toString() end
 ```
 
+#### Description
+
+Formats this dataframe as a human-readable text table.
+
+Returns: `string` - Text table representation.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -2836,13 +3211,7 @@ end
 
 ### LDataFrame:toTable
 
-`LDataFrame:toTable() -> table`
-
-Converts this dataframe to an array table of row tables.
-
-**Returns**: `table` - Array of rows keyed by column name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Converts this dataframe to an array table of row tables.
@@ -2850,9 +3219,15 @@ Converts this dataframe to an array table of row tables.
 function LDataFrame:toTable() end
 ```
 
+#### Description
+
+Converts this dataframe to an array table of row tables.
+
+Returns: `table` - Array of rows keyed by column name.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -2864,13 +3239,7 @@ end
 
 ### LDataFrame:type
 
-`LDataFrame:type() -> string`
-
-Returns the Lua-visible type name for this dataframe handle.
-
-**Returns**: `string` - The string `LDataFrame`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this dataframe handle.
@@ -2878,9 +3247,15 @@ Returns the Lua-visible type name for this dataframe handle.
 function LDataFrame:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this dataframe handle.
+
+Returns: `string` - The string `LDataFrame`.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -2891,17 +3266,7 @@ end
 
 ### LDataFrame:typeOf
 
-`LDataFrame:typeOf(name: string) -> boolean`
-
-Returns whether this dataframe handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LDataFrame`, `DataFrame`, and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this dataframe handle matches a supported type name.
@@ -2910,9 +3275,19 @@ Returns whether this dataframe handle matches a supported type name.
 function LDataFrame:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this dataframe handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LDataFrame`, `DataFrame`, and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -2923,17 +3298,7 @@ end
 
 ### LDataFrame:unique
 
-`LDataFrame:unique(col: any) -> number[]`
-
-Returns unique values from a column.
-
-**Parameters**
-
-- `col` (`any`, required): Column name string or one-based column index.
-
-**Returns**: `number[]` - Array table of unique values.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns unique values from a column.
@@ -2942,9 +3307,19 @@ Returns unique values from a column.
 function LDataFrame:unique(col) end
 ```
 
+#### Description
+
+Returns unique values from a column.
+
+Parameters:
+
+- `col` (`any`, required): Column name string or one-based column index.
+
+Returns: `number[]` - Array table of unique values.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -2956,17 +3331,7 @@ end
 
 ### LDataFrame:variance
 
-`LDataFrame:variance(col: string) -> number`
-
-Returns the numeric variance of a column.
-
-**Parameters**
-
-- `col` (`string`, required): Column name string or one-based column index.
-
-**Returns**: `number` - Column variance.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the numeric variance of a column.
@@ -2975,9 +3340,19 @@ Returns the numeric variance of a column.
 function LDataFrame:variance(col) end
 ```
 
+#### Description
+
+Returns the numeric variance of a column.
+
+Parameters:
+
+- `col` (`string`, required): Column name string or one-based column index.
+
+Returns: `number` - Column variance.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -2988,16 +3363,7 @@ end
 
 ### LDataFrame:withCumsum
 
-`LDataFrame:withCumsum(col: string, name: string)`
-
-Adds a cumulative-sum column in place.
-
-**Parameters**
-
-- `col` (`string`, required): Column name string or one-based column index.
-- `name` (`string`, required): Output column name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a cumulative-sum column in place.
@@ -3006,9 +3372,18 @@ Adds a cumulative-sum column in place.
 function LDataFrame:withCumsum(col, name) end
 ```
 
+#### Description
+
+Adds a cumulative-sum column in place.
+
+Parameters:
+
+- `col` (`string`, required): Column name string or one-based column index.
+- `name` (`string`, required): Output column name.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -3020,18 +3395,7 @@ end
 
 ### LDataFrame:withEval
 
-`LDataFrame:withEval(col_name: string, expr: string) -> LDataFrame`
-
-Returns a dataframe with a column computed from an expression.
-
-**Parameters**
-
-- `col_name` (`string`, required): Output column name.
-- `expr` (`string`, required): Dataframe expression evaluated by the dataframe module.
-
-**Returns**: `LDataFrame` - New dataframe with the evaluated column.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a dataframe with a column computed from an expression.
@@ -3041,9 +3405,20 @@ Returns a dataframe with a column computed from an expression.
 function LDataFrame:withEval(col_name, expr) end
 ```
 
+#### Description
+
+Returns a dataframe with a column computed from an expression.
+
+Parameters:
+
+- `col_name` (`string`, required): Output column name.
+- `expr` (`string`, required): Dataframe expression evaluated by the dataframe module.
+
+Returns: `LDataFrame` - New dataframe with the evaluated column.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -3055,16 +3430,7 @@ end
 
 ### LDataFrame:withPctChange
 
-`LDataFrame:withPctChange(col: string, name: string)`
-
-Adds a percent-change column in place.
-
-**Parameters**
-
-- `col` (`string`, required): Column name string or one-based column index.
-- `name` (`string`, required): Output column name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a percent-change column in place.
@@ -3073,9 +3439,18 @@ Adds a percent-change column in place.
 function LDataFrame:withPctChange(col, name) end
 ```
 
+#### Description
+
+Adds a percent-change column in place.
+
+Parameters:
+
+- `col` (`string`, required): Column name string or one-based column index.
+- `name` (`string`, required): Output column name.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -3087,17 +3462,7 @@ end
 
 ### LDataFrame:withRank
 
-`LDataFrame:withRank(col: string, [asc]: boolean, name: string)`
-
-Adds a rank column in place. This method is available to Lua scripts.
-
-**Parameters**
-
-- `col` (`string`, required): Column name string or one-based column index.
-- `asc` (`boolean`, optional): True for ascending rank; defaults to true.
-- `name` (`string`, required): Output column name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a rank column in place. This method is available to Lua scripts.
@@ -3107,9 +3472,19 @@ Adds a rank column in place. This method is available to Lua scripts.
 function LDataFrame:withRank(col, asc, name) end
 ```
 
+#### Description
+
+Adds a rank column in place. This method is available to Lua scripts.
+
+Parameters:
+
+- `col` (`string`, required): Column name string or one-based column index.
+- `asc` (`boolean`, optional): True for ascending rank; defaults to true.
+- `name` (`string`, required): Output column name.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -3121,17 +3496,7 @@ end
 
 ### LDataFrame:withRollingMax
 
-`LDataFrame:withRollingMax(col: string, window: integer, name: string)`
-
-Adds a rolling maximum column in place.
-
-**Parameters**
-
-- `col` (`string`, required): Column name string or one-based column index.
-- `window` (`integer`, required): Rolling window size.
-- `name` (`string`, required): Output column name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a rolling maximum column in place.
@@ -3141,9 +3506,19 @@ Adds a rolling maximum column in place.
 function LDataFrame:withRollingMax(col, window, name) end
 ```
 
+#### Description
+
+Adds a rolling maximum column in place.
+
+Parameters:
+
+- `col` (`string`, required): Column name string or one-based column index.
+- `window` (`integer`, required): Rolling window size.
+- `name` (`string`, required): Output column name.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -3155,17 +3530,7 @@ end
 
 ### LDataFrame:withRollingMean
 
-`LDataFrame:withRollingMean(col: string, window: integer, name: string)`
-
-Adds a rolling mean column in place.
-
-**Parameters**
-
-- `col` (`string`, required): Column name string or one-based column index.
-- `window` (`integer`, required): Rolling window size.
-- `name` (`string`, required): Output column name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a rolling mean column in place.
@@ -3175,9 +3540,19 @@ Adds a rolling mean column in place.
 function LDataFrame:withRollingMean(col, window, name) end
 ```
 
+#### Description
+
+Adds a rolling mean column in place.
+
+Parameters:
+
+- `col` (`string`, required): Column name string or one-based column index.
+- `window` (`integer`, required): Rolling window size.
+- `name` (`string`, required): Output column name.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -3189,17 +3564,7 @@ end
 
 ### LDataFrame:withRollingMin
 
-`LDataFrame:withRollingMin(col: string, window: integer, name: string)`
-
-Adds a rolling minimum column in place.
-
-**Parameters**
-
-- `col` (`string`, required): Column name string or one-based column index.
-- `window` (`integer`, required): Rolling window size.
-- `name` (`string`, required): Output column name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a rolling minimum column in place.
@@ -3209,9 +3574,19 @@ Adds a rolling minimum column in place.
 function LDataFrame:withRollingMin(col, window, name) end
 ```
 
+#### Description
+
+Adds a rolling minimum column in place.
+
+Parameters:
+
+- `col` (`string`, required): Column name string or one-based column index.
+- `window` (`integer`, required): Rolling window size.
+- `name` (`string`, required): Output column name.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -3223,17 +3598,7 @@ end
 
 ### LDataFrame:withRollingSum
 
-`LDataFrame:withRollingSum(col: string, window: integer, name: string)`
-
-Adds a rolling sum column in place. This method is available to Lua scripts.
-
-**Parameters**
-
-- `col` (`string`, required): Column name string or one-based column index.
-- `window` (`integer`, required): Rolling window size.
-- `name` (`string`, required): Output column name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a rolling sum column in place. This method is available to Lua scripts.
@@ -3243,9 +3608,19 @@ Adds a rolling sum column in place. This method is available to Lua scripts.
 function LDataFrame:withRollingSum(col, window, name) end
 ```
 
+#### Description
+
+Adds a rolling sum column in place. This method is available to Lua scripts.
+
+Parameters:
+
+- `col` (`string`, required): Column name string or one-based column index.
+- `window` (`integer`, required): Rolling window size.
+- `name` (`string`, required): Output column name.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -3257,16 +3632,7 @@ end
 
 ### LDataFrame:zscoreCol
 
-`LDataFrame:zscoreCol(col: string, name: string)`
-
-Adds a z-score normalized column in place.
-
-**Parameters**
-
-- `col` (`string`, required): Column name string or one-based column index.
-- `name` (`string`, required): Output column name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a z-score normalized column in place.
@@ -3275,9 +3641,18 @@ Adds a z-score normalized column in place.
 function LDataFrame:zscoreCol(col, name) end
 ```
 
+#### Description
+
+Adds a z-score normalized column in place.
+
+Parameters:
+
+- `col` (`string`, required): Column name string or one-based column index.
+- `name` (`string`, required): Output column name.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -3289,18 +3664,7 @@ end
 
 ### LGroupedFrame:aggregate
 
-`LGroupedFrame:aggregate(col_name: string, func: function) -> LDataFrame`
-
-Aggregates one numeric column in every group by calling a Lua function with that group's numeric values.
-
-**Parameters**
-
-- `col_name` (`string`, required): Column name to aggregate in each group.
-- `func` (`function`, required): Function called with an array table of numeric values and returning a number.
-
-**Returns**: `LDataFrame` - DataFrame containing `group_key` and the aggregated column.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Aggregates one numeric column in every group by calling a Lua function with that group's numeric values.
@@ -3310,9 +3674,20 @@ Aggregates one numeric column in every group by calling a Lua function with that
 function LGroupedFrame:aggregate(col_name, func) end
 ```
 
+#### Description
+
+Aggregates one numeric column in every group by calling a Lua function with that group's numeric values.
+
+Parameters:
+
+- `col_name` (`string`, required): Column name to aggregate in each group.
+- `func` (`function`, required): Function called with an array table of numeric values and returning a number.
+
+Returns: `LDataFrame` - DataFrame containing `group_key` and the aggregated column.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -3324,13 +3699,7 @@ end
 
 ### LGroupedFrame:type
 
-`LGroupedFrame:type() -> string`
-
-Returns the Lua-visible type name for this grouped frame handle.
-
-**Returns**: `string` - The string `LGroupedFrame`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this grouped frame handle.
@@ -3338,9 +3707,15 @@ Returns the Lua-visible type name for this grouped frame handle.
 function LGroupedFrame:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this grouped frame handle.
+
+Returns: `string` - The string `LGroupedFrame`.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -3352,17 +3727,7 @@ end
 
 ### LGroupedFrame:typeOf
 
-`LGroupedFrame:typeOf(name: string) -> boolean`
-
-Returns whether this grouped frame handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LGroupedFrame` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this grouped frame handle matches a supported type name.
@@ -3371,9 +3736,19 @@ Returns whether this grouped frame handle matches a supported type name.
 function LGroupedFrame:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this grouped frame handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LGroupedFrame` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -3385,13 +3760,7 @@ end
 
 ### LLazyQuery:collect
 
-`LLazyQuery:collect() -> LDataFrame`
-
-Executes the lazy query and returns a dataframe.
-
-**Returns**: `LDataFrame` - Dataframe produced by the query plan.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Executes the lazy query and returns a dataframe.
@@ -3399,9 +3768,15 @@ Executes the lazy query and returns a dataframe.
 function LLazyQuery:collect() end
 ```
 
+#### Description
+
+Executes the lazy query and returns a dataframe.
+
+Returns: `LDataFrame` - Dataframe produced by the query plan.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -3413,17 +3788,7 @@ end
 
 ### LLazyQuery:dropNil
 
-`LLazyQuery:dropNil(col: string) -> LLazyQuery`
-
-Adds a step that drops rows with nil values in a column.
-
-**Parameters**
-
-- `col` (`string`, required): Column name to test for nil values.
-
-**Returns**: `LLazyQuery` - New lazy query handle with the drop-nil step.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a step that drops rows with nil values in a column.
@@ -3432,9 +3797,19 @@ Adds a step that drops rows with nil values in a column.
 function LLazyQuery:dropNil(col) end
 ```
 
+#### Description
+
+Adds a step that drops rows with nil values in a column.
+
+Parameters:
+
+- `col` (`string`, required): Column name to test for nil values.
+
+Returns: `LLazyQuery` - New lazy query handle with the drop-nil step.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -3448,19 +3823,7 @@ end
 
 ### LLazyQuery:filter
 
-`LLazyQuery:filter(col: string, op: string, val: any) -> LLazyQuery`
-
-Adds a filter step to the lazy query.
-
-**Parameters**
-
-- `col` (`string`, required): Column name to filter.
-- `op` (`string`, required): Comparison operator string.
-- `val` (`any`, required): Filter comparison value.
-
-**Returns**: `LLazyQuery` - New lazy query handle with the filter step.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a filter step to the lazy query.
@@ -3471,9 +3834,21 @@ Adds a filter step to the lazy query.
 function LLazyQuery:filter(col, op, val) end
 ```
 
+#### Description
+
+Adds a filter step to the lazy query.
+
+Parameters:
+
+- `col` (`string`, required): Column name to filter.
+- `op` (`string`, required): Comparison operator string.
+- `val` (`any`, required): Filter comparison value.
+
+Returns: `LLazyQuery` - New lazy query handle with the filter step.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -3485,17 +3860,7 @@ end
 
 ### LLazyQuery:head
 
-`LLazyQuery:head(n: integer) -> LLazyQuery`
-
-Adds a head limit step to the lazy query.
-
-**Parameters**
-
-- `n` (`integer`, required): Number of leading rows to keep.
-
-**Returns**: `LLazyQuery` - New lazy query handle with the head step.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a head limit step to the lazy query.
@@ -3504,9 +3869,19 @@ Adds a head limit step to the lazy query.
 function LLazyQuery:head(n) end
 ```
 
+#### Description
+
+Adds a head limit step to the lazy query.
+
+Parameters:
+
+- `n` (`integer`, required): Number of leading rows to keep.
+
+Returns: `LLazyQuery` - New lazy query handle with the head step.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -3518,17 +3893,7 @@ end
 
 ### LLazyQuery:limit
 
-`LLazyQuery:limit(n: integer) -> LLazyQuery`
-
-Adds a row limit step to the lazy query.
-
-**Parameters**
-
-- `n` (`integer`, required): Maximum number of rows to keep.
-
-**Returns**: `LLazyQuery` - New lazy query handle with the limit step.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a row limit step to the lazy query.
@@ -3537,9 +3902,19 @@ Adds a row limit step to the lazy query.
 function LLazyQuery:limit(n) end
 ```
 
+#### Description
+
+Adds a row limit step to the lazy query.
+
+Parameters:
+
+- `n` (`integer`, required): Maximum number of rows to keep.
+
+Returns: `LLazyQuery` - New lazy query handle with the limit step.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -3551,17 +3926,7 @@ end
 
 ### LLazyQuery:select
 
-`LLazyQuery:select(cols: table) -> LLazyQuery`
-
-Adds a column selection step to the lazy query.
-
-**Parameters**
-
-- `cols` (`table`, required): Array table of column names to keep.
-
-**Returns**: `LLazyQuery` - New lazy query handle with the select step.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a column selection step to the lazy query.
@@ -3570,9 +3935,19 @@ Adds a column selection step to the lazy query.
 function LLazyQuery:select(cols) end
 ```
 
+#### Description
+
+Adds a column selection step to the lazy query.
+
+Parameters:
+
+- `cols` (`table`, required): Array table of column names to keep.
+
+Returns: `LLazyQuery` - New lazy query handle with the select step.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -3584,18 +3959,7 @@ end
 
 ### LLazyQuery:slice
 
-`LLazyQuery:slice(start: integer, end: integer) -> LLazyQuery`
-
-Adds a one-based row slice step to the lazy query.
-
-**Parameters**
-
-- `start` (`integer`, required): One-based start row.
-- `end` (`integer`, required): One-based end row.
-
-**Returns**: `LLazyQuery` - New lazy query handle with the slice step.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a one-based row slice step to the lazy query.
@@ -3605,9 +3969,20 @@ Adds a one-based row slice step to the lazy query.
 function LLazyQuery:slice(start, end_) end
 ```
 
+#### Description
+
+Adds a one-based row slice step to the lazy query.
+
+Parameters:
+
+- `start` (`integer`, required): One-based start row.
+- `end` (`integer`, required): One-based end row.
+
+Returns: `LLazyQuery` - New lazy query handle with the slice step.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -3619,18 +3994,7 @@ end
 
 ### LLazyQuery:sort
 
-`LLazyQuery:sort(col: string, [ascending]: boolean) -> LLazyQuery`
-
-Adds a sort step to the lazy query. This method is available to Lua scripts.
-
-**Parameters**
-
-- `col` (`string`, required): Column name to sort by.
-- `ascending` (`boolean`, optional): True for ascending order; defaults to true.
-
-**Returns**: `LLazyQuery` - New lazy query handle with the sort step.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a sort step to the lazy query. This method is available to Lua scripts.
@@ -3640,9 +4004,20 @@ Adds a sort step to the lazy query. This method is available to Lua scripts.
 function LLazyQuery:sort(col, ascending) end
 ```
 
+#### Description
+
+Adds a sort step to the lazy query. This method is available to Lua scripts.
+
+Parameters:
+
+- `col` (`string`, required): Column name to sort by.
+- `ascending` (`boolean`, optional): True for ascending order; defaults to true.
+
+Returns: `LLazyQuery` - New lazy query handle with the sort step.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -3654,17 +4029,7 @@ end
 
 ### LLazyQuery:tail
 
-`LLazyQuery:tail(n: integer) -> LLazyQuery`
-
-Adds a tail limit step to the lazy query.
-
-**Parameters**
-
-- `n` (`integer`, required): Number of trailing rows to keep.
-
-**Returns**: `LLazyQuery` - New lazy query handle with the tail step.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a tail limit step to the lazy query.
@@ -3673,9 +4038,19 @@ Adds a tail limit step to the lazy query.
 function LLazyQuery:tail(n) end
 ```
 
+#### Description
+
+Adds a tail limit step to the lazy query.
+
+Parameters:
+
+- `n` (`integer`, required): Number of trailing rows to keep.
+
+Returns: `LLazyQuery` - New lazy query handle with the tail step.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -3687,13 +4062,7 @@ end
 
 ### LLazyQuery:type
 
-`LLazyQuery:type() -> string`
-
-Returns the Lua-visible type name for this lazy query handle.
-
-**Returns**: `string` - The string `LLazyQuery`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this lazy query handle.
@@ -3701,9 +4070,15 @@ Returns the Lua-visible type name for this lazy query handle.
 function LLazyQuery:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this lazy query handle.
+
+Returns: `string` - The string `LLazyQuery`.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -3715,17 +4090,7 @@ end
 
 ### LLazyQuery:typeOf
 
-`LLazyQuery:typeOf(name: string) -> boolean`
-
-Returns whether this lazy query handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LLazyQuery`, `LazyQuery`, and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this lazy query handle matches a supported type name.
@@ -3734,9 +4099,19 @@ Returns whether this lazy query handle matches a supported type name.
 function LLazyQuery:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this lazy query handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LLazyQuery`, `LazyQuery`, and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -3748,17 +4123,7 @@ end
 
 ### LVecFrame:applyMask
 
-`LVecFrame:applyMask(mask_tbl: table) -> LVecFrame`
-
-Returns a vectorized frame filtered by a boolean mask table.
-
-**Parameters**
-
-- `mask_tbl` (`table`, required): Array table of booleans, one per row.
-
-**Returns**: `LVecFrame` - New vectorized frame containing masked rows.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a vectorized frame filtered by a boolean mask table.
@@ -3767,9 +4132,19 @@ Returns a vectorized frame filtered by a boolean mask table.
 function LVecFrame:applyMask(mask_tbl) end
 ```
 
+#### Description
+
+Returns a vectorized frame filtered by a boolean mask table.
+
+Parameters:
+
+- `mask_tbl` (`table`, required): Array table of booleans, one per row.
+
+Returns: `LVecFrame` - New vectorized frame containing masked rows.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -3782,15 +4157,7 @@ end
 
 ### LVecFrame:colAbs
 
-`LVecFrame:colAbs(col: string)`
-
-Applies absolute value to a numeric column in place.
-
-**Parameters**
-
-- `col` (`string`, required): Column name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Applies absolute value to a numeric column in place.
@@ -3798,9 +4165,17 @@ Applies absolute value to a numeric column in place.
 function LVecFrame:colAbs(col) end
 ```
 
+#### Description
+
+Applies absolute value to a numeric column in place.
+
+Parameters:
+
+- `col` (`string`, required): Column name.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -3813,16 +4188,7 @@ end
 
 ### LVecFrame:colAdd
 
-`LVecFrame:colAdd(col: string, val: number)`
-
-Adds a scalar to a numeric column in place.
-
-**Parameters**
-
-- `col` (`string`, required): Column name.
-- `val` (`number`, required): Scalar value to add.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a scalar to a numeric column in place.
@@ -3831,9 +4197,18 @@ Adds a scalar to a numeric column in place.
 function LVecFrame:colAdd(col, val) end
 ```
 
+#### Description
+
+Adds a scalar to a numeric column in place.
+
+Parameters:
+
+- `col` (`string`, required): Column name.
+- `val` (`number`, required): Scalar value to add.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -3846,16 +4221,7 @@ end
 
 ### LVecFrame:colCast
 
-`LVecFrame:colCast(col: string, dtype: string)`
-
-Casts a vectorized column to another data type in place.
-
-**Parameters**
-
-- `col` (`string`, required): Column name.
-- `dtype` (`string`, required): Target data type name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Casts a vectorized column to another data type in place.
@@ -3864,9 +4230,18 @@ Casts a vectorized column to another data type in place.
 function LVecFrame:colCast(col, dtype) end
 ```
 
+#### Description
+
+Casts a vectorized column to another data type in place.
+
+Parameters:
+
+- `col` (`string`, required): Column name.
+- `dtype` (`string`, required): Target data type name.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -3879,15 +4254,7 @@ end
 
 ### LVecFrame:colCeil
 
-`LVecFrame:colCeil(col: string)`
-
-Applies ceil to a numeric column in place.
-
-**Parameters**
-
-- `col` (`string`, required): Column name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Applies ceil to a numeric column in place.
@@ -3895,9 +4262,17 @@ Applies ceil to a numeric column in place.
 function LVecFrame:colCeil(col) end
 ```
 
+#### Description
+
+Applies ceil to a numeric column in place.
+
+Parameters:
+
+- `col` (`string`, required): Column name.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -3910,17 +4285,7 @@ end
 
 ### LVecFrame:colClamp
 
-`LVecFrame:colClamp(col: string, min_val: number, max_val: number)`
-
-Clamps a numeric column in place. This method is available to Lua scripts.
-
-**Parameters**
-
-- `col` (`string`, required): Column name.
-- `min_val` (`number`, required): Minimum allowed value.
-- `max_val` (`number`, required): Maximum allowed value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Clamps a numeric column in place. This method is available to Lua scripts.
@@ -3930,9 +4295,19 @@ Clamps a numeric column in place. This method is available to Lua scripts.
 function LVecFrame:colClamp(col, min_val, max_val) end
 ```
 
+#### Description
+
+Clamps a numeric column in place. This method is available to Lua scripts.
+
+Parameters:
+
+- `col` (`string`, required): Column name.
+- `min_val` (`number`, required): Minimum allowed value.
+- `max_val` (`number`, required): Maximum allowed value.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -3945,16 +4320,7 @@ end
 
 ### LVecFrame:colDiv
 
-`LVecFrame:colDiv(col: string, val: number)`
-
-Divides a numeric column by a scalar in place.
-
-**Parameters**
-
-- `col` (`string`, required): Column name.
-- `val` (`number`, required): Scalar divisor.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Divides a numeric column by a scalar in place.
@@ -3963,9 +4329,18 @@ Divides a numeric column by a scalar in place.
 function LVecFrame:colDiv(col, val) end
 ```
 
+#### Description
+
+Divides a numeric column by a scalar in place.
+
+Parameters:
+
+- `col` (`string`, required): Column name.
+- `val` (`number`, required): Scalar divisor.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -3978,15 +4353,7 @@ end
 
 ### LVecFrame:colFloor
 
-`LVecFrame:colFloor(col: string)`
-
-Applies floor to a numeric column in place.
-
-**Parameters**
-
-- `col` (`string`, required): Column name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Applies floor to a numeric column in place.
@@ -3994,9 +4361,17 @@ Applies floor to a numeric column in place.
 function LVecFrame:colFloor(col) end
 ```
 
+#### Description
+
+Applies floor to a numeric column in place.
+
+Parameters:
+
+- `col` (`string`, required): Column name.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -4009,16 +4384,7 @@ end
 
 ### LVecFrame:colMul
 
-`LVecFrame:colMul(col: string, val: number)`
-
-Multiplies a numeric column by a scalar in place.
-
-**Parameters**
-
-- `col` (`string`, required): Column name.
-- `val` (`number`, required): Scalar multiplier.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Multiplies a numeric column by a scalar in place.
@@ -4027,9 +4393,18 @@ Multiplies a numeric column by a scalar in place.
 function LVecFrame:colMul(col, val) end
 ```
 
+#### Description
+
+Multiplies a numeric column by a scalar in place.
+
+Parameters:
+
+- `col` (`string`, required): Column name.
+- `val` (`number`, required): Scalar multiplier.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -4042,15 +4417,7 @@ end
 
 ### LVecFrame:colNeg
 
-`LVecFrame:colNeg(col: string)`
-
-Negates a numeric column in place. This method is available to Lua scripts.
-
-**Parameters**
-
-- `col` (`string`, required): Column name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Negates a numeric column in place. This method is available to Lua scripts.
@@ -4058,9 +4425,17 @@ Negates a numeric column in place. This method is available to Lua scripts.
 function LVecFrame:colNeg(col) end
 ```
 
+#### Description
+
+Negates a numeric column in place. This method is available to Lua scripts.
+
+Parameters:
+
+- `col` (`string`, required): Column name.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -4073,18 +4448,7 @@ end
 
 ### LVecFrame:colOp
 
-`LVecFrame:colOp(out_col: string, left_col: string, op: string, right_col: string)`
-
-Applies a binary column operation into an output column.
-
-**Parameters**
-
-- `out_col` (`string`, required): Output column name.
-- `left_col` (`string`, required): Left input column name.
-- `op` (`string`, required): Binary operation name.
-- `right_col` (`string`, required): Right input column name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Applies a binary column operation into an output column.
@@ -4095,9 +4459,20 @@ Applies a binary column operation into an output column.
 function LVecFrame:colOp(out_col, left_col, op, right_col) end
 ```
 
+#### Description
+
+Applies a binary column operation into an output column.
+
+Parameters:
+
+- `out_col` (`string`, required): Output column name.
+- `left_col` (`string`, required): Left input column name.
+- `op` (`string`, required): Binary operation name.
+- `right_col` (`string`, required): Right input column name.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -4110,15 +4485,7 @@ end
 
 ### LVecFrame:colSqrt
 
-`LVecFrame:colSqrt(col: string)`
-
-Applies square root to a numeric column in place.
-
-**Parameters**
-
-- `col` (`string`, required): Column name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Applies square root to a numeric column in place.
@@ -4126,9 +4493,17 @@ Applies square root to a numeric column in place.
 function LVecFrame:colSqrt(col) end
 ```
 
+#### Description
+
+Applies square root to a numeric column in place.
+
+Parameters:
+
+- `col` (`string`, required): Column name.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -4141,16 +4516,7 @@ end
 
 ### LVecFrame:colSub
 
-`LVecFrame:colSub(col: string, val: number)`
-
-Subtracts a scalar from a numeric column in place.
-
-**Parameters**
-
-- `col` (`string`, required): Column name.
-- `val` (`number`, required): Scalar value to subtract.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Subtracts a scalar from a numeric column in place.
@@ -4159,9 +4525,18 @@ Subtracts a scalar from a numeric column in place.
 function LVecFrame:colSub(col, val) end
 ```
 
+#### Description
+
+Subtracts a scalar from a numeric column in place.
+
+Parameters:
+
+- `col` (`string`, required): Column name.
+- `val` (`number`, required): Scalar value to subtract.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -4174,17 +4549,7 @@ end
 
 ### LVecFrame:colType
 
-`LVecFrame:colType(col: string) -> string`
-
-Returns the data type name for a vectorized column.
-
-**Parameters**
-
-- `col` (`string`, required): Column name.
-
-**Returns**: `string` - Column type name, or nil when the column is missing.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the data type name for a vectorized column.
@@ -4193,9 +4558,19 @@ Returns the data type name for a vectorized column.
 function LVecFrame:colType(col) end
 ```
 
+#### Description
+
+Returns the data type name for a vectorized column.
+
+Parameters:
+
+- `col` (`string`, required): Column name.
+
+Returns: `string` - Column type name, or nil when the column is missing.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -4207,13 +4582,7 @@ end
 
 ### LVecFrame:columns
 
-`LVecFrame:columns() -> string[]`
-
-Returns all vectorized column names in order.
-
-**Returns**: `string[]` - Column names.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns all vectorized column names in order.
@@ -4221,9 +4590,15 @@ Returns all vectorized column names in order.
 function LVecFrame:columns() end
 ```
 
+#### Description
+
+Returns all vectorized column names in order.
+
+Returns: `string[]` - Column names.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -4236,19 +4611,7 @@ end
 
 ### LVecFrame:filterMask
 
-`LVecFrame:filterMask(col: string, cmp_op: string, val: number) -> number[]`
-
-Builds a boolean mask for a numeric column comparison.
-
-**Parameters**
-
-- `col` (`string`, required): Column name.
-- `cmp_op` (`string`, required): Comparison operation name.
-- `val` (`number`, required): Comparison value.
-
-**Returns**: `number[]` - Array table of boolean mask values.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Builds a boolean mask for a numeric column comparison.
@@ -4259,9 +4622,21 @@ Builds a boolean mask for a numeric column comparison.
 function LVecFrame:filterMask(col, cmp_op, val) end
 ```
 
+#### Description
+
+Builds a boolean mask for a numeric column comparison.
+
+Parameters:
+
+- `col` (`string`, required): Column name.
+- `cmp_op` (`string`, required): Comparison operation name.
+- `val` (`number`, required): Comparison value.
+
+Returns: `number[]` - Array table of boolean mask values.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -4274,13 +4649,7 @@ end
 
 ### LVecFrame:ncols
 
-`LVecFrame:ncols() -> integer`
-
-Returns the number of columns in this vectorized frame.
-
-**Returns**: `integer` - Column count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of columns in this vectorized frame.
@@ -4288,9 +4657,15 @@ Returns the number of columns in this vectorized frame.
 function LVecFrame:ncols() end
 ```
 
+#### Description
+
+Returns the number of columns in this vectorized frame.
+
+Returns: `integer` - Column count.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -4302,13 +4677,7 @@ end
 
 ### LVecFrame:nrows
 
-`LVecFrame:nrows() -> integer`
-
-Returns the number of rows in this vectorized frame.
-
-**Returns**: `integer` - Row count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of rows in this vectorized frame.
@@ -4316,9 +4685,15 @@ Returns the number of rows in this vectorized frame.
 function LVecFrame:nrows() end
 ```
 
+#### Description
+
+Returns the number of rows in this vectorized frame.
+
+Returns: `integer` - Row count.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -4330,18 +4705,7 @@ end
 
 ### LVecFrame:parReduce
 
-`LVecFrame:parReduce(cols_tbl: table, op: string) -> table`
-
-Reduces multiple numeric columns in parallel.
-
-**Parameters**
-
-- `cols_tbl` (`table`, required): Array table of column names.
-- `op` (`string`, required): Reduction operation name.
-
-**Returns**: `table` - Table mapping column names to reduction results or nil.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Reduces multiple numeric columns in parallel.
@@ -4351,9 +4715,20 @@ Reduces multiple numeric columns in parallel.
 function LVecFrame:parReduce(cols_tbl, op) end
 ```
 
+#### Description
+
+Reduces multiple numeric columns in parallel.
+
+Parameters:
+
+- `cols_tbl` (`table`, required): Array table of column names.
+- `op` (`string`, required): Reduction operation name.
+
+Returns: `table` - Table mapping column names to reduction results or nil.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -4366,17 +4741,7 @@ end
 
 ### LVecFrame:parScalarOp
 
-`LVecFrame:parScalarOp(cols_tbl: table, op: string, val: number)`
-
-Applies a scalar operation to multiple numeric columns in parallel.
-
-**Parameters**
-
-- `cols_tbl` (`table`, required): Array table of column names.
-- `op` (`string`, required): Scalar operation name.
-- `val` (`number`, required): Scalar value used by the operation.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Applies a scalar operation to multiple numeric columns in parallel.
@@ -4386,9 +4751,19 @@ Applies a scalar operation to multiple numeric columns in parallel.
 function LVecFrame:parScalarOp(cols_tbl, op, val) end
 ```
 
+#### Description
+
+Applies a scalar operation to multiple numeric columns in parallel.
+
+Parameters:
+
+- `cols_tbl` (`table`, required): Array table of column names.
+- `op` (`string`, required): Scalar operation name.
+- `val` (`number`, required): Scalar value used by the operation.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -4401,18 +4776,7 @@ end
 
 ### LVecFrame:reduce
 
-`LVecFrame:reduce(col: string, op: string) -> number`
-
-Reduces a numeric column with a named operation.
-
-**Parameters**
-
-- `col` (`string`, required): Column name.
-- `op` (`string`, required): Reduction operation name.
-
-**Returns**: `number` - Reduction result.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Reduces a numeric column with a named operation.
@@ -4422,9 +4786,20 @@ Reduces a numeric column with a named operation.
 function LVecFrame:reduce(col, op) end
 ```
 
+#### Description
+
+Reduces a numeric column with a named operation.
+
+Parameters:
+
+- `col` (`string`, required): Column name.
+- `op` (`string`, required): Reduction operation name.
+
+Returns: `number` - Reduction result.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -4437,13 +4812,7 @@ end
 
 ### LVecFrame:toDataFrame
 
-`LVecFrame:toDataFrame() -> LDataFrame`
-
-Converts this vectorized frame to a dataframe.
-
-**Returns**: `LDataFrame` - New dataframe handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Converts this vectorized frame to a dataframe.
@@ -4451,9 +4820,15 @@ Converts this vectorized frame to a dataframe.
 function LVecFrame:toDataFrame() end
 ```
 
+#### Description
+
+Converts this vectorized frame to a dataframe.
+
+Returns: `LDataFrame` - New dataframe handle.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -4467,13 +4842,7 @@ end
 
 ### LVecFrame:type
 
-`LVecFrame:type() -> string`
-
-Returns the Lua-visible type name for this vectorized frame handle.
-
-**Returns**: `string` - The string `LVecFrame`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this vectorized frame handle.
@@ -4481,9 +4850,15 @@ Returns the Lua-visible type name for this vectorized frame handle.
 function LVecFrame:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this vectorized frame handle.
+
+Returns: `string` - The string `LVecFrame`.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do
@@ -4495,17 +4870,7 @@ end
 
 ### LVecFrame:typeOf
 
-`LVecFrame:typeOf(name: string) -> boolean`
-
-Returns whether this vectorized frame handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `VecFrame` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this vectorized frame handle matches a supported type name.
@@ -4514,9 +4879,19 @@ Returns whether this vectorized frame handle matches a supported type name.
 function LVecFrame:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this vectorized frame handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `VecFrame` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [dataframe.lua](../blob/main/content/examples/dataframe.lua):
+Source: [dataframe.lua](../blob/main/content/examples/dataframe.lua)
 
 ```lua
 do

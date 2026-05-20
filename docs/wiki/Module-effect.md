@@ -14,173 +14,505 @@
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
   - [lurek.effect.getEffectTypes](#lurekeffectgeteffecttypes)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.effect.getShaderErrorDisplay](#lurekeffectgetshadererrordisplay)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.effect.newCustomEffect](#lurekeffectnewcustomeffect)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.effect.newEffect](#lurekeffectneweffect)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.effect.newImageEffect](#lurekeffectnewimageeffect)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.effect.newOverlay](#lurekeffectnewoverlay)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.effect.newPass](#lurekeffectnewpass)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.effect.newPresetStack](#lurekeffectnewpresetstack)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.effect.newStack](#lurekeffectnewstack)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.effect.newTransition](#lurekeffectnewtransition)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.effect.setShaderErrorDisplay](#lurekeffectsetshadererrordisplay)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔷 Module Types](#module-types)
   - [LImageEffect](#limageeffect)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay](#loverlay)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxEffect](#lpostfxeffect)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxStack](#lpostfxstack)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScreenTransition](#lscreentransition)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
   - [LImageEffect:addEffect](#limageeffectaddeffect)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageEffect:clear](#limageeffectclear)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageEffect:clearEffects](#limageeffectcleareffects)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageEffect:clone](#limageeffectclone)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageEffect:effectCount](#limageeffecteffectcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageEffect:getEffect](#limageeffectgeteffect)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageEffect:getEffectCount](#limageeffectgeteffectcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageEffect:removeByIndex](#limageeffectremovebyindex)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageEffect:removeByName](#limageeffectremovebyname)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageEffect:removeEffect](#limageeffectremoveeffect)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageEffect:save](#limageeffectsave)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageEffect:type](#limageeffecttype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LImageEffect:typeOf](#limageeffecttypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:clear](#loverlayclear)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:drawToImage](#loverlaydrawtoimage)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:fade](#loverlayfade)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:flash](#loverlayflash)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:getAmbientColor](#loverlaygetambientcolor)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:getCloudCount](#loverlaygetcloudcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:getCloudOpacity](#loverlaygetcloudopacity)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:getCloudScale](#loverlaygetcloudscale)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:getCloudSpeed](#loverlaygetcloudspeed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:getDimensions](#loverlaygetdimensions)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:getFilmGrainIntensity](#loverlaygetfilmgrainintensity)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:getFlashAlpha](#loverlaygetflashalpha)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:getFogColor](#loverlaygetfogcolor)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:getFogDensity](#loverlaygetfogdensity)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:getHeatHazeIntensity](#loverlaygetheathazeintensity)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:getHeight](#loverlaygetheight)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:getLightningAlpha](#loverlaygetlightningalpha)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:getLightningColor](#loverlaygetlightningcolor)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:getShakeOffset](#loverlaygetshakeoffset)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:getTimeOfDay](#loverlaygettimeofday)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:getVignetteStrength](#loverlaygetvignettestrength)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:getWater](#loverlaygetwater)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:getWeather](#loverlaygetweather)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:getWeatherIntensity](#loverlaygetweatherintensity)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:getWidth](#loverlaygetwidth)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:getWindDirection](#loverlaygetwinddirection)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:getWindSpeed](#loverlaygetwindspeed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:isActive](#loverlayisactive)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:isAmbientEnabled](#loverlayisambientenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:isCloudShadowsEnabled](#loverlayiscloudshadowsenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:isFading](#loverlayisfading)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:isFilmGrainEnabled](#loverlayisfilmgrainenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:isFlashing](#loverlayisflashing)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:isFogEnabled](#loverlayisfogenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:isHeatHazeEnabled](#loverlayisheathazeenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:isShaking](#loverlayisshaking)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:isVignetteEnabled](#loverlayisvignetteenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:isWeatherEnabled](#loverlayisweatherenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:pullAmbientFromLight](#loverlaypullambientfromlight)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:pushAmbientToLight](#loverlaypushambienttolight)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:render](#loverlayrender)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:resize](#loverlayresize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:setAmbientColor](#loverlaysetambientcolor)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:setAmbientEnabled](#loverlaysetambientenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:setCloudCount](#loverlaysetcloudcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:setCloudOpacity](#loverlaysetcloudopacity)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:setCloudScale](#loverlaysetcloudscale)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:setCloudShadows](#loverlaysetcloudshadows)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:setCloudSpeed](#loverlaysetcloudspeed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:setCustomShader](#loverlaysetcustomshader)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:setFilmGrainEnabled](#loverlaysetfilmgrainenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:setFilmGrainIntensity](#loverlaysetfilmgrainintensity)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:setFogColor](#loverlaysetfogcolor)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:setFogDensity](#loverlaysetfogdensity)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:setFogEnabled](#loverlaysetfogenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:setHeatHazeEnabled](#loverlaysetheathazeenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:setHeatHazeIntensity](#loverlaysetheathazeintensity)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:setLightningColor](#loverlaysetlightningcolor)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:setTimeOfDay](#loverlaysettimeofday)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:setVignetteEnabled](#loverlaysetvignetteenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:setVignetteStrength](#loverlaysetvignettestrength)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:setWater](#loverlaysetwater)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:setWaterTint](#loverlaysetwatertint)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:setWeather](#loverlaysetweather)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:setWeatherEnabled](#loverlaysetweatherenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:setWeatherIntensity](#loverlaysetweatherintensity)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:setWindDirection](#loverlaysetwinddirection)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:setWindSpeed](#loverlaysetwindspeed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:shake](#loverlayshake)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:syncAmbientWithLight](#loverlaysyncambientwithlight)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:triggerFade](#loverlaytriggerfade)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:triggerFlash](#loverlaytriggerflash)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:triggerLightning](#loverlaytriggerlightning)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:triggerShake](#loverlaytriggershake)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:type](#loverlaytype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:typeOf](#loverlaytypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LOverlay:update](#loverlayupdate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxEffect:disableAutoUniforms](#lpostfxeffectdisableautouniforms)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxEffect:enableAutoUniforms](#lpostfxeffectenableautouniforms)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxEffect:getEffectType](#lpostfxeffectgeteffecttype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxEffect:getParameter](#lpostfxeffectgetparameter)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxEffect:getParameterNames](#lpostfxeffectgetparameternames)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxEffect:getType](#lpostfxeffectgettype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxEffect:getTypeName](#lpostfxeffectgettypename)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxEffect:hasParameter](#lpostfxeffecthasparameter)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxEffect:isAutoUniforms](#lpostfxeffectisautouniforms)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxEffect:isBuiltIn](#lpostfxeffectisbuiltin)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxEffect:isEnabled](#lpostfxeffectisenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxEffect:setBrightness](#lpostfxeffectsetbrightness)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxEffect:setContrast](#lpostfxeffectsetcontrast)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxEffect:setEnabled](#lpostfxeffectsetenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxEffect:setIntensity](#lpostfxeffectsetintensity)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxEffect:setOffset](#lpostfxeffectsetoffset)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxEffect:setParameter](#lpostfxeffectsetparameter)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxEffect:setRadius](#lpostfxeffectsetradius)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxEffect:setSaturation](#lpostfxeffectsetsaturation)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxEffect:setScanlineStrength](#lpostfxeffectsetscanlinestrength)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxEffect:setStrength](#lpostfxeffectsetstrength)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxEffect:setThreshold](#lpostfxeffectsetthreshold)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxEffect:type](#lpostfxeffecttype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxEffect:typeOf](#lpostfxeffecttypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxStack:add](#lpostfxstackadd)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxStack:apply](#lpostfxstackapply)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxStack:beginCapture](#lpostfxstackbegincapture)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxStack:clear](#lpostfxstackclear)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxStack:clearFeedback](#lpostfxstackclearfeedback)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxStack:dedup](#lpostfxstackdedup)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxStack:endCapture](#lpostfxstackendcapture)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxStack:getDimensions](#lpostfxstackgetdimensions)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxStack:getEffect](#lpostfxstackgeteffect)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxStack:getEffectCount](#lpostfxstackgeteffectcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxStack:getEnabledEffects](#lpostfxstackgetenabledeffects)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxStack:getFeedback](#lpostfxstackgetfeedback)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxStack:getHeight](#lpostfxstackgetheight)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxStack:getWidth](#lpostfxstackgetwidth)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxStack:insert](#lpostfxstackinsert)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxStack:isCapturing](#lpostfxstackiscapturing)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxStack:isEmpty](#lpostfxstackisempty)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxStack:isEnabled](#lpostfxstackisenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxStack:len](#lpostfxstacklen)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxStack:remove](#lpostfxstackremove)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxStack:resize](#lpostfxstackresize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxStack:setEnabled](#lpostfxstacksetenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxStack:setFeedback](#lpostfxstacksetfeedback)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxStack:type](#lpostfxstacktype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPostFxStack:typeOf](#lpostfxstacktypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScreenTransition:color](#lscreentransitioncolor)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScreenTransition:isActive](#lscreentransitionisactive)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScreenTransition:isDone](#lscreentransitionisdone)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScreenTransition:kind](#lscreentransitionkind)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScreenTransition:play](#lscreentransitionplay)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScreenTransition:progress](#lscreentransitionprogress)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScreenTransition:reverse](#lscreentransitionreverse)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScreenTransition:setColor](#lscreentransitionsetcolor)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScreenTransition:type](#lscreentransitiontype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScreenTransition:typeOf](#lscreentransitiontypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScreenTransition:update](#lscreentransitionupdate)
+    - [Definition](#definition)
+    - [Description](#description)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -238,15 +570,23 @@ lurek.effect.setShaderErrorDisplay(enabled: boolean) -- Enables or disables rend
 
 ### lurek.effect.getEffectTypes
 
-`lurek.effect.getEffectTypes() -> string[]`
+#### Definition
+
+```lua
+--- Returns all built-in post-processing effect type names.
+---@return string[] Built-in effect type strings.
+lurek.effect.getEffectTypes = function() end
+```
+
+#### Description
 
 Returns all built-in post-processing effect type names.
 
-**Returns**: `string[]` - Built-in effect type strings.
+Returns: `string[]` - Built-in effect type strings.
 
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -257,15 +597,23 @@ end
 
 ### lurek.effect.getShaderErrorDisplay
 
-`lurek.effect.getShaderErrorDisplay() -> boolean`
+#### Definition
+
+```lua
+--- Returns whether renderer shader error display overlays are enabled.
+---@return boolean True when shader error display is enabled.
+lurek.effect.getShaderErrorDisplay = function() end
+```
+
+#### Description
 
 Returns whether renderer shader error display overlays are enabled.
 
-**Returns**: `boolean` - True when shader error display is enabled.
+Returns: `boolean` - True when shader error display is enabled.
 
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -276,19 +624,28 @@ end
 
 ### lurek.effect.newCustomEffect
 
-`lurek.effect.newCustomEffect(shader_id: integer) -> LPostFxEffect`
+#### Definition
+
+```lua
+--- Creates a custom post-processing effect that references an existing shader id.
+---@param shader_id number Renderer shader identifier used for the custom effect.
+---@return LPostFxEffect New custom post-processing effect handle.
+lurek.effect.newCustomEffect = function(shader_id) end
+```
+
+#### Description
 
 Creates a custom post-processing effect that references an existing shader id.
 
-**Parameters**
+Parameters:
 
 - `shader_id` (`integer`, required): Renderer shader identifier used for the custom effect.
 
-**Returns**: `LPostFxEffect` - New custom post-processing effect handle.
+Returns: `LPostFxEffect` - New custom post-processing effect handle.
 
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -299,19 +656,28 @@ end
 
 ### lurek.effect.newEffect
 
-`lurek.effect.newEffect(type_name: string) -> LPostFxEffect`
+#### Definition
+
+```lua
+--- Creates a built-in post-processing effect by type name.
+---@param type_name string Built-in effect type name such as `blur`, `bloom`, or `crt`.
+---@return LPostFxEffect New post-processing effect handle.
+lurek.effect.newEffect = function(type_name) end
+```
+
+#### Description
 
 Creates a built-in post-processing effect by type name.
 
-**Parameters**
+Parameters:
 
 - `type_name` (`string`, required): Built-in effect type name such as `blur`, `bloom`, or `crt`.
 
-**Returns**: `LPostFxEffect` - New post-processing effect handle.
+Returns: `LPostFxEffect` - New post-processing effect handle.
 
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -322,20 +688,30 @@ end
 
 ### lurek.effect.newImageEffect
 
-`lurek.effect.newImageEffect([spec]: LuaValue, [params]: table) -> LImageEffect`
+#### Definition
+
+```lua
+--- Creates an image effect chain from no arguments, a type name and optional parameters, or a chain table.
+---@param spec? LuaValue Optional effect type string, or an array table of effect entries, or nil for an empty chain.
+---@param params? table Optional parameter table used when `spec` is an effect type string.
+---@return LImageEffect New image effect chain handle.
+lurek.effect.newImageEffect = function(spec, params) end
+```
+
+#### Description
 
 Creates an image effect chain from no arguments, a type name and optional parameters, or a chain table.
 
-**Parameters**
+Parameters:
 
 - `spec` (`LuaValue`, optional): Optional effect type string, or an array table of effect entries, or nil for an empty chain.
 - `params` (`table`, optional): Optional parameter table used when `spec` is an effect type string.
 
-**Returns**: `LImageEffect` - New image effect chain handle.
+Returns: `LImageEffect` - New image effect chain handle.
 
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -346,20 +722,30 @@ end
 
 ### lurek.effect.newOverlay
 
-`lurek.effect.newOverlay([w]: integer, [h]: integer) -> LOverlay`
+#### Definition
+
+```lua
+--- Creates an overlay controller for screen effects using optional dimensions.
+---@param w? number Overlay width in pixels, defaulting to 800.
+---@param h? number Overlay height in pixels, defaulting to 600.
+---@return LOverlay New overlay handle.
+lurek.effect.newOverlay = function(w, h) end
+```
+
+#### Description
 
 Creates an overlay controller for screen effects using optional dimensions.
 
-**Parameters**
+Parameters:
 
 - `w` (`integer`, optional): Overlay width in pixels, defaulting to 800.
 - `h` (`integer`, optional): Overlay height in pixels, defaulting to 600.
 
-**Returns**: `LOverlay` - New overlay handle.
+Returns: `LOverlay` - New overlay handle.
 
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -370,19 +756,28 @@ end
 
 ### lurek.effect.newPass
 
-`lurek.effect.newPass(shader_id: integer) -> LPostFxEffect`
+#### Definition
+
+```lua
+--- Creates a custom post-processing pass from an existing shader id.
+---@param shader_id number Renderer shader identifier used for the pass.
+---@return LPostFxEffect New custom post-processing effect handle.
+lurek.effect.newPass = function(shader_id) end
+```
+
+#### Description
 
 Creates a custom post-processing pass from an existing shader id.
 
-**Parameters**
+Parameters:
 
 - `shader_id` (`integer`, required): Renderer shader identifier used for the pass.
 
-**Returns**: `LPostFxEffect` - New custom post-processing effect handle.
+Returns: `LPostFxEffect` - New custom post-processing effect handle.
 
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -393,21 +788,32 @@ end
 
 ### lurek.effect.newPresetStack
 
-`lurek.effect.newPresetStack(name: string, [w]: integer, [h]: integer) -> LPostFxStack`
+#### Definition
+
+```lua
+--- Creates a named preset post-processing stack with optional dimensions.
+---@param name string Preset stack name.
+---@param w? number Stack width in pixels, defaulting to window width.
+---@param h? number Stack height in pixels, defaulting to window height.
+---@return LPostFxStack New preset post-processing stack handle.
+lurek.effect.newPresetStack = function(name, w, h) end
+```
+
+#### Description
 
 Creates a named preset post-processing stack with optional dimensions.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, required): Preset stack name.
 - `w` (`integer`, optional): Stack width in pixels, defaulting to window width.
 - `h` (`integer`, optional): Stack height in pixels, defaulting to window height.
 
-**Returns**: `LPostFxStack` - New preset post-processing stack handle.
+Returns: `LPostFxStack` - New preset post-processing stack handle.
 
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -418,20 +824,30 @@ end
 
 ### lurek.effect.newStack
 
-`lurek.effect.newStack([w]: integer, [h]: integer) -> LPostFxStack`
+#### Definition
+
+```lua
+--- Creates a post-processing stack using optional dimensions or the current window size.
+---@param w? number Stack width in pixels, defaulting to window width.
+---@param h? number Stack height in pixels, defaulting to window height.
+---@return LPostFxStack New post-processing stack handle.
+lurek.effect.newStack = function(w, h) end
+```
+
+#### Description
 
 Creates a post-processing stack using optional dimensions or the current window size.
 
-**Parameters**
+Parameters:
 
 - `w` (`integer`, optional): Stack width in pixels, defaulting to window width.
 - `h` (`integer`, optional): Stack height in pixels, defaulting to window height.
 
-**Returns**: `LPostFxStack` - New post-processing stack handle.
+Returns: `LPostFxStack` - New post-processing stack handle.
 
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -442,21 +858,32 @@ end
 
 ### lurek.effect.newTransition
 
-`lurek.effect.newTransition([kind]: string, [duration]: number, [color_tbl]: table) -> LScreenTransition`
+#### Definition
+
+```lua
+--- Creates a timed screen transition with optional kind, duration, and color.
+---@param kind? string Transition kind name, defaulting to `fade`.
+---@param duration? number Duration in seconds, defaulting to 1.0.
+---@param color_tbl? table Numeric RGBA table using indices 1 through 4.
+---@return LScreenTransition New screen transition handle.
+lurek.effect.newTransition = function(kind, duration, color_tbl) end
+```
+
+#### Description
 
 Creates a timed screen transition with optional kind, duration, and color.
 
-**Parameters**
+Parameters:
 
 - `kind` (`string`, optional): Transition kind name, defaulting to `fade`.
 - `duration` (`number`, optional): Duration in seconds, defaulting to 1.0.
 - `color_tbl` (`table`, optional): Numeric RGBA table using indices 1 through 4.
 
-**Returns**: `LScreenTransition` - New screen transition handle.
+Returns: `LScreenTransition` - New screen transition handle.
 
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -467,17 +894,25 @@ end
 
 ### lurek.effect.setShaderErrorDisplay
 
-`lurek.effect.setShaderErrorDisplay(enabled: boolean)`
+#### Definition
+
+```lua
+--- Enables or disables renderer shader error display overlays.
+---@param enabled boolean New shader error display flag.
+lurek.effect.setShaderErrorDisplay = function(enabled) end
+```
+
+#### Description
 
 Enables or disables renderer shader error display overlays.
 
-**Parameters**
+Parameters:
 
 - `enabled` (`boolean`, required): New shader error display flag.
 
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -493,9 +928,7 @@ end
 
 ### LImageEffect
 
-Lua-side handle for an image effect chain detached from live post-effect capture.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side handle for an image effect chain detached from live post-effect capture.
@@ -503,9 +936,13 @@ Lua-side handle for an image effect chain detached from live post-effect capture
 LImageEffect = {}
 ```
 
+#### Description
+
+Lua-side handle for an image effect chain detached from live post-effect capture.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -516,9 +953,7 @@ end
 
 ### LOverlay
 
-Lua-side handle for screen overlay, ambient, weather, and transition visual state.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side handle for screen overlay, ambient, weather, and transition visual state.
@@ -526,9 +961,13 @@ Lua-side handle for screen overlay, ambient, weather, and transition visual stat
 LOverlay = {}
 ```
 
+#### Description
+
+Lua-side handle for screen overlay, ambient, weather, and transition visual state.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -539,9 +978,7 @@ end
 
 ### LPostFxEffect
 
-Lua-side handle for a single post-processing effect instance.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side handle for a single post-processing effect instance.
@@ -549,9 +986,13 @@ Lua-side handle for a single post-processing effect instance.
 LPostFxEffect = {}
 ```
 
+#### Description
+
+Lua-side handle for a single post-processing effect instance.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -562,9 +1003,7 @@ end
 
 ### LPostFxStack
 
-Lua-side handle for an ordered post-processing stack.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side handle for an ordered post-processing stack.
@@ -572,9 +1011,13 @@ Lua-side handle for an ordered post-processing stack.
 LPostFxStack = {}
 ```
 
+#### Description
+
+Lua-side handle for an ordered post-processing stack.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -585,9 +1028,7 @@ end
 
 ### LScreenTransition
 
-Lua-side handle for a timed screen transition effect.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side handle for a timed screen transition effect.
@@ -595,9 +1036,13 @@ Lua-side handle for a timed screen transition effect.
 LScreenTransition = {}
 ```
 
+#### Description
+
+Lua-side handle for a timed screen transition effect.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -613,17 +1058,7 @@ end
 
 ### LImageEffect:addEffect
 
-`LImageEffect:addEffect(name: string) -> LPostFxEffect`
-
-Appends a built-in post-effect by type name to this image effect chain.
-
-**Parameters**
-
-- `name` (`string`, required): Built-in effect type name.
-
-**Returns**: `LPostFxEffect` - Handle for the effect added to the chain.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Appends a built-in post-effect by type name to this image effect chain.
@@ -632,9 +1067,19 @@ Appends a built-in post-effect by type name to this image effect chain.
 function LImageEffect:addEffect(name) end
 ```
 
+#### Description
+
+Appends a built-in post-effect by type name to this image effect chain.
+
+Parameters:
+
+- `name` (`string`, required): Built-in effect type name.
+
+Returns: `LPostFxEffect` - Handle for the effect added to the chain.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -646,20 +1091,20 @@ end
 
 ### LImageEffect:clear
 
-`LImageEffect:clear()`
-
-Removes every effect from this image effect chain.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes every effect from this image effect chain.
 function LImageEffect:clear() end
 ```
 
+#### Description
+
+Removes every effect from this image effect chain.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -672,20 +1117,20 @@ end
 
 ### LImageEffect:clearEffects
 
-`LImageEffect:clearEffects()`
-
-Removes every effect from this image effect chain.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes every effect from this image effect chain.
 function LImageEffect:clearEffects() end
 ```
 
+#### Description
+
+Removes every effect from this image effect chain.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -698,13 +1143,7 @@ end
 
 ### LImageEffect:clone
 
-`LImageEffect:clone() -> LImageEffect`
-
-Creates a new image effect chain with cloned effect entries.
-
-**Returns**: `LImageEffect` - New image effect handle with the same effect chain.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Creates a new image effect chain with cloned effect entries.
@@ -712,9 +1151,15 @@ Creates a new image effect chain with cloned effect entries.
 function LImageEffect:clone() end
 ```
 
+#### Description
+
+Creates a new image effect chain with cloned effect entries.
+
+Returns: `LImageEffect` - New image effect handle with the same effect chain.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -727,13 +1172,7 @@ end
 
 ### LImageEffect:effectCount
 
-`LImageEffect:effectCount() -> integer`
-
-Returns the number of effects in this image effect chain.
-
-**Returns**: `integer` - Effect count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of effects in this image effect chain.
@@ -741,9 +1180,15 @@ Returns the number of effects in this image effect chain.
 function LImageEffect:effectCount() end
 ```
 
+#### Description
+
+Returns the number of effects in this image effect chain.
+
+Returns: `integer` - Effect count.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -755,17 +1200,7 @@ end
 
 ### LImageEffect:getEffect
 
-`LImageEffect:getEffect(key: string) -> LuaValue`
-
-Looks up an image effect by one-based index or effect type name.
-
-**Parameters**
-
-- `key` (`string`, required): Effect name string or one-based integer index.
-
-**Returns**: `LuaValue` - `LPostFxEffect` handle, or nil when no matching effect exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Looks up an image effect by one-based index or effect type name.
@@ -774,9 +1209,19 @@ Looks up an image effect by one-based index or effect type name.
 function LImageEffect:getEffect(key) end
 ```
 
+#### Description
+
+Looks up an image effect by one-based index or effect type name.
+
+Parameters:
+
+- `key` (`string`, required): Effect name string or one-based integer index.
+
+Returns: `LuaValue` - `LPostFxEffect` handle, or nil when no matching effect exists.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -789,13 +1234,7 @@ end
 
 ### LImageEffect:getEffectCount
 
-`LImageEffect:getEffectCount() -> integer`
-
-Returns the number of effects in this image effect chain.
-
-**Returns**: `integer` - Effect count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of effects in this image effect chain.
@@ -803,9 +1242,15 @@ Returns the number of effects in this image effect chain.
 function LImageEffect:getEffectCount() end
 ```
 
+#### Description
+
+Returns the number of effects in this image effect chain.
+
+Returns: `integer` - Effect count.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -818,17 +1263,7 @@ end
 
 ### LImageEffect:removeByIndex
 
-`LImageEffect:removeByIndex(idx: integer) -> boolean`
-
-Removes an image effect by zero-based internal index.
-
-**Parameters**
-
-- `idx` (`integer`, required): Zero-based effect index.
-
-**Returns**: `boolean` - True when an effect was removed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes an image effect by zero-based internal index.
@@ -837,9 +1272,19 @@ Removes an image effect by zero-based internal index.
 function LImageEffect:removeByIndex(idx) end
 ```
 
+#### Description
+
+Removes an image effect by zero-based internal index.
+
+Parameters:
+
+- `idx` (`integer`, required): Zero-based effect index.
+
+Returns: `boolean` - True when an effect was removed.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -852,17 +1297,7 @@ end
 
 ### LImageEffect:removeByName
 
-`LImageEffect:removeByName(name: string) -> boolean`
-
-Removes the first image effect with a matching effect type name.
-
-**Parameters**
-
-- `name` (`string`, required): Effect type name to remove.
-
-**Returns**: `boolean` - True when an effect was removed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes the first image effect with a matching effect type name.
@@ -871,9 +1306,19 @@ Removes the first image effect with a matching effect type name.
 function LImageEffect:removeByName(name) end
 ```
 
+#### Description
+
+Removes the first image effect with a matching effect type name.
+
+Parameters:
+
+- `name` (`string`, required): Effect type name to remove.
+
+Returns: `boolean` - True when an effect was removed.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -886,17 +1331,7 @@ end
 
 ### LImageEffect:removeEffect
 
-`LImageEffect:removeEffect(key: string) -> boolean`
-
-Removes an image effect by one-based index or effect type name.
-
-**Parameters**
-
-- `key` (`string`, required): Effect name string or one-based integer index.
-
-**Returns**: `boolean` - True when an effect was removed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes an image effect by one-based index or effect type name.
@@ -905,9 +1340,19 @@ Removes an image effect by one-based index or effect type name.
 function LImageEffect:removeEffect(key) end
 ```
 
+#### Description
+
+Removes an image effect by one-based index or effect type name.
+
+Parameters:
+
+- `key` (`string`, required): Effect name string or one-based integer index.
+
+Returns: `boolean` - True when an effect was removed.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -920,13 +1365,7 @@ end
 
 ### LImageEffect:save
 
-`LImageEffect:save() -> boolean`
-
-Reports success for the current image effect save placeholder.
-
-**Returns**: `boolean` - Always true.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Reports success for the current image effect save placeholder.
@@ -934,9 +1373,15 @@ Reports success for the current image effect save placeholder.
 function LImageEffect:save() end
 ```
 
+#### Description
+
+Reports success for the current image effect save placeholder.
+
+Returns: `boolean` - Always true.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -948,13 +1393,7 @@ end
 
 ### LImageEffect:type
 
-`LImageEffect:type() -> string`
-
-Returns the Lua-visible type name for this image effect handle.
-
-**Returns**: `string` - The string `LImageEffect`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this image effect handle.
@@ -962,9 +1401,15 @@ Returns the Lua-visible type name for this image effect handle.
 function LImageEffect:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this image effect handle.
+
+Returns: `string` - The string `LImageEffect`.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -975,17 +1420,7 @@ end
 
 ### LImageEffect:typeOf
 
-`LImageEffect:typeOf(name: string) -> boolean`
-
-Returns whether this image effect handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `ImageEffect` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this image effect handle matches a supported type name.
@@ -994,9 +1429,19 @@ Returns whether this image effect handle matches a supported type name.
 function LImageEffect:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this image effect handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `ImageEffect` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -1007,20 +1452,20 @@ end
 
 ### LOverlay:clear
 
-`LOverlay:clear()`
-
-Clears active overlay effects and resets transient state.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Clears active overlay effects and resets transient state.
 function LOverlay:clear() end
 ```
 
+#### Description
+
+Clears active overlay effects and resets transient state.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -1033,18 +1478,7 @@ end
 
 ### LOverlay:drawToImage
 
-`LOverlay:drawToImage(w: integer, h: integer) -> Image`
-
-Renders overlay state into an image object of the requested size.
-
-**Parameters**
-
-- `w` (`integer`, required): Target image width in pixels.
-- `h` (`integer`, required): Target image height in pixels.
-
-**Returns**: `Image` - Image containing the overlay draw state.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Renders overlay state into an image object of the requested size.
@@ -1054,9 +1488,20 @@ Renders overlay state into an image object of the requested size.
 function LOverlay:drawToImage(w, h) end
 ```
 
+#### Description
+
+Renders overlay state into an image object of the requested size.
+
+Parameters:
+
+- `w` (`integer`, required): Target image width in pixels.
+- `h` (`integer`, required): Target image height in pixels.
+
+Returns: `Image` - Image containing the overlay draw state.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -1069,19 +1514,7 @@ end
 
 ### LOverlay:fade
 
-`LOverlay:fade(r: number, g: number, b: number, [a]: number, [dur]: number)`
-
-Starts a fade overlay with optional alpha and duration.
-
-**Parameters**
-
-- `r` (`number`, required): Red channel.
-- `g` (`number`, required): Green channel.
-- `b` (`number`, required): Blue channel.
-- `a` (`number`, optional): Target alpha, defaulting to 1.0.
-- `dur` (`number`, optional): Duration in seconds, defaulting to 1.0.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Starts a fade overlay with optional alpha and duration.
@@ -1093,9 +1526,21 @@ Starts a fade overlay with optional alpha and duration.
 function LOverlay:fade(r, g, b, a, dur) end
 ```
 
+#### Description
+
+Starts a fade overlay with optional alpha and duration.
+
+Parameters:
+
+- `r` (`number`, required): Red channel.
+- `g` (`number`, required): Green channel.
+- `b` (`number`, required): Blue channel.
+- `a` (`number`, optional): Target alpha, defaulting to 1.0.
+- `dur` (`number`, optional): Duration in seconds, defaulting to 1.0.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -1107,19 +1552,7 @@ end
 
 ### LOverlay:flash
 
-`LOverlay:flash(r: number, g: number, b: number, [a]: number, [dur]: number)`
-
-Starts a short flash overlay with optional alpha and duration.
-
-**Parameters**
-
-- `r` (`number`, required): Red channel.
-- `g` (`number`, required): Green channel.
-- `b` (`number`, required): Blue channel.
-- `a` (`number`, optional): Alpha channel, defaulting to 1.0.
-- `dur` (`number`, optional): Duration in seconds, defaulting to 0.2.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Starts a short flash overlay with optional alpha and duration.
@@ -1131,9 +1564,21 @@ Starts a short flash overlay with optional alpha and duration.
 function LOverlay:flash(r, g, b, a, dur) end
 ```
 
+#### Description
+
+Starts a short flash overlay with optional alpha and duration.
+
+Parameters:
+
+- `r` (`number`, required): Red channel.
+- `g` (`number`, required): Green channel.
+- `b` (`number`, required): Blue channel.
+- `a` (`number`, optional): Alpha channel, defaulting to 1.0.
+- `dur` (`number`, optional): Duration in seconds, defaulting to 0.2.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -1145,13 +1590,7 @@ end
 
 ### LOverlay:getAmbientColor
 
-`LOverlay:getAmbientColor() -> number`
-
-Returns overlay ambient RGBA color.
-
-**Returns**: `number` - Red channel.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns overlay ambient RGBA color.
@@ -1162,9 +1601,15 @@ Returns overlay ambient RGBA color.
 function LOverlay:getAmbientColor() end
 ```
 
+#### Description
+
+Returns overlay ambient RGBA color.
+
+Returns: `number` - Red channel.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -1176,13 +1621,7 @@ end
 
 ### LOverlay:getCloudCount
 
-`LOverlay:getCloudCount() -> integer`
-
-Returns the overlay cloud shadow count.
-
-**Returns**: `integer` - Cloud shadow count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the overlay cloud shadow count.
@@ -1190,9 +1629,15 @@ Returns the overlay cloud shadow count.
 function LOverlay:getCloudCount() end
 ```
 
+#### Description
+
+Returns the overlay cloud shadow count.
+
+Returns: `integer` - Cloud shadow count.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -1204,13 +1649,7 @@ end
 
 ### LOverlay:getCloudOpacity
 
-`LOverlay:getCloudOpacity() -> number`
-
-Returns cloud shadow opacity. This method is available to Lua scripts.
-
-**Returns**: `number` - Cloud opacity value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns cloud shadow opacity. This method is available to Lua scripts.
@@ -1218,9 +1657,15 @@ Returns cloud shadow opacity. This method is available to Lua scripts.
 function LOverlay:getCloudOpacity() end
 ```
 
+#### Description
+
+Returns cloud shadow opacity. This method is available to Lua scripts.
+
+Returns: `number` - Cloud opacity value.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -1232,13 +1677,7 @@ end
 
 ### LOverlay:getCloudScale
 
-`LOverlay:getCloudScale() -> number`
-
-Returns cloud shadow scale. This method is available to Lua scripts.
-
-**Returns**: `number` - Cloud scale value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns cloud shadow scale. This method is available to Lua scripts.
@@ -1246,9 +1685,15 @@ Returns cloud shadow scale. This method is available to Lua scripts.
 function LOverlay:getCloudScale() end
 ```
 
+#### Description
+
+Returns cloud shadow scale. This method is available to Lua scripts.
+
+Returns: `number` - Cloud scale value.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -1260,13 +1705,7 @@ end
 
 ### LOverlay:getCloudSpeed
 
-`LOverlay:getCloudSpeed() -> number`
-
-Returns cloud shadow movement speed.
-
-**Returns**: `number` - Cloud speed value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns cloud shadow movement speed.
@@ -1274,9 +1713,15 @@ Returns cloud shadow movement speed.
 function LOverlay:getCloudSpeed() end
 ```
 
+#### Description
+
+Returns cloud shadow movement speed.
+
+Returns: `number` - Cloud speed value.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -1288,13 +1733,7 @@ end
 
 ### LOverlay:getDimensions
 
-`LOverlay:getDimensions() -> integer`
-
-Returns the overlay dimensions. This method is available to Lua scripts.
-
-**Returns**: `integer` - Overlay width in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the overlay dimensions. This method is available to Lua scripts.
@@ -1303,9 +1742,15 @@ Returns the overlay dimensions. This method is available to Lua scripts.
 function LOverlay:getDimensions() end
 ```
 
+#### Description
+
+Returns the overlay dimensions. This method is available to Lua scripts.
+
+Returns: `integer` - Overlay width in pixels.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -1317,13 +1762,7 @@ end
 
 ### LOverlay:getFilmGrainIntensity
 
-`LOverlay:getFilmGrainIntensity() -> number`
-
-Returns overlay film grain intensity.
-
-**Returns**: `number` - Current film grain intensity.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns overlay film grain intensity.
@@ -1331,9 +1770,15 @@ Returns overlay film grain intensity.
 function LOverlay:getFilmGrainIntensity() end
 ```
 
+#### Description
+
+Returns overlay film grain intensity.
+
+Returns: `number` - Current film grain intensity.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -1345,13 +1790,7 @@ end
 
 ### LOverlay:getFlashAlpha
 
-`LOverlay:getFlashAlpha() -> number`
-
-Returns the current flash alpha. This method is available to Lua scripts.
-
-**Returns**: `number` - Flash alpha value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current flash alpha. This method is available to Lua scripts.
@@ -1359,9 +1798,15 @@ Returns the current flash alpha. This method is available to Lua scripts.
 function LOverlay:getFlashAlpha() end
 ```
 
+#### Description
+
+Returns the current flash alpha. This method is available to Lua scripts.
+
+Returns: `number` - Flash alpha value.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -1372,13 +1817,7 @@ end
 
 ### LOverlay:getFogColor
 
-`LOverlay:getFogColor() -> number`
-
-Returns overlay fog RGBA color. This method is available to Lua scripts.
-
-**Returns**: `number` - Red channel.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns overlay fog RGBA color. This method is available to Lua scripts.
@@ -1389,9 +1828,15 @@ Returns overlay fog RGBA color. This method is available to Lua scripts.
 function LOverlay:getFogColor() end
 ```
 
+#### Description
+
+Returns overlay fog RGBA color. This method is available to Lua scripts.
+
+Returns: `number` - Red channel.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -1404,13 +1849,7 @@ end
 
 ### LOverlay:getFogDensity
 
-`LOverlay:getFogDensity() -> number`
-
-Returns overlay fog density. This method is available to Lua scripts.
-
-**Returns**: `number` - Current fog density.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns overlay fog density. This method is available to Lua scripts.
@@ -1418,9 +1857,15 @@ Returns overlay fog density. This method is available to Lua scripts.
 function LOverlay:getFogDensity() end
 ```
 
+#### Description
+
+Returns overlay fog density. This method is available to Lua scripts.
+
+Returns: `number` - Current fog density.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -1432,13 +1877,7 @@ end
 
 ### LOverlay:getHeatHazeIntensity
 
-`LOverlay:getHeatHazeIntensity() -> number`
-
-Returns overlay heat haze intensity.
-
-**Returns**: `number` - Current heat haze intensity.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns overlay heat haze intensity.
@@ -1446,9 +1885,15 @@ Returns overlay heat haze intensity.
 function LOverlay:getHeatHazeIntensity() end
 ```
 
+#### Description
+
+Returns overlay heat haze intensity.
+
+Returns: `number` - Current heat haze intensity.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -1460,13 +1905,7 @@ end
 
 ### LOverlay:getHeight
 
-`LOverlay:getHeight() -> integer`
-
-Returns the overlay height. This method is available to Lua scripts.
-
-**Returns**: `integer` - Overlay height in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the overlay height. This method is available to Lua scripts.
@@ -1474,9 +1913,15 @@ Returns the overlay height. This method is available to Lua scripts.
 function LOverlay:getHeight() end
 ```
 
+#### Description
+
+Returns the overlay height. This method is available to Lua scripts.
+
+Returns: `integer` - Overlay height in pixels.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -1487,13 +1932,7 @@ end
 
 ### LOverlay:getLightningAlpha
 
-`LOverlay:getLightningAlpha() -> number`
-
-Returns the current lightning alpha.
-
-**Returns**: `number` - Lightning alpha value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current lightning alpha.
@@ -1501,9 +1940,15 @@ Returns the current lightning alpha.
 function LOverlay:getLightningAlpha() end
 ```
 
+#### Description
+
+Returns the current lightning alpha.
+
+Returns: `number` - Lightning alpha value.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -1514,13 +1959,7 @@ end
 
 ### LOverlay:getLightningColor
 
-`LOverlay:getLightningColor() -> number`
-
-Returns overlay lightning RGBA color.
-
-**Returns**: `number` - Red channel.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns overlay lightning RGBA color.
@@ -1531,9 +1970,15 @@ Returns overlay lightning RGBA color.
 function LOverlay:getLightningColor() end
 ```
 
+#### Description
+
+Returns overlay lightning RGBA color.
+
+Returns: `number` - Red channel.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -1545,13 +1990,7 @@ end
 
 ### LOverlay:getShakeOffset
 
-`LOverlay:getShakeOffset() -> number`
-
-Returns the current screen shake offset.
-
-**Returns**: `number` - Current x offset.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current screen shake offset.
@@ -1560,9 +1999,15 @@ Returns the current screen shake offset.
 function LOverlay:getShakeOffset() end
 ```
 
+#### Description
+
+Returns the current screen shake offset.
+
+Returns: `number` - Current x offset.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -1574,13 +2019,7 @@ end
 
 ### LOverlay:getTimeOfDay
 
-`LOverlay:getTimeOfDay() -> number`
-
-Returns the overlay time-of-day value.
-
-**Returns**: `number` - Current time-of-day value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the overlay time-of-day value.
@@ -1588,9 +2027,15 @@ Returns the overlay time-of-day value.
 function LOverlay:getTimeOfDay() end
 ```
 
+#### Description
+
+Returns the overlay time-of-day value.
+
+Returns: `number` - Current time-of-day value.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -1602,13 +2047,7 @@ end
 
 ### LOverlay:getVignetteStrength
 
-`LOverlay:getVignetteStrength() -> number`
-
-Returns overlay vignette strength.
-
-**Returns**: `number` - Current vignette strength.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns overlay vignette strength.
@@ -1616,9 +2055,15 @@ Returns overlay vignette strength.
 function LOverlay:getVignetteStrength() end
 ```
 
+#### Description
+
+Returns overlay vignette strength.
+
+Returns: `number` - Current vignette strength.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -1630,13 +2075,7 @@ end
 
 ### LOverlay:getWater
 
-`LOverlay:getWater() -> table`
-
-Returns a table describing the current water effect settings.
-
-**Returns**: `table` - Water state table with enabled, wave, tint, depth, and time fields.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a table describing the current water effect settings.
@@ -1644,9 +2083,15 @@ Returns a table describing the current water effect settings.
 function LOverlay:getWater() end
 ```
 
+#### Description
+
+Returns a table describing the current water effect settings.
+
+Returns: `table` - Water state table with enabled, wave, tint, depth, and time fields.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -1658,13 +2103,7 @@ end
 
 ### LOverlay:getWeather
 
-`LOverlay:getWeather() -> string`
-
-Returns the overlay weather type name.
-
-**Returns**: `string` - Current weather type name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the overlay weather type name.
@@ -1672,9 +2111,15 @@ Returns the overlay weather type name.
 function LOverlay:getWeather() end
 ```
 
+#### Description
+
+Returns the overlay weather type name.
+
+Returns: `string` - Current weather type name.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -1686,13 +2131,7 @@ end
 
 ### LOverlay:getWeatherIntensity
 
-`LOverlay:getWeatherIntensity() -> number`
-
-Returns weather intensity for the current weather type.
-
-**Returns**: `number` - Weather intensity value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns weather intensity for the current weather type.
@@ -1700,9 +2139,15 @@ Returns weather intensity for the current weather type.
 function LOverlay:getWeatherIntensity() end
 ```
 
+#### Description
+
+Returns weather intensity for the current weather type.
+
+Returns: `number` - Weather intensity value.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -1714,13 +2159,7 @@ end
 
 ### LOverlay:getWidth
 
-`LOverlay:getWidth() -> integer`
-
-Returns the overlay width. This method is available to Lua scripts.
-
-**Returns**: `integer` - Overlay width in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the overlay width. This method is available to Lua scripts.
@@ -1728,9 +2167,15 @@ Returns the overlay width. This method is available to Lua scripts.
 function LOverlay:getWidth() end
 ```
 
+#### Description
+
+Returns the overlay width. This method is available to Lua scripts.
+
+Returns: `integer` - Overlay width in pixels.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -1741,13 +2186,7 @@ end
 
 ### LOverlay:getWindDirection
 
-`LOverlay:getWindDirection() -> number`
-
-Returns the overlay weather wind direction.
-
-**Returns**: `number` - Wind direction value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the overlay weather wind direction.
@@ -1755,9 +2194,15 @@ Returns the overlay weather wind direction.
 function LOverlay:getWindDirection() end
 ```
 
+#### Description
+
+Returns the overlay weather wind direction.
+
+Returns: `number` - Wind direction value.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -1769,13 +2214,7 @@ end
 
 ### LOverlay:getWindSpeed
 
-`LOverlay:getWindSpeed() -> number`
-
-Returns the overlay weather wind speed.
-
-**Returns**: `number` - Wind speed value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the overlay weather wind speed.
@@ -1783,9 +2222,15 @@ Returns the overlay weather wind speed.
 function LOverlay:getWindSpeed() end
 ```
 
+#### Description
+
+Returns the overlay weather wind speed.
+
+Returns: `number` - Wind speed value.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -1797,13 +2242,7 @@ end
 
 ### LOverlay:isActive
 
-`LOverlay:isActive() -> boolean`
-
-Returns whether any overlay effect is currently active.
-
-**Returns**: `boolean` - True when overlay state should render.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether any overlay effect is currently active.
@@ -1811,9 +2250,15 @@ Returns whether any overlay effect is currently active.
 function LOverlay:isActive() end
 ```
 
+#### Description
+
+Returns whether any overlay effect is currently active.
+
+Returns: `boolean` - True when overlay state should render.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -1824,13 +2269,7 @@ end
 
 ### LOverlay:isAmbientEnabled
 
-`LOverlay:isAmbientEnabled() -> boolean`
-
-Returns whether overlay ambient color rendering is enabled.
-
-**Returns**: `boolean` - True when ambient rendering is enabled.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether overlay ambient color rendering is enabled.
@@ -1838,9 +2277,15 @@ Returns whether overlay ambient color rendering is enabled.
 function LOverlay:isAmbientEnabled() end
 ```
 
+#### Description
+
+Returns whether overlay ambient color rendering is enabled.
+
+Returns: `boolean` - True when ambient rendering is enabled.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -1851,13 +2296,7 @@ end
 
 ### LOverlay:isCloudShadowsEnabled
 
-`LOverlay:isCloudShadowsEnabled() -> boolean`
-
-Returns whether overlay cloud shadow rendering is enabled.
-
-**Returns**: `boolean` - True when cloud shadow rendering is enabled.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether overlay cloud shadow rendering is enabled.
@@ -1865,9 +2304,15 @@ Returns whether overlay cloud shadow rendering is enabled.
 function LOverlay:isCloudShadowsEnabled() end
 ```
 
+#### Description
+
+Returns whether overlay cloud shadow rendering is enabled.
+
+Returns: `boolean` - True when cloud shadow rendering is enabled.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -1878,13 +2323,7 @@ end
 
 ### LOverlay:isFading
 
-`LOverlay:isFading() -> boolean`
-
-Returns whether the fade overlay is active.
-
-**Returns**: `boolean` - True while fade is active.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether the fade overlay is active.
@@ -1892,9 +2331,15 @@ Returns whether the fade overlay is active.
 function LOverlay:isFading() end
 ```
 
+#### Description
+
+Returns whether the fade overlay is active.
+
+Returns: `boolean` - True while fade is active.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -1905,13 +2350,7 @@ end
 
 ### LOverlay:isFilmGrainEnabled
 
-`LOverlay:isFilmGrainEnabled() -> boolean`
-
-Returns whether overlay film grain rendering is enabled.
-
-**Returns**: `boolean` - True when film grain rendering is enabled.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether overlay film grain rendering is enabled.
@@ -1919,9 +2358,15 @@ Returns whether overlay film grain rendering is enabled.
 function LOverlay:isFilmGrainEnabled() end
 ```
 
+#### Description
+
+Returns whether overlay film grain rendering is enabled.
+
+Returns: `boolean` - True when film grain rendering is enabled.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -1932,13 +2377,7 @@ end
 
 ### LOverlay:isFlashing
 
-`LOverlay:isFlashing() -> boolean`
-
-Returns whether the flash overlay is active.
-
-**Returns**: `boolean` - True while the flash is active.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether the flash overlay is active.
@@ -1946,9 +2385,15 @@ Returns whether the flash overlay is active.
 function LOverlay:isFlashing() end
 ```
 
+#### Description
+
+Returns whether the flash overlay is active.
+
+Returns: `boolean` - True while the flash is active.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -1959,13 +2404,7 @@ end
 
 ### LOverlay:isFogEnabled
 
-`LOverlay:isFogEnabled() -> boolean`
-
-Returns whether overlay fog rendering is enabled.
-
-**Returns**: `boolean` - True when fog rendering is enabled.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether overlay fog rendering is enabled.
@@ -1973,9 +2412,15 @@ Returns whether overlay fog rendering is enabled.
 function LOverlay:isFogEnabled() end
 ```
 
+#### Description
+
+Returns whether overlay fog rendering is enabled.
+
+Returns: `boolean` - True when fog rendering is enabled.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -1986,13 +2431,7 @@ end
 
 ### LOverlay:isHeatHazeEnabled
 
-`LOverlay:isHeatHazeEnabled() -> boolean`
-
-Returns whether overlay heat haze rendering is enabled.
-
-**Returns**: `boolean` - True when heat haze rendering is enabled.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether overlay heat haze rendering is enabled.
@@ -2000,9 +2439,15 @@ Returns whether overlay heat haze rendering is enabled.
 function LOverlay:isHeatHazeEnabled() end
 ```
 
+#### Description
+
+Returns whether overlay heat haze rendering is enabled.
+
+Returns: `boolean` - True when heat haze rendering is enabled.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -2013,13 +2458,7 @@ end
 
 ### LOverlay:isShaking
 
-`LOverlay:isShaking() -> boolean`
-
-Returns whether the screen shake effect is active.
-
-**Returns**: `boolean` - True while screen shake is active.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether the screen shake effect is active.
@@ -2027,9 +2466,15 @@ Returns whether the screen shake effect is active.
 function LOverlay:isShaking() end
 ```
 
+#### Description
+
+Returns whether the screen shake effect is active.
+
+Returns: `boolean` - True while screen shake is active.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -2040,13 +2485,7 @@ end
 
 ### LOverlay:isVignetteEnabled
 
-`LOverlay:isVignetteEnabled() -> boolean`
-
-Returns whether overlay vignette rendering is enabled.
-
-**Returns**: `boolean` - True when vignette rendering is enabled.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether overlay vignette rendering is enabled.
@@ -2054,9 +2493,15 @@ Returns whether overlay vignette rendering is enabled.
 function LOverlay:isVignetteEnabled() end
 ```
 
+#### Description
+
+Returns whether overlay vignette rendering is enabled.
+
+Returns: `boolean` - True when vignette rendering is enabled.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -2067,13 +2512,7 @@ end
 
 ### LOverlay:isWeatherEnabled
 
-`LOverlay:isWeatherEnabled() -> boolean`
-
-Returns whether overlay weather rendering is enabled.
-
-**Returns**: `boolean` - True when weather rendering is enabled.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether overlay weather rendering is enabled.
@@ -2081,9 +2520,15 @@ Returns whether overlay weather rendering is enabled.
 function LOverlay:isWeatherEnabled() end
 ```
 
+#### Description
+
+Returns whether overlay weather rendering is enabled.
+
+Returns: `boolean` - True when weather rendering is enabled.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -2094,20 +2539,20 @@ end
 
 ### LOverlay:pullAmbientFromLight
 
-`LOverlay:pullAmbientFromLight()`
-
-Copies ambient color from the shared light world into this overlay.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Copies ambient color from the shared light world into this overlay.
 function LOverlay:pullAmbientFromLight() end
 ```
 
+#### Description
+
+Copies ambient color from the shared light world into this overlay.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -2119,20 +2564,20 @@ end
 
 ### LOverlay:pushAmbientToLight
 
-`LOverlay:pushAmbientToLight()`
-
-Copies this overlay ambient color into the shared light world.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Copies this overlay ambient color into the shared light world.
 function LOverlay:pushAmbientToLight() end
 ```
 
+#### Description
+
+Copies this overlay ambient color into the shared light world.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -2144,20 +2589,20 @@ end
 
 ### LOverlay:render
 
-`LOverlay:render()`
-
-Queues renderer commands for the overlay's current visual state.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Queues renderer commands for the overlay's current visual state.
 function LOverlay:render() end
 ```
 
+#### Description
+
+Queues renderer commands for the overlay's current visual state.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -2169,16 +2614,7 @@ end
 
 ### LOverlay:resize
 
-`LOverlay:resize(w: integer, h: integer)`
-
-Resizes the overlay target dimensions.
-
-**Parameters**
-
-- `w` (`integer`, required): New width in pixels.
-- `h` (`integer`, required): New height in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Resizes the overlay target dimensions.
@@ -2187,9 +2623,18 @@ Resizes the overlay target dimensions.
 function LOverlay:resize(w, h) end
 ```
 
+#### Description
+
+Resizes the overlay target dimensions.
+
+Parameters:
+
+- `w` (`integer`, required): New width in pixels.
+- `h` (`integer`, required): New height in pixels.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -2201,18 +2646,7 @@ end
 
 ### LOverlay:setAmbientColor
 
-`LOverlay:setAmbientColor(r: number, g: number, b: number, [a]: number)`
-
-Sets the overlay ambient color from RGBA channels.
-
-**Parameters**
-
-- `r` (`number`, required): Red channel.
-- `g` (`number`, required): Green channel.
-- `b` (`number`, required): Blue channel.
-- `a` (`number`, optional): Alpha channel, defaulting to 1.0.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the overlay ambient color from RGBA channels.
@@ -2223,9 +2657,20 @@ Sets the overlay ambient color from RGBA channels.
 function LOverlay:setAmbientColor(r, g, b, a) end
 ```
 
+#### Description
+
+Sets the overlay ambient color from RGBA channels.
+
+Parameters:
+
+- `r` (`number`, required): Red channel.
+- `g` (`number`, required): Green channel.
+- `b` (`number`, required): Blue channel.
+- `a` (`number`, optional): Alpha channel, defaulting to 1.0.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -2238,15 +2683,7 @@ end
 
 ### LOverlay:setAmbientEnabled
 
-`LOverlay:setAmbientEnabled(v: boolean)`
-
-Enables or disables overlay ambient color rendering.
-
-**Parameters**
-
-- `v` (`boolean`, required): New ambient enabled flag.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Enables or disables overlay ambient color rendering.
@@ -2254,9 +2691,17 @@ Enables or disables overlay ambient color rendering.
 function LOverlay:setAmbientEnabled(v) end
 ```
 
+#### Description
+
+Enables or disables overlay ambient color rendering.
+
+Parameters:
+
+- `v` (`boolean`, required): New ambient enabled flag.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -2268,15 +2713,7 @@ end
 
 ### LOverlay:setCloudCount
 
-`LOverlay:setCloudCount(v: integer)`
-
-Sets the overlay cloud shadow count.
-
-**Parameters**
-
-- `v` (`integer`, required): Cloud shadow count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the overlay cloud shadow count.
@@ -2284,9 +2721,17 @@ Sets the overlay cloud shadow count.
 function LOverlay:setCloudCount(v) end
 ```
 
+#### Description
+
+Sets the overlay cloud shadow count.
+
+Parameters:
+
+- `v` (`integer`, required): Cloud shadow count.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -2298,15 +2743,7 @@ end
 
 ### LOverlay:setCloudOpacity
 
-`LOverlay:setCloudOpacity(v: number)`
-
-Sets cloud shadow opacity. This method is available to Lua scripts.
-
-**Parameters**
-
-- `v` (`number`, required): Cloud opacity value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets cloud shadow opacity. This method is available to Lua scripts.
@@ -2314,9 +2751,17 @@ Sets cloud shadow opacity. This method is available to Lua scripts.
 function LOverlay:setCloudOpacity(v) end
 ```
 
+#### Description
+
+Sets cloud shadow opacity. This method is available to Lua scripts.
+
+Parameters:
+
+- `v` (`number`, required): Cloud opacity value.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -2328,15 +2773,7 @@ end
 
 ### LOverlay:setCloudScale
 
-`LOverlay:setCloudScale(v: number)`
-
-Sets cloud shadow scale. This method is available to Lua scripts.
-
-**Parameters**
-
-- `v` (`number`, required): Cloud scale value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets cloud shadow scale. This method is available to Lua scripts.
@@ -2344,9 +2781,17 @@ Sets cloud shadow scale. This method is available to Lua scripts.
 function LOverlay:setCloudScale(v) end
 ```
 
+#### Description
+
+Sets cloud shadow scale. This method is available to Lua scripts.
+
+Parameters:
+
+- `v` (`number`, required): Cloud scale value.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -2358,15 +2803,7 @@ end
 
 ### LOverlay:setCloudShadows
 
-`LOverlay:setCloudShadows(v: boolean)`
-
-Enables or disables overlay cloud shadow rendering.
-
-**Parameters**
-
-- `v` (`boolean`, required): New cloud shadow enabled flag.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Enables or disables overlay cloud shadow rendering.
@@ -2374,9 +2811,17 @@ Enables or disables overlay cloud shadow rendering.
 function LOverlay:setCloudShadows(v) end
 ```
 
+#### Description
+
+Enables or disables overlay cloud shadow rendering.
+
+Parameters:
+
+- `v` (`boolean`, required): New cloud shadow enabled flag.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -2388,15 +2833,7 @@ end
 
 ### LOverlay:setCloudSpeed
 
-`LOverlay:setCloudSpeed(v: number)`
-
-Sets cloud shadow movement speed. This method is available to Lua scripts.
-
-**Parameters**
-
-- `v` (`number`, required): Cloud speed value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets cloud shadow movement speed. This method is available to Lua scripts.
@@ -2404,9 +2841,17 @@ Sets cloud shadow movement speed. This method is available to Lua scripts.
 function LOverlay:setCloudSpeed(v) end
 ```
 
+#### Description
+
+Sets cloud shadow movement speed. This method is available to Lua scripts.
+
+Parameters:
+
+- `v` (`number`, required): Cloud speed value.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -2418,15 +2863,7 @@ end
 
 ### LOverlay:setCustomShader
 
-`LOverlay:setCustomShader([name]: string)`
-
-Sets or clears the custom overlay shader name.
-
-**Parameters**
-
-- `name` (`string`, optional): Optional shader name; nil clears the custom shader.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets or clears the custom overlay shader name.
@@ -2434,9 +2871,17 @@ Sets or clears the custom overlay shader name.
 function LOverlay:setCustomShader(name) end
 ```
 
+#### Description
+
+Sets or clears the custom overlay shader name.
+
+Parameters:
+
+- `name` (`string`, optional): Optional shader name; nil clears the custom shader.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -2448,15 +2893,7 @@ end
 
 ### LOverlay:setFilmGrainEnabled
 
-`LOverlay:setFilmGrainEnabled(v: boolean)`
-
-Enables or disables overlay film grain rendering.
-
-**Parameters**
-
-- `v` (`boolean`, required): New film grain enabled flag.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Enables or disables overlay film grain rendering.
@@ -2464,9 +2901,17 @@ Enables or disables overlay film grain rendering.
 function LOverlay:setFilmGrainEnabled(v) end
 ```
 
+#### Description
+
+Enables or disables overlay film grain rendering.
+
+Parameters:
+
+- `v` (`boolean`, required): New film grain enabled flag.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -2478,15 +2923,7 @@ end
 
 ### LOverlay:setFilmGrainIntensity
 
-`LOverlay:setFilmGrainIntensity(v: number)`
-
-Sets overlay film grain intensity.
-
-**Parameters**
-
-- `v` (`number`, required): Film grain intensity value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets overlay film grain intensity.
@@ -2494,9 +2931,17 @@ Sets overlay film grain intensity.
 function LOverlay:setFilmGrainIntensity(v) end
 ```
 
+#### Description
+
+Sets overlay film grain intensity.
+
+Parameters:
+
+- `v` (`number`, required): Film grain intensity value.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -2508,18 +2953,7 @@ end
 
 ### LOverlay:setFogColor
 
-`LOverlay:setFogColor(r: number, g: number, b: number, [a]: number)`
-
-Sets the overlay fog color from RGBA channels.
-
-**Parameters**
-
-- `r` (`number`, required): Red channel.
-- `g` (`number`, required): Green channel.
-- `b` (`number`, required): Blue channel.
-- `a` (`number`, optional): Alpha channel, defaulting to 1.0.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the overlay fog color from RGBA channels.
@@ -2530,9 +2964,20 @@ Sets the overlay fog color from RGBA channels.
 function LOverlay:setFogColor(r, g, b, a) end
 ```
 
+#### Description
+
+Sets the overlay fog color from RGBA channels.
+
+Parameters:
+
+- `r` (`number`, required): Red channel.
+- `g` (`number`, required): Green channel.
+- `b` (`number`, required): Blue channel.
+- `a` (`number`, optional): Alpha channel, defaulting to 1.0.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -2545,15 +2990,7 @@ end
 
 ### LOverlay:setFogDensity
 
-`LOverlay:setFogDensity(v: number)`
-
-Sets overlay fog density. This method is available to Lua scripts.
-
-**Parameters**
-
-- `v` (`number`, required): Fog density value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets overlay fog density. This method is available to Lua scripts.
@@ -2561,9 +2998,17 @@ Sets overlay fog density. This method is available to Lua scripts.
 function LOverlay:setFogDensity(v) end
 ```
 
+#### Description
+
+Sets overlay fog density. This method is available to Lua scripts.
+
+Parameters:
+
+- `v` (`number`, required): Fog density value.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -2575,15 +3020,7 @@ end
 
 ### LOverlay:setFogEnabled
 
-`LOverlay:setFogEnabled(v: boolean)`
-
-Enables or disables overlay fog rendering.
-
-**Parameters**
-
-- `v` (`boolean`, required): New fog enabled flag.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Enables or disables overlay fog rendering.
@@ -2591,9 +3028,17 @@ Enables or disables overlay fog rendering.
 function LOverlay:setFogEnabled(v) end
 ```
 
+#### Description
+
+Enables or disables overlay fog rendering.
+
+Parameters:
+
+- `v` (`boolean`, required): New fog enabled flag.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -2605,15 +3050,7 @@ end
 
 ### LOverlay:setHeatHazeEnabled
 
-`LOverlay:setHeatHazeEnabled(v: boolean)`
-
-Enables or disables overlay heat haze rendering.
-
-**Parameters**
-
-- `v` (`boolean`, required): New heat haze enabled flag.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Enables or disables overlay heat haze rendering.
@@ -2621,9 +3058,17 @@ Enables or disables overlay heat haze rendering.
 function LOverlay:setHeatHazeEnabled(v) end
 ```
 
+#### Description
+
+Enables or disables overlay heat haze rendering.
+
+Parameters:
+
+- `v` (`boolean`, required): New heat haze enabled flag.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -2635,15 +3080,7 @@ end
 
 ### LOverlay:setHeatHazeIntensity
 
-`LOverlay:setHeatHazeIntensity(v: number)`
-
-Sets overlay heat haze intensity. This method is available to Lua scripts.
-
-**Parameters**
-
-- `v` (`number`, required): Heat haze intensity value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets overlay heat haze intensity. This method is available to Lua scripts.
@@ -2651,9 +3088,17 @@ Sets overlay heat haze intensity. This method is available to Lua scripts.
 function LOverlay:setHeatHazeIntensity(v) end
 ```
 
+#### Description
+
+Sets overlay heat haze intensity. This method is available to Lua scripts.
+
+Parameters:
+
+- `v` (`number`, required): Heat haze intensity value.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -2665,18 +3110,7 @@ end
 
 ### LOverlay:setLightningColor
 
-`LOverlay:setLightningColor(r: number, g: number, b: number, [a]: number)`
-
-Sets overlay lightning RGBA color.
-
-**Parameters**
-
-- `r` (`number`, required): Red channel.
-- `g` (`number`, required): Green channel.
-- `b` (`number`, required): Blue channel.
-- `a` (`number`, optional): Alpha channel, defaulting to 1.0.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets overlay lightning RGBA color.
@@ -2687,9 +3121,20 @@ Sets overlay lightning RGBA color.
 function LOverlay:setLightningColor(r, g, b, a) end
 ```
 
+#### Description
+
+Sets overlay lightning RGBA color.
+
+Parameters:
+
+- `r` (`number`, required): Red channel.
+- `g` (`number`, required): Green channel.
+- `b` (`number`, required): Blue channel.
+- `a` (`number`, optional): Alpha channel, defaulting to 1.0.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -2702,15 +3147,7 @@ end
 
 ### LOverlay:setTimeOfDay
 
-`LOverlay:setTimeOfDay(v: number)`
-
-Sets the overlay time-of-day value used by ambient effects.
-
-**Parameters**
-
-- `v` (`number`, required): Time-of-day value stored on the overlay ambient state.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the overlay time-of-day value used by ambient effects.
@@ -2718,9 +3155,17 @@ Sets the overlay time-of-day value used by ambient effects.
 function LOverlay:setTimeOfDay(v) end
 ```
 
+#### Description
+
+Sets the overlay time-of-day value used by ambient effects.
+
+Parameters:
+
+- `v` (`number`, required): Time-of-day value stored on the overlay ambient state.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -2732,15 +3177,7 @@ end
 
 ### LOverlay:setVignetteEnabled
 
-`LOverlay:setVignetteEnabled(v: boolean)`
-
-Enables or disables overlay vignette rendering.
-
-**Parameters**
-
-- `v` (`boolean`, required): New vignette enabled flag.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Enables or disables overlay vignette rendering.
@@ -2748,9 +3185,17 @@ Enables or disables overlay vignette rendering.
 function LOverlay:setVignetteEnabled(v) end
 ```
 
+#### Description
+
+Enables or disables overlay vignette rendering.
+
+Parameters:
+
+- `v` (`boolean`, required): New vignette enabled flag.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -2762,15 +3207,7 @@ end
 
 ### LOverlay:setVignetteStrength
 
-`LOverlay:setVignetteStrength(v: number)`
-
-Sets overlay vignette strength. This method is available to Lua scripts.
-
-**Parameters**
-
-- `v` (`number`, required): Vignette strength value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets overlay vignette strength. This method is available to Lua scripts.
@@ -2778,9 +3215,17 @@ Sets overlay vignette strength. This method is available to Lua scripts.
 function LOverlay:setVignetteStrength(v) end
 ```
 
+#### Description
+
+Sets overlay vignette strength. This method is available to Lua scripts.
+
+Parameters:
+
+- `v` (`number`, required): Vignette strength value.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -2792,17 +3237,7 @@ end
 
 ### LOverlay:setWater
 
-`LOverlay:setWater(amplitude: number, frequency: number, speed: number)`
-
-Enables water distortion and sets wave amplitude, frequency, and speed.
-
-**Parameters**
-
-- `amplitude` (`number`, required): Water wave amplitude.
-- `frequency` (`number`, required): Water wave frequency.
-- `speed` (`number`, required): Water animation speed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Enables water distortion and sets wave amplitude, frequency, and speed.
@@ -2812,9 +3247,19 @@ Enables water distortion and sets wave amplitude, frequency, and speed.
 function LOverlay:setWater(amplitude, frequency, speed) end
 ```
 
+#### Description
+
+Enables water distortion and sets wave amplitude, frequency, and speed.
+
+Parameters:
+
+- `amplitude` (`number`, required): Water wave amplitude.
+- `frequency` (`number`, required): Water wave frequency.
+- `speed` (`number`, required): Water animation speed.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -2826,18 +3271,7 @@ end
 
 ### LOverlay:setWaterTint
 
-`LOverlay:setWaterTint(r: number, g: number, b: number, strength: number)`
-
-Sets the water tint color and strength.
-
-**Parameters**
-
-- `r` (`number`, required): Red channel.
-- `g` (`number`, required): Green channel.
-- `b` (`number`, required): Blue channel.
-- `strength` (`number`, required): Tint strength.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the water tint color and strength.
@@ -2848,9 +3282,20 @@ Sets the water tint color and strength.
 function LOverlay:setWaterTint(r, g, b, strength) end
 ```
 
+#### Description
+
+Sets the water tint color and strength.
+
+Parameters:
+
+- `r` (`number`, required): Red channel.
+- `g` (`number`, required): Green channel.
+- `b` (`number`, required): Blue channel.
+- `strength` (`number`, required): Tint strength.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -2863,15 +3308,7 @@ end
 
 ### LOverlay:setWeather
 
-`LOverlay:setWeather(name: string)`
-
-Sets the overlay weather type by name.
-
-**Parameters**
-
-- `name` (`string`, required): Weather type name recognized by the engine.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the overlay weather type by name.
@@ -2879,9 +3316,17 @@ Sets the overlay weather type by name.
 function LOverlay:setWeather(name) end
 ```
 
+#### Description
+
+Sets the overlay weather type by name.
+
+Parameters:
+
+- `name` (`string`, required): Weather type name recognized by the engine.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -2893,15 +3338,7 @@ end
 
 ### LOverlay:setWeatherEnabled
 
-`LOverlay:setWeatherEnabled(v: boolean)`
-
-Enables or disables overlay weather rendering.
-
-**Parameters**
-
-- `v` (`boolean`, required): New weather enabled flag.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Enables or disables overlay weather rendering.
@@ -2909,9 +3346,17 @@ Enables or disables overlay weather rendering.
 function LOverlay:setWeatherEnabled(v) end
 ```
 
+#### Description
+
+Enables or disables overlay weather rendering.
+
+Parameters:
+
+- `v` (`boolean`, required): New weather enabled flag.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -2923,15 +3368,7 @@ end
 
 ### LOverlay:setWeatherIntensity
 
-`LOverlay:setWeatherIntensity(v: number)`
-
-Sets weather intensity for the current weather type.
-
-**Parameters**
-
-- `v` (`number`, required): Weather intensity value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets weather intensity for the current weather type.
@@ -2939,9 +3376,17 @@ Sets weather intensity for the current weather type.
 function LOverlay:setWeatherIntensity(v) end
 ```
 
+#### Description
+
+Sets weather intensity for the current weather type.
+
+Parameters:
+
+- `v` (`number`, required): Weather intensity value.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -2953,15 +3398,7 @@ end
 
 ### LOverlay:setWindDirection
 
-`LOverlay:setWindDirection(v: number)`
-
-Sets the overlay weather wind direction.
-
-**Parameters**
-
-- `v` (`number`, required): Wind direction value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the overlay weather wind direction.
@@ -2969,9 +3406,17 @@ Sets the overlay weather wind direction.
 function LOverlay:setWindDirection(v) end
 ```
 
+#### Description
+
+Sets the overlay weather wind direction.
+
+Parameters:
+
+- `v` (`number`, required): Wind direction value.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -2983,15 +3428,7 @@ end
 
 ### LOverlay:setWindSpeed
 
-`LOverlay:setWindSpeed(v: number)`
-
-Sets the overlay weather wind speed.
-
-**Parameters**
-
-- `v` (`number`, required): Wind speed value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the overlay weather wind speed.
@@ -2999,9 +3436,17 @@ Sets the overlay weather wind speed.
 function LOverlay:setWindSpeed(v) end
 ```
 
+#### Description
+
+Sets the overlay weather wind speed.
+
+Parameters:
+
+- `v` (`number`, required): Wind speed value.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -3013,16 +3458,7 @@ end
 
 ### LOverlay:shake
 
-`LOverlay:shake(intensity: number, [dur]: number)`
-
-Starts a screen shake with optional duration.
-
-**Parameters**
-
-- `intensity` (`number`, required): Shake intensity.
-- `dur` (`number`, optional): Duration in seconds, defaulting to 0.5.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Starts a screen shake with optional duration.
@@ -3031,9 +3467,18 @@ Starts a screen shake with optional duration.
 function LOverlay:shake(intensity, dur) end
 ```
 
+#### Description
+
+Starts a screen shake with optional duration.
+
+Parameters:
+
+- `intensity` (`number`, required): Shake intensity.
+- `dur` (`number`, optional): Duration in seconds, defaulting to 0.5.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -3045,15 +3490,7 @@ end
 
 ### LOverlay:syncAmbientWithLight
 
-`LOverlay:syncAmbientWithLight(mode: string)`
-
-Resolves overlay and light ambient colors using a named mode and writes both stores.
-
-**Parameters**
-
-- `mode` (`string`, required): One of `light`, `overlay`, `avg`, `max`, or `min`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Resolves overlay and light ambient colors using a named mode and writes both stores.
@@ -3061,9 +3498,17 @@ Resolves overlay and light ambient colors using a named mode and writes both sto
 function LOverlay:syncAmbientWithLight(mode) end
 ```
 
+#### Description
+
+Resolves overlay and light ambient colors using a named mode and writes both stores.
+
+Parameters:
+
+- `mode` (`string`, required): One of `light`, `overlay`, `avg`, `max`, or `min`.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -3075,19 +3520,7 @@ end
 
 ### LOverlay:triggerFade
 
-`LOverlay:triggerFade(r: number, g: number, b: number, target_alpha: number, duration: number)`
-
-Starts a fade overlay toward a target alpha.
-
-**Parameters**
-
-- `r` (`number`, required): Red channel.
-- `g` (`number`, required): Green channel.
-- `b` (`number`, required): Blue channel.
-- `target_alpha` (`number`, required): Target alpha value.
-- `duration` (`number`, required): Fade duration in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Starts a fade overlay toward a target alpha.
@@ -3099,9 +3532,21 @@ Starts a fade overlay toward a target alpha.
 function LOverlay:triggerFade(r, g, b, target_alpha, duration) end
 ```
 
+#### Description
+
+Starts a fade overlay toward a target alpha.
+
+Parameters:
+
+- `r` (`number`, required): Red channel.
+- `g` (`number`, required): Green channel.
+- `b` (`number`, required): Blue channel.
+- `target_alpha` (`number`, required): Target alpha value.
+- `duration` (`number`, required): Fade duration in seconds.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -3113,19 +3558,7 @@ end
 
 ### LOverlay:triggerFlash
 
-`LOverlay:triggerFlash(r: number, g: number, b: number, a: number, duration: number)`
-
-Starts a screen flash with explicit RGBA color and duration.
-
-**Parameters**
-
-- `r` (`number`, required): Red channel.
-- `g` (`number`, required): Green channel.
-- `b` (`number`, required): Blue channel.
-- `a` (`number`, required): Alpha channel.
-- `duration` (`number`, required): Flash duration in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Starts a screen flash with explicit RGBA color and duration.
@@ -3137,9 +3570,21 @@ Starts a screen flash with explicit RGBA color and duration.
 function LOverlay:triggerFlash(r, g, b, a, duration) end
 ```
 
+#### Description
+
+Starts a screen flash with explicit RGBA color and duration.
+
+Parameters:
+
+- `r` (`number`, required): Red channel.
+- `g` (`number`, required): Green channel.
+- `b` (`number`, required): Blue channel.
+- `a` (`number`, required): Alpha channel.
+- `duration` (`number`, required): Flash duration in seconds.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -3151,20 +3596,20 @@ end
 
 ### LOverlay:triggerLightning
 
-`LOverlay:triggerLightning()`
-
-Starts a lightning flash using the overlay lightning state.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Starts a lightning flash using the overlay lightning state.
 function LOverlay:triggerLightning() end
 ```
 
+#### Description
+
+Starts a lightning flash using the overlay lightning state.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -3176,16 +3621,7 @@ end
 
 ### LOverlay:triggerShake
 
-`LOverlay:triggerShake(intensity: number, duration: number)`
-
-Starts a screen shake effect. This method is available to Lua scripts.
-
-**Parameters**
-
-- `intensity` (`number`, required): Shake intensity.
-- `duration` (`number`, required): Shake duration in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Starts a screen shake effect. This method is available to Lua scripts.
@@ -3194,9 +3630,18 @@ Starts a screen shake effect. This method is available to Lua scripts.
 function LOverlay:triggerShake(intensity, duration) end
 ```
 
+#### Description
+
+Starts a screen shake effect. This method is available to Lua scripts.
+
+Parameters:
+
+- `intensity` (`number`, required): Shake intensity.
+- `duration` (`number`, required): Shake duration in seconds.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -3208,13 +3653,7 @@ end
 
 ### LOverlay:type
 
-`LOverlay:type() -> string`
-
-Returns the Lua-visible type name for this overlay handle.
-
-**Returns**: `string` - The string `LOverlay`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this overlay handle.
@@ -3222,9 +3661,15 @@ Returns the Lua-visible type name for this overlay handle.
 function LOverlay:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this overlay handle.
+
+Returns: `string` - The string `LOverlay`.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -3235,17 +3680,7 @@ end
 
 ### LOverlay:typeOf
 
-`LOverlay:typeOf(name: string) -> boolean`
-
-Returns whether this overlay handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `Overlay` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this overlay handle matches a supported type name.
@@ -3254,9 +3689,19 @@ Returns whether this overlay handle matches a supported type name.
 function LOverlay:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this overlay handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `Overlay` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -3267,15 +3712,7 @@ end
 
 ### LOverlay:update
 
-`LOverlay:update(dt: number)`
-
-Advances overlay timers and animated effect state.
-
-**Parameters**
-
-- `dt` (`number`, required): Delta time in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Advances overlay timers and animated effect state.
@@ -3283,9 +3720,17 @@ Advances overlay timers and animated effect state.
 function LOverlay:update(dt) end
 ```
 
+#### Description
+
+Advances overlay timers and animated effect state.
+
+Parameters:
+
+- `dt` (`number`, required): Delta time in seconds.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -3297,20 +3742,20 @@ end
 
 ### LPostFxEffect:disableAutoUniforms
 
-`LPostFxEffect:disableAutoUniforms()`
-
-Disables automatic time and resolution uniforms for this effect.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Disables automatic time and resolution uniforms for this effect.
 function LPostFxEffect:disableAutoUniforms() end
 ```
 
+#### Description
+
+Disables automatic time and resolution uniforms for this effect.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -3322,20 +3767,20 @@ end
 
 ### LPostFxEffect:enableAutoUniforms
 
-`LPostFxEffect:enableAutoUniforms()`
-
-Enables automatic time and resolution uniforms for this effect.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Enables automatic time and resolution uniforms for this effect.
 function LPostFxEffect:enableAutoUniforms() end
 ```
 
+#### Description
+
+Enables automatic time and resolution uniforms for this effect.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -3347,13 +3792,7 @@ end
 
 ### LPostFxEffect:getEffectType
 
-`LPostFxEffect:getEffectType() -> string`
-
-Returns the renderer effect type name.
-
-**Returns**: `string` - Effect type name used by the renderer.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the renderer effect type name.
@@ -3361,9 +3800,15 @@ Returns the renderer effect type name.
 function LPostFxEffect:getEffectType() end
 ```
 
+#### Description
+
+Returns the renderer effect type name.
+
+Returns: `string` - Effect type name used by the renderer.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -3374,18 +3819,7 @@ end
 
 ### LPostFxEffect:getParameter
 
-`LPostFxEffect:getParameter(name: string, [default]: number) -> number`
-
-Reads a numeric shader parameter and falls back to a default value when missing.
-
-**Parameters**
-
-- `name` (`string`, required): Parameter name to read.
-- `default` (`number`, optional): Default value returned when the parameter is absent.
-
-**Returns**: `number` - Stored parameter value or the supplied default.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Reads a numeric shader parameter and falls back to a default value when missing.
@@ -3395,9 +3829,20 @@ Reads a numeric shader parameter and falls back to a default value when missing.
 function LPostFxEffect:getParameter(name, default) end
 ```
 
+#### Description
+
+Reads a numeric shader parameter and falls back to a default value when missing.
+
+Parameters:
+
+- `name` (`string`, required): Parameter name to read.
+- `default` (`number`, optional): Default value returned when the parameter is absent.
+
+Returns: `number` - Stored parameter value or the supplied default.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -3410,13 +3855,7 @@ end
 
 ### LPostFxEffect:getParameterNames
 
-`LPostFxEffect:getParameterNames() -> string[]`
-
-Returns the parameter names stored on this effect.
-
-**Returns**: `string[]` - Parameter name strings.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the parameter names stored on this effect.
@@ -3424,9 +3863,15 @@ Returns the parameter names stored on this effect.
 function LPostFxEffect:getParameterNames() end
 ```
 
+#### Description
+
+Returns the parameter names stored on this effect.
+
+Returns: `string[]` - Parameter name strings.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -3439,13 +3884,7 @@ end
 
 ### LPostFxEffect:getType
 
-`LPostFxEffect:getType() -> string`
-
-Returns the renderer effect type name.
-
-**Returns**: `string` - Effect type name used by the renderer.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the renderer effect type name.
@@ -3453,9 +3892,15 @@ Returns the renderer effect type name.
 function LPostFxEffect:getType() end
 ```
 
+#### Description
+
+Returns the renderer effect type name.
+
+Returns: `string` - Effect type name used by the renderer.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -3466,13 +3911,7 @@ end
 
 ### LPostFxEffect:getTypeName
 
-`LPostFxEffect:getTypeName() -> string`
-
-Returns the built-in or custom effect type name.
-
-**Returns**: `string` - Effect type name used by the renderer.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the built-in or custom effect type name.
@@ -3480,9 +3919,15 @@ Returns the built-in or custom effect type name.
 function LPostFxEffect:getTypeName() end
 ```
 
+#### Description
+
+Returns the built-in or custom effect type name.
+
+Returns: `string` - Effect type name used by the renderer.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -3493,17 +3938,7 @@ end
 
 ### LPostFxEffect:hasParameter
 
-`LPostFxEffect:hasParameter(name: string) -> boolean`
-
-Returns whether a shader parameter exists on this effect.
-
-**Parameters**
-
-- `name` (`string`, required): Parameter name to check.
-
-**Returns**: `boolean` - True when the parameter is present.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether a shader parameter exists on this effect.
@@ -3512,9 +3947,19 @@ Returns whether a shader parameter exists on this effect.
 function LPostFxEffect:hasParameter(name) end
 ```
 
+#### Description
+
+Returns whether a shader parameter exists on this effect.
+
+Parameters:
+
+- `name` (`string`, required): Parameter name to check.
+
+Returns: `boolean` - True when the parameter is present.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -3526,13 +3971,7 @@ end
 
 ### LPostFxEffect:isAutoUniforms
 
-`LPostFxEffect:isAutoUniforms() -> boolean`
-
-Returns whether automatic uniforms are enabled for this effect.
-
-**Returns**: `boolean` - True when automatic uniforms are enabled.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether automatic uniforms are enabled for this effect.
@@ -3540,9 +3979,15 @@ Returns whether automatic uniforms are enabled for this effect.
 function LPostFxEffect:isAutoUniforms() end
 ```
 
+#### Description
+
+Returns whether automatic uniforms are enabled for this effect.
+
+Returns: `boolean` - True when automatic uniforms are enabled.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -3553,13 +3998,7 @@ end
 
 ### LPostFxEffect:isBuiltIn
 
-`LPostFxEffect:isBuiltIn() -> boolean`
-
-Returns whether this effect uses one of the engine built-in effect types.
-
-**Returns**: `boolean` - True for built-in effects, false for custom shader effects.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this effect uses one of the engine built-in effect types.
@@ -3567,9 +4006,15 @@ Returns whether this effect uses one of the engine built-in effect types.
 function LPostFxEffect:isBuiltIn() end
 ```
 
+#### Description
+
+Returns whether this effect uses one of the engine built-in effect types.
+
+Returns: `boolean` - True for built-in effects, false for custom shader effects.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -3580,13 +4025,7 @@ end
 
 ### LPostFxEffect:isEnabled
 
-`LPostFxEffect:isEnabled() -> boolean`
-
-Returns whether this effect is enabled on its owning effect object.
-
-**Returns**: `boolean` - Current enabled flag stored on the effect.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this effect is enabled on its owning effect object.
@@ -3594,9 +4033,15 @@ Returns whether this effect is enabled on its owning effect object.
 function LPostFxEffect:isEnabled() end
 ```
 
+#### Description
+
+Returns whether this effect is enabled on its owning effect object.
+
+Returns: `boolean` - Current enabled flag stored on the effect.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -3607,15 +4052,7 @@ end
 
 ### LPostFxEffect:setBrightness
 
-`LPostFxEffect:setBrightness(v: number)`
-
-Sets the `brightness` shader parameter.
-
-**Parameters**
-
-- `v` (`number`, required): Brightness value passed to the effect shader.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the `brightness` shader parameter.
@@ -3623,9 +4060,17 @@ Sets the `brightness` shader parameter.
 function LPostFxEffect:setBrightness(v) end
 ```
 
+#### Description
+
+Sets the `brightness` shader parameter.
+
+Parameters:
+
+- `v` (`number`, required): Brightness value passed to the effect shader.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -3637,15 +4082,7 @@ end
 
 ### LPostFxEffect:setContrast
 
-`LPostFxEffect:setContrast(v: number)`
-
-Sets the `contrast` shader parameter.
-
-**Parameters**
-
-- `v` (`number`, required): Contrast value passed to the effect shader.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the `contrast` shader parameter.
@@ -3653,9 +4090,17 @@ Sets the `contrast` shader parameter.
 function LPostFxEffect:setContrast(v) end
 ```
 
+#### Description
+
+Sets the `contrast` shader parameter.
+
+Parameters:
+
+- `v` (`number`, required): Contrast value passed to the effect shader.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -3667,15 +4112,7 @@ end
 
 ### LPostFxEffect:setEnabled
 
-`LPostFxEffect:setEnabled(enabled: boolean)`
-
-Enables or disables this effect. This method is available to Lua scripts.
-
-**Parameters**
-
-- `enabled` (`boolean`, required): New enabled flag.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Enables or disables this effect. This method is available to Lua scripts.
@@ -3683,9 +4120,17 @@ Enables or disables this effect. This method is available to Lua scripts.
 function LPostFxEffect:setEnabled(enabled) end
 ```
 
+#### Description
+
+Enables or disables this effect. This method is available to Lua scripts.
+
+Parameters:
+
+- `enabled` (`boolean`, required): New enabled flag.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -3697,15 +4142,7 @@ end
 
 ### LPostFxEffect:setIntensity
 
-`LPostFxEffect:setIntensity(v: number)`
-
-Sets the `intensity` shader parameter.
-
-**Parameters**
-
-- `v` (`number`, required): Intensity value passed to the effect shader.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the `intensity` shader parameter.
@@ -3713,9 +4150,17 @@ Sets the `intensity` shader parameter.
 function LPostFxEffect:setIntensity(v) end
 ```
 
+#### Description
+
+Sets the `intensity` shader parameter.
+
+Parameters:
+
+- `v` (`number`, required): Intensity value passed to the effect shader.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -3727,15 +4172,7 @@ end
 
 ### LPostFxEffect:setOffset
 
-`LPostFxEffect:setOffset(v: number)`
-
-Sets the `offset` shader parameter.
-
-**Parameters**
-
-- `v` (`number`, required): Offset value passed to the effect shader.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the `offset` shader parameter.
@@ -3743,9 +4180,17 @@ Sets the `offset` shader parameter.
 function LPostFxEffect:setOffset(v) end
 ```
 
+#### Description
+
+Sets the `offset` shader parameter.
+
+Parameters:
+
+- `v` (`number`, required): Offset value passed to the effect shader.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -3757,16 +4202,7 @@ end
 
 ### LPostFxEffect:setParameter
 
-`LPostFxEffect:setParameter(name: string, value: number)`
-
-Sets a numeric shader parameter by name.
-
-**Parameters**
-
-- `name` (`string`, required): Parameter name expected by the effect shader.
-- `value` (`number`, required): Numeric parameter value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets a numeric shader parameter by name.
@@ -3775,9 +4211,18 @@ Sets a numeric shader parameter by name.
 function LPostFxEffect:setParameter(name, value) end
 ```
 
+#### Description
+
+Sets a numeric shader parameter by name.
+
+Parameters:
+
+- `name` (`string`, required): Parameter name expected by the effect shader.
+- `value` (`number`, required): Numeric parameter value.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -3789,15 +4234,7 @@ end
 
 ### LPostFxEffect:setRadius
 
-`LPostFxEffect:setRadius(v: number)`
-
-Sets the `radius` shader parameter.
-
-**Parameters**
-
-- `v` (`number`, required): Radius value passed to the effect shader.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the `radius` shader parameter.
@@ -3805,9 +4242,17 @@ Sets the `radius` shader parameter.
 function LPostFxEffect:setRadius(v) end
 ```
 
+#### Description
+
+Sets the `radius` shader parameter.
+
+Parameters:
+
+- `v` (`number`, required): Radius value passed to the effect shader.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -3819,15 +4264,7 @@ end
 
 ### LPostFxEffect:setSaturation
 
-`LPostFxEffect:setSaturation(v: number)`
-
-Sets the `saturation` shader parameter.
-
-**Parameters**
-
-- `v` (`number`, required): Saturation value passed to the effect shader.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the `saturation` shader parameter.
@@ -3835,9 +4272,17 @@ Sets the `saturation` shader parameter.
 function LPostFxEffect:setSaturation(v) end
 ```
 
+#### Description
+
+Sets the `saturation` shader parameter.
+
+Parameters:
+
+- `v` (`number`, required): Saturation value passed to the effect shader.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -3849,15 +4294,7 @@ end
 
 ### LPostFxEffect:setScanlineStrength
 
-`LPostFxEffect:setScanlineStrength(v: number)`
-
-Sets the `scanline_strength` shader parameter.
-
-**Parameters**
-
-- `v` (`number`, required): Scanline strength value passed to the effect shader.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the `scanline_strength` shader parameter.
@@ -3865,9 +4302,17 @@ Sets the `scanline_strength` shader parameter.
 function LPostFxEffect:setScanlineStrength(v) end
 ```
 
+#### Description
+
+Sets the `scanline_strength` shader parameter.
+
+Parameters:
+
+- `v` (`number`, required): Scanline strength value passed to the effect shader.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -3879,15 +4324,7 @@ end
 
 ### LPostFxEffect:setStrength
 
-`LPostFxEffect:setStrength(v: number)`
-
-Sets the `strength` shader parameter.
-
-**Parameters**
-
-- `v` (`number`, required): Strength value passed to the effect shader.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the `strength` shader parameter.
@@ -3895,9 +4332,17 @@ Sets the `strength` shader parameter.
 function LPostFxEffect:setStrength(v) end
 ```
 
+#### Description
+
+Sets the `strength` shader parameter.
+
+Parameters:
+
+- `v` (`number`, required): Strength value passed to the effect shader.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -3909,15 +4354,7 @@ end
 
 ### LPostFxEffect:setThreshold
 
-`LPostFxEffect:setThreshold(v: number)`
-
-Sets the `threshold` shader parameter.
-
-**Parameters**
-
-- `v` (`number`, required): Threshold value passed to the effect shader.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the `threshold` shader parameter.
@@ -3925,9 +4362,17 @@ Sets the `threshold` shader parameter.
 function LPostFxEffect:setThreshold(v) end
 ```
 
+#### Description
+
+Sets the `threshold` shader parameter.
+
+Parameters:
+
+- `v` (`number`, required): Threshold value passed to the effect shader.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -3939,13 +4384,7 @@ end
 
 ### LPostFxEffect:type
 
-`LPostFxEffect:type() -> string`
-
-Returns the Lua-visible type name for this post-processing effect handle.
-
-**Returns**: `string` - The string `LPostFxEffect`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this post-processing effect handle.
@@ -3953,9 +4392,15 @@ Returns the Lua-visible type name for this post-processing effect handle.
 function LPostFxEffect:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this post-processing effect handle.
+
+Returns: `string` - The string `LPostFxEffect`.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -3966,17 +4411,7 @@ end
 
 ### LPostFxEffect:typeOf
 
-`LPostFxEffect:typeOf(name: string) -> boolean`
-
-Returns whether this effect handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `PostFxEffect` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this effect handle matches a supported type name.
@@ -3985,9 +4420,19 @@ Returns whether this effect handle matches a supported type name.
 function LPostFxEffect:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this effect handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `PostFxEffect` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -3998,15 +4443,7 @@ end
 
 ### LPostFxStack:add
 
-`LPostFxStack:add(effect_ud: LPostFxEffect)`
-
-Appends an effect to the end of this stack.
-
-**Parameters**
-
-- `effect_ud` (`LPostFxEffect`, required): Effect handle to append.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Appends an effect to the end of this stack.
@@ -4014,9 +4451,17 @@ Appends an effect to the end of this stack.
 function LPostFxStack:add(effect_ud) end
 ```
 
+#### Description
+
+Appends an effect to the end of this stack.
+
+Parameters:
+
+- `effect_ud` (`LPostFxEffect`, required): Effect handle to append.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -4029,20 +4474,20 @@ end
 
 ### LPostFxStack:apply
 
-`LPostFxStack:apply()`
-
-Queues this stack's enabled post-effect passes for renderer application.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Queues this stack's enabled post-effect passes for renderer application.
 function LPostFxStack:apply() end
 ```
 
+#### Description
+
+Queues this stack's enabled post-effect passes for renderer application.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -4055,20 +4500,20 @@ end
 
 ### LPostFxStack:beginCapture
 
-`LPostFxStack:beginCapture()`
-
-Starts post-effect capture and queues a renderer begin-capture command.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Starts post-effect capture and queues a renderer begin-capture command.
 function LPostFxStack:beginCapture() end
 ```
 
+#### Description
+
+Starts post-effect capture and queues a renderer begin-capture command.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -4081,20 +4526,20 @@ end
 
 ### LPostFxStack:clear
 
-`LPostFxStack:clear()`
-
-Removes all effects and pass state from this stack.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes all effects and pass state from this stack.
 function LPostFxStack:clear() end
 ```
 
+#### Description
+
+Removes all effects and pass state from this stack.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -4107,20 +4552,20 @@ end
 
 ### LPostFxStack:clearFeedback
 
-`LPostFxStack:clearFeedback()`
-
-Resets the stack feedback blend factor to zero.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Resets the stack feedback blend factor to zero.
 function LPostFxStack:clearFeedback() end
 ```
 
+#### Description
+
+Resets the stack feedback blend factor to zero.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -4133,13 +4578,7 @@ end
 
 ### LPostFxStack:dedup
 
-`LPostFxStack:dedup() -> integer`
-
-Removes duplicate effect handles while preserving first occurrences.
-
-**Returns**: `integer` - Number of duplicate effects removed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes duplicate effect handles while preserving first occurrences.
@@ -4147,9 +4586,15 @@ Removes duplicate effect handles while preserving first occurrences.
 function LPostFxStack:dedup() end
 ```
 
+#### Description
+
+Removes duplicate effect handles while preserving first occurrences.
+
+Returns: `integer` - Number of duplicate effects removed.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -4163,20 +4608,20 @@ end
 
 ### LPostFxStack:endCapture
 
-`LPostFxStack:endCapture()`
-
-Ends post-effect capture and queues a renderer end-capture command.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Ends post-effect capture and queues a renderer end-capture command.
 function LPostFxStack:endCapture() end
 ```
 
+#### Description
+
+Ends post-effect capture and queues a renderer end-capture command.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -4190,13 +4635,7 @@ end
 
 ### LPostFxStack:getDimensions
 
-`LPostFxStack:getDimensions() -> integer`
-
-Returns the stack render dimensions.
-
-**Returns**: `integer` - Stack width in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the stack render dimensions.
@@ -4205,9 +4644,15 @@ Returns the stack render dimensions.
 function LPostFxStack:getDimensions() end
 ```
 
+#### Description
+
+Returns the stack render dimensions.
+
+Returns: `integer` - Stack width in pixels.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -4219,17 +4664,7 @@ end
 
 ### LPostFxStack:getEffect
 
-`LPostFxStack:getEffect(index: integer) -> LuaValue`
-
-Returns the effect handle at a one-based position.
-
-**Parameters**
-
-- `index` (`integer`, required): One-based stack position.
-
-**Returns**: `LuaValue` - `LPostFxEffect` handle, or nil when the index is out of range.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the effect handle at a one-based position.
@@ -4238,9 +4673,19 @@ Returns the effect handle at a one-based position.
 function LPostFxStack:getEffect(index) end
 ```
 
+#### Description
+
+Returns the effect handle at a one-based position.
+
+Parameters:
+
+- `index` (`integer`, required): One-based stack position.
+
+Returns: `LuaValue` - `LPostFxEffect` handle, or nil when the index is out of range.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -4253,13 +4698,7 @@ end
 
 ### LPostFxStack:getEffectCount
 
-`LPostFxStack:getEffectCount() -> integer`
-
-Returns the number of effect handles in this stack.
-
-**Returns**: `integer` - Effect count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of effect handles in this stack.
@@ -4267,9 +4706,15 @@ Returns the number of effect handles in this stack.
 function LPostFxStack:getEffectCount() end
 ```
 
+#### Description
+
+Returns the number of effect handles in this stack.
+
+Returns: `integer` - Effect count.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -4282,13 +4727,7 @@ end
 
 ### LPostFxStack:getEnabledEffects
 
-`LPostFxStack:getEnabledEffects() -> LPostFxEffect[]`
-
-Returns effect handles whose stack passes are enabled.
-
-**Returns**: `LPostFxEffect[]` - Enabled `LPostFxEffect` handles.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns effect handles whose stack passes are enabled.
@@ -4296,9 +4735,15 @@ Returns effect handles whose stack passes are enabled.
 function LPostFxStack:getEnabledEffects() end
 ```
 
+#### Description
+
+Returns effect handles whose stack passes are enabled.
+
+Returns: `LPostFxEffect[]` - Enabled `LPostFxEffect` handles.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -4312,13 +4757,7 @@ end
 
 ### LPostFxStack:getFeedback
 
-`LPostFxStack:getFeedback() -> number`
-
-Returns the current stack feedback blend factor.
-
-**Returns**: `number` - Feedback blend factor in the range 0.0 through 1.0.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current stack feedback blend factor.
@@ -4326,9 +4765,15 @@ Returns the current stack feedback blend factor.
 function LPostFxStack:getFeedback() end
 ```
 
+#### Description
+
+Returns the current stack feedback blend factor.
+
+Returns: `number` - Feedback blend factor in the range 0.0 through 1.0.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -4340,13 +4785,7 @@ end
 
 ### LPostFxStack:getHeight
 
-`LPostFxStack:getHeight() -> integer`
-
-Returns the stack render height. This method is available to Lua scripts.
-
-**Returns**: `integer` - Stack height in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the stack render height. This method is available to Lua scripts.
@@ -4354,9 +4793,15 @@ Returns the stack render height. This method is available to Lua scripts.
 function LPostFxStack:getHeight() end
 ```
 
+#### Description
+
+Returns the stack render height. This method is available to Lua scripts.
+
+Returns: `integer` - Stack height in pixels.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -4367,13 +4812,7 @@ end
 
 ### LPostFxStack:getWidth
 
-`LPostFxStack:getWidth() -> integer`
-
-Returns the stack render width. This method is available to Lua scripts.
-
-**Returns**: `integer` - Stack width in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the stack render width. This method is available to Lua scripts.
@@ -4381,9 +4820,15 @@ Returns the stack render width. This method is available to Lua scripts.
 function LPostFxStack:getWidth() end
 ```
 
+#### Description
+
+Returns the stack render width. This method is available to Lua scripts.
+
+Returns: `integer` - Stack width in pixels.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -4394,16 +4839,7 @@ end
 
 ### LPostFxStack:insert
 
-`LPostFxStack:insert(position: integer, effect_ud: LPostFxEffect)`
-
-Inserts an effect at a one-based stack position.
-
-**Parameters**
-
-- `position` (`integer`, required): One-based insertion position, clamped to the stack length.
-- `effect_ud` (`LPostFxEffect`, required): Effect handle to insert.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Inserts an effect at a one-based stack position.
@@ -4412,9 +4848,18 @@ Inserts an effect at a one-based stack position.
 function LPostFxStack:insert(position, effect_ud) end
 ```
 
+#### Description
+
+Inserts an effect at a one-based stack position.
+
+Parameters:
+
+- `position` (`integer`, required): One-based insertion position, clamped to the stack length.
+- `effect_ud` (`LPostFxEffect`, required): Effect handle to insert.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -4427,13 +4872,7 @@ end
 
 ### LPostFxStack:isCapturing
 
-`LPostFxStack:isCapturing() -> boolean`
-
-Returns whether this stack is currently capturing draw commands.
-
-**Returns**: `boolean` - True when capture mode is active.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this stack is currently capturing draw commands.
@@ -4441,9 +4880,15 @@ Returns whether this stack is currently capturing draw commands.
 function LPostFxStack:isCapturing() end
 ```
 
+#### Description
+
+Returns whether this stack is currently capturing draw commands.
+
+Returns: `boolean` - True when capture mode is active.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -4454,13 +4899,7 @@ end
 
 ### LPostFxStack:isEmpty
 
-`LPostFxStack:isEmpty() -> boolean`
-
-Returns whether this stack has no effects.
-
-**Returns**: `boolean` - True when the stack has zero effects.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this stack has no effects.
@@ -4468,9 +4907,15 @@ Returns whether this stack has no effects.
 function LPostFxStack:isEmpty() end
 ```
 
+#### Description
+
+Returns whether this stack has no effects.
+
+Returns: `boolean` - True when the stack has zero effects.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -4481,17 +4926,7 @@ end
 
 ### LPostFxStack:isEnabled
 
-`LPostFxStack:isEnabled(position: integer) -> boolean`
-
-Returns whether the effect pass at a one-based position is enabled.
-
-**Parameters**
-
-- `position` (`integer`, required): One-based stack position.
-
-**Returns**: `boolean` - True when the pass is enabled; false for out-of-range positions.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether the effect pass at a one-based position is enabled.
@@ -4500,9 +4935,19 @@ Returns whether the effect pass at a one-based position is enabled.
 function LPostFxStack:isEnabled(position) end
 ```
 
+#### Description
+
+Returns whether the effect pass at a one-based position is enabled.
+
+Parameters:
+
+- `position` (`integer`, required): One-based stack position.
+
+Returns: `boolean` - True when the pass is enabled; false for out-of-range positions.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -4515,13 +4960,7 @@ end
 
 ### LPostFxStack:len
 
-`LPostFxStack:len() -> integer`
-
-Returns the number of effect handles in this stack.
-
-**Returns**: `integer` - Effect count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of effect handles in this stack.
@@ -4529,9 +4968,15 @@ Returns the number of effect handles in this stack.
 function LPostFxStack:len() end
 ```
 
+#### Description
+
+Returns the number of effect handles in this stack.
+
+Returns: `integer` - Effect count.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -4543,17 +4988,7 @@ end
 
 ### LPostFxStack:remove
 
-`LPostFxStack:remove(effect_ud: LPostFxEffect) -> boolean`
-
-Removes the first matching effect handle from this stack.
-
-**Parameters**
-
-- `effect_ud` (`LPostFxEffect`, required): Effect handle to remove.
-
-**Returns**: `boolean` - True when the effect was found and removed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes the first matching effect handle from this stack.
@@ -4562,9 +4997,19 @@ Removes the first matching effect handle from this stack.
 function LPostFxStack:remove(effect_ud) end
 ```
 
+#### Description
+
+Removes the first matching effect handle from this stack.
+
+Parameters:
+
+- `effect_ud` (`LPostFxEffect`, required): Effect handle to remove.
+
+Returns: `boolean` - True when the effect was found and removed.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -4578,16 +5023,7 @@ end
 
 ### LPostFxStack:resize
 
-`LPostFxStack:resize(w: integer, h: integer)`
-
-Resizes the post-processing stack render target dimensions.
-
-**Parameters**
-
-- `w` (`integer`, required): New width in pixels.
-- `h` (`integer`, required): New height in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Resizes the post-processing stack render target dimensions.
@@ -4596,9 +5032,18 @@ Resizes the post-processing stack render target dimensions.
 function LPostFxStack:resize(w, h) end
 ```
 
+#### Description
+
+Resizes the post-processing stack render target dimensions.
+
+Parameters:
+
+- `w` (`integer`, required): New width in pixels.
+- `h` (`integer`, required): New height in pixels.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -4610,16 +5055,7 @@ end
 
 ### LPostFxStack:setEnabled
 
-`LPostFxStack:setEnabled(position: integer, enabled: boolean)`
-
-Enables or disables the effect pass at a one-based stack position.
-
-**Parameters**
-
-- `position` (`integer`, required): One-based stack position.
-- `enabled` (`boolean`, required): New enabled flag for the pass.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Enables or disables the effect pass at a one-based stack position.
@@ -4628,9 +5064,18 @@ Enables or disables the effect pass at a one-based stack position.
 function LPostFxStack:setEnabled(position, enabled) end
 ```
 
+#### Description
+
+Enables or disables the effect pass at a one-based stack position.
+
+Parameters:
+
+- `position` (`integer`, required): One-based stack position.
+- `enabled` (`boolean`, required): New enabled flag for the pass.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -4644,15 +5089,7 @@ end
 
 ### LPostFxStack:setFeedback
 
-`LPostFxStack:setFeedback(factor: number)`
-
-Sets the stack feedback blend factor and clamps it to 0.0 through 1.0.
-
-**Parameters**
-
-- `factor` (`number`, required): Feedback blend factor.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the stack feedback blend factor and clamps it to 0.0 through 1.0.
@@ -4660,9 +5097,17 @@ Sets the stack feedback blend factor and clamps it to 0.0 through 1.0.
 function LPostFxStack:setFeedback(factor) end
 ```
 
+#### Description
+
+Sets the stack feedback blend factor and clamps it to 0.0 through 1.0.
+
+Parameters:
+
+- `factor` (`number`, required): Feedback blend factor.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -4674,13 +5119,7 @@ end
 
 ### LPostFxStack:type
 
-`LPostFxStack:type() -> string`
-
-Returns the Lua-visible type name for this post-processing stack handle.
-
-**Returns**: `string` - The string `LPostFxStack`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this post-processing stack handle.
@@ -4688,9 +5127,15 @@ Returns the Lua-visible type name for this post-processing stack handle.
 function LPostFxStack:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this post-processing stack handle.
+
+Returns: `string` - The string `LPostFxStack`.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -4701,17 +5146,7 @@ end
 
 ### LPostFxStack:typeOf
 
-`LPostFxStack:typeOf(name: string) -> boolean`
-
-Returns whether this stack handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `PostFxStack` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this stack handle matches a supported type name.
@@ -4720,9 +5155,19 @@ Returns whether this stack handle matches a supported type name.
 function LPostFxStack:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this stack handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `PostFxStack` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -4733,13 +5178,7 @@ end
 
 ### LScreenTransition:color
 
-`LScreenTransition:color() -> number`
-
-Returns the transition RGBA color.
-
-**Returns**: `number` - Red channel.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the transition RGBA color.
@@ -4750,9 +5189,15 @@ Returns the transition RGBA color.
 function LScreenTransition:color() end
 ```
 
+#### Description
+
+Returns the transition RGBA color.
+
+Returns: `number` - Red channel.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -4764,13 +5209,7 @@ end
 
 ### LScreenTransition:isActive
 
-`LScreenTransition:isActive() -> boolean`
-
-Returns whether the transition is currently active.
-
-**Returns**: `boolean` - True when the transition is active.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether the transition is currently active.
@@ -4778,9 +5217,15 @@ Returns whether the transition is currently active.
 function LScreenTransition:isActive() end
 ```
 
+#### Description
+
+Returns whether the transition is currently active.
+
+Returns: `boolean` - True when the transition is active.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -4791,13 +5236,7 @@ end
 
 ### LScreenTransition:isDone
 
-`LScreenTransition:isDone() -> boolean`
-
-Returns whether the transition has finished.
-
-**Returns**: `boolean` - True when the transition is complete.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether the transition has finished.
@@ -4805,9 +5244,15 @@ Returns whether the transition has finished.
 function LScreenTransition:isDone() end
 ```
 
+#### Description
+
+Returns whether the transition has finished.
+
+Returns: `boolean` - True when the transition is complete.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -4820,13 +5265,7 @@ end
 
 ### LScreenTransition:kind
 
-`LScreenTransition:kind() -> string`
-
-Returns the transition kind name. This method is available to Lua scripts.
-
-**Returns**: `string` - Transition kind name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the transition kind name. This method is available to Lua scripts.
@@ -4834,9 +5273,15 @@ Returns the transition kind name. This method is available to Lua scripts.
 function LScreenTransition:kind() end
 ```
 
+#### Description
+
+Returns the transition kind name. This method is available to Lua scripts.
+
+Returns: `string` - Transition kind name.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -4847,20 +5292,20 @@ end
 
 ### LScreenTransition:play
 
-`LScreenTransition:play()`
-
-Starts this screen transition forward from its current state.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Starts this screen transition forward from its current state.
 function LScreenTransition:play() end
 ```
 
+#### Description
+
+Starts this screen transition forward from its current state.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -4872,13 +5317,7 @@ end
 
 ### LScreenTransition:progress
 
-`LScreenTransition:progress() -> number`
-
-Returns normalized transition progress.
-
-**Returns**: `number` - Progress value between the transition start and end.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns normalized transition progress.
@@ -4886,9 +5325,15 @@ Returns normalized transition progress.
 function LScreenTransition:progress() end
 ```
 
+#### Description
+
+Returns normalized transition progress.
+
+Returns: `number` - Progress value between the transition start and end.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -4901,20 +5346,20 @@ end
 
 ### LScreenTransition:reverse
 
-`LScreenTransition:reverse()`
-
-Starts this screen transition in reverse from its current state.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Starts this screen transition in reverse from its current state.
 function LScreenTransition:reverse() end
 ```
 
+#### Description
+
+Starts this screen transition in reverse from its current state.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -4928,15 +5373,7 @@ end
 
 ### LScreenTransition:setColor
 
-`LScreenTransition:setColor(color: table)`
-
-Sets the transition RGBA color from a numeric array table.
-
-**Parameters**
-
-- `color` (`table`, required): Numeric color table using indices 1 through 4.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the transition RGBA color from a numeric array table.
@@ -4944,9 +5381,17 @@ Sets the transition RGBA color from a numeric array table.
 function LScreenTransition:setColor(color) end
 ```
 
+#### Description
+
+Sets the transition RGBA color from a numeric array table.
+
+Parameters:
+
+- `color` (`table`, required): Numeric color table using indices 1 through 4.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -4959,13 +5404,7 @@ end
 
 ### LScreenTransition:type
 
-`LScreenTransition:type() -> string`
-
-Returns the Lua-visible type name for this transition handle.
-
-**Returns**: `string` - The string `LScreenTransition`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this transition handle.
@@ -4973,9 +5412,15 @@ Returns the Lua-visible type name for this transition handle.
 function LScreenTransition:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this transition handle.
+
+Returns: `string` - The string `LScreenTransition`.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -4986,17 +5431,7 @@ end
 
 ### LScreenTransition:typeOf
 
-`LScreenTransition:typeOf(name: string) -> boolean`
-
-Returns whether this transition handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `ScreenTransition` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this transition handle matches a supported type name.
@@ -5005,9 +5440,19 @@ Returns whether this transition handle matches a supported type name.
 function LScreenTransition:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this transition handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `ScreenTransition` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do
@@ -5018,17 +5463,7 @@ end
 
 ### LScreenTransition:update
 
-`LScreenTransition:update(dt: number) -> boolean`
-
-Advances this transition timer and returns whether it remains active.
-
-**Parameters**
-
-- `dt` (`number`, required): Delta time in seconds.
-
-**Returns**: `boolean` - True when the transition is still active after the update.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Advances this transition timer and returns whether it remains active.
@@ -5037,9 +5472,19 @@ Advances this transition timer and returns whether it remains active.
 function LScreenTransition:update(dt) end
 ```
 
+#### Description
+
+Advances this transition timer and returns whether it remains active.
+
+Parameters:
+
+- `dt` (`number`, required): Delta time in seconds.
+
+Returns: `boolean` - True when the transition is still active after the update.
+
 #### Example
 
-Exact example from [effect.lua](../blob/main/content/examples/effect.lua):
+Source: [effect.lua](../blob/main/content/examples/effect.lua)
 
 ```lua
 do

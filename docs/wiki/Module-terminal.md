@@ -14,97 +14,277 @@
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
   - [lurek.terminal.addCompletion](#lurekterminaladdcompletion)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.terminal.applyTheme](#lurekterminalapplytheme)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.terminal.clearCmdHistory](#lurekterminalclearcmdhistory)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.terminal.clearCompletions](#lurekterminalclearcompletions)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.terminal.cmdHistoryLen](#lurekterminalcmdhistorylen)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.terminal.getCompletions](#lurekterminalgetcompletions)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.terminal.getMaxCols](#lurekterminalgetmaxcols)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.terminal.getMaxRows](#lurekterminalgetmaxrows)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.terminal.getScrollback](#lurekterminalgetscrollback)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.terminal.newBorder](#lurekterminalnewborder)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.terminal.newButton](#lurekterminalnewbutton)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.terminal.newLabel](#lurekterminalnewlabel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.terminal.newList](#lurekterminalnewlist)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.terminal.newPanel](#lurekterminalnewpanel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.terminal.newTerminal](#lurekterminalnewterminal)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.terminal.newTextBox](#lurekterminalnewtextbox)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.terminal.nextCmd](#lurekterminalnextcmd)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.terminal.nextCompletion](#lurekterminalnextcompletion)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.terminal.parseAnsi](#lurekterminalparseansi)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.terminal.prevCmd](#lurekterminalprevcmd)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.terminal.printAnsi](#lurekterminalprintansi)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.terminal.printHighlighted](#lurekterminalprinthighlighted)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.terminal.pushCmdHistory](#lurekterminalpushcmdhistory)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.terminal.pushScrollback](#lurekterminalpushscrollback)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.terminal.removeCompletion](#lurekterminalremovecompletion)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.terminal.resetCompletion](#lurekterminalresetcompletion)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.terminal.scrollbackLen](#lurekterminalscrollbacklen)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.terminal.setScrollbackCap](#lurekterminalsetscrollbackcap)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.terminal.stripAnsi](#lurekterminalstripansi)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔷 Module Types](#module-types)
   - [LTerminal](#lterminal)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWidget](#lwidget)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
   - [LTerminal:addWidget](#lterminaladdwidget)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTerminal:autoResize](#lterminalautoresize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTerminal:clear](#lterminalclear)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTerminal:clearWidgets](#lterminalclearwidgets)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTerminal:get](#lterminalget)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTerminal:getCellSize](#lterminalgetcellsize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTerminal:getDimensions](#lterminalgetdimensions)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTerminal:getFocused](#lterminalgetfocused)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTerminal:getWidgetCount](#lterminalgetwidgetcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTerminal:keypressed](#lterminalkeypressed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTerminal:mousepressed](#lterminalmousepressed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTerminal:print](#lterminalprint)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTerminal:removeWidget](#lterminalremovewidget)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTerminal:render](#lterminalrender)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTerminal:resetCellSize](#lterminalresetcellsize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTerminal:set](#lterminalset)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTerminal:setCellSize](#lterminalsetcellsize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTerminal:setFocus](#lterminalsetfocus)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTerminal:setFont](#lterminalsetfont)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTerminal:textinput](#lterminaltextinput)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTerminal:type](#lterminaltype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTerminal:typeOf](#lterminaltypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWidget:addChild](#lwidgetaddchild)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWidget:addItem](#lwidgetadditem)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWidget:clearChildren](#lwidgetclearchildren)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWidget:clearItems](#lwidgetclearitems)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWidget:getChild](#lwidgetgetchild)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWidget:getChildCount](#lwidgetgetchildcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWidget:getColor](#lwidgetgetcolor)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWidget:getItem](#lwidgetgetitem)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWidget:getItemCount](#lwidgetgetitemcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWidget:getMaxLength](#lwidgetgetmaxlength)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWidget:getPosition](#lwidgetgetposition)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWidget:getSelected](#lwidgetgetselected)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWidget:getSize](#lwidgetgetsize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWidget:getStyle](#lwidgetgetstyle)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWidget:getTag](#lwidgetgettag)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWidget:getText](#lwidgetgettext)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWidget:getTitle](#lwidgetgettitle)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWidget:isEnabled](#lwidgetisenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWidget:isVisible](#lwidgetisvisible)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWidget:removeChild](#lwidgetremovechild)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWidget:removeItem](#lwidgetremoveitem)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWidget:setColor](#lwidgetsetcolor)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWidget:setEnabled](#lwidgetsetenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWidget:setMaxLength](#lwidgetsetmaxlength)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWidget:setOnChange](#lwidgetsetonchange)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWidget:setOnClick](#lwidgetsetonclick)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWidget:setOnSelect](#lwidgetsetonselect)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWidget:setPosition](#lwidgetsetposition)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWidget:setSelected](#lwidgetsetselected)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWidget:setSize](#lwidgetsetsize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWidget:setStyle](#lwidgetsetstyle)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWidget:setTag](#lwidgetsettag)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWidget:setText](#lwidgetsettext)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWidget:setTitle](#lwidgetsettitle)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWidget:setVisible](#lwidgetsetvisible)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWidget:type](#lwidgettype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWidget:typeOf](#lwidgettypeof)
+    - [Definition](#definition)
+    - [Description](#description)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -167,17 +347,25 @@ lurek.terminal.nextCompletion(prefix: string) -> string -- Cycles to the next ma
 
 ### lurek.terminal.addCompletion
 
-`lurek.terminal.addCompletion(candidate: string)`
+#### Definition
+
+```lua
+--- Registers a candidate string for tab-completion in the shared completion engine.
+---@param candidate string The completion candidate to add.
+lurek.terminal.addCompletion = function(candidate) end
+```
+
+#### Description
 
 Registers a candidate string for tab-completion in the shared completion engine.
 
-**Parameters**
+Parameters:
 
 - `candidate` (`string`, required): The completion candidate to add.
 
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -191,18 +379,27 @@ end
 
 ### lurek.terminal.applyTheme
 
-`lurek.terminal.applyTheme(terminal: LTerminal, theme: string)`
+#### Definition
+
+```lua
+--- Applies a named color theme to the terminal, setting default foreground and background colors.
+---@param terminal LTerminal The terminal to theme.
+---@param theme string Theme name: "solarized_dark", "solarized_light", "monokai", "dracula", or "nord".
+lurek.terminal.applyTheme = function(terminal, theme) end
+```
+
+#### Description
 
 Applies a named color theme to the terminal, setting default foreground and background colors.
 
-**Parameters**
+Parameters:
 
 - `terminal` (`LTerminal`, required): The terminal to theme.
 - `theme` (`string`, required): Theme name: "solarized_dark", "solarized_light", "monokai", "dracula", or "nord".
 
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -216,17 +413,25 @@ end
 
 ### lurek.terminal.clearCmdHistory
 
-`lurek.terminal.clearCmdHistory(terminal: LTerminal)`
+#### Definition
+
+```lua
+--- Removes all entries from the terminal command history.
+---@param terminal LTerminal The terminal to clear.
+lurek.terminal.clearCmdHistory = function(terminal) end
+```
+
+#### Description
 
 Removes all entries from the terminal command history.
 
-**Parameters**
+Parameters:
 
 - `terminal` (`LTerminal`, required): The terminal to clear.
 
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -240,13 +445,20 @@ end
 
 ### lurek.terminal.clearCompletions
 
-`lurek.terminal.clearCompletions()`
+#### Definition
+
+```lua
+--- Removes all registered completion candidates from the shared completion engine.
+lurek.terminal.clearCompletions = function() end
+```
+
+#### Description
 
 Removes all registered completion candidates from the shared completion engine.
 
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -258,19 +470,28 @@ end
 
 ### lurek.terminal.cmdHistoryLen
 
-`lurek.terminal.cmdHistoryLen(terminal: LTerminal) -> integer`
+#### Definition
+
+```lua
+--- Returns the number of commands currently stored in the terminal command history.
+---@param terminal LTerminal The terminal to query.
+---@return number History entry count.
+lurek.terminal.cmdHistoryLen = function(terminal) end
+```
+
+#### Description
 
 Returns the number of commands currently stored in the terminal command history.
 
-**Parameters**
+Parameters:
 
 - `terminal` (`LTerminal`, required): The terminal to query.
 
-**Returns**: `integer` - History entry count.
+Returns: `integer` - History entry count.
 
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -284,19 +505,28 @@ end
 
 ### lurek.terminal.getCompletions
 
-`lurek.terminal.getCompletions(prefix: string) -> string[]`
+#### Definition
+
+```lua
+--- Returns all completion candidates matching the given prefix string.
+---@param prefix string The prefix to match against.
+---@return string[] Matching candidate strings.
+lurek.terminal.getCompletions = function(prefix) end
+```
+
+#### Description
 
 Returns all completion candidates matching the given prefix string.
 
-**Parameters**
+Parameters:
 
 - `prefix` (`string`, required): The prefix to match against.
 
-**Returns**: `string[]` - Matching candidate strings.
+Returns: `string[]` - Matching candidate strings.
 
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -308,15 +538,23 @@ end
 
 ### lurek.terminal.getMaxCols
 
-`lurek.terminal.getMaxCols() -> integer`
+#### Definition
+
+```lua
+--- Returns the engine-defined maximum number of columns a terminal grid can have.
+---@return number Maximum column count.
+lurek.terminal.getMaxCols = function() end
+```
+
+#### Description
 
 Returns the engine-defined maximum number of columns a terminal grid can have.
 
-**Returns**: `integer` - Maximum column count.
+Returns: `integer` - Maximum column count.
 
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -327,15 +565,23 @@ end
 
 ### lurek.terminal.getMaxRows
 
-`lurek.terminal.getMaxRows() -> integer`
+#### Definition
+
+```lua
+--- Returns the engine-defined maximum number of rows a terminal grid can have.
+---@return number Maximum row count.
+lurek.terminal.getMaxRows = function() end
+```
+
+#### Description
 
 Returns the engine-defined maximum number of rows a terminal grid can have.
 
-**Returns**: `integer` - Maximum row count.
+Returns: `integer` - Maximum row count.
 
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -346,21 +592,32 @@ end
 
 ### lurek.terminal.getScrollback
 
-`lurek.terminal.getScrollback(terminal: LTerminal, offset: integer, count: integer) -> string[]`
+#### Definition
+
+```lua
+--- Retrieves a range of lines from the terminal scrollback buffer.
+---@param terminal LTerminal The terminal to read from.
+---@param offset number 0-based offset from the newest line.
+---@param count number Number of lines to retrieve.
+---@return string[] Scrollback line strings.
+lurek.terminal.getScrollback = function(terminal, offset, count) end
+```
+
+#### Description
 
 Retrieves a range of lines from the terminal scrollback buffer.
 
-**Parameters**
+Parameters:
 
 - `terminal` (`LTerminal`, required): The terminal to read from.
 - `offset` (`integer`, required): 0-based offset from the newest line.
 - `count` (`integer`, required): Number of lines to retrieve.
 
-**Returns**: `string[]` - Scrollback line strings.
+Returns: `string[]` - Scrollback line strings.
 
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -372,22 +629,34 @@ end
 
 ### lurek.terminal.newBorder
 
-`lurek.terminal.newBorder(col: integer, row: integer, width: integer, height: integer) -> LWidget`
+#### Definition
+
+```lua
+--- Creates a new decorative border widget drawn using box-drawing characters.
+---@param col number Column position (1-based).
+---@param row number Row position (1-based).
+---@param width number Border width in cells.
+---@param height number Border height in cells.
+---@return LWidget The new border widget.
+lurek.terminal.newBorder = function(col, row, width, height) end
+```
+
+#### Description
 
 Creates a new decorative border widget drawn using box-drawing characters.
 
-**Parameters**
+Parameters:
 
 - `col` (`integer`, required): Column position (1-based).
 - `row` (`integer`, required): Row position (1-based).
 - `width` (`integer`, required): Border width in cells.
 - `height` (`integer`, required): Border height in cells.
 
-**Returns**: `LWidget` - The new border widget.
+Returns: `LWidget` - The new border widget.
 
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -401,11 +670,24 @@ end
 
 ### lurek.terminal.newButton
 
-`lurek.terminal.newButton(col: integer, row: integer, width: integer, [height]: integer, [text]: string) -> LWidget`
+#### Definition
+
+```lua
+--- Creates a new clickable button widget with the given position, size, and label text.
+---@param col number Column position (1-based).
+---@param row number Row position (1-based).
+---@param width number Button width in cells.
+---@param height? number Button height in cells (default 1).
+---@param text? string Button label text (default empty).
+---@return LWidget The new button widget.
+lurek.terminal.newButton = function(col, row, width, height, text) end
+```
+
+#### Description
 
 Creates a new clickable button widget with the given position, size, and label text.
 
-**Parameters**
+Parameters:
 
 - `col` (`integer`, required): Column position (1-based).
 - `row` (`integer`, required): Row position (1-based).
@@ -413,11 +695,11 @@ Creates a new clickable button widget with the given position, size, and label t
 - `height` (`integer`, optional): Button height in cells (default 1).
 - `text` (`string`, optional): Button label text (default empty).
 
-**Returns**: `LWidget` - The new button widget.
+Returns: `LWidget` - The new button widget.
 
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -431,21 +713,32 @@ end
 
 ### lurek.terminal.newLabel
 
-`lurek.terminal.newLabel(col: integer, row: integer, [text]: string) -> LWidget`
+#### Definition
+
+```lua
+--- Creates a new label widget that displays static text at the given cell position.
+---@param col number Column position (1-based).
+---@param row number Row position (1-based).
+---@param text? string Initial text (default empty).
+---@return LWidget The new label widget.
+lurek.terminal.newLabel = function(col, row, text) end
+```
+
+#### Description
 
 Creates a new label widget that displays static text at the given cell position.
 
-**Parameters**
+Parameters:
 
 - `col` (`integer`, required): Column position (1-based).
 - `row` (`integer`, required): Row position (1-based).
 - `text` (`string`, optional): Initial text (default empty).
 
-**Returns**: `LWidget` - The new label widget.
+Returns: `LWidget` - The new label widget.
 
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -459,22 +752,34 @@ end
 
 ### lurek.terminal.newList
 
-`lurek.terminal.newList(col: integer, row: integer, width: integer, height: integer) -> LWidget`
+#### Definition
+
+```lua
+--- Creates a new scrollable list widget for displaying and selecting items.
+---@param col number Column position (1-based).
+---@param row number Row position (1-based).
+---@param width number List width in cells.
+---@param height number List height in cells (visible rows).
+---@return LWidget The new list widget.
+lurek.terminal.newList = function(col, row, width, height) end
+```
+
+#### Description
 
 Creates a new scrollable list widget for displaying and selecting items.
 
-**Parameters**
+Parameters:
 
 - `col` (`integer`, required): Column position (1-based).
 - `row` (`integer`, required): Row position (1-based).
 - `width` (`integer`, required): List width in cells.
 - `height` (`integer`, required): List height in cells (visible rows).
 
-**Returns**: `LWidget` - The new list widget.
+Returns: `LWidget` - The new list widget.
 
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -488,22 +793,34 @@ end
 
 ### lurek.terminal.newPanel
 
-`lurek.terminal.newPanel(col: integer, row: integer, [width]: integer, [height]: integer) -> LWidget`
+#### Definition
+
+```lua
+--- Creates a new panel widget that can contain child widgets for grouped layout.
+---@param col number Column position (1-based).
+---@param row number Row position (1-based).
+---@param width? number Panel width in cells (default 1).
+---@param height? number Panel height in cells (default 1).
+---@return LWidget The new panel widget.
+lurek.terminal.newPanel = function(col, row, width, height) end
+```
+
+#### Description
 
 Creates a new panel widget that can contain child widgets for grouped layout.
 
-**Parameters**
+Parameters:
 
 - `col` (`integer`, required): Column position (1-based).
 - `row` (`integer`, required): Row position (1-based).
 - `width` (`integer`, optional): Panel width in cells (default 1).
 - `height` (`integer`, optional): Panel height in cells (default 1).
 
-**Returns**: `LWidget` - The new panel widget.
+Returns: `LWidget` - The new panel widget.
 
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -517,20 +834,30 @@ end
 
 ### lurek.terminal.newTerminal
 
-`lurek.terminal.newTerminal([cols]: integer, [rows]: integer) -> LTerminal`
+#### Definition
+
+```lua
+--- Creates a new terminal emulator grid and stages a window size that fits its active cell metrics.
+---@param cols? number Number of columns (default 80).
+---@param rows? number Number of rows (default 40).
+---@return LTerminal The new terminal object.
+lurek.terminal.newTerminal = function(cols, rows) end
+```
+
+#### Description
 
 Creates a new terminal emulator grid and stages a window size that fits its active cell metrics.
 
-**Parameters**
+Parameters:
 
 - `cols` (`integer`, optional): Number of columns (default 80).
 - `rows` (`integer`, optional): Number of rows (default 40).
 
-**Returns**: `LTerminal` - The new terminal object.
+Returns: `LTerminal` - The new terminal object.
 
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -544,21 +871,32 @@ end
 
 ### lurek.terminal.newTextBox
 
-`lurek.terminal.newTextBox(col: integer, row: integer, width: integer) -> LWidget`
+#### Definition
+
+```lua
+--- Creates a new single-line text input widget at the given position with a fixed width.
+---@param col number Column position (1-based).
+---@param row number Row position (1-based).
+---@param width number Input field width in cells.
+---@return LWidget The new text box widget.
+lurek.terminal.newTextBox = function(col, row, width) end
+```
+
+#### Description
 
 Creates a new single-line text input widget at the given position with a fixed width.
 
-**Parameters**
+Parameters:
 
 - `col` (`integer`, required): Column position (1-based).
 - `row` (`integer`, required): Row position (1-based).
 - `width` (`integer`, required): Input field width in cells.
 
-**Returns**: `LWidget` - The new text box widget.
+Returns: `LWidget` - The new text box widget.
 
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -572,19 +910,28 @@ end
 
 ### lurek.terminal.nextCmd
 
-`lurek.terminal.nextCmd(terminal: LTerminal) -> string`
+#### Definition
+
+```lua
+--- Navigates forward in the terminal command history, returning the next command or nil if at the end.
+---@param terminal LTerminal The terminal to navigate.
+---@return string The next command, or nil.
+lurek.terminal.nextCmd = function(terminal) end
+```
+
+#### Description
 
 Navigates forward in the terminal command history, returning the next command or nil if at the end.
 
-**Parameters**
+Parameters:
 
 - `terminal` (`LTerminal`, required): The terminal to navigate.
 
-**Returns**: `string` - The next command, or nil.
+Returns: `string` - The next command, or nil.
 
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -598,19 +945,28 @@ end
 
 ### lurek.terminal.nextCompletion
 
-`lurek.terminal.nextCompletion(prefix: string) -> string`
+#### Definition
+
+```lua
+--- Cycles to the next matching completion candidate for the given prefix, wrapping around after the last match.
+---@param prefix string The prefix to match against.
+---@return string The next matching candidate, or nil if none match.
+lurek.terminal.nextCompletion = function(prefix) end
+```
+
+#### Description
 
 Cycles to the next matching completion candidate for the given prefix, wrapping around after the last match.
 
-**Parameters**
+Parameters:
 
 - `prefix` (`string`, required): The prefix to match against.
 
-**Returns**: `string` - The next matching candidate, or nil if none match.
+Returns: `string` - The next matching candidate, or nil if none match.
 
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -624,19 +980,28 @@ end
 
 ### lurek.terminal.parseAnsi
 
-`lurek.terminal.parseAnsi(text: string) -> table`
+#### Definition
+
+```lua
+--- Parses ANSI escape sequences in a string into an array of span tables with text, bold, fg, and bg fields.
+---@param text string Input string with ANSI codes.
+---@return TerminalParseAnsiResult Array of span tables: { text=string, bold=boolean, fg?={r,g,b}, bg?={r,g,b} }.
+lurek.terminal.parseAnsi = function(text) end
+```
+
+#### Description
 
 Parses ANSI escape sequences in a string into an array of span tables with text, bold, fg, and bg fields.
 
-**Parameters**
+Parameters:
 
 - `text` (`string`, required): Input string with ANSI codes.
 
-**Returns**: `table` - Array of span tables: { text=string, bold=boolean, fg?={r,g,b}, bg?={r,g,b} }.
+Returns: `table` - Array of span tables: { text=string, bold=boolean, fg?={r,g,b}, bg?={r,g,b} }.
 
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -649,19 +1014,28 @@ end
 
 ### lurek.terminal.prevCmd
 
-`lurek.terminal.prevCmd(terminal: LTerminal) -> string`
+#### Definition
+
+```lua
+--- Navigates backward in the terminal command history, returning the previous command or nil if at the start.
+---@param terminal LTerminal The terminal to navigate.
+---@return string The previous command, or nil.
+lurek.terminal.prevCmd = function(terminal) end
+```
+
+#### Description
 
 Navigates backward in the terminal command history, returning the previous command or nil if at the start.
 
-**Parameters**
+Parameters:
 
 - `terminal` (`LTerminal`, required): The terminal to navigate.
 
-**Returns**: `string` - The previous command, or nil.
+Returns: `string` - The previous command, or nil.
 
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -675,11 +1049,22 @@ end
 
 ### lurek.terminal.printAnsi
 
-`lurek.terminal.printAnsi(terminal: LTerminal, col: integer, row: integer, text: string)`
+#### Definition
+
+```lua
+--- Renders ANSI-colored text directly onto the terminal grid at the given cell position.
+---@param terminal LTerminal The terminal to print to.
+---@param col number Starting column (1-based).
+---@param row number Row to print on (1-based).
+---@param text string Text containing ANSI escape sequences.
+lurek.terminal.printAnsi = function(terminal, col, row, text) end
+```
+
+#### Description
 
 Renders ANSI-colored text directly onto the terminal grid at the given cell position.
 
-**Parameters**
+Parameters:
 
 - `terminal` (`LTerminal`, required): The terminal to print to.
 - `col` (`integer`, required): Starting column (1-based).
@@ -688,7 +1073,7 @@ Renders ANSI-colored text directly onto the terminal grid at the given cell posi
 
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -702,11 +1087,23 @@ end
 
 ### lurek.terminal.printHighlighted
 
-`lurek.terminal.printHighlighted(terminal: LTerminal, col: integer, row: integer, text: string, rules: table)`
+#### Definition
+
+```lua
+--- Renders syntax-highlighted text onto the terminal grid using a table of highlight rules with regex patterns and colors.
+---@param terminal LTerminal The terminal to print to.
+---@param col number Starting column (1-based).
+---@param row number Row to print on (1-based).
+---@param text string The text to highlight.
+---@param rules table Array of rule tables, each with `pattern` (string), `fg` (table {r,g,b} 0-255), and optional `bg` (table {r,g,b} 0-255).
+lurek.terminal.printHighlighted = function(terminal, col, row, text, rules) end
+```
+
+#### Description
 
 Renders syntax-highlighted text onto the terminal grid using a table of highlight rules with regex patterns and colors.
 
-**Parameters**
+Parameters:
 
 - `terminal` (`LTerminal`, required): The terminal to print to.
 - `col` (`integer`, required): Starting column (1-based).
@@ -716,7 +1113,7 @@ Renders syntax-highlighted text onto the terminal grid using a table of highligh
 
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -730,18 +1127,27 @@ end
 
 ### lurek.terminal.pushCmdHistory
 
-`lurek.terminal.pushCmdHistory(terminal: LTerminal, cmd: string)`
+#### Definition
+
+```lua
+--- Appends a command string to the terminal command history for up/down arrow recall.
+---@param terminal LTerminal The terminal to push to.
+---@param cmd string The command string to store.
+lurek.terminal.pushCmdHistory = function(terminal, cmd) end
+```
+
+#### Description
 
 Appends a command string to the terminal command history for up/down arrow recall.
 
-**Parameters**
+Parameters:
 
 - `terminal` (`LTerminal`, required): The terminal to push to.
 - `cmd` (`string`, required): The command string to store.
 
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -755,18 +1161,27 @@ end
 
 ### lurek.terminal.pushScrollback
 
-`lurek.terminal.pushScrollback(terminal: LTerminal, line: string)`
+#### Definition
+
+```lua
+--- Appends a line of text to the terminal scrollback buffer for later retrieval.
+---@param terminal LTerminal The terminal to push to.
+---@param line string The text line to append.
+lurek.terminal.pushScrollback = function(terminal, line) end
+```
+
+#### Description
 
 Appends a line of text to the terminal scrollback buffer for later retrieval.
 
-**Parameters**
+Parameters:
 
 - `terminal` (`LTerminal`, required): The terminal to push to.
 - `line` (`string`, required): The text line to append.
 
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -780,17 +1195,25 @@ end
 
 ### lurek.terminal.removeCompletion
 
-`lurek.terminal.removeCompletion(candidate: string)`
+#### Definition
+
+```lua
+--- Removes a previously registered completion candidate from the shared completion engine.
+---@param candidate string The completion candidate to remove.
+lurek.terminal.removeCompletion = function(candidate) end
+```
+
+#### Description
 
 Removes a previously registered completion candidate from the shared completion engine.
 
-**Parameters**
+Parameters:
 
 - `candidate` (`string`, required): The completion candidate to remove.
 
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -803,13 +1226,20 @@ end
 
 ### lurek.terminal.resetCompletion
 
-`lurek.terminal.resetCompletion()`
+#### Definition
+
+```lua
+--- Resets the completion cycling state so the next call to nextCompletion starts from the first match.
+lurek.terminal.resetCompletion = function() end
+```
+
+#### Description
 
 Resets the completion cycling state so the next call to nextCompletion starts from the first match.
 
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -821,19 +1251,28 @@ end
 
 ### lurek.terminal.scrollbackLen
 
-`lurek.terminal.scrollbackLen(terminal: LTerminal) -> integer`
+#### Definition
+
+```lua
+--- Returns the number of lines currently stored in the terminal scrollback buffer.
+---@param terminal LTerminal The terminal to query.
+---@return number Line count.
+lurek.terminal.scrollbackLen = function(terminal) end
+```
+
+#### Description
 
 Returns the number of lines currently stored in the terminal scrollback buffer.
 
-**Parameters**
+Parameters:
 
 - `terminal` (`LTerminal`, required): The terminal to query.
 
-**Returns**: `integer` - Line count.
+Returns: `integer` - Line count.
 
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -845,18 +1284,27 @@ end
 
 ### lurek.terminal.setScrollbackCap
 
-`lurek.terminal.setScrollbackCap(terminal: LTerminal, cap: integer)`
+#### Definition
+
+```lua
+--- Sets the maximum number of lines retained in the terminal scrollback buffer. Older lines are discarded when the cap is exceeded.
+---@param terminal LTerminal The terminal to configure.
+---@param cap number Maximum number of scrollback lines.
+lurek.terminal.setScrollbackCap = function(terminal, cap) end
+```
+
+#### Description
 
 Sets the maximum number of lines retained in the terminal scrollback buffer. Older lines are discarded when the cap is exceeded.
 
-**Parameters**
+Parameters:
 
 - `terminal` (`LTerminal`, required): The terminal to configure.
 - `cap` (`integer`, required): Maximum number of scrollback lines.
 
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -869,19 +1317,28 @@ end
 
 ### lurek.terminal.stripAnsi
 
-`lurek.terminal.stripAnsi(text: string) -> string`
+#### Definition
+
+```lua
+--- Removes all ANSI escape sequences from a string, returning plain text.
+---@param text string Input string with ANSI codes.
+---@return string Clean text without escape sequences.
+lurek.terminal.stripAnsi = function(text) end
+```
+
+#### Description
 
 Removes all ANSI escape sequences from a string, returning plain text.
 
-**Parameters**
+Parameters:
 
 - `text` (`string`, required): Input string with ANSI codes.
 
-**Returns**: `string` - Clean text without escape sequences.
+Returns: `string` - Clean text without escape sequences.
 
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -900,9 +1357,7 @@ end
 
 ### LTerminal
 
-Lua-side userdata wrapping a terminal emulator grid with cell access, widgets, input, and rendering.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side userdata wrapping a terminal emulator grid with cell access, widgets, input, and rendering.
@@ -910,9 +1365,13 @@ Lua-side userdata wrapping a terminal emulator grid with cell access, widgets, i
 LTerminal = {}
 ```
 
+#### Description
+
+Lua-side userdata wrapping a terminal emulator grid with cell access, widgets, input, and rendering.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -926,9 +1385,7 @@ end
 
 ### LWidget
 
-Lua-side userdata wrapping a terminal widget (label, button, text box, list, border, or panel).
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side userdata wrapping a terminal widget (label, button, text box, list, border, or panel).
@@ -936,9 +1393,13 @@ Lua-side userdata wrapping a terminal widget (label, button, text box, list, bor
 LWidget = {}
 ```
 
+#### Description
+
+Lua-side userdata wrapping a terminal widget (label, button, text box, list, border, or panel).
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -957,15 +1418,7 @@ end
 
 ### LTerminal:addWidget
 
-`LTerminal:addWidget(widget: LWidget)`
-
-Attaches a widget to this terminal so it is rendered and receives input events.
-
-**Parameters**
-
-- `widget` (`LWidget`, required): The widget to attach.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Attaches a widget to this terminal so it is rendered and receives input events.
@@ -973,9 +1426,17 @@ Attaches a widget to this terminal so it is rendered and receives input events.
 function LTerminal:addWidget(widget) end
 ```
 
+#### Description
+
+Attaches a widget to this terminal so it is rendered and receives input events.
+
+Parameters:
+
+- `widget` (`LWidget`, required): The widget to attach.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -988,20 +1449,20 @@ end
 
 ### LTerminal:autoResize
 
-`LTerminal:autoResize()`
-
-Requests the window to resize so it exactly fits the terminal grid at the current cell size.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Requests the window to resize so it exactly fits the terminal grid at the current cell size.
 function LTerminal:autoResize() end
 ```
 
+#### Description
+
+Requests the window to resize so it exactly fits the terminal grid at the current cell size.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -1014,20 +1475,20 @@ end
 
 ### LTerminal:clear
 
-`LTerminal:clear()`
-
-Clears all cells in the terminal grid, resetting characters and colors to defaults.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Clears all cells in the terminal grid, resetting characters and colors to defaults.
 function LTerminal:clear() end
 ```
 
+#### Description
+
+Clears all cells in the terminal grid, resetting characters and colors to defaults.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -1041,20 +1502,20 @@ end
 
 ### LTerminal:clearWidgets
 
-`LTerminal:clearWidgets()`
-
-Removes all attached widgets from this terminal at once.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes all attached widgets from this terminal at once.
 function LTerminal:clearWidgets() end
 ```
 
+#### Description
+
+Removes all attached widgets from this terminal at once.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -1068,18 +1529,7 @@ end
 
 ### LTerminal:get
 
-`LTerminal:get(col: integer, row: integer) -> integer, number, number, number, number, number, number, number, number`
-
-Reads the character and colors at a specific cell in the terminal grid.
-
-**Parameters**
-
-- `col` (`integer`, required): Column index (1-based).
-- `row` (`integer`, required): Row index (1-based).
-
-**Returns**: `integer, number, number, number, number, number, number, number, number` - Character codepoint, fg RGBA, bg RGBA.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Reads the character and colors at a specific cell in the terminal grid.
@@ -1097,9 +1547,20 @@ Reads the character and colors at a specific cell in the terminal grid.
 function LTerminal:get(col, row) end
 ```
 
+#### Description
+
+Reads the character and colors at a specific cell in the terminal grid.
+
+Parameters:
+
+- `col` (`integer`, required): Column index (1-based).
+- `row` (`integer`, required): Row index (1-based).
+
+Returns: `integer, number, number, number, number, number, number, number, number` - Character codepoint, fg RGBA, bg RGBA.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -1113,13 +1574,7 @@ end
 
 ### LTerminal:getCellSize
 
-`LTerminal:getCellSize() -> number, number`
-
-Returns the active terminal cell width and height in pixels, using custom override or font metrics.
-
-**Returns**: `number, number` - Cell width and height in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the active terminal cell width and height in pixels, using custom override or font metrics.
@@ -1128,9 +1583,15 @@ Returns the active terminal cell width and height in pixels, using custom overri
 function LTerminal:getCellSize() end
 ```
 
+#### Description
+
+Returns the active terminal cell width and height in pixels, using custom override or font metrics.
+
+Returns: `number, number` - Cell width and height in pixels.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -1144,13 +1605,7 @@ end
 
 ### LTerminal:getDimensions
 
-`LTerminal:getDimensions() -> integer, integer`
-
-Returns the number of columns and rows in the terminal grid.
-
-**Returns**: `integer, integer` - Column count, row count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of columns and rows in the terminal grid.
@@ -1159,9 +1614,15 @@ Returns the number of columns and rows in the terminal grid.
 function LTerminal:getDimensions() end
 ```
 
+#### Description
+
+Returns the number of columns and rows in the terminal grid.
+
+Returns: `integer, integer` - Column count, row count.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -1173,13 +1634,7 @@ end
 
 ### LTerminal:getFocused
 
-`LTerminal:getFocused() -> LWidget`
-
-Returns the widget that currently has keyboard focus, or nil if no widget is focused.
-
-**Returns**: `LWidget` - The focused widget, or nil.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the widget that currently has keyboard focus, or nil if no widget is focused.
@@ -1187,9 +1642,15 @@ Returns the widget that currently has keyboard focus, or nil if no widget is foc
 function LTerminal:getFocused() end
 ```
 
+#### Description
+
+Returns the widget that currently has keyboard focus, or nil if no widget is focused.
+
+Returns: `LWidget` - The focused widget, or nil.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -1202,13 +1663,7 @@ end
 
 ### LTerminal:getWidgetCount
 
-`LTerminal:getWidgetCount() -> integer`
-
-Returns the number of widgets currently attached to this terminal.
-
-**Returns**: `integer` - Widget count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of widgets currently attached to this terminal.
@@ -1216,9 +1671,15 @@ Returns the number of widgets currently attached to this terminal.
 function LTerminal:getWidgetCount() end
 ```
 
+#### Description
+
+Returns the number of widgets currently attached to this terminal.
+
+Returns: `integer` - Widget count.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -1231,17 +1692,7 @@ end
 
 ### LTerminal:keypressed
 
-`LTerminal:keypressed(key: string) -> boolean`
-
-Forwards a key press event to the terminal for widget input processing.
-
-**Parameters**
-
-- `key` (`string`, required): The key name (e.g. "return", "backspace", "left").
-
-**Returns**: `boolean` - True if the terminal consumed the key event.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Forwards a key press event to the terminal for widget input processing.
@@ -1250,9 +1701,19 @@ Forwards a key press event to the terminal for widget input processing.
 function LTerminal:keypressed(key) end
 ```
 
+#### Description
+
+Forwards a key press event to the terminal for widget input processing.
+
+Parameters:
+
+- `key` (`string`, required): The key name (e.g. "return", "backspace", "left").
+
+Returns: `boolean` - True if the terminal consumed the key event.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -1266,17 +1727,7 @@ end
 
 ### LTerminal:mousepressed
 
-`LTerminal:mousepressed(px: number, py: number, [button]: integer)`
-
-Forwards a mouse press event to the terminal, converting pixel coordinates to cell coordinates.
-
-**Parameters**
-
-- `px` (`number`, required): Pixel X position of the mouse click.
-- `py` (`number`, required): Pixel Y position of the mouse click.
-- `button` (`integer`, optional): Mouse button index (default 1 for left).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Forwards a mouse press event to the terminal, converting pixel coordinates to cell coordinates.
@@ -1286,9 +1737,19 @@ Forwards a mouse press event to the terminal, converting pixel coordinates to ce
 function LTerminal:mousepressed(px, py, button) end
 ```
 
+#### Description
+
+Forwards a mouse press event to the terminal, converting pixel coordinates to cell coordinates.
+
+Parameters:
+
+- `px` (`number`, required): Pixel X position of the mouse click.
+- `py` (`number`, required): Pixel Y position of the mouse click.
+- `button` (`integer`, optional): Mouse button index (default 1 for left).
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -1302,17 +1763,7 @@ end
 
 ### LTerminal:print
 
-`LTerminal:print(col: integer, row: integer, text: string)`
-
-Writes text to the terminal grid starting at a specific cell.
-
-**Parameters**
-
-- `col` (`integer`, required): Column index (1-based) where writing starts.
-- `row` (`integer`, required): Row index (1-based) where writing starts.
-- `text` (`string`, required): Text to write into consecutive cells.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Writes text to the terminal grid starting at a specific cell.
@@ -1322,9 +1773,19 @@ Writes text to the terminal grid starting at a specific cell.
 function LTerminal:print(col, row, text) end
 ```
 
+#### Description
+
+Writes text to the terminal grid starting at a specific cell.
+
+Parameters:
+
+- `col` (`integer`, required): Column index (1-based) where writing starts.
+- `row` (`integer`, required): Row index (1-based) where writing starts.
+- `text` (`string`, required): Text to write into consecutive cells.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -1336,15 +1797,7 @@ end
 
 ### LTerminal:removeWidget
 
-`LTerminal:removeWidget(widget: LWidget)`
-
-Detaches a widget from this terminal, removing it from rendering and input handling.
-
-**Parameters**
-
-- `widget` (`LWidget`, required): The widget to detach.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Detaches a widget from this terminal, removing it from rendering and input handling.
@@ -1352,9 +1805,17 @@ Detaches a widget from this terminal, removing it from rendering and input handl
 function LTerminal:removeWidget(widget) end
 ```
 
+#### Description
+
+Detaches a widget from this terminal, removing it from rendering and input handling.
+
+Parameters:
+
+- `widget` (`LWidget`, required): The widget to detach.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -1368,16 +1829,7 @@ end
 
 ### LTerminal:render
 
-`LTerminal:render([x]: number, [y]: number)`
-
-Renders the terminal grid and widgets and stages a window size matching the grid and active cell size.
-
-**Parameters**
-
-- `x` (`number`, optional): Screen X offset in pixels (default 0).
-- `y` (`number`, optional): Screen Y offset in pixels (default 0).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Renders the terminal grid and widgets and stages a window size matching the grid and active cell size.
@@ -1386,9 +1838,18 @@ Renders the terminal grid and widgets and stages a window size matching the grid
 function LTerminal:render(x, y) end
 ```
 
+#### Description
+
+Renders the terminal grid and widgets and stages a window size matching the grid and active cell size.
+
+Parameters:
+
+- `x` (`number`, optional): Screen X offset in pixels (default 0).
+- `y` (`number`, optional): Screen Y offset in pixels (default 0).
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -1402,20 +1863,20 @@ end
 
 ### LTerminal:resetCellSize
 
-`LTerminal:resetCellSize()`
-
-Removes any custom cell size override, reverting to the active font metrics and refitting the window.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes any custom cell size override, reverting to the active font metrics and refitting the window.
 function LTerminal:resetCellSize() end
 ```
 
+#### Description
+
+Removes any custom cell size override, reverting to the active font metrics and refitting the window.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -1428,25 +1889,7 @@ end
 
 ### LTerminal:set
 
-`LTerminal:set(col: integer, row: integer, ch: string|number, [fr]: number, [fg]: number, [fb]: number, [fa]: number, [br]: number, [bg]: number, [bb]: number, [ba]: number)`
-
-Writes a character with foreground and background color to a specific cell in the terminal grid.
-
-**Parameters**
-
-- `col` (`integer`, required): Column index (1-based).
-- `row` (`integer`, required): Row index (1-based).
-- `ch` (`string|number`, required): Character as a string or Unicode codepoint.
-- `fr` (`number`, optional): Foreground red (0-1, default 1).
-- `fg` (`number`, optional): Foreground green (0-1, default 1).
-- `fb` (`number`, optional): Foreground blue (0-1, default 1).
-- `fa` (`number`, optional): Foreground alpha (0-1, default 1).
-- `br` (`number`, optional): Background red (0-1, default 0).
-- `bg` (`number`, optional): Background green (0-1, default 0).
-- `bb` (`number`, optional): Background blue (0-1, default 0).
-- `ba` (`number`, optional): Background alpha (0-1, default 0).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Writes a character with foreground and background color to a specific cell in the terminal grid.
@@ -1464,9 +1907,27 @@ Writes a character with foreground and background color to a specific cell in th
 function LTerminal:set(col, row, ch, fr, fg, fb, fa, br, bg, bb, ba) end
 ```
 
+#### Description
+
+Writes a character with foreground and background color to a specific cell in the terminal grid.
+
+Parameters:
+
+- `col` (`integer`, required): Column index (1-based).
+- `row` (`integer`, required): Row index (1-based).
+- `ch` (`string|number`, required): Character as a string or Unicode codepoint.
+- `fr` (`number`, optional): Foreground red (0-1, default 1).
+- `fg` (`number`, optional): Foreground green (0-1, default 1).
+- `fb` (`number`, optional): Foreground blue (0-1, default 1).
+- `fa` (`number`, optional): Foreground alpha (0-1, default 1).
+- `br` (`number`, optional): Background red (0-1, default 0).
+- `bg` (`number`, optional): Background green (0-1, default 0).
+- `bb` (`number`, optional): Background blue (0-1, default 0).
+- `ba` (`number`, optional): Background alpha (0-1, default 0).
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -1480,16 +1941,7 @@ end
 
 ### LTerminal:setCellSize
 
-`LTerminal:setCellSize(w: number, h: number)`
-
-Overrides the cell width and height used for rendering this terminal grid and refits the window.
-
-**Parameters**
-
-- `w` (`number`, required): Cell width in pixels.
-- `h` (`number`, required): Cell height in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Overrides the cell width and height used for rendering this terminal grid and refits the window.
@@ -1498,9 +1950,18 @@ Overrides the cell width and height used for rendering this terminal grid and re
 function LTerminal:setCellSize(w, h) end
 ```
 
+#### Description
+
+Overrides the cell width and height used for rendering this terminal grid and refits the window.
+
+Parameters:
+
+- `w` (`number`, required): Cell width in pixels.
+- `h` (`number`, required): Cell height in pixels.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -1513,15 +1974,7 @@ end
 
 ### LTerminal:setFocus
 
-`LTerminal:setFocus([widget]: LWidget)`
-
-Sets which widget currently has keyboard focus, or clears focus when nil is passed.
-
-**Parameters**
-
-- `widget` (`LWidget`, optional): The widget to focus, or nil to clear focus.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets which widget currently has keyboard focus, or clears focus when nil is passed.
@@ -1529,9 +1982,17 @@ Sets which widget currently has keyboard focus, or clears focus when nil is pass
 function LTerminal:setFocus(widget) end
 ```
 
+#### Description
+
+Sets which widget currently has keyboard focus, or clears focus when nil is passed.
+
+Parameters:
+
+- `widget` (`LWidget`, optional): The widget to focus, or nil to clear focus.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -1544,15 +2005,7 @@ end
 
 ### LTerminal:setFont
 
-`LTerminal:setFont(height: integer)`
-
-Selects the nearest built-in bitmap font by pixel height and refits the window to the terminal grid.
-
-**Parameters**
-
-- `height` (`integer`, required): Desired font height in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Selects the nearest built-in bitmap font by pixel height and refits the window to the terminal grid.
@@ -1560,9 +2013,17 @@ Selects the nearest built-in bitmap font by pixel height and refits the window t
 function LTerminal:setFont(height) end
 ```
 
+#### Description
+
+Selects the nearest built-in bitmap font by pixel height and refits the window to the terminal grid.
+
+Parameters:
+
+- `height` (`integer`, required): Desired font height in pixels.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -1575,17 +2036,7 @@ end
 
 ### LTerminal:textinput
 
-`LTerminal:textinput(text: string) -> boolean`
-
-Forwards a text input event to the terminal for character entry into focused widgets.
-
-**Parameters**
-
-- `text` (`string`, required): The text characters entered.
-
-**Returns**: `boolean` - True if the terminal consumed the text input.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Forwards a text input event to the terminal for character entry into focused widgets.
@@ -1594,9 +2045,19 @@ Forwards a text input event to the terminal for character entry into focused wid
 function LTerminal:textinput(text) end
 ```
 
+#### Description
+
+Forwards a text input event to the terminal for character entry into focused widgets.
+
+Parameters:
+
+- `text` (`string`, required): The text characters entered.
+
+Returns: `boolean` - True if the terminal consumed the text input.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -1610,13 +2071,7 @@ end
 
 ### LTerminal:type
 
-`LTerminal:type() -> string`
-
-Returns the type name string "LTerminal".
-
-**Returns**: `string` - Always "LTerminal".
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name string "LTerminal".
@@ -1624,9 +2079,15 @@ Returns the type name string "LTerminal".
 function LTerminal:type() end
 ```
 
+#### Description
+
+Returns the type name string "LTerminal".
+
+Returns: `string` - Always "LTerminal".
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -1637,17 +2098,7 @@ end
 
 ### LTerminal:typeOf
 
-`LTerminal:typeOf(name: string) -> boolean`
-
-Checks whether this object matches a given type name. Accepts "LTerminal" or "Object".
-
-**Parameters**
-
-- `name` (`string`, required): Type name to test against.
-
-**Returns**: `boolean` - True if the name matches.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this object matches a given type name. Accepts "LTerminal" or "Object".
@@ -1656,9 +2107,19 @@ Checks whether this object matches a given type name. Accepts "LTerminal" or "Ob
 function LTerminal:typeOf(name) end
 ```
 
+#### Description
+
+Checks whether this object matches a given type name. Accepts "LTerminal" or "Object".
+
+Parameters:
+
+- `name` (`string`, required): Type name to test against.
+
+Returns: `boolean` - True if the name matches.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -1669,15 +2130,7 @@ end
 
 ### LWidget:addChild
 
-`LWidget:addChild(child: LWidget)`
-
-Adds a child widget to a panel widget. The child becomes part of the panel layout and rendering.
-
-**Parameters**
-
-- `child` (`LWidget`, required): The child widget to add.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a child widget to a panel widget. The child becomes part of the panel layout and rendering.
@@ -1685,9 +2138,17 @@ Adds a child widget to a panel widget. The child becomes part of the panel layou
 function LWidget:addChild(child) end
 ```
 
+#### Description
+
+Adds a child widget to a panel widget. The child becomes part of the panel layout and rendering.
+
+Parameters:
+
+- `child` (`LWidget`, required): The child widget to add.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -1701,15 +2162,7 @@ end
 
 ### LWidget:addItem
 
-`LWidget:addItem(item: string)`
-
-Appends a text item to a list widget.
-
-**Parameters**
-
-- `item` (`string`, required): The item text to add.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Appends a text item to a list widget.
@@ -1717,9 +2170,17 @@ Appends a text item to a list widget.
 function LWidget:addItem(item) end
 ```
 
+#### Description
+
+Appends a text item to a list widget.
+
+Parameters:
+
+- `item` (`string`, required): The item text to add.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -1731,20 +2192,20 @@ end
 
 ### LWidget:clearChildren
 
-`LWidget:clearChildren()`
-
-Removes all child widgets from a panel widget.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes all child widgets from a panel widget.
 function LWidget:clearChildren() end
 ```
 
+#### Description
+
+Removes all child widgets from a panel widget.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -1758,20 +2219,20 @@ end
 
 ### LWidget:clearItems
 
-`LWidget:clearItems()`
-
-Removes all items from a list widget.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes all items from a list widget.
 function LWidget:clearItems() end
 ```
 
+#### Description
+
+Removes all items from a list widget.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -1785,17 +2246,7 @@ end
 
 ### LWidget:getChild
 
-`LWidget:getChild(index: integer) -> LWidget`
-
-Returns a child widget from a panel by its 1-based index, or nil if the index is out of range.
-
-**Parameters**
-
-- `index` (`integer`, required): 1-based child index.
-
-**Returns**: `LWidget` - The child widget, or nil.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a child widget from a panel by its 1-based index, or nil if the index is out of range.
@@ -1804,9 +2255,19 @@ Returns a child widget from a panel by its 1-based index, or nil if the index is
 function LWidget:getChild(index) end
 ```
 
+#### Description
+
+Returns a child widget from a panel by its 1-based index, or nil if the index is out of range.
+
+Parameters:
+
+- `index` (`integer`, required): 1-based child index.
+
+Returns: `LWidget` - The child widget, or nil.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -1820,13 +2281,7 @@ end
 
 ### LWidget:getChildCount
 
-`LWidget:getChildCount() -> integer`
-
-Returns the number of child widgets in a panel widget.
-
-**Returns**: `integer` - Child count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of child widgets in a panel widget.
@@ -1834,9 +2289,15 @@ Returns the number of child widgets in a panel widget.
 function LWidget:getChildCount() end
 ```
 
+#### Description
+
+Returns the number of child widgets in a panel widget.
+
+Returns: `integer` - Child count.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -1850,13 +2311,7 @@ end
 
 ### LWidget:getColor
 
-`LWidget:getColor() -> number, number, number, number`
-
-Returns the foreground color of the widget as RGBA components.
-
-**Returns**: `number, number, number, number` - Red, green, blue, and alpha channels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the foreground color of the widget as RGBA components.
@@ -1867,9 +2322,15 @@ Returns the foreground color of the widget as RGBA components.
 function LWidget:getColor() end
 ```
 
+#### Description
+
+Returns the foreground color of the widget as RGBA components.
+
+Returns: `number, number, number, number` - Red, green, blue, and alpha channels.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -1882,17 +2343,7 @@ end
 
 ### LWidget:getItem
 
-`LWidget:getItem(index: integer) -> string`
-
-Returns the text of a list item by its 1-based index.
-
-**Parameters**
-
-- `index` (`integer`, required): 1-based item index.
-
-**Returns**: `string` - The item text.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the text of a list item by its 1-based index.
@@ -1901,9 +2352,19 @@ Returns the text of a list item by its 1-based index.
 function LWidget:getItem(index) end
 ```
 
+#### Description
+
+Returns the text of a list item by its 1-based index.
+
+Parameters:
+
+- `index` (`integer`, required): 1-based item index.
+
+Returns: `string` - The item text.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -1917,13 +2378,7 @@ end
 
 ### LWidget:getItemCount
 
-`LWidget:getItemCount() -> integer`
-
-Returns the number of items in a list widget.
-
-**Returns**: `integer` - Item count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of items in a list widget.
@@ -1931,9 +2386,15 @@ Returns the number of items in a list widget.
 function LWidget:getItemCount() end
 ```
 
+#### Description
+
+Returns the number of items in a list widget.
+
+Returns: `integer` - Item count.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -1947,13 +2408,7 @@ end
 
 ### LWidget:getMaxLength
 
-`LWidget:getMaxLength() -> integer`
-
-Returns the maximum character limit of a text box widget.
-
-**Returns**: `integer` - Maximum character count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the maximum character limit of a text box widget.
@@ -1961,9 +2416,15 @@ Returns the maximum character limit of a text box widget.
 function LWidget:getMaxLength() end
 ```
 
+#### Description
+
+Returns the maximum character limit of a text box widget.
+
+Returns: `integer` - Maximum character count.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -1975,13 +2436,7 @@ end
 
 ### LWidget:getPosition
 
-`LWidget:getPosition() -> integer, integer`
-
-Returns the widget position as 1-based column and row.
-
-**Returns**: `integer, integer` - Column, row.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the widget position as 1-based column and row.
@@ -1990,9 +2445,15 @@ Returns the widget position as 1-based column and row.
 function LWidget:getPosition() end
 ```
 
+#### Description
+
+Returns the widget position as 1-based column and row.
+
+Returns: `integer, integer` - Column, row.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -2004,13 +2465,7 @@ end
 
 ### LWidget:getSelected
 
-`LWidget:getSelected() -> integer`
-
-Returns the 1-based index of the currently selected list item, or nil if nothing is selected.
-
-**Returns**: `integer` - Selected item index, or nil.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the 1-based index of the currently selected list item, or nil if nothing is selected.
@@ -2018,9 +2473,15 @@ Returns the 1-based index of the currently selected list item, or nil if nothing
 function LWidget:getSelected() end
 ```
 
+#### Description
+
+Returns the 1-based index of the currently selected list item, or nil if nothing is selected.
+
+Returns: `integer` - Selected item index, or nil.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -2034,13 +2495,7 @@ end
 
 ### LWidget:getSize
 
-`LWidget:getSize() -> integer, integer`
-
-Returns the widget dimensions as width and height in cell units.
-
-**Returns**: `integer, integer` - Width, height.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the widget dimensions as width and height in cell units.
@@ -2049,9 +2504,15 @@ Returns the widget dimensions as width and height in cell units.
 function LWidget:getSize() end
 ```
 
+#### Description
+
+Returns the widget dimensions as width and height in cell units.
+
+Returns: `integer, integer` - Width, height.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -2063,13 +2524,7 @@ end
 
 ### LWidget:getStyle
 
-`LWidget:getStyle() -> string`
-
-Returns the current border style name of a border or panel widget.
-
-**Returns**: `string` - The border style name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current border style name of a border or panel widget.
@@ -2077,9 +2532,15 @@ Returns the current border style name of a border or panel widget.
 function LWidget:getStyle() end
 ```
 
+#### Description
+
+Returns the current border style name of a border or panel widget.
+
+Returns: `string` - The border style name.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -2092,13 +2553,7 @@ end
 
 ### LWidget:getTag
 
-`LWidget:getTag() -> string`
-
-Returns the current tag string assigned to the widget.
-
-**Returns**: `string` - The tag value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current tag string assigned to the widget.
@@ -2106,9 +2561,15 @@ Returns the current tag string assigned to the widget.
 function LWidget:getTag() end
 ```
 
+#### Description
+
+Returns the current tag string assigned to the widget.
+
+Returns: `string` - The tag value.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -2121,13 +2582,7 @@ end
 
 ### LWidget:getText
 
-`LWidget:getText() -> string`
-
-Returns the current text content of a label, button, or text box widget.
-
-**Returns**: `string` - The widget text.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current text content of a label, button, or text box widget.
@@ -2135,9 +2590,15 @@ Returns the current text content of a label, button, or text box widget.
 function LWidget:getText() end
 ```
 
+#### Description
+
+Returns the current text content of a label, button, or text box widget.
+
+Returns: `string` - The widget text.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -2150,13 +2611,7 @@ end
 
 ### LWidget:getTitle
 
-`LWidget:getTitle() -> string`
-
-Returns the current title text of a border or panel widget.
-
-**Returns**: `string` - The title text.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current title text of a border or panel widget.
@@ -2164,9 +2619,15 @@ Returns the current title text of a border or panel widget.
 function LWidget:getTitle() end
 ```
 
+#### Description
+
+Returns the current title text of a border or panel widget.
+
+Returns: `string` - The title text.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -2179,13 +2640,7 @@ end
 
 ### LWidget:isEnabled
 
-`LWidget:isEnabled() -> boolean`
-
-Returns whether the widget is currently enabled for user interaction.
-
-**Returns**: `boolean` - True if enabled.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether the widget is currently enabled for user interaction.
@@ -2193,9 +2648,15 @@ Returns whether the widget is currently enabled for user interaction.
 function LWidget:isEnabled() end
 ```
 
+#### Description
+
+Returns whether the widget is currently enabled for user interaction.
+
+Returns: `boolean` - True if enabled.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -2208,13 +2669,7 @@ end
 
 ### LWidget:isVisible
 
-`LWidget:isVisible() -> boolean`
-
-Returns whether the widget is currently visible.
-
-**Returns**: `boolean` - True if visible.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether the widget is currently visible.
@@ -2222,9 +2677,15 @@ Returns whether the widget is currently visible.
 function LWidget:isVisible() end
 ```
 
+#### Description
+
+Returns whether the widget is currently visible.
+
+Returns: `boolean` - True if visible.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -2237,15 +2698,7 @@ end
 
 ### LWidget:removeChild
 
-`LWidget:removeChild(child: LWidget)`
-
-Removes a child widget from a panel, detaching it from the panel layout.
-
-**Parameters**
-
-- `child` (`LWidget`, required): The child widget to remove.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes a child widget from a panel, detaching it from the panel layout.
@@ -2253,9 +2706,17 @@ Removes a child widget from a panel, detaching it from the panel layout.
 function LWidget:removeChild(child) end
 ```
 
+#### Description
+
+Removes a child widget from a panel, detaching it from the panel layout.
+
+Parameters:
+
+- `child` (`LWidget`, required): The child widget to remove.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -2269,15 +2730,7 @@ end
 
 ### LWidget:removeItem
 
-`LWidget:removeItem(index: integer)`
-
-Removes a list item by its 1-based index.
-
-**Parameters**
-
-- `index` (`integer`, required): 1-based item index to remove.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes a list item by its 1-based index.
@@ -2285,9 +2738,17 @@ Removes a list item by its 1-based index.
 function LWidget:removeItem(index) end
 ```
 
+#### Description
+
+Removes a list item by its 1-based index.
+
+Parameters:
+
+- `index` (`integer`, required): 1-based item index to remove.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -2301,18 +2762,7 @@ end
 
 ### LWidget:setColor
 
-`LWidget:setColor(r: number, g: number, b: number, [a]: number)`
-
-Sets the foreground color of the widget as RGBA components (0-1 range).
-
-**Parameters**
-
-- `r` (`number`, required): Red channel.
-- `g` (`number`, required): Green channel.
-- `b` (`number`, required): Blue channel.
-- `a` (`number`, optional): Alpha channel (default 1).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the foreground color of the widget as RGBA components (0-1 range).
@@ -2323,9 +2773,20 @@ Sets the foreground color of the widget as RGBA components (0-1 range).
 function LWidget:setColor(r, g, b, a) end
 ```
 
+#### Description
+
+Sets the foreground color of the widget as RGBA components (0-1 range).
+
+Parameters:
+
+- `r` (`number`, required): Red channel.
+- `g` (`number`, required): Green channel.
+- `b` (`number`, required): Blue channel.
+- `a` (`number`, optional): Alpha channel (default 1).
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -2338,15 +2799,7 @@ end
 
 ### LWidget:setEnabled
 
-`LWidget:setEnabled(enabled: boolean)`
-
-Controls whether the widget accepts user interaction (clicks, typing).
-
-**Parameters**
-
-- `enabled` (`boolean`, required): True to enable, false to disable.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Controls whether the widget accepts user interaction (clicks, typing).
@@ -2354,9 +2807,17 @@ Controls whether the widget accepts user interaction (clicks, typing).
 function LWidget:setEnabled(enabled) end
 ```
 
+#### Description
+
+Controls whether the widget accepts user interaction (clicks, typing).
+
+Parameters:
+
+- `enabled` (`boolean`, required): True to enable, false to disable.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -2368,15 +2829,7 @@ end
 
 ### LWidget:setMaxLength
 
-`LWidget:setMaxLength(maxLength: integer)`
-
-Sets the maximum number of characters allowed in a text box widget.
-
-**Parameters**
-
-- `maxLength` (`integer`, required): Maximum character count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the maximum number of characters allowed in a text box widget.
@@ -2384,9 +2837,17 @@ Sets the maximum number of characters allowed in a text box widget.
 function LWidget:setMaxLength(maxLength) end
 ```
 
+#### Description
+
+Sets the maximum number of characters allowed in a text box widget.
+
+Parameters:
+
+- `maxLength` (`integer`, required): Maximum character count.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -2399,15 +2860,7 @@ end
 
 ### LWidget:setOnChange
 
-`LWidget:setOnChange([callback]: function)`
-
-Registers a callback function invoked when the text content of a text box widget changes. Only valid for text box widgets.
-
-**Parameters**
-
-- `callback` (`function`, optional): The change handler, or nil to clear.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Registers a callback function invoked when the text content of a text box widget changes. Only valid for text box widgets.
@@ -2415,9 +2868,17 @@ Registers a callback function invoked when the text content of a text box widget
 function LWidget:setOnChange(callback) end
 ```
 
+#### Description
+
+Registers a callback function invoked when the text content of a text box widget changes. Only valid for text box widgets.
+
+Parameters:
+
+- `callback` (`function`, optional): The change handler, or nil to clear.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -2431,15 +2892,7 @@ end
 
 ### LWidget:setOnClick
 
-`LWidget:setOnClick([callback]: function)`
-
-Registers a callback function invoked when a button widget is clicked. Only valid for button widgets.
-
-**Parameters**
-
-- `callback` (`function`, optional): The click handler, or nil to clear.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Registers a callback function invoked when a button widget is clicked. Only valid for button widgets.
@@ -2447,9 +2900,17 @@ Registers a callback function invoked when a button widget is clicked. Only vali
 function LWidget:setOnClick(callback) end
 ```
 
+#### Description
+
+Registers a callback function invoked when a button widget is clicked. Only valid for button widgets.
+
+Parameters:
+
+- `callback` (`function`, optional): The click handler, or nil to clear.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -2461,15 +2922,7 @@ end
 
 ### LWidget:setOnSelect
 
-`LWidget:setOnSelect([callback]: function)`
-
-Registers a callback function invoked when the selected item in a list widget changes. Only valid for list widgets.
-
-**Parameters**
-
-- `callback` (`function`, optional): The selection handler, or nil to clear.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Registers a callback function invoked when the selected item in a list widget changes. Only valid for list widgets.
@@ -2477,9 +2930,17 @@ Registers a callback function invoked when the selected item in a list widget ch
 function LWidget:setOnSelect(callback) end
 ```
 
+#### Description
+
+Registers a callback function invoked when the selected item in a list widget changes. Only valid for list widgets.
+
+Parameters:
+
+- `callback` (`function`, optional): The selection handler, or nil to clear.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -2491,16 +2952,7 @@ end
 
 ### LWidget:setPosition
 
-`LWidget:setPosition(col: integer, row: integer)`
-
-Sets the widget position in 1-based cell coordinates within the terminal grid.
-
-**Parameters**
-
-- `col` (`integer`, required): Column index (1-based).
-- `row` (`integer`, required): Row index (1-based).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the widget position in 1-based cell coordinates within the terminal grid.
@@ -2509,9 +2961,18 @@ Sets the widget position in 1-based cell coordinates within the terminal grid.
 function LWidget:setPosition(col, row) end
 ```
 
+#### Description
+
+Sets the widget position in 1-based cell coordinates within the terminal grid.
+
+Parameters:
+
+- `col` (`integer`, required): Column index (1-based).
+- `row` (`integer`, required): Row index (1-based).
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -2524,15 +2985,7 @@ end
 
 ### LWidget:setSelected
 
-`LWidget:setSelected([index]: integer)`
-
-Sets the currently selected item in a list widget by 1-based index, or clears the selection with nil. Fires the onSelect callback if changed.
-
-**Parameters**
-
-- `index` (`integer`, optional): 1-based item index, or nil to clear selection.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the currently selected item in a list widget by 1-based index, or clears the selection with nil. Fires the onSelect callback if changed.
@@ -2540,9 +2993,17 @@ Sets the currently selected item in a list widget by 1-based index, or clears th
 function LWidget:setSelected(index) end
 ```
 
+#### Description
+
+Sets the currently selected item in a list widget by 1-based index, or clears the selection with nil. Fires the onSelect callback if changed.
+
+Parameters:
+
+- `index` (`integer`, optional): 1-based item index, or nil to clear selection.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -2555,16 +3016,7 @@ end
 
 ### LWidget:setSize
 
-`LWidget:setSize(width: integer, height: integer)`
-
-Sets the widget dimensions in cell units, clamped to a minimum of 1x1.
-
-**Parameters**
-
-- `width` (`integer`, required): Width in cells.
-- `height` (`integer`, required): Height in cells.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the widget dimensions in cell units, clamped to a minimum of 1x1.
@@ -2573,9 +3025,18 @@ Sets the widget dimensions in cell units, clamped to a minimum of 1x1.
 function LWidget:setSize(width, height) end
 ```
 
+#### Description
+
+Sets the widget dimensions in cell units, clamped to a minimum of 1x1.
+
+Parameters:
+
+- `width` (`integer`, required): Width in cells.
+- `height` (`integer`, required): Height in cells.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -2588,15 +3049,7 @@ end
 
 ### LWidget:setStyle
 
-`LWidget:setStyle(styleName: string)`
-
-Sets the border drawing style for a border or panel widget.
-
-**Parameters**
-
-- `styleName` (`string`, required): Border style name (e.g. "single", "double", "rounded", "heavy", "none").
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the border drawing style for a border or panel widget.
@@ -2604,9 +3057,17 @@ Sets the border drawing style for a border or panel widget.
 function LWidget:setStyle(styleName) end
 ```
 
+#### Description
+
+Sets the border drawing style for a border or panel widget.
+
+Parameters:
+
+- `styleName` (`string`, required): Border style name (e.g. "single", "double", "rounded", "heavy", "none").
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -2619,15 +3080,7 @@ end
 
 ### LWidget:setTag
 
-`LWidget:setTag(tag: string)`
-
-Assigns an arbitrary string tag to the widget for identification or grouping.
-
-**Parameters**
-
-- `tag` (`string`, required): The tag value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Assigns an arbitrary string tag to the widget for identification or grouping.
@@ -2635,9 +3088,17 @@ Assigns an arbitrary string tag to the widget for identification or grouping.
 function LWidget:setTag(tag) end
 ```
 
+#### Description
+
+Assigns an arbitrary string tag to the widget for identification or grouping.
+
+Parameters:
+
+- `tag` (`string`, required): The tag value.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -2649,15 +3110,7 @@ end
 
 ### LWidget:setText
 
-`LWidget:setText(text: string)`
-
-Sets the display text of a label, button, or text box widget. Fires the onChange callback if the text actually changed.
-
-**Parameters**
-
-- `text` (`string`, required): The new text content.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the display text of a label, button, or text box widget. Fires the onChange callback if the text actually changed.
@@ -2665,9 +3118,17 @@ Sets the display text of a label, button, or text box widget. Fires the onChange
 function LWidget:setText(text) end
 ```
 
+#### Description
+
+Sets the display text of a label, button, or text box widget. Fires the onChange callback if the text actually changed.
+
+Parameters:
+
+- `text` (`string`, required): The new text content.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -2679,15 +3140,7 @@ end
 
 ### LWidget:setTitle
 
-`LWidget:setTitle(title: string)`
-
-Sets the title text displayed in the border of a border or panel widget.
-
-**Parameters**
-
-- `title` (`string`, required): The title text.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the title text displayed in the border of a border or panel widget.
@@ -2695,9 +3148,17 @@ Sets the title text displayed in the border of a border or panel widget.
 function LWidget:setTitle(title) end
 ```
 
+#### Description
+
+Sets the title text displayed in the border of a border or panel widget.
+
+Parameters:
+
+- `title` (`string`, required): The title text.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -2709,15 +3170,7 @@ end
 
 ### LWidget:setVisible
 
-`LWidget:setVisible(visible: boolean)`
-
-Controls whether the widget is drawn and receives input events.
-
-**Parameters**
-
-- `visible` (`boolean`, required): True to show, false to hide.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Controls whether the widget is drawn and receives input events.
@@ -2725,9 +3178,17 @@ Controls whether the widget is drawn and receives input events.
 function LWidget:setVisible(visible) end
 ```
 
+#### Description
+
+Controls whether the widget is drawn and receives input events.
+
+Parameters:
+
+- `visible` (`boolean`, required): True to show, false to hide.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -2739,13 +3200,7 @@ end
 
 ### LWidget:type
 
-`LWidget:type() -> string`
-
-Returns the type name string "LWidget".
-
-**Returns**: `string` - Always "LWidget".
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name string "LWidget".
@@ -2753,9 +3208,15 @@ Returns the type name string "LWidget".
 function LWidget:type() end
 ```
 
+#### Description
+
+Returns the type name string "LWidget".
+
+Returns: `string` - Always "LWidget".
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do
@@ -2766,17 +3227,7 @@ end
 
 ### LWidget:typeOf
 
-`LWidget:typeOf(name: string) -> boolean`
-
-Checks whether this object matches a given type name. Accepts "LWidget" or "Object".
-
-**Parameters**
-
-- `name` (`string`, required): Type name to test against.
-
-**Returns**: `boolean` - True if the name matches.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this object matches a given type name. Accepts "LWidget" or "Object".
@@ -2785,9 +3236,19 @@ Checks whether this object matches a given type name. Accepts "LWidget" or "Obje
 function LWidget:typeOf(name) end
 ```
 
+#### Description
+
+Checks whether this object matches a given type name. Accepts "LWidget" or "Object".
+
+Parameters:
+
+- `name` (`string`, required): Type name to test against.
+
+Returns: `boolean` - True if the name matches.
+
 #### Example
 
-Exact example from [terminal.lua](../blob/main/content/examples/terminal.lua):
+Source: [terminal.lua](../blob/main/content/examples/terminal.lua)
 
 ```lua
 do

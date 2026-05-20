@@ -14,20 +14,50 @@
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
   - [lurek.serial.applyDefaults](#lurekserialapplydefaults)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.serial.decode](#lurekserialdecode)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.serial.decodeMsgPack](#lurekserialdecodemsgpack)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.serial.decodeXml](#lurekserialdecodexml)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.serial.detectFormat](#lurekserialdetectformat)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.serial.encode](#lurekserialencode)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.serial.encodeMsgPack](#lurekserialencodemsgpack)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.serial.fromCsv](#lurekserialfromcsv)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.serial.fromIni](#lurekserialfromini)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.serial.fromJson](#lurekserialfromjson)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.serial.fromToml](#lurekserialfromtoml)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.serial.toCsv](#lurekserialtocsv)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.serial.toJson](#lurekserialtojson)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.serial.toToml](#lurekserialtotoml)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.serial.validate](#lurekserialvalidate)
+    - [Definition](#definition)
+    - [Description](#description)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -85,20 +115,30 @@ lurek.serial.validate(value: table, schema: table) -> boolean -- Validates a Lua
 
 ### lurek.serial.applyDefaults
 
-`lurek.serial.applyDefaults(value: table, schema: table) -> table`
+#### Definition
+
+```lua
+--- Merges a schema's default values into a data table, filling in any missing fields without overwriting existing ones. Use this to ensure game config or save data always has complete fields even when the user provides only partial overrides.
+---@param value table The data table that may have missing fields.
+---@param schema table A schema table containing `default` entries for fields.
+---@return table A new table with defaults applied for any absent fields.
+lurek.serial.applyDefaults = function(value, schema) end
+```
+
+#### Description
 
 Merges a schema's default values into a data table, filling in any missing fields without overwriting existing ones. Use this to ensure game config or save data always has complete fields even when the user provides only partial overrides.
 
-**Parameters**
+Parameters:
 
 - `value` (`table`, required): The data table that may have missing fields.
 - `schema` (`table`, required): A schema table containing `default` entries for fields.
 
-**Returns**: `table` - A new table with defaults applied for any absent fields.
+Returns: `table` - A new table with defaults applied for any absent fields.
 
 #### Example
 
-Exact example from [serial.lua](../blob/main/content/examples/serial.lua):
+Source: [serial.lua](../blob/main/content/examples/serial.lua)
 
 ```lua
 do
@@ -112,21 +152,32 @@ end
 
 ### lurek.serial.decode
 
-`lurek.serial.decode(payload: string, [format]: string, [opts]: table) -> table`
+#### Definition
+
+```lua
+--- Universal decoder that parses a string payload into a Lua table using the specified format. If no format is given, auto-detects from the content. Supports JSON, TOML, CSV, XML, INI, and MessagePack. Use this as a single entry point when handling files of varying or unknown formats.
+---@param payload string The raw string (or binary for msgpack) to decode.
+---@param format? string Format hint: "json", "toml", "csv", "xml", "ini", or "msgpack". Nil triggers auto-detection.
+---@param opts? table Optional settings table. For CSV: `delimiter` (string) and `has_headers` (boolean).
+---@return table The decoded Lua table.
+lurek.serial.decode = function(payload, format, opts) end
+```
+
+#### Description
 
 Universal decoder that parses a string payload into a Lua table using the specified format. If no format is given, auto-detects from the content. Supports JSON, TOML, CSV, XML, INI, and MessagePack. Use this as a single entry point when handling files of varying or unknown formats.
 
-**Parameters**
+Parameters:
 
 - `payload` (`string`, required): The raw string (or binary for msgpack) to decode.
 - `format` (`string`, optional): Format hint: "json", "toml", "csv", "xml", "ini", or "msgpack". Nil triggers auto-detection.
 - `opts` (`table`, optional): Optional settings table. For CSV: `delimiter` (string) and `has_headers` (boolean).
 
-**Returns**: `table` - The decoded Lua table.
+Returns: `table` - The decoded Lua table.
 
 #### Example
 
-Exact example from [serial.lua](../blob/main/content/examples/serial.lua):
+Source: [serial.lua](../blob/main/content/examples/serial.lua)
 
 ```lua
 do
@@ -139,19 +190,28 @@ end
 
 ### lurek.serial.decodeMsgPack
 
-`lurek.serial.decodeMsgPack(bytes: string) -> table`
+#### Definition
+
+```lua
+--- Decodes a binary MessagePack string back into a Lua table. Use this to read save files, network packets, or any data previously encoded with encodeMsgPack.
+---@param bytes string A binary string containing valid MessagePack data.
+---@return table The decoded Lua table from the MessagePack payload.
+lurek.serial.decodeMsgPack = function(bytes) end
+```
+
+#### Description
 
 Decodes a binary MessagePack string back into a Lua table. Use this to read save files, network packets, or any data previously encoded with encodeMsgPack.
 
-**Parameters**
+Parameters:
 
 - `bytes` (`string`, required): A binary string containing valid MessagePack data.
 
-**Returns**: `table` - The decoded Lua table from the MessagePack payload.
+Returns: `table` - The decoded Lua table from the MessagePack payload.
 
 #### Example
 
-Exact example from [serial.lua](../blob/main/content/examples/serial.lua):
+Source: [serial.lua](../blob/main/content/examples/serial.lua)
 
 ```lua
 do
@@ -165,19 +225,28 @@ end
 
 ### lurek.serial.decodeXml
 
-`lurek.serial.decodeXml(text: string) -> table`
+#### Definition
+
+```lua
+--- Parses an XML string into a Lua table structure. Elements become nested tables with tag names as keys. Useful for loading Tiled map exports, SVG data, UI layout definitions, or other XML-based game assets.
+---@param text string A valid XML string to parse.
+---@return table A nested Lua table representing the XML document structure.
+lurek.serial.decodeXml = function(text) end
+```
+
+#### Description
 
 Parses an XML string into a Lua table structure. Elements become nested tables with tag names as keys. Useful for loading Tiled map exports, SVG data, UI layout definitions, or other XML-based game assets.
 
-**Parameters**
+Parameters:
 
 - `text` (`string`, required): A valid XML string to parse.
 
-**Returns**: `table` - A nested Lua table representing the XML document structure.
+Returns: `table` - A nested Lua table representing the XML document structure.
 
 #### Example
 
-Exact example from [serial.lua](../blob/main/content/examples/serial.lua):
+Source: [serial.lua](../blob/main/content/examples/serial.lua)
 
 ```lua
 do
@@ -189,19 +258,28 @@ end
 
 ### lurek.serial.detectFormat
 
-`lurek.serial.detectFormat(text: string) -> string`
+#### Definition
+
+```lua
+--- Attempts to auto-detect the serialization format of a string by inspecting its content (e.g., leading `{` for JSON, `[section]` for INI, XML declaration for XML). Returns the format name or nil if detection fails. Useful for loading user-provided files where the format is unknown.
+---@param text string The raw text content to analyze.
+---@return string The detected format name ("json", "toml", "csv", "xml", "ini"), or nil if unrecognized.
+lurek.serial.detectFormat = function(text) end
+```
+
+#### Description
 
 Attempts to auto-detect the serialization format of a string by inspecting its content (e.g., leading `{` for JSON, `[section]` for INI, XML declaration for XML). Returns the format name or nil if detection fails. Useful for loading user-provided files where the format is unknown.
 
-**Parameters**
+Parameters:
 
 - `text` (`string`, required): The raw text content to analyze.
 
-**Returns**: `string` - The detected format name ("json", "toml", "csv", "xml", "ini"), or nil if unrecognized.
+Returns: `string` - The detected format name ("json", "toml", "csv", "xml", "ini"), or nil if unrecognized.
 
 #### Example
 
-Exact example from [serial.lua](../blob/main/content/examples/serial.lua):
+Source: [serial.lua](../blob/main/content/examples/serial.lua)
 
 ```lua
 do
@@ -211,21 +289,32 @@ end
 
 ### lurek.serial.encode
 
-`lurek.serial.encode(value: table, format: string, [opts]: table) -> string`
+#### Definition
+
+```lua
+--- Universal encoder that serializes a Lua value into the specified format. Supports JSON, TOML, CSV, and MessagePack. Returns a string (text for JSON/TOML/CSV, binary for MessagePack). Use this as a single entry point for all serialization needs.
+---@param value table The Lua value to encode.
+---@param format string Target format: "json", "toml", "csv", or "msgpack".
+---@param opts? table Optional settings table. For JSON: `pretty` (boolean). For CSV: `delimiter` (string) and `has_headers` (boolean).
+---@return string The encoded string (text or binary depending on format).
+lurek.serial.encode = function(value, format, opts) end
+```
+
+#### Description
 
 Universal encoder that serializes a Lua value into the specified format. Supports JSON, TOML, CSV, and MessagePack. Returns a string (text for JSON/TOML/CSV, binary for MessagePack). Use this as a single entry point for all serialization needs.
 
-**Parameters**
+Parameters:
 
 - `value` (`table`, required): The Lua value to encode.
 - `format` (`string`, required): Target format: "json", "toml", "csv", or "msgpack".
 - `opts` (`table`, optional): Optional settings table. For JSON: `pretty` (boolean). For CSV: `delimiter` (string) and `has_headers` (boolean).
 
-**Returns**: `string` - The encoded string (text or binary depending on format).
+Returns: `string` - The encoded string (text or binary depending on format).
 
 #### Example
 
-Exact example from [serial.lua](../blob/main/content/examples/serial.lua):
+Source: [serial.lua](../blob/main/content/examples/serial.lua)
 
 ```lua
 do
@@ -237,19 +326,28 @@ end
 
 ### lurek.serial.encodeMsgPack
 
-`lurek.serial.encodeMsgPack(value: table) -> string`
+#### Definition
+
+```lua
+--- Encodes a Lua table into a compact binary MessagePack string. MessagePack is faster and smaller than JSON, making it ideal for save files, network packets, or any scenario where performance matters more than human readability. The argument must be a table.
+---@param value table The Lua table to encode. Must be a table (not a primitive).
+---@return string A binary string containing the MessagePack-encoded data.
+lurek.serial.encodeMsgPack = function(value) end
+```
+
+#### Description
 
 Encodes a Lua table into a compact binary MessagePack string. MessagePack is faster and smaller than JSON, making it ideal for save files, network packets, or any scenario where performance matters more than human readability. The argument must be a table.
 
-**Parameters**
+Parameters:
 
 - `value` (`table`, required): The Lua table to encode. Must be a table (not a primitive).
 
-**Returns**: `string` - A binary string containing the MessagePack-encoded data.
+Returns: `string` - A binary string containing the MessagePack-encoded data.
 
 #### Example
 
-Exact example from [serial.lua](../blob/main/content/examples/serial.lua):
+Source: [serial.lua](../blob/main/content/examples/serial.lua)
 
 ```lua
 do
@@ -262,21 +360,32 @@ end
 
 ### lurek.serial.fromCsv
 
-`lurek.serial.fromCsv(text: string, [delimiter]: string, [hasHeaders]: boolean) -> table`
+#### Definition
+
+```lua
+--- Parses a CSV string into a Lua table (array of rows). Each row is either a keyed table (when headers are present) or an indexed array of field values. Useful for loading spreadsheet exports, leaderboard data, or tabular game data.
+---@param text string The CSV content to parse.
+---@param delimiter? string Single-character field delimiter. Defaults to comma (",").
+---@param hasHeaders? boolean When true, the first row is treated as column names and each data row becomes a keyed table. Defaults to true.
+---@return table An array of row tables containing the parsed CSV data.
+lurek.serial.fromCsv = function(text, delimiter, hasHeaders) end
+```
+
+#### Description
 
 Parses a CSV string into a Lua table (array of rows). Each row is either a keyed table (when headers are present) or an indexed array of field values. Useful for loading spreadsheet exports, leaderboard data, or tabular game data.
 
-**Parameters**
+Parameters:
 
 - `text` (`string`, required): The CSV content to parse.
 - `delimiter` (`string`, optional): Single-character field delimiter. Defaults to comma (",").
 - `hasHeaders` (`boolean`, optional): When true, the first row is treated as column names and each data row becomes a keyed table. Defaults to true.
 
-**Returns**: `table` - An array of row tables containing the parsed CSV data.
+Returns: `table` - An array of row tables containing the parsed CSV data.
 
 #### Example
 
-Exact example from [serial.lua](../blob/main/content/examples/serial.lua):
+Source: [serial.lua](../blob/main/content/examples/serial.lua)
 
 ```lua
 do
@@ -289,19 +398,28 @@ end
 
 ### lurek.serial.fromIni
 
-`lurek.serial.fromIni(text: string) -> table`
+#### Definition
+
+```lua
+--- Parses an INI-format string into a Lua table. Sections become nested tables, and key-value pairs become string fields. Useful for legacy config files or simple settings.
+---@param text string A valid INI string to parse.
+---@return table The decoded Lua table with section names as keys and their key-value pairs as nested tables.
+lurek.serial.fromIni = function(text) end
+```
+
+#### Description
 
 Parses an INI-format string into a Lua table. Sections become nested tables, and key-value pairs become string fields. Useful for legacy config files or simple settings.
 
-**Parameters**
+Parameters:
 
 - `text` (`string`, required): A valid INI string to parse.
 
-**Returns**: `table` - The decoded Lua table with section names as keys and their key-value pairs as nested tables.
+Returns: `table` - The decoded Lua table with section names as keys and their key-value pairs as nested tables.
 
 #### Example
 
-Exact example from [serial.lua](../blob/main/content/examples/serial.lua):
+Source: [serial.lua](../blob/main/content/examples/serial.lua)
 
 ```lua
 do
@@ -314,19 +432,28 @@ end
 
 ### lurek.serial.fromJson
 
-`lurek.serial.fromJson(text: string) -> table`
+#### Definition
+
+```lua
+--- Parses a JSON string into a Lua table. Use this to load configuration files, network responses, or any structured data stored as JSON.
+---@param text string A valid JSON string to parse.
+---@return table The decoded Lua table representing the JSON structure.
+lurek.serial.fromJson = function(text) end
+```
+
+#### Description
 
 Parses a JSON string into a Lua table. Use this to load configuration files, network responses, or any structured data stored as JSON.
 
-**Parameters**
+Parameters:
 
 - `text` (`string`, required): A valid JSON string to parse.
 
-**Returns**: `table` - The decoded Lua table representing the JSON structure.
+Returns: `table` - The decoded Lua table representing the JSON structure.
 
 #### Example
 
-Exact example from [serial.lua](../blob/main/content/examples/serial.lua):
+Source: [serial.lua](../blob/main/content/examples/serial.lua)
 
 ```lua
 do
@@ -339,19 +466,28 @@ end
 
 ### lurek.serial.fromToml
 
-`lurek.serial.fromToml(text: string) -> table`
+#### Definition
+
+```lua
+--- Parses a TOML string into a Lua table. Ideal for loading game configuration files, level definitions, and engine settings stored in TOML format.
+---@param text string A valid TOML string to parse.
+---@return table The decoded Lua table representing the TOML structure.
+lurek.serial.fromToml = function(text) end
+```
+
+#### Description
 
 Parses a TOML string into a Lua table. Ideal for loading game configuration files, level definitions, and engine settings stored in TOML format.
 
-**Parameters**
+Parameters:
 
 - `text` (`string`, required): A valid TOML string to parse.
 
-**Returns**: `table` - The decoded Lua table representing the TOML structure.
+Returns: `table` - The decoded Lua table representing the TOML structure.
 
 #### Example
 
-Exact example from [serial.lua](../blob/main/content/examples/serial.lua):
+Source: [serial.lua](../blob/main/content/examples/serial.lua)
 
 ```lua
 do
@@ -364,21 +500,32 @@ end
 
 ### lurek.serial.toCsv
 
-`lurek.serial.toCsv(value: table, [delimiter]: string, [hasHeaders]: boolean) -> string`
+#### Definition
+
+```lua
+--- Serializes a Lua table (array of row tables) into a CSV-formatted string. Each row table should have consistent keys or be an indexed array. Use this to export leaderboards, save tabular data, or generate spreadsheet-compatible output.
+---@param value table An array of row tables to serialize.
+---@param delimiter? string Single-character field delimiter. Defaults to comma (",").
+---@param hasHeaders? boolean When true, writes column names as the first row. Defaults to true.
+---@return string The CSV-encoded string of the table data.
+lurek.serial.toCsv = function(value, delimiter, hasHeaders) end
+```
+
+#### Description
 
 Serializes a Lua table (array of row tables) into a CSV-formatted string. Each row table should have consistent keys or be an indexed array. Use this to export leaderboards, save tabular data, or generate spreadsheet-compatible output.
 
-**Parameters**
+Parameters:
 
 - `value` (`table`, required): An array of row tables to serialize.
 - `delimiter` (`string`, optional): Single-character field delimiter. Defaults to comma (",").
 - `hasHeaders` (`boolean`, optional): When true, writes column names as the first row. Defaults to true.
 
-**Returns**: `string` - The CSV-encoded string of the table data.
+Returns: `string` - The CSV-encoded string of the table data.
 
 #### Example
 
-Exact example from [serial.lua](../blob/main/content/examples/serial.lua):
+Source: [serial.lua](../blob/main/content/examples/serial.lua)
 
 ```lua
 do
@@ -389,20 +536,30 @@ end
 
 ### lurek.serial.toJson
 
-`lurek.serial.toJson(value: table, [pretty]: boolean) -> string`
+#### Definition
+
+```lua
+--- Serializes a Lua value (table, string, number, boolean, or nil) into a JSON string. Useful for saving game state, writing config files, or preparing network payloads.
+---@param value table The Lua value to serialize into JSON.
+---@param pretty? boolean When true, outputs indented human-readable JSON. Defaults to false (compact).
+---@return string The JSON-encoded string representation of the value.
+lurek.serial.toJson = function(value, pretty) end
+```
+
+#### Description
 
 Serializes a Lua value (table, string, number, boolean, or nil) into a JSON string. Useful for saving game state, writing config files, or preparing network payloads.
 
-**Parameters**
+Parameters:
 
 - `value` (`table`, required): The Lua value to serialize into JSON.
 - `pretty` (`boolean`, optional): When true, outputs indented human-readable JSON. Defaults to false (compact).
 
-**Returns**: `string` - The JSON-encoded string representation of the value.
+Returns: `string` - The JSON-encoded string representation of the value.
 
 #### Example
 
-Exact example from [serial.lua](../blob/main/content/examples/serial.lua):
+Source: [serial.lua](../blob/main/content/examples/serial.lua)
 
 ```lua
 do
@@ -413,19 +570,28 @@ end
 
 ### lurek.serial.toToml
 
-`lurek.serial.toToml(value: table) -> string`
+#### Definition
+
+```lua
+--- Serializes a Lua table into a TOML-formatted string. Use this to write configuration files, save structured settings, or export data in a human-readable format.
+---@param value table The Lua table to serialize into TOML.
+---@return string The TOML-encoded string representation of the table.
+lurek.serial.toToml = function(value) end
+```
+
+#### Description
 
 Serializes a Lua table into a TOML-formatted string. Use this to write configuration files, save structured settings, or export data in a human-readable format.
 
-**Parameters**
+Parameters:
 
 - `value` (`table`, required): The Lua table to serialize into TOML.
 
-**Returns**: `string` - The TOML-encoded string representation of the table.
+Returns: `string` - The TOML-encoded string representation of the table.
 
 #### Example
 
-Exact example from [serial.lua](../blob/main/content/examples/serial.lua):
+Source: [serial.lua](../blob/main/content/examples/serial.lua)
 
 ```lua
 do
@@ -436,20 +602,31 @@ end
 
 ### lurek.serial.validate
 
-`lurek.serial.validate(value: table, schema: table) -> boolean`
+#### Definition
+
+```lua
+--- Validates a Lua value against a schema table. The schema defines expected types, required fields, and constraints. Returns a success boolean and an optional error message string describing the first validation failure. Use this to verify save data integrity or user-provided configuration before processing.
+---@param value table The data to validate.
+---@param schema table A schema table defining the expected structure and constraints.
+---@return boolean a True if validation passes, false otherwise.
+---@return string b An error message describing the validation failure, or nil on success.
+lurek.serial.validate = function(value, schema) end
+```
+
+#### Description
 
 Validates a Lua value against a schema table. The schema defines expected types, required fields, and constraints. Returns a success boolean and an optional error message string describing the first validation failure. Use this to verify save data integrity or user-provided configuration before processing.
 
-**Parameters**
+Parameters:
 
 - `value` (`table`, required): The data to validate.
 - `schema` (`table`, required): A schema table defining the expected structure and constraints.
 
-**Returns**: `boolean` - True if validation passes, false otherwise.
+Returns: `boolean` - True if validation passes, false otherwise.
 
 #### Example
 
-Exact example from [serial.lua](../blob/main/content/examples/serial.lua):
+Source: [serial.lua](../blob/main/content/examples/serial.lua)
 
 ```lua
 do

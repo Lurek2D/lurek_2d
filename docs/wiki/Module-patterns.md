@@ -14,273 +14,805 @@
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
   - [lurek.patterns.newBehaviorTree](#lurekpatternsnewbehaviortree)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.patterns.newBlackboard](#lurekpatternsnewblackboard)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.patterns.newCommandStack](#lurekpatternsnewcommandstack)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.patterns.newDebounce](#lurekpatternsnewdebounce)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.patterns.newEventBus](#lurekpatternsneweventbus)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.patterns.newFactory](#lurekpatternsnewfactory)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.patterns.newFunnel](#lurekpatternsnewfunnel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.patterns.newGraph](#lurekpatternsnewgraph)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.patterns.newList](#lurekpatternsnewlist)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.patterns.newMap](#lurekpatternsnewmap)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.patterns.newMediator](#lurekpatternsnewmediator)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.patterns.newObjectPool](#lurekpatternsnewobjectpool)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.patterns.newObserver](#lurekpatternsnewobserver)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.patterns.newPriorityQueue](#lurekpatternsnewpriorityqueue)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.patterns.newQueue](#lurekpatternsnewqueue)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.patterns.newRelationshipManager](#lurekpatternsnewrelationshipmanager)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.patterns.newRing](#lurekpatternsnewring)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.patterns.newServiceLocator](#lurekpatternsnewservicelocator)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.patterns.newSet](#lurekpatternsnewset)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.patterns.newSimpleState](#lurekpatternsnewsimplestate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.patterns.newStack](#lurekpatternsnewstack)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.patterns.newStrategy](#lurekpatternsnewstrategy)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.patterns.newThrottle](#lurekpatternsnewthrottle)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.patterns.newWeightedRandom](#lurekpatternsnewweightedrandom)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔷 Module Types](#module-types)
   - [LBehaviorTree](#lbehaviortree)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBlackboard](#lblackboard)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCommandStack](#lcommandstack)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDebounce](#ldebounce)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LEventBus](#leventbus)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LFactory](#lfactory)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LFunnel](#lfunnel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LList](#llist)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMap](#lmap)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMediator](#lmediator)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LObjectPool](#lobjectpool)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LObserver](#lobserver)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPatternGraph](#lpatterngraph)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPriorityQueue](#lpriorityqueue)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LQueue](#lqueue)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRelationshipManager](#lrelationshipmanager)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRing](#lring)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LServiceLocator](#lservicelocator)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSet](#lset)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSimpleState](#lsimplestate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LStack](#lstack)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LStrategy](#lstrategy)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LThrottle](#lthrottle)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWeightedRandom](#lweightedrandom)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
   - [LBehaviorTree:addChild](#lbehaviortreeaddchild)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBehaviorTree:addInverter](#lbehaviortreeaddinverter)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBehaviorTree:addLeaf](#lbehaviortreeaddleaf)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBehaviorTree:addParallel](#lbehaviortreeaddparallel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBehaviorTree:addRepeat](#lbehaviortreeaddrepeat)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBehaviorTree:addSelector](#lbehaviortreeaddselector)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBehaviorTree:addSequence](#lbehaviortreeaddsequence)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBehaviorTree:clearAll](#lbehaviortreeclearall)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBehaviorTree:nodeCount](#lbehaviortreenodecount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBehaviorTree:resetState](#lbehaviortreeresetstate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBehaviorTree:setLeaf](#lbehaviortreesetleaf)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBehaviorTree:setRoot](#lbehaviortreesetroot)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBehaviorTree:tick](#lbehaviortreetick)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBlackboard:clear](#lblackboardclear)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBlackboard:clearAll](#lblackboardclearall)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBlackboard:get](#lblackboardget)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBlackboard:getRevision](#lblackboardgetrevision)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBlackboard:has](#lblackboardhas)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBlackboard:keys](#lblackboardkeys)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBlackboard:set](#lblackboardset)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBlackboard:snapshot](#lblackboardsnapshot)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBlackboard:unwatch](#lblackboardunwatch)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBlackboard:watch](#lblackboardwatch)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCommandStack:canRedo](#lcommandstackcanredo)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCommandStack:canUndo](#lcommandstackcanundo)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCommandStack:clearAll](#lcommandstackclearall)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCommandStack:execute](#lcommandstackexecute)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCommandStack:getCurrentName](#lcommandstackgetcurrentname)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCommandStack:getHistorySize](#lcommandstackgethistorysize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCommandStack:redo](#lcommandstackredo)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCommandStack:undo](#lcommandstackundo)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDebounce:cancel](#ldebouncecancel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDebounce:getFireCount](#ldebouncegetfirecount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDebounce:isPending](#ldebounceispending)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDebounce:onFire](#ldebounceonfire)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDebounce:trigger](#ldebouncetrigger)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LDebounce:update](#ldebounceupdate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LEventBus:clear](#leventbusclear)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LEventBus:clearAll](#leventbusclearall)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LEventBus:emit](#leventbusemit)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LEventBus:getEvents](#leventbusgetevents)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LEventBus:getListenerCount](#leventbusgetlistenercount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LEventBus:off](#leventbusoff)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LEventBus:on](#leventbuson)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LFactory:alias](#lfactoryalias)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LFactory:clearAll](#lfactoryclearall)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LFactory:create](#lfactorycreate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LFactory:getTypes](#lfactorygettypes)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LFactory:has](#lfactoryhas)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LFactory:register](#lfactoryregister)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LFactory:remove](#lfactoryremove)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LFunnel:discard](#lfunneldiscard)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LFunnel:flush](#lfunnelflush)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LFunnel:getFlushCount](#lfunnelgetflushcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LFunnel:onFlush](#lfunnelonflush)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LFunnel:pendingCount](#lfunnelpendingcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LFunnel:push](#lfunnelpush)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LFunnel:update](#lfunnelupdate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LList:add](#llistadd)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LList:clear](#llistclear)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LList:contains](#llistcontains)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LList:get](#llistget)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LList:indexOf](#llistindexof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LList:insert](#llistinsert)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LList:isEmpty](#llistisempty)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LList:len](#llistlen)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LList:pop](#llistpop)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LList:push](#llistpush)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LList:remove](#llistremove)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LList:reverse](#llistreverse)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LList:set](#llistset)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LList:shift](#llistshift)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LList:toArray](#llisttoarray)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LList:unshift](#llistunshift)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMap:clear](#lmapclear)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMap:entries](#lmapentries)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMap:get](#lmapget)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMap:has](#lmaphas)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMap:isEmpty](#lmapisempty)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMap:keys](#lmapkeys)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMap:len](#lmaplen)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMap:merge](#lmapmerge)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMap:remove](#lmapremove)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMap:set](#lmapset)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMap:values](#lmapvalues)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMediator:broadcast](#lmediatorbroadcast)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMediator:channels](#lmediatorchannels)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMediator:clear](#lmediatorclear)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMediator:handlerCount](#lmediatorhandlercount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMediator:off](#lmediatoroff)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMediator:on](#lmediatoron)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMediator:removeChannel](#lmediatorremovechannel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LMediator:send](#lmediatorsend)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LObjectPool:acquire](#lobjectpoolacquire)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LObjectPool:add](#lobjectpooladd)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LObjectPool:clearAll](#lobjectpoolclearall)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LObjectPool:getActiveCount](#lobjectpoolgetactivecount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LObjectPool:getAvailableCount](#lobjectpoolgetavailablecount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LObjectPool:getTotalCount](#lobjectpoolgettotalcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LObjectPool:release](#lobjectpoolrelease)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LObserver:get](#lobserverget)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LObserver:getCount](#lobservergetcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LObserver:set](#lobserverset)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LObserver:subscribe](#lobserversubscribe)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LObserver:unsubscribe](#lobserverunsubscribe)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPatternGraph:addEdge](#lpatterngraphaddedge)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPatternGraph:addNode](#lpatterngraphaddnode)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPatternGraph:bfs](#lpatterngraphbfs)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPatternGraph:clearAll](#lpatterngraphclearall)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPatternGraph:dfs](#lpatterngraphdfs)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPatternGraph:edgeCount](#lpatterngraphedgecount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPatternGraph:getNodeValue](#lpatterngraphgetnodevalue)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPatternGraph:hasNode](#lpatterngraphhasnode)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPatternGraph:isConnected](#lpatterngraphisconnected)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPatternGraph:neighbors](#lpatterngraphneighbors)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPatternGraph:nodeCount](#lpatterngraphnodecount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPatternGraph:removeEdge](#lpatterngraphremoveedge)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPatternGraph:removeNode](#lpatterngraphremovenode)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPriorityQueue:clearAll](#lpriorityqueueclearall)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPriorityQueue:isEmpty](#lpriorityqueueisempty)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPriorityQueue:len](#lpriorityqueuelen)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPriorityQueue:peek](#lpriorityqueuepeek)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPriorityQueue:pop](#lpriorityqueuepop)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPriorityQueue:push](#lpriorityqueuepush)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LQueue:back](#lqueueback)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LQueue:clear](#lqueueclear)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LQueue:dequeue](#lqueuedequeue)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LQueue:dequeueBack](#lqueuedequeueback)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LQueue:enqueue](#lqueueenqueue)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LQueue:enqueueFront](#lqueueenqueuefront)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LQueue:front](#lqueuefront)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LQueue:insertAt](#lqueueinsertat)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LQueue:isEmpty](#lqueueisempty)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LQueue:isFull](#lqueueisfull)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LQueue:len](#lqueuelen)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LQueue:peekAt](#lqueuepeekat)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LQueue:removeAt](#lqueueremoveat)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LQueue:toArray](#lqueuetoarray)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRelationshipManager:adjustValue](#lrelationshipmanageradjustvalue)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRelationshipManager:defineType](#lrelationshipmanagerdefinetype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRelationshipManager:getLevel](#lrelationshipmanagergetlevel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRelationshipManager:getValue](#lrelationshipmanagergetvalue)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRelationshipManager:pairCount](#lrelationshipmanagerpaircount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRelationshipManager:removePair](#lrelationshipmanagerremovepair)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRelationshipManager:removeType](#lrelationshipmanagerremovetype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRelationshipManager:setLevel](#lrelationshipmanagersetlevel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRelationshipManager:setValue](#lrelationshipmanagersetvalue)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRelationshipManager:typeNames](#lrelationshipmanagertypenames)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRing:average](#lringaverage)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRing:clear](#lringclear)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRing:isFull](#lringisfull)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRing:latest](#lringlatest)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRing:len](#lringlen)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRing:push](#lringpush)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRing:sum](#lringsum)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LRing:toArray](#lringtoarray)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LServiceLocator:clearAll](#lservicelocatorclearall)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LServiceLocator:getServices](#lservicelocatorgetservices)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LServiceLocator:has](#lservicelocatorhas)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LServiceLocator:locate](#lservicelocatorlocate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LServiceLocator:provide](#lservicelocatorprovide)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LServiceLocator:remove](#lservicelocatorremove)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSet:add](#lsetadd)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSet:clear](#lsetclear)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSet:has](#lsethas)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSet:intersection](#lsetintersection)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSet:isEmpty](#lsetisempty)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSet:len](#lsetlen)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSet:remove](#lsetremove)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSet:toArray](#lsettoarray)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSet:union](#lsetunion)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSimpleState:addState](#lsimplestateaddstate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSimpleState:clearAll](#lsimplestateclearall)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSimpleState:getCurrent](#lsimplestategetcurrent)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSimpleState:getStates](#lsimplestategetstates)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSimpleState:hasState](#lsimplestatehasstate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSimpleState:transitionTo](#lsimplestatetransitionto)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSimpleState:update](#lsimplestateupdate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LStack:clear](#lstackclear)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LStack:insertAt](#lstackinsertat)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LStack:isEmpty](#lstackisempty)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LStack:isFull](#lstackisfull)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LStack:len](#lstacklen)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LStack:moveWithin](#lstackmovewithin)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LStack:peek](#lstackpeek)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LStack:peekAt](#lstackpeekat)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LStack:peekBottom](#lstackpeekbottom)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LStack:pop](#lstackpop)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LStack:popBottom](#lstackpopbottom)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LStack:popMany](#lstackpopmany)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LStack:push](#lstackpush)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LStack:pushBottom](#lstackpushbottom)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LStack:removeAt](#lstackremoveat)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LStack:toArray](#lstacktoarray)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LStrategy:clear](#lstrategyclear)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LStrategy:execute](#lstrategyexecute)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LStrategy:getCurrent](#lstrategygetcurrent)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LStrategy:has](#lstrategyhas)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LStrategy:names](#lstrategynames)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LStrategy:register](#lstrategyregister)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LStrategy:remove](#lstrategyremove)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LStrategy:set](#lstrategyset)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LThrottle:getFireCount](#lthrottlegetfirecount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LThrottle:getProgress](#lthrottlegetprogress)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LThrottle:onFire](#lthrottleonfire)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LThrottle:reset](#lthrottlereset)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LThrottle:setEnabled](#lthrottlesetenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LThrottle:update](#lthrottleupdate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWeightedRandom:add](#lweightedrandomadd)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWeightedRandom:clearAll](#lweightedrandomclearall)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWeightedRandom:getRevision](#lweightedrandomgetrevision)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWeightedRandom:isEmpty](#lweightedrandomisempty)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWeightedRandom:len](#lweightedrandomlen)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWeightedRandom:pick](#lweightedrandompick)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWeightedRandom:pickN](#lweightedrandompickn)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWeightedRandom:remove](#lweightedrandomremove)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWeightedRandom:setWeight](#lweightedrandomsetweight)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWeightedRandom:totalWeight](#lweightedrandomtotalweight)
+    - [Definition](#definition)
+    - [Description](#description)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -357,15 +889,23 @@ lurek.patterns.newServiceLocator() -> LServiceLocator -- Create a new service lo
 
 ### lurek.patterns.newBehaviorTree
 
-`lurek.patterns.newBehaviorTree() -> LBehaviorTree`
+#### Definition
+
+```lua
+--- Create a new behavior tree for AI decision-making with sequences, selectors, parallels, and leaf actions.
+---@return LBehaviorTree A new behavior tree instance.
+lurek.patterns.newBehaviorTree = function() end
+```
+
+#### Description
 
 Create a new behavior tree for AI decision-making with sequences, selectors, parallels, and leaf actions.
 
-**Returns**: `LBehaviorTree` - A new behavior tree instance.
+Returns: `LBehaviorTree` - A new behavior tree instance.
 
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -379,19 +919,28 @@ end
 
 ### lurek.patterns.newBlackboard
 
-`lurek.patterns.newBlackboard([name]: string) -> LBlackboard`
+#### Definition
+
+```lua
+--- Create a new shared key-value blackboard supporting reactive watchers for game logic variables.
+---@param name? string Optional name for debugging.
+---@return LBlackboard A new blackboard instance.
+lurek.patterns.newBlackboard = function(name) end
+```
+
+#### Description
 
 Create a new shared key-value blackboard supporting reactive watchers for game logic variables.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, optional): Optional name for debugging.
 
-**Returns**: `LBlackboard` - A new blackboard instance.
+Returns: `LBlackboard` - A new blackboard instance.
 
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -405,19 +954,28 @@ end
 
 ### lurek.patterns.newCommandStack
 
-`lurek.patterns.newCommandStack([maxSize]: integer) -> LCommandStack`
+#### Definition
+
+```lua
+--- Create a new undo/redo command stack for recording and reversing player or editor actions.
+---@param maxSize? number Maximum history depth (0 = unlimited).
+---@return LCommandStack A new command stack instance.
+lurek.patterns.newCommandStack = function(maxSize) end
+```
+
+#### Description
 
 Create a new undo/redo command stack for recording and reversing player or editor actions.
 
-**Parameters**
+Parameters:
 
 - `maxSize` (`integer`, optional): Maximum history depth (0 = unlimited).
 
-**Returns**: `LCommandStack` - A new command stack instance.
+Returns: `LCommandStack` - A new command stack instance.
 
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -431,19 +989,28 @@ end
 
 ### lurek.patterns.newDebounce
 
-`lurek.patterns.newDebounce(wait: number) -> LDebounce`
+#### Definition
+
+```lua
+--- Create a new debounce that delays firing until input stops for a specified wait period.
+---@param wait number Seconds of inactivity before firing.
+---@return LDebounce A new debounce instance.
+lurek.patterns.newDebounce = function(wait) end
+```
+
+#### Description
 
 Create a new debounce that delays firing until input stops for a specified wait period.
 
-**Parameters**
+Parameters:
 
 - `wait` (`number`, required): Seconds of inactivity before firing.
 
-**Returns**: `LDebounce` - A new debounce instance.
+Returns: `LDebounce` - A new debounce instance.
 
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -464,19 +1031,28 @@ end
 
 ### lurek.patterns.newEventBus
 
-`lurek.patterns.newEventBus([name]: string) -> LEventBus`
+#### Definition
+
+```lua
+--- Create a new publish/subscribe event bus for decoupled communication between game systems.
+---@param name? string Optional name for debugging.
+---@return LEventBus A new event bus instance.
+lurek.patterns.newEventBus = function(name) end
+```
+
+#### Description
 
 Create a new publish/subscribe event bus for decoupled communication between game systems.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, optional): Optional name for debugging.
 
-**Returns**: `LEventBus` - A new event bus instance.
+Returns: `LEventBus` - A new event bus instance.
 
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -496,15 +1072,23 @@ end
 
 ### lurek.patterns.newFactory
 
-`lurek.patterns.newFactory() -> LFactory`
+#### Definition
+
+```lua
+--- Create a new factory for producing typed game objects from registered constructor functions.
+---@return LFactory A new factory instance.
+lurek.patterns.newFactory = function() end
+```
+
+#### Description
 
 Create a new factory for producing typed game objects from registered constructor functions.
 
-**Returns**: `LFactory` - A new factory instance.
+Returns: `LFactory` - A new factory instance.
 
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -527,21 +1111,32 @@ end
 
 ### lurek.patterns.newFunnel
 
-`lurek.patterns.newFunnel(window: number, [maxEntries]: integer, [name]: string) -> LFunnel`
+#### Definition
+
+```lua
+--- Create a new batching funnel that collects events over a time window and flushes them together.
+---@param window number Time window in seconds before auto-flush.
+---@param maxEntries? number Maximum entries before forced flush (0 = no limit).
+---@param name? string Optional name for debugging.
+---@return LFunnel A new funnel instance.
+lurek.patterns.newFunnel = function(window, maxEntries, name) end
+```
+
+#### Description
 
 Create a new batching funnel that collects events over a time window and flushes them together.
 
-**Parameters**
+Parameters:
 
 - `window` (`number`, required): Time window in seconds before auto-flush.
 - `maxEntries` (`integer`, optional): Maximum entries before forced flush (0 = no limit).
 - `name` (`string`, optional): Optional name for debugging.
 
-**Returns**: `LFunnel` - A new funnel instance.
+Returns: `LFunnel` - A new funnel instance.
 
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -559,19 +1154,28 @@ end
 
 ### lurek.patterns.newGraph
 
-`lurek.patterns.newGraph([undirected]: boolean) -> LPatternGraph`
+#### Definition
+
+```lua
+--- Create a new graph data structure with directed or undirected edges, BFS, DFS, and connectivity queries.
+---@param undirected? boolean If true, edges are bidirectional (default false).
+---@return LPatternGraph A new graph instance.
+lurek.patterns.newGraph = function(undirected) end
+```
+
+#### Description
 
 Create a new graph data structure with directed or undirected edges, BFS, DFS, and connectivity queries.
 
-**Parameters**
+Parameters:
 
 - `undirected` (`boolean`, optional): If true, edges are bidirectional (default false).
 
-**Returns**: `LPatternGraph` - A new graph instance.
+Returns: `LPatternGraph` - A new graph instance.
 
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -585,15 +1189,23 @@ end
 
 ### lurek.patterns.newList
 
-`lurek.patterns.newList() -> LList`
+#### Definition
+
+```lua
+--- Create a new dynamic array list with indexed access, insertion, removal, and search.
+---@return LList A new list instance.
+lurek.patterns.newList = function() end
+```
+
+#### Description
 
 Create a new dynamic array list with indexed access, insertion, removal, and search.
 
-**Returns**: `LList` - A new list instance.
+Returns: `LList` - A new list instance.
 
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -607,15 +1219,23 @@ end
 
 ### lurek.patterns.newMap
 
-`lurek.patterns.newMap() -> LMap`
+#### Definition
+
+```lua
+--- Create a new string-keyed dictionary (map) with keys/values/entries access and merge support.
+---@return LMap A new map instance.
+lurek.patterns.newMap = function() end
+```
+
+#### Description
 
 Create a new string-keyed dictionary (map) with keys/values/entries access and merge support.
 
-**Returns**: `LMap` - A new map instance.
+Returns: `LMap` - A new map instance.
 
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -629,15 +1249,23 @@ end
 
 ### lurek.patterns.newMediator
 
-`lurek.patterns.newMediator() -> LMediator`
+#### Definition
+
+```lua
+--- Create a new mediator for channel-based message passing between decoupled game systems.
+---@return LMediator A new mediator instance.
+lurek.patterns.newMediator = function() end
+```
+
+#### Description
 
 Create a new mediator for channel-based message passing between decoupled game systems.
 
-**Returns**: `LMediator` - A new mediator instance.
+Returns: `LMediator` - A new mediator instance.
 
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -658,15 +1286,23 @@ end
 
 ### lurek.patterns.newObjectPool
 
-`lurek.patterns.newObjectPool() -> LObjectPool`
+#### Definition
+
+```lua
+--- Create a new object pool for reusing pre-allocated game objects to reduce allocation overhead.
+---@return LObjectPool A new object pool instance.
+lurek.patterns.newObjectPool = function() end
+```
+
+#### Description
 
 Create a new object pool for reusing pre-allocated game objects to reduce allocation overhead.
 
-**Returns**: `LObjectPool` - A new object pool instance.
+Returns: `LObjectPool` - A new object pool instance.
 
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -678,19 +1314,28 @@ end
 
 ### lurek.patterns.newObserver
 
-`lurek.patterns.newObserver([name]: string) -> LObserver`
+#### Definition
+
+```lua
+--- Create a new reactive observer that stores values and notifies subscribers when they change.
+---@param name? string Optional name for debugging.
+---@return LObserver A new observer instance.
+lurek.patterns.newObserver = function(name) end
+```
+
+#### Description
 
 Create a new reactive observer that stores values and notifies subscribers when they change.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, optional): Optional name for debugging.
 
-**Returns**: `LObserver` - A new observer instance.
+Returns: `LObserver` - A new observer instance.
 
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -710,19 +1355,28 @@ end
 
 ### lurek.patterns.newPriorityQueue
 
-`lurek.patterns.newPriorityQueue([name]: string) -> LPriorityQueue`
+#### Definition
+
+```lua
+--- Create a new priority queue that orders elements by numeric priority (highest first).
+---@param name? string Optional name for debugging.
+---@return LPriorityQueue A new priority queue instance.
+lurek.patterns.newPriorityQueue = function(name) end
+```
+
+#### Description
 
 Create a new priority queue that orders elements by numeric priority (highest first).
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, optional): Optional name for debugging.
 
-**Returns**: `LPriorityQueue` - A new priority queue instance.
+Returns: `LPriorityQueue` - A new priority queue instance.
 
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -736,19 +1390,28 @@ end
 
 ### lurek.patterns.newQueue
 
-`lurek.patterns.newQueue([capacity]: integer) -> LQueue`
+#### Definition
+
+```lua
+--- Create a new FIFO queue with optional capacity limit.
+---@param capacity? number Maximum items (0 = unlimited).
+---@return LQueue A new queue instance.
+lurek.patterns.newQueue = function(capacity) end
+```
+
+#### Description
 
 Create a new FIFO queue with optional capacity limit.
 
-**Parameters**
+Parameters:
 
 - `capacity` (`integer`, optional): Maximum items (0 = unlimited).
 
-**Returns**: `LQueue` - A new queue instance.
+Returns: `LQueue` - A new queue instance.
 
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -762,15 +1425,23 @@ end
 
 ### lurek.patterns.newRelationshipManager
 
-`lurek.patterns.newRelationshipManager() -> LRelationshipManager`
+#### Definition
+
+```lua
+--- Create a new relationship manager for tracking numeric values and named levels between entity pairs.
+---@return LRelationshipManager A new relationship manager instance.
+lurek.patterns.newRelationshipManager = function() end
+```
+
+#### Description
 
 Create a new relationship manager for tracking numeric values and named levels between entity pairs.
 
-**Returns**: `LRelationshipManager` - A new relationship manager instance.
+Returns: `LRelationshipManager` - A new relationship manager instance.
 
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -784,20 +1455,30 @@ end
 
 ### lurek.patterns.newRing
 
-`lurek.patterns.newRing(capacity: integer, [name]: string) -> LRing`
+#### Definition
+
+```lua
+--- Create a new fixed-size ring buffer for numeric or string values. Oldest entries are overwritten when full.
+---@param capacity number Maximum number of entries the ring can hold.
+---@param name? string Optional name for debugging.
+---@return LRing A new ring buffer instance.
+lurek.patterns.newRing = function(capacity, name) end
+```
+
+#### Description
 
 Create a new fixed-size ring buffer for numeric or string values. Oldest entries are overwritten when full.
 
-**Parameters**
+Parameters:
 
 - `capacity` (`integer`, required): Maximum number of entries the ring can hold.
 - `name` (`string`, optional): Optional name for debugging.
 
-**Returns**: `LRing` - A new ring buffer instance.
+Returns: `LRing` - A new ring buffer instance.
 
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -811,15 +1492,23 @@ end
 
 ### lurek.patterns.newServiceLocator
 
-`lurek.patterns.newServiceLocator() -> LServiceLocator`
+#### Definition
+
+```lua
+--- Create a new service locator for registering and retrieving shared services by name at runtime.
+---@return LServiceLocator A new service locator instance.
+lurek.patterns.newServiceLocator = function() end
+```
+
+#### Description
 
 Create a new service locator for registering and retrieving shared services by name at runtime.
 
-**Returns**: `LServiceLocator` - A new service locator instance.
+Returns: `LServiceLocator` - A new service locator instance.
 
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -831,15 +1520,23 @@ end
 
 ### lurek.patterns.newSet
 
-`lurek.patterns.newSet() -> LSet`
+#### Definition
+
+```lua
+--- Create a new string set with add/remove/has operations and set algebra (union, intersection).
+---@return LSet A new set instance.
+lurek.patterns.newSet = function() end
+```
+
+#### Description
 
 Create a new string set with add/remove/has operations and set algebra (union, intersection).
 
-**Returns**: `LSet` - A new set instance.
+Returns: `LSet` - A new set instance.
 
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -853,15 +1550,23 @@ end
 
 ### lurek.patterns.newSimpleState
 
-`lurek.patterns.newSimpleState() -> LSimpleState`
+#### Definition
+
+```lua
+--- Create a new finite state machine with enter/exit/update callbacks per state.
+---@return LSimpleState A new state machine instance.
+lurek.patterns.newSimpleState = function() end
+```
+
+#### Description
 
 Create a new finite state machine with enter/exit/update callbacks per state.
 
-**Returns**: `LSimpleState` - A new state machine instance.
+Returns: `LSimpleState` - A new state machine instance.
 
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -875,19 +1580,28 @@ end
 
 ### lurek.patterns.newStack
 
-`lurek.patterns.newStack([capacity]: integer) -> LStack`
+#### Definition
+
+```lua
+--- Create a new LIFO stack with optional capacity limit.
+---@param capacity? number Maximum items (0 = unlimited).
+---@return LStack A new stack instance.
+lurek.patterns.newStack = function(capacity) end
+```
+
+#### Description
 
 Create a new LIFO stack with optional capacity limit.
 
-**Parameters**
+Parameters:
 
 - `capacity` (`integer`, optional): Maximum items (0 = unlimited).
 
-**Returns**: `LStack` - A new stack instance.
+Returns: `LStack` - A new stack instance.
 
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -901,15 +1615,23 @@ end
 
 ### lurek.patterns.newStrategy
 
-`lurek.patterns.newStrategy() -> LStrategy`
+#### Definition
+
+```lua
+--- Create a new strategy pattern container for hot-swappable algorithm implementations.
+---@return LStrategy A new strategy instance.
+lurek.patterns.newStrategy = function() end
+```
+
+#### Description
 
 Create a new strategy pattern container for hot-swappable algorithm implementations.
 
-**Returns**: `LStrategy` - A new strategy instance.
+Returns: `LStrategy` - A new strategy instance.
 
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -935,19 +1657,28 @@ end
 
 ### lurek.patterns.newThrottle
 
-`lurek.patterns.newThrottle(interval: number) -> LThrottle`
+#### Definition
+
+```lua
+--- Create a new throttle that limits how often an action can fire, enforcing a minimum interval.
+---@param interval number Minimum seconds between fires.
+---@return LThrottle A new throttle instance.
+lurek.patterns.newThrottle = function(interval) end
+```
+
+#### Description
 
 Create a new throttle that limits how often an action can fire, enforcing a minimum interval.
 
-**Parameters**
+Parameters:
 
 - `interval` (`number`, required): Minimum seconds between fires.
 
-**Returns**: `LThrottle` - A new throttle instance.
+Returns: `LThrottle` - A new throttle instance.
 
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -967,15 +1698,23 @@ end
 
 ### lurek.patterns.newWeightedRandom
 
-`lurek.patterns.newWeightedRandom() -> LWeightedRandom`
+#### Definition
+
+```lua
+--- Create a new weighted random selection pool. Add items with weights and pick random selections.
+---@return LWeightedRandom A new weighted random pool instance.
+lurek.patterns.newWeightedRandom = function() end
+```
+
+#### Description
 
 Create a new weighted random selection pool. Add items with weights and pick random selections.
 
-**Returns**: `LWeightedRandom` - A new weighted random pool instance.
+Returns: `LWeightedRandom` - A new weighted random pool instance.
 
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -994,9 +1733,7 @@ end
 
 ### LBehaviorTree
 
-Lua-facing behavior tree for AI decision-making with sequences, selectors, parallels, inverters, repeaters, and leaf actions.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-facing behavior tree for AI decision-making with sequences, selectors, parallels, inverters, repeaters, and leaf actions.
@@ -1004,9 +1741,13 @@ Lua-facing behavior tree for AI decision-making with sequences, selectors, paral
 LBehaviorTree = {}
 ```
 
+#### Description
+
+Lua-facing behavior tree for AI decision-making with sequences, selectors, parallels, inverters, repeaters, and leaf actions.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -1020,9 +1761,7 @@ end
 
 ### LBlackboard
 
-Lua-facing shared key-value blackboard supporting bool/number/string values with watchers for reactive game logic.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-facing shared key-value blackboard supporting bool/number/string values with watchers for reactive game logic.
@@ -1030,9 +1769,13 @@ Lua-facing shared key-value blackboard supporting bool/number/string values with
 LBlackboard = {}
 ```
 
+#### Description
+
+Lua-facing shared key-value blackboard supporting bool/number/string values with watchers for reactive game logic.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -1046,9 +1789,7 @@ end
 
 ### LCommandStack
 
-Lua-facing undo/redo command stack. Records executed actions with optional undo functions for full history navigation.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-facing undo/redo command stack. Records executed actions with optional undo functions for full history navigation.
@@ -1056,9 +1797,13 @@ Lua-facing undo/redo command stack. Records executed actions with optional undo 
 LCommandStack = {}
 ```
 
+#### Description
+
+Lua-facing undo/redo command stack. Records executed actions with optional undo functions for full history navigation.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -1072,9 +1817,7 @@ end
 
 ### LDebounce
 
-Lua-facing debounce that delays firing until input stops for a specified wait period.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-facing debounce that delays firing until input stops for a specified wait period.
@@ -1082,9 +1825,13 @@ Lua-facing debounce that delays firing until input stops for a specified wait pe
 LDebounce = {}
 ```
 
+#### Description
+
+Lua-facing debounce that delays firing until input stops for a specified wait period.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -1105,9 +1852,7 @@ end
 
 ### LEventBus
 
-Lua-facing publish/subscribe event bus allowing decoupled communication between game systems.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-facing publish/subscribe event bus allowing decoupled communication between game systems.
@@ -1115,9 +1860,13 @@ Lua-facing publish/subscribe event bus allowing decoupled communication between 
 LEventBus = {}
 ```
 
+#### Description
+
+Lua-facing publish/subscribe event bus allowing decoupled communication between game systems.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -1137,9 +1886,7 @@ end
 
 ### LFactory
 
-Lua-facing factory pattern for creating typed game objects from registered constructor functions.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-facing factory pattern for creating typed game objects from registered constructor functions.
@@ -1147,9 +1894,13 @@ Lua-facing factory pattern for creating typed game objects from registered const
 LFactory = {}
 ```
 
+#### Description
+
+Lua-facing factory pattern for creating typed game objects from registered constructor functions.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -1172,9 +1923,7 @@ end
 
 ### LFunnel
 
-Lua-facing batching funnel that collects events over a time window and flushes them together.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-facing batching funnel that collects events over a time window and flushes them together.
@@ -1182,9 +1931,13 @@ Lua-facing batching funnel that collects events over a time window and flushes t
 LFunnel = {}
 ```
 
+#### Description
+
+Lua-facing batching funnel that collects events over a time window and flushes them together.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -1202,9 +1955,7 @@ end
 
 ### LList
 
-Lua-facing dynamic array list with indexed access, insertion, removal, and search.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-facing dynamic array list with indexed access, insertion, removal, and search.
@@ -1212,9 +1963,13 @@ Lua-facing dynamic array list with indexed access, insertion, removal, and searc
 LList = {}
 ```
 
+#### Description
+
+Lua-facing dynamic array list with indexed access, insertion, removal, and search.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -1228,9 +1983,7 @@ end
 
 ### LMap
 
-Lua-facing string-keyed dictionary (map) with keys(), values(), entries(), and merge operations.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-facing string-keyed dictionary (map) with keys(), values(), entries(), and merge operations.
@@ -1238,9 +1991,13 @@ Lua-facing string-keyed dictionary (map) with keys(), values(), entries(), and m
 LMap = {}
 ```
 
+#### Description
+
+Lua-facing string-keyed dictionary (map) with keys(), values(), entries(), and merge operations.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -1254,9 +2011,7 @@ end
 
 ### LMediator
 
-Lua-facing mediator for channel-based message passing between decoupled game systems.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-facing mediator for channel-based message passing between decoupled game systems.
@@ -1264,9 +2019,13 @@ Lua-facing mediator for channel-based message passing between decoupled game sys
 LMediator = {}
 ```
 
+#### Description
+
+Lua-facing mediator for channel-based message passing between decoupled game systems.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -1287,9 +2046,7 @@ end
 
 ### LObjectPool
 
-Lua-facing object pool for reusing pre-allocated game objects (bullets, particles, enemies) to avoid per-frame allocations.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-facing object pool for reusing pre-allocated game objects (bullets, particles, enemies) to avoid per-frame allocations.
@@ -1297,9 +2054,13 @@ Lua-facing object pool for reusing pre-allocated game objects (bullets, particle
 LObjectPool = {}
 ```
 
+#### Description
+
+Lua-facing object pool for reusing pre-allocated game objects (bullets, particles, enemies) to avoid per-frame allocations.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -1311,9 +2072,7 @@ end
 
 ### LObserver
 
-Lua-facing reactive observer that stores values and notifies subscribers when values change.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-facing reactive observer that stores values and notifies subscribers when values change.
@@ -1321,9 +2080,13 @@ Lua-facing reactive observer that stores values and notifies subscribers when va
 LObserver = {}
 ```
 
+#### Description
+
+Lua-facing reactive observer that stores values and notifies subscribers when values change.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -1343,9 +2106,7 @@ end
 
 ### LPatternGraph
 
-Lua-facing graph data structure with directed/undirected edges, BFS, DFS, and connectivity queries.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-facing graph data structure with directed/undirected edges, BFS, DFS, and connectivity queries.
@@ -1353,9 +2114,13 @@ Lua-facing graph data structure with directed/undirected edges, BFS, DFS, and co
 LPatternGraph = {}
 ```
 
+#### Description
+
+Lua-facing graph data structure with directed/undirected edges, BFS, DFS, and connectivity queries.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -1369,9 +2134,7 @@ end
 
 ### LPriorityQueue
 
-Lua-facing priority queue that orders elements by numeric priority (highest first).
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-facing priority queue that orders elements by numeric priority (highest first).
@@ -1379,9 +2142,13 @@ Lua-facing priority queue that orders elements by numeric priority (highest firs
 LPriorityQueue = {}
 ```
 
+#### Description
+
+Lua-facing priority queue that orders elements by numeric priority (highest first).
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -1395,9 +2162,7 @@ end
 
 ### LQueue
 
-Lua-facing FIFO queue with optional capacity limit. Supports enqueue/dequeue from both ends.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-facing FIFO queue with optional capacity limit. Supports enqueue/dequeue from both ends.
@@ -1405,9 +2170,13 @@ Lua-facing FIFO queue with optional capacity limit. Supports enqueue/dequeue fro
 LQueue = {}
 ```
 
+#### Description
+
+Lua-facing FIFO queue with optional capacity limit. Supports enqueue/dequeue from both ends.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -1421,9 +2190,7 @@ end
 
 ### LRelationshipManager
 
-Lua-facing relationship manager for tracking numeric values and named levels between entity pairs.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-facing relationship manager for tracking numeric values and named levels between entity pairs.
@@ -1431,9 +2198,13 @@ Lua-facing relationship manager for tracking numeric values and named levels bet
 LRelationshipManager = {}
 ```
 
+#### Description
+
+Lua-facing relationship manager for tracking numeric values and named levels between entity pairs.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -1447,9 +2218,7 @@ end
 
 ### LRing
 
-Lua-facing fixed-size ring buffer for numeric or string values. Oldest entries are overwritten when full.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-facing fixed-size ring buffer for numeric or string values. Oldest entries are overwritten when full.
@@ -1457,9 +2226,13 @@ Lua-facing fixed-size ring buffer for numeric or string values. Oldest entries a
 LRing = {}
 ```
 
+#### Description
+
+Lua-facing fixed-size ring buffer for numeric or string values. Oldest entries are overwritten when full.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -1473,9 +2246,7 @@ end
 
 ### LServiceLocator
 
-Lua-facing service locator for registering and retrieving shared services by name at runtime.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-facing service locator for registering and retrieving shared services by name at runtime.
@@ -1483,9 +2254,13 @@ Lua-facing service locator for registering and retrieving shared services by nam
 LServiceLocator = {}
 ```
 
+#### Description
+
+Lua-facing service locator for registering and retrieving shared services by name at runtime.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -1497,9 +2272,7 @@ end
 
 ### LSet
 
-Lua-facing string set with add/remove/has operations and set algebra (union, intersection).
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-facing string set with add/remove/has operations and set algebra (union, intersection).
@@ -1507,9 +2280,13 @@ Lua-facing string set with add/remove/has operations and set algebra (union, int
 LSet = {}
 ```
 
+#### Description
+
+Lua-facing string set with add/remove/has operations and set algebra (union, intersection).
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -1523,9 +2300,7 @@ end
 
 ### LSimpleState
 
-Lua-facing finite state machine with enter/exit/update callbacks per state.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-facing finite state machine with enter/exit/update callbacks per state.
@@ -1533,9 +2308,13 @@ Lua-facing finite state machine with enter/exit/update callbacks per state.
 LSimpleState = {}
 ```
 
+#### Description
+
+Lua-facing finite state machine with enter/exit/update callbacks per state.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -1549,9 +2328,7 @@ end
 
 ### LStack
 
-Lua-facing LIFO stack with optional capacity limit. Supports push/pop from both ends.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-facing LIFO stack with optional capacity limit. Supports push/pop from both ends.
@@ -1559,9 +2336,13 @@ Lua-facing LIFO stack with optional capacity limit. Supports push/pop from both 
 LStack = {}
 ```
 
+#### Description
+
+Lua-facing LIFO stack with optional capacity limit. Supports push/pop from both ends.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -1575,9 +2356,7 @@ end
 
 ### LStrategy
 
-Lua-facing strategy pattern allowing hot-swappable algorithm implementations by name.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-facing strategy pattern allowing hot-swappable algorithm implementations by name.
@@ -1585,9 +2364,13 @@ Lua-facing strategy pattern allowing hot-swappable algorithm implementations by 
 LStrategy = {}
 ```
 
+#### Description
+
+Lua-facing strategy pattern allowing hot-swappable algorithm implementations by name.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -1613,9 +2396,7 @@ end
 
 ### LThrottle
 
-Lua-facing throttle that limits how often an action can fire, enforcing a minimum interval between executions.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-facing throttle that limits how often an action can fire, enforcing a minimum interval between executions.
@@ -1623,9 +2404,13 @@ Lua-facing throttle that limits how often an action can fire, enforcing a minimu
 LThrottle = {}
 ```
 
+#### Description
+
+Lua-facing throttle that limits how often an action can fire, enforcing a minimum interval between executions.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -1645,9 +2430,7 @@ end
 
 ### LWeightedRandom
 
-Lua-facing weighted random selection pool. Add items with weights and pick random selections.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-facing weighted random selection pool. Add items with weights and pick random selections.
@@ -1655,9 +2438,13 @@ Lua-facing weighted random selection pool. Add items with weights and pick rando
 LWeightedRandom = {}
 ```
 
+#### Description
+
+Lua-facing weighted random selection pool. Add items with weights and pick random selections.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -1676,18 +2463,7 @@ end
 
 ### LBehaviorTree:addChild
 
-`LBehaviorTree:addChild(parentId: integer, childId: integer) -> boolean`
-
-Attach a child node to a parent composite or decorator node.
-
-**Parameters**
-
-- `parentId` (`integer`, required): The parent node ID.
-- `childId` (`integer`, required): The child node ID to attach.
-
-**Returns**: `boolean` - True if attached successfully.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Attach a child node to a parent composite or decorator node.
@@ -1697,9 +2473,20 @@ Attach a child node to a parent composite or decorator node.
 function LBehaviorTree:addChild(parentId, childId) end
 ```
 
+#### Description
+
+Attach a child node to a parent composite or decorator node.
+
+Parameters:
+
+- `parentId` (`integer`, required): The parent node ID.
+- `childId` (`integer`, required): The child node ID to attach.
+
+Returns: `boolean` - True if attached successfully.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -1713,17 +2500,7 @@ end
 
 ### LBehaviorTree:addInverter
 
-`LBehaviorTree:addInverter([label]: string) -> number`
-
-Create a decorator node that inverts its child's result (success ↔ failure).
-
-**Parameters**
-
-- `label` (`string`, optional): Optional debug label.
-
-**Returns**: `number` - The node ID.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Create a decorator node that inverts its child's result (success ↔ failure).
@@ -1732,9 +2509,19 @@ Create a decorator node that inverts its child's result (success ↔ failure).
 function LBehaviorTree:addInverter(label) end
 ```
 
+#### Description
+
+Create a decorator node that inverts its child's result (success ↔ failure).
+
+Parameters:
+
+- `label` (`string`, optional): Optional debug label.
+
+Returns: `number` - The node ID.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -1748,18 +2535,7 @@ end
 
 ### LBehaviorTree:addLeaf
 
-`LBehaviorTree:addLeaf(name: string, [label]: string) -> number`
-
-Create a leaf (action) node that will invoke a named callback function on tick.
-
-**Parameters**
-
-- `name` (`string`, required): The leaf name (must match a setLeaf registration).
-- `label` (`string`, optional): Optional debug label.
-
-**Returns**: `number` - The node ID.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Create a leaf (action) node that will invoke a named callback function on tick.
@@ -1769,9 +2545,20 @@ Create a leaf (action) node that will invoke a named callback function on tick.
 function LBehaviorTree:addLeaf(name, label) end
 ```
 
+#### Description
+
+Create a leaf (action) node that will invoke a named callback function on tick.
+
+Parameters:
+
+- `name` (`string`, required): The leaf name (must match a setLeaf registration).
+- `label` (`string`, optional): Optional debug label.
+
+Returns: `number` - The node ID.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -1785,18 +2572,7 @@ end
 
 ### LBehaviorTree:addParallel
 
-`LBehaviorTree:addParallel(minSuccess: integer, [label]: string) -> number`
-
-Create a parallel composite node that runs all children simultaneously.
-
-**Parameters**
-
-- `minSuccess` (`integer`, required): Minimum successful children required for this node to succeed.
-- `label` (`string`, optional): Optional debug label.
-
-**Returns**: `number` - The node ID.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Create a parallel composite node that runs all children simultaneously.
@@ -1806,9 +2582,20 @@ Create a parallel composite node that runs all children simultaneously.
 function LBehaviorTree:addParallel(minSuccess, label) end
 ```
 
+#### Description
+
+Create a parallel composite node that runs all children simultaneously.
+
+Parameters:
+
+- `minSuccess` (`integer`, required): Minimum successful children required for this node to succeed.
+- `label` (`string`, optional): Optional debug label.
+
+Returns: `number` - The node ID.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -1822,18 +2609,7 @@ end
 
 ### LBehaviorTree:addRepeat
 
-`LBehaviorTree:addRepeat(count: integer, [label]: string) -> number`
-
-Create a decorator node that repeats its child a fixed number of times.
-
-**Parameters**
-
-- `count` (`integer`, required): Number of repetitions.
-- `label` (`string`, optional): Optional debug label.
-
-**Returns**: `number` - The node ID.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Create a decorator node that repeats its child a fixed number of times.
@@ -1843,9 +2619,20 @@ Create a decorator node that repeats its child a fixed number of times.
 function LBehaviorTree:addRepeat(count, label) end
 ```
 
+#### Description
+
+Create a decorator node that repeats its child a fixed number of times.
+
+Parameters:
+
+- `count` (`integer`, required): Number of repetitions.
+- `label` (`string`, optional): Optional debug label.
+
+Returns: `number` - The node ID.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -1859,17 +2646,7 @@ end
 
 ### LBehaviorTree:addSelector
 
-`LBehaviorTree:addSelector([label]: string) -> number`
-
-Create a selector (fallback) composite node. Succeeds if any child succeeds.
-
-**Parameters**
-
-- `label` (`string`, optional): Optional debug label.
-
-**Returns**: `number` - The node ID.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Create a selector (fallback) composite node. Succeeds if any child succeeds.
@@ -1878,9 +2655,19 @@ Create a selector (fallback) composite node. Succeeds if any child succeeds.
 function LBehaviorTree:addSelector(label) end
 ```
 
+#### Description
+
+Create a selector (fallback) composite node. Succeeds if any child succeeds.
+
+Parameters:
+
+- `label` (`string`, optional): Optional debug label.
+
+Returns: `number` - The node ID.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -1894,17 +2681,7 @@ end
 
 ### LBehaviorTree:addSequence
 
-`LBehaviorTree:addSequence([label]: string) -> number`
-
-Create a sequence composite node. All children must succeed for this node to succeed.
-
-**Parameters**
-
-- `label` (`string`, optional): Optional debug label.
-
-**Returns**: `number` - The node ID.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Create a sequence composite node. All children must succeed for this node to succeed.
@@ -1913,9 +2690,19 @@ Create a sequence composite node. All children must succeed for this node to suc
 function LBehaviorTree:addSequence(label) end
 ```
 
+#### Description
+
+Create a sequence composite node. All children must succeed for this node to succeed.
+
+Parameters:
+
+- `label` (`string`, optional): Optional debug label.
+
+Returns: `number` - The node ID.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -1929,20 +2716,20 @@ end
 
 ### LBehaviorTree:clearAll
 
-`LBehaviorTree:clearAll()`
-
-Remove all nodes and leaf functions, resetting the tree to empty.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Remove all nodes and leaf functions, resetting the tree to empty.
 function LBehaviorTree:clearAll() end
 ```
 
+#### Description
+
+Remove all nodes and leaf functions, resetting the tree to empty.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -1956,13 +2743,7 @@ end
 
 ### LBehaviorTree:nodeCount
 
-`LBehaviorTree:nodeCount() -> number`
-
-Return the total number of nodes in the tree.
-
-**Returns**: `number` - Node count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return the total number of nodes in the tree.
@@ -1970,9 +2751,15 @@ Return the total number of nodes in the tree.
 function LBehaviorTree:nodeCount() end
 ```
 
+#### Description
+
+Return the total number of nodes in the tree.
+
+Returns: `number` - Node count.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -1986,20 +2773,20 @@ end
 
 ### LBehaviorTree:resetState
 
-`LBehaviorTree:resetState()`
-
-Reset the tree's running state. Use between encounters or when restarting AI logic.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Reset the tree's running state. Use between encounters or when restarting AI logic.
 function LBehaviorTree:resetState() end
 ```
 
+#### Description
+
+Reset the tree's running state. Use between encounters or when restarting AI logic.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -2025,16 +2812,7 @@ end
 
 ### LBehaviorTree:setLeaf
 
-`LBehaviorTree:setLeaf(name: string, callback: function)`
-
-Register or replace the callback function for a named leaf. The function must return "success", "failure", or "running".
-
-**Parameters**
-
-- `name` (`string`, required): The leaf name (matching addLeaf).
-- `callback` (`function`, required): A function returning a status string.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Register or replace the callback function for a named leaf. The function must return "success", "failure", or "running".
@@ -2043,9 +2821,18 @@ Register or replace the callback function for a named leaf. The function must re
 function LBehaviorTree:setLeaf(name, callback) end
 ```
 
+#### Description
+
+Register or replace the callback function for a named leaf. The function must return "success", "failure", or "running".
+
+Parameters:
+
+- `name` (`string`, required): The leaf name (matching addLeaf).
+- `callback` (`function`, required): A function returning a status string.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -2071,17 +2858,7 @@ end
 
 ### LBehaviorTree:setRoot
 
-`LBehaviorTree:setRoot(id: integer) -> boolean`
-
-Designate a node as the tree's root. Tick evaluation starts here.
-
-**Parameters**
-
-- `id` (`integer`, required): The node ID to set as root.
-
-**Returns**: `boolean` - True if the node exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Designate a node as the tree's root. Tick evaluation starts here.
@@ -2090,9 +2867,19 @@ Designate a node as the tree's root. Tick evaluation starts here.
 function LBehaviorTree:setRoot(id) end
 ```
 
+#### Description
+
+Designate a node as the tree's root. Tick evaluation starts here.
+
+Parameters:
+
+- `id` (`integer`, required): The node ID to set as root.
+
+Returns: `boolean` - True if the node exists.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -2106,13 +2893,7 @@ end
 
 ### LBehaviorTree:tick
 
-`LBehaviorTree:tick() -> string`
-
-Execute one tick of the behavior tree from the root. Returns the root node's status.
-
-**Returns**: `string` - One of "success", "failure", or "running".
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Execute one tick of the behavior tree from the root. Returns the root node's status.
@@ -2120,9 +2901,15 @@ Execute one tick of the behavior tree from the root. Returns the root node's sta
 function LBehaviorTree:tick() end
 ```
 
+#### Description
+
+Execute one tick of the behavior tree from the root. Returns the root node's status.
+
+Returns: `string` - One of "success", "failure", or "running".
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -2148,15 +2935,7 @@ end
 
 ### LBlackboard:clear
 
-`LBlackboard:clear(key: string)`
-
-Remove a single key from the blackboard.
-
-**Parameters**
-
-- `key` (`string`, required): The key to remove.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Remove a single key from the blackboard.
@@ -2164,9 +2943,17 @@ Remove a single key from the blackboard.
 function LBlackboard:clear(key) end
 ```
 
+#### Description
+
+Remove a single key from the blackboard.
+
+Parameters:
+
+- `key` (`string`, required): The key to remove.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -2192,20 +2979,20 @@ end
 
 ### LBlackboard:clearAll
 
-`LBlackboard:clearAll()`
-
-Remove all keys and values from the blackboard.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Remove all keys and values from the blackboard.
 function LBlackboard:clearAll() end
 ```
 
+#### Description
+
+Remove all keys and values from the blackboard.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -2231,17 +3018,7 @@ end
 
 ### LBlackboard:get
 
-`LBlackboard:get(key: string) -> boolean|number|string|nil`
-
-Retrieve the value stored under a key. Returns nil if the key does not exist.
-
-**Parameters**
-
-- `key` (`string`, required): The key name to look up.
-
-**Returns**: `boolean|number|string|nil` - The stored value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Retrieve the value stored under a key. Returns nil if the key does not exist.
@@ -2250,9 +3027,19 @@ Retrieve the value stored under a key. Returns nil if the key does not exist.
 function LBlackboard:get(key) end
 ```
 
+#### Description
+
+Retrieve the value stored under a key. Returns nil if the key does not exist.
+
+Parameters:
+
+- `key` (`string`, required): The key name to look up.
+
+Returns: `boolean|number|string|nil` - The stored value.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -2266,13 +3053,7 @@ end
 
 ### LBlackboard:getRevision
 
-`LBlackboard:getRevision() -> number`
-
-Return the current revision counter. Increments on every value change.
-
-**Returns**: `number` - The revision number.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return the current revision counter. Increments on every value change.
@@ -2280,9 +3061,15 @@ Return the current revision counter. Increments on every value change.
 function LBlackboard:getRevision() end
 ```
 
+#### Description
+
+Return the current revision counter. Increments on every value change.
+
+Returns: `number` - The revision number.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -2308,17 +3095,7 @@ end
 
 ### LBlackboard:has
 
-`LBlackboard:has(key: string) -> boolean`
-
-Check whether a key exists on the blackboard.
-
-**Parameters**
-
-- `key` (`string`, required): The key to check.
-
-**Returns**: `boolean` - True if the key has a stored value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Check whether a key exists on the blackboard.
@@ -2327,9 +3104,19 @@ Check whether a key exists on the blackboard.
 function LBlackboard:has(key) end
 ```
 
+#### Description
+
+Check whether a key exists on the blackboard.
+
+Parameters:
+
+- `key` (`string`, required): The key to check.
+
+Returns: `boolean` - True if the key has a stored value.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -2343,13 +3130,7 @@ end
 
 ### LBlackboard:keys
 
-`LBlackboard:keys() -> string[]`
-
-Return an array of all keys currently stored on the blackboard.
-
-**Returns**: `string[]` - Key name strings.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return an array of all keys currently stored on the blackboard.
@@ -2357,9 +3138,15 @@ Return an array of all keys currently stored on the blackboard.
 function LBlackboard:keys() end
 ```
 
+#### Description
+
+Return an array of all keys currently stored on the blackboard.
+
+Returns: `string[]` - Key name strings.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -2373,16 +3160,7 @@ end
 
 ### LBlackboard:set
 
-`LBlackboard:set(key: string, value: boolean|number|string|nil)`
-
-Set a key to a value (boolean, number, string, or nil to clear). Notifies registered watchers if value changed.
-
-**Parameters**
-
-- `key` (`string`, required): The key name.
-- `value` (`boolean|number|string|nil`, required): The value to store. Pass nil to clear the key.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Set a key to a value (boolean, number, string, or nil to clear). Notifies registered watchers if value changed.
@@ -2391,9 +3169,18 @@ Set a key to a value (boolean, number, string, or nil to clear). Notifies regist
 function LBlackboard:set(key, value) end
 ```
 
+#### Description
+
+Set a key to a value (boolean, number, string, or nil to clear). Notifies registered watchers if value changed.
+
+Parameters:
+
+- `key` (`string`, required): The key name.
+- `value` (`boolean|number|string|nil`, required): The value to store. Pass nil to clear the key.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -2448,13 +3235,7 @@ do
 
 ### LBlackboard:snapshot
 
-`LBlackboard:snapshot() -> table`
-
-Return a table containing all current key-value pairs as a snapshot. Useful for serialization or debug display.
-
-**Returns**: `table` - A table mapping key strings to their stored values.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return a table containing all current key-value pairs as a snapshot. Useful for serialization or debug display.
@@ -2462,9 +3243,15 @@ Return a table containing all current key-value pairs as a snapshot. Useful for 
 function LBlackboard:snapshot() end
 ```
 
+#### Description
+
+Return a table containing all current key-value pairs as a snapshot. Useful for serialization or debug display.
+
+Returns: `table` - A table mapping key strings to their stored values.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -2490,15 +3277,7 @@ end
 
 ### LBlackboard:unwatch
 
-`LBlackboard:unwatch(id: integer)`
-
-Remove a previously registered watcher by its ID.
-
-**Parameters**
-
-- `id` (`integer`, required): The watcher ID returned by `watch()`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Remove a previously registered watcher by its ID.
@@ -2506,9 +3285,17 @@ Remove a previously registered watcher by its ID.
 function LBlackboard:unwatch(id) end
 ```
 
+#### Description
+
+Remove a previously registered watcher by its ID.
+
+Parameters:
+
+- `id` (`integer`, required): The watcher ID returned by `watch()`.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -2534,18 +3321,7 @@ end
 
 ### LBlackboard:watch
 
-`LBlackboard:watch(key: string, callback: function) -> number`
-
-Register a watcher callback that fires whenever the specified key changes. Use `"*"` to watch all keys.
-
-**Parameters**
-
-- `key` (`string`, required): The key to watch, or `"*"` for all changes.
-- `callback` (`function`, required): Called with (key, newValue) when a change occurs.
-
-**Returns**: `number` - A watcher ID for later removal with `unwatch()`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Register a watcher callback that fires whenever the specified key changes. Use `"*"` to watch all keys.
@@ -2555,9 +3331,20 @@ Register a watcher callback that fires whenever the specified key changes. Use `
 function LBlackboard:watch(key, callback) end
 ```
 
+#### Description
+
+Register a watcher callback that fires whenever the specified key changes. Use `"*"` to watch all keys.
+
+Parameters:
+
+- `key` (`string`, required): The key to watch, or `"*"` for all changes.
+- `callback` (`function`, required): Called with (key, newValue) when a change occurs.
+
+Returns: `number` - A watcher ID for later removal with `unwatch()`.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -2583,13 +3370,7 @@ end
 
 ### LCommandStack:canRedo
 
-`LCommandStack:canRedo() -> boolean`
-
-Check whether a redo operation is possible (there are commands ahead of the pointer).
-
-**Returns**: `boolean` - True if redo is available.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Check whether a redo operation is possible (there are commands ahead of the pointer).
@@ -2597,9 +3378,15 @@ Check whether a redo operation is possible (there are commands ahead of the poin
 function LCommandStack:canRedo() end
 ```
 
+#### Description
+
+Check whether a redo operation is possible (there are commands ahead of the pointer).
+
+Returns: `boolean` - True if redo is available.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -2613,13 +3400,7 @@ end
 
 ### LCommandStack:canUndo
 
-`LCommandStack:canUndo() -> boolean`
-
-Check whether an undo operation is possible (there is a command with an undo function behind the pointer).
-
-**Returns**: `boolean` - True if undo is available.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Check whether an undo operation is possible (there is a command with an undo function behind the pointer).
@@ -2627,9 +3408,15 @@ Check whether an undo operation is possible (there is a command with an undo fun
 function LCommandStack:canUndo() end
 ```
 
+#### Description
+
+Check whether an undo operation is possible (there is a command with an undo function behind the pointer).
+
+Returns: `boolean` - True if undo is available.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -2643,20 +3430,20 @@ end
 
 ### LCommandStack:clearAll
 
-`LCommandStack:clearAll()`
-
-Discard all command history and free associated callbacks.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Discard all command history and free associated callbacks.
 function LCommandStack:clearAll() end
 ```
 
+#### Description
+
+Discard all command history and free associated callbacks.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -2670,17 +3457,7 @@ end
 
 ### LCommandStack:execute
 
-`LCommandStack:execute(name: string, execFn: function, [undoFn]: function)`
-
-Execute a named command immediately, recording it in history. Discards any redo history ahead of the current position.
-
-**Parameters**
-
-- `name` (`string`, required): A descriptive name for the command (shown in history).
-- `execFn` (`function`, required): The function that performs the action.
-- `undoFn` (`function`, optional): An optional function that reverses the action. If omitted, command cannot be undone.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Execute a named command immediately, recording it in history. Discards any redo history ahead of the current position.
@@ -2690,9 +3467,19 @@ Execute a named command immediately, recording it in history. Discards any redo 
 function LCommandStack:execute(name, execFn, undoFn) end
 ```
 
+#### Description
+
+Execute a named command immediately, recording it in history. Discards any redo history ahead of the current position.
+
+Parameters:
+
+- `name` (`string`, required): A descriptive name for the command (shown in history).
+- `execFn` (`function`, required): The function that performs the action.
+- `undoFn` (`function`, optional): An optional function that reverses the action. If omitted, command cannot be undone.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -2706,13 +3493,7 @@ end
 
 ### LCommandStack:getCurrentName
 
-`LCommandStack:getCurrentName() -> string`
-
-Return the name of the most recently executed (or undone-to) command, or nil if history is empty.
-
-**Returns**: `string` - The command name, or nil if history is empty.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return the name of the most recently executed (or undone-to) command, or nil if history is empty.
@@ -2720,9 +3501,15 @@ Return the name of the most recently executed (or undone-to) command, or nil if 
 function LCommandStack:getCurrentName() end
 ```
 
+#### Description
+
+Return the name of the most recently executed (or undone-to) command, or nil if history is empty.
+
+Returns: `string` - The command name, or nil if history is empty.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -2736,13 +3523,7 @@ end
 
 ### LCommandStack:getHistorySize
 
-`LCommandStack:getHistorySize() -> number`
-
-Return the total number of commands in the history (both undone and available for redo).
-
-**Returns**: `number` - Total history depth.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return the total number of commands in the history (both undone and available for redo).
@@ -2750,9 +3531,15 @@ Return the total number of commands in the history (both undone and available fo
 function LCommandStack:getHistorySize() end
 ```
 
+#### Description
+
+Return the total number of commands in the history (both undone and available for redo).
+
+Returns: `number` - Total history depth.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -2766,13 +3553,7 @@ end
 
 ### LCommandStack:redo
 
-`LCommandStack:redo() -> boolean`
-
-Redo a previously undone command by re-calling its execute function. Moves the pointer forward.
-
-**Returns**: `boolean` - True if redo succeeded, false if nothing to redo.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Redo a previously undone command by re-calling its execute function. Moves the pointer forward.
@@ -2780,9 +3561,15 @@ Redo a previously undone command by re-calling its execute function. Moves the p
 function LCommandStack:redo() end
 ```
 
+#### Description
+
+Redo a previously undone command by re-calling its execute function. Moves the pointer forward.
+
+Returns: `boolean` - True if redo succeeded, false if nothing to redo.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -2796,13 +3583,7 @@ end
 
 ### LCommandStack:undo
 
-`LCommandStack:undo() -> boolean`
-
-Undo the most recent command by calling its undo function. Moves the pointer back in history.
-
-**Returns**: `boolean` - True if undo succeeded, false if nothing to undo or no undo function registered.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Undo the most recent command by calling its undo function. Moves the pointer back in history.
@@ -2810,9 +3591,15 @@ Undo the most recent command by calling its undo function. Moves the pointer bac
 function LCommandStack:undo() end
 ```
 
+#### Description
+
+Undo the most recent command by calling its undo function. Moves the pointer back in history.
+
+Returns: `boolean` - True if undo succeeded, false if nothing to undo or no undo function registered.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -2826,20 +3613,20 @@ end
 
 ### LDebounce:cancel
 
-`LDebounce:cancel()`
-
-Cancel any pending debounce without firing. The callback will not be called until triggered again.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Cancel any pending debounce without firing. The callback will not be called until triggered again.
 function LDebounce:cancel() end
 ```
 
+#### Description
+
+Cancel any pending debounce without firing. The callback will not be called until triggered again.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -2853,13 +3640,7 @@ end
 
 ### LDebounce:getFireCount
 
-`LDebounce:getFireCount() -> number`
-
-Return the total number of times this debounce has fired since creation.
-
-**Returns**: `number` - Total fire count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return the total number of times this debounce has fired since creation.
@@ -2867,9 +3648,15 @@ Return the total number of times this debounce has fired since creation.
 function LDebounce:getFireCount() end
 ```
 
+#### Description
+
+Return the total number of times this debounce has fired since creation.
+
+Returns: `number` - Total fire count.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -2883,13 +3670,7 @@ end
 
 ### LDebounce:isPending
 
-`LDebounce:isPending() -> boolean`
-
-Check whether the debounce is currently waiting to fire (has been triggered but wait period not yet elapsed).
-
-**Returns**: `boolean` - True if a fire is pending.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Check whether the debounce is currently waiting to fire (has been triggered but wait period not yet elapsed).
@@ -2897,9 +3678,15 @@ Check whether the debounce is currently waiting to fire (has been triggered but 
 function LDebounce:isPending() end
 ```
 
+#### Description
+
+Check whether the debounce is currently waiting to fire (has been triggered but wait period not yet elapsed).
+
+Returns: `boolean` - True if a fire is pending.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -2913,15 +3700,7 @@ end
 
 ### LDebounce:onFire
 
-`LDebounce:onFire(f: function)`
-
-Set the callback function to invoke when the debounce fires after the wait period.
-
-**Parameters**
-
-- `f` (`function`, required): The callback to execute.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Set the callback function to invoke when the debounce fires after the wait period.
@@ -2929,9 +3708,17 @@ Set the callback function to invoke when the debounce fires after the wait perio
 function LDebounce:onFire(f) end
 ```
 
+#### Description
+
+Set the callback function to invoke when the debounce fires after the wait period.
+
+Parameters:
+
+- `f` (`function`, required): The callback to execute.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -2952,20 +3739,20 @@ end
 
 ### LDebounce:trigger
 
-`LDebounce:trigger()`
-
-Signal input activity. Resets the wait timer so the debounce will fire after the full wait period of inactivity.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Signal input activity. Resets the wait timer so the debounce will fire after the full wait period of inactivity.
 function LDebounce:trigger() end
 ```
 
+#### Description
+
+Signal input activity. Resets the wait timer so the debounce will fire after the full wait period of inactivity.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -2986,17 +3773,7 @@ end
 
 ### LDebounce:update
 
-`LDebounce:update(dt: number) -> boolean`
-
-Advance the debounce timer. If the wait period elapsed since last trigger, fires the callback and returns true.
-
-**Parameters**
-
-- `dt` (`number`, required): Delta time in seconds since last update.
-
-**Returns**: `boolean` - True if the debounce fired this frame.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Advance the debounce timer. If the wait period elapsed since last trigger, fires the callback and returns true.
@@ -3005,9 +3782,19 @@ Advance the debounce timer. If the wait period elapsed since last trigger, fires
 function LDebounce:update(dt) end
 ```
 
+#### Description
+
+Advance the debounce timer. If the wait period elapsed since last trigger, fires the callback and returns true.
+
+Parameters:
+
+- `dt` (`number`, required): Delta time in seconds since last update.
+
+Returns: `boolean` - True if the debounce fired this frame.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -3028,15 +3815,7 @@ end
 
 ### LEventBus:clear
 
-`LEventBus:clear(event: string)`
-
-Remove all listeners subscribed to a specific event name.
-
-**Parameters**
-
-- `event` (`string`, required): The event name whose listeners will be removed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Remove all listeners subscribed to a specific event name.
@@ -3044,9 +3823,17 @@ Remove all listeners subscribed to a specific event name.
 function LEventBus:clear(event) end
 ```
 
+#### Description
+
+Remove all listeners subscribed to a specific event name.
+
+Parameters:
+
+- `event` (`string`, required): The event name whose listeners will be removed.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -3060,20 +3847,20 @@ end
 
 ### LEventBus:clearAll
 
-`LEventBus:clearAll()`
-
-Remove all listeners from every event on this bus. Resets the bus to empty.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Remove all listeners from every event on this bus. Resets the bus to empty.
 function LEventBus:clearAll() end
 ```
 
+#### Description
+
+Remove all listeners from every event on this bus. Resets the bus to empty.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -3087,16 +3874,7 @@ end
 
 ### LEventBus:emit
 
-`LEventBus:emit(event: string, ...: any)`
-
-Emit an event, invoking all subscribed listeners in priority order with optional payload arguments.
-
-**Parameters**
-
-- `event` (`string`, required): The event name to emit.
-- `...` (`any`, required): Additional arguments passed to each listener callback.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Emit an event, invoking all subscribed listeners in priority order with optional payload arguments.
@@ -3105,9 +3883,18 @@ Emit an event, invoking all subscribed listeners in priority order with optional
 function LEventBus:emit(event, ...) end
 ```
 
+#### Description
+
+Emit an event, invoking all subscribed listeners in priority order with optional payload arguments.
+
+Parameters:
+
+- `event` (`string`, required): The event name to emit.
+- `...` (`any`, required): Additional arguments passed to each listener callback.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -3127,13 +3914,7 @@ end
 
 ### LEventBus:getEvents
 
-`LEventBus:getEvents() -> string[]`
-
-Return an array of all event names that have at least one listener.
-
-**Returns**: `string[]` - Event name strings.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return an array of all event names that have at least one listener.
@@ -3141,9 +3922,15 @@ Return an array of all event names that have at least one listener.
 function LEventBus:getEvents() end
 ```
 
+#### Description
+
+Return an array of all event names that have at least one listener.
+
+Returns: `string[]` - Event name strings.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -3157,17 +3944,7 @@ end
 
 ### LEventBus:getListenerCount
 
-`LEventBus:getListenerCount(event: string) -> number`
-
-Return the number of active listeners for a given event name.
-
-**Parameters**
-
-- `event` (`string`, required): The event name to query.
-
-**Returns**: `number` - Count of currently registered listeners.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return the number of active listeners for a given event name.
@@ -3176,9 +3953,19 @@ Return the number of active listeners for a given event name.
 function LEventBus:getListenerCount(event) end
 ```
 
+#### Description
+
+Return the number of active listeners for a given event name.
+
+Parameters:
+
+- `event` (`string`, required): The event name to query.
+
+Returns: `number` - Count of currently registered listeners.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -3192,15 +3979,7 @@ end
 
 ### LEventBus:off
 
-`LEventBus:off(id: integer)`
-
-Unsubscribe a listener by its subscription ID. Removes the callback from the event bus.
-
-**Parameters**
-
-- `id` (`integer`, required): The subscription ID returned by `on()`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Unsubscribe a listener by its subscription ID. Removes the callback from the event bus.
@@ -3208,9 +3987,17 @@ Unsubscribe a listener by its subscription ID. Removes the callback from the eve
 function LEventBus:off(id) end
 ```
 
+#### Description
+
+Unsubscribe a listener by its subscription ID. Removes the callback from the event bus.
+
+Parameters:
+
+- `id` (`integer`, required): The subscription ID returned by `on()`.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -3230,19 +4017,7 @@ end
 
 ### LEventBus:on
 
-`LEventBus:on(event: string, callback: function, [priority]: integer) -> number`
-
-Subscribe a callback to a named event. Higher priority listeners fire first.
-
-**Parameters**
-
-- `event` (`string`, required): The event name to listen for.
-- `callback` (`function`, required): The function to invoke when the event fires.
-- `priority` (`integer`, optional): Listener priority (default 0). Higher values execute first.
-
-**Returns**: `number` - A subscription ID used to unsubscribe later.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Subscribe a callback to a named event. Higher priority listeners fire first.
@@ -3253,9 +4028,21 @@ Subscribe a callback to a named event. Higher priority listeners fire first.
 function LEventBus:on(event, callback, priority) end
 ```
 
+#### Description
+
+Subscribe a callback to a named event. Higher priority listeners fire first.
+
+Parameters:
+
+- `event` (`string`, required): The event name to listen for.
+- `callback` (`function`, required): The function to invoke when the event fires.
+- `priority` (`integer`, optional): Listener priority (default 0). Higher values execute first.
+
+Returns: `number` - A subscription ID used to unsubscribe later.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -3301,16 +4088,7 @@ end
 
 ### LFactory:alias
 
-`LFactory:alias(alias: string, canonical: string)`
-
-Create an alias that maps to an existing type name. `create(alias)` will use the canonical constructor.
-
-**Parameters**
-
-- `alias` (`string`, required): The alternative name.
-- `canonical` (`string`, required): The existing registered type name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Create an alias that maps to an existing type name. `create(alias)` will use the canonical constructor.
@@ -3319,9 +4097,18 @@ Create an alias that maps to an existing type name. `create(alias)` will use the
 function LFactory:alias(alias, canonical) end
 ```
 
+#### Description
+
+Create an alias that maps to an existing type name. `create(alias)` will use the canonical constructor.
+
+Parameters:
+
+- `alias` (`string`, required): The alternative name.
+- `canonical` (`string`, required): The existing registered type name.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -3342,20 +4129,20 @@ end
 
 ### LFactory:clearAll
 
-`LFactory:clearAll()`
-
-Remove all registered types and constructors, resetting the factory.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Remove all registered types and constructors, resetting the factory.
 function LFactory:clearAll() end
 ```
 
+#### Description
+
+Remove all registered types and constructors, resetting the factory.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -3376,18 +4163,7 @@ end
 
 ### LFactory:create
 
-`LFactory:create(typeName: string, ...: any) -> table`
-
-Create a new object by type name, passing additional arguments to the constructor.
-
-**Parameters**
-
-- `typeName` (`string`, required): The registered type to instantiate.
-- `...` (`any`, required): Extra arguments forwarded to the constructor.
-
-**Returns**: `table` - The created object table.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Create a new object by type name, passing additional arguments to the constructor.
@@ -3398,9 +4174,20 @@ Create a new object by type name, passing additional arguments to the constructo
 function LFactory:create(typeName, ...) end
 ```
 
+#### Description
+
+Create a new object by type name, passing additional arguments to the constructor.
+
+Parameters:
+
+- `typeName` (`string`, required): The registered type to instantiate.
+- `...` (`any`, required): Extra arguments forwarded to the constructor.
+
+Returns: `table` - The created object table.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -3420,13 +4207,7 @@ end
 
 ### LFactory:getTypes
 
-`LFactory:getTypes() -> string[]`
-
-Return an array of all registered type names.
-
-**Returns**: `string[]` - Type name strings.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return an array of all registered type names.
@@ -3434,9 +4215,15 @@ Return an array of all registered type names.
 function LFactory:getTypes() end
 ```
 
+#### Description
+
+Return an array of all registered type names.
+
+Returns: `string[]` - Type name strings.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -3459,17 +4246,7 @@ end
 
 ### LFactory:has
 
-`LFactory:has(typeName: string) -> boolean`
-
-Check whether a constructor is registered for the given type name.
-
-**Parameters**
-
-- `typeName` (`string`, required): The type name to query.
-
-**Returns**: `boolean` - True if a constructor exists for this type.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Check whether a constructor is registered for the given type name.
@@ -3478,9 +4255,19 @@ Check whether a constructor is registered for the given type name.
 function LFactory:has(typeName) end
 ```
 
+#### Description
+
+Check whether a constructor is registered for the given type name.
+
+Parameters:
+
+- `typeName` (`string`, required): The type name to query.
+
+Returns: `boolean` - True if a constructor exists for this type.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -3494,16 +4281,7 @@ end
 
 ### LFactory:register
 
-`LFactory:register(typeName: string, ctor: function)`
-
-Register a constructor function for a given type name. Future `create()` calls with this type will invoke it.
-
-**Parameters**
-
-- `typeName` (`string`, required): The type identifier (e.g. "enemy", "bullet").
-- `ctor` (`function`, required): A constructor function that returns a new instance.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Register a constructor function for a given type name. Future `create()` calls with this type will invoke it.
@@ -3512,9 +4290,18 @@ Register a constructor function for a given type name. Future `create()` calls w
 function LFactory:register(typeName, ctor) end
 ```
 
+#### Description
+
+Register a constructor function for a given type name. Future `create()` calls with this type will invoke it.
+
+Parameters:
+
+- `typeName` (`string`, required): The type identifier (e.g. "enemy", "bullet").
+- `ctor` (`function`, required): A constructor function that returns a new instance.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -3537,15 +4324,7 @@ end
 
 ### LFactory:remove
 
-`LFactory:remove(typeName: string)`
-
-Unregister a type and discard its constructor function.
-
-**Parameters**
-
-- `typeName` (`string`, required): The type name to remove.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Unregister a type and discard its constructor function.
@@ -3553,9 +4332,17 @@ Unregister a type and discard its constructor function.
 function LFactory:remove(typeName) end
 ```
 
+#### Description
+
+Unregister a type and discard its constructor function.
+
+Parameters:
+
+- `typeName` (`string`, required): The type name to remove.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -3576,20 +4363,20 @@ end
 
 ### LFunnel:discard
 
-`LFunnel:discard()`
-
-Discard all pending entries without flushing or calling the callback.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Discard all pending entries without flushing or calling the callback.
 function LFunnel:discard() end
 ```
 
+#### Description
+
+Discard all pending entries without flushing or calling the callback.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -3610,20 +4397,20 @@ end
 
 ### LFunnel:flush
 
-`LFunnel:flush()`
-
-Force an immediate flush of all pending entries, invoking the callback.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Force an immediate flush of all pending entries, invoking the callback.
 function LFunnel:flush() end
 ```
 
+#### Description
+
+Force an immediate flush of all pending entries, invoking the callback.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -3644,13 +4431,7 @@ end
 
 ### LFunnel:getFlushCount
 
-`LFunnel:getFlushCount() -> number`
-
-Return the total number of times this funnel has flushed since creation.
-
-**Returns**: `number` - Total flush count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return the total number of times this funnel has flushed since creation.
@@ -3658,9 +4439,15 @@ Return the total number of times this funnel has flushed since creation.
 function LFunnel:getFlushCount() end
 ```
 
+#### Description
+
+Return the total number of times this funnel has flushed since creation.
+
+Returns: `number` - Total flush count.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -3681,15 +4468,7 @@ end
 
 ### LFunnel:onFlush
 
-`LFunnel:onFlush(f: function)`
-
-Set the callback invoked when the funnel flushes. Receives an array of {tag, value} entries.
-
-**Parameters**
-
-- `f` (`function`, required): Callback receiving a table array of batched entries.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Set the callback invoked when the funnel flushes. Receives an array of {tag, value} entries.
@@ -3697,9 +4476,17 @@ Set the callback invoked when the funnel flushes. Receives an array of {tag, val
 function LFunnel:onFlush(f) end
 ```
 
+#### Description
+
+Set the callback invoked when the funnel flushes. Receives an array of {tag, value} entries.
+
+Parameters:
+
+- `f` (`function`, required): Callback receiving a table array of batched entries.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -3751,13 +4538,7 @@ end
 
 ### LFunnel:pendingCount
 
-`LFunnel:pendingCount() -> number`
-
-Return the number of entries waiting to be flushed.
-
-**Returns**: `number` - Pending entry count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return the number of entries waiting to be flushed.
@@ -3765,9 +4546,15 @@ Return the number of entries waiting to be flushed.
 function LFunnel:pendingCount() end
 ```
 
+#### Description
+
+Return the number of entries waiting to be flushed.
+
+Returns: `number` - Pending entry count.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -3788,16 +4575,7 @@ end
 
 ### LFunnel:push
 
-`LFunnel:push(tag: string, [value]: number)`
-
-Push a tagged event into the funnel. May trigger an immediate flush if the max entry count is reached.
-
-**Parameters**
-
-- `tag` (`string`, required): A category label for the event.
-- `value` (`number`, optional): Optional numeric value (default 0).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Push a tagged event into the funnel. May trigger an immediate flush if the max entry count is reached.
@@ -3806,9 +4584,18 @@ Push a tagged event into the funnel. May trigger an immediate flush if the max e
 function LFunnel:push(tag, value) end
 ```
 
+#### Description
+
+Push a tagged event into the funnel. May trigger an immediate flush if the max entry count is reached.
+
+Parameters:
+
+- `tag` (`string`, required): A category label for the event.
+- `value` (`number`, optional): Optional numeric value (default 0).
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -3826,17 +4613,7 @@ end
 
 ### LFunnel:update
 
-`LFunnel:update(dt: number) -> boolean`
-
-Advance the funnel's time window. Flushes and invokes the callback if the window elapsed.
-
-**Parameters**
-
-- `dt` (`number`, required): Delta time in seconds.
-
-**Returns**: `boolean` - True if a flush occurred this frame.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Advance the funnel's time window. Flushes and invokes the callback if the window elapsed.
@@ -3845,9 +4622,19 @@ Advance the funnel's time window. Flushes and invokes the callback if the window
 function LFunnel:update(dt) end
 ```
 
+#### Description
+
+Advance the funnel's time window. Flushes and invokes the callback if the window elapsed.
+
+Parameters:
+
+- `dt` (`number`, required): Delta time in seconds.
+
+Returns: `boolean` - True if a flush occurred this frame.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -3865,15 +4652,7 @@ end
 
 ### LList:add
 
-`LList:add(value: any)`
-
-Append a value to the end of the list.
-
-**Parameters**
-
-- `value` (`any`, required): The value to append.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Append a value to the end of the list.
@@ -3881,9 +4660,17 @@ Append a value to the end of the list.
 function LList:add(value) end
 ```
 
+#### Description
+
+Append a value to the end of the list.
+
+Parameters:
+
+- `value` (`any`, required): The value to append.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -3897,20 +4684,20 @@ end
 
 ### LList:clear
 
-`LList:clear()`
-
-Remove all items from the list. This method is available to Lua scripts.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Remove all items from the list. This method is available to Lua scripts.
 function LList:clear() end
 ```
 
+#### Description
+
+Remove all items from the list. This method is available to Lua scripts.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -3924,17 +4711,7 @@ end
 
 ### LList:contains
 
-`LList:contains(value: string) -> boolean`
-
-Check whether the list contains a specific value.
-
-**Parameters**
-
-- `value` (`string`, required): The value to search for.
-
-**Returns**: `boolean` - True if found.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Check whether the list contains a specific value.
@@ -3943,9 +4720,19 @@ Check whether the list contains a specific value.
 function LList:contains(value) end
 ```
 
+#### Description
+
+Check whether the list contains a specific value.
+
+Parameters:
+
+- `value` (`string`, required): The value to search for.
+
+Returns: `boolean` - True if found.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -3959,17 +4746,7 @@ end
 
 ### LList:get
 
-`LList:get(index: integer) -> string`
-
-Get the value at a 1-based index. Returns nil if out of range.
-
-**Parameters**
-
-- `index` (`integer`, required): 1-based position.
-
-**Returns**: `string` - The value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Get the value at a 1-based index. Returns nil if out of range.
@@ -3979,9 +4756,19 @@ Get the value at a 1-based index. Returns nil if out of range.
 function LList:get(index) end
 ```
 
+#### Description
+
+Get the value at a 1-based index. Returns nil if out of range.
+
+Parameters:
+
+- `index` (`integer`, required): 1-based position.
+
+Returns: `string` - The value.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -3995,17 +4782,7 @@ end
 
 ### LList:indexOf
 
-`LList:indexOf(value: string) -> integer`
-
-Find the 1-based index of the first occurrence of a value. Returns nil if not found.
-
-**Parameters**
-
-- `value` (`string`, required): The value to search for.
-
-**Returns**: `integer` - The 1-based index, or nil when the value is not found.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Find the 1-based index of the first occurrence of a value. Returns nil if not found.
@@ -4014,9 +4791,19 @@ Find the 1-based index of the first occurrence of a value. Returns nil if not fo
 function LList:indexOf(value) end
 ```
 
+#### Description
+
+Find the 1-based index of the first occurrence of a value. Returns nil if not found.
+
+Parameters:
+
+- `value` (`string`, required): The value to search for.
+
+Returns: `integer` - The 1-based index, or nil when the value is not found.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -4030,16 +4817,7 @@ end
 
 ### LList:insert
 
-`LList:insert(index: integer, value: any)`
-
-Insert a value at a 1-based index, shifting subsequent items right.
-
-**Parameters**
-
-- `index` (`integer`, required): 1-based insertion position.
-- `value` (`any`, required): The value to insert.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Insert a value at a 1-based index, shifting subsequent items right.
@@ -4048,9 +4826,18 @@ Insert a value at a 1-based index, shifting subsequent items right.
 function LList:insert(index, value) end
 ```
 
+#### Description
+
+Insert a value at a 1-based index, shifting subsequent items right.
+
+Parameters:
+
+- `index` (`integer`, required): 1-based insertion position.
+- `value` (`any`, required): The value to insert.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -4064,13 +4851,7 @@ end
 
 ### LList:isEmpty
 
-`LList:isEmpty() -> boolean`
-
-Check whether the list is empty. This method is available to Lua scripts.
-
-**Returns**: `boolean` - True if empty.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Check whether the list is empty. This method is available to Lua scripts.
@@ -4078,9 +4859,15 @@ Check whether the list is empty. This method is available to Lua scripts.
 function LList:isEmpty() end
 ```
 
+#### Description
+
+Check whether the list is empty. This method is available to Lua scripts.
+
+Returns: `boolean` - True if empty.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -4094,13 +4881,7 @@ end
 
 ### LList:len
 
-`LList:len() -> number`
-
-Return the number of items in the list.
-
-**Returns**: `number` - Item count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return the number of items in the list.
@@ -4108,9 +4889,15 @@ Return the number of items in the list.
 function LList:len() end
 ```
 
+#### Description
+
+Return the number of items in the list.
+
+Returns: `number` - Item count.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -4124,13 +4911,7 @@ end
 
 ### LList:pop
 
-`LList:pop() -> string`
-
-Remove and return the last value. Returns nil if empty.
-
-**Returns**: `string` - The popped value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Remove and return the last value. Returns nil if empty.
@@ -4139,9 +4920,15 @@ Remove and return the last value. Returns nil if empty.
 function LList:pop() end
 ```
 
+#### Description
+
+Remove and return the last value. Returns nil if empty.
+
+Returns: `string` - The popped value.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -4155,15 +4942,7 @@ end
 
 ### LList:push
 
-`LList:push(value: any)`
-
-Append a value to the end of the list (alias for add).
-
-**Parameters**
-
-- `value` (`any`, required): The value to append.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Append a value to the end of the list (alias for add).
@@ -4171,9 +4950,17 @@ Append a value to the end of the list (alias for add).
 function LList:push(value) end
 ```
 
+#### Description
+
+Append a value to the end of the list (alias for add).
+
+Parameters:
+
+- `value` (`any`, required): The value to append.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -4187,17 +4974,7 @@ end
 
 ### LList:remove
 
-`LList:remove(index: integer) -> string`
-
-Remove and return the value at a 1-based index. Returns nil if out of range.
-
-**Parameters**
-
-- `index` (`integer`, required): 1-based position to remove.
-
-**Returns**: `string` - The removed value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Remove and return the value at a 1-based index. Returns nil if out of range.
@@ -4207,9 +4984,19 @@ Remove and return the value at a 1-based index. Returns nil if out of range.
 function LList:remove(index) end
 ```
 
+#### Description
+
+Remove and return the value at a 1-based index. Returns nil if out of range.
+
+Parameters:
+
+- `index` (`integer`, required): 1-based position to remove.
+
+Returns: `string` - The removed value.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -4223,20 +5010,20 @@ end
 
 ### LList:reverse
 
-`LList:reverse()`
-
-Reverse the order of all items in the list in-place.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Reverse the order of all items in the list in-place.
 function LList:reverse() end
 ```
 
+#### Description
+
+Reverse the order of all items in the list in-place.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -4250,16 +5037,7 @@ end
 
 ### LList:set
 
-`LList:set(index: integer, value: any)`
-
-Replace the value at a 1-based index. Errors if index is 0 or out of range.
-
-**Parameters**
-
-- `index` (`integer`, required): 1-based position.
-- `value` (`any`, required): The new value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Replace the value at a 1-based index. Errors if index is 0 or out of range.
@@ -4268,9 +5046,18 @@ Replace the value at a 1-based index. Errors if index is 0 or out of range.
 function LList:set(index, value) end
 ```
 
+#### Description
+
+Replace the value at a 1-based index. Errors if index is 0 or out of range.
+
+Parameters:
+
+- `index` (`integer`, required): 1-based position.
+- `value` (`any`, required): The new value.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -4284,13 +5071,7 @@ end
 
 ### LList:shift
 
-`LList:shift() -> string`
-
-Remove and return the first value. Returns nil if empty.
-
-**Returns**: `string` - The shifted value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Remove and return the first value. Returns nil if empty.
@@ -4299,9 +5080,15 @@ Remove and return the first value. Returns nil if empty.
 function LList:shift() end
 ```
 
+#### Description
+
+Remove and return the first value. Returns nil if empty.
+
+Returns: `string` - The shifted value.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -4315,13 +5102,7 @@ end
 
 ### LList:toArray
 
-`LList:toArray() -> number[]`
-
-Return all items as an array table. This method is available to Lua scripts.
-
-**Returns**: `number[]` - Array of all values.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return all items as an array table. This method is available to Lua scripts.
@@ -4329,9 +5110,15 @@ Return all items as an array table. This method is available to Lua scripts.
 function LList:toArray() end
 ```
 
+#### Description
+
+Return all items as an array table. This method is available to Lua scripts.
+
+Returns: `number[]` - Array of all values.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -4345,15 +5132,7 @@ end
 
 ### LList:unshift
 
-`LList:unshift(value: any)`
-
-Insert a value at the beginning of the list.
-
-**Parameters**
-
-- `value` (`any`, required): The value to prepend.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Insert a value at the beginning of the list.
@@ -4361,9 +5140,17 @@ Insert a value at the beginning of the list.
 function LList:unshift(value) end
 ```
 
+#### Description
+
+Insert a value at the beginning of the list.
+
+Parameters:
+
+- `value` (`any`, required): The value to prepend.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -4377,20 +5164,20 @@ end
 
 ### LMap:clear
 
-`LMap:clear()`
-
-Remove all entries from the map. This method is available to Lua scripts.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Remove all entries from the map. This method is available to Lua scripts.
 function LMap:clear() end
 ```
 
+#### Description
+
+Remove all entries from the map. This method is available to Lua scripts.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -4404,13 +5191,7 @@ end
 
 ### LMap:entries
 
-`LMap:entries() -> table`
-
-Return an array of {key, value} tables for all entries.
-
-**Returns**: `table` - Array of entry tables.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return an array of {key, value} tables for all entries.
@@ -4418,9 +5199,15 @@ Return an array of {key, value} tables for all entries.
 function LMap:entries() end
 ```
 
+#### Description
+
+Return an array of {key, value} tables for all entries.
+
+Returns: `table` - Array of entry tables.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -4434,17 +5221,7 @@ end
 
 ### LMap:get
 
-`LMap:get(key: string) -> string`
-
-Retrieve the value for a key. Returns nil if the key does not exist.
-
-**Parameters**
-
-- `key` (`string`, required): The key to look up.
-
-**Returns**: `string` - The value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Retrieve the value for a key. Returns nil if the key does not exist.
@@ -4454,9 +5231,19 @@ Retrieve the value for a key. Returns nil if the key does not exist.
 function LMap:get(key) end
 ```
 
+#### Description
+
+Retrieve the value for a key. Returns nil if the key does not exist.
+
+Parameters:
+
+- `key` (`string`, required): The key to look up.
+
+Returns: `string` - The value.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -4470,17 +5257,7 @@ end
 
 ### LMap:has
 
-`LMap:has(key: string) -> boolean`
-
-Check whether a key exists in the map.
-
-**Parameters**
-
-- `key` (`string`, required): The key to check.
-
-**Returns**: `boolean` - True if present.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Check whether a key exists in the map.
@@ -4489,9 +5266,19 @@ Check whether a key exists in the map.
 function LMap:has(key) end
 ```
 
+#### Description
+
+Check whether a key exists in the map.
+
+Parameters:
+
+- `key` (`string`, required): The key to check.
+
+Returns: `boolean` - True if present.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -4505,13 +5292,7 @@ end
 
 ### LMap:isEmpty
 
-`LMap:isEmpty() -> boolean`
-
-Check whether the map has no entries.
-
-**Returns**: `boolean` - True if empty.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Check whether the map has no entries.
@@ -4519,9 +5300,15 @@ Check whether the map has no entries.
 function LMap:isEmpty() end
 ```
 
+#### Description
+
+Check whether the map has no entries.
+
+Returns: `boolean` - True if empty.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -4535,13 +5322,7 @@ end
 
 ### LMap:keys
 
-`LMap:keys() -> string[]`
-
-Return an array of all keys in the map.
-
-**Returns**: `string[]` - Key strings.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return an array of all keys in the map.
@@ -4549,9 +5330,15 @@ Return an array of all keys in the map.
 function LMap:keys() end
 ```
 
+#### Description
+
+Return an array of all keys in the map.
+
+Returns: `string[]` - Key strings.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -4565,13 +5352,7 @@ end
 
 ### LMap:len
 
-`LMap:len() -> number`
-
-Return the number of key-value pairs.
-
-**Returns**: `number` - Entry count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return the number of key-value pairs.
@@ -4579,9 +5360,15 @@ Return the number of key-value pairs.
 function LMap:len() end
 ```
 
+#### Description
+
+Return the number of key-value pairs.
+
+Returns: `number` - Entry count.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -4595,15 +5382,7 @@ end
 
 ### LMap:merge
 
-`LMap:merge(other: LMap)`
-
-Copy all entries from another LMap into this map. Existing keys are overwritten.
-
-**Parameters**
-
-- `other` (`LMap`, required): The source map to merge from.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Copy all entries from another LMap into this map. Existing keys are overwritten.
@@ -4611,9 +5390,17 @@ Copy all entries from another LMap into this map. Existing keys are overwritten.
 function LMap:merge(other) end
 ```
 
+#### Description
+
+Copy all entries from another LMap into this map. Existing keys are overwritten.
+
+Parameters:
+
+- `other` (`LMap`, required): The source map to merge from.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -4627,17 +5414,7 @@ end
 
 ### LMap:remove
 
-`LMap:remove(key: string) -> boolean`
-
-Remove a key from the map. Returns true if it was present.
-
-**Parameters**
-
-- `key` (`string`, required): The key to remove.
-
-**Returns**: `boolean` - True if removed, false if not found.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Remove a key from the map. Returns true if it was present.
@@ -4646,9 +5423,19 @@ Remove a key from the map. Returns true if it was present.
 function LMap:remove(key) end
 ```
 
+#### Description
+
+Remove a key from the map. Returns true if it was present.
+
+Parameters:
+
+- `key` (`string`, required): The key to remove.
+
+Returns: `boolean` - True if removed, false if not found.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -4662,16 +5449,7 @@ end
 
 ### LMap:set
 
-`LMap:set(key: string, value: any)`
-
-Set a key-value pair in the map. Replaces any existing value for the same key.
-
-**Parameters**
-
-- `key` (`string`, required): The key.
-- `value` (`any`, required): The value to store.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Set a key-value pair in the map. Replaces any existing value for the same key.
@@ -4680,9 +5458,18 @@ Set a key-value pair in the map. Replaces any existing value for the same key.
 function LMap:set(key, value) end
 ```
 
+#### Description
+
+Set a key-value pair in the map. Replaces any existing value for the same key.
+
+Parameters:
+
+- `key` (`string`, required): The key.
+- `value` (`any`, required): The value to store.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -4731,13 +5518,7 @@ end
 
 ### LMap:values
 
-`LMap:values() -> number[]`
-
-Return an array of all values in the map.
-
-**Returns**: `number[]` - Array of values.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return an array of all values in the map.
@@ -4745,9 +5526,15 @@ Return an array of all values in the map.
 function LMap:values() end
 ```
 
+#### Description
+
+Return an array of all values in the map.
+
+Returns: `number[]` - Array of values.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -4761,15 +5548,7 @@ end
 
 ### LMediator:broadcast
 
-`LMediator:broadcast(...: any)`
-
-Send a message to all handlers on all channels. Every registered handler receives the payload.
-
-**Parameters**
-
-- `...` (`any`, required): Arguments passed to every handler.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Send a message to all handlers on all channels. Every registered handler receives the payload.
@@ -4777,9 +5556,17 @@ Send a message to all handlers on all channels. Every registered handler receive
 function LMediator:broadcast(...) end
 ```
 
+#### Description
+
+Send a message to all handlers on all channels. Every registered handler receives the payload.
+
+Parameters:
+
+- `...` (`any`, required): Arguments passed to every handler.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -4793,13 +5580,7 @@ end
 
 ### LMediator:channels
 
-`LMediator:channels() -> string[]`
-
-Return an array of all channel names that have at least one handler.
-
-**Returns**: `string[]` - Channel name strings.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return an array of all channel names that have at least one handler.
@@ -4807,9 +5588,15 @@ Return an array of all channel names that have at least one handler.
 function LMediator:channels() end
 ```
 
+#### Description
+
+Return an array of all channel names that have at least one handler.
+
+Returns: `string[]` - Channel name strings.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -4823,20 +5610,20 @@ end
 
 ### LMediator:clear
 
-`LMediator:clear()`
-
-Remove all channels and handlers, resetting the mediator.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Remove all channels and handlers, resetting the mediator.
 function LMediator:clear() end
 ```
 
+#### Description
+
+Remove all channels and handlers, resetting the mediator.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -4850,17 +5637,7 @@ end
 
 ### LMediator:handlerCount
 
-`LMediator:handlerCount(channel: string) -> number`
-
-Return the number of handlers registered on a specific channel.
-
-**Parameters**
-
-- `channel` (`string`, required): The channel name.
-
-**Returns**: `number` - Handler count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return the number of handlers registered on a specific channel.
@@ -4869,9 +5646,19 @@ Return the number of handlers registered on a specific channel.
 function LMediator:handlerCount(channel) end
 ```
 
+#### Description
+
+Return the number of handlers registered on a specific channel.
+
+Parameters:
+
+- `channel` (`string`, required): The channel name.
+
+Returns: `number` - Handler count.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -4885,16 +5672,7 @@ end
 
 ### LMediator:off
 
-`LMediator:off(channel: string, id: integer)`
-
-Unregister a handler from a channel by its ID.
-
-**Parameters**
-
-- `channel` (`string`, required): The channel name.
-- `id` (`integer`, required): The handler ID to remove.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Unregister a handler from a channel by its ID.
@@ -4903,9 +5681,18 @@ Unregister a handler from a channel by its ID.
 function LMediator:off(channel, id) end
 ```
 
+#### Description
+
+Unregister a handler from a channel by its ID.
+
+Parameters:
+
+- `channel` (`string`, required): The channel name.
+- `id` (`integer`, required): The handler ID to remove.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -4926,18 +5713,7 @@ end
 
 ### LMediator:on
 
-`LMediator:on(channel: string, callback: function) -> number`
-
-Register a handler callback on a named channel. Returns an ID for unregistration.
-
-**Parameters**
-
-- `channel` (`string`, required): The message channel name.
-- `callback` (`function`, required): The handler to invoke when a message is sent to this channel.
-
-**Returns**: `number` - Handler ID for later removal.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Register a handler callback on a named channel. Returns an ID for unregistration.
@@ -4947,9 +5723,20 @@ Register a handler callback on a named channel. Returns an ID for unregistration
 function LMediator:on(channel, callback) end
 ```
 
+#### Description
+
+Register a handler callback on a named channel. Returns an ID for unregistration.
+
+Parameters:
+
+- `channel` (`string`, required): The message channel name.
+- `callback` (`function`, required): The handler to invoke when a message is sent to this channel.
+
+Returns: `number` - Handler ID for later removal.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -4970,15 +5757,7 @@ end
 
 ### LMediator:removeChannel
 
-`LMediator:removeChannel(channel: string)`
-
-Remove an entire channel and all its handlers.
-
-**Parameters**
-
-- `channel` (`string`, required): The channel to remove.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Remove an entire channel and all its handlers.
@@ -4986,9 +5765,17 @@ Remove an entire channel and all its handlers.
 function LMediator:removeChannel(channel) end
 ```
 
+#### Description
+
+Remove an entire channel and all its handlers.
+
+Parameters:
+
+- `channel` (`string`, required): The channel to remove.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -5002,16 +5789,7 @@ end
 
 ### LMediator:send
 
-`LMediator:send(channel: string, ...: any)`
-
-Send a message to all handlers on a specific channel with optional payload arguments.
-
-**Parameters**
-
-- `channel` (`string`, required): The target channel name.
-- `...` (`any`, required): Additional arguments passed to each handler.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Send a message to all handlers on a specific channel with optional payload arguments.
@@ -5020,9 +5798,18 @@ Send a message to all handlers on a specific channel with optional payload argum
 function LMediator:send(channel, ...) end
 ```
 
+#### Description
+
+Send a message to all handlers on a specific channel with optional payload arguments.
+
+Parameters:
+
+- `channel` (`string`, required): The target channel name.
+- `...` (`any`, required): Additional arguments passed to each handler.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -5043,13 +5830,7 @@ end
 
 ### LObjectPool:acquire
 
-`LObjectPool:acquire() -> table`
-
-Take an idle object from the pool and mark it active. Returns nil if the pool is empty.
-
-**Returns**: `table` - The acquired object table.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Take an idle object from the pool and mark it active. Returns nil if the pool is empty.
@@ -5058,9 +5839,15 @@ Take an idle object from the pool and mark it active. Returns nil if the pool is
 function LObjectPool:acquire() end
 ```
 
+#### Description
+
+Take an idle object from the pool and mark it active. Returns nil if the pool is empty.
+
+Returns: `table` - The acquired object table.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -5074,15 +5861,7 @@ end
 
 ### LObjectPool:add
 
-`LObjectPool:add(value: any)`
-
-Add an object to the pool's idle set, making it available for future acquisition.
-
-**Parameters**
-
-- `value` (`any`, required): The object value to store in the pool.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Add an object to the pool's idle set, making it available for future acquisition.
@@ -5090,9 +5869,17 @@ Add an object to the pool's idle set, making it available for future acquisition
 function LObjectPool:add(value) end
 ```
 
+#### Description
+
+Add an object to the pool's idle set, making it available for future acquisition.
+
+Parameters:
+
+- `value` (`any`, required): The object value to store in the pool.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -5106,20 +5893,20 @@ end
 
 ### LObjectPool:clearAll
 
-`LObjectPool:clearAll()`
-
-Destroy all objects (active and idle) and reset the pool to empty.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Destroy all objects (active and idle) and reset the pool to empty.
 function LObjectPool:clearAll() end
 ```
 
+#### Description
+
+Destroy all objects (active and idle) and reset the pool to empty.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -5133,13 +5920,7 @@ end
 
 ### LObjectPool:getActiveCount
 
-`LObjectPool:getActiveCount() -> number`
-
-Return the number of objects currently checked out from the pool.
-
-**Returns**: `number` - Count of active (in-use) objects.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return the number of objects currently checked out from the pool.
@@ -5147,9 +5928,15 @@ Return the number of objects currently checked out from the pool.
 function LObjectPool:getActiveCount() end
 ```
 
+#### Description
+
+Return the number of objects currently checked out from the pool.
+
+Returns: `number` - Count of active (in-use) objects.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -5163,13 +5950,7 @@ end
 
 ### LObjectPool:getAvailableCount
 
-`LObjectPool:getAvailableCount() -> number`
-
-Return the number of idle objects ready for acquisition.
-
-**Returns**: `number` - Count of available (idle) objects.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return the number of idle objects ready for acquisition.
@@ -5177,9 +5958,15 @@ Return the number of idle objects ready for acquisition.
 function LObjectPool:getAvailableCount() end
 ```
 
+#### Description
+
+Return the number of idle objects ready for acquisition.
+
+Returns: `number` - Count of available (idle) objects.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -5193,13 +5980,7 @@ end
 
 ### LObjectPool:getTotalCount
 
-`LObjectPool:getTotalCount() -> number`
-
-Return the total number of objects managed by this pool (active + idle).
-
-**Returns**: `number` - Total object count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return the total number of objects managed by this pool (active + idle).
@@ -5207,9 +5988,15 @@ Return the total number of objects managed by this pool (active + idle).
 function LObjectPool:getTotalCount() end
 ```
 
+#### Description
+
+Return the total number of objects managed by this pool (active + idle).
+
+Returns: `number` - Total object count.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -5223,15 +6010,7 @@ end
 
 ### LObjectPool:release
 
-`LObjectPool:release(value: any)`
-
-Return an active object back to the pool's idle set so it can be reused.
-
-**Parameters**
-
-- `value` (`any`, required): The object value to release back into the pool.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return an active object back to the pool's idle set so it can be reused.
@@ -5239,9 +6018,17 @@ Return an active object back to the pool's idle set so it can be reused.
 function LObjectPool:release(value) end
 ```
 
+#### Description
+
+Return an active object back to the pool's idle set so it can be reused.
+
+Parameters:
+
+- `value` (`any`, required): The object value to release back into the pool.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -5255,17 +6042,7 @@ end
 
 ### LObserver:get
 
-`LObserver:get(key: string) -> number`
-
-Retrieve the current value for a key. Returns nil if not set.
-
-**Parameters**
-
-- `key` (`string`, required): The property name to look up.
-
-**Returns**: `number` - The stored value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Retrieve the current value for a key. Returns nil if not set.
@@ -5275,9 +6052,19 @@ Retrieve the current value for a key. Returns nil if not set.
 function LObserver:get(key) end
 ```
 
+#### Description
+
+Retrieve the current value for a key. Returns nil if not set.
+
+Parameters:
+
+- `key` (`string`, required): The property name to look up.
+
+Returns: `number` - The stored value.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -5297,13 +6084,7 @@ end
 
 ### LObserver:getCount
 
-`LObserver:getCount() -> number`
-
-Return the total number of active subscriptions across all keys.
-
-**Returns**: `number` - Total subscription count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return the total number of active subscriptions across all keys.
@@ -5311,9 +6092,15 @@ Return the total number of active subscriptions across all keys.
 function LObserver:getCount() end
 ```
 
+#### Description
+
+Return the total number of active subscriptions across all keys.
+
+Returns: `number` - Total subscription count.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -5330,16 +6117,7 @@ end
 
 ### LObserver:set
 
-`LObserver:set(key: string, value: number)`
-
-Set a value by key and notify all subscribers watching that key.
-
-**Parameters**
-
-- `key` (`string`, required): The property name.
-- `value` (`number`, required): The new value to store.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Set a value by key and notify all subscribers watching that key.
@@ -5348,9 +6126,18 @@ Set a value by key and notify all subscribers watching that key.
 function LObserver:set(key, value) end
 ```
 
+#### Description
+
+Set a value by key and notify all subscribers watching that key.
+
+Parameters:
+
+- `key` (`string`, required): The property name.
+- `value` (`number`, required): The new value to store.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -5370,19 +6157,7 @@ end
 
 ### LObserver:subscribe
 
-`LObserver:subscribe(key: string, callback: function, [once]: boolean) -> number`
-
-Subscribe to changes on a specific key. The callback receives (key, newValue) on each change.
-
-**Parameters**
-
-- `key` (`string`, required): The property name to watch.
-- `callback` (`function`, required): Called with (key, newValue) when the property changes.
-- `once` (`boolean`, optional): If true, automatically unsubscribe after the first notification.
-
-**Returns**: `number` - A subscription ID for later removal with `unsubscribe()`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Subscribe to changes on a specific key. The callback receives (key, newValue) on each change.
@@ -5393,9 +6168,21 @@ Subscribe to changes on a specific key. The callback receives (key, newValue) on
 function LObserver:subscribe(key, callback, once) end
 ```
 
+#### Description
+
+Subscribe to changes on a specific key. The callback receives (key, newValue) on each change.
+
+Parameters:
+
+- `key` (`string`, required): The property name to watch.
+- `callback` (`function`, required): Called with (key, newValue) when the property changes.
+- `once` (`boolean`, optional): If true, automatically unsubscribe after the first notification.
+
+Returns: `number` - A subscription ID for later removal with `unsubscribe()`.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -5415,15 +6202,7 @@ end
 
 ### LObserver:unsubscribe
 
-`LObserver:unsubscribe(id: integer)`
-
-Remove a subscription by its ID. The callback will no longer fire.
-
-**Parameters**
-
-- `id` (`integer`, required): The subscription ID returned by `subscribe()`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Remove a subscription by its ID. The callback will no longer fire.
@@ -5431,9 +6210,17 @@ Remove a subscription by its ID. The callback will no longer fire.
 function LObserver:unsubscribe(id) end
 ```
 
+#### Description
+
+Remove a subscription by its ID. The callback will no longer fire.
+
+Parameters:
+
+- `id` (`integer`, required): The subscription ID returned by `subscribe()`.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -5453,20 +6240,7 @@ end
 
 ### LPatternGraph:addEdge
 
-`LPatternGraph:addEdge(from: integer, to: integer, [weight]: number, [label]: string) -> number`
-
-Add a directed (or undirected) edge between two nodes with optional weight and label.
-
-**Parameters**
-
-- `from` (`integer`, required): Source node ID.
-- `to` (`integer`, required): Target node ID.
-- `weight` (`number`, optional): Edge weight (default 1.0).
-- `label` (`string`, optional): Optional edge label.
-
-**Returns**: `number` - The new edge's ID.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Add a directed (or undirected) edge between two nodes with optional weight and label.
@@ -5478,9 +6252,22 @@ Add a directed (or undirected) edge between two nodes with optional weight and l
 function LPatternGraph:addEdge(from, to, weight, label) end
 ```
 
+#### Description
+
+Add a directed (or undirected) edge between two nodes with optional weight and label.
+
+Parameters:
+
+- `from` (`integer`, required): Source node ID.
+- `to` (`integer`, required): Target node ID.
+- `weight` (`number`, optional): Edge weight (default 1.0).
+- `label` (`string`, optional): Optional edge label.
+
+Returns: `number` - The new edge's ID.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -5494,18 +6281,7 @@ end
 
 ### LPatternGraph:addNode
 
-`LPatternGraph:addNode([label]: string, [value]: table) -> number`
-
-Add a node to the graph with an optional label and payload value.
-
-**Parameters**
-
-- `label` (`string`, optional): Optional node label.
-- `value` (`table`, optional): Optional payload stored with the node.
-
-**Returns**: `number` - The new node's ID.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Add a node to the graph with an optional label and payload value.
@@ -5515,9 +6291,20 @@ Add a node to the graph with an optional label and payload value.
 function LPatternGraph:addNode(label, value) end
 ```
 
+#### Description
+
+Add a node to the graph with an optional label and payload value.
+
+Parameters:
+
+- `label` (`string`, optional): Optional node label.
+- `value` (`table`, optional): Optional payload stored with the node.
+
+Returns: `number` - The new node's ID.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -5531,17 +6318,7 @@ end
 
 ### LPatternGraph:bfs
 
-`LPatternGraph:bfs(start: integer) -> integer[]`
-
-Perform a breadth-first search from a node. Returns visited node IDs in BFS order.
-
-**Parameters**
-
-- `start` (`integer`, required): The starting node ID.
-
-**Returns**: `integer[]` - Array of visited node IDs.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Perform a breadth-first search from a node. Returns visited node IDs in BFS order.
@@ -5550,9 +6327,19 @@ Perform a breadth-first search from a node. Returns visited node IDs in BFS orde
 function LPatternGraph:bfs(start) end
 ```
 
+#### Description
+
+Perform a breadth-first search from a node. Returns visited node IDs in BFS order.
+
+Parameters:
+
+- `start` (`integer`, required): The starting node ID.
+
+Returns: `integer[]` - Array of visited node IDs.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -5561,20 +6348,20 @@ do
 
 ### LPatternGraph:clearAll
 
-`LPatternGraph:clearAll()`
-
-Remove all nodes, edges, and payloads from the graph.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Remove all nodes, edges, and payloads from the graph.
 function LPatternGraph:clearAll() end
 ```
 
+#### Description
+
+Remove all nodes, edges, and payloads from the graph.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -5588,17 +6375,7 @@ end
 
 ### LPatternGraph:dfs
 
-`LPatternGraph:dfs(start: integer) -> integer[]`
-
-Perform a depth-first search from a node. Returns visited node IDs in DFS order.
-
-**Parameters**
-
-- `start` (`integer`, required): The starting node ID.
-
-**Returns**: `integer[]` - Array of visited node IDs.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Perform a depth-first search from a node. Returns visited node IDs in DFS order.
@@ -5607,9 +6384,19 @@ Perform a depth-first search from a node. Returns visited node IDs in DFS order.
 function LPatternGraph:dfs(start) end
 ```
 
+#### Description
+
+Perform a depth-first search from a node. Returns visited node IDs in DFS order.
+
+Parameters:
+
+- `start` (`integer`, required): The starting node ID.
+
+Returns: `integer[]` - Array of visited node IDs.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -5618,13 +6405,7 @@ do
 
 ### LPatternGraph:edgeCount
 
-`LPatternGraph:edgeCount() -> number`
-
-Return the total number of edges in the graph.
-
-**Returns**: `number` - Edge count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return the total number of edges in the graph.
@@ -5632,9 +6413,15 @@ Return the total number of edges in the graph.
 function LPatternGraph:edgeCount() end
 ```
 
+#### Description
+
+Return the total number of edges in the graph.
+
+Returns: `number` - Edge count.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -5648,17 +6435,7 @@ end
 
 ### LPatternGraph:getNodeValue
 
-`LPatternGraph:getNodeValue(id: integer) -> table`
-
-Retrieve the payload value stored on a node. Returns nil if no payload.
-
-**Parameters**
-
-- `id` (`integer`, required): The node ID.
-
-**Returns**: `table` - The payload.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Retrieve the payload value stored on a node. Returns nil if no payload.
@@ -5668,9 +6445,19 @@ Retrieve the payload value stored on a node. Returns nil if no payload.
 function LPatternGraph:getNodeValue(id) end
 ```
 
+#### Description
+
+Retrieve the payload value stored on a node. Returns nil if no payload.
+
+Parameters:
+
+- `id` (`integer`, required): The node ID.
+
+Returns: `table` - The payload.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -5684,17 +6471,7 @@ end
 
 ### LPatternGraph:hasNode
 
-`LPatternGraph:hasNode(id: integer) -> boolean`
-
-Check whether a node with the given ID exists in the graph.
-
-**Parameters**
-
-- `id` (`integer`, required): Node ID to check.
-
-**Returns**: `boolean` - True if the node exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Check whether a node with the given ID exists in the graph.
@@ -5703,9 +6480,19 @@ Check whether a node with the given ID exists in the graph.
 function LPatternGraph:hasNode(id) end
 ```
 
+#### Description
+
+Check whether a node with the given ID exists in the graph.
+
+Parameters:
+
+- `id` (`integer`, required): Node ID to check.
+
+Returns: `boolean` - True if the node exists.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -5714,18 +6501,7 @@ do
 
 ### LPatternGraph:isConnected
 
-`LPatternGraph:isConnected(from: integer, to: integer) -> boolean`
-
-Check whether there is any path from one node to another.
-
-**Parameters**
-
-- `from` (`integer`, required): Source node ID.
-- `to` (`integer`, required): Target node ID.
-
-**Returns**: `boolean` - True if a path exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Check whether there is any path from one node to another.
@@ -5735,9 +6511,20 @@ Check whether there is any path from one node to another.
 function LPatternGraph:isConnected(from, to) end
 ```
 
+#### Description
+
+Check whether there is any path from one node to another.
+
+Parameters:
+
+- `from` (`integer`, required): Source node ID.
+- `to` (`integer`, required): Target node ID.
+
+Returns: `boolean` - True if a path exists.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -5746,17 +6533,7 @@ do
 
 ### LPatternGraph:neighbors
 
-`LPatternGraph:neighbors(id: integer) -> integer[]`
-
-Return an array of node IDs directly connected to the given node.
-
-**Parameters**
-
-- `id` (`integer`, required): The node ID to query.
-
-**Returns**: `integer[]` - Array of neighbor node IDs.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return an array of node IDs directly connected to the given node.
@@ -5765,9 +6542,19 @@ Return an array of node IDs directly connected to the given node.
 function LPatternGraph:neighbors(id) end
 ```
 
+#### Description
+
+Return an array of node IDs directly connected to the given node.
+
+Parameters:
+
+- `id` (`integer`, required): The node ID to query.
+
+Returns: `integer[]` - Array of neighbor node IDs.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -5776,13 +6563,7 @@ do
 
 ### LPatternGraph:nodeCount
 
-`LPatternGraph:nodeCount() -> number`
-
-Return the total number of nodes in the graph.
-
-**Returns**: `number` - Node count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return the total number of nodes in the graph.
@@ -5790,9 +6571,15 @@ Return the total number of nodes in the graph.
 function LPatternGraph:nodeCount() end
 ```
 
+#### Description
+
+Return the total number of nodes in the graph.
+
+Returns: `number` - Node count.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -5806,17 +6593,7 @@ end
 
 ### LPatternGraph:removeEdge
 
-`LPatternGraph:removeEdge(id: integer) -> boolean`
-
-Remove an edge by its ID. Returns true if it existed.
-
-**Parameters**
-
-- `id` (`integer`, required): The edge ID to remove.
-
-**Returns**: `boolean` - True if removed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Remove an edge by its ID. Returns true if it existed.
@@ -5825,9 +6602,19 @@ Remove an edge by its ID. Returns true if it existed.
 function LPatternGraph:removeEdge(id) end
 ```
 
+#### Description
+
+Remove an edge by its ID. Returns true if it existed.
+
+Parameters:
+
+- `id` (`integer`, required): The edge ID to remove.
+
+Returns: `boolean` - True if removed.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -5841,17 +6628,7 @@ end
 
 ### LPatternGraph:removeNode
 
-`LPatternGraph:removeNode(id: integer) -> boolean`
-
-Remove a node and all its connected edges. Returns true if the node existed.
-
-**Parameters**
-
-- `id` (`integer`, required): The node ID to remove.
-
-**Returns**: `boolean` - True if removed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Remove a node and all its connected edges. Returns true if the node existed.
@@ -5860,9 +6637,19 @@ Remove a node and all its connected edges. Returns true if the node existed.
 function LPatternGraph:removeNode(id) end
 ```
 
+#### Description
+
+Remove a node and all its connected edges. Returns true if the node existed.
+
+Parameters:
+
+- `id` (`integer`, required): The node ID to remove.
+
+Returns: `boolean` - True if removed.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -5876,20 +6663,20 @@ end
 
 ### LPriorityQueue:clearAll
 
-`LPriorityQueue:clearAll()`
-
-Remove all items from the queue. This method is available to Lua scripts.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Remove all items from the queue. This method is available to Lua scripts.
 function LPriorityQueue:clearAll() end
 ```
 
+#### Description
+
+Remove all items from the queue. This method is available to Lua scripts.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -5903,13 +6690,7 @@ end
 
 ### LPriorityQueue:isEmpty
 
-`LPriorityQueue:isEmpty() -> boolean`
-
-Check whether the queue contains no items.
-
-**Returns**: `boolean` - True if the queue is empty.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Check whether the queue contains no items.
@@ -5917,9 +6698,15 @@ Check whether the queue contains no items.
 function LPriorityQueue:isEmpty() end
 ```
 
+#### Description
+
+Check whether the queue contains no items.
+
+Returns: `boolean` - True if the queue is empty.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -5933,13 +6720,7 @@ end
 
 ### LPriorityQueue:len
 
-`LPriorityQueue:len() -> number`
-
-Return the number of items currently in the queue.
-
-**Returns**: `number` - Item count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return the number of items currently in the queue.
@@ -5947,9 +6728,15 @@ Return the number of items currently in the queue.
 function LPriorityQueue:len() end
 ```
 
+#### Description
+
+Return the number of items currently in the queue.
+
+Returns: `number` - Item count.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -5963,13 +6750,7 @@ end
 
 ### LPriorityQueue:peek
 
-`LPriorityQueue:peek() -> table`
-
-Return the highest-priority item without removing it. Returns nil if empty.
-
-**Returns**: `table` - The item table.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return the highest-priority item without removing it. Returns nil if empty.
@@ -5978,9 +6759,15 @@ Return the highest-priority item without removing it. Returns nil if empty.
 function LPriorityQueue:peek() end
 ```
 
+#### Description
+
+Return the highest-priority item without removing it. Returns nil if empty.
+
+Returns: `table` - The item table.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -5994,13 +6781,7 @@ end
 
 ### LPriorityQueue:pop
 
-`LPriorityQueue:pop() -> table`
-
-Remove and return the highest-priority item. Returns nil if the queue is empty.
-
-**Returns**: `table` - The item table.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Remove and return the highest-priority item. Returns nil if the queue is empty.
@@ -6009,9 +6790,15 @@ Remove and return the highest-priority item. Returns nil if the queue is empty.
 function LPriorityQueue:pop() end
 ```
 
+#### Description
+
+Remove and return the highest-priority item. Returns nil if the queue is empty.
+
+Returns: `table` - The item table.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -6025,19 +6812,7 @@ end
 
 ### LPriorityQueue:push
 
-`LPriorityQueue:push(priority: integer, value: any, [label]: string) -> number`
-
-Add an item with a numeric priority. Higher priority items are dequeued first.
-
-**Parameters**
-
-- `priority` (`integer`, required): The priority value (higher = dequeued sooner).
-- `value` (`any`, required): The payload value to store.
-- `label` (`string`, optional): Optional human-readable label for debugging.
-
-**Returns**: `number` - The internal ID of the enqueued item.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Add an item with a numeric priority. Higher priority items are dequeued first.
@@ -6048,9 +6823,21 @@ Add an item with a numeric priority. Higher priority items are dequeued first.
 function LPriorityQueue:push(priority, value, label) end
 ```
 
+#### Description
+
+Add an item with a numeric priority. Higher priority items are dequeued first.
+
+Parameters:
+
+- `priority` (`integer`, required): The priority value (higher = dequeued sooner).
+- `value` (`any`, required): The payload value to store.
+- `label` (`string`, optional): Optional human-readable label for debugging.
+
+Returns: `number` - The internal ID of the enqueued item.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -6064,13 +6851,7 @@ end
 
 ### LQueue:back
 
-`LQueue:back() -> string`
-
-Return the back value without removing it. Returns nil if empty.
-
-**Returns**: `string` - The back value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return the back value without removing it. Returns nil if empty.
@@ -6079,9 +6860,15 @@ Return the back value without removing it. Returns nil if empty.
 function LQueue:back() end
 ```
 
+#### Description
+
+Return the back value without removing it. Returns nil if empty.
+
+Returns: `string` - The back value.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -6095,20 +6882,20 @@ end
 
 ### LQueue:clear
 
-`LQueue:clear()`
-
-Remove all items from the queue. This method is available to Lua scripts.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Remove all items from the queue. This method is available to Lua scripts.
 function LQueue:clear() end
 ```
 
+#### Description
+
+Remove all items from the queue. This method is available to Lua scripts.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -6122,13 +6909,7 @@ end
 
 ### LQueue:dequeue
 
-`LQueue:dequeue() -> string`
-
-Remove and return the front value. Returns nil if empty.
-
-**Returns**: `string` - The dequeued value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Remove and return the front value. Returns nil if empty.
@@ -6137,9 +6918,15 @@ Remove and return the front value. Returns nil if empty.
 function LQueue:dequeue() end
 ```
 
+#### Description
+
+Remove and return the front value. Returns nil if empty.
+
+Returns: `string` - The dequeued value.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -6153,13 +6940,7 @@ end
 
 ### LQueue:dequeueBack
 
-`LQueue:dequeueBack() -> string`
-
-Remove and return the back value. Returns nil if empty.
-
-**Returns**: `string` - The dequeued value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Remove and return the back value. Returns nil if empty.
@@ -6168,9 +6949,15 @@ Remove and return the back value. Returns nil if empty.
 function LQueue:dequeueBack() end
 ```
 
+#### Description
+
+Remove and return the back value. Returns nil if empty.
+
+Returns: `string` - The dequeued value.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -6184,17 +6971,7 @@ end
 
 ### LQueue:enqueue
 
-`LQueue:enqueue(value: any) -> boolean`
-
-Add a value to the back of the queue. Returns false if at capacity.
-
-**Parameters**
-
-- `value` (`any`, required): The value to enqueue.
-
-**Returns**: `boolean` - True if enqueued, false if full.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Add a value to the back of the queue. Returns false if at capacity.
@@ -6203,9 +6980,19 @@ Add a value to the back of the queue. Returns false if at capacity.
 function LQueue:enqueue(value) end
 ```
 
+#### Description
+
+Add a value to the back of the queue. Returns false if at capacity.
+
+Parameters:
+
+- `value` (`any`, required): The value to enqueue.
+
+Returns: `boolean` - True if enqueued, false if full.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -6219,17 +7006,7 @@ end
 
 ### LQueue:enqueueFront
 
-`LQueue:enqueueFront(value: any) -> boolean`
-
-Add a value to the front of the queue (priority insertion). Returns false if at capacity.
-
-**Parameters**
-
-- `value` (`any`, required): The value to insert at the front.
-
-**Returns**: `boolean` - True if enqueued, false if full.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Add a value to the front of the queue (priority insertion). Returns false if at capacity.
@@ -6238,9 +7015,19 @@ Add a value to the front of the queue (priority insertion). Returns false if at 
 function LQueue:enqueueFront(value) end
 ```
 
+#### Description
+
+Add a value to the front of the queue (priority insertion). Returns false if at capacity.
+
+Parameters:
+
+- `value` (`any`, required): The value to insert at the front.
+
+Returns: `boolean` - True if enqueued, false if full.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -6254,13 +7041,7 @@ end
 
 ### LQueue:front
 
-`LQueue:front() -> string`
-
-Return the front value without removing it. Returns nil if empty.
-
-**Returns**: `string` - The front value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return the front value without removing it. Returns nil if empty.
@@ -6269,9 +7050,15 @@ Return the front value without removing it. Returns nil if empty.
 function LQueue:front() end
 ```
 
+#### Description
+
+Return the front value without removing it. Returns nil if empty.
+
+Returns: `string` - The front value.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -6285,18 +7072,7 @@ end
 
 ### LQueue:insertAt
 
-`LQueue:insertAt(index: integer, value: any) -> boolean`
-
-Insert a value at a 1-based index in the queue. Returns false if at capacity.
-
-**Parameters**
-
-- `index` (`integer`, required): 1-based insertion position.
-- `value` (`any`, required): The value to insert.
-
-**Returns**: `boolean` - True if inserted, false if full.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Insert a value at a 1-based index in the queue. Returns false if at capacity.
@@ -6306,9 +7082,20 @@ Insert a value at a 1-based index in the queue. Returns false if at capacity.
 function LQueue:insertAt(index, value) end
 ```
 
+#### Description
+
+Insert a value at a 1-based index in the queue. Returns false if at capacity.
+
+Parameters:
+
+- `index` (`integer`, required): 1-based insertion position.
+- `value` (`any`, required): The value to insert.
+
+Returns: `boolean` - True if inserted, false if full.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -6322,13 +7109,7 @@ end
 
 ### LQueue:isEmpty
 
-`LQueue:isEmpty() -> boolean`
-
-Check whether the queue is empty. This method is available to Lua scripts.
-
-**Returns**: `boolean` - True if empty.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Check whether the queue is empty. This method is available to Lua scripts.
@@ -6336,9 +7117,15 @@ Check whether the queue is empty. This method is available to Lua scripts.
 function LQueue:isEmpty() end
 ```
 
+#### Description
+
+Check whether the queue is empty. This method is available to Lua scripts.
+
+Returns: `boolean` - True if empty.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -6352,13 +7139,7 @@ end
 
 ### LQueue:isFull
 
-`LQueue:isFull() -> boolean`
-
-Check whether the queue has reached its capacity limit.
-
-**Returns**: `boolean` - True if full.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Check whether the queue has reached its capacity limit.
@@ -6366,9 +7147,15 @@ Check whether the queue has reached its capacity limit.
 function LQueue:isFull() end
 ```
 
+#### Description
+
+Check whether the queue has reached its capacity limit.
+
+Returns: `boolean` - True if full.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -6382,13 +7169,7 @@ end
 
 ### LQueue:len
 
-`LQueue:len() -> number`
-
-Return the current number of items in the queue.
-
-**Returns**: `number` - Item count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return the current number of items in the queue.
@@ -6396,9 +7177,15 @@ Return the current number of items in the queue.
 function LQueue:len() end
 ```
 
+#### Description
+
+Return the current number of items in the queue.
+
+Returns: `number` - Item count.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -6412,17 +7199,7 @@ end
 
 ### LQueue:peekAt
 
-`LQueue:peekAt(index: integer) -> string`
-
-Return the value at a 1-based index without removing it. Returns nil if out of range.
-
-**Parameters**
-
-- `index` (`integer`, required): 1-based position.
-
-**Returns**: `string` - The value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return the value at a 1-based index without removing it. Returns nil if out of range.
@@ -6432,9 +7209,19 @@ Return the value at a 1-based index without removing it. Returns nil if out of r
 function LQueue:peekAt(index) end
 ```
 
+#### Description
+
+Return the value at a 1-based index without removing it. Returns nil if out of range.
+
+Parameters:
+
+- `index` (`integer`, required): 1-based position.
+
+Returns: `string` - The value.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -6448,17 +7235,7 @@ end
 
 ### LQueue:removeAt
 
-`LQueue:removeAt(index: integer) -> string`
-
-Remove and return the value at a 1-based index. Returns nil if out of range.
-
-**Parameters**
-
-- `index` (`integer`, required): 1-based position to remove.
-
-**Returns**: `string` - The removed value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Remove and return the value at a 1-based index. Returns nil if out of range.
@@ -6468,9 +7245,19 @@ Remove and return the value at a 1-based index. Returns nil if out of range.
 function LQueue:removeAt(index) end
 ```
 
+#### Description
+
+Remove and return the value at a 1-based index. Returns nil if out of range.
+
+Parameters:
+
+- `index` (`integer`, required): 1-based position to remove.
+
+Returns: `string` - The removed value.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -6484,13 +7271,7 @@ end
 
 ### LQueue:toArray
 
-`LQueue:toArray() -> number[]`
-
-Return all queue items as an array table (front to back).
-
-**Returns**: `number[]` - Array of all values.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return all queue items as an array table (front to back).
@@ -6498,9 +7279,15 @@ Return all queue items as an array table (front to back).
 function LQueue:toArray() end
 ```
 
+#### Description
+
+Return all queue items as an array table (front to back).
+
+Returns: `number[]` - Array of all values.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -6514,17 +7301,7 @@ end
 
 ### LRelationshipManager:adjustValue
 
-`LRelationshipManager:adjustValue(a: integer, b: integer, delta: number)`
-
-Add a delta to the relationship value between two entities.
-
-**Parameters**
-
-- `a` (`integer`, required): First entity ID.
-- `b` (`integer`, required): Second entity ID.
-- `delta` (`number`, required): Amount to add (can be negative).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Add a delta to the relationship value between two entities.
@@ -6534,9 +7311,19 @@ Add a delta to the relationship value between two entities.
 function LRelationshipManager:adjustValue(a, b, delta) end
 ```
 
+#### Description
+
+Add a delta to the relationship value between two entities.
+
+Parameters:
+
+- `a` (`integer`, required): First entity ID.
+- `b` (`integer`, required): Second entity ID.
+- `delta` (`number`, required): Amount to add (can be negative).
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -6550,17 +7337,7 @@ end
 
 ### LRelationshipManager:defineType
 
-`LRelationshipManager:defineType(name: string, levels: table, [defaultLevel]: string)`
-
-Define a relationship type with named levels (e.g. "friendship" with levels ["hostile", "neutral", "friendly"]).
-
-**Parameters**
-
-- `name` (`string`, required): The relationship type name.
-- `levels` (`table`, required): Array of level name strings in order.
-- `defaultLevel` (`string`, optional): The default level for new pairs.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Define a relationship type with named levels (e.g. "friendship" with levels ["hostile", "neutral", "friendly"]).
@@ -6570,9 +7347,19 @@ Define a relationship type with named levels (e.g. "friendship" with levels ["ho
 function LRelationshipManager:defineType(name, levels, defaultLevel) end
 ```
 
+#### Description
+
+Define a relationship type with named levels (e.g. "friendship" with levels ["hostile", "neutral", "friendly"]).
+
+Parameters:
+
+- `name` (`string`, required): The relationship type name.
+- `levels` (`table`, required): Array of level name strings in order.
+- `defaultLevel` (`string`, optional): The default level for new pairs.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -6586,19 +7373,7 @@ end
 
 ### LRelationshipManager:getLevel
 
-`LRelationshipManager:getLevel(a: integer, b: integer, typeName: string) -> string`
-
-Get the named level for a relationship type between two entities.
-
-**Parameters**
-
-- `a` (`integer`, required): First entity ID.
-- `b` (`integer`, required): Second entity ID.
-- `typeName` (`string`, required): The relationship type.
-
-**Returns**: `string` - The current level name, or nil when no level is assigned.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Get the named level for a relationship type between two entities.
@@ -6609,9 +7384,21 @@ Get the named level for a relationship type between two entities.
 function LRelationshipManager:getLevel(a, b, typeName) end
 ```
 
+#### Description
+
+Get the named level for a relationship type between two entities.
+
+Parameters:
+
+- `a` (`integer`, required): First entity ID.
+- `b` (`integer`, required): Second entity ID.
+- `typeName` (`string`, required): The relationship type.
+
+Returns: `string` - The current level name, or nil when no level is assigned.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -6625,18 +7412,7 @@ end
 
 ### LRelationshipManager:getValue
 
-`LRelationshipManager:getValue(a: integer, b: integer) -> number`
-
-Get the numeric relationship value between two entity IDs.
-
-**Parameters**
-
-- `a` (`integer`, required): First entity ID.
-- `b` (`integer`, required): Second entity ID.
-
-**Returns**: `number` - The stored value (0 if not set).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Get the numeric relationship value between two entity IDs.
@@ -6646,9 +7422,20 @@ Get the numeric relationship value between two entity IDs.
 function LRelationshipManager:getValue(a, b) end
 ```
 
+#### Description
+
+Get the numeric relationship value between two entity IDs.
+
+Parameters:
+
+- `a` (`integer`, required): First entity ID.
+- `b` (`integer`, required): Second entity ID.
+
+Returns: `number` - The stored value (0 if not set).
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -6662,13 +7449,7 @@ end
 
 ### LRelationshipManager:pairCount
 
-`LRelationshipManager:pairCount() -> number`
-
-Return the total number of tracked entity pairs.
-
-**Returns**: `number` - Pair count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return the total number of tracked entity pairs.
@@ -6676,9 +7457,15 @@ Return the total number of tracked entity pairs.
 function LRelationshipManager:pairCount() end
 ```
 
+#### Description
+
+Return the total number of tracked entity pairs.
+
+Returns: `number` - Pair count.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -6692,16 +7479,7 @@ end
 
 ### LRelationshipManager:removePair
 
-`LRelationshipManager:removePair(a: integer, b: integer)`
-
-Remove all relationship data between two entities.
-
-**Parameters**
-
-- `a` (`integer`, required): First entity ID.
-- `b` (`integer`, required): Second entity ID.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Remove all relationship data between two entities.
@@ -6710,9 +7488,18 @@ Remove all relationship data between two entities.
 function LRelationshipManager:removePair(a, b) end
 ```
 
+#### Description
+
+Remove all relationship data between two entities.
+
+Parameters:
+
+- `a` (`integer`, required): First entity ID.
+- `b` (`integer`, required): Second entity ID.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -6726,15 +7513,7 @@ end
 
 ### LRelationshipManager:removeType
 
-`LRelationshipManager:removeType(name: string)`
-
-Remove a relationship type definition.
-
-**Parameters**
-
-- `name` (`string`, required): The type name to remove.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Remove a relationship type definition.
@@ -6742,9 +7521,17 @@ Remove a relationship type definition.
 function LRelationshipManager:removeType(name) end
 ```
 
+#### Description
+
+Remove a relationship type definition.
+
+Parameters:
+
+- `name` (`string`, required): The type name to remove.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -6758,20 +7545,7 @@ end
 
 ### LRelationshipManager:setLevel
 
-`LRelationshipManager:setLevel(a: integer, b: integer, typeName: string, level: string) -> boolean`
-
-Set the named level for a relationship type between two entities.
-
-**Parameters**
-
-- `a` (`integer`, required): First entity ID.
-- `b` (`integer`, required): Second entity ID.
-- `typeName` (`string`, required): The relationship type.
-- `level` (`string`, required): The level name to assign.
-
-**Returns**: `boolean` - True if the level was set successfully.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Set the named level for a relationship type between two entities.
@@ -6783,9 +7557,22 @@ Set the named level for a relationship type between two entities.
 function LRelationshipManager:setLevel(a, b, typeName, level) end
 ```
 
+#### Description
+
+Set the named level for a relationship type between two entities.
+
+Parameters:
+
+- `a` (`integer`, required): First entity ID.
+- `b` (`integer`, required): Second entity ID.
+- `typeName` (`string`, required): The relationship type.
+- `level` (`string`, required): The level name to assign.
+
+Returns: `boolean` - True if the level was set successfully.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -6799,17 +7586,7 @@ end
 
 ### LRelationshipManager:setValue
 
-`LRelationshipManager:setValue(a: integer, b: integer, value: number)`
-
-Set the numeric relationship value between two entity IDs.
-
-**Parameters**
-
-- `a` (`integer`, required): First entity ID.
-- `b` (`integer`, required): Second entity ID.
-- `value` (`number`, required): The numeric value to store.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Set the numeric relationship value between two entity IDs.
@@ -6819,9 +7596,19 @@ Set the numeric relationship value between two entity IDs.
 function LRelationshipManager:setValue(a, b, value) end
 ```
 
+#### Description
+
+Set the numeric relationship value between two entity IDs.
+
+Parameters:
+
+- `a` (`integer`, required): First entity ID.
+- `b` (`integer`, required): Second entity ID.
+- `value` (`number`, required): The numeric value to store.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -6835,13 +7622,7 @@ end
 
 ### LRelationshipManager:typeNames
 
-`LRelationshipManager:typeNames() -> string[]`
-
-Return all defined relationship type names.
-
-**Returns**: `string[]` - Type name strings.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return all defined relationship type names.
@@ -6849,9 +7630,15 @@ Return all defined relationship type names.
 function LRelationshipManager:typeNames() end
 ```
 
+#### Description
+
+Return all defined relationship type names.
+
+Returns: `string[]` - Type name strings.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -6865,13 +7652,7 @@ end
 
 ### LRing:average
 
-`LRing:average() -> number`
-
-Return the arithmetic mean of all numeric values in the ring.
-
-**Returns**: `number` - Average value (0 if empty).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return the arithmetic mean of all numeric values in the ring.
@@ -6879,9 +7660,15 @@ Return the arithmetic mean of all numeric values in the ring.
 function LRing:average() end
 ```
 
+#### Description
+
+Return the arithmetic mean of all numeric values in the ring.
+
+Returns: `number` - Average value (0 if empty).
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -6895,20 +7682,20 @@ end
 
 ### LRing:clear
 
-`LRing:clear()`
-
-Remove all entries from the ring. This method is available to Lua scripts.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Remove all entries from the ring. This method is available to Lua scripts.
 function LRing:clear() end
 ```
 
+#### Description
+
+Remove all entries from the ring. This method is available to Lua scripts.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -6922,13 +7709,7 @@ end
 
 ### LRing:isFull
 
-`LRing:isFull() -> boolean`
-
-Check whether the ring has reached its maximum capacity.
-
-**Returns**: `boolean` - True if full.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Check whether the ring has reached its maximum capacity.
@@ -6936,9 +7717,15 @@ Check whether the ring has reached its maximum capacity.
 function LRing:isFull() end
 ```
 
+#### Description
+
+Check whether the ring has reached its maximum capacity.
+
+Returns: `boolean` - True if full.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -6952,13 +7739,7 @@ end
 
 ### LRing:latest
 
-`LRing:latest() -> table|nil`
-
-Return the most recently pushed entry as a table with id, tag, value, and text fields. Returns nil if empty.
-
-**Returns**: `table|nil` - Entry table or nil.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return the most recently pushed entry as a table with id, tag, value, and text fields. Returns nil if empty.
@@ -6966,9 +7747,15 @@ Return the most recently pushed entry as a table with id, tag, value, and text f
 function LRing:latest() end
 ```
 
+#### Description
+
+Return the most recently pushed entry as a table with id, tag, value, and text fields. Returns nil if empty.
+
+Returns: `table|nil` - Entry table or nil.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -6982,13 +7769,7 @@ end
 
 ### LRing:len
 
-`LRing:len() -> number`
-
-Return the number of entries currently in the ring.
-
-**Returns**: `number` - Entry count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return the number of entries currently in the ring.
@@ -6996,9 +7777,15 @@ Return the number of entries currently in the ring.
 function LRing:len() end
 ```
 
+#### Description
+
+Return the number of entries currently in the ring.
+
+Returns: `number` - Entry count.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -7012,18 +7799,7 @@ end
 
 ### LRing:push
 
-`LRing:push(value: number|string, [tag]: string) -> number`
-
-Push a number or string value into the ring. Overwrites the oldest entry if the ring is full.
-
-**Parameters**
-
-- `value` (`number|string`, required): The value to store.
-- `tag` (`string`, optional): Optional label for categorizing entries.
-
-**Returns**: `number` - The internal ID of the new entry.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Push a number or string value into the ring. Overwrites the oldest entry if the ring is full.
@@ -7033,9 +7809,20 @@ Push a number or string value into the ring. Overwrites the oldest entry if the 
 function LRing:push(value, tag) end
 ```
 
+#### Description
+
+Push a number or string value into the ring. Overwrites the oldest entry if the ring is full.
+
+Parameters:
+
+- `value` (`number|string`, required): The value to store.
+- `tag` (`string`, optional): Optional label for categorizing entries.
+
+Returns: `number` - The internal ID of the new entry.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -7049,13 +7836,7 @@ end
 
 ### LRing:sum
 
-`LRing:sum() -> number`
-
-Return the sum of all numeric values in the ring. Non-numeric entries contribute zero.
-
-**Returns**: `number` - Sum of values.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return the sum of all numeric values in the ring. Non-numeric entries contribute zero.
@@ -7063,9 +7844,15 @@ Return the sum of all numeric values in the ring. Non-numeric entries contribute
 function LRing:sum() end
 ```
 
+#### Description
+
+Return the sum of all numeric values in the ring. Non-numeric entries contribute zero.
+
+Returns: `number` - Sum of values.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -7079,13 +7866,7 @@ end
 
 ### LRing:toArray
 
-`LRing:toArray() -> table`
-
-Return all entries in the ring as an ordered array of tables (oldest to newest).
-
-**Returns**: `table` - Array of entry tables with id, tag, value, and text fields.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return all entries in the ring as an ordered array of tables (oldest to newest).
@@ -7093,9 +7874,15 @@ Return all entries in the ring as an ordered array of tables (oldest to newest).
 function LRing:toArray() end
 ```
 
+#### Description
+
+Return all entries in the ring as an ordered array of tables (oldest to newest).
+
+Returns: `table` - Array of entry tables with id, tag, value, and text fields.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -7109,20 +7896,20 @@ end
 
 ### LServiceLocator:clearAll
 
-`LServiceLocator:clearAll()`
-
-Remove all registered services and reset the locator.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Remove all registered services and reset the locator.
 function LServiceLocator:clearAll() end
 ```
 
+#### Description
+
+Remove all registered services and reset the locator.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -7136,13 +7923,7 @@ end
 
 ### LServiceLocator:getServices
 
-`LServiceLocator:getServices() -> string[]`
-
-Return an array of all registered service names.
-
-**Returns**: `string[]` - Service name strings.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return an array of all registered service names.
@@ -7150,9 +7931,15 @@ Return an array of all registered service names.
 function LServiceLocator:getServices() end
 ```
 
+#### Description
+
+Return an array of all registered service names.
+
+Returns: `string[]` - Service name strings.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -7166,17 +7953,7 @@ end
 
 ### LServiceLocator:has
 
-`LServiceLocator:has(name: string) -> boolean`
-
-Check whether a service with the given name is currently registered.
-
-**Parameters**
-
-- `name` (`string`, required): The service name to check.
-
-**Returns**: `boolean` - True if the service exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Check whether a service with the given name is currently registered.
@@ -7185,9 +7962,19 @@ Check whether a service with the given name is currently registered.
 function LServiceLocator:has(name) end
 ```
 
+#### Description
+
+Check whether a service with the given name is currently registered.
+
+Parameters:
+
+- `name` (`string`, required): The service name to check.
+
+Returns: `boolean` - True if the service exists.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -7201,17 +7988,7 @@ end
 
 ### LServiceLocator:locate
 
-`LServiceLocator:locate(name: string) -> table`
-
-Retrieve a registered service by name. Returns nil if not found.
-
-**Parameters**
-
-- `name` (`string`, required): The service name to look up.
-
-**Returns**: `table` - The service table.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Retrieve a registered service by name. Returns nil if not found.
@@ -7221,9 +7998,19 @@ Retrieve a registered service by name. Returns nil if not found.
 function LServiceLocator:locate(name) end
 ```
 
+#### Description
+
+Retrieve a registered service by name. Returns nil if not found.
+
+Parameters:
+
+- `name` (`string`, required): The service name to look up.
+
+Returns: `table` - The service table.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -7236,16 +8023,7 @@ end
 
 ### LServiceLocator:provide
 
-`LServiceLocator:provide(name: string, value: any)`
-
-Register a service instance under a given name. Replaces any previously registered service with the same name.
-
-**Parameters**
-
-- `name` (`string`, required): Unique identifier for the service.
-- `value` (`any`, required): The service value to register.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Register a service instance under a given name. Replaces any previously registered service with the same name.
@@ -7254,9 +8032,18 @@ Register a service instance under a given name. Replaces any previously register
 function LServiceLocator:provide(name, value) end
 ```
 
+#### Description
+
+Register a service instance under a given name. Replaces any previously registered service with the same name.
+
+Parameters:
+
+- `name` (`string`, required): Unique identifier for the service.
+- `value` (`any`, required): The service value to register.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -7269,15 +8056,7 @@ end
 
 ### LServiceLocator:remove
 
-`LServiceLocator:remove(name: string)`
-
-Unregister and discard a service by name.
-
-**Parameters**
-
-- `name` (`string`, required): The service name to remove.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Unregister and discard a service by name.
@@ -7285,9 +8064,17 @@ Unregister and discard a service by name.
 function LServiceLocator:remove(name) end
 ```
 
+#### Description
+
+Unregister and discard a service by name.
+
+Parameters:
+
+- `name` (`string`, required): The service name to remove.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -7301,17 +8088,7 @@ end
 
 ### LSet:add
 
-`LSet:add(key: string) -> boolean`
-
-Add a string to the set. Returns true if it was not already present.
-
-**Parameters**
-
-- `key` (`string`, required): The string to add.
-
-**Returns**: `boolean` - True if newly added, false if already existed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Add a string to the set. Returns true if it was not already present.
@@ -7320,9 +8097,19 @@ Add a string to the set. Returns true if it was not already present.
 function LSet:add(key) end
 ```
 
+#### Description
+
+Add a string to the set. Returns true if it was not already present.
+
+Parameters:
+
+- `key` (`string`, required): The string to add.
+
+Returns: `boolean` - True if newly added, false if already existed.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -7336,20 +8123,20 @@ end
 
 ### LSet:clear
 
-`LSet:clear()`
-
-Remove all items from the set. This method is available to Lua scripts.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Remove all items from the set. This method is available to Lua scripts.
 function LSet:clear() end
 ```
 
+#### Description
+
+Remove all items from the set. This method is available to Lua scripts.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -7363,17 +8150,7 @@ end
 
 ### LSet:has
 
-`LSet:has(key: string) -> boolean`
-
-Check whether a string is in the set.
-
-**Parameters**
-
-- `key` (`string`, required): The string to check.
-
-**Returns**: `boolean` - True if present.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Check whether a string is in the set.
@@ -7382,9 +8159,19 @@ Check whether a string is in the set.
 function LSet:has(key) end
 ```
 
+#### Description
+
+Check whether a string is in the set.
+
+Parameters:
+
+- `key` (`string`, required): The string to check.
+
+Returns: `boolean` - True if present.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -7398,17 +8185,7 @@ end
 
 ### LSet:intersection
 
-`LSet:intersection(other: LSet) -> LSet`
-
-Return a new set containing only items present in both this set and another.
-
-**Parameters**
-
-- `other` (`LSet`, required): The other set to intersect with.
-
-**Returns**: `LSet` - A new set with only shared items.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return a new set containing only items present in both this set and another.
@@ -7417,9 +8194,19 @@ Return a new set containing only items present in both this set and another.
 function LSet:intersection(other) end
 ```
 
+#### Description
+
+Return a new set containing only items present in both this set and another.
+
+Parameters:
+
+- `other` (`LSet`, required): The other set to intersect with.
+
+Returns: `LSet` - A new set with only shared items.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -7433,13 +8220,7 @@ end
 
 ### LSet:isEmpty
 
-`LSet:isEmpty() -> boolean`
-
-Check whether the set is empty. This method is available to Lua scripts.
-
-**Returns**: `boolean` - True if empty.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Check whether the set is empty. This method is available to Lua scripts.
@@ -7447,9 +8228,15 @@ Check whether the set is empty. This method is available to Lua scripts.
 function LSet:isEmpty() end
 ```
 
+#### Description
+
+Check whether the set is empty. This method is available to Lua scripts.
+
+Returns: `boolean` - True if empty.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -7463,13 +8250,7 @@ end
 
 ### LSet:len
 
-`LSet:len() -> number`
-
-Return the number of items in the set.
-
-**Returns**: `number` - Item count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return the number of items in the set.
@@ -7477,9 +8258,15 @@ Return the number of items in the set.
 function LSet:len() end
 ```
 
+#### Description
+
+Return the number of items in the set.
+
+Returns: `number` - Item count.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -7493,17 +8280,7 @@ end
 
 ### LSet:remove
 
-`LSet:remove(key: string) -> boolean`
-
-Remove a string from the set. Returns true if it was present.
-
-**Parameters**
-
-- `key` (`string`, required): The string to remove.
-
-**Returns**: `boolean` - True if removed, false if not found.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Remove a string from the set. Returns true if it was present.
@@ -7512,9 +8289,19 @@ Remove a string from the set. Returns true if it was present.
 function LSet:remove(key) end
 ```
 
+#### Description
+
+Remove a string from the set. Returns true if it was present.
+
+Parameters:
+
+- `key` (`string`, required): The string to remove.
+
+Returns: `boolean` - True if removed, false if not found.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -7528,13 +8315,7 @@ end
 
 ### LSet:toArray
 
-`LSet:toArray() -> string[]`
-
-Return all set items as an array table.
-
-**Returns**: `string[]` - String values.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return all set items as an array table.
@@ -7542,9 +8323,15 @@ Return all set items as an array table.
 function LSet:toArray() end
 ```
 
+#### Description
+
+Return all set items as an array table.
+
+Returns: `string[]` - String values.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -7558,17 +8345,7 @@ end
 
 ### LSet:union
 
-`LSet:union(other: LSet) -> LSet`
-
-Return a new set containing all items from both this set and another.
-
-**Parameters**
-
-- `other` (`LSet`, required): The other set to merge with.
-
-**Returns**: `LSet` - A new set with the union of both.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return a new set containing all items from both this set and another.
@@ -7577,9 +8354,19 @@ Return a new set containing all items from both this set and another.
 function LSet:union(other) end
 ```
 
+#### Description
+
+Return a new set containing all items from both this set and another.
+
+Parameters:
+
+- `other` (`LSet`, required): The other set to merge with.
+
+Returns: `LSet` - A new set with the union of both.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -7593,16 +8380,7 @@ end
 
 ### LSimpleState:addState
 
-`LSimpleState:addState(name: string, [callbacks]: table)`
-
-Register a named state with optional enter, exit, and update callbacks.
-
-**Parameters**
-
-- `name` (`string`, required): Unique state identifier.
-- `callbacks` (`table`, optional): Table with optional fields: `enter` (function), `exit` (function), `update` (function receiving dt).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Register a named state with optional enter, exit, and update callbacks.
@@ -7611,9 +8389,18 @@ Register a named state with optional enter, exit, and update callbacks.
 function LSimpleState:addState(name, callbacks) end
 ```
 
+#### Description
+
+Register a named state with optional enter, exit, and update callbacks.
+
+Parameters:
+
+- `name` (`string`, required): Unique state identifier.
+- `callbacks` (`table`, optional): Table with optional fields: `enter` (function), `exit` (function), `update` (function receiving dt).
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -7627,20 +8414,20 @@ end
 
 ### LSimpleState:clearAll
 
-`LSimpleState:clearAll()`
-
-Remove all states and their callbacks, resetting the state machine.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Remove all states and their callbacks, resetting the state machine.
 function LSimpleState:clearAll() end
 ```
 
+#### Description
+
+Remove all states and their callbacks, resetting the state machine.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -7654,13 +8441,7 @@ end
 
 ### LSimpleState:getCurrent
 
-`LSimpleState:getCurrent() -> string`
-
-Return the name of the currently active state, or nil if no state is set.
-
-**Returns**: `string` - Current state name, or nil if no state is set.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return the name of the currently active state, or nil if no state is set.
@@ -7668,9 +8449,15 @@ Return the name of the currently active state, or nil if no state is set.
 function LSimpleState:getCurrent() end
 ```
 
+#### Description
+
+Return the name of the currently active state, or nil if no state is set.
+
+Returns: `string` - Current state name, or nil if no state is set.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -7684,13 +8471,7 @@ end
 
 ### LSimpleState:getStates
 
-`LSimpleState:getStates() -> string[]`
-
-Return an array of all registered state names.
-
-**Returns**: `string[]` - State name strings.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return an array of all registered state names.
@@ -7698,9 +8479,15 @@ Return an array of all registered state names.
 function LSimpleState:getStates() end
 ```
 
+#### Description
+
+Return an array of all registered state names.
+
+Returns: `string[]` - State name strings.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -7714,17 +8501,7 @@ end
 
 ### LSimpleState:hasState
 
-`LSimpleState:hasState(name: string) -> boolean`
-
-Check whether a state with the given name is registered.
-
-**Parameters**
-
-- `name` (`string`, required): State name to check.
-
-**Returns**: `boolean` - True if the state exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Check whether a state with the given name is registered.
@@ -7733,9 +8510,19 @@ Check whether a state with the given name is registered.
 function LSimpleState:hasState(name) end
 ```
 
+#### Description
+
+Check whether a state with the given name is registered.
+
+Parameters:
+
+- `name` (`string`, required): State name to check.
+
+Returns: `boolean` - True if the state exists.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -7749,17 +8536,7 @@ end
 
 ### LSimpleState:transitionTo
 
-`LSimpleState:transitionTo(name: string) -> boolean`
-
-Transition to a new state. Calls the current state's `exit` and the target state's `enter` callbacks.
-
-**Parameters**
-
-- `name` (`string`, required): The state to transition to. Must be previously added.
-
-**Returns**: `boolean` - True if the transition happened, false if the target state does not exist.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Transition to a new state. Calls the current state's `exit` and the target state's `enter` callbacks.
@@ -7768,9 +8545,19 @@ Transition to a new state. Calls the current state's `exit` and the target state
 function LSimpleState:transitionTo(name) end
 ```
 
+#### Description
+
+Transition to a new state. Calls the current state's `exit` and the target state's `enter` callbacks.
+
+Parameters:
+
+- `name` (`string`, required): The state to transition to. Must be previously added.
+
+Returns: `boolean` - True if the transition happened, false if the target state does not exist.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -7784,15 +8571,7 @@ end
 
 ### LSimpleState:update
 
-`LSimpleState:update(dt: number)`
-
-Call the current state's update callback with the frame delta time.
-
-**Parameters**
-
-- `dt` (`number`, required): Delta time in seconds since last frame.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Call the current state's update callback with the frame delta time.
@@ -7800,9 +8579,17 @@ Call the current state's update callback with the frame delta time.
 function LSimpleState:update(dt) end
 ```
 
+#### Description
+
+Call the current state's update callback with the frame delta time.
+
+Parameters:
+
+- `dt` (`number`, required): Delta time in seconds since last frame.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -7816,20 +8603,20 @@ end
 
 ### LStack:clear
 
-`LStack:clear()`
-
-Remove all items from the stack. This method is available to Lua scripts.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Remove all items from the stack. This method is available to Lua scripts.
 function LStack:clear() end
 ```
 
+#### Description
+
+Remove all items from the stack. This method is available to Lua scripts.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -7843,18 +8630,7 @@ end
 
 ### LStack:insertAt
 
-`LStack:insertAt(index: integer, value: any) -> boolean`
-
-Insert a value at a 1-based index in the stack, shifting items above it. Returns false if at capacity.
-
-**Parameters**
-
-- `index` (`integer`, required): 1-based insertion position.
-- `value` (`any`, required): The value to insert.
-
-**Returns**: `boolean` - True if inserted, false if full.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Insert a value at a 1-based index in the stack, shifting items above it. Returns false if at capacity.
@@ -7864,9 +8640,20 @@ Insert a value at a 1-based index in the stack, shifting items above it. Returns
 function LStack:insertAt(index, value) end
 ```
 
+#### Description
+
+Insert a value at a 1-based index in the stack, shifting items above it. Returns false if at capacity.
+
+Parameters:
+
+- `index` (`integer`, required): 1-based insertion position.
+- `value` (`any`, required): The value to insert.
+
+Returns: `boolean` - True if inserted, false if full.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -7880,13 +8667,7 @@ end
 
 ### LStack:isEmpty
 
-`LStack:isEmpty() -> boolean`
-
-Check whether the stack is empty. This method is available to Lua scripts.
-
-**Returns**: `boolean` - True if empty.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Check whether the stack is empty. This method is available to Lua scripts.
@@ -7894,9 +8675,15 @@ Check whether the stack is empty. This method is available to Lua scripts.
 function LStack:isEmpty() end
 ```
 
+#### Description
+
+Check whether the stack is empty. This method is available to Lua scripts.
+
+Returns: `boolean` - True if empty.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -7910,13 +8697,7 @@ end
 
 ### LStack:isFull
 
-`LStack:isFull() -> boolean`
-
-Check whether the stack has reached its capacity limit (if one was set).
-
-**Returns**: `boolean` - True if full.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Check whether the stack has reached its capacity limit (if one was set).
@@ -7924,9 +8705,15 @@ Check whether the stack has reached its capacity limit (if one was set).
 function LStack:isFull() end
 ```
 
+#### Description
+
+Check whether the stack has reached its capacity limit (if one was set).
+
+Returns: `boolean` - True if full.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -7940,13 +8727,7 @@ end
 
 ### LStack:len
 
-`LStack:len() -> number`
-
-Return the current number of items in the stack.
-
-**Returns**: `number` - Item count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return the current number of items in the stack.
@@ -7954,9 +8735,15 @@ Return the current number of items in the stack.
 function LStack:len() end
 ```
 
+#### Description
+
+Return the current number of items in the stack.
+
+Returns: `number` - Item count.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -7970,18 +8757,7 @@ end
 
 ### LStack:moveWithin
 
-`LStack:moveWithin(from: integer, to: integer) -> boolean`
-
-Move an item from one 1-based index to another within the stack.
-
-**Parameters**
-
-- `from` (`integer`, required): Source index.
-- `to` (`integer`, required): Destination index.
-
-**Returns**: `boolean` - True if the move succeeded.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Move an item from one 1-based index to another within the stack.
@@ -7991,9 +8767,20 @@ Move an item from one 1-based index to another within the stack.
 function LStack:moveWithin(from, to) end
 ```
 
+#### Description
+
+Move an item from one 1-based index to another within the stack.
+
+Parameters:
+
+- `from` (`integer`, required): Source index.
+- `to` (`integer`, required): Destination index.
+
+Returns: `boolean` - True if the move succeeded.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -8007,13 +8794,7 @@ end
 
 ### LStack:peek
 
-`LStack:peek() -> string`
-
-Return the top value without removing it. Returns nil if empty.
-
-**Returns**: `string` - The top value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return the top value without removing it. Returns nil if empty.
@@ -8022,9 +8803,15 @@ Return the top value without removing it. Returns nil if empty.
 function LStack:peek() end
 ```
 
+#### Description
+
+Return the top value without removing it. Returns nil if empty.
+
+Returns: `string` - The top value.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -8038,17 +8825,7 @@ end
 
 ### LStack:peekAt
 
-`LStack:peekAt(index: integer) -> string`
-
-Return the value at a 1-based index without removing it. Returns nil if out of range.
-
-**Parameters**
-
-- `index` (`integer`, required): 1-based position in the stack.
-
-**Returns**: `string` - The value at that position.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return the value at a 1-based index without removing it. Returns nil if out of range.
@@ -8058,9 +8835,19 @@ Return the value at a 1-based index without removing it. Returns nil if out of r
 function LStack:peekAt(index) end
 ```
 
+#### Description
+
+Return the value at a 1-based index without removing it. Returns nil if out of range.
+
+Parameters:
+
+- `index` (`integer`, required): 1-based position in the stack.
+
+Returns: `string` - The value at that position.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -8074,13 +8861,7 @@ end
 
 ### LStack:peekBottom
 
-`LStack:peekBottom() -> string`
-
-Return the bottom value without removing it. Returns nil if empty.
-
-**Returns**: `string` - The bottom value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return the bottom value without removing it. Returns nil if empty.
@@ -8089,9 +8870,15 @@ Return the bottom value without removing it. Returns nil if empty.
 function LStack:peekBottom() end
 ```
 
+#### Description
+
+Return the bottom value without removing it. Returns nil if empty.
+
+Returns: `string` - The bottom value.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -8105,13 +8892,7 @@ end
 
 ### LStack:pop
 
-`LStack:pop() -> string`
-
-Remove and return the top value. Returns nil if the stack is empty.
-
-**Returns**: `string` - The popped value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Remove and return the top value. Returns nil if the stack is empty.
@@ -8120,9 +8901,15 @@ Remove and return the top value. Returns nil if the stack is empty.
 function LStack:pop() end
 ```
 
+#### Description
+
+Remove and return the top value. Returns nil if the stack is empty.
+
+Returns: `string` - The popped value.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -8136,13 +8923,7 @@ end
 
 ### LStack:popBottom
 
-`LStack:popBottom() -> string`
-
-Remove and return the bottom value. Returns nil if empty.
-
-**Returns**: `string` - The popped value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Remove and return the bottom value. Returns nil if empty.
@@ -8151,9 +8932,15 @@ Remove and return the bottom value. Returns nil if empty.
 function LStack:popBottom() end
 ```
 
+#### Description
+
+Remove and return the bottom value. Returns nil if empty.
+
+Returns: `string` - The popped value.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -8167,17 +8954,7 @@ end
 
 ### LStack:popMany
 
-`LStack:popMany(count: integer) -> integer[]`
-
-Pop up to `count` values from the top and return them as an array table.
-
-**Parameters**
-
-- `count` (`integer`, required): Maximum number of items to pop.
-
-**Returns**: `integer[]` - Popped values (may be shorter than count).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Pop up to `count` values from the top and return them as an array table.
@@ -8186,9 +8963,19 @@ Pop up to `count` values from the top and return them as an array table.
 function LStack:popMany(count) end
 ```
 
+#### Description
+
+Pop up to `count` values from the top and return them as an array table.
+
+Parameters:
+
+- `count` (`integer`, required): Maximum number of items to pop.
+
+Returns: `integer[]` - Popped values (may be shorter than count).
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -8202,17 +8989,7 @@ end
 
 ### LStack:push
 
-`LStack:push(value: any) -> boolean`
-
-Push a value onto the top of the stack. Returns false if the stack is at capacity.
-
-**Parameters**
-
-- `value` (`any`, required): The value to push.
-
-**Returns**: `boolean` - True if pushed, false if full.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Push a value onto the top of the stack. Returns false if the stack is at capacity.
@@ -8221,9 +8998,19 @@ Push a value onto the top of the stack. Returns false if the stack is at capacit
 function LStack:push(value) end
 ```
 
+#### Description
+
+Push a value onto the top of the stack. Returns false if the stack is at capacity.
+
+Parameters:
+
+- `value` (`any`, required): The value to push.
+
+Returns: `boolean` - True if pushed, false if full.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -8237,17 +9024,7 @@ end
 
 ### LStack:pushBottom
 
-`LStack:pushBottom(value: any) -> boolean`
-
-Push a value onto the bottom of the stack. Returns false if at capacity.
-
-**Parameters**
-
-- `value` (`any`, required): The value to insert at the bottom.
-
-**Returns**: `boolean` - True if pushed, false if full.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Push a value onto the bottom of the stack. Returns false if at capacity.
@@ -8256,9 +9033,19 @@ Push a value onto the bottom of the stack. Returns false if at capacity.
 function LStack:pushBottom(value) end
 ```
 
+#### Description
+
+Push a value onto the bottom of the stack. Returns false if at capacity.
+
+Parameters:
+
+- `value` (`any`, required): The value to insert at the bottom.
+
+Returns: `boolean` - True if pushed, false if full.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -8272,17 +9059,7 @@ end
 
 ### LStack:removeAt
 
-`LStack:removeAt(index: integer) -> string`
-
-Remove and return the value at a 1-based index. Returns nil if out of range.
-
-**Parameters**
-
-- `index` (`integer`, required): 1-based position to remove.
-
-**Returns**: `string` - The removed value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Remove and return the value at a 1-based index. Returns nil if out of range.
@@ -8292,9 +9069,19 @@ Remove and return the value at a 1-based index. Returns nil if out of range.
 function LStack:removeAt(index) end
 ```
 
+#### Description
+
+Remove and return the value at a 1-based index. Returns nil if out of range.
+
+Parameters:
+
+- `index` (`integer`, required): 1-based position to remove.
+
+Returns: `string` - The removed value.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -8308,13 +9095,7 @@ end
 
 ### LStack:toArray
 
-`LStack:toArray() -> number[]`
-
-Return all stack items as an array table (bottom to top).
-
-**Returns**: `number[]` - Array of all values.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return all stack items as an array table (bottom to top).
@@ -8322,9 +9103,15 @@ Return all stack items as an array table (bottom to top).
 function LStack:toArray() end
 ```
 
+#### Description
+
+Return all stack items as an array table (bottom to top).
+
+Returns: `number[]` - Array of all values.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -8338,20 +9125,20 @@ end
 
 ### LStrategy:clear
 
-`LStrategy:clear()`
-
-Remove all strategies and reset the selection.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Remove all strategies and reset the selection.
 function LStrategy:clear() end
 ```
 
+#### Description
+
+Remove all strategies and reset the selection.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -8365,17 +9152,7 @@ end
 
 ### LStrategy:execute
 
-`LStrategy:execute(...: any) -> table`
-
-Execute the currently active strategy, passing through all arguments and returning its results.
-
-**Parameters**
-
-- `...` (`any`, required): Arguments forwarded to the active strategy function.
-
-**Returns**: `table` - Return value from the strategy function.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Execute the currently active strategy, passing through all arguments and returning its results.
@@ -8385,9 +9162,19 @@ Execute the currently active strategy, passing through all arguments and returni
 function LStrategy:execute(...) end
 ```
 
+#### Description
+
+Execute the currently active strategy, passing through all arguments and returning its results.
+
+Parameters:
+
+- `...` (`any`, required): Arguments forwarded to the active strategy function.
+
+Returns: `table` - Return value from the strategy function.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -8413,13 +9200,7 @@ end
 
 ### LStrategy:getCurrent
 
-`LStrategy:getCurrent() -> string`
-
-Return the name of the currently active strategy, or nil if none set.
-
-**Returns**: `string` - Active strategy name, or nil if none is selected.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return the name of the currently active strategy, or nil if none set.
@@ -8427,9 +9208,15 @@ Return the name of the currently active strategy, or nil if none set.
 function LStrategy:getCurrent() end
 ```
 
+#### Description
+
+Return the name of the currently active strategy, or nil if none set.
+
+Returns: `string` - Active strategy name, or nil if none is selected.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -8443,17 +9230,7 @@ end
 
 ### LStrategy:has
 
-`LStrategy:has(name: string) -> boolean`
-
-Check whether a strategy with the given name is registered.
-
-**Parameters**
-
-- `name` (`string`, required): Strategy name to check.
-
-**Returns**: `boolean` - True if registered.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Check whether a strategy with the given name is registered.
@@ -8462,9 +9239,19 @@ Check whether a strategy with the given name is registered.
 function LStrategy:has(name) end
 ```
 
+#### Description
+
+Check whether a strategy with the given name is registered.
+
+Parameters:
+
+- `name` (`string`, required): Strategy name to check.
+
+Returns: `boolean` - True if registered.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -8478,13 +9265,7 @@ end
 
 ### LStrategy:names
 
-`LStrategy:names() -> string[]`
-
-Return an array of all registered strategy names.
-
-**Returns**: `string[]` - Strategy name strings.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return an array of all registered strategy names.
@@ -8492,9 +9273,15 @@ Return an array of all registered strategy names.
 function LStrategy:names() end
 ```
 
+#### Description
+
+Return an array of all registered strategy names.
+
+Returns: `string[]` - Strategy name strings.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -8508,16 +9295,7 @@ end
 
 ### LStrategy:register
 
-`LStrategy:register(name: string, callback: function)`
-
-Register a named strategy implementation function.
-
-**Parameters**
-
-- `name` (`string`, required): Strategy identifier.
-- `callback` (`function`, required): The implementation function to call when this strategy is active.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Register a named strategy implementation function.
@@ -8526,9 +9304,18 @@ Register a named strategy implementation function.
 function LStrategy:register(name, callback) end
 ```
 
+#### Description
+
+Register a named strategy implementation function.
+
+Parameters:
+
+- `name` (`string`, required): Strategy identifier.
+- `callback` (`function`, required): The implementation function to call when this strategy is active.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -8554,17 +9341,7 @@ end
 
 ### LStrategy:remove
 
-`LStrategy:remove(name: string) -> boolean`
-
-Remove a named strategy. If it was the active strategy, no strategy will be selected.
-
-**Parameters**
-
-- `name` (`string`, required): Strategy name to remove.
-
-**Returns**: `boolean` - True if the strategy was found and removed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Remove a named strategy. If it was the active strategy, no strategy will be selected.
@@ -8573,9 +9350,19 @@ Remove a named strategy. If it was the active strategy, no strategy will be sele
 function LStrategy:remove(name) end
 ```
 
+#### Description
+
+Remove a named strategy. If it was the active strategy, no strategy will be selected.
+
+Parameters:
+
+- `name` (`string`, required): Strategy name to remove.
+
+Returns: `boolean` - True if the strategy was found and removed.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -8589,17 +9376,7 @@ end
 
 ### LStrategy:set
 
-`LStrategy:set(name: string) -> boolean`
-
-Switch to a named strategy. Future `execute()` calls will use this implementation.
-
-**Parameters**
-
-- `name` (`string`, required): The strategy name to activate.
-
-**Returns**: `boolean` - True if the strategy exists and was set.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Switch to a named strategy. Future `execute()` calls will use this implementation.
@@ -8608,9 +9385,19 @@ Switch to a named strategy. Future `execute()` calls will use this implementatio
 function LStrategy:set(name) end
 ```
 
+#### Description
+
+Switch to a named strategy. Future `execute()` calls will use this implementation.
+
+Parameters:
+
+- `name` (`string`, required): The strategy name to activate.
+
+Returns: `boolean` - True if the strategy exists and was set.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -8636,13 +9423,7 @@ end
 
 ### LThrottle:getFireCount
 
-`LThrottle:getFireCount() -> number`
-
-Return the total number of times this throttle has fired since creation.
-
-**Returns**: `number` - Total fire count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return the total number of times this throttle has fired since creation.
@@ -8650,9 +9431,15 @@ Return the total number of times this throttle has fired since creation.
 function LThrottle:getFireCount() end
 ```
 
+#### Description
+
+Return the total number of times this throttle has fired since creation.
+
+Returns: `number` - Total fire count.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -8672,13 +9459,7 @@ end
 
 ### LThrottle:getProgress
 
-`LThrottle:getProgress() -> number`
-
-Return how far through the current interval the throttle is (0.0 to 1.0).
-
-**Returns**: `number` - Progress fraction.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return how far through the current interval the throttle is (0.0 to 1.0).
@@ -8686,9 +9467,15 @@ Return how far through the current interval the throttle is (0.0 to 1.0).
 function LThrottle:getProgress() end
 ```
 
+#### Description
+
+Return how far through the current interval the throttle is (0.0 to 1.0).
+
+Returns: `number` - Progress fraction.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -8702,15 +9489,7 @@ end
 
 ### LThrottle:onFire
 
-`LThrottle:onFire(f: function)`
-
-Set the callback function to invoke each time the throttle fires.
-
-**Parameters**
-
-- `f` (`function`, required): The callback to execute on fire.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Set the callback function to invoke each time the throttle fires.
@@ -8718,9 +9497,17 @@ Set the callback function to invoke each time the throttle fires.
 function LThrottle:onFire(f) end
 ```
 
+#### Description
+
+Set the callback function to invoke each time the throttle fires.
+
+Parameters:
+
+- `f` (`function`, required): The callback to execute on fire.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -8740,20 +9527,20 @@ end
 
 ### LThrottle:reset
 
-`LThrottle:reset()`
-
-Reset the throttle timer back to zero without firing.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Reset the throttle timer back to zero without firing.
 function LThrottle:reset() end
 ```
 
+#### Description
+
+Reset the throttle timer back to zero without firing.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -8767,15 +9554,7 @@ end
 
 ### LThrottle:setEnabled
 
-`LThrottle:setEnabled(enabled: boolean)`
-
-Enable or disable the throttle. When disabled, update() will not accumulate time.
-
-**Parameters**
-
-- `enabled` (`boolean`, required): True to enable, false to disable.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Enable or disable the throttle. When disabled, update() will not accumulate time.
@@ -8783,9 +9562,17 @@ Enable or disable the throttle. When disabled, update() will not accumulate time
 function LThrottle:setEnabled(enabled) end
 ```
 
+#### Description
+
+Enable or disable the throttle. When disabled, update() will not accumulate time.
+
+Parameters:
+
+- `enabled` (`boolean`, required): True to enable, false to disable.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -8799,17 +9586,7 @@ end
 
 ### LThrottle:update
 
-`LThrottle:update(dt: number) -> boolean`
-
-Advance the throttle timer. If the interval has elapsed, fires the callback and returns true.
-
-**Parameters**
-
-- `dt` (`number`, required): Delta time in seconds since last update.
-
-**Returns**: `boolean` - True if the throttle fired this frame.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Advance the throttle timer. If the interval has elapsed, fires the callback and returns true.
@@ -8818,9 +9595,19 @@ Advance the throttle timer. If the interval has elapsed, fires the callback and 
 function LThrottle:update(dt) end
 ```
 
+#### Description
+
+Advance the throttle timer. If the interval has elapsed, fires the callback and returns true.
+
+Parameters:
+
+- `dt` (`number`, required): Delta time in seconds since last update.
+
+Returns: `boolean` - True if the throttle fired this frame.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -8840,19 +9627,7 @@ end
 
 ### LWeightedRandom:add
 
-`LWeightedRandom:add(weight: number, value: any, [label]: string) -> number`
-
-Add an item with a relative weight. Higher weight = higher selection probability.
-
-**Parameters**
-
-- `weight` (`number`, required): The selection weight (must be > 0).
-- `value` (`any`, required): The payload value returned on pick.
-- `label` (`string`, optional): Optional human-readable label.
-
-**Returns**: `number` - The internal ID of the added entry.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Add an item with a relative weight. Higher weight = higher selection probability.
@@ -8863,9 +9638,21 @@ Add an item with a relative weight. Higher weight = higher selection probability
 function LWeightedRandom:add(weight, value, label) end
 ```
 
+#### Description
+
+Add an item with a relative weight. Higher weight = higher selection probability.
+
+Parameters:
+
+- `weight` (`number`, required): The selection weight (must be > 0).
+- `value` (`any`, required): The payload value returned on pick.
+- `label` (`string`, optional): Optional human-readable label.
+
+Returns: `number` - The internal ID of the added entry.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -8879,20 +9666,20 @@ end
 
 ### LWeightedRandom:clearAll
 
-`LWeightedRandom:clearAll()`
-
-Remove all entries from the pool. This method is available to Lua scripts.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Remove all entries from the pool. This method is available to Lua scripts.
 function LWeightedRandom:clearAll() end
 ```
 
+#### Description
+
+Remove all entries from the pool. This method is available to Lua scripts.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -8906,13 +9693,7 @@ end
 
 ### LWeightedRandom:getRevision
 
-`LWeightedRandom:getRevision() -> number`
-
-Return the revision counter. Increments on any add/remove/weight change.
-
-**Returns**: `number` - Revision number.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return the revision counter. Increments on any add/remove/weight change.
@@ -8920,9 +9701,15 @@ Return the revision counter. Increments on any add/remove/weight change.
 function LWeightedRandom:getRevision() end
 ```
 
+#### Description
+
+Return the revision counter. Increments on any add/remove/weight change.
+
+Returns: `number` - Revision number.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -8936,13 +9723,7 @@ end
 
 ### LWeightedRandom:isEmpty
 
-`LWeightedRandom:isEmpty() -> boolean`
-
-Check whether the pool has no entries.
-
-**Returns**: `boolean` - True if empty.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Check whether the pool has no entries.
@@ -8950,9 +9731,15 @@ Check whether the pool has no entries.
 function LWeightedRandom:isEmpty() end
 ```
 
+#### Description
+
+Check whether the pool has no entries.
+
+Returns: `boolean` - True if empty.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -8966,13 +9753,7 @@ end
 
 ### LWeightedRandom:len
 
-`LWeightedRandom:len() -> number`
-
-Return the number of entries in the pool.
-
-**Returns**: `number` - Entry count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return the number of entries in the pool.
@@ -8980,9 +9761,15 @@ Return the number of entries in the pool.
 function LWeightedRandom:len() end
 ```
 
+#### Description
+
+Return the number of entries in the pool.
+
+Returns: `number` - Entry count.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -8996,17 +9783,7 @@ end
 
 ### LWeightedRandom:pick
 
-`LWeightedRandom:pick(sample: number) -> string`
-
-Pick one item using a random sample value in [0, 1). Returns its value or nil.
-
-**Parameters**
-
-- `sample` (`number`, required): A random number in [0, 1) range.
-
-**Returns**: `string` - The selected item's value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Pick one item using a random sample value in [0, 1). Returns its value or nil.
@@ -9016,9 +9793,19 @@ Pick one item using a random sample value in [0, 1). Returns its value or nil.
 function LWeightedRandom:pick(sample) end
 ```
 
+#### Description
+
+Pick one item using a random sample value in [0, 1). Returns its value or nil.
+
+Parameters:
+
+- `sample` (`number`, required): A random number in [0, 1) range.
+
+Returns: `string` - The selected item's value.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -9032,18 +9819,7 @@ end
 
 ### LWeightedRandom:pickN
 
-`LWeightedRandom:pickN(count: integer, samples: table) -> number[]`
-
-Pick multiple unique items. Requires an array of random samples.
-
-**Parameters**
-
-- `count` (`integer`, required): Number of items to pick.
-- `samples` (`table`, required): Array of random numbers in [0, 1).
-
-**Returns**: `number[]` - Array of picked values.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Pick multiple unique items. Requires an array of random samples.
@@ -9053,9 +9829,20 @@ Pick multiple unique items. Requires an array of random samples.
 function LWeightedRandom:pickN(count, samples) end
 ```
 
+#### Description
+
+Pick multiple unique items. Requires an array of random samples.
+
+Parameters:
+
+- `count` (`integer`, required): Number of items to pick.
+- `samples` (`table`, required): Array of random numbers in [0, 1).
+
+Returns: `number[]` - Array of picked values.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -9069,17 +9856,7 @@ end
 
 ### LWeightedRandom:remove
 
-`LWeightedRandom:remove(id: integer) -> boolean`
-
-Remove an item by its ID. Returns true if it existed.
-
-**Parameters**
-
-- `id` (`integer`, required): The entry ID to remove.
-
-**Returns**: `boolean` - True if removed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Remove an item by its ID. Returns true if it existed.
@@ -9088,9 +9865,19 @@ Remove an item by its ID. Returns true if it existed.
 function LWeightedRandom:remove(id) end
 ```
 
+#### Description
+
+Remove an item by its ID. Returns true if it existed.
+
+Parameters:
+
+- `id` (`integer`, required): The entry ID to remove.
+
+Returns: `boolean` - True if removed.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -9104,18 +9891,7 @@ end
 
 ### LWeightedRandom:setWeight
 
-`LWeightedRandom:setWeight(id: integer, weight: number) -> boolean`
-
-Change the weight of an existing entry.
-
-**Parameters**
-
-- `id` (`integer`, required): The entry ID.
-- `weight` (`number`, required): The new weight value.
-
-**Returns**: `boolean` - True if the entry was found and updated.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Change the weight of an existing entry.
@@ -9125,9 +9901,20 @@ Change the weight of an existing entry.
 function LWeightedRandom:setWeight(id, weight) end
 ```
 
+#### Description
+
+Change the weight of an existing entry.
+
+Parameters:
+
+- `id` (`integer`, required): The entry ID.
+- `weight` (`number`, required): The new weight value.
+
+Returns: `boolean` - True if the entry was found and updated.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do
@@ -9141,13 +9928,7 @@ end
 
 ### LWeightedRandom:totalWeight
 
-`LWeightedRandom:totalWeight() -> number`
-
-Return the sum of all entry weights.
-
-**Returns**: `number` - Total weight.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Return the sum of all entry weights.
@@ -9155,9 +9936,15 @@ Return the sum of all entry weights.
 function LWeightedRandom:totalWeight() end
 ```
 
+#### Description
+
+Return the sum of all entry weights.
+
+Returns: `number` - Total weight.
+
 #### Example
 
-Exact example from [patterns.lua](../blob/main/content/examples/patterns.lua):
+Source: [patterns.lua](../blob/main/content/examples/patterns.lua)
 
 ```lua
 do

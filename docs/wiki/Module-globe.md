@@ -14,86 +14,244 @@
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
   - [lurek.globe.generateVoronoi](#lurekglobegeneratevoronoi)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.globe.get](#lurekglobeget)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.globe.greatCircleDistance](#lurekglobegreatcircledistance)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.globe.greatCirclePath](#lurekglobegreatcirclepath)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.globe.latLonToUnit](#lurekglobelatlontounit)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.globe.loadFromPNG](#lurekglobeloadfrompng)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.globe.loadFromTOML](#lurekglobeloadfromtoml)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.globe.new](#lurekglobenew)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔷 Module Types](#module-types)
   - [LGlobe](#lglobe)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobeRegistry](#lgloberegistry)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
   - [LGlobe:addArc](#lglobeaddarc)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:addLabel](#lglobeaddlabel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:addLayer](#lglobeaddlayer)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:addMarker](#lglobeaddmarker)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:addProvince](#lglobeaddprovince)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:cacheReachability](#lglobecachereachability)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:clearProvinceTexture](#lglobeclearprovincetexture)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:decodeFogBase64](#lglobedecodefogbase64)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:encodeFogBase64](#lglobeencodefogbase64)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:exportProvinceMeshOBJ](#lglobeexportprovincemeshobj)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:findPath](#lglobefindpath)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:getCachedReachability](#lglobegetcachedreachability)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:getCamera](#lglobegetcamera)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:getFogState](#lglobegetfogstate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:getLod](#lglobegetlod)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:getMarkerAttr](#lglobegetmarkerattr)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:getName](#lglobegetname)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:getNeighbors](#lglobegetneighbors)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:getProvinceAttr](#lglobegetprovinceattr)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:getProvinceSector](#lglobegetprovincesector)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:getSectorProvinces](#lglobegetsectorprovinces)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:getTimeOfDay](#lglobegettimeofday)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:hideProvince](#lglobehideprovince)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:isVisible](#lglobeisvisible)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:moveMarker](#lglobemovemarker)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:pan](#lglobepan)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:pick](#lglobepick)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:pickLatLon](#lglobepicklatlon)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:pickRaycast](#lglobepickraycast)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:provinceCount](#lglobeprovincecount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:reachable](#lglobereachable)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:removeArc](#lgloberemovearc)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:removeHeatLayer](#lgloberemoveheatlayer)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:removeLabel](#lgloberemovelabel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:removeLayer](#lgloberemovelayer)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:removeMarker](#lgloberemovemarker)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:removeProvince](#lgloberemoveprovince)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:revealAll](#lgloberevealall)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:revealProvince](#lgloberevealprovince)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:setActiveViewer](#lglobesetactiveviewer)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:setAutoRotationSpeed](#lglobesetautorotationspeed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:setBorders](#lglobesetborders)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:setCamera](#lglobesetcamera)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:setFogState](#lglobesetfogstate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:setHeatLayer](#lglobesetheatlayer)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:setLabelText](#lglobesetlabeltext)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:setLabelVisible](#lglobesetlabelvisible)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:setLayerAlpha](#lglobesetlayeralpha)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:setLayerColor](#lglobesetlayercolor)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:setLayerVisible](#lglobesetlayervisible)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:setMarkerAttr](#lglobesetmarkerattr)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:setMarkerPulse](#lglobesetmarkerpulse)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:setMarkerRotation](#lglobesetmarkerrotation)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:setMarkerVisible](#lglobesetmarkervisible)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:setProvinceAttr](#lglobesetprovinceattr)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:setProvinceSector](#lglobesetprovincesector)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:setProvinceTexture](#lglobesetprovincetexture)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:setRotation](#lglobesetrotation)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:setTimeOfDay](#lglobesettimeofday)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:type](#lglobetype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:typeOf](#lglobetypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:update](#lglobeupdate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobe:zoom](#lglobezoom)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobeRegistry:get](#lgloberegistryget)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobeRegistry:names](#lgloberegistrynames)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobeRegistry:new](#lgloberegistrynew)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobeRegistry:remove](#lgloberegistryremove)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobeRegistry:type](#lgloberegistrytype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LGlobeRegistry:typeOf](#lgloberegistrytypeof)
+    - [Definition](#definition)
+    - [Description](#description)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -145,21 +303,32 @@ lurek.globe.new(name: string, [spec_tbl]: table) -> LGlobe -- Creates a named gl
 
 ### lurek.globe.generateVoronoi
 
-`lurek.globe.generateVoronoi(name: string, seeds_tbl: table, [spec_tbl]: table) -> LGlobe`
+#### Definition
+
+```lua
+--- Creates a globe and populates provinces from latitude-longitude seed points.
+---@param name string Globe registry name.
+---@param seeds_tbl table Array table of `{lat, lon}` seed pairs.
+---@param spec_tbl? table Globe specification table.
+---@return LGlobe New generated globe handle.
+lurek.globe.generateVoronoi = function(name, seeds_tbl, spec_tbl) end
+```
+
+#### Description
 
 Creates a globe and populates provinces from latitude-longitude seed points.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, required): Globe registry name.
 - `seeds_tbl` (`table`, required): Array table of `{lat, lon}` seed pairs.
 - `spec_tbl` (`table`, optional): Globe specification table.
 
-**Returns**: `LGlobe` - New generated globe handle.
+Returns: `LGlobe` - New generated globe handle.
 
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -170,19 +339,28 @@ end
 
 ### lurek.globe.get
 
-`lurek.globe.get(name: string) -> LGlobe`
+#### Definition
+
+```lua
+--- Returns a globe from the module registry by name.
+---@param name string Globe registry name.
+---@return LGlobe Globe handle, or nil when no globe exists with that name.
+lurek.globe.get = function(name) end
+```
+
+#### Description
 
 Returns a globe from the module registry by name.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, required): Globe registry name.
 
-**Returns**: `LGlobe` - Globe handle, or nil when no globe exists with that name.
+Returns: `LGlobe` - Globe handle, or nil when no globe exists with that name.
 
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -196,22 +374,34 @@ end
 
 ### lurek.globe.greatCircleDistance
 
-`lurek.globe.greatCircleDistance(la: number, lo: number, lb: number, lo2: number) -> number`
+#### Definition
+
+```lua
+--- Computes great-circle distance between two latitude-longitude points.
+---@param la number Start latitude in degrees.
+---@param lo number Start longitude in degrees.
+---@param lb number End latitude in degrees.
+---@param lo2 number End longitude in degrees.
+---@return number Great-circle distance on the unit sphere.
+lurek.globe.greatCircleDistance = function(la, lo, lb, lo2) end
+```
+
+#### Description
 
 Computes great-circle distance between two latitude-longitude points.
 
-**Parameters**
+Parameters:
 
 - `la` (`number`, required): Start latitude in degrees.
 - `lo` (`number`, required): Start longitude in degrees.
 - `lb` (`number`, required): End latitude in degrees.
 - `lo2` (`number`, required): End longitude in degrees.
 
-**Returns**: `number` - Great-circle distance on the unit sphere.
+Returns: `number` - Great-circle distance on the unit sphere.
 
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -222,11 +412,24 @@ end
 
 ### lurek.globe.greatCirclePath
 
-`lurek.globe.greatCirclePath(la: number, lo: number, lb: number, lo2: number, n: integer) -> table`
+#### Definition
+
+```lua
+--- Computes sampled latitude-longitude points along a great-circle path.
+---@param la number Start latitude in degrees.
+---@param lo number Start longitude in degrees.
+---@param lb number End latitude in degrees.
+---@param lo2 number End longitude in degrees.
+---@param n number Number of samples.
+---@return GlobeGreatCirclePathResult Array table of `{lat, lon}` point tables.
+lurek.globe.greatCirclePath = function(la, lo, lb, lo2, n) end
+```
+
+#### Description
 
 Computes sampled latitude-longitude points along a great-circle path.
 
-**Parameters**
+Parameters:
 
 - `la` (`number`, required): Start latitude in degrees.
 - `lo` (`number`, required): Start longitude in degrees.
@@ -234,63 +437,84 @@ Computes sampled latitude-longitude points along a great-circle path.
 - `lo2` (`number`, required): End longitude in degrees.
 - `n` (`integer`, required): Number of samples.
 
-**Returns**: `table` - Array table of `{lat, lon}` point tables.
+Returns: `table` - Array table of `{lat, lon}` point tables.
 
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
     local points = lurek.globe.greatCirclePath(0, 0, 45, 90, 5)
     print("path has " .. #points .. " points")
     for _, p in ipairs(points) do
-        print("  lat=" .. p.lat .. " lng=" .. p.lng)
+        print("  lat=" .. tostring(p[1]) .. " lng=" .. tostring(p[2]))
     end
 end
 ```
 
 ### lurek.globe.latLonToUnit
 
-`lurek.globe.latLonToUnit(lat: number, lon: number) -> table`
+#### Definition
+
+```lua
+--- Converts latitude and longitude to a unit-sphere 3D vector table.
+---@param lat number Latitude in degrees.
+---@param lon number Longitude in degrees.
+---@return GlobeLatLonToUnitResult Array table `{x, y, z}` on the unit sphere.
+lurek.globe.latLonToUnit = function(lat, lon) end
+```
+
+#### Description
 
 Converts latitude and longitude to a unit-sphere 3D vector table.
 
-**Parameters**
+Parameters:
 
 - `lat` (`number`, required): Latitude in degrees.
 - `lon` (`number`, required): Longitude in degrees.
 
-**Returns**: `table` - Array table `{x, y, z}` on the unit sphere.
+Returns: `table` - Array table `{x, y, z}` on the unit sphere.
 
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
     local v = lurek.globe.latLonToUnit(0, 0)
-    print("unit vec = " .. v.x .. "," .. v.y .. "," .. v.z)
+    print("unit vec = " .. tostring(v[1]) .. "," .. tostring(v[2]) .. "," .. tostring(v[3]))
 end
 ```
 
 ### lurek.globe.loadFromPNG
 
-`lurek.globe.loadFromPNG(name: string, png_path: string, [spec_tbl]: table) -> LGlobe`
+#### Definition
+
+```lua
+--- Creates a globe and populates provinces from a PNG file.
+---@param name string Globe registry name.
+---@param png_path string PNG file path to load.
+---@param spec_tbl? table Globe specification table.
+---@return LGlobe New populated globe handle.
+lurek.globe.loadFromPNG = function(name, png_path, spec_tbl) end
+```
+
+#### Description
 
 Creates a globe and populates provinces from a PNG file.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, required): Globe registry name.
 - `png_path` (`string`, required): PNG file path to load.
 - `spec_tbl` (`table`, optional): Globe specification table.
 
-**Returns**: `LGlobe` - New populated globe handle.
+Returns: `LGlobe` - New populated globe handle.
 
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -301,21 +525,32 @@ end
 
 ### lurek.globe.loadFromTOML
 
-`lurek.globe.loadFromTOML(name: string, toml_src: string, [spec_tbl]: table) -> LGlobe`
+#### Definition
+
+```lua
+--- Creates a globe and populates provinces from TOML source text.
+---@param name string Globe registry name.
+---@param toml_src string TOML province document source.
+---@param spec_tbl? table Globe specification table.
+---@return LGlobe New populated globe handle.
+lurek.globe.loadFromTOML = function(name, toml_src, spec_tbl) end
+```
+
+#### Description
 
 Creates a globe and populates provinces from TOML source text.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, required): Globe registry name.
 - `toml_src` (`string`, required): TOML province document source.
 - `spec_tbl` (`table`, optional): Globe specification table.
 
-**Returns**: `LGlobe` - New populated globe handle.
+Returns: `LGlobe` - New populated globe handle.
 
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -327,20 +562,30 @@ end
 
 ### lurek.globe.new
 
-`lurek.globe.new(name: string, [spec_tbl]: table) -> LGlobe`
+#### Definition
+
+```lua
+--- Creates a named globe with optional specification fields in the module registry.
+---@param name string Globe registry name.
+---@param spec_tbl? table Globe specification table.
+---@return LGlobe New globe handle.
+lurek.globe.new = function(name, spec_tbl) end
+```
+
+#### Description
 
 Creates a named globe with optional specification fields in the module registry.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, required): Globe registry name.
 - `spec_tbl` (`table`, optional): Globe specification table.
 
-**Returns**: `LGlobe` - New globe handle.
+Returns: `LGlobe` - New globe handle.
 
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -356,9 +601,7 @@ end
 
 ### LGlobe
 
-Lua-side handle for a named globe stored inside a shared registry.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side handle for a named globe stored inside a shared registry.
@@ -366,9 +609,13 @@ Lua-side handle for a named globe stored inside a shared registry.
 LGlobe = {}
 ```
 
+#### Description
+
+Lua-side handle for a named globe stored inside a shared registry.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -379,9 +626,7 @@ end
 
 ### LGlobeRegistry
 
-Lua-side handle for creating and locating named globes in one registry.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side handle for creating and locating named globes in one registry.
@@ -389,9 +634,13 @@ Lua-side handle for creating and locating named globes in one registry.
 LGlobeRegistry = {}
 ```
 
+#### Description
+
+Lua-side handle for creating and locating named globes in one registry.
+
 #### Example
 
-Module-level example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 --- Globe Module Part 1: factories, registry, constants, utilities
@@ -450,21 +699,7 @@ do
 
 ### LGlobe:addArc
 
-`LGlobe:addArc(lat1: number, lon1: number, lat2: number, lon2: number, [steps]: integer) -> integer`
-
-Adds a visible route arc between two latitude and longitude points.
-
-**Parameters**
-
-- `lat1` (`number`, required): Start latitude in degrees.
-- `lon1` (`number`, required): Start longitude in degrees.
-- `lat2` (`number`, required): End latitude in degrees.
-- `lon2` (`number`, required): End longitude in degrees.
-- `steps` (`integer`, optional): Point count for the arc, defaulting to 24.
-
-**Returns**: `integer` - New arc id.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a visible route arc between two latitude and longitude points.
@@ -477,9 +712,23 @@ Adds a visible route arc between two latitude and longitude points.
 function LGlobe:addArc(lat1, lon1, lat2, lon2, steps) end
 ```
 
+#### Description
+
+Adds a visible route arc between two latitude and longitude points.
+
+Parameters:
+
+- `lat1` (`number`, required): Start latitude in degrees.
+- `lon1` (`number`, required): Start longitude in degrees.
+- `lat2` (`number`, required): End latitude in degrees.
+- `lon2` (`number`, required): End longitude in degrees.
+- `steps` (`integer`, optional): Point count for the arc, defaulting to 24.
+
+Returns: `integer` - New arc id.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -491,20 +740,7 @@ end
 
 ### LGlobe:addLabel
 
-`LGlobe:addLabel(ltype: string, lat: number, lon: number, text: string) -> integer`
-
-Adds a text label at latitude and longitude.
-
-**Parameters**
-
-- `ltype` (`string`, required): Label type name.
-- `lat` (`number`, required): Latitude in degrees.
-- `lon` (`number`, required): Longitude in degrees.
-- `text` (`string`, required): Label text.
-
-**Returns**: `integer` - New label id.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a text label at latitude and longitude.
@@ -516,9 +752,22 @@ Adds a text label at latitude and longitude.
 function LGlobe:addLabel(ltype, lat, lon, text) end
 ```
 
+#### Description
+
+Adds a text label at latitude and longitude.
+
+Parameters:
+
+- `ltype` (`string`, required): Label type name.
+- `lat` (`number`, required): Latitude in degrees.
+- `lon` (`number`, required): Longitude in degrees.
+- `text` (`string`, required): Label text.
+
+Returns: `integer` - New label id.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -530,16 +779,7 @@ end
 
 ### LGlobe:addLayer
 
-`LGlobe:addLayer(name: string, [z_order]: integer)`
-
-Adds a render layer with optional z-order.
-
-**Parameters**
-
-- `name` (`string`, required): Layer name.
-- `z_order` (`integer`, optional): Layer z-order, defaulting to zero.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a render layer with optional z-order.
@@ -548,9 +788,18 @@ Adds a render layer with optional z-order.
 function LGlobe:addLayer(name, z_order) end
 ```
 
+#### Description
+
+Adds a render layer with optional z-order.
+
+Parameters:
+
+- `name` (`string`, required): Layer name.
+- `z_order` (`integer`, optional): Layer z-order, defaulting to zero.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -563,20 +812,7 @@ end
 
 ### LGlobe:addMarker
 
-`LGlobe:addMarker(mtype: string, lat: number, lon: number, [label]: string) -> integer`
-
-Adds a marker at latitude and longitude with an optional label.
-
-**Parameters**
-
-- `mtype` (`string`, required): Marker type name.
-- `lat` (`number`, required): Latitude in degrees.
-- `lon` (`number`, required): Longitude in degrees.
-- `label` (`string`, optional): Marker label.
-
-**Returns**: `integer` - New marker id.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a marker at latitude and longitude with an optional label.
@@ -588,9 +824,22 @@ Adds a marker at latitude and longitude with an optional label.
 function LGlobe:addMarker(mtype, lat, lon, label) end
 ```
 
+#### Description
+
+Adds a marker at latitude and longitude with an optional label.
+
+Parameters:
+
+- `mtype` (`string`, required): Marker type name.
+- `lat` (`number`, required): Latitude in degrees.
+- `lon` (`number`, required): Longitude in degrees.
+- `label` (`string`, optional): Marker label.
+
+Returns: `integer` - New marker id.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -602,17 +851,7 @@ end
 
 ### LGlobe:addProvince
 
-`LGlobe:addProvince(p: table) -> boolean`
-
-Adds a province described by id, centroid, vertices, neighbors, and optional base color.
-
-**Parameters**
-
-- `p` (`table`, required): Province table with `id`, `centroid`, `vertices`, optional `neighbors`, and optional `base_color`.
-
-**Returns**: `boolean` - True when the province was accepted by the globe.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a province described by id, centroid, vertices, neighbors, and optional base color.
@@ -621,9 +860,19 @@ Adds a province described by id, centroid, vertices, neighbors, and optional bas
 function LGlobe:addProvince(p) end
 ```
 
+#### Description
+
+Adds a province described by id, centroid, vertices, neighbors, and optional base color.
+
+Parameters:
+
+- `p` (`table`, required): Province table with `id`, `centroid`, `vertices`, optional `neighbors`, and optional `base_color`.
+
+Returns: `boolean` - True when the province was accepted by the globe.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -635,17 +884,7 @@ end
 
 ### LGlobe:cacheReachability
 
-`LGlobe:cacheReachability(faction: string, start_id: integer, max_cost: number)`
-
-Caches default-cost reachability for a named faction.
-
-**Parameters**
-
-- `faction` (`string`, required): Faction cache key.
-- `start_id` (`integer`, required): Start province id.
-- `max_cost` (`number`, required): Maximum traversal cost.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Caches default-cost reachability for a named faction.
@@ -655,9 +894,19 @@ Caches default-cost reachability for a named faction.
 function LGlobe:cacheReachability(faction, start_id, max_cost) end
 ```
 
+#### Description
+
+Caches default-cost reachability for a named faction.
+
+Parameters:
+
+- `faction` (`string`, required): Faction cache key.
+- `start_id` (`integer`, required): Start province id.
+- `max_cost` (`number`, required): Maximum traversal cost.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -670,17 +919,7 @@ end
 
 ### LGlobe:clearProvinceTexture
 
-`LGlobe:clearProvinceTexture(id: integer) -> boolean`
-
-Removes texture metadata from a province.
-
-**Parameters**
-
-- `id` (`integer`, required): Province id.
-
-**Returns**: `boolean` - True when the province exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes texture metadata from a province.
@@ -689,9 +928,19 @@ Removes texture metadata from a province.
 function LGlobe:clearProvinceTexture(id) end
 ```
 
+#### Description
+
+Removes texture metadata from a province.
+
+Parameters:
+
+- `id` (`integer`, required): Province id.
+
+Returns: `boolean` - True when the province exists.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -705,18 +954,7 @@ end
 
 ### LGlobe:decodeFogBase64
 
-`LGlobe:decodeFogBase64(viewer: string, payload: string) -> boolean`
-
-Loads one viewer's fog state from a base64 string.
-
-**Parameters**
-
-- `viewer` (`string`, required): Viewer name.
-- `payload` (`string`, required): Base64-encoded fog state.
-
-**Returns**: `boolean` - True when the payload was decoded.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Loads one viewer's fog state from a base64 string.
@@ -726,9 +964,20 @@ Loads one viewer's fog state from a base64 string.
 function LGlobe:decodeFogBase64(viewer, payload) end
 ```
 
+#### Description
+
+Loads one viewer's fog state from a base64 string.
+
+Parameters:
+
+- `viewer` (`string`, required): Viewer name.
+- `payload` (`string`, required): Base64-encoded fog state.
+
+Returns: `boolean` - True when the payload was decoded.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -741,17 +990,7 @@ end
 
 ### LGlobe:encodeFogBase64
 
-`LGlobe:encodeFogBase64(viewer: string) -> string`
-
-Serializes one viewer's fog state to a base64 string.
-
-**Parameters**
-
-- `viewer` (`string`, required): Viewer name.
-
-**Returns**: `string` - Base64-encoded fog state, or an empty string on encode failure.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Serializes one viewer's fog state to a base64 string.
@@ -760,9 +999,19 @@ Serializes one viewer's fog state to a base64 string.
 function LGlobe:encodeFogBase64(viewer) end
 ```
 
+#### Description
+
+Serializes one viewer's fog state to a base64 string.
+
+Parameters:
+
+- `viewer` (`string`, required): Viewer name.
+
+Returns: `string` - Base64-encoded fog state, or an empty string on encode failure.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -774,13 +1023,7 @@ end
 
 ### LGlobe:exportProvinceMeshOBJ
 
-`LGlobe:exportProvinceMeshOBJ() -> string`
-
-Exports province geometry as Wavefront OBJ text.
-
-**Returns**: `string` - OBJ mesh text for the current provinces.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Exports province geometry as Wavefront OBJ text.
@@ -788,9 +1031,15 @@ Exports province geometry as Wavefront OBJ text.
 function LGlobe:exportProvinceMeshOBJ() end
 ```
 
+#### Description
+
+Exports province geometry as Wavefront OBJ text.
+
+Returns: `string` - OBJ mesh text for the current provinces.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -803,18 +1052,7 @@ end
 
 ### LGlobe:findPath
 
-`LGlobe:findPath(from_id: integer, to_id: integer) -> string[]`
-
-Finds a default-cost province path between two province ids.
-
-**Parameters**
-
-- `from_id` (`integer`, required): Start province id.
-- `to_id` (`integer`, required): Target province id.
-
-**Returns**: `string[]` - Province ids, or nil when no path exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Finds a default-cost province path between two province ids.
@@ -824,9 +1062,20 @@ Finds a default-cost province path between two province ids.
 function LGlobe:findPath(from_id, to_id) end
 ```
 
+#### Description
+
+Finds a default-cost province path between two province ids.
+
+Parameters:
+
+- `from_id` (`integer`, required): Start province id.
+- `to_id` (`integer`, required): Target province id.
+
+Returns: `string[]` - Province ids, or nil when no path exists.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -839,17 +1088,7 @@ end
 
 ### LGlobe:getCachedReachability
 
-`LGlobe:getCachedReachability(faction: string) -> table`
-
-Returns cached reachability costs for a faction.
-
-**Parameters**
-
-- `faction` (`string`, required): Faction cache key.
-
-**Returns**: `table` - Map table from province id (integer key) to accumulated traversal cost (number), empty when missing.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns cached reachability costs for a faction.
@@ -858,9 +1097,19 @@ Returns cached reachability costs for a faction.
 function LGlobe:getCachedReachability(faction) end
 ```
 
+#### Description
+
+Returns cached reachability costs for a faction.
+
+Parameters:
+
+- `faction` (`string`, required): Faction cache key.
+
+Returns: `table` - Map table from province id (integer key) to accumulated traversal cost (number), empty when missing.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -874,13 +1123,7 @@ end
 
 ### LGlobe:getCamera
 
-`LGlobe:getCamera() -> number`
-
-Returns camera latitude, longitude, and zoom.
-
-**Returns**: `number` - Camera latitude in degrees.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns camera latitude, longitude, and zoom.
@@ -890,9 +1133,15 @@ Returns camera latitude, longitude, and zoom.
 function LGlobe:getCamera() end
 ```
 
+#### Description
+
+Returns camera latitude, longitude, and zoom.
+
+Returns: `number` - Camera latitude in degrees.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -905,18 +1154,7 @@ end
 
 ### LGlobe:getFogState
 
-`LGlobe:getFogState(viewer: string, id: integer) -> string`
-
-Returns fog-of-war state for one viewer and province.
-
-**Parameters**
-
-- `viewer` (`string`, required): Viewer name.
-- `id` (`integer`, required): Province id.
-
-**Returns**: `string` - `visible`, `explored`, or `hidden`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns fog-of-war state for one viewer and province.
@@ -926,9 +1164,20 @@ Returns fog-of-war state for one viewer and province.
 function LGlobe:getFogState(viewer, id) end
 ```
 
+#### Description
+
+Returns fog-of-war state for one viewer and province.
+
+Parameters:
+
+- `viewer` (`string`, required): Viewer name.
+- `id` (`integer`, required): Province id.
+
+Returns: `string` - `visible`, `explored`, or `hidden`.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -942,13 +1191,7 @@ end
 
 ### LGlobe:getLod
 
-`LGlobe:getLod() -> string`
-
-Returns the camera-derived level-of-detail tier name.
-
-**Returns**: `string` - One of `far`, `mid`, or `near`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the camera-derived level-of-detail tier name.
@@ -956,9 +1199,15 @@ Returns the camera-derived level-of-detail tier name.
 function LGlobe:getLod() end
 ```
 
+#### Description
+
+Returns the camera-derived level-of-detail tier name.
+
+Returns: `string` - One of `far`, `mid`, or `near`.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -970,18 +1219,7 @@ end
 
 ### LGlobe:getMarkerAttr
 
-`LGlobe:getMarkerAttr(id: integer, key: string) -> string`
-
-Reads a string attribute from a marker.
-
-**Parameters**
-
-- `id` (`integer`, required): Marker id.
-- `key` (`string`, required): Attribute key.
-
-**Returns**: `string` - Attribute string, or nil when missing.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Reads a string attribute from a marker.
@@ -991,9 +1229,20 @@ Reads a string attribute from a marker.
 function LGlobe:getMarkerAttr(id, key) end
 ```
 
+#### Description
+
+Reads a string attribute from a marker.
+
+Parameters:
+
+- `id` (`integer`, required): Marker id.
+- `key` (`string`, required): Attribute key.
+
+Returns: `string` - Attribute string, or nil when missing.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -1007,13 +1256,7 @@ end
 
 ### LGlobe:getName
 
-`LGlobe:getName() -> string`
-
-Returns the registry name of this globe.
-
-**Returns**: `string` - Globe registry name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the registry name of this globe.
@@ -1021,9 +1264,15 @@ Returns the registry name of this globe.
 function LGlobe:getName() end
 ```
 
+#### Description
+
+Returns the registry name of this globe.
+
+Returns: `string` - Globe registry name.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -1034,17 +1283,7 @@ end
 
 ### LGlobe:getNeighbors
 
-`LGlobe:getNeighbors(id: integer) -> integer[]`
-
-Returns neighboring province ids for a province.
-
-**Parameters**
-
-- `id` (`integer`, required): Province id.
-
-**Returns**: `integer[]` - Array table of neighboring province ids.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns neighboring province ids for a province.
@@ -1053,9 +1292,19 @@ Returns neighboring province ids for a province.
 function LGlobe:getNeighbors(id) end
 ```
 
+#### Description
+
+Returns neighboring province ids for a province.
+
+Parameters:
+
+- `id` (`integer`, required): Province id.
+
+Returns: `integer[]` - Array table of neighboring province ids.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -1068,18 +1317,7 @@ end
 
 ### LGlobe:getProvinceAttr
 
-`LGlobe:getProvinceAttr(id: integer, key: string) -> string`
-
-Reads a string attribute from a province.
-
-**Parameters**
-
-- `id` (`integer`, required): Province id.
-- `key` (`string`, required): Attribute key.
-
-**Returns**: `string` - Attribute string, or nil when the province or key is missing.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Reads a string attribute from a province.
@@ -1089,9 +1327,20 @@ Reads a string attribute from a province.
 function LGlobe:getProvinceAttr(id, key) end
 ```
 
+#### Description
+
+Reads a string attribute from a province.
+
+Parameters:
+
+- `id` (`integer`, required): Province id.
+- `key` (`string`, required): Attribute key.
+
+Returns: `string` - Attribute string, or nil when the province or key is missing.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -1105,17 +1354,7 @@ end
 
 ### LGlobe:getProvinceSector
 
-`LGlobe:getProvinceSector(id: integer) -> string`
-
-Returns the sector name assigned to a province.
-
-**Parameters**
-
-- `id` (`integer`, required): Province id.
-
-**Returns**: `string` - Sector string, or nil when absent.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the sector name assigned to a province.
@@ -1124,9 +1363,19 @@ Returns the sector name assigned to a province.
 function LGlobe:getProvinceSector(id) end
 ```
 
+#### Description
+
+Returns the sector name assigned to a province.
+
+Parameters:
+
+- `id` (`integer`, required): Province id.
+
+Returns: `string` - Sector string, or nil when absent.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -1140,17 +1389,7 @@ end
 
 ### LGlobe:getSectorProvinces
 
-`LGlobe:getSectorProvinces(sector: string) -> integer[]`
-
-Returns province ids assigned to a sector.
-
-**Parameters**
-
-- `sector` (`string`, required): Sector name.
-
-**Returns**: `integer[]` - Array table of province ids.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns province ids assigned to a sector.
@@ -1159,9 +1398,19 @@ Returns province ids assigned to a sector.
 function LGlobe:getSectorProvinces(sector) end
 ```
 
+#### Description
+
+Returns province ids assigned to a sector.
+
+Parameters:
+
+- `sector` (`string`, required): Sector name.
+
+Returns: `integer[]` - Array table of province ids.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -1175,13 +1424,7 @@ end
 
 ### LGlobe:getTimeOfDay
 
-`LGlobe:getTimeOfDay() -> number`
-
-Returns globe time of day. This method is available to Lua scripts.
-
-**Returns**: `number` - Time of day in hours.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns globe time of day. This method is available to Lua scripts.
@@ -1189,9 +1432,15 @@ Returns globe time of day. This method is available to Lua scripts.
 function LGlobe:getTimeOfDay() end
 ```
 
+#### Description
+
+Returns globe time of day. This method is available to Lua scripts.
+
+Returns: `number` - Time of day in hours.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -1204,16 +1453,7 @@ end
 
 ### LGlobe:hideProvince
 
-`LGlobe:hideProvince(viewer: string, id: integer)`
-
-Hides a province for one fog-of-war viewer.
-
-**Parameters**
-
-- `viewer` (`string`, required): Viewer name.
-- `id` (`integer`, required): Province id.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Hides a province for one fog-of-war viewer.
@@ -1222,9 +1462,18 @@ Hides a province for one fog-of-war viewer.
 function LGlobe:hideProvince(viewer, id) end
 ```
 
+#### Description
+
+Hides a province for one fog-of-war viewer.
+
+Parameters:
+
+- `viewer` (`string`, required): Viewer name.
+- `id` (`integer`, required): Province id.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -1237,18 +1486,7 @@ end
 
 ### LGlobe:isVisible
 
-`LGlobe:isVisible(viewer: string, id: integer) -> boolean`
-
-Returns whether a province is visible for one fog-of-war viewer.
-
-**Parameters**
-
-- `viewer` (`string`, required): Viewer name.
-- `id` (`integer`, required): Province id.
-
-**Returns**: `boolean` - True when the province is visible.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether a province is visible for one fog-of-war viewer.
@@ -1258,9 +1496,20 @@ Returns whether a province is visible for one fog-of-war viewer.
 function LGlobe:isVisible(viewer, id) end
 ```
 
+#### Description
+
+Returns whether a province is visible for one fog-of-war viewer.
+
+Parameters:
+
+- `viewer` (`string`, required): Viewer name.
+- `id` (`integer`, required): Province id.
+
+Returns: `boolean` - True when the province is visible.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -1273,19 +1522,7 @@ end
 
 ### LGlobe:moveMarker
 
-`LGlobe:moveMarker(id: integer, lat: number, lon: number) -> boolean`
-
-Moves a marker to latitude and longitude coordinates.
-
-**Parameters**
-
-- `id` (`integer`, required): Marker id.
-- `lat` (`number`, required): Latitude in degrees.
-- `lon` (`number`, required): Longitude in degrees.
-
-**Returns**: `boolean` - True when the marker exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Moves a marker to latitude and longitude coordinates.
@@ -1296,9 +1533,21 @@ Moves a marker to latitude and longitude coordinates.
 function LGlobe:moveMarker(id, lat, lon) end
 ```
 
+#### Description
+
+Moves a marker to latitude and longitude coordinates.
+
+Parameters:
+
+- `id` (`integer`, required): Marker id.
+- `lat` (`number`, required): Latitude in degrees.
+- `lon` (`number`, required): Longitude in degrees.
+
+Returns: `boolean` - True when the marker exists.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -1311,16 +1560,7 @@ end
 
 ### LGlobe:pan
 
-`LGlobe:pan(dlat: number, dlon: number)`
-
-Pans the globe camera by latitude and longitude deltas.
-
-**Parameters**
-
-- `dlat` (`number`, required): Latitude delta in degrees.
-- `dlon` (`number`, required): Longitude delta in degrees.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Pans the globe camera by latitude and longitude deltas.
@@ -1329,9 +1569,18 @@ Pans the globe camera by latitude and longitude deltas.
 function LGlobe:pan(dlat, dlon) end
 ```
 
+#### Description
+
+Pans the globe camera by latitude and longitude deltas.
+
+Parameters:
+
+- `dlat` (`number`, required): Latitude delta in degrees.
+- `dlon` (`number`, required): Longitude delta in degrees.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -1345,18 +1594,7 @@ end
 
 ### LGlobe:pick
 
-`LGlobe:pick(sx: number, sy: number) -> integer`
-
-Picks a province at screen coordinates.
-
-**Parameters**
-
-- `sx` (`number`, required): Screen x coordinate.
-- `sy` (`number`, required): Screen y coordinate.
-
-**Returns**: `integer` - Province id, or nil when nothing is hit.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Picks a province at screen coordinates.
@@ -1366,9 +1604,20 @@ Picks a province at screen coordinates.
 function LGlobe:pick(sx, sy) end
 ```
 
+#### Description
+
+Picks a province at screen coordinates.
+
+Parameters:
+
+- `sx` (`number`, required): Screen x coordinate.
+- `sy` (`number`, required): Screen y coordinate.
+
+Returns: `integer` - Province id, or nil when nothing is hit.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -1380,18 +1629,7 @@ end
 
 ### LGlobe:pickLatLon
 
-`LGlobe:pickLatLon(sx: number, sy: number) -> number`
-
-Picks at screen coordinates and returns the hit province centroid screen coordinates.
-
-**Parameters**
-
-- `sx` (`number`, required): Screen x coordinate.
-- `sy` (`number`, required): Screen y coordinate.
-
-**Returns**: `number` - Centroid x coordinate, or nil when nothing is hit.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Picks at screen coordinates and returns the hit province centroid screen coordinates.
@@ -1402,9 +1640,20 @@ Picks at screen coordinates and returns the hit province centroid screen coordin
 function LGlobe:pickLatLon(sx, sy) end
 ```
 
+#### Description
+
+Picks at screen coordinates and returns the hit province centroid screen coordinates.
+
+Parameters:
+
+- `sx` (`number`, required): Screen x coordinate.
+- `sy` (`number`, required): Screen y coordinate.
+
+Returns: `number` - Centroid x coordinate, or nil when nothing is hit.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -1416,19 +1665,7 @@ end
 
 ### LGlobe:pickRaycast
 
-`LGlobe:pickRaycast(sx: number, sy: number, [steps]: integer) -> integer`
-
-Samples along a screen ray from the camera center and returns the first hit province.
-
-**Parameters**
-
-- `sx` (`number`, required): Target screen x coordinate.
-- `sy` (`number`, required): Target screen y coordinate.
-- `steps` (`integer`, optional): Number of samples along the ray, defaulting to 24.
-
-**Returns**: `integer` - Province id, or nil when no sample hits.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Samples along a screen ray from the camera center and returns the first hit province.
@@ -1439,9 +1676,21 @@ Samples along a screen ray from the camera center and returns the first hit prov
 function LGlobe:pickRaycast(sx, sy, steps) end
 ```
 
+#### Description
+
+Samples along a screen ray from the camera center and returns the first hit province.
+
+Parameters:
+
+- `sx` (`number`, required): Target screen x coordinate.
+- `sy` (`number`, required): Target screen y coordinate.
+- `steps` (`integer`, optional): Number of samples along the ray, defaulting to 24.
+
+Returns: `integer` - Province id, or nil when no sample hits.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -1453,13 +1702,7 @@ end
 
 ### LGlobe:provinceCount
 
-`LGlobe:provinceCount() -> integer`
-
-Returns the number of provinces in this globe.
-
-**Returns**: `integer` - Province count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of provinces in this globe.
@@ -1467,9 +1710,15 @@ Returns the number of provinces in this globe.
 function LGlobe:provinceCount() end
 ```
 
+#### Description
+
+Returns the number of provinces in this globe.
+
+Returns: `integer` - Province count.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -1480,18 +1729,7 @@ end
 
 ### LGlobe:reachable
 
-`LGlobe:reachable(start_id: integer, max_cost: number) -> table`
-
-Returns provinces reachable from a start province within a cost budget.
-
-**Parameters**
-
-- `start_id` (`integer`, required): Start province id.
-- `max_cost` (`number`, required): Maximum traversal cost.
-
-**Returns**: `table` - Map table from province id (integer key) to accumulated traversal cost (number).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns provinces reachable from a start province within a cost budget.
@@ -1501,9 +1739,20 @@ Returns provinces reachable from a start province within a cost budget.
 function LGlobe:reachable(start_id, max_cost) end
 ```
 
+#### Description
+
+Returns provinces reachable from a start province within a cost budget.
+
+Parameters:
+
+- `start_id` (`integer`, required): Start province id.
+- `max_cost` (`number`, required): Maximum traversal cost.
+
+Returns: `table` - Map table from province id (integer key) to accumulated traversal cost (number).
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -1517,17 +1766,7 @@ end
 
 ### LGlobe:removeArc
 
-`LGlobe:removeArc(id: integer) -> boolean`
-
-Removes an arc by id. This method is available to Lua scripts.
-
-**Parameters**
-
-- `id` (`integer`, required): Arc id.
-
-**Returns**: `boolean` - True when an arc was removed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes an arc by id. This method is available to Lua scripts.
@@ -1536,9 +1775,19 @@ Removes an arc by id. This method is available to Lua scripts.
 function LGlobe:removeArc(id) end
 ```
 
+#### Description
+
+Removes an arc by id. This method is available to Lua scripts.
+
+Parameters:
+
+- `id` (`integer`, required): Arc id.
+
+Returns: `boolean` - True when an arc was removed.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -1551,17 +1800,7 @@ end
 
 ### LGlobe:removeHeatLayer
 
-`LGlobe:removeHeatLayer(name: string) -> boolean`
-
-Removes a heat layer by name. This method is available to Lua scripts.
-
-**Parameters**
-
-- `name` (`string`, required): Heat layer name.
-
-**Returns**: `boolean` - True when a layer was removed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes a heat layer by name. This method is available to Lua scripts.
@@ -1570,9 +1809,19 @@ Removes a heat layer by name. This method is available to Lua scripts.
 function LGlobe:removeHeatLayer(name) end
 ```
 
+#### Description
+
+Removes a heat layer by name. This method is available to Lua scripts.
+
+Parameters:
+
+- `name` (`string`, required): Heat layer name.
+
+Returns: `boolean` - True when a layer was removed.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -1585,17 +1834,7 @@ end
 
 ### LGlobe:removeLabel
 
-`LGlobe:removeLabel(id: integer) -> boolean`
-
-Removes a label by id. This method is available to Lua scripts.
-
-**Parameters**
-
-- `id` (`integer`, required): Label id.
-
-**Returns**: `boolean` - True when a label was removed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes a label by id. This method is available to Lua scripts.
@@ -1604,9 +1843,19 @@ Removes a label by id. This method is available to Lua scripts.
 function LGlobe:removeLabel(id) end
 ```
 
+#### Description
+
+Removes a label by id. This method is available to Lua scripts.
+
+Parameters:
+
+- `id` (`integer`, required): Label id.
+
+Returns: `boolean` - True when a label was removed.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -1619,17 +1868,7 @@ end
 
 ### LGlobe:removeLayer
 
-`LGlobe:removeLayer(name: string) -> boolean`
-
-Removes a render layer by name. This method is available to Lua scripts.
-
-**Parameters**
-
-- `name` (`string`, required): Layer name.
-
-**Returns**: `boolean` - True when a layer was removed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes a render layer by name. This method is available to Lua scripts.
@@ -1638,9 +1877,19 @@ Removes a render layer by name. This method is available to Lua scripts.
 function LGlobe:removeLayer(name) end
 ```
 
+#### Description
+
+Removes a render layer by name. This method is available to Lua scripts.
+
+Parameters:
+
+- `name` (`string`, required): Layer name.
+
+Returns: `boolean` - True when a layer was removed.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -1653,17 +1902,7 @@ end
 
 ### LGlobe:removeMarker
 
-`LGlobe:removeMarker(id: integer) -> boolean`
-
-Removes a marker by id. This method is available to Lua scripts.
-
-**Parameters**
-
-- `id` (`integer`, required): Marker id.
-
-**Returns**: `boolean` - True when a marker was removed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes a marker by id. This method is available to Lua scripts.
@@ -1672,9 +1911,19 @@ Removes a marker by id. This method is available to Lua scripts.
 function LGlobe:removeMarker(id) end
 ```
 
+#### Description
+
+Removes a marker by id. This method is available to Lua scripts.
+
+Parameters:
+
+- `id` (`integer`, required): Marker id.
+
+Returns: `boolean` - True when a marker was removed.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -1687,17 +1936,7 @@ end
 
 ### LGlobe:removeProvince
 
-`LGlobe:removeProvince(id: integer) -> boolean`
-
-Removes a province by id. This method is available to Lua scripts.
-
-**Parameters**
-
-- `id` (`integer`, required): Province id to remove.
-
-**Returns**: `boolean` - True when a province was removed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes a province by id. This method is available to Lua scripts.
@@ -1706,9 +1945,19 @@ Removes a province by id. This method is available to Lua scripts.
 function LGlobe:removeProvince(id) end
 ```
 
+#### Description
+
+Removes a province by id. This method is available to Lua scripts.
+
+Parameters:
+
+- `id` (`integer`, required): Province id to remove.
+
+Returns: `boolean` - True when a province was removed.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -1721,15 +1970,7 @@ end
 
 ### LGlobe:revealAll
 
-`LGlobe:revealAll(viewer: string)`
-
-Reveals every province for one fog-of-war viewer.
-
-**Parameters**
-
-- `viewer` (`string`, required): Viewer name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Reveals every province for one fog-of-war viewer.
@@ -1737,9 +1978,17 @@ Reveals every province for one fog-of-war viewer.
 function LGlobe:revealAll(viewer) end
 ```
 
+#### Description
+
+Reveals every province for one fog-of-war viewer.
+
+Parameters:
+
+- `viewer` (`string`, required): Viewer name.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -1751,16 +2000,7 @@ end
 
 ### LGlobe:revealProvince
 
-`LGlobe:revealProvince(viewer: string, id: integer)`
-
-Reveals a province for one fog-of-war viewer.
-
-**Parameters**
-
-- `viewer` (`string`, required): Viewer name.
-- `id` (`integer`, required): Province id.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Reveals a province for one fog-of-war viewer.
@@ -1769,9 +2009,18 @@ Reveals a province for one fog-of-war viewer.
 function LGlobe:revealProvince(viewer, id) end
 ```
 
+#### Description
+
+Reveals a province for one fog-of-war viewer.
+
+Parameters:
+
+- `viewer` (`string`, required): Viewer name.
+- `id` (`integer`, required): Province id.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -1784,15 +2033,7 @@ end
 
 ### LGlobe:setActiveViewer
 
-`LGlobe:setActiveViewer([viewer]: string)`
-
-Sets the active fog-of-war viewer name or clears it.
-
-**Parameters**
-
-- `viewer` (`string`, optional): Viewer name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the active fog-of-war viewer name or clears it.
@@ -1800,9 +2041,17 @@ Sets the active fog-of-war viewer name or clears it.
 function LGlobe:setActiveViewer(viewer) end
 ```
 
+#### Description
+
+Sets the active fog-of-war viewer name or clears it.
+
+Parameters:
+
+- `viewer` (`string`, optional): Viewer name.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -1814,15 +2063,7 @@ end
 
 ### LGlobe:setAutoRotationSpeed
 
-`LGlobe:setAutoRotationSpeed(dps: number)`
-
-Sets automatic globe rotation speed.
-
-**Parameters**
-
-- `dps` (`number`, required): Rotation speed in degrees per second.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets automatic globe rotation speed.
@@ -1830,9 +2071,17 @@ Sets automatic globe rotation speed.
 function LGlobe:setAutoRotationSpeed(dps) end
 ```
 
+#### Description
+
+Sets automatic globe rotation speed.
+
+Parameters:
+
+- `dps` (`number`, required): Rotation speed in degrees per second.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -1844,15 +2093,7 @@ end
 
 ### LGlobe:setBorders
 
-`LGlobe:setBorders(show: boolean)`
-
-Enables or disables province border rendering.
-
-**Parameters**
-
-- `show` (`boolean`, required): New border visibility flag.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Enables or disables province border rendering.
@@ -1860,9 +2101,17 @@ Enables or disables province border rendering.
 function LGlobe:setBorders(show) end
 ```
 
+#### Description
+
+Enables or disables province border rendering.
+
+Parameters:
+
+- `show` (`boolean`, required): New border visibility flag.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -1874,17 +2123,7 @@ end
 
 ### LGlobe:setCamera
 
-`LGlobe:setCamera(lat: number, lon: number, z: number)`
-
-Sets camera latitude, longitude, and zoom.
-
-**Parameters**
-
-- `lat` (`number`, required): Camera latitude in degrees.
-- `lon` (`number`, required): Camera longitude in degrees.
-- `z` (`number`, required): Camera zoom, clamped to at least 0.1.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets camera latitude, longitude, and zoom.
@@ -1894,9 +2133,19 @@ Sets camera latitude, longitude, and zoom.
 function LGlobe:setCamera(lat, lon, z) end
 ```
 
+#### Description
+
+Sets camera latitude, longitude, and zoom.
+
+Parameters:
+
+- `lat` (`number`, required): Camera latitude in degrees.
+- `lon` (`number`, required): Camera longitude in degrees.
+- `z` (`number`, required): Camera zoom, clamped to at least 0.1.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -1908,17 +2157,7 @@ end
 
 ### LGlobe:setFogState
 
-`LGlobe:setFogState(viewer: string, id: integer, state: string)`
-
-Sets fog-of-war state for one viewer and province.
-
-**Parameters**
-
-- `viewer` (`string`, required): Viewer name.
-- `id` (`integer`, required): Province id.
-- `state` (`string`, required): `visible`, `explored`, or any other value for hidden.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets fog-of-war state for one viewer and province.
@@ -1928,9 +2167,19 @@ Sets fog-of-war state for one viewer and province.
 function LGlobe:setFogState(viewer, id, state) end
 ```
 
+#### Description
+
+Sets fog-of-war state for one viewer and province.
+
+Parameters:
+
+- `viewer` (`string`, required): Viewer name.
+- `id` (`integer`, required): Province id.
+- `state` (`string`, required): `visible`, `explored`, or any other value for hidden.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -1943,19 +2192,7 @@ end
 
 ### LGlobe:setHeatLayer
 
-`LGlobe:setHeatLayer(name: string, attr_key: string, min: number, max: number, alpha: number)`
-
-Creates or replaces a heat layer that maps province attributes into colors.
-
-**Parameters**
-
-- `name` (`string`, required): Heat layer name.
-- `attr_key` (`string`, required): Province attribute key read as a numeric value.
-- `min` (`number`, required): Attribute value mapped to cold color.
-- `max` (`number`, required): Attribute value mapped to hot color.
-- `alpha` (`number`, required): Layer alpha clamped to 0.0 through 1.0.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Creates or replaces a heat layer that maps province attributes into colors.
@@ -1967,9 +2204,21 @@ Creates or replaces a heat layer that maps province attributes into colors.
 function LGlobe:setHeatLayer(name, attr_key, min, max, alpha) end
 ```
 
+#### Description
+
+Creates or replaces a heat layer that maps province attributes into colors.
+
+Parameters:
+
+- `name` (`string`, required): Heat layer name.
+- `attr_key` (`string`, required): Province attribute key read as a numeric value.
+- `min` (`number`, required): Attribute value mapped to cold color.
+- `max` (`number`, required): Attribute value mapped to hot color.
+- `alpha` (`number`, required): Layer alpha clamped to 0.0 through 1.0.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -1981,18 +2230,7 @@ end
 
 ### LGlobe:setLabelText
 
-`LGlobe:setLabelText(id: integer, text: string) -> boolean`
-
-Changes text for an existing label.
-
-**Parameters**
-
-- `id` (`integer`, required): Label id.
-- `text` (`string`, required): New label text.
-
-**Returns**: `boolean` - True when the label exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Changes text for an existing label.
@@ -2002,9 +2240,20 @@ Changes text for an existing label.
 function LGlobe:setLabelText(id, text) end
 ```
 
+#### Description
+
+Changes text for an existing label.
+
+Parameters:
+
+- `id` (`integer`, required): Label id.
+- `text` (`string`, required): New label text.
+
+Returns: `boolean` - True when the label exists.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -2017,18 +2266,7 @@ end
 
 ### LGlobe:setLabelVisible
 
-`LGlobe:setLabelVisible(id: integer, vis: boolean) -> boolean`
-
-Shows or hides a label. This method is available to Lua scripts.
-
-**Parameters**
-
-- `id` (`integer`, required): Label id.
-- `vis` (`boolean`, required): New visibility flag.
-
-**Returns**: `boolean` - True when the label exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Shows or hides a label. This method is available to Lua scripts.
@@ -2038,9 +2276,20 @@ Shows or hides a label. This method is available to Lua scripts.
 function LGlobe:setLabelVisible(id, vis) end
 ```
 
+#### Description
+
+Shows or hides a label. This method is available to Lua scripts.
+
+Parameters:
+
+- `id` (`integer`, required): Label id.
+- `vis` (`boolean`, required): New visibility flag.
+
+Returns: `boolean` - True when the label exists.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -2053,18 +2302,7 @@ end
 
 ### LGlobe:setLayerAlpha
 
-`LGlobe:setLayerAlpha(name: string, alpha: number) -> boolean`
-
-Sets render layer alpha. This method is available to Lua scripts.
-
-**Parameters**
-
-- `name` (`string`, required): Layer name.
-- `alpha` (`number`, required): Layer alpha.
-
-**Returns**: `boolean` - True when the layer exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets render layer alpha. This method is available to Lua scripts.
@@ -2074,9 +2312,20 @@ Sets render layer alpha. This method is available to Lua scripts.
 function LGlobe:setLayerAlpha(name, alpha) end
 ```
 
+#### Description
+
+Sets render layer alpha. This method is available to Lua scripts.
+
+Parameters:
+
+- `name` (`string`, required): Layer name.
+- `alpha` (`number`, required): Layer alpha.
+
+Returns: `boolean` - True when the layer exists.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -2089,22 +2338,7 @@ end
 
 ### LGlobe:setLayerColor
 
-`LGlobe:setLayerColor(layer: string, id: integer, r: number, g: number, b: number, a: number) -> boolean`
-
-Sets a province color override inside a render layer.
-
-**Parameters**
-
-- `layer` (`string`, required): Layer name.
-- `id` (`integer`, required): Province id.
-- `r` (`number`, required): Red channel.
-- `g` (`number`, required): Green channel.
-- `b` (`number`, required): Blue channel.
-- `a` (`number`, required): Alpha channel.
-
-**Returns**: `boolean` - True when the layer exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets a province color override inside a render layer.
@@ -2118,9 +2352,24 @@ Sets a province color override inside a render layer.
 function LGlobe:setLayerColor(layer, id, r, g, b, a) end
 ```
 
+#### Description
+
+Sets a province color override inside a render layer.
+
+Parameters:
+
+- `layer` (`string`, required): Layer name.
+- `id` (`integer`, required): Province id.
+- `r` (`number`, required): Red channel.
+- `g` (`number`, required): Green channel.
+- `b` (`number`, required): Blue channel.
+- `a` (`number`, required): Alpha channel.
+
+Returns: `boolean` - True when the layer exists.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -2134,18 +2383,7 @@ end
 
 ### LGlobe:setLayerVisible
 
-`LGlobe:setLayerVisible(name: string, vis: boolean) -> boolean`
-
-Shows or hides a render layer. This method is available to Lua scripts.
-
-**Parameters**
-
-- `name` (`string`, required): Layer name.
-- `vis` (`boolean`, required): New visibility flag.
-
-**Returns**: `boolean` - True when the layer exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Shows or hides a render layer. This method is available to Lua scripts.
@@ -2155,9 +2393,20 @@ Shows or hides a render layer. This method is available to Lua scripts.
 function LGlobe:setLayerVisible(name, vis) end
 ```
 
+#### Description
+
+Shows or hides a render layer. This method is available to Lua scripts.
+
+Parameters:
+
+- `name` (`string`, required): Layer name.
+- `vis` (`boolean`, required): New visibility flag.
+
+Returns: `boolean` - True when the layer exists.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -2170,19 +2419,7 @@ end
 
 ### LGlobe:setMarkerAttr
 
-`LGlobe:setMarkerAttr(id: integer, key: string, val: string) -> boolean`
-
-Sets a string attribute on a marker.
-
-**Parameters**
-
-- `id` (`integer`, required): Marker id.
-- `key` (`string`, required): Attribute key.
-- `val` (`string`, required): Attribute value.
-
-**Returns**: `boolean` - True when the marker exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets a string attribute on a marker.
@@ -2193,9 +2430,21 @@ Sets a string attribute on a marker.
 function LGlobe:setMarkerAttr(id, key, val) end
 ```
 
+#### Description
+
+Sets a string attribute on a marker.
+
+Parameters:
+
+- `id` (`integer`, required): Marker id.
+- `key` (`string`, required): Attribute key.
+- `val` (`string`, required): Attribute value.
+
+Returns: `boolean` - True when the marker exists.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -2208,19 +2457,7 @@ end
 
 ### LGlobe:setMarkerPulse
 
-`LGlobe:setMarkerPulse(id: integer, hz: number, amp: number) -> boolean`
-
-Sets marker pulse frequency and amplitude.
-
-**Parameters**
-
-- `id` (`integer`, required): Marker id.
-- `hz` (`number`, required): Pulse frequency in hertz, clamped to at least zero.
-- `amp` (`number`, required): Pulse amplitude clamped to 0.0 through 1.0.
-
-**Returns**: `boolean` - True when the marker exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets marker pulse frequency and amplitude.
@@ -2231,9 +2468,21 @@ Sets marker pulse frequency and amplitude.
 function LGlobe:setMarkerPulse(id, hz, amp) end
 ```
 
+#### Description
+
+Sets marker pulse frequency and amplitude.
+
+Parameters:
+
+- `id` (`integer`, required): Marker id.
+- `hz` (`number`, required): Pulse frequency in hertz, clamped to at least zero.
+- `amp` (`number`, required): Pulse amplitude clamped to 0.0 through 1.0.
+
+Returns: `boolean` - True when the marker exists.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -2246,18 +2495,7 @@ end
 
 ### LGlobe:setMarkerRotation
 
-`LGlobe:setMarkerRotation(id: integer, dps: number) -> boolean`
-
-Sets marker rotation speed. This method is available to Lua scripts.
-
-**Parameters**
-
-- `id` (`integer`, required): Marker id.
-- `dps` (`number`, required): Rotation speed in degrees per second.
-
-**Returns**: `boolean` - True when the marker exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets marker rotation speed. This method is available to Lua scripts.
@@ -2267,9 +2505,20 @@ Sets marker rotation speed. This method is available to Lua scripts.
 function LGlobe:setMarkerRotation(id, dps) end
 ```
 
+#### Description
+
+Sets marker rotation speed. This method is available to Lua scripts.
+
+Parameters:
+
+- `id` (`integer`, required): Marker id.
+- `dps` (`number`, required): Rotation speed in degrees per second.
+
+Returns: `boolean` - True when the marker exists.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -2282,18 +2531,7 @@ end
 
 ### LGlobe:setMarkerVisible
 
-`LGlobe:setMarkerVisible(id: integer, vis: boolean) -> boolean`
-
-Shows or hides a marker. This method is available to Lua scripts.
-
-**Parameters**
-
-- `id` (`integer`, required): Marker id.
-- `vis` (`boolean`, required): New visibility flag.
-
-**Returns**: `boolean` - True when the marker exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Shows or hides a marker. This method is available to Lua scripts.
@@ -2303,9 +2541,20 @@ Shows or hides a marker. This method is available to Lua scripts.
 function LGlobe:setMarkerVisible(id, vis) end
 ```
 
+#### Description
+
+Shows or hides a marker. This method is available to Lua scripts.
+
+Parameters:
+
+- `id` (`integer`, required): Marker id.
+- `vis` (`boolean`, required): New visibility flag.
+
+Returns: `boolean` - True when the marker exists.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -2318,19 +2567,7 @@ end
 
 ### LGlobe:setProvinceAttr
 
-`LGlobe:setProvinceAttr(id: integer, key: string, val: string) -> boolean`
-
-Sets a string attribute on a province.
-
-**Parameters**
-
-- `id` (`integer`, required): Province id.
-- `key` (`string`, required): Attribute key.
-- `val` (`string`, required): Attribute value.
-
-**Returns**: `boolean` - True when the province exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets a string attribute on a province.
@@ -2341,9 +2578,21 @@ Sets a string attribute on a province.
 function LGlobe:setProvinceAttr(id, key, val) end
 ```
 
+#### Description
+
+Sets a string attribute on a province.
+
+Parameters:
+
+- `id` (`integer`, required): Province id.
+- `key` (`string`, required): Attribute key.
+- `val` (`string`, required): Attribute value.
+
+Returns: `boolean` - True when the province exists.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -2356,18 +2605,7 @@ end
 
 ### LGlobe:setProvinceSector
 
-`LGlobe:setProvinceSector(id: integer, sector: string) -> boolean`
-
-Assigns a province to a named sector.
-
-**Parameters**
-
-- `id` (`integer`, required): Province id.
-- `sector` (`string`, required): Sector name.
-
-**Returns**: `boolean` - True when the province sector was set.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Assigns a province to a named sector.
@@ -2377,9 +2615,20 @@ Assigns a province to a named sector.
 function LGlobe:setProvinceSector(id, sector) end
 ```
 
+#### Description
+
+Assigns a province to a named sector.
+
+Parameters:
+
+- `id` (`integer`, required): Province id.
+- `sector` (`string`, required): Sector name.
+
+Returns: `boolean` - True when the province sector was set.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -2392,22 +2641,7 @@ end
 
 ### LGlobe:setProvinceTexture
 
-`LGlobe:setProvinceTexture(id: integer, tex_raw: integer, u0: number, v0: number, u1: number, v1: number) -> boolean`
-
-Assigns a raw texture handle and UV rectangle to a province.
-
-**Parameters**
-
-- `id` (`integer`, required): Province id.
-- `tex_raw` (`integer`, required): Raw texture identifier stored in province attributes.
-- `u0` (`number`, required): Left UV coordinate.
-- `v0` (`number`, required): Top UV coordinate.
-- `u1` (`number`, required): Right UV coordinate.
-- `v1` (`number`, required): Bottom UV coordinate.
-
-**Returns**: `boolean` - True when the province exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Assigns a raw texture handle and UV rectangle to a province.
@@ -2421,9 +2655,24 @@ Assigns a raw texture handle and UV rectangle to a province.
 function LGlobe:setProvinceTexture(id, tex_raw, u0, v0, u1, v1) end
 ```
 
+#### Description
+
+Assigns a raw texture handle and UV rectangle to a province.
+
+Parameters:
+
+- `id` (`integer`, required): Province id.
+- `tex_raw` (`integer`, required): Raw texture identifier stored in province attributes.
+- `u0` (`number`, required): Left UV coordinate.
+- `v0` (`number`, required): Top UV coordinate.
+- `u1` (`number`, required): Right UV coordinate.
+- `v1` (`number`, required): Bottom UV coordinate.
+
+Returns: `boolean` - True when the province exists.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -2436,15 +2685,7 @@ end
 
 ### LGlobe:setRotation
 
-`LGlobe:setRotation(deg: number)`
-
-Sets globe rotation angle. This method is available to Lua scripts.
-
-**Parameters**
-
-- `deg` (`number`, required): Rotation in degrees.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets globe rotation angle. This method is available to Lua scripts.
@@ -2452,9 +2693,17 @@ Sets globe rotation angle. This method is available to Lua scripts.
 function LGlobe:setRotation(deg) end
 ```
 
+#### Description
+
+Sets globe rotation angle. This method is available to Lua scripts.
+
+Parameters:
+
+- `deg` (`number`, required): Rotation in degrees.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -2466,15 +2715,7 @@ end
 
 ### LGlobe:setTimeOfDay
 
-`LGlobe:setTimeOfDay(t: number)`
-
-Sets globe time of day modulo 24 hours.
-
-**Parameters**
-
-- `t` (`number`, required): Time of day in hours.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets globe time of day modulo 24 hours.
@@ -2482,9 +2723,17 @@ Sets globe time of day modulo 24 hours.
 function LGlobe:setTimeOfDay(t) end
 ```
 
+#### Description
+
+Sets globe time of day modulo 24 hours.
+
+Parameters:
+
+- `t` (`number`, required): Time of day in hours.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -2496,13 +2745,7 @@ end
 
 ### LGlobe:type
 
-`LGlobe:type() -> string`
-
-Returns the Lua-visible type name for this globe handle.
-
-**Returns**: `string` - The string `LGlobe`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this globe handle.
@@ -2510,9 +2753,15 @@ Returns the Lua-visible type name for this globe handle.
 function LGlobe:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this globe handle.
+
+Returns: `string` - The string `LGlobe`.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -2523,17 +2772,7 @@ end
 
 ### LGlobe:typeOf
 
-`LGlobe:typeOf(name: string) -> boolean`
-
-Returns whether this globe handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LGlobe` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this globe handle matches a supported type name.
@@ -2542,9 +2781,19 @@ Returns whether this globe handle matches a supported type name.
 function LGlobe:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this globe handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LGlobe` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -2555,15 +2804,7 @@ end
 
 ### LGlobe:update
 
-`LGlobe:update(dt: number)`
-
-Advances globe simulation timers and animated state.
-
-**Parameters**
-
-- `dt` (`number`, required): Delta time in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Advances globe simulation timers and animated state.
@@ -2571,9 +2812,17 @@ Advances globe simulation timers and animated state.
 function LGlobe:update(dt) end
 ```
 
+#### Description
+
+Advances globe simulation timers and animated state.
+
+Parameters:
+
+- `dt` (`number`, required): Delta time in seconds.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -2585,15 +2834,7 @@ end
 
 ### LGlobe:zoom
 
-`LGlobe:zoom(factor: number)`
-
-Multiplies the globe camera zoom by a factor.
-
-**Parameters**
-
-- `factor` (`number`, required): Zoom factor.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Multiplies the globe camera zoom by a factor.
@@ -2601,9 +2842,17 @@ Multiplies the globe camera zoom by a factor.
 function LGlobe:zoom(factor) end
 ```
 
+#### Description
+
+Multiplies the globe camera zoom by a factor.
+
+Parameters:
+
+- `factor` (`number`, required): Zoom factor.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -2617,17 +2866,7 @@ end
 
 ### LGlobeRegistry:get
 
-`LGlobeRegistry:get(name: string) -> LGlobe`
-
-Returns a globe handle by registry name.
-
-**Parameters**
-
-- `name` (`string`, required): Globe registry name.
-
-**Returns**: `LGlobe` - Globe handle, or nil when no globe exists with that name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a globe handle by registry name.
@@ -2636,9 +2875,19 @@ Returns a globe handle by registry name.
 function LGlobeRegistry:get(name) end
 ```
 
+#### Description
+
+Returns a globe handle by registry name.
+
+Parameters:
+
+- `name` (`string`, required): Globe registry name.
+
+Returns: `LGlobe` - Globe handle, or nil when no globe exists with that name.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -2650,13 +2899,7 @@ end
 
 ### LGlobeRegistry:names
 
-`LGlobeRegistry:names() -> string[]`
-
-Returns all globe names currently stored in this registry.
-
-**Returns**: `string[]` - Globe names.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns all globe names currently stored in this registry.
@@ -2664,9 +2907,15 @@ Returns all globe names currently stored in this registry.
 function LGlobeRegistry:names() end
 ```
 
+#### Description
+
+Returns all globe names currently stored in this registry.
+
+Returns: `string[]` - Globe names.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -2678,18 +2927,7 @@ end
 
 ### LGlobeRegistry:new
 
-`LGlobeRegistry:new(name: string, [spec_tbl]: table) -> LGlobe`
-
-Creates a named globe with optional specification fields.
-
-**Parameters**
-
-- `name` (`string`, required): Globe registry name.
-- `spec_tbl` (`table`, optional): Globe specification table.
-
-**Returns**: `LGlobe` - New globe handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Creates a named globe with optional specification fields.
@@ -2699,9 +2937,20 @@ Creates a named globe with optional specification fields.
 function LGlobeRegistry:new(name, spec_tbl) end
 ```
 
+#### Description
+
+Creates a named globe with optional specification fields.
+
+Parameters:
+
+- `name` (`string`, required): Globe registry name.
+- `spec_tbl` (`table`, optional): Globe specification table.
+
+Returns: `LGlobe` - New globe handle.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -2713,17 +2962,7 @@ end
 
 ### LGlobeRegistry:remove
 
-`LGlobeRegistry:remove(name: string) -> boolean`
-
-Removes a globe from the registry by name.
-
-**Parameters**
-
-- `name` (`string`, required): Globe registry name.
-
-**Returns**: `boolean` - True when a globe was removed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes a globe from the registry by name.
@@ -2732,9 +2971,19 @@ Removes a globe from the registry by name.
 function LGlobeRegistry:remove(name) end
 ```
 
+#### Description
+
+Removes a globe from the registry by name.
+
+Parameters:
+
+- `name` (`string`, required): Globe registry name.
+
+Returns: `boolean` - True when a globe was removed.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -2746,13 +2995,7 @@ end
 
 ### LGlobeRegistry:type
 
-`LGlobeRegistry:type() -> string`
-
-Returns the Lua-visible type name for this globe registry handle.
-
-**Returns**: `string` - The string `LGlobeRegistry`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this globe registry handle.
@@ -2760,9 +3003,15 @@ Returns the Lua-visible type name for this globe registry handle.
 function LGlobeRegistry:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this globe registry handle.
+
+Returns: `string` - The string `LGlobeRegistry`.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do
@@ -2774,17 +3023,7 @@ end
 
 ### LGlobeRegistry:typeOf
 
-`LGlobeRegistry:typeOf(name: string) -> boolean`
-
-Returns whether this registry handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LGlobeRegistry` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this registry handle matches a supported type name.
@@ -2793,9 +3032,19 @@ Returns whether this registry handle matches a supported type name.
 function LGlobeRegistry:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this registry handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LGlobeRegistry` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [globe.lua](../blob/main/content/examples/globe.lua):
+Source: [globe.lua](../blob/main/content/examples/globe.lua)
 
 ```lua
 do

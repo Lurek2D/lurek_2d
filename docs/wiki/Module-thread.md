@@ -14,54 +14,148 @@
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
   - [lurek.thread.async](#lurekthreadasync)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.thread.getChannel](#lurekthreadgetchannel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.thread.getWorkerCapabilities](#lurekthreadgetworkercapabilities)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.thread.newBoundedChannel](#lurekthreadnewboundedchannel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.thread.newChannel](#lurekthreadnewchannel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.thread.newPool](#lurekthreadnewpool)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.thread.newThread](#lurekthreadnewthread)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔷 Module Types](#module-types)
   - [LChannel](#lchannel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPromise](#lpromise)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LThread](#lthread)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LThreadPool](#lthreadpool)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
   - [LChannel:clear](#lchannelclear)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LChannel:demand](#lchanneldemand)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LChannel:getCapacity](#lchannelgetcapacity)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LChannel:getCount](#lchannelgetcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LChannel:isBounded](#lchannelisbounded)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LChannel:peek](#lchannelpeek)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LChannel:pop](#lchannelpop)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LChannel:popBytes](#lchannelpopbytes)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LChannel:popTable](#lchannelpoptable)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LChannel:push](#lchannelpush)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LChannel:pushBytes](#lchannelpushbytes)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LChannel:pushTable](#lchannelpushtable)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LChannel:supply](#lchannelsupply)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LChannel:tryPush](#lchanneltrypush)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LChannel:type](#lchanneltype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LChannel:typeOf](#lchanneltypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPromise:chain](#lpromisechain)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPromise:getError](#lpromisegeterror)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPromise:isDone](#lpromiseisdone)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPromise:result](#lpromiseresult)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPromise:type](#lpromisetype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPromise:typeOf](#lpromisetypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LThread:getError](#lthreadgeterror)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LThread:isRunning](#lthreadisrunning)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LThread:start](#lthreadstart)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LThread:type](#lthreadtype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LThread:typeOf](#lthreadtypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LThread:wait](#lthreadwait)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LThreadPool:collect](#lthreadpoolcollect)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LThreadPool:getInputChannel](#lthreadpoolgetinputchannel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LThreadPool:getOutputChannel](#lthreadpoolgetoutputchannel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LThreadPool:join](#lthreadpooljoin)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LThreadPool:size](#lthreadpoolsize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LThreadPool:submit](#lthreadpoolsubmit)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LThreadPool:type](#lthreadpooltype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LThreadPool:typeOf](#lthreadpooltypeof)
+    - [Definition](#definition)
+    - [Description](#description)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -114,20 +208,30 @@ lurek.thread.newThread(code: string) -> LThread -- Creates a new worker thread t
 
 ### lurek.thread.async
 
-`lurek.thread.async(codeOrFunc: string|function, ...: any) -> LPromise`
+#### Definition
+
+```lua
+--- Runs a Lua code string or dumped function asynchronously on a new worker thread, returning a promise for the result.
+---@param codeOrFunc string|function Lua source code or a dumpable Lua function to execute.
+---@param ... any Additional arguments forwarded to the worker.
+---@return LPromise A promise that resolves to the worker's return value.
+lurek.thread.async = function(codeOrFunc, ...) end
+```
+
+#### Description
 
 Runs a Lua code string or dumped function asynchronously on a new worker thread, returning a promise for the result.
 
-**Parameters**
+Parameters:
 
 - `codeOrFunc` (`string|function`, required): Lua source code or a dumpable Lua function to execute.
 - `...` (`any`, required): Additional arguments forwarded to the worker.
 
-**Returns**: `LPromise` - A promise that resolves to the worker's return value.
+Returns: `LPromise` - A promise that resolves to the worker's return value.
 
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -139,19 +243,28 @@ end
 
 ### lurek.thread.getChannel
 
-`lurek.thread.getChannel(name: string) -> LChannel`
+#### Definition
+
+```lua
+--- Returns a named shared channel, creating it on first access. Repeated calls with the same name return the same channel.
+---@param name string Unique name identifying the shared channel.
+---@return LChannel The named channel instance.
+lurek.thread.getChannel = function(name) end
+```
+
+#### Description
 
 Returns a named shared channel, creating it on first access. Repeated calls with the same name return the same channel.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, required): Unique name identifying the shared channel.
 
-**Returns**: `LChannel` - The named channel instance.
+Returns: `LChannel` - The named channel instance.
 
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -165,15 +278,23 @@ end
 
 ### lurek.thread.getWorkerCapabilities
 
-`lurek.thread.getWorkerCapabilities() -> string[]`
+#### Definition
+
+```lua
+--- Returns a list of capability names available inside worker VMs (e.g. which `lurek.*` modules are accessible).
+---@return string[] Integer-indexed list of capability name strings.
+lurek.thread.getWorkerCapabilities = function() end
+```
+
+#### Description
 
 Returns a list of capability names available inside worker VMs (e.g. which `lurek.*` modules are accessible).
 
-**Returns**: `string[]` - Integer-indexed list of capability name strings.
+Returns: `string[]` - Integer-indexed list of capability name strings.
 
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -184,19 +305,28 @@ end
 
 ### lurek.thread.newBoundedChannel
 
-`lurek.thread.newBoundedChannel(capacity: integer) -> LChannel`
+#### Definition
+
+```lua
+--- Creates a new bounded channel with a fixed capacity, blocking pushes when full.
+---@param capacity number Maximum number of items the channel can hold.
+---@return LChannel A new bounded channel.
+lurek.thread.newBoundedChannel = function(capacity) end
+```
+
+#### Description
 
 Creates a new bounded channel with a fixed capacity, blocking pushes when full.
 
-**Parameters**
+Parameters:
 
 - `capacity` (`integer`, required): Maximum number of items the channel can hold.
 
-**Returns**: `LChannel` - A new bounded channel.
+Returns: `LChannel` - A new bounded channel.
 
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -210,15 +340,23 @@ end
 
 ### lurek.thread.newChannel
 
-`lurek.thread.newChannel() -> LChannel`
+#### Definition
+
+```lua
+--- Creates a new unbounded channel for sending typed values between threads.
+---@return LChannel A new unbounded channel.
+lurek.thread.newChannel = function() end
+```
+
+#### Description
 
 Creates a new unbounded channel for sending typed values between threads.
 
-**Returns**: `LChannel` - A new unbounded channel.
+Returns: `LChannel` - A new unbounded channel.
 
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -231,20 +369,30 @@ end
 
 ### lurek.thread.newPool
 
-`lurek.thread.newPool(size: integer, code: string) -> LThreadPool`
+#### Definition
+
+```lua
+--- Creates a fixed-size thread pool where each worker runs the same Lua code and consumes items from a shared input channel.
+---@param size number Number of worker threads to spawn.
+---@param code string Lua source code each worker thread will execute.
+---@return LThreadPool A pool handle for submitting work and collecting results.
+lurek.thread.newPool = function(size, code) end
+```
+
+#### Description
 
 Creates a fixed-size thread pool where each worker runs the same Lua code and consumes items from a shared input channel.
 
-**Parameters**
+Parameters:
 
 - `size` (`integer`, required): Number of worker threads to spawn.
 - `code` (`string`, required): Lua source code each worker thread will execute.
 
-**Returns**: `LThreadPool` - A pool handle for submitting work and collecting results.
+Returns: `LThreadPool` - A pool handle for submitting work and collecting results.
 
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -256,19 +404,28 @@ end
 
 ### lurek.thread.newThread
 
-`lurek.thread.newThread(code: string) -> LThread`
+#### Definition
+
+```lua
+--- Creates a new worker thread that will execute the given Lua code string when started.
+---@param code string Lua source code to run in the worker VM.
+---@return LThread A thread handle that can be started, waited on, and inspected.
+lurek.thread.newThread = function(code) end
+```
+
+#### Description
 
 Creates a new worker thread that will execute the given Lua code string when started.
 
-**Parameters**
+Parameters:
 
 - `code` (`string`, required): Lua source code to run in the worker VM.
 
-**Returns**: `LThread` - A thread handle that can be started, waited on, and inspected.
+Returns: `LThread` - A thread handle that can be started, waited on, and inspected.
 
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -287,9 +444,7 @@ end
 
 ### LChannel
 
-Creates a new unbounded channel for sending typed values between threads.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Creates a new unbounded channel for sending typed values between threads.
@@ -297,9 +452,13 @@ Creates a new unbounded channel for sending typed values between threads.
 LChannel = {}
 ```
 
+#### Description
+
+Creates a new unbounded channel for sending typed values between threads.
+
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -313,9 +472,7 @@ end
 
 ### LPromise
 
-Lua-visible handle representing an asynchronous computation that will produce a single result value.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-visible handle representing an asynchronous computation that will produce a single result value.
@@ -323,9 +480,13 @@ Lua-visible handle representing an asynchronous computation that will produce a 
 LPromise = {}
 ```
 
+#### Description
+
+Lua-visible handle representing an asynchronous computation that will produce a single result value.
+
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -337,9 +498,7 @@ end
 
 ### LThread
 
-Lua-visible handle wrapping a single background worker VM that executes a Lua code string on a dedicated OS thread.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-visible handle wrapping a single background worker VM that executes a Lua code string on a dedicated OS thread.
@@ -347,9 +506,13 @@ Lua-visible handle wrapping a single background worker VM that executes a Lua co
 LThread = {}
 ```
 
+#### Description
+
+Lua-visible handle wrapping a single background worker VM that executes a Lua code string on a dedicated OS thread.
+
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -363,9 +526,7 @@ end
 
 ### LThreadPool
 
-Lua-visible handle for a fixed-size pool of worker threads that process items from a shared input channel.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-visible handle for a fixed-size pool of worker threads that process items from a shared input channel.
@@ -373,9 +534,13 @@ Lua-visible handle for a fixed-size pool of worker threads that process items fr
 LThreadPool = {}
 ```
 
+#### Description
+
+Lua-visible handle for a fixed-size pool of worker threads that process items from a shared input channel.
+
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -392,20 +557,20 @@ end
 
 ### LChannel:clear
 
-`LChannel:clear()`
-
-Removes all pending values from the channel.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes all pending values from the channel.
 function LChannel:clear() end
 ```
 
+#### Description
+
+Removes all pending values from the channel.
+
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -419,17 +584,7 @@ end
 
 ### LChannel:demand
 
-`LChannel:demand([timeout]: number) -> table`
-
-Blocks until a value is available on the channel or the optional timeout expires.
-
-**Parameters**
-
-- `timeout` (`number`, optional): Maximum seconds to wait. If omitted, waits indefinitely.
-
-**Returns**: `table` - The received message table.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Blocks until a value is available on the channel or the optional timeout expires.
@@ -439,9 +594,19 @@ Blocks until a value is available on the channel or the optional timeout expires
 function LChannel:demand(timeout) end
 ```
 
+#### Description
+
+Blocks until a value is available on the channel or the optional timeout expires.
+
+Parameters:
+
+- `timeout` (`number`, optional): Maximum seconds to wait. If omitted, waits indefinitely.
+
+Returns: `table` - The received message table.
+
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -454,13 +619,7 @@ end
 
 ### LChannel:getCapacity
 
-`LChannel:getCapacity() -> integer`
-
-Returns the maximum capacity of a bounded channel, or `nil` for unbounded channels.
-
-**Returns**: `integer` - The capacity limit, or `nil` if unbounded.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the maximum capacity of a bounded channel, or `nil` for unbounded channels.
@@ -468,9 +627,15 @@ Returns the maximum capacity of a bounded channel, or `nil` for unbounded channe
 function LChannel:getCapacity() end
 ```
 
+#### Description
+
+Returns the maximum capacity of a bounded channel, or `nil` for unbounded channels.
+
+Returns: `integer` - The capacity limit, or `nil` if unbounded.
+
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -481,13 +646,7 @@ end
 
 ### LChannel:getCount
 
-`LChannel:getCount() -> integer`
-
-Returns the number of values currently queued in the channel.
-
-**Returns**: `integer` - The current item count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of values currently queued in the channel.
@@ -495,9 +654,15 @@ Returns the number of values currently queued in the channel.
 function LChannel:getCount() end
 ```
 
+#### Description
+
+Returns the number of values currently queued in the channel.
+
+Returns: `integer` - The current item count.
+
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -509,13 +674,7 @@ end
 
 ### LChannel:isBounded
 
-`LChannel:isBounded() -> boolean`
-
-Checks whether this channel has a fixed capacity limit.
-
-**Returns**: `boolean` - `true` if the channel is bounded.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this channel has a fixed capacity limit.
@@ -523,9 +682,15 @@ Checks whether this channel has a fixed capacity limit.
 function LChannel:isBounded() end
 ```
 
+#### Description
+
+Checks whether this channel has a fixed capacity limit.
+
+Returns: `boolean` - `true` if the channel is bounded.
+
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -536,13 +701,7 @@ end
 
 ### LChannel:peek
 
-`LChannel:peek() -> table`
-
-Returns the next value from the channel without removing it.
-
-**Returns**: `table` - The front message table.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the next value from the channel without removing it.
@@ -551,9 +710,15 @@ Returns the next value from the channel without removing it.
 function LChannel:peek() end
 ```
 
+#### Description
+
+Returns the next value from the channel without removing it.
+
+Returns: `table` - The front message table.
+
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -566,13 +731,7 @@ end
 
 ### LChannel:pop
 
-`LChannel:pop() -> table`
-
-Removes and returns the next value from the channel without blocking.
-
-**Returns**: `table` - The next message table.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes and returns the next value from the channel without blocking.
@@ -581,9 +740,15 @@ Removes and returns the next value from the channel without blocking.
 function LChannel:pop() end
 ```
 
+#### Description
+
+Removes and returns the next value from the channel without blocking.
+
+Returns: `table` - The next message table.
+
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -597,13 +762,7 @@ end
 
 ### LChannel:popBytes
 
-`LChannel:popBytes() -> string`
-
-Pops the next value from the channel only if it is a byte blob, discarding non-bytes values.
-
-**Returns**: `string` - The binary data as a Lua string, or `nil` if the channel is empty or the front value is not bytes.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Pops the next value from the channel only if it is a byte blob, discarding non-bytes values.
@@ -611,9 +770,15 @@ Pops the next value from the channel only if it is a byte blob, discarding non-b
 function LChannel:popBytes() end
 ```
 
+#### Description
+
+Pops the next value from the channel only if it is a byte blob, discarding non-bytes values.
+
+Returns: `string` - The binary data as a Lua string, or `nil` if the channel is empty or the front value is not bytes.
+
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -625,13 +790,7 @@ end
 
 ### LChannel:popTable
 
-`LChannel:popTable() -> table`
-
-Pops the next value from the channel only if it is a table, discarding non-table values.
-
-**Returns**: `table` - The table value, or `nil` if the channel is empty or the front value is not a table.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Pops the next value from the channel only if it is a table, discarding non-table values.
@@ -639,9 +798,15 @@ Pops the next value from the channel only if it is a table, discarding non-table
 function LChannel:popTable() end
 ```
 
+#### Description
+
+Pops the next value from the channel only if it is a table, discarding non-table values.
+
+Returns: `table` - The table value, or `nil` if the channel is empty or the front value is not a table.
+
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -654,17 +819,7 @@ end
 
 ### LChannel:push
 
-`LChannel:push(value: any) -> integer`
-
-Pushes a value onto the channel. Blocks on bounded channels if the channel is full.
-
-**Parameters**
-
-- `value` (`any`, required): The message value to send.
-
-**Returns**: `integer` - The message sequence ID assigned to this push.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Pushes a value onto the channel. Blocks on bounded channels if the channel is full.
@@ -673,9 +828,19 @@ Pushes a value onto the channel. Blocks on bounded channels if the channel is fu
 function LChannel:push(value) end
 ```
 
+#### Description
+
+Pushes a value onto the channel. Blocks on bounded channels if the channel is full.
+
+Parameters:
+
+- `value` (`any`, required): The message value to send.
+
+Returns: `integer` - The message sequence ID assigned to this push.
+
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -689,17 +854,7 @@ end
 
 ### LChannel:pushBytes
 
-`LChannel:pushBytes(data: string) -> integer`
-
-Pushes raw binary data onto the channel as a byte blob.
-
-**Parameters**
-
-- `data` (`string`, required): The binary data to send (Lua strings can hold arbitrary bytes).
-
-**Returns**: `integer` - The message sequence ID assigned to this push.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Pushes raw binary data onto the channel as a byte blob.
@@ -708,9 +863,19 @@ Pushes raw binary data onto the channel as a byte blob.
 function LChannel:pushBytes(data) end
 ```
 
+#### Description
+
+Pushes raw binary data onto the channel as a byte blob.
+
+Parameters:
+
+- `data` (`string`, required): The binary data to send (Lua strings can hold arbitrary bytes).
+
+Returns: `integer` - The message sequence ID assigned to this push.
+
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -724,17 +889,7 @@ end
 
 ### LChannel:pushTable
 
-`LChannel:pushTable(value: table) -> integer`
-
-Pushes a table value onto the channel, raising an error if the value is not a table.
-
-**Parameters**
-
-- `value` (`table`, required): The table to send through the channel.
-
-**Returns**: `integer` - The message sequence ID assigned to this push.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Pushes a table value onto the channel, raising an error if the value is not a table.
@@ -743,9 +898,19 @@ Pushes a table value onto the channel, raising an error if the value is not a ta
 function LChannel:pushTable(value) end
 ```
 
+#### Description
+
+Pushes a table value onto the channel, raising an error if the value is not a table.
+
+Parameters:
+
+- `value` (`table`, required): The table to send through the channel.
+
+Returns: `integer` - The message sequence ID assigned to this push.
+
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -759,17 +924,7 @@ end
 
 ### LChannel:supply
 
-`LChannel:supply(value: any) -> boolean`
-
-Pushes a value and blocks until a consumer pops it (synchronous handoff).
-
-**Parameters**
-
-- `value` (`any`, required): The message value to send.
-
-**Returns**: `boolean` - true when the value has been consumed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Pushes a value and blocks until a consumer pops it (synchronous handoff).
@@ -778,9 +933,19 @@ Pushes a value and blocks until a consumer pops it (synchronous handoff).
 function LChannel:supply(value) end
 ```
 
+#### Description
+
+Pushes a value and blocks until a consumer pops it (synchronous handoff).
+
+Parameters:
+
+- `value` (`any`, required): The message value to send.
+
+Returns: `boolean` - true when the value has been consumed.
+
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -793,17 +958,7 @@ end
 
 ### LChannel:tryPush
 
-`LChannel:tryPush(value: any) -> boolean`
-
-Attempts to push a value onto a bounded channel without blocking.
-
-**Parameters**
-
-- `value` (`any`, required): The message value to send.
-
-**Returns**: `boolean` - true if the value was enqueued, false if the channel is full.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Attempts to push a value onto a bounded channel without blocking.
@@ -812,9 +967,19 @@ Attempts to push a value onto a bounded channel without blocking.
 function LChannel:tryPush(value) end
 ```
 
+#### Description
+
+Attempts to push a value onto a bounded channel without blocking.
+
+Parameters:
+
+- `value` (`any`, required): The message value to send.
+
+Returns: `boolean` - true if the value was enqueued, false if the channel is full.
+
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -827,13 +992,7 @@ end
 
 ### LChannel:type
 
-`LChannel:type() -> string`
-
-Returns the type name of this object.
-
-**Returns**: `string` - Always returns `"LChannel"`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this object.
@@ -841,9 +1000,15 @@ Returns the type name of this object.
 function LChannel:type() end
 ```
 
+#### Description
+
+Returns the type name of this object.
+
+Returns: `string` - Always returns `"LChannel"`.
+
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -854,17 +1019,7 @@ end
 
 ### LChannel:typeOf
 
-`LChannel:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to test against (`"LChannel"`, `"Channel"`, or `"Object"`).
-
-**Returns**: `boolean` - `true` if the name matches one of the accepted type names.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this object matches the given type name.
@@ -873,9 +1028,19 @@ Checks whether this object matches the given type name.
 function LChannel:typeOf(name) end
 ```
 
+#### Description
+
+Checks whether this object matches the given type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to test against (`"LChannel"`, `"Channel"`, or `"Object"`).
+
+Returns: `boolean` - `true` if the name matches one of the accepted type names.
+
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -886,18 +1051,7 @@ end
 
 ### LPromise:chain
 
-`LPromise:chain(code: string, ...: any) -> LPromise`
-
-Creates a new promise that runs the given code with the parent promise's result as its first argument.
-
-**Parameters**
-
-- `code` (`string`, required): Lua source code to execute in the chained worker thread.
-- `...` (`any`, required): Additional arguments forwarded after the parent result.
-
-**Returns**: `LPromise` - A new promise representing the chained computation.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Creates a new promise that runs the given code with the parent promise's result as its first argument.
@@ -907,9 +1061,20 @@ Creates a new promise that runs the given code with the parent promise's result 
 function LPromise:chain(code, ...) end
 ```
 
+#### Description
+
+Creates a new promise that runs the given code with the parent promise's result as its first argument.
+
+Parameters:
+
+- `code` (`string`, required): Lua source code to execute in the chained worker thread.
+- `...` (`any`, required): Additional arguments forwarded after the parent result.
+
+Returns: `LPromise` - A new promise representing the chained computation.
+
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -923,13 +1088,7 @@ end
 
 ### LPromise:getError
 
-`LPromise:getError() -> string`
-
-Returns the error message from the promise, if it terminated with an error.
-
-**Returns**: `string` - The error string, or `nil` if the promise succeeded or is still running.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the error message from the promise, if it terminated with an error.
@@ -937,9 +1096,15 @@ Returns the error message from the promise, if it terminated with an error.
 function LPromise:getError() end
 ```
 
+#### Description
+
+Returns the error message from the promise, if it terminated with an error.
+
+Returns: `string` - The error string, or `nil` if the promise succeeded or is still running.
+
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -951,13 +1116,7 @@ end
 
 ### LPromise:isDone
 
-`LPromise:isDone() -> boolean`
-
-Checks whether the asynchronous computation has completed.
-
-**Returns**: `boolean` - `true` if the promise has finished (either successfully or with an error).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether the asynchronous computation has completed.
@@ -965,9 +1124,15 @@ Checks whether the asynchronous computation has completed.
 function LPromise:isDone() end
 ```
 
+#### Description
+
+Checks whether the asynchronous computation has completed.
+
+Returns: `boolean` - `true` if the promise has finished (either successfully or with an error).
+
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -979,13 +1144,7 @@ end
 
 ### LPromise:result
 
-`LPromise:result() -> table`
-
-Returns the result value of the completed promise.
-
-**Returns**: `table` - The computed result table.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the result value of the completed promise.
@@ -994,9 +1153,15 @@ Returns the result value of the completed promise.
 function LPromise:result() end
 ```
 
+#### Description
+
+Returns the result value of the completed promise.
+
+Returns: `table` - The computed result table.
+
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -1007,13 +1172,7 @@ end
 
 ### LPromise:type
 
-`LPromise:type() -> string`
-
-Returns the type name of this object.
-
-**Returns**: `string` - Always returns `"LPromise"`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this object.
@@ -1021,9 +1180,15 @@ Returns the type name of this object.
 function LPromise:type() end
 ```
 
+#### Description
+
+Returns the type name of this object.
+
+Returns: `string` - Always returns `"LPromise"`.
+
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -1035,17 +1200,7 @@ end
 
 ### LPromise:typeOf
 
-`LPromise:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to test against (`"Promise"` or `"Object"`).
-
-**Returns**: `boolean` - `true` if the name matches one of the accepted type names.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this object matches the given type name.
@@ -1054,9 +1209,19 @@ Checks whether this object matches the given type name.
 function LPromise:typeOf(name) end
 ```
 
+#### Description
+
+Checks whether this object matches the given type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to test against (`"Promise"` or `"Object"`).
+
+Returns: `boolean` - `true` if the name matches one of the accepted type names.
+
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -1068,13 +1233,7 @@ end
 
 ### LThread:getError
 
-`LThread:getError() -> string`
-
-Returns the error message from the worker thread, if it terminated with an error.
-
-**Returns**: `string` - The error string, or `nil` if the thread completed successfully or is still running.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the error message from the worker thread, if it terminated with an error.
@@ -1082,9 +1241,15 @@ Returns the error message from the worker thread, if it terminated with an error
 function LThread:getError() end
 ```
 
+#### Description
+
+Returns the error message from the worker thread, if it terminated with an error.
+
+Returns: `string` - The error string, or `nil` if the thread completed successfully or is still running.
+
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -1096,13 +1261,7 @@ end
 
 ### LThread:isRunning
 
-`LThread:isRunning() -> boolean`
-
-Checks whether the worker thread is still executing.
-
-**Returns**: `boolean` - `true` if the thread has been started and has not yet finished.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether the worker thread is still executing.
@@ -1110,9 +1269,15 @@ Checks whether the worker thread is still executing.
 function LThread:isRunning() end
 ```
 
+#### Description
+
+Checks whether the worker thread is still executing.
+
+Returns: `boolean` - `true` if the thread has been started and has not yet finished.
+
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -1124,15 +1289,7 @@ end
 
 ### LThread:start
 
-`LThread:start(...: any)`
-
-Launches the worker thread, executing the Lua code string supplied at creation time.
-
-**Parameters**
-
-- `...` (`any`, required): Zero or more arguments forwarded to the worker as the `arg` table.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Launches the worker thread, executing the Lua code string supplied at creation time.
@@ -1140,9 +1297,17 @@ Launches the worker thread, executing the Lua code string supplied at creation t
 function LThread:start(...) end
 ```
 
+#### Description
+
+Launches the worker thread, executing the Lua code string supplied at creation time.
+
+Parameters:
+
+- `...` (`any`, required): Zero or more arguments forwarded to the worker as the `arg` table.
+
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -1154,13 +1319,7 @@ end
 
 ### LThread:type
 
-`LThread:type() -> string`
-
-Returns the type name of this object.
-
-**Returns**: `string` - Always returns `"LThread"`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this object.
@@ -1168,9 +1327,15 @@ Returns the type name of this object.
 function LThread:type() end
 ```
 
+#### Description
+
+Returns the type name of this object.
+
+Returns: `string` - Always returns `"LThread"`.
+
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -1181,17 +1346,7 @@ end
 
 ### LThread:typeOf
 
-`LThread:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to test against (`"LThread"`, `"Thread"`, or `"Object"`).
-
-**Returns**: `boolean` - `true` if the name matches one of the accepted type names.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this object matches the given type name.
@@ -1200,9 +1355,19 @@ Checks whether this object matches the given type name.
 function LThread:typeOf(name) end
 ```
 
+#### Description
+
+Checks whether this object matches the given type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to test against (`"LThread"`, `"Thread"`, or `"Object"`).
+
+Returns: `boolean` - `true` if the name matches one of the accepted type names.
+
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -1213,20 +1378,20 @@ end
 
 ### LThread:wait
 
-`LThread:wait()`
-
-Blocks the calling thread until the worker thread finishes execution.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Blocks the calling thread until the worker thread finishes execution.
 function LThread:wait() end
 ```
 
+#### Description
+
+Blocks the calling thread until the worker thread finishes execution.
+
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -1239,13 +1404,7 @@ end
 
 ### LThreadPool:collect
 
-`LThreadPool:collect() -> table`
-
-Pops and returns the next result from the pool's output channel.
-
-**Returns**: `table` - The next result table.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Pops and returns the next result from the pool's output channel.
@@ -1254,9 +1413,15 @@ Pops and returns the next result from the pool's output channel.
 function LThreadPool:collect() end
 ```
 
+#### Description
+
+Pops and returns the next result from the pool's output channel.
+
+Returns: `table` - The next result table.
+
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -1268,13 +1433,7 @@ end
 
 ### LThreadPool:getInputChannel
 
-`LThreadPool:getInputChannel() -> LChannel`
-
-Returns the pool's shared input channel that feeds work items to worker threads.
-
-**Returns**: `LChannel` - The input channel.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the pool's shared input channel that feeds work items to worker threads.
@@ -1282,9 +1441,15 @@ Returns the pool's shared input channel that feeds work items to worker threads.
 function LThreadPool:getInputChannel() end
 ```
 
+#### Description
+
+Returns the pool's shared input channel that feeds work items to worker threads.
+
+Returns: `LChannel` - The input channel.
+
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -1296,13 +1461,7 @@ end
 
 ### LThreadPool:getOutputChannel
 
-`LThreadPool:getOutputChannel() -> LChannel`
-
-Returns the pool's shared output channel where worker threads place their results.
-
-**Returns**: `LChannel` - The output channel.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the pool's shared output channel where worker threads place their results.
@@ -1310,9 +1469,15 @@ Returns the pool's shared output channel where worker threads place their result
 function LThreadPool:getOutputChannel() end
 ```
 
+#### Description
+
+Returns the pool's shared output channel where worker threads place their results.
+
+Returns: `LChannel` - The output channel.
+
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -1324,17 +1489,7 @@ end
 
 ### LThreadPool:join
 
-`LThreadPool:join([timeout]: number) -> boolean`
-
-Blocks until all workers finish or the optional timeout elapses.
-
-**Parameters**
-
-- `timeout` (`number`, optional): Maximum seconds to wait. If omitted, waits indefinitely.
-
-**Returns**: `boolean` - `true` if all workers finished, `false` if the timeout expired.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Blocks until all workers finish or the optional timeout elapses.
@@ -1343,9 +1498,19 @@ Blocks until all workers finish or the optional timeout elapses.
 function LThreadPool:join(timeout) end
 ```
 
+#### Description
+
+Blocks until all workers finish or the optional timeout elapses.
+
+Parameters:
+
+- `timeout` (`number`, optional): Maximum seconds to wait. If omitted, waits indefinitely.
+
+Returns: `boolean` - `true` if all workers finished, `false` if the timeout expired.
+
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -1356,13 +1521,7 @@ end
 
 ### LThreadPool:size
 
-`LThreadPool:size() -> integer`
-
-Returns the number of worker threads in the pool.
-
-**Returns**: `integer` - The pool's worker count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of worker threads in the pool.
@@ -1370,9 +1529,15 @@ Returns the number of worker threads in the pool.
 function LThreadPool:size() end
 ```
 
+#### Description
+
+Returns the number of worker threads in the pool.
+
+Returns: `integer` - The pool's worker count.
+
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -1384,15 +1549,7 @@ end
 
 ### LThreadPool:submit
 
-`LThreadPool:submit(value: any)`
-
-Pushes a value into the pool's input channel for processing by a worker thread.
-
-**Parameters**
-
-- `value` (`any`, required): The message value to send.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Pushes a value into the pool's input channel for processing by a worker thread.
@@ -1400,9 +1557,17 @@ Pushes a value into the pool's input channel for processing by a worker thread.
 function LThreadPool:submit(value) end
 ```
 
+#### Description
+
+Pushes a value into the pool's input channel for processing by a worker thread.
+
+Parameters:
+
+- `value` (`any`, required): The message value to send.
+
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -1414,13 +1579,7 @@ end
 
 ### LThreadPool:type
 
-`LThreadPool:type() -> string`
-
-Returns the type name of this object.
-
-**Returns**: `string` - Always returns `"LThreadPool"`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this object.
@@ -1428,9 +1587,15 @@ Returns the type name of this object.
 function LThreadPool:type() end
 ```
 
+#### Description
+
+Returns the type name of this object.
+
+Returns: `string` - Always returns `"LThreadPool"`.
+
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do
@@ -1442,17 +1607,7 @@ end
 
 ### LThreadPool:typeOf
 
-`LThreadPool:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to test against (`"ThreadPool"` or `"Object"`).
-
-**Returns**: `boolean` - `true` if the name matches one of the accepted type names.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this object matches the given type name.
@@ -1461,9 +1616,19 @@ Checks whether this object matches the given type name.
 function LThreadPool:typeOf(name) end
 ```
 
+#### Description
+
+Checks whether this object matches the given type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to test against (`"ThreadPool"` or `"Object"`).
+
+Returns: `boolean` - `true` if the name matches one of the accepted type names.
+
 #### Example
 
-Exact example from [thread.lua](../blob/main/content/examples/thread.lua):
+Source: [thread.lua](../blob/main/content/examples/thread.lua)
 
 ```lua
 do

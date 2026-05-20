@@ -549,10 +549,12 @@ def parse_stub_index(stub_text: str) -> tuple[dict[str, str], dict[str, str]]:
     callable_stubs: dict[str, str] = {}
     class_stubs: dict[str, str] = {}
     for i, line in enumerate(lines):
-        fn_match = re.match(r'^function\s+([\w.]+(?::[\w]+)?)\s*\(', line)
+        fn_match = re.match(r'^(?:function\s+([\w.]+(?::[\w]+)?)\s*\(|([\w.]+)\s*=\s*function\s*\()', line)
         if fn_match:
-            key_raw = fn_match.group(1)
+            key_raw = fn_match.group(1) or fn_match.group(2)
             start = i
+            while start > 0 and lines[start - 1].startswith("---@"):
+                start -= 1
             while start > 0 and lines[start - 1].startswith("---"):
                 start -= 1
             block = "\n".join(lines[start:i + 1])
@@ -822,13 +824,7 @@ def rendered_example_section(context: Context, example: ExampleSnippet | None) -
     if example is None or not example.snippet:
         lines += ["No generated example snippet was found in `content/examples/`.", "", "```lua", "-- No example snippet available.", "```", ""]
         return lines
-    if example.match_kind == "exact":
-        lead = "Exact example from"
-    elif example.match_kind == "module-level":
-        lead = "Module-level example from"
-    else:
-        lead = "General example from"
-    lines += [f"{lead} {file_link(context, example.source_path, example.source_name)}:", "", "```lua", example.snippet, "```", ""]
+    lines += [f"Source: {file_link(context, example.source_path, example.source_name)}", "", "```lua", example.snippet, "```", ""]
     return lines
 
 
@@ -882,30 +878,35 @@ def detail(context: Context, function_data: dict[str, Any], module: str, class_n
         short_heading = f"{class_name}:{fn_name}"
     else:
         short_heading = str(function_data.get("lua_name", "") or f"lurek.{module}.{fn_name}")
-    full_sig = signature(function_data, module, class_name)
     lines = [f"### {short_heading}", ""]
-    if full_sig != short_heading:
-        lines += [f"`{full_sig}`", ""]
+    stub_keys = callable_example_keys(module, function_data, class_name)
+    callable_stub = next((context.callable_stubs[example_key(k)] for k in stub_keys if example_key(k) in context.callable_stubs), "")
+    definition_block = callable_stub or signature(function_data, module, class_name)
+    lines += ["#### Definition", "", "```lua", definition_block, "```", ""]
+
     desc = clean_text(str(function_data.get("description", "") or ""))
+    function_params = params(function_data)
+    returns = return_type(function_data)
+    returns_description = clean_text(return_desc(function_data))
+
+    lines += ["#### Description", ""]
     if desc:
         lines += [desc, ""]
-    function_params = params(function_data)
     if function_params:
-        lines += ["**Parameters**", ""]
+        lines += ["Parameters:", ""]
         for name, type_name, description, is_optional in function_params:
             marker = "optional" if is_optional else "required"
             desc_text = clean_text(description)
             suffix = f": {desc_text}" if desc_text else ""
             lines.append(f"- `{name}` (`{type_name}`, {marker}){suffix}")
         lines.append("")
-    returns = return_type(function_data)
-    if returns:
-        suffix = f" - {clean_text(return_desc(function_data))}" if clean_text(return_desc(function_data)) else ""
-        lines += [f"**Returns**: `{returns}`{suffix}", ""]
-    stub_keys = callable_example_keys(module, function_data, class_name)
-    callable_stub = next((context.callable_stubs[k] for k in stub_keys if k in context.callable_stubs), "")
-    if callable_stub:
-        lines += ["**Lua API Stub**", "", "```lua", callable_stub, "```", ""]
+    if returns or returns_description:
+        return_line = "Returns:"
+        if returns:
+            return_line += f" `{returns}`"
+        if returns_description:
+            return_line += f" - {returns_description}"
+        lines += [return_line, ""]
     lines += example_section(context, module, function_data, class_name)
     return lines
 
@@ -979,11 +980,14 @@ def module_page(context: Context, module: str) -> Page:
         for class_name, class_data in class_list:
             body += [f"### {class_name}", ""]
             desc = clean_text(str(class_data.get("description", "") or ""))
-            if desc:
-                body += [desc, ""]
             class_stub = context.class_stubs.get(example_key(class_name), "")
             if class_stub:
-                body += ["**Lua API Definition**", "", "```lua", class_stub, "```", ""]
+                body += ["#### Definition", "", "```lua", class_stub, "```", ""]
+            body += ["#### Description", ""]
+            if desc:
+                body += [desc, ""]
+            else:
+                body += ["No generated type description was found.", ""]
             body += type_example_section(context, module, class_name, function_list, class_list)
         body += ["", BACK_TOP]
         body += ["", sec("Module Methods"), ""]

@@ -14,23 +14,59 @@
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
   - [lurek.log.addSink](#lureklogaddsink)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.log.clearSinks](#lureklogclearsinks)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.log.debug](#lureklogdebug)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.log.debug_fields](#lureklogdebugfields)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.log.error](#lureklogerror)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.log.error_fields](#lureklogerrorfields)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.log.flushFile](#lureklogflushfile)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.log.getLevel](#lurekloggetlevel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.log.info](#lurekloginfo)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.log.info_fields](#lurekloginfofields)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.log.listSinks](#lurekloglistsinks)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.log.print](#lureklogprint)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.log.readMemory](#lureklogreadmemory)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.log.removeSink](#lureklogremovesink)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.log.setLevel](#lureklogsetlevel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.log.struct](#lureklogstruct)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.log.warn](#lureklogwarn)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.log.warn_fields](#lureklogwarnfields)
+    - [Definition](#definition)
+    - [Description](#description)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -91,19 +127,28 @@ lurek.log.warn_fields(message: string, fields_tbl: table) -- Logs a warning mess
 
 ### lurek.log.addSink
 
-`lurek.log.addSink(config: table) -> integer`
+#### Definition
+
+```lua
+--- Adds a memory, file, rotating, or callback sink from a config table.
+---@param config table Sink config with `type`, `level`, format, tag, path, capacity, or callback fields.
+---@return number Sink id.
+lurek.log.addSink = function(config) end
+```
+
+#### Description
 
 Adds a memory, file, rotating, or callback sink from a config table.
 
-**Parameters**
+Parameters:
 
 - `config` (`table`, required): Sink config with `type`, `level`, format, tag, path, capacity, or callback fields.
 
-**Returns**: `integer` - Sink id.
+Returns: `integer` - Sink id.
 
 #### Example
 
-Exact example from [log.lua](../blob/main/content/examples/log.lua):
+Source: [log.lua](../blob/main/content/examples/log.lua)
 
 ```lua
 do
@@ -114,13 +159,20 @@ end
 
 ### lurek.log.clearSinks
 
-`lurek.log.clearSinks()`
+#### Definition
+
+```lua
+--- Removes all sinks and releases callback registry keys.
+lurek.log.clearSinks = function() end
+```
+
+#### Description
 
 Removes all sinks and releases callback registry keys.
 
 #### Example
 
-Exact example from [log.lua](../blob/main/content/examples/log.lua):
+Source: [log.lua](../blob/main/content/examples/log.lua)
 
 ```lua
 do
@@ -132,18 +184,27 @@ end
 
 ### lurek.log.debug
 
-`lurek.log.debug(message: string, [tag]: string)`
+#### Definition
+
+```lua
+--- Logs a debug message with an optional tag.
+---@param message string Message text.
+---@param tag? string Log tag shown in the sink output (default `"Lua"`).
+lurek.log.debug = function(message, tag) end
+```
+
+#### Description
 
 Logs a debug message with an optional tag.
 
-**Parameters**
+Parameters:
 
 - `message` (`string`, required): Message text.
 - `tag` (`string`, optional): Log tag shown in the sink output (default `"Lua"`).
 
 #### Example
 
-Exact example from [log.lua](../blob/main/content/examples/log.lua):
+Source: [log.lua](../blob/main/content/examples/log.lua)
 
 ```lua
 do
@@ -154,18 +215,27 @@ end
 
 ### lurek.log.debug_fields
 
-`lurek.log.debug_fields(message: string, fields_tbl: table)`
+#### Definition
+
+```lua
+--- Logs a debug message with structured fields.
+---@param message string Message text.
+---@param fields_tbl table Scalar field table converted to strings.
+lurek.log.debug_fields = function(message, fields_tbl) end
+```
+
+#### Description
 
 Logs a debug message with structured fields.
 
-**Parameters**
+Parameters:
 
 - `message` (`string`, required): Message text.
 - `fields_tbl` (`table`, required): Scalar field table converted to strings.
 
 #### Example
 
-Exact example from [log.lua](../blob/main/content/examples/log.lua):
+Source: [log.lua](../blob/main/content/examples/log.lua)
 
 ```lua
 do
@@ -176,18 +246,27 @@ end
 
 ### lurek.log.error
 
-`lurek.log.error(message: string, [tag]: string)`
+#### Definition
+
+```lua
+--- Logs an error message with an optional tag.
+---@param message string Message text.
+---@param tag? string Log tag shown in the sink output (default `"Lua"`).
+lurek.log.error = function(message, tag) end
+```
+
+#### Description
 
 Logs an error message with an optional tag.
 
-**Parameters**
+Parameters:
 
 - `message` (`string`, required): Message text.
 - `tag` (`string`, optional): Log tag shown in the sink output (default `"Lua"`).
 
 #### Example
 
-Exact example from [log.lua](../blob/main/content/examples/log.lua):
+Source: [log.lua](../blob/main/content/examples/log.lua)
 
 ```lua
 do
@@ -199,18 +278,27 @@ end
 
 ### lurek.log.error_fields
 
-`lurek.log.error_fields(message: string, fields_tbl: table)`
+#### Definition
+
+```lua
+--- Logs an error message with structured fields.
+---@param message string Message text.
+---@param fields_tbl table Scalar field table converted to strings.
+lurek.log.error_fields = function(message, fields_tbl) end
+```
+
+#### Description
 
 Logs an error message with structured fields.
 
-**Parameters**
+Parameters:
 
 - `message` (`string`, required): Message text.
 - `fields_tbl` (`table`, required): Scalar field table converted to strings.
 
 #### Example
 
-Exact example from [log.lua](../blob/main/content/examples/log.lua):
+Source: [log.lua](../blob/main/content/examples/log.lua)
 
 ```lua
 do
@@ -221,17 +309,25 @@ end
 
 ### lurek.log.flushFile
 
-`lurek.log.flushFile(id: integer)`
+#### Definition
+
+```lua
+--- Flushes a file-backed sink by id when it exists.
+---@param id number Sink id.
+lurek.log.flushFile = function(id) end
+```
+
+#### Description
 
 Flushes a file-backed sink by id when it exists.
 
-**Parameters**
+Parameters:
 
 - `id` (`integer`, required): Sink id.
 
 #### Example
 
-Exact example from [log.lua](../blob/main/content/examples/log.lua):
+Source: [log.lua](../blob/main/content/examples/log.lua)
 
 ```lua
 do
@@ -244,15 +340,23 @@ end
 
 ### lurek.log.getLevel
 
-`lurek.log.getLevel() -> string`
+#### Definition
+
+```lua
+--- Returns the global log level string.
+---@return string Current global log level.
+lurek.log.getLevel = function() end
+```
+
+#### Description
 
 Returns the global log level string.
 
-**Returns**: `string` - Current global log level.
+Returns: `string` - Current global log level.
 
 #### Example
 
-Exact example from [log.lua](../blob/main/content/examples/log.lua):
+Source: [log.lua](../blob/main/content/examples/log.lua)
 
 ```lua
 do
@@ -265,18 +369,27 @@ end
 
 ### lurek.log.info
 
-`lurek.log.info(message: string, [tag]: string)`
+#### Definition
+
+```lua
+--- Logs an info message with an optional tag.
+---@param message string Message text.
+---@param tag? string Log tag shown in the sink output (default `"Lua"`).
+lurek.log.info = function(message, tag) end
+```
+
+#### Description
 
 Logs an info message with an optional tag.
 
-**Parameters**
+Parameters:
 
 - `message` (`string`, required): Message text.
 - `tag` (`string`, optional): Log tag shown in the sink output (default `"Lua"`).
 
 #### Example
 
-Exact example from [log.lua](../blob/main/content/examples/log.lua):
+Source: [log.lua](../blob/main/content/examples/log.lua)
 
 ```lua
 do
@@ -288,18 +401,27 @@ end
 
 ### lurek.log.info_fields
 
-`lurek.log.info_fields(message: string, fields_tbl: table)`
+#### Definition
+
+```lua
+--- Logs an info message with structured fields.
+---@param message string Message text.
+---@param fields_tbl table Scalar field table converted to strings.
+lurek.log.info_fields = function(message, fields_tbl) end
+```
+
+#### Description
 
 Logs an info message with structured fields.
 
-**Parameters**
+Parameters:
 
 - `message` (`string`, required): Message text.
 - `fields_tbl` (`table`, required): Scalar field table converted to strings.
 
 #### Example
 
-Exact example from [log.lua](../blob/main/content/examples/log.lua):
+Source: [log.lua](../blob/main/content/examples/log.lua)
 
 ```lua
 do
@@ -310,15 +432,23 @@ end
 
 ### lurek.log.listSinks
 
-`lurek.log.listSinks() -> table`
+#### Definition
+
+```lua
+--- Returns metadata for all registered sinks.
+---@return LogListSinksResult Array of sink records with id, type, level, and optional path.
+lurek.log.listSinks = function() end
+```
+
+#### Description
 
 Returns metadata for all registered sinks.
 
-**Returns**: `table` - Array of sink records with id, type, level, and optional path.
+Returns: `table` - Array of sink records with id, type, level, and optional path.
 
 #### Example
 
-Exact example from [log.lua](../blob/main/content/examples/log.lua):
+Source: [log.lua](../blob/main/content/examples/log.lua)
 
 ```lua
 do
@@ -329,11 +459,21 @@ end
 
 ### lurek.log.print
 
-`lurek.log.print(level: string, message: string, [tag]: string)`
+#### Definition
+
+```lua
+--- Logs a message at a runtime-selected level with an optional tag.
+---@param level string Log level string.
+---@param message string Message text.
+---@param tag? string Optional tag, defaulting to `Lua`.
+lurek.log.print = function(level, message, tag) end
+```
+
+#### Description
 
 Logs a message at a runtime-selected level with an optional tag.
 
-**Parameters**
+Parameters:
 
 - `level` (`string`, required): Log level string.
 - `message` (`string`, required): Message text.
@@ -341,7 +481,7 @@ Logs a message at a runtime-selected level with an optional tag.
 
 #### Example
 
-Exact example from [log.lua](../blob/main/content/examples/log.lua):
+Source: [log.lua](../blob/main/content/examples/log.lua)
 
 ```lua
 do
@@ -353,20 +493,30 @@ end
 
 ### lurek.log.readMemory
 
-`lurek.log.readMemory(id: integer, [drain]: boolean) -> table`
+#### Definition
+
+```lua
+--- Reads entries from a memory sink and optionally drains them.
+---@param id number Memory sink id.
+---@param drain? boolean Optional drain flag, defaulting to false.
+---@return LogReadMemoryResult Array table of memory log entries.
+lurek.log.readMemory = function(id, drain) end
+```
+
+#### Description
 
 Reads entries from a memory sink and optionally drains them.
 
-**Parameters**
+Parameters:
 
 - `id` (`integer`, required): Memory sink id.
 - `drain` (`boolean`, optional): Optional drain flag, defaulting to false.
 
-**Returns**: `table` - Array table of memory log entries.
+Returns: `table` - Array table of memory log entries.
 
 #### Example
 
-Exact example from [log.lua](../blob/main/content/examples/log.lua):
+Source: [log.lua](../blob/main/content/examples/log.lua)
 
 ```lua
 do
@@ -379,19 +529,28 @@ end
 
 ### lurek.log.removeSink
 
-`lurek.log.removeSink(id: integer) -> boolean`
+#### Definition
+
+```lua
+--- Removes a sink by id and releases any callback registry key.
+---@param id number Sink id.
+---@return boolean True when a sink was removed.
+lurek.log.removeSink = function(id) end
+```
+
+#### Description
 
 Removes a sink by id and releases any callback registry key.
 
-**Parameters**
+Parameters:
 
 - `id` (`integer`, required): Sink id.
 
-**Returns**: `boolean` - True when a sink was removed.
+Returns: `boolean` - True when a sink was removed.
 
 #### Example
 
-Exact example from [log.lua](../blob/main/content/examples/log.lua):
+Source: [log.lua](../blob/main/content/examples/log.lua)
 
 ```lua
 do
@@ -403,17 +562,25 @@ end
 
 ### lurek.log.setLevel
 
-`lurek.log.setLevel(level: string)`
+#### Definition
+
+```lua
+--- Sets the global log level. This function is exposed to Lua scripts.
+---@param level string Level `error`, `warn`, `info`, `debug`, `trace`, `off`, or `none`.
+lurek.log.setLevel = function(level) end
+```
+
+#### Description
 
 Sets the global log level. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `level` (`string`, required): Level `error`, `warn`, `info`, `debug`, `trace`, `off`, or `none`.
 
 #### Example
 
-Exact example from [log.lua](../blob/main/content/examples/log.lua):
+Source: [log.lua](../blob/main/content/examples/log.lua)
 
 ```lua
 do
@@ -424,11 +591,21 @@ end
 
 ### lurek.log.struct
 
-`lurek.log.struct(level_str: string, message: string, fields_tbl: table)`
+#### Definition
+
+```lua
+--- Logs a structured message at a runtime-selected level.
+---@param level_str string Log level string.
+---@param message string Message text.
+---@param fields_tbl table Scalar field table converted to strings.
+lurek.log.struct = function(level_str, message, fields_tbl) end
+```
+
+#### Description
 
 Logs a structured message at a runtime-selected level.
 
-**Parameters**
+Parameters:
 
 - `level_str` (`string`, required): Log level string.
 - `message` (`string`, required): Message text.
@@ -436,7 +613,7 @@ Logs a structured message at a runtime-selected level.
 
 #### Example
 
-Exact example from [log.lua](../blob/main/content/examples/log.lua):
+Source: [log.lua](../blob/main/content/examples/log.lua)
 
 ```lua
 do
@@ -447,18 +624,27 @@ end
 
 ### lurek.log.warn
 
-`lurek.log.warn(message: string, [tag]: string)`
+#### Definition
+
+```lua
+--- Logs a warning message with an optional tag.
+---@param message string Message text.
+---@param tag? string Log tag shown in the sink output (default `"Lua"`).
+lurek.log.warn = function(message, tag) end
+```
+
+#### Description
 
 Logs a warning message with an optional tag.
 
-**Parameters**
+Parameters:
 
 - `message` (`string`, required): Message text.
 - `tag` (`string`, optional): Log tag shown in the sink output (default `"Lua"`).
 
 #### Example
 
-Exact example from [log.lua](../blob/main/content/examples/log.lua):
+Source: [log.lua](../blob/main/content/examples/log.lua)
 
 ```lua
 do
@@ -470,18 +656,27 @@ end
 
 ### lurek.log.warn_fields
 
-`lurek.log.warn_fields(message: string, fields_tbl: table)`
+#### Definition
+
+```lua
+--- Logs a warning message with structured fields.
+---@param message string Message text.
+---@param fields_tbl table Scalar field table converted to strings.
+lurek.log.warn_fields = function(message, fields_tbl) end
+```
+
+#### Description
 
 Logs a warning message with structured fields.
 
-**Parameters**
+Parameters:
 
 - `message` (`string`, required): Message text.
 - `fields_tbl` (`table`, required): Scalar field table converted to strings.
 
 #### Example
 
-Exact example from [log.lua](../blob/main/content/examples/log.lua):
+Source: [log.lua](../blob/main/content/examples/log.lua)
 
 ```lua
 do

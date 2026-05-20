@@ -14,218 +14,640 @@
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
   - [lurek.physics.attachShape](#lurekphysicsattachshape)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.physics.debugDraw](#lurekphysicsdebugdraw)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.physics.destroyWorld](#lurekphysicsdestroyworld)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.physics.drawDebugGpu](#lurekphysicsdrawdebuggpu)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.physics.getBody](#lurekphysicsgetbody)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.physics.getCollisions](#lurekphysicsgetcollisions)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.physics.isSleepingAllowed](#lurekphysicsissleepingallowed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.physics.newBody](#lurekphysicsnewbody)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.physics.newCellular](#lurekphysicsnewcellular)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.physics.newChainShape](#lurekphysicsnewchainshape)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.physics.newCircleShape](#lurekphysicsnewcircleshape)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.physics.newEdgeShape](#lurekphysicsnewedgeshape)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.physics.newPolygonShape](#lurekphysicsnewpolygonshape)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.physics.newRectangleShape](#lurekphysicsnewrectangleshape)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.physics.newTerrain](#lurekphysicsnewterrain)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.physics.newWorld](#lurekphysicsnewworld)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.physics.setBodyVelocity](#lurekphysicssetbodyvelocity)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.physics.setSleepingAllowed](#lurekphysicssetsleepingallowed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.physics.step](#lurekphysicsstep)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.physics.testAABB](#lurekphysicstestaabb)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.physics.testCircleAABB](#lurekphysicstestcircleaabb)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.physics.testCircles](#lurekphysicstestcircles)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.physics.testPoint](#lurekphysicstestpoint)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔷 Module Types](#module-types)
   - [LBody](#lbody)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCellular](#lcellular)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPhysicsShape](#lphysicsshape)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTerrain](#lterrain)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld](#lworld)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LZone](#lzone)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
   - [LBody:applyAngularImpulse](#lbodyapplyangularimpulse)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:applyForce](#lbodyapplyforce)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:applyForceAtPoint](#lbodyapplyforceatpoint)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:applyImpulse](#lbodyapplyimpulse)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:applyTorque](#lbodyapplytorque)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:destroy](#lbodydestroy)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:getAngle](#lbodygetangle)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:getAngularDamping](#lbodygetangulardamping)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:getAngularVelocity](#lbodygetangularvelocity)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:getFriction](#lbodygetfriction)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:getGravityScale](#lbodygetgravityscale)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:getHeight](#lbodygetheight)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:getId](#lbodygetid)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:getLayer](#lbodygetlayer)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:getLinearDamping](#lbodygetlineardamping)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:getMask](#lbodygetmask)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:getMass](#lbodygetmass)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:getPosition](#lbodygetposition)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:getRestitution](#lbodygetrestitution)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:getType](#lbodygettype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:getVelocity](#lbodygetvelocity)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:getWidth](#lbodygetwidth)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:getX](#lbodygetx)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:getY](#lbodygety)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:isBullet](#lbodyisbullet)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:isFixedRotation](#lbodyisfixedrotation)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:isSleeping](#lbodyissleeping)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:isSleepingAllowed](#lbodyissleepingallowed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:setAngle](#lbodysetangle)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:setAngularDamping](#lbodysetangulardamping)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:setAngularVelocity](#lbodysetangularvelocity)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:setBullet](#lbodysetbullet)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:setFixedRotation](#lbodysetfixedrotation)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:setFriction](#lbodysetfriction)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:setGravityScale](#lbodysetgravityscale)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:setLayer](#lbodysetlayer)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:setLinearDamping](#lbodysetlineardamping)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:setMask](#lbodysetmask)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:setMass](#lbodysetmass)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:setPosition](#lbodysetposition)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:setRestitution](#lbodysetrestitution)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:setSleepingAllowed](#lbodysetsleepingallowed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:setType](#lbodysettype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:setVelocity](#lbodysetvelocity)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:sleep](#lbodysleep)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:type](#lbodytype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:typeOf](#lbodytypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LBody:wakeUp](#lbodywakeup)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCellular:countCells](#lcellularcountcells)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCellular:fillCircle](#lcellularfillcircle)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCellular:fillRect](#lcellularfillrect)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCellular:findCells](#lcellularfindcells)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCellular:getCell](#lcellulargetcell)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCellular:loadFromBytes](#lcellularloadfrombytes)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCellular:setCell](#lcellularsetcell)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCellular:step](#lcellularstep)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCellular:stepN](#lcellularstepn)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCellular:toBytes](#lcellulartobytes)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCellular:toImageData](#lcellulartoimagedata)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCellular:toImageDataRegion](#lcellulartoimagedataregion)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCellular:type](#lcellulartype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCellular:typeOf](#lcellulartypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPhysicsShape:destroy](#lphysicsshapedestroy)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPhysicsShape:getBoundingBox](#lphysicsshapegetboundingbox)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPhysicsShape:getRadius](#lphysicsshapegetradius)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPhysicsShape:getType](#lphysicsshapegettype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPhysicsShape:setDensity](#lphysicsshapesetdensity)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPhysicsShape:setFriction](#lphysicsshapesetfriction)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPhysicsShape:setRestitution](#lphysicsshapesetrestitution)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPhysicsShape:setSensor](#lphysicsshapesetsensor)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPhysicsShape:type](#lphysicsshapetype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPhysicsShape:typeOf](#lphysicsshapetypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTerrain:collapseColumns](#lterraincollapsecolumns)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTerrain:fillAll](#lterrainfillall)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTerrain:fillCircle](#lterrainfillcircle)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTerrain:fillRect](#lterrainfillrect)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTerrain:flush](#lterrainflush)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTerrain:getCell](#lterraingetcell)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTerrain:isDirty](#lterrainisdirty)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTerrain:loadFromBytes](#lterrainloadfrombytes)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTerrain:setCell](#lterrainsetcell)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTerrain:solidPositions](#lterrainsolidpositions)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTerrain:spawnDebris](#lterrainspawndebris)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTerrain:toBytes](#lterraintobytes)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTerrain:toImageData](#lterraintoimagedata)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTerrain:type](#lterraintype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LTerrain:typeOf](#lterraintypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:addDistanceJoint](#lworldadddistancejoint)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:addFixture](#lworldaddfixture)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:addFrictionJoint](#lworldaddfrictionjoint)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:addGearJoint](#lworldaddgearjoint)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:addMotorJoint](#lworldaddmotorjoint)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:addMouseJoint](#lworldaddmousejoint)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:addPrismaticJoint](#lworldaddprismaticjoint)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:addPulleyJoint](#lworldaddpulleyjoint)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:addRevoluteJoint](#lworldaddrevolutejoint)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:addRopeJoint](#lworldaddropejoint)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:addWeldJoint](#lworldaddweldjoint)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:addWheelJoint](#lworldaddwheeljoint)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:addZone](#lworldaddzone)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:clear](#lworldclear)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:clearBeginContact](#lworldclearbegincontact)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:clearBodyData](#lworldclearbodydata)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:clearBodyOneWay](#lworldclearbodyoneway)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:clearEndContact](#lworldclearendcontact)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:destroyBody](#lworlddestroybody)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:destroyJoint](#lworlddestroyjoint)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:drawDebug](#lworlddrawdebug)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:fixtureCount](#lworldfixturecount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:getBeginContactEvents](#lworldgetbegincontactevents)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:getBodyAtPoint](#lworldgetbodyatpoint)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:getBodyCCD](#lworldgetbodyccd)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:getBodyContacts](#lworldgetbodycontacts)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:getBodyCount](#lworldgetbodycount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:getBodyData](#lworldgetbodydata)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:getBodyIds](#lworldgetbodyids)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:getBodyOneWay](#lworldgetbodyoneway)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:getBodyType](#lworldgetbodytype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:getCollisionEvents](#lworldgetcollisionevents)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:getContacts](#lworldgetcontacts)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:getEndContactEvents](#lworldgetendcontactevents)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:getGravity](#lworldgetgravity)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:getJointBodies](#lworldgetjointbodies)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:getJointBreakForce](#lworldgetjointbreakforce)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:getJointIds](#lworldgetjointids)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:getJointLimits](#lworldgetjointlimits)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:getJointMotorSpeed](#lworldgetjointmotorspeed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:getJointType](#lworldgetjointtype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:getMeter](#lworldgetmeter)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:getSolverIterations](#lworldgetsolveriterations)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:getZoneEvents](#lworldgetzoneevents)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:isBodySleeping](#lworldisbodysleeping)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:jointCount](#lworldjointcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:newBodies](#lworldnewbodies)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:newBody](#lworldnewbody)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:newChainBody](#lworldnewchainbody)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:newCircleBody](#lworldnewcirclebody)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:newEdgeBody](#lworldnewedgebody)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:newPolygonBody](#lworldnewpolygonbody)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:queryAABB](#lworldqueryaabb)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:raycast](#lworldraycast)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:raycastAll](#lworldraycastall)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:raycastClosest](#lworldraycastclosest)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:setBeginContact](#lworldsetbegincontact)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:setBodyCCD](#lworldsetbodyccd)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:setBodyData](#lworldsetbodydata)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:setBodyOneWay](#lworldsetbodyoneway)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:setBodyType](#lworldsetbodytype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:setEndContact](#lworldsetendcontact)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:setFixtureFriction](#lworldsetfixturefriction)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:setFixtureRestitution](#lworldsetfixturerestitution)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:setFixtureSensor](#lworldsetfixturesensor)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:setGravity](#lworldsetgravity)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:setJointBreakForce](#lworldsetjointbreakforce)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:setJointLimits](#lworldsetjointlimits)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:setJointLimitsEnabled](#lworldsetjointlimitsenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:setJointMotorSpeed](#lworldsetjointmotorspeed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:setMeter](#lworldsetmeter)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:setMouseJointTarget](#lworldsetmousejointtarget)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:setSolverIterations](#lworldsetsolveriterations)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:sleepBody](#lworldsleepbody)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:step](#lworldstep)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:stepFixed](#lworldstepfixed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:toPhysics](#lworldtophysics)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:toPixels](#lworldtopixels)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:type](#lworldtype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:typeOf](#lworldtypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LWorld:wakeUpBody](#lworldwakeupbody)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LZone:destroy](#lzonedestroy)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LZone:getId](#lzonegetid)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LZone:setAngularDampingOverride](#lzonesetangulardampingoverride)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LZone:setCircle](#lzonesetcircle)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LZone:setEnabled](#lzonesetenabled)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LZone:setGravityDirectional](#lzonesetgravitydirectional)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LZone:setGravityPoint](#lzonesetgravitypoint)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LZone:setGravityRepulsor](#lzonesetgravityrepulsor)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LZone:setGravityZero](#lzonesetgravityzero)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LZone:setLayerMask](#lzonesetlayermask)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LZone:setLinearDampingOverride](#lzonesetlineardampingoverride)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LZone:setPriority](#lzonesetpriority)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LZone:type](#lzonetype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LZone:typeOf](#lzonetypeof)
+    - [Definition](#definition)
+    - [Description](#description)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -292,18 +714,27 @@ lurek.physics.setSleepingAllowed(world: LWorld, body: LBody, allowed: boolean) -
 
 ### lurek.physics.attachShape
 
-`lurek.physics.attachShape(body: LBody, shape: LPhysicsShape)`
+#### Definition
+
+```lua
+--- Attaches a previously created shape to a body, using the shape's stored material properties.
+---@param body LBody The target body.
+---@param shape LPhysicsShape The shape to attach.
+lurek.physics.attachShape = function(body, shape) end
+```
+
+#### Description
 
 Attaches a previously created shape to a body, using the shape's stored material properties.
 
-**Parameters**
+Parameters:
 
 - `body` (`LBody`, required): The target body.
 - `shape` (`LPhysicsShape`, required): The shape to attach.
 
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -317,17 +748,25 @@ end
 
 ### lurek.physics.debugDraw
 
-`lurek.physics.debugDraw(enable: boolean)`
+#### Definition
+
+```lua
+--- Enables or disables automatic physics debug overlay rendering for the next frame.
+---@param enable boolean True to show debug shapes.
+lurek.physics.debugDraw = function(enable) end
+```
+
+#### Description
 
 Enables or disables automatic physics debug overlay rendering for the next frame.
 
-**Parameters**
+Parameters:
 
 - `enable` (`boolean`, required): True to show debug shapes.
 
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -341,17 +780,25 @@ end
 
 ### lurek.physics.destroyWorld
 
-`lurek.physics.destroyWorld(world: LWorld)`
+#### Definition
+
+```lua
+--- No-op placeholder for API parity. Worlds are freed when no longer referenced.
+---@param world LWorld The world to destroy.
+lurek.physics.destroyWorld = function(world) end
+```
+
+#### Description
 
 No-op placeholder for API parity. Worlds are freed when no longer referenced.
 
-**Parameters**
+Parameters:
 
 - `world` (`LWorld`, required): The world to destroy.
 
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -365,18 +812,27 @@ end
 
 ### lurek.physics.drawDebugGpu
 
-`lurek.physics.drawDebugGpu(world: LWorld, [config]: table)`
+#### Definition
+
+```lua
+--- Queues a GPU-rendered physics debug visualization using the world's current body state.
+---@param world LWorld The world to visualize.
+---@param config? table Optional config: {bodyColor, staticColor, sleepColor, sensorColor, lineWidth}.
+lurek.physics.drawDebugGpu = function(world, config) end
+```
+
+#### Description
 
 Queues a GPU-rendered physics debug visualization using the world's current body state.
 
-**Parameters**
+Parameters:
 
 - `world` (`LWorld`, required): The world to visualize.
 - `config` (`table`, optional): Optional config: {bodyColor, staticColor, sleepColor, sensorColor, lineWidth}.
 
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -388,20 +844,33 @@ end
 
 ### lurek.physics.getBody
 
-`lurek.physics.getBody(world: LWorld, body: LBody) -> number`
+#### Definition
+
+```lua
+--- Returns position and velocity of a body (free-function variant for quick queries).
+---@param world LWorld The world.
+---@param body LBody The body to query.
+---@return number a X position.
+---@return number b Y position.
+---@return number c Velocity X.
+---@return number d Velocity Y.
+lurek.physics.getBody = function(world, body) end
+```
+
+#### Description
 
 Returns position and velocity of a body (free-function variant for quick queries).
 
-**Parameters**
+Parameters:
 
 - `world` (`LWorld`, required): The world.
 - `body` (`LBody`, required): The body to query.
 
-**Returns**: `number` - X position.
+Returns: `number` - X position.
 
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -414,19 +883,28 @@ end
 
 ### lurek.physics.getCollisions
 
-`lurek.physics.getCollisions(world: LWorld) -> table`
+#### Definition
+
+```lua
+--- Returns all collision events from the last world step as {body_a, body_b} pairs.
+---@param world LWorld The world to query.
+---@return PhysicsGetCollisionsResult Array of collision event tables.
+lurek.physics.getCollisions = function(world) end
+```
+
+#### Description
 
 Returns all collision events from the last world step as {body_a, body_b} pairs.
 
-**Parameters**
+Parameters:
 
 - `world` (`LWorld`, required): The world to query.
 
-**Returns**: `table` - Array of collision event tables.
+Returns: `table` - Array of collision event tables.
 
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -440,20 +918,30 @@ end
 
 ### lurek.physics.isSleepingAllowed
 
-`lurek.physics.isSleepingAllowed(world: LWorld, body: LBody) -> boolean`
+#### Definition
+
+```lua
+--- Checks if sleeping is allowed on a body (free-function variant).
+---@param world LWorld The world.
+---@param body LBody The body.
+---@return boolean True if sleeping is allowed.
+lurek.physics.isSleepingAllowed = function(world, body) end
+```
+
+#### Description
 
 Checks if sleeping is allowed on a body (free-function variant).
 
-**Parameters**
+Parameters:
 
 - `world` (`LWorld`, required): The world.
 - `body` (`LBody`, required): The body.
 
-**Returns**: `boolean` - True if sleeping is allowed.
+Returns: `boolean` - True if sleeping is allowed.
 
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -467,22 +955,34 @@ end
 
 ### lurek.physics.newBody
 
-`lurek.physics.newBody(world: LWorld, x: number, y: number, bodyType: string) -> LBody`
+#### Definition
+
+```lua
+--- Creates a new body in a world (free-function variant).
+---@param world LWorld The target world.
+---@param x number Initial X position.
+---@param y number Initial Y position.
+---@param bodyType string Body type: "static", "dynamic", "kinematic", or "sensor".
+---@return LBody The newly created body.
+lurek.physics.newBody = function(world, x, y, bodyType) end
+```
+
+#### Description
 
 Creates a new body in a world (free-function variant).
 
-**Parameters**
+Parameters:
 
 - `world` (`LWorld`, required): The target world.
 - `x` (`number`, required): Initial X position.
 - `y` (`number`, required): Initial Y position.
 - `bodyType` (`string`, required): Body type: "static", "dynamic", "kinematic", or "sensor".
 
-**Returns**: `LBody` - The newly created body.
+Returns: `LBody` - The newly created body.
 
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -494,20 +994,30 @@ end
 
 ### lurek.physics.newCellular
 
-`lurek.physics.newCellular(width: integer, height: integer) -> LCellular`
+#### Definition
+
+```lua
+--- Creates a new cellular automaton simulation grid for particle-like physics (sand, water, fire).
+---@param width number Grid width in cells.
+---@param height number Grid height in cells.
+---@return LCellular The cellular simulation object.
+lurek.physics.newCellular = function(width, height) end
+```
+
+#### Description
 
 Creates a new cellular automaton simulation grid for particle-like physics (sand, water, fire).
 
-**Parameters**
+Parameters:
 
 - `width` (`integer`, required): Grid width in cells.
 - `height` (`integer`, required): Grid height in cells.
 
-**Returns**: `LCellular` - The cellular simulation object.
+Returns: `LCellular` - The cellular simulation object.
 
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -521,20 +1031,30 @@ end
 
 ### lurek.physics.newChainShape
 
-`lurek.physics.newChainShape(closed: boolean, ...: number) -> LPhysicsShape`
+#### Definition
+
+```lua
+--- Creates a chain (polyline) collision shape. Useful for terrain outlines.
+---@param closed boolean If true, connects last vertex to first.
+---@param ... number Alternating x,y coordinates (minimum 2 pairs = 4 numbers).
+---@return LPhysicsShape The shape object.
+lurek.physics.newChainShape = function(closed, ...) end
+```
+
+#### Description
 
 Creates a chain (polyline) collision shape. Useful for terrain outlines.
 
-**Parameters**
+Parameters:
 
 - `closed` (`boolean`, required): If true, connects last vertex to first.
 - `...` (`number`, required): Alternating x,y coordinates (minimum 2 pairs = 4 numbers).
 
-**Returns**: `LPhysicsShape` - The shape object.
+Returns: `LPhysicsShape` - The shape object.
 
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -547,19 +1067,28 @@ end
 
 ### lurek.physics.newCircleShape
 
-`lurek.physics.newCircleShape(r: number) -> LPhysicsShape`
+#### Definition
+
+```lua
+--- Creates a circle collision shape with the given radius.
+---@param r number Radius.
+---@return LPhysicsShape The shape object.
+lurek.physics.newCircleShape = function(r) end
+```
+
+#### Description
 
 Creates a circle collision shape with the given radius.
 
-**Parameters**
+Parameters:
 
 - `r` (`number`, required): Radius.
 
-**Returns**: `LPhysicsShape` - The shape object.
+Returns: `LPhysicsShape` - The shape object.
 
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -573,22 +1102,34 @@ end
 
 ### lurek.physics.newEdgeShape
 
-`lurek.physics.newEdgeShape(x1: number, y1: number, x2: number, y2: number) -> LPhysicsShape`
+#### Definition
+
+```lua
+--- Creates an edge (line segment) collision shape between two local points.
+---@param x1 number Start X.
+---@param y1 number Start Y.
+---@param x2 number End X.
+---@param y2 number End Y.
+---@return LPhysicsShape The shape object.
+lurek.physics.newEdgeShape = function(x1, y1, x2, y2) end
+```
+
+#### Description
 
 Creates an edge (line segment) collision shape between two local points.
 
-**Parameters**
+Parameters:
 
 - `x1` (`number`, required): Start X.
 - `y1` (`number`, required): Start Y.
 - `x2` (`number`, required): End X.
 - `y2` (`number`, required): End Y.
 
-**Returns**: `LPhysicsShape` - The shape object.
+Returns: `LPhysicsShape` - The shape object.
 
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -602,19 +1143,28 @@ end
 
 ### lurek.physics.newPolygonShape
 
-`lurek.physics.newPolygonShape(...: number) -> LPhysicsShape`
+#### Definition
+
+```lua
+--- Creates a convex polygon collision shape from vertex coordinate pairs.
+---@param ... number Alternating x,y coordinates (minimum 3 pairs = 6 numbers).
+---@return LPhysicsShape The shape object.
+lurek.physics.newPolygonShape = function(...) end
+```
+
+#### Description
 
 Creates a convex polygon collision shape from vertex coordinate pairs.
 
-**Parameters**
+Parameters:
 
 - `...` (`number`, required): Alternating x,y coordinates (minimum 3 pairs = 6 numbers).
 
-**Returns**: `LPhysicsShape` - The shape object.
+Returns: `LPhysicsShape` - The shape object.
 
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -627,20 +1177,30 @@ end
 
 ### lurek.physics.newRectangleShape
 
-`lurek.physics.newRectangleShape(w: number, h: number) -> LPhysicsShape`
+#### Definition
+
+```lua
+--- Creates a rectangle collision shape with the given dimensions.
+---@param w number Width.
+---@param h number Height.
+---@return LPhysicsShape The shape object.
+lurek.physics.newRectangleShape = function(w, h) end
+```
+
+#### Description
 
 Creates a rectangle collision shape with the given dimensions.
 
-**Parameters**
+Parameters:
 
 - `w` (`number`, required): Width.
 - `h` (`number`, required): Height.
 
-**Returns**: `LPhysicsShape` - The shape object.
+Returns: `LPhysicsShape` - The shape object.
 
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -654,22 +1214,34 @@ end
 
 ### lurek.physics.newTerrain
 
-`lurek.physics.newTerrain(width: integer, height: integer, cellSize: number, world: LWorld) -> LTerrain`
+#### Definition
+
+```lua
+--- Creates a destructible terrain grid linked to a physics world for automatic collider generation.
+---@param width number Grid width in cells.
+---@param height number Grid height in cells.
+---@param cellSize number World-space size of each cell.
+---@param world LWorld The physics world that will own the generated colliders.
+---@return LTerrain The terrain object.
+lurek.physics.newTerrain = function(width, height, cellSize, world) end
+```
+
+#### Description
 
 Creates a destructible terrain grid linked to a physics world for automatic collider generation.
 
-**Parameters**
+Parameters:
 
 - `width` (`integer`, required): Grid width in cells.
 - `height` (`integer`, required): Grid height in cells.
 - `cellSize` (`number`, required): World-space size of each cell.
 - `world` (`LWorld`, required): The physics world that will own the generated colliders.
 
-**Returns**: `LTerrain` - The terrain object.
+Returns: `LTerrain` - The terrain object.
 
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -683,20 +1255,30 @@ end
 
 ### lurek.physics.newWorld
 
-`lurek.physics.newWorld(gx: number, gy: number) -> LWorld`
+#### Definition
+
+```lua
+--- Creates a new physics world with the given gravity vector.
+---@param gx number Gravity X component.
+---@param gy number Gravity Y component (positive = down).
+---@return LWorld The new physics world.
+lurek.physics.newWorld = function(gx, gy) end
+```
+
+#### Description
 
 Creates a new physics world with the given gravity vector.
 
-**Parameters**
+Parameters:
 
 - `gx` (`number`, required): Gravity X component.
 - `gy` (`number`, required): Gravity Y component (positive = down).
 
-**Returns**: `LWorld` - The new physics world.
+Returns: `LWorld` - The new physics world.
 
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -710,11 +1292,22 @@ end
 
 ### lurek.physics.setBodyVelocity
 
-`lurek.physics.setBodyVelocity(world: LWorld, body: LBody, vx: number, vy: number)`
+#### Definition
+
+```lua
+--- Sets a body's velocity (free-function variant).
+---@param world LWorld The world.
+---@param body LBody The body.
+---@param vx number Velocity X.
+---@param vy number Velocity Y.
+lurek.physics.setBodyVelocity = function(world, body, vx, vy) end
+```
+
+#### Description
 
 Sets a body's velocity (free-function variant).
 
-**Parameters**
+Parameters:
 
 - `world` (`LWorld`, required): The world.
 - `body` (`LBody`, required): The body.
@@ -723,7 +1316,7 @@ Sets a body's velocity (free-function variant).
 
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -736,11 +1329,21 @@ end
 
 ### lurek.physics.setSleepingAllowed
 
-`lurek.physics.setSleepingAllowed(world: LWorld, body: LBody, allowed: boolean)`
+#### Definition
+
+```lua
+--- Sets whether a body is allowed to sleep (free-function variant).
+---@param world LWorld The world.
+---@param body LBody The body.
+---@param allowed boolean True to allow sleeping.
+lurek.physics.setSleepingAllowed = function(world, body, allowed) end
+```
+
+#### Description
 
 Sets whether a body is allowed to sleep (free-function variant).
 
-**Parameters**
+Parameters:
 
 - `world` (`LWorld`, required): The world.
 - `body` (`LBody`, required): The body.
@@ -748,7 +1351,7 @@ Sets whether a body is allowed to sleep (free-function variant).
 
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -761,18 +1364,27 @@ end
 
 ### lurek.physics.step
 
-`lurek.physics.step(world: LWorld, dt: number)`
+#### Definition
+
+```lua
+--- Steps a physics world forward by dt seconds (free-function variant).
+---@param world LWorld The world to step.
+---@param dt number Time step in seconds.
+lurek.physics.step = function(world, dt) end
+```
+
+#### Description
 
 Steps a physics world forward by dt seconds (free-function variant).
 
-**Parameters**
+Parameters:
 
 - `world` (`LWorld`, required): The world to step.
 - `dt` (`number`, required): Time step in seconds.
 
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -786,11 +1398,27 @@ end
 
 ### lurek.physics.testAABB
 
-`lurek.physics.testAABB(ax: number, ay: number, aw: number, ah: number, bx: number, by: number, bw: number, bh: number) -> boolean`
+#### Definition
+
+```lua
+--- Tests whether two axis-aligned bounding boxes overlap. Lightweight collision check without physics world.
+---@param ax number First rect X.
+---@param ay number First rect Y.
+---@param aw number First rect width.
+---@param ah number First rect height.
+---@param bx number Second rect X.
+---@param by number Second rect Y.
+---@param bw number Second rect width.
+---@param bh number Second rect height.
+---@return boolean True if the rectangles overlap.
+lurek.physics.testAABB = function(ax, ay, aw, ah, bx, by, bw, bh) end
+```
+
+#### Description
 
 Tests whether two axis-aligned bounding boxes overlap. Lightweight collision check without physics world.
 
-**Parameters**
+Parameters:
 
 - `ax` (`number`, required): First rect X.
 - `ay` (`number`, required): First rect Y.
@@ -801,11 +1429,11 @@ Tests whether two axis-aligned bounding boxes overlap. Lightweight collision che
 - `bw` (`number`, required): Second rect width.
 - `bh` (`number`, required): Second rect height.
 
-**Returns**: `boolean` - True if the rectangles overlap.
+Returns: `boolean` - True if the rectangles overlap.
 
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -818,11 +1446,26 @@ end
 
 ### lurek.physics.testCircleAABB
 
-`lurek.physics.testCircleAABB(cx: number, cy: number, cr: number, ax: number, ay: number, aw: number, ah: number) -> boolean`
+#### Definition
+
+```lua
+--- Tests whether a circle overlaps an AABB. Lightweight check without physics world.
+---@param cx number Circle center X.
+---@param cy number Circle center Y.
+---@param cr number Circle radius.
+---@param ax number Rect X.
+---@param ay number Rect Y.
+---@param aw number Rect width.
+---@param ah number Rect height.
+---@return boolean True if circle and AABB overlap.
+lurek.physics.testCircleAABB = function(cx, cy, cr, ax, ay, aw, ah) end
+```
+
+#### Description
 
 Tests whether a circle overlaps an AABB. Lightweight check without physics world.
 
-**Parameters**
+Parameters:
 
 - `cx` (`number`, required): Circle center X.
 - `cy` (`number`, required): Circle center Y.
@@ -832,11 +1475,11 @@ Tests whether a circle overlaps an AABB. Lightweight check without physics world
 - `aw` (`number`, required): Rect width.
 - `ah` (`number`, required): Rect height.
 
-**Returns**: `boolean` - True if circle and AABB overlap.
+Returns: `boolean` - True if circle and AABB overlap.
 
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -849,11 +1492,25 @@ end
 
 ### lurek.physics.testCircles
 
-`lurek.physics.testCircles(ax: number, ay: number, ar: number, bx: number, by: number, br: number) -> boolean`
+#### Definition
+
+```lua
+--- Tests whether two circles overlap. Lightweight collision check without physics world.
+---@param ax number First circle center X.
+---@param ay number First circle center Y.
+---@param ar number First circle radius.
+---@param bx number Second circle center X.
+---@param by number Second circle center Y.
+---@param br number Second circle radius.
+---@return boolean True if the circles overlap.
+lurek.physics.testCircles = function(ax, ay, ar, bx, by, br) end
+```
+
+#### Description
 
 Tests whether two circles overlap. Lightweight collision check without physics world.
 
-**Parameters**
+Parameters:
 
 - `ax` (`number`, required): First circle center X.
 - `ay` (`number`, required): First circle center Y.
@@ -862,11 +1519,11 @@ Tests whether two circles overlap. Lightweight collision check without physics w
 - `by` (`number`, required): Second circle center Y.
 - `br` (`number`, required): Second circle radius.
 
-**Returns**: `boolean` - True if the circles overlap.
+Returns: `boolean` - True if the circles overlap.
 
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -879,11 +1536,25 @@ end
 
 ### lurek.physics.testPoint
 
-`lurek.physics.testPoint(px: number, py: number, ax: number, ay: number, aw: number, ah: number) -> boolean`
+#### Definition
+
+```lua
+--- Tests whether a point lies inside an AABB. Lightweight check without physics world.
+---@param px number Point X.
+---@param py number Point Y.
+---@param ax number Rect X.
+---@param ay number Rect Y.
+---@param aw number Rect width.
+---@param ah number Rect height.
+---@return boolean True if the point is inside.
+lurek.physics.testPoint = function(px, py, ax, ay, aw, ah) end
+```
+
+#### Description
 
 Tests whether a point lies inside an AABB. Lightweight check without physics world.
 
-**Parameters**
+Parameters:
 
 - `px` (`number`, required): Point X.
 - `py` (`number`, required): Point Y.
@@ -892,11 +1563,11 @@ Tests whether a point lies inside an AABB. Lightweight check without physics wor
 - `aw` (`number`, required): Rect width.
 - `ah` (`number`, required): Rect height.
 
-**Returns**: `boolean` - True if the point is inside.
+Returns: `boolean` - True if the point is inside.
 
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -914,9 +1585,7 @@ end
 
 ### LBody
 
-A handle to a single physics body in the world, providing per-body manipulation methods.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- A handle to a single physics body in the world, providing per-body manipulation methods.
@@ -924,9 +1593,13 @@ A handle to a single physics body in the world, providing per-body manipulation 
 LBody = {}
 ```
 
+#### Description
+
+A handle to a single physics body in the world, providing per-body manipulation methods.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -938,9 +1611,7 @@ end
 
 ### LCellular
 
-A cellular automaton simulation grid (sand, water, fire, gas, rock) for particle-like physics effects.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- A cellular automaton simulation grid (sand, water, fire, gas, rock) for particle-like physics effects.
@@ -948,9 +1619,13 @@ A cellular automaton simulation grid (sand, water, fire, gas, rock) for particle
 LCellular = {}
 ```
 
+#### Description
+
+A cellular automaton simulation grid (sand, water, fire, gas, rock) for particle-like physics effects.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -964,9 +1639,7 @@ end
 
 ### LPhysicsShape
 
-A standalone collision shape with material properties, to be attached to bodies via `attachShape`.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- A standalone collision shape with material properties, to be attached to bodies via `attachShape`.
@@ -974,9 +1647,13 @@ A standalone collision shape with material properties, to be attached to bodies 
 LPhysicsShape = {}
 ```
 
+#### Description
+
+A standalone collision shape with material properties, to be attached to bodies via `attachShape`.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -989,9 +1666,7 @@ end
 
 ### LTerrain
 
-A destructible terrain map backed by a grid of solid/empty cells. Generates physics colliders on flush.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- A destructible terrain map backed by a grid of solid/empty cells. Generates physics colliders on flush.
@@ -999,9 +1674,13 @@ A destructible terrain map backed by a grid of solid/empty cells. Generates phys
 LTerrain = {}
 ```
 
+#### Description
+
+A destructible terrain map backed by a grid of solid/empty cells. Generates physics colliders on flush.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -1015,9 +1694,7 @@ end
 
 ### LWorld
 
-A physics world that manages rigid bodies, joints, collision detection, and simulation stepping.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- A physics world that manages rigid bodies, joints, collision detection, and simulation stepping.
@@ -1025,9 +1702,13 @@ A physics world that manages rigid bodies, joints, collision detection, and simu
 LWorld = {}
 ```
 
+#### Description
+
+A physics world that manages rigid bodies, joints, collision detection, and simulation stepping.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -1041,9 +1722,7 @@ end
 
 ### LZone
 
-A physics zone that applies area-based effects (gravity overrides, damping) to bodies within its bounds.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- A physics zone that applies area-based effects (gravity overrides, damping) to bodies within its bounds.
@@ -1051,9 +1730,13 @@ A physics zone that applies area-based effects (gravity overrides, damping) to b
 LZone = {}
 ```
 
+#### Description
+
+A physics zone that applies area-based effects (gravity overrides, damping) to bodies within its bounds.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -1072,15 +1755,7 @@ end
 
 ### LBody:applyAngularImpulse
 
-`LBody:applyAngularImpulse(impulse: number)`
-
-Applies an instantaneous angular impulse (spin) to the body.
-
-**Parameters**
-
-- `impulse` (`number`, required): Angular impulse value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Applies an instantaneous angular impulse (spin) to the body.
@@ -1088,9 +1763,17 @@ Applies an instantaneous angular impulse (spin) to the body.
 function LBody:applyAngularImpulse(impulse) end
 ```
 
+#### Description
+
+Applies an instantaneous angular impulse (spin) to the body.
+
+Parameters:
+
+- `impulse` (`number`, required): Angular impulse value.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -1104,16 +1787,7 @@ end
 
 ### LBody:applyForce
 
-`LBody:applyForce(fx: number, fy: number)`
-
-Applies a continuous force to the body's center of mass (accumulates over the step).
-
-**Parameters**
-
-- `fx` (`number`, required): Force X component.
-- `fy` (`number`, required): Force Y component.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Applies a continuous force to the body's center of mass (accumulates over the step).
@@ -1122,9 +1796,18 @@ Applies a continuous force to the body's center of mass (accumulates over the st
 function LBody:applyForce(fx, fy) end
 ```
 
+#### Description
+
+Applies a continuous force to the body's center of mass (accumulates over the step).
+
+Parameters:
+
+- `fx` (`number`, required): Force X component.
+- `fy` (`number`, required): Force Y component.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -1138,18 +1821,7 @@ end
 
 ### LBody:applyForceAtPoint
 
-`LBody:applyForceAtPoint(fx: number, fy: number, px: number, py: number)`
-
-Applies a force at a specific world point, generating both linear and angular acceleration.
-
-**Parameters**
-
-- `fx` (`number`, required): Force X component.
-- `fy` (`number`, required): Force Y component.
-- `px` (`number`, required): Application point X in world coordinates.
-- `py` (`number`, required): Application point Y in world coordinates.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Applies a force at a specific world point, generating both linear and angular acceleration.
@@ -1160,9 +1832,20 @@ Applies a force at a specific world point, generating both linear and angular ac
 function LBody:applyForceAtPoint(fx, fy, px, py) end
 ```
 
+#### Description
+
+Applies a force at a specific world point, generating both linear and angular acceleration.
+
+Parameters:
+
+- `fx` (`number`, required): Force X component.
+- `fy` (`number`, required): Force Y component.
+- `px` (`number`, required): Application point X in world coordinates.
+- `py` (`number`, required): Application point Y in world coordinates.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -1176,16 +1859,7 @@ end
 
 ### LBody:applyImpulse
 
-`LBody:applyImpulse(ix: number, iy: number)`
-
-Applies an instantaneous linear impulse to the body's center of mass.
-
-**Parameters**
-
-- `ix` (`number`, required): Impulse X component.
-- `iy` (`number`, required): Impulse Y component.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Applies an instantaneous linear impulse to the body's center of mass.
@@ -1194,9 +1868,18 @@ Applies an instantaneous linear impulse to the body's center of mass.
 function LBody:applyImpulse(ix, iy) end
 ```
 
+#### Description
+
+Applies an instantaneous linear impulse to the body's center of mass.
+
+Parameters:
+
+- `ix` (`number`, required): Impulse X component.
+- `iy` (`number`, required): Impulse Y component.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -1210,15 +1893,7 @@ end
 
 ### LBody:applyTorque
 
-`LBody:applyTorque(torque: number)`
-
-Applies a rotational torque to the body.
-
-**Parameters**
-
-- `torque` (`number`, required): Torque value (positive = counter-clockwise).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Applies a rotational torque to the body.
@@ -1226,9 +1901,17 @@ Applies a rotational torque to the body.
 function LBody:applyTorque(torque) end
 ```
 
+#### Description
+
+Applies a rotational torque to the body.
+
+Parameters:
+
+- `torque` (`number`, required): Torque value (positive = counter-clockwise).
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -1242,20 +1925,20 @@ end
 
 ### LBody:destroy
 
-`LBody:destroy()`
-
-Destroys this body, removing it from the world along with all fixtures and joints.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Destroys this body, removing it from the world along with all fixtures and joints.
 function LBody:destroy() end
 ```
 
+#### Description
+
+Destroys this body, removing it from the world along with all fixtures and joints.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -1269,13 +1952,7 @@ end
 
 ### LBody:getAngle
 
-`LBody:getAngle() -> number`
-
-Returns the body's rotation angle in radians.
-
-**Returns**: `number` - Angle in radians.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the body's rotation angle in radians.
@@ -1283,9 +1960,15 @@ Returns the body's rotation angle in radians.
 function LBody:getAngle() end
 ```
 
+#### Description
+
+Returns the body's rotation angle in radians.
+
+Returns: `number` - Angle in radians.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -1299,13 +1982,7 @@ end
 
 ### LBody:getAngularDamping
 
-`LBody:getAngularDamping() -> number`
-
-Returns the angular damping factor (rotational decay rate).
-
-**Returns**: `number` - Angular damping value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the angular damping factor (rotational decay rate).
@@ -1313,9 +1990,15 @@ Returns the angular damping factor (rotational decay rate).
 function LBody:getAngularDamping() end
 ```
 
+#### Description
+
+Returns the angular damping factor (rotational decay rate).
+
+Returns: `number` - Angular damping value.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -1329,13 +2012,7 @@ end
 
 ### LBody:getAngularVelocity
 
-`LBody:getAngularVelocity() -> number`
-
-Returns the body's angular (rotational) velocity.
-
-**Returns**: `number` - Angular velocity in radians per second.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the body's angular (rotational) velocity.
@@ -1343,9 +2020,15 @@ Returns the body's angular (rotational) velocity.
 function LBody:getAngularVelocity() end
 ```
 
+#### Description
+
+Returns the body's angular (rotational) velocity.
+
+Returns: `number` - Angular velocity in radians per second.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -1359,13 +2042,7 @@ end
 
 ### LBody:getFriction
 
-`LBody:getFriction() -> number`
-
-Returns the body's friction coefficient.
-
-**Returns**: `number` - Friction value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the body's friction coefficient.
@@ -1373,9 +2050,15 @@ Returns the body's friction coefficient.
 function LBody:getFriction() end
 ```
 
+#### Description
+
+Returns the body's friction coefficient.
+
+Returns: `number` - Friction value.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -1389,13 +2072,7 @@ end
 
 ### LBody:getGravityScale
 
-`LBody:getGravityScale() -> number`
-
-Returns the gravity scale multiplier for this body (1.0 = normal gravity).
-
-**Returns**: `number` - Gravity scale.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the gravity scale multiplier for this body (1.0 = normal gravity).
@@ -1403,9 +2080,15 @@ Returns the gravity scale multiplier for this body (1.0 = normal gravity).
 function LBody:getGravityScale() end
 ```
 
+#### Description
+
+Returns the gravity scale multiplier for this body (1.0 = normal gravity).
+
+Returns: `number` - Gravity scale.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -1419,13 +2102,7 @@ end
 
 ### LBody:getHeight
 
-`LBody:getHeight() -> number`
-
-Returns the body's bounding height (from its primary shape).
-
-**Returns**: `number` - Height in world units.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the body's bounding height (from its primary shape).
@@ -1433,9 +2110,15 @@ Returns the body's bounding height (from its primary shape).
 function LBody:getHeight() end
 ```
 
+#### Description
+
+Returns the body's bounding height (from its primary shape).
+
+Returns: `number` - Height in world units.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -1449,13 +2132,7 @@ end
 
 ### LBody:getId
 
-`LBody:getId() -> integer`
-
-Returns the unique numeric ID of this body within the world.
-
-**Returns**: `integer` - Body ID.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the unique numeric ID of this body within the world.
@@ -1463,9 +2140,15 @@ Returns the unique numeric ID of this body within the world.
 function LBody:getId() end
 ```
 
+#### Description
+
+Returns the unique numeric ID of this body within the world.
+
+Returns: `integer` - Body ID.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -1479,13 +2162,7 @@ end
 
 ### LBody:getLayer
 
-`LBody:getLayer() -> integer`
-
-Returns the body's collision layer bitmask.
-
-**Returns**: `integer` - Layer bitmask.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the body's collision layer bitmask.
@@ -1493,9 +2170,15 @@ Returns the body's collision layer bitmask.
 function LBody:getLayer() end
 ```
 
+#### Description
+
+Returns the body's collision layer bitmask.
+
+Returns: `integer` - Layer bitmask.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -1509,13 +2192,7 @@ end
 
 ### LBody:getLinearDamping
 
-`LBody:getLinearDamping() -> number`
-
-Returns the linear damping factor (velocity decay rate, like air resistance).
-
-**Returns**: `number` - Damping value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the linear damping factor (velocity decay rate, like air resistance).
@@ -1523,9 +2200,15 @@ Returns the linear damping factor (velocity decay rate, like air resistance).
 function LBody:getLinearDamping() end
 ```
 
+#### Description
+
+Returns the linear damping factor (velocity decay rate, like air resistance).
+
+Returns: `number` - Damping value.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -1539,13 +2222,7 @@ end
 
 ### LBody:getMask
 
-`LBody:getMask() -> integer`
-
-Returns the body's collision mask (which layers this body can collide with).
-
-**Returns**: `integer` - Mask bitmask.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the body's collision mask (which layers this body can collide with).
@@ -1553,9 +2230,15 @@ Returns the body's collision mask (which layers this body can collide with).
 function LBody:getMask() end
 ```
 
+#### Description
+
+Returns the body's collision mask (which layers this body can collide with).
+
+Returns: `integer` - Mask bitmask.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -1569,13 +2252,7 @@ end
 
 ### LBody:getMass
 
-`LBody:getMass() -> number`
-
-Returns the body's total mass (computed from density and fixture areas).
-
-**Returns**: `number` - Mass in kilograms.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the body's total mass (computed from density and fixture areas).
@@ -1583,9 +2260,15 @@ Returns the body's total mass (computed from density and fixture areas).
 function LBody:getMass() end
 ```
 
+#### Description
+
+Returns the body's total mass (computed from density and fixture areas).
+
+Returns: `number` - Mass in kilograms.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -1599,13 +2282,7 @@ end
 
 ### LBody:getPosition
 
-`LBody:getPosition() -> number`
-
-Returns the current world-space position of this body.
-
-**Returns**: `number` - X coordinate.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current world-space position of this body.
@@ -1614,9 +2291,15 @@ Returns the current world-space position of this body.
 function LBody:getPosition() end
 ```
 
+#### Description
+
+Returns the current world-space position of this body.
+
+Returns: `number` - X coordinate.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -1630,13 +2313,7 @@ end
 
 ### LBody:getRestitution
 
-`LBody:getRestitution() -> number`
-
-Returns the body's restitution (bounciness) value.
-
-**Returns**: `number` - Restitution (0 = no bounce, 1 = perfectly elastic).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the body's restitution (bounciness) value.
@@ -1644,9 +2321,15 @@ Returns the body's restitution (bounciness) value.
 function LBody:getRestitution() end
 ```
 
+#### Description
+
+Returns the body's restitution (bounciness) value.
+
+Returns: `number` - Restitution (0 = no bounce, 1 = perfectly elastic).
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -1660,13 +2343,7 @@ end
 
 ### LBody:getType
 
-`LBody:getType() -> string`
-
-Returns the body's type as a string.
-
-**Returns**: `string` - Body type: "static", "dynamic", "kinematic", or "sensor".
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the body's type as a string.
@@ -1674,9 +2351,15 @@ Returns the body's type as a string.
 function LBody:getType() end
 ```
 
+#### Description
+
+Returns the body's type as a string.
+
+Returns: `string` - Body type: "static", "dynamic", "kinematic", or "sensor".
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -1690,13 +2373,7 @@ end
 
 ### LBody:getVelocity
 
-`LBody:getVelocity() -> number`
-
-Returns the body's current linear velocity.
-
-**Returns**: `number` - Velocity X component.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the body's current linear velocity.
@@ -1705,9 +2382,15 @@ Returns the body's current linear velocity.
 function LBody:getVelocity() end
 ```
 
+#### Description
+
+Returns the body's current linear velocity.
+
+Returns: `number` - Velocity X component.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -1721,13 +2404,7 @@ end
 
 ### LBody:getWidth
 
-`LBody:getWidth() -> number`
-
-Returns the body's bounding width (from its primary shape).
-
-**Returns**: `number` - Width in world units.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the body's bounding width (from its primary shape).
@@ -1735,9 +2412,15 @@ Returns the body's bounding width (from its primary shape).
 function LBody:getWidth() end
 ```
 
+#### Description
+
+Returns the body's bounding width (from its primary shape).
+
+Returns: `number` - Width in world units.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -1751,13 +2434,7 @@ end
 
 ### LBody:getX
 
-`LBody:getX() -> number`
-
-Returns only the X component of the body's position.
-
-**Returns**: `number` - X coordinate.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns only the X component of the body's position.
@@ -1765,9 +2442,15 @@ Returns only the X component of the body's position.
 function LBody:getX() end
 ```
 
+#### Description
+
+Returns only the X component of the body's position.
+
+Returns: `number` - X coordinate.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -1781,13 +2464,7 @@ end
 
 ### LBody:getY
 
-`LBody:getY() -> number`
-
-Returns only the Y component of the body's position.
-
-**Returns**: `number` - Y coordinate.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns only the Y component of the body's position.
@@ -1795,9 +2472,15 @@ Returns only the Y component of the body's position.
 function LBody:getY() end
 ```
 
+#### Description
+
+Returns only the Y component of the body's position.
+
+Returns: `number` - Y coordinate.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -1811,13 +2494,7 @@ end
 
 ### LBody:isBullet
 
-`LBody:isBullet() -> boolean`
-
-Returns whether continuous collision detection (bullet mode) is enabled for this body.
-
-**Returns**: `boolean` - True if CCD is active.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether continuous collision detection (bullet mode) is enabled for this body.
@@ -1825,9 +2502,15 @@ Returns whether continuous collision detection (bullet mode) is enabled for this
 function LBody:isBullet() end
 ```
 
+#### Description
+
+Returns whether continuous collision detection (bullet mode) is enabled for this body.
+
+Returns: `boolean` - True if CCD is active.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -1841,13 +2524,7 @@ end
 
 ### LBody:isFixedRotation
 
-`LBody:isFixedRotation() -> boolean`
-
-Returns whether the body's rotation is locked.
-
-**Returns**: `boolean` - True if rotation is fixed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether the body's rotation is locked.
@@ -1855,9 +2532,15 @@ Returns whether the body's rotation is locked.
 function LBody:isFixedRotation() end
 ```
 
+#### Description
+
+Returns whether the body's rotation is locked.
+
+Returns: `boolean` - True if rotation is fixed.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -1871,13 +2554,7 @@ end
 
 ### LBody:isSleeping
 
-`LBody:isSleeping() -> boolean`
-
-Returns whether this body is currently in the sleeping (inactive) state.
-
-**Returns**: `boolean` - True if sleeping.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this body is currently in the sleeping (inactive) state.
@@ -1885,9 +2562,15 @@ Returns whether this body is currently in the sleeping (inactive) state.
 function LBody:isSleeping() end
 ```
 
+#### Description
+
+Returns whether this body is currently in the sleeping (inactive) state.
+
+Returns: `boolean` - True if sleeping.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -1901,13 +2584,7 @@ end
 
 ### LBody:isSleepingAllowed
 
-`LBody:isSleepingAllowed() -> boolean`
-
-Returns whether the body is allowed to enter sleep state when at rest.
-
-**Returns**: `boolean` - True if sleeping is allowed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether the body is allowed to enter sleep state when at rest.
@@ -1915,9 +2592,15 @@ Returns whether the body is allowed to enter sleep state when at rest.
 function LBody:isSleepingAllowed() end
 ```
 
+#### Description
+
+Returns whether the body is allowed to enter sleep state when at rest.
+
+Returns: `boolean` - True if sleeping is allowed.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -1931,15 +2614,7 @@ end
 
 ### LBody:setAngle
 
-`LBody:setAngle(angle: number)`
-
-Sets the body's rotation angle directly.
-
-**Parameters**
-
-- `angle` (`number`, required): New angle in radians.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the body's rotation angle directly.
@@ -1947,9 +2622,17 @@ Sets the body's rotation angle directly.
 function LBody:setAngle(angle) end
 ```
 
+#### Description
+
+Sets the body's rotation angle directly.
+
+Parameters:
+
+- `angle` (`number`, required): New angle in radians.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -1963,15 +2646,7 @@ end
 
 ### LBody:setAngularDamping
 
-`LBody:setAngularDamping(damping: number)`
-
-Sets the angular damping factor (higher = rotation decays faster).
-
-**Parameters**
-
-- `damping` (`number`, required): Angular damping value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the angular damping factor (higher = rotation decays faster).
@@ -1979,9 +2654,17 @@ Sets the angular damping factor (higher = rotation decays faster).
 function LBody:setAngularDamping(damping) end
 ```
 
+#### Description
+
+Sets the angular damping factor (higher = rotation decays faster).
+
+Parameters:
+
+- `damping` (`number`, required): Angular damping value.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -1995,15 +2678,7 @@ end
 
 ### LBody:setAngularVelocity
 
-`LBody:setAngularVelocity(omega: number)`
-
-Sets the body's angular velocity directly.
-
-**Parameters**
-
-- `omega` (`number`, required): Angular velocity in radians per second.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the body's angular velocity directly.
@@ -2011,9 +2686,17 @@ Sets the body's angular velocity directly.
 function LBody:setAngularVelocity(omega) end
 ```
 
+#### Description
+
+Sets the body's angular velocity directly.
+
+Parameters:
+
+- `omega` (`number`, required): Angular velocity in radians per second.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -2027,15 +2710,7 @@ end
 
 ### LBody:setBullet
 
-`LBody:setBullet(bullet: boolean)`
-
-Enables or disables continuous collision detection to prevent fast-moving tunneling.
-
-**Parameters**
-
-- `bullet` (`boolean`, required): True to enable CCD.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Enables or disables continuous collision detection to prevent fast-moving tunneling.
@@ -2043,9 +2718,17 @@ Enables or disables continuous collision detection to prevent fast-moving tunnel
 function LBody:setBullet(bullet) end
 ```
 
+#### Description
+
+Enables or disables continuous collision detection to prevent fast-moving tunneling.
+
+Parameters:
+
+- `bullet` (`boolean`, required): True to enable CCD.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -2059,15 +2742,7 @@ end
 
 ### LBody:setFixedRotation
 
-`LBody:setFixedRotation(fixed: boolean)`
-
-Locks or unlocks the body's rotation. Useful for player characters.
-
-**Parameters**
-
-- `fixed` (`boolean`, required): True to prevent rotation.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Locks or unlocks the body's rotation. Useful for player characters.
@@ -2075,9 +2750,17 @@ Locks or unlocks the body's rotation. Useful for player characters.
 function LBody:setFixedRotation(fixed) end
 ```
 
+#### Description
+
+Locks or unlocks the body's rotation. Useful for player characters.
+
+Parameters:
+
+- `fixed` (`boolean`, required): True to prevent rotation.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -2091,15 +2774,7 @@ end
 
 ### LBody:setFriction
 
-`LBody:setFriction(friction: number)`
-
-Sets the body's friction coefficient.
-
-**Parameters**
-
-- `friction` (`number`, required): New friction value (0 = ice, 1 = rubber).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the body's friction coefficient.
@@ -2107,9 +2782,17 @@ Sets the body's friction coefficient.
 function LBody:setFriction(friction) end
 ```
 
+#### Description
+
+Sets the body's friction coefficient.
+
+Parameters:
+
+- `friction` (`number`, required): New friction value (0 = ice, 1 = rubber).
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -2123,15 +2806,7 @@ end
 
 ### LBody:setGravityScale
 
-`LBody:setGravityScale(scale: number)`
-
-Sets a per-body gravity scale multiplier (0 = no gravity, 2 = double gravity, -1 = inverted).
-
-**Parameters**
-
-- `scale` (`number`, required): Gravity scale factor.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets a per-body gravity scale multiplier (0 = no gravity, 2 = double gravity, -1 = inverted).
@@ -2139,9 +2814,17 @@ Sets a per-body gravity scale multiplier (0 = no gravity, 2 = double gravity, -1
 function LBody:setGravityScale(scale) end
 ```
 
+#### Description
+
+Sets a per-body gravity scale multiplier (0 = no gravity, 2 = double gravity, -1 = inverted).
+
+Parameters:
+
+- `scale` (`number`, required): Gravity scale factor.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -2155,15 +2838,7 @@ end
 
 ### LBody:setLayer
 
-`LBody:setLayer(layer: integer)`
-
-Sets the body's collision layer bitmask (which layers this body belongs to).
-
-**Parameters**
-
-- `layer` (`integer`, required): Layer bitmask.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the body's collision layer bitmask (which layers this body belongs to).
@@ -2171,9 +2846,17 @@ Sets the body's collision layer bitmask (which layers this body belongs to).
 function LBody:setLayer(layer) end
 ```
 
+#### Description
+
+Sets the body's collision layer bitmask (which layers this body belongs to).
+
+Parameters:
+
+- `layer` (`integer`, required): Layer bitmask.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -2187,15 +2870,7 @@ end
 
 ### LBody:setLinearDamping
 
-`LBody:setLinearDamping(damping: number)`
-
-Sets the linear damping factor (higher = more velocity decay per step).
-
-**Parameters**
-
-- `damping` (`number`, required): Damping value (0 = no damping).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the linear damping factor (higher = more velocity decay per step).
@@ -2203,9 +2878,17 @@ Sets the linear damping factor (higher = more velocity decay per step).
 function LBody:setLinearDamping(damping) end
 ```
 
+#### Description
+
+Sets the linear damping factor (higher = more velocity decay per step).
+
+Parameters:
+
+- `damping` (`number`, required): Damping value (0 = no damping).
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -2219,15 +2902,7 @@ end
 
 ### LBody:setMask
 
-`LBody:setMask(mask: integer)`
-
-Sets the body's collision mask (which layers this body can collide with).
-
-**Parameters**
-
-- `mask` (`integer`, required): Collision mask bitmask.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the body's collision mask (which layers this body can collide with).
@@ -2235,9 +2910,17 @@ Sets the body's collision mask (which layers this body can collide with).
 function LBody:setMask(mask) end
 ```
 
+#### Description
+
+Sets the body's collision mask (which layers this body can collide with).
+
+Parameters:
+
+- `mask` (`integer`, required): Collision mask bitmask.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -2251,15 +2934,7 @@ end
 
 ### LBody:setMass
 
-`LBody:setMass(mass: number)`
-
-Overrides the body's mass directly.
-
-**Parameters**
-
-- `mass` (`number`, required): New mass value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Overrides the body's mass directly.
@@ -2267,9 +2942,17 @@ Overrides the body's mass directly.
 function LBody:setMass(mass) end
 ```
 
+#### Description
+
+Overrides the body's mass directly.
+
+Parameters:
+
+- `mass` (`number`, required): New mass value.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -2283,16 +2966,7 @@ end
 
 ### LBody:setPosition
 
-`LBody:setPosition(x: number, y: number)`
-
-Teleports the body to a new world-space position (does not apply physics forces).
-
-**Parameters**
-
-- `x` (`number`, required): New X position.
-- `y` (`number`, required): New Y position.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Teleports the body to a new world-space position (does not apply physics forces).
@@ -2301,9 +2975,18 @@ Teleports the body to a new world-space position (does not apply physics forces)
 function LBody:setPosition(x, y) end
 ```
 
+#### Description
+
+Teleports the body to a new world-space position (does not apply physics forces).
+
+Parameters:
+
+- `x` (`number`, required): New X position.
+- `y` (`number`, required): New Y position.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -2317,15 +3000,7 @@ end
 
 ### LBody:setRestitution
 
-`LBody:setRestitution(restitution: number)`
-
-Sets the body's restitution (bounciness) value.
-
-**Parameters**
-
-- `restitution` (`number`, required): New restitution (0–1).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the body's restitution (bounciness) value.
@@ -2333,9 +3008,17 @@ Sets the body's restitution (bounciness) value.
 function LBody:setRestitution(restitution) end
 ```
 
+#### Description
+
+Sets the body's restitution (bounciness) value.
+
+Parameters:
+
+- `restitution` (`number`, required): New restitution (0–1).
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -2349,15 +3032,7 @@ end
 
 ### LBody:setSleepingAllowed
 
-`LBody:setSleepingAllowed(allowed: boolean)`
-
-Controls whether the body can enter sleep state. Disable for bodies that must stay active.
-
-**Parameters**
-
-- `allowed` (`boolean`, required): True to allow sleeping.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Controls whether the body can enter sleep state. Disable for bodies that must stay active.
@@ -2365,9 +3040,17 @@ Controls whether the body can enter sleep state. Disable for bodies that must st
 function LBody:setSleepingAllowed(allowed) end
 ```
 
+#### Description
+
+Controls whether the body can enter sleep state. Disable for bodies that must stay active.
+
+Parameters:
+
+- `allowed` (`boolean`, required): True to allow sleeping.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -2381,15 +3064,7 @@ end
 
 ### LBody:setType
 
-`LBody:setType(bodyType: string)`
-
-Changes the body's type at runtime.
-
-**Parameters**
-
-- `bodyType` (`string`, required): New type: "static", "dynamic", "kinematic", or "sensor".
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Changes the body's type at runtime.
@@ -2397,9 +3072,17 @@ Changes the body's type at runtime.
 function LBody:setType(bodyType) end
 ```
 
+#### Description
+
+Changes the body's type at runtime.
+
+Parameters:
+
+- `bodyType` (`string`, required): New type: "static", "dynamic", "kinematic", or "sensor".
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -2413,16 +3096,7 @@ end
 
 ### LBody:setVelocity
 
-`LBody:setVelocity(vx: number, vy: number)`
-
-Directly sets the body's linear velocity.
-
-**Parameters**
-
-- `vx` (`number`, required): Velocity X component.
-- `vy` (`number`, required): Velocity Y component.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Directly sets the body's linear velocity.
@@ -2431,9 +3105,18 @@ Directly sets the body's linear velocity.
 function LBody:setVelocity(vx, vy) end
 ```
 
+#### Description
+
+Directly sets the body's linear velocity.
+
+Parameters:
+
+- `vx` (`number`, required): Velocity X component.
+- `vy` (`number`, required): Velocity Y component.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -2447,20 +3130,20 @@ end
 
 ### LBody:sleep
 
-`LBody:sleep()`
-
-Forces the body into sleep state, pausing its simulation until disturbed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Forces the body into sleep state, pausing its simulation until disturbed.
 function LBody:sleep() end
 ```
 
+#### Description
+
+Forces the body into sleep state, pausing its simulation until disturbed.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -2474,13 +3157,7 @@ end
 
 ### LBody:type
 
-`LBody:type() -> string`
-
-Returns the type name of this object ("LBody").
-
-**Returns**: `string` - "LBody".
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this object ("LBody").
@@ -2488,9 +3165,15 @@ Returns the type name of this object ("LBody").
 function LBody:type() end
 ```
 
+#### Description
+
+Returns the type name of this object ("LBody").
+
+Returns: `string` - "LBody".
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -2504,17 +3187,7 @@ end
 
 ### LBody:typeOf
 
-`LBody:typeOf(name: string) -> boolean`
-
-Checks if this object is of a given type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to check.
-
-**Returns**: `boolean` - True if the object matches.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks if this object is of a given type name.
@@ -2523,9 +3196,19 @@ Checks if this object is of a given type name.
 function LBody:typeOf(name) end
 ```
 
+#### Description
+
+Checks if this object is of a given type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to check.
+
+Returns: `boolean` - True if the object matches.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -2539,20 +3222,20 @@ end
 
 ### LBody:wakeUp
 
-`LBody:wakeUp()`
-
-Wakes the body from sleep, making it active in the simulation again.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Wakes the body from sleep, making it active in the simulation again.
 function LBody:wakeUp() end
 ```
 
+#### Description
+
+Wakes the body from sleep, making it active in the simulation again.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -2566,17 +3249,7 @@ end
 
 ### LCellular:countCells
 
-`LCellular:countCells(cellType: integer) -> integer`
-
-Counts how many cells of a given material type exist in the grid.
-
-**Parameters**
-
-- `cellType` (`integer`, required): Material type constant to count.
-
-**Returns**: `integer` - Cell count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Counts how many cells of a given material type exist in the grid.
@@ -2585,9 +3258,19 @@ Counts how many cells of a given material type exist in the grid.
 function LCellular:countCells(cellType) end
 ```
 
+#### Description
+
+Counts how many cells of a given material type exist in the grid.
+
+Parameters:
+
+- `cellType` (`integer`, required): Material type constant to count.
+
+Returns: `integer` - Cell count.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -2601,18 +3284,7 @@ end
 
 ### LCellular:fillCircle
 
-`LCellular:fillCircle(cx: integer, cy: integer, r: integer, cellType: integer)`
-
-Fills a circular region of cells with a material type.
-
-**Parameters**
-
-- `cx` (`integer`, required): Center cell column.
-- `cy` (`integer`, required): Center cell row.
-- `r` (`integer`, required): Radius in cells.
-- `cellType` (`integer`, required): Material type constant.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Fills a circular region of cells with a material type.
@@ -2623,9 +3295,20 @@ Fills a circular region of cells with a material type.
 function LCellular:fillCircle(cx, cy, r, cellType) end
 ```
 
+#### Description
+
+Fills a circular region of cells with a material type.
+
+Parameters:
+
+- `cx` (`integer`, required): Center cell column.
+- `cy` (`integer`, required): Center cell row.
+- `r` (`integer`, required): Radius in cells.
+- `cellType` (`integer`, required): Material type constant.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -2639,19 +3322,7 @@ end
 
 ### LCellular:fillRect
 
-`LCellular:fillRect(cx0: integer, cy0: integer, cw: integer, ch: integer, cellType: integer)`
-
-Fills a rectangular region of cells with a material type.
-
-**Parameters**
-
-- `cx0` (`integer`, required): Top-left cell column.
-- `cy0` (`integer`, required): Top-left cell row.
-- `cw` (`integer`, required): Width in cells.
-- `ch` (`integer`, required): Height in cells.
-- `cellType` (`integer`, required): Material type constant.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Fills a rectangular region of cells with a material type.
@@ -2663,9 +3334,21 @@ Fills a rectangular region of cells with a material type.
 function LCellular:fillRect(cx0, cy0, cw, ch, cellType) end
 ```
 
+#### Description
+
+Fills a rectangular region of cells with a material type.
+
+Parameters:
+
+- `cx0` (`integer`, required): Top-left cell column.
+- `cy0` (`integer`, required): Top-left cell row.
+- `cw` (`integer`, required): Width in cells.
+- `ch` (`integer`, required): Height in cells.
+- `cellType` (`integer`, required): Material type constant.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -2679,17 +3362,7 @@ end
 
 ### LCellular:findCells
 
-`LCellular:findCells(cellType: integer) -> table`
-
-Returns positions of all cells matching a material type.
-
-**Parameters**
-
-- `cellType` (`integer`, required): Material type constant to find.
-
-**Returns**: `table` - Array of {x, y} tables with cell coordinates.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns positions of all cells matching a material type.
@@ -2698,9 +3371,19 @@ Returns positions of all cells matching a material type.
 function LCellular:findCells(cellType) end
 ```
 
+#### Description
+
+Returns positions of all cells matching a material type.
+
+Parameters:
+
+- `cellType` (`integer`, required): Material type constant to find.
+
+Returns: `table` - Array of {x, y} tables with cell coordinates.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -2714,18 +3397,7 @@ end
 
 ### LCellular:getCell
 
-`LCellular:getCell(cx: integer, cy: integer) -> integer`
-
-Returns the material type of a cell at the given grid position.
-
-**Parameters**
-
-- `cx` (`integer`, required): Cell column.
-- `cy` (`integer`, required): Cell row.
-
-**Returns**: `integer` - Material type constant.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the material type of a cell at the given grid position.
@@ -2735,9 +3407,20 @@ Returns the material type of a cell at the given grid position.
 function LCellular:getCell(cx, cy) end
 ```
 
+#### Description
+
+Returns the material type of a cell at the given grid position.
+
+Parameters:
+
+- `cx` (`integer`, required): Cell column.
+- `cy` (`integer`, required): Cell row.
+
+Returns: `integer` - Material type constant.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -2751,17 +3434,7 @@ end
 
 ### LCellular:loadFromBytes
 
-`LCellular:loadFromBytes(data: string) -> boolean`
-
-Restores cellular grid state from binary data previously produced by toBytes.
-
-**Parameters**
-
-- `data` (`string`, required): Binary cellular data.
-
-**Returns**: `boolean` - True if loading succeeded, false if data was invalid.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Restores cellular grid state from binary data previously produced by toBytes.
@@ -2770,9 +3443,19 @@ Restores cellular grid state from binary data previously produced by toBytes.
 function LCellular:loadFromBytes(data) end
 ```
 
+#### Description
+
+Restores cellular grid state from binary data previously produced by toBytes.
+
+Parameters:
+
+- `data` (`string`, required): Binary cellular data.
+
+Returns: `boolean` - True if loading succeeded, false if data was invalid.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -2786,17 +3469,7 @@ end
 
 ### LCellular:setCell
 
-`LCellular:setCell(cx: integer, cy: integer, cellType: integer)`
-
-Sets a single cell in the cellular grid to a specific material type.
-
-**Parameters**
-
-- `cx` (`integer`, required): Cell column (0-based).
-- `cy` (`integer`, required): Cell row (0-based).
-- `cellType` (`integer`, required): Material type constant (CELL_AIR, CELL_SAND, etc.).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets a single cell in the cellular grid to a specific material type.
@@ -2806,9 +3479,19 @@ Sets a single cell in the cellular grid to a specific material type.
 function LCellular:setCell(cx, cy, cellType) end
 ```
 
+#### Description
+
+Sets a single cell in the cellular grid to a specific material type.
+
+Parameters:
+
+- `cx` (`integer`, required): Cell column (0-based).
+- `cy` (`integer`, required): Cell row (0-based).
+- `cellType` (`integer`, required): Material type constant (CELL_AIR, CELL_SAND, etc.).
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -2822,20 +3505,20 @@ end
 
 ### LCellular:step
 
-`LCellular:step()`
-
-Advances the cellular simulation by one tick (particles fall, flow, burn, etc.).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Advances the cellular simulation by one tick (particles fall, flow, burn, etc.).
 function LCellular:step() end
 ```
 
+#### Description
+
+Advances the cellular simulation by one tick (particles fall, flow, burn, etc.).
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -2849,15 +3532,7 @@ end
 
 ### LCellular:stepN
 
-`LCellular:stepN(n: integer)`
-
-Advances the cellular simulation by N ticks in a single call.
-
-**Parameters**
-
-- `n` (`integer`, required): Number of simulation ticks to run.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Advances the cellular simulation by N ticks in a single call.
@@ -2865,9 +3540,17 @@ Advances the cellular simulation by N ticks in a single call.
 function LCellular:stepN(n) end
 ```
 
+#### Description
+
+Advances the cellular simulation by N ticks in a single call.
+
+Parameters:
+
+- `n` (`integer`, required): Number of simulation ticks to run.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -2881,13 +3564,7 @@ end
 
 ### LCellular:toBytes
 
-`LCellular:toBytes() -> string`
-
-Serializes the cellular grid to a compact binary format for saving.
-
-**Returns**: `string` - Binary cellular data.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Serializes the cellular grid to a compact binary format for saving.
@@ -2895,9 +3572,15 @@ Serializes the cellular grid to a compact binary format for saving.
 function LCellular:toBytes() end
 ```
 
+#### Description
+
+Serializes the cellular grid to a compact binary format for saving.
+
+Returns: `string` - Binary cellular data.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -2911,13 +3594,7 @@ end
 
 ### LCellular:toImageData
 
-`LCellular:toImageData() -> string`
-
-Renders the entire cellular grid to raw RGBA pixel data using the default material palette.
-
-**Returns**: `string` - Raw RGBA pixel bytes (width * height * 4).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Renders the entire cellular grid to raw RGBA pixel data using the default material palette.
@@ -2925,9 +3602,15 @@ Renders the entire cellular grid to raw RGBA pixel data using the default materi
 function LCellular:toImageData() end
 ```
 
+#### Description
+
+Renders the entire cellular grid to raw RGBA pixel data using the default material palette.
+
+Returns: `string` - Raw RGBA pixel bytes (width * height * 4).
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -2941,20 +3624,7 @@ end
 
 ### LCellular:toImageDataRegion
 
-`LCellular:toImageDataRegion(cx0: integer, cy0: integer, cw: integer, ch: integer) -> string`
-
-Renders a rectangular sub-region of the cellular grid to raw RGBA pixel data.
-
-**Parameters**
-
-- `cx0` (`integer`, required): Top-left cell column.
-- `cy0` (`integer`, required): Top-left cell row.
-- `cw` (`integer`, required): Width in cells.
-- `ch` (`integer`, required): Height in cells.
-
-**Returns**: `string` - Raw RGBA pixel bytes (cw * ch * 4).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Renders a rectangular sub-region of the cellular grid to raw RGBA pixel data.
@@ -2966,9 +3636,22 @@ Renders a rectangular sub-region of the cellular grid to raw RGBA pixel data.
 function LCellular:toImageDataRegion(cx0, cy0, cw, ch) end
 ```
 
+#### Description
+
+Renders a rectangular sub-region of the cellular grid to raw RGBA pixel data.
+
+Parameters:
+
+- `cx0` (`integer`, required): Top-left cell column.
+- `cy0` (`integer`, required): Top-left cell row.
+- `cw` (`integer`, required): Width in cells.
+- `ch` (`integer`, required): Height in cells.
+
+Returns: `string` - Raw RGBA pixel bytes (cw * ch * 4).
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -2982,13 +3665,7 @@ end
 
 ### LCellular:type
 
-`LCellular:type() -> string`
-
-Returns the type name of this object ("LCellular").
-
-**Returns**: `string` - "LCellular".
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this object ("LCellular").
@@ -2996,9 +3673,15 @@ Returns the type name of this object ("LCellular").
 function LCellular:type() end
 ```
 
+#### Description
+
+Returns the type name of this object ("LCellular").
+
+Returns: `string` - "LCellular".
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -3012,17 +3695,7 @@ end
 
 ### LCellular:typeOf
 
-`LCellular:typeOf(name: string) -> boolean`
-
-Checks if this object is of a given type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to check.
-
-**Returns**: `boolean` - True if the object matches.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks if this object is of a given type name.
@@ -3031,9 +3704,19 @@ Checks if this object is of a given type name.
 function LCellular:typeOf(name) end
 ```
 
+#### Description
+
+Checks if this object is of a given type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to check.
+
+Returns: `boolean` - True if the object matches.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -3047,20 +3730,20 @@ end
 
 ### LPhysicsShape:destroy
 
-`LPhysicsShape:destroy()`
-
-No-op placeholder for API consistency. Shapes are freed when no longer referenced.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- No-op placeholder for API consistency. Shapes are freed when no longer referenced.
 function LPhysicsShape:destroy() end
 ```
 
+#### Description
+
+No-op placeholder for API consistency. Shapes are freed when no longer referenced.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -3073,13 +3756,7 @@ end
 
 ### LPhysicsShape:getBoundingBox
 
-`LPhysicsShape:getBoundingBox() -> number`
-
-Returns the axis-aligned bounding box of the shape in local coordinates.
-
-**Returns**: `number` - Minimum X.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the axis-aligned bounding box of the shape in local coordinates.
@@ -3090,9 +3767,15 @@ Returns the axis-aligned bounding box of the shape in local coordinates.
 function LPhysicsShape:getBoundingBox() end
 ```
 
+#### Description
+
+Returns the axis-aligned bounding box of the shape in local coordinates.
+
+Returns: `number` - Minimum X.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -3106,13 +3789,7 @@ end
 
 ### LPhysicsShape:getRadius
 
-`LPhysicsShape:getRadius() -> number`
-
-Returns the radius of a circle shape. Errors if called on a non-circle shape.
-
-**Returns**: `number` - Circle radius.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the radius of a circle shape. Errors if called on a non-circle shape.
@@ -3120,9 +3797,15 @@ Returns the radius of a circle shape. Errors if called on a non-circle shape.
 function LPhysicsShape:getRadius() end
 ```
 
+#### Description
+
+Returns the radius of a circle shape. Errors if called on a non-circle shape.
+
+Returns: `number` - Circle radius.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -3136,13 +3819,7 @@ end
 
 ### LPhysicsShape:getType
 
-`LPhysicsShape:getType() -> string`
-
-Returns the shape kind as a string: "circle", "rectangle", "polygon", "edge", or "chain".
-
-**Returns**: `string` - Shape type name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the shape kind as a string: "circle", "rectangle", "polygon", "edge", or "chain".
@@ -3150,9 +3827,15 @@ Returns the shape kind as a string: "circle", "rectangle", "polygon", "edge", or
 function LPhysicsShape:getType() end
 ```
 
+#### Description
+
+Returns the shape kind as a string: "circle", "rectangle", "polygon", "edge", or "chain".
+
+Returns: `string` - Shape type name.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -3166,15 +3849,7 @@ end
 
 ### LPhysicsShape:setDensity
 
-`LPhysicsShape:setDensity(density: number)`
-
-Sets the density used when this shape is attached to a body (affects mass calculation).
-
-**Parameters**
-
-- `density` (`number`, required): Mass density.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the density used when this shape is attached to a body (affects mass calculation).
@@ -3182,9 +3857,17 @@ Sets the density used when this shape is attached to a body (affects mass calcul
 function LPhysicsShape:setDensity(density) end
 ```
 
+#### Description
+
+Sets the density used when this shape is attached to a body (affects mass calculation).
+
+Parameters:
+
+- `density` (`number`, required): Mass density.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -3197,15 +3880,7 @@ end
 
 ### LPhysicsShape:setFriction
 
-`LPhysicsShape:setFriction(friction: number)`
-
-Sets the friction coefficient for this shape.
-
-**Parameters**
-
-- `friction` (`number`, required): Friction (0 = ice, 1 = rubber).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the friction coefficient for this shape.
@@ -3213,9 +3888,17 @@ Sets the friction coefficient for this shape.
 function LPhysicsShape:setFriction(friction) end
 ```
 
+#### Description
+
+Sets the friction coefficient for this shape.
+
+Parameters:
+
+- `friction` (`number`, required): Friction (0 = ice, 1 = rubber).
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -3228,15 +3911,7 @@ end
 
 ### LPhysicsShape:setRestitution
 
-`LPhysicsShape:setRestitution(restitution: number)`
-
-Sets the restitution (bounciness) for this shape.
-
-**Parameters**
-
-- `restitution` (`number`, required): Restitution (0\u20131).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the restitution (bounciness) for this shape.
@@ -3244,9 +3919,17 @@ Sets the restitution (bounciness) for this shape.
 function LPhysicsShape:setRestitution(restitution) end
 ```
 
+#### Description
+
+Sets the restitution (bounciness) for this shape.
+
+Parameters:
+
+- `restitution` (`number`, required): Restitution (0\u20131).
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -3259,15 +3942,7 @@ end
 
 ### LPhysicsShape:setSensor
 
-`LPhysicsShape:setSensor(sensor: boolean)`
-
-Marks this shape as a sensor (overlap detection only, no physical response).
-
-**Parameters**
-
-- `sensor` (`boolean`, required): True for sensor mode.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Marks this shape as a sensor (overlap detection only, no physical response).
@@ -3275,9 +3950,17 @@ Marks this shape as a sensor (overlap detection only, no physical response).
 function LPhysicsShape:setSensor(sensor) end
 ```
 
+#### Description
+
+Marks this shape as a sensor (overlap detection only, no physical response).
+
+Parameters:
+
+- `sensor` (`boolean`, required): True for sensor mode.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -3290,13 +3973,7 @@ end
 
 ### LPhysicsShape:type
 
-`LPhysicsShape:type() -> string`
-
-Returns the type name of this object ("LPhysicsShape").
-
-**Returns**: `string` - "LPhysicsShape".
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this object ("LPhysicsShape").
@@ -3304,9 +3981,15 @@ Returns the type name of this object ("LPhysicsShape").
 function LPhysicsShape:type() end
 ```
 
+#### Description
+
+Returns the type name of this object ("LPhysicsShape").
+
+Returns: `string` - "LPhysicsShape".
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -3318,17 +4001,7 @@ end
 
 ### LPhysicsShape:typeOf
 
-`LPhysicsShape:typeOf(name: string) -> boolean`
-
-Checks if this object is of a given type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to check.
-
-**Returns**: `boolean` - True if the object matches.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks if this object is of a given type name.
@@ -3337,9 +4010,19 @@ Checks if this object is of a given type name.
 function LPhysicsShape:typeOf(name) end
 ```
 
+#### Description
+
+Checks if this object is of a given type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to check.
+
+Returns: `boolean` - True if the object matches.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -3351,13 +4034,7 @@ end
 
 ### LTerrain:collapseColumns
 
-`LTerrain:collapseColumns() -> integer`
-
-Optimizes terrain by merging vertically adjacent solid cells into larger colliders.
-
-**Returns**: `integer` - Number of columns collapsed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Optimizes terrain by merging vertically adjacent solid cells into larger colliders.
@@ -3365,9 +4042,15 @@ Optimizes terrain by merging vertically adjacent solid cells into larger collide
 function LTerrain:collapseColumns() end
 ```
 
+#### Description
+
+Optimizes terrain by merging vertically adjacent solid cells into larger colliders.
+
+Returns: `integer` - Number of columns collapsed.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -3381,15 +4064,7 @@ end
 
 ### LTerrain:fillAll
 
-`LTerrain:fillAll(solid: boolean)`
-
-Sets all terrain cells to either solid or empty.
-
-**Parameters**
-
-- `solid` (`boolean`, required): True to fill everything solid, false to clear.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets all terrain cells to either solid or empty.
@@ -3397,9 +4072,17 @@ Sets all terrain cells to either solid or empty.
 function LTerrain:fillAll(solid) end
 ```
 
+#### Description
+
+Sets all terrain cells to either solid or empty.
+
+Parameters:
+
+- `solid` (`boolean`, required): True to fill everything solid, false to clear.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -3413,18 +4096,7 @@ end
 
 ### LTerrain:fillCircle
 
-`LTerrain:fillCircle(wx: number, wy: number, radius: number, solid: boolean)`
-
-Fills or clears a circular region of terrain cells.
-
-**Parameters**
-
-- `wx` (`number`, required): Circle center X in world coordinates.
-- `wy` (`number`, required): Circle center Y in world coordinates.
-- `radius` (`number`, required): Circle radius in world units.
-- `solid` (`boolean`, required): True to fill solid, false to carve empty.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Fills or clears a circular region of terrain cells.
@@ -3435,9 +4107,20 @@ Fills or clears a circular region of terrain cells.
 function LTerrain:fillCircle(wx, wy, radius, solid) end
 ```
 
+#### Description
+
+Fills or clears a circular region of terrain cells.
+
+Parameters:
+
+- `wx` (`number`, required): Circle center X in world coordinates.
+- `wy` (`number`, required): Circle center Y in world coordinates.
+- `radius` (`number`, required): Circle radius in world units.
+- `solid` (`boolean`, required): True to fill solid, false to carve empty.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -3451,19 +4134,7 @@ end
 
 ### LTerrain:fillRect
 
-`LTerrain:fillRect(wx: number, wy: number, w: number, h: number, solid: boolean)`
-
-Fills or clears a rectangular region of terrain cells.
-
-**Parameters**
-
-- `wx` (`number`, required): Rectangle left X in world coordinates.
-- `wy` (`number`, required): Rectangle top Y in world coordinates.
-- `w` (`number`, required): Rectangle width.
-- `h` (`number`, required): Rectangle height.
-- `solid` (`boolean`, required): True to fill solid, false to carve empty.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Fills or clears a rectangular region of terrain cells.
@@ -3475,9 +4146,21 @@ Fills or clears a rectangular region of terrain cells.
 function LTerrain:fillRect(wx, wy, w, h, solid) end
 ```
 
+#### Description
+
+Fills or clears a rectangular region of terrain cells.
+
+Parameters:
+
+- `wx` (`number`, required): Rectangle left X in world coordinates.
+- `wy` (`number`, required): Rectangle top Y in world coordinates.
+- `w` (`number`, required): Rectangle width.
+- `h` (`number`, required): Rectangle height.
+- `solid` (`boolean`, required): True to fill solid, false to carve empty.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -3491,20 +4174,20 @@ end
 
 ### LTerrain:flush
 
-`LTerrain:flush()`
-
-Regenerates physics colliders from the current terrain grid state. Call after modifying cells.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Regenerates physics colliders from the current terrain grid state. Call after modifying cells.
 function LTerrain:flush() end
 ```
 
+#### Description
+
+Regenerates physics colliders from the current terrain grid state. Call after modifying cells.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -3518,18 +4201,7 @@ end
 
 ### LTerrain:getCell
 
-`LTerrain:getCell(cx: integer, cy: integer) -> boolean`
-
-Returns whether a cell is solid. This method is available to Lua scripts.
-
-**Parameters**
-
-- `cx` (`integer`, required): Cell column.
-- `cy` (`integer`, required): Cell row.
-
-**Returns**: `boolean` - True if the cell is solid.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether a cell is solid. This method is available to Lua scripts.
@@ -3539,9 +4211,20 @@ Returns whether a cell is solid. This method is available to Lua scripts.
 function LTerrain:getCell(cx, cy) end
 ```
 
+#### Description
+
+Returns whether a cell is solid. This method is available to Lua scripts.
+
+Parameters:
+
+- `cx` (`integer`, required): Cell column.
+- `cy` (`integer`, required): Cell row.
+
+Returns: `boolean` - True if the cell is solid.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -3555,13 +4238,7 @@ end
 
 ### LTerrain:isDirty
 
-`LTerrain:isDirty() -> boolean`
-
-Returns true if terrain cells have been modified since the last flush.
-
-**Returns**: `boolean` - True if a flush is needed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns true if terrain cells have been modified since the last flush.
@@ -3569,9 +4246,15 @@ Returns true if terrain cells have been modified since the last flush.
 function LTerrain:isDirty() end
 ```
 
+#### Description
+
+Returns true if terrain cells have been modified since the last flush.
+
+Returns: `boolean` - True if a flush is needed.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -3585,17 +4268,7 @@ end
 
 ### LTerrain:loadFromBytes
 
-`LTerrain:loadFromBytes(data: string) -> boolean`
-
-Restores terrain grid state from binary data previously produced by toBytes.
-
-**Parameters**
-
-- `data` (`string`, required): Binary terrain data.
-
-**Returns**: `boolean` - True if loading succeeded.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Restores terrain grid state from binary data previously produced by toBytes.
@@ -3604,9 +4277,19 @@ Restores terrain grid state from binary data previously produced by toBytes.
 function LTerrain:loadFromBytes(data) end
 ```
 
+#### Description
+
+Restores terrain grid state from binary data previously produced by toBytes.
+
+Parameters:
+
+- `data` (`string`, required): Binary terrain data.
+
+Returns: `boolean` - True if loading succeeded.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -3620,17 +4303,7 @@ end
 
 ### LTerrain:setCell
 
-`LTerrain:setCell(cx: integer, cy: integer, solid: boolean)`
-
-Sets a single terrain cell to solid or empty.
-
-**Parameters**
-
-- `cx` (`integer`, required): Cell column (0-based).
-- `cy` (`integer`, required): Cell row (0-based).
-- `solid` (`boolean`, required): True for solid, false for empty.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets a single terrain cell to solid or empty.
@@ -3640,9 +4313,19 @@ Sets a single terrain cell to solid or empty.
 function LTerrain:setCell(cx, cy, solid) end
 ```
 
+#### Description
+
+Sets a single terrain cell to solid or empty.
+
+Parameters:
+
+- `cx` (`integer`, required): Cell column (0-based).
+- `cy` (`integer`, required): Cell row (0-based).
+- `solid` (`boolean`, required): True for solid, false for empty.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -3656,13 +4339,7 @@ end
 
 ### LTerrain:solidPositions
 
-`LTerrain:solidPositions() -> table`
-
-Returns all solid cell positions as a table of {x, y} entries.
-
-**Returns**: `table` - Array of tables with x and y fields (cell coordinates).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns all solid cell positions as a table of {x, y} entries.
@@ -3670,9 +4347,15 @@ Returns all solid cell positions as a table of {x, y} entries.
 function LTerrain:solidPositions() end
 ```
 
+#### Description
+
+Returns all solid cell positions as a table of {x, y} entries.
+
+Returns: `table` - Array of tables with x and y fields (cell coordinates).
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -3686,19 +4369,7 @@ end
 
 ### LTerrain:spawnDebris
 
-`LTerrain:spawnDebris(positions: table, mass: number, restitution: number) -> integer[]`
-
-Spawns small dynamic debris bodies at the given positions (for destruction effects).
-
-**Parameters**
-
-- `positions` (`table`, required): Array of {x, y} tables in world coordinates.
-- `mass` (`number`, required): Mass of each debris body.
-- `restitution` (`number`, required): Bounciness of debris bodies.
-
-**Returns**: `integer[]` - Array of body IDs for the spawned debris.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Spawns small dynamic debris bodies at the given positions (for destruction effects).
@@ -3709,9 +4380,21 @@ Spawns small dynamic debris bodies at the given positions (for destruction effec
 function LTerrain:spawnDebris(positions, mass, restitution) end
 ```
 
+#### Description
+
+Spawns small dynamic debris bodies at the given positions (for destruction effects).
+
+Parameters:
+
+- `positions` (`table`, required): Array of {x, y} tables in world coordinates.
+- `mass` (`number`, required): Mass of each debris body.
+- `restitution` (`number`, required): Bounciness of debris bodies.
+
+Returns: `integer[]` - Array of body IDs for the spawned debris.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -3725,13 +4408,7 @@ end
 
 ### LTerrain:toBytes
 
-`LTerrain:toBytes() -> string`
-
-Serializes the terrain grid to a compact binary format for saving.
-
-**Returns**: `string` - Binary terrain data.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Serializes the terrain grid to a compact binary format for saving.
@@ -3739,9 +4416,15 @@ Serializes the terrain grid to a compact binary format for saving.
 function LTerrain:toBytes() end
 ```
 
+#### Description
+
+Serializes the terrain grid to a compact binary format for saving.
+
+Returns: `string` - Binary terrain data.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -3755,22 +4438,7 @@ end
 
 ### LTerrain:toImageData
 
-`LTerrain:toImageData(sr: integer, sg: integer, sb: integer, er: integer, eg: integer, eb: integer) -> string`
-
-Renders the terrain grid to raw RGBA pixel data with solid and empty colors.
-
-**Parameters**
-
-- `sr` (`integer`, required): Solid color red (0-255).
-- `sg` (`integer`, required): Solid color green.
-- `sb` (`integer`, required): Solid color blue.
-- `er` (`integer`, required): Empty color red.
-- `eg` (`integer`, required): Empty color green.
-- `eb` (`integer`, required): Empty color blue.
-
-**Returns**: `string` - Raw RGBA pixel bytes.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Renders the terrain grid to raw RGBA pixel data with solid and empty colors.
@@ -3784,9 +4452,24 @@ Renders the terrain grid to raw RGBA pixel data with solid and empty colors.
 function LTerrain:toImageData(sr, sg, sb, er, eg, eb) end
 ```
 
+#### Description
+
+Renders the terrain grid to raw RGBA pixel data with solid and empty colors.
+
+Parameters:
+
+- `sr` (`integer`, required): Solid color red (0-255).
+- `sg` (`integer`, required): Solid color green.
+- `sb` (`integer`, required): Solid color blue.
+- `er` (`integer`, required): Empty color red.
+- `eg` (`integer`, required): Empty color green.
+- `eb` (`integer`, required): Empty color blue.
+
+Returns: `string` - Raw RGBA pixel bytes.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -3800,13 +4483,7 @@ end
 
 ### LTerrain:type
 
-`LTerrain:type() -> string`
-
-Returns the type name of this object ("LTerrain").
-
-**Returns**: `string` - "LTerrain".
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this object ("LTerrain").
@@ -3814,9 +4491,15 @@ Returns the type name of this object ("LTerrain").
 function LTerrain:type() end
 ```
 
+#### Description
+
+Returns the type name of this object ("LTerrain").
+
+Returns: `string` - "LTerrain".
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -3830,17 +4513,7 @@ end
 
 ### LTerrain:typeOf
 
-`LTerrain:typeOf(name: string) -> boolean`
-
-Checks if this object is of a given type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to check.
-
-**Returns**: `boolean` - True if the object matches.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks if this object is of a given type name.
@@ -3849,9 +4522,19 @@ Checks if this object is of a given type name.
 function LTerrain:typeOf(name) end
 ```
 
+#### Description
+
+Checks if this object is of a given type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to check.
+
+Returns: `boolean` - True if the object matches.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -3865,23 +4548,7 @@ end
 
 ### LWorld:addDistanceJoint
 
-`LWorld:addDistanceJoint(bodyA: integer, bodyB: integer, anchorAX: number, anchorAY: number, anchorBX: number, anchorBY: number, length: number) -> integer`
-
-Creates a distance joint that keeps two bodies at a fixed distance apart, like a rigid rod.
-
-**Parameters**
-
-- `bodyA` (`integer`, required): First body ID.
-- `bodyB` (`integer`, required): Second body ID.
-- `anchorAX` (`number`, required): Local anchor X on body A.
-- `anchorAY` (`number`, required): Local anchor Y on body A.
-- `anchorBX` (`number`, required): Local anchor X on body B.
-- `anchorBY` (`number`, required): Local anchor Y on body B.
-- `length` (`number`, required): Target distance between anchors.
-
-**Returns**: `integer` - The joint ID.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Creates a distance joint that keeps two bodies at a fixed distance apart, like a rigid rod.
@@ -3896,9 +4563,25 @@ Creates a distance joint that keeps two bodies at a fixed distance apart, like a
 function LWorld:addDistanceJoint(bodyA, bodyB, anchorAX, anchorAY, anchorBX, anchorBY, length) end
 ```
 
+#### Description
+
+Creates a distance joint that keeps two bodies at a fixed distance apart, like a rigid rod.
+
+Parameters:
+
+- `bodyA` (`integer`, required): First body ID.
+- `bodyB` (`integer`, required): Second body ID.
+- `anchorAX` (`number`, required): Local anchor X on body A.
+- `anchorAY` (`number`, required): Local anchor Y on body A.
+- `anchorBX` (`number`, required): Local anchor X on body B.
+- `anchorBY` (`number`, required): Local anchor Y on body B.
+- `length` (`number`, required): Target distance between anchors.
+
+Returns: `integer` - The joint ID.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -3912,23 +4595,7 @@ end
 
 ### LWorld:addFixture
 
-`LWorld:addFixture(bodyId: number, shapeType: string, density: number, friction: number, restitution: number, sensor: boolean, ...: number) -> integer`
-
-Attaches a new collider shape to an existing body with material properties.
-
-**Parameters**
-
-- `bodyId` (`number`, required): The target body ID.
-- `shapeType` (`string`, required): Shape kind: "circle", "rectangle", "polygon", "edge", or "chain".
-- `density` (`number`, required): Mass density (affects dynamic body mass calculation).
-- `friction` (`number`, required): Surface friction coefficient (0 = ice, 1 = rubber).
-- `restitution` (`number`, required): Bounciness (0 = no bounce, 1 = perfectly elastic).
-- `sensor` (`boolean`, required): If true, detects overlaps without generating collision response.
-- `...` (`number`, required): Shape-specific size arguments (radius, width/height, or vertex list).
-
-**Returns**: `integer` - The fixture index on the body.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Attaches a new collider shape to an existing body with material properties.
@@ -3943,9 +4610,25 @@ Attaches a new collider shape to an existing body with material properties.
 function LWorld:addFixture(bodyId, shapeType, density, friction, restitution, sensor, ...) end
 ```
 
+#### Description
+
+Attaches a new collider shape to an existing body with material properties.
+
+Parameters:
+
+- `bodyId` (`number`, required): The target body ID.
+- `shapeType` (`string`, required): Shape kind: "circle", "rectangle", "polygon", "edge", or "chain".
+- `density` (`number`, required): Mass density (affects dynamic body mass calculation).
+- `friction` (`number`, required): Surface friction coefficient (0 = ice, 1 = rubber).
+- `restitution` (`number`, required): Bounciness (0 = no bounce, 1 = perfectly elastic).
+- `sensor` (`boolean`, required): If true, detects overlaps without generating collision response.
+- `...` (`number`, required): Shape-specific size arguments (radius, width/height, or vertex list).
+
+Returns: `integer` - The fixture index on the body.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -3959,22 +4642,7 @@ end
 
 ### LWorld:addFrictionJoint
 
-`LWorld:addFrictionJoint(bodyA: integer, bodyB: integer, anchorX: number, anchorY: number, maxForce: number, maxTorque: number) -> integer`
-
-Creates a friction joint that applies resistance to relative motion between two bodies.
-
-**Parameters**
-
-- `bodyA` (`integer`, required): First body ID.
-- `bodyB` (`integer`, required): Second body ID.
-- `anchorX` (`number`, required): Anchor X in world coordinates.
-- `anchorY` (`number`, required): Anchor Y in world coordinates.
-- `maxForce` (`number`, required): Maximum friction force.
-- `maxTorque` (`number`, required): Maximum friction torque.
-
-**Returns**: `integer` - The joint ID.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Creates a friction joint that applies resistance to relative motion between two bodies.
@@ -3988,9 +4656,24 @@ Creates a friction joint that applies resistance to relative motion between two 
 function LWorld:addFrictionJoint(bodyA, bodyB, anchorX, anchorY, maxForce, maxTorque) end
 ```
 
+#### Description
+
+Creates a friction joint that applies resistance to relative motion between two bodies.
+
+Parameters:
+
+- `bodyA` (`integer`, required): First body ID.
+- `bodyB` (`integer`, required): Second body ID.
+- `anchorX` (`number`, required): Anchor X in world coordinates.
+- `anchorY` (`number`, required): Anchor Y in world coordinates.
+- `maxForce` (`number`, required): Maximum friction force.
+- `maxTorque` (`number`, required): Maximum friction torque.
+
+Returns: `integer` - The joint ID.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -4004,20 +4687,7 @@ end
 
 ### LWorld:addGearJoint
 
-`LWorld:addGearJoint(bodyA: integer, bodyB: integer, anchorX: number, anchorY: number) -> integer`
-
-Creates a gear joint that synchronizes rotation between two bodies at an anchor.
-
-**Parameters**
-
-- `bodyA` (`integer`, required): First body ID.
-- `bodyB` (`integer`, required): Second body ID.
-- `anchorX` (`number`, required): Gear anchor X.
-- `anchorY` (`number`, required): Gear anchor Y.
-
-**Returns**: `integer` - The joint ID.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Creates a gear joint that synchronizes rotation between two bodies at an anchor.
@@ -4029,9 +4699,22 @@ Creates a gear joint that synchronizes rotation between two bodies at an anchor.
 function LWorld:addGearJoint(bodyA, bodyB, anchorX, anchorY) end
 ```
 
+#### Description
+
+Creates a gear joint that synchronizes rotation between two bodies at an anchor.
+
+Parameters:
+
+- `bodyA` (`integer`, required): First body ID.
+- `bodyB` (`integer`, required): Second body ID.
+- `anchorX` (`number`, required): Gear anchor X.
+- `anchorY` (`number`, required): Gear anchor Y.
+
+Returns: `integer` - The joint ID.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -4045,19 +4728,7 @@ end
 
 ### LWorld:addMotorJoint
 
-`LWorld:addMotorJoint(bodyA: integer, bodyB: integer, factor: number) -> integer`
-
-Creates a motor joint that drives body B toward a target offset from body A using a correction factor.
-
-**Parameters**
-
-- `bodyA` (`integer`, required): First body ID.
-- `bodyB` (`integer`, required): Second body ID.
-- `factor` (`number`, required): Correction factor (0–1), higher = faster convergence.
-
-**Returns**: `integer` - The joint ID.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Creates a motor joint that drives body B toward a target offset from body A using a correction factor.
@@ -4068,9 +4739,21 @@ Creates a motor joint that drives body B toward a target offset from body A usin
 function LWorld:addMotorJoint(bodyA, bodyB, factor) end
 ```
 
+#### Description
+
+Creates a motor joint that drives body B toward a target offset from body A using a correction factor.
+
+Parameters:
+
+- `bodyA` (`integer`, required): First body ID.
+- `bodyB` (`integer`, required): Second body ID.
+- `factor` (`number`, required): Correction factor (0–1), higher = faster convergence.
+
+Returns: `integer` - The joint ID.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -4084,20 +4767,7 @@ end
 
 ### LWorld:addMouseJoint
 
-`LWorld:addMouseJoint(bodyId: integer, targetX: number, targetY: number, maxForce: number) -> integer`
-
-Creates a mouse joint that pulls a body toward a world target point with spring-like force.
-
-**Parameters**
-
-- `bodyId` (`integer`, required): The body to pull.
-- `targetX` (`number`, required): Initial target X in world coordinates.
-- `targetY` (`number`, required): Initial target Y in world coordinates.
-- `maxForce` (`number`, required): Maximum force applied to reach the target.
-
-**Returns**: `integer` - The joint ID.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Creates a mouse joint that pulls a body toward a world target point with spring-like force.
@@ -4109,9 +4779,22 @@ Creates a mouse joint that pulls a body toward a world target point with spring-
 function LWorld:addMouseJoint(bodyId, targetX, targetY, maxForce) end
 ```
 
+#### Description
+
+Creates a mouse joint that pulls a body toward a world target point with spring-like force.
+
+Parameters:
+
+- `bodyId` (`integer`, required): The body to pull.
+- `targetX` (`number`, required): Initial target X in world coordinates.
+- `targetY` (`number`, required): Initial target Y in world coordinates.
+- `maxForce` (`number`, required): Maximum force applied to reach the target.
+
+Returns: `integer` - The joint ID.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -4125,22 +4808,7 @@ end
 
 ### LWorld:addPrismaticJoint
 
-`LWorld:addPrismaticJoint(bodyA: integer, bodyB: integer, anchorX: number, anchorY: number, axisX: number, axisY: number) -> integer`
-
-Creates a prismatic (slider) joint that constrains body B to move along an axis relative to body A.
-
-**Parameters**
-
-- `bodyA` (`integer`, required): First body ID.
-- `bodyB` (`integer`, required): Second body ID.
-- `anchorX` (`number`, required): Anchor X in world coordinates.
-- `anchorY` (`number`, required): Anchor Y in world coordinates.
-- `axisX` (`number`, required): Slide axis X direction.
-- `axisY` (`number`, required): Slide axis Y direction.
-
-**Returns**: `integer` - The joint ID.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Creates a prismatic (slider) joint that constrains body B to move along an axis relative to body A.
@@ -4154,9 +4822,24 @@ Creates a prismatic (slider) joint that constrains body B to move along an axis 
 function LWorld:addPrismaticJoint(bodyA, bodyB, anchorX, anchorY, axisX, axisY) end
 ```
 
+#### Description
+
+Creates a prismatic (slider) joint that constrains body B to move along an axis relative to body A.
+
+Parameters:
+
+- `bodyA` (`integer`, required): First body ID.
+- `bodyB` (`integer`, required): Second body ID.
+- `anchorX` (`number`, required): Anchor X in world coordinates.
+- `anchorY` (`number`, required): Anchor Y in world coordinates.
+- `axisX` (`number`, required): Slide axis X direction.
+- `axisY` (`number`, required): Slide axis Y direction.
+
+Returns: `integer` - The joint ID.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -4170,20 +4853,7 @@ end
 
 ### LWorld:addPulleyJoint
 
-`LWorld:addPulleyJoint(bodyA: integer, bodyB: integer, anchorX: number, anchorY: number) -> integer`
-
-Creates a pulley joint connecting two bodies so that movement of one affects the other inversely.
-
-**Parameters**
-
-- `bodyA` (`integer`, required): First body ID.
-- `bodyB` (`integer`, required): Second body ID.
-- `anchorX` (`number`, required): Shared anchor X.
-- `anchorY` (`number`, required): Shared anchor Y.
-
-**Returns**: `integer` - The joint ID.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Creates a pulley joint connecting two bodies so that movement of one affects the other inversely.
@@ -4195,9 +4865,22 @@ Creates a pulley joint connecting two bodies so that movement of one affects the
 function LWorld:addPulleyJoint(bodyA, bodyB, anchorX, anchorY) end
 ```
 
+#### Description
+
+Creates a pulley joint connecting two bodies so that movement of one affects the other inversely.
+
+Parameters:
+
+- `bodyA` (`integer`, required): First body ID.
+- `bodyB` (`integer`, required): Second body ID.
+- `anchorX` (`number`, required): Shared anchor X.
+- `anchorY` (`number`, required): Shared anchor Y.
+
+Returns: `integer` - The joint ID.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -4211,20 +4894,7 @@ end
 
 ### LWorld:addRevoluteJoint
 
-`LWorld:addRevoluteJoint(bodyA: integer, bodyB: integer, anchorX: number, anchorY: number) -> integer`
-
-Creates a revolute (hinge) joint connecting two bodies at an anchor point. Bodies can rotate freely around the anchor.
-
-**Parameters**
-
-- `bodyA` (`integer`, required): First body ID.
-- `bodyB` (`integer`, required): Second body ID.
-- `anchorX` (`number`, required): Anchor X in world coordinates.
-- `anchorY` (`number`, required): Anchor Y in world coordinates.
-
-**Returns**: `integer` - The joint ID.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Creates a revolute (hinge) joint connecting two bodies at an anchor point. Bodies can rotate freely around the anchor.
@@ -4236,9 +4906,22 @@ Creates a revolute (hinge) joint connecting two bodies at an anchor point. Bodie
 function LWorld:addRevoluteJoint(bodyA, bodyB, anchorX, anchorY) end
 ```
 
+#### Description
+
+Creates a revolute (hinge) joint connecting two bodies at an anchor point. Bodies can rotate freely around the anchor.
+
+Parameters:
+
+- `bodyA` (`integer`, required): First body ID.
+- `bodyB` (`integer`, required): Second body ID.
+- `anchorX` (`number`, required): Anchor X in world coordinates.
+- `anchorY` (`number`, required): Anchor Y in world coordinates.
+
+Returns: `integer` - The joint ID.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -4252,23 +4935,7 @@ end
 
 ### LWorld:addRopeJoint
 
-`LWorld:addRopeJoint(bodyA: integer, bodyB: integer, anchorAX: number, anchorAY: number, anchorBX: number, anchorBY: number, maxLength: number) -> integer`
-
-Creates a rope joint limiting the maximum distance between two anchor points on two bodies.
-
-**Parameters**
-
-- `bodyA` (`integer`, required): First body ID.
-- `bodyB` (`integer`, required): Second body ID.
-- `anchorAX` (`number`, required): Local anchor X on body A.
-- `anchorAY` (`number`, required): Local anchor Y on body A.
-- `anchorBX` (`number`, required): Local anchor X on body B.
-- `anchorBY` (`number`, required): Local anchor Y on body B.
-- `maxLength` (`number`, required): Maximum allowed distance between anchors.
-
-**Returns**: `integer` - The joint ID.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Creates a rope joint limiting the maximum distance between two anchor points on two bodies.
@@ -4283,9 +4950,25 @@ Creates a rope joint limiting the maximum distance between two anchor points on 
 function LWorld:addRopeJoint(bodyA, bodyB, anchorAX, anchorAY, anchorBX, anchorBY, maxLength) end
 ```
 
+#### Description
+
+Creates a rope joint limiting the maximum distance between two anchor points on two bodies.
+
+Parameters:
+
+- `bodyA` (`integer`, required): First body ID.
+- `bodyB` (`integer`, required): Second body ID.
+- `anchorAX` (`number`, required): Local anchor X on body A.
+- `anchorAY` (`number`, required): Local anchor Y on body A.
+- `anchorBX` (`number`, required): Local anchor X on body B.
+- `anchorBY` (`number`, required): Local anchor Y on body B.
+- `maxLength` (`number`, required): Maximum allowed distance between anchors.
+
+Returns: `integer` - The joint ID.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -4299,20 +4982,7 @@ end
 
 ### LWorld:addWeldJoint
 
-`LWorld:addWeldJoint(bodyA: integer, bodyB: integer, anchorX: number, anchorY: number) -> integer`
-
-Creates a weld joint that rigidly connects two bodies at an anchor point (no relative movement).
-
-**Parameters**
-
-- `bodyA` (`integer`, required): First body ID.
-- `bodyB` (`integer`, required): Second body ID.
-- `anchorX` (`number`, required): Anchor X in world coordinates.
-- `anchorY` (`number`, required): Anchor Y in world coordinates.
-
-**Returns**: `integer` - The joint ID.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Creates a weld joint that rigidly connects two bodies at an anchor point (no relative movement).
@@ -4324,9 +4994,22 @@ Creates a weld joint that rigidly connects two bodies at an anchor point (no rel
 function LWorld:addWeldJoint(bodyA, bodyB, anchorX, anchorY) end
 ```
 
+#### Description
+
+Creates a weld joint that rigidly connects two bodies at an anchor point (no relative movement).
+
+Parameters:
+
+- `bodyA` (`integer`, required): First body ID.
+- `bodyB` (`integer`, required): Second body ID.
+- `anchorX` (`number`, required): Anchor X in world coordinates.
+- `anchorY` (`number`, required): Anchor Y in world coordinates.
+
+Returns: `integer` - The joint ID.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -4340,22 +5023,7 @@ end
 
 ### LWorld:addWheelJoint
 
-`LWorld:addWheelJoint(bodyA: integer, bodyB: integer, anchorX: number, anchorY: number, axisX: number, axisY: number) -> integer`
-
-Creates a wheel joint simulating a suspension: allows rotation and linear movement along an axis.
-
-**Parameters**
-
-- `bodyA` (`integer`, required): First body ID (chassis).
-- `bodyB` (`integer`, required): Second body ID (wheel).
-- `anchorX` (`number`, required): Anchor X in world coordinates.
-- `anchorY` (`number`, required): Anchor Y in world coordinates.
-- `axisX` (`number`, required): Suspension axis X direction.
-- `axisY` (`number`, required): Suspension axis Y direction.
-
-**Returns**: `integer` - The joint ID.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Creates a wheel joint simulating a suspension: allows rotation and linear movement along an axis.
@@ -4369,9 +5037,24 @@ Creates a wheel joint simulating a suspension: allows rotation and linear moveme
 function LWorld:addWheelJoint(bodyA, bodyB, anchorX, anchorY, axisX, axisY) end
 ```
 
+#### Description
+
+Creates a wheel joint simulating a suspension: allows rotation and linear movement along an axis.
+
+Parameters:
+
+- `bodyA` (`integer`, required): First body ID (chassis).
+- `bodyB` (`integer`, required): Second body ID (wheel).
+- `anchorX` (`number`, required): Anchor X in world coordinates.
+- `anchorY` (`number`, required): Anchor Y in world coordinates.
+- `axisX` (`number`, required): Suspension axis X direction.
+- `axisY` (`number`, required): Suspension axis Y direction.
+
+Returns: `integer` - The joint ID.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -4385,20 +5068,7 @@ end
 
 ### LWorld:addZone
 
-`LWorld:addZone(x: number, y: number, w: number, h: number) -> LZone`
-
-Creates a rectangular physics zone for area-based effects (custom gravity, damping overrides).
-
-**Parameters**
-
-- `x` (`number`, required): Zone left X.
-- `y` (`number`, required): Zone top Y.
-- `w` (`number`, required): Zone width.
-- `h` (`number`, required): Zone height.
-
-**Returns**: `LZone` - The zone handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Creates a rectangular physics zone for area-based effects (custom gravity, damping overrides).
@@ -4410,9 +5080,22 @@ Creates a rectangular physics zone for area-based effects (custom gravity, dampi
 function LWorld:addZone(x, y, w, h) end
 ```
 
+#### Description
+
+Creates a rectangular physics zone for area-based effects (custom gravity, damping overrides).
+
+Parameters:
+
+- `x` (`number`, required): Zone left X.
+- `y` (`number`, required): Zone top Y.
+- `w` (`number`, required): Zone width.
+- `h` (`number`, required): Zone height.
+
+Returns: `LZone` - The zone handle.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -4426,20 +5109,20 @@ end
 
 ### LWorld:clear
 
-`LWorld:clear()`
-
-Removes all bodies and joints from the world, resetting it to an empty state.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes all bodies and joints from the world, resetting it to an empty state.
 function LWorld:clear() end
 ```
 
+#### Description
+
+Removes all bodies and joints from the world, resetting it to an empty state.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -4453,20 +5136,20 @@ end
 
 ### LWorld:clearBeginContact
 
-`LWorld:clearBeginContact()`
-
-Removes the begin-contact callback so it is no longer called.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes the begin-contact callback so it is no longer called.
 function LWorld:clearBeginContact() end
 ```
 
+#### Description
+
+Removes the begin-contact callback so it is no longer called.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -4480,15 +5163,7 @@ end
 
 ### LWorld:clearBodyData
 
-`LWorld:clearBodyData(id: integer)`
-
-Removes and releases the Lua data attached to a body.
-
-**Parameters**
-
-- `id` (`integer`, required): The body ID.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes and releases the Lua data attached to a body.
@@ -4496,9 +5171,17 @@ Removes and releases the Lua data attached to a body.
 function LWorld:clearBodyData(id) end
 ```
 
+#### Description
+
+Removes and releases the Lua data attached to a body.
+
+Parameters:
+
+- `id` (`integer`, required): The body ID.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -4512,15 +5195,7 @@ end
 
 ### LWorld:clearBodyOneWay
 
-`LWorld:clearBodyOneWay(id: integer)`
-
-Removes the one-way platform behavior from a body, making it block from all directions.
-
-**Parameters**
-
-- `id` (`integer`, required): The body ID.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes the one-way platform behavior from a body, making it block from all directions.
@@ -4528,9 +5203,17 @@ Removes the one-way platform behavior from a body, making it block from all dire
 function LWorld:clearBodyOneWay(id) end
 ```
 
+#### Description
+
+Removes the one-way platform behavior from a body, making it block from all directions.
+
+Parameters:
+
+- `id` (`integer`, required): The body ID.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -4544,20 +5227,20 @@ end
 
 ### LWorld:clearEndContact
 
-`LWorld:clearEndContact()`
-
-Removes the end-contact callback so it is no longer called.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes the end-contact callback so it is no longer called.
 function LWorld:clearEndContact() end
 ```
 
+#### Description
+
+Removes the end-contact callback so it is no longer called.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -4571,15 +5254,7 @@ end
 
 ### LWorld:destroyBody
 
-`LWorld:destroyBody(id: integer)`
-
-Removes a body from the world by its ID, along with all attached fixtures and joints.
-
-**Parameters**
-
-- `id` (`integer`, required): The body ID to destroy.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes a body from the world by its ID, along with all attached fixtures and joints.
@@ -4587,9 +5262,17 @@ Removes a body from the world by its ID, along with all attached fixtures and jo
 function LWorld:destroyBody(id) end
 ```
 
+#### Description
+
+Removes a body from the world by its ID, along with all attached fixtures and joints.
+
+Parameters:
+
+- `id` (`integer`, required): The body ID to destroy.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -4603,15 +5286,7 @@ end
 
 ### LWorld:destroyJoint
 
-`LWorld:destroyJoint(jointId: integer)`
-
-Removes a joint from the world, disconnecting the two bodies it linked.
-
-**Parameters**
-
-- `jointId` (`integer`, required): The joint ID to destroy.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes a joint from the world, disconnecting the two bodies it linked.
@@ -4619,9 +5294,17 @@ Removes a joint from the world, disconnecting the two bodies it linked.
 function LWorld:destroyJoint(jointId) end
 ```
 
+#### Description
+
+Removes a joint from the world, disconnecting the two bodies it linked.
+
+Parameters:
+
+- `jointId` (`integer`, required): The joint ID to destroy.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -4635,19 +5318,7 @@ end
 
 ### LWorld:drawDebug
 
-`LWorld:drawDebug(target: LImageData, [r]: integer, [g]: integer, [b]: integer, [a]: integer)`
-
-Renders a debug visualization of all physics bodies onto a software ImageData target.
-
-**Parameters**
-
-- `target` (`LImageData`, required): The image to draw debug shapes onto.
-- `r` (`integer`, optional): Red channel (0-255, default 0).
-- `g` (`integer`, optional): Green channel (0-255, default 255).
-- `b` (`integer`, optional): Blue channel (0-255, default 0).
-- `a` (`integer`, optional): Alpha channel (0-255, default 255).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Renders a debug visualization of all physics bodies onto a software ImageData target.
@@ -4659,9 +5330,21 @@ Renders a debug visualization of all physics bodies onto a software ImageData ta
 function LWorld:drawDebug(target, r, g, b, a) end
 ```
 
+#### Description
+
+Renders a debug visualization of all physics bodies onto a software ImageData target.
+
+Parameters:
+
+- `target` (`LImageData`, required): The image to draw debug shapes onto.
+- `r` (`integer`, optional): Red channel (0-255, default 0).
+- `g` (`integer`, optional): Green channel (0-255, default 255).
+- `b` (`integer`, optional): Blue channel (0-255, default 0).
+- `a` (`integer`, optional): Alpha channel (0-255, default 255).
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -4675,17 +5358,7 @@ end
 
 ### LWorld:fixtureCount
 
-`LWorld:fixtureCount(bodyId: integer) -> integer`
-
-Returns how many fixtures (colliders) are attached to a body.
-
-**Parameters**
-
-- `bodyId` (`integer`, required): The body to query.
-
-**Returns**: `integer` - Number of attached fixtures.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns how many fixtures (colliders) are attached to a body.
@@ -4694,9 +5367,19 @@ Returns how many fixtures (colliders) are attached to a body.
 function LWorld:fixtureCount(bodyId) end
 ```
 
+#### Description
+
+Returns how many fixtures (colliders) are attached to a body.
+
+Parameters:
+
+- `bodyId` (`integer`, required): The body to query.
+
+Returns: `integer` - Number of attached fixtures.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -4710,13 +5393,7 @@ end
 
 ### LWorld:getBeginContactEvents
 
-`LWorld:getBeginContactEvents() -> table`
-
-Returns contact-begin events from the last step (pairs of bodies that started touching).
-
-**Returns**: `table` - Array of {bodyA, bodyB} tables.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns contact-begin events from the last step (pairs of bodies that started touching).
@@ -4724,9 +5401,15 @@ Returns contact-begin events from the last step (pairs of bodies that started to
 function LWorld:getBeginContactEvents() end
 ```
 
+#### Description
+
+Returns contact-begin events from the last step (pairs of bodies that started touching).
+
+Returns: `table` - Array of {bodyA, bodyB} tables.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -4740,18 +5423,7 @@ end
 
 ### LWorld:getBodyAtPoint
 
-`LWorld:getBodyAtPoint(x: number, y: number) -> integer`
-
-Returns the body ID at a specific world point, or nil if no body is there.
-
-**Parameters**
-
-- `x` (`number`, required): Query point X.
-- `y` (`number`, required): Query point Y.
-
-**Returns**: `integer` - Body ID at the point, or nil.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the body ID at a specific world point, or nil if no body is there.
@@ -4761,9 +5433,20 @@ Returns the body ID at a specific world point, or nil if no body is there.
 function LWorld:getBodyAtPoint(x, y) end
 ```
 
+#### Description
+
+Returns the body ID at a specific world point, or nil if no body is there.
+
+Parameters:
+
+- `x` (`number`, required): Query point X.
+- `y` (`number`, required): Query point Y.
+
+Returns: `integer` - Body ID at the point, or nil.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -4777,17 +5460,7 @@ end
 
 ### LWorld:getBodyCCD
 
-`LWorld:getBodyCCD(id: integer) -> boolean`
-
-Returns whether continuous collision detection is enabled on a body.
-
-**Parameters**
-
-- `id` (`integer`, required): The body ID.
-
-**Returns**: `boolean` - True if CCD is enabled.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether continuous collision detection is enabled on a body.
@@ -4796,9 +5469,19 @@ Returns whether continuous collision detection is enabled on a body.
 function LWorld:getBodyCCD(id) end
 ```
 
+#### Description
+
+Returns whether continuous collision detection is enabled on a body.
+
+Parameters:
+
+- `id` (`integer`, required): The body ID.
+
+Returns: `boolean` - True if CCD is enabled.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -4812,17 +5495,7 @@ end
 
 ### LWorld:getBodyContacts
 
-`LWorld:getBodyContacts(bodyId: integer) -> table`
-
-Returns all contacts involving a specific body.
-
-**Parameters**
-
-- `bodyId` (`integer`, required): The body to query contacts for.
-
-**Returns**: `table` - Array of {bodyA, bodyB, normalX, normalY, isTouching} tables.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns all contacts involving a specific body.
@@ -4831,9 +5504,19 @@ Returns all contacts involving a specific body.
 function LWorld:getBodyContacts(bodyId) end
 ```
 
+#### Description
+
+Returns all contacts involving a specific body.
+
+Parameters:
+
+- `bodyId` (`integer`, required): The body to query contacts for.
+
+Returns: `table` - Array of {bodyA, bodyB, normalX, normalY, isTouching} tables.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -4847,13 +5530,7 @@ end
 
 ### LWorld:getBodyCount
 
-`LWorld:getBodyCount() -> integer`
-
-Returns the total number of active bodies in the world.
-
-**Returns**: `integer` - Body count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the total number of active bodies in the world.
@@ -4861,9 +5538,15 @@ Returns the total number of active bodies in the world.
 function LWorld:getBodyCount() end
 ```
 
+#### Description
+
+Returns the total number of active bodies in the world.
+
+Returns: `integer` - Body count.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -4877,17 +5560,7 @@ end
 
 ### LWorld:getBodyData
 
-`LWorld:getBodyData(id: integer) -> table`
-
-Retrieves the Lua data previously attached to a body, or nil if none was set.
-
-**Parameters**
-
-- `id` (`integer`, required): The body ID.
-
-**Returns**: `table` - The stored value, or nil if none was set.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Retrieves the Lua data previously attached to a body, or nil if none was set.
@@ -4896,9 +5569,19 @@ Retrieves the Lua data previously attached to a body, or nil if none was set.
 function LWorld:getBodyData(id) end
 ```
 
+#### Description
+
+Retrieves the Lua data previously attached to a body, or nil if none was set.
+
+Parameters:
+
+- `id` (`integer`, required): The body ID.
+
+Returns: `table` - The stored value, or nil if none was set.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -4912,13 +5595,7 @@ end
 
 ### LWorld:getBodyIds
 
-`LWorld:getBodyIds() -> integer[]`
-
-Returns a sequential table of all body IDs currently in the world.
-
-**Returns**: `integer[]` - Body ID numbers.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a sequential table of all body IDs currently in the world.
@@ -4926,9 +5603,15 @@ Returns a sequential table of all body IDs currently in the world.
 function LWorld:getBodyIds() end
 ```
 
+#### Description
+
+Returns a sequential table of all body IDs currently in the world.
+
+Returns: `integer[]` - Body ID numbers.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -4942,17 +5625,7 @@ end
 
 ### LWorld:getBodyOneWay
 
-`LWorld:getBodyOneWay(id: integer) -> number`
-
-Returns the one-way platform normal for a body, or nil,nil if not set.
-
-**Parameters**
-
-- `id` (`integer`, required): The body ID.
-
-**Returns**: `number` - Normal X, or nil if not a one-way body.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the one-way platform normal for a body, or nil,nil if not set.
@@ -4962,9 +5635,19 @@ Returns the one-way platform normal for a body, or nil,nil if not set.
 function LWorld:getBodyOneWay(id) end
 ```
 
+#### Description
+
+Returns the one-way platform normal for a body, or nil,nil if not set.
+
+Parameters:
+
+- `id` (`integer`, required): The body ID.
+
+Returns: `number` - Normal X, or nil if not a one-way body.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -4978,17 +5661,7 @@ end
 
 ### LWorld:getBodyType
 
-`LWorld:getBodyType(id: integer) -> string`
-
-Returns the type name of a body as a string.
-
-**Parameters**
-
-- `id` (`integer`, required): The body ID.
-
-**Returns**: `string` - Body type: "static", "dynamic", "kinematic", or "sensor".
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of a body as a string.
@@ -4997,9 +5670,19 @@ Returns the type name of a body as a string.
 function LWorld:getBodyType(id) end
 ```
 
+#### Description
+
+Returns the type name of a body as a string.
+
+Parameters:
+
+- `id` (`integer`, required): The body ID.
+
+Returns: `string` - Body type: "static", "dynamic", "kinematic", or "sensor".
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -5012,13 +5695,7 @@ end
 
 ### LWorld:getCollisionEvents
 
-`LWorld:getCollisionEvents() -> table`
-
-Returns all collision events from the last step as a table of {bodyA, bodyB} pairs.
-
-**Returns**: `table` - Array of collision event tables.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns all collision events from the last step as a table of {bodyA, bodyB} pairs.
@@ -5026,9 +5703,15 @@ Returns all collision events from the last step as a table of {bodyA, bodyB} pai
 function LWorld:getCollisionEvents() end
 ```
 
+#### Description
+
+Returns all collision events from the last step as a table of {bodyA, bodyB} pairs.
+
+Returns: `table` - Array of collision event tables.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -5042,13 +5725,7 @@ end
 
 ### LWorld:getContacts
 
-`LWorld:getContacts() -> table`
-
-Returns all currently active contact manifolds with normals and touching state.
-
-**Returns**: `table` - Array of {bodyA, bodyB, normalX, normalY, isTouching} tables.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns all currently active contact manifolds with normals and touching state.
@@ -5056,9 +5733,15 @@ Returns all currently active contact manifolds with normals and touching state.
 function LWorld:getContacts() end
 ```
 
+#### Description
+
+Returns all currently active contact manifolds with normals and touching state.
+
+Returns: `table` - Array of {bodyA, bodyB, normalX, normalY, isTouching} tables.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -5072,13 +5755,7 @@ end
 
 ### LWorld:getEndContactEvents
 
-`LWorld:getEndContactEvents() -> table`
-
-Returns contact-end events from the last step (pairs of bodies that stopped touching).
-
-**Returns**: `table` - Array of {bodyA, bodyB} tables.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns contact-end events from the last step (pairs of bodies that stopped touching).
@@ -5086,9 +5763,15 @@ Returns contact-end events from the last step (pairs of bodies that stopped touc
 function LWorld:getEndContactEvents() end
 ```
 
+#### Description
+
+Returns contact-end events from the last step (pairs of bodies that stopped touching).
+
+Returns: `table` - Array of {bodyA, bodyB} tables.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -5100,13 +5783,7 @@ do
 
 ### LWorld:getGravity
 
-`LWorld:getGravity() -> number`
-
-Returns the current world gravity vector.
-
-**Returns**: `number` - Gravity X component in world units per second squared.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current world gravity vector.
@@ -5115,9 +5792,15 @@ Returns the current world gravity vector.
 function LWorld:getGravity() end
 ```
 
+#### Description
+
+Returns the current world gravity vector.
+
+Returns: `number` - Gravity X component in world units per second squared.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -5131,17 +5814,7 @@ end
 
 ### LWorld:getJointBodies
 
-`LWorld:getJointBodies(jointId: integer) -> integer`
-
-Returns the two body IDs connected by a joint.
-
-**Parameters**
-
-- `jointId` (`integer`, required): The joint ID to query.
-
-**Returns**: `integer` - Body A ID.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the two body IDs connected by a joint.
@@ -5151,9 +5824,19 @@ Returns the two body IDs connected by a joint.
 function LWorld:getJointBodies(jointId) end
 ```
 
+#### Description
+
+Returns the two body IDs connected by a joint.
+
+Parameters:
+
+- `jointId` (`integer`, required): The joint ID to query.
+
+Returns: `integer` - Body A ID.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -5167,17 +5850,7 @@ end
 
 ### LWorld:getJointBreakForce
 
-`LWorld:getJointBreakForce(jointId: integer) -> number`
-
-Returns the break force threshold for a joint.
-
-**Parameters**
-
-- `jointId` (`integer`, required): The joint ID.
-
-**Returns**: `number` - Break force value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the break force threshold for a joint.
@@ -5186,9 +5859,19 @@ Returns the break force threshold for a joint.
 function LWorld:getJointBreakForce(jointId) end
 ```
 
+#### Description
+
+Returns the break force threshold for a joint.
+
+Parameters:
+
+- `jointId` (`integer`, required): The joint ID.
+
+Returns: `number` - Break force value.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -5202,13 +5885,7 @@ end
 
 ### LWorld:getJointIds
 
-`LWorld:getJointIds() -> integer[]`
-
-Returns a sequential table of all joint IDs currently in the world.
-
-**Returns**: `integer[]` - Joint ID numbers.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a sequential table of all joint IDs currently in the world.
@@ -5216,9 +5893,15 @@ Returns a sequential table of all joint IDs currently in the world.
 function LWorld:getJointIds() end
 ```
 
+#### Description
+
+Returns a sequential table of all joint IDs currently in the world.
+
+Returns: `integer[]` - Joint ID numbers.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -5232,17 +5915,7 @@ end
 
 ### LWorld:getJointLimits
 
-`LWorld:getJointLimits(jointId: integer) -> number`
-
-Returns the lower and upper limit values for a joint.
-
-**Parameters**
-
-- `jointId` (`integer`, required): The joint ID.
-
-**Returns**: `number` - Lower limit.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the lower and upper limit values for a joint.
@@ -5252,9 +5925,19 @@ Returns the lower and upper limit values for a joint.
 function LWorld:getJointLimits(jointId) end
 ```
 
+#### Description
+
+Returns the lower and upper limit values for a joint.
+
+Parameters:
+
+- `jointId` (`integer`, required): The joint ID.
+
+Returns: `number` - Lower limit.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -5268,17 +5951,7 @@ end
 
 ### LWorld:getJointMotorSpeed
 
-`LWorld:getJointMotorSpeed(jointId: integer) -> number`
-
-Returns the current motor speed setting of a joint.
-
-**Parameters**
-
-- `jointId` (`integer`, required): The joint ID.
-
-**Returns**: `number` - Motor speed value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current motor speed setting of a joint.
@@ -5287,9 +5960,19 @@ Returns the current motor speed setting of a joint.
 function LWorld:getJointMotorSpeed(jointId) end
 ```
 
+#### Description
+
+Returns the current motor speed setting of a joint.
+
+Parameters:
+
+- `jointId` (`integer`, required): The joint ID.
+
+Returns: `number` - Motor speed value.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -5303,17 +5986,7 @@ end
 
 ### LWorld:getJointType
 
-`LWorld:getJointType(jointId: integer) -> string`
-
-Returns the type name of a joint (e.g. "revolute", "distance", "prismatic").
-
-**Parameters**
-
-- `jointId` (`integer`, required): The joint ID.
-
-**Returns**: `string` - The joint type name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of a joint (e.g. "revolute", "distance", "prismatic").
@@ -5322,9 +5995,19 @@ Returns the type name of a joint (e.g. "revolute", "distance", "prismatic").
 function LWorld:getJointType(jointId) end
 ```
 
+#### Description
+
+Returns the type name of a joint (e.g. "revolute", "distance", "prismatic").
+
+Parameters:
+
+- `jointId` (`integer`, required): The joint ID.
+
+Returns: `string` - The joint type name.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -5338,13 +6021,7 @@ end
 
 ### LWorld:getMeter
 
-`LWorld:getMeter() -> number`
-
-Returns the current pixels-per-meter scale.
-
-**Returns**: `number` - Pixels per meter.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current pixels-per-meter scale.
@@ -5352,9 +6029,15 @@ Returns the current pixels-per-meter scale.
 function LWorld:getMeter() end
 ```
 
+#### Description
+
+Returns the current pixels-per-meter scale.
+
+Returns: `number` - Pixels per meter.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -5368,13 +6051,7 @@ end
 
 ### LWorld:getSolverIterations
 
-`LWorld:getSolverIterations() -> integer`
-
-Returns the current number of velocity solver iterations.
-
-**Returns**: `integer` - Iteration count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current number of velocity solver iterations.
@@ -5382,9 +6059,15 @@ Returns the current number of velocity solver iterations.
 function LWorld:getSolverIterations() end
 ```
 
+#### Description
+
+Returns the current number of velocity solver iterations.
+
+Returns: `integer` - Iteration count.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -5397,13 +6080,7 @@ end
 
 ### LWorld:getZoneEvents
 
-`LWorld:getZoneEvents() -> table`
-
-Returns all zone enter/leave events from the last step.
-
-**Returns**: `table` - Array of {zone_id, body_id, kind} tables where kind is "enter" or "leave".
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns all zone enter/leave events from the last step.
@@ -5411,9 +6088,15 @@ Returns all zone enter/leave events from the last step.
 function LWorld:getZoneEvents() end
 ```
 
+#### Description
+
+Returns all zone enter/leave events from the last step.
+
+Returns: `table` - Array of {zone_id, body_id, kind} tables where kind is "enter" or "leave".
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -5427,17 +6110,7 @@ end
 
 ### LWorld:isBodySleeping
 
-`LWorld:isBodySleeping(id: integer) -> boolean`
-
-Returns whether a body is currently in the sleeping (inactive) state.
-
-**Parameters**
-
-- `id` (`integer`, required): The body ID.
-
-**Returns**: `boolean` - True if the body is sleeping.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether a body is currently in the sleeping (inactive) state.
@@ -5446,9 +6119,19 @@ Returns whether a body is currently in the sleeping (inactive) state.
 function LWorld:isBodySleeping(id) end
 ```
 
+#### Description
+
+Returns whether a body is currently in the sleeping (inactive) state.
+
+Parameters:
+
+- `id` (`integer`, required): The body ID.
+
+Returns: `boolean` - True if the body is sleeping.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -5462,13 +6145,7 @@ end
 
 ### LWorld:jointCount
 
-`LWorld:jointCount() -> integer`
-
-Returns the total number of joints in the world.
-
-**Returns**: `integer` - Joint count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the total number of joints in the world.
@@ -5476,9 +6153,15 @@ Returns the total number of joints in the world.
 function LWorld:jointCount() end
 ```
 
+#### Description
+
+Returns the total number of joints in the world.
+
+Returns: `integer` - Joint count.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -5492,17 +6175,7 @@ end
 
 ### LWorld:newBodies
 
-`LWorld:newBodies(specs: table) -> integer[]`
-
-Batch-creates multiple bodies at once for better performance. Each entry is {x, y, type}.
-
-**Parameters**
-
-- `specs` (`table`, required): Array of tables: {{x, y, "dynamic"}, {x, y, "static"}, ...}.
-
-**Returns**: `integer[]` - Body ID numbers in creation order.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Batch-creates multiple bodies at once for better performance. Each entry is {x, y, type}.
@@ -5511,9 +6184,19 @@ Batch-creates multiple bodies at once for better performance. Each entry is {x, 
 function LWorld:newBodies(specs) end
 ```
 
+#### Description
+
+Batch-creates multiple bodies at once for better performance. Each entry is {x, y, type}.
+
+Parameters:
+
+- `specs` (`table`, required): Array of tables: {{x, y, "dynamic"}, {x, y, "static"}, ...}.
+
+Returns: `integer[]` - Body ID numbers in creation order.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -5526,19 +6209,7 @@ end
 
 ### LWorld:newBody
 
-`LWorld:newBody(x: number, y: number, bodyType: string) -> LBody`
-
-Creates a new physics body at the given position with the specified type.
-
-**Parameters**
-
-- `x` (`number`, required): Initial X position in world coordinates.
-- `y` (`number`, required): Initial Y position in world coordinates.
-- `bodyType` (`string`, required): One of "static", "dynamic", "kinematic", or "sensor".
-
-**Returns**: `LBody` - The newly created body handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Creates a new physics body at the given position with the specified type.
@@ -5549,9 +6220,21 @@ Creates a new physics body at the given position with the specified type.
 function LWorld:newBody(x, y, bodyType) end
 ```
 
+#### Description
+
+Creates a new physics body at the given position with the specified type.
+
+Parameters:
+
+- `x` (`number`, required): Initial X position in world coordinates.
+- `y` (`number`, required): Initial Y position in world coordinates.
+- `bodyType` (`string`, required): One of "static", "dynamic", "kinematic", or "sensor".
+
+Returns: `LBody` - The newly created body handle.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -5565,21 +6248,7 @@ end
 
 ### LWorld:newChainBody
 
-`LWorld:newChainBody(x: number, y: number, vertices: table, closed: boolean, bodyType: string) -> LBody`
-
-Creates a new body with a chain (polyline) collider. Useful for terrain edges.
-
-**Parameters**
-
-- `x` (`number`, required): Body X position in world coordinates.
-- `y` (`number`, required): Body Y position in world coordinates.
-- `vertices` (`table`, required): Flat array of vertex coordinates {x1,y1,x2,y2,...}.
-- `closed` (`boolean`, required): If true, connects the last vertex back to the first.
-- `bodyType` (`string`, required): One of "static", "dynamic", "kinematic", or "sensor".
-
-**Returns**: `LBody` - The newly created body handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Creates a new body with a chain (polyline) collider. Useful for terrain edges.
@@ -5592,9 +6261,23 @@ Creates a new body with a chain (polyline) collider. Useful for terrain edges.
 function LWorld:newChainBody(x, y, vertices, closed, bodyType) end
 ```
 
+#### Description
+
+Creates a new body with a chain (polyline) collider. Useful for terrain edges.
+
+Parameters:
+
+- `x` (`number`, required): Body X position in world coordinates.
+- `y` (`number`, required): Body Y position in world coordinates.
+- `vertices` (`table`, required): Flat array of vertex coordinates {x1,y1,x2,y2,...}.
+- `closed` (`boolean`, required): If true, connects the last vertex back to the first.
+- `bodyType` (`string`, required): One of "static", "dynamic", "kinematic", or "sensor".
+
+Returns: `LBody` - The newly created body handle.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -5608,20 +6291,7 @@ end
 
 ### LWorld:newCircleBody
 
-`LWorld:newCircleBody(x: number, y: number, radius: number, bodyType: string) -> LBody`
-
-Creates a new body with a circle collider already attached.
-
-**Parameters**
-
-- `x` (`number`, required): Initial X position in world coordinates.
-- `y` (`number`, required): Initial Y position in world coordinates.
-- `radius` (`number`, required): Circle radius in world units.
-- `bodyType` (`string`, required): One of "static", "dynamic", "kinematic", or "sensor".
-
-**Returns**: `LBody` - The newly created body handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Creates a new body with a circle collider already attached.
@@ -5633,9 +6303,22 @@ Creates a new body with a circle collider already attached.
 function LWorld:newCircleBody(x, y, radius, bodyType) end
 ```
 
+#### Description
+
+Creates a new body with a circle collider already attached.
+
+Parameters:
+
+- `x` (`number`, required): Initial X position in world coordinates.
+- `y` (`number`, required): Initial Y position in world coordinates.
+- `radius` (`number`, required): Circle radius in world units.
+- `bodyType` (`string`, required): One of "static", "dynamic", "kinematic", or "sensor".
+
+Returns: `LBody` - The newly created body handle.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -5648,23 +6331,7 @@ end
 
 ### LWorld:newEdgeBody
 
-`LWorld:newEdgeBody(x: number, y: number, x1: number, y1: number, x2: number, y2: number, bodyType: string) -> LBody`
-
-Creates a new body with an edge (line segment) collider between two local points.
-
-**Parameters**
-
-- `x` (`number`, required): Body X position in world coordinates.
-- `y` (`number`, required): Body Y position in world coordinates.
-- `x1` (`number`, required): Edge start X relative to body.
-- `y1` (`number`, required): Edge start Y relative to body.
-- `x2` (`number`, required): Edge end X relative to body.
-- `y2` (`number`, required): Edge end Y relative to body.
-- `bodyType` (`string`, required): One of "static", "dynamic", "kinematic", or "sensor".
-
-**Returns**: `LBody` - The newly created body handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Creates a new body with an edge (line segment) collider between two local points.
@@ -5679,9 +6346,25 @@ Creates a new body with an edge (line segment) collider between two local points
 function LWorld:newEdgeBody(x, y, x1, y1, x2, y2, bodyType) end
 ```
 
+#### Description
+
+Creates a new body with an edge (line segment) collider between two local points.
+
+Parameters:
+
+- `x` (`number`, required): Body X position in world coordinates.
+- `y` (`number`, required): Body Y position in world coordinates.
+- `x1` (`number`, required): Edge start X relative to body.
+- `y1` (`number`, required): Edge start Y relative to body.
+- `x2` (`number`, required): Edge end X relative to body.
+- `y2` (`number`, required): Edge end Y relative to body.
+- `bodyType` (`string`, required): One of "static", "dynamic", "kinematic", or "sensor".
+
+Returns: `LBody` - The newly created body handle.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -5694,20 +6377,7 @@ end
 
 ### LWorld:newPolygonBody
 
-`LWorld:newPolygonBody(x: number, y: number, vertices: table, bodyType: string) -> LBody`
-
-Creates a new body with a convex polygon collider defined by vertex pairs.
-
-**Parameters**
-
-- `x` (`number`, required): Initial X position in world coordinates.
-- `y` (`number`, required): Initial Y position in world coordinates.
-- `vertices` (`table`, required): Flat array of vertex coordinates {x1,y1,x2,y2,...}.
-- `bodyType` (`string`, required): One of "static", "dynamic", "kinematic", or "sensor".
-
-**Returns**: `LBody` - The newly created body handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Creates a new body with a convex polygon collider defined by vertex pairs.
@@ -5719,9 +6389,22 @@ Creates a new body with a convex polygon collider defined by vertex pairs.
 function LWorld:newPolygonBody(x, y, vertices, bodyType) end
 ```
 
+#### Description
+
+Creates a new body with a convex polygon collider defined by vertex pairs.
+
+Parameters:
+
+- `x` (`number`, required): Initial X position in world coordinates.
+- `y` (`number`, required): Initial Y position in world coordinates.
+- `vertices` (`table`, required): Flat array of vertex coordinates {x1,y1,x2,y2,...}.
+- `bodyType` (`string`, required): One of "static", "dynamic", "kinematic", or "sensor".
+
+Returns: `LBody` - The newly created body handle.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -5735,20 +6418,7 @@ end
 
 ### LWorld:queryAABB
 
-`LWorld:queryAABB(x: number, y: number, w: number, h: number) -> integer[]`
-
-Returns all body IDs whose axis-aligned bounding boxes overlap the given rectangle.
-
-**Parameters**
-
-- `x` (`number`, required): Query rectangle left X.
-- `y` (`number`, required): Query rectangle top Y.
-- `w` (`number`, required): Query rectangle width.
-- `h` (`number`, required): Query rectangle height.
-
-**Returns**: `integer[]` - Body ID numbers found in the region.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns all body IDs whose axis-aligned bounding boxes overlap the given rectangle.
@@ -5760,9 +6430,22 @@ Returns all body IDs whose axis-aligned bounding boxes overlap the given rectang
 function LWorld:queryAABB(x, y, w, h) end
 ```
 
+#### Description
+
+Returns all body IDs whose axis-aligned bounding boxes overlap the given rectangle.
+
+Parameters:
+
+- `x` (`number`, required): Query rectangle left X.
+- `y` (`number`, required): Query rectangle top Y.
+- `w` (`number`, required): Query rectangle width.
+- `h` (`number`, required): Query rectangle height.
+
+Returns: `integer[]` - Body ID numbers found in the region.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -5776,20 +6459,7 @@ end
 
 ### LWorld:raycast
 
-`LWorld:raycast(x1: number, y1: number, x2: number, y2: number) -> table`
-
-Casts a ray from point (x1,y1) to (x2,y2) and returns the first body hit, or nil.
-
-**Parameters**
-
-- `x1` (`number`, required): Ray origin X.
-- `y1` (`number`, required): Ray origin Y.
-- `x2` (`number`, required): Ray end X.
-- `y2` (`number`, required): Ray end Y.
-
-**Returns**: `table` - Hit info {bodyId, x, y, normalX, normalY, toi} or nil if no hit.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Casts a ray from point (x1,y1) to (x2,y2) and returns the first body hit, or nil.
@@ -5801,9 +6471,22 @@ Casts a ray from point (x1,y1) to (x2,y2) and returns the first body hit, or nil
 function LWorld:raycast(x1, y1, x2, y2) end
 ```
 
+#### Description
+
+Casts a ray from point (x1,y1) to (x2,y2) and returns the first body hit, or nil.
+
+Parameters:
+
+- `x1` (`number`, required): Ray origin X.
+- `y1` (`number`, required): Ray origin Y.
+- `x2` (`number`, required): Ray end X.
+- `y2` (`number`, required): Ray end Y.
+
+Returns: `table` - Hit info {bodyId, x, y, normalX, normalY, toi} or nil if no hit.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -5817,21 +6500,7 @@ end
 
 ### LWorld:raycastAll
 
-`LWorld:raycastAll(x: number, y: number, dx: number, dy: number, maxDist: number) -> table`
-
-Casts a directional ray and returns all bodies hit within max distance as a table of results.
-
-**Parameters**
-
-- `x` (`number`, required): Ray origin X.
-- `y` (`number`, required): Ray origin Y.
-- `dx` (`number`, required): Ray direction X.
-- `dy` (`number`, required): Ray direction Y.
-- `maxDist` (`number`, required): Maximum ray travel distance.
-
-**Returns**: `table` - Array of hit tables {bodyId, x, y, normalX, normalY, toi}.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Casts a directional ray and returns all bodies hit within max distance as a table of results.
@@ -5844,9 +6513,23 @@ Casts a directional ray and returns all bodies hit within max distance as a tabl
 function LWorld:raycastAll(x, y, dx, dy, maxDist) end
 ```
 
+#### Description
+
+Casts a directional ray and returns all bodies hit within max distance as a table of results.
+
+Parameters:
+
+- `x` (`number`, required): Ray origin X.
+- `y` (`number`, required): Ray origin Y.
+- `dx` (`number`, required): Ray direction X.
+- `dy` (`number`, required): Ray direction Y.
+- `maxDist` (`number`, required): Maximum ray travel distance.
+
+Returns: `table` - Array of hit tables {bodyId, x, y, normalX, normalY, toi}.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -5860,21 +6543,7 @@ end
 
 ### LWorld:raycastClosest
 
-`LWorld:raycastClosest(x: number, y: number, dx: number, dy: number, maxDist: number) -> table`
-
-Casts a directional ray from a point and returns the closest hit within max distance.
-
-**Parameters**
-
-- `x` (`number`, required): Ray origin X.
-- `y` (`number`, required): Ray origin Y.
-- `dx` (`number`, required): Ray direction X (does not need to be normalized).
-- `dy` (`number`, required): Ray direction Y.
-- `maxDist` (`number`, required): Maximum ray travel distance.
-
-**Returns**: `table` - Hit info {bodyId, x, y, normalX, normalY, toi} or nil if no hit.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Casts a directional ray from a point and returns the closest hit within max distance.
@@ -5887,9 +6556,23 @@ Casts a directional ray from a point and returns the closest hit within max dist
 function LWorld:raycastClosest(x, y, dx, dy, maxDist) end
 ```
 
+#### Description
+
+Casts a directional ray from a point and returns the closest hit within max distance.
+
+Parameters:
+
+- `x` (`number`, required): Ray origin X.
+- `y` (`number`, required): Ray origin Y.
+- `dx` (`number`, required): Ray direction X (does not need to be normalized).
+- `dy` (`number`, required): Ray direction Y.
+- `maxDist` (`number`, required): Maximum ray travel distance.
+
+Returns: `table` - Hit info {bodyId, x, y, normalX, normalY, toi} or nil if no hit.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -5903,15 +6586,7 @@ end
 
 ### LWorld:setBeginContact
 
-`LWorld:setBeginContact(callback: function)`
-
-Registers a callback function invoked whenever two bodies begin touching.
-
-**Parameters**
-
-- `callback` (`function`, required): Called with (bodyIdA, bodyIdB) on each new contact.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Registers a callback function invoked whenever two bodies begin touching.
@@ -5919,9 +6594,17 @@ Registers a callback function invoked whenever two bodies begin touching.
 function LWorld:setBeginContact(callback) end
 ```
 
+#### Description
+
+Registers a callback function invoked whenever two bodies begin touching.
+
+Parameters:
+
+- `callback` (`function`, required): Called with (bodyIdA, bodyIdB) on each new contact.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -5941,16 +6624,7 @@ end
 
 ### LWorld:setBodyCCD
 
-`LWorld:setBodyCCD(id: integer, enabled: boolean)`
-
-Enables or disables continuous collision detection (bullet mode) on a body to prevent tunneling.
-
-**Parameters**
-
-- `id` (`integer`, required): The body ID.
-- `enabled` (`boolean`, required): True to enable CCD.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Enables or disables continuous collision detection (bullet mode) on a body to prevent tunneling.
@@ -5959,9 +6633,18 @@ Enables or disables continuous collision detection (bullet mode) on a body to pr
 function LWorld:setBodyCCD(id, enabled) end
 ```
 
+#### Description
+
+Enables or disables continuous collision detection (bullet mode) on a body to prevent tunneling.
+
+Parameters:
+
+- `id` (`integer`, required): The body ID.
+- `enabled` (`boolean`, required): True to enable CCD.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -5975,16 +6658,7 @@ end
 
 ### LWorld:setBodyData
 
-`LWorld:setBodyData(id: integer, value: table)`
-
-Attaches arbitrary Lua data to a body ID for later retrieval (e.g. entity reference, tag).
-
-**Parameters**
-
-- `id` (`integer`, required): The body ID.
-- `value` (`table`, required): Lua value to associate with this body (table, number, string, etc.).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Attaches arbitrary Lua data to a body ID for later retrieval (e.g. entity reference, tag).
@@ -5993,9 +6667,18 @@ Attaches arbitrary Lua data to a body ID for later retrieval (e.g. entity refere
 function LWorld:setBodyData(id, value) end
 ```
 
+#### Description
+
+Attaches arbitrary Lua data to a body ID for later retrieval (e.g. entity reference, tag).
+
+Parameters:
+
+- `id` (`integer`, required): The body ID.
+- `value` (`table`, required): Lua value to associate with this body (table, number, string, etc.).
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -6009,17 +6692,7 @@ end
 
 ### LWorld:setBodyOneWay
 
-`LWorld:setBodyOneWay(id: integer, nx: number, ny: number)`
-
-Marks a body as a one-way platform: other bodies can pass through from the opposite side of the normal.
-
-**Parameters**
-
-- `id` (`integer`, required): The body ID.
-- `nx` (`number`, required): One-way normal X (points toward the blocking side).
-- `ny` (`number`, required): One-way normal Y.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Marks a body as a one-way platform: other bodies can pass through from the opposite side of the normal.
@@ -6029,9 +6702,19 @@ Marks a body as a one-way platform: other bodies can pass through from the oppos
 function LWorld:setBodyOneWay(id, nx, ny) end
 ```
 
+#### Description
+
+Marks a body as a one-way platform: other bodies can pass through from the opposite side of the normal.
+
+Parameters:
+
+- `id` (`integer`, required): The body ID.
+- `nx` (`number`, required): One-way normal X (points toward the blocking side).
+- `ny` (`number`, required): One-way normal Y.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -6045,16 +6728,7 @@ end
 
 ### LWorld:setBodyType
 
-`LWorld:setBodyType(id: integer, bodyType: string)`
-
-Changes the type of an existing body (e.g. from "dynamic" to "static").
-
-**Parameters**
-
-- `id` (`integer`, required): The body ID.
-- `bodyType` (`string`, required): New type: "static", "dynamic", "kinematic", or "sensor".
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Changes the type of an existing body (e.g. from "dynamic" to "static").
@@ -6063,9 +6737,18 @@ Changes the type of an existing body (e.g. from "dynamic" to "static").
 function LWorld:setBodyType(id, bodyType) end
 ```
 
+#### Description
+
+Changes the type of an existing body (e.g. from "dynamic" to "static").
+
+Parameters:
+
+- `id` (`integer`, required): The body ID.
+- `bodyType` (`string`, required): New type: "static", "dynamic", "kinematic", or "sensor".
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -6079,15 +6762,7 @@ end
 
 ### LWorld:setEndContact
 
-`LWorld:setEndContact(callback: function)`
-
-Registers a callback function invoked whenever two bodies stop touching.
-
-**Parameters**
-
-- `callback` (`function`, required): Called with (bodyIdA, bodyIdB) on each ended contact.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Registers a callback function invoked whenever two bodies stop touching.
@@ -6095,9 +6770,17 @@ Registers a callback function invoked whenever two bodies stop touching.
 function LWorld:setEndContact(callback) end
 ```
 
+#### Description
+
+Registers a callback function invoked whenever two bodies stop touching.
+
+Parameters:
+
+- `callback` (`function`, required): Called with (bodyIdA, bodyIdB) on each ended contact.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -6115,17 +6798,7 @@ do
 
 ### LWorld:setFixtureFriction
 
-`LWorld:setFixtureFriction(bodyId: integer, fixtureIndex: integer, friction: number)`
-
-Updates the friction coefficient of a specific fixture on a body.
-
-**Parameters**
-
-- `bodyId` (`integer`, required): The body ID.
-- `fixtureIndex` (`integer`, required): Zero-based fixture index on the body.
-- `friction` (`number`, required): New friction value (0–1 typical range).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Updates the friction coefficient of a specific fixture on a body.
@@ -6135,9 +6808,19 @@ Updates the friction coefficient of a specific fixture on a body.
 function LWorld:setFixtureFriction(bodyId, fixtureIndex, friction) end
 ```
 
+#### Description
+
+Updates the friction coefficient of a specific fixture on a body.
+
+Parameters:
+
+- `bodyId` (`integer`, required): The body ID.
+- `fixtureIndex` (`integer`, required): Zero-based fixture index on the body.
+- `friction` (`number`, required): New friction value (0–1 typical range).
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -6151,17 +6834,7 @@ end
 
 ### LWorld:setFixtureRestitution
 
-`LWorld:setFixtureRestitution(bodyId: integer, fixtureIndex: integer, restitution: number)`
-
-Updates the restitution (bounciness) of a specific fixture on a body.
-
-**Parameters**
-
-- `bodyId` (`integer`, required): The body ID.
-- `fixtureIndex` (`integer`, required): Zero-based fixture index on the body.
-- `restitution` (`number`, required): New restitution value (0 = no bounce, 1 = full bounce).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Updates the restitution (bounciness) of a specific fixture on a body.
@@ -6171,9 +6844,19 @@ Updates the restitution (bounciness) of a specific fixture on a body.
 function LWorld:setFixtureRestitution(bodyId, fixtureIndex, restitution) end
 ```
 
+#### Description
+
+Updates the restitution (bounciness) of a specific fixture on a body.
+
+Parameters:
+
+- `bodyId` (`integer`, required): The body ID.
+- `fixtureIndex` (`integer`, required): Zero-based fixture index on the body.
+- `restitution` (`number`, required): New restitution value (0 = no bounce, 1 = full bounce).
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -6187,17 +6870,7 @@ end
 
 ### LWorld:setFixtureSensor
 
-`LWorld:setFixtureSensor(bodyId: integer, fixtureIndex: integer, sensor: boolean)`
-
-Toggles whether a fixture acts as a sensor (overlap detection only, no physical response).
-
-**Parameters**
-
-- `bodyId` (`integer`, required): The body ID.
-- `fixtureIndex` (`integer`, required): Zero-based fixture index on the body.
-- `sensor` (`boolean`, required): True to make it a sensor, false for solid collision.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Toggles whether a fixture acts as a sensor (overlap detection only, no physical response).
@@ -6207,9 +6880,19 @@ Toggles whether a fixture acts as a sensor (overlap detection only, no physical 
 function LWorld:setFixtureSensor(bodyId, fixtureIndex, sensor) end
 ```
 
+#### Description
+
+Toggles whether a fixture acts as a sensor (overlap detection only, no physical response).
+
+Parameters:
+
+- `bodyId` (`integer`, required): The body ID.
+- `fixtureIndex` (`integer`, required): Zero-based fixture index on the body.
+- `sensor` (`boolean`, required): True to make it a sensor, false for solid collision.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -6223,16 +6906,7 @@ end
 
 ### LWorld:setGravity
 
-`LWorld:setGravity(gx: number, gy: number)`
-
-Sets the world gravity vector. Affects all dynamic bodies.
-
-**Parameters**
-
-- `gx` (`number`, required): Horizontal gravity component.
-- `gy` (`number`, required): Vertical gravity component (positive = down in screen space).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the world gravity vector. Affects all dynamic bodies.
@@ -6241,9 +6915,18 @@ Sets the world gravity vector. Affects all dynamic bodies.
 function LWorld:setGravity(gx, gy) end
 ```
 
+#### Description
+
+Sets the world gravity vector. Affects all dynamic bodies.
+
+Parameters:
+
+- `gx` (`number`, required): Horizontal gravity component.
+- `gy` (`number`, required): Vertical gravity component (positive = down in screen space).
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -6257,16 +6940,7 @@ end
 
 ### LWorld:setJointBreakForce
 
-`LWorld:setJointBreakForce(jointId: integer, force: number)`
-
-Sets the maximum force a joint can withstand before it breaks and is automatically destroyed.
-
-**Parameters**
-
-- `jointId` (`integer`, required): The joint ID.
-- `force` (`number`, required): Break threshold force (use math.huge for unbreakable).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the maximum force a joint can withstand before it breaks and is automatically destroyed.
@@ -6275,9 +6949,18 @@ Sets the maximum force a joint can withstand before it breaks and is automatical
 function LWorld:setJointBreakForce(jointId, force) end
 ```
 
+#### Description
+
+Sets the maximum force a joint can withstand before it breaks and is automatically destroyed.
+
+Parameters:
+
+- `jointId` (`integer`, required): The joint ID.
+- `force` (`number`, required): Break threshold force (use math.huge for unbreakable).
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -6291,17 +6974,7 @@ end
 
 ### LWorld:setJointLimits
 
-`LWorld:setJointLimits(jointId: integer, lower: number, upper: number)`
-
-Sets the lower and upper bounds for a joint's limited range of motion.
-
-**Parameters**
-
-- `jointId` (`integer`, required): The joint ID.
-- `lower` (`number`, required): Lower limit (radians or meters depending on joint type).
-- `upper` (`number`, required): Upper limit.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the lower and upper bounds for a joint's limited range of motion.
@@ -6311,9 +6984,19 @@ Sets the lower and upper bounds for a joint's limited range of motion.
 function LWorld:setJointLimits(jointId, lower, upper) end
 ```
 
+#### Description
+
+Sets the lower and upper bounds for a joint's limited range of motion.
+
+Parameters:
+
+- `jointId` (`integer`, required): The joint ID.
+- `lower` (`number`, required): Lower limit (radians or meters depending on joint type).
+- `upper` (`number`, required): Upper limit.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -6327,16 +7010,7 @@ end
 
 ### LWorld:setJointLimitsEnabled
 
-`LWorld:setJointLimitsEnabled(jointId: integer, enabled: boolean)`
-
-Enables or disables angular/linear limits on a joint.
-
-**Parameters**
-
-- `jointId` (`integer`, required): The joint ID.
-- `enabled` (`boolean`, required): True to enforce limits, false to allow free movement.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Enables or disables angular/linear limits on a joint.
@@ -6345,9 +7019,18 @@ Enables or disables angular/linear limits on a joint.
 function LWorld:setJointLimitsEnabled(jointId, enabled) end
 ```
 
+#### Description
+
+Enables or disables angular/linear limits on a joint.
+
+Parameters:
+
+- `jointId` (`integer`, required): The joint ID.
+- `enabled` (`boolean`, required): True to enforce limits, false to allow free movement.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -6361,16 +7044,7 @@ end
 
 ### LWorld:setJointMotorSpeed
 
-`LWorld:setJointMotorSpeed(jointId: integer, speed: number)`
-
-Sets the motor speed on a motorized joint (revolute or prismatic).
-
-**Parameters**
-
-- `jointId` (`integer`, required): The joint ID.
-- `speed` (`number`, required): Desired motor speed (radians/sec for revolute, meters/sec for prismatic).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the motor speed on a motorized joint (revolute or prismatic).
@@ -6379,9 +7053,18 @@ Sets the motor speed on a motorized joint (revolute or prismatic).
 function LWorld:setJointMotorSpeed(jointId, speed) end
 ```
 
+#### Description
+
+Sets the motor speed on a motorized joint (revolute or prismatic).
+
+Parameters:
+
+- `jointId` (`integer`, required): The joint ID.
+- `speed` (`number`, required): Desired motor speed (radians/sec for revolute, meters/sec for prismatic).
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -6395,15 +7078,7 @@ end
 
 ### LWorld:setMeter
 
-`LWorld:setMeter(ppm: number)`
-
-Sets the pixels-per-meter scale used to convert between pixel coordinates and physics units.
-
-**Parameters**
-
-- `ppm` (`number`, required): Pixels per meter (e.g. 64 means 64 px = 1 meter in physics).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the pixels-per-meter scale used to convert between pixel coordinates and physics units.
@@ -6411,9 +7086,17 @@ Sets the pixels-per-meter scale used to convert between pixel coordinates and ph
 function LWorld:setMeter(ppm) end
 ```
 
+#### Description
+
+Sets the pixels-per-meter scale used to convert between pixel coordinates and physics units.
+
+Parameters:
+
+- `ppm` (`number`, required): Pixels per meter (e.g. 64 means 64 px = 1 meter in physics).
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -6427,17 +7110,7 @@ end
 
 ### LWorld:setMouseJointTarget
 
-`LWorld:setMouseJointTarget(jointId: integer, x: number, y: number)`
-
-Moves the target position of a mouse joint, causing the attached body to follow.
-
-**Parameters**
-
-- `jointId` (`integer`, required): The mouse joint ID.
-- `x` (`number`, required): New target X in world coordinates.
-- `y` (`number`, required): New target Y in world coordinates.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Moves the target position of a mouse joint, causing the attached body to follow.
@@ -6447,9 +7120,19 @@ Moves the target position of a mouse joint, causing the attached body to follow.
 function LWorld:setMouseJointTarget(jointId, x, y) end
 ```
 
+#### Description
+
+Moves the target position of a mouse joint, causing the attached body to follow.
+
+Parameters:
+
+- `jointId` (`integer`, required): The mouse joint ID.
+- `x` (`number`, required): New target X in world coordinates.
+- `y` (`number`, required): New target Y in world coordinates.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -6463,15 +7146,7 @@ end
 
 ### LWorld:setSolverIterations
 
-`LWorld:setSolverIterations(n: integer)`
-
-Sets the number of velocity solver iterations. Higher values improve stability at the cost of performance.
-
-**Parameters**
-
-- `n` (`integer`, required): Number of iterations (default is typically 4–8).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the number of velocity solver iterations. Higher values improve stability at the cost of performance.
@@ -6479,9 +7154,17 @@ Sets the number of velocity solver iterations. Higher values improve stability a
 function LWorld:setSolverIterations(n) end
 ```
 
+#### Description
+
+Sets the number of velocity solver iterations. Higher values improve stability at the cost of performance.
+
+Parameters:
+
+- `n` (`integer`, required): Number of iterations (default is typically 4–8).
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -6494,15 +7177,7 @@ end
 
 ### LWorld:sleepBody
 
-`LWorld:sleepBody(id: integer)`
-
-Forces a body into the sleeping state, pausing its simulation until disturbed.
-
-**Parameters**
-
-- `id` (`integer`, required): The body ID.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Forces a body into the sleeping state, pausing its simulation until disturbed.
@@ -6510,9 +7185,17 @@ Forces a body into the sleeping state, pausing its simulation until disturbed.
 function LWorld:sleepBody(id) end
 ```
 
+#### Description
+
+Forces a body into the sleeping state, pausing its simulation until disturbed.
+
+Parameters:
+
+- `id` (`integer`, required): The body ID.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -6526,15 +7209,7 @@ end
 
 ### LWorld:step
 
-`LWorld:step(dt: number)`
-
-Advances the physics simulation by a time delta and fires any registered contact callbacks.
-
-**Parameters**
-
-- `dt` (`number`, required): Time step in seconds (e.g. 1/60 for 60 FPS).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Advances the physics simulation by a time delta and fires any registered contact callbacks.
@@ -6542,9 +7217,17 @@ Advances the physics simulation by a time delta and fires any registered contact
 function LWorld:step(dt) end
 ```
 
+#### Description
+
+Advances the physics simulation by a time delta and fires any registered contact callbacks.
+
+Parameters:
+
+- `dt` (`number`, required): Time step in seconds (e.g. 1/60 for 60 FPS).
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -6558,19 +7241,7 @@ end
 
 ### LWorld:stepFixed
 
-`LWorld:stepFixed(accumulator: number, stepDt: number, maxSteps: integer) -> number`
-
-Performs fixed-timestep physics stepping, consuming accumulated time. Returns the leftover time.
-
-**Parameters**
-
-- `accumulator` (`number`, required): Accumulated time since last frame (seconds).
-- `stepDt` (`number`, required): Fixed step size (e.g. 1/60).
-- `maxSteps` (`integer`, required): Maximum sub-steps per call to prevent spiral of death.
-
-**Returns**: `number` - Remaining unstepped time to carry into next frame.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Performs fixed-timestep physics stepping, consuming accumulated time. Returns the leftover time.
@@ -6581,9 +7252,21 @@ Performs fixed-timestep physics stepping, consuming accumulated time. Returns th
 function LWorld:stepFixed(accumulator, stepDt, maxSteps) end
 ```
 
+#### Description
+
+Performs fixed-timestep physics stepping, consuming accumulated time. Returns the leftover time.
+
+Parameters:
+
+- `accumulator` (`number`, required): Accumulated time since last frame (seconds).
+- `stepDt` (`number`, required): Fixed step size (e.g. 1/60).
+- `maxSteps` (`integer`, required): Maximum sub-steps per call to prevent spiral of death.
+
+Returns: `number` - Remaining unstepped time to carry into next frame.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -6597,17 +7280,7 @@ end
 
 ### LWorld:toPhysics
 
-`LWorld:toPhysics(px: number) -> number`
-
-Converts a pixel measurement to physics-world meters using the current meter scale.
-
-**Parameters**
-
-- `px` (`number`, required): Value in pixels.
-
-**Returns**: `number` - Equivalent value in physics meters.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Converts a pixel measurement to physics-world meters using the current meter scale.
@@ -6616,9 +7289,19 @@ Converts a pixel measurement to physics-world meters using the current meter sca
 function LWorld:toPhysics(px) end
 ```
 
+#### Description
+
+Converts a pixel measurement to physics-world meters using the current meter scale.
+
+Parameters:
+
+- `px` (`number`, required): Value in pixels.
+
+Returns: `number` - Equivalent value in physics meters.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -6632,17 +7315,7 @@ end
 
 ### LWorld:toPixels
 
-`LWorld:toPixels(m: number) -> number`
-
-Converts a physics-world meter measurement to pixels using the current meter scale.
-
-**Parameters**
-
-- `m` (`number`, required): Value in physics meters.
-
-**Returns**: `number` - Equivalent value in pixels.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Converts a physics-world meter measurement to pixels using the current meter scale.
@@ -6651,9 +7324,19 @@ Converts a physics-world meter measurement to pixels using the current meter sca
 function LWorld:toPixels(m) end
 ```
 
+#### Description
+
+Converts a physics-world meter measurement to pixels using the current meter scale.
+
+Parameters:
+
+- `m` (`number`, required): Value in physics meters.
+
+Returns: `number` - Equivalent value in pixels.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -6667,13 +7350,7 @@ end
 
 ### LWorld:type
 
-`LWorld:type() -> string`
-
-Returns the type name of this object ("LWorld").
-
-**Returns**: `string` - "LWorld".
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this object ("LWorld").
@@ -6681,9 +7358,15 @@ Returns the type name of this object ("LWorld").
 function LWorld:type() end
 ```
 
+#### Description
+
+Returns the type name of this object ("LWorld").
+
+Returns: `string` - "LWorld".
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -6696,17 +7379,7 @@ end
 
 ### LWorld:typeOf
 
-`LWorld:typeOf(name: string) -> boolean`
-
-Checks if this object is of a given type name. Supports inheritance (always matches "Object").
-
-**Parameters**
-
-- `name` (`string`, required): Type name to check.
-
-**Returns**: `boolean` - True if the object matches.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks if this object is of a given type name. Supports inheritance (always matches "Object").
@@ -6715,9 +7388,19 @@ Checks if this object is of a given type name. Supports inheritance (always matc
 function LWorld:typeOf(name) end
 ```
 
+#### Description
+
+Checks if this object is of a given type name. Supports inheritance (always matches "Object").
+
+Parameters:
+
+- `name` (`string`, required): Type name to check.
+
+Returns: `boolean` - True if the object matches.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -6730,15 +7413,7 @@ end
 
 ### LWorld:wakeUpBody
 
-`LWorld:wakeUpBody(id: integer)`
-
-Forces a sleeping body to wake up and participate in simulation again.
-
-**Parameters**
-
-- `id` (`integer`, required): The body ID.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Forces a sleeping body to wake up and participate in simulation again.
@@ -6746,9 +7421,17 @@ Forces a sleeping body to wake up and participate in simulation again.
 function LWorld:wakeUpBody(id) end
 ```
 
+#### Description
+
+Forces a sleeping body to wake up and participate in simulation again.
+
+Parameters:
+
+- `id` (`integer`, required): The body ID.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -6762,20 +7445,20 @@ end
 
 ### LZone:destroy
 
-`LZone:destroy()`
-
-Removes this zone from the world. Bodies will no longer be affected by it.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes this zone from the world. Bodies will no longer be affected by it.
 function LZone:destroy() end
 ```
 
+#### Description
+
+Removes this zone from the world. Bodies will no longer be affected by it.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -6789,13 +7472,7 @@ end
 
 ### LZone:getId
 
-`LZone:getId() -> integer`
-
-Returns the unique ID of this zone. This method is available to Lua scripts.
-
-**Returns**: `integer` - Zone ID.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the unique ID of this zone. This method is available to Lua scripts.
@@ -6803,9 +7480,15 @@ Returns the unique ID of this zone. This method is available to Lua scripts.
 function LZone:getId() end
 ```
 
+#### Description
+
+Returns the unique ID of this zone. This method is available to Lua scripts.
+
+Returns: `integer` - Zone ID.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -6819,15 +7502,7 @@ end
 
 ### LZone:setAngularDampingOverride
 
-`LZone:setAngularDampingOverride([value]: number)`
-
-Overrides the angular damping of bodies inside this zone, or nil to use each body's own value.
-
-**Parameters**
-
-- `value` (`number`, optional): Damping override, or nil to clear.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Overrides the angular damping of bodies inside this zone, or nil to use each body's own value.
@@ -6835,9 +7510,17 @@ Overrides the angular damping of bodies inside this zone, or nil to use each bod
 function LZone:setAngularDampingOverride(value) end
 ```
 
+#### Description
+
+Overrides the angular damping of bodies inside this zone, or nil to use each body's own value.
+
+Parameters:
+
+- `value` (`number`, optional): Damping override, or nil to clear.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -6851,17 +7534,7 @@ end
 
 ### LZone:setCircle
 
-`LZone:setCircle(cx: number, cy: number, radius: number)`
-
-Changes this zone's shape to a circle (overrides the initial rectangle).
-
-**Parameters**
-
-- `cx` (`number`, required): Center X.
-- `cy` (`number`, required): Center Y.
-- `radius` (`number`, required): Circle radius.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Changes this zone's shape to a circle (overrides the initial rectangle).
@@ -6871,9 +7544,19 @@ Changes this zone's shape to a circle (overrides the initial rectangle).
 function LZone:setCircle(cx, cy, radius) end
 ```
 
+#### Description
+
+Changes this zone's shape to a circle (overrides the initial rectangle).
+
+Parameters:
+
+- `cx` (`number`, required): Center X.
+- `cy` (`number`, required): Center Y.
+- `radius` (`number`, required): Circle radius.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -6887,15 +7570,7 @@ end
 
 ### LZone:setEnabled
 
-`LZone:setEnabled(enabled: boolean)`
-
-Enables or disables this zone. Disabled zones have no effect on bodies.
-
-**Parameters**
-
-- `enabled` (`boolean`, required): True to enable, false to disable.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Enables or disables this zone. Disabled zones have no effect on bodies.
@@ -6903,9 +7578,17 @@ Enables or disables this zone. Disabled zones have no effect on bodies.
 function LZone:setEnabled(enabled) end
 ```
 
+#### Description
+
+Enables or disables this zone. Disabled zones have no effect on bodies.
+
+Parameters:
+
+- `enabled` (`boolean`, required): True to enable, false to disable.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -6919,16 +7602,7 @@ end
 
 ### LZone:setGravityDirectional
 
-`LZone:setGravityDirectional(gx: number, gy: number)`
-
-Sets the zone to apply a constant directional gravity to bodies inside.
-
-**Parameters**
-
-- `gx` (`number`, required): Gravity X component.
-- `gy` (`number`, required): Gravity Y component.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the zone to apply a constant directional gravity to bodies inside.
@@ -6937,9 +7611,18 @@ Sets the zone to apply a constant directional gravity to bodies inside.
 function LZone:setGravityDirectional(gx, gy) end
 ```
 
+#### Description
+
+Sets the zone to apply a constant directional gravity to bodies inside.
+
+Parameters:
+
+- `gx` (`number`, required): Gravity X component.
+- `gy` (`number`, required): Gravity Y component.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -6953,17 +7636,7 @@ end
 
 ### LZone:setGravityPoint
 
-`LZone:setGravityPoint(cx: number, cy: number, strength: number)`
-
-Sets the zone to attract bodies toward a center point with a given strength.
-
-**Parameters**
-
-- `cx` (`number`, required): Attractor center X.
-- `cy` (`number`, required): Attractor center Y.
-- `strength` (`number`, required): Pull force magnitude.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the zone to attract bodies toward a center point with a given strength.
@@ -6973,9 +7646,19 @@ Sets the zone to attract bodies toward a center point with a given strength.
 function LZone:setGravityPoint(cx, cy, strength) end
 ```
 
+#### Description
+
+Sets the zone to attract bodies toward a center point with a given strength.
+
+Parameters:
+
+- `cx` (`number`, required): Attractor center X.
+- `cy` (`number`, required): Attractor center Y.
+- `strength` (`number`, required): Pull force magnitude.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -6989,17 +7672,7 @@ end
 
 ### LZone:setGravityRepulsor
 
-`LZone:setGravityRepulsor(cx: number, cy: number, strength: number)`
-
-Sets the zone to push bodies away from a center point with a given strength.
-
-**Parameters**
-
-- `cx` (`number`, required): Repulsor center X.
-- `cy` (`number`, required): Repulsor center Y.
-- `strength` (`number`, required): Push force magnitude.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the zone to push bodies away from a center point with a given strength.
@@ -7009,9 +7682,19 @@ Sets the zone to push bodies away from a center point with a given strength.
 function LZone:setGravityRepulsor(cx, cy, strength) end
 ```
 
+#### Description
+
+Sets the zone to push bodies away from a center point with a given strength.
+
+Parameters:
+
+- `cx` (`number`, required): Repulsor center X.
+- `cy` (`number`, required): Repulsor center Y.
+- `strength` (`number`, required): Push force magnitude.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -7025,20 +7708,20 @@ end
 
 ### LZone:setGravityZero
 
-`LZone:setGravityZero()`
-
-Sets the zone to cancel all gravity for bodies inside (zero-G area).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the zone to cancel all gravity for bodies inside (zero-G area).
 function LZone:setGravityZero() end
 ```
 
+#### Description
+
+Sets the zone to cancel all gravity for bodies inside (zero-G area).
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -7052,15 +7735,7 @@ end
 
 ### LZone:setLayerMask
 
-`LZone:setLayerMask(mask: integer)`
-
-Sets a bitmask controlling which body layers this zone affects.
-
-**Parameters**
-
-- `mask` (`integer`, required): Layer bitmask (bitwise AND with body layer must be nonzero).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets a bitmask controlling which body layers this zone affects.
@@ -7068,9 +7743,17 @@ Sets a bitmask controlling which body layers this zone affects.
 function LZone:setLayerMask(mask) end
 ```
 
+#### Description
+
+Sets a bitmask controlling which body layers this zone affects.
+
+Parameters:
+
+- `mask` (`integer`, required): Layer bitmask (bitwise AND with body layer must be nonzero).
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -7084,15 +7767,7 @@ end
 
 ### LZone:setLinearDampingOverride
 
-`LZone:setLinearDampingOverride([value]: number)`
-
-Overrides the linear damping of bodies inside this zone, or nil to use each body's own value.
-
-**Parameters**
-
-- `value` (`number`, optional): Damping override, or nil to clear.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Overrides the linear damping of bodies inside this zone, or nil to use each body's own value.
@@ -7100,9 +7775,17 @@ Overrides the linear damping of bodies inside this zone, or nil to use each body
 function LZone:setLinearDampingOverride(value) end
 ```
 
+#### Description
+
+Overrides the linear damping of bodies inside this zone, or nil to use each body's own value.
+
+Parameters:
+
+- `value` (`number`, optional): Damping override, or nil to clear.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -7116,15 +7799,7 @@ end
 
 ### LZone:setPriority
 
-`LZone:setPriority(priority: integer)`
-
-Sets the priority of this zone. Higher-priority zones take precedence when overlapping.
-
-**Parameters**
-
-- `priority` (`integer`, required): Integer priority value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the priority of this zone. Higher-priority zones take precedence when overlapping.
@@ -7132,9 +7807,17 @@ Sets the priority of this zone. Higher-priority zones take precedence when overl
 function LZone:setPriority(priority) end
 ```
 
+#### Description
+
+Sets the priority of this zone. Higher-priority zones take precedence when overlapping.
+
+Parameters:
+
+- `priority` (`integer`, required): Integer priority value.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -7148,13 +7831,7 @@ end
 
 ### LZone:type
 
-`LZone:type() -> string`
-
-Returns the type name of this object ("LZone").
-
-**Returns**: `string` - "LZone".
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this object ("LZone").
@@ -7162,9 +7839,15 @@ Returns the type name of this object ("LZone").
 function LZone:type() end
 ```
 
+#### Description
+
+Returns the type name of this object ("LZone").
+
+Returns: `string` - "LZone".
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do
@@ -7178,17 +7861,7 @@ end
 
 ### LZone:typeOf
 
-`LZone:typeOf(name: string) -> boolean`
-
-Checks if this object is of a given type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to check.
-
-**Returns**: `boolean` - True if the object matches.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks if this object is of a given type name.
@@ -7197,9 +7870,19 @@ Checks if this object is of a given type name.
 function LZone:typeOf(name) end
 ```
 
+#### Description
+
+Checks if this object is of a given type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to check.
+
+Returns: `boolean` - True if the object matches.
+
 #### Example
 
-Exact example from [physics.lua](../blob/main/content/examples/physics.lua):
+Source: [physics.lua](../blob/main/content/examples/physics.lua)
 
 ```lua
 do

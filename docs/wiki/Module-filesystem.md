@@ -14,77 +14,217 @@
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
   - [lurek.filesystem.append](#lurekfilesystemappend)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.filesystem.copy](#lurekfilesystemcopy)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.filesystem.createDirectory](#lurekfilesystemcreatedirectory)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.filesystem.createTempFile](#lurekfilesystemcreatetempfile)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.filesystem.exists](#lurekfilesystemexists)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.filesystem.getDirectoryItems](#lurekfilesystemgetdirectoryitems)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.filesystem.getIdentity](#lurekfilesystemgetidentity)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.filesystem.getInfo](#lurekfilesystemgetinfo)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.filesystem.getSaveDirectory](#lurekfilesystemgetsavedirectory)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.filesystem.getSource](#lurekfilesystemgetsource)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.filesystem.getUserDirectory](#lurekfilesystemgetuserdirectory)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.filesystem.getWorkingDirectory](#lurekfilesystemgetworkingdirectory)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.filesystem.glob](#lurekfilesystemglob)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.filesystem.isDirectory](#lurekfilesystemisdirectory)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.filesystem.isFile](#lurekfilesystemisfile)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.filesystem.lines](#lurekfilesystemlines)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.filesystem.listRecursive](#lurekfilesystemlistrecursive)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.filesystem.load](#lurekfilesystemload)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.filesystem.mkdir](#lurekfilesystemmkdir)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.filesystem.mount](#lurekfilesystemmount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.filesystem.mountZip](#lurekfilesystemmountzip)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.filesystem.move](#lurekfilesystemmove)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.filesystem.newFileData](#lurekfilesystemnewfiledata)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.filesystem.openFile](#lurekfilesystemopenfile)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.filesystem.pollAsync](#lurekfilesystempollasync)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.filesystem.pollAsyncWrite](#lurekfilesystempollasyncwrite)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.filesystem.pollWatchers](#lurekfilesystempollwatchers)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.filesystem.read](#lurekfilesystemread)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.filesystem.readAsync](#lurekfilesystemreadasync)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.filesystem.readBytes](#lurekfilesystemreadbytes)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.filesystem.readJson](#lurekfilesystemreadjson)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.filesystem.readOrWriteJson](#lurekfilesystemreadorwritejson)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.filesystem.remove](#lurekfilesystemremove)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.filesystem.removeDir](#lurekfilesystemremovedir)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.filesystem.setIdentity](#lurekfilesystemsetidentity)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.filesystem.stat](#lurekfilesystemstat)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.filesystem.toAbsolutePath](#lurekfilesystemtoabsolutepath)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.filesystem.unmount](#lurekfilesystemunmount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.filesystem.unwatchPath](#lurekfilesystemunwatchpath)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.filesystem.watchPath](#lurekfilesystemwatchpath)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.filesystem.write](#lurekfilesystemwrite)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.filesystem.writeAsync](#lurekfilesystemwriteasync)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.filesystem.writeBytes](#lurekfilesystemwritebytes)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.filesystem.writeJson](#lurekfilesystemwritejson)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔷 Module Types](#module-types)
   - [LFileData](#lfiledata)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LFileHandle](#lfilehandle)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LZipMount](#lzipmount)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
   - [LFileData:getFilename](#lfiledatagetfilename)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LFileData:getSize](#lfiledatagetsize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LFileData:getString](#lfiledatagetstring)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LFileData:type](#lfiledatatype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LFileData:typeOf](#lfiledatatypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LFileHandle:close](#lfilehandleclose)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LFileHandle:flush](#lfilehandleflush)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LFileHandle:getMode](#lfilehandlegetmode)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LFileHandle:getSize](#lfilehandlegetsize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LFileHandle:isEOF](#lfilehandleiseof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LFileHandle:read](#lfilehandleread)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LFileHandle:readLine](#lfilehandlereadline)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LFileHandle:seek](#lfilehandleseek)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LFileHandle:tell](#lfilehandletell)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LFileHandle:type](#lfilehandletype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LFileHandle:typeOf](#lfilehandletypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LFileHandle:write](#lfilehandlewrite)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LZipMount:contains](#lzipmountcontains)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LZipMount:listFiles](#lzipmountlistfiles)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LZipMount:prefix](#lzipmountprefix)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LZipMount:readFile](#lzipmountreadfile)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LZipMount:type](#lzipmounttype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LZipMount:typeOf](#lzipmounttypeof)
+    - [Definition](#definition)
+    - [Description](#description)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -148,18 +288,27 @@ lurek.filesystem.load(path: string) -> function -- Loads a Lua chunk from GameFS
 
 ### lurek.filesystem.append
 
-`lurek.filesystem.append(path: string, data: string)`
+#### Definition
+
+```lua
+--- Appends UTF-8 text to a GameFS file.
+---@param path string GameFS path to append to.
+---@param data string Text to append.
+lurek.filesystem.append = function(path, data) end
+```
+
+#### Description
 
 Appends UTF-8 text to a GameFS file.
 
-**Parameters**
+Parameters:
 
 - `path` (`string`, required): GameFS path to append to.
 - `data` (`string`, required): Text to append.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -171,18 +320,27 @@ end
 
 ### lurek.filesystem.copy
 
-`lurek.filesystem.copy(src: string, dst: string)`
+#### Definition
+
+```lua
+--- Copies one GameFS file to another path.
+---@param src string Source path.
+---@param dst string Destination path.
+lurek.filesystem.copy = function(src, dst) end
+```
+
+#### Description
 
 Copies one GameFS file to another path.
 
-**Parameters**
+Parameters:
 
 - `src` (`string`, required)
 - `dst` (`string`, required): Destination path.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -193,17 +351,25 @@ end
 
 ### lurek.filesystem.createDirectory
 
-`lurek.filesystem.createDirectory(path: string)`
+#### Definition
+
+```lua
+--- Creates a GameFS directory and any missing parents.
+---@param path string Directory path to create.
+lurek.filesystem.createDirectory = function(path) end
+```
+
+#### Description
 
 Creates a GameFS directory and any missing parents.
 
-**Parameters**
+Parameters:
 
 - `path` (`string`, required): Directory path to create.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -214,19 +380,28 @@ end
 
 ### lurek.filesystem.createTempFile
 
-`lurek.filesystem.createTempFile([prefix]: string) -> string`
+#### Definition
+
+```lua
+--- Creates a temporary file through GameFS.
+---@param prefix? string Optional filename prefix, defaulting to `tmp`.
+---@return string Created temporary file path.
+lurek.filesystem.createTempFile = function(prefix) end
+```
+
+#### Description
 
 Creates a temporary file through GameFS.
 
-**Parameters**
+Parameters:
 
 - `prefix` (`string`, optional): Optional filename prefix, defaulting to `tmp`.
 
-**Returns**: `string` - Created temporary file path.
+Returns: `string` - Created temporary file path.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -237,19 +412,28 @@ end
 
 ### lurek.filesystem.exists
 
-`lurek.filesystem.exists(path: string) -> boolean`
+#### Definition
+
+```lua
+--- Returns whether a path exists in GameFS.
+---@param path string GameFS path to check.
+---@return boolean True when the path exists.
+lurek.filesystem.exists = function(path) end
+```
+
+#### Description
 
 Returns whether a path exists in GameFS.
 
-**Parameters**
+Parameters:
 
 - `path` (`string`, required): GameFS path to check.
 
-**Returns**: `boolean` - True when the path exists.
+Returns: `boolean` - True when the path exists.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -261,19 +445,28 @@ end
 
 ### lurek.filesystem.getDirectoryItems
 
-`lurek.filesystem.getDirectoryItems(path: string) -> string[]`
+#### Definition
+
+```lua
+--- Lists immediate entries in a GameFS directory.
+---@param path string Directory path to list.
+---@return string[] Entry names.
+lurek.filesystem.getDirectoryItems = function(path) end
+```
+
+#### Description
 
 Lists immediate entries in a GameFS directory.
 
-**Parameters**
+Parameters:
 
 - `path` (`string`, required): Directory path to list.
 
-**Returns**: `string[]` - Entry names.
+Returns: `string[]` - Entry names.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -284,15 +477,23 @@ end
 
 ### lurek.filesystem.getIdentity
 
-`lurek.filesystem.getIdentity() -> string`
+#### Definition
+
+```lua
+--- Returns the current filesystem identity string.
+---@return string Filesystem identity used for save namespacing.
+lurek.filesystem.getIdentity = function() end
+```
+
+#### Description
 
 Returns the current filesystem identity string.
 
-**Returns**: `string` - Filesystem identity used for save namespacing.
+Returns: `string` - Filesystem identity used for save namespacing.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -303,19 +504,28 @@ end
 
 ### lurek.filesystem.getInfo
 
-`lurek.filesystem.getInfo(path: string) -> table`
+#### Definition
+
+```lua
+--- Returns file metadata for a GameFS path when available.
+---@param path string GameFS path to inspect.
+---@return FilesystemGetInfoResult Metadata table with type, size, modtime, and readonly fields, or nil on error.
+lurek.filesystem.getInfo = function(path) end
+```
+
+#### Description
 
 Returns file metadata for a GameFS path when available.
 
-**Parameters**
+Parameters:
 
 - `path` (`string`, required): GameFS path to inspect.
 
-**Returns**: `table` - Metadata table with type, size, modtime, and readonly fields, or nil on error.
+Returns: `table` - Metadata table with type, size, modtime, and readonly fields, or nil on error.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -329,15 +539,23 @@ end
 
 ### lurek.filesystem.getSaveDirectory
 
-`lurek.filesystem.getSaveDirectory() -> string`
+#### Definition
+
+```lua
+--- Returns the save directory path used by GameFS.
+---@return string Save directory path.
+lurek.filesystem.getSaveDirectory = function() end
+```
+
+#### Description
 
 Returns the save directory path used by GameFS.
 
-**Returns**: `string` - Save directory path.
+Returns: `string` - Save directory path.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -348,15 +566,23 @@ end
 
 ### lurek.filesystem.getSource
 
-`lurek.filesystem.getSource() -> string`
+#### Definition
+
+```lua
+--- Returns the GameFS source root string.
+---@return string Source directory or source description.
+lurek.filesystem.getSource = function() end
+```
+
+#### Description
 
 Returns the GameFS source root string.
 
-**Returns**: `string` - Source directory or source description.
+Returns: `string` - Source directory or source description.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -367,15 +593,23 @@ end
 
 ### lurek.filesystem.getUserDirectory
 
-`lurek.filesystem.getUserDirectory() -> string`
+#### Definition
+
+```lua
+--- Returns the current user's directory path.
+---@return string User directory path.
+lurek.filesystem.getUserDirectory = function() end
+```
+
+#### Description
 
 Returns the current user's directory path.
 
-**Returns**: `string` - User directory path.
+Returns: `string` - User directory path.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -386,15 +620,23 @@ end
 
 ### lurek.filesystem.getWorkingDirectory
 
-`lurek.filesystem.getWorkingDirectory() -> string`
+#### Definition
+
+```lua
+--- Returns the process working directory.
+---@return string Working directory path.
+lurek.filesystem.getWorkingDirectory = function() end
+```
+
+#### Description
 
 Returns the process working directory.
 
-**Returns**: `string` - Working directory path.
+Returns: `string` - Working directory path.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -405,19 +647,28 @@ end
 
 ### lurek.filesystem.glob
 
-`lurek.filesystem.glob(pattern: string) -> string[]`
+#### Definition
+
+```lua
+--- Returns GameFS paths matching a glob pattern.
+---@param pattern string Glob pattern.
+---@return string[] Matching path strings.
+lurek.filesystem.glob = function(pattern) end
+```
+
+#### Description
 
 Returns GameFS paths matching a glob pattern.
 
-**Parameters**
+Parameters:
 
 - `pattern` (`string`, required): Glob pattern.
 
-**Returns**: `string[]` - Matching path strings.
+Returns: `string[]` - Matching path strings.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -428,19 +679,28 @@ end
 
 ### lurek.filesystem.isDirectory
 
-`lurek.filesystem.isDirectory(path: string) -> boolean`
+#### Definition
+
+```lua
+--- Returns whether a GameFS path is a directory.
+---@param path string GameFS path to check.
+---@return boolean True when the path is a directory.
+lurek.filesystem.isDirectory = function(path) end
+```
+
+#### Description
 
 Returns whether a GameFS path is a directory.
 
-**Parameters**
+Parameters:
 
 - `path` (`string`, required): GameFS path to check.
 
-**Returns**: `boolean` - True when the path is a directory.
+Returns: `boolean` - True when the path is a directory.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -451,19 +711,28 @@ end
 
 ### lurek.filesystem.isFile
 
-`lurek.filesystem.isFile(path: string) -> boolean`
+#### Definition
+
+```lua
+--- Returns whether a GameFS path is a regular file.
+---@param path string GameFS path to check.
+---@return boolean True when the path is a file.
+lurek.filesystem.isFile = function(path) end
+```
+
+#### Description
 
 Returns whether a GameFS path is a regular file.
 
-**Parameters**
+Parameters:
 
 - `path` (`string`, required): GameFS path to check.
 
-**Returns**: `boolean` - True when the path is a file.
+Returns: `boolean` - True when the path is a file.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -474,19 +743,28 @@ end
 
 ### lurek.filesystem.lines
 
-`lurek.filesystem.lines(path: string) -> function`
+#### Definition
+
+```lua
+--- Creates an iterator function over lines in a text file.
+---@param path string GameFS path to read.
+---@return function Iterator returning the next line string or nil at EOF.
+lurek.filesystem.lines = function(path) end
+```
+
+#### Description
 
 Creates an iterator function over lines in a text file.
 
-**Parameters**
+Parameters:
 
 - `path` (`string`, required): GameFS path to read.
 
-**Returns**: `function` - Iterator returning the next line string or nil at EOF.
+Returns: `function` - Iterator returning the next line string or nil at EOF.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -500,19 +778,28 @@ end
 
 ### lurek.filesystem.listRecursive
 
-`lurek.filesystem.listRecursive(path: string) -> string[]`
+#### Definition
+
+```lua
+--- Lists all paths under a GameFS directory recursively.
+---@param path string Root directory path.
+---@return string[] Path strings.
+lurek.filesystem.listRecursive = function(path) end
+```
+
+#### Description
 
 Lists all paths under a GameFS directory recursively.
 
-**Parameters**
+Parameters:
 
 - `path` (`string`, required): Root directory path.
 
-**Returns**: `string[]` - Path strings.
+Returns: `string[]` - Path strings.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -523,19 +810,28 @@ end
 
 ### lurek.filesystem.load
 
-`lurek.filesystem.load(path: string) -> function`
+#### Definition
+
+```lua
+--- Loads a Lua chunk from GameFS and returns it as a Lua function.
+---@param path string GameFS path to a Lua script chunk.
+---@return function Compiled Lua chunk function.
+lurek.filesystem.load = function(path) end
+```
+
+#### Description
 
 Loads a Lua chunk from GameFS and returns it as a Lua function.
 
-**Parameters**
+Parameters:
 
 - `path` (`string`, required): GameFS path to a Lua script chunk.
 
-**Returns**: `function` - Compiled Lua chunk function.
+Returns: `function` - Compiled Lua chunk function.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -548,17 +844,25 @@ end
 
 ### lurek.filesystem.mkdir
 
-`lurek.filesystem.mkdir(path: string)`
+#### Definition
+
+```lua
+--- Creates a directory under the GameFS base directory.
+---@param path string Relative directory path to create.
+lurek.filesystem.mkdir = function(path) end
+```
+
+#### Description
 
 Creates a directory under the GameFS base directory.
 
-**Parameters**
+Parameters:
 
 - `path` (`string`, required): Relative directory path to create.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -569,18 +873,28 @@ end
 
 ### lurek.filesystem.mount
 
-`lurek.filesystem.mount(src: string, mp: string) -> boolean`
+#### Definition
 
-**Parameters**
+```lua
+--- Mounts an external source path at a GameFS mount point.
+---@param src string Source path to mount.
+---@param mp string Virtual mount point.
+---@return boolean True when the mount succeeds.
+lurek.filesystem.mount = function(src, mp) end
+```
+
+#### Description
+
+Parameters:
 
 - `src` (`string`, required)
 - `mp` (`string`, required): Virtual mount point.
 
-**Returns**: `boolean` - True when the mount succeeds.
+Returns: `boolean` - True when the mount succeeds.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -591,20 +905,30 @@ end
 
 ### lurek.filesystem.mountZip
 
-`lurek.filesystem.mountZip(archive_path: string, prefix: string) -> LZipMount`
+#### Definition
+
+```lua
+--- Opens a ZIP archive and exposes it through a virtual prefix.
+---@param archive_path string Archive path on disk.
+---@param prefix string Virtual path prefix for archive contents.
+---@return LZipMount New ZIP mount handle.
+lurek.filesystem.mountZip = function(archive_path, prefix) end
+```
+
+#### Description
 
 Opens a ZIP archive and exposes it through a virtual prefix.
 
-**Parameters**
+Parameters:
 
 - `archive_path` (`string`, required): Archive path on disk.
 - `prefix` (`string`, required): Virtual path prefix for archive contents.
 
-**Returns**: `LZipMount` - New ZIP mount handle.
+Returns: `LZipMount` - New ZIP mount handle.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -615,18 +939,27 @@ end
 
 ### lurek.filesystem.move
 
-`lurek.filesystem.move(src: string, dst: string)`
+#### Definition
+
+```lua
+--- Moves or renames one GameFS file to another path.
+---@param src string Source path.
+---@param dst string Destination path.
+lurek.filesystem.move = function(src, dst) end
+```
+
+#### Description
 
 Moves or renames one GameFS file to another path.
 
-**Parameters**
+Parameters:
 
 - `src` (`string`, required)
 - `dst` (`string`, required): Destination path.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -637,19 +970,28 @@ end
 
 ### lurek.filesystem.newFileData
 
-`lurek.filesystem.newFileData(path: string) -> LFileData`
+#### Definition
+
+```lua
+--- Loads a file into an immutable file data handle.
+---@param path string GameFS path to load.
+---@return LFileData New file data handle containing path and bytes.
+lurek.filesystem.newFileData = function(path) end
+```
+
+#### Description
 
 Loads a file into an immutable file data handle.
 
-**Parameters**
+Parameters:
 
 - `path` (`string`, required): GameFS path to load.
 
-**Returns**: `LFileData` - New file data handle containing path and bytes.
+Returns: `LFileData` - New file data handle containing path and bytes.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -660,20 +1002,30 @@ end
 
 ### lurek.filesystem.openFile
 
-`lurek.filesystem.openFile(path: string, mode: string) -> LFileHandle`
+#### Definition
+
+```lua
+--- Opens a GameFS file handle in a requested mode.
+---@param path string GameFS path to open.
+---@param mode string File mode understood by GameFS.
+---@return LFileHandle Open file handle.
+lurek.filesystem.openFile = function(path, mode) end
+```
+
+#### Description
 
 Opens a GameFS file handle in a requested mode.
 
-**Parameters**
+Parameters:
 
 - `path` (`string`, required): GameFS path to open.
 - `mode` (`string`, required): File mode understood by GameFS.
 
-**Returns**: `LFileHandle` - Open file handle.
+Returns: `LFileHandle` - Open file handle.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -686,19 +1038,28 @@ end
 
 ### lurek.filesystem.pollAsync
 
-`lurek.filesystem.pollAsync(handle_id: integer) -> string`
+#### Definition
+
+```lua
+--- Polls an asynchronous file load request.
+---@param handle_id number Async load handle id.
+---@return string Completed bytes/result, pending marker, or nil depending on async state.
+lurek.filesystem.pollAsync = function(handle_id) end
+```
+
+#### Description
 
 Polls an asynchronous file load request.
 
-**Parameters**
+Parameters:
 
 - `handle_id` (`integer`, required): Async load handle id.
 
-**Returns**: `string` - Completed bytes/result, pending marker, or nil depending on async state.
+Returns: `string` - Completed bytes/result, pending marker, or nil depending on async state.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -710,19 +1071,28 @@ end
 
 ### lurek.filesystem.pollAsyncWrite
 
-`lurek.filesystem.pollAsyncWrite(handle_id: integer) -> string`
+#### Definition
+
+```lua
+--- Polls an asynchronous file write request.
+---@param handle_id number Async write handle id.
+---@return string Completed status, pending marker, or nil depending on async state.
+lurek.filesystem.pollAsyncWrite = function(handle_id) end
+```
+
+#### Description
 
 Polls an asynchronous file write request.
 
-**Parameters**
+Parameters:
 
 - `handle_id` (`integer`, required): Async write handle id.
 
-**Returns**: `string` - Completed status, pending marker, or nil depending on async state.
+Returns: `string` - Completed status, pending marker, or nil depending on async state.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -734,15 +1104,23 @@ end
 
 ### lurek.filesystem.pollWatchers
 
-`lurek.filesystem.pollWatchers() -> string[]`
+#### Definition
+
+```lua
+--- Polls watched paths and returns paths that changed since the previous poll.
+---@return string[] Changed path strings.
+lurek.filesystem.pollWatchers = function() end
+```
+
+#### Description
 
 Polls watched paths and returns paths that changed since the previous poll.
 
-**Returns**: `string[]` - Changed path strings.
+Returns: `string[]` - Changed path strings.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -755,19 +1133,28 @@ end
 
 ### lurek.filesystem.read
 
-`lurek.filesystem.read(path: string) -> string`
+#### Definition
+
+```lua
+--- Reads a UTF-8 text file from GameFS.
+---@param path string GameFS path to read.
+---@return string File contents as text.
+lurek.filesystem.read = function(path) end
+```
+
+#### Description
 
 Reads a UTF-8 text file from GameFS.
 
-**Parameters**
+Parameters:
 
 - `path` (`string`, required): GameFS path to read.
 
-**Returns**: `string` - File contents as text.
+Returns: `string` - File contents as text.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -779,19 +1166,28 @@ end
 
 ### lurek.filesystem.readAsync
 
-`lurek.filesystem.readAsync(path: string) -> integer`
+#### Definition
+
+```lua
+--- Starts an asynchronous file load request.
+---@param path string GameFS path to read asynchronously.
+---@return number Async load handle id.
+lurek.filesystem.readAsync = function(path) end
+```
+
+#### Description
 
 Starts an asynchronous file load request.
 
-**Parameters**
+Parameters:
 
 - `path` (`string`, required): GameFS path to read asynchronously.
 
-**Returns**: `integer` - Async load handle id.
+Returns: `integer` - Async load handle id.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -802,19 +1198,28 @@ end
 
 ### lurek.filesystem.readBytes
 
-`lurek.filesystem.readBytes(path: string) -> string`
+#### Definition
+
+```lua
+--- Reads a binary file from GameFS and returns the bytes as a Lua string.
+---@param path string GameFS path to read.
+---@return string Raw file bytes.
+lurek.filesystem.readBytes = function(path) end
+```
+
+#### Description
 
 Reads a binary file from GameFS and returns the bytes as a Lua string.
 
-**Parameters**
+Parameters:
 
 - `path` (`string`, required): GameFS path to read.
 
-**Returns**: `string` - Raw file bytes.
+Returns: `string` - Raw file bytes.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -825,19 +1230,28 @@ end
 
 ### lurek.filesystem.readJson
 
-`lurek.filesystem.readJson(path: string) -> string`
+#### Definition
+
+```lua
+--- Reads a JSON document as text from GameFS.
+---@param path string GameFS path to read.
+---@return string JSON text.
+lurek.filesystem.readJson = function(path) end
+```
+
+#### Description
 
 Reads a JSON document as text from GameFS.
 
-**Parameters**
+Parameters:
 
 - `path` (`string`, required): GameFS path to read.
 
-**Returns**: `string` - JSON text.
+Returns: `string` - JSON text.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -850,20 +1264,30 @@ end
 
 ### lurek.filesystem.readOrWriteJson
 
-`lurek.filesystem.readOrWriteJson(path: string, default_json: string) -> string`
+#### Definition
+
+```lua
+--- Reads a JSON file or writes and returns default JSON when the file is absent.
+---@param path string GameFS path to read.
+---@param default_json string JSON text written when the path does not exist.
+---@return string Existing or newly written JSON text.
+lurek.filesystem.readOrWriteJson = function(path, default_json) end
+```
+
+#### Description
 
 Reads a JSON file or writes and returns default JSON when the file is absent.
 
-**Parameters**
+Parameters:
 
 - `path` (`string`, required): GameFS path to read.
 - `default_json` (`string`, required): JSON text written when the path does not exist.
 
-**Returns**: `string` - Existing or newly written JSON text.
+Returns: `string` - Existing or newly written JSON text.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -875,17 +1299,25 @@ end
 
 ### lurek.filesystem.remove
 
-`lurek.filesystem.remove(path: string)`
+#### Definition
+
+```lua
+--- Removes a GameFS file or supported path.
+---@param path string Path to remove.
+lurek.filesystem.remove = function(path) end
+```
+
+#### Description
 
 Removes a GameFS file or supported path.
 
-**Parameters**
+Parameters:
 
 - `path` (`string`, required): Path to remove.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -896,17 +1328,25 @@ end
 
 ### lurek.filesystem.removeDir
 
-`lurek.filesystem.removeDir(path: string)`
+#### Definition
+
+```lua
+--- Removes a GameFS directory by its path.
+---@param path string Directory path to remove.
+lurek.filesystem.removeDir = function(path) end
+```
+
+#### Description
 
 Removes a GameFS directory by its path.
 
-**Parameters**
+Parameters:
 
 - `path` (`string`, required): Directory path to remove.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -917,17 +1357,25 @@ end
 
 ### lurek.filesystem.setIdentity
 
-`lurek.filesystem.setIdentity(name: string)`
+#### Definition
+
+```lua
+--- Sets the filesystem identity string used by save paths.
+---@param name string New filesystem identity.
+lurek.filesystem.setIdentity = function(name) end
+```
+
+#### Description
 
 Sets the filesystem identity string used by save paths.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, required): New filesystem identity.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -938,19 +1386,28 @@ end
 
 ### lurek.filesystem.stat
 
-`lurek.filesystem.stat(path: string) -> table`
+#### Definition
+
+```lua
+--- Returns size and file/directory flags for a GameFS path.
+---@param path string Path to inspect.
+---@return FilesystemStatResult Table with `size`, `isFile`, and `isDir` fields.
+lurek.filesystem.stat = function(path) end
+```
+
+#### Description
 
 Returns size and file/directory flags for a GameFS path.
 
-**Parameters**
+Parameters:
 
 - `path` (`string`, required): Path to inspect.
 
-**Returns**: `table` - Table with `size`, `isFile`, and `isDir` fields.
+Returns: `table` - Table with `size`, `isFile`, and `isDir` fields.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -964,19 +1421,28 @@ end
 
 ### lurek.filesystem.toAbsolutePath
 
-`lurek.filesystem.toAbsolutePath(path: string) -> string`
+#### Definition
+
+```lua
+--- Resolves a GameFS-relative path against the filesystem base directory.
+---@param path string Relative path to resolve.
+---@return string Absolute filesystem path string.
+lurek.filesystem.toAbsolutePath = function(path) end
+```
+
+#### Description
 
 Resolves a GameFS-relative path against the filesystem base directory.
 
-**Parameters**
+Parameters:
 
 - `path` (`string`, required): Relative path to resolve.
 
-**Returns**: `string` - Absolute filesystem path string.
+Returns: `string` - Absolute filesystem path string.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -987,19 +1453,28 @@ end
 
 ### lurek.filesystem.unmount
 
-`lurek.filesystem.unmount(mp: string) -> boolean`
+#### Definition
+
+```lua
+--- Removes a GameFS mount point by its name.
+---@param mp string Virtual mount point to remove.
+---@return boolean True when a mount was removed.
+lurek.filesystem.unmount = function(mp) end
+```
+
+#### Description
 
 Removes a GameFS mount point by its name.
 
-**Parameters**
+Parameters:
 
 - `mp` (`string`, required): Virtual mount point to remove.
 
-**Returns**: `boolean` - True when a mount was removed.
+Returns: `boolean` - True when a mount was removed.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -1010,17 +1485,25 @@ end
 
 ### lurek.filesystem.unwatchPath
 
-`lurek.filesystem.unwatchPath(path: string)`
+#### Definition
+
+```lua
+--- Removes a path from the module-local file watcher.
+---@param path string Watched path to remove.
+lurek.filesystem.unwatchPath = function(path) end
+```
+
+#### Description
 
 Removes a path from the module-local file watcher.
 
-**Parameters**
+Parameters:
 
 - `path` (`string`, required): Watched path to remove.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -1031,17 +1514,25 @@ end
 
 ### lurek.filesystem.watchPath
 
-`lurek.filesystem.watchPath(path: string)`
+#### Definition
+
+```lua
+--- Adds a path to the module-local file watcher.
+---@param path string Path to watch for changes.
+lurek.filesystem.watchPath = function(path) end
+```
+
+#### Description
 
 Adds a path to the module-local file watcher.
 
-**Parameters**
+Parameters:
 
 - `path` (`string`, required): Path to watch for changes.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -1052,18 +1543,27 @@ end
 
 ### lurek.filesystem.write
 
-`lurek.filesystem.write(path: string, data: string)`
+#### Definition
+
+```lua
+--- Writes a UTF-8 text file through GameFS.
+---@param path string GameFS path to write.
+---@param data string Text contents.
+lurek.filesystem.write = function(path, data) end
+```
+
+#### Description
 
 Writes a UTF-8 text file through GameFS.
 
-**Parameters**
+Parameters:
 
 - `path` (`string`, required): GameFS path to write.
 - `data` (`string`, required): Text contents.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -1075,20 +1575,30 @@ end
 
 ### lurek.filesystem.writeAsync
 
-`lurek.filesystem.writeAsync(path: string, data: string) -> integer`
+#### Definition
+
+```lua
+--- Starts an asynchronous file write request.
+---@param path string GameFS path to write.
+---@param data string Raw bytes stored in a Lua string.
+---@return number Async write handle id.
+lurek.filesystem.writeAsync = function(path, data) end
+```
+
+#### Description
 
 Starts an asynchronous file write request.
 
-**Parameters**
+Parameters:
 
 - `path` (`string`, required): GameFS path to write.
 - `data` (`string`, required): Raw bytes stored in a Lua string.
 
-**Returns**: `integer` - Async write handle id.
+Returns: `integer` - Async write handle id.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -1099,18 +1609,27 @@ end
 
 ### lurek.filesystem.writeBytes
 
-`lurek.filesystem.writeBytes(path: string, data: string)`
+#### Definition
+
+```lua
+--- Writes binary data through GameFS.
+---@param path string GameFS path to write.
+---@param data string Raw bytes stored in a Lua string.
+lurek.filesystem.writeBytes = function(path, data) end
+```
+
+#### Description
 
 Writes binary data through GameFS.
 
-**Parameters**
+Parameters:
 
 - `path` (`string`, required): GameFS path to write.
 - `data` (`string`, required): Raw bytes stored in a Lua string.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -1121,18 +1640,27 @@ end
 
 ### lurek.filesystem.writeJson
 
-`lurek.filesystem.writeJson(path: string, json: string)`
+#### Definition
+
+```lua
+--- Writes JSON text through the GameFS layer.
+---@param path string GameFS path to write.
+---@param json string JSON text to store.
+lurek.filesystem.writeJson = function(path, json) end
+```
+
+#### Description
 
 Writes JSON text through the GameFS layer.
 
-**Parameters**
+Parameters:
 
 - `path` (`string`, required): GameFS path to write.
 - `json` (`string`, required): JSON text to store.
 
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -1149,7 +1677,7 @@ end
 
 ### LFileData
 
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side handle for immutable file bytes and their source path.
@@ -1157,9 +1685,13 @@ end
 LFileData = {}
 ```
 
+#### Description
+
+No generated type description was found.
+
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -1170,9 +1702,7 @@ end
 
 ### LFileHandle
 
-Lua-side handle for a mutable file stream opened through GameFS.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side handle for a mutable file stream opened through GameFS.
@@ -1180,9 +1710,13 @@ Lua-side handle for a mutable file stream opened through GameFS.
 LFileHandle = {}
 ```
 
+#### Description
+
+Lua-side handle for a mutable file stream opened through GameFS.
+
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -1195,9 +1729,7 @@ end
 
 ### LZipMount
 
-Lua-side handle for a mounted ZIP archive view.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side handle for a mounted ZIP archive view.
@@ -1205,9 +1737,13 @@ Lua-side handle for a mounted ZIP archive view.
 LZipMount = {}
 ```
 
+#### Description
+
+Lua-side handle for a mounted ZIP archive view.
+
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -1223,13 +1759,7 @@ end
 
 ### LFileData:getFilename
 
-`LFileData:getFilename() -> string`
-
-Returns the path associated with this file data object.
-
-**Returns**: `string` - Original file path.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the path associated with this file data object.
@@ -1237,9 +1767,15 @@ Returns the path associated with this file data object.
 function LFileData:getFilename() end
 ```
 
+#### Description
+
+Returns the path associated with this file data object.
+
+Returns: `string` - Original file path.
+
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -1250,13 +1786,7 @@ end
 
 ### LFileData:getSize
 
-`LFileData:getSize() -> integer`
-
-Returns the byte length of this file data.
-
-**Returns**: `integer` - File data size in bytes.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the byte length of this file data.
@@ -1264,9 +1794,15 @@ Returns the byte length of this file data.
 function LFileData:getSize() end
 ```
 
+#### Description
+
+Returns the byte length of this file data.
+
+Returns: `integer` - File data size in bytes.
+
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -1277,13 +1813,7 @@ end
 
 ### LFileData:getString
 
-`LFileData:getString() -> string`
-
-Returns file data bytes as a Lua string without UTF-8 validation.
-
-**Returns**: `string` - Lua string containing the raw file bytes.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns file data bytes as a Lua string without UTF-8 validation.
@@ -1291,9 +1821,15 @@ Returns file data bytes as a Lua string without UTF-8 validation.
 function LFileData:getString() end
 ```
 
+#### Description
+
+Returns file data bytes as a Lua string without UTF-8 validation.
+
+Returns: `string` - Lua string containing the raw file bytes.
+
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -1305,13 +1841,7 @@ end
 
 ### LFileData:type
 
-`LFileData:type() -> string`
-
-Returns the Lua-visible type name for this file data handle.
-
-**Returns**: `string` - The string `LFileData`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this file data handle.
@@ -1319,9 +1849,15 @@ Returns the Lua-visible type name for this file data handle.
 function LFileData:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this file data handle.
+
+Returns: `string` - The string `LFileData`.
+
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -1332,17 +1868,7 @@ end
 
 ### LFileData:typeOf
 
-`LFileData:typeOf(name: string) -> boolean`
-
-Returns whether this file data handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LFileData` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this file data handle matches a supported type name.
@@ -1351,9 +1877,19 @@ Returns whether this file data handle matches a supported type name.
 function LFileData:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this file data handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LFileData` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -1364,20 +1900,20 @@ end
 
 ### LFileHandle:close
 
-`LFileHandle:close()`
-
-Closes this file handle on this object.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Closes this file handle on this object.
 function LFileHandle:close() end
 ```
 
+#### Description
+
+Closes this file handle on this object.
+
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -1390,20 +1926,20 @@ end
 
 ### LFileHandle:flush
 
-`LFileHandle:flush()`
-
-Flushes pending writes on this file handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Flushes pending writes on this file handle.
 function LFileHandle:flush() end
 ```
 
+#### Description
+
+Flushes pending writes on this file handle.
+
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -1417,13 +1953,7 @@ end
 
 ### LFileHandle:getMode
 
-`LFileHandle:getMode() -> string`
-
-Returns the mode used to open this file handle.
-
-**Returns**: `string` - File mode string.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the mode used to open this file handle.
@@ -1431,9 +1961,15 @@ Returns the mode used to open this file handle.
 function LFileHandle:getMode() end
 ```
 
+#### Description
+
+Returns the mode used to open this file handle.
+
+Returns: `string` - File mode string.
+
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -1445,13 +1981,7 @@ end
 
 ### LFileHandle:getSize
 
-`LFileHandle:getSize() -> integer`
-
-Returns the size of the open file in bytes.
-
-**Returns**: `integer` - File size in bytes.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the size of the open file in bytes.
@@ -1459,9 +1989,15 @@ Returns the size of the open file in bytes.
 function LFileHandle:getSize() end
 ```
 
+#### Description
+
+Returns the size of the open file in bytes.
+
+Returns: `integer` - File size in bytes.
+
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -1473,13 +2009,7 @@ end
 
 ### LFileHandle:isEOF
 
-`LFileHandle:isEOF() -> boolean`
-
-Returns whether the file cursor is at end of file.
-
-**Returns**: `boolean` - True when no more bytes remain.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether the file cursor is at end of file.
@@ -1487,9 +2017,15 @@ Returns whether the file cursor is at end of file.
 function LFileHandle:isEOF() end
 ```
 
+#### Description
+
+Returns whether the file cursor is at end of file.
+
+Returns: `boolean` - True when no more bytes remain.
+
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -1502,17 +2038,7 @@ end
 
 ### LFileHandle:read
 
-`LFileHandle:read([count]: integer) -> string`
-
-Reads up to an optional byte count and returns text using lossless UTF-8 replacement.
-
-**Parameters**
-
-- `count` (`integer`, optional): Optional maximum number of bytes to read.
-
-**Returns**: `string` - String decoded from the bytes that were read.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Reads up to an optional byte count and returns text using lossless UTF-8 replacement.
@@ -1521,9 +2047,19 @@ Reads up to an optional byte count and returns text using lossless UTF-8 replace
 function LFileHandle:read(count) end
 ```
 
+#### Description
+
+Reads up to an optional byte count and returns text using lossless UTF-8 replacement.
+
+Parameters:
+
+- `count` (`integer`, optional): Optional maximum number of bytes to read.
+
+Returns: `string` - String decoded from the bytes that were read.
+
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -1536,13 +2072,7 @@ end
 
 ### LFileHandle:readLine
 
-`LFileHandle:readLine() -> string`
-
-Reads the next line from this file handle.
-
-**Returns**: `string` - Line string when available, or nil at EOF.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Reads the next line from this file handle.
@@ -1550,9 +2080,15 @@ Reads the next line from this file handle.
 function LFileHandle:readLine() end
 ```
 
+#### Description
+
+Reads the next line from this file handle.
+
+Returns: `string` - Line string when available, or nil at EOF.
+
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -1566,15 +2102,7 @@ end
 
 ### LFileHandle:seek
 
-`LFileHandle:seek(pos: integer)`
-
-Moves the file cursor to an absolute byte position.
-
-**Parameters**
-
-- `pos` (`integer`, required): Absolute byte offset.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Moves the file cursor to an absolute byte position.
@@ -1582,9 +2110,17 @@ Moves the file cursor to an absolute byte position.
 function LFileHandle:seek(pos) end
 ```
 
+#### Description
+
+Moves the file cursor to an absolute byte position.
+
+Parameters:
+
+- `pos` (`integer`, required): Absolute byte offset.
+
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -1598,13 +2134,7 @@ end
 
 ### LFileHandle:tell
 
-`LFileHandle:tell() -> integer`
-
-Returns the current file cursor position.
-
-**Returns**: `integer` - Current absolute byte offset.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current file cursor position.
@@ -1612,9 +2142,15 @@ Returns the current file cursor position.
 function LFileHandle:tell() end
 ```
 
+#### Description
+
+Returns the current file cursor position.
+
+Returns: `integer` - Current absolute byte offset.
+
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -1628,13 +2164,7 @@ end
 
 ### LFileHandle:type
 
-`LFileHandle:type() -> string`
-
-Returns the Lua-visible type name for this file handle.
-
-**Returns**: `string` - The string `LFileHandle`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this file handle.
@@ -1642,9 +2172,15 @@ Returns the Lua-visible type name for this file handle.
 function LFileHandle:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this file handle.
+
+Returns: `string` - The string `LFileHandle`.
+
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -1656,17 +2192,7 @@ end
 
 ### LFileHandle:typeOf
 
-`LFileHandle:typeOf(name: string) -> boolean`
-
-Returns whether this file handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LFileHandle` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this file handle matches a supported type name.
@@ -1675,9 +2201,19 @@ Returns whether this file handle matches a supported type name.
 function LFileHandle:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this file handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LFileHandle` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -1689,15 +2225,7 @@ end
 
 ### LFileHandle:write
 
-`LFileHandle:write(data: string)`
-
-Writes a string to this file handle.
-
-**Parameters**
-
-- `data` (`string`, required): Text bytes to write.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Writes a string to this file handle.
@@ -1705,9 +2233,17 @@ Writes a string to this file handle.
 function LFileHandle:write(data) end
 ```
 
+#### Description
+
+Writes a string to this file handle.
+
+Parameters:
+
+- `data` (`string`, required): Text bytes to write.
+
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -1721,17 +2257,7 @@ end
 
 ### LZipMount:contains
 
-`LZipMount:contains(virtual_path: string) -> boolean`
-
-Returns whether a virtual path exists in the ZIP mount.
-
-**Parameters**
-
-- `virtual_path` (`string`, required): Path inside the mount prefix.
-
-**Returns**: `boolean` - True when the file exists in the archive.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether a virtual path exists in the ZIP mount.
@@ -1740,26 +2266,30 @@ Returns whether a virtual path exists in the ZIP mount.
 function LZipMount:contains(virtual_path) end
 ```
 
+#### Description
+
+Returns whether a virtual path exists in the ZIP mount.
+
+Parameters:
+
+- `virtual_path` (`string`, required): Path inside the mount prefix.
+
+Returns: `boolean` - True when the file exists in the archive.
+
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
     local zip = lurek.filesystem.mountZip("content/examples/assets/data/sample_data.zip", "data")
-    print("has hello = " .. tostring(zip:contains("hello.txt")))
+    print("has hello = " .. tostring(zip:contains("data/hello.txt")))
 end
 ```
 
 ### LZipMount:listFiles
 
-`LZipMount:listFiles() -> string[]`
-
-Returns every virtual file path in the ZIP mount.
-
-**Returns**: `string[]` - Mounted file paths.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns every virtual file path in the ZIP mount.
@@ -1767,9 +2297,15 @@ Returns every virtual file path in the ZIP mount.
 function LZipMount:listFiles() end
 ```
 
+#### Description
+
+Returns every virtual file path in the ZIP mount.
+
+Returns: `string[]` - Mounted file paths.
+
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -1781,13 +2317,7 @@ end
 
 ### LZipMount:prefix
 
-`LZipMount:prefix() -> string`
-
-Returns the virtual prefix used by this ZIP mount.
-
-**Returns**: `string` - Mount prefix.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the virtual prefix used by this ZIP mount.
@@ -1795,9 +2325,15 @@ Returns the virtual prefix used by this ZIP mount.
 function LZipMount:prefix() end
 ```
 
+#### Description
+
+Returns the virtual prefix used by this ZIP mount.
+
+Returns: `string` - Mount prefix.
+
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -1808,17 +2344,7 @@ end
 
 ### LZipMount:readFile
 
-`LZipMount:readFile(virtual_path: string) -> string`
-
-Reads a file from the ZIP mount by virtual path.
-
-**Parameters**
-
-- `virtual_path` (`string`, required): Path inside the mount prefix.
-
-**Returns**: `string` - Raw file bytes as a Lua string.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Reads a file from the ZIP mount by virtual path.
@@ -1827,27 +2353,31 @@ Reads a file from the ZIP mount by virtual path.
 function LZipMount:readFile(virtual_path) end
 ```
 
+#### Description
+
+Reads a file from the ZIP mount by virtual path.
+
+Parameters:
+
+- `virtual_path` (`string`, required): Path inside the mount prefix.
+
+Returns: `string` - Raw file bytes as a Lua string.
+
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
     local zip = lurek.filesystem.mountZip("content/examples/assets/data/sample_data.zip", "data")
-    local txt = zip:readFile("hello.txt")
+    local txt = zip:readFile("data/hello.txt")
     print("zip read bytes: " .. #txt)
 end
 ```
 
 ### LZipMount:type
 
-`LZipMount:type() -> string`
-
-Returns the Lua-visible type name for this ZIP mount handle.
-
-**Returns**: `string` - The string `LZipMount`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this ZIP mount handle.
@@ -1855,9 +2385,15 @@ Returns the Lua-visible type name for this ZIP mount handle.
 function LZipMount:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this ZIP mount handle.
+
+Returns: `string` - The string `LZipMount`.
+
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do
@@ -1868,17 +2404,7 @@ end
 
 ### LZipMount:typeOf
 
-`LZipMount:typeOf(name: string) -> boolean`
-
-Returns whether this ZIP mount handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LZipMount` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this ZIP mount handle matches a supported type name.
@@ -1887,9 +2413,19 @@ Returns whether this ZIP mount handle matches a supported type name.
 function LZipMount:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this ZIP mount handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LZipMount` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [filesystem.lua](../blob/main/content/examples/filesystem.lua):
+Source: [filesystem.lua](../blob/main/content/examples/filesystem.lua)
 
 ```lua
 do

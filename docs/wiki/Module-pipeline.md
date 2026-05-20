@@ -14,75 +14,211 @@
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
   - [lurek.pipeline.fromTable](#lurekpipelinefromtable)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.pipeline.newPipeline](#lurekpipelinenewpipeline)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.pipeline.newStep](#lurekpipelinenewstep)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔷 Module Types](#module-types)
   - [LPipeline](#lpipeline)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipelineStep](#lpipelinestep)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
   - [LPipeline:addBranch](#lpipelineaddbranch)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipeline:addConditional](#lpipelineaddconditional)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipeline:addStep](#lpipelineaddstep)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipeline:addSubPipeline](#lpipelineaddsubpipeline)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipeline:cancel](#lpipelinecancel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipeline:clear](#lpipelineclear)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipeline:getContext](#lpipelinegetcontext)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipeline:getErrorMode](#lpipelinegeterrormode)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipeline:getExecutionOrder](#lpipelinegetexecutionorder)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipeline:getName](#lpipelinegetname)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipeline:getParallelGroups](#lpipelinegetparallelgroups)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipeline:getResult](#lpipelinegetresult)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipeline:getStep](#lpipelinegetstep)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipeline:getStepCount](#lpipelinegetstepcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipeline:getSteps](#lpipelinegetsteps)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipeline:getStepsByTag](#lpipelinegetstepsbytag)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipeline:isComplete](#lpipelineiscomplete)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipeline:isRunning](#lpipelineisrunning)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipeline:onEvent](#lpipelineonevent)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipeline:onProgress](#lpipelineonprogress)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipeline:removeStep](#lpipelineremovestep)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipeline:reset](#lpipelinereset)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipeline:run](#lpipelinerun)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipeline:runAsync](#lpipelinerunasync)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipeline:setErrorMode](#lpipelineseterrormode)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipeline:setName](#lpipelinesetname)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipeline:setOnComplete](#lpipelinesetoncomplete)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipeline:setOnStepComplete](#lpipelinesetonstepcomplete)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipeline:setOnStepError](#lpipelinesetonsteperror)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipeline:toAscii](#lpipelinetoascii)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipeline:toTable](#lpipelinetotable)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipeline:type](#lpipelinetype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipeline:typeOf](#lpipelinetypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipeline:update](#lpipelineupdate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipeline:validate](#lpipelinevalidate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipelineStep:dependsOn](#lpipelinestepdependson)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipelineStep:getAttempt](#lpipelinestepgetattempt)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipelineStep:getData](#lpipelinestepgetdata)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipelineStep:getDelay](#lpipelinestepgetdelay)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipelineStep:getDependencies](#lpipelinestepgetdependencies)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipelineStep:getDependencyCount](#lpipelinestepgetdependencycount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipelineStep:getDuration](#lpipelinestepgetduration)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipelineStep:getError](#lpipelinestepgeterror)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipelineStep:getName](#lpipelinestepgetname)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipelineStep:getRetryCount](#lpipelinestepgetretrycount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipelineStep:getStatus](#lpipelinestepgetstatus)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipelineStep:getTag](#lpipelinestepgettag)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipelineStep:getTimeout](#lpipelinestepgettimeout)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipelineStep:isAsync](#lpipelinestepisasync)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipelineStep:isOptional](#lpipelinestepisoptional)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipelineStep:setAsync](#lpipelinestepsetasync)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipelineStep:setCallback](#lpipelinestepsetcallback)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipelineStep:setCondition](#lpipelinestepsetcondition)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipelineStep:setData](#lpipelinestepsetdata)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipelineStep:setDelay](#lpipelinestepsetdelay)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipelineStep:setOnError](#lpipelinestepsetonerror)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipelineStep:setOptional](#lpipelinestepsetoptional)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipelineStep:setRetryCount](#lpipelinestepsetretrycount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipelineStep:setRetryDelay](#lpipelinestepsetretrydelay)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipelineStep:setTag](#lpipelinestepsettag)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipelineStep:setTimeout](#lpipelinestepsettimeout)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipelineStep:type](#lpipelinesteptype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LPipelineStep:typeOf](#lpipelinesteptypeof)
+    - [Definition](#definition)
+    - [Description](#description)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -129,19 +265,28 @@ lurek.pipeline.newStep(name: string, [callback]: function) -> LPipelineStep -- C
 
 ### lurek.pipeline.fromTable
 
-`lurek.pipeline.fromTable(definition: table) -> LPipeline`
+#### Definition
+
+```lua
+--- Creates a pipeline pre-populated with steps from a declarative table definition. Each step entry can specify name, deps, delay, optional, retryCount, retryDelay, async, tag, and fn.
+---@param definition table A table with optional name, errorMode, and a steps array.
+---@return LPipeline The constructed pipeline.
+lurek.pipeline.fromTable = function(definition) end
+```
+
+#### Description
 
 Creates a pipeline pre-populated with steps from a declarative table definition. Each step entry can specify name, deps, delay, optional, retryCount, retryDelay, async, tag, and fn.
 
-**Parameters**
+Parameters:
 
 - `definition` (`table`, required): A table with optional name, errorMode, and a steps array.
 
-**Returns**: `LPipeline` - The constructed pipeline.
+Returns: `LPipeline` - The constructed pipeline.
 
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -153,19 +298,28 @@ end
 
 ### lurek.pipeline.newPipeline
 
-`lurek.pipeline.newPipeline([name]: string) -> LPipeline`
+#### Definition
+
+```lua
+--- Creates a new empty pipeline with an optional name. Add steps via addStep() or addConditional().
+---@param name? string Pipeline name (defaults to "pipeline").
+---@return LPipeline The new pipeline object.
+lurek.pipeline.newPipeline = function(name) end
+```
+
+#### Description
 
 Creates a new empty pipeline with an optional name. Add steps via addStep() or addConditional().
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, optional): Pipeline name (defaults to "pipeline").
 
-**Returns**: `LPipeline` - The new pipeline object.
+Returns: `LPipeline` - The new pipeline object.
 
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -176,20 +330,30 @@ end
 
 ### lurek.pipeline.newStep
 
-`lurek.pipeline.newStep(name: string, [callback]: function) -> LPipelineStep`
+#### Definition
+
+```lua
+--- Creates a new pipeline step with the given name and an optional callback function.
+---@param name string Unique step name.
+---@param callback? function Optional callback executed when this step runs.
+---@return LPipelineStep The new step object.
+lurek.pipeline.newStep = function(name, callback) end
+```
+
+#### Description
 
 Creates a new pipeline step with the given name and an optional callback function.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, required): Unique step name.
 - `callback` (`function`, optional): Optional callback executed when this step runs.
 
-**Returns**: `LPipelineStep` - The new step object.
+Returns: `LPipelineStep` - The new step object.
 
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -205,9 +369,7 @@ end
 
 ### LPipeline
 
-A full pipeline that orchestrates multiple steps with dependency resolution, error modes, and async scheduling.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- A full pipeline that orchestrates multiple steps with dependency resolution, error modes, and async scheduling.
@@ -215,9 +377,13 @@ A full pipeline that orchestrates multiple steps with dependency resolution, err
 LPipeline = {}
 ```
 
+#### Description
+
+A full pipeline that orchestrates multiple steps with dependency resolution, error modes, and async scheduling.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -229,9 +395,7 @@ end
 
 ### LPipelineStep
 
-A single executable step within a pipeline, wrapping callback, condition, retry, and error hooks.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- A single executable step within a pipeline, wrapping callback, condition, retry, and error hooks.
@@ -239,9 +403,13 @@ A single executable step within a pipeline, wrapping callback, condition, retry,
 LPipelineStep = {}
 ```
 
+#### Description
+
+A single executable step within a pipeline, wrapping callback, condition, retry, and error hooks.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -257,21 +425,7 @@ end
 
 ### LPipeline:addBranch
 
-`LPipeline:addBranch(name: string, deps: table, when: function, thenFn: function, [elseFn]: function) -> LPipeline`
-
-Adds a branching construct: evaluates a predicate, then runs either the "then" or "else" callback based on the result.
-
-**Parameters**
-
-- `name` (`string`, required): Base name for the branch (generates internal guard/then/else sub-steps).
-- `deps` (`table`, required): Array of dependency step names that must complete before the branch evaluates.
-- `when` (`function`, required): Predicate function receiving context; returns true for the "then" path.
-- `thenFn` (`function`, required): Callback executed if the predicate returns true.
-- `elseFn` (`function`, optional): Callback executed if the predicate returns false. Defaults to a no-op.
-
-**Returns**: `LPipeline` - Returns self for method chaining.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a branching construct: evaluates a predicate, then runs either the "then" or "else" callback based on the result.
@@ -284,9 +438,23 @@ Adds a branching construct: evaluates a predicate, then runs either the "then" o
 function LPipeline:addBranch(name, deps, when, thenFn, elseFn) end
 ```
 
+#### Description
+
+Adds a branching construct: evaluates a predicate, then runs either the "then" or "else" callback based on the result.
+
+Parameters:
+
+- `name` (`string`, required): Base name for the branch (generates internal guard/then/else sub-steps).
+- `deps` (`table`, required): Array of dependency step names that must complete before the branch evaluates.
+- `when` (`function`, required): Predicate function receiving context; returns true for the "then" path.
+- `thenFn` (`function`, required): Callback executed if the predicate returns true.
+- `elseFn` (`function`, optional): Callback executed if the predicate returns false. Defaults to a no-op.
+
+Returns: `LPipeline` - Returns self for method chaining.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -300,20 +468,7 @@ end
 
 ### LPipeline:addConditional
 
-`LPipeline:addConditional(name: string, deps: table, callback: function, condition: function) -> LPipeline`
-
-Convenience method to create and add a step with dependencies and a condition in one call.
-
-**Parameters**
-
-- `name` (`string`, required): Unique step name.
-- `deps` (`table`, required): Array of dependency step names.
-- `callback` (`function`, required): The step callback function.
-- `condition` (`function`, required): Predicate function; step runs only if it returns true.
-
-**Returns**: `LPipeline` - Returns self for method chaining.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Convenience method to create and add a step with dependencies and a condition in one call.
@@ -325,9 +480,22 @@ Convenience method to create and add a step with dependencies and a condition in
 function LPipeline:addConditional(name, deps, callback, condition) end
 ```
 
+#### Description
+
+Convenience method to create and add a step with dependencies and a condition in one call.
+
+Parameters:
+
+- `name` (`string`, required): Unique step name.
+- `deps` (`table`, required): Array of dependency step names.
+- `callback` (`function`, required): The step callback function.
+- `condition` (`function`, required): Predicate function; step runs only if it returns true.
+
+Returns: `LPipeline` - Returns self for method chaining.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -341,17 +509,7 @@ end
 
 ### LPipeline:addStep
 
-`LPipeline:addStep(step: LPipelineStep) -> LPipeline`
-
-Adds an existing step object to this pipeline. The step will be scheduled according to its declared dependencies.
-
-**Parameters**
-
-- `step` (`LPipelineStep`, required): The step to add.
-
-**Returns**: `LPipeline` - Returns self for method chaining.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds an existing step object to this pipeline. The step will be scheduled according to its declared dependencies.
@@ -360,9 +518,19 @@ Adds an existing step object to this pipeline. The step will be scheduled accord
 function LPipeline:addStep(step) end
 ```
 
+#### Description
+
+Adds an existing step object to this pipeline. The step will be scheduled according to its declared dependencies.
+
+Parameters:
+
+- `step` (`LPipelineStep`, required): The step to add.
+
+Returns: `LPipeline` - Returns self for method chaining.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -376,17 +544,7 @@ end
 
 ### LPipeline:addSubPipeline
 
-`LPipeline:addSubPipeline(subPipeline: LPipeline, alias: string, [deps]: table)`
-
-Embeds another pipeline's steps into this pipeline under an alias prefix, with optional outer dependencies.
-
-**Parameters**
-
-- `subPipeline` (`LPipeline`, required): The pipeline whose steps will be merged in.
-- `alias` (`string`, required): A prefix applied to all merged step names to avoid collisions.
-- `deps` (`table`, optional): Optional array of step names that all merged steps depend on.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Embeds another pipeline's steps into this pipeline under an alias prefix, with optional outer dependencies.
@@ -396,9 +554,19 @@ Embeds another pipeline's steps into this pipeline under an alias prefix, with o
 function LPipeline:addSubPipeline(subPipeline, alias, deps) end
 ```
 
+#### Description
+
+Embeds another pipeline's steps into this pipeline under an alias prefix, with optional outer dependencies.
+
+Parameters:
+
+- `subPipeline` (`LPipeline`, required): The pipeline whose steps will be merged in.
+- `alias` (`string`, required): A prefix applied to all merged step names to avoid collisions.
+- `deps` (`table`, optional): Optional array of step names that all merged steps depend on.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -412,20 +580,20 @@ end
 
 ### LPipeline:cancel
 
-`LPipeline:cancel()`
-
-Cancels all pending and waiting steps. Steps already running or completed are unaffected.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Cancels all pending and waiting steps. Steps already running or completed are unaffected.
 function LPipeline:cancel() end
 ```
 
+#### Description
+
+Cancels all pending and waiting steps. Steps already running or completed are unaffected.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -438,20 +606,20 @@ end
 
 ### LPipeline:clear
 
-`LPipeline:clear()`
-
-Removes all steps from the pipeline, resetting it to an empty state.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes all steps from the pipeline, resetting it to an empty state.
 function LPipeline:clear() end
 ```
 
+#### Description
+
+Removes all steps from the pipeline, resetting it to an empty state.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -464,13 +632,7 @@ end
 
 ### LPipeline:getContext
 
-`LPipeline:getContext() -> table`
-
-Returns the shared context table used by the current or most recent pipeline execution, or nil if none exists.
-
-**Returns**: `table` - The pipeline context table.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the shared context table used by the current or most recent pipeline execution, or nil if none exists.
@@ -479,9 +641,15 @@ Returns the shared context table used by the current or most recent pipeline exe
 function LPipeline:getContext() end
 ```
 
+#### Description
+
+Returns the shared context table used by the current or most recent pipeline execution, or nil if none exists.
+
+Returns: `table` - The pipeline context table.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -494,13 +662,7 @@ end
 
 ### LPipeline:getErrorMode
 
-`LPipeline:getErrorMode() -> string`
-
-Returns the current error mode of the pipeline as a string.
-
-**Returns**: `string` - "abort" or "continue".
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current error mode of the pipeline as a string.
@@ -508,9 +670,15 @@ Returns the current error mode of the pipeline as a string.
 function LPipeline:getErrorMode() end
 ```
 
+#### Description
+
+Returns the current error mode of the pipeline as a string.
+
+Returns: `string` - "abort" or "continue".
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -522,13 +690,7 @@ end
 
 ### LPipeline:getExecutionOrder
 
-`LPipeline:getExecutionOrder() -> string[]`
-
-Computes the topologically sorted execution order of all steps, respecting dependencies.
-
-**Returns**: `string[]` - Step names in execution order, or nil on error.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Computes the topologically sorted execution order of all steps, respecting dependencies.
@@ -537,9 +699,15 @@ Computes the topologically sorted execution order of all steps, respecting depen
 function LPipeline:getExecutionOrder() end
 ```
 
+#### Description
+
+Computes the topologically sorted execution order of all steps, respecting dependencies.
+
+Returns: `string[]` - Step names in execution order, or nil on error.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -553,13 +721,7 @@ end
 
 ### LPipeline:getName
 
-`LPipeline:getName() -> string`
-
-Returns the name of this pipeline. This method is available to Lua scripts.
-
-**Returns**: `string` - Pipeline name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the name of this pipeline. This method is available to Lua scripts.
@@ -567,9 +729,15 @@ Returns the name of this pipeline. This method is available to Lua scripts.
 function LPipeline:getName() end
 ```
 
+#### Description
+
+Returns the name of this pipeline. This method is available to Lua scripts.
+
+Returns: `string` - Pipeline name.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -581,13 +749,7 @@ end
 
 ### LPipeline:getParallelGroups
 
-`LPipeline:getParallelGroups() -> string[]`
-
-Groups steps into parallel execution tiers. Steps within the same group have no mutual dependencies and can run concurrently.
-
-**Returns**: `string[]` - Array of arrays, each inner array is a group of step names. Nil on error.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Groups steps into parallel execution tiers. Steps within the same group have no mutual dependencies and can run concurrently.
@@ -596,9 +758,15 @@ Groups steps into parallel execution tiers. Steps within the same group have no 
 function LPipeline:getParallelGroups() end
 ```
 
+#### Description
+
+Groups steps into parallel execution tiers. Steps within the same group have no mutual dependencies and can run concurrently.
+
+Returns: `string[]` - Array of arrays, each inner array is a group of step names. Nil on error.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -612,13 +780,7 @@ end
 
 ### LPipeline:getResult
 
-`LPipeline:getResult() -> table`
-
-Returns the current pipeline result summary table, or nil if no steps exist. Useful for inspecting state after run or during async execution.
-
-**Returns**: `table` - Result table with success, completed, failed, skipped, cancelled, totalDuration, errors fields, or nil if no steps exist.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current pipeline result summary table, or nil if no steps exist. Useful for inspecting state after run or during async execution.
@@ -626,9 +788,15 @@ Returns the current pipeline result summary table, or nil if no steps exist. Use
 function LPipeline:getResult() end
 ```
 
+#### Description
+
+Returns the current pipeline result summary table, or nil if no steps exist. Useful for inspecting state after run or during async execution.
+
+Returns: `table` - Result table with success, completed, failed, skipped, cancelled, totalDuration, errors fields, or nil if no steps exist.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -642,17 +810,7 @@ end
 
 ### LPipeline:getStep
 
-`LPipeline:getStep(name: string) -> LPipelineStep`
-
-Retrieves a step object by name, or nil if no step with that name exists in this pipeline.
-
-**Parameters**
-
-- `name` (`string`, required): Name of the step to find.
-
-**Returns**: `LPipelineStep` - The step object, or nil if no step with that name exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Retrieves a step object by name, or nil if no step with that name exists in this pipeline.
@@ -661,9 +819,19 @@ Retrieves a step object by name, or nil if no step with that name exists in this
 function LPipeline:getStep(name) end
 ```
 
+#### Description
+
+Retrieves a step object by name, or nil if no step with that name exists in this pipeline.
+
+Parameters:
+
+- `name` (`string`, required): Name of the step to find.
+
+Returns: `LPipelineStep` - The step object, or nil if no step with that name exists.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -676,13 +844,7 @@ end
 
 ### LPipeline:getStepCount
 
-`LPipeline:getStepCount() -> integer`
-
-Returns the total number of steps in this pipeline.
-
-**Returns**: `integer` - Step count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the total number of steps in this pipeline.
@@ -690,9 +852,15 @@ Returns the total number of steps in this pipeline.
 function LPipeline:getStepCount() end
 ```
 
+#### Description
+
+Returns the total number of steps in this pipeline.
+
+Returns: `integer` - Step count.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -704,13 +872,7 @@ end
 
 ### LPipeline:getSteps
 
-`LPipeline:getSteps() -> LPipelineStep[]`
-
-Returns a table containing all step objects currently in this pipeline.
-
-**Returns**: `LPipelineStep[]` - LPipelineStep objects.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a table containing all step objects currently in this pipeline.
@@ -718,9 +880,15 @@ Returns a table containing all step objects currently in this pipeline.
 function LPipeline:getSteps() end
 ```
 
+#### Description
+
+Returns a table containing all step objects currently in this pipeline.
+
+Returns: `LPipelineStep[]` - LPipelineStep objects.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -733,17 +901,7 @@ end
 
 ### LPipeline:getStepsByTag
 
-`LPipeline:getStepsByTag(tag: string) -> LPipelineStep[]`
-
-Returns all steps that have the specified tag assigned.
-
-**Parameters**
-
-- `tag` (`string`, required): The tag to filter by.
-
-**Returns**: `LPipelineStep[]` - Matching LPipelineStep objects.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns all steps that have the specified tag assigned.
@@ -752,9 +910,19 @@ Returns all steps that have the specified tag assigned.
 function LPipeline:getStepsByTag(tag) end
 ```
 
+#### Description
+
+Returns all steps that have the specified tag assigned.
+
+Parameters:
+
+- `tag` (`string`, required): The tag to filter by.
+
+Returns: `LPipelineStep[]` - Matching LPipelineStep objects.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -767,13 +935,7 @@ end
 
 ### LPipeline:isComplete
 
-`LPipeline:isComplete() -> boolean`
-
-Returns whether all steps have reached a terminal state (completed, failed, skipped, or cancelled).
-
-**Returns**: `boolean` - True if no steps are still pending or running.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether all steps have reached a terminal state (completed, failed, skipped, or cancelled).
@@ -781,9 +943,15 @@ Returns whether all steps have reached a terminal state (completed, failed, skip
 function LPipeline:isComplete() end
 ```
 
+#### Description
+
+Returns whether all steps have reached a terminal state (completed, failed, skipped, or cancelled).
+
+Returns: `boolean` - True if no steps are still pending or running.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -796,13 +964,7 @@ end
 
 ### LPipeline:isRunning
 
-`LPipeline:isRunning() -> boolean`
-
-Returns whether the pipeline is currently in async execution mode (started via runAsync and not yet finished).
-
-**Returns**: `boolean` - True if the pipeline is actively running.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether the pipeline is currently in async execution mode (started via runAsync and not yet finished).
@@ -810,9 +972,15 @@ Returns whether the pipeline is currently in async execution mode (started via r
 function LPipeline:isRunning() end
 ```
 
+#### Description
+
+Returns whether the pipeline is currently in async execution mode (started via runAsync and not yet finished).
+
+Returns: `boolean` - True if the pipeline is actively running.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -825,15 +993,7 @@ end
 
 ### LPipeline:onEvent
 
-`LPipeline:onEvent(callback: function)`
-
-Registers a low-level event callback for all pipeline lifecycle events. Receives (eventName, stepName, status, detail).
-
-**Parameters**
-
-- `callback` (`function`, required): A function receiving (eventName, stepName, status, detail).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Registers a low-level event callback for all pipeline lifecycle events. Receives (eventName, stepName, status, detail).
@@ -841,9 +1001,17 @@ Registers a low-level event callback for all pipeline lifecycle events. Receives
 function LPipeline:onEvent(callback) end
 ```
 
+#### Description
+
+Registers a low-level event callback for all pipeline lifecycle events. Receives (eventName, stepName, status, detail).
+
+Parameters:
+
+- `callback` (`function`, required): A function receiving (eventName, stepName, status, detail).
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -856,15 +1024,7 @@ end
 
 ### LPipeline:onProgress
 
-`LPipeline:onProgress(callback: function)`
-
-Registers a progress callback invoked after each step finishes (regardless of outcome). Receives (stepName, statusString).
-
-**Parameters**
-
-- `callback` (`function`, required): A function receiving (stepName, status).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Registers a progress callback invoked after each step finishes (regardless of outcome). Receives (stepName, statusString).
@@ -872,9 +1032,17 @@ Registers a progress callback invoked after each step finishes (regardless of ou
 function LPipeline:onProgress(callback) end
 ```
 
+#### Description
+
+Registers a progress callback invoked after each step finishes (regardless of outcome). Receives (stepName, statusString).
+
+Parameters:
+
+- `callback` (`function`, required): A function receiving (stepName, status).
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -887,15 +1055,7 @@ end
 
 ### LPipeline:removeStep
 
-`LPipeline:removeStep(name: string)`
-
-Removes a step from the pipeline by name. Any other steps that depend on it may fail or be skipped.
-
-**Parameters**
-
-- `name` (`string`, required): Name of the step to remove.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes a step from the pipeline by name. Any other steps that depend on it may fail or be skipped.
@@ -903,9 +1063,17 @@ Removes a step from the pipeline by name. Any other steps that depend on it may 
 function LPipeline:removeStep(name) end
 ```
 
+#### Description
+
+Removes a step from the pipeline by name. Any other steps that depend on it may fail or be skipped.
+
+Parameters:
+
+- `name` (`string`, required): Name of the step to remove.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -918,20 +1086,20 @@ end
 
 ### LPipeline:reset
 
-`LPipeline:reset()`
-
-Resets the pipeline and all steps back to their initial pending state, clearing context and async state.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Resets the pipeline and all steps back to their initial pending state, clearing context and async state.
 function LPipeline:reset() end
 ```
 
+#### Description
+
+Resets the pipeline and all steps back to their initial pending state, clearing context and async state.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -944,17 +1112,7 @@ end
 
 ### LPipeline:run
 
-`LPipeline:run([context]: table) -> table`
-
-Executes all pipeline steps synchronously in dependency order. Blocks until all steps complete, fail, or are cancelled.
-
-**Parameters**
-
-- `context` (`table`, optional): An optional shared context table passed to every step callback. A fresh table is created if omitted.
-
-**Returns**: `table` - A result table with fields: success (boolean), completed, failed, skipped, cancelled (arrays of names), totalDuration (number), errors (array of {name, msg}).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Executes all pipeline steps synchronously in dependency order. Blocks until all steps complete, fail, or are cancelled.
@@ -963,9 +1121,19 @@ Executes all pipeline steps synchronously in dependency order. Blocks until all 
 function LPipeline:run(context) end
 ```
 
+#### Description
+
+Executes all pipeline steps synchronously in dependency order. Blocks until all steps complete, fail, or are cancelled.
+
+Parameters:
+
+- `context` (`table`, optional): An optional shared context table passed to every step callback. A fresh table is created if omitted.
+
+Returns: `table` - A result table with fields: success (boolean), completed, failed, skipped, cancelled (arrays of names), totalDuration (number), errors (array of {name, msg}).
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -977,15 +1145,7 @@ end
 
 ### LPipeline:runAsync
 
-`LPipeline:runAsync([context]: table)`
-
-Starts asynchronous (coroutine-based) execution of the pipeline. Call update(dt) each frame to advance steps.
-
-**Parameters**
-
-- `context` (`table`, optional): An optional shared context table. A fresh table is created if omitted.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Starts asynchronous (coroutine-based) execution of the pipeline. Call update(dt) each frame to advance steps.
@@ -993,9 +1153,17 @@ Starts asynchronous (coroutine-based) execution of the pipeline. Call update(dt)
 function LPipeline:runAsync(context) end
 ```
 
+#### Description
+
+Starts asynchronous (coroutine-based) execution of the pipeline. Call update(dt) each frame to advance steps.
+
+Parameters:
+
+- `context` (`table`, optional): An optional shared context table. A fresh table is created if omitted.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -1008,15 +1176,7 @@ end
 
 ### LPipeline:setErrorMode
 
-`LPipeline:setErrorMode(mode: string)`
-
-Sets how the pipeline handles step failures. "abort" stops on first failure; "continue" runs remaining steps.
-
-**Parameters**
-
-- `mode` (`string`, required): Either "abort" or "continue".
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets how the pipeline handles step failures. "abort" stops on first failure; "continue" runs remaining steps.
@@ -1024,9 +1184,17 @@ Sets how the pipeline handles step failures. "abort" stops on first failure; "co
 function LPipeline:setErrorMode(mode) end
 ```
 
+#### Description
+
+Sets how the pipeline handles step failures. "abort" stops on first failure; "continue" runs remaining steps.
+
+Parameters:
+
+- `mode` (`string`, required): Either "abort" or "continue".
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -1039,15 +1207,7 @@ end
 
 ### LPipeline:setName
 
-`LPipeline:setName(name: string)`
-
-Changes the name of this pipeline. This method is available to Lua scripts.
-
-**Parameters**
-
-- `name` (`string`, required): New pipeline name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Changes the name of this pipeline. This method is available to Lua scripts.
@@ -1055,9 +1215,17 @@ Changes the name of this pipeline. This method is available to Lua scripts.
 function LPipeline:setName(name) end
 ```
 
+#### Description
+
+Changes the name of this pipeline. This method is available to Lua scripts.
+
+Parameters:
+
+- `name` (`string`, required): New pipeline name.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -1069,15 +1237,7 @@ end
 
 ### LPipeline:setOnComplete
 
-`LPipeline:setOnComplete([callback]: function)`
-
-Registers a callback invoked when the entire pipeline finishes execution. Receives the result table.
-
-**Parameters**
-
-- `callback` (`function`, optional): A function receiving the result table. Pass nil to remove.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Registers a callback invoked when the entire pipeline finishes execution. Receives the result table.
@@ -1085,9 +1245,17 @@ Registers a callback invoked when the entire pipeline finishes execution. Receiv
 function LPipeline:setOnComplete(callback) end
 ```
 
+#### Description
+
+Registers a callback invoked when the entire pipeline finishes execution. Receives the result table.
+
+Parameters:
+
+- `callback` (`function`, optional): A function receiving the result table. Pass nil to remove.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -1100,15 +1268,7 @@ end
 
 ### LPipeline:setOnStepComplete
 
-`LPipeline:setOnStepComplete([callback]: function)`
-
-Registers a callback invoked each time any step completes successfully. Receives (stepName, context).
-
-**Parameters**
-
-- `callback` (`function`, optional): A function receiving (stepName, context). Pass nil to remove.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Registers a callback invoked each time any step completes successfully. Receives (stepName, context).
@@ -1116,9 +1276,17 @@ Registers a callback invoked each time any step completes successfully. Receives
 function LPipeline:setOnStepComplete(callback) end
 ```
 
+#### Description
+
+Registers a callback invoked each time any step completes successfully. Receives (stepName, context).
+
+Parameters:
+
+- `callback` (`function`, optional): A function receiving (stepName, context). Pass nil to remove.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -1131,15 +1299,7 @@ end
 
 ### LPipeline:setOnStepError
 
-`LPipeline:setOnStepError([callback]: function)`
-
-Registers a callback invoked each time any step fails. Receives (stepName, errorMessage).
-
-**Parameters**
-
-- `callback` (`function`, optional): A function receiving (stepName, errorMessage). Pass nil to remove.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Registers a callback invoked each time any step fails. Receives (stepName, errorMessage).
@@ -1147,9 +1307,17 @@ Registers a callback invoked each time any step fails. Receives (stepName, error
 function LPipeline:setOnStepError(callback) end
 ```
 
+#### Description
+
+Registers a callback invoked each time any step fails. Receives (stepName, errorMessage).
+
+Parameters:
+
+- `callback` (`function`, optional): A function receiving (stepName, errorMessage). Pass nil to remove.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -1162,13 +1330,7 @@ end
 
 ### LPipeline:toAscii
 
-`LPipeline:toAscii() -> string`
-
-Returns an ASCII art diagram of the pipeline's dependency graph for debugging and visualization.
-
-**Returns**: `string` - Multi-line ASCII diagram.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns an ASCII art diagram of the pipeline's dependency graph for debugging and visualization.
@@ -1176,9 +1338,15 @@ Returns an ASCII art diagram of the pipeline's dependency graph for debugging an
 function LPipeline:toAscii() end
 ```
 
+#### Description
+
+Returns an ASCII art diagram of the pipeline's dependency graph for debugging and visualization.
+
+Returns: `string` - Multi-line ASCII diagram.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -1191,13 +1359,7 @@ end
 
 ### LPipeline:toTable
 
-`LPipeline:toTable() -> table`
-
-Serializes the pipeline configuration into a plain Lua table for inspection or persistence.
-
-**Returns**: `table` - A table with name, errorMode, and steps array fields.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Serializes the pipeline configuration into a plain Lua table for inspection or persistence.
@@ -1205,9 +1367,15 @@ Serializes the pipeline configuration into a plain Lua table for inspection or p
 function LPipeline:toTable() end
 ```
 
+#### Description
+
+Serializes the pipeline configuration into a plain Lua table for inspection or persistence.
+
+Returns: `table` - A table with name, errorMode, and steps array fields.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -1220,13 +1388,7 @@ end
 
 ### LPipeline:type
 
-`LPipeline:type() -> string`
-
-Returns the type name of this object ("LPipeline").
-
-**Returns**: `string` - Type identifier.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this object ("LPipeline").
@@ -1234,9 +1396,15 @@ Returns the type name of this object ("LPipeline").
 function LPipeline:type() end
 ```
 
+#### Description
+
+Returns the type name of this object ("LPipeline").
+
+Returns: `string` - Type identifier.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -1247,17 +1415,7 @@ end
 
 ### LPipeline:typeOf
 
-`LPipeline:typeOf(name: string) -> boolean`
-
-Checks whether this object is of a given type name. Accepts "LPipeline", "Pipeline", or "Object".
-
-**Parameters**
-
-- `name` (`string`, required): Type name to check against.
-
-**Returns**: `boolean` - True if the type matches.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this object is of a given type name. Accepts "LPipeline", "Pipeline", or "Object".
@@ -1266,9 +1424,19 @@ Checks whether this object is of a given type name. Accepts "LPipeline", "Pipeli
 function LPipeline:typeOf(name) end
 ```
 
+#### Description
+
+Checks whether this object is of a given type name. Accepts "LPipeline", "Pipeline", or "Object".
+
+Parameters:
+
+- `name` (`string`, required): Type name to check against.
+
+Returns: `boolean` - True if the type matches.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -1279,17 +1447,7 @@ end
 
 ### LPipeline:update
 
-`LPipeline:update(dt: number) -> boolean`
-
-Advances an async pipeline by one frame tick. Resumes coroutines, checks dependencies, and fires callbacks. Call every frame after runAsync().
-
-**Parameters**
-
-- `dt` (`number`, required): Delta time in seconds since last frame.
-
-**Returns**: `boolean` - True when the entire pipeline has finished (all steps done); false if still running.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Advances an async pipeline by one frame tick. Resumes coroutines, checks dependencies, and fires callbacks. Call every frame after runAsync().
@@ -1298,9 +1456,19 @@ Advances an async pipeline by one frame tick. Resumes coroutines, checks depende
 function LPipeline:update(dt) end
 ```
 
+#### Description
+
+Advances an async pipeline by one frame tick. Resumes coroutines, checks dependencies, and fires callbacks. Call every frame after runAsync().
+
+Parameters:
+
+- `dt` (`number`, required): Delta time in seconds since last frame.
+
+Returns: `boolean` - True when the entire pipeline has finished (all steps done); false if still running.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -1313,13 +1481,7 @@ end
 
 ### LPipeline:validate
 
-`LPipeline:validate() -> boolean`
-
-Validates the pipeline structure, checking for missing dependencies and circular references.
-
-**Returns**: `boolean` - True if the pipeline is valid.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Validates the pipeline structure, checking for missing dependencies and circular references.
@@ -1328,9 +1490,15 @@ Validates the pipeline structure, checking for missing dependencies and circular
 function LPipeline:validate() end
 ```
 
+#### Description
+
+Validates the pipeline structure, checking for missing dependencies and circular references.
+
+Returns: `boolean` - True if the pipeline is valid.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -1344,17 +1512,7 @@ end
 
 ### LPipelineStep:dependsOn
 
-`LPipelineStep:dependsOn(dep: string|LPipelineStep) -> LPipelineStep`
-
-Declares that this step depends on another step (by name or reference). The dependency must complete before this step runs.
-
-**Parameters**
-
-- `dep` (`string|LPipelineStep`, required): The dependency step name or step object.
-
-**Returns**: `LPipelineStep` - Returns self for method chaining.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Declares that this step depends on another step (by name or reference). The dependency must complete before this step runs.
@@ -1363,9 +1521,19 @@ Declares that this step depends on another step (by name or reference). The depe
 function LPipelineStep:dependsOn(dep) end
 ```
 
+#### Description
+
+Declares that this step depends on another step (by name or reference). The dependency must complete before this step runs.
+
+Parameters:
+
+- `dep` (`string|LPipelineStep`, required): The dependency step name or step object.
+
+Returns: `LPipelineStep` - Returns self for method chaining.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -1378,13 +1546,7 @@ end
 
 ### LPipelineStep:getAttempt
 
-`LPipelineStep:getAttempt() -> integer`
-
-Returns the current attempt number (1-based). Increases with each retry.
-
-**Returns**: `integer` - Attempt number.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current attempt number (1-based). Increases with each retry.
@@ -1392,9 +1554,15 @@ Returns the current attempt number (1-based). Increases with each retry.
 function LPipelineStep:getAttempt() end
 ```
 
+#### Description
+
+Returns the current attempt number (1-based). Increases with each retry.
+
+Returns: `integer` - Attempt number.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -1407,17 +1575,7 @@ end
 
 ### LPipelineStep:getData
 
-`LPipelineStep:getData(key: string) -> string`
-
-Retrieves a metadata value previously stored with setData.
-
-**Parameters**
-
-- `key` (`string`, required): Metadata key to look up.
-
-**Returns**: `string` - The stored value, or nil if the key does not exist.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Retrieves a metadata value previously stored with setData.
@@ -1426,9 +1584,19 @@ Retrieves a metadata value previously stored with setData.
 function LPipelineStep:getData(key) end
 ```
 
+#### Description
+
+Retrieves a metadata value previously stored with setData.
+
+Parameters:
+
+- `key` (`string`, required): Metadata key to look up.
+
+Returns: `string` - The stored value, or nil if the key does not exist.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -1440,13 +1608,7 @@ end
 
 ### LPipelineStep:getDelay
 
-`LPipelineStep:getDelay() -> number`
-
-Returns the configured delay for this step.
-
-**Returns**: `number` - Delay in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the configured delay for this step.
@@ -1454,9 +1616,15 @@ Returns the configured delay for this step.
 function LPipelineStep:getDelay() end
 ```
 
+#### Description
+
+Returns the configured delay for this step.
+
+Returns: `number` - Delay in seconds.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -1468,13 +1636,7 @@ end
 
 ### LPipelineStep:getDependencies
 
-`LPipelineStep:getDependencies() -> string[]`
-
-Returns a list of step names that this step depends on.
-
-**Returns**: `string[]` - Dependency step name strings.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a list of step names that this step depends on.
@@ -1482,9 +1644,15 @@ Returns a list of step names that this step depends on.
 function LPipelineStep:getDependencies() end
 ```
 
+#### Description
+
+Returns a list of step names that this step depends on.
+
+Returns: `string[]` - Dependency step name strings.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -1497,13 +1665,7 @@ end
 
 ### LPipelineStep:getDependencyCount
 
-`LPipelineStep:getDependencyCount() -> integer`
-
-Returns the number of dependencies this step has.
-
-**Returns**: `integer` - Dependency count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of dependencies this step has.
@@ -1511,9 +1673,15 @@ Returns the number of dependencies this step has.
 function LPipelineStep:getDependencyCount() end
 ```
 
+#### Description
+
+Returns the number of dependencies this step has.
+
+Returns: `integer` - Dependency count.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -1525,13 +1693,7 @@ end
 
 ### LPipelineStep:getDuration
 
-`LPipelineStep:getDuration() -> number`
-
-Returns how long this step took to execute in seconds (measured from start to completion or failure).
-
-**Returns**: `number` - Duration in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns how long this step took to execute in seconds (measured from start to completion or failure).
@@ -1539,9 +1701,15 @@ Returns how long this step took to execute in seconds (measured from start to co
 function LPipelineStep:getDuration() end
 ```
 
+#### Description
+
+Returns how long this step took to execute in seconds (measured from start to completion or failure).
+
+Returns: `number` - Duration in seconds.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -1554,13 +1722,7 @@ end
 
 ### LPipelineStep:getError
 
-`LPipelineStep:getError() -> string`
-
-Returns the error message if this step failed, or nil if it has not failed.
-
-**Returns**: `string` - Error message, or nil if the step has not failed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the error message if this step failed, or nil if it has not failed.
@@ -1568,9 +1730,15 @@ Returns the error message if this step failed, or nil if it has not failed.
 function LPipelineStep:getError() end
 ```
 
+#### Description
+
+Returns the error message if this step failed, or nil if it has not failed.
+
+Returns: `string` - Error message, or nil if the step has not failed.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -1582,13 +1750,7 @@ end
 
 ### LPipelineStep:getName
 
-`LPipelineStep:getName() -> string`
-
-Returns the unique name of this pipeline step.
-
-**Returns**: `string` - The step name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the unique name of this pipeline step.
@@ -1596,9 +1758,15 @@ Returns the unique name of this pipeline step.
 function LPipelineStep:getName() end
 ```
 
+#### Description
+
+Returns the unique name of this pipeline step.
+
+Returns: `string` - The step name.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -1609,13 +1777,7 @@ end
 
 ### LPipelineStep:getRetryCount
 
-`LPipelineStep:getRetryCount() -> integer`
-
-Returns the configured retry count for this step.
-
-**Returns**: `integer` - Number of retry attempts.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the configured retry count for this step.
@@ -1623,9 +1785,15 @@ Returns the configured retry count for this step.
 function LPipelineStep:getRetryCount() end
 ```
 
+#### Description
+
+Returns the configured retry count for this step.
+
+Returns: `integer` - Number of retry attempts.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -1638,13 +1806,7 @@ end
 
 ### LPipelineStep:getStatus
 
-`LPipelineStep:getStatus() -> string`
-
-Returns the current execution status of this step as a string ("pending", "waiting", "running", "completed", "failed", "skipped", "cancelled").
-
-**Returns**: `string` - Current step status.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current execution status of this step as a string ("pending", "waiting", "running", "completed", "failed", "skipped", "cancelled").
@@ -1652,9 +1814,15 @@ Returns the current execution status of this step as a string ("pending", "waiti
 function LPipelineStep:getStatus() end
 ```
 
+#### Description
+
+Returns the current execution status of this step as a string ("pending", "waiting", "running", "completed", "failed", "skipped", "cancelled").
+
+Returns: `string` - Current step status.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -1667,13 +1835,7 @@ end
 
 ### LPipelineStep:getTag
 
-`LPipelineStep:getTag() -> string`
-
-Returns the tag assigned to this step, or nil if none is set.
-
-**Returns**: `string` - The step tag, or nil if no tag is assigned.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the tag assigned to this step, or nil if none is set.
@@ -1681,9 +1843,15 @@ Returns the tag assigned to this step, or nil if none is set.
 function LPipelineStep:getTag() end
 ```
 
+#### Description
+
+Returns the tag assigned to this step, or nil if none is set.
+
+Returns: `string` - The step tag, or nil if no tag is assigned.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -1695,13 +1863,7 @@ end
 
 ### LPipelineStep:getTimeout
 
-`LPipelineStep:getTimeout() -> number`
-
-Returns the configured timeout for this step, or 0 if none is set.
-
-**Returns**: `number` - Timeout in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the configured timeout for this step, or 0 if none is set.
@@ -1709,9 +1871,15 @@ Returns the configured timeout for this step, or 0 if none is set.
 function LPipelineStep:getTimeout() end
 ```
 
+#### Description
+
+Returns the configured timeout for this step, or 0 if none is set.
+
+Returns: `number` - Timeout in seconds.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -1723,13 +1891,7 @@ end
 
 ### LPipelineStep:isAsync
 
-`LPipelineStep:isAsync() -> boolean`
-
-Returns whether this step is configured for asynchronous coroutine execution.
-
-**Returns**: `boolean` - True if the step runs as a coroutine.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this step is configured for asynchronous coroutine execution.
@@ -1737,9 +1899,15 @@ Returns whether this step is configured for asynchronous coroutine execution.
 function LPipelineStep:isAsync() end
 ```
 
+#### Description
+
+Returns whether this step is configured for asynchronous coroutine execution.
+
+Returns: `boolean` - True if the step runs as a coroutine.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -1751,13 +1919,7 @@ end
 
 ### LPipelineStep:isOptional
 
-`LPipelineStep:isOptional() -> boolean`
-
-Returns whether this step is marked as optional.
-
-**Returns**: `boolean` - True if the step is optional.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this step is marked as optional.
@@ -1765,9 +1927,15 @@ Returns whether this step is marked as optional.
 function LPipelineStep:isOptional() end
 ```
 
+#### Description
+
+Returns whether this step is marked as optional.
+
+Returns: `boolean` - True if the step is optional.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -1779,15 +1947,7 @@ end
 
 ### LPipelineStep:setAsync
 
-`LPipelineStep:setAsync(enabled: boolean)`
-
-Marks this step as asynchronous. Async steps run as coroutines and can yield between frames.
-
-**Parameters**
-
-- `enabled` (`boolean`, required): True to enable coroutine-based async execution.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Marks this step as asynchronous. Async steps run as coroutines and can yield between frames.
@@ -1795,9 +1955,17 @@ Marks this step as asynchronous. Async steps run as coroutines and can yield bet
 function LPipelineStep:setAsync(enabled) end
 ```
 
+#### Description
+
+Marks this step as asynchronous. Async steps run as coroutines and can yield between frames.
+
+Parameters:
+
+- `enabled` (`boolean`, required): True to enable coroutine-based async execution.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -1809,15 +1977,7 @@ end
 
 ### LPipelineStep:setCallback
 
-`LPipelineStep:setCallback(callback: function)`
-
-Sets the main execution function for this step. Called when the step runs.
-
-**Parameters**
-
-- `callback` (`function`, required): A function receiving the pipeline context table and optionally returning a result value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the main execution function for this step. Called when the step runs.
@@ -1825,9 +1985,17 @@ Sets the main execution function for this step. Called when the step runs.
 function LPipelineStep:setCallback(callback) end
 ```
 
+#### Description
+
+Sets the main execution function for this step. Called when the step runs.
+
+Parameters:
+
+- `callback` (`function`, required): A function receiving the pipeline context table and optionally returning a result value.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -1841,15 +2009,7 @@ end
 
 ### LPipelineStep:setCondition
 
-`LPipelineStep:setCondition([condition]: function)`
-
-Sets a predicate function that determines whether this step should execute. If the predicate returns false, the step is skipped.
-
-**Parameters**
-
-- `condition` (`function`, optional): A function receiving the context table and returning a boolean. Pass nil to remove the condition.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets a predicate function that determines whether this step should execute. If the predicate returns false, the step is skipped.
@@ -1857,9 +2017,17 @@ Sets a predicate function that determines whether this step should execute. If t
 function LPipelineStep:setCondition(condition) end
 ```
 
+#### Description
+
+Sets a predicate function that determines whether this step should execute. If the predicate returns false, the step is skipped.
+
+Parameters:
+
+- `condition` (`function`, optional): A function receiving the context table and returning a boolean. Pass nil to remove the condition.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -1873,16 +2041,7 @@ end
 
 ### LPipelineStep:setData
 
-`LPipelineStep:setData(key: string, value: string)`
-
-Stores a key-value metadata pair on this step. Useful for passing configuration between steps.
-
-**Parameters**
-
-- `key` (`string`, required): Metadata key.
-- `value` (`string`, required): Metadata value.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Stores a key-value metadata pair on this step. Useful for passing configuration between steps.
@@ -1891,9 +2050,18 @@ Stores a key-value metadata pair on this step. Useful for passing configuration 
 function LPipelineStep:setData(key, value) end
 ```
 
+#### Description
+
+Stores a key-value metadata pair on this step. Useful for passing configuration between steps.
+
+Parameters:
+
+- `key` (`string`, required): Metadata key.
+- `value` (`string`, required): Metadata value.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -1905,15 +2073,7 @@ end
 
 ### LPipelineStep:setDelay
 
-`LPipelineStep:setDelay(seconds: number)`
-
-Sets a delay in seconds before this step begins execution after its dependencies are satisfied.
-
-**Parameters**
-
-- `seconds` (`number`, required): Delay duration in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets a delay in seconds before this step begins execution after its dependencies are satisfied.
@@ -1921,9 +2081,17 @@ Sets a delay in seconds before this step begins execution after its dependencies
 function LPipelineStep:setDelay(seconds) end
 ```
 
+#### Description
+
+Sets a delay in seconds before this step begins execution after its dependencies are satisfied.
+
+Parameters:
+
+- `seconds` (`number`, required): Delay duration in seconds.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -1935,15 +2103,7 @@ end
 
 ### LPipelineStep:setOnError
 
-`LPipelineStep:setOnError([callback]: function)`
-
-Sets an error handler callback invoked when this step fails after all retries are exhausted.
-
-**Parameters**
-
-- `callback` (`function`, optional): A function receiving (stepName, errorMessage). Pass nil to remove.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets an error handler callback invoked when this step fails after all retries are exhausted.
@@ -1951,9 +2111,17 @@ Sets an error handler callback invoked when this step fails after all retries ar
 function LPipelineStep:setOnError(callback) end
 ```
 
+#### Description
+
+Sets an error handler callback invoked when this step fails after all retries are exhausted.
+
+Parameters:
+
+- `callback` (`function`, optional): A function receiving (stepName, errorMessage). Pass nil to remove.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -1966,15 +2134,7 @@ end
 
 ### LPipelineStep:setOptional
 
-`LPipelineStep:setOptional(optional: boolean)`
-
-Marks this step as optional. Optional steps do not cause pipeline failure if they fail.
-
-**Parameters**
-
-- `optional` (`boolean`, required): True to mark the step as optional.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Marks this step as optional. Optional steps do not cause pipeline failure if they fail.
@@ -1982,9 +2142,17 @@ Marks this step as optional. Optional steps do not cause pipeline failure if the
 function LPipelineStep:setOptional(optional) end
 ```
 
+#### Description
+
+Marks this step as optional. Optional steps do not cause pipeline failure if they fail.
+
+Parameters:
+
+- `optional` (`boolean`, required): True to mark the step as optional.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -1998,15 +2166,7 @@ end
 
 ### LPipelineStep:setRetryCount
 
-`LPipelineStep:setRetryCount(count: integer)`
-
-Sets how many times this step should be retried after a failure before being marked as failed.
-
-**Parameters**
-
-- `count` (`integer`, required): Number of retry attempts (0 means no retries).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets how many times this step should be retried after a failure before being marked as failed.
@@ -2014,9 +2174,17 @@ Sets how many times this step should be retried after a failure before being mar
 function LPipelineStep:setRetryCount(count) end
 ```
 
+#### Description
+
+Sets how many times this step should be retried after a failure before being marked as failed.
+
+Parameters:
+
+- `count` (`integer`, required): Number of retry attempts (0 means no retries).
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -2029,15 +2197,7 @@ end
 
 ### LPipelineStep:setRetryDelay
 
-`LPipelineStep:setRetryDelay(seconds: number)`
-
-Sets the delay in seconds between retry attempts for this step.
-
-**Parameters**
-
-- `seconds` (`number`, required): Delay between retries.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the delay in seconds between retry attempts for this step.
@@ -2045,9 +2205,17 @@ Sets the delay in seconds between retry attempts for this step.
 function LPipelineStep:setRetryDelay(seconds) end
 ```
 
+#### Description
+
+Sets the delay in seconds between retry attempts for this step.
+
+Parameters:
+
+- `seconds` (`number`, required): Delay between retries.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -2060,15 +2228,7 @@ end
 
 ### LPipelineStep:setTag
 
-`LPipelineStep:setTag(tag: string)`
-
-Assigns a tag string to this step for grouping and filtering purposes.
-
-**Parameters**
-
-- `tag` (`string`, required): A category tag for this step.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Assigns a tag string to this step for grouping and filtering purposes.
@@ -2076,9 +2236,17 @@ Assigns a tag string to this step for grouping and filtering purposes.
 function LPipelineStep:setTag(tag) end
 ```
 
+#### Description
+
+Assigns a tag string to this step for grouping and filtering purposes.
+
+Parameters:
+
+- `tag` (`string`, required): A category tag for this step.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -2091,15 +2259,7 @@ end
 
 ### LPipelineStep:setTimeout
 
-`LPipelineStep:setTimeout(seconds: number)`
-
-Sets a maximum execution time for this step. If exceeded in async mode, the step may be considered failed.
-
-**Parameters**
-
-- `seconds` (`number`, required): Timeout duration in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets a maximum execution time for this step. If exceeded in async mode, the step may be considered failed.
@@ -2107,9 +2267,17 @@ Sets a maximum execution time for this step. If exceeded in async mode, the step
 function LPipelineStep:setTimeout(seconds) end
 ```
 
+#### Description
+
+Sets a maximum execution time for this step. If exceeded in async mode, the step may be considered failed.
+
+Parameters:
+
+- `seconds` (`number`, required): Timeout duration in seconds.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -2121,13 +2289,7 @@ end
 
 ### LPipelineStep:type
 
-`LPipelineStep:type() -> string`
-
-Returns the type name of this object ("LPipelineStep").
-
-**Returns**: `string` - Type identifier.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this object ("LPipelineStep").
@@ -2135,9 +2297,15 @@ Returns the type name of this object ("LPipelineStep").
 function LPipelineStep:type() end
 ```
 
+#### Description
+
+Returns the type name of this object ("LPipelineStep").
+
+Returns: `string` - Type identifier.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do
@@ -2148,17 +2316,7 @@ end
 
 ### LPipelineStep:typeOf
 
-`LPipelineStep:typeOf(name: string) -> boolean`
-
-Checks whether this object is of a given type name. Accepts "LPipelineStep", "PipelineStep", or "Object".
-
-**Parameters**
-
-- `name` (`string`, required): Type name to check against.
-
-**Returns**: `boolean` - True if the type matches.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this object is of a given type name. Accepts "LPipelineStep", "PipelineStep", or "Object".
@@ -2167,9 +2325,19 @@ Checks whether this object is of a given type name. Accepts "LPipelineStep", "Pi
 function LPipelineStep:typeOf(name) end
 ```
 
+#### Description
+
+Checks whether this object is of a given type name. Accepts "LPipelineStep", "PipelineStep", or "Object".
+
+Parameters:
+
+- `name` (`string`, required): Type name to check against.
+
+Returns: `boolean` - True if the type matches.
+
 #### Example
 
-Exact example from [pipeline.lua](../blob/main/content/examples/pipeline.lua):
+Source: [pipeline.lua](../blob/main/content/examples/pipeline.lua)
 
 ```lua
 do

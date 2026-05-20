@@ -14,46 +14,124 @@
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
   - [lurek.spine.animationFromJson](#lurekspineanimationfromjson)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.spine.newSkeleton](#lurekspinenewskeleton)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.spine.newSkeletonAnimation](#lurekspinenewskeletonanimation)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔷 Module Types](#module-types)
   - [LSkeleton](#lskeleton)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSkeletonAnimation](#lskeletonanimation)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
   - [LSkeleton:addAnimation](#lskeletonaddanimation)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSkeleton:addBone](#lskeletonaddbone)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSkeleton:addChildBone](#lskeletonaddchildbone)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSkeleton:addIKConstraint](#lskeletonaddikconstraint)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSkeleton:addSkin](#lskeletonaddskin)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSkeleton:addSlot](#lskeletonaddslot)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSkeleton:blendAnimation](#lskeletonblendanimation)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSkeleton:boneCount](#lskeletonbonecount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSkeleton:drawToImage](#lskeletondrawtoimage)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSkeleton:findBone](#lskeletonfindbone)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSkeleton:findSlot](#lskeletonfindslot)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSkeleton:getAnimationTime](#lskeletongetanimationtime)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSkeleton:getBoneWorld](#lskeletongetboneworld)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSkeleton:getSkin](#lskeletongetskin)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSkeleton:playAnimation](#lskeletonplayanimation)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSkeleton:setIKTarget](#lskeletonsetiktarget)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSkeleton:setPosition](#lskeletonsetposition)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSkeleton:setSkin](#lskeletonsetskin)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSkeleton:setSkinMapping](#lskeletonsetskinmapping)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSkeleton:slotCount](#lskeletonslotcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSkeleton:stopAnimation](#lskeletonstopanimation)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSkeleton:type](#lskeletontype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSkeleton:typeOf](#lskeletontypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSkeleton:updateAnimation](#lskeletonupdateanimation)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSkeleton:updateWorldTransforms](#lskeletonupdateworldtransforms)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSkeletonAnimation:addEventKey](#lskeletonanimationaddeventkey)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSkeletonAnimation:addKeyframe](#lskeletonanimationaddkeyframe)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSkeletonAnimation:getDuration](#lskeletonanimationgetduration)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSkeletonAnimation:getEvents](#lskeletonanimationgetevents)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSkeletonAnimation:getTimelineCount](#lskeletonanimationgettimelinecount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSkeletonAnimation:poseAt](#lskeletonanimationposeat)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSkeletonAnimation:reverse](#lskeletonanimationreverse)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSkeletonAnimation:type](#lskeletonanimationtype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSkeletonAnimation:typeOf](#lskeletonanimationtypeof)
+    - [Definition](#definition)
+    - [Description](#description)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -100,19 +178,28 @@ lurek.spine.newSkeletonAnimation(name: string, duration: number) -> LSkeletonAni
 
 ### lurek.spine.animationFromJson
 
-`lurek.spine.animationFromJson(json: string) -> LSkeletonAnimation`
+#### Definition
+
+```lua
+--- Parses a JSON string into a SkeletonAnimation. Returns nil if parsing fails or the format is invalid.
+---@param json string JSON string describing the animation (Spine-compatible format).
+---@return LSkeletonAnimation Parsed animation userdata, or nil on failure.
+lurek.spine.animationFromJson = function(json) end
+```
+
+#### Description
 
 Parses a JSON string into a SkeletonAnimation. Returns nil if parsing fails or the format is invalid.
 
-**Parameters**
+Parameters:
 
 - `json` (`string`, required): JSON string describing the animation (Spine-compatible format).
 
-**Returns**: `LSkeletonAnimation` - Parsed animation userdata, or nil on failure.
+Returns: `LSkeletonAnimation` - Parsed animation userdata, or nil on failure.
 
 #### Example
 
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+Source: [spine.lua](../blob/main/content/examples/spine.lua)
 
 ```lua
 do
@@ -124,19 +211,28 @@ end
 
 ### lurek.spine.newSkeleton
 
-`lurek.spine.newSkeleton(name: string) -> LSkeleton`
+#### Definition
+
+```lua
+--- Creates a new empty skeleton with the given name. Add bones and slots to build the hierarchy.
+---@param name string Name identifier for this skeleton.
+---@return LSkeleton A new skeleton userdata.
+lurek.spine.newSkeleton = function(name) end
+```
+
+#### Description
 
 Creates a new empty skeleton with the given name. Add bones and slots to build the hierarchy.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, required): Name identifier for this skeleton.
 
-**Returns**: `LSkeleton` - A new skeleton userdata.
+Returns: `LSkeleton` - A new skeleton userdata.
 
 #### Example
 
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+Source: [spine.lua](../blob/main/content/examples/spine.lua)
 
 ```lua
 do
@@ -150,20 +246,30 @@ end
 
 ### lurek.spine.newSkeletonAnimation
 
-`lurek.spine.newSkeletonAnimation(name: string, duration: number) -> LSkeletonAnimation`
+#### Definition
+
+```lua
+--- Creates a new empty animation with the given name and duration. Add keyframes to define motion.
+---@param name string Name identifier for this animation (used with playAnimation).
+---@param duration number Total duration of the animation in seconds.
+---@return LSkeletonAnimation A new animation userdata.
+lurek.spine.newSkeletonAnimation = function(name, duration) end
+```
+
+#### Description
 
 Creates a new empty animation with the given name and duration. Add keyframes to define motion.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, required): Name identifier for this animation (used with playAnimation).
 - `duration` (`number`, required): Total duration of the animation in seconds.
 
-**Returns**: `LSkeletonAnimation` - A new animation userdata.
+Returns: `LSkeletonAnimation` - A new animation userdata.
 
 #### Example
 
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+Source: [spine.lua](../blob/main/content/examples/spine.lua)
 
 ```lua
 do
@@ -181,9 +287,7 @@ end
 
 ### LSkeleton
 
-Lua-facing skeleton object providing bone hierarchy, slots, IK, skins, and animation playback.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-facing skeleton object providing bone hierarchy, slots, IK, skins, and animation playback.
@@ -191,9 +295,13 @@ Lua-facing skeleton object providing bone hierarchy, slots, IK, skins, and anima
 LSkeleton = {}
 ```
 
+#### Description
+
+Lua-facing skeleton object providing bone hierarchy, slots, IK, skins, and animation playback.
+
 #### Example
 
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+Source: [spine.lua](../blob/main/content/examples/spine.lua)
 
 ```lua
 do
@@ -207,9 +315,7 @@ end
 
 ### LSkeletonAnimation
 
-Lua-facing animation object containing bone timelines, keyframes, events, and easing curves.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-facing animation object containing bone timelines, keyframes, events, and easing curves.
@@ -217,9 +323,13 @@ Lua-facing animation object containing bone timelines, keyframes, events, and ea
 LSkeletonAnimation = {}
 ```
 
+#### Description
+
+Lua-facing animation object containing bone timelines, keyframes, events, and easing curves.
+
 #### Example
 
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+Source: [spine.lua](../blob/main/content/examples/spine.lua)
 
 ```lua
 do
@@ -236,15 +346,7 @@ end
 
 ### LSkeleton:addAnimation
 
-`LSkeleton:addAnimation(anim: LSkeletonAnimation)`
-
-Registers a SkeletonAnimation object with this skeleton so it can be played by name.
-
-**Parameters**
-
-- `anim` (`LSkeletonAnimation`, required): The animation userdata to register. Consumed by this call.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Registers a SkeletonAnimation object with this skeleton so it can be played by name.
@@ -252,9 +354,17 @@ Registers a SkeletonAnimation object with this skeleton so it can be played by n
 function LSkeleton:addAnimation(anim) end
 ```
 
+#### Description
+
+Registers a SkeletonAnimation object with this skeleton so it can be played by name.
+
+Parameters:
+
+- `anim` (`LSkeletonAnimation`, required): The animation userdata to register. Consumed by this call.
+
 #### Example
 
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+Source: [spine.lua](../blob/main/content/examples/spine.lua)
 
 ```lua
 do
@@ -266,18 +376,7 @@ end
 
 ### LSkeleton:addBone
 
-`LSkeleton:addBone(name: string, [opts]: table) -> integer`
-
-Adds a root-level bone to the skeleton with optional transform properties.
-
-**Parameters**
-
-- `name` (`string`, required): Unique name for this bone.
-- `opts` (`table`, optional): Optional table with keys: x, y, rotation, scale_x, scale_y.
-
-**Returns**: `integer` - Zero-based index of the newly added bone.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a root-level bone to the skeleton with optional transform properties.
@@ -287,9 +386,20 @@ Adds a root-level bone to the skeleton with optional transform properties.
 function LSkeleton:addBone(name, opts) end
 ```
 
+#### Description
+
+Adds a root-level bone to the skeleton with optional transform properties.
+
+Parameters:
+
+- `name` (`string`, required): Unique name for this bone.
+- `opts` (`table`, optional): Optional table with keys: x, y, rotation, scale_x, scale_y.
+
+Returns: `integer` - Zero-based index of the newly added bone.
+
 #### Example
 
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+Source: [spine.lua](../blob/main/content/examples/spine.lua)
 
 ```lua
 do
@@ -302,19 +412,7 @@ end
 
 ### LSkeleton:addChildBone
 
-`LSkeleton:addChildBone(name: string, parent_idx: integer, [opts]: table) -> integer`
-
-Adds a bone as a child of an existing bone, inheriting its parent's world transform.
-
-**Parameters**
-
-- `name` (`string`, required): Unique name for this bone.
-- `parent_idx` (`integer`, required): Zero-based index of the parent bone.
-- `opts` (`table`, optional): Optional table with keys: x, y, rotation, scale_x, scale_y (local offsets from parent).
-
-**Returns**: `integer` - Zero-based index of the newly added child bone.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a bone as a child of an existing bone, inheriting its parent's world transform.
@@ -325,9 +423,21 @@ Adds a bone as a child of an existing bone, inheriting its parent's world transf
 function LSkeleton:addChildBone(name, parent_idx, opts) end
 ```
 
+#### Description
+
+Adds a bone as a child of an existing bone, inheriting its parent's world transform.
+
+Parameters:
+
+- `name` (`string`, required): Unique name for this bone.
+- `parent_idx` (`integer`, required): Zero-based index of the parent bone.
+- `opts` (`table`, optional): Optional table with keys: x, y, rotation, scale_x, scale_y (local offsets from parent).
+
+Returns: `integer` - Zero-based index of the newly added child bone.
+
 #### Example
 
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+Source: [spine.lua](../blob/main/content/examples/spine.lua)
 
 ```lua
 do
@@ -341,19 +451,7 @@ end
 
 ### LSkeleton:addIKConstraint
 
-`LSkeleton:addIKConstraint(name: string, chain: table, [bend_positive]: boolean) -> integer`
-
-Adds an inverse-kinematics constraint that controls a chain of bones to reach a target position.
-
-**Parameters**
-
-- `name` (`string`, required): Unique name for this IK constraint (used with setIKTarget).
-- `chain` (`table`, required): Array of bone indices forming the IK chain from root to tip.
-- `bend_positive` (`boolean`, optional): Whether the joint bends in the positive direction. Defaults to true.
-
-**Returns**: `integer` - Index of the newly added constraint.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds an inverse-kinematics constraint that controls a chain of bones to reach a target position.
@@ -364,9 +462,21 @@ Adds an inverse-kinematics constraint that controls a chain of bones to reach a 
 function LSkeleton:addIKConstraint(name, chain, bend_positive) end
 ```
 
+#### Description
+
+Adds an inverse-kinematics constraint that controls a chain of bones to reach a target position.
+
+Parameters:
+
+- `name` (`string`, required): Unique name for this IK constraint (used with setIKTarget).
+- `chain` (`table`, required): Array of bone indices forming the IK chain from root to tip.
+- `bend_positive` (`boolean`, optional): Whether the joint bends in the positive direction. Defaults to true.
+
+Returns: `integer` - Index of the newly added constraint.
+
 #### Example
 
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+Source: [spine.lua](../blob/main/content/examples/spine.lua)
 
 ```lua
 do
@@ -379,15 +489,7 @@ end
 
 ### LSkeleton:addSkin
 
-`LSkeleton:addSkin(name: string)`
-
-Registers a new named skin on this skeleton. Skins remap slot attachments for visual variants.
-
-**Parameters**
-
-- `name` (`string`, required): Unique name for the skin.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Registers a new named skin on this skeleton. Skins remap slot attachments for visual variants.
@@ -395,9 +497,17 @@ Registers a new named skin on this skeleton. Skins remap slot attachments for vi
 function LSkeleton:addSkin(name) end
 ```
 
+#### Description
+
+Registers a new named skin on this skeleton. Skins remap slot attachments for visual variants.
+
+Parameters:
+
+- `name` (`string`, required): Unique name for the skin.
+
 #### Example
 
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+Source: [spine.lua](../blob/main/content/examples/spine.lua)
 
 ```lua
 do
@@ -410,19 +520,7 @@ end
 
 ### LSkeleton:addSlot
 
-`LSkeleton:addSlot(name: string, bone_idx: integer, [attachment]: string) -> integer`
-
-Adds a slot attached to a specific bone, optionally assigning a default attachment name.
-
-**Parameters**
-
-- `name` (`string`, required): Unique name for this slot.
-- `bone_idx` (`integer`, required): Zero-based index of the bone this slot is attached to.
-- `attachment` (`string`, optional): Optional default attachment name for this slot.
-
-**Returns**: `integer` - Zero-based index of the newly added slot.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a slot attached to a specific bone, optionally assigning a default attachment name.
@@ -433,9 +531,21 @@ Adds a slot attached to a specific bone, optionally assigning a default attachme
 function LSkeleton:addSlot(name, bone_idx, attachment) end
 ```
 
+#### Description
+
+Adds a slot attached to a specific bone, optionally assigning a default attachment name.
+
+Parameters:
+
+- `name` (`string`, required): Unique name for this slot.
+- `bone_idx` (`integer`, required): Zero-based index of the bone this slot is attached to.
+- `attachment` (`string`, optional): Optional default attachment name for this slot.
+
+Returns: `integer` - Zero-based index of the newly added slot.
+
 #### Example
 
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+Source: [spine.lua](../blob/main/content/examples/spine.lua)
 
 ```lua
 do
@@ -448,17 +558,7 @@ end
 
 ### LSkeleton:blendAnimation
 
-`LSkeleton:blendAnimation(anim: LSkeletonAnimation, time: number, [blend_weight]: number)`
-
-Blends an animation pose onto the skeleton at a given time with a weight factor for smooth transitions.
-
-**Parameters**
-
-- `anim` (`LSkeletonAnimation`, required): The animation to sample and blend from.
-- `time` (`number`, required): The time position to sample within the animation.
-- `blend_weight` (`number`, optional): Blend factor from 0.0 (no effect) to 1.0 (full). Defaults to 1.0.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Blends an animation pose onto the skeleton at a given time with a weight factor for smooth transitions.
@@ -468,9 +568,19 @@ Blends an animation pose onto the skeleton at a given time with a weight factor 
 function LSkeleton:blendAnimation(anim, time, blend_weight) end
 ```
 
+#### Description
+
+Blends an animation pose onto the skeleton at a given time with a weight factor for smooth transitions.
+
+Parameters:
+
+- `anim` (`LSkeletonAnimation`, required): The animation to sample and blend from.
+- `time` (`number`, required): The time position to sample within the animation.
+- `blend_weight` (`number`, optional): Blend factor from 0.0 (no effect) to 1.0 (full). Defaults to 1.0.
+
 #### Example
 
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+Source: [spine.lua](../blob/main/content/examples/spine.lua)
 
 ```lua
 do
@@ -484,13 +594,7 @@ end
 
 ### LSkeleton:boneCount
 
-`LSkeleton:boneCount() -> integer`
-
-Returns the total number of bones in the skeleton.
-
-**Returns**: `integer` - Bone count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the total number of bones in the skeleton.
@@ -498,9 +602,15 @@ Returns the total number of bones in the skeleton.
 function LSkeleton:boneCount() end
 ```
 
+#### Description
+
+Returns the total number of bones in the skeleton.
+
+Returns: `integer` - Bone count.
+
 #### Example
 
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+Source: [spine.lua](../blob/main/content/examples/spine.lua)
 
 ```lua
 do
@@ -512,18 +622,7 @@ end
 
 ### LSkeleton:drawToImage
 
-`LSkeleton:drawToImage(w: integer, h: integer) -> LImageData`
-
-Renders the skeleton into an in-memory image of the given dimensions and returns it as LImageData userdata.
-
-**Parameters**
-
-- `w` (`integer`, required): Width of the output image in pixels.
-- `h` (`integer`, required): Height of the output image in pixels.
-
-**Returns**: `LImageData` - A new image data object containing the rendered skeleton.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Renders the skeleton into an in-memory image of the given dimensions and returns it as LImageData userdata.
@@ -533,9 +632,20 @@ Renders the skeleton into an in-memory image of the given dimensions and returns
 function LSkeleton:drawToImage(w, h) end
 ```
 
+#### Description
+
+Renders the skeleton into an in-memory image of the given dimensions and returns it as LImageData userdata.
+
+Parameters:
+
+- `w` (`integer`, required): Width of the output image in pixels.
+- `h` (`integer`, required): Height of the output image in pixels.
+
+Returns: `LImageData` - A new image data object containing the rendered skeleton.
+
 #### Example
 
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+Source: [spine.lua](../blob/main/content/examples/spine.lua)
 
 ```lua
 do
@@ -549,17 +659,7 @@ end
 
 ### LSkeleton:findBone
 
-`LSkeleton:findBone(name: string) -> integer`
-
-Searches for a bone by name and returns its zero-based index, or nil if not found.
-
-**Parameters**
-
-- `name` (`string`, required): Name of the bone to find.
-
-**Returns**: `integer` - Zero-based bone index, or nil if no bone with that name exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Searches for a bone by name and returns its zero-based index, or nil if not found.
@@ -568,9 +668,19 @@ Searches for a bone by name and returns its zero-based index, or nil if not foun
 function LSkeleton:findBone(name) end
 ```
 
+#### Description
+
+Searches for a bone by name and returns its zero-based index, or nil if not found.
+
+Parameters:
+
+- `name` (`string`, required): Name of the bone to find.
+
+Returns: `integer` - Zero-based bone index, or nil if no bone with that name exists.
+
 #### Example
 
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+Source: [spine.lua](../blob/main/content/examples/spine.lua)
 
 ```lua
 do
@@ -582,17 +692,7 @@ end
 
 ### LSkeleton:findSlot
 
-`LSkeleton:findSlot(name: string) -> integer`
-
-Searches for a slot by name and returns its zero-based index, or nil if not found.
-
-**Parameters**
-
-- `name` (`string`, required): Name of the slot to find.
-
-**Returns**: `integer` - Zero-based slot index, or nil if no slot with that name exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Searches for a slot by name and returns its zero-based index, or nil if not found.
@@ -601,9 +701,19 @@ Searches for a slot by name and returns its zero-based index, or nil if not foun
 function LSkeleton:findSlot(name) end
 ```
 
+#### Description
+
+Searches for a slot by name and returns its zero-based index, or nil if not found.
+
+Parameters:
+
+- `name` (`string`, required): Name of the slot to find.
+
+Returns: `integer` - Zero-based slot index, or nil if no slot with that name exists.
+
 #### Example
 
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+Source: [spine.lua](../blob/main/content/examples/spine.lua)
 
 ```lua
 do
@@ -615,13 +725,7 @@ end
 
 ### LSkeleton:getAnimationTime
 
-`LSkeleton:getAnimationTime() -> number`
-
-Returns the current playback time of the active animation in seconds.
-
-**Returns**: `number` - Current animation time position.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current playback time of the active animation in seconds.
@@ -629,9 +733,15 @@ Returns the current playback time of the active animation in seconds.
 function LSkeleton:getAnimationTime() end
 ```
 
+#### Description
+
+Returns the current playback time of the active animation in seconds.
+
+Returns: `number` - Current animation time position.
+
 #### Example
 
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+Source: [spine.lua](../blob/main/content/examples/spine.lua)
 
 ```lua
 do
@@ -644,17 +754,7 @@ end
 
 ### LSkeleton:getBoneWorld
 
-`LSkeleton:getBoneWorld(idx: integer) -> table`
-
-Returns the final world-space transform of a bone after hierarchy resolution.
-
-**Parameters**
-
-- `idx` (`integer`, required): Zero-based bone index.
-
-**Returns**: `table` - Table with keys x, y, rotation, scale_x, scale_y — or nil if the index is invalid.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the final world-space transform of a bone after hierarchy resolution.
@@ -663,9 +763,19 @@ Returns the final world-space transform of a bone after hierarchy resolution.
 function LSkeleton:getBoneWorld(idx) end
 ```
 
+#### Description
+
+Returns the final world-space transform of a bone after hierarchy resolution.
+
+Parameters:
+
+- `idx` (`integer`, required): Zero-based bone index.
+
+Returns: `table` - Table with keys x, y, rotation, scale_x, scale_y — or nil if the index is invalid.
+
 #### Example
 
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+Source: [spine.lua](../blob/main/content/examples/spine.lua)
 
 ```lua
 do
@@ -679,13 +789,7 @@ end
 
 ### LSkeleton:getSkin
 
-`LSkeleton:getSkin() -> string`
-
-Returns the name of the currently active skin, or nil if no skin is set.
-
-**Returns**: `string` - Active skin name or nil.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the name of the currently active skin, or nil if no skin is set.
@@ -693,9 +797,15 @@ Returns the name of the currently active skin, or nil if no skin is set.
 function LSkeleton:getSkin() end
 ```
 
+#### Description
+
+Returns the name of the currently active skin, or nil if no skin is set.
+
+Returns: `string` - Active skin name or nil.
+
 #### Example
 
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+Source: [spine.lua](../blob/main/content/examples/spine.lua)
 
 ```lua
 do
@@ -708,18 +818,7 @@ end
 
 ### LSkeleton:playAnimation
 
-`LSkeleton:playAnimation(name: string, [looping]: boolean) -> boolean`
-
-Starts playing a named animation on this skeleton. Optionally loops.
-
-**Parameters**
-
-- `name` (`string`, required): Name of the animation to play (must have been added via addAnimation).
-- `looping` (`boolean`, optional): Whether to loop the animation. Defaults to true.
-
-**Returns**: `boolean` - True if the animation was found and started, false otherwise.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Starts playing a named animation on this skeleton. Optionally loops.
@@ -729,9 +828,20 @@ Starts playing a named animation on this skeleton. Optionally loops.
 function LSkeleton:playAnimation(name, looping) end
 ```
 
+#### Description
+
+Starts playing a named animation on this skeleton. Optionally loops.
+
+Parameters:
+
+- `name` (`string`, required): Name of the animation to play (must have been added via addAnimation).
+- `looping` (`boolean`, optional): Whether to loop the animation. Defaults to true.
+
+Returns: `boolean` - True if the animation was found and started, false otherwise.
+
 #### Example
 
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+Source: [spine.lua](../blob/main/content/examples/spine.lua)
 
 ```lua
 do
@@ -744,19 +854,7 @@ end
 
 ### LSkeleton:setIKTarget
 
-`LSkeleton:setIKTarget(name: string, x: number, y: number) -> boolean`
-
-Sets the world-space target position for a named IK constraint. Call updateWorldTransforms after.
-
-**Parameters**
-
-- `name` (`string`, required): Name of the IK constraint to update.
-- `x` (`number`, required): Target world X coordinate.
-- `y` (`number`, required): Target world Y coordinate.
-
-**Returns**: `boolean` - True if the constraint was found and updated, false otherwise.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the world-space target position for a named IK constraint. Call updateWorldTransforms after.
@@ -767,9 +865,21 @@ Sets the world-space target position for a named IK constraint. Call updateWorld
 function LSkeleton:setIKTarget(name, x, y) end
 ```
 
+#### Description
+
+Sets the world-space target position for a named IK constraint. Call updateWorldTransforms after.
+
+Parameters:
+
+- `name` (`string`, required): Name of the IK constraint to update.
+- `x` (`number`, required): Target world X coordinate.
+- `y` (`number`, required): Target world Y coordinate.
+
+Returns: `boolean` - True if the constraint was found and updated, false otherwise.
+
 #### Example
 
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+Source: [spine.lua](../blob/main/content/examples/spine.lua)
 
 ```lua
 do
@@ -783,16 +893,7 @@ end
 
 ### LSkeleton:setPosition
 
-`LSkeleton:setPosition(x: number, y: number)`
-
-Sets the root bone world position, shifting the entire skeleton.
-
-**Parameters**
-
-- `x` (`number`, required): World X coordinate.
-- `y` (`number`, required): World Y coordinate.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the root bone world position, shifting the entire skeleton.
@@ -801,9 +902,18 @@ Sets the root bone world position, shifting the entire skeleton.
 function LSkeleton:setPosition(x, y) end
 ```
 
+#### Description
+
+Sets the root bone world position, shifting the entire skeleton.
+
+Parameters:
+
+- `x` (`number`, required): World X coordinate.
+- `y` (`number`, required): World Y coordinate.
+
 #### Example
 
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+Source: [spine.lua](../blob/main/content/examples/spine.lua)
 
 ```lua
 do
@@ -815,17 +925,7 @@ end
 
 ### LSkeleton:setSkin
 
-`LSkeleton:setSkin(name: string) -> boolean`
-
-Activates a named skin, applying its slot-attachment mappings to the skeleton.
-
-**Parameters**
-
-- `name` (`string`, required): Name of the skin to activate (must have been added via addSkin).
-
-**Returns**: `boolean` - True if the skin was found and activated, false otherwise.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Activates a named skin, applying its slot-attachment mappings to the skeleton.
@@ -834,9 +934,19 @@ Activates a named skin, applying its slot-attachment mappings to the skeleton.
 function LSkeleton:setSkin(name) end
 ```
 
+#### Description
+
+Activates a named skin, applying its slot-attachment mappings to the skeleton.
+
+Parameters:
+
+- `name` (`string`, required): Name of the skin to activate (must have been added via addSkin).
+
+Returns: `boolean` - True if the skin was found and activated, false otherwise.
+
 #### Example
 
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+Source: [spine.lua](../blob/main/content/examples/spine.lua)
 
 ```lua
 do
@@ -849,17 +959,7 @@ end
 
 ### LSkeleton:setSkinMapping
 
-`LSkeleton:setSkinMapping(skin: string, slot: string, attachment: string)`
-
-Maps a slot to a specific attachment name within a skin. When that skin is active, the slot shows this attachment.
-
-**Parameters**
-
-- `skin` (`string`, required): Name of the skin to add the mapping to.
-- `slot` (`string`, required): Name of the slot to remap.
-- `attachment` (`string`, required): Attachment name to display in that slot when the skin is active.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Maps a slot to a specific attachment name within a skin. When that skin is active, the slot shows this attachment.
@@ -869,9 +969,19 @@ Maps a slot to a specific attachment name within a skin. When that skin is activ
 function LSkeleton:setSkinMapping(skin, slot, attachment) end
 ```
 
+#### Description
+
+Maps a slot to a specific attachment name within a skin. When that skin is active, the slot shows this attachment.
+
+Parameters:
+
+- `skin` (`string`, required): Name of the skin to add the mapping to.
+- `slot` (`string`, required): Name of the slot to remap.
+- `attachment` (`string`, required): Attachment name to display in that slot when the skin is active.
+
 #### Example
 
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+Source: [spine.lua](../blob/main/content/examples/spine.lua)
 
 ```lua
 do
@@ -885,13 +995,7 @@ end
 
 ### LSkeleton:slotCount
 
-`LSkeleton:slotCount() -> integer`
-
-Returns the total number of slots in the skeleton.
-
-**Returns**: `integer` - Slot count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the total number of slots in the skeleton.
@@ -899,9 +1003,15 @@ Returns the total number of slots in the skeleton.
 function LSkeleton:slotCount() end
 ```
 
+#### Description
+
+Returns the total number of slots in the skeleton.
+
+Returns: `integer` - Slot count.
+
 #### Example
 
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+Source: [spine.lua](../blob/main/content/examples/spine.lua)
 
 ```lua
 do
@@ -913,20 +1023,20 @@ end
 
 ### LSkeleton:stopAnimation
 
-`LSkeleton:stopAnimation()`
-
-Stops the currently playing animation and resets playback state.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Stops the currently playing animation and resets playback state.
 function LSkeleton:stopAnimation() end
 ```
 
+#### Description
+
+Stops the currently playing animation and resets playback state.
+
 #### Example
 
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+Source: [spine.lua](../blob/main/content/examples/spine.lua)
 
 ```lua
 do
@@ -940,13 +1050,7 @@ end
 
 ### LSkeleton:type
 
-`LSkeleton:type() -> string`
-
-Returns the type name of this userdata object.
-
-**Returns**: `string` - Always "LSkeleton".
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this userdata object.
@@ -954,9 +1058,15 @@ Returns the type name of this userdata object.
 function LSkeleton:type() end
 ```
 
+#### Description
+
+Returns the type name of this userdata object.
+
+Returns: `string` - Always "LSkeleton".
+
 #### Example
 
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+Source: [spine.lua](../blob/main/content/examples/spine.lua)
 
 ```lua
 do
@@ -967,17 +1077,7 @@ end
 
 ### LSkeleton:typeOf
 
-`LSkeleton:typeOf(name: string) -> boolean`
-
-Checks whether this object is of the given type name. Supports "LSkeleton" and "Object".
-
-**Parameters**
-
-- `name` (`string`, required): Type name to check.
-
-**Returns**: `boolean` - True if this object matches the given type.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this object is of the given type name. Supports "LSkeleton" and "Object".
@@ -986,9 +1086,19 @@ Checks whether this object is of the given type name. Supports "LSkeleton" and "
 function LSkeleton:typeOf(name) end
 ```
 
+#### Description
+
+Checks whether this object is of the given type name. Supports "LSkeleton" and "Object".
+
+Parameters:
+
+- `name` (`string`, required): Type name to check.
+
+Returns: `boolean` - True if this object matches the given type.
+
 #### Example
 
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+Source: [spine.lua](../blob/main/content/examples/spine.lua)
 
 ```lua
 do
@@ -999,15 +1109,7 @@ end
 
 ### LSkeleton:updateAnimation
 
-`LSkeleton:updateAnimation(dt: number)`
-
-Advances the current animation by a delta time, applying bone transforms to the skeleton.
-
-**Parameters**
-
-- `dt` (`number`, required): Time step in seconds (e.g. from lurek.timer.getDelta()).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Advances the current animation by a delta time, applying bone transforms to the skeleton.
@@ -1015,9 +1117,17 @@ Advances the current animation by a delta time, applying bone transforms to the 
 function LSkeleton:updateAnimation(dt) end
 ```
 
+#### Description
+
+Advances the current animation by a delta time, applying bone transforms to the skeleton.
+
+Parameters:
+
+- `dt` (`number`, required): Time step in seconds (e.g. from lurek.timer.getDelta()).
+
 #### Example
 
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+Source: [spine.lua](../blob/main/content/examples/spine.lua)
 
 ```lua
 do
@@ -1030,20 +1140,20 @@ end
 
 ### LSkeleton:updateWorldTransforms
 
-`LSkeleton:updateWorldTransforms()`
-
-Recomputes world transforms for all bones in hierarchy order. Call after modifying bone locals or IK targets.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Recomputes world transforms for all bones in hierarchy order. Call after modifying bone locals or IK targets.
 function LSkeleton:updateWorldTransforms() end
 ```
 
+#### Description
+
+Recomputes world transforms for all bones in hierarchy order. Call after modifying bone locals or IK targets.
+
 #### Example
 
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+Source: [spine.lua](../blob/main/content/examples/spine.lua)
 
 ```lua
 do
@@ -1056,17 +1166,7 @@ end
 
 ### LSkeletonAnimation:addEventKey
 
-`LSkeletonAnimation:addEventKey(time: number, name: string, [value]: number)`
-
-Inserts an event trigger at a specific time within the animation timeline.
-
-**Parameters**
-
-- `time` (`number`, required): Time position in seconds when the event fires.
-- `name` (`string`, required): Name of the event (used to identify it when querying).
-- `value` (`number`, optional): Optional numeric payload for the event. Defaults to 0.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Inserts an event trigger at a specific time within the animation timeline.
@@ -1076,9 +1176,19 @@ Inserts an event trigger at a specific time within the animation timeline.
 function LSkeletonAnimation:addEventKey(time, name, value) end
 ```
 
+#### Description
+
+Inserts an event trigger at a specific time within the animation timeline.
+
+Parameters:
+
+- `time` (`number`, required): Time position in seconds when the event fires.
+- `name` (`string`, required): Name of the event (used to identify it when querying).
+- `value` (`number`, optional): Optional numeric payload for the event. Defaults to 0.
+
 #### Example
 
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+Source: [spine.lua](../blob/main/content/examples/spine.lua)
 
 ```lua
 do
@@ -1090,19 +1200,7 @@ end
 
 ### LSkeletonAnimation:addKeyframe
 
-`LSkeletonAnimation:addKeyframe(bone_idx: integer, property: string, time: number, value: number, [easing]: string)`
-
-Adds a keyframe to a bone's property timeline at a specific time with a value and easing curve.
-
-**Parameters**
-
-- `bone_idx` (`integer`, required): Zero-based index of the target bone.
-- `property` (`string`, required): Bone property: "x", "y", "rotation", "scale_x", or "scale_y".
-- `time` (`number`, required): Time position in seconds for this keyframe.
-- `value` (`number`, required): Value of the property at this keyframe.
-- `easing` (`string`, optional): Easing type: "linear" (default), "ease_in", "ease_out", "ease_in_out", or "step".
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a keyframe to a bone's property timeline at a specific time with a value and easing curve.
@@ -1114,9 +1212,21 @@ Adds a keyframe to a bone's property timeline at a specific time with a value an
 function LSkeletonAnimation:addKeyframe(bone_idx, property, time, value, easing) end
 ```
 
+#### Description
+
+Adds a keyframe to a bone's property timeline at a specific time with a value and easing curve.
+
+Parameters:
+
+- `bone_idx` (`integer`, required): Zero-based index of the target bone.
+- `property` (`string`, required): Bone property: "x", "y", "rotation", "scale_x", or "scale_y".
+- `time` (`number`, required): Time position in seconds for this keyframe.
+- `value` (`number`, required): Value of the property at this keyframe.
+- `easing` (`string`, optional): Easing type: "linear" (default), "ease_in", "ease_out", "ease_in_out", or "step".
+
 #### Example
 
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+Source: [spine.lua](../blob/main/content/examples/spine.lua)
 
 ```lua
 do
@@ -1129,13 +1239,7 @@ end
 
 ### LSkeletonAnimation:getDuration
 
-`LSkeletonAnimation:getDuration() -> number`
-
-Returns the total duration of this animation in seconds.
-
-**Returns**: `number` - Duration in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the total duration of this animation in seconds.
@@ -1143,9 +1247,15 @@ Returns the total duration of this animation in seconds.
 function LSkeletonAnimation:getDuration() end
 ```
 
+#### Description
+
+Returns the total duration of this animation in seconds.
+
+Returns: `number` - Duration in seconds.
+
 #### Example
 
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+Source: [spine.lua](../blob/main/content/examples/spine.lua)
 
 ```lua
 do
@@ -1156,18 +1266,7 @@ end
 
 ### LSkeletonAnimation:getEvents
 
-`LSkeletonAnimation:getEvents(from: number, to: number) -> table`
-
-Collects all events that fire within a time range. Useful for triggering sound effects or gameplay actions.
-
-**Parameters**
-
-- `from` (`number`, required): Start time in seconds (inclusive).
-- `to` (`number`, required): End time in seconds (exclusive).
-
-**Returns**: `table` - Array of tables, each with "name" (string) and "value" (number) fields.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Collects all events that fire within a time range. Useful for triggering sound effects or gameplay actions.
@@ -1177,9 +1276,20 @@ Collects all events that fire within a time range. Useful for triggering sound e
 function LSkeletonAnimation:getEvents(from, to) end
 ```
 
+#### Description
+
+Collects all events that fire within a time range. Useful for triggering sound effects or gameplay actions.
+
+Parameters:
+
+- `from` (`number`, required): Start time in seconds (inclusive).
+- `to` (`number`, required): End time in seconds (exclusive).
+
+Returns: `table` - Array of tables, each with "name" (string) and "value" (number) fields.
+
 #### Example
 
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+Source: [spine.lua](../blob/main/content/examples/spine.lua)
 
 ```lua
 do
@@ -1191,13 +1301,7 @@ end
 
 ### LSkeletonAnimation:getTimelineCount
 
-`LSkeletonAnimation:getTimelineCount() -> integer`
-
-Returns the number of bone-property timelines in this animation.
-
-**Returns**: `integer` - Timeline count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of bone-property timelines in this animation.
@@ -1205,9 +1309,15 @@ Returns the number of bone-property timelines in this animation.
 function LSkeletonAnimation:getTimelineCount() end
 ```
 
+#### Description
+
+Returns the number of bone-property timelines in this animation.
+
+Returns: `integer` - Timeline count.
+
 #### Example
 
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+Source: [spine.lua](../blob/main/content/examples/spine.lua)
 
 ```lua
 do
@@ -1219,17 +1329,7 @@ end
 
 ### LSkeletonAnimation:poseAt
 
-`LSkeletonAnimation:poseAt(time: number) -> table`
-
-Samples all timelines at a given time and returns the computed pose as an array of bone-property-value entries.
-
-**Parameters**
-
-- `time` (`number`, required): Time position in seconds to sample.
-
-**Returns**: `table` - Array of tables, each with "bone_idx" (integer), "property" (string), and "value" (number).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Samples all timelines at a given time and returns the computed pose as an array of bone-property-value entries.
@@ -1238,9 +1338,19 @@ Samples all timelines at a given time and returns the computed pose as an array 
 function LSkeletonAnimation:poseAt(time) end
 ```
 
+#### Description
+
+Samples all timelines at a given time and returns the computed pose as an array of bone-property-value entries.
+
+Parameters:
+
+- `time` (`number`, required): Time position in seconds to sample.
+
+Returns: `table` - Array of tables, each with "bone_idx" (integer), "property" (string), and "value" (number).
+
 #### Example
 
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+Source: [spine.lua](../blob/main/content/examples/spine.lua)
 
 ```lua
 do
@@ -1253,13 +1363,7 @@ end
 
 ### LSkeletonAnimation:reverse
 
-`LSkeletonAnimation:reverse() -> LSkeletonAnimation`
-
-Creates a new animation that plays this animation's keyframes in reverse order.
-
-**Returns**: `LSkeletonAnimation` - A new reversed copy of this animation.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Creates a new animation that plays this animation's keyframes in reverse order.
@@ -1267,9 +1371,15 @@ Creates a new animation that plays this animation's keyframes in reverse order.
 function LSkeletonAnimation:reverse() end
 ```
 
+#### Description
+
+Creates a new animation that plays this animation's keyframes in reverse order.
+
+Returns: `LSkeletonAnimation` - A new reversed copy of this animation.
+
 #### Example
 
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+Source: [spine.lua](../blob/main/content/examples/spine.lua)
 
 ```lua
 do
@@ -1283,13 +1393,7 @@ end
 
 ### LSkeletonAnimation:type
 
-`LSkeletonAnimation:type() -> string`
-
-Returns the type name of this userdata object.
-
-**Returns**: `string` - Always "LSkeletonAnimation".
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this userdata object.
@@ -1297,9 +1401,15 @@ Returns the type name of this userdata object.
 function LSkeletonAnimation:type() end
 ```
 
+#### Description
+
+Returns the type name of this userdata object.
+
+Returns: `string` - Always "LSkeletonAnimation".
+
 #### Example
 
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+Source: [spine.lua](../blob/main/content/examples/spine.lua)
 
 ```lua
 do
@@ -1310,17 +1420,7 @@ end
 
 ### LSkeletonAnimation:typeOf
 
-`LSkeletonAnimation:typeOf(name: string) -> boolean`
-
-Checks whether this object is of the given type name. Supports "LSkeletonAnimation" and "Object".
-
-**Parameters**
-
-- `name` (`string`, required): Type name to check.
-
-**Returns**: `boolean` - True if this object matches the given type.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this object is of the given type name. Supports "LSkeletonAnimation" and "Object".
@@ -1329,9 +1429,19 @@ Checks whether this object is of the given type name. Supports "LSkeletonAnimati
 function LSkeletonAnimation:typeOf(name) end
 ```
 
+#### Description
+
+Checks whether this object is of the given type name. Supports "LSkeletonAnimation" and "Object".
+
+Parameters:
+
+- `name` (`string`, required): Type name to check.
+
+Returns: `boolean` - True if this object matches the given type.
+
 #### Example
 
-Exact example from [spine.lua](../blob/main/content/examples/spine.lua):
+Source: [spine.lua](../blob/main/content/examples/spine.lua)
 
 ```lua
 do

@@ -14,21 +14,53 @@
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
   - [lurek.debugbridge.broadcast](#lurekdebugbridgebroadcast)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.debugbridge.capturePrint](#lurekdebugbridgecaptureprint)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.debugbridge.clearPrintHistory](#lurekdebugbridgeclearprinthistory)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.debugbridge.consumeHotReloadRequest](#lurekdebugbridgeconsumehotreloadrequest)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.debugbridge.getClientCount](#lurekdebugbridgegetclientcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.debugbridge.getPerformance](#lurekdebugbridgegetperformance)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.debugbridge.getPort](#lurekdebugbridgegetport)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.debugbridge.getPrintHistory](#lurekdebugbridgegetprinthistory)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.debugbridge.getProtocolInfo](#lurekdebugbridgegetprotocolinfo)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.debugbridge.isRunning](#lurekdebugbridgeisrunning)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.debugbridge.isScreenshotRequested](#lurekdebugbridgeisscreenshotrequested)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.debugbridge.poll](#lurekdebugbridgepoll)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.debugbridge.requestScreenshot](#lurekdebugbridgerequestscreenshot)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.debugbridge.setMaxPrintHistory](#lurekdebugbridgesetmaxprinthistory)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.debugbridge.start](#lurekdebugbridgestart)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.debugbridge.stop](#lurekdebugbridgestop)
+    - [Definition](#definition)
+    - [Description](#description)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -87,18 +119,27 @@ lurek.debugbridge.stop() -- Stops the debug bridge server and joins its server t
 
 ### lurek.debugbridge.broadcast
 
-`lurek.debugbridge.broadcast(event: string, json_data: string)`
+#### Definition
+
+```lua
+--- Queues a JSON string payload broadcast for debug bridge clients.
+---@param event string Event name sent to clients.
+---@param json_data string Payload string wrapped as JSON for clients.
+lurek.debugbridge.broadcast = function(event, json_data) end
+```
+
+#### Description
 
 Queues a JSON string payload broadcast for debug bridge clients.
 
-**Parameters**
+Parameters:
 
 - `event` (`string`, required): Event name sent to clients.
 - `json_data` (`string`, required): Payload string wrapped as JSON for clients.
 
 #### Example
 
-Exact example from [debugbridge.lua](../blob/main/content/examples/debugbridge.lua):
+Source: [debugbridge.lua](../blob/main/content/examples/debugbridge.lua)
 
 ```lua
 do
@@ -109,11 +150,21 @@ end
 
 ### lurek.debugbridge.capturePrint
 
-`lurek.debugbridge.capturePrint(msg: string, [source]: string, [line]: integer)`
+#### Definition
+
+```lua
+--- Captures a print message and broadcasts it to debug bridge clients.
+---@param msg string Printed message text.
+---@param source? string Source label; defaults to `?`.
+---@param line? number Source line; defaults to zero.
+lurek.debugbridge.capturePrint = function(msg, source, line) end
+```
+
+#### Description
 
 Captures a print message and broadcasts it to debug bridge clients.
 
-**Parameters**
+Parameters:
 
 - `msg` (`string`, required): Printed message text.
 - `source` (`string`, optional): Source label; defaults to `?`.
@@ -121,7 +172,7 @@ Captures a print message and broadcasts it to debug bridge clients.
 
 #### Example
 
-Exact example from [debugbridge.lua](../blob/main/content/examples/debugbridge.lua):
+Source: [debugbridge.lua](../blob/main/content/examples/debugbridge.lua)
 
 ```lua
 do
@@ -132,13 +183,20 @@ end
 
 ### lurek.debugbridge.clearPrintHistory
 
-`lurek.debugbridge.clearPrintHistory()`
+#### Definition
+
+```lua
+--- Clears all entries from the captured print history buffer.
+lurek.debugbridge.clearPrintHistory = function() end
+```
+
+#### Description
 
 Clears all entries from the captured print history buffer.
 
 #### Example
 
-Exact example from [debugbridge.lua](../blob/main/content/examples/debugbridge.lua):
+Source: [debugbridge.lua](../blob/main/content/examples/debugbridge.lua)
 
 ```lua
 do
@@ -151,15 +209,23 @@ end
 
 ### lurek.debugbridge.consumeHotReloadRequest
 
-`lurek.debugbridge.consumeHotReloadRequest() -> boolean`
+#### Definition
+
+```lua
+--- Returns and clears the pending hot reload request flag.
+---@return boolean True when a hot reload request was pending.
+lurek.debugbridge.consumeHotReloadRequest = function() end
+```
+
+#### Description
 
 Returns and clears the pending hot reload request flag.
 
-**Returns**: `boolean` - True when a hot reload request was pending.
+Returns: `boolean` - True when a hot reload request was pending.
 
 #### Example
 
-Exact example from [debugbridge.lua](../blob/main/content/examples/debugbridge.lua):
+Source: [debugbridge.lua](../blob/main/content/examples/debugbridge.lua)
 
 ```lua
 do
@@ -170,15 +236,23 @@ end
 
 ### lurek.debugbridge.getClientCount
 
-`lurek.debugbridge.getClientCount() -> integer`
+#### Definition
+
+```lua
+--- Returns the number of connected debug bridge clients.
+---@return number Connected client count.
+lurek.debugbridge.getClientCount = function() end
+```
+
+#### Description
 
 Returns the number of connected debug bridge clients.
 
-**Returns**: `integer` - Connected client count.
+Returns: `integer` - Connected client count.
 
 #### Example
 
-Exact example from [debugbridge.lua](../blob/main/content/examples/debugbridge.lua):
+Source: [debugbridge.lua](../blob/main/content/examples/debugbridge.lua)
 
 ```lua
 do
@@ -188,15 +262,23 @@ end
 
 ### lurek.debugbridge.getPerformance
 
-`lurek.debugbridge.getPerformance() -> table`
+#### Definition
+
+```lua
+--- Returns debug bridge performance metrics.
+---@return table Table of numeric performance metrics.
+lurek.debugbridge.getPerformance = function() end
+```
+
+#### Description
 
 Returns debug bridge performance metrics.
 
-**Returns**: `table` - Table of numeric performance metrics.
+Returns: `table` - Table of numeric performance metrics.
 
 #### Example
 
-Exact example from [debugbridge.lua](../blob/main/content/examples/debugbridge.lua):
+Source: [debugbridge.lua](../blob/main/content/examples/debugbridge.lua)
 
 ```lua
 do
@@ -207,15 +289,23 @@ end
 
 ### lurek.debugbridge.getPort
 
-`lurek.debugbridge.getPort() -> integer`
+#### Definition
+
+```lua
+--- Returns the configured TCP port for the debug bridge.
+---@return number Active or configured port, or zero when unavailable.
+lurek.debugbridge.getPort = function() end
+```
+
+#### Description
 
 Returns the configured TCP port for the debug bridge.
 
-**Returns**: `integer` - Active or configured port, or zero when unavailable.
+Returns: `integer` - Active or configured port, or zero when unavailable.
 
 #### Example
 
-Exact example from [debugbridge.lua](../blob/main/content/examples/debugbridge.lua):
+Source: [debugbridge.lua](../blob/main/content/examples/debugbridge.lua)
 
 ```lua
 do
@@ -225,19 +315,28 @@ end
 
 ### lurek.debugbridge.getPrintHistory
 
-`lurek.debugbridge.getPrintHistory([count]: integer) -> table`
+#### Definition
+
+```lua
+--- Returns captured print history entries.
+---@param count? number Number of newest entries; nil or zero returns all entries.
+---@return DebugbridgeGetPrintHistoryResult Array table of entries with `timestamp`, `message`, `source`, and `line` fields.
+lurek.debugbridge.getPrintHistory = function(count) end
+```
+
+#### Description
 
 Returns captured print history entries.
 
-**Parameters**
+Parameters:
 
 - `count` (`integer`, optional): Number of newest entries; nil or zero returns all entries.
 
-**Returns**: `table` - Array table of entries with `timestamp`, `message`, `source`, and `line` fields.
+Returns: `table` - Array table of entries with `timestamp`, `message`, `source`, and `line` fields.
 
 #### Example
 
-Exact example from [debugbridge.lua](../blob/main/content/examples/debugbridge.lua):
+Source: [debugbridge.lua](../blob/main/content/examples/debugbridge.lua)
 
 ```lua
 do
@@ -249,15 +348,23 @@ end
 
 ### lurek.debugbridge.getProtocolInfo
 
-`lurek.debugbridge.getProtocolInfo() -> table`
+#### Definition
+
+```lua
+--- Returns debug bridge protocol version, capabilities, and handshake nonce.
+---@return DebugbridgeGetProtocolInfoResult Protocol info table with `version`, `capabilities`, and `nonce` fields.
+lurek.debugbridge.getProtocolInfo = function() end
+```
+
+#### Description
 
 Returns debug bridge protocol version, capabilities, and handshake nonce.
 
-**Returns**: `table` - Protocol info table with `version`, `capabilities`, and `nonce` fields.
+Returns: `table` - Protocol info table with `version`, `capabilities`, and `nonce` fields.
 
 #### Example
 
-Exact example from [debugbridge.lua](../blob/main/content/examples/debugbridge.lua):
+Source: [debugbridge.lua](../blob/main/content/examples/debugbridge.lua)
 
 ```lua
 do
@@ -268,15 +375,23 @@ end
 
 ### lurek.debugbridge.isRunning
 
-`lurek.debugbridge.isRunning() -> boolean`
+#### Definition
+
+```lua
+--- Returns whether the debug bridge server is currently running.
+---@return boolean True when the server thread is active.
+lurek.debugbridge.isRunning = function() end
+```
+
+#### Description
 
 Returns whether the debug bridge server is currently running.
 
-**Returns**: `boolean` - True when the server thread is active.
+Returns: `boolean` - True when the server thread is active.
 
 #### Example
 
-Exact example from [debugbridge.lua](../blob/main/content/examples/debugbridge.lua):
+Source: [debugbridge.lua](../blob/main/content/examples/debugbridge.lua)
 
 ```lua
 do
@@ -286,15 +401,23 @@ end
 
 ### lurek.debugbridge.isScreenshotRequested
 
-`lurek.debugbridge.isScreenshotRequested() -> boolean`
+#### Definition
+
+```lua
+--- Returns whether a screenshot request is pending.
+---@return boolean True when a screenshot request is pending.
+lurek.debugbridge.isScreenshotRequested = function() end
+```
+
+#### Description
 
 Returns whether a screenshot request is pending.
 
-**Returns**: `boolean` - True when a screenshot request is pending.
+Returns: `boolean` - True when a screenshot request is pending.
 
 #### Example
 
-Exact example from [debugbridge.lua](../blob/main/content/examples/debugbridge.lua):
+Source: [debugbridge.lua](../blob/main/content/examples/debugbridge.lua)
 
 ```lua
 do
@@ -305,13 +428,23 @@ end
 
 ### lurek.debugbridge.poll
 
-`lurek.debugbridge.poll()`
+#### Definition
+
+```lua
+--- Polls pending debugger requests, evaluates supported methods, and queues responses.
+---@return nil No return value.
+lurek.debugbridge.poll = function() end
+```
+
+#### Description
 
 Polls pending debugger requests, evaluates supported methods, and queues responses.
 
+Returns: - No return value.
+
 #### Example
 
-Exact example from [debugbridge.lua](../blob/main/content/examples/debugbridge.lua):
+Source: [debugbridge.lua](../blob/main/content/examples/debugbridge.lua)
 
 ```lua
 do
@@ -322,17 +455,25 @@ end
 
 ### lurek.debugbridge.requestScreenshot
 
-`lurek.debugbridge.requestScreenshot([scale]: integer)`
+#### Definition
+
+```lua
+--- Requests a screenshot from the runtime.
+---@param scale? number Screenshot scale clamped from 1 to 8; defaults to 1.
+lurek.debugbridge.requestScreenshot = function(scale) end
+```
+
+#### Description
 
 Requests a screenshot from the runtime.
 
-**Parameters**
+Parameters:
 
 - `scale` (`integer`, optional): Screenshot scale clamped from 1 to 8; defaults to 1.
 
 #### Example
 
-Exact example from [debugbridge.lua](../blob/main/content/examples/debugbridge.lua):
+Source: [debugbridge.lua](../blob/main/content/examples/debugbridge.lua)
 
 ```lua
 do
@@ -343,17 +484,25 @@ end
 
 ### lurek.debugbridge.setMaxPrintHistory
 
-`lurek.debugbridge.setMaxPrintHistory(max: integer)`
+#### Definition
+
+```lua
+--- Sets the maximum retained print history entry count.
+---@param max number Maximum retained print entries.
+lurek.debugbridge.setMaxPrintHistory = function(max) end
+```
+
+#### Description
 
 Sets the maximum retained print history entry count.
 
-**Parameters**
+Parameters:
 
 - `max` (`integer`, required): Maximum retained print entries.
 
 #### Example
 
-Exact example from [debugbridge.lua](../blob/main/content/examples/debugbridge.lua):
+Source: [debugbridge.lua](../blob/main/content/examples/debugbridge.lua)
 
 ```lua
 do
@@ -364,19 +513,28 @@ end
 
 ### lurek.debugbridge.start
 
-`lurek.debugbridge.start([port]: integer) -> boolean`
+#### Definition
+
+```lua
+--- Starts the localhost debug bridge server on a port.
+---@param port? number TCP port to bind on `127.0.0.1`; defaults to 19740 and must be at least 1024.
+---@return boolean True when the server was started, false when it was already running.
+lurek.debugbridge.start = function(port) end
+```
+
+#### Description
 
 Starts the localhost debug bridge server on a port.
 
-**Parameters**
+Parameters:
 
 - `port` (`integer`, optional): TCP port to bind on `127.0.0.1`; defaults to 19740 and must be at least 1024.
 
-**Returns**: `boolean` - True when the server was started, false when it was already running.
+Returns: `boolean` - True when the server was started, false when it was already running.
 
 #### Example
 
-Exact example from [debugbridge.lua](../blob/main/content/examples/debugbridge.lua):
+Source: [debugbridge.lua](../blob/main/content/examples/debugbridge.lua)
 
 ```lua
 do
@@ -389,13 +547,20 @@ end
 
 ### lurek.debugbridge.stop
 
-`lurek.debugbridge.stop()`
+#### Definition
+
+```lua
+--- Stops the debug bridge server and joins its server thread.
+lurek.debugbridge.stop = function() end
+```
+
+#### Description
 
 Stops the debug bridge server and joins its server thread.
 
 #### Example
 
-Exact example from [debugbridge.lua](../blob/main/content/examples/debugbridge.lua):
+Source: [debugbridge.lua](../blob/main/content/examples/debugbridge.lua)
 
 ```lua
 do

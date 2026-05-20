@@ -14,41 +14,113 @@
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
   - [lurek.i18n.buildIndex](#lureki18nbuildindex)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.i18n.categories](#lureki18ncategories)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.i18n.detectLocale](#lureki18ndetectlocale)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.i18n.formatDate](#lureki18nformatdate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.i18n.formatNumber](#lureki18nformatnumber)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.i18n.getAvailableLanguages](#lureki18ngetavailablelanguages)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.i18n.getBase](#lureki18ngetbase)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.i18n.getFallbacks](#lureki18ngetfallbacks)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.i18n.getKeys](#lureki18ngetkeys)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.i18n.getLanguage](#lureki18ngetlanguage)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.i18n.getLanguages](#lureki18ngetlanguages)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.i18n.getLoadedLocales](#lureki18ngetloadedlocales)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.i18n.hasKey](#lureki18nhaskey)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.i18n.hasLanguage](#lureki18nhaslanguage)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.i18n.interpolate](#lureki18ninterpolate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.i18n.isRTL](#lureki18nisrtl)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.i18n.keyCount](#lureki18nkeycount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.i18n.keysInCategory](#lureki18nkeysincategory)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.i18n.loadString](#lureki18nloadstring)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.i18n.loadTable](#lureki18nloadtable)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.i18n.localeCoverage](#lureki18nlocalecoverage)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.i18n.mergeLocale](#lureki18nmergelocale)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.i18n.offChange](#lureki18noffchange)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.i18n.onChange](#lureki18nonchange)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.i18n.onLanguageChange](#lureki18nonlanguagechange)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.i18n.pluralFor](#lureki18npluralfor)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.i18n.search](#lureki18nsearch)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.i18n.searchIndexed](#lureki18nsearchindexed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.i18n.setBase](#lureki18nsetbase)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.i18n.setFallbacks](#lureki18nsetfallbacks)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.i18n.setKey](#lureki18nsetkey)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.i18n.setLanguage](#lureki18nsetlanguage)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.i18n.t](#lureki18nt)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.i18n.tGender](#lureki18ntgender)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.i18n.unloadTable](#lureki18nunloadtable)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.i18n.validateLocale](#lureki18nvalidatelocale)
+    - [Definition](#definition)
+    - [Description](#description)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -110,15 +182,23 @@ lurek.i18n.keysInCategory(category: string) -> string[] -- Returns translation k
 
 ### lurek.i18n.buildIndex
 
-`lurek.i18n.buildIndex() -> string[]`
+#### Definition
+
+```lua
+--- Builds a word-to-keys search index from the catalog.
+---@return string[] Map table from normalized words to arrays of translation keys.
+lurek.i18n.buildIndex = function() end
+```
+
+#### Description
 
 Builds a word-to-keys search index from the catalog.
 
-**Returns**: `string[]` - Map table from normalized words to arrays of translation keys.
+Returns: `string[]` - Map table from normalized words to arrays of translation keys.
 
 #### Example
 
-Exact example from [i18n.lua](../blob/main/content/examples/i18n.lua):
+Source: [i18n.lua](../blob/main/content/examples/i18n.lua)
 
 ```lua
 do
@@ -129,15 +209,23 @@ end
 
 ### lurek.i18n.categories
 
-`lurek.i18n.categories() -> string[]`
+#### Definition
+
+```lua
+--- Returns top-level translation key categories.
+---@return string[] Category names.
+lurek.i18n.categories = function() end
+```
+
+#### Description
 
 Returns top-level translation key categories.
 
-**Returns**: `string[]` - Category names.
+Returns: `string[]` - Category names.
 
 #### Example
 
-Exact example from [i18n.lua](../blob/main/content/examples/i18n.lua):
+Source: [i18n.lua](../blob/main/content/examples/i18n.lua)
 
 ```lua
 do
@@ -148,15 +236,23 @@ end
 
 ### lurek.i18n.detectLocale
 
-`lurek.i18n.detectLocale() -> string`
+#### Definition
+
+```lua
+--- Detects the system locale when available.
+---@return string Locale string, or nil when detection fails.
+lurek.i18n.detectLocale = function() end
+```
+
+#### Description
 
 Detects the system locale when available.
 
-**Returns**: `string` - Locale string, or nil when detection fails.
+Returns: `string` - Locale string, or nil when detection fails.
 
 #### Example
 
-Exact example from [i18n.lua](../blob/main/content/examples/i18n.lua):
+Source: [i18n.lua](../blob/main/content/examples/i18n.lua)
 
 ```lua
 do
@@ -167,20 +263,30 @@ end
 
 ### lurek.i18n.formatDate
 
-`lurek.i18n.formatDate(timestamp: integer, [fmt]: string) -> string`
+#### Definition
+
+```lua
+--- Formats a timestamp with the active locale and a named format.
+---@param timestamp number Unix timestamp value.
+---@param fmt? string Format name, defaulting to `short`.
+---@return string Formatted date string.
+lurek.i18n.formatDate = function(timestamp, fmt) end
+```
+
+#### Description
 
 Formats a timestamp with the active locale and a named format.
 
-**Parameters**
+Parameters:
 
 - `timestamp` (`integer`, required): Unix timestamp value.
 - `fmt` (`string`, optional): Format name, defaulting to `short`.
 
-**Returns**: `string` - Formatted date string.
+Returns: `string` - Formatted date string.
 
 #### Example
 
-Exact example from [i18n.lua](../blob/main/content/examples/i18n.lua):
+Source: [i18n.lua](../blob/main/content/examples/i18n.lua)
 
 ```lua
 do
@@ -191,20 +297,30 @@ end
 
 ### lurek.i18n.formatNumber
 
-`lurek.i18n.formatNumber(n: number, [opts]: table) -> string`
+#### Definition
+
+```lua
+--- Formats a number with locale-aware separators and optional decimal precision.
+---@param n number Number to format.
+---@param opts? table Table with `decimals` field, defaulting to 2.
+---@return string Formatted number string.
+lurek.i18n.formatNumber = function(n, opts) end
+```
+
+#### Description
 
 Formats a number with locale-aware separators and optional decimal precision.
 
-**Parameters**
+Parameters:
 
 - `n` (`number`, required): Number to format.
 - `opts` (`table`, optional): Table with `decimals` field, defaulting to 2.
 
-**Returns**: `string` - Formatted number string.
+Returns: `string` - Formatted number string.
 
 #### Example
 
-Exact example from [i18n.lua](../blob/main/content/examples/i18n.lua):
+Source: [i18n.lua](../blob/main/content/examples/i18n.lua)
 
 ```lua
 do
@@ -215,15 +331,23 @@ end
 
 ### lurek.i18n.getAvailableLanguages
 
-`lurek.i18n.getAvailableLanguages() -> string[]`
+#### Definition
+
+```lua
+--- Returns sorted locale codes currently loaded in the catalog.
+---@return string[] Array table of locale codes.
+lurek.i18n.getAvailableLanguages = function() end
+```
+
+#### Description
 
 Returns sorted locale codes currently loaded in the catalog.
 
-**Returns**: `string[]` - Array table of locale codes.
+Returns: `string[]` - Array table of locale codes.
 
 #### Example
 
-Exact example from [i18n.lua](../blob/main/content/examples/i18n.lua):
+Source: [i18n.lua](../blob/main/content/examples/i18n.lua)
 
 ```lua
 do
@@ -234,15 +358,23 @@ end
 
 ### lurek.i18n.getBase
 
-`lurek.i18n.getBase() -> string`
+#### Definition
+
+```lua
+--- Returns the base locale string stored by the localization module.
+---@return string Base locale code, or an empty string when unset.
+lurek.i18n.getBase = function() end
+```
+
+#### Description
 
 Returns the base locale string stored by the localization module.
 
-**Returns**: `string` - Base locale code, or an empty string when unset.
+Returns: `string` - Base locale code, or an empty string when unset.
 
 #### Example
 
-Exact example from [i18n.lua](../blob/main/content/examples/i18n.lua):
+Source: [i18n.lua](../blob/main/content/examples/i18n.lua)
 
 ```lua
 do
@@ -254,15 +386,23 @@ end
 
 ### lurek.i18n.getFallbacks
 
-`lurek.i18n.getFallbacks() -> string[]`
+#### Definition
+
+```lua
+--- Returns fallback locale codes in lookup order.
+---@return string[] Array table of fallback locale codes.
+lurek.i18n.getFallbacks = function() end
+```
+
+#### Description
 
 Returns fallback locale codes in lookup order.
 
-**Returns**: `string[]` - Array table of fallback locale codes.
+Returns: `string[]` - Array table of fallback locale codes.
 
 #### Example
 
-Exact example from [i18n.lua](../blob/main/content/examples/i18n.lua):
+Source: [i18n.lua](../blob/main/content/examples/i18n.lua)
 
 ```lua
 do
@@ -274,15 +414,23 @@ end
 
 ### lurek.i18n.getKeys
 
-`lurek.i18n.getKeys() -> string[]`
+#### Definition
+
+```lua
+--- Returns sorted translation keys known to the catalog.
+---@return string[] Translation keys.
+lurek.i18n.getKeys = function() end
+```
+
+#### Description
 
 Returns sorted translation keys known to the catalog.
 
-**Returns**: `string[]` - Translation keys.
+Returns: `string[]` - Translation keys.
 
 #### Example
 
-Exact example from [i18n.lua](../blob/main/content/examples/i18n.lua):
+Source: [i18n.lua](../blob/main/content/examples/i18n.lua)
 
 ```lua
 do
@@ -293,15 +441,23 @@ end
 
 ### lurek.i18n.getLanguage
 
-`lurek.i18n.getLanguage() -> string`
+#### Definition
+
+```lua
+--- Returns the active locale code string.
+---@return string Active locale string, or nil when no locale is active.
+lurek.i18n.getLanguage = function() end
+```
+
+#### Description
 
 Returns the active locale code string.
 
-**Returns**: `string` - Active locale string, or nil when no locale is active.
+Returns: `string` - Active locale string, or nil when no locale is active.
 
 #### Example
 
-Exact example from [i18n.lua](../blob/main/content/examples/i18n.lua):
+Source: [i18n.lua](../blob/main/content/examples/i18n.lua)
 
 ```lua
 do
@@ -313,15 +469,23 @@ end
 
 ### lurek.i18n.getLanguages
 
-`lurek.i18n.getLanguages() -> string[]`
+#### Definition
+
+```lua
+--- Returns sorted locale codes currently loaded in the catalog.
+---@return string[] Array table of locale codes.
+lurek.i18n.getLanguages = function() end
+```
+
+#### Description
 
 Returns sorted locale codes currently loaded in the catalog.
 
-**Returns**: `string[]` - Array table of locale codes.
+Returns: `string[]` - Array table of locale codes.
 
 #### Example
 
-Exact example from [i18n.lua](../blob/main/content/examples/i18n.lua):
+Source: [i18n.lua](../blob/main/content/examples/i18n.lua)
 
 ```lua
 do
@@ -332,15 +496,23 @@ end
 
 ### lurek.i18n.getLoadedLocales
 
-`lurek.i18n.getLoadedLocales() -> string[]`
+#### Definition
+
+```lua
+--- Returns locale codes currently loaded in the catalog.
+---@return string[] Array table of loaded locale codes.
+lurek.i18n.getLoadedLocales = function() end
+```
+
+#### Description
 
 Returns locale codes currently loaded in the catalog.
 
-**Returns**: `string[]` - Array table of loaded locale codes.
+Returns: `string[]` - Array table of loaded locale codes.
 
 #### Example
 
-Exact example from [i18n.lua](../blob/main/content/examples/i18n.lua):
+Source: [i18n.lua](../blob/main/content/examples/i18n.lua)
 
 ```lua
 do
@@ -351,19 +523,28 @@ end
 
 ### lurek.i18n.hasKey
 
-`lurek.i18n.hasKey(key: string) -> boolean`
+#### Definition
+
+```lua
+--- Returns whether the catalog contains a translation key in active or fallback locales.
+---@param key string Translation key to check.
+---@return boolean True when the key is available.
+lurek.i18n.hasKey = function(key) end
+```
+
+#### Description
 
 Returns whether the catalog contains a translation key in active or fallback locales.
 
-**Parameters**
+Parameters:
 
 - `key` (`string`, required): Translation key to check.
 
-**Returns**: `boolean` - True when the key is available.
+Returns: `boolean` - True when the key is available.
 
 #### Example
 
-Exact example from [i18n.lua](../blob/main/content/examples/i18n.lua):
+Source: [i18n.lua](../blob/main/content/examples/i18n.lua)
 
 ```lua
 do
@@ -374,19 +555,28 @@ end
 
 ### lurek.i18n.hasLanguage
 
-`lurek.i18n.hasLanguage(locale: string) -> boolean`
+#### Definition
+
+```lua
+--- Returns whether a locale has translations loaded.
+---@param locale string Locale code to check.
+---@return boolean True when the locale exists in the catalog.
+lurek.i18n.hasLanguage = function(locale) end
+```
+
+#### Description
 
 Returns whether a locale has translations loaded.
 
-**Parameters**
+Parameters:
 
 - `locale` (`string`, required): Locale code to check.
 
-**Returns**: `boolean` - True when the locale exists in the catalog.
+Returns: `boolean` - True when the locale exists in the catalog.
 
 #### Example
 
-Exact example from [i18n.lua](../blob/main/content/examples/i18n.lua):
+Source: [i18n.lua](../blob/main/content/examples/i18n.lua)
 
 ```lua
 do
@@ -397,20 +587,30 @@ end
 
 ### lurek.i18n.interpolate
 
-`lurek.i18n.interpolate(template: string, vars: table) -> string`
+#### Definition
+
+```lua
+--- Replaces `{name}` placeholders in a template using string variables.
+---@param template string Template text containing placeholders.
+---@param vars table Map table from placeholder names to replacement strings.
+---@return string Interpolated text.
+lurek.i18n.interpolate = function(template, vars) end
+```
+
+#### Description
 
 Replaces `{name}` placeholders in a template using string variables.
 
-**Parameters**
+Parameters:
 
 - `template` (`string`, required): Template text containing placeholders.
 - `vars` (`table`, required): Map table from placeholder names to replacement strings.
 
-**Returns**: `string` - Interpolated text.
+Returns: `string` - Interpolated text.
 
 #### Example
 
-Exact example from [i18n.lua](../blob/main/content/examples/i18n.lua):
+Source: [i18n.lua](../blob/main/content/examples/i18n.lua)
 
 ```lua
 do
@@ -421,19 +621,28 @@ end
 
 ### lurek.i18n.isRTL
 
-`lurek.i18n.isRTL([locale]: string) -> boolean`
+#### Definition
+
+```lua
+--- Returns whether a locale is written right-to-left.
+---@param locale? string Locale code; defaults to the active locale.
+---@return boolean True for right-to-left locales.
+lurek.i18n.isRTL = function(locale) end
+```
+
+#### Description
 
 Returns whether a locale is written right-to-left.
 
-**Parameters**
+Parameters:
 
 - `locale` (`string`, optional): Locale code; defaults to the active locale.
 
-**Returns**: `boolean` - True for right-to-left locales.
+Returns: `boolean` - True for right-to-left locales.
 
 #### Example
 
-Exact example from [i18n.lua](../blob/main/content/examples/i18n.lua):
+Source: [i18n.lua](../blob/main/content/examples/i18n.lua)
 
 ```lua
 do
@@ -444,15 +653,23 @@ end
 
 ### lurek.i18n.keyCount
 
-`lurek.i18n.keyCount() -> integer`
+#### Definition
+
+```lua
+--- Returns the number of translation keys known to the catalog.
+---@return number Translation key count.
+lurek.i18n.keyCount = function() end
+```
+
+#### Description
 
 Returns the number of translation keys known to the catalog.
 
-**Returns**: `integer` - Translation key count.
+Returns: `integer` - Translation key count.
 
 #### Example
 
-Exact example from [i18n.lua](../blob/main/content/examples/i18n.lua):
+Source: [i18n.lua](../blob/main/content/examples/i18n.lua)
 
 ```lua
 do
@@ -463,19 +680,28 @@ end
 
 ### lurek.i18n.keysInCategory
 
-`lurek.i18n.keysInCategory(category: string) -> string[]`
+#### Definition
+
+```lua
+--- Returns translation keys belonging to one category prefix.
+---@param category string Category prefix.
+---@return string[] Translation keys.
+lurek.i18n.keysInCategory = function(category) end
+```
+
+#### Description
 
 Returns translation keys belonging to one category prefix.
 
-**Parameters**
+Parameters:
 
 - `category` (`string`, required): Category prefix.
 
-**Returns**: `string[]` - Translation keys.
+Returns: `string[]` - Translation keys.
 
 #### Example
 
-Exact example from [i18n.lua](../blob/main/content/examples/i18n.lua):
+Source: [i18n.lua](../blob/main/content/examples/i18n.lua)
 
 ```lua
 do
@@ -486,11 +712,21 @@ end
 
 ### lurek.i18n.loadString
 
-`lurek.i18n.loadString(locale: string, content: string, format: string)`
+#### Definition
+
+```lua
+--- Loads translations for a locale from TOML or JSON source text.
+---@param locale string Locale code to load.
+---@param content string TOML or JSON translation source.
+---@param format string Source format, either `toml` or `json`.
+lurek.i18n.loadString = function(locale, content, format) end
+```
+
+#### Description
 
 Loads translations for a locale from TOML or JSON source text.
 
-**Parameters**
+Parameters:
 
 - `locale` (`string`, required): Locale code to load.
 - `content` (`string`, required): TOML or JSON translation source.
@@ -498,7 +734,7 @@ Loads translations for a locale from TOML or JSON source text.
 
 #### Example
 
-Exact example from [i18n.lua](../blob/main/content/examples/i18n.lua):
+Source: [i18n.lua](../blob/main/content/examples/i18n.lua)
 
 ```lua
 do
@@ -509,18 +745,27 @@ end
 
 ### lurek.i18n.loadTable
 
-`lurek.i18n.loadTable(locale: string, tbl: table)`
+#### Definition
+
+```lua
+--- Loads translations for a locale from a nested Lua table flattened with dot-separated keys.
+---@param locale string Locale code to load.
+---@param tbl table Translation table containing strings, numbers, booleans, or nested tables.
+lurek.i18n.loadTable = function(locale, tbl) end
+```
+
+#### Description
 
 Loads translations for a locale from a nested Lua table flattened with dot-separated keys.
 
-**Parameters**
+Parameters:
 
 - `locale` (`string`, required): Locale code to load.
 - `tbl` (`table`, required): Translation table containing strings, numbers, booleans, or nested tables.
 
 #### Example
 
-Exact example from [i18n.lua](../blob/main/content/examples/i18n.lua):
+Source: [i18n.lua](../blob/main/content/examples/i18n.lua)
 
 ```lua
 do
@@ -531,19 +776,28 @@ end
 
 ### lurek.i18n.localeCoverage
 
-`lurek.i18n.localeCoverage(reference: string) -> table`
+#### Definition
+
+```lua
+--- Returns missing translation keys for all locales compared to a reference locale.
+---@param reference string Locale code used as the coverage reference.
+---@return I18nLocaleCoverageResult Array of gap rows with `key` and `missing_in` fields.
+lurek.i18n.localeCoverage = function(reference) end
+```
+
+#### Description
 
 Returns missing translation keys for all locales compared to a reference locale.
 
-**Parameters**
+Parameters:
 
 - `reference` (`string`, required): Locale code used as the coverage reference.
 
-**Returns**: `table` - Array of gap rows with `key` and `missing_in` fields.
+Returns: `table` - Array of gap rows with `key` and `missing_in` fields.
 
 #### Example
 
-Exact example from [i18n.lua](../blob/main/content/examples/i18n.lua):
+Source: [i18n.lua](../blob/main/content/examples/i18n.lua)
 
 ```lua
 do
@@ -554,18 +808,27 @@ end
 
 ### lurek.i18n.mergeLocale
 
-`lurek.i18n.mergeLocale(locale: string, entries: table)`
+#### Definition
+
+```lua
+--- Merges flat translation entries into an existing locale.
+---@param locale string Locale code to merge into.
+---@param entries table Map table from translation keys to strings.
+lurek.i18n.mergeLocale = function(locale, entries) end
+```
+
+#### Description
 
 Merges flat translation entries into an existing locale.
 
-**Parameters**
+Parameters:
 
 - `locale` (`string`, required): Locale code to merge into.
 - `entries` (`table`, required): Map table from translation keys to strings.
 
 #### Example
 
-Exact example from [i18n.lua](../blob/main/content/examples/i18n.lua):
+Source: [i18n.lua](../blob/main/content/examples/i18n.lua)
 
 ```lua
 do
@@ -576,13 +839,20 @@ end
 
 ### lurek.i18n.offChange
 
-`lurek.i18n.offChange()`
+#### Definition
+
+```lua
+--- Removes every registered locale-change callback.
+lurek.i18n.offChange = function() end
+```
+
+#### Description
 
 Removes every registered locale-change callback.
 
 #### Example
 
-Exact example from [i18n.lua](../blob/main/content/examples/i18n.lua):
+Source: [i18n.lua](../blob/main/content/examples/i18n.lua)
 
 ```lua
 do
@@ -594,17 +864,25 @@ end
 
 ### lurek.i18n.onChange
 
-`lurek.i18n.onChange(cb: function)`
+#### Definition
+
+```lua
+--- Registers a locale-change callback using the shorter alias name.
+---@param cb function Callback receiving `(new_locale, old_locale)`.
+lurek.i18n.onChange = function(cb) end
+```
+
+#### Description
 
 Registers a locale-change callback using the shorter alias name.
 
-**Parameters**
+Parameters:
 
 - `cb` (`function`, required): Callback receiving `(new_locale, old_locale)`.
 
 #### Example
 
-Exact example from [i18n.lua](../blob/main/content/examples/i18n.lua):
+Source: [i18n.lua](../blob/main/content/examples/i18n.lua)
 
 ```lua
 do
@@ -617,17 +895,25 @@ end
 
 ### lurek.i18n.onLanguageChange
 
-`lurek.i18n.onLanguageChange(cb: function)`
+#### Definition
+
+```lua
+--- Registers a callback invoked when the active locale changes.
+---@param cb function Callback receiving `(new_locale, old_locale)`.
+lurek.i18n.onLanguageChange = function(cb) end
+```
+
+#### Description
 
 Registers a callback invoked when the active locale changes.
 
-**Parameters**
+Parameters:
 
 - `cb` (`function`, required): Callback receiving `(new_locale, old_locale)`.
 
 #### Example
 
-Exact example from [i18n.lua](../blob/main/content/examples/i18n.lua):
+Source: [i18n.lua](../blob/main/content/examples/i18n.lua)
 
 ```lua
 do
@@ -640,19 +926,28 @@ end
 
 ### lurek.i18n.pluralFor
 
-`lurek.i18n.pluralFor(n: number) -> string`
+#### Definition
+
+```lua
+--- Returns the English plural category key for a number.
+---@param n number Count used for plural selection.
+---@return string Plural category, usually `one` or `other`.
+lurek.i18n.pluralFor = function(n) end
+```
+
+#### Description
 
 Returns the English plural category key for a number.
 
-**Parameters**
+Parameters:
 
 - `n` (`number`, required): Count used for plural selection.
 
-**Returns**: `string` - Plural category, usually `one` or `other`.
+Returns: `string` - Plural category, usually `one` or `other`.
 
 #### Example
 
-Exact example from [i18n.lua](../blob/main/content/examples/i18n.lua):
+Source: [i18n.lua](../blob/main/content/examples/i18n.lua)
 
 ```lua
 do
@@ -663,20 +958,30 @@ end
 
 ### lurek.i18n.search
 
-`lurek.i18n.search(query: string, [limit]: integer) -> table`
+#### Definition
+
+```lua
+--- Searches translation keys and values for a query string.
+---@param query string Search query.
+---@param limit? number Maximum result count; zero or nil means no truncation.
+---@return I18nSearchResult Array of rows with `key` and `value` fields.
+lurek.i18n.search = function(query, limit) end
+```
+
+#### Description
 
 Searches translation keys and values for a query string.
 
-**Parameters**
+Parameters:
 
 - `query` (`string`, required): Search query.
 - `limit` (`integer`, optional): Maximum result count; zero or nil means no truncation.
 
-**Returns**: `table` - Array of rows with `key` and `value` fields.
+Returns: `table` - Array of rows with `key` and `value` fields.
 
 #### Example
 
-Exact example from [i18n.lua](../blob/main/content/examples/i18n.lua):
+Source: [i18n.lua](../blob/main/content/examples/i18n.lua)
 
 ```lua
 do
@@ -687,21 +992,32 @@ end
 
 ### lurek.i18n.searchIndexed
 
-`lurek.i18n.searchIndexed(index: table, query: string, [limit]: integer) -> string[]`
+#### Definition
+
+```lua
+--- Searches a prebuilt word index and returns matching keys.
+---@param index table Index table returned by `buildIndex`.
+---@param query string Search query.
+---@param limit? number Maximum key count; zero or nil means no truncation.
+---@return string[] Matching translation keys.
+lurek.i18n.searchIndexed = function(index, query, limit) end
+```
+
+#### Description
 
 Searches a prebuilt word index and returns matching keys.
 
-**Parameters**
+Parameters:
 
 - `index` (`table`, required): Index table returned by `buildIndex`.
 - `query` (`string`, required): Search query.
 - `limit` (`integer`, optional): Maximum key count; zero or nil means no truncation.
 
-**Returns**: `string[]` - Matching translation keys.
+Returns: `string[]` - Matching translation keys.
 
 #### Example
 
-Exact example from [i18n.lua](../blob/main/content/examples/i18n.lua):
+Source: [i18n.lua](../blob/main/content/examples/i18n.lua)
 
 ```lua
 do
@@ -713,17 +1029,25 @@ end
 
 ### lurek.i18n.setBase
 
-`lurek.i18n.setBase(locale: string)`
+#### Definition
+
+```lua
+--- Sets the base locale string stored by the localization module.
+---@param locale string Base locale code.
+lurek.i18n.setBase = function(locale) end
+```
+
+#### Description
 
 Sets the base locale string stored by the localization module.
 
-**Parameters**
+Parameters:
 
 - `locale` (`string`, required): Base locale code.
 
 #### Example
 
-Exact example from [i18n.lua](../blob/main/content/examples/i18n.lua):
+Source: [i18n.lua](../blob/main/content/examples/i18n.lua)
 
 ```lua
 do
@@ -734,17 +1058,25 @@ end
 
 ### lurek.i18n.setFallbacks
 
-`lurek.i18n.setFallbacks(locales: table)`
+#### Definition
+
+```lua
+--- Replaces the fallback locale list used for missing translations.
+---@param locales table Array table of locale codes in fallback order.
+lurek.i18n.setFallbacks = function(locales) end
+```
+
+#### Description
 
 Replaces the fallback locale list used for missing translations.
 
-**Parameters**
+Parameters:
 
 - `locales` (`table`, required): Array table of locale codes in fallback order.
 
 #### Example
 
-Exact example from [i18n.lua](../blob/main/content/examples/i18n.lua):
+Source: [i18n.lua](../blob/main/content/examples/i18n.lua)
 
 ```lua
 do
@@ -755,11 +1087,21 @@ end
 
 ### lurek.i18n.setKey
 
-`lurek.i18n.setKey(locale: string, key: string, value: string)`
+#### Definition
+
+```lua
+--- Sets one translation value for one locale and key.
+---@param locale string Locale code to update.
+---@param key string Translation key.
+---@param value string Translation text.
+lurek.i18n.setKey = function(locale, key, value) end
+```
+
+#### Description
 
 Sets one translation value for one locale and key.
 
-**Parameters**
+Parameters:
 
 - `locale` (`string`, required): Locale code to update.
 - `key` (`string`, required): Translation key.
@@ -767,7 +1109,7 @@ Sets one translation value for one locale and key.
 
 #### Example
 
-Exact example from [i18n.lua](../blob/main/content/examples/i18n.lua):
+Source: [i18n.lua](../blob/main/content/examples/i18n.lua)
 
 ```lua
 do
@@ -778,17 +1120,25 @@ end
 
 ### lurek.i18n.setLanguage
 
-`lurek.i18n.setLanguage(locale: string)`
+#### Definition
+
+```lua
+--- Sets the active locale and invokes registered change callbacks with new and old locale values.
+---@param locale string Locale code to activate.
+lurek.i18n.setLanguage = function(locale) end
+```
+
+#### Description
 
 Sets the active locale and invokes registered change callbacks with new and old locale values.
 
-**Parameters**
+Parameters:
 
 - `locale` (`string`, required): Locale code to activate.
 
 #### Example
 
-Exact example from [i18n.lua](../blob/main/content/examples/i18n.lua):
+Source: [i18n.lua](../blob/main/content/examples/i18n.lua)
 
 ```lua
 do
@@ -799,21 +1149,32 @@ end
 
 ### lurek.i18n.t
 
-`lurek.i18n.t(key: string, [vars]: table, [count]: number) -> string`
+#### Definition
+
+```lua
+--- Translates a key using the active locale, optional variables, and optional English plural selection.
+---@param key string Translation key.
+---@param vars? table Interpolation variables.
+---@param count? number Plural count, also inserted as `{count}` when variables are used.
+---@return string Translated and interpolated text, or the catalog fallback for the key.
+lurek.i18n.t = function(key, vars, count) end
+```
+
+#### Description
 
 Translates a key using the active locale, optional variables, and optional English plural selection.
 
-**Parameters**
+Parameters:
 
 - `key` (`string`, required): Translation key.
 - `vars` (`table`, optional): Interpolation variables.
 - `count` (`number`, optional): Plural count, also inserted as `{count}` when variables are used.
 
-**Returns**: `string` - Translated and interpolated text, or the catalog fallback for the key.
+Returns: `string` - Translated and interpolated text, or the catalog fallback for the key.
 
 #### Example
 
-Exact example from [i18n.lua](../blob/main/content/examples/i18n.lua):
+Source: [i18n.lua](../blob/main/content/examples/i18n.lua)
 
 ```lua
 do
@@ -825,21 +1186,32 @@ end
 
 ### lurek.i18n.tGender
 
-`lurek.i18n.tGender(key: string, gender: string, [vars]: table) -> string`
+#### Definition
+
+```lua
+--- Translates a gender-specific key variant when present, then falls back to the base key.
+---@param key string Base translation key.
+---@param gender string Gender suffix appended to the key.
+---@param vars? table Interpolation variables.
+---@return string Gender-specific or fallback translated text.
+lurek.i18n.tGender = function(key, gender, vars) end
+```
+
+#### Description
 
 Translates a gender-specific key variant when present, then falls back to the base key.
 
-**Parameters**
+Parameters:
 
 - `key` (`string`, required): Base translation key.
 - `gender` (`string`, required): Gender suffix appended to the key.
 - `vars` (`table`, optional): Interpolation variables.
 
-**Returns**: `string` - Gender-specific or fallback translated text.
+Returns: `string` - Gender-specific or fallback translated text.
 
 #### Example
 
-Exact example from [i18n.lua](../blob/main/content/examples/i18n.lua):
+Source: [i18n.lua](../blob/main/content/examples/i18n.lua)
 
 ```lua
 do
@@ -850,19 +1222,28 @@ end
 
 ### lurek.i18n.unloadTable
 
-`lurek.i18n.unloadTable(locale: string) -> boolean`
+#### Definition
+
+```lua
+--- Removes all translations for a locale from the catalog.
+---@param locale string Locale code to unload.
+---@return boolean True when a locale table was removed.
+lurek.i18n.unloadTable = function(locale) end
+```
+
+#### Description
 
 Removes all translations for a locale from the catalog.
 
-**Parameters**
+Parameters:
 
 - `locale` (`string`, required): Locale code to unload.
 
-**Returns**: `boolean` - True when a locale table was removed.
+Returns: `boolean` - True when a locale table was removed.
 
 #### Example
 
-Exact example from [i18n.lua](../blob/main/content/examples/i18n.lua):
+Source: [i18n.lua](../blob/main/content/examples/i18n.lua)
 
 ```lua
 do
@@ -874,19 +1255,28 @@ end
 
 ### lurek.i18n.validateLocale
 
-`lurek.i18n.validateLocale(locale: string) -> boolean`
+#### Definition
+
+```lua
+--- Returns whether a locale code has a valid syntax.
+---@param locale string Locale code to validate.
+---@return boolean True when the code is valid.
+lurek.i18n.validateLocale = function(locale) end
+```
+
+#### Description
 
 Returns whether a locale code has a valid syntax.
 
-**Parameters**
+Parameters:
 
 - `locale` (`string`, required): Locale code to validate.
 
-**Returns**: `boolean` - True when the code is valid.
+Returns: `boolean` - True when the code is valid.
 
 #### Example
 
-Exact example from [i18n.lua](../blob/main/content/examples/i18n.lua):
+Source: [i18n.lua](../blob/main/content/examples/i18n.lua)
 
 ```lua
 do

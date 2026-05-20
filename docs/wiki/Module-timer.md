@@ -14,57 +14,157 @@
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
   - [lurek.timer.afterReal](#lurektimerafterreal)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.timer.chain](#lurektimerchain)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.timer.getAverageDelta](#lurektimergetaveragedelta)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.timer.getDelta](#lurektimergetdelta)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.timer.getFPS](#lurektimergetfps)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.timer.getFrameCount](#lurektimergetframecount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.timer.getMicroTime](#lurektimergetmicrotime)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.timer.getPhysicsDelta](#lurektimergetphysicsdelta)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.timer.getPhysicsMaxSteps](#lurektimergetphysicsmaxsteps)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.timer.getSmoothedDelta](#lurektimergetsmootheddelta)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.timer.getTime](#lurektimergettime)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.timer.newScheduler](#lurektimernewscheduler)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.timer.setPhysicsDelta](#lurektimersetphysicsdelta)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.timer.setPhysicsMaxSteps](#lurektimersetphysicsmaxsteps)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.timer.setSmoothingFactor](#lurektimersetsmoothingfactor)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.timer.sleep](#lurektimersleep)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.timer.step](#lurektimerstep)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.timer.tickRealTimers](#lurektimertickrealtimers)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.timer.tickWaits](#lurektimertickwaits)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.timer.waitFrames](#lurektimerwaitframes)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.timer.waitSeconds](#lurektimerwaitseconds)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔷 Module Types](#module-types)
   - [LScheduler](#lscheduler)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
   - [LScheduler:after](#lschedulerafter)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScheduler:afterFrames](#lschedulerafterframes)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScheduler:afterNamed](#lschedulerafternamed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScheduler:cancel](#lschedulercancel)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScheduler:cancelAll](#lschedulercancelall)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScheduler:cancelNamed](#lschedulercancelnamed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScheduler:every](#lschedulerevery)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScheduler:everyFrames](#lschedulereveryframes)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScheduler:everyNamed](#lschedulereverynamed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScheduler:getCount](#lschedulergetcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScheduler:getInterval](#lschedulergetinterval)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScheduler:getRemaining](#lschedulergetremaining)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScheduler:getRepeatCount](#lschedulergetrepeatcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScheduler:getTimeScale](#lschedulergettimescale)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScheduler:isEmpty](#lschedulerisempty)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScheduler:isPaused](#lschedulerispaused)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScheduler:isPausedNamed](#lschedulerispausednamed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScheduler:pause](#lschedulerpause)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScheduler:pauseNamed](#lschedulerpausenamed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScheduler:resetEvent](#lschedulerresetevent)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScheduler:resume](#lschedulerresume)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScheduler:resumeNamed](#lschedulerresumenamed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScheduler:setInterval](#lschedulersetinterval)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScheduler:setTimeScale](#lschedulersettimescale)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScheduler:type](#lschedulertype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScheduler:typeOf](#lschedulertypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScheduler:update](#lschedulerupdate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LScheduler:updateFrames](#lschedulerupdateframes)
+    - [Definition](#definition)
+    - [Description](#description)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -126,18 +226,27 @@ lurek.timer.tickRealTimers() -> integer -- Checks all real-time timers and fires
 
 ### lurek.timer.afterReal
 
-`lurek.timer.afterReal(delay: number, func: function)`
+#### Definition
+
+```lua
+--- Schedules a one-shot callback based on real (wall-clock) time, unaffected by game pausing or time scaling. Use for UI fade-outs, notifications, or anything that should run on real time.
+---@param delay number Real-time delay in seconds before the callback fires.
+---@param func function Callback to invoke when the real-time deadline is reached.
+lurek.timer.afterReal = function(delay, func) end
+```
+
+#### Description
 
 Schedules a one-shot callback based on real (wall-clock) time, unaffected by game pausing or time scaling. Use for UI fade-outs, notifications, or anything that should run on real time.
 
-**Parameters**
+Parameters:
 
 - `delay` (`number`, required): Real-time delay in seconds before the callback fires.
 - `func` (`function`, required): Callback to invoke when the real-time deadline is reached.
 
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -149,19 +258,28 @@ end
 
 ### lurek.timer.chain
 
-`lurek.timer.chain(steps: table) -> LScheduler`
+#### Definition
+
+```lua
+--- Creates a scheduler pre-loaded with a sequence of delayed callbacks. Each step is a table with an optional `delay` (seconds) and optional `func` (callback). Delays accumulate so each step fires after the sum of all preceding delays. Returns the scheduler for manual update calls.
+---@param steps table Array of step tables, each with optional fields `delay` (number) and `func` (function).
+---@return LScheduler A new scheduler pre-loaded with the chained events.
+lurek.timer.chain = function(steps) end
+```
+
+#### Description
 
 Creates a scheduler pre-loaded with a sequence of delayed callbacks. Each step is a table with an optional `delay` (seconds) and optional `func` (callback). Delays accumulate so each step fires after the sum of all preceding delays. Returns the scheduler for manual update calls.
 
-**Parameters**
+Parameters:
 
 - `steps` (`table`, required): Array of step tables, each with optional fields `delay` (number) and `func` (function).
 
-**Returns**: `LScheduler` - A new scheduler pre-loaded with the chained events.
+Returns: `LScheduler` - A new scheduler pre-loaded with the chained events.
 
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -174,15 +292,23 @@ end
 
 ### lurek.timer.getAverageDelta
 
-`lurek.timer.getAverageDelta() -> number`
+#### Definition
+
+```lua
+--- Returns the smoothed average delta time in seconds over a recent window of frames. More stable than getDelta for display or adaptive logic.
+---@return number Average delta time in seconds.
+lurek.timer.getAverageDelta = function() end
+```
+
+#### Description
 
 Returns the smoothed average delta time in seconds over a recent window of frames. More stable than getDelta for display or adaptive logic.
 
-**Returns**: `number` - Average delta time in seconds.
+Returns: `number` - Average delta time in seconds.
 
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -193,15 +319,23 @@ end
 
 ### lurek.timer.getDelta
 
-`lurek.timer.getDelta() -> number`
+#### Definition
+
+```lua
+--- Returns the time in seconds elapsed since the last frame. Use this to make movement and animations frame-rate independent.
+---@return number Delta time in seconds.
+lurek.timer.getDelta = function() end
+```
+
+#### Description
 
 Returns the time in seconds elapsed since the last frame. Use this to make movement and animations frame-rate independent.
 
-**Returns**: `number` - Delta time in seconds.
+Returns: `number` - Delta time in seconds.
 
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -212,15 +346,23 @@ end
 
 ### lurek.timer.getFPS
 
-`lurek.timer.getFPS() -> number`
+#### Definition
+
+```lua
+--- Returns the current frames-per-second count. Useful for performance monitoring overlays and debug HUDs.
+---@return number Current FPS.
+lurek.timer.getFPS = function() end
+```
+
+#### Description
 
 Returns the current frames-per-second count. Useful for performance monitoring overlays and debug HUDs.
 
-**Returns**: `number` - Current FPS.
+Returns: `number` - Current FPS.
 
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -231,15 +373,23 @@ end
 
 ### lurek.timer.getFrameCount
 
-`lurek.timer.getFrameCount() -> integer`
+#### Definition
+
+```lua
+--- Returns the total number of frames rendered since the engine started.
+---@return number Total frame count.
+lurek.timer.getFrameCount = function() end
+```
+
+#### Description
 
 Returns the total number of frames rendered since the engine started.
 
-**Returns**: `integer` - Total frame count.
+Returns: `integer` - Total frame count.
 
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -250,15 +400,23 @@ end
 
 ### lurek.timer.getMicroTime
 
-`lurek.timer.getMicroTime() -> number`
+#### Definition
+
+```lua
+--- Returns high-resolution elapsed time in seconds since engine start. Useful for precise benchmarking and profiling.
+---@return number Elapsed time in seconds with sub-microsecond precision.
+lurek.timer.getMicroTime = function() end
+```
+
+#### Description
 
 Returns high-resolution elapsed time in seconds since engine start. Useful for precise benchmarking and profiling.
 
-**Returns**: `number` - Elapsed time in seconds with sub-microsecond precision.
+Returns: `number` - Elapsed time in seconds with sub-microsecond precision.
 
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -272,15 +430,23 @@ end
 
 ### lurek.timer.getPhysicsDelta
 
-`lurek.timer.getPhysicsDelta() -> number`
+#### Definition
+
+```lua
+--- Returns the fixed timestep used for physics simulation in seconds. The default is typically 1/60.
+---@return number Fixed physics delta time in seconds.
+lurek.timer.getPhysicsDelta = function() end
+```
+
+#### Description
 
 Returns the fixed timestep used for physics simulation in seconds. The default is typically 1/60.
 
-**Returns**: `number` - Fixed physics delta time in seconds.
+Returns: `number` - Fixed physics delta time in seconds.
 
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -291,15 +457,23 @@ end
 
 ### lurek.timer.getPhysicsMaxSteps
 
-`lurek.timer.getPhysicsMaxSteps() -> number`
+#### Definition
+
+```lua
+--- Returns the maximum number of physics steps allowed per frame. Prevents the spiral of death when the game runs slowly.
+---@return number Maximum physics steps per frame.
+lurek.timer.getPhysicsMaxSteps = function() end
+```
+
+#### Description
 
 Returns the maximum number of physics steps allowed per frame. Prevents the spiral of death when the game runs slowly.
 
-**Returns**: `number` - Maximum physics steps per frame.
+Returns: `number` - Maximum physics steps per frame.
 
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -312,15 +486,23 @@ end
 
 ### lurek.timer.getSmoothedDelta
 
-`lurek.timer.getSmoothedDelta() -> number`
+#### Definition
+
+```lua
+--- Returns an exponentially smoothed delta time in seconds, reducing frame-to-frame jitter. Call once per frame for consistent results. The smoothing factor is set via setSmoothingFactor.
+---@return number Smoothed delta time in seconds.
+lurek.timer.getSmoothedDelta = function() end
+```
+
+#### Description
 
 Returns an exponentially smoothed delta time in seconds, reducing frame-to-frame jitter. Call once per frame for consistent results. The smoothing factor is set via setSmoothingFactor.
 
-**Returns**: `number` - Smoothed delta time in seconds.
+Returns: `number` - Smoothed delta time in seconds.
 
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -332,15 +514,23 @@ end
 
 ### lurek.timer.getTime
 
-`lurek.timer.getTime() -> number`
+#### Definition
+
+```lua
+--- Returns the total elapsed game time in seconds since the engine started. Useful for time-based animations, effects, and shader uniforms.
+---@return number Total elapsed time in seconds.
+lurek.timer.getTime = function() end
+```
+
+#### Description
 
 Returns the total elapsed game time in seconds since the engine started. Useful for time-based animations, effects, and shader uniforms.
 
-**Returns**: `number` - Total elapsed time in seconds.
+Returns: `number` - Total elapsed time in seconds.
 
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -351,15 +541,23 @@ end
 
 ### lurek.timer.newScheduler
 
-`lurek.timer.newScheduler() -> LScheduler`
+#### Definition
+
+```lua
+--- Creates a new LScheduler instance for managing timed and frame-based callbacks independently from the global timer. Each scheduler has its own time scale and event list.
+---@return LScheduler A new scheduler object.
+lurek.timer.newScheduler = function() end
+```
+
+#### Description
 
 Creates a new LScheduler instance for managing timed and frame-based callbacks independently from the global timer. Each scheduler has its own time scale and event list.
 
-**Returns**: `LScheduler` - A new scheduler object.
+Returns: `LScheduler` - A new scheduler object.
 
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -373,17 +571,25 @@ end
 
 ### lurek.timer.setPhysicsDelta
 
-`lurek.timer.setPhysicsDelta(dt: number)`
+#### Definition
+
+```lua
+--- Sets the fixed timestep for physics simulation. Clamped between 1/240 and 1/10 seconds. Lower values increase accuracy but cost more CPU.
+---@param dt number Desired fixed delta time in seconds.
+lurek.timer.setPhysicsDelta = function(dt) end
+```
+
+#### Description
 
 Sets the fixed timestep for physics simulation. Clamped between 1/240 and 1/10 seconds. Lower values increase accuracy but cost more CPU.
 
-**Parameters**
+Parameters:
 
 - `dt` (`number`, required): Desired fixed delta time in seconds.
 
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -395,17 +601,25 @@ end
 
 ### lurek.timer.setPhysicsMaxSteps
 
-`lurek.timer.setPhysicsMaxSteps(n: integer)`
+#### Definition
+
+```lua
+--- Sets the maximum number of physics steps allowed per frame. Clamped between 1 and 64. Higher values improve accuracy under lag but cost more CPU.
+---@param n number Maximum physics steps per frame.
+lurek.timer.setPhysicsMaxSteps = function(n) end
+```
+
+#### Description
 
 Sets the maximum number of physics steps allowed per frame. Clamped between 1 and 64. Higher values improve accuracy under lag but cost more CPU.
 
-**Parameters**
+Parameters:
 
 - `n` (`integer`, required): Maximum physics steps per frame.
 
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -417,17 +631,25 @@ end
 
 ### lurek.timer.setSmoothingFactor
 
-`lurek.timer.setSmoothingFactor(alpha: number)`
+#### Definition
+
+```lua
+--- Sets the exponential smoothing factor used by getSmoothedDelta. Lower values produce smoother (more lagged) results; higher values track changes faster. Clamped to [0.01, 1.0].
+---@param alpha number Smoothing factor between 0.01 and 1.0.
+lurek.timer.setSmoothingFactor = function(alpha) end
+```
+
+#### Description
 
 Sets the exponential smoothing factor used by getSmoothedDelta. Lower values produce smoother (more lagged) results; higher values track changes faster. Clamped to [0.01, 1.0].
 
-**Parameters**
+Parameters:
 
 - `alpha` (`number`, required): Smoothing factor between 0.01 and 1.0.
 
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -439,17 +661,25 @@ end
 
 ### lurek.timer.sleep
 
-`lurek.timer.sleep(seconds: number)`
+#### Definition
+
+```lua
+--- Blocks the current thread for the given number of seconds. Use sparingly — this halts the entire game loop. Intended for loading screens or synchronization.
+---@param seconds number Duration to sleep in seconds.
+lurek.timer.sleep = function(seconds) end
+```
+
+#### Description
 
 Blocks the current thread for the given number of seconds. Use sparingly — this halts the entire game loop. Intended for loading screens or synchronization.
 
-**Parameters**
+Parameters:
 
 - `seconds` (`number`, required): Duration to sleep in seconds.
 
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -461,15 +691,23 @@ end
 
 ### lurek.timer.step
 
-`lurek.timer.step() -> number`
+#### Definition
+
+```lua
+--- Advances the internal clock by one tick and returns the delta time for that tick. Typically called by the engine loop; game scripts rarely need this.
+---@return number Delta time in seconds for the step.
+lurek.timer.step = function() end
+```
+
+#### Description
 
 Advances the internal clock by one tick and returns the delta time for that tick. Typically called by the engine loop; game scripts rarely need this.
 
-**Returns**: `number` - Delta time in seconds for the step.
+Returns: `number` - Delta time in seconds for the step.
 
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -480,15 +718,23 @@ end
 
 ### lurek.timer.tickRealTimers
 
-`lurek.timer.tickRealTimers() -> integer`
+#### Definition
+
+```lua
+--- Checks all real-time timers and fires any whose deadline has passed. Returns the number of callbacks that fired. Call this once per frame after afterReal scheduling.
+---@return number Count of real-time callbacks that fired.
+lurek.timer.tickRealTimers = function() end
+```
+
+#### Description
 
 Checks all real-time timers and fires any whose deadline has passed. Returns the number of callbacks that fired. Call this once per frame after afterReal scheduling.
 
-**Returns**: `integer` - Count of real-time callbacks that fired.
+Returns: `integer` - Count of real-time callbacks that fired.
 
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -499,15 +745,23 @@ end
 
 ### lurek.timer.tickWaits
 
-`lurek.timer.tickWaits() -> integer`
+#### Definition
+
+```lua
+--- Checks all pending waitSeconds and waitFrames coroutines, resumes any whose deadline or frame target has been reached, and cleans up completed entries. Returns the number of coroutines that were resumed. Call once per frame.
+---@return number Count of coroutines resumed.
+lurek.timer.tickWaits = function() end
+```
+
+#### Description
 
 Checks all pending waitSeconds and waitFrames coroutines, resumes any whose deadline or frame target has been reached, and cleans up completed entries. Returns the number of coroutines that were resumed. Call once per frame.
 
-**Returns**: `integer` - Count of coroutines resumed.
+Returns: `integer` - Count of coroutines resumed.
 
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -521,17 +775,25 @@ end
 
 ### lurek.timer.waitFrames
 
-`lurek.timer.waitFrames(frames: integer)`
+#### Definition
+
+```lua
+--- Yields the current coroutine for the given number of frames. Must be called from within a coroutine. The coroutine is resumed automatically when tickWaits is called and the target frame count has been reached.
+---@param frames number Number of frames to wait.
+lurek.timer.waitFrames = function(frames) end
+```
+
+#### Description
 
 Yields the current coroutine for the given number of frames. Must be called from within a coroutine. The coroutine is resumed automatically when tickWaits is called and the target frame count has been reached.
 
-**Parameters**
+Parameters:
 
 - `frames` (`integer`, required): Number of frames to wait.
 
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -545,17 +807,25 @@ end
 
 ### lurek.timer.waitSeconds
 
-`lurek.timer.waitSeconds(seconds: number)`
+#### Definition
+
+```lua
+--- Yields the current coroutine for the given number of real-time seconds. Must be called from within a coroutine. The coroutine is resumed automatically when tickWaits is called and the deadline has passed.
+---@param seconds number Real-time seconds to wait.
+lurek.timer.waitSeconds = function(seconds) end
+```
+
+#### Description
 
 Yields the current coroutine for the given number of real-time seconds. Must be called from within a coroutine. The coroutine is resumed automatically when tickWaits is called and the deadline has passed.
 
-**Parameters**
+Parameters:
 
 - `seconds` (`number`, required): Real-time seconds to wait.
 
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -573,9 +843,7 @@ end
 
 ### LScheduler
 
-A Lua-exposed event scheduler that fires callbacks after timed delays or frame counts, with support for repeating intervals, named entries, pausing, and time-scaling.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- A Lua-exposed event scheduler that fires callbacks after timed delays or frame counts, with support for repeating intervals, named entries, pausing, and time-scaling.
@@ -583,9 +851,13 @@ A Lua-exposed event scheduler that fires callbacks after timed delays or frame c
 LScheduler = {}
 ```
 
+#### Description
+
+A Lua-exposed event scheduler that fires callbacks after timed delays or frame counts, with support for repeating intervals, named entries, pausing, and time-scaling.
+
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -603,18 +875,7 @@ end
 
 ### LScheduler:after
 
-`LScheduler:after(delay: number, func: function) -> integer`
-
-Schedules a one-shot callback to fire after the given delay in seconds. Returns an event ID that can be used to cancel, pause, or query the event.
-
-**Parameters**
-
-- `delay` (`number`, required): Time in seconds before the callback fires.
-- `func` (`function`, required): Callback to invoke when the delay elapses.
-
-**Returns**: `integer` - Unique event ID for this scheduled callback.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Schedules a one-shot callback to fire after the given delay in seconds. Returns an event ID that can be used to cancel, pause, or query the event.
@@ -624,9 +885,20 @@ Schedules a one-shot callback to fire after the given delay in seconds. Returns 
 function LScheduler:after(delay, func) end
 ```
 
+#### Description
+
+Schedules a one-shot callback to fire after the given delay in seconds. Returns an event ID that can be used to cancel, pause, or query the event.
+
+Parameters:
+
+- `delay` (`number`, required): Time in seconds before the callback fires.
+- `func` (`function`, required): Callback to invoke when the delay elapses.
+
+Returns: `integer` - Unique event ID for this scheduled callback.
+
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -638,18 +910,7 @@ end
 
 ### LScheduler:afterFrames
 
-`LScheduler:afterFrames(n: integer, func: function) -> integer`
-
-Schedules a one-shot callback to fire after the given number of frames. Returns an event ID for management.
-
-**Parameters**
-
-- `n` (`integer`, required): Number of frames to wait before the callback fires.
-- `func` (`function`, required): Callback to invoke when the frame count elapses.
-
-**Returns**: `integer` - Unique event ID for this scheduled callback.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Schedules a one-shot callback to fire after the given number of frames. Returns an event ID for management.
@@ -659,9 +920,20 @@ Schedules a one-shot callback to fire after the given number of frames. Returns 
 function LScheduler:afterFrames(n, func) end
 ```
 
+#### Description
+
+Schedules a one-shot callback to fire after the given number of frames. Returns an event ID for management.
+
+Parameters:
+
+- `n` (`integer`, required): Number of frames to wait before the callback fires.
+- `func` (`function`, required): Callback to invoke when the frame count elapses.
+
+Returns: `integer` - Unique event ID for this scheduled callback.
+
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -674,19 +946,7 @@ end
 
 ### LScheduler:afterNamed
 
-`LScheduler:afterNamed(name: string, delay: number, func: function) -> integer`
-
-Schedules a named one-shot callback after a delay in seconds. If a callback with the same name already exists, the old one is cancelled and replaced. Useful for debouncing or resettable delays.
-
-**Parameters**
-
-- `name` (`string`, required): Unique name for this scheduled event.
-- `delay` (`number`, required): Time in seconds before the callback fires.
-- `func` (`function`, required): Callback to invoke when the delay elapses.
-
-**Returns**: `integer` - Unique event ID for this scheduled callback.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Schedules a named one-shot callback after a delay in seconds. If a callback with the same name already exists, the old one is cancelled and replaced. Useful for debouncing or resettable delays.
@@ -697,9 +957,21 @@ Schedules a named one-shot callback after a delay in seconds. If a callback with
 function LScheduler:afterNamed(name, delay, func) end
 ```
 
+#### Description
+
+Schedules a named one-shot callback after a delay in seconds. If a callback with the same name already exists, the old one is cancelled and replaced. Useful for debouncing or resettable delays.
+
+Parameters:
+
+- `name` (`string`, required): Unique name for this scheduled event.
+- `delay` (`number`, required): Time in seconds before the callback fires.
+- `func` (`function`, required): Callback to invoke when the delay elapses.
+
+Returns: `integer` - Unique event ID for this scheduled callback.
+
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -711,17 +983,7 @@ end
 
 ### LScheduler:cancel
 
-`LScheduler:cancel(id: integer) -> boolean`
-
-Cancels a scheduled event by its ID. Returns true if the event was found and removed, false if it did not exist.
-
-**Parameters**
-
-- `id` (`integer`, required): Event ID returned by after, every, or their variants.
-
-**Returns**: `boolean` - True if the event was found and cancelled.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Cancels a scheduled event by its ID. Returns true if the event was found and removed, false if it did not exist.
@@ -730,9 +992,19 @@ Cancels a scheduled event by its ID. Returns true if the event was found and rem
 function LScheduler:cancel(id) end
 ```
 
+#### Description
+
+Cancels a scheduled event by its ID. Returns true if the event was found and removed, false if it did not exist.
+
+Parameters:
+
+- `id` (`integer`, required): Event ID returned by after, every, or their variants.
+
+Returns: `boolean` - True if the event was found and cancelled.
+
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -746,13 +1018,7 @@ end
 
 ### LScheduler:cancelAll
 
-`LScheduler:cancelAll() -> integer`
-
-Cancels all scheduled events in this scheduler and frees their callbacks. Returns the number of events that were removed.
-
-**Returns**: `integer` - Count of events that were cancelled.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Cancels all scheduled events in this scheduler and frees their callbacks. Returns the number of events that were removed.
@@ -760,9 +1026,15 @@ Cancels all scheduled events in this scheduler and frees their callbacks. Return
 function LScheduler:cancelAll() end
 ```
 
+#### Description
+
+Cancels all scheduled events in this scheduler and frees their callbacks. Returns the number of events that were removed.
+
+Returns: `integer` - Count of events that were cancelled.
+
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -776,17 +1048,7 @@ end
 
 ### LScheduler:cancelNamed
 
-`LScheduler:cancelNamed(name: string) -> boolean`
-
-Cancels a named scheduled event. Returns true if the named event was found and removed.
-
-**Parameters**
-
-- `name` (`string`, required): The name used when scheduling with afterNamed or everyNamed.
-
-**Returns**: `boolean` - True if the named event was found and cancelled.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Cancels a named scheduled event. Returns true if the named event was found and removed.
@@ -795,9 +1057,19 @@ Cancels a named scheduled event. Returns true if the named event was found and r
 function LScheduler:cancelNamed(name) end
 ```
 
+#### Description
+
+Cancels a named scheduled event. Returns true if the named event was found and removed.
+
+Parameters:
+
+- `name` (`string`, required): The name used when scheduling with afterNamed or everyNamed.
+
+Returns: `boolean` - True if the named event was found and cancelled.
+
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -810,19 +1082,7 @@ end
 
 ### LScheduler:every
 
-`LScheduler:every(interval: number, func: function, [count]: integer) -> integer`
-
-Schedules a repeating callback that fires at a fixed interval in seconds. Pass a positive count to limit repetitions, or omit/pass -1 to repeat indefinitely.
-
-**Parameters**
-
-- `interval` (`number`, required): Time in seconds between each invocation.
-- `func` (`function`, required): Callback to invoke on each interval tick.
-- `count` (`integer`, optional): Maximum number of times to fire. Defaults to -1 (infinite).
-
-**Returns**: `integer` - Unique event ID for this repeating callback.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Schedules a repeating callback that fires at a fixed interval in seconds. Pass a positive count to limit repetitions, or omit/pass -1 to repeat indefinitely.
@@ -833,9 +1093,21 @@ Schedules a repeating callback that fires at a fixed interval in seconds. Pass a
 function LScheduler:every(interval, func, count) end
 ```
 
+#### Description
+
+Schedules a repeating callback that fires at a fixed interval in seconds. Pass a positive count to limit repetitions, or omit/pass -1 to repeat indefinitely.
+
+Parameters:
+
+- `interval` (`number`, required): Time in seconds between each invocation.
+- `func` (`function`, required): Callback to invoke on each interval tick.
+- `count` (`integer`, optional): Maximum number of times to fire. Defaults to -1 (infinite).
+
+Returns: `integer` - Unique event ID for this repeating callback.
+
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -849,19 +1121,7 @@ end
 
 ### LScheduler:everyFrames
 
-`LScheduler:everyFrames(n: integer, func: function, [count]: integer) -> integer`
-
-Schedules a repeating callback that fires every N frames. Pass a positive count to limit repetitions, or omit/pass -1 to repeat indefinitely.
-
-**Parameters**
-
-- `n` (`integer`, required): Number of frames between each invocation.
-- `func` (`function`, required): Callback to invoke on each frame-interval tick.
-- `count` (`integer`, optional): Maximum number of times to fire. Defaults to -1 (infinite).
-
-**Returns**: `integer` - Unique event ID for this repeating callback.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Schedules a repeating callback that fires every N frames. Pass a positive count to limit repetitions, or omit/pass -1 to repeat indefinitely.
@@ -872,9 +1132,21 @@ Schedules a repeating callback that fires every N frames. Pass a positive count 
 function LScheduler:everyFrames(n, func, count) end
 ```
 
+#### Description
+
+Schedules a repeating callback that fires every N frames. Pass a positive count to limit repetitions, or omit/pass -1 to repeat indefinitely.
+
+Parameters:
+
+- `n` (`integer`, required): Number of frames between each invocation.
+- `func` (`function`, required): Callback to invoke on each frame-interval tick.
+- `count` (`integer`, optional): Maximum number of times to fire. Defaults to -1 (infinite).
+
+Returns: `integer` - Unique event ID for this repeating callback.
+
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -888,20 +1160,7 @@ end
 
 ### LScheduler:everyNamed
 
-`LScheduler:everyNamed(name: string, interval: number, func: function, [count]: integer) -> integer`
-
-Schedules a named repeating callback at a fixed interval. If a callback with the same name already exists, the old one is cancelled and replaced. Useful for restartable periodic effects like health regeneration or status ticks.
-
-**Parameters**
-
-- `name` (`string`, required): Unique name for this repeating event.
-- `interval` (`number`, required): Time in seconds between each invocation.
-- `func` (`function`, required): Callback to invoke on each interval tick.
-- `count` (`integer`, optional): Maximum number of times to fire. Defaults to -1 (infinite).
-
-**Returns**: `integer` - Unique event ID for this repeating callback.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Schedules a named repeating callback at a fixed interval. If a callback with the same name already exists, the old one is cancelled and replaced. Useful for restartable periodic effects like health regeneration or status ticks.
@@ -913,9 +1172,22 @@ Schedules a named repeating callback at a fixed interval. If a callback with the
 function LScheduler:everyNamed(name, interval, func, count) end
 ```
 
+#### Description
+
+Schedules a named repeating callback at a fixed interval. If a callback with the same name already exists, the old one is cancelled and replaced. Useful for restartable periodic effects like health regeneration or status ticks.
+
+Parameters:
+
+- `name` (`string`, required): Unique name for this repeating event.
+- `interval` (`number`, required): Time in seconds between each invocation.
+- `func` (`function`, required): Callback to invoke on each interval tick.
+- `count` (`integer`, optional): Maximum number of times to fire. Defaults to -1 (infinite).
+
+Returns: `integer` - Unique event ID for this repeating callback.
+
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -929,13 +1201,7 @@ end
 
 ### LScheduler:getCount
 
-`LScheduler:getCount() -> integer`
-
-Returns the total number of active scheduled events in this scheduler.
-
-**Returns**: `integer` - Count of active events.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the total number of active scheduled events in this scheduler.
@@ -943,9 +1209,15 @@ Returns the total number of active scheduled events in this scheduler.
 function LScheduler:getCount() end
 ```
 
+#### Description
+
+Returns the total number of active scheduled events in this scheduler.
+
+Returns: `integer` - Count of active events.
+
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -959,17 +1231,7 @@ end
 
 ### LScheduler:getInterval
 
-`LScheduler:getInterval(id: integer) -> boolean`
-
-Returns the interval duration in seconds for a repeating event. The first return value indicates whether the event was found; the second is the interval (0.0 if not found).
-
-**Parameters**
-
-- `id` (`integer`, required): Event ID to query.
-
-**Returns**: `boolean` - True if the event exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the interval duration in seconds for a repeating event. The first return value indicates whether the event was found; the second is the interval (0.0 if not found).
@@ -979,9 +1241,19 @@ Returns the interval duration in seconds for a repeating event. The first return
 function LScheduler:getInterval(id) end
 ```
 
+#### Description
+
+Returns the interval duration in seconds for a repeating event. The first return value indicates whether the event was found; the second is the interval (0.0 if not found).
+
+Parameters:
+
+- `id` (`integer`, required): Event ID to query.
+
+Returns: `boolean` - True if the event exists.
+
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -995,17 +1267,7 @@ end
 
 ### LScheduler:getRemaining
 
-`LScheduler:getRemaining(id: integer) -> boolean`
-
-Returns the remaining time in seconds before the event fires. The first return value indicates whether the event was found; the second is the remaining time (0.0 if not found).
-
-**Parameters**
-
-- `id` (`integer`, required): Event ID to query.
-
-**Returns**: `boolean` - True if the event exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the remaining time in seconds before the event fires. The first return value indicates whether the event was found; the second is the remaining time (0.0 if not found).
@@ -1015,9 +1277,19 @@ Returns the remaining time in seconds before the event fires. The first return v
 function LScheduler:getRemaining(id) end
 ```
 
+#### Description
+
+Returns the remaining time in seconds before the event fires. The first return value indicates whether the event was found; the second is the remaining time (0.0 if not found).
+
+Parameters:
+
+- `id` (`integer`, required): Event ID to query.
+
+Returns: `boolean` - True if the event exists.
+
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -1031,17 +1303,7 @@ end
 
 ### LScheduler:getRepeatCount
 
-`LScheduler:getRepeatCount(id: integer) -> boolean`
-
-Returns the remaining repeat count for a repeating event. The first return value indicates whether the event was found; the second is the count (0 if not found). A value of -1 means infinite repeats.
-
-**Parameters**
-
-- `id` (`integer`, required): Event ID to query.
-
-**Returns**: `boolean` - True if the event exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the remaining repeat count for a repeating event. The first return value indicates whether the event was found; the second is the count (0 if not found). A value of -1 means infinite repeats.
@@ -1051,9 +1313,19 @@ Returns the remaining repeat count for a repeating event. The first return value
 function LScheduler:getRepeatCount(id) end
 ```
 
+#### Description
+
+Returns the remaining repeat count for a repeating event. The first return value indicates whether the event was found; the second is the count (0 if not found). A value of -1 means infinite repeats.
+
+Parameters:
+
+- `id` (`integer`, required): Event ID to query.
+
+Returns: `boolean` - True if the event exists.
+
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -1108,13 +1380,7 @@ end
 
 ### LScheduler:getTimeScale
 
-`LScheduler:getTimeScale() -> number`
-
-Returns the current time scale multiplier for this scheduler.
-
-**Returns**: `number` - Current time scale (1.0 = normal speed).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current time scale multiplier for this scheduler.
@@ -1122,9 +1388,15 @@ Returns the current time scale multiplier for this scheduler.
 function LScheduler:getTimeScale() end
 ```
 
+#### Description
+
+Returns the current time scale multiplier for this scheduler.
+
+Returns: `number` - Current time scale (1.0 = normal speed).
+
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -1137,13 +1409,7 @@ end
 
 ### LScheduler:isEmpty
 
-`LScheduler:isEmpty() -> boolean`
-
-Returns true if the scheduler has no active events.
-
-**Returns**: `boolean` - True when no events are scheduled.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns true if the scheduler has no active events.
@@ -1151,9 +1417,15 @@ Returns true if the scheduler has no active events.
 function LScheduler:isEmpty() end
 ```
 
+#### Description
+
+Returns true if the scheduler has no active events.
+
+Returns: `boolean` - True when no events are scheduled.
+
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -1166,17 +1438,7 @@ end
 
 ### LScheduler:isPaused
 
-`LScheduler:isPaused(id: integer) -> boolean`
-
-Checks whether a scheduled event is currently paused.
-
-**Parameters**
-
-- `id` (`integer`, required): Event ID to check.
-
-**Returns**: `boolean` - True if the event is paused, false if running or not found.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether a scheduled event is currently paused.
@@ -1185,9 +1447,19 @@ Checks whether a scheduled event is currently paused.
 function LScheduler:isPaused(id) end
 ```
 
+#### Description
+
+Checks whether a scheduled event is currently paused.
+
+Parameters:
+
+- `id` (`integer`, required): Event ID to check.
+
+Returns: `boolean` - True if the event is paused, false if running or not found.
+
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -1200,17 +1472,7 @@ end
 
 ### LScheduler:isPausedNamed
 
-`LScheduler:isPausedNamed(name: string) -> boolean`
-
-Checks whether a named scheduled event is currently paused.
-
-**Parameters**
-
-- `name` (`string`, required): The name used when scheduling.
-
-**Returns**: `boolean` - True if the named event is paused.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether a named scheduled event is currently paused.
@@ -1219,9 +1481,19 @@ Checks whether a named scheduled event is currently paused.
 function LScheduler:isPausedNamed(name) end
 ```
 
+#### Description
+
+Checks whether a named scheduled event is currently paused.
+
+Parameters:
+
+- `name` (`string`, required): The name used when scheduling.
+
+Returns: `boolean` - True if the named event is paused.
+
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -1234,17 +1506,7 @@ end
 
 ### LScheduler:pause
 
-`LScheduler:pause(id: integer) -> boolean`
-
-Pauses a scheduled event so it stops accumulating time. Returns true if the event was found and paused.
-
-**Parameters**
-
-- `id` (`integer`, required): Event ID to pause.
-
-**Returns**: `boolean` - True if the event exists and was paused.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Pauses a scheduled event so it stops accumulating time. Returns true if the event was found and paused.
@@ -1253,9 +1515,19 @@ Pauses a scheduled event so it stops accumulating time. Returns true if the even
 function LScheduler:pause(id) end
 ```
 
+#### Description
+
+Pauses a scheduled event so it stops accumulating time. Returns true if the event was found and paused.
+
+Parameters:
+
+- `id` (`integer`, required): Event ID to pause.
+
+Returns: `boolean` - True if the event exists and was paused.
+
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -1268,17 +1540,7 @@ end
 
 ### LScheduler:pauseNamed
 
-`LScheduler:pauseNamed(name: string) -> boolean`
-
-Pauses a named scheduled event. Returns true if the named event was found and paused.
-
-**Parameters**
-
-- `name` (`string`, required): The name used when scheduling.
-
-**Returns**: `boolean` - True if the named event exists and was paused.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Pauses a named scheduled event. Returns true if the named event was found and paused.
@@ -1287,9 +1549,19 @@ Pauses a named scheduled event. Returns true if the named event was found and pa
 function LScheduler:pauseNamed(name) end
 ```
 
+#### Description
+
+Pauses a named scheduled event. Returns true if the named event was found and paused.
+
+Parameters:
+
+- `name` (`string`, required): The name used when scheduling.
+
+Returns: `boolean` - True if the named event exists and was paused.
+
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -1302,17 +1574,7 @@ end
 
 ### LScheduler:resetEvent
 
-`LScheduler:resetEvent(id: integer) -> boolean`
-
-Resets the elapsed time of a scheduled event back to zero, restarting its delay or interval countdown. Returns true if the event was found and reset.
-
-**Parameters**
-
-- `id` (`integer`, required): Event ID to reset.
-
-**Returns**: `boolean` - True if the event was found and reset.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Resets the elapsed time of a scheduled event back to zero, restarting its delay or interval countdown. Returns true if the event was found and reset.
@@ -1321,9 +1583,19 @@ Resets the elapsed time of a scheduled event back to zero, restarting its delay 
 function LScheduler:resetEvent(id) end
 ```
 
+#### Description
+
+Resets the elapsed time of a scheduled event back to zero, restarting its delay or interval countdown. Returns true if the event was found and reset.
+
+Parameters:
+
+- `id` (`integer`, required): Event ID to reset.
+
+Returns: `boolean` - True if the event was found and reset.
+
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -1337,17 +1609,7 @@ end
 
 ### LScheduler:resume
 
-`LScheduler:resume(id: integer) -> boolean`
-
-Resumes a previously paused event so it continues accumulating time. Returns true if the event was found and resumed.
-
-**Parameters**
-
-- `id` (`integer`, required): Event ID to resume.
-
-**Returns**: `boolean` - True if the event exists and was resumed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Resumes a previously paused event so it continues accumulating time. Returns true if the event was found and resumed.
@@ -1356,9 +1618,19 @@ Resumes a previously paused event so it continues accumulating time. Returns tru
 function LScheduler:resume(id) end
 ```
 
+#### Description
+
+Resumes a previously paused event so it continues accumulating time. Returns true if the event was found and resumed.
+
+Parameters:
+
+- `id` (`integer`, required): Event ID to resume.
+
+Returns: `boolean` - True if the event exists and was resumed.
+
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -1372,17 +1644,7 @@ end
 
 ### LScheduler:resumeNamed
 
-`LScheduler:resumeNamed(name: string) -> boolean`
-
-Resumes a previously paused named event. Returns true if the named event was found and resumed.
-
-**Parameters**
-
-- `name` (`string`, required): The name used when scheduling.
-
-**Returns**: `boolean` - True if the named event exists and was resumed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Resumes a previously paused named event. Returns true if the named event was found and resumed.
@@ -1391,9 +1653,19 @@ Resumes a previously paused named event. Returns true if the named event was fou
 function LScheduler:resumeNamed(name) end
 ```
 
+#### Description
+
+Resumes a previously paused named event. Returns true if the named event was found and resumed.
+
+Parameters:
+
+- `name` (`string`, required): The name used when scheduling.
+
+Returns: `boolean` - True if the named event exists and was resumed.
+
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -1407,18 +1679,7 @@ end
 
 ### LScheduler:setInterval
 
-`LScheduler:setInterval(id: integer, interval: number) -> boolean`
-
-Changes the interval duration in seconds for an existing repeating event. Returns true if the event was found and updated.
-
-**Parameters**
-
-- `id` (`integer`, required): Event ID of the repeating event.
-- `interval` (`number`, required): New interval duration in seconds.
-
-**Returns**: `boolean` - True if the event was found and its interval updated.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Changes the interval duration in seconds for an existing repeating event. Returns true if the event was found and updated.
@@ -1428,9 +1689,20 @@ Changes the interval duration in seconds for an existing repeating event. Return
 function LScheduler:setInterval(id, interval) end
 ```
 
+#### Description
+
+Changes the interval duration in seconds for an existing repeating event. Returns true if the event was found and updated.
+
+Parameters:
+
+- `id` (`integer`, required): Event ID of the repeating event.
+- `interval` (`number`, required): New interval duration in seconds.
+
+Returns: `boolean` - True if the event was found and its interval updated.
+
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -1443,15 +1715,7 @@ end
 
 ### LScheduler:setTimeScale
 
-`LScheduler:setTimeScale(scale: number)`
-
-Sets the time scale multiplier for this scheduler. A value of 2.0 makes events fire twice as fast; 0.5 makes them fire at half speed. Does not affect frame-based events.
-
-**Parameters**
-
-- `scale` (`number`, required): Time scale multiplier (1.0 = normal speed).
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets the time scale multiplier for this scheduler. A value of 2.0 makes events fire twice as fast; 0.5 makes them fire at half speed. Does not affect frame-based events.
@@ -1459,9 +1723,17 @@ Sets the time scale multiplier for this scheduler. A value of 2.0 makes events f
 function LScheduler:setTimeScale(scale) end
 ```
 
+#### Description
+
+Sets the time scale multiplier for this scheduler. A value of 2.0 makes events fire twice as fast; 0.5 makes them fire at half speed. Does not affect frame-based events.
+
+Parameters:
+
+- `scale` (`number`, required): Time scale multiplier (1.0 = normal speed).
+
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -1474,13 +1746,7 @@ end
 
 ### LScheduler:type
 
-`LScheduler:type() -> string`
-
-Returns the type name of this object as a string.
-
-**Returns**: `string` - Always "LScheduler".
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the type name of this object as a string.
@@ -1488,9 +1754,15 @@ Returns the type name of this object as a string.
 function LScheduler:type() end
 ```
 
+#### Description
+
+Returns the type name of this object as a string.
+
+Returns: `string` - Always "LScheduler".
+
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -1501,17 +1773,7 @@ end
 
 ### LScheduler:typeOf
 
-`LScheduler:typeOf(name: string) -> boolean`
-
-Checks whether this object matches the given type name. Accepts "LScheduler" or "Object".
-
-**Parameters**
-
-- `name` (`string`, required): Type name to check against.
-
-**Returns**: `boolean` - True if the name matches.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Checks whether this object matches the given type name. Accepts "LScheduler" or "Object".
@@ -1520,9 +1782,19 @@ Checks whether this object matches the given type name. Accepts "LScheduler" or 
 function LScheduler:typeOf(name) end
 ```
 
+#### Description
+
+Checks whether this object matches the given type name. Accepts "LScheduler" or "Object".
+
+Parameters:
+
+- `name` (`string`, required): Type name to check against.
+
+Returns: `boolean` - True if the name matches.
+
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -1533,17 +1805,7 @@ end
 
 ### LScheduler:update
 
-`LScheduler:update(dt: number) -> integer`
-
-Advances all time-based events by dt seconds, fires any callbacks whose delay has elapsed, and cleans up completed one-shot events. Call this once per frame with delta time. Returns the number of callbacks that fired.
-
-**Parameters**
-
-- `dt` (`number`, required): Delta time in seconds since the last update.
-
-**Returns**: `integer` - Count of callbacks that fired during this update.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Advances all time-based events by dt seconds, fires any callbacks whose delay has elapsed, and cleans up completed one-shot events. Call this once per frame with delta time. Returns the number of callbacks that fired.
@@ -1552,9 +1814,19 @@ Advances all time-based events by dt seconds, fires any callbacks whose delay ha
 function LScheduler:update(dt) end
 ```
 
+#### Description
+
+Advances all time-based events by dt seconds, fires any callbacks whose delay has elapsed, and cleans up completed one-shot events. Call this once per frame with delta time. Returns the number of callbacks that fired.
+
+Parameters:
+
+- `dt` (`number`, required): Delta time in seconds since the last update.
+
+Returns: `integer` - Count of callbacks that fired during this update.
+
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do
@@ -1568,13 +1840,7 @@ end
 
 ### LScheduler:updateFrames
 
-`LScheduler:updateFrames() -> integer`
-
-Advances all frame-based events by one frame, fires any callbacks whose frame count has been reached, and cleans up completed one-shot events. Call this once per frame. Returns the number of callbacks that fired.
-
-**Returns**: `integer` - Count of callbacks that fired during this frame update.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Advances all frame-based events by one frame, fires any callbacks whose frame count has been reached, and cleans up completed one-shot events. Call this once per frame. Returns the number of callbacks that fired.
@@ -1582,9 +1848,15 @@ Advances all frame-based events by one frame, fires any callbacks whose frame co
 function LScheduler:updateFrames() end
 ```
 
+#### Description
+
+Advances all frame-based events by one frame, fires any callbacks whose frame count has been reached, and cleans up completed one-shot events. Call this once per frame. Returns the number of callbacks that fired.
+
+Returns: `integer` - Count of callbacks that fired during this frame update.
+
 #### Example
 
-Exact example from [timer.lua](../blob/main/content/examples/timer.lua):
+Source: [timer.lua](../blob/main/content/examples/timer.lua)
 
 ```lua
 do

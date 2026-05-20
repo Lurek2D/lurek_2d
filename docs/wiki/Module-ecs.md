@@ -14,77 +14,217 @@
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
   - [lurek.ecs.newUniverse](#lurekecsnewuniverse)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔷 Module Types](#module-types)
   - [LUniverse](#luniverse)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
   - [LUniverse:addRelation](#luniverseaddrelation)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:addSystem](#luniverseaddsystem)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:addTag](#luniverseaddtag)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:applySnapshot](#luniverseapplysnapshot)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:bitmapTag](#luniversebitmaptag)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:bitmapUntag](#luniversebitmapuntag)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:clear](#luniverseclear)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:clearRelations](#luniverseclearrelations)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:defineBlueprint](#luniversedefineblueprint)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:defineTag](#luniversedefinetag)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:deserialize](#luniversedeserialize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:each](#luniverseeach)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:emit](#luniverseemit)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:extendBlueprint](#luniverseextendblueprint)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:flushObservers](#luniverseflushobservers)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:get](#luniverseget)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:getBitmapTagBit](#luniversegetbitmaptagbit)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:getBlueprintComponents](#luniversegetblueprintcomponents)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:getChildren](#luniversegetchildren)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:getComponents](#luniversegetcomponents)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:getDirtyEntities](#luniversegetdirtyentities)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:getEntities](#luniversegetentities)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:getEntitiesByLayer](#luniversegetentitiesbylayer)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:getEntitiesByTag](#luniversegetentitiesbytag)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:getEntitiesSorted](#luniversegetentitiessorted)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:getEntityCount](#luniversegetentitycount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:getLayer](#luniversegetlayer)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:getParent](#luniversegetparent)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:getRelated](#luniversegetrelated)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:getSystemCount](#luniversegetsystemcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:getTags](#luniversegettags)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:has](#luniversehas)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:hasBitmapTag](#luniversehasbitmaptag)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:hasBlueprint](#luniversehasblueprint)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:hasRelation](#luniversehasrelation)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:hasTag](#luniversehastag)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:isAlive](#luniverseisalive)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:kill](#luniversekill)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:killRecursive](#luniversekillrecursive)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:listBlueprints](#luniverselistblueprints)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:onComponentAdded](#luniverseoncomponentadded)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:onComponentRemoved](#luniverseoncomponentremoved)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:query](#luniversequery)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:queryBitmapAll](#luniversequerybitmapall)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:queryBitmapAny](#luniversequerybitmapany)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:queryBitmapTag](#luniversequerybitmaptag)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:queryMulti](#luniversequerymulti)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:queryNot](#luniversequerynot)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:release](#luniverserelease)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:remove](#luniverseremove)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:removeBlueprint](#luniverseremoveblueprint)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:removeRelation](#luniverseremoverelation)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:removeSystem](#luniverseremovesystem)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:removeTag](#luniverseremovetag)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:render](#luniverserender)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:serialize](#luniverseserialize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:set](#luniverseset)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:setLayer](#luniversesetlayer)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:setParent](#luniversesetparent)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:snapshot](#luniversesnapshot)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:spawn](#luniversespawn)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:spawnBlueprint](#luniversespawnblueprint)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:spawnBulk](#luniversespawnbulk)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:takeSnapshotDiff](#luniversetakesnapshotdiff)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:type](#luniversetype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:typeOf](#luniversetypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:update](#luniverseupdate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LUniverse:updatePhase](#luniverseupdatephase)
+    - [Definition](#definition)
+    - [Description](#description)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -128,15 +268,23 @@ lurek.ecs.newUniverse() -> LUniverse -- Creates an empty ECS universe for entity
 
 ### lurek.ecs.newUniverse
 
-`lurek.ecs.newUniverse() -> LUniverse`
+#### Definition
+
+```lua
+--- Creates an empty ECS universe for entity, component, system, and relationship management.
+---@return LUniverse New universe handle.
+lurek.ecs.newUniverse = function() end
+```
+
+#### Description
 
 Creates an empty ECS universe for entity, component, system, and relationship management.
 
-**Returns**: `LUniverse` - New universe handle.
+Returns: `LUniverse` - New universe handle.
 
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -152,9 +300,7 @@ end
 
 ### LUniverse
 
-Lua-side handle for one ECS universe.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side handle for one ECS universe.
@@ -162,9 +308,13 @@ Lua-side handle for one ECS universe.
 LUniverse = {}
 ```
 
+#### Description
+
+Lua-side handle for one ECS universe.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -180,17 +330,7 @@ end
 
 ### LUniverse:addRelation
 
-`LUniverse:addRelation(from: integer, name: string, to: integer)`
-
-Adds a named directed relation from one entity to another.
-
-**Parameters**
-
-- `from` (`integer`, required): Source entity id.
-- `name` (`string`, required): Relation name.
-- `to` (`integer`, required): Target entity id.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a named directed relation from one entity to another.
@@ -200,9 +340,19 @@ Adds a named directed relation from one entity to another.
 function LUniverse:addRelation(from, name, to) end
 ```
 
+#### Description
+
+Adds a named directed relation from one entity to another.
+
+Parameters:
+
+- `from` (`integer`, required): Source entity id.
+- `name` (`string`, required): Relation name.
+- `to` (`integer`, required): Target entity id.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -216,16 +366,7 @@ end
 
 ### LUniverse:addSystem
 
-`LUniverse:addSystem(system: table, [opts]: table)`
-
-Registers a Lua system table with optional phase, priority, name, and dependency metadata.
-
-**Parameters**
-
-- `system` (`table`, required): System table containing update, render, draw, or event methods.
-- `opts` (`table`, optional): Optional table with priority, phase, name, and after fields.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Registers a Lua system table with optional phase, priority, name, and dependency metadata.
@@ -234,9 +375,18 @@ Registers a Lua system table with optional phase, priority, name, and dependency
 function LUniverse:addSystem(system, opts) end
 ```
 
+#### Description
+
+Registers a Lua system table with optional phase, priority, name, and dependency metadata.
+
+Parameters:
+
+- `system` (`table`, required): System table containing update, render, draw, or event methods.
+- `opts` (`table`, optional): Optional table with priority, phase, name, and after fields.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -249,16 +399,7 @@ end
 
 ### LUniverse:addTag
 
-`LUniverse:addTag(id: integer, tag: string)`
-
-Assigns a string tag name to an entity in this universe.
-
-**Parameters**
-
-- `id` (`integer`, required): Entity id to tag.
-- `tag` (`string`, required): Tag name to add.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Assigns a string tag name to an entity in this universe.
@@ -267,9 +408,18 @@ Assigns a string tag name to an entity in this universe.
 function LUniverse:addTag(id, tag) end
 ```
 
+#### Description
+
+Assigns a string tag name to an entity in this universe.
+
+Parameters:
+
+- `id` (`integer`, required): Entity id to tag.
+- `tag` (`string`, required): Tag name to add.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -283,15 +433,7 @@ end
 
 ### LUniverse:applySnapshot
 
-`LUniverse:applySnapshot(snapshot: table)`
-
-Replaces this universe state from a Lua table snapshot.
-
-**Parameters**
-
-- `snapshot` (`table`, required): Snapshot table previously produced by `snapshot` or `serialize`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Replaces this universe state from a Lua table snapshot.
@@ -299,9 +441,17 @@ Replaces this universe state from a Lua table snapshot.
 function LUniverse:applySnapshot(snapshot) end
 ```
 
+#### Description
+
+Replaces this universe state from a Lua table snapshot.
+
+Parameters:
+
+- `snapshot` (`table`, required): Snapshot table previously produced by `snapshot` or `serialize`.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -315,18 +465,7 @@ end
 
 ### LUniverse:bitmapTag
 
-`LUniverse:bitmapTag(id: integer, name: string) -> integer`
-
-Adds a bitmap tag to an entity, defining the tag if needed.
-
-**Parameters**
-
-- `id` (`integer`, required): Entity id to tag.
-- `name` (`string`, required): Bitmap tag name.
-
-**Returns**: `integer` - Bit index used by the bitmap tag.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Adds a bitmap tag to an entity, defining the tag if needed.
@@ -336,9 +475,20 @@ Adds a bitmap tag to an entity, defining the tag if needed.
 function LUniverse:bitmapTag(id, name) end
 ```
 
+#### Description
+
+Adds a bitmap tag to an entity, defining the tag if needed.
+
+Parameters:
+
+- `id` (`integer`, required): Entity id to tag.
+- `name` (`string`, required): Bitmap tag name.
+
+Returns: `integer` - Bit index used by the bitmap tag.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -352,16 +502,7 @@ end
 
 ### LUniverse:bitmapUntag
 
-`LUniverse:bitmapUntag(id: integer, name: string)`
-
-Removes a bitmap tag from an entity.
-
-**Parameters**
-
-- `id` (`integer`, required): Entity id to update.
-- `name` (`string`, required): Bitmap tag name to remove.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes a bitmap tag from an entity.
@@ -370,9 +511,18 @@ Removes a bitmap tag from an entity.
 function LUniverse:bitmapUntag(id, name) end
 ```
 
+#### Description
+
+Removes a bitmap tag from an entity.
+
+Parameters:
+
+- `id` (`integer`, required): Entity id to update.
+- `name` (`string`, required): Bitmap tag name to remove.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -386,20 +536,20 @@ end
 
 ### LUniverse:clear
 
-`LUniverse:clear()`
-
-Clears all entities, components, systems, and ECS state from this universe.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Clears all entities, components, systems, and ECS state from this universe.
 function LUniverse:clear() end
 ```
 
+#### Description
+
+Clears all entities, components, systems, and ECS state from this universe.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -412,16 +562,7 @@ end
 
 ### LUniverse:clearRelations
 
-`LUniverse:clearRelations(from: integer, name: string)`
-
-Removes every target for one named relation from an entity.
-
-**Parameters**
-
-- `from` (`integer`, required): Source entity id.
-- `name` (`string`, required): Relation name to clear.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes every target for one named relation from an entity.
@@ -430,9 +571,18 @@ Removes every target for one named relation from an entity.
 function LUniverse:clearRelations(from, name) end
 ```
 
+#### Description
+
+Removes every target for one named relation from an entity.
+
+Parameters:
+
+- `from` (`integer`, required): Source entity id.
+- `name` (`string`, required): Relation name to clear.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -446,16 +596,7 @@ end
 
 ### LUniverse:defineBlueprint
 
-`LUniverse:defineBlueprint(name: string, components: table)`
-
-Defines a named entity blueprint from a component table.
-
-**Parameters**
-
-- `name` (`string`, required): Blueprint name.
-- `components` (`table`, required): Component table copied when the blueprint is spawned.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Defines a named entity blueprint from a component table.
@@ -464,9 +605,18 @@ Defines a named entity blueprint from a component table.
 function LUniverse:defineBlueprint(name, components) end
 ```
 
+#### Description
+
+Defines a named entity blueprint from a component table.
+
+Parameters:
+
+- `name` (`string`, required): Blueprint name.
+- `components` (`table`, required): Component table copied when the blueprint is spawned.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -478,17 +628,7 @@ end
 
 ### LUniverse:defineTag
 
-`LUniverse:defineTag(name: string) -> integer`
-
-Defines a bitmap tag name and assigns it a bit slot.
-
-**Parameters**
-
-- `name` (`string`, required): Bitmap tag name to define.
-
-**Returns**: `integer` - Bit index assigned to the tag.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Defines a bitmap tag name and assigns it a bit slot.
@@ -497,9 +637,19 @@ Defines a bitmap tag name and assigns it a bit slot.
 function LUniverse:defineTag(name) end
 ```
 
+#### Description
+
+Defines a bitmap tag name and assigns it a bit slot.
+
+Parameters:
+
+- `name` (`string`, required): Bitmap tag name to define.
+
+Returns: `integer` - Bit index assigned to the tag.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -513,15 +663,7 @@ end
 
 ### LUniverse:deserialize
 
-`LUniverse:deserialize(snapshot: table)`
-
-Replaces this universe state from a serialized Lua snapshot.
-
-**Parameters**
-
-- `snapshot` (`table`, required): Snapshot table previously produced by `serialize` or `snapshot`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Replaces this universe state from a serialized Lua snapshot.
@@ -529,9 +671,17 @@ Replaces this universe state from a serialized Lua snapshot.
 function LUniverse:deserialize(snapshot) end
 ```
 
+#### Description
+
+Replaces this universe state from a serialized Lua snapshot.
+
+Parameters:
+
+- `snapshot` (`table`, required): Snapshot table previously produced by `serialize` or `snapshot`.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -545,16 +695,7 @@ end
 
 ### LUniverse:each
 
-`LUniverse:each(name: string, callback: function)`
-
-Iterates entities with one component and calls a Lua callback for each match.
-
-**Parameters**
-
-- `name` (`string`, required): Component name used to select entities.
-- `callback` (`function`, required): Callback invoked by the ECS backend for each matching entity.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Iterates entities with one component and calls a Lua callback for each match.
@@ -563,9 +704,18 @@ Iterates entities with one component and calls a Lua callback for each match.
 function LUniverse:each(name, callback) end
 ```
 
+#### Description
+
+Iterates entities with one component and calls a Lua callback for each match.
+
+Parameters:
+
+- `name` (`string`, required): Component name used to select entities.
+- `callback` (`function`, required): Callback invoked by the ECS backend for each matching entity.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -579,16 +729,7 @@ end
 
 ### LUniverse:emit
 
-`LUniverse:emit(event: string, ...: table)`
-
-Calls matching event-named functions on registered systems.
-
-**Parameters**
-
-- `event` (`string`, required): Function name looked up on each system table.
-- `...` (`table`, required): Extra values forwarded after the system and universe arguments.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Calls matching event-named functions on registered systems.
@@ -597,9 +738,18 @@ Calls matching event-named functions on registered systems.
 function LUniverse:emit(event, ...) end
 ```
 
+#### Description
+
+Calls matching event-named functions on registered systems.
+
+Parameters:
+
+- `event` (`string`, required): Function name looked up on each system table.
+- `...` (`table`, required): Extra values forwarded after the system and universe arguments.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -613,17 +763,7 @@ end
 
 ### LUniverse:extendBlueprint
 
-`LUniverse:extendBlueprint(name: string, parent: string, overrides: table)`
-
-Defines a blueprint that inherits from a parent blueprint and applies overrides.
-
-**Parameters**
-
-- `name` (`string`, required): Child blueprint name to define.
-- `parent` (`string`, required): Existing parent blueprint name.
-- `overrides` (`table`, required): Component overrides applied over the parent definition.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Defines a blueprint that inherits from a parent blueprint and applies overrides.
@@ -633,9 +773,19 @@ Defines a blueprint that inherits from a parent blueprint and applies overrides.
 function LUniverse:extendBlueprint(name, parent, overrides) end
 ```
 
+#### Description
+
+Defines a blueprint that inherits from a parent blueprint and applies overrides.
+
+Parameters:
+
+- `name` (`string`, required): Child blueprint name to define.
+- `parent` (`string`, required): Existing parent blueprint name.
+- `overrides` (`table`, required): Component overrides applied over the parent definition.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -649,20 +799,20 @@ end
 
 ### LUniverse:flushObservers
 
-`LUniverse:flushObservers()`
-
-Delivers queued component add and remove events to registered observer callbacks.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Delivers queued component add and remove events to registered observer callbacks.
 function LUniverse:flushObservers() end
 ```
 
+#### Description
+
+Delivers queued component add and remove events to registered observer callbacks.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -674,18 +824,7 @@ end
 
 ### LUniverse:get
 
-`LUniverse:get(id: integer, name: string) -> table|number|string|boolean|nil`
-
-Returns a component value from an entity.
-
-**Parameters**
-
-- `id` (`integer`, required): Entity id to read.
-- `name` (`string`, required): Component name to read.
-
-**Returns**: `table|number|string|boolean|nil` - Stored component value, or nil when the entity does not have that component.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns a component value from an entity.
@@ -695,9 +834,20 @@ Returns a component value from an entity.
 function LUniverse:get(id, name) end
 ```
 
+#### Description
+
+Returns a component value from an entity.
+
+Parameters:
+
+- `id` (`integer`, required): Entity id to read.
+- `name` (`string`, required): Component name to read.
+
+Returns: `table|number|string|boolean|nil` - Stored component value, or nil when the entity does not have that component.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -711,17 +861,7 @@ end
 
 ### LUniverse:getBitmapTagBit
 
-`LUniverse:getBitmapTagBit(name: string) -> integer`
-
-Returns the bit index assigned to a bitmap tag name.
-
-**Parameters**
-
-- `name` (`string`, required): Bitmap tag name to inspect.
-
-**Returns**: `integer` - Bit index when the tag exists, or nil when the tag is undefined.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the bit index assigned to a bitmap tag name.
@@ -730,9 +870,19 @@ Returns the bit index assigned to a bitmap tag name.
 function LUniverse:getBitmapTagBit(name) end
 ```
 
+#### Description
+
+Returns the bit index assigned to a bitmap tag name.
+
+Parameters:
+
+- `name` (`string`, required): Bitmap tag name to inspect.
+
+Returns: `integer` - Bit index when the tag exists, or nil when the tag is undefined.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -745,17 +895,7 @@ end
 
 ### LUniverse:getBlueprintComponents
 
-`LUniverse:getBlueprintComponents(name: string) -> table`
-
-Returns the component table stored for a blueprint.
-
-**Parameters**
-
-- `name` (`string`, required): Blueprint name to inspect.
-
-**Returns**: `table` - Blueprint component table.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the component table stored for a blueprint.
@@ -764,9 +904,19 @@ Returns the component table stored for a blueprint.
 function LUniverse:getBlueprintComponents(name) end
 ```
 
+#### Description
+
+Returns the component table stored for a blueprint.
+
+Parameters:
+
+- `name` (`string`, required): Blueprint name to inspect.
+
+Returns: `table` - Blueprint component table.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -779,17 +929,7 @@ end
 
 ### LUniverse:getChildren
 
-`LUniverse:getChildren(parent_id: integer) -> integer[]`
-
-Returns child entity ids for a parent entity.
-
-**Parameters**
-
-- `parent_id` (`integer`, required): Parent entity id to inspect.
-
-**Returns**: `integer[]` - Array table of child entity ids.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns child entity ids for a parent entity.
@@ -798,9 +938,19 @@ Returns child entity ids for a parent entity.
 function LUniverse:getChildren(parent_id) end
 ```
 
+#### Description
+
+Returns child entity ids for a parent entity.
+
+Parameters:
+
+- `parent_id` (`integer`, required): Parent entity id to inspect.
+
+Returns: `integer[]` - Array table of child entity ids.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -814,17 +964,7 @@ end
 
 ### LUniverse:getComponents
 
-`LUniverse:getComponents(id: integer) -> string[]`
-
-Returns component names currently stored on an entity.
-
-**Parameters**
-
-- `id` (`integer`, required): Entity id to inspect.
-
-**Returns**: `string[]` - Component name strings.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns component names currently stored on an entity.
@@ -833,9 +973,19 @@ Returns component names currently stored on an entity.
 function LUniverse:getComponents(id) end
 ```
 
+#### Description
+
+Returns component names currently stored on an entity.
+
+Parameters:
+
+- `id` (`integer`, required): Entity id to inspect.
+
+Returns: `string[]` - Component name strings.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -849,13 +999,7 @@ end
 
 ### LUniverse:getDirtyEntities
 
-`LUniverse:getDirtyEntities() -> integer[]`
-
-Returns entities marked dirty by recent ECS mutations.
-
-**Returns**: `integer[]` - Array table of dirty entity ids.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns entities marked dirty by recent ECS mutations.
@@ -863,9 +1007,15 @@ Returns entities marked dirty by recent ECS mutations.
 function LUniverse:getDirtyEntities() end
 ```
 
+#### Description
+
+Returns entities marked dirty by recent ECS mutations.
+
+Returns: `integer[]` - Array table of dirty entity ids.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -879,13 +1029,7 @@ end
 
 ### LUniverse:getEntities
 
-`LUniverse:getEntities() -> integer[]`
-
-Returns all live entity ids in this universe.
-
-**Returns**: `integer[]` - Array table of live entity ids.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns all live entity ids in this universe.
@@ -893,9 +1037,15 @@ Returns all live entity ids in this universe.
 function LUniverse:getEntities() end
 ```
 
+#### Description
+
+Returns all live entity ids in this universe.
+
+Returns: `integer[]` - Array table of live entity ids.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -909,17 +1059,7 @@ end
 
 ### LUniverse:getEntitiesByLayer
 
-`LUniverse:getEntitiesByLayer(layer: integer) -> integer[]`
-
-Returns entities assigned to a numeric layer.
-
-**Parameters**
-
-- `layer` (`integer`, required): Layer value used for lookup.
-
-**Returns**: `integer[]` - Array table of matching entity ids.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns entities assigned to a numeric layer.
@@ -928,9 +1068,19 @@ Returns entities assigned to a numeric layer.
 function LUniverse:getEntitiesByLayer(layer) end
 ```
 
+#### Description
+
+Returns entities assigned to a numeric layer.
+
+Parameters:
+
+- `layer` (`integer`, required): Layer value used for lookup.
+
+Returns: `integer[]` - Array table of matching entity ids.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -944,17 +1094,7 @@ end
 
 ### LUniverse:getEntitiesByTag
 
-`LUniverse:getEntitiesByTag(tag: string) -> integer[]`
-
-Returns entities that have a string tag.
-
-**Parameters**
-
-- `tag` (`string`, required): Tag name used for lookup.
-
-**Returns**: `integer[]` - Array table of matching entity ids.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns entities that have a string tag.
@@ -963,9 +1103,19 @@ Returns entities that have a string tag.
 function LUniverse:getEntitiesByTag(tag) end
 ```
 
+#### Description
+
+Returns entities that have a string tag.
+
+Parameters:
+
+- `tag` (`string`, required): Tag name used for lookup.
+
+Returns: `integer[]` - Array table of matching entity ids.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -979,13 +1129,7 @@ end
 
 ### LUniverse:getEntitiesSorted
 
-`LUniverse:getEntitiesSorted() -> integer[]`
-
-Returns live entities sorted by ECS layer and stable entity ordering.
-
-**Returns**: `integer[]` - Array table of sorted entity ids.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns live entities sorted by ECS layer and stable entity ordering.
@@ -993,9 +1137,15 @@ Returns live entities sorted by ECS layer and stable entity ordering.
 function LUniverse:getEntitiesSorted() end
 ```
 
+#### Description
+
+Returns live entities sorted by ECS layer and stable entity ordering.
+
+Returns: `integer[]` - Array table of sorted entity ids.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -1009,13 +1159,7 @@ end
 
 ### LUniverse:getEntityCount
 
-`LUniverse:getEntityCount() -> integer`
-
-Returns the number of live entities in this universe.
-
-**Returns**: `integer` - Live entity count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of live entities in this universe.
@@ -1023,9 +1167,15 @@ Returns the number of live entities in this universe.
 function LUniverse:getEntityCount() end
 ```
 
+#### Description
+
+Returns the number of live entities in this universe.
+
+Returns: `integer` - Live entity count.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -1039,17 +1189,7 @@ end
 
 ### LUniverse:getLayer
 
-`LUniverse:getLayer(id: integer) -> integer`
-
-Returns the numeric layer assigned to an entity.
-
-**Parameters**
-
-- `id` (`integer`, required): Entity id to inspect.
-
-**Returns**: `integer` - Layer value, using the ECS default when no explicit layer exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the numeric layer assigned to an entity.
@@ -1058,9 +1198,19 @@ Returns the numeric layer assigned to an entity.
 function LUniverse:getLayer(id) end
 ```
 
+#### Description
+
+Returns the numeric layer assigned to an entity.
+
+Parameters:
+
+- `id` (`integer`, required): Entity id to inspect.
+
+Returns: `integer` - Layer value, using the ECS default when no explicit layer exists.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -1074,17 +1224,7 @@ end
 
 ### LUniverse:getParent
 
-`LUniverse:getParent(child_id: integer) -> integer`
-
-Returns the parent entity id for a child entity.
-
-**Parameters**
-
-- `child_id` (`integer`, required): Entity id whose parent is read.
-
-**Returns**: `integer` - Parent entity id, or nil when the entity has no parent.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the parent entity id for a child entity.
@@ -1093,9 +1233,19 @@ Returns the parent entity id for a child entity.
 function LUniverse:getParent(child_id) end
 ```
 
+#### Description
+
+Returns the parent entity id for a child entity.
+
+Parameters:
+
+- `child_id` (`integer`, required): Entity id whose parent is read.
+
+Returns: `integer` - Parent entity id, or nil when the entity has no parent.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -1109,18 +1259,7 @@ end
 
 ### LUniverse:getRelated
 
-`LUniverse:getRelated(from: integer, name: string) -> integer[]`
-
-Returns targets linked from an entity by a named relation.
-
-**Parameters**
-
-- `from` (`integer`, required): Source entity id.
-- `name` (`string`, required): Relation name.
-
-**Returns**: `integer[]` - Array table of related target entity ids.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns targets linked from an entity by a named relation.
@@ -1130,9 +1269,20 @@ Returns targets linked from an entity by a named relation.
 function LUniverse:getRelated(from, name) end
 ```
 
+#### Description
+
+Returns targets linked from an entity by a named relation.
+
+Parameters:
+
+- `from` (`integer`, required): Source entity id.
+- `name` (`string`, required): Relation name.
+
+Returns: `integer[]` - Array table of related target entity ids.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -1146,13 +1296,7 @@ end
 
 ### LUniverse:getSystemCount
 
-`LUniverse:getSystemCount() -> integer`
-
-Returns the number of registered systems.
-
-**Returns**: `integer` - Registered system count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of registered systems.
@@ -1160,9 +1304,15 @@ Returns the number of registered systems.
 function LUniverse:getSystemCount() end
 ```
 
+#### Description
+
+Returns the number of registered systems.
+
+Returns: `integer` - Registered system count.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -1175,17 +1325,7 @@ end
 
 ### LUniverse:getTags
 
-`LUniverse:getTags(id: integer) -> string[]`
-
-Returns string tags assigned to an entity.
-
-**Parameters**
-
-- `id` (`integer`, required): Entity id to inspect.
-
-**Returns**: `string[]` - Tag names.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns string tags assigned to an entity.
@@ -1194,9 +1334,19 @@ Returns string tags assigned to an entity.
 function LUniverse:getTags(id) end
 ```
 
+#### Description
+
+Returns string tags assigned to an entity.
+
+Parameters:
+
+- `id` (`integer`, required): Entity id to inspect.
+
+Returns: `string[]` - Tag names.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -1210,18 +1360,7 @@ end
 
 ### LUniverse:has
 
-`LUniverse:has(id: integer, name: string) -> boolean`
-
-Returns whether an entity has a named component.
-
-**Parameters**
-
-- `id` (`integer`, required): Entity id to inspect.
-- `name` (`string`, required): Component name to check.
-
-**Returns**: `boolean` - True when the component exists on the entity.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether an entity has a named component.
@@ -1231,9 +1370,20 @@ Returns whether an entity has a named component.
 function LUniverse:has(id, name) end
 ```
 
+#### Description
+
+Returns whether an entity has a named component.
+
+Parameters:
+
+- `id` (`integer`, required): Entity id to inspect.
+- `name` (`string`, required): Component name to check.
+
+Returns: `boolean` - True when the component exists on the entity.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -1246,18 +1396,7 @@ end
 
 ### LUniverse:hasBitmapTag
 
-`LUniverse:hasBitmapTag(id: integer, name: string) -> boolean`
-
-Returns whether an entity has a bitmap tag.
-
-**Parameters**
-
-- `id` (`integer`, required): Entity id to inspect.
-- `name` (`string`, required): Bitmap tag name to check.
-
-**Returns**: `boolean` - True when the entity has the bitmap tag.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether an entity has a bitmap tag.
@@ -1267,9 +1406,20 @@ Returns whether an entity has a bitmap tag.
 function LUniverse:hasBitmapTag(id, name) end
 ```
 
+#### Description
+
+Returns whether an entity has a bitmap tag.
+
+Parameters:
+
+- `id` (`integer`, required): Entity id to inspect.
+- `name` (`string`, required): Bitmap tag name to check.
+
+Returns: `boolean` - True when the entity has the bitmap tag.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -1283,17 +1433,7 @@ end
 
 ### LUniverse:hasBlueprint
 
-`LUniverse:hasBlueprint(name: string) -> boolean`
-
-Returns whether a named blueprint exists.
-
-**Parameters**
-
-- `name` (`string`, required): Blueprint name to check.
-
-**Returns**: `boolean` - True when the blueprint is registered.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether a named blueprint exists.
@@ -1302,9 +1442,19 @@ Returns whether a named blueprint exists.
 function LUniverse:hasBlueprint(name) end
 ```
 
+#### Description
+
+Returns whether a named blueprint exists.
+
+Parameters:
+
+- `name` (`string`, required): Blueprint name to check.
+
+Returns: `boolean` - True when the blueprint is registered.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -1318,19 +1468,7 @@ end
 
 ### LUniverse:hasRelation
 
-`LUniverse:hasRelation(from: integer, name: string, to: integer) -> boolean`
-
-Returns whether a named directed relation exists between two entities.
-
-**Parameters**
-
-- `from` (`integer`, required): Source entity id.
-- `name` (`string`, required): Relation name.
-- `to` (`integer`, required): Target entity id.
-
-**Returns**: `boolean` - True when the relation exists.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether a named directed relation exists between two entities.
@@ -1341,9 +1479,21 @@ Returns whether a named directed relation exists between two entities.
 function LUniverse:hasRelation(from, name, to) end
 ```
 
+#### Description
+
+Returns whether a named directed relation exists between two entities.
+
+Parameters:
+
+- `from` (`integer`, required): Source entity id.
+- `name` (`string`, required): Relation name.
+- `to` (`integer`, required): Target entity id.
+
+Returns: `boolean` - True when the relation exists.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -1357,18 +1507,7 @@ end
 
 ### LUniverse:hasTag
 
-`LUniverse:hasTag(id: integer, tag: string) -> boolean`
-
-Returns whether an entity has a string tag.
-
-**Parameters**
-
-- `id` (`integer`, required): Entity id to inspect.
-- `tag` (`string`, required): Tag name to check.
-
-**Returns**: `boolean` - True when the entity has the tag.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether an entity has a string tag.
@@ -1378,9 +1517,20 @@ Returns whether an entity has a string tag.
 function LUniverse:hasTag(id, tag) end
 ```
 
+#### Description
+
+Returns whether an entity has a string tag.
+
+Parameters:
+
+- `id` (`integer`, required): Entity id to inspect.
+- `tag` (`string`, required): Tag name to check.
+
+Returns: `boolean` - True when the entity has the tag.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -1394,17 +1544,7 @@ end
 
 ### LUniverse:isAlive
 
-`LUniverse:isAlive(id: integer) -> boolean`
-
-Returns whether an entity id currently exists in this universe.
-
-**Parameters**
-
-- `id` (`integer`, required): Entity id to test.
-
-**Returns**: `boolean` - True when the entity is alive.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether an entity id currently exists in this universe.
@@ -1413,9 +1553,19 @@ Returns whether an entity id currently exists in this universe.
 function LUniverse:isAlive(id) end
 ```
 
+#### Description
+
+Returns whether an entity id currently exists in this universe.
+
+Parameters:
+
+- `id` (`integer`, required): Entity id to test.
+
+Returns: `boolean` - True when the entity is alive.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -1427,15 +1577,7 @@ end
 
 ### LUniverse:kill
 
-`LUniverse:kill(id: integer)`
-
-Deletes an entity and removes its components from this universe.
-
-**Parameters**
-
-- `id` (`integer`, required): Entity id to delete.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Deletes an entity and removes its components from this universe.
@@ -1443,9 +1585,17 @@ Deletes an entity and removes its components from this universe.
 function LUniverse:kill(id) end
 ```
 
+#### Description
+
+Deletes an entity and removes its components from this universe.
+
+Parameters:
+
+- `id` (`integer`, required): Entity id to delete.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -1458,15 +1608,7 @@ end
 
 ### LUniverse:killRecursive
 
-`LUniverse:killRecursive(id: integer)`
-
-Deletes an entity and all descendant entities in its hierarchy.
-
-**Parameters**
-
-- `id` (`integer`, required): Root entity id to delete.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Deletes an entity and all descendant entities in its hierarchy.
@@ -1474,9 +1616,17 @@ Deletes an entity and all descendant entities in its hierarchy.
 function LUniverse:killRecursive(id) end
 ```
 
+#### Description
+
+Deletes an entity and all descendant entities in its hierarchy.
+
+Parameters:
+
+- `id` (`integer`, required): Root entity id to delete.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -1490,13 +1640,7 @@ end
 
 ### LUniverse:listBlueprints
 
-`LUniverse:listBlueprints() -> string[]`
-
-Returns names of all registered blueprints.
-
-**Returns**: `string[]` - Blueprint names.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns names of all registered blueprints.
@@ -1504,9 +1648,15 @@ Returns names of all registered blueprints.
 function LUniverse:listBlueprints() end
 ```
 
+#### Description
+
+Returns names of all registered blueprints.
+
+Returns: `string[]` - Blueprint names.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -1520,16 +1670,7 @@ end
 
 ### LUniverse:onComponentAdded
 
-`LUniverse:onComponentAdded(name: string, cb: function)`
-
-Registers a callback for queued component-add events with a given component name.
-
-**Parameters**
-
-- `name` (`string`, required): Component name whose add events are observed.
-- `cb` (`function`, required): Callback receiving entity id and component name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Registers a callback for queued component-add events with a given component name.
@@ -1538,9 +1679,18 @@ Registers a callback for queued component-add events with a given component name
 function LUniverse:onComponentAdded(name, cb) end
 ```
 
+#### Description
+
+Registers a callback for queued component-add events with a given component name.
+
+Parameters:
+
+- `name` (`string`, required): Component name whose add events are observed.
+- `cb` (`function`, required): Callback receiving entity id and component name.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -1554,16 +1704,7 @@ end
 
 ### LUniverse:onComponentRemoved
 
-`LUniverse:onComponentRemoved(name: string, cb: function)`
-
-Registers a callback for queued component-remove events with a given component name.
-
-**Parameters**
-
-- `name` (`string`, required): Component name whose remove events are observed.
-- `cb` (`function`, required): Callback receiving entity id and component name.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Registers a callback for queued component-remove events with a given component name.
@@ -1572,9 +1713,18 @@ Registers a callback for queued component-remove events with a given component n
 function LUniverse:onComponentRemoved(name, cb) end
 ```
 
+#### Description
+
+Registers a callback for queued component-remove events with a given component name.
+
+Parameters:
+
+- `name` (`string`, required): Component name whose remove events are observed.
+- `cb` (`function`, required): Callback receiving entity id and component name.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -1588,17 +1738,7 @@ end
 
 ### LUniverse:query
 
-`LUniverse:query(...: string) -> integer[]`
-
-Returns entities that have all component names passed as varargs.
-
-**Parameters**
-
-- `...` (`string`, required): Component names that every returned entity must have.
-
-**Returns**: `integer[]` - Array table of matching entity ids.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns entities that have all component names passed as varargs.
@@ -1607,9 +1747,19 @@ Returns entities that have all component names passed as varargs.
 function LUniverse:query(...) end
 ```
 
+#### Description
+
+Returns entities that have all component names passed as varargs.
+
+Parameters:
+
+- `...` (`string`, required): Component names that every returned entity must have.
+
+Returns: `integer[]` - Array table of matching entity ids.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -1622,17 +1772,7 @@ end
 
 ### LUniverse:queryBitmapAll
 
-`LUniverse:queryBitmapAll(names: table) -> integer[]`
-
-Returns entities that have every bitmap tag from a list.
-
-**Parameters**
-
-- `names` (`table`, required): Array table of bitmap tag names.
-
-**Returns**: `integer[]` - Array table of matching entity ids.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns entities that have every bitmap tag from a list.
@@ -1641,9 +1781,19 @@ Returns entities that have every bitmap tag from a list.
 function LUniverse:queryBitmapAll(names) end
 ```
 
+#### Description
+
+Returns entities that have every bitmap tag from a list.
+
+Parameters:
+
+- `names` (`table`, required): Array table of bitmap tag names.
+
+Returns: `integer[]` - Array table of matching entity ids.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -1657,17 +1807,7 @@ end
 
 ### LUniverse:queryBitmapAny
 
-`LUniverse:queryBitmapAny(names: table) -> integer[]`
-
-Returns entities with at least one bitmap tag from a list.
-
-**Parameters**
-
-- `names` (`table`, required): Array table of bitmap tag names.
-
-**Returns**: `integer[]` - Array table of matching entity ids.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns entities with at least one bitmap tag from a list.
@@ -1676,9 +1816,19 @@ Returns entities with at least one bitmap tag from a list.
 function LUniverse:queryBitmapAny(names) end
 ```
 
+#### Description
+
+Returns entities with at least one bitmap tag from a list.
+
+Parameters:
+
+- `names` (`table`, required): Array table of bitmap tag names.
+
+Returns: `integer[]` - Array table of matching entity ids.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -1692,17 +1842,7 @@ end
 
 ### LUniverse:queryBitmapTag
 
-`LUniverse:queryBitmapTag(name: string) -> integer[]`
-
-Returns entities with one bitmap tag.
-
-**Parameters**
-
-- `name` (`string`, required): Bitmap tag name used for lookup.
-
-**Returns**: `integer[]` - Array table of matching entity ids.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns entities with one bitmap tag.
@@ -1711,9 +1851,19 @@ Returns entities with one bitmap tag.
 function LUniverse:queryBitmapTag(name) end
 ```
 
+#### Description
+
+Returns entities with one bitmap tag.
+
+Parameters:
+
+- `name` (`string`, required): Bitmap tag name used for lookup.
+
+Returns: `integer[]` - Array table of matching entity ids.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -1727,16 +1877,7 @@ end
 
 ### LUniverse:queryMulti
 
-`LUniverse:queryMulti(names_table: table, callback: function)`
-
-Iterates entities that have all component names from a table.
-
-**Parameters**
-
-- `names_table` (`table`, required): Array table of component names.
-- `callback` (`function`, required): Callback invoked by the ECS backend for each matching entity.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Iterates entities that have all component names from a table.
@@ -1745,9 +1886,18 @@ Iterates entities that have all component names from a table.
 function LUniverse:queryMulti(names_table, callback) end
 ```
 
+#### Description
+
+Iterates entities that have all component names from a table.
+
+Parameters:
+
+- `names_table` (`table`, required): Array table of component names.
+- `callback` (`function`, required): Callback invoked by the ECS backend for each matching entity.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -1761,18 +1911,7 @@ end
 
 ### LUniverse:queryNot
 
-`LUniverse:queryNot(with_tbl: table, without_tbl: table) -> integer[]`
-
-Returns entities that include one component set and exclude another component set.
-
-**Parameters**
-
-- `with_tbl` (`table`, required): Array table of required component names.
-- `without_tbl` (`table`, required): Array table of forbidden component names.
-
-**Returns**: `integer[]` - Array table of matching entity ids.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns entities that include one component set and exclude another component set.
@@ -1782,9 +1921,20 @@ Returns entities that include one component set and exclude another component se
 function LUniverse:queryNot(with_tbl, without_tbl) end
 ```
 
+#### Description
+
+Returns entities that include one component set and exclude another component set.
+
+Parameters:
+
+- `with_tbl` (`table`, required): Array table of required component names.
+- `without_tbl` (`table`, required): Array table of forbidden component names.
+
+Returns: `integer[]` - Array table of matching entity ids.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -1797,20 +1947,20 @@ end
 
 ### LUniverse:release
 
-`LUniverse:release()`
-
-Releases universe contents by clearing all ECS state.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Releases universe contents by clearing all ECS state.
 function LUniverse:release() end
 ```
 
+#### Description
+
+Releases universe contents by clearing all ECS state.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -1822,16 +1972,7 @@ end
 
 ### LUniverse:remove
 
-`LUniverse:remove(id: integer, name: string)`
-
-Removes a named component from an entity.
-
-**Parameters**
-
-- `id` (`integer`, required): Entity id to mutate.
-- `name` (`string`, required): Component name to remove.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes a named component from an entity.
@@ -1840,9 +1981,18 @@ Removes a named component from an entity.
 function LUniverse:remove(id, name) end
 ```
 
+#### Description
+
+Removes a named component from an entity.
+
+Parameters:
+
+- `id` (`integer`, required): Entity id to mutate.
+- `name` (`string`, required): Component name to remove.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -1856,17 +2006,7 @@ end
 
 ### LUniverse:removeBlueprint
 
-`LUniverse:removeBlueprint(name: string) -> boolean`
-
-Removes a named blueprint from this universe.
-
-**Parameters**
-
-- `name` (`string`, required): Blueprint name to remove.
-
-**Returns**: `boolean` - True when a blueprint was removed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes a named blueprint from this universe.
@@ -1875,9 +2015,19 @@ Removes a named blueprint from this universe.
 function LUniverse:removeBlueprint(name) end
 ```
 
+#### Description
+
+Removes a named blueprint from this universe.
+
+Parameters:
+
+- `name` (`string`, required): Blueprint name to remove.
+
+Returns: `boolean` - True when a blueprint was removed.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -1891,17 +2041,7 @@ end
 
 ### LUniverse:removeRelation
 
-`LUniverse:removeRelation(from: integer, name: string, to: integer)`
-
-Removes a named directed relation between two entities.
-
-**Parameters**
-
-- `from` (`integer`, required): Source entity id.
-- `name` (`string`, required): Relation name.
-- `to` (`integer`, required): Target entity id.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes a named directed relation between two entities.
@@ -1911,9 +2051,19 @@ Removes a named directed relation between two entities.
 function LUniverse:removeRelation(from, name, to) end
 ```
 
+#### Description
+
+Removes a named directed relation between two entities.
+
+Parameters:
+
+- `from` (`integer`, required): Source entity id.
+- `name` (`string`, required): Relation name.
+- `to` (`integer`, required): Target entity id.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -1927,15 +2077,7 @@ end
 
 ### LUniverse:removeSystem
 
-`LUniverse:removeSystem(system: table)`
-
-Removes a previously registered Lua system table.
-
-**Parameters**
-
-- `system` (`table`, required): System table to remove from this universe.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes a previously registered Lua system table.
@@ -1943,9 +2085,17 @@ Removes a previously registered Lua system table.
 function LUniverse:removeSystem(system) end
 ```
 
+#### Description
+
+Removes a previously registered Lua system table.
+
+Parameters:
+
+- `system` (`table`, required): System table to remove from this universe.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -1959,16 +2109,7 @@ end
 
 ### LUniverse:removeTag
 
-`LUniverse:removeTag(id: integer, tag: string)`
-
-Removes a string tag from an entity.
-
-**Parameters**
-
-- `id` (`integer`, required): Entity id to update.
-- `tag` (`string`, required): Tag name to remove.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes a string tag from an entity.
@@ -1977,9 +2118,18 @@ Removes a string tag from an entity.
 function LUniverse:removeTag(id, tag) end
 ```
 
+#### Description
+
+Removes a string tag from an entity.
+
+Parameters:
+
+- `id` (`integer`, required): Entity id to update.
+- `tag` (`string`, required): Tag name to remove.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -1993,20 +2143,20 @@ end
 
 ### LUniverse:render
 
-`LUniverse:render()`
-
-Runs registered render-phase systems using their render or draw callbacks.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Runs registered render-phase systems using their render or draw callbacks.
 function LUniverse:render() end
 ```
 
+#### Description
+
+Runs registered render-phase systems using their render or draw callbacks.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -2020,13 +2170,7 @@ end
 
 ### LUniverse:serialize
 
-`LUniverse:serialize() -> table`
-
-Serializes this universe into a Lua table snapshot.
-
-**Returns**: `table` - Snapshot table containing entities and component state.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Serializes this universe into a Lua table snapshot.
@@ -2034,9 +2178,15 @@ Serializes this universe into a Lua table snapshot.
 function LUniverse:serialize() end
 ```
 
+#### Description
+
+Serializes this universe into a Lua table snapshot.
+
+Returns: `table` - Snapshot table containing entities and component state.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -2050,17 +2200,7 @@ end
 
 ### LUniverse:set
 
-`LUniverse:set(id: integer, name: string, value: table)`
-
-Stores or replaces a component value on an entity.
-
-**Parameters**
-
-- `id` (`integer`, required): Entity id that receives the component.
-- `name` (`string`, required): Component name.
-- `value` (`table`, required): Lua value stored as the component payload.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Stores or replaces a component value on an entity.
@@ -2070,9 +2210,19 @@ Stores or replaces a component value on an entity.
 function LUniverse:set(id, name, value) end
 ```
 
+#### Description
+
+Stores or replaces a component value on an entity.
+
+Parameters:
+
+- `id` (`integer`, required): Entity id that receives the component.
+- `name` (`string`, required): Component name.
+- `value` (`table`, required): Lua value stored as the component payload.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -2085,16 +2235,7 @@ end
 
 ### LUniverse:setLayer
 
-`LUniverse:setLayer(id: integer, layer: integer)`
-
-Assigns a numeric layer to an entity.
-
-**Parameters**
-
-- `id` (`integer`, required): Entity id to update.
-- `layer` (`integer`, required): Layer value stored on the entity.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Assigns a numeric layer to an entity.
@@ -2103,9 +2244,18 @@ Assigns a numeric layer to an entity.
 function LUniverse:setLayer(id, layer) end
 ```
 
+#### Description
+
+Assigns a numeric layer to an entity.
+
+Parameters:
+
+- `id` (`integer`, required): Entity id to update.
+- `layer` (`integer`, required): Layer value stored on the entity.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -2119,16 +2269,7 @@ end
 
 ### LUniverse:setParent
 
-`LUniverse:setParent(child_id: integer, [parent_id]: integer)`
-
-Sets or clears the parent entity for a child entity.
-
-**Parameters**
-
-- `child_id` (`integer`, required): Entity id whose parent changes.
-- `parent_id` (`integer`, optional): Parent entity id, or nil to clear the parent.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Sets or clears the parent entity for a child entity.
@@ -2137,9 +2278,18 @@ Sets or clears the parent entity for a child entity.
 function LUniverse:setParent(child_id, parent_id) end
 ```
 
+#### Description
+
+Sets or clears the parent entity for a child entity.
+
+Parameters:
+
+- `child_id` (`integer`, required): Entity id whose parent changes.
+- `parent_id` (`integer`, optional): Parent entity id, or nil to clear the parent.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -2153,13 +2303,7 @@ end
 
 ### LUniverse:snapshot
 
-`LUniverse:snapshot() -> table`
-
-Serializes this universe into a Lua table snapshot.
-
-**Returns**: `table` - Snapshot table containing entities and component state.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Serializes this universe into a Lua table snapshot.
@@ -2167,9 +2311,15 @@ Serializes this universe into a Lua table snapshot.
 function LUniverse:snapshot() end
 ```
 
+#### Description
+
+Serializes this universe into a Lua table snapshot.
+
+Returns: `table` - Snapshot table containing entities and component state.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -2183,13 +2333,7 @@ end
 
 ### LUniverse:spawn
 
-`LUniverse:spawn() -> integer`
-
-Creates a new entity in this universe.
-
-**Returns**: `integer` - Numeric entity id for the spawned entity.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Creates a new entity in this universe.
@@ -2197,9 +2341,15 @@ Creates a new entity in this universe.
 function LUniverse:spawn() end
 ```
 
+#### Description
+
+Creates a new entity in this universe.
+
+Returns: `integer` - Numeric entity id for the spawned entity.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -2211,18 +2361,7 @@ end
 
 ### LUniverse:spawnBlueprint
 
-`LUniverse:spawnBlueprint(name: string, [overrides]: table) -> integer`
-
-Spawns an entity from a named blueprint with optional component overrides.
-
-**Parameters**
-
-- `name` (`string`, required): Blueprint name to instantiate.
-- `overrides` (`table`, optional): Optional component overrides applied to this spawn.
-
-**Returns**: `integer` - Entity id created from the blueprint.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Spawns an entity from a named blueprint with optional component overrides.
@@ -2232,9 +2371,20 @@ Spawns an entity from a named blueprint with optional component overrides.
 function LUniverse:spawnBlueprint(name, overrides) end
 ```
 
+#### Description
+
+Spawns an entity from a named blueprint with optional component overrides.
+
+Parameters:
+
+- `name` (`string`, required): Blueprint name to instantiate.
+- `overrides` (`table`, optional): Optional component overrides applied to this spawn.
+
+Returns: `integer` - Entity id created from the blueprint.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -2247,19 +2397,7 @@ end
 
 ### LUniverse:spawnBulk
 
-`LUniverse:spawnBulk(name: string, count: integer, [overrides]: table) -> integer[]`
-
-Spawns multiple entities from a blueprint using shared optional overrides.
-
-**Parameters**
-
-- `name` (`string`, required): Blueprint name to instantiate.
-- `count` (`integer`, required): Number of entities to spawn.
-- `overrides` (`table`, optional): Optional component overrides applied to each spawned entity.
-
-**Returns**: `integer[]` - Array table of spawned entity ids.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Spawns multiple entities from a blueprint using shared optional overrides.
@@ -2270,9 +2408,21 @@ Spawns multiple entities from a blueprint using shared optional overrides.
 function LUniverse:spawnBulk(name, count, overrides) end
 ```
 
+#### Description
+
+Spawns multiple entities from a blueprint using shared optional overrides.
+
+Parameters:
+
+- `name` (`string`, required): Blueprint name to instantiate.
+- `count` (`integer`, required): Number of entities to spawn.
+- `overrides` (`table`, optional): Optional component overrides applied to each spawned entity.
+
+Returns: `integer[]` - Array table of spawned entity ids.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -2285,13 +2435,7 @@ end
 
 ### LUniverse:takeSnapshotDiff
 
-`LUniverse:takeSnapshotDiff() -> table`
-
-Returns and clears accumulated ECS snapshot diff data.
-
-**Returns**: `table` - Diff table with added_components, removed_components, deleted_entities, and dirty_entities arrays.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns and clears accumulated ECS snapshot diff data.
@@ -2299,9 +2443,15 @@ Returns and clears accumulated ECS snapshot diff data.
 function LUniverse:takeSnapshotDiff() end
 ```
 
+#### Description
+
+Returns and clears accumulated ECS snapshot diff data.
+
+Returns: `table` - Diff table with added_components, removed_components, deleted_entities, and dirty_entities arrays.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -2315,13 +2465,7 @@ end
 
 ### LUniverse:type
 
-`LUniverse:type() -> string`
-
-Returns the Lua-visible type name for this universe handle.
-
-**Returns**: `string` - The string `LUniverse`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this universe handle.
@@ -2329,9 +2473,15 @@ Returns the Lua-visible type name for this universe handle.
 function LUniverse:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this universe handle.
+
+Returns: `string` - The string `LUniverse`.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -2342,17 +2492,7 @@ end
 
 ### LUniverse:typeOf
 
-`LUniverse:typeOf(name: string) -> boolean`
-
-Returns whether this universe handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LUniverse` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this universe handle matches a supported type name.
@@ -2361,9 +2501,19 @@ Returns whether this universe handle matches a supported type name.
 function LUniverse:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this universe handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LUniverse` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -2374,15 +2524,7 @@ end
 
 ### LUniverse:update
 
-`LUniverse:update(dt: number)`
-
-Runs registered update-phase systems with a frame delta.
-
-**Parameters**
-
-- `dt` (`number`, required): Frame delta time in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Runs registered update-phase systems with a frame delta.
@@ -2390,9 +2532,17 @@ Runs registered update-phase systems with a frame delta.
 function LUniverse:update(dt) end
 ```
 
+#### Description
+
+Runs registered update-phase systems with a frame delta.
+
+Parameters:
+
+- `dt` (`number`, required): Frame delta time in seconds.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do
@@ -2406,16 +2556,7 @@ end
 
 ### LUniverse:updatePhase
 
-`LUniverse:updatePhase(phase: string, dt: number)`
-
-Runs registered systems assigned to a named phase.
-
-**Parameters**
-
-- `phase` (`string`, required): System phase name to run.
-- `dt` (`number`, required): Frame delta time in seconds.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Runs registered systems assigned to a named phase.
@@ -2424,9 +2565,18 @@ Runs registered systems assigned to a named phase.
 function LUniverse:updatePhase(phase, dt) end
 ```
 
+#### Description
+
+Runs registered systems assigned to a named phase.
+
+Parameters:
+
+- `phase` (`string`, required): System phase name to run.
+- `dt` (`number`, required): Frame delta time in seconds.
+
 #### Example
 
-Exact example from [ecs.lua](../blob/main/content/examples/ecs.lua):
+Source: [ecs.lua](../blob/main/content/examples/ecs.lua)
 
 ```lua
 do

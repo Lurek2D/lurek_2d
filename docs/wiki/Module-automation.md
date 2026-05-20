@@ -14,37 +14,101 @@
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
   - [lurek.automation.getCondition](#lurekautomationgetcondition)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.automation.getCurrentScript](#lurekautomationgetcurrentscript)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.automation.getCurrentStep](#lurekautomationgetcurrentstep)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.automation.getElapsedTime](#lurekautomationgetelapsedtime)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.automation.getLastError](#lurekautomationgetlasterror)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.automation.getPlaybackSpeed](#lurekautomationgetplaybackspeed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.automation.getScripts](#lurekautomationgetscripts)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.automation.getStepCount](#lurekautomationgetstepcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.automation.getStepLimit](#lurekautomationgetsteplimit)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.automation.hasMacro](#lurekautomationhasmacro)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.automation.hasScript](#lurekautomationhasscript)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.automation.isComplete](#lurekautomationiscomplete)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.automation.isFailed](#lurekautomationisfailed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.automation.isHighlightMode](#lurekautomationishighlightmode)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.automation.isPaused](#lurekautomationispaused)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.automation.isRunning](#lurekautomationisrunning)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.automation.listMacros](#lurekautomationlistmacros)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.automation.load](#lurekautomationload)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.automation.loadFromToml](#lurekautomationloadfromtoml)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.automation.pause](#lurekautomationpause)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.automation.playMacro](#lurekautomationplaymacro)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.automation.resume](#lurekautomationresume)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.automation.saveMacro](#lurekautomationsavemacro)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.automation.setCondition](#lurekautomationsetcondition)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.automation.setHighlightMode](#lurekautomationsethighlightmode)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.automation.setPlaybackSpeed](#lurekautomationsetplaybackspeed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.automation.setStepLimit](#lurekautomationsetsteplimit)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.automation.start](#lurekautomationstart)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.automation.stop](#lurekautomationstop)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.automation.unload](#lurekautomationunload)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.automation.update](#lurekautomationupdate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.automation.waitUntil](#lurekautomationwaituntil)
+    - [Definition](#definition)
+    - [Description](#description)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -106,19 +170,28 @@ lurek.automation.load(name: string, data: table) -- Loads an automation script f
 
 ### lurek.automation.getCondition
 
-`lurek.automation.getCondition(name: string) -> boolean`
+#### Definition
+
+```lua
+--- Returns a named automation condition value.
+---@param name string Condition name.
+---@return boolean Current condition value.
+lurek.automation.getCondition = function(name) end
+```
+
+#### Description
 
 Returns a named automation condition value.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, required): Condition name.
 
-**Returns**: `boolean` - Current condition value.
+Returns: `boolean` - Current condition value.
 
 #### Example
 
-Exact example from [automation.lua](../blob/main/content/examples/automation.lua):
+Source: [automation.lua](../blob/main/content/examples/automation.lua)
 
 ```lua
 do
@@ -130,15 +203,23 @@ end
 
 ### lurek.automation.getCurrentScript
 
-`lurek.automation.getCurrentScript() -> string`
+#### Definition
+
+```lua
+--- Returns the current script name when a script is active.
+---@return string Current script name, or nil when no script is active.
+lurek.automation.getCurrentScript = function() end
+```
+
+#### Description
 
 Returns the current script name when a script is active.
 
-**Returns**: `string` - Current script name, or nil when no script is active.
+Returns: `string` - Current script name, or nil when no script is active.
 
 #### Example
 
-Exact example from [automation.lua](../blob/main/content/examples/automation.lua):
+Source: [automation.lua](../blob/main/content/examples/automation.lua)
 
 ```lua
 do
@@ -149,15 +230,23 @@ end
 
 ### lurek.automation.getCurrentStep
 
-`lurek.automation.getCurrentStep() -> integer`
+#### Definition
+
+```lua
+--- Returns the current step index of the active script.
+---@return number Current step index.
+lurek.automation.getCurrentStep = function() end
+```
+
+#### Description
 
 Returns the current step index of the active script.
 
-**Returns**: `integer` - Current step index.
+Returns: `integer` - Current step index.
 
 #### Example
 
-Exact example from [automation.lua](../blob/main/content/examples/automation.lua):
+Source: [automation.lua](../blob/main/content/examples/automation.lua)
 
 ```lua
 do
@@ -168,15 +257,23 @@ end
 
 ### lurek.automation.getElapsedTime
 
-`lurek.automation.getElapsedTime() -> number`
+#### Definition
+
+```lua
+--- Returns elapsed playback time for the current script.
+---@return number Elapsed time in seconds.
+lurek.automation.getElapsedTime = function() end
+```
+
+#### Description
 
 Returns elapsed playback time for the current script.
 
-**Returns**: `number` - Elapsed time in seconds.
+Returns: `number` - Elapsed time in seconds.
 
 #### Example
 
-Exact example from [automation.lua](../blob/main/content/examples/automation.lua):
+Source: [automation.lua](../blob/main/content/examples/automation.lua)
 
 ```lua
 do
@@ -187,15 +284,23 @@ end
 
 ### lurek.automation.getLastError
 
-`lurek.automation.getLastError() -> string`
+#### Definition
+
+```lua
+--- Returns the last automation error message when one exists.
+---@return string Last error string, or nil when no error is stored.
+lurek.automation.getLastError = function() end
+```
+
+#### Description
 
 Returns the last automation error message when one exists.
 
-**Returns**: `string` - Last error string, or nil when no error is stored.
+Returns: `string` - Last error string, or nil when no error is stored.
 
 #### Example
 
-Exact example from [automation.lua](../blob/main/content/examples/automation.lua):
+Source: [automation.lua](../blob/main/content/examples/automation.lua)
 
 ```lua
 do
@@ -206,15 +311,23 @@ end
 
 ### lurek.automation.getPlaybackSpeed
 
-`lurek.automation.getPlaybackSpeed() -> number`
+#### Definition
+
+```lua
+--- Returns automation playback speed multiplier.
+---@return number Current playback speed multiplier.
+lurek.automation.getPlaybackSpeed = function() end
+```
+
+#### Description
 
 Returns automation playback speed multiplier.
 
-**Returns**: `number` - Current playback speed multiplier.
+Returns: `number` - Current playback speed multiplier.
 
 #### Example
 
-Exact example from [automation.lua](../blob/main/content/examples/automation.lua):
+Source: [automation.lua](../blob/main/content/examples/automation.lua)
 
 ```lua
 do
@@ -225,15 +338,23 @@ end
 
 ### lurek.automation.getScripts
 
-`lurek.automation.getScripts() -> string[]`
+#### Definition
+
+```lua
+--- Returns the names of loaded automation scripts.
+---@return string[] Script names.
+lurek.automation.getScripts = function() end
+```
+
+#### Description
 
 Returns the names of loaded automation scripts.
 
-**Returns**: `string[]` - Script names.
+Returns: `string[]` - Script names.
 
 #### Example
 
-Exact example from [automation.lua](../blob/main/content/examples/automation.lua):
+Source: [automation.lua](../blob/main/content/examples/automation.lua)
 
 ```lua
 do
@@ -244,15 +365,23 @@ end
 
 ### lurek.automation.getStepCount
 
-`lurek.automation.getStepCount() -> integer`
+#### Definition
+
+```lua
+--- Returns the number of steps in the active script.
+---@return number Active script step count.
+lurek.automation.getStepCount = function() end
+```
+
+#### Description
 
 Returns the number of steps in the active script.
 
-**Returns**: `integer` - Active script step count.
+Returns: `integer` - Active script step count.
 
 #### Example
 
-Exact example from [automation.lua](../blob/main/content/examples/automation.lua):
+Source: [automation.lua](../blob/main/content/examples/automation.lua)
 
 ```lua
 do
@@ -263,19 +392,28 @@ end
 
 ### lurek.automation.getStepLimit
 
-`lurek.automation.getStepLimit(name: string) -> integer`
+#### Definition
+
+```lua
+--- Returns the configured step limit for a loaded script.
+---@param name string Script name to query.
+---@return number Step limit, or nil when no limit is set.
+lurek.automation.getStepLimit = function(name) end
+```
+
+#### Description
 
 Returns the configured step limit for a loaded script.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, required): Script name to query.
 
-**Returns**: `integer` - Step limit, or nil when no limit is set.
+Returns: `integer` - Step limit, or nil when no limit is set.
 
 #### Example
 
-Exact example from [automation.lua](../blob/main/content/examples/automation.lua):
+Source: [automation.lua](../blob/main/content/examples/automation.lua)
 
 ```lua
 do
@@ -286,19 +424,28 @@ end
 
 ### lurek.automation.hasMacro
 
-`lurek.automation.hasMacro(name: string) -> boolean`
+#### Definition
+
+```lua
+--- Returns whether a macro is saved. This function is exposed to Lua scripts.
+---@param name string Macro name to check.
+---@return boolean True when the macro exists.
+lurek.automation.hasMacro = function(name) end
+```
+
+#### Description
 
 Returns whether a macro is saved. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, required): Macro name to check.
 
-**Returns**: `boolean` - True when the macro exists.
+Returns: `boolean` - True when the macro exists.
 
 #### Example
 
-Exact example from [automation.lua](../blob/main/content/examples/automation.lua):
+Source: [automation.lua](../blob/main/content/examples/automation.lua)
 
 ```lua
 do
@@ -309,19 +456,28 @@ end
 
 ### lurek.automation.hasScript
 
-`lurek.automation.hasScript(name: string) -> boolean`
+#### Definition
+
+```lua
+--- Returns whether a script is loaded.
+---@param name string Script name to check.
+---@return boolean True when the script is loaded.
+lurek.automation.hasScript = function(name) end
+```
+
+#### Description
 
 Returns whether a script is loaded.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, required): Script name to check.
 
-**Returns**: `boolean` - True when the script is loaded.
+Returns: `boolean` - True when the script is loaded.
 
 #### Example
 
-Exact example from [automation.lua](../blob/main/content/examples/automation.lua):
+Source: [automation.lua](../blob/main/content/examples/automation.lua)
 
 ```lua
 do
@@ -332,15 +488,23 @@ end
 
 ### lurek.automation.isComplete
 
-`lurek.automation.isComplete() -> boolean`
+#### Definition
+
+```lua
+--- Returns whether the current automation script completed.
+---@return boolean True when the current script has completed.
+lurek.automation.isComplete = function() end
+```
+
+#### Description
 
 Returns whether the current automation script completed.
 
-**Returns**: `boolean` - True when the current script has completed.
+Returns: `boolean` - True when the current script has completed.
 
 #### Example
 
-Exact example from [automation.lua](../blob/main/content/examples/automation.lua):
+Source: [automation.lua](../blob/main/content/examples/automation.lua)
 
 ```lua
 do
@@ -351,15 +515,23 @@ end
 
 ### lurek.automation.isFailed
 
-`lurek.automation.isFailed() -> boolean`
+#### Definition
+
+```lua
+--- Returns whether the current automation script failed.
+---@return boolean True when the current script has failed.
+lurek.automation.isFailed = function() end
+```
+
+#### Description
 
 Returns whether the current automation script failed.
 
-**Returns**: `boolean` - True when the current script has failed.
+Returns: `boolean` - True when the current script has failed.
 
 #### Example
 
-Exact example from [automation.lua](../blob/main/content/examples/automation.lua):
+Source: [automation.lua](../blob/main/content/examples/automation.lua)
 
 ```lua
 do
@@ -370,15 +542,23 @@ end
 
 ### lurek.automation.isHighlightMode
 
-`lurek.automation.isHighlightMode() -> boolean`
+#### Definition
+
+```lua
+--- Returns whether automation highlight mode is enabled.
+---@return boolean True when highlight mode is enabled.
+lurek.automation.isHighlightMode = function() end
+```
+
+#### Description
 
 Returns whether automation highlight mode is enabled.
 
-**Returns**: `boolean` - True when highlight mode is enabled.
+Returns: `boolean` - True when highlight mode is enabled.
 
 #### Example
 
-Exact example from [automation.lua](../blob/main/content/examples/automation.lua):
+Source: [automation.lua](../blob/main/content/examples/automation.lua)
 
 ```lua
 do
@@ -389,15 +569,23 @@ end
 
 ### lurek.automation.isPaused
 
-`lurek.automation.isPaused() -> boolean`
+#### Definition
+
+```lua
+--- Returns whether automation playback is paused.
+---@return boolean True when playback is paused.
+lurek.automation.isPaused = function() end
+```
+
+#### Description
 
 Returns whether automation playback is paused.
 
-**Returns**: `boolean` - True when playback is paused.
+Returns: `boolean` - True when playback is paused.
 
 #### Example
 
-Exact example from [automation.lua](../blob/main/content/examples/automation.lua):
+Source: [automation.lua](../blob/main/content/examples/automation.lua)
 
 ```lua
 do
@@ -408,15 +596,23 @@ end
 
 ### lurek.automation.isRunning
 
-`lurek.automation.isRunning() -> boolean`
+#### Definition
+
+```lua
+--- Returns whether automation playback is running.
+---@return boolean True when a script is running.
+lurek.automation.isRunning = function() end
+```
+
+#### Description
 
 Returns whether automation playback is running.
 
-**Returns**: `boolean` - True when a script is running.
+Returns: `boolean` - True when a script is running.
 
 #### Example
 
-Exact example from [automation.lua](../blob/main/content/examples/automation.lua):
+Source: [automation.lua](../blob/main/content/examples/automation.lua)
 
 ```lua
 do
@@ -427,15 +623,23 @@ end
 
 ### lurek.automation.listMacros
 
-`lurek.automation.listMacros() -> string[]`
+#### Definition
+
+```lua
+--- Returns the names of saved macros. This function is exposed to Lua scripts.
+---@return string[] Macro names.
+lurek.automation.listMacros = function() end
+```
+
+#### Description
 
 Returns the names of saved macros. This function is exposed to Lua scripts.
 
-**Returns**: `string[]` - Macro names.
+Returns: `string[]` - Macro names.
 
 #### Example
 
-Exact example from [automation.lua](../blob/main/content/examples/automation.lua):
+Source: [automation.lua](../blob/main/content/examples/automation.lua)
 
 ```lua
 do
@@ -446,18 +650,27 @@ end
 
 ### lurek.automation.load
 
-`lurek.automation.load(name: string, data: table)`
+#### Definition
+
+```lua
+--- Loads an automation script from a Lua table of steps and optional metadata.
+---@param name string Script name used by `start`, macros, and lookup calls.
+---@param data table Script data table with a `steps` array and optional `meta.description` string.
+lurek.automation.load = function(name, data) end
+```
+
+#### Description
 
 Loads an automation script from a Lua table of steps and optional metadata.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, required): Script name used by `start`, macros, and lookup calls.
 - `data` (`table`, required): Script data table with a `steps` array and optional `meta.description` string.
 
 #### Example
 
-Exact example from [automation.lua](../blob/main/content/examples/automation.lua):
+Source: [automation.lua](../blob/main/content/examples/automation.lua)
 
 ```lua
 do
@@ -469,18 +682,27 @@ end
 
 ### lurek.automation.loadFromToml
 
-`lurek.automation.loadFromToml(name: string, toml_str: string)`
+#### Definition
+
+```lua
+--- Loads an automation script from TOML text.
+---@param name string Script name used by `start`, macros, and lookup calls.
+---@param toml_str string TOML automation script contents.
+lurek.automation.loadFromToml = function(name, toml_str) end
+```
+
+#### Description
 
 Loads an automation script from TOML text.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, required): Script name used by `start`, macros, and lookup calls.
 - `toml_str` (`string`, required): TOML automation script contents.
 
 #### Example
 
-Exact example from [automation.lua](../blob/main/content/examples/automation.lua):
+Source: [automation.lua](../blob/main/content/examples/automation.lua)
 
 ```lua
 do
@@ -492,13 +714,20 @@ end
 
 ### lurek.automation.pause
 
-`lurek.automation.pause()`
+#### Definition
+
+```lua
+--- Pauses automation playback. This function is exposed to Lua scripts.
+lurek.automation.pause = function() end
+```
+
+#### Description
 
 Pauses automation playback. This function is exposed to Lua scripts.
 
 #### Example
 
-Exact example from [automation.lua](../blob/main/content/examples/automation.lua):
+Source: [automation.lua](../blob/main/content/examples/automation.lua)
 
 ```lua
 do
@@ -509,17 +738,25 @@ end
 
 ### lurek.automation.playMacro
 
-`lurek.automation.playMacro(name: string)`
+#### Definition
+
+```lua
+--- Starts playback of a saved macro. This function is exposed to Lua scripts.
+---@param name string Macro name to play.
+lurek.automation.playMacro = function(name) end
+```
+
+#### Description
 
 Starts playback of a saved macro. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, required): Macro name to play.
 
 #### Example
 
-Exact example from [automation.lua](../blob/main/content/examples/automation.lua):
+Source: [automation.lua](../blob/main/content/examples/automation.lua)
 
 ```lua
 do
@@ -530,13 +767,20 @@ end
 
 ### lurek.automation.resume
 
-`lurek.automation.resume()`
+#### Definition
+
+```lua
+--- Resumes automation playback. This function is exposed to Lua scripts.
+lurek.automation.resume = function() end
+```
+
+#### Description
 
 Resumes automation playback. This function is exposed to Lua scripts.
 
 #### Example
 
-Exact example from [automation.lua](../blob/main/content/examples/automation.lua):
+Source: [automation.lua](../blob/main/content/examples/automation.lua)
 
 ```lua
 do
@@ -547,18 +791,27 @@ end
 
 ### lurek.automation.saveMacro
 
-`lurek.automation.saveMacro(macro_name: string, script_name: string)`
+#### Definition
+
+```lua
+--- Saves a loaded script as a named macro.
+---@param macro_name string Macro name to save.
+---@param script_name string Loaded script name to copy into the macro store.
+lurek.automation.saveMacro = function(macro_name, script_name) end
+```
+
+#### Description
 
 Saves a loaded script as a named macro.
 
-**Parameters**
+Parameters:
 
 - `macro_name` (`string`, required): Macro name to save.
 - `script_name` (`string`, required): Loaded script name to copy into the macro store.
 
 #### Example
 
-Exact example from [automation.lua](../blob/main/content/examples/automation.lua):
+Source: [automation.lua](../blob/main/content/examples/automation.lua)
 
 ```lua
 do
@@ -569,18 +822,27 @@ end
 
 ### lurek.automation.setCondition
 
-`lurek.automation.setCondition(name: string, value: boolean)`
+#### Definition
+
+```lua
+--- Sets a named boolean condition used by automation steps.
+---@param name string Condition name.
+---@param value boolean Condition value.
+lurek.automation.setCondition = function(name, value) end
+```
+
+#### Description
 
 Sets a named boolean condition used by automation steps.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, required): Condition name.
 - `value` (`boolean`, required): Condition value.
 
 #### Example
 
-Exact example from [automation.lua](../blob/main/content/examples/automation.lua):
+Source: [automation.lua](../blob/main/content/examples/automation.lua)
 
 ```lua
 do
@@ -591,17 +853,25 @@ end
 
 ### lurek.automation.setHighlightMode
 
-`lurek.automation.setHighlightMode(enable: boolean)`
+#### Definition
+
+```lua
+--- Enables or disables automation highlight mode.
+---@param enable boolean True to enable highlight mode.
+lurek.automation.setHighlightMode = function(enable) end
+```
+
+#### Description
 
 Enables or disables automation highlight mode.
 
-**Parameters**
+Parameters:
 
 - `enable` (`boolean`, required): True to enable highlight mode.
 
 #### Example
 
-Exact example from [automation.lua](../blob/main/content/examples/automation.lua):
+Source: [automation.lua](../blob/main/content/examples/automation.lua)
 
 ```lua
 do
@@ -612,17 +882,25 @@ end
 
 ### lurek.automation.setPlaybackSpeed
 
-`lurek.automation.setPlaybackSpeed(factor: number)`
+#### Definition
+
+```lua
+--- Sets automation playback speed multiplier.
+---@param factor number Playback speed multiplier.
+lurek.automation.setPlaybackSpeed = function(factor) end
+```
+
+#### Description
 
 Sets automation playback speed multiplier.
 
-**Parameters**
+Parameters:
 
 - `factor` (`number`, required): Playback speed multiplier.
 
 #### Example
 
-Exact example from [automation.lua](../blob/main/content/examples/automation.lua):
+Source: [automation.lua](../blob/main/content/examples/automation.lua)
 
 ```lua
 do
@@ -633,20 +911,30 @@ end
 
 ### lurek.automation.setStepLimit
 
-`lurek.automation.setStepLimit(name: string, n: integer) -> boolean`
+#### Definition
+
+```lua
+--- Sets the maximum step count for a loaded script.
+---@param name string Script name to update.
+---@param n number Maximum step count.
+---@return boolean True when the script exists and the limit was set.
+lurek.automation.setStepLimit = function(name, n) end
+```
+
+#### Description
 
 Sets the maximum step count for a loaded script.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, required): Script name to update.
 - `n` (`integer`, required): Maximum step count.
 
-**Returns**: `boolean` - True when the script exists and the limit was set.
+Returns: `boolean` - True when the script exists and the limit was set.
 
 #### Example
 
-Exact example from [automation.lua](../blob/main/content/examples/automation.lua):
+Source: [automation.lua](../blob/main/content/examples/automation.lua)
 
 ```lua
 do
@@ -657,17 +945,25 @@ end
 
 ### lurek.automation.start
 
-`lurek.automation.start(name: string)`
+#### Definition
+
+```lua
+--- Starts playback of a loaded automation script.
+---@param name string Loaded script name to start.
+lurek.automation.start = function(name) end
+```
+
+#### Description
 
 Starts playback of a loaded automation script.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, required): Loaded script name to start.
 
 #### Example
 
-Exact example from [automation.lua](../blob/main/content/examples/automation.lua):
+Source: [automation.lua](../blob/main/content/examples/automation.lua)
 
 ```lua
 do
@@ -680,13 +976,20 @@ end
 
 ### lurek.automation.stop
 
-`lurek.automation.stop()`
+#### Definition
+
+```lua
+--- Stops the current automation script.
+lurek.automation.stop = function() end
+```
+
+#### Description
 
 Stops the current automation script.
 
 #### Example
 
-Exact example from [automation.lua](../blob/main/content/examples/automation.lua):
+Source: [automation.lua](../blob/main/content/examples/automation.lua)
 
 ```lua
 do
@@ -697,19 +1000,28 @@ end
 
 ### lurek.automation.unload
 
-`lurek.automation.unload(name: string) -> boolean`
+#### Definition
+
+```lua
+--- Unloads a named automation script.
+---@param name string Script name to remove.
+---@return boolean True when the script existed and was removed.
+lurek.automation.unload = function(name) end
+```
+
+#### Description
 
 Unloads a named automation script.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, required): Script name to remove.
 
-**Returns**: `boolean` - True when the script existed and was removed.
+Returns: `boolean` - True when the script existed and was removed.
 
 #### Example
 
-Exact example from [automation.lua](../blob/main/content/examples/automation.lua):
+Source: [automation.lua](../blob/main/content/examples/automation.lua)
 
 ```lua
 do
@@ -722,17 +1034,25 @@ end
 
 ### lurek.automation.update
 
-`lurek.automation.update(dt: number)`
+#### Definition
+
+```lua
+--- Advances automation playback and dispatches generated input events.
+---@param dt number Elapsed time in seconds.
+lurek.automation.update = function(dt) end
+```
+
+#### Description
 
 Advances automation playback and dispatches generated input events.
 
-**Parameters**
+Parameters:
 
 - `dt` (`number`, required): Elapsed time in seconds.
 
 #### Example
 
-Exact example from [automation.lua](../blob/main/content/examples/automation.lua):
+Source: [automation.lua](../blob/main/content/examples/automation.lua)
 
 ```lua
 do
@@ -743,18 +1063,27 @@ end
 
 ### lurek.automation.waitUntil
 
-`lurek.automation.waitUntil(predicate: function, timeout: number)`
+#### Definition
+
+```lua
+--- Suspends automation updates until a predicate returns true or a timeout elapses.
+---@param predicate function Function called each update; true resolves the wait.
+---@param timeout number Maximum wait duration in seconds.
+lurek.automation.waitUntil = function(predicate, timeout) end
+```
+
+#### Description
 
 Suspends automation updates until a predicate returns true or a timeout elapses.
 
-**Parameters**
+Parameters:
 
 - `predicate` (`function`, required): Function called each update; true resolves the wait.
 - `timeout` (`number`, required): Maximum wait duration in seconds.
 
 #### Example
 
-Exact example from [automation.lua](../blob/main/content/examples/automation.lua):
+Source: [automation.lua](../blob/main/content/examples/automation.lua)
 
 ```lua
 do

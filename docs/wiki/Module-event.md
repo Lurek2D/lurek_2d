@@ -14,36 +14,94 @@
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
   - [lurek.event.clear](#lurekeventclear)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.event.clearHistory](#lurekeventclearhistory)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.event.enableHistory](#lurekeventenablehistory)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.event.exit](#lurekeventexit)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.event.flushDeferred](#lurekeventflushdeferred)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.event.getHistory](#lurekeventgethistory)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.event.newSignal](#lurekeventnewsignal)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.event.poll](#lurekeventpoll)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.event.pump](#lurekeventpump)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.event.push](#lurekeventpush)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.event.pushDeferred](#lurekeventpushdeferred)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.event.pushDeferredPriority](#lurekeventpushdeferredpriority)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.event.pushPriority](#lurekeventpushpriority)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.event.quit](#lurekeventquit)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.event.restart](#lurekeventrestart)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.event.wait](#lurekeventwait)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔷 Module Types](#module-types)
   - [LSignal](#lsignal)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
   - [LSignal:clear](#lsignalclear)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSignal:clearAll](#lsignalclearall)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSignal:connect](#lsignalconnect)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSignal:emit](#lsignalemit)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSignal:getCount](#lsignalgetcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSignal:getTotalCount](#lsignalgettotalcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSignal:once](#lsignalonce)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSignal:register](#lsignalregister)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSignal:registerWithFilter](#lsignalregisterwithfilter)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSignal:remove](#lsignalremove)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSignal:type](#lsignaltype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LSignal:typeOf](#lsignaltypeof)
+    - [Definition](#definition)
+    - [Description](#description)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -102,13 +160,20 @@ lurek.event.wait([timeout]: number) -> boolean -- Waits for the next queued even
 
 ### lurek.event.clear
 
-`lurek.event.clear()`
+#### Definition
+
+```lua
+--- Clears all pending events from the shared event queue.
+lurek.event.clear = function() end
+```
+
+#### Description
 
 Clears all pending events from the shared event queue.
 
 #### Example
 
-Exact example from [event.lua](../blob/main/content/examples/event.lua):
+Source: [event.lua](../blob/main/content/examples/event.lua)
 
 ```lua
 do
@@ -120,13 +185,20 @@ end
 
 ### lurek.event.clearHistory
 
-`lurek.event.clearHistory()`
+#### Definition
+
+```lua
+--- Clears retained pushed event history.
+lurek.event.clearHistory = function() end
+```
+
+#### Description
 
 Clears retained pushed event history.
 
 #### Example
 
-Exact example from [event.lua](../blob/main/content/examples/event.lua):
+Source: [event.lua](../blob/main/content/examples/event.lua)
 
 ```lua
 do
@@ -137,17 +209,25 @@ end
 
 ### lurek.event.enableHistory
 
-`lurek.event.enableHistory(capacity: integer)`
+#### Definition
+
+```lua
+--- Enables event push history with a maximum retained capacity.
+---@param capacity number Maximum number of pushed events to keep; zero disables retention.
+lurek.event.enableHistory = function(capacity) end
+```
+
+#### Description
 
 Enables event push history with a maximum retained capacity.
 
-**Parameters**
+Parameters:
 
 - `capacity` (`integer`, required): Maximum number of pushed events to keep; zero disables retention.
 
 #### Example
 
-Exact example from [event.lua](../blob/main/content/examples/event.lua):
+Source: [event.lua](../blob/main/content/examples/event.lua)
 
 ```lua
 do
@@ -158,17 +238,25 @@ end
 
 ### lurek.event.exit
 
-`lurek.event.exit([code]: integer)`
+#### Definition
+
+```lua
+--- Requests engine shutdown with an optional process exit code.
+---@param code? number Optional exit code, defaulting to 0.
+lurek.event.exit = function(code) end
+```
+
+#### Description
 
 Requests engine shutdown with an optional process exit code.
 
-**Parameters**
+Parameters:
 
 - `code` (`integer`, optional): Optional exit code, defaulting to 0.
 
 #### Example
 
-Exact example from [event.lua](../blob/main/content/examples/event.lua):
+Source: [event.lua](../blob/main/content/examples/event.lua)
 
 ```lua
 do
@@ -179,15 +267,23 @@ end
 
 ### lurek.event.flushDeferred
 
-`lurek.event.flushDeferred() -> integer`
+#### Definition
+
+```lua
+--- Moves all deferred events into the shared event queue and clears the deferred buffer.
+---@return number Number of events flushed.
+lurek.event.flushDeferred = function() end
+```
+
+#### Description
 
 Moves all deferred events into the shared event queue and clears the deferred buffer.
 
-**Returns**: `integer` - Number of events flushed.
+Returns: `integer` - Number of events flushed.
 
 #### Example
 
-Exact example from [event.lua](../blob/main/content/examples/event.lua):
+Source: [event.lua](../blob/main/content/examples/event.lua)
 
 ```lua
 do
@@ -200,15 +296,23 @@ end
 
 ### lurek.event.getHistory
 
-`lurek.event.getHistory() -> table`
+#### Definition
+
+```lua
+--- Returns retained pushed event history entries.
+---@return EventGetHistoryResult Array of entries with `name` and `args` fields.
+lurek.event.getHistory = function() end
+```
+
+#### Description
 
 Returns retained pushed event history entries.
 
-**Returns**: `table` - Array of entries with `name` and `args` fields.
+Returns: `table` - Array of entries with `name` and `args` fields.
 
 #### Example
 
-Exact example from [event.lua](../blob/main/content/examples/event.lua):
+Source: [event.lua](../blob/main/content/examples/event.lua)
 
 ```lua
 do
@@ -221,15 +325,23 @@ end
 
 ### lurek.event.newSignal
 
-`lurek.event.newSignal() -> LSignal`
+#### Definition
+
+```lua
+--- Creates an isolated signal dispatcher for Lua callbacks.
+---@return LSignal New signal handle.
+lurek.event.newSignal = function() end
+```
+
+#### Description
 
 Creates an isolated signal dispatcher for Lua callbacks.
 
-**Returns**: `LSignal` - New signal handle.
+Returns: `LSignal` - New signal handle.
 
 #### Example
 
-Exact example from [event.lua](../blob/main/content/examples/event.lua):
+Source: [event.lua](../blob/main/content/examples/event.lua)
 
 ```lua
 do
@@ -240,15 +352,23 @@ end
 
 ### lurek.event.poll
 
-`lurek.event.poll() -> function`
+#### Definition
+
+```lua
+--- Creates a polling function that returns the next queued event each time it is called.
+---@return function Poll function returning event values, or no values when the queue is empty.
+lurek.event.poll = function() end
+```
+
+#### Description
 
 Creates a polling function that returns the next queued event each time it is called.
 
-**Returns**: `function` - Poll function returning event values, or no values when the queue is empty.
+Returns: `function` - Poll function returning event values, or no values when the queue is empty.
 
 #### Example
 
-Exact example from [event.lua](../blob/main/content/examples/event.lua):
+Source: [event.lua](../blob/main/content/examples/event.lua)
 
 ```lua
 do
@@ -261,13 +381,20 @@ end
 
 ### lurek.event.pump
 
-`lurek.event.pump()`
+#### Definition
+
+```lua
+--- Pumps the shared event queue without removing events for Lua.
+lurek.event.pump = function() end
+```
+
+#### Description
 
 Pumps the shared event queue without removing events for Lua.
 
 #### Example
 
-Exact example from [event.lua](../blob/main/content/examples/event.lua):
+Source: [event.lua](../blob/main/content/examples/event.lua)
 
 ```lua
 do
@@ -278,18 +405,27 @@ end
 
 ### lurek.event.push
 
-`lurek.event.push(name: string, ...: any)`
+#### Definition
+
+```lua
+--- Pushes a normal-priority event into the shared event queue and optional history.
+---@param name string Event name.
+---@param ... any Additional event arguments.
+lurek.event.push = function(name, ...) end
+```
+
+#### Description
 
 Pushes a normal-priority event into the shared event queue and optional history.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, required): Event name.
 - `...` (`any`, required): Additional event arguments.
 
 #### Example
 
-Exact example from [event.lua](../blob/main/content/examples/event.lua):
+Source: [event.lua](../blob/main/content/examples/event.lua)
 
 ```lua
 do
@@ -300,18 +436,27 @@ end
 
 ### lurek.event.pushDeferred
 
-`lurek.event.pushDeferred(name: string, ...: any)`
+#### Definition
+
+```lua
+--- Adds a normal-priority event to the deferred buffer instead of the live queue.
+---@param name string Event name to enqueue later.
+---@param ... any Additional event arguments stored with the event.
+lurek.event.pushDeferred = function(name, ...) end
+```
+
+#### Description
 
 Adds a normal-priority event to the deferred buffer instead of the live queue.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, required): Event name to enqueue later.
 - `...` (`any`, required): Additional event arguments stored with the event.
 
 #### Example
 
-Exact example from [event.lua](../blob/main/content/examples/event.lua):
+Source: [event.lua](../blob/main/content/examples/event.lua)
 
 ```lua
 do
@@ -322,11 +467,21 @@ end
 
 ### lurek.event.pushDeferredPriority
 
-`lurek.event.pushDeferredPriority(name: string, priority: string, ...: any)`
+#### Definition
+
+```lua
+--- Adds an event with explicit priority to the deferred buffer.
+---@param name string Event name to enqueue later.
+---@param priority string Priority string `high` or `normal`.
+---@param ... any Additional event arguments stored with the event.
+lurek.event.pushDeferredPriority = function(name, priority, ...) end
+```
+
+#### Description
 
 Adds an event with explicit priority to the deferred buffer.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, required): Event name to enqueue later.
 - `priority` (`string`, required): Priority string `high` or `normal`.
@@ -334,7 +489,7 @@ Adds an event with explicit priority to the deferred buffer.
 
 #### Example
 
-Exact example from [event.lua](../blob/main/content/examples/event.lua):
+Source: [event.lua](../blob/main/content/examples/event.lua)
 
 ```lua
 do
@@ -345,11 +500,21 @@ end
 
 ### lurek.event.pushPriority
 
-`lurek.event.pushPriority(name: string, priority: string, ...: any)`
+#### Definition
+
+```lua
+--- Pushes an event with explicit priority into the shared event queue and optional history.
+---@param name string Event name.
+---@param priority string Priority string `high` or `normal`.
+---@param ... any Additional event arguments.
+lurek.event.pushPriority = function(name, priority, ...) end
+```
+
+#### Description
 
 Pushes an event with explicit priority into the shared event queue and optional history.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, required): Event name.
 - `priority` (`string`, required): Priority string `high` or `normal`.
@@ -357,7 +522,7 @@ Pushes an event with explicit priority into the shared event queue and optional 
 
 #### Example
 
-Exact example from [event.lua](../blob/main/content/examples/event.lua):
+Source: [event.lua](../blob/main/content/examples/event.lua)
 
 ```lua
 do
@@ -368,13 +533,20 @@ end
 
 ### lurek.event.quit
 
-`lurek.event.quit()`
+#### Definition
+
+```lua
+--- Requests engine shutdown with exit code zero.
+lurek.event.quit = function() end
+```
+
+#### Description
 
 Requests engine shutdown with exit code zero.
 
 #### Example
 
-Exact example from [event.lua](../blob/main/content/examples/event.lua):
+Source: [event.lua](../blob/main/content/examples/event.lua)
 
 ```lua
 do
@@ -385,13 +557,20 @@ end
 
 ### lurek.event.restart
 
-`lurek.event.restart()`
+#### Definition
+
+```lua
+--- Requests a full engine restart cycle from the runtime.
+lurek.event.restart = function() end
+```
+
+#### Description
 
 Requests a full engine restart cycle from the runtime.
 
 #### Example
 
-Exact example from [event.lua](../blob/main/content/examples/event.lua):
+Source: [event.lua](../blob/main/content/examples/event.lua)
 
 ```lua
 do
@@ -402,19 +581,30 @@ end
 
 ### lurek.event.wait
 
-`lurek.event.wait([timeout]: number) -> boolean`
+#### Definition
+
+```lua
+--- Waits for the next queued event and returns success, name, and argument table.
+---@param timeout? number Optional timeout in seconds.
+---@return boolean a True when an event was received before timeout.
+---@return string b Event name, or an empty string on timeout.
+---@return table c Array of event arguments; element types depend on the emitted event.
+lurek.event.wait = function(timeout) end
+```
+
+#### Description
 
 Waits for the next queued event and returns success, name, and argument table.
 
-**Parameters**
+Parameters:
 
 - `timeout` (`number`, optional): Optional timeout in seconds.
 
-**Returns**: `boolean` - True when an event was received before timeout.
+Returns: `boolean` - True when an event was received before timeout.
 
 #### Example
 
-Exact example from [event.lua](../blob/main/content/examples/event.lua):
+Source: [event.lua](../blob/main/content/examples/event.lua)
 
 ```lua
 do
@@ -431,9 +621,7 @@ end
 
 ### LSignal
 
-Lua-side signal object storing subscriptions and Lua callback registry keys.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side signal object storing subscriptions and Lua callback registry keys.
@@ -441,9 +629,13 @@ Lua-side signal object storing subscriptions and Lua callback registry keys.
 LSignal = {}
 ```
 
+#### Description
+
+Lua-side signal object storing subscriptions and Lua callback registry keys.
+
 #### Example
 
-Exact example from [event.lua](../blob/main/content/examples/event.lua):
+Source: [event.lua](../blob/main/content/examples/event.lua)
 
 ```lua
 do
@@ -459,17 +651,7 @@ end
 
 ### LSignal:clear
 
-`LSignal:clear(name: string) -> integer`
-
-Removes all callbacks registered for one exact signal event name.
-
-**Parameters**
-
-- `name` (`string`, required): Signal event name to clear.
-
-**Returns**: `integer` - Number of callbacks removed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes all callbacks registered for one exact signal event name.
@@ -478,9 +660,19 @@ Removes all callbacks registered for one exact signal event name.
 function LSignal:clear(name) end
 ```
 
+#### Description
+
+Removes all callbacks registered for one exact signal event name.
+
+Parameters:
+
+- `name` (`string`, required): Signal event name to clear.
+
+Returns: `integer` - Number of callbacks removed.
+
 #### Example
 
-Exact example from [event.lua](../blob/main/content/examples/event.lua):
+Source: [event.lua](../blob/main/content/examples/event.lua)
 
 ```lua
 do
@@ -494,13 +686,7 @@ end
 
 ### LSignal:clearAll
 
-`LSignal:clearAll() -> integer`
-
-Removes every callback from this signal object.
-
-**Returns**: `integer` - Number of callbacks removed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes every callback from this signal object.
@@ -508,9 +694,15 @@ Removes every callback from this signal object.
 function LSignal:clearAll() end
 ```
 
+#### Description
+
+Removes every callback from this signal object.
+
+Returns: `integer` - Number of callbacks removed.
+
 #### Example
 
-Exact example from [event.lua](../blob/main/content/examples/event.lua):
+Source: [event.lua](../blob/main/content/examples/event.lua)
 
 ```lua
 do
@@ -524,18 +716,7 @@ end
 
 ### LSignal:connect
 
-`LSignal:connect(name: string, func: function) -> integer`
-
-Registers a callback for an exact name or wildcard signal pattern.
-
-**Parameters**
-
-- `name` (`string`, required): Exact signal event name or wildcard pattern.
-- `func` (`function`, required): Lua function invoked with emitted signal arguments.
-
-**Returns**: `integer` - Subscription handle used for removal.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Registers a callback for an exact name or wildcard signal pattern.
@@ -545,9 +726,20 @@ Registers a callback for an exact name or wildcard signal pattern.
 function LSignal:connect(name, func) end
 ```
 
+#### Description
+
+Registers a callback for an exact name or wildcard signal pattern.
+
+Parameters:
+
+- `name` (`string`, required): Exact signal event name or wildcard pattern.
+- `func` (`function`, required): Lua function invoked with emitted signal arguments.
+
+Returns: `integer` - Subscription handle used for removal.
+
 #### Example
 
-Exact example from [event.lua](../blob/main/content/examples/event.lua):
+Source: [event.lua](../blob/main/content/examples/event.lua)
 
 ```lua
 do
@@ -561,16 +753,7 @@ end
 
 ### LSignal:emit
 
-`LSignal:emit(name: string, ...: any)`
-
-Emits a signal event and invokes matching callbacks with the remaining arguments.
-
-**Parameters**
-
-- `name` (`string`, required): Signal event name to emit.
-- `...` (`any`, required): Additional arguments passed to matching callbacks.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Emits a signal event and invokes matching callbacks with the remaining arguments.
@@ -579,9 +762,18 @@ Emits a signal event and invokes matching callbacks with the remaining arguments
 function LSignal:emit(name, ...) end
 ```
 
+#### Description
+
+Emits a signal event and invokes matching callbacks with the remaining arguments.
+
+Parameters:
+
+- `name` (`string`, required): Signal event name to emit.
+- `...` (`any`, required): Additional arguments passed to matching callbacks.
+
 #### Example
 
-Exact example from [event.lua](../blob/main/content/examples/event.lua):
+Source: [event.lua](../blob/main/content/examples/event.lua)
 
 ```lua
 do
@@ -595,17 +787,7 @@ end
 
 ### LSignal:getCount
 
-`LSignal:getCount(name: string) -> integer`
-
-Returns the callback count for one exact signal event name.
-
-**Parameters**
-
-- `name` (`string`, required): Signal event name.
-
-**Returns**: `integer` - Number of callbacks registered for the event.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the callback count for one exact signal event name.
@@ -614,9 +796,19 @@ Returns the callback count for one exact signal event name.
 function LSignal:getCount(name) end
 ```
 
+#### Description
+
+Returns the callback count for one exact signal event name.
+
+Parameters:
+
+- `name` (`string`, required): Signal event name.
+
+Returns: `integer` - Number of callbacks registered for the event.
+
 #### Example
 
-Exact example from [event.lua](../blob/main/content/examples/event.lua):
+Source: [event.lua](../blob/main/content/examples/event.lua)
 
 ```lua
 do
@@ -629,13 +821,7 @@ end
 
 ### LSignal:getTotalCount
 
-`LSignal:getTotalCount() -> integer`
-
-Returns the total callback count across all signal event names.
-
-**Returns**: `integer` - Total callback count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the total callback count across all signal event names.
@@ -643,9 +829,15 @@ Returns the total callback count across all signal event names.
 function LSignal:getTotalCount() end
 ```
 
+#### Description
+
+Returns the total callback count across all signal event names.
+
+Returns: `integer` - Total callback count.
+
 #### Example
 
-Exact example from [event.lua](../blob/main/content/examples/event.lua):
+Source: [event.lua](../blob/main/content/examples/event.lua)
 
 ```lua
 do
@@ -659,18 +851,7 @@ end
 
 ### LSignal:once
 
-`LSignal:once(name: string, callback: function) -> integer`
-
-Registers a callback that is removed after its next matching emission.
-
-**Parameters**
-
-- `name` (`string`, required): Signal event name.
-- `callback` (`function`, required): Lua function invoked once with emitted signal arguments.
-
-**Returns**: `integer` - Subscription handle used for removal before it fires.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Registers a callback that is removed after its next matching emission.
@@ -680,9 +861,20 @@ Registers a callback that is removed after its next matching emission.
 function LSignal:once(name, callback) end
 ```
 
+#### Description
+
+Registers a callback that is removed after its next matching emission.
+
+Parameters:
+
+- `name` (`string`, required): Signal event name.
+- `callback` (`function`, required): Lua function invoked once with emitted signal arguments.
+
+Returns: `integer` - Subscription handle used for removal before it fires.
+
 #### Example
 
-Exact example from [event.lua](../blob/main/content/examples/event.lua):
+Source: [event.lua](../blob/main/content/examples/event.lua)
 
 ```lua
 do
@@ -696,18 +888,7 @@ end
 
 ### LSignal:register
 
-`LSignal:register(name: string, callback: function) -> integer`
-
-Registers a callback for an exact signal event name.
-
-**Parameters**
-
-- `name` (`string`, required): Signal event name.
-- `callback` (`function`, required): Lua function invoked with emitted signal arguments.
-
-**Returns**: `integer` - Subscription handle used for removal.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Registers a callback for an exact signal event name.
@@ -717,9 +898,20 @@ Registers a callback for an exact signal event name.
 function LSignal:register(name, callback) end
 ```
 
+#### Description
+
+Registers a callback for an exact signal event name.
+
+Parameters:
+
+- `name` (`string`, required): Signal event name.
+- `callback` (`function`, required): Lua function invoked with emitted signal arguments.
+
+Returns: `integer` - Subscription handle used for removal.
+
 #### Example
 
-Exact example from [event.lua](../blob/main/content/examples/event.lua):
+Source: [event.lua](../blob/main/content/examples/event.lua)
 
 ```lua
 do
@@ -733,19 +925,7 @@ end
 
 ### LSignal:registerWithFilter
 
-`LSignal:registerWithFilter(name: string, callback: function, filter: function) -> integer`
-
-Registers a callback that runs only when a filter callback returns true.
-
-**Parameters**
-
-- `name` (`string`, required): Signal event name.
-- `callback` (`function`, required): Lua function invoked after the filter accepts the signal.
-- `filter` (`function`, required): Lua predicate called with emitted arguments.
-
-**Returns**: `integer` - Subscription handle used for removal.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Registers a callback that runs only when a filter callback returns true.
@@ -756,9 +936,21 @@ Registers a callback that runs only when a filter callback returns true.
 function LSignal:registerWithFilter(name, callback, filter) end
 ```
 
+#### Description
+
+Registers a callback that runs only when a filter callback returns true.
+
+Parameters:
+
+- `name` (`string`, required): Signal event name.
+- `callback` (`function`, required): Lua function invoked after the filter accepts the signal.
+- `filter` (`function`, required): Lua predicate called with emitted arguments.
+
+Returns: `integer` - Subscription handle used for removal.
+
 #### Example
 
-Exact example from [event.lua](../blob/main/content/examples/event.lua):
+Source: [event.lua](../blob/main/content/examples/event.lua)
 
 ```lua
 do
@@ -770,17 +962,7 @@ end
 
 ### LSignal:remove
 
-`LSignal:remove(handle: integer) -> boolean`
-
-Removes a signal callback by subscription handle.
-
-**Parameters**
-
-- `handle` (`integer`, required): Subscription handle returned by registration.
-
-**Returns**: `boolean` - True when a callback was removed.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Removes a signal callback by subscription handle.
@@ -789,9 +971,19 @@ Removes a signal callback by subscription handle.
 function LSignal:remove(handle) end
 ```
 
+#### Description
+
+Removes a signal callback by subscription handle.
+
+Parameters:
+
+- `handle` (`integer`, required): Subscription handle returned by registration.
+
+Returns: `boolean` - True when a callback was removed.
+
 #### Example
 
-Exact example from [event.lua](../blob/main/content/examples/event.lua):
+Source: [event.lua](../blob/main/content/examples/event.lua)
 
 ```lua
 do
@@ -804,13 +996,7 @@ end
 
 ### LSignal:type
 
-`LSignal:type() -> string`
-
-Returns the Lua-visible type name for this signal handle.
-
-**Returns**: `string` - The string `LSignal`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this signal handle.
@@ -818,9 +1004,15 @@ Returns the Lua-visible type name for this signal handle.
 function LSignal:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this signal handle.
+
+Returns: `string` - The string `LSignal`.
+
 #### Example
 
-Exact example from [event.lua](../blob/main/content/examples/event.lua):
+Source: [event.lua](../blob/main/content/examples/event.lua)
 
 ```lua
 do
@@ -831,17 +1023,7 @@ end
 
 ### LSignal:typeOf
 
-`LSignal:typeOf(name: string) -> boolean`
-
-Returns whether this signal handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LSignal`, `Signal`, and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this signal handle matches a supported type name.
@@ -850,9 +1032,19 @@ Returns whether this signal handle matches a supported type name.
 function LSignal:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this signal handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LSignal`, `Signal`, and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [event.lua](../blob/main/content/examples/event.lua):
+Source: [event.lua](../blob/main/content/examples/event.lua)
 
 ```lua
 do

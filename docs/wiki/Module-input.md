@@ -14,108 +14,310 @@
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
   - [lurek.input.advancePlayback](#lurekinputadvanceplayback)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.bind](#lurekinputbind)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.clearBindings](#lurekinputclearbindings)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.gamepad.getAxis](#lurekinputgamepadgetaxis)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.gamepad.getAxisCount](#lurekinputgamepadgetaxiscount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.gamepad.getBackgroundEvents](#lurekinputgamepadgetbackgroundevents)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.getBindings](#lurekinputgetbindings)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.gamepad.getButtonCount](#lurekinputgamepadgetbuttoncount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.gamepad.getCount](#lurekinputgamepadgetcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.mouse.getCursor](#lurekinputmousegetcursor)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.gamepad.getGamepadMappingString](#lurekinputgamepadgetgamepadmappingstring)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.gamepad.getGUID](#lurekinputgamepadgetguid)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.gamepad.getHat](#lurekinputgamepadgethat)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.gamepad.getJoystickCount](#lurekinputgamepadgetjoystickcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.gamepad.getJoysticks](#lurekinputgamepadgetjoysticks)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.keyboard.getKeyFromScancode](#lurekinputkeyboardgetkeyfromscancode)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.gamepad.getName](#lurekinputgamepadgetname)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.getPlaybackFrame](#lurekinputgetplaybackframe)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.mouse.getPosition](#lurekinputmousegetposition)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.touch.getPosition](#lurekinputtouchgetposition)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.touch.getPressure](#lurekinputtouchgetpressure)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.mouse.getRelativeMode](#lurekinputmousegetrelativemode)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.keyboard.getScancodeFromKey](#lurekinputkeyboardgetscancodefromkey)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.mouse.getSystemCursor](#lurekinputmousegetsystemcursor)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.touch.getTouchCount](#lurekinputtouchgettouchcount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.touch.getTouches](#lurekinputtouchgettouches)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.mouse.getWheelDelta](#lurekinputmousegetwheeldelta)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.mouse.getX](#lurekinputmousegetx)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.mouse.getY](#lurekinputmousegety)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.keyboard.hasKeyRepeat](#lurekinputkeyboardhaskeyrepeat)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.keyboard.hasTextInput](#lurekinputkeyboardhastextinput)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.isActionDown](#lurekinputisactiondown)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.gamepad.isConnected](#lurekinputgamepadisconnected)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.mouse.isCursorSupported](#lurekinputmouseiscursorsupported)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.gamepad.isDown](#lurekinputgamepadisdown)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.isDown](#lurekinputisdown)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.keyboard.isDown](#lurekinputkeyboardisdown)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.mouse.isDown](#lurekinputmouseisdown)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.gamepad.isGamepad](#lurekinputgamepadisgamepad)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.mouse.isGrabbed](#lurekinputmouseisgrabbed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.keyboard.isModifierActive](#lurekinputkeyboardismodifieractive)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.isPlayingBack](#lurekinputisplayingback)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.isRecording](#lurekinputisrecording)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.keyboard.isScancodeDown](#lurekinputkeyboardisscancodedown)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.gamepad.isVibrationSupported](#lurekinputgamepadisvibrationsupported)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.mouse.isVisible](#lurekinputmouseisvisible)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.gamepad.loadGamepadMappings](#lurekinputgamepadloadgamepadmappings)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.loadRecording](#lurekinputloadrecording)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.newCombo](#lurekinputnewcombo)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.mouse.newCursor](#lurekinputmousenewcursor)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.newMapping](#lurekinputnewmapping)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.gamepad.saveGamepadMappings](#lurekinputgamepadsavegamepadmappings)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.gamepad.setBackgroundEvents](#lurekinputgamepadsetbackgroundevents)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.mouse.setCursor](#lurekinputmousesetcursor)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.gamepad.setGamepadMapping](#lurekinputgamepadsetgamepadmapping)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.mouse.setGrabbed](#lurekinputmousesetgrabbed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.keyboard.setKeyRepeat](#lurekinputkeyboardsetkeyrepeat)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.mouse.setPosition](#lurekinputmousesetposition)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.mouse.setRelativeMode](#lurekinputmousesetrelativemode)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.keyboard.setTextInput](#lurekinputkeyboardsettextinput)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.gamepad.setVibration](#lurekinputgamepadsetvibration)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.mouse.setVisible](#lurekinputmousesetvisible)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.startPlayback](#lurekinputstartplayback)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.startRecording](#lurekinputstartrecording)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.stopPlayback](#lurekinputstopplayback)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.stopRecording](#lurekinputstoprecording)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.unbind](#lurekinputunbind)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.gamepad.vibrate](#lurekinputgamepadvibrate)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.gamepad.virtualDpad](#lurekinputgamepadvirtualdpad)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.wasActionPressed](#lurekinputwasactionpressed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.wasActionPressedWithin](#lurekinputwasactionpressedwithin)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.wasActionReleased](#lurekinputwasactionreleased)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.gamepad.wasConnected](#lurekinputgamepadwasconnected)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.gamepad.wasDisconnected](#lurekinputgamepadwasdisconnected)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.gamepad.wasPressed](#lurekinputgamepadwaspressed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.touch.wasPressed](#lurekinputtouchwaspressed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.wasPressed](#lurekinputwaspressed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.gamepad.wasReleased](#lurekinputgamepadwasreleased)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.touch.wasReleased](#lurekinputtouchwasreleased)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.input.wasReleased](#lurekinputwasreleased)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔷 Module Types](#module-types)
   - [LCombo](#lcombo)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCursor](#lcursor)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LInputRecording](#linputrecording)
+    - [Definition](#definition)
+    - [Description](#description)
 - [🔹 Module Methods](#module-methods)
   - [LCombo:feed](#lcombofeed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCombo:getStep](#lcombogetstep)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCombo:isInProgress](#lcomboisinprogress)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCombo:progress](#lcomboprogress)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCombo:reset](#lcomboreset)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCombo:tick](#lcombotick)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCombo:totalSteps](#lcombototalsteps)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCombo:type](#lcombotype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCombo:typeOf](#lcombotypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCursor:getType](#lcursorgettype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCursor:release](#lcursorrelease)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCursor:type](#lcursortype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LCursor:typeOf](#lcursortypeof)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LInputRecording:frameCount](#linputrecordingframecount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LInputRecording:toJson](#linputrecordingtojson)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LInputRecording:totalFrames](#linputrecordingtotalframes)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LInputRecording:type](#linputrecordingtype)
+    - [Definition](#definition)
+    - [Description](#description)
   - [LInputRecording:typeOf](#linputrecordingtypeof)
+    - [Definition](#definition)
+    - [Description](#description)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -179,15 +381,23 @@ lurek.input.getPlaybackFrame() -> integer -- Returns the current playback frame 
 
 ### lurek.input.advancePlayback
 
-`lurek.input.advancePlayback() -> table`
+#### Definition
+
+```lua
+--- Advances playback by one frame and returns events for that frame.
+---@return InputAdvancePlaybackResult Array of event records with `kind` and `name` fields.
+lurek.input.advancePlayback = function() end
+```
+
+#### Description
 
 Advances playback by one frame and returns events for that frame.
 
-**Returns**: `table` - Array of event records with `kind` and `name` fields.
+Returns: `table` - Array of event records with `kind` and `name` fields.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -202,18 +412,27 @@ end
 
 ### lurek.input.bind
 
-`lurek.input.bind(action: string, keys: any)`
+#### Definition
+
+```lua
+--- Adds one or more keyboard/gamepad bindings to an action.
+---@param action string Action name.
+---@param keys any Binding string or array table of binding strings.
+lurek.input.bind = function(action, keys) end
+```
+
+#### Description
 
 Adds one or more keyboard/gamepad bindings to an action.
 
-**Parameters**
+Parameters:
 
 - `action` (`string`, required): Action name.
 - `keys` (`any`, required): Binding string or array table of binding strings.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -225,13 +444,20 @@ end
 
 ### lurek.input.clearBindings
 
-`lurek.input.clearBindings()`
+#### Definition
+
+```lua
+--- Removes all action bindings from the map.
+lurek.input.clearBindings = function() end
+```
+
+#### Description
 
 Removes all action bindings from the map.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -244,20 +470,30 @@ end
 
 ### lurek.input.gamepad.getAxis
 
-`lurek.input.gamepad.getAxis(id: integer, axis: integer) -> number`
+#### Definition
+
+```lua
+--- Returns a gamepad axis value by index.
+---@param id number Gamepad id.
+---@param axis number Axis index.
+---@return number Axis value, or zero when missing.
+lurek.input.gamepad.getAxis = function(id, axis) end
+```
+
+#### Description
 
 Returns a gamepad axis value by index.
 
-**Parameters**
+Parameters:
 
 - `id` (`integer`, required): Gamepad id.
 - `axis` (`integer`, required): Axis index.
 
-**Returns**: `number` - Axis value, or zero when missing.
+Returns: `number` - Axis value, or zero when missing.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -268,19 +504,28 @@ end
 
 ### lurek.input.gamepad.getAxisCount
 
-`lurek.input.gamepad.getAxisCount(id: integer) -> integer`
+#### Definition
+
+```lua
+--- Returns the axis count for a gamepad.
+---@param id number Gamepad id.
+---@return number Axis count, or zero when missing.
+lurek.input.gamepad.getAxisCount = function(id) end
+```
+
+#### Description
 
 Returns the axis count for a gamepad.
 
-**Parameters**
+Parameters:
 
 - `id` (`integer`, required): Gamepad id.
 
-**Returns**: `integer` - Axis count, or zero when missing.
+Returns: `integer` - Axis count, or zero when missing.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -291,15 +536,23 @@ end
 
 ### lurek.input.gamepad.getBackgroundEvents
 
-`lurek.input.gamepad.getBackgroundEvents() -> boolean`
+#### Definition
+
+```lua
+--- Returns whether background gamepad event processing is enabled.
+---@return boolean True when background events are enabled.
+lurek.input.gamepad.getBackgroundEvents = function() end
+```
+
+#### Description
 
 Returns whether background gamepad event processing is enabled.
 
-**Returns**: `boolean` - True when background events are enabled.
+Returns: `boolean` - True when background events are enabled.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -311,15 +564,23 @@ end
 
 ### lurek.input.getBindings
 
-`lurek.input.getBindings() -> string[]`
+#### Definition
+
+```lua
+--- Returns all registered action bindings.
+---@return string[] Map table from action names to arrays of binding strings.
+lurek.input.getBindings = function() end
+```
+
+#### Description
 
 Returns all registered action bindings.
 
-**Returns**: `string[]` - Map table from action names to arrays of binding strings.
+Returns: `string[]` - Map table from action names to arrays of binding strings.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -331,19 +592,28 @@ end
 
 ### lurek.input.gamepad.getButtonCount
 
-`lurek.input.gamepad.getButtonCount(id: integer) -> integer`
+#### Definition
+
+```lua
+--- Returns the button count for a gamepad.
+---@param id number Gamepad id.
+---@return number Button count, or zero when missing.
+lurek.input.gamepad.getButtonCount = function(id) end
+```
+
+#### Description
 
 Returns the button count for a gamepad.
 
-**Parameters**
+Parameters:
 
 - `id` (`integer`, required): Gamepad id.
 
-**Returns**: `integer` - Button count, or zero when missing.
+Returns: `integer` - Button count, or zero when missing.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -354,15 +624,23 @@ end
 
 ### lurek.input.gamepad.getCount
 
-`lurek.input.gamepad.getCount() -> integer`
+#### Definition
+
+```lua
+--- Returns the number of gamepad slots tracked by the runtime.
+---@return number Gamepad slot count.
+lurek.input.gamepad.getCount = function() end
+```
+
+#### Description
 
 Returns the number of gamepad slots tracked by the runtime.
 
-**Returns**: `integer` - Gamepad slot count.
+Returns: `integer` - Gamepad slot count.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -373,15 +651,23 @@ end
 
 ### lurek.input.mouse.getCursor
 
-`lurek.input.mouse.getCursor() -> string`
+#### Definition
+
+```lua
+--- Returns the current system cursor name.
+---@return string Current cursor name.
+lurek.input.mouse.getCursor = function() end
+```
+
+#### Description
 
 Returns the current system cursor name.
 
-**Returns**: `string` - Current cursor name.
+Returns: `string` - Current cursor name.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -392,19 +678,28 @@ end
 
 ### lurek.input.gamepad.getGamepadMappingString
 
-`lurek.input.gamepad.getGamepadMappingString(guid: string) -> string`
+#### Definition
+
+```lua
+--- Returns a stored mapping string for a gamepad GUID.
+---@param guid string Gamepad GUID.
+---@return string Mapping string, or nil when no mapping exists.
+lurek.input.gamepad.getGamepadMappingString = function(guid) end
+```
+
+#### Description
 
 Returns a stored mapping string for a gamepad GUID.
 
-**Parameters**
+Parameters:
 
 - `guid` (`string`, required): Gamepad GUID.
 
-**Returns**: `string` - Mapping string, or nil when no mapping exists.
+Returns: `string` - Mapping string, or nil when no mapping exists.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -417,19 +712,28 @@ end
 
 ### lurek.input.gamepad.getGUID
 
-`lurek.input.gamepad.getGUID(id: integer) -> string`
+#### Definition
+
+```lua
+--- Returns the GUID string for a gamepad.
+---@param id number Gamepad id.
+---@return string GUID string, or an empty string when missing.
+lurek.input.gamepad.getGUID = function(id) end
+```
+
+#### Description
 
 Returns the GUID string for a gamepad.
 
-**Parameters**
+Parameters:
 
 - `id` (`integer`, required): Gamepad id.
 
-**Returns**: `string` - GUID string, or an empty string when missing.
+Returns: `string` - GUID string, or an empty string when missing.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -440,20 +744,30 @@ end
 
 ### lurek.input.gamepad.getHat
 
-`lurek.input.gamepad.getHat(id: integer, hat: integer) -> string`
+#### Definition
+
+```lua
+--- Returns hat direction for a gamepad hat index.
+---@param id number Gamepad id.
+---@param hat number Hat index.
+---@return string Hat direction string, or `c` when centered or missing.
+lurek.input.gamepad.getHat = function(id, hat) end
+```
+
+#### Description
 
 Returns hat direction for a gamepad hat index.
 
-**Parameters**
+Parameters:
 
 - `id` (`integer`, required): Gamepad id.
 - `hat` (`integer`, required): Hat index.
 
-**Returns**: `string` - Hat direction string, or `c` when centered or missing.
+Returns: `string` - Hat direction string, or `c` when centered or missing.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -464,15 +778,23 @@ end
 
 ### lurek.input.gamepad.getJoystickCount
 
-`lurek.input.gamepad.getJoystickCount() -> integer`
+#### Definition
+
+```lua
+--- Returns the number of joystick slots tracked by the runtime.
+---@return number Joystick slot count.
+lurek.input.gamepad.getJoystickCount = function() end
+```
+
+#### Description
 
 Returns the number of joystick slots tracked by the runtime.
 
-**Returns**: `integer` - Joystick slot count.
+Returns: `integer` - Joystick slot count.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -484,15 +806,23 @@ end
 
 ### lurek.input.gamepad.getJoysticks
 
-`lurek.input.gamepad.getJoysticks() -> integer[]`
+#### Definition
+
+```lua
+--- Returns ids for currently connected gamepads.
+---@return number[] Array table of connected gamepad ids.
+lurek.input.gamepad.getJoysticks = function() end
+```
+
+#### Description
 
 Returns ids for currently connected gamepads.
 
-**Returns**: `integer[]` - Array table of connected gamepad ids.
+Returns: `integer[]` - Array table of connected gamepad ids.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -504,19 +834,28 @@ end
 
 ### lurek.input.keyboard.getKeyFromScancode
 
-`lurek.input.keyboard.getKeyFromScancode(scancode: string) -> string`
+#### Definition
+
+```lua
+--- Converts a scancode name to its key name when known.
+---@param scancode string Scancode name.
+---@return string Key string, or nil when unknown.
+lurek.input.keyboard.getKeyFromScancode = function(scancode) end
+```
+
+#### Description
 
 Converts a scancode name to its key name when known.
 
-**Parameters**
+Parameters:
 
 - `scancode` (`string`, required): Scancode name.
 
-**Returns**: `string` - Key string, or nil when unknown.
+Returns: `string` - Key string, or nil when unknown.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -527,19 +866,28 @@ end
 
 ### lurek.input.gamepad.getName
 
-`lurek.input.gamepad.getName(id: integer) -> string`
+#### Definition
+
+```lua
+--- Returns a gamepad display name by its id.
+---@param id number Gamepad id.
+---@return string Gamepad name, or `Unknown` when missing.
+lurek.input.gamepad.getName = function(id) end
+```
+
+#### Description
 
 Returns a gamepad display name by its id.
 
-**Parameters**
+Parameters:
 
 - `id` (`integer`, required): Gamepad id.
 
-**Returns**: `string` - Gamepad name, or `Unknown` when missing.
+Returns: `string` - Gamepad name, or `Unknown` when missing.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -550,15 +898,23 @@ end
 
 ### lurek.input.getPlaybackFrame
 
-`lurek.input.getPlaybackFrame() -> integer`
+#### Definition
+
+```lua
+--- Returns the current playback frame index.
+---@return number Playback frame index.
+lurek.input.getPlaybackFrame = function() end
+```
+
+#### Description
 
 Returns the current playback frame index.
 
-**Returns**: `integer` - Playback frame index.
+Returns: `integer` - Playback frame index.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -569,15 +925,24 @@ end
 
 ### lurek.input.mouse.getPosition
 
-`lurek.input.mouse.getPosition() -> number`
+#### Definition
+
+```lua
+--- Returns the current mouse position.
+---@return number a Mouse x coordinate.
+---@return number b Mouse y coordinate.
+lurek.input.mouse.getPosition = function() end
+```
+
+#### Description
 
 Returns the current mouse position.
 
-**Returns**: `number` - Mouse x coordinate.
+Returns: `number` - Mouse x coordinate.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -588,19 +953,29 @@ end
 
 ### lurek.input.touch.getPosition
 
-`lurek.input.touch.getPosition(id: integer) -> number`
+#### Definition
+
+```lua
+--- Returns the position of a touch point by id.
+---@param id number Touch id.
+---@return number a Touch x coordinate, or 0 when missing.
+---@return number b Touch y coordinate, or 0 when missing.
+lurek.input.touch.getPosition = function(id) end
+```
+
+#### Description
 
 Returns the position of a touch point by id.
 
-**Parameters**
+Parameters:
 
 - `id` (`integer`, required): Touch id.
 
-**Returns**: `number` - Touch x coordinate, or 0 when missing.
+Returns: `number` - Touch x coordinate, or 0 when missing.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -611,19 +986,28 @@ end
 
 ### lurek.input.touch.getPressure
 
-`lurek.input.touch.getPressure(id: integer) -> number`
+#### Definition
+
+```lua
+--- Returns pressure for a touch point by its id.
+---@param id number Touch id.
+---@return number Touch pressure, or 0 when missing.
+lurek.input.touch.getPressure = function(id) end
+```
+
+#### Description
 
 Returns pressure for a touch point by its id.
 
-**Parameters**
+Parameters:
 
 - `id` (`integer`, required): Touch id.
 
-**Returns**: `number` - Touch pressure, or 0 when missing.
+Returns: `number` - Touch pressure, or 0 when missing.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -634,15 +1018,23 @@ end
 
 ### lurek.input.mouse.getRelativeMode
 
-`lurek.input.mouse.getRelativeMode() -> boolean`
+#### Definition
+
+```lua
+--- Returns whether relative mouse mode is enabled.
+---@return boolean True when relative mode is enabled.
+lurek.input.mouse.getRelativeMode = function() end
+```
+
+#### Description
 
 Returns whether relative mouse mode is enabled.
 
-**Returns**: `boolean` - True when relative mode is enabled.
+Returns: `boolean` - True when relative mode is enabled.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -652,19 +1044,28 @@ end
 
 ### lurek.input.keyboard.getScancodeFromKey
 
-`lurek.input.keyboard.getScancodeFromKey(key: string) -> string`
+#### Definition
+
+```lua
+--- Converts a key name to its scancode name when known.
+---@param key string Key name.
+---@return string Scancode string, or nil when unknown.
+lurek.input.keyboard.getScancodeFromKey = function(key) end
+```
+
+#### Description
 
 Converts a key name to its scancode name when known.
 
-**Parameters**
+Parameters:
 
 - `key` (`string`, required): Key name.
 
-**Returns**: `string` - Scancode string, or nil when unknown.
+Returns: `string` - Scancode string, or nil when unknown.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -675,19 +1076,28 @@ end
 
 ### lurek.input.mouse.getSystemCursor
 
-`lurek.input.mouse.getSystemCursor(name: string) -> LCursor`
+#### Definition
+
+```lua
+--- Creates a system cursor handle from a cursor name.
+---@param name string System cursor name.
+---@return LCursor System cursor handle.
+lurek.input.mouse.getSystemCursor = function(name) end
+```
+
+#### Description
 
 Creates a system cursor handle from a cursor name.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, required): System cursor name.
 
-**Returns**: `LCursor` - System cursor handle.
+Returns: `LCursor` - System cursor handle.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -698,15 +1108,23 @@ end
 
 ### lurek.input.touch.getTouchCount
 
-`lurek.input.touch.getTouchCount() -> integer`
+#### Definition
+
+```lua
+--- Returns the current active touch count.
+---@return number Active touch count.
+lurek.input.touch.getTouchCount = function() end
+```
+
+#### Description
 
 Returns the current active touch count.
 
-**Returns**: `integer` - Active touch count.
+Returns: `integer` - Active touch count.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -717,15 +1135,23 @@ end
 
 ### lurek.input.touch.getTouches
 
-`lurek.input.touch.getTouches() -> table`
+#### Definition
+
+```lua
+--- Returns active touch points with id, position, and pressure.
+---@return TouchGetTouchesResult Array table of touch records.
+lurek.input.touch.getTouches = function() end
+```
+
+#### Description
 
 Returns active touch points with id, position, and pressure.
 
-**Returns**: `table` - Array table of touch records.
+Returns: `table` - Array table of touch records.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -736,15 +1162,24 @@ end
 
 ### lurek.input.mouse.getWheelDelta
 
-`lurek.input.mouse.getWheelDelta() -> number`
+#### Definition
+
+```lua
+--- Returns the current mouse wheel delta.
+---@return number a Horizontal wheel delta.
+---@return number b Vertical wheel delta.
+lurek.input.mouse.getWheelDelta = function() end
+```
+
+#### Description
 
 Returns the current mouse wheel delta.
 
-**Returns**: `number` - Horizontal wheel delta.
+Returns: `number` - Horizontal wheel delta.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -755,15 +1190,23 @@ end
 
 ### lurek.input.mouse.getX
 
-`lurek.input.mouse.getX() -> number`
+#### Definition
+
+```lua
+--- Returns the current mouse x coordinate.
+---@return number Mouse x coordinate.
+lurek.input.mouse.getX = function() end
+```
+
+#### Description
 
 Returns the current mouse x coordinate.
 
-**Returns**: `number` - Mouse x coordinate.
+Returns: `number` - Mouse x coordinate.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -774,15 +1217,23 @@ end
 
 ### lurek.input.mouse.getY
 
-`lurek.input.mouse.getY() -> number`
+#### Definition
+
+```lua
+--- Returns the current mouse y coordinate.
+---@return number Mouse y coordinate.
+lurek.input.mouse.getY = function() end
+```
+
+#### Description
 
 Returns the current mouse y coordinate.
 
-**Returns**: `number` - Mouse y coordinate.
+Returns: `number` - Mouse y coordinate.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -793,15 +1244,23 @@ end
 
 ### lurek.input.keyboard.hasKeyRepeat
 
-`lurek.input.keyboard.hasKeyRepeat() -> boolean`
+#### Definition
+
+```lua
+--- Returns whether key repeat tracking is enabled.
+---@return boolean True when key repeat is enabled.
+lurek.input.keyboard.hasKeyRepeat = function() end
+```
+
+#### Description
 
 Returns whether key repeat tracking is enabled.
 
-**Returns**: `boolean` - True when key repeat is enabled.
+Returns: `boolean` - True when key repeat is enabled.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -856,15 +1315,23 @@ do
 
 ### lurek.input.keyboard.hasTextInput
 
-`lurek.input.keyboard.hasTextInput() -> boolean`
+#### Definition
+
+```lua
+--- Returns whether text input tracking is enabled.
+---@return boolean True when text input is enabled.
+lurek.input.keyboard.hasTextInput = function() end
+```
+
+#### Description
 
 Returns whether text input tracking is enabled.
 
-**Returns**: `boolean` - True when text input is enabled.
+Returns: `boolean` - True when text input is enabled.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -874,19 +1341,28 @@ end
 
 ### lurek.input.isActionDown
 
-`lurek.input.isActionDown(action: string) -> boolean`
+#### Definition
+
+```lua
+--- Returns whether any binding for an action is currently down.
+---@param action string Action name.
+---@return boolean True when any binding is down.
+lurek.input.isActionDown = function(action) end
+```
+
+#### Description
 
 Returns whether any binding for an action is currently down.
 
-**Parameters**
+Parameters:
 
 - `action` (`string`, required): Action name.
 
-**Returns**: `boolean` - True when any binding is down.
+Returns: `boolean` - True when any binding is down.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -898,19 +1374,28 @@ end
 
 ### lurek.input.gamepad.isConnected
 
-`lurek.input.gamepad.isConnected(id: integer) -> boolean`
+#### Definition
+
+```lua
+--- Returns whether a gamepad id is currently connected.
+---@param id number Gamepad id.
+---@return boolean True when the gamepad is connected.
+lurek.input.gamepad.isConnected = function(id) end
+```
+
+#### Description
 
 Returns whether a gamepad id is currently connected.
 
-**Parameters**
+Parameters:
 
 - `id` (`integer`, required): Gamepad id.
 
-**Returns**: `boolean` - True when the gamepad is connected.
+Returns: `boolean` - True when the gamepad is connected.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -921,15 +1406,23 @@ end
 
 ### lurek.input.mouse.isCursorSupported
 
-`lurek.input.mouse.isCursorSupported() -> boolean`
+#### Definition
+
+```lua
+--- Returns whether the current platform supports cursor changes.
+---@return boolean True when cursor changes are supported.
+lurek.input.mouse.isCursorSupported = function() end
+```
+
+#### Description
 
 Returns whether the current platform supports cursor changes.
 
-**Returns**: `boolean` - True when cursor changes are supported.
+Returns: `boolean` - True when cursor changes are supported.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -939,20 +1432,30 @@ end
 
 ### lurek.input.gamepad.isDown
 
-`lurek.input.gamepad.isDown(id: integer, button: integer) -> boolean`
+#### Definition
+
+```lua
+--- Returns whether a gamepad button is currently down.
+---@param id number Gamepad id.
+---@param button number Button index.
+---@return boolean True when the button is down.
+lurek.input.gamepad.isDown = function(id, button) end
+```
+
+#### Description
 
 Returns whether a gamepad button is currently down.
 
-**Parameters**
+Parameters:
 
 - `id` (`integer`, required): Gamepad id.
 - `button` (`integer`, required): Button index.
 
-**Returns**: `boolean` - True when the button is down.
+Returns: `boolean` - True when the button is down.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -963,15 +1466,23 @@ end
 
 ### lurek.input.isDown
 
-`lurek.input.isDown() -> boolean`
+#### Definition
+
+```lua
+--- Returns whether any bound key for this mapping is currently down.
+---@return boolean True when any bound key is down.
+lurek.input.isDown = function() end
+```
+
+#### Description
 
 Returns whether any bound key for this mapping is currently down.
 
-**Returns**: `boolean` - True when any bound key is down.
+Returns: `boolean` - True when any bound key is down.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -1026,19 +1537,28 @@ do
 
 ### lurek.input.keyboard.isDown
 
-`lurek.input.keyboard.isDown(...: string) -> boolean`
+#### Definition
+
+```lua
+--- Returns whether any of the supplied key names are currently held down.
+---@param ... string One or more key name strings (e.g. `"space"`, `"w"`, `"up"`). At least one required.
+---@return boolean `true` if any of the given keys is currently pressed.
+lurek.input.keyboard.isDown = function(...) end
+```
+
+#### Description
 
 Returns whether any of the supplied key names are currently held down.
 
-**Parameters**
+Parameters:
 
 - `...` (`string`, required): One or more key name strings (e.g. `"space"`, `"w"`, `"up"`). At least one required.
 
-**Returns**: `boolean` - `true` if any of the given keys is currently pressed.
+Returns: `boolean` - `true` if any of the given keys is currently pressed.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -1049,19 +1569,28 @@ end
 
 ### lurek.input.mouse.isDown
 
-`lurek.input.mouse.isDown(button: integer) -> boolean`
+#### Definition
+
+```lua
+--- Returns whether a one-based mouse button index is down.
+---@param button number One-based mouse button index.
+---@return boolean True when the button is down.
+lurek.input.mouse.isDown = function(button) end
+```
+
+#### Description
 
 Returns whether a one-based mouse button index is down.
 
-**Parameters**
+Parameters:
 
 - `button` (`integer`, required): One-based mouse button index.
 
-**Returns**: `boolean` - True when the button is down.
+Returns: `boolean` - True when the button is down.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -1073,19 +1602,28 @@ end
 
 ### lurek.input.gamepad.isGamepad
 
-`lurek.input.gamepad.isGamepad(id: integer) -> boolean`
+#### Definition
+
+```lua
+--- Returns whether a connected gamepad exists at an id.
+---@param id number Gamepad id.
+---@return boolean True when the id is a connected gamepad.
+lurek.input.gamepad.isGamepad = function(id) end
+```
+
+#### Description
 
 Returns whether a connected gamepad exists at an id.
 
-**Parameters**
+Parameters:
 
 - `id` (`integer`, required): Gamepad id.
 
-**Returns**: `boolean` - True when the id is a connected gamepad.
+Returns: `boolean` - True when the id is a connected gamepad.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -1096,15 +1634,23 @@ end
 
 ### lurek.input.mouse.isGrabbed
 
-`lurek.input.mouse.isGrabbed() -> boolean`
+#### Definition
+
+```lua
+--- Returns whether the mouse is grabbed by the window.
+---@return boolean True when the mouse is grabbed.
+lurek.input.mouse.isGrabbed = function() end
+```
+
+#### Description
 
 Returns whether the mouse is grabbed by the window.
 
-**Returns**: `boolean` - True when the mouse is grabbed.
+Returns: `boolean` - True when the mouse is grabbed.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -1114,19 +1660,28 @@ end
 
 ### lurek.input.keyboard.isModifierActive
 
-`lurek.input.keyboard.isModifierActive(modifier: string) -> boolean`
+#### Definition
+
+```lua
+--- Returns whether a named keyboard modifier is active.
+---@param modifier string Modifier name such as shift, ctrl, alt, or gui.
+---@return boolean True when the modifier is active.
+lurek.input.keyboard.isModifierActive = function(modifier) end
+```
+
+#### Description
 
 Returns whether a named keyboard modifier is active.
 
-**Parameters**
+Parameters:
 
 - `modifier` (`string`, required): Modifier name such as shift, ctrl, alt, or gui.
 
-**Returns**: `boolean` - True when the modifier is active.
+Returns: `boolean` - True when the modifier is active.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -1138,15 +1693,23 @@ end
 
 ### lurek.input.isPlayingBack
 
-`lurek.input.isPlayingBack() -> boolean`
+#### Definition
+
+```lua
+--- Returns whether the module recorder is currently playing back.
+---@return boolean True when playback is active.
+lurek.input.isPlayingBack = function() end
+```
+
+#### Description
 
 Returns whether the module recorder is currently playing back.
 
-**Returns**: `boolean` - True when playback is active.
+Returns: `boolean` - True when playback is active.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -1160,15 +1723,23 @@ end
 
 ### lurek.input.isRecording
 
-`lurek.input.isRecording() -> boolean`
+#### Definition
+
+```lua
+--- Returns whether the module recorder is currently recording.
+---@return boolean True when recording is active.
+lurek.input.isRecording = function() end
+```
+
+#### Description
 
 Returns whether the module recorder is currently recording.
 
-**Returns**: `boolean` - True when recording is active.
+Returns: `boolean` - True when recording is active.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -1179,19 +1750,28 @@ end
 
 ### lurek.input.keyboard.isScancodeDown
 
-`lurek.input.keyboard.isScancodeDown(scancode: string) -> boolean`
+#### Definition
+
+```lua
+--- Returns whether a scancode is currently down.
+---@param scancode string Keyboard scancode name.
+---@return boolean True when the scancode is down.
+lurek.input.keyboard.isScancodeDown = function(scancode) end
+```
+
+#### Description
 
 Returns whether a scancode is currently down.
 
-**Parameters**
+Parameters:
 
 - `scancode` (`string`, required): Keyboard scancode name.
 
-**Returns**: `boolean` - True when the scancode is down.
+Returns: `boolean` - True when the scancode is down.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -1202,19 +1782,28 @@ end
 
 ### lurek.input.gamepad.isVibrationSupported
 
-`lurek.input.gamepad.isVibrationSupported(id: integer) -> boolean`
+#### Definition
+
+```lua
+--- Returns whether a gamepad supports vibration requests.
+---@param id number Gamepad id.
+---@return boolean True when vibration is supported.
+lurek.input.gamepad.isVibrationSupported = function(id) end
+```
+
+#### Description
 
 Returns whether a gamepad supports vibration requests.
 
-**Parameters**
+Parameters:
 
 - `id` (`integer`, required): Gamepad id.
 
-**Returns**: `boolean` - True when vibration is supported.
+Returns: `boolean` - True when vibration is supported.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -1225,15 +1814,23 @@ end
 
 ### lurek.input.mouse.isVisible
 
-`lurek.input.mouse.isVisible() -> boolean`
+#### Definition
+
+```lua
+--- Returns whether the mouse cursor is visible.
+---@return boolean True when the cursor is visible.
+lurek.input.mouse.isVisible = function() end
+```
+
+#### Description
 
 Returns whether the mouse cursor is visible.
 
-**Returns**: `boolean` - True when the cursor is visible.
+Returns: `boolean` - True when the cursor is visible.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -1243,17 +1840,25 @@ end
 
 ### lurek.input.gamepad.loadGamepadMappings
 
-`lurek.input.gamepad.loadGamepadMappings(path: string)`
+#### Definition
+
+```lua
+--- Loads gamepad mapping strings from a file.
+---@param path string Mapping file path.
+lurek.input.gamepad.loadGamepadMappings = function(path) end
+```
+
+#### Description
 
 Loads gamepad mapping strings from a file.
 
-**Parameters**
+Parameters:
 
 - `path` (`string`, required): Mapping file path.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -1267,17 +1872,25 @@ end
 
 ### lurek.input.loadRecording
 
-`lurek.input.loadRecording(json: string)`
+#### Definition
+
+```lua
+--- Loads recording JSON into the module recorder.
+---@param json string Recording JSON.
+lurek.input.loadRecording = function(json) end
+```
+
+#### Description
 
 Loads recording JSON into the module recorder.
 
-**Parameters**
+Parameters:
 
 - `json` (`string`, required): Recording JSON.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -1290,20 +1903,30 @@ end
 
 ### lurek.input.newCombo
 
-`lurek.input.newCombo(steps: table, [opts]: table) -> LCombo`
+#### Definition
+
+```lua
+--- Creates a combo detector from string steps or step tables with optional timing.
+---@param steps table Array table of key strings or `{key, gap}` step tables.
+---@param opts? table Options table with `total_gap` in milliseconds.
+---@return LCombo New combo detector handle.
+lurek.input.newCombo = function(steps, opts) end
+```
+
+#### Description
 
 Creates a combo detector from string steps or step tables with optional timing.
 
-**Parameters**
+Parameters:
 
 - `steps` (`table`, required): Array table of key strings or `{key, gap}` step tables.
 - `opts` (`table`, optional): Options table with `total_gap` in milliseconds.
 
-**Returns**: `LCombo` - New combo detector handle.
+Returns: `LCombo` - New combo detector handle.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -1316,11 +1939,24 @@ end
 
 ### lurek.input.mouse.newCursor
 
-`lurek.input.mouse.newCursor(pixels: table, width: integer, height: integer, [hotx]: integer, [hoty]: integer) -> LCursor`
+#### Definition
+
+```lua
+--- Creates a custom cursor handle from RGBA pixels and hotspot coordinates.
+---@param pixels table Cursor pixel bytes.
+---@param width number Cursor width in pixels.
+---@param height number Cursor height in pixels.
+---@param hotx? number Optional hotspot x coordinate.
+---@param hoty? number Optional hotspot y coordinate.
+---@return LCursor New custom cursor handle.
+lurek.input.mouse.newCursor = function(pixels, width, height, hotx, hoty) end
+```
+
+#### Description
 
 Creates a custom cursor handle from RGBA pixels and hotspot coordinates.
 
-**Parameters**
+Parameters:
 
 - `pixels` (`table`, required): Cursor pixel bytes.
 - `width` (`integer`, required): Cursor width in pixels.
@@ -1328,11 +1964,11 @@ Creates a custom cursor handle from RGBA pixels and hotspot coordinates.
 - `hotx` (`integer`, optional): Optional hotspot x coordinate.
 - `hoty` (`integer`, optional): Optional hotspot y coordinate.
 
-**Returns**: `LCursor` - New custom cursor handle.
+Returns: `LCursor` - New custom cursor handle.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -1345,20 +1981,30 @@ end
 
 ### lurek.input.newMapping
 
-`lurek.input.newMapping(name: string, keys: any) -> table`
+#### Definition
+
+```lua
+--- Creates an action mapping table with isDown, wasPressed, and wasReleased helper functions.
+---@param name string Action name.
+---@param keys any Binding string or array table of binding strings.
+---@return InputNewMappingResult Mapping table with action query closures.
+lurek.input.newMapping = function(name, keys) end
+```
+
+#### Description
 
 Creates an action mapping table with isDown, wasPressed, and wasReleased helper functions.
 
-**Parameters**
+Parameters:
 
 - `name` (`string`, required): Action name.
 - `keys` (`any`, required): Binding string or array table of binding strings.
 
-**Returns**: `table` - Mapping table with action query closures.
+Returns: `table` - Mapping table with action query closures.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -1372,17 +2018,25 @@ end
 
 ### lurek.input.gamepad.saveGamepadMappings
 
-`lurek.input.gamepad.saveGamepadMappings(path: string)`
+#### Definition
+
+```lua
+--- Saves gamepad mapping strings to a file.
+---@param path string Mapping file path.
+lurek.input.gamepad.saveGamepadMappings = function(path) end
+```
+
+#### Description
 
 Saves gamepad mapping strings to a file.
 
-**Parameters**
+Parameters:
 
 - `path` (`string`, required): Mapping file path.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -1396,17 +2050,25 @@ end
 
 ### lurek.input.gamepad.setBackgroundEvents
 
-`lurek.input.gamepad.setBackgroundEvents(enable: boolean)`
+#### Definition
+
+```lua
+--- Enables or disables background gamepad event processing.
+---@param enable boolean New background event flag.
+lurek.input.gamepad.setBackgroundEvents = function(enable) end
+```
+
+#### Description
 
 Enables or disables background gamepad event processing.
 
-**Parameters**
+Parameters:
 
 - `enable` (`boolean`, required): New background event flag.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -1418,17 +2080,25 @@ end
 
 ### lurek.input.mouse.setCursor
 
-`lurek.input.mouse.setCursor(cursor: any)`
+#### Definition
+
+```lua
+--- Sets the active cursor from a cursor handle, system cursor name, or nil for arrow.
+---@param cursor any `LCursor`, system cursor string, or nil.
+lurek.input.mouse.setCursor = function(cursor) end
+```
+
+#### Description
 
 Sets the active cursor from a cursor handle, system cursor name, or nil for arrow.
 
-**Parameters**
+Parameters:
 
 - `cursor` (`any`, required): `LCursor`, system cursor string, or nil.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -1440,18 +2110,27 @@ end
 
 ### lurek.input.gamepad.setGamepadMapping
 
-`lurek.input.gamepad.setGamepadMapping(guid: string, mapping: string)`
+#### Definition
+
+```lua
+--- Stores a controller mapping string for a gamepad GUID.
+---@param guid string Gamepad GUID.
+---@param mapping string Mapping string.
+lurek.input.gamepad.setGamepadMapping = function(guid, mapping) end
+```
+
+#### Description
 
 Stores a controller mapping string for a gamepad GUID.
 
-**Parameters**
+Parameters:
 
 - `guid` (`string`, required): Gamepad GUID.
 - `mapping` (`string`, required): Mapping string.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -1463,17 +2142,25 @@ end
 
 ### lurek.input.mouse.setGrabbed
 
-`lurek.input.mouse.setGrabbed(grabbed: boolean)`
+#### Definition
+
+```lua
+--- Sets whether the mouse is grabbed by the window.
+---@param grabbed boolean New grabbed flag.
+lurek.input.mouse.setGrabbed = function(grabbed) end
+```
+
+#### Description
 
 Sets whether the mouse is grabbed by the window.
 
-**Parameters**
+Parameters:
 
 - `grabbed` (`boolean`, required): New grabbed flag.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -1484,17 +2171,25 @@ end
 
 ### lurek.input.keyboard.setKeyRepeat
 
-`lurek.input.keyboard.setKeyRepeat(enabled: boolean)`
+#### Definition
+
+```lua
+--- Enables or disables key repeat tracking.
+---@param enabled boolean New key repeat flag.
+lurek.input.keyboard.setKeyRepeat = function(enabled) end
+```
+
+#### Description
 
 Enables or disables key repeat tracking.
 
-**Parameters**
+Parameters:
 
 - `enabled` (`boolean`, required): New key repeat flag.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -1549,18 +2244,27 @@ end
 
 ### lurek.input.mouse.setPosition
 
-`lurek.input.mouse.setPosition(x: number, y: number)`
+#### Definition
+
+```lua
+--- Requests a mouse cursor position change.
+---@param x number Target x coordinate.
+---@param y number Target y coordinate.
+lurek.input.mouse.setPosition = function(x, y) end
+```
+
+#### Description
 
 Requests a mouse cursor position change.
 
-**Parameters**
+Parameters:
 
 - `x` (`number`, required): Target x coordinate.
 - `y` (`number`, required): Target y coordinate.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -1571,17 +2275,25 @@ end
 
 ### lurek.input.mouse.setRelativeMode
 
-`lurek.input.mouse.setRelativeMode(relative: boolean)`
+#### Definition
+
+```lua
+--- Sets the relative mouse input mode state.
+---@param relative boolean New relative mode flag.
+lurek.input.mouse.setRelativeMode = function(relative) end
+```
+
+#### Description
 
 Sets the relative mouse input mode state.
 
-**Parameters**
+Parameters:
 
 - `relative` (`boolean`, required): New relative mode flag.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -1592,17 +2304,25 @@ end
 
 ### lurek.input.keyboard.setTextInput
 
-`lurek.input.keyboard.setTextInput(enabled: boolean)`
+#### Definition
+
+```lua
+--- Enables or disables text input tracking.
+---@param enabled boolean New text input flag.
+lurek.input.keyboard.setTextInput = function(enabled) end
+```
+
+#### Description
 
 Enables or disables text input tracking.
 
-**Parameters**
+Parameters:
 
 - `enabled` (`boolean`, required): New text input flag.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -1613,22 +2333,34 @@ end
 
 ### lurek.input.gamepad.setVibration
 
-`lurek.input.gamepad.setVibration(id: integer, low_freq: number, high_freq: number, duration_ms: number) -> boolean`
+#### Definition
+
+```lua
+--- Requests gamepad vibration with low and high frequency motor strengths.
+---@param id number Gamepad id.
+---@param low_freq number Low-frequency motor strength clamped to 0.0 through 1.0.
+---@param high_freq number High-frequency motor strength clamped to 0.0 through 1.0.
+---@param duration_ms number Duration in milliseconds.
+---@return boolean True when the gamepad supports vibration and the request was queued.
+lurek.input.gamepad.setVibration = function(id, low_freq, high_freq, duration_ms) end
+```
+
+#### Description
 
 Requests gamepad vibration with low and high frequency motor strengths.
 
-**Parameters**
+Parameters:
 
 - `id` (`integer`, required): Gamepad id.
 - `low_freq` (`number`, required): Low-frequency motor strength clamped to 0.0 through 1.0.
 - `high_freq` (`number`, required): High-frequency motor strength clamped to 0.0 through 1.0.
 - `duration_ms` (`number`, required): Duration in milliseconds.
 
-**Returns**: `boolean` - True when the gamepad supports vibration and the request was queued.
+Returns: `boolean` - True when the gamepad supports vibration and the request was queued.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -1639,17 +2371,25 @@ end
 
 ### lurek.input.mouse.setVisible
 
-`lurek.input.mouse.setVisible(visible: boolean)`
+#### Definition
+
+```lua
+--- Sets the mouse cursor visibility state.
+---@param visible boolean New cursor visibility flag.
+lurek.input.mouse.setVisible = function(visible) end
+```
+
+#### Description
 
 Sets the mouse cursor visibility state.
 
-**Parameters**
+Parameters:
 
 - `visible` (`boolean`, required): New cursor visibility flag.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -1660,13 +2400,20 @@ end
 
 ### lurek.input.startPlayback
 
-`lurek.input.startPlayback()`
+#### Definition
+
+```lua
+--- Starts playback of the loaded recording.
+lurek.input.startPlayback = function() end
+```
+
+#### Description
 
 Starts playback of the loaded recording.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -1680,13 +2427,20 @@ end
 
 ### lurek.input.startRecording
 
-`lurek.input.startRecording()`
+#### Definition
+
+```lua
+--- Starts recording input events into the module recorder.
+lurek.input.startRecording = function() end
+```
+
+#### Description
 
 Starts recording input events into the module recorder.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -1698,13 +2452,20 @@ end
 
 ### lurek.input.stopPlayback
 
-`lurek.input.stopPlayback()`
+#### Definition
+
+```lua
+--- Stops playback of the loaded recording.
+lurek.input.stopPlayback = function() end
+```
+
+#### Description
 
 Stops playback of the loaded recording.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -1718,15 +2479,23 @@ end
 
 ### lurek.input.stopRecording
 
-`lurek.input.stopRecording() -> LInputRecording`
+#### Definition
+
+```lua
+--- Stops input recording and returns the captured recording when one is active.
+---@return LInputRecording Recording handle, or nil when recording was not active.
+lurek.input.stopRecording = function() end
+```
+
+#### Description
 
 Stops input recording and returns the captured recording when one is active.
 
-**Returns**: `LInputRecording` - Recording handle, or nil when recording was not active.
+Returns: `LInputRecording` - Recording handle, or nil when recording was not active.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -1738,19 +2507,28 @@ end
 
 ### lurek.input.unbind
 
-`lurek.input.unbind(action: string) -> boolean`
+#### Definition
+
+```lua
+--- Removes all bindings for an action.
+---@param action string Action name.
+---@return boolean True when the action had bindings.
+lurek.input.unbind = function(action) end
+```
+
+#### Description
 
 Removes all bindings for an action.
 
-**Parameters**
+Parameters:
 
 - `action` (`string`, required): Action name.
 
-**Returns**: `boolean` - True when the action had bindings.
+Returns: `boolean` - True when the action had bindings.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -1762,22 +2540,34 @@ end
 
 ### lurek.input.gamepad.vibrate
 
-`lurek.input.gamepad.vibrate(id: integer, low_freq: number, high_freq: number, duration_ms: number) -> boolean`
+#### Definition
+
+```lua
+--- Requests gamepad vibration with low and high frequency motor strengths.
+---@param id number Gamepad id.
+---@param low_freq number Low-frequency motor strength clamped to 0.0 through 1.0.
+---@param high_freq number High-frequency motor strength clamped to 0.0 through 1.0.
+---@param duration_ms number Duration in milliseconds.
+---@return boolean True when the gamepad supports vibration and the request was queued.
+lurek.input.gamepad.vibrate = function(id, low_freq, high_freq, duration_ms) end
+```
+
+#### Description
 
 Requests gamepad vibration with low and high frequency motor strengths.
 
-**Parameters**
+Parameters:
 
 - `id` (`integer`, required): Gamepad id.
 - `low_freq` (`number`, required): Low-frequency motor strength clamped to 0.0 through 1.0.
 - `high_freq` (`number`, required): High-frequency motor strength clamped to 0.0 through 1.0.
 - `duration_ms` (`number`, required): Duration in milliseconds.
 
-**Returns**: `boolean` - True when the gamepad supports vibration and the request was queued.
+Returns: `boolean` - True when the gamepad supports vibration and the request was queued.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -1788,21 +2578,32 @@ end
 
 ### lurek.input.gamepad.virtualDpad
 
-`lurek.input.gamepad.virtualDpad(x: number, y: number, [deadzone]: number) -> table`
+#### Definition
+
+```lua
+--- Converts analog x and y values into virtual d-pad booleans and direction.
+---@param x number Horizontal analog value.
+---@param y number Vertical analog value.
+---@param deadzone? number Deadzone threshold, defaults to 0.3.
+---@return GamepadVirtualDpadResult Table with `up`, `down`, `left`, `right`, and `direction` fields.
+lurek.input.gamepad.virtualDpad = function(x, y, deadzone) end
+```
+
+#### Description
 
 Converts analog x and y values into virtual d-pad booleans and direction.
 
-**Parameters**
+Parameters:
 
 - `x` (`number`, required): Horizontal analog value.
 - `y` (`number`, required): Vertical analog value.
 - `deadzone` (`number`, optional): Deadzone threshold, defaults to 0.3.
 
-**Returns**: `table` - Table with `up`, `down`, `left`, `right`, and `direction` fields.
+Returns: `table` - Table with `up`, `down`, `left`, `right`, and `direction` fields.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -1814,19 +2615,28 @@ end
 
 ### lurek.input.wasActionPressed
 
-`lurek.input.wasActionPressed(action: string) -> boolean`
+#### Definition
+
+```lua
+--- Returns whether any binding for an action was pressed this frame and records the frame.
+---@param action string Action name.
+---@return boolean True when any binding was pressed this frame.
+lurek.input.wasActionPressed = function(action) end
+```
+
+#### Description
 
 Returns whether any binding for an action was pressed this frame and records the frame.
 
-**Parameters**
+Parameters:
 
 - `action` (`string`, required): Action name.
 
-**Returns**: `boolean` - True when any binding was pressed this frame.
+Returns: `boolean` - True when any binding was pressed this frame.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -1838,20 +2648,30 @@ end
 
 ### lurek.input.wasActionPressedWithin
 
-`lurek.input.wasActionPressedWithin(action: string, frames: integer) -> boolean`
+#### Definition
+
+```lua
+--- Returns whether an action was pressed within a recent frame window.
+---@param action string Action name.
+---@param frames number Number of frames allowed since the last press.
+---@return boolean True when the action was pressed within the window.
+lurek.input.wasActionPressedWithin = function(action, frames) end
+```
+
+#### Description
 
 Returns whether an action was pressed within a recent frame window.
 
-**Parameters**
+Parameters:
 
 - `action` (`string`, required): Action name.
 - `frames` (`integer`, required): Number of frames allowed since the last press.
 
-**Returns**: `boolean` - True when the action was pressed within the window.
+Returns: `boolean` - True when the action was pressed within the window.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -1863,19 +2683,28 @@ end
 
 ### lurek.input.wasActionReleased
 
-`lurek.input.wasActionReleased(action: string) -> boolean`
+#### Definition
+
+```lua
+--- Returns whether any binding for an action was released this frame.
+---@param action string Action name.
+---@return boolean True when any binding was released this frame.
+lurek.input.wasActionReleased = function(action) end
+```
+
+#### Description
 
 Returns whether any binding for an action was released this frame.
 
-**Parameters**
+Parameters:
 
 - `action` (`string`, required): Action name.
 
-**Returns**: `boolean` - True when any binding was released this frame.
+Returns: `boolean` - True when any binding was released this frame.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -1887,19 +2716,28 @@ end
 
 ### lurek.input.gamepad.wasConnected
 
-`lurek.input.gamepad.wasConnected(id: integer) -> boolean`
+#### Definition
+
+```lua
+--- Returns whether a gamepad connected this frame.
+---@param id number Gamepad id.
+---@return boolean True when the gamepad connected this frame.
+lurek.input.gamepad.wasConnected = function(id) end
+```
+
+#### Description
 
 Returns whether a gamepad connected this frame.
 
-**Parameters**
+Parameters:
 
 - `id` (`integer`, required): Gamepad id.
 
-**Returns**: `boolean` - True when the gamepad connected this frame.
+Returns: `boolean` - True when the gamepad connected this frame.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -1910,19 +2748,28 @@ end
 
 ### lurek.input.gamepad.wasDisconnected
 
-`lurek.input.gamepad.wasDisconnected(id: integer) -> boolean`
+#### Definition
+
+```lua
+--- Returns whether a gamepad disconnected this frame.
+---@param id number Gamepad id.
+---@return boolean True when the gamepad disconnected this frame.
+lurek.input.gamepad.wasDisconnected = function(id) end
+```
+
+#### Description
 
 Returns whether a gamepad disconnected this frame.
 
-**Parameters**
+Parameters:
 
 - `id` (`integer`, required): Gamepad id.
 
-**Returns**: `boolean` - True when the gamepad disconnected this frame.
+Returns: `boolean` - True when the gamepad disconnected this frame.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -1933,20 +2780,30 @@ end
 
 ### lurek.input.gamepad.wasPressed
 
-`lurek.input.gamepad.wasPressed(id: integer, button: integer) -> boolean`
+#### Definition
+
+```lua
+--- Returns whether a gamepad button was pressed this frame.
+---@param id number Gamepad id.
+---@param button number Button index.
+---@return boolean True when the button was pressed.
+lurek.input.gamepad.wasPressed = function(id, button) end
+```
+
+#### Description
 
 Returns whether a gamepad button was pressed this frame.
 
-**Parameters**
+Parameters:
 
 - `id` (`integer`, required): Gamepad id.
 - `button` (`integer`, required): Button index.
 
-**Returns**: `boolean` - True when the button was pressed.
+Returns: `boolean` - True when the button was pressed.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -1957,19 +2814,28 @@ end
 
 ### lurek.input.touch.wasPressed
 
-`lurek.input.touch.wasPressed(id: integer) -> boolean`
+#### Definition
+
+```lua
+--- Returns whether a touch id began this frame.
+---@param id number Touch id.
+---@return boolean True when the touch was pressed.
+lurek.input.touch.wasPressed = function(id) end
+```
+
+#### Description
 
 Returns whether a touch id began this frame.
 
-**Parameters**
+Parameters:
 
 - `id` (`integer`, required): Touch id.
 
-**Returns**: `boolean` - True when the touch was pressed.
+Returns: `boolean` - True when the touch was pressed.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -1981,15 +2847,23 @@ end
 
 ### lurek.input.wasPressed
 
-`lurek.input.wasPressed() -> boolean`
+#### Definition
+
+```lua
+--- Returns whether any bound key for this mapping was pressed this frame.
+---@return boolean True when any bound key was pressed.
+lurek.input.wasPressed = function() end
+```
+
+#### Description
 
 Returns whether any bound key for this mapping was pressed this frame.
 
-**Returns**: `boolean` - True when any bound key was pressed.
+Returns: `boolean` - True when any bound key was pressed.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -2044,20 +2918,30 @@ end
 
 ### lurek.input.gamepad.wasReleased
 
-`lurek.input.gamepad.wasReleased(id: integer, button: integer) -> boolean`
+#### Definition
+
+```lua
+--- Returns whether a gamepad button was released this frame.
+---@param id number Gamepad id.
+---@param button number Button index.
+---@return boolean True when the button was released.
+lurek.input.gamepad.wasReleased = function(id, button) end
+```
+
+#### Description
 
 Returns whether a gamepad button was released this frame.
 
-**Parameters**
+Parameters:
 
 - `id` (`integer`, required): Gamepad id.
 - `button` (`integer`, required): Button index.
 
-**Returns**: `boolean` - True when the button was released.
+Returns: `boolean` - True when the button was released.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -2068,19 +2952,28 @@ end
 
 ### lurek.input.touch.wasReleased
 
-`lurek.input.touch.wasReleased(id: integer) -> boolean`
+#### Definition
+
+```lua
+--- Returns whether a touch id ended this frame.
+---@param id number Touch id.
+---@return boolean True when the touch was released.
+lurek.input.touch.wasReleased = function(id) end
+```
+
+#### Description
 
 Returns whether a touch id ended this frame.
 
-**Parameters**
+Parameters:
 
 - `id` (`integer`, required): Touch id.
 
-**Returns**: `boolean` - True when the touch was released.
+Returns: `boolean` - True when the touch was released.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -2092,15 +2985,23 @@ end
 
 ### lurek.input.wasReleased
 
-`lurek.input.wasReleased() -> boolean`
+#### Definition
+
+```lua
+--- Returns whether any bound key for this mapping was released this frame.
+---@return boolean True when any bound key was released.
+lurek.input.wasReleased = function() end
+```
+
+#### Description
 
 Returns whether any bound key for this mapping was released this frame.
 
-**Returns**: `boolean` - True when any bound key was released.
+Returns: `boolean` - True when any bound key was released.
 
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -2160,9 +3061,7 @@ do
 
 ### LCombo
 
-Lua-side combo detector handle tracking ordered key sequences.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side combo detector handle tracking ordered key sequences.
@@ -2170,9 +3069,13 @@ Lua-side combo detector handle tracking ordered key sequences.
 LCombo = {}
 ```
 
+#### Description
+
+Lua-side combo detector handle tracking ordered key sequences.
+
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -2185,9 +3088,7 @@ end
 
 ### LCursor
 
-Lua-side cursor handle for system and custom cursor requests.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side cursor handle for system and custom cursor requests.
@@ -2195,9 +3096,13 @@ Lua-side cursor handle for system and custom cursor requests.
 LCursor = {}
 ```
 
+#### Description
+
+Lua-side cursor handle for system and custom cursor requests.
+
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -2208,9 +3113,7 @@ end
 
 ### LInputRecording
 
-Lua-side handle for serialized input recording data.
-
-**Lua API Definition**
+#### Definition
 
 ```lua
 --- Lua-side handle for serialized input recording data.
@@ -2218,9 +3121,13 @@ Lua-side handle for serialized input recording data.
 LInputRecording = {}
 ```
 
+#### Description
+
+Lua-side handle for serialized input recording data.
+
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -2237,17 +3144,7 @@ end
 
 ### LCombo:feed
 
-`LCombo:feed(key: string) -> string`
-
-Feeds one key into the combo detector and returns progress status.
-
-**Parameters**
-
-- `key` (`string`, required): Key name to feed into the combo sequence.
-
-**Returns**: `string` - `completed`, `advanced`, `broken`, or `idle`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Feeds one key into the combo detector and returns progress status.
@@ -2256,9 +3153,19 @@ Feeds one key into the combo detector and returns progress status.
 function LCombo:feed(key) end
 ```
 
+#### Description
+
+Feeds one key into the combo detector and returns progress status.
+
+Parameters:
+
+- `key` (`string`, required): Key name to feed into the combo sequence.
+
+Returns: `string` - `completed`, `advanced`, `broken`, or `idle`.
+
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -2270,17 +3177,7 @@ end
 
 ### LCombo:getStep
 
-`LCombo:getStep(index: integer) -> table`
-
-Returns step data by one-based index.
-
-**Parameters**
-
-- `index` (`integer`, required): One-based combo step index.
-
-**Returns**: `table` - Step table with `key` and `gap_ms`, or nil when out of range.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns step data by one-based index.
@@ -2289,9 +3186,19 @@ Returns step data by one-based index.
 function LCombo:getStep(index) end
 ```
 
+#### Description
+
+Returns step data by one-based index.
+
+Parameters:
+
+- `index` (`integer`, required): One-based combo step index.
+
+Returns: `table` - Step table with `key` and `gap_ms`, or nil when out of range.
+
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -2303,13 +3210,7 @@ end
 
 ### LCombo:isInProgress
 
-`LCombo:isInProgress() -> boolean`
-
-Returns whether the combo sequence is partially matched.
-
-**Returns**: `boolean` - True when the combo is in progress.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether the combo sequence is partially matched.
@@ -2317,9 +3218,15 @@ Returns whether the combo sequence is partially matched.
 function LCombo:isInProgress() end
 ```
 
+#### Description
+
+Returns whether the combo sequence is partially matched.
+
+Returns: `boolean` - True when the combo is in progress.
+
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -2332,13 +3239,7 @@ end
 
 ### LCombo:progress
 
-`LCombo:progress() -> integer`
-
-Returns the current combo step index reached.
-
-**Returns**: `integer` - Number of completed combo steps.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the current combo step index reached.
@@ -2346,9 +3247,15 @@ Returns the current combo step index reached.
 function LCombo:progress() end
 ```
 
+#### Description
+
+Returns the current combo step index reached.
+
+Returns: `integer` - Number of completed combo steps.
+
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -2362,20 +3269,20 @@ end
 
 ### LCombo:reset
 
-`LCombo:reset()`
-
-Resets combo progress and elapsed time.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Resets combo progress and elapsed time.
 function LCombo:reset() end
 ```
 
+#### Description
+
+Resets combo progress and elapsed time.
+
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -2388,17 +3295,7 @@ end
 
 ### LCombo:tick
 
-`LCombo:tick(dt: number) -> string`
-
-Advances combo timeout state and returns progress status.
-
-**Parameters**
-
-- `dt` (`number`, required): Delta time in seconds.
-
-**Returns**: `string` - `expired`, `in_progress`, or `idle`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Advances combo timeout state and returns progress status.
@@ -2407,9 +3304,19 @@ Advances combo timeout state and returns progress status.
 function LCombo:tick(dt) end
 ```
 
+#### Description
+
+Advances combo timeout state and returns progress status.
+
+Parameters:
+
+- `dt` (`number`, required): Delta time in seconds.
+
+Returns: `string` - `expired`, `in_progress`, or `idle`.
+
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -2421,13 +3328,7 @@ end
 
 ### LCombo:totalSteps
 
-`LCombo:totalSteps() -> integer`
-
-Returns the number of steps in this combo sequence.
-
-**Returns**: `integer` - Total combo step count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of steps in this combo sequence.
@@ -2435,9 +3336,15 @@ Returns the number of steps in this combo sequence.
 function LCombo:totalSteps() end
 ```
 
+#### Description
+
+Returns the number of steps in this combo sequence.
+
+Returns: `integer` - Total combo step count.
+
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -2450,13 +3357,7 @@ end
 
 ### LCombo:type
 
-`LCombo:type() -> string`
-
-Returns the Lua-visible type name for this combo handle.
-
-**Returns**: `string` - The string `LCombo`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this combo handle.
@@ -2464,9 +3365,15 @@ Returns the Lua-visible type name for this combo handle.
 function LCombo:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this combo handle.
+
+Returns: `string` - The string `LCombo`.
+
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -2478,17 +3385,7 @@ end
 
 ### LCombo:typeOf
 
-`LCombo:typeOf(name: string) -> boolean`
-
-Returns whether this combo handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LCombo` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this combo handle matches a supported type name.
@@ -2497,9 +3394,19 @@ Returns whether this combo handle matches a supported type name.
 function LCombo:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this combo handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LCombo` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -2511,13 +3418,7 @@ end
 
 ### LCursor:getType
 
-`LCursor:getType() -> string`
-
-Returns whether this cursor is a system cursor or custom cursor.
-
-**Returns**: `string` - `system` or `custom`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this cursor is a system cursor or custom cursor.
@@ -2525,9 +3426,15 @@ Returns whether this cursor is a system cursor or custom cursor.
 function LCursor:getType() end
 ```
 
+#### Description
+
+Returns whether this cursor is a system cursor or custom cursor.
+
+Returns: `string` - `system` or `custom`.
+
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -2541,20 +3448,20 @@ end
 
 ### LCursor:release
 
-`LCursor:release()`
-
-Releases cursor resources; currently a no-op for managed cursor handles.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Releases cursor resources; currently a no-op for managed cursor handles.
 function LCursor:release() end
 ```
 
+#### Description
+
+Releases cursor resources; currently a no-op for managed cursor handles.
+
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -2568,13 +3475,7 @@ end
 
 ### LCursor:type
 
-`LCursor:type() -> string`
-
-Returns the Lua-visible type name for this cursor handle.
-
-**Returns**: `string` - The string `LCursor`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this cursor handle.
@@ -2582,9 +3483,15 @@ Returns the Lua-visible type name for this cursor handle.
 function LCursor:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this cursor handle.
+
+Returns: `string` - The string `LCursor`.
+
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -2598,17 +3505,7 @@ end
 
 ### LCursor:typeOf
 
-`LCursor:typeOf(name: string) -> boolean`
-
-Returns whether this cursor handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LCursor` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this cursor handle matches a supported type name.
@@ -2617,9 +3514,19 @@ Returns whether this cursor handle matches a supported type name.
 function LCursor:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this cursor handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LCursor` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -2633,13 +3540,7 @@ end
 
 ### LInputRecording:frameCount
 
-`LInputRecording:frameCount() -> integer`
-
-Returns the number of event frames stored in this recording.
-
-**Returns**: `integer` - Stored event frame count.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the number of event frames stored in this recording.
@@ -2647,9 +3548,15 @@ Returns the number of event frames stored in this recording.
 function LInputRecording:frameCount() end
 ```
 
+#### Description
+
+Returns the number of event frames stored in this recording.
+
+Returns: `integer` - Stored event frame count.
+
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -2661,13 +3568,7 @@ end
 
 ### LInputRecording:toJson
 
-`LInputRecording:toJson() -> string`
-
-Serializes this input recording to JSON text.
-
-**Returns**: `string` - Recording JSON.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Serializes this input recording to JSON text.
@@ -2675,9 +3576,15 @@ Serializes this input recording to JSON text.
 function LInputRecording:toJson() end
 ```
 
+#### Description
+
+Serializes this input recording to JSON text.
+
+Returns: `string` - Recording JSON.
+
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -2690,13 +3597,7 @@ end
 
 ### LInputRecording:totalFrames
 
-`LInputRecording:totalFrames() -> integer`
-
-Returns total frame count stored in this recording.
-
-**Returns**: `integer` - Total recorded frames.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns total frame count stored in this recording.
@@ -2704,9 +3605,15 @@ Returns total frame count stored in this recording.
 function LInputRecording:totalFrames() end
 ```
 
+#### Description
+
+Returns total frame count stored in this recording.
+
+Returns: `integer` - Total recorded frames.
+
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -2718,13 +3625,7 @@ end
 
 ### LInputRecording:type
 
-`LInputRecording:type() -> string`
-
-Returns the Lua-visible type name for this input recording handle.
-
-**Returns**: `string` - The string `LInputRecording`.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns the Lua-visible type name for this input recording handle.
@@ -2732,9 +3633,15 @@ Returns the Lua-visible type name for this input recording handle.
 function LInputRecording:type() end
 ```
 
+#### Description
+
+Returns the Lua-visible type name for this input recording handle.
+
+Returns: `string` - The string `LInputRecording`.
+
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do
@@ -2746,17 +3653,7 @@ end
 
 ### LInputRecording:typeOf
 
-`LInputRecording:typeOf(name: string) -> boolean`
-
-Returns whether this input recording handle matches a supported type name.
-
-**Parameters**
-
-- `name` (`string`, required): Type name to compare against `LInputRecording` and `Object`.
-
-**Returns**: `boolean` - True when the supplied type name matches this handle.
-
-**Lua API Stub**
+#### Definition
 
 ```lua
 --- Returns whether this input recording handle matches a supported type name.
@@ -2765,9 +3662,19 @@ Returns whether this input recording handle matches a supported type name.
 function LInputRecording:typeOf(name) end
 ```
 
+#### Description
+
+Returns whether this input recording handle matches a supported type name.
+
+Parameters:
+
+- `name` (`string`, required): Type name to compare against `LInputRecording` and `Object`.
+
+Returns: `boolean` - True when the supplied type name matches this handle.
+
 #### Example
 
-Exact example from [input.lua](../blob/main/content/examples/input.lua):
+Source: [input.lua](../blob/main/content/examples/input.lua)
 
 ```lua
 do

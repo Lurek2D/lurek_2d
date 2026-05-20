@@ -14,60 +14,170 @@
 - [📖 API Overview](#api-overview)
 - [⚙️ Module Functions](#module-functions)
   - [lurek.window.close](#lurekwindowclose)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.flash](#lurekwindowflash)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.focus](#lurekwindowfocus)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.fromPixels](#lurekwindowfrompixels)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.getCurrentDisplay](#lurekwindowgetcurrentdisplay)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.getDesktopDimensions](#lurekwindowgetdesktopdimensions)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.getDimensions](#lurekwindowgetdimensions)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.getDisplayCount](#lurekwindowgetdisplaycount)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.getDisplayName](#lurekwindowgetdisplayname)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.getDisplayOrientation](#lurekwindowgetdisplayorientation)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.getDisplays](#lurekwindowgetdisplays)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.getDPIScale](#lurekwindowgetdpiscale)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.getFullscreen](#lurekwindowgetfullscreen)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.getFullscreenModes](#lurekwindowgetfullscreenmodes)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.getGameHeight](#lurekwindowgetgameheight)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.getGameWidth](#lurekwindowgetgamewidth)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.getHeight](#lurekwindowgetheight)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.getMode](#lurekwindowgetmode)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.getNativeDPIScale](#lurekwindowgetnativedpiscale)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.getPixelDimensions](#lurekwindowgetpixeldimensions)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.getPosition](#lurekwindowgetposition)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.getSafeArea](#lurekwindowgetsafearea)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.getScaleInfo](#lurekwindowgetscaleinfo)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.getScaleMode](#lurekwindowgetscalemode)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.getSystemTheme](#lurekwindowgetsystemtheme)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.getTitle](#lurekwindowgettitle)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.getVSync](#lurekwindowgetvsync)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.getWidth](#lurekwindowgetwidth)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.hasFocus](#lurekwindowhasfocus)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.hasMouseFocus](#lurekwindowhasmousefocus)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.isFullscreen](#lurekwindowisfullscreen)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.isHighDPIAllowed](#lurekwindowishighdpiallowed)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.isMaximized](#lurekwindowismaximized)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.isMinimized](#lurekwindowisminimized)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.isOpen](#lurekwindowisopen)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.isResizable](#lurekwindowisresizable)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.isVisible](#lurekwindowisvisible)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.maximize](#lurekwindowmaximize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.minimize](#lurekwindowminimize)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.onDpiChange](#lurekwindowondpichange)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.openFileDialog](#lurekwindowopenfiledialog)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.pollDpiChange](#lurekwindowpolldpichange)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.requestAttention](#lurekwindowrequestattention)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.restore](#lurekwindowrestore)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.setDisplay](#lurekwindowsetdisplay)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.setFullscreen](#lurekwindowsetfullscreen)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.setIcon](#lurekwindowseticon)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.setMode](#lurekwindowsetmode)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.setPosition](#lurekwindowsetposition)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.setScaleMode](#lurekwindowsetscalemode)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.setTitle](#lurekwindowsettitle)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.setVSync](#lurekwindowsetvsync)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.showMessageBox](#lurekwindowshowmessagebox)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.toPixels](#lurekwindowtopixels)
+    - [Definition](#definition)
+    - [Description](#description)
   - [lurek.window.windowConfig](#lurekwindowwindowconfig)
+    - [Definition](#definition)
+    - [Description](#description)
 - [💡 Examples](#examples)
 - [🎮 Reference Games](#reference-games)
 - [🔗 Related Modules](#related-modules)
@@ -129,13 +239,20 @@ lurek.window.getMode() -> number -- Returns the current window display mode: wid
 
 ### lurek.window.close
 
-`lurek.window.close()`
+#### Definition
+
+```lua
+--- Closes the window and signals the engine to shut down.
+lurek.window.close = function() end
+```
+
+#### Description
 
 Closes the window and signals the engine to shut down.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -144,13 +261,20 @@ do
 
 ### lurek.window.flash
 
-`lurek.window.flash()`
+#### Definition
+
+```lua
+--- Flashes the window briefly to attract the user's attention.
+lurek.window.flash = function() end
+```
+
+#### Description
 
 Flashes the window briefly to attract the user's attention.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -162,13 +286,20 @@ end
 
 ### lurek.window.focus
 
-`lurek.window.focus()`
+#### Definition
+
+```lua
+--- Requests keyboard focus for the window. No-op if already focused.
+lurek.window.focus = function() end
+```
+
+#### Description
 
 Requests keyboard focus for the window. No-op if already focused.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -180,19 +311,28 @@ end
 
 ### lurek.window.fromPixels
 
-`lurek.window.fromPixels(value: number) -> number`
+#### Definition
+
+```lua
+--- Converts a value from physical pixel units to logical (DPI-independent) units using the current DPI scale.
+---@param value number The value in physical pixels.
+---@return number The value in logical units.
+lurek.window.fromPixels = function(value) end
+```
+
+#### Description
 
 Converts a value from physical pixel units to logical (DPI-independent) units using the current DPI scale.
 
-**Parameters**
+Parameters:
 
 - `value` (`number`, required): The value in physical pixels.
 
-**Returns**: `number` - The value in logical units.
+Returns: `number` - The value in logical units.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -206,15 +346,23 @@ end
 
 ### lurek.window.getCurrentDisplay
 
-`lurek.window.getCurrentDisplay() -> number`
+#### Definition
+
+```lua
+--- Returns the index of the display that currently contains the window.
+---@return number The zero-based index of the current display.
+lurek.window.getCurrentDisplay = function() end
+```
+
+#### Description
 
 Returns the index of the display that currently contains the window.
 
-**Returns**: `number` - The zero-based index of the current display.
+Returns: `number` - The zero-based index of the current display.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -228,19 +376,29 @@ end
 
 ### lurek.window.getDesktopDimensions
 
-`lurek.window.getDesktopDimensions([display]: integer) -> number`
+#### Definition
+
+```lua
+--- Returns the desktop resolution of a specific display, or the current display if none is specified.
+---@param display? number Zero-based display index. Uses the current display if omitted.
+---@return number a Desktop width in pixels.
+---@return number b Desktop height in pixels.
+lurek.window.getDesktopDimensions = function(display) end
+```
+
+#### Description
 
 Returns the desktop resolution of a specific display, or the current display if none is specified.
 
-**Parameters**
+Parameters:
 
 - `display` (`integer`, optional): Zero-based display index. Uses the current display if omitted.
 
-**Returns**: `number` - Desktop width in pixels.
+Returns: `number` - Desktop width in pixels.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -254,15 +412,24 @@ end
 
 ### lurek.window.getDimensions
 
-`lurek.window.getDimensions() -> number`
+#### Definition
+
+```lua
+--- Returns the current window width and height in logical pixels.
+---@return number a The window width.
+---@return number b The window height.
+lurek.window.getDimensions = function() end
+```
+
+#### Description
 
 Returns the current window width and height in logical pixels.
 
-**Returns**: `number` - The window width.
+Returns: `number` - The window width.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -274,15 +441,23 @@ end
 
 ### lurek.window.getDisplayCount
 
-`lurek.window.getDisplayCount() -> number`
+#### Definition
+
+```lua
+--- Returns the number of connected displays (monitors).
+---@return number The total number of available displays.
+lurek.window.getDisplayCount = function() end
+```
+
+#### Description
 
 Returns the number of connected displays (monitors).
 
-**Returns**: `number` - The total number of available displays.
+Returns: `number` - The total number of available displays.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -296,19 +471,28 @@ end
 
 ### lurek.window.getDisplayName
 
-`lurek.window.getDisplayName([display]: integer) -> string`
+#### Definition
+
+```lua
+--- Returns the human-readable name of a display. Returns "Unknown" if the display cannot be identified.
+---@param display? number Zero-based display index. Uses the current display if omitted.
+---@return string The display name.
+lurek.window.getDisplayName = function(display) end
+```
+
+#### Description
 
 Returns the human-readable name of a display. Returns "Unknown" if the display cannot be identified.
 
-**Parameters**
+Parameters:
 
 - `display` (`integer`, optional): Zero-based display index. Uses the current display if omitted.
 
-**Returns**: `string` - The display name.
+Returns: `string` - The display name.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -322,15 +506,23 @@ end
 
 ### lurek.window.getDisplayOrientation
 
-`lurek.window.getDisplayOrientation() -> string`
+#### Definition
+
+```lua
+--- Returns the display orientation based on the window's aspect ratio.
+---@return string "landscape" if width >= height, "portrait" otherwise.
+lurek.window.getDisplayOrientation = function() end
+```
+
+#### Description
 
 Returns the display orientation based on the window's aspect ratio.
 
-**Returns**: `string` - "landscape" if width >= height, "portrait" otherwise.
+Returns: `string` - "landscape" if width >= height, "portrait" otherwise.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -342,15 +534,23 @@ end
 
 ### lurek.window.getDisplays
 
-`lurek.window.getDisplays() -> table`
+#### Definition
+
+```lua
+--- Returns a list of all connected displays with their properties. Each entry contains index, name, position (x, y), resolution (width, height), scale factor, refresh rate, and whether it is the primary monitor.
+---@return WindowGetDisplaysResult Array of display info tables with fields: index, name, x, y, width, height, scale, refreshRate, primary.
+lurek.window.getDisplays = function() end
+```
+
+#### Description
 
 Returns a list of all connected displays with their properties. Each entry contains index, name, position (x, y), resolution (width, height), scale factor, refresh rate, and whether it is the primary monitor.
 
-**Returns**: `table` - Array of display info tables with fields: index, name, x, y, width, height, scale, refreshRate, primary.
+Returns: `table` - Array of display info tables with fields: index, name, x, y, width, height, scale, refreshRate, primary.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -364,15 +564,23 @@ end
 
 ### lurek.window.getDPIScale
 
-`lurek.window.getDPIScale() -> number`
+#### Definition
+
+```lua
+--- Returns the current DPI scale factor of the window. A value of 2.0 means the display uses 2x scaling (e.g., Retina).
+---@return number The DPI scale factor.
+lurek.window.getDPIScale = function() end
+```
+
+#### Description
 
 Returns the current DPI scale factor of the window. A value of 2.0 means the display uses 2x scaling (e.g., Retina).
 
-**Returns**: `number` - The DPI scale factor.
+Returns: `number` - The DPI scale factor.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -382,15 +590,23 @@ end
 
 ### lurek.window.getFullscreen
 
-`lurek.window.getFullscreen() -> boolean`
+#### Definition
+
+```lua
+--- Returns the current fullscreen state and type.
+---@return boolean Whether the window is in fullscreen mode.
+lurek.window.getFullscreen = function() end
+```
+
+#### Description
 
 Returns the current fullscreen state and type.
 
-**Returns**: `boolean` - Whether the window is in fullscreen mode.
+Returns: `boolean` - Whether the window is in fullscreen mode.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -400,15 +616,23 @@ end
 
 ### lurek.window.getFullscreenModes
 
-`lurek.window.getFullscreenModes() -> table`
+#### Definition
+
+```lua
+--- Returns a list of all supported fullscreen video modes across all monitors. Each entry contains width, height, and refresh rate.
+---@return WindowGetFullscreenModesResult Array of mode tables with fields: width (number), height (number), refreshRate (number).
+lurek.window.getFullscreenModes = function() end
+```
+
+#### Description
 
 Returns a list of all supported fullscreen video modes across all monitors. Each entry contains width, height, and refresh rate.
 
-**Returns**: `table` - Array of mode tables with fields: width (number), height (number), refreshRate (number).
+Returns: `table` - Array of mode tables with fields: width (number), height (number), refreshRate (number).
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -421,15 +645,23 @@ end
 
 ### lurek.window.getGameHeight
 
-`lurek.window.getGameHeight() -> number`
+#### Definition
+
+```lua
+--- Returns the logical game height as defined by the current scale mode and game configuration.
+---@return number The game height in logical units.
+lurek.window.getGameHeight = function() end
+```
+
+#### Description
 
 Returns the logical game height as defined by the current scale mode and game configuration.
 
-**Returns**: `number` - The game height in logical units.
+Returns: `number` - The game height in logical units.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -441,15 +673,23 @@ end
 
 ### lurek.window.getGameWidth
 
-`lurek.window.getGameWidth() -> number`
+#### Definition
+
+```lua
+--- Returns the logical game width as defined by the current scale mode and game configuration.
+---@return number The game width in logical units.
+lurek.window.getGameWidth = function() end
+```
+
+#### Description
 
 Returns the logical game width as defined by the current scale mode and game configuration.
 
-**Returns**: `number` - The game width in logical units.
+Returns: `number` - The game width in logical units.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -461,15 +701,23 @@ end
 
 ### lurek.window.getHeight
 
-`lurek.window.getHeight() -> number`
+#### Definition
+
+```lua
+--- Returns the current window height in logical (DPI-independent) pixels.
+---@return number The window height.
+lurek.window.getHeight = function() end
+```
+
+#### Description
 
 Returns the current window height in logical (DPI-independent) pixels.
 
-**Returns**: `number` - The window height.
+Returns: `number` - The window height.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -482,15 +730,25 @@ end
 
 ### lurek.window.getMode
 
-`lurek.window.getMode() -> number`
+#### Definition
+
+```lua
+--- Returns the current window display mode: width, height, and a flags table containing fullscreen state, fullscreen type, and VSync mode.
+---@return number a The window width.
+---@return number b The window height.
+---@return WindowGetModeResult c Flags table with fields: fullscreen (boolean), fullscreentype (string), vsync (number).
+lurek.window.getMode = function() end
+```
+
+#### Description
 
 Returns the current window display mode: width, height, and a flags table containing fullscreen state, fullscreen type, and VSync mode.
 
-**Returns**: `number` - The window width.
+Returns: `number` - The window width.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -503,15 +761,23 @@ end
 
 ### lurek.window.getNativeDPIScale
 
-`lurek.window.getNativeDPIScale() -> number`
+#### Definition
+
+```lua
+--- Returns the native DPI scale factor reported by the operating system.
+---@return number The native DPI scale.
+lurek.window.getNativeDPIScale = function() end
+```
+
+#### Description
 
 Returns the native DPI scale factor reported by the operating system.
 
-**Returns**: `number` - The native DPI scale.
+Returns: `number` - The native DPI scale.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -521,15 +787,24 @@ end
 
 ### lurek.window.getPixelDimensions
 
-`lurek.window.getPixelDimensions() -> number`
+#### Definition
+
+```lua
+--- Returns the window dimensions in actual physical pixels, accounting for DPI scaling.
+---@return number a The pixel width.
+---@return number b The pixel height.
+lurek.window.getPixelDimensions = function() end
+```
+
+#### Description
 
 Returns the window dimensions in actual physical pixels, accounting for DPI scaling.
 
-**Returns**: `number` - The pixel width.
+Returns: `number` - The pixel width.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -540,15 +815,24 @@ end
 
 ### lurek.window.getPosition
 
-`lurek.window.getPosition() -> number`
+#### Definition
+
+```lua
+--- Returns the window position on screen in pixels.
+---@return number a The x-coordinate of the window's top-left corner.
+---@return number b The y-coordinate of the window's top-left corner.
+lurek.window.getPosition = function() end
+```
+
+#### Description
 
 Returns the window position on screen in pixels.
 
-**Returns**: `number` - The x-coordinate of the window's top-left corner.
+Returns: `number` - The x-coordinate of the window's top-left corner.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -559,15 +843,26 @@ end
 
 ### lurek.window.getSafeArea
 
-`lurek.window.getSafeArea() -> number`
+#### Definition
+
+```lua
+--- Returns the safe drawing area of the window. On desktop this is the full window area. Useful for compatibility with mobile-style layout code.
+---@return number a X offset (always 0 on desktop).
+---@return number b Y offset (always 0 on desktop).
+---@return number c Safe area width.
+---@return number d Safe area height.
+lurek.window.getSafeArea = function() end
+```
+
+#### Description
 
 Returns the safe drawing area of the window. On desktop this is the full window area. Useful for compatibility with mobile-style layout code.
 
-**Returns**: `number` - X offset (always 0 on desktop).
+Returns: `number` - X offset (always 0 on desktop).
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -579,15 +874,23 @@ end
 
 ### lurek.window.getScaleInfo
 
-`lurek.window.getScaleInfo() -> table`
+#### Definition
+
+```lua
+--- Returns detailed scaling information including scale factors, offsets, and logical game dimensions. Useful for coordinate conversion between screen space and game space.
+---@return WindowGetScaleInfoResult Table with fields: scale_x (number), scale_y (number), offset_x (number), offset_y (number), game_width (number), game_height (number).
+lurek.window.getScaleInfo = function() end
+```
+
+#### Description
 
 Returns detailed scaling information including scale factors, offsets, and logical game dimensions. Useful for coordinate conversion between screen space and game space.
 
-**Returns**: `table` - Table with fields: scale_x (number), scale_y (number), offset_x (number), offset_y (number), game_width (number), game_height (number).
+Returns: `table` - Table with fields: scale_x (number), scale_y (number), offset_x (number), offset_y (number), game_width (number), game_height (number).
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -600,15 +903,23 @@ end
 
 ### lurek.window.getScaleMode
 
-`lurek.window.getScaleMode() -> string`
+#### Definition
+
+```lua
+--- Returns the current content scale mode name (e.g., "stretch", "letterbox", "pixel-perfect").
+---@return string The active scale mode.
+lurek.window.getScaleMode = function() end
+```
+
+#### Description
 
 Returns the current content scale mode name (e.g., "stretch", "letterbox", "pixel-perfect").
 
-**Returns**: `string` - The active scale mode.
+Returns: `string` - The active scale mode.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -621,15 +932,23 @@ end
 
 ### lurek.window.getSystemTheme
 
-`lurek.window.getSystemTheme() -> string`
+#### Definition
+
+```lua
+--- Returns the operating system's current color theme. Desktop currently returns "unknown".
+---@return string The system theme name.
+lurek.window.getSystemTheme = function() end
+```
+
+#### Description
 
 Returns the operating system's current color theme. Desktop currently returns "unknown".
 
-**Returns**: `string` - The system theme name.
+Returns: `string` - The system theme name.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -641,15 +960,23 @@ end
 
 ### lurek.window.getTitle
 
-`lurek.window.getTitle() -> string`
+#### Definition
+
+```lua
+--- Returns the current window title bar text.
+---@return string The current window title.
+lurek.window.getTitle = function() end
+```
+
+#### Description
 
 Returns the current window title bar text.
 
-**Returns**: `string` - The current window title.
+Returns: `string` - The current window title.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -660,15 +987,23 @@ end
 
 ### lurek.window.getVSync
 
-`lurek.window.getVSync() -> number`
+#### Definition
+
+```lua
+--- Returns the current VSync mode. This function is exposed to Lua scripts.
+---@return number The VSync mode: 0 = off, 1 = on, -1 = adaptive.
+lurek.window.getVSync = function() end
+```
+
+#### Description
 
 Returns the current VSync mode. This function is exposed to Lua scripts.
 
-**Returns**: `number` - The VSync mode: 0 = off, 1 = on, -1 = adaptive.
+Returns: `number` - The VSync mode: 0 = off, 1 = on, -1 = adaptive.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -681,15 +1016,23 @@ end
 
 ### lurek.window.getWidth
 
-`lurek.window.getWidth() -> number`
+#### Definition
+
+```lua
+--- Returns the current window width in logical (DPI-independent) pixels.
+---@return number The window width.
+lurek.window.getWidth = function() end
+```
+
+#### Description
 
 Returns the current window width in logical (DPI-independent) pixels.
 
-**Returns**: `number` - The window width.
+Returns: `number` - The window width.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -702,15 +1045,23 @@ end
 
 ### lurek.window.hasFocus
 
-`lurek.window.hasFocus() -> boolean`
+#### Definition
+
+```lua
+--- Returns whether the window currently has keyboard focus.
+---@return boolean True if the window has keyboard input focus.
+lurek.window.hasFocus = function() end
+```
+
+#### Description
 
 Returns whether the window currently has keyboard focus.
 
-**Returns**: `boolean` - True if the window has keyboard input focus.
+Returns: `boolean` - True if the window has keyboard input focus.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -722,15 +1073,23 @@ end
 
 ### lurek.window.hasMouseFocus
 
-`lurek.window.hasMouseFocus() -> boolean`
+#### Definition
+
+```lua
+--- Returns whether the mouse cursor is inside the window.
+---@return boolean True if the mouse cursor is within the window bounds.
+lurek.window.hasMouseFocus = function() end
+```
+
+#### Description
 
 Returns whether the mouse cursor is inside the window.
 
-**Returns**: `boolean` - True if the mouse cursor is within the window bounds.
+Returns: `boolean` - True if the mouse cursor is within the window bounds.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -740,15 +1099,23 @@ end
 
 ### lurek.window.isFullscreen
 
-`lurek.window.isFullscreen() -> boolean`
+#### Definition
+
+```lua
+--- Returns whether the window is currently in fullscreen mode.
+---@return boolean True if the window is fullscreen.
+lurek.window.isFullscreen = function() end
+```
+
+#### Description
 
 Returns whether the window is currently in fullscreen mode.
 
-**Returns**: `boolean` - True if the window is fullscreen.
+Returns: `boolean` - True if the window is fullscreen.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -758,15 +1125,23 @@ end
 
 ### lurek.window.isHighDPIAllowed
 
-`lurek.window.isHighDPIAllowed() -> boolean`
+#### Definition
+
+```lua
+--- Returns whether high-DPI rendering is allowed. Currently always returns false on desktop.
+---@return boolean True if high-DPI mode is enabled.
+lurek.window.isHighDPIAllowed = function() end
+```
+
+#### Description
 
 Returns whether high-DPI rendering is allowed. Currently always returns false on desktop.
 
-**Returns**: `boolean` - True if high-DPI mode is enabled.
+Returns: `boolean` - True if high-DPI mode is enabled.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -777,15 +1152,23 @@ end
 
 ### lurek.window.isMaximized
 
-`lurek.window.isMaximized() -> boolean`
+#### Definition
+
+```lua
+--- Returns whether the window is currently maximized.
+---@return boolean True if the window is maximized.
+lurek.window.isMaximized = function() end
+```
+
+#### Description
 
 Returns whether the window is currently maximized.
 
-**Returns**: `boolean` - True if the window is maximized.
+Returns: `boolean` - True if the window is maximized.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -797,15 +1180,23 @@ end
 
 ### lurek.window.isMinimized
 
-`lurek.window.isMinimized() -> boolean`
+#### Definition
+
+```lua
+--- Returns whether the window is currently minimized to the taskbar.
+---@return boolean True if the window is minimized.
+lurek.window.isMinimized = function() end
+```
+
+#### Description
 
 Returns whether the window is currently minimized to the taskbar.
 
-**Returns**: `boolean` - True if the window is minimized.
+Returns: `boolean` - True if the window is minimized.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -817,15 +1208,23 @@ end
 
 ### lurek.window.isOpen
 
-`lurek.window.isOpen() -> boolean`
+#### Definition
+
+```lua
+--- Returns whether the window is currently open. Always returns true while the game is running.
+---@return boolean True if the window exists.
+lurek.window.isOpen = function() end
+```
+
+#### Description
 
 Returns whether the window is currently open. Always returns true while the game is running.
 
-**Returns**: `boolean` - True if the window exists.
+Returns: `boolean` - True if the window exists.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -836,15 +1235,23 @@ end
 
 ### lurek.window.isResizable
 
-`lurek.window.isResizable() -> boolean`
+#### Definition
+
+```lua
+--- Returns whether the window can be resized by the user.
+---@return boolean True if the window is resizable.
+lurek.window.isResizable = function() end
+```
+
+#### Description
 
 Returns whether the window can be resized by the user.
 
-**Returns**: `boolean` - True if the window is resizable.
+Returns: `boolean` - True if the window is resizable.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -855,15 +1262,23 @@ end
 
 ### lurek.window.isVisible
 
-`lurek.window.isVisible() -> boolean`
+#### Definition
+
+```lua
+--- Returns whether the window is currently visible on screen.
+---@return boolean True if the window is visible.
+lurek.window.isVisible = function() end
+```
+
+#### Description
 
 Returns whether the window is currently visible on screen.
 
-**Returns**: `boolean` - True if the window is visible.
+Returns: `boolean` - True if the window is visible.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -874,13 +1289,20 @@ end
 
 ### lurek.window.maximize
 
-`lurek.window.maximize()`
+#### Definition
+
+```lua
+--- Maximizes the window to fill the screen.
+lurek.window.maximize = function() end
+```
+
+#### Description
 
 Maximizes the window to fill the screen.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -893,13 +1315,20 @@ end
 
 ### lurek.window.minimize
 
-`lurek.window.minimize()`
+#### Definition
+
+```lua
+--- Minimizes the window to the taskbar.
+lurek.window.minimize = function() end
+```
+
+#### Description
 
 Minimizes the window to the taskbar.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -912,17 +1341,25 @@ end
 
 ### lurek.window.onDpiChange
 
-`lurek.window.onDpiChange(func: function)`
+#### Definition
+
+```lua
+--- Registers a callback function that is called whenever the DPI scale factor changes (e.g., when the window is moved to a different monitor). Only one callback can be active at a time; setting a new one replaces the previous.
+---@param func function Callback receiving the new DPI scale as a number.
+lurek.window.onDpiChange = function(func) end
+```
+
+#### Description
 
 Registers a callback function that is called whenever the DPI scale factor changes (e.g., when the window is moved to a different monitor). Only one callback can be active at a time; setting a new one replaces the previous.
 
-**Parameters**
+Parameters:
 
 - `func` (`function`, required): Callback receiving the new DPI scale as a number.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -935,19 +1372,28 @@ end
 
 ### lurek.window.openFileDialog
 
-`lurek.window.openFileDialog([opts]: table) -> string[]`
+#### Definition
+
+```lua
+--- Opens a native file picker dialog and returns the selected file paths. Blocks until the user picks file(s) or cancels.
+---@param opts? table Optional config table with fields: title (string), defaultPath (string), multiple (boolean), filters (table of {name, extensions}).
+---@return string[] Selected file path strings. Empty table if cancelled.
+lurek.window.openFileDialog = function(opts) end
+```
+
+#### Description
 
 Opens a native file picker dialog and returns the selected file paths. Blocks until the user picks file(s) or cancels.
 
-**Parameters**
+Parameters:
 
 - `opts` (`table`, optional): Optional config table with fields: title (string), defaultPath (string), multiple (boolean), filters (table of {name, extensions}).
 
-**Returns**: `string[]` - Selected file path strings. Empty table if cancelled.
+Returns: `string[]` - Selected file path strings. Empty table if cancelled.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -960,15 +1406,23 @@ end
 
 ### lurek.window.pollDpiChange
 
-`lurek.window.pollDpiChange() -> number`
+#### Definition
+
+```lua
+--- Checks if the DPI scale has changed since the last poll and fires the onDpiChange callback if so. Call this once per frame in your update loop to detect monitor changes.
+---@return number The current DPI scale factor.
+lurek.window.pollDpiChange = function() end
+```
+
+#### Description
 
 Checks if the DPI scale has changed since the last poll and fires the onDpiChange callback if so. Call this once per frame in your update loop to detect monitor changes.
 
-**Returns**: `number` - The current DPI scale factor.
+Returns: `number` - The current DPI scale factor.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -981,13 +1435,20 @@ end
 
 ### lurek.window.requestAttention
 
-`lurek.window.requestAttention()`
+#### Definition
+
+```lua
+--- Requests user attention by flashing the taskbar icon. Useful for notifying the player when the window is in the background.
+lurek.window.requestAttention = function() end
+```
+
+#### Description
 
 Requests user attention by flashing the taskbar icon. Useful for notifying the player when the window is in the background.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -999,13 +1460,20 @@ end
 
 ### lurek.window.restore
 
-`lurek.window.restore()`
+#### Definition
+
+```lua
+--- Restores the window from minimized or maximized state to its previous size and position.
+lurek.window.restore = function() end
+```
+
+#### Description
 
 Restores the window from minimized or maximized state to its previous size and position.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -1018,17 +1486,25 @@ end
 
 ### lurek.window.setDisplay
 
-`lurek.window.setDisplay(display: integer)`
+#### Definition
+
+```lua
+--- Moves the window to the specified display. Throws an error if the index is negative.
+---@param display number Zero-based index of the target display.
+lurek.window.setDisplay = function(display) end
+```
+
+#### Description
 
 Moves the window to the specified display. Throws an error if the index is negative.
 
-**Parameters**
+Parameters:
 
 - `display` (`integer`, required): Zero-based index of the target display.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -1040,18 +1516,27 @@ end
 
 ### lurek.window.setFullscreen
 
-`lurek.window.setFullscreen(enabled: boolean, [fstype]: string)`
+#### Definition
+
+```lua
+--- Enables or disables fullscreen mode. Supports "desktop" (borderless) and "exclusive" types.
+---@param enabled boolean Whether to enter fullscreen.
+---@param fstype? string Fullscreen type: "desktop" (default) or "exclusive".
+lurek.window.setFullscreen = function(enabled, fstype) end
+```
+
+#### Description
 
 Enables or disables fullscreen mode. Supports "desktop" (borderless) and "exclusive" types.
 
-**Parameters**
+Parameters:
 
 - `enabled` (`boolean`, required): Whether to enter fullscreen.
 - `fstype` (`string`, optional): Fullscreen type: "desktop" (default) or "exclusive".
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -1064,17 +1549,25 @@ end
 
 ### lurek.window.setIcon
 
-`lurek.window.setIcon(path: string)`
+#### Definition
+
+```lua
+--- Sets the window icon from an image file. The file must exist in the game's filesystem. Supports PNG and other common image formats.
+---@param path string Path to the icon image file.
+lurek.window.setIcon = function(path) end
+```
+
+#### Description
 
 Sets the window icon from an image file. The file must exist in the game's filesystem. Supports PNG and other common image formats.
 
-**Parameters**
+Parameters:
 
 - `path` (`string`, required): Path to the icon image file.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -1086,11 +1579,21 @@ end
 
 ### lurek.window.setMode
 
-`lurek.window.setMode(w: integer, h: integer, [flags]: table)`
+#### Definition
+
+```lua
+--- Sets the window display mode with a specific resolution and optional flags. Use this to resize the window and configure fullscreen or VSync at the same time.
+---@param w number The desired window width in pixels.
+---@param h number The desired window height in pixels.
+---@param flags? table Optional table with fields: fullscreen (boolean), fullscreentype (string), vsync (number).
+lurek.window.setMode = function(w, h, flags) end
+```
+
+#### Description
 
 Sets the window display mode with a specific resolution and optional flags. Use this to resize the window and configure fullscreen or VSync at the same time.
 
-**Parameters**
+Parameters:
 
 - `w` (`integer`, required): The desired window width in pixels.
 - `h` (`integer`, required): The desired window height in pixels.
@@ -1098,7 +1601,7 @@ Sets the window display mode with a specific resolution and optional flags. Use 
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -1110,18 +1613,27 @@ end
 
 ### lurek.window.setPosition
 
-`lurek.window.setPosition(x: integer, y: integer)`
+#### Definition
+
+```lua
+--- Moves the window to the specified screen position.
+---@param x number The x-coordinate for the window's top-left corner.
+---@param y number The y-coordinate for the window's top-left corner.
+lurek.window.setPosition = function(x, y) end
+```
+
+#### Description
 
 Moves the window to the specified screen position.
 
-**Parameters**
+Parameters:
 
 - `x` (`integer`, required): The x-coordinate for the window's top-left corner.
 - `y` (`integer`, required): The y-coordinate for the window's top-left corner.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -1133,17 +1645,25 @@ end
 
 ### lurek.window.setScaleMode
 
-`lurek.window.setScaleMode(mode: string)`
+#### Definition
+
+```lua
+--- Sets the content scale mode. Controls how the game's logical resolution maps to the window size.
+---@param mode string The scale mode name (e.g., "stretch", "letterbox", "pixel-perfect").
+lurek.window.setScaleMode = function(mode) end
+```
+
+#### Description
 
 Sets the content scale mode. Controls how the game's logical resolution maps to the window size.
 
-**Parameters**
+Parameters:
 
 - `mode` (`string`, required): The scale mode name (e.g., "stretch", "letterbox", "pixel-perfect").
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -1156,17 +1676,25 @@ end
 
 ### lurek.window.setTitle
 
-`lurek.window.setTitle(title: string)`
+#### Definition
+
+```lua
+--- Sets the window title bar text. This function is exposed to Lua scripts.
+---@param title string The new window title to display.
+lurek.window.setTitle = function(title) end
+```
+
+#### Description
 
 Sets the window title bar text. This function is exposed to Lua scripts.
 
-**Parameters**
+Parameters:
 
 - `title` (`string`, required): The new window title to display.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -1178,17 +1706,25 @@ end
 
 ### lurek.window.setVSync
 
-`lurek.window.setVSync(mode: integer)`
+#### Definition
+
+```lua
+--- Sets the vertical sync mode. Controls how frame presentation is synchronized with the display.
+---@param mode number VSync mode: 0 = off, 1 = on, -1 = adaptive.
+lurek.window.setVSync = function(mode) end
+```
+
+#### Description
 
 Sets the vertical sync mode. Controls how frame presentation is synchronized with the display.
 
-**Parameters**
+Parameters:
 
 - `mode` (`integer`, required): VSync mode: 0 = off, 1 = on, -1 = adaptive.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -1201,22 +1737,34 @@ end
 
 ### lurek.window.showMessageBox
 
-`lurek.window.showMessageBox(title: string, message: string, [box_type]: string, [btn_type]: string) -> string`
+#### Definition
+
+```lua
+--- Displays a native OS message box dialog. Blocks execution until the user dismisses it.
+---@param title string The dialog title.
+---@param message string The message body text.
+---@param box_type? string Dialog icon type: "info" (default), "warning", or "error".
+---@param btn_type? string Button layout: "ok" (default), "okcancel", or "yesno".
+---@return string The button the user clicked.
+lurek.window.showMessageBox = function(title, message, box_type, btn_type) end
+```
+
+#### Description
 
 Displays a native OS message box dialog. Blocks execution until the user dismisses it.
 
-**Parameters**
+Parameters:
 
 - `title` (`string`, required): The dialog title.
 - `message` (`string`, required): The message body text.
 - `box_type` (`string`, optional): Dialog icon type: "info" (default), "warning", or "error".
 - `btn_type` (`string`, optional): Button layout: "ok" (default), "okcancel", or "yesno".
 
-**Returns**: `string` - The button the user clicked.
+Returns: `string` - The button the user clicked.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -1228,19 +1776,28 @@ end
 
 ### lurek.window.toPixels
 
-`lurek.window.toPixels(value: number) -> number`
+#### Definition
+
+```lua
+--- Converts a value from logical (DPI-independent) units to physical pixel units using the current DPI scale.
+---@param value number The value in logical units.
+---@return number The value in physical pixels.
+lurek.window.toPixels = function(value) end
+```
+
+#### Description
 
 Converts a value from logical (DPI-independent) units to physical pixel units using the current DPI scale.
 
-**Parameters**
+Parameters:
 
 - `value` (`number`, required): The value in logical units.
 
-**Returns**: `number` - The value in physical pixels.
+Returns: `number` - The value in physical pixels.
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
@@ -1254,17 +1811,25 @@ end
 
 ### lurek.window.windowConfig
 
-`lurek.window.windowConfig(opts: table)`
+#### Definition
+
+```lua
+--- Applies multiple window settings at once from a configuration table. Supports title, width, height, fullscreen, fullscreentype, vsync, position (x, y), scaleMode, and display index.
+---@param opts table Configuration table with optional fields: title (string), width (number), height (number), fullscreen (boolean), fullscreentype (string), vsync (number), x (number), y (number), scaleMode (string), display (number).
+lurek.window.windowConfig = function(opts) end
+```
+
+#### Description
 
 Applies multiple window settings at once from a configuration table. Supports title, width, height, fullscreen, fullscreentype, vsync, position (x, y), scaleMode, and display index.
 
-**Parameters**
+Parameters:
 
 - `opts` (`table`, required): Configuration table with optional fields: title (string), width (number), height (number), fullscreen (boolean), fullscreentype (string), vsync (number), x (number), y (number), scaleMode (string), display (number).
 
 #### Example
 
-Exact example from [window.lua](../blob/main/content/examples/window.lua):
+Source: [window.lua](../blob/main/content/examples/window.lua)
 
 ```lua
 do
