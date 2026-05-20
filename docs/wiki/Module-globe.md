@@ -508,12 +508,6 @@ end
 
 ### LGlobe
 
-#### Definition
-
-```lua
----@class LGlobe
-```
-
 #### Description
 
 Lua-side handle for a named globe stored inside a shared registry.
@@ -530,12 +524,6 @@ end
 ```
 
 ### LGlobeRegistry
-
-#### Definition
-
-```lua
----@class LGlobeRegistry
-```
 
 #### Description
 

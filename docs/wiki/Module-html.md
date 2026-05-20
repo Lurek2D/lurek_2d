@@ -445,12 +445,6 @@ end
 
 ### LHtmlDocument
 
-#### Definition
-
-```lua
----@class LHtmlDocument
-```
-
 #### Description
 
 Lua-side HTML document handle with DOM state, callbacks, and render command access.
@@ -467,12 +461,6 @@ end
 ```
 
 ### LHtmlElement
-
-#### Definition
-
-```lua
----@class LHtmlElement
-```
 
 #### Description
 

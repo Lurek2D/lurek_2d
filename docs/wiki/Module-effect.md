@@ -553,12 +553,6 @@ end
 
 ### LImageEffect
 
-#### Definition
-
-```lua
----@class LImageEffect
-```
-
 #### Description
 
 Lua-side handle for an image effect chain detached from live post-effect capture.
@@ -575,12 +569,6 @@ end
 ```
 
 ### LOverlay
-
-#### Definition
-
-```lua
----@class LOverlay
-```
 
 #### Description
 
@@ -599,12 +587,6 @@ end
 
 ### LPostFxEffect
 
-#### Definition
-
-```lua
----@class LPostFxEffect
-```
-
 #### Description
 
 Lua-side handle for a single post-processing effect instance.
@@ -622,12 +604,6 @@ end
 
 ### LPostFxStack
 
-#### Definition
-
-```lua
----@class LPostFxStack
-```
-
 #### Description
 
 Lua-side handle for an ordered post-processing stack.
@@ -644,12 +620,6 @@ end
 ```
 
 ### LScreenTransition
-
-#### Definition
-
-```lua
----@class LScreenTransition
-```
 
 #### Description
 

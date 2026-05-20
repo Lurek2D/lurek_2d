@@ -3962,12 +3962,6 @@ end
 
 ### LCanvas
 
-#### Definition
-
-```lua
----@class LCanvas
-```
-
 #### Description
 
 Off-screen render target that can be drawn to and then composited onto the screen.
@@ -3987,12 +3981,6 @@ end
 ```
 
 ### LDrawLayer
-
-#### Definition
-
-```lua
----@class LDrawLayer
-```
 
 #### Description
 
@@ -4027,12 +4015,6 @@ end
 
 ### LFont
 
-#### Definition
-
-```lua
----@class LFont
-```
-
 #### Description
 
 Bitmap font handle for measuring and rendering text.
@@ -4052,12 +4034,6 @@ end
 ```
 
 ### LImage
-
-#### Definition
-
-```lua
----@class LImage
-```
 
 #### Description
 
@@ -4079,12 +4055,6 @@ end
 
 ### LImageData
 
-#### Definition
-
-```lua
----@class LImageData
-```
-
 #### Description
 
 Raw pixel buffer for CPU-side image manipulation before uploading to a GPU texture.
@@ -4104,12 +4074,6 @@ end
 ```
 
 ### LMesh
-
-#### Definition
-
-```lua
----@class LMesh
-```
 
 #### Description
 
@@ -4131,12 +4095,6 @@ end
 
 ### LNineSlice
 
-#### Definition
-
-```lua
----@class LNineSlice
-```
-
 #### Description
 
 Texture with defined border insets for scalable 9-slice rendering (e.g., UI panels, buttons).
@@ -4156,12 +4114,6 @@ end
 ```
 
 ### LObjModel
-
-#### Definition
-
-```lua
----@class LObjModel
-```
 
 #### Description
 
@@ -4183,12 +4135,6 @@ end
 
 ### LQuad
 
-#### Definition
-
-```lua
----@class LQuad
-```
-
 #### Description
 
 Rectangular sub-region of a texture, used for sprite sheets and atlas-based rendering.
@@ -4208,12 +4154,6 @@ end
 ```
 
 ### LShader
-
-#### Definition
-
-```lua
----@class LShader
-```
 
 #### Description
 
@@ -4235,12 +4175,6 @@ end
 
 ### LShape
 
-#### Definition
-
-```lua
----@class LShape
-```
-
 #### Description
 
 Retained compound shape that accumulates drawing commands and can be rendered in one call.
@@ -4260,12 +4194,6 @@ end
 ```
 
 ### LSpriteBatch
-
-#### Definition
-
-```lua
----@class LSpriteBatch
-```
 
 #### Description
 

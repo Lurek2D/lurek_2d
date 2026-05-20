@@ -353,12 +353,6 @@ end
 
 ### LChannel
 
-#### Definition
-
-```lua
----@class LChannel
-```
-
 #### Description
 
 Creates a new unbounded channel for sending typed values between threads.
@@ -379,12 +373,6 @@ end
 
 ### LPromise
 
-#### Definition
-
-```lua
----@class LPromise
-```
-
 #### Description
 
 Lua-visible handle representing an asynchronous computation that will produce a single result value.
@@ -402,12 +390,6 @@ end
 ```
 
 ### LThread
-
-#### Definition
-
-```lua
----@class LThread
-```
 
 #### Description
 
@@ -428,12 +410,6 @@ end
 ```
 
 ### LThreadPool
-
-#### Definition
-
-```lua
----@class LThreadPool
-```
 
 #### Description
 

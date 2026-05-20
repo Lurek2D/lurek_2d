@@ -2816,12 +2816,6 @@ do
 
 ### LCombo
 
-#### Definition
-
-```lua
----@class LCombo
-```
-
 #### Description
 
 Lua-side combo detector handle tracking ordered key sequences.
@@ -2841,12 +2835,6 @@ end
 
 ### LCursor
 
-#### Definition
-
-```lua
----@class LCursor
-```
-
 #### Description
 
 Lua-side cursor handle for system and custom cursor requests.
@@ -2863,12 +2851,6 @@ end
 ```
 
 ### LInputRecording
-
-#### Definition
-
-```lua
----@class LInputRecording
-```
 
 #### Description
 

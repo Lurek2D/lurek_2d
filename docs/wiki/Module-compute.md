@@ -576,12 +576,6 @@ end
 
 ### LArray
 
-#### Definition
-
-```lua
----@class LArray
-```
-
 #### Description
 
 Lua-side multidimensional numeric array handle.

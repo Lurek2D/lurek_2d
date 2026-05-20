@@ -3480,12 +3480,6 @@ end
 
 ### LBus
 
-#### Definition
-
-```lua
----@class LBus
-```
-
 #### Description
 
 Lua-side wrapper around an audio mixing bus for grouped volume and effect control.
@@ -3506,12 +3500,6 @@ end
 
 ### LDecoder
 
-#### Definition
-
-```lua
----@class LDecoder
-```
-
 #### Description
 
 Lua-side wrapper around a streaming audio decoder for incremental PCM extraction.
@@ -3530,12 +3518,6 @@ end
 
 ### LMidiPlayer
 
-#### Definition
-
-```lua
----@class LMidiPlayer
-```
-
 #### Description
 
 Lua-side wrapper around a MIDI file player with per-channel control and tempo scaling.
@@ -3552,12 +3534,6 @@ end
 ```
 
 ### LSoundData
-
-#### Definition
-
-```lua
----@class LSoundData
-```
 
 #### Description
 
@@ -3576,12 +3552,6 @@ end
 
 ### LSoundPool
 
-#### Definition
-
-```lua
----@class LSoundPool
-```
-
 #### Description
 
 Lua-side wrapper around a pre-allocated pool of identical sound voices for rapid fire effects.
@@ -3599,12 +3569,6 @@ end
 ```
 
 ### LSource
-
-#### Definition
-
-```lua
----@class LSource
-```
 
 #### Description
 

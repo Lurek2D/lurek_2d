@@ -1044,12 +1044,6 @@ end
 
 ### LBody
 
-#### Definition
-
-```lua
----@class LBody
-```
-
 #### Description
 
 A handle to a single physics body in the world, providing per-body manipulation methods.
@@ -1067,12 +1061,6 @@ end
 ```
 
 ### LCellular
-
-#### Definition
-
-```lua
----@class LCellular
-```
 
 #### Description
 
@@ -1094,12 +1082,6 @@ end
 
 ### LPhysicsShape
 
-#### Definition
-
-```lua
----@class LPhysicsShape
-```
-
 #### Description
 
 A standalone collision shape with material properties, to be attached to bodies via `attachShape`.
@@ -1118,12 +1100,6 @@ end
 ```
 
 ### LTerrain
-
-#### Definition
-
-```lua
----@class LTerrain
-```
 
 #### Description
 
@@ -1145,12 +1121,6 @@ end
 
 ### LWorld
 
-#### Definition
-
-```lua
----@class LWorld
-```
-
 #### Description
 
 A physics world that manages rigid bodies, joints, collision detection, and simulation stepping.
@@ -1170,12 +1140,6 @@ end
 ```
 
 ### LZone
-
-#### Definition
-
-```lua
----@class LZone
-```
 
 #### Description
 

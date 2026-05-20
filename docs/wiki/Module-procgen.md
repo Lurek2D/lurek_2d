@@ -1099,12 +1099,6 @@ end
 
 ### BiomeClassifier
 
-#### Definition
-
-```lua
----@class BiomeClassifier
-```
-
 #### Description
 
 Lua-visible wrapper around the biome classification engine, used to assign biome types based on height, moisture, and temperature.

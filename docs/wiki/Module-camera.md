@@ -238,12 +238,6 @@ end
 
 ### LCamera
 
-#### Definition
-
-```lua
----@class LCamera
-```
-
 #### Description
 
 Lua-side 2D camera handle with transforms, effects, bounds, and render command access.
@@ -260,12 +254,6 @@ end
 ```
 
 ### LCameraRig
-
-#### Definition
-
-```lua
----@class LCameraRig
-```
 
 #### Description
 

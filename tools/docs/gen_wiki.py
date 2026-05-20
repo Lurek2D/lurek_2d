@@ -1024,9 +1024,6 @@ def module_page(context: Context, module: str) -> Page:
         for class_name, class_data in class_list:
             body += [f"### {class_name}", ""]
             desc = clean_text(str(class_data.get("description", "") or ""))
-            class_stub = context.class_stubs.get(example_key(class_name), "")
-            if class_stub:
-                body += ["#### Definition", "", "```lua", type_definition_block(class_name, class_stub), "```", ""]
             body += ["#### Description", ""]
             if desc:
                 body += [desc, ""]

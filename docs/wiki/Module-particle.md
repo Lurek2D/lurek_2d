@@ -309,12 +309,6 @@ end
 
 ### LParticleSystem
 
-#### Definition
-
-```lua
----@class LParticleSystem
-```
-
 #### Description
 
 Lua-side handle for a particle system stored in shared runtime state.
@@ -332,12 +326,6 @@ end
 ```
 
 ### LTrail
-
-#### Definition
-
-```lua
----@class LTrail
-```
 
 #### Description
 

@@ -724,12 +724,6 @@ end
 
 ### LScheduler
 
-#### Definition
-
-```lua
----@class LScheduler
-```
-
 #### Description
 
 A Lua-exposed event scheduler that fires callbacks after timed delays or frame counts, with support for repeating intervals, named entries, pausing, and time-scaling.

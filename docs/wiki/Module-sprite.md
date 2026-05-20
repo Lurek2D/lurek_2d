@@ -308,12 +308,6 @@ end
 
 ### LSpriteAtlas
 
-#### Definition
-
-```lua
----@class LSpriteAtlas
-```
-
 #### Description
 
 Lua-visible wrapper around a SpriteAtlas, providing named region lookups.
@@ -333,12 +327,6 @@ end
 ```
 
 ### LSpriteSheet
-
-#### Definition
-
-```lua
----@class LSpriteSheet
-```
 
 #### Description
 

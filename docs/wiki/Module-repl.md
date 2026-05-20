@@ -146,12 +146,6 @@ end
 
 ### LReplSession
 
-#### Definition
-
-```lua
----@class LReplSession
-```
-
 #### Description
 
 Lua-side REPL session handle with bounded history.

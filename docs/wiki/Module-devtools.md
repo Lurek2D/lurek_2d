@@ -1578,12 +1578,6 @@ end
 
 ### LFileWatcher
 
-#### Definition
-
-```lua
----@class LFileWatcher
-```
-
 #### Description
 
 Lua-side file watcher with an optional change callback.
@@ -1600,12 +1594,6 @@ end
 ```
 
 ### LReplConsole
-
-#### Definition
-
-```lua
----@class LReplConsole
-```
 
 #### Description
 

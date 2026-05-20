@@ -551,12 +551,6 @@ end
 
 ### LSignal
 
-#### Definition
-
-```lua
----@class LSignal
-```
-
 #### Description
 
 Lua-side signal object storing subscriptions and Lua callback registry keys.

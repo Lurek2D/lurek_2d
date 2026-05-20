@@ -224,12 +224,6 @@ end
 
 ### LParallaxLayer
 
-#### Definition
-
-```lua
----@class LParallaxLayer
-```
-
 #### Description
 
 Lua-side wrapper for a parallax layer and shared render state.
@@ -246,12 +240,6 @@ end
 ```
 
 ### LParallaxSet
-
-#### Definition
-
-```lua
----@class LParallaxSet
-```
 
 #### Description
 

@@ -731,12 +731,6 @@ end
 
 ### LCompressedImageData
 
-#### Definition
-
-```lua
----@class LCompressedImageData
-```
-
 #### Description
 
 Lua-side handle for compressed DDS image metadata and mipmap data.
@@ -756,12 +750,6 @@ end
 
 ### LImageData
 
-#### Definition
-
-```lua
----@class LImageData
-```
-
 #### Description
 
 Provides Lua methods for reading, editing, filtering, drawing, and encoding image data.
@@ -779,12 +767,6 @@ end
 ```
 
 ### LLayeredImage
-
-#### Definition
-
-```lua
----@class LLayeredImage
-```
 
 #### Description
 
@@ -847,12 +829,6 @@ do
 
 ### LPaletteLUT
 
-#### Definition
-
-```lua
----@class LPaletteLUT
-```
-
 #### Description
 
 Lua-side handle for palette color remapping.
@@ -869,12 +845,6 @@ end
 ```
 
 ### LProvinceGrid
-
-#### Definition
-
-```lua
----@class LProvinceGrid
-```
 
 #### Description
 

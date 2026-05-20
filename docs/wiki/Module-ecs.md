@@ -161,12 +161,6 @@ end
 
 ### LUniverse
 
-#### Definition
-
-```lua
----@class LUniverse
-```
-
 #### Description
 
 Lua-side handle for one ECS universe.

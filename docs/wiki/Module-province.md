@@ -457,12 +457,6 @@ end
 
 ### LProvinceRegistry
 
-#### Definition
-
-```lua
----@class LProvinceRegistry
-```
-
 #### Description
 
 Handle to a named province registry, exposing spatial queries, style mutations, rendering, and change tracking to Lua scripts.

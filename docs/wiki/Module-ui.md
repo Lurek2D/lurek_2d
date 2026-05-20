@@ -2745,12 +2745,6 @@ end
 
 ### LAccordion
 
-#### Definition
-
-```lua
----@class LAccordion : LUiWidget
-```
-
 #### Description
 
 Adds accordion-specific methods to an accordion widget table.
@@ -2769,12 +2763,6 @@ end
 ```
 
 ### LAreaChart
-
-#### Definition
-
-```lua
----@class LAreaChart
-```
 
 #### Description
 
@@ -2796,12 +2784,6 @@ end
 
 ### LBadge
 
-#### Definition
-
-```lua
----@class LBadge : LUiWidget
-```
-
 #### Description
 
 Adds badge-specific methods to a notification badge widget table.
@@ -2821,12 +2803,6 @@ end
 ```
 
 ### LBarChart
-
-#### Definition
-
-```lua
----@class LBarChart
-```
 
 #### Description
 
@@ -2848,12 +2824,6 @@ end
 
 ### LButton
 
-#### Definition
-
-```lua
----@class LButton : LUiWidget
-```
-
 #### Description
 
 Adds button-specific methods (setText, getText) to a button widget table.
@@ -2872,12 +2842,6 @@ end
 ```
 
 ### LCheckbox
-
-#### Definition
-
-```lua
----@class LCheckbox : LUiWidget
-```
 
 #### Description
 
@@ -2899,12 +2863,6 @@ end
 
 ### LColorPicker
 
-#### Definition
-
-```lua
----@class LColorPicker : LUiWidget
-```
-
 #### Description
 
 Adds color-picker-specific methods to a color picker widget table.
@@ -2925,12 +2883,6 @@ end
 
 ### LComboBox
 
-#### Definition
-
-```lua
----@class LComboBox : LUiWidget
-```
-
 #### Description
 
 Adds combo-box-specific methods to a combo box widget table.
@@ -2949,12 +2901,6 @@ end
 ```
 
 ### LDialog
-
-#### Definition
-
-```lua
----@class LDialog : LUiWidget
-```
 
 #### Description
 
@@ -2995,12 +2941,6 @@ end
 
 ### LDockPanel
 
-#### Definition
-
-```lua
----@class LDockPanel : LUiWidget
-```
-
 #### Description
 
 Adds dock-panel-specific methods to a dock panel widget table.
@@ -3021,12 +2961,6 @@ end
 
 ### LGuiTable
 
-#### Definition
-
-```lua
----@class LGuiTable : LUiWidget
-```
-
 #### Description
 
 Adds GUI-table-specific methods to a table widget.
@@ -3046,12 +2980,6 @@ end
 ```
 
 ### LGuiWindow
-
-#### Definition
-
-```lua
----@class LGuiWindow : LUiWidget
-```
 
 #### Description
 
@@ -3091,12 +3019,6 @@ end
 
 ### LImageWidget
 
-#### Definition
-
-```lua
----@class LImageWidget : LUiWidget
-```
-
 #### Description
 
 Adds image-widget-specific methods to an image widget table.
@@ -3116,12 +3038,6 @@ end
 ```
 
 ### LLabel
-
-#### Definition
-
-```lua
----@class LLabel : LUiWidget
-```
 
 #### Description
 
@@ -3143,12 +3059,6 @@ end
 
 ### LLayout
 
-#### Definition
-
-```lua
----@class LLayout : LUiWidget
-```
-
 #### Description
 
 Adds layout-specific methods to a layout container widget table.
@@ -3168,12 +3078,6 @@ end
 ```
 
 ### LLineChart
-
-#### Definition
-
-```lua
----@class LLineChart
-```
 
 #### Description
 
@@ -3195,12 +3099,6 @@ end
 
 ### LListBox
 
-#### Definition
-
-```lua
----@class LListBox : LUiWidget
-```
-
 #### Description
 
 Adds list-box-specific methods to a list box widget table.
@@ -3220,12 +3118,6 @@ end
 
 ### LMenuBar
 
-#### Definition
-
-```lua
----@class LMenuBar : LUiWidget
-```
-
 #### Description
 
 Adds menu-bar-specific methods to a menu bar widget table.
@@ -3244,12 +3136,6 @@ end
 ```
 
 ### LMenuItem
-
-#### Definition
-
-```lua
----@class LMenuItem : LUiWidget
-```
 
 #### Description
 
@@ -3271,12 +3157,6 @@ end
 
 ### LNinePatch
 
-#### Definition
-
-```lua
----@class LNinePatch : LUiWidget
-```
-
 #### Description
 
 Adds nine-patch-specific methods to a nine-patch widget table.
@@ -3297,12 +3177,6 @@ end
 
 ### LPanel
 
-#### Definition
-
-```lua
----@class LPanel : LUiWidget
-```
-
 #### Description
 
 Adds panel-specific methods (setTitle, getTitle, setScrollable) to a panel widget table.
@@ -3320,12 +3194,6 @@ end
 ```
 
 ### LPieChart
-
-#### Definition
-
-```lua
----@class LPieChart
-```
 
 #### Description
 
@@ -3347,12 +3215,6 @@ end
 
 ### LProgressBar
 
-#### Definition
-
-```lua
----@class LProgressBar : LUiWidget
-```
-
 #### Description
 
 Adds progress-bar-specific methods to a progress bar widget table.
@@ -3371,12 +3233,6 @@ end
 ```
 
 ### LRadioButton
-
-#### Definition
-
-```lua
----@class LRadioButton : LUiWidget
-```
 
 #### Description
 
@@ -3398,12 +3254,6 @@ end
 
 ### LScatterPlot
 
-#### Definition
-
-```lua
----@class LScatterPlot
-```
-
 #### Description
 
 Lua-exposed scatter plot for data visualization.
@@ -3424,12 +3274,6 @@ end
 
 ### LScrollBar
 
-#### Definition
-
-```lua
----@class LScrollBar : LUiWidget
-```
-
 #### Description
 
 Adds scroll-bar-specific methods to a scroll bar widget table.
@@ -3448,12 +3292,6 @@ end
 ```
 
 ### LScrollPanel
-
-#### Definition
-
-```lua
----@class LScrollPanel : LUiWidget
-```
 
 #### Description
 
@@ -3475,12 +3313,6 @@ end
 
 ### LSeparator
 
-#### Definition
-
-```lua
----@class LSeparator : LUiWidget
-```
-
 #### Description
 
 Adds separator-specific methods to a separator widget table.
@@ -3499,12 +3331,6 @@ end
 ```
 
 ### LSlider
-
-#### Definition
-
-```lua
----@class LSlider : LUiWidget
-```
 
 #### Description
 
@@ -3526,12 +3352,6 @@ end
 
 ### LSpinBox
 
-#### Definition
-
-```lua
----@class LSpinBox : LUiWidget
-```
-
 #### Description
 
 Adds spin-box-specific methods to a spin box widget table.
@@ -3551,12 +3371,6 @@ end
 ```
 
 ### LSplitPanel
-
-#### Definition
-
-```lua
----@class LSplitPanel : LUiWidget
-```
 
 #### Description
 
@@ -3578,12 +3392,6 @@ end
 
 ### LStatusBar
 
-#### Definition
-
-```lua
----@class LStatusBar : LUiWidget
-```
-
 #### Description
 
 Adds status-bar-specific methods to a status bar widget table.
@@ -3602,12 +3410,6 @@ end
 ```
 
 ### LSwitch
-
-#### Definition
-
-```lua
----@class LSwitch : LUiWidget
-```
 
 #### Description
 
@@ -3628,12 +3430,6 @@ end
 
 ### LTabBar
 
-#### Definition
-
-```lua
----@class LTabBar : LUiWidget
-```
-
 #### Description
 
 Adds tab-bar-specific methods to a tab bar widget table.
@@ -3652,12 +3448,6 @@ end
 ```
 
 ### LTextInput
-
-#### Definition
-
-```lua
----@class LTextInput : LUiWidget
-```
 
 #### Description
 
@@ -3679,12 +3469,6 @@ end
 
 ### LTheme
 
-#### Definition
-
-```lua
----@class LTheme
-```
-
 #### Description
 
 Lua-exposed wrapper around a GUI theme for styling widgets.
@@ -3704,12 +3488,6 @@ end
 ```
 
 ### LToast
-
-#### Definition
-
-```lua
----@class LToast : LUiWidget
-```
 
 #### Description
 
@@ -3731,12 +3509,6 @@ end
 
 ### LToolbar
 
-#### Definition
-
-```lua
----@class LToolbar : LUiWidget
-```
-
 #### Description
 
 Adds toolbar-specific methods to a toolbar widget table.
@@ -3754,12 +3526,6 @@ end
 ```
 
 ### LTooltipPanel
-
-#### Definition
-
-```lua
----@class LTooltipPanel : LUiWidget
-```
 
 #### Description
 
@@ -3781,12 +3547,6 @@ end
 
 ### LTreeView
 
-#### Definition
-
-```lua
----@class LTreeView : LUiWidget
-```
-
 #### Description
 
 Registers tree-view-specific Lua methods on a widget method table.
@@ -3806,12 +3566,6 @@ end
 ```
 
 ### LUiWidget
-
-#### Definition
-
-```lua
----@class LUiWidget
-```
 
 #### Description
 

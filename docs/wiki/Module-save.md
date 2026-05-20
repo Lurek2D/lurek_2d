@@ -118,12 +118,6 @@ end
 
 ### LSaveManager
 
-#### Definition
-
-```lua
----@class LSaveManager
-```
-
 #### Description
 
 Manages persistent game state: registering data collectors/restorers, serializing to named.

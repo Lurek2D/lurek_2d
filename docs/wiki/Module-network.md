@@ -820,12 +820,6 @@ end
 
 ### LNetworkHost
 
-#### Definition
-
-```lua
----@class LNetworkHost
-```
-
 #### Description
 
 Lua-side wrapper for a network host.
@@ -844,12 +838,6 @@ end
 ```
 
 ### LNetworkRuntime
-
-#### Definition
-
-```lua
----@class LNetworkRuntime
-```
 
 #### Description
 

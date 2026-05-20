@@ -684,12 +684,6 @@ end
 
 ### LAIFlowField
 
-#### Definition
-
-```lua
----@class LAIFlowField
-```
-
 #### Description
 
 Lua-side wrapper for an AI flow field over a path grid.
@@ -709,12 +703,6 @@ end
 ```
 
 ### LFlowField
-
-#### Definition
-
-```lua
----@class LFlowField
-```
 
 #### Description
 
@@ -736,12 +724,6 @@ end
 
 ### LHexGrid
 
-#### Definition
-
-```lua
----@class LHexGrid
-```
-
 #### Description
 
 Lua-side wrapper for a hexagonal grid.
@@ -761,12 +743,6 @@ end
 ```
 
 ### LJpsGrid
-
-#### Definition
-
-```lua
----@class LJpsGrid
-```
 
 #### Description
 
@@ -788,12 +764,6 @@ end
 
 ### LNavGrid
 
-#### Definition
-
-```lua
----@class LNavGrid
-```
-
 #### Description
 
 Lua-side wrapper for a navigation grid and optional abstract graph cache.
@@ -813,12 +783,6 @@ end
 ```
 
 ### LNavMesh
-
-#### Definition
-
-```lua
----@class LNavMesh
-```
 
 #### Description
 
@@ -840,12 +804,6 @@ end
 
 ### LPathGrid
 
-#### Definition
-
-```lua
----@class LPathGrid
-```
-
 #### Description
 
 Lua-side wrapper for a cell-size path grid.
@@ -863,12 +821,6 @@ end
 ```
 
 ### LUnitPathfinder
-
-#### Definition
-
-```lua
----@class LUnitPathfinder
-```
 
 #### Description
 

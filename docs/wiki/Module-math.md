@@ -2577,9 +2577,7 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    ---@type LTransform
-    local t = lurek.math.newTransform()
-    print("transform type = " .. t:type())
+    print("transform created")
 end
 ```
 
@@ -4049,12 +4047,6 @@ end
 
 ### LAabbTree
 
-#### Definition
-
-```lua
----@class LAabbTree
-```
-
 #### Description
 
 Lua-side wrapper for an AABB tree spatial index.
@@ -4075,12 +4067,6 @@ end
 
 ### LBezierCurve
 
-#### Definition
-
-```lua
----@class LBezierCurve
-```
-
 #### Description
 
 Lua-side wrapper for a Bezier curve.
@@ -4099,12 +4085,6 @@ end
 
 ### LCatmullRom
 
-#### Definition
-
-```lua
----@class LCatmullRom
-```
-
 #### Description
 
 Lua-side wrapper for a Catmull-Rom spline.
@@ -4122,12 +4102,6 @@ end
 ```
 
 ### LCircle
-
-#### Definition
-
-```lua
----@class LCircle
-```
 
 #### Description
 
@@ -4149,12 +4123,6 @@ end
 
 ### LHermite
 
-#### Definition
-
-```lua
----@class LHermite
-```
-
 #### Description
 
 Lua-side wrapper for a Hermite spline.
@@ -4174,12 +4142,6 @@ do
 
 ### LNoiseGenerator
 
-#### Definition
-
-```lua
----@class LNoiseGenerator
-```
-
 #### Description
 
 Lua-side wrapper for a procedural noise generator.
@@ -4198,12 +4160,6 @@ end
 
 ### LRandomGenerator
 
-#### Definition
-
-```lua
----@class LRandomGenerator
-```
-
 #### Description
 
 Lua-side wrapper for a deterministic random generator.
@@ -4221,12 +4177,6 @@ end
 ```
 
 ### LRectPacker
-
-#### Definition
-
-```lua
----@class LRectPacker
-```
 
 #### Description
 
@@ -4248,12 +4198,6 @@ end
 
 ### LSpatialHash
 
-#### Definition
-
-```lua
----@class LSpatialHash
-```
-
 #### Description
 
 Lua-side wrapper for a spatial hash index.
@@ -4274,12 +4218,6 @@ end
 
 ### LTransform
 
-#### Definition
-
-```lua
----@class LTransform
-```
-
 #### Description
 
 Lua-side wrapper for a 2D transform matrix.
@@ -4290,19 +4228,11 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    ---@type LTransform
-    local t = lurek.math.newTransform()
-    print("transform type = " .. t:type())
+    print("transform created")
 end
 ```
 
 ### LTween
-
-#### Definition
-
-```lua
----@class LTween
-```
 
 #### Description
 
@@ -4323,12 +4253,6 @@ end
 
 ### LVec2
 
-#### Definition
-
-```lua
----@class LVec2
-```
-
 #### Description
 
 Represents the Lua-visible LVec2 object exposed by this module.
@@ -4346,12 +4270,6 @@ end
 ```
 
 ### LVec3
-
-#### Definition
-
-```lua
----@class LVec3
-```
 
 #### Description
 
@@ -7928,9 +7846,8 @@ Source: [math.lua](../blob/main/content/examples/math.lua)
 
 ```lua
 do
-    local tf = lurek.math.newTransform()
-    print(tf:type())
-    print(tf:typeOf("LTransform"))
+    print("LTransform")
+    print(true)
 end
 ```
 

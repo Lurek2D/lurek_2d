@@ -236,12 +236,6 @@ end
 
 ### LSkeleton
 
-#### Definition
-
-```lua
----@class LSkeleton
-```
-
 #### Description
 
 Lua-facing skeleton object providing bone hierarchy, slots, IK, skins, and animation playback.
@@ -261,12 +255,6 @@ end
 ```
 
 ### LSkeletonAnimation
-
-#### Definition
-
-```lua
----@class LSkeletonAnimation
-```
 
 #### Description
 

@@ -745,12 +745,6 @@ end
 
 ### LLight
 
-#### Definition
-
-```lua
----@class LLight
-```
-
 #### Description
 
 Lua-side handle for a light stored in the shared light world.
@@ -767,12 +761,6 @@ end
 ```
 
 ### LOccluder
-
-#### Definition
-
-```lua
----@class LOccluder
-```
 
 #### Description
 

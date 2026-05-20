@@ -1520,12 +1520,6 @@ end
 
 ### LFileData
 
-#### Definition
-
-```lua
----@class LFileData
-```
-
 #### Description
 
 No generated type description was found.
@@ -1542,12 +1536,6 @@ end
 ```
 
 ### LFileHandle
-
-#### Definition
-
-```lua
----@class LFileHandle
-```
 
 #### Description
 
@@ -1567,12 +1555,6 @@ end
 ```
 
 ### LZipMount
-
-#### Definition
-
-```lua
----@class LZipMount
-```
 
 #### Description
 

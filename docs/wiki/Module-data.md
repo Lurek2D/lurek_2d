@@ -918,12 +918,6 @@ end
 
 ### LByteData
 
-#### Definition
-
-```lua
----@class LByteData
-```
-
 #### Description
 
 Exposes byte-buffer inspection and bit editing methods to Lua.
@@ -940,12 +934,6 @@ end
 ```
 
 ### LDataView
-
-#### Definition
-
-```lua
----@class LDataView
-```
 
 #### Description
 
@@ -965,12 +953,6 @@ end
 
 ### LDataWriter
 
-#### Definition
-
-```lua
----@class LDataWriter
-```
-
 #### Description
 
 Lua-side binary writer for sequential byte construction.
@@ -987,12 +969,6 @@ end
 ```
 
 ### LRingBuffer
-
-#### Definition
-
-```lua
----@class LRingBuffer
-```
 
 #### Description
 

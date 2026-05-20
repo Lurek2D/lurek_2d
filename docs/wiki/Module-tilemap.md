@@ -1302,12 +1302,6 @@ end
 
 ### LAutoTileSheet
 
-#### Definition
-
-```lua
----@class LAutoTileSheet
-```
-
 #### Description
 
 Lua-side handle wrapping an `AutoTileSheet` that maps bitmasks to tile quads for auto-tiling.
@@ -1328,12 +1322,6 @@ end
 
 ### LChunkMap
 
-#### Definition
-
-```lua
----@class LChunkMap
-```
-
 #### Description
 
 Lua-side handle wrapping a `ChunkMap` for infinite or very large tile grids stored in dynamically loaded chunks.
@@ -1352,12 +1340,6 @@ end
 ```
 
 ### LIsoMap
-
-#### Definition
-
-```lua
----@class LIsoMap
-```
 
 #### Description
 
@@ -1379,12 +1361,6 @@ end
 
 ### LLargeMapRenderer
 
-#### Definition
-
-```lua
----@class LLargeMapRenderer
-```
-
 #### Description
 
 Lua-side handle wrapping a `LargeMapRenderer` for chunk-based rendering of very large tile maps with LOD support.
@@ -1403,12 +1379,6 @@ end
 ```
 
 ### LMapBlock
-
-#### Definition
-
-```lua
----@class LMapBlock
-```
 
 #### Description
 
@@ -1430,12 +1400,6 @@ end
 
 ### LMapGen
 
-#### Definition
-
-```lua
----@class LMapGen
-```
-
 #### Description
 
 Lua-side handle wrapping a `MapGen` procedural map generator that assembles blocks into a tilemap.
@@ -1455,12 +1419,6 @@ end
 ```
 
 ### LMapGroup
-
-#### Definition
-
-```lua
----@class LMapGroup
-```
 
 #### Description
 
@@ -1482,12 +1440,6 @@ end
 
 ### LMapScript
 
-#### Definition
-
-```lua
----@class LMapScript
-```
-
 #### Description
 
 Lua-side handle wrapping a `MapScript` that defines a sequence of procedural generation steps.
@@ -1508,12 +1460,6 @@ end
 
 ### LTileMap
 
-#### Definition
-
-```lua
----@class LTileMap
-```
-
 #### Description
 
 Lua-side handle wrapping a `TileMap` with layers, tile data, collision, viewports, auto-tiling, and tile callbacks.
@@ -1533,12 +1479,6 @@ end
 ```
 
 ### LTileSet
-
-#### Definition
-
-```lua
----@class LTileSet
-```
 
 #### Description
 

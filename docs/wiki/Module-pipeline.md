@@ -214,12 +214,6 @@ end
 
 ### LPipeline
 
-#### Definition
-
-```lua
----@class LPipeline
-```
-
 #### Description
 
 A full pipeline that orchestrates multiple steps with dependency resolution, error modes, and async scheduling.
@@ -237,12 +231,6 @@ end
 ```
 
 ### LPipelineStep
-
-#### Definition
-
-```lua
----@class LPipelineStep
-```
 
 #### Description
 

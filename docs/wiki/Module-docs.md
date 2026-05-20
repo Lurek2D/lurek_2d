@@ -1060,12 +1060,6 @@ end
 
 ### LApiCatalog
 
-#### Definition
-
-```lua
----@class LApiCatalog
-```
-
 #### Description
 
 Provides Lua methods for querying, merging, filtering, and exporting catalog data.
@@ -1082,12 +1076,6 @@ end
 ```
 
 ### LDocEntry
-
-#### Definition
-
-```lua
----@class LDocEntry
-```
 
 #### Description
 
@@ -1149,12 +1137,6 @@ do
 
 ### LQualityReport
 
-#### Definition
-
-```lua
----@class LQualityReport
-```
-
 #### Description
 
 Provides Lua accessors for documentation quality scoring results.
@@ -1173,12 +1155,6 @@ end
 
 ### LSchema
 
-#### Definition
-
-```lua
----@class LSchema
-```
-
 #### Description
 
 Lua-side schema validator built from docs field rules.
@@ -1195,12 +1171,6 @@ end
 ```
 
 ### LValidationReport
-
-#### Definition
-
-```lua
----@class LValidationReport
-```
 
 #### Description
 

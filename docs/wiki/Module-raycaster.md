@@ -528,12 +528,6 @@ end
 
 ### LDoorManager
 
-#### Definition
-
-```lua
----@class LDoorManager
-```
-
 #### Description
 
 Lua-visible door manager that controls sliding doors within a raycaster map.
@@ -554,12 +548,6 @@ end
 
 ### LHeightMap
 
-#### Definition
-
-```lua
----@class LHeightMap
-```
-
 #### Description
 
 Lua-visible height map that stores per-cell floor and ceiling offsets for variable-height raycaster levels.
@@ -578,12 +566,6 @@ end
 ```
 
 ### LPointLight
-
-#### Definition
-
-```lua
----@class LPointLight
-```
 
 #### Description
 
@@ -604,12 +586,6 @@ end
 
 ### LRaycaster
 
-#### Definition
-
-```lua
----@class LRaycaster
-```
-
 #### Description
 
 Lua-visible raycaster map that holds cell data, per-cell textures, and provides raycasting,.
@@ -627,12 +603,6 @@ end
 ```
 
 ### LSpriteManager
-
-#### Definition
-
-```lua
----@class LSpriteManager
-```
 
 #### Description
 

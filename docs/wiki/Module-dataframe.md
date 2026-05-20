@@ -537,12 +537,6 @@ end
 
 ### LDatabase
 
-#### Definition
-
-```lua
----@class LDatabase
-```
-
 #### Description
 
 Lua-side in-memory database containing named dataframes.
@@ -559,12 +553,6 @@ end
 ```
 
 ### LDataFrame
-
-#### Definition
-
-```lua
----@class LDataFrame
-```
 
 #### Description
 
@@ -584,12 +572,6 @@ end
 ```
 
 ### LGroupedFrame
-
-#### Definition
-
-```lua
----@class LGroupedFrame
-```
 
 #### Description
 
@@ -611,12 +593,6 @@ end
 
 ### LLazyQuery
 
-#### Definition
-
-```lua
----@class LLazyQuery
-```
-
 #### Description
 
 Lua-side lazy dataframe query pipeline.
@@ -634,12 +610,6 @@ end
 ```
 
 ### LVecFrame
-
-#### Definition
-
-```lua
----@class LVecFrame
-```
 
 #### Description
 

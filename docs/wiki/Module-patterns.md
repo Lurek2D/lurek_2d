@@ -1132,12 +1132,6 @@ end
 
 ### LBehaviorTree
 
-#### Definition
-
-```lua
----@class LBehaviorTree
-```
-
 #### Description
 
 Lua-facing behavior tree for AI decision-making with sequences, selectors, parallels, inverters, repeaters, and leaf actions.
@@ -1157,12 +1151,6 @@ end
 ```
 
 ### LBlackboard
-
-#### Definition
-
-```lua
----@class LBlackboard
-```
 
 #### Description
 
@@ -1184,12 +1172,6 @@ end
 
 ### LCommandStack
 
-#### Definition
-
-```lua
----@class LCommandStack
-```
-
 #### Description
 
 Lua-facing undo/redo command stack. Records executed actions with optional undo functions for full history navigation.
@@ -1209,12 +1191,6 @@ end
 ```
 
 ### LDebounce
-
-#### Definition
-
-```lua
----@class LDebounce
-```
 
 #### Description
 
@@ -1243,12 +1219,6 @@ end
 
 ### LEventBus
 
-#### Definition
-
-```lua
----@class LEventBus
-```
-
 #### Description
 
 Lua-facing publish/subscribe event bus allowing decoupled communication between game systems.
@@ -1274,12 +1244,6 @@ end
 ```
 
 ### LFactory
-
-#### Definition
-
-```lua
----@class LFactory
-```
 
 #### Description
 
@@ -1310,12 +1274,6 @@ end
 
 ### LFunnel
 
-#### Definition
-
-```lua
----@class LFunnel
-```
-
 #### Description
 
 Lua-facing batching funnel that collects events over a time window and flushes them together.
@@ -1340,12 +1298,6 @@ end
 
 ### LList
 
-#### Definition
-
-```lua
----@class LList
-```
-
 #### Description
 
 Lua-facing dynamic array list with indexed access, insertion, removal, and search.
@@ -1366,12 +1318,6 @@ end
 
 ### LMap
 
-#### Definition
-
-```lua
----@class LMap
-```
-
 #### Description
 
 Lua-facing string-keyed dictionary (map) with keys(), values(), entries(), and merge operations.
@@ -1391,12 +1337,6 @@ end
 ```
 
 ### LMediator
-
-#### Definition
-
-```lua
----@class LMediator
-```
 
 #### Description
 
@@ -1425,12 +1365,6 @@ end
 
 ### LObjectPool
 
-#### Definition
-
-```lua
----@class LObjectPool
-```
-
 #### Description
 
 Lua-facing object pool for reusing pre-allocated game objects (bullets, particles, enemies) to avoid per-frame allocations.
@@ -1448,12 +1382,6 @@ end
 ```
 
 ### LObserver
-
-#### Definition
-
-```lua
----@class LObserver
-```
 
 #### Description
 
@@ -1481,12 +1409,6 @@ end
 
 ### LPatternGraph
 
-#### Definition
-
-```lua
----@class LPatternGraph
-```
-
 #### Description
 
 Lua-facing graph data structure with directed/undirected edges, BFS, DFS, and connectivity queries.
@@ -1506,12 +1428,6 @@ end
 ```
 
 ### LPriorityQueue
-
-#### Definition
-
-```lua
----@class LPriorityQueue
-```
 
 #### Description
 
@@ -1533,12 +1449,6 @@ end
 
 ### LQueue
 
-#### Definition
-
-```lua
----@class LQueue
-```
-
 #### Description
 
 Lua-facing FIFO queue with optional capacity limit. Supports enqueue/dequeue from both ends.
@@ -1558,12 +1468,6 @@ end
 ```
 
 ### LRelationshipManager
-
-#### Definition
-
-```lua
----@class LRelationshipManager
-```
 
 #### Description
 
@@ -1585,12 +1489,6 @@ end
 
 ### LRing
 
-#### Definition
-
-```lua
----@class LRing
-```
-
 #### Description
 
 Lua-facing fixed-size ring buffer for numeric or string values. Oldest entries are overwritten when full.
@@ -1611,12 +1509,6 @@ end
 
 ### LServiceLocator
 
-#### Definition
-
-```lua
----@class LServiceLocator
-```
-
 #### Description
 
 Lua-facing service locator for registering and retrieving shared services by name at runtime.
@@ -1634,12 +1526,6 @@ end
 ```
 
 ### LSet
-
-#### Definition
-
-```lua
----@class LSet
-```
 
 #### Description
 
@@ -1661,12 +1547,6 @@ end
 
 ### LSimpleState
 
-#### Definition
-
-```lua
----@class LSimpleState
-```
-
 #### Description
 
 Lua-facing finite state machine with enter/exit/update callbacks per state.
@@ -1687,12 +1567,6 @@ end
 
 ### LStack
 
-#### Definition
-
-```lua
----@class LStack
-```
-
 #### Description
 
 Lua-facing LIFO stack with optional capacity limit. Supports push/pop from both ends.
@@ -1712,12 +1586,6 @@ end
 ```
 
 ### LStrategy
-
-#### Definition
-
-```lua
----@class LStrategy
-```
 
 #### Description
 
@@ -1751,12 +1619,6 @@ end
 
 ### LThrottle
 
-#### Definition
-
-```lua
----@class LThrottle
-```
-
 #### Description
 
 Lua-facing throttle that limits how often an action can fire, enforcing a minimum interval between executions.
@@ -1782,12 +1644,6 @@ end
 ```
 
 ### LWeightedRandom
-
-#### Definition
-
-```lua
----@class LWeightedRandom
-```
 
 #### Description
 

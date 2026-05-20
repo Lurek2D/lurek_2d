@@ -1473,12 +1473,6 @@ end
 
 ### LAgent
 
-#### Definition
-
-```lua
----@class LAgent
-```
-
 #### Description
 
 Lua handle for a named agent stored inside an AI world.
@@ -1496,12 +1490,6 @@ end
 ```
 
 ### LAIBlackboard
-
-#### Definition
-
-```lua
----@class LAIBlackboard
-```
 
 #### Description
 
@@ -1521,12 +1509,6 @@ end
 
 ### LAIDirector
 
-#### Definition
-
-```lua
----@class LAIDirector
-```
-
 #### Description
 
 Lua handle for an AI director that tracks encounter tension and pacing factors.
@@ -1543,12 +1525,6 @@ end
 ```
 
 ### LAILod
-
-#### Definition
-
-```lua
----@class LAILod
-```
 
 #### Description
 
@@ -1567,12 +1543,6 @@ end
 
 ### LAIWorld
 
-#### Definition
-
-```lua
----@class LAIWorld
-```
-
 #### Description
 
 Lua handle for an AI world that owns named agents, global blackboard data, and custom callback registrations.
@@ -1589,12 +1559,6 @@ end
 ```
 
 ### LBandit
-
-#### Definition
-
-```lua
----@class LBandit
-```
 
 #### Description
 
@@ -1613,12 +1577,6 @@ end
 
 ### LBehaviorTree
 
-#### Definition
-
-```lua
----@class LBehaviorTree
-```
-
 #### Description
 
 Lua handle for a behavior tree root and its most recent execution status.
@@ -1635,12 +1593,6 @@ end
 ```
 
 ### LBTNode
-
-#### Definition
-
-```lua
----@class LBTNode
-```
 
 #### Description
 
@@ -1659,12 +1611,6 @@ end
 
 ### LCommandQueue
 
-#### Definition
-
-```lua
----@class LCommandQueue
-```
-
 #### Description
 
 Lua handle for a command queue that stores ordered callback-backed commands.
@@ -1681,12 +1627,6 @@ end
 ```
 
 ### LContextSteering
-
-#### Definition
-
-```lua
----@class LContextSteering
-```
 
 #### Description
 
@@ -1705,12 +1645,6 @@ end
 
 ### LDialogueAI
 
-#### Definition
-
-```lua
----@class LDialogueAI
-```
-
 #### Description
 
 Lua handle for topic and branch selection driven by dialogue AI state.
@@ -1727,12 +1661,6 @@ end
 ```
 
 ### LEmotionModel
-
-#### Definition
-
-```lua
----@class LEmotionModel
-```
 
 #### Description
 
@@ -1751,12 +1679,6 @@ end
 
 ### LGeneticAlgorithm
 
-#### Definition
-
-```lua
----@class LGeneticAlgorithm
-```
-
 #### Description
 
 Lua handle for a floating-point genetic algorithm population.
@@ -1773,12 +1695,6 @@ end
 ```
 
 ### LGOAPPlanner
-
-#### Definition
-
-```lua
----@class LGOAPPlanner
-```
 
 #### Description
 
@@ -1797,12 +1713,6 @@ end
 
 ### LHTNDomain
 
-#### Definition
-
-```lua
----@class LHTNDomain
-```
-
 #### Description
 
 Lua handle for a hierarchical task network domain.
@@ -1820,12 +1730,6 @@ end
 
 ### LInfluenceMap
 
-#### Definition
-
-```lua
----@class LInfluenceMap
-```
-
 #### Description
 
 Lua handle for a grid-based influence map with named layers.
@@ -1842,12 +1746,6 @@ end
 ```
 
 ### LMCTSEngine
-
-#### Definition
-
-```lua
----@class LMCTSEngine
-```
 
 #### Description
 
@@ -1869,12 +1767,6 @@ end
 
 ### LNeedSystem
 
-#### Definition
-
-```lua
----@class LNeedSystem
-```
-
 #### Description
 
 Lua handle for decaying needs and urgency selection.
@@ -1891,12 +1783,6 @@ end
 ```
 
 ### LNeuralNet
-
-#### Definition
-
-```lua
----@class LNeuralNet
-```
 
 #### Description
 
@@ -1915,12 +1801,6 @@ end
 
 ### LNeuroevolution
 
-#### Definition
-
-```lua
----@class LNeuroevolution
-```
-
 #### Description
 
 Lua handle for evolving neural network chromosomes.
@@ -1937,12 +1817,6 @@ end
 ```
 
 ### LORCASolver
-
-#### Definition
-
-```lua
----@class LORCASolver
-```
 
 #### Description
 
@@ -1961,12 +1835,6 @@ end
 
 ### LQLearner
 
-#### Definition
-
-```lua
----@class LQLearner
-```
-
 #### Description
 
 Lua handle for a Q-learning table with configurable exploration and learning parameters.
@@ -1983,12 +1851,6 @@ end
 ```
 
 ### LSquad
-
-#### Definition
-
-```lua
----@class LSquad
-```
 
 #### Description
 
@@ -2007,12 +1869,6 @@ end
 
 ### LStateMachine
 
-#### Definition
-
-```lua
----@class LStateMachine
-```
-
 #### Description
 
 Lua handle for a finite state machine with Lua-backed state callbacks and transition guards.
@@ -2029,12 +1885,6 @@ end
 ```
 
 ### LSteeringManager
-
-#### Definition
-
-```lua
----@class LSteeringManager
-```
 
 #### Description
 
@@ -2053,12 +1903,6 @@ end
 
 ### LStimulusWorld
 
-#### Definition
-
-```lua
----@class LStimulusWorld
-```
-
 #### Description
 
 Lua handle for sensory stimuli tracked in world space.
@@ -2075,12 +1919,6 @@ end
 ```
 
 ### LStrategyAI
-
-#### Definition
-
-```lua
----@class LStrategyAI
-```
 
 #### Description
 
@@ -2099,12 +1937,6 @@ end
 
 ### LTraitProfile
 
-#### Definition
-
-```lua
----@class LTraitProfile
-```
-
 #### Description
 
 Lua handle for trait values with temporary modifiers and archetype lookup.
@@ -2121,12 +1953,6 @@ end
 ```
 
 ### LUtilityAI
-
-#### Definition
-
-```lua
----@class LUtilityAI
-```
 
 #### Description
 

@@ -1699,12 +1699,6 @@ end
 
 ### LDepthSorter
 
-#### Definition
-
-```lua
----@class LDepthSorter
-```
-
 #### Description
 
 Depth sorter exposed to Lua as `LDepthSorter`. Collects draw callbacks or drawable objects with numeric depth values and flushes them in back-to-front order for correct painter's-algorithm rendering. Ideal for sorting sprites, particles, and layered game objects within a single scene.

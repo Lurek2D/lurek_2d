@@ -159,12 +159,6 @@ end
 
 ### LMinimap
 
-#### Definition
-
-```lua
----@class LMinimap
-```
-
 #### Description
 
 Lua-side wrapper for a minimap instance and access to render command state.

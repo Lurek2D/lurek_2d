@@ -393,12 +393,6 @@ end
 
 ### LAnimation
 
-#### Definition
-
-```lua
----@class LAnimation
-```
-
 #### Description
 
 Lua-side animation object containing frame rectangles, named clips, playback state, and blend state.
@@ -416,12 +410,6 @@ end
 
 ### LAnimCurve
 
-#### Definition
-
-```lua
----@class LAnimCurve
-```
-
 #### Description
 
 Lua-side animation curve with keyframes and optional custom easing callback.
@@ -438,12 +426,6 @@ end
 ```
 
 ### LAnimStateMachine
-
-#### Definition
-
-```lua
----@class LAnimStateMachine
-```
 
 #### Description
 
@@ -465,12 +447,6 @@ end
 
 ### LAnimSyncGroup
 
-#### Definition
-
-```lua
----@class LAnimSyncGroup
-```
-
 #### Description
 
 Lua-side animation synchronization group for coordinating multiple animation handles.
@@ -487,12 +463,6 @@ end
 ```
 
 ### LBlendLayerSet
-
-#### Definition
-
-```lua
----@class LBlendLayerSet
-```
 
 #### Description
 

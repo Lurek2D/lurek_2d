@@ -1154,12 +1154,6 @@ end
 
 ### LTerminal
 
-#### Definition
-
-```lua
----@class LTerminal
-```
-
 #### Description
 
 Lua-side userdata wrapping a terminal emulator grid with cell access, widgets, input, and rendering.
@@ -1179,12 +1173,6 @@ end
 ```
 
 ### LWidget
-
-#### Definition
-
-```lua
----@class LWidget
-```
 
 #### Description
 
