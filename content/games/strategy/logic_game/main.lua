@@ -200,6 +200,7 @@ end
 
 -- ── Process ───────────────────────────────────────────────
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     if step_particles then step_particles:update(dt) end
     if win_particles  then win_particles:update(dt)  end
 

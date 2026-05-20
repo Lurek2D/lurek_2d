@@ -204,6 +204,7 @@ end
 
 -- ── Process ───────────────────────────────────────────────────────────────
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     blink = blink + dt
     if lurek.input.wasActionPressed("quit") then lurek.event.quit(); return end
 

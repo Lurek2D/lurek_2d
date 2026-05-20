@@ -461,6 +461,7 @@ end
 
 -- ── Process ─────────────────────────────────────────────────
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     dt = dt * speed_mult
 
     if state == "TITLE" then

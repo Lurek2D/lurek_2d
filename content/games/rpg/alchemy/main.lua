@@ -251,6 +251,16 @@ function lurek.init()
     _cam = lurek.camera.new()
     lurek.window.setTitle("Alchemy Lab — Lurek2D")
     lurek.render.setBackgroundColor(0.12, 0.08, 0.06)
+    lurek.input.bind("enter", "return")
+    lurek.input.bind("escape", "escape")
+    lurek.input.bind("shop", "s")
+    lurek.input.bind("grind", "g")
+    lurek.input.bind("heat", "h")
+    lurek.input.bind("cool", "j")
+    lurek.input.bind("bottle", "b")
+    for i = 1, 6 do
+        lurek.input.bind("ingredient" .. i, tostring(i))
+    end
     _cam:reset()
 end
 
@@ -261,6 +271,7 @@ end
 -- ── Process ─────────────────────────────────────────────────────────────────
 
 function lurek.process(delta)
+    if lurek.automation then lurek.automation.update(delta) end
     dt = delta
     title_blink = title_blink + delta
 

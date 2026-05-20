@@ -1,4 +1,4 @@
-﻿-- content/games/showcase/html-inventory/main.lua
+-- content/games/showcase/html-inventory/main.lua
 -- HTML Inventory Demo â€” lurek.html showcase.
 --
 -- Shows a 4x5 inventory grid built entirely with HTML/CSS.  Click a slot to
@@ -103,6 +103,7 @@ function lurek.init()
 end
 
 function lurek.process(dt)
+  if lurek.automation then lurek.automation.update(dt) end
   if inv_doc then
     inv_doc:update(dt)
   end

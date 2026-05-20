@@ -304,6 +304,7 @@ end
 -- Process
 -- ---------------------------------------------------------------------------
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     fps = lurek.timer.getFPS()
 
     if lurek.input.wasActionPressed("quit") then

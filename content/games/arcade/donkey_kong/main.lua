@@ -346,6 +346,7 @@ end
 --  lurek.process — game logic
 -- ═══════════════════════════════════════════════════════════════════════════
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     lurek.tween.update(dt)
     sparks:update(dt)
     dust:update(dt)

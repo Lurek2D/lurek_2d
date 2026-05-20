@@ -303,12 +303,12 @@ function lurek.init()
     lurek.render.setBackgroundColor(0.02, 0.02, 0.06)
 
     -- Action-based input
-    lurek.input.bind("left",  { "a", "left" })
-    lurek.input.bind("right", { "d", "right" })
-    lurek.input.bind("fire",  { "space" })
-    lurek.input.bind("quit",  { "escape" })
-    lurek.input.bind("start", { "return" })
-    lurek.input.bind("restart", { "r" })
+    lurek.input.bind("left",  { "a", "left", "gamepad:0:12" })
+    lurek.input.bind("right", { "d", "right", "gamepad:0:13" })
+    lurek.input.bind("fire",  { "space", "gamepad:0:2" })
+    lurek.input.bind("quit",  { "escape", "gamepad:0:8" })
+    lurek.input.bind("start", { "return", "gamepad:0:0", "gamepad:0:9" })
+    lurek.input.bind("restart", { "r", "gamepad:0:3" })
 
     cam = lurek.camera.new(SCREEN_W, SCREEN_H)
 
@@ -320,6 +320,7 @@ end
 -- Process
 -- ---------------------------------------------------------------------------
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     -- Quit
     if lurek.input.wasActionPressed("quit") then
         lurek.event.quit()
@@ -357,10 +358,10 @@ function lurek.process(dt)
     -- -----------------------------------------------------------------------
 
     -- Player movement
-    if lurek.input.keyboard.isDown("left") then
+    if lurek.input.isActionDown("left") then
         player.x = player.x - PLAYER_SPEED * dt
     end
-    if lurek.input.keyboard.isDown("right") then
+    if lurek.input.isActionDown("right") then
         player.x = player.x + PLAYER_SPEED * dt
     end
     player.x = clamp(player.x, 0, SCREEN_W - PLAYER_W)

@@ -437,6 +437,7 @@ local function _ready_setup()
 end
 
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     -- track mouse
     cursor_x, cursor_y = lurek.input.mouse.getPosition()
 

@@ -3,7 +3,7 @@
 ;
 ; Requirements:
 ;   - NSIS 3.x (https://nsis.sourceforge.io/Download)
-;   - Built release binary at:  build\release\lurek.exe
+;   - Built dist binary at:     build\dist\lurek2d.exe
 ;   - Icon at:                  assets\icon.ico
 ;   - Run from workspace root:  makensis tools\installer.nsi
 ;
@@ -98,6 +98,13 @@ Section "Engine (required)" SecEngine
     SetOutPath "$INSTDIR\library"
     File /r "..\..\library\*.*"
 
+    ; Windows distribution helpers (.lurek packers and association repair script)
+    SetOutPath "$INSTDIR\tools\dist"
+    File "..\..\tools\dist\pack.ps1"
+    File "..\..\tools\dist\pack.py"
+    File "..\..\tools\dist\package_games.py"
+    File "..\..\tools\dist\register_lurek_filetype.ps1"
+
     ; API docs (lurek.md, lurek.lua LuaCATS stubs)
     SetOutPath "$INSTDIR\docs"
     File "..\..\docs\api\lurek.md"
@@ -158,6 +165,18 @@ Section ".lua File Association" SecFileAssoc
     System::Call 'Shell32::SHChangeNotify(i 0x8000000, i 0, i 0, i 0)'
 SectionEnd
 
+; ── .lurek File Association ─────────────────────────────────────────────────
+Section ".lurek File Association" SecArchiveAssoc
+    WriteRegStr HKCR ".lurek"                            ""            "Lurek2D.Game"
+    WriteRegStr HKCR "Lurek2D.Game"                     ""            "Lurek2D Game Archive"
+    WriteRegStr HKCR "Lurek2D.Game\DefaultIcon"         ""            "$INSTDIR\${APP_EXE},0"
+    WriteRegStr HKCR "Lurek2D.Game\shell\open"         ""            "Open with Lurek2D"
+    WriteRegStr HKCR "Lurek2D.Game\shell\open\command" ""           '"$INSTDIR\${APP_EXE}" "%1"'
+
+    ; Notify Windows that file associations have changed
+    System::Call 'Shell32::SHChangeNotify(i 0x8000000, i 0, i 0, i 0)'
+SectionEnd
+
 Section "Start Menu Shortcuts" SecStartMenu
     CreateDirectory "$SMPROGRAMS\${APP_NAME}"
     CreateShortcut  "$SMPROGRAMS\${APP_NAME}\${APP_NAME}.lnk"             "$INSTDIR\${APP_EXE}"  ""                                      "$INSTDIR\${APP_EXE}"
@@ -186,6 +205,7 @@ Section "Uninstall"
     RMDir /r "$INSTDIR\games"
     RMDir /r "$INSTDIR\library"
     RMDir /r "$INSTDIR\docs"
+    RMDir /r "$INSTDIR\tools"
     RMDir    "$INSTDIR"
 
     ; Remove shortcuts
@@ -196,6 +216,8 @@ Section "Uninstall"
     ; Remove .lua file association
     DeleteRegKey HKCR ".lua"
     DeleteRegKey HKCR "Lurek2DScript"
+    DeleteRegKey HKCR ".lurek"
+    DeleteRegKey HKCR "Lurek2D.Game"
 
     ; Remove registry keys
     DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}"

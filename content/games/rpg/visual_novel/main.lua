@@ -589,6 +589,7 @@ end
 -- lurek.process
 -- ---------------------------------------------------------------------------
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     -- FPS toggle
     if lurek.input.keyboard.isDown("f3") then fps_visible = not fps_visible end
 

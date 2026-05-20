@@ -166,10 +166,10 @@ end
 -- ---------------------------------------------------------------------------
 -- Input bindings
 -- ---------------------------------------------------------------------------
-lurek.input.bind("run_left",  "a")
-lurek.input.bind("run_right", "d")
-lurek.input.bind("action",    "space")
-lurek.input.bind("quit",      "escape")
+lurek.input.bind("run_left",  { "a", "left", "gamepad:0:12" })
+lurek.input.bind("run_right", { "d", "right", "gamepad:0:13" })
+lurek.input.bind("action",    { "space", "gamepad:0:0", "gamepad:0:2" })
+lurek.input.bind("quit",      { "escape", "gamepad:0:8" })
 
 -- ---------------------------------------------------------------------------
 -- Init AI runners
@@ -425,8 +425,8 @@ end
 -- Mash processing
 -- ---------------------------------------------------------------------------
 local function process_mash(dt)
-    local pressed_a = lurek.input.keyboard.isDown("run_left")
-    local pressed_d = lurek.input.keyboard.isDown("run_right")
+    local pressed_a = lurek.input.isActionDown("run_left")
+    local pressed_d = lurek.input.isActionDown("run_right")
 
     if pressed_a and p_last_key ~= "a" then
         p_mash_power = clamp(p_mash_power + 12 * (p_stamina / p_max_stamina), 0, 100)
@@ -492,7 +492,7 @@ local function update_long_jump(dt)
         process_mash(dt)
         px = px + p_speed * dt
 
-        if lurek.input.keyboard.isDown("action") and px >= BOARD_X - 20 and px <= BOARD_X + 20 then
+        if lurek.input.isActionDown("action") and px >= BOARD_X - 20 and px <= BOARD_X + 20 then
             -- Jump
             p_airborne = true
             local angle_factor = 0.7 + 0.3 * (clamp(px - BOARD_X + 20, 0, 40) / 40)
@@ -579,7 +579,7 @@ local function update_javelin(dt)
         end
     elseif angle_set then
         -- Waiting for throw release
-        if lurek.input.keyboard.isDown("action") then
+        if lurek.input.isActionDown("action") then
             throw_released = true
             event_timer = 0
             p_vy = -p_speed * math.sin(math.rad(angle))
@@ -589,7 +589,7 @@ local function update_javelin(dt)
         process_mash(dt)
         px = px + p_speed * dt
 
-        if lurek.input.keyboard.isDown("action") and p_speed > 30 then
+        if lurek.input.isActionDown("action") and p_speed > 30 then
             angle_set = true
             angle = 0
         end
@@ -646,7 +646,7 @@ local function update_high_jump(dt)
         process_mash(dt)
         px = px + p_speed * dt
 
-        if lurek.input.keyboard.isDown("action") and math.abs(px - BAR_X) < 60 then
+        if lurek.input.isActionDown("action") and math.abs(px - BAR_X) < 60 then
             hj_jumping = true
             local jump_power = clamp(p_speed / MAX_SPEED, 0.3, 1.0)
             p_vy = -(450 * jump_power)
@@ -667,7 +667,7 @@ local function update_hurdles(dt)
     event_timer = event_timer + dt
 
     -- Jump
-    if lurek.input.keyboard.isDown("action") and not p_airborne then
+    if lurek.input.isActionDown("action") and not p_airborne then
         p_airborne = true
         p_vy = -350
         ps_dust:setPosition(px, TRACK_Y)
@@ -801,8 +801,9 @@ end
 -- lurek.process
 -- ---------------------------------------------------------------------------
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     -- Quit
-    if lurek.input.keyboard.isDown("quit") then
+    if lurek.input.isActionDown("quit") then
         lurek.event.push("quit")
         return
     end
@@ -815,7 +816,7 @@ function lurek.process(dt)
 
     -- Title
     if current_state == STATE.TITLE then
-        if lurek.input.keyboard.isDown("action") then
+        if lurek.input.isActionDown("action") then
             p_stamina = p_max_stamina
             medals = { gold = 0, silver = 0, bronze = 0 }
             total_points = 0
@@ -862,7 +863,7 @@ function lurek.process(dt)
 
     -- Final screen
     if current_state == STATE.FINAL then
-        if lurek.input.keyboard.isDown("action") then
+        if lurek.input.isActionDown("action") then
             current_state = STATE.TITLE
         end
         return

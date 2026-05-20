@@ -193,6 +193,7 @@ end
 -- Update
 ------------------------------------------------------------
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     fps = lurek.timer.getFPS()
 
     if state == STATE_TITLE then

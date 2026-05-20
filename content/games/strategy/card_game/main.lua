@@ -583,6 +583,7 @@ end
 -- Process
 -- ---------------------------------------------------------------------------
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     -- Shake decay
     if shake_timer > 0 then
         shake_timer = shake_timer - dt

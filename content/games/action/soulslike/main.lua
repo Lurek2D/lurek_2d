@@ -526,6 +526,7 @@ function lurek.init()
 end
 
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     -- FPS display
     lurek.window.setTitle("Soulslike — Lurek2D | FPS: " .. lurek.timer.getFPS())
 

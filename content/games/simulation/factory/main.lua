@@ -884,6 +884,7 @@ local function _ready_setup()
 end
 
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     game_time = game_time + dt
 
     if lurek.input.wasActionPressed("quit") then

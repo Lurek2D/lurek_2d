@@ -267,6 +267,11 @@ function lurek.update(dt)
     end
 end
 
+function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
+    lurek.update(dt)
+end
+
 -- ── Draw ──────────────────────────────────────────────────────────────────
 function lurek.draw()
     -- Tiles
@@ -362,7 +367,7 @@ function lurek.mousepressed(x, y, button)
 end
 
 -- ── Keypressed ────────────────────────────────────────────────────────────
-function lurek._keypressed(key)
+function lurek.keypressed(key)
     if key == "escape" then lurek.event.quit() end
     if key == "tab" then
         build_index = (build_index % #BUILD_ORDER) + 1

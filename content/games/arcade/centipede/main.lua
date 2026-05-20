@@ -595,6 +595,7 @@ end
 
 -- ── update ────────────────────────────────────────────────────────────────
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     lurek.tween.update(dt)
     sparks:update(dt)
     burst:update(dt)
@@ -862,6 +863,6 @@ function lurek.draw_ui()
 end
 
 -- ── keypressed ────────────────────────────────────────────────────────────
-function lurek._keypressed(key)
+function lurek.keypressed(key)
     if key == "escape" then lurek.event.quit() end
 end

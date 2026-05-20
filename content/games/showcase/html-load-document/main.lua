@@ -76,6 +76,7 @@ function lurek.init()
 end
 
 function lurek.process(dt)
+  if lurek.automation then lurek.automation.update(dt) end
   elapsed = elapsed + dt
   score = score + math.floor(dt * 120)
 

@@ -209,6 +209,7 @@ end
 
 -- ── Process ───────────────────────────────────────────────
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     if hit_particles  then hit_particles:update(dt)  end
     if card_particles then card_particles:update(dt) end
 

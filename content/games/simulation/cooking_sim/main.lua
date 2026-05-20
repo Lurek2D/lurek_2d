@@ -236,6 +236,7 @@ end
 -- Process
 ------------------------------------------------------------
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     local fps = lurek.timer.getFPS()
     lurek.window.setTitle(string.format("Cooking Sim — Day %d | Gold: %d | FPS: %d", day, gold, fps))
 

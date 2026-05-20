@@ -259,19 +259,25 @@ local function ln(x1, y1, x2, y2, c)
 end
 
 function lurek.init()
+  lurek.input.bind("left", { "a", "left", "gamepad:0:12" })
+  lurek.input.bind("right", { "d", "right", "gamepad:0:13" })
+  lurek.input.bind("jump", { "space", "w", "up", "gamepad:0:0" })
+  lurek.input.bind("start", { "return", "gamepad:0:0", "gamepad:0:9" })
+  lurek.input.bind("quit", { "escape", "gamepad:0:8" })
   load_level(1)
 end
 
 function lurek.process(dt)
+  if lurek.automation then lurek.automation.update(dt) end
   -- Global quit
-  if lurek.input.keyboard.isDown("escape") then
+  if lurek.input.isActionDown("quit") then
     lurek.event.quit()
     return
   end
 
   -- ---- TITLE ----
   if state == TITLE then
-    if lurek.input.keyboard.isDown("return") then
+    if lurek.input.wasActionPressed("start") then
       state = PLAYING
       score = 0
       gem_count = 0
@@ -284,7 +290,7 @@ function lurek.process(dt)
 
   -- ---- GAME OVER ----
   if state == GAME_OVER then
-    if lurek.input.keyboard.isDown("return") then
+    if lurek.input.wasActionPressed("start") then
       state = TITLE
     end
     return
@@ -310,12 +316,12 @@ function lurek.process(dt)
 
   -- Input
   local move_x = 0
-  if lurek.input.isActionDown("a") or lurek.input.isActionDown("left") then move_x = move_x - 1 end
-  if lurek.input.isActionDown("d") or lurek.input.isActionDown("right") then move_x = move_x + 1 end
+  if lurek.input.isActionDown("left") then move_x = move_x - 1 end
+  if lurek.input.isActionDown("right") then move_x = move_x + 1 end
   if move_x ~= 0 then player.facing = move_x end
 
   player.vx = move_x * SPEED
-  if (lurek.input.keyboard.isDown("space") or lurek.input.keyboard.isDown("w") or lurek.input.keyboard.isDown("up")) and player.on_ground then
+  if lurek.input.wasActionPressed("jump") and player.on_ground then
     player.vy = JUMP_VEL
     player.on_ground = false
   end

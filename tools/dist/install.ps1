@@ -4,51 +4,52 @@
     Install or uninstall the Lurek2D engine locally on Windows.
 
 .DESCRIPTION
-    Builds the Lurek2D engine in release mode through tools/dev/parallel_cargo.py, copies the binary to
-    %USERPROFILE%\bin (or a custom destination via -Destination), and
-    copies the content/demos/ folder so you can run games from any terminal.
-
-    Run with --uninstall / -Uninstall to remove a previous installation.
+    Builds the Lurek2D engine in release mode through tools/dev/parallel_cargo.py,
+    copies lurek2d.exe to %USERPROFILE%\bin or a custom destination, copies
+    content/games, and registers .lurek archive double-click handling for the
+    current user unless -SkipFileAssociation is passed.
 
 .PARAMETER Destination
     Target directory for the binary. Defaults to "$env:USERPROFILE\bin".
 
 .PARAMETER Uninstall
-    Remove the binary and installed examples from Destination.
+    Remove the installed binary and copied games from Destination.
+
+.PARAMETER SkipFileAssociation
+    Skip registering .lurek files with the installed engine binary.
 
 .EXAMPLE
-    .\tools\install.ps1
-    .\tools\install.ps1 -Destination "C:\Programs\lurek2d"
-    .\tools\install.ps1 --uninstall
+    .\tools\dist\install.ps1
+    .\tools\dist\install.ps1 -Destination "C:\Programs\lurek2d"
+    .\tools\dist\install.ps1 -Uninstall
 #>
 
 param(
     [string]$Destination = "$env:USERPROFILE\bin",
-    [switch]$Uninstall
+    [switch]$Uninstall,
+    [switch]$SkipFileAssociation
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
-$BinaryName  = 'lurek2d.exe'
-$BinaryDest  = Join-Path $Destination $BinaryName
-$ExamplesDest = Join-Path $Destination 'games'
+$BinaryName = 'lurek2d.exe'
+$BinaryDest = Join-Path $Destination $BinaryName
+$GamesDest = Join-Path $Destination 'games'
 
-# ── Helper ────────────────────────────────────────────────────────────────────
-function Write-Step([string]$Msg) {
-    Write-Host "[lurek2d] $Msg" -ForegroundColor Cyan
+function Write-Step([string]$Message) {
+    Write-Host "[lurek2d] $Message" -ForegroundColor Cyan
 }
 
-function Write-OK([string]$Msg) {
-    Write-Host "[  OK  ] $Msg" -ForegroundColor Green
+function Write-OK([string]$Message) {
+    Write-Host "[  OK  ] $Message" -ForegroundColor Green
 }
 
-function Write-Fail([string]$Msg) {
-    Write-Host "[ FAIL ] $Msg" -ForegroundColor Red
+function Write-Fail([string]$Message) {
+    Write-Host "[ FAIL ] $Message" -ForegroundColor Red
     exit 1
 }
 
-# ── Uninstall path ─────────────────────────────────────────────────────────────
 if ($Uninstall) {
     Write-Step "Uninstalling Lurek2D from '$Destination' ..."
 
@@ -56,70 +57,79 @@ if ($Uninstall) {
         Remove-Item $BinaryDest -Force
         Write-OK "Removed $BinaryDest"
     } else {
-        Write-Host "[  --  ] Binary not found at $BinaryDest (already removed?)"
+        Write-Host "[  --  ] Binary not found at $BinaryDest"
     }
 
-    if (Test-Path $ExamplesDest) {
-        Remove-Item $ExamplesDest -Recurse -Force
-        Write-OK "Removed $ExamplesDest"
+    if (Test-Path $GamesDest) {
+        Remove-Item $GamesDest -Recurse -Force
+        Write-OK "Removed $GamesDest"
     } else {
-        Write-Host "[  --  ] Examples folder not found at $ExamplesDest"
+        Write-Host "[  --  ] Games folder not found at $GamesDest"
     }
 
     Write-OK "Uninstall complete."
     exit 0
 }
 
-# ── Install path ───────────────────────────────────────────────────────────────
-
-# 1. Verify we are at the workspace root
 $WorkspaceRoot = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 $CargoToml = Join-Path $WorkspaceRoot 'Cargo.toml'
 if (-not (Test-Path $CargoToml)) {
-    Write-Fail "Cannot find Cargo.toml. Run this script from the lurek2d workspace root."
+    Write-Fail "Cannot find Cargo.toml. Run this script from the Lurek2D workspace."
 }
 
-# 2. Build release binary
-Write-Step "Building Lurek2D (release) — this may take a minute..."
+Write-Step "Building Lurek2D release binary."
 Push-Location $WorkspaceRoot
 try {
     python tools/dev/parallel_cargo.py build release 2>&1 | ForEach-Object { Write-Host "    $_" }
-    if ($LASTEXITCODE -ne 0) { Write-Fail "parallel_cargo.py build release failed (exit $LASTEXITCODE)." }
+    if ($LASTEXITCODE -ne 0) {
+        Write-Fail "parallel_cargo.py build release failed with exit code $LASTEXITCODE."
+    }
 } finally {
     Pop-Location
 }
 Write-OK "Build succeeded."
 
-# 3. Locate the compiled binary
 $BuiltBinary = Join-Path $WorkspaceRoot 'build\release\lurek2d.exe'
 if (-not (Test-Path $BuiltBinary)) {
     Write-Fail "Expected binary at '$BuiltBinary' but it was not found."
 }
 
-# 4. Create destination directory
 if (-not (Test-Path $Destination)) {
-    Write-Step "Creating destination directory '$Destination' ..."
+    Write-Step "Creating destination directory '$Destination'."
     New-Item -ItemType Directory -Path $Destination -Force | Out-Null
     Write-OK "Directory created."
 }
 
-# 5. Copy binary
-Write-Step "Installing binary to '$BinaryDest' ..."
+Write-Step "Installing binary to '$BinaryDest'."
 Copy-Item $BuiltBinary -Destination $BinaryDest -Force
 Write-OK "Binary installed."
 
-# 6. Copy games (showcase game demos)
-$ExamplesSource = Join-Path $WorkspaceRoot 'content\games'
-if (Test-Path $ExamplesSource) {
-    Write-Step "Copying content/games to '$ExamplesDest' ..."
-    if (Test-Path $ExamplesDest) { Remove-Item $ExamplesDest -Recurse -Force }
-    Copy-Item $ExamplesSource -Destination $ExamplesDest -Recurse -Force
+$GamesSource = Join-Path $WorkspaceRoot 'content\games'
+if (Test-Path $GamesSource) {
+    Write-Step "Copying content/games to '$GamesDest'."
+    if (Test-Path $GamesDest) {
+        Remove-Item $GamesDest -Recurse -Force
+    }
+    Copy-Item $GamesSource -Destination $GamesDest -Recurse -Force
     Write-OK "Games copied."
 } else {
-    Write-Host "[  --  ] content/games/ folder not found — skipping."
+    Write-Host "[  --  ] content/games folder not found; skipping."
 }
 
-# 7. PATH advisory
+if (-not $SkipFileAssociation) {
+    $RegisterScript = Join-Path $WorkspaceRoot 'tools\dist\register_lurek_filetype.ps1'
+    if (Test-Path $RegisterScript) {
+        Write-Step "Registering .lurek archives for '$BinaryDest'."
+        & powershell -ExecutionPolicy Bypass -File $RegisterScript -EnginePath $BinaryDest
+        if ($LASTEXITCODE -ne 0) {
+            Write-Fail ".lurek file association registration failed with exit code $LASTEXITCODE."
+        }
+        Write-OK ".lurek file association registered for the current user."
+    } else {
+        Write-Host "[  --  ] register_lurek_filetype.ps1 not found; skipping .lurek association."
+    }
+}
+
 $PathDirs = $env:PATH -split ';'
 if ($Destination -notin $PathDirs) {
     Write-Host ""
@@ -129,5 +139,5 @@ if ($Destination -notin $PathDirs) {
     Write-Host ""
 }
 
-Write-OK "Lurek2D installed. Run:  lurek2d content\games\showcase\hello_world"
-Write-OK "Or use games from:     $ExamplesDest"
+Write-OK "Lurek2D installed. Run: lurek2d.exe content\games\showcase\hello_world"
+Write-OK "Or use games from: $GamesDest"

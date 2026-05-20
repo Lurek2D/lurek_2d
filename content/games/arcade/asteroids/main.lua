@@ -289,6 +289,7 @@ end
 --  lurek.process(dt) — gameplay logic
 -- ===========================================================================
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     -- Global quit
     if lurek.input.wasActionPressed("quit") then
         lurek.event.quit()

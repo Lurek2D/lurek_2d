@@ -247,10 +247,12 @@ end
 -- Input bindings
 -- ============================================================
 
-lurek.input.bind("next_room", "space")
-lurek.input.bind("equip",     "e")
-lurek.input.bind("buy",       "b")
-lurek.input.bind("quit",      "escape")
+lurek.input.bind("next_room", { "space", "gamepad:0:0", "gamepad:0:9" })
+lurek.input.bind("equip",     { "e", "gamepad:0:2" })
+lurek.input.bind("buy",       { "b", "gamepad:0:3" })
+lurek.input.bind("up",        { "up", "w", "gamepad:0:10" })
+lurek.input.bind("down",      { "down", "s", "gamepad:0:11" })
+lurek.input.bind("quit",      { "escape", "gamepad:0:8" })
 
 -- ============================================================
 -- Callbacks
@@ -334,6 +336,7 @@ function lurek.init()
 end
 
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     titleBlink = titleBlink + dt
 
     if lootSparkle then lootSparkle:update(dt) end
@@ -392,9 +395,9 @@ function lurek.process(dt)
         end
     end
 
-    if lurek.input.keyboard.isDown("up") then
+    if lurek.input.isActionDown("up") then
         scrollOffset = math.max(0, scrollOffset - 1)
-    elseif lurek.input.keyboard.isDown("down") then
+    elseif lurek.input.isActionDown("down") then
         scrollOffset = scrollOffset + 1
     end
 end

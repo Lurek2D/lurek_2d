@@ -148,10 +148,10 @@ end
 function lurek.init()
     lurek.window.setTitle("Sensible Soccer — Lurek2D")
     lurek.render.setBackgroundColor(0.15, 0.48, 0.18)
-    lurek.input.bind("left",  "a,left")
-    lurek.input.bind("right", "d,right")
-    lurek.input.bind("up",    "w,up")
-    lurek.input.bind("down",  "s,down")
+    lurek.input.bind("left",  { "a", "left" })
+    lurek.input.bind("right", { "d", "right" })
+    lurek.input.bind("up",    { "w", "up" })
+    lurek.input.bind("down",  { "s", "down" })
     lurek.input.bind("kick",  "space")
     reset_positions(1)
 end
@@ -172,7 +172,7 @@ function lurek.update(dt)
     if match_time >= MATCH_LEN then state = STATE.FT; return end
 
     -- Pick controlled player
-    controlled = find_nearest_player(1)
+    controlled = find_nearest_player(1) or controlled
 
     -- Human movement
     local mx, my = 0, 0
@@ -288,6 +288,11 @@ function lurek.update(dt)
     end
 end
 
+function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
+    lurek.update(dt)
+end
+
 -- ── Draw ──────────────────────────────────────────────────────────────────
 function lurek.draw()
     -- Pitch markings
@@ -360,7 +365,7 @@ function lurek.draw()
 end
 
 -- ── Keypressed ────────────────────────────────────────────────────────────
-function lurek._keypressed(key)
+function lurek.keypressed(key)
     if key == "escape" then lurek.event.quit() end
     if (key == "space" or key == "return") and state == STATE.PLAY then
         -- Shoot: kick ball in player's facing direction + aftertouch

@@ -299,12 +299,12 @@ function lurek.init()
     lurek.window.setTitle("Shadow of the Beast — Lurek2D")
     lurek.render.setBackgroundColor(0.05, 0.02, 0.15)
 
-    lurek.input.bind("left", "a")
-    lurek.input.bind("right", "d")
-    lurek.input.bind("jump", {"space", "w"})
-    lurek.input.bind("attack", "f")
-    lurek.input.bind("confirm", "return")
-    lurek.input.bind("quit", "escape")
+    lurek.input.bind("left", { "a", "left", "gamepad:0:12" })
+    lurek.input.bind("right", { "d", "right", "gamepad:0:13" })
+    lurek.input.bind("jump", { "space", "w", "up", "gamepad:0:0" })
+    lurek.input.bind("attack", { "f", "gamepad:0:2" })
+    lurek.input.bind("confirm", { "return", "gamepad:0:0", "gamepad:0:9" })
+    lurek.input.bind("quit", { "escape", "gamepad:0:8" })
 
     cam = lurek.camera.new()
     reset_game()
@@ -328,11 +328,11 @@ end
 local function update_player(dt)
     -- Horizontal movement
     player.vx = 0
-    if lurek.input.keyboard.isDown("left") then
+    if lurek.input.isActionDown("left") then
         player.vx = -WALK_SPEED
         player.facing = -1
     end
-    if lurek.input.keyboard.isDown("right") then
+    if lurek.input.isActionDown("right") then
         player.vx = WALK_SPEED
         player.facing = 1
     end
@@ -714,6 +714,7 @@ end
 -- Update (process)
 -- ---------------------------------------------------------------------------
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     if lurek.input.wasActionPressed("quit") then
         lurek.event.quit()
         return

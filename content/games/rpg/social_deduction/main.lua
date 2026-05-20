@@ -82,19 +82,19 @@ local title_alpha = 0
 local result_timer = 0
 
 -- ── Input bindings ─────────────────────────────────────────────────────────
-lurek.input.bind("up", "w")
-lurek.input.bind("down", "s")
-lurek.input.bind("left", "a")
-lurek.input.bind("right", "d")
-lurek.input.bind("interact", "e")
-lurek.input.bind("meeting", "m")
+lurek.input.bind("up", { "w", "up", "gamepad:0:10" })
+lurek.input.bind("down", { "s", "down", "gamepad:0:11" })
+lurek.input.bind("left", { "a", "left", "gamepad:0:12" })
+lurek.input.bind("right", { "d", "right", "gamepad:0:13" })
+lurek.input.bind("interact", { "e", "gamepad:0:0" })
+lurek.input.bind("meeting", { "m", "gamepad:0:3" })
 lurek.input.bind("vote1", "1")
 lurek.input.bind("vote2", "2")
 lurek.input.bind("vote3", "3")
 lurek.input.bind("vote4", "4")
 lurek.input.bind("vote5", "5")
 lurek.input.bind("vote6", "6")
-lurek.input.bind("quit", "escape")
+lurek.input.bind("quit", { "escape", "gamepad:0:8" })
 
 -- ── Helpers ────────────────────────────────────────────────────────────────
 local function dist(ax, ay, bx, by)
@@ -488,6 +488,7 @@ local function _ready_setup()
 end
 
 function lurek.process(delta)
+    if lurek.automation then lurek.automation.update(delta) end
     dt = delta
     frame_count = frame_count + 1
 
@@ -522,10 +523,10 @@ function lurek.process(delta)
 
         -- player movement
         local mx, my = 0, 0
-        if lurek.input.keyboard.isDown("up")    then my = my - 1 end
-        if lurek.input.keyboard.isDown("down")  then my = my + 1 end
-        if lurek.input.keyboard.isDown("left")  then mx = mx - 1 end
-        if lurek.input.keyboard.isDown("right") then mx = mx + 1 end
+        if lurek.input.isActionDown("up")    then my = my - 1 end
+        if lurek.input.isActionDown("down")  then my = my + 1 end
+        if lurek.input.isActionDown("left")  then mx = mx - 1 end
+        if lurek.input.isActionDown("right") then mx = mx + 1 end
         if mx ~= 0 or my ~= 0 then
             local len = math.sqrt(mx * mx + my * my)
             p.x = clamp(p.x + (mx / len) * PLAYER_SPEED * dt, 20, 750)

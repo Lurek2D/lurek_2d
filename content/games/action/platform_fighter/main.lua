@@ -517,6 +517,7 @@ end
 
 -- ── lurek.process ────────────────────────────────────────────────────────
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     update_tweens(dt)
 
     -- Quit

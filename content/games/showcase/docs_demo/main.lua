@@ -366,6 +366,7 @@ end
 
 -- ── Update ───────────────────────────────────────────────────────────────
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     ps_page:update(dt)
     ps_search:update(dt)
     lurek.tween.update(dt)
@@ -793,7 +794,7 @@ function lurek.draw_ui()
 end
 
 -- ── Keyboard text input for search ─────────────────────────────────────────
-function lurek._keypressed(key)
+function lurek.keypressed(key)
     if current_state == STATE.SEARCH then
         if key == "backspace" and #search_query > 0 then
             search_query = search_query:sub(1, -2)

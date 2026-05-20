@@ -347,6 +347,7 @@ end
 -- Process
 ------------------------------------------------------------------------
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     title_time = title_time + dt
 
     -- Quit

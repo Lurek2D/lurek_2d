@@ -410,15 +410,15 @@ function lurek.init()
     lurek.render.setBackgroundColor(0.05, 0.02, 0.1)
 
     -- Action-based input
-    lurek.input.bind("up",      "w");     lurek.input.bind("up",      "up")
-    lurek.input.bind("down",    "s");     lurek.input.bind("down",    "down")
-    lurek.input.bind("left",    "a");     lurek.input.bind("left",    "left")
-    lurek.input.bind("right",   "d");     lurek.input.bind("right",   "right")
-    lurek.input.bind("fire",    "space")
-    lurek.input.bind("bomb",    "x")
-    lurek.input.bind("focus",   "lshift"); lurek.input.bind("focus",   "rshift")
-    lurek.input.bind("quit",    "escape")
-    lurek.input.bind("start",   "return")
+    lurek.input.bind("up",      { "w", "up", "gamepad:0:10" })
+    lurek.input.bind("down",    { "s", "down", "gamepad:0:11" })
+    lurek.input.bind("left",    { "a", "left", "gamepad:0:12" })
+    lurek.input.bind("right",   { "d", "right", "gamepad:0:13" })
+    lurek.input.bind("fire",    { "space", "gamepad:0:2" })
+    lurek.input.bind("bomb",    { "x", "gamepad:0:1" })
+    lurek.input.bind("focus",   { "lshift", "rshift", "gamepad:0:5" })
+    lurek.input.bind("quit",    { "escape", "gamepad:0:8" })
+    lurek.input.bind("start",   { "return", "gamepad:0:0", "gamepad:0:9" })
 
     cam = lurek.camera.new(SCREEN_W, SCREEN_H)
     math.randomseed(os.time())
@@ -430,6 +430,7 @@ end
 -- Process
 -- ---------------------------------------------------------------------------
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     if lurek.input.wasActionPressed("quit") then
         lurek.event.quit()
         return
@@ -479,10 +480,10 @@ function lurek.process(dt)
     local speed = focused and FOCUS_SPEED or PLAYER_SPEED
 
     -- Player movement
-    if lurek.input.keyboard.isDown("left")  then player.x = player.x - speed * dt end
-    if lurek.input.keyboard.isDown("right") then player.x = player.x + speed * dt end
-    if lurek.input.keyboard.isDown("up")    then player.y = player.y - speed * dt end
-    if lurek.input.keyboard.isDown("down")  then player.y = player.y + speed * dt end
+    if lurek.input.isActionDown("left")  then player.x = player.x - speed * dt end
+    if lurek.input.isActionDown("right") then player.x = player.x + speed * dt end
+    if lurek.input.isActionDown("up")    then player.y = player.y - speed * dt end
+    if lurek.input.isActionDown("down")  then player.y = player.y + speed * dt end
     player.x = clamp(player.x, PLAYER_SIZE, SCREEN_W - PLAYER_SIZE)
     player.y = clamp(player.y, PLAYER_SIZE, SCREEN_H - PLAYER_SIZE)
 

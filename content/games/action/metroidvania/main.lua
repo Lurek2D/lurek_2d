@@ -482,6 +482,7 @@ end
 
 -- ── update ────────────────────────────────────────────────────────────────
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     if current_state == STATE.TITLE then
         title_blink = title_blink + dt
         if lurek.input.wasActionPressed("jump") then

@@ -286,6 +286,11 @@ function lurek.update(dt)
     if #soldiers == 0 then state = STATE.LOSE end
 end
 
+function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
+    lurek.update(dt)
+end
+
 -- ── Draw ──────────────────────────────────────────────────────────────────
 function lurek.draw()
     -- Tiles
@@ -385,6 +390,6 @@ function lurek.mousepressed(x, y, button)
 end
 
 -- ── Keypressed ────────────────────────────────────────────────────────────
-function lurek._keypressed(key)
+function lurek.keypressed(key)
     if key == "escape" then lurek.event.quit() end
 end

@@ -399,6 +399,7 @@ end
 -- lurek.process — update
 -- ---------------------------------------------------------------------------
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     update_particles(dt)
     update_score_pops(dt)
 
@@ -866,6 +867,6 @@ end
 -- ---------------------------------------------------------------------------
 -- lurek.keypressed — discrete key events
 -- ---------------------------------------------------------------------------
-function lurek._keypressed(key)
+function lurek.keypressed(key)
     if key == "escape" then lurek.event.quit() end
 end

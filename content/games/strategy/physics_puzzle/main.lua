@@ -250,6 +250,7 @@ end
 
 -- ── Process ───────────────────────────────────────────────
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     if ball_trail    then ball_trail:update(dt)    end
     if win_burst     then win_burst:update(dt)     end
     if bounce_sparks then bounce_sparks:update(dt) end

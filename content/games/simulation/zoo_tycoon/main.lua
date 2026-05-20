@@ -401,6 +401,7 @@ end
 -- Update
 ------------------------------------------------------------
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     fps = lurek.timer.getFPS()
     titleBlink = titleBlink + dt
 

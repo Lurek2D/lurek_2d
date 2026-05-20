@@ -479,6 +479,7 @@ end
 -- Update
 -- ---------------------------------------------------------------------------
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     -- Quit / back
     if lurek.input.wasActionPressed("quit") then
         if current_state == STATES.ALBUM then

@@ -466,6 +466,7 @@ end
 -- lurek.process — game logic
 ------------------------------------------------------------------------
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     local fps = lurek.timer.getFPS()
     lurek.window.setTitle("Creature Collector — Lurek2D | FPS: " .. math.floor(fps))
 

@@ -205,6 +205,7 @@ end
 
 -- ── Process ───────────────────────────────────────────────
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     if expand_burst then expand_burst:update(dt) end
     if city_sparkle then city_sparkle:update(dt) end
     if info_timer > 0 then info_timer = info_timer - dt end

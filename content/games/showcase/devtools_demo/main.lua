@@ -234,6 +234,7 @@ end
 
 -- ── Update ─────────────────────────────────────────────────────────────────
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     local scaled_dt = dt * time_scale
     frame_time_ms = dt * 1000
     record_frame_time(frame_time_ms)

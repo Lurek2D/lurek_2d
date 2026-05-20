@@ -478,17 +478,27 @@ end
 
 --@api-stub: LSpriteBatch:type
 do
-    print("type = LSpriteBatch")
+    local img = lurek.render.newImage("content/examples/assets/images/sample_texture.png"); local batch = lurek.render.newSpriteBatch(img, 50)
+    print("type = " .. batch:type())
+    print("is LSpriteBatch = " .. tostring(batch:typeOf("LSpriteBatch")))
+    local released = batch:release()
+    print("released = " .. tostring(released))
 end
 
 --@api-stub: LSpriteBatch:typeOf
 do
-    print("is LSpriteBatch = true")
+    local img = lurek.render.newImage("content/examples/assets/images/sample_texture.png"); local batch = lurek.render.newSpriteBatch(img, 50)
+    print("type = " .. batch:type())
+    print("is LSpriteBatch = " .. tostring(batch:typeOf("LSpriteBatch")))
+    local released = batch:release()
+    print("released = " .. tostring(released))
 end
 
 --@api-stub: LSpriteBatch:release
 do
     local img = lurek.render.newImage("content/examples/assets/images/sample_texture.png"); local batch = lurek.render.newSpriteBatch(img, 50)
+    print("type = " .. batch:type())
+    print("is LSpriteBatch = " .. tostring(batch:typeOf("LSpriteBatch")))
     local released = batch:release()
     print("released = " .. tostring(released))
 end
@@ -568,27 +578,39 @@ end
 
 --@api-stub: lurek.render.newShader
 do
-    print("type = LShader")
+    local shader = lurek.render.newShader([[ @vertex fn vs_main(@builtin(vertex_index) idx: u32) -> @builtin(position) vec4<f32> { return vec4<f32>(0.0, 0.0, 0.0, 1.0); } @fragment fn fs_main() -> @location(0) vec4<f32> { return vec4<f32>(0.5, 0.5, 1.0, 1.0); } ]])
+    print("type = " .. shader:type())
 end
 
 --@api-stub: LShader:send
 do
+    local shader = lurek.render.newShader([[ @vertex fn vs_main(@builtin(vertex_index) idx: u32) -> @builtin(position) vec4<f32> { return vec4<f32>(0.0, 0.0, 0.0, 1.0); } @fragment fn fs_main() -> @location(0) vec4<f32> { return vec4<f32>(0.5, 0.5, 1.0, 1.0); } ]])
+    shader:send("time", 1.5)
     print("sent time")
 end
 
 --@api-stub: LShader:setShader
 do
-    print("shader active = true")
+    local shader = lurek.render.newShader([[ @vertex fn vs_main(@builtin(vertex_index) idx: u32) -> @builtin(position) vec4<f32> { return vec4<f32>(0.0, 0.0, 0.0, 1.0); } @fragment fn fs_main() -> @location(0) vec4<f32> { return vec4<f32>(0.5, 0.5, 1.0, 1.0); } ]])
+    lurek.render.setShader(shader)
+    print("shader active = " .. tostring(lurek.render.getShader()))
+    lurek.render.setShader(nil)
 end
 
 --@api-stub: LShader:getShader
 do
-    print("shader active = true")
+    local shader = lurek.render.newShader([[ @vertex fn vs_main(@builtin(vertex_index) idx: u32) -> @builtin(position) vec4<f32> { return vec4<f32>(0.0, 0.0, 0.0, 1.0); } @fragment fn fs_main() -> @location(0) vec4<f32> { return vec4<f32>(0.5, 0.5, 1.0, 1.0); } ]])
+    lurek.render.setShader(shader)
+    print("shader active = " .. tostring(lurek.render.getShader()))
+    lurek.render.setShader(nil)
 end
 
 --@api-stub: LShader:release
 do
-    print("released = true")
+    local code = [[ @vertex fn vs(@builtin(vertex_index) i: u32) -> @builtin(position) vec4<f32> { return vec4<f32>(0.0); } @fragment fn fs() -> @location(0) vec4<f32> { return vec4<f32>(1.0); } ]]
+    local shader = lurek.render.newShader(code)
+    local released = shader:release()
+    print("released = " .. tostring(released))
 end
 
 --@api-stub: lurek.render.newMesh
@@ -738,9 +760,9 @@ end
 
 --@api-stub: lurek.render.newFont
 do
-    local font = lurek.render.newFont(16); print("font type = " .. font:type()); print("is LFont = " .. tostring(font:typeOf("LFont")))
+    local font = lurek.render.newFont("content/examples/assets/fonts/sample_font.ttf", 16); print("font type = " .. font:type()); print("is LFont = " .. tostring(font:typeOf("LFont")))
     lurek.render.setFont(font); local active = lurek.render.getFont(); print("active font = " .. active:type())
-    lurek.render.print("Using custom font", 10, 10); local font = lurek.render.newFont(16); lurek.render.setFont(font)
+    lurek.render.print("Using custom font", 10, 10); local font = lurek.render.newFont("content/examples/assets/fonts/sample_font.ttf", 16); lurek.render.setFont(font)
     lurek.render.print("Rendered with custom font", 10, 350); lurek.render.print("Second line", 10, 370)
     local def = lurek.render.getDefaultFont(); lurek.render.setFont(def)
 end
@@ -749,14 +771,14 @@ end
 do
     local defFont = lurek.render.getDefaultFont(); print("default font height = " .. defFont:getHeight()); local bigDefault = lurek.render.getDefaultFont(24)
     print("big default height = " .. bigDefault:getHeight()); lurek.render.setFont(bigDefault); lurek.render.print("Big default font", 10, 30)
-    local font = lurek.render.newFont(16); lurek.render.setFont(font)
+    local font = lurek.render.newFont("content/examples/assets/fonts/sample_font.ttf", 16); lurek.render.setFont(font)
     lurek.render.print("Rendered with custom font", 10, 350); lurek.render.print("Second line", 10, 370)
     local def = lurek.render.getDefaultFont(); lurek.render.setFont(def)
 end
 
 --@api-stub: LFont:getWidth
 do
-    local font = lurek.render.newFont(14); print("width of 'Hello' = " .. font:getWidth("Hello"))
+    local font = lurek.render.newFont("content/examples/assets/fonts/sample_font.ttf", 14); print("width of 'Hello' = " .. font:getWidth("Hello"))
     print("height = " .. font:getHeight())
     print("line height = " .. font:getLineHeight())
     print("ascent = " .. font:getAscent())
@@ -765,7 +787,7 @@ end
 
 --@api-stub: LFont:getHeight
 do
-    local font = lurek.render.newFont(14); print("width of 'Hello' = " .. font:getWidth("Hello"))
+    local font = lurek.render.newFont("content/examples/assets/fonts/sample_font.ttf", 14); print("width of 'Hello' = " .. font:getWidth("Hello"))
     print("height = " .. font:getHeight())
     print("line height = " .. font:getLineHeight())
     print("ascent = " .. font:getAscent())
@@ -774,7 +796,7 @@ end
 
 --@api-stub: LFont:getLineHeight
 do
-    local font = lurek.render.newFont(14); print("width of 'Hello' = " .. font:getWidth("Hello"))
+    local font = lurek.render.newFont("content/examples/assets/fonts/sample_font.ttf", 14); print("width of 'Hello' = " .. font:getWidth("Hello"))
     print("height = " .. font:getHeight())
     print("line height = " .. font:getLineHeight())
     print("ascent = " .. font:getAscent())
@@ -783,7 +805,7 @@ end
 
 --@api-stub: LFont:getAscent
 do
-    local font = lurek.render.newFont(14); print("width of 'Hello' = " .. font:getWidth("Hello"))
+    local font = lurek.render.newFont("content/examples/assets/fonts/sample_font.ttf", 14); print("width of 'Hello' = " .. font:getWidth("Hello"))
     print("height = " .. font:getHeight())
     print("line height = " .. font:getLineHeight())
     print("ascent = " .. font:getAscent())
@@ -792,7 +814,7 @@ end
 
 --@api-stub: LFont:getDescent
 do
-    local font = lurek.render.newFont(14); print("width of 'Hello' = " .. font:getWidth("Hello"))
+    local font = lurek.render.newFont("content/examples/assets/fonts/sample_font.ttf", 14); print("width of 'Hello' = " .. font:getWidth("Hello"))
     print("height = " .. font:getHeight())
     print("line height = " .. font:getLineHeight())
     print("ascent = " .. font:getAscent())
@@ -801,7 +823,7 @@ end
 
 --@api-stub: LFont:getWrap
 do
-    local font = lurek.render.newFont(12); local lines, width = font:getWrap("This is a long paragraph of text that should wrap nicely.", 150)
+    local font = lurek.render.newFont("content/examples/assets/fonts/sample_font.ttf", 12); local lines, width = font:getWrap("This is a long paragraph of text that should wrap nicely.", 150)
     print("wrapped lines = " .. #lines .. " width = " .. width)
     for i, line in ipairs(lines) do print("  " .. i .. ": " .. line) end
     font:setLineHeight(1.5)
@@ -810,7 +832,7 @@ end
 
 --@api-stub: LFont:setLineHeight
 do
-    local font = lurek.render.newFont(12); local lines, width = font:getWrap("This is a long paragraph of text that should wrap nicely.", 150)
+    local font = lurek.render.newFont("content/examples/assets/fonts/sample_font.ttf", 12); local lines, width = font:getWrap("This is a long paragraph of text that should wrap nicely.", 150)
     print("wrapped lines = " .. #lines .. " width = " .. width)
     for i, line in ipairs(lines) do print("  " .. i .. ": " .. line) end
     font:setLineHeight(1.5)
@@ -820,7 +842,7 @@ end
 --@api-stub: LFont:release
 do
     ---@type LFont
-    local font = lurek.render.newFont(18)
+    local font = lurek.render.newFont("content/examples/assets/fonts/sample_font.ttf", 18)
     local released = font:release()
     print("released = " .. tostring(released))
 end
@@ -834,7 +856,7 @@ end
 
 --@api-stub: lurek.render.getFontWidth
 do
-    local font = lurek.render.newFont(14); local w = lurek.render.getFontWidth(font, "Measurement")
+    local font = lurek.render.newFont("content/examples/assets/fonts/sample_font.ttf", 14); local w = lurek.render.getFontWidth(font, "Measurement")
     print("font width = " .. w); local h = lurek.render.getFontHeight(font)
     print("font height = " .. h)
     local lh = lurek.render.getFontLineHeight(font)
@@ -844,7 +866,7 @@ end
 --@api-stub: lurek.render.getFontAscent
 do
     ---@type LFont
-    local font = lurek.render.newFont(16)
+    local font = lurek.render.newFont("content/examples/assets/fonts/sample_font.ttf", 16)
     print("ascent = " .. lurek.render.getFontAscent(font))
     print("descent = " .. lurek.render.getFontDescent(font))
     print("cell width = " .. lurek.render.getFontCellWidth(font))
@@ -852,7 +874,7 @@ end
 
 --@api-stub: lurek.render.getFontWrap
 do
-    local font = lurek.render.newFont(12)
+    local font = lurek.render.newFont("content/examples/assets/fonts/sample_font.ttf", 12)
     local lines, width = lurek.render.getFontWrap("A long sentence for wrap testing at 200 px limit.", 200)
     print("lines = " .. #lines .. " max_width = " .. width)
     lurek.render.setFontLineHeight(font, 2.0)
@@ -909,7 +931,7 @@ end
 
 --@api-stub: lurek.render.setFont
 do
-    local font = lurek.render.newFont(16); lurek.render.setFont(font)
+    local font = lurek.render.newFont("content/examples/assets/fonts/sample_font.ttf", 16); lurek.render.setFont(font)
     lurek.render.print("Rendered with custom font", 10, 350)
     lurek.render.print("Second line", 10, 370)
     local def = lurek.render.getDefaultFont()
@@ -948,7 +970,7 @@ end
 
 --@api-stub: LFont:type
 do
-    local f = lurek.render.newFont(16)
+    local f = lurek.render.newFont("content/examples/assets/fonts/sample_font.ttf", 16)
     print("type=" .. f:type())
     print("typeOf=" .. tostring(f:typeOf("LFont")))
     f:release()
@@ -956,7 +978,7 @@ end
 
 --@api-stub: LFont:typeOf
 do
-    local f = lurek.render.newFont(16)
+    local f = lurek.render.newFont("content/examples/assets/fonts/sample_font.ttf", 16)
     print("type=" .. f:type())
     print("typeOf=" .. tostring(f:typeOf("LFont")))
     f:release()
@@ -981,23 +1003,29 @@ end
 
 --@api-stub: LShader:hasUniform
 do
-    print("has_time=true")
-    print("type=LShader")
-    print("typeOf=true")
+    local code = [[ uniform float time; vec4 effect(vec4 color, Image tex, vec2 uv, vec2 fragCoord) { return Texel(tex, uv) * color; } ]]; local sh = lurek.render.newShader(code)
+    print("has_time=" .. tostring(sh:hasUniform("time"))); sh:send("time", 0.5)
+    print("type=" .. sh:type())
+    print("typeOf=" .. tostring(sh:typeOf("LShader")))
+    sh:release()
 end
 
 --@api-stub: LShader:type
 do
-    print("has_time=true")
-    print("type=LShader")
-    print("typeOf=true")
+    local code = [[ uniform float time; vec4 effect(vec4 color, Image tex, vec2 uv, vec2 fragCoord) { return Texel(tex, uv) * color; } ]]; local sh = lurek.render.newShader(code)
+    print("has_time=" .. tostring(sh:hasUniform("time"))); sh:send("time", 0.5)
+    print("type=" .. sh:type())
+    print("typeOf=" .. tostring(sh:typeOf("LShader")))
+    sh:release()
 end
 
 --@api-stub: LShader:typeOf
 do
-    print("has_time=true")
-    print("type=LShader")
-    print("typeOf=true")
+    local code = [[ uniform float time; vec4 effect(vec4 color, Image tex, vec2 uv, vec2 fragCoord) { return Texel(tex, uv) * color; } ]]; local sh = lurek.render.newShader(code)
+    print("has_time=" .. tostring(sh:hasUniform("time"))); sh:send("time", 0.5)
+    print("type=" .. sh:type())
+    print("typeOf=" .. tostring(sh:typeOf("LShader")))
+    sh:release()
 end
 
 --@api-stub: LSpriteBatch:add
@@ -1020,22 +1048,20 @@ end
 
 --@api-stub: LSpriteBatch:getBufferSize
 do
-    local img = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
-    local sb = lurek.render.newSpriteBatch(img, 100)
-    print("buf=" .. sb:getBufferSize())
-    sb:release()
+    local img = lurek.render.newImage("content/examples/assets/images/sample_texture.png"); local sb = lurek.render.newSpriteBatch(img, 100); local id = sb:add(0, 0, 0, 1, 1, 0, 0)
+    sb:add(100, 0, 0, 1, 1, 0, 0); print("count=" .. sb:getCount())
+    print("buf=" .. sb:getBufferSize()); sb:clear()
+    print("count_after=" .. sb:getCount()); print("type=" .. sb:type())
+    print("typeOf=" .. tostring(sb:typeOf("LSpriteBatch"))); sb:release()
 end
 
 --@api-stub: LSpriteBatch:getCount
 do
-    local img = lurek.render.newImage("content/examples/assets/images/sample_texture.png")
-    local sb = lurek.render.newSpriteBatch(img, 100)
-    sb:add(0, 0, 0, 1, 1, 0, 0)
-    sb:add(100, 0, 0, 1, 1, 0, 0)
-    print("count=" .. sb:getCount())
-    sb:clear()
-    print("count_after=" .. sb:getCount())
-    sb:release()
+    local img = lurek.render.newImage("content/examples/assets/images/sample_texture.png"); local sb = lurek.render.newSpriteBatch(img, 100); local id = sb:add(0, 0, 0, 1, 1, 0, 0)
+    sb:add(100, 0, 0, 1, 1, 0, 0); print("count=" .. sb:getCount())
+    print("buf=" .. sb:getBufferSize()); sb:clear()
+    print("count_after=" .. sb:getCount()); print("type=" .. sb:type())
+    print("typeOf=" .. tostring(sb:typeOf("LSpriteBatch"))); sb:release()
 end
 
 --- Render Module Part 6: module-level functions (clear, color, blend, canvas, shader, transforms, font, wireframe, dims, scissor, line/point)
@@ -1080,7 +1106,7 @@ end
 
 --@api-stub: lurek.render.getFont
 do
-    local f = lurek.render.newFont(14)
+    local f = lurek.render.newFont("content/examples/assets/fonts/sample_font.ttf", 14)
     lurek.render.setFont(f)
     local cur = lurek.render.getFont()
     print("font=" .. tostring(cur ~= nil))
@@ -1096,12 +1122,20 @@ end
 
 --@api-stub: lurek.render.getShader
 do
-    print("shader=true")
+    local code = "vec4 effect(vec4 c, Image t, vec2 uv, vec2 fc) { return Texel(t, uv) * c; }"; local sh = lurek.render.newShader(code)
+    lurek.render.setShader(sh)
+    local cur = lurek.render.getShader()
+    print("shader=" .. tostring(cur ~= nil))
+    lurek.render.setShader(nil)
 end
 
 --@api-stub: lurek.render.setShader
 do
-    print("shader=true")
+    local code = "vec4 effect(vec4 c, Image t, vec2 uv, vec2 fc) { return Texel(t, uv) * c; }"; local sh = lurek.render.newShader(code)
+    lurek.render.setShader(sh)
+    local cur = lurek.render.getShader()
+    print("shader=" .. tostring(cur ~= nil))
+    lurek.render.setShader(nil)
 end
 
 --@api-stub: lurek.render.isWireframe

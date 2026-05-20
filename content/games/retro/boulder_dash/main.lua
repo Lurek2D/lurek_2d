@@ -261,6 +261,12 @@ end
 function lurek.init()
     lurek.window.setTitle("Boulder Dash — Lurek2D")
     lurek.render.setBackgroundColor(0.06, 0.04, 0.02)
+    lurek.input.bind("ui_accept", { "return", "space" })
+    lurek.input.bind("quit", "escape")
+    lurek.input.bind("up", { "w", "up" })
+    lurek.input.bind("down", { "s", "down" })
+    lurek.input.bind("left", { "a", "left" })
+    lurek.input.bind("right", { "d", "right" })
     math.randomseed(os.time())
 end
 
@@ -269,6 +275,7 @@ local function _ready_setup()
 end
 
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     if state == TITLE then
         if lurek.input.wasActionPressed("ui_accept") then
             level = 1

@@ -1,4 +1,4 @@
-﻿-- content/games/showcase/terminal_demo/main.lua
+-- content/games/showcase/terminal_demo/main.lua
 -- Terminal API showcase: 5 navigable scenes covering all lurek.terminal widgets.
 -- Auto-fills the window. Navigate: Left/Right arrows or 1-5.
 
@@ -580,6 +580,7 @@ function lurek.draw()
 end
 
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     tick = tick + 1
 end
 

@@ -314,6 +314,7 @@ end
 -- lurek.process
 -- ---------------------------------------------------------------------------
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     -- FPS
     fps_count = fps_count + 1
     fps_timer = fps_timer + dt

@@ -156,6 +156,7 @@ end
 -- ── Update ───────────────────────────────────────────────────────────────
 
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     -- Tween update (runs in all states for smooth finish)
     lurek.tween.update(dt)
 
@@ -349,7 +350,7 @@ end
 
 -- ── Input events ─────────────────────────────────────────────────────────
 
-function lurek._keypressed(key)
+function lurek.keypressed(key)
     if key == "escape" then
         lurek.event.quit()
     end

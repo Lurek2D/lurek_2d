@@ -580,18 +580,18 @@ function lurek.init()
     lurek.render.setBackgroundColor(0.08, 0.06, 0.04)
     _cam = lurek.camera.new()
 
-    lurek.input.bind("up",     "w");    lurek.input.bind("up",     "up")
-    lurek.input.bind("down",   "s");    lurek.input.bind("down",   "down")
-    lurek.input.bind("left",   "a");    lurek.input.bind("left",   "left")
-    lurek.input.bind("right",  "d");    lurek.input.bind("right",  "right")
-    lurek.input.bind("attack", "j");    lurek.input.bind("attack", "mouse_left")
-    lurek.input.bind("ranged", "k");    lurek.input.bind("ranged", "mouse_right")
-    lurek.input.bind("dash",   "lshift"); lurek.input.bind("dash",  "rshift")
+    lurek.input.bind("up",     { "w", "up", "gamepad:0:10" })
+    lurek.input.bind("down",   { "s", "down", "gamepad:0:11" })
+    lurek.input.bind("left",   { "a", "left", "gamepad:0:12" })
+    lurek.input.bind("right",  { "d", "right", "gamepad:0:13" })
+    lurek.input.bind("attack", { "j", "mouse_left", "gamepad:0:2" })
+    lurek.input.bind("ranged", { "k", "mouse_right", "gamepad:0:1" })
+    lurek.input.bind("dash",   { "lshift", "rshift", "gamepad:0:5" })
     lurek.input.bind("perk1",  "1")
     lurek.input.bind("perk2",  "2")
     lurek.input.bind("perk3",  "3")
-    lurek.input.bind("restart","r")
-    lurek.input.bind("quit",   "escape")
+    lurek.input.bind("restart",{ "r", "gamepad:0:3" })
+    lurek.input.bind("quit",   { "escape", "gamepad:0:8" })
 
     math.randomseed(os.time())
     reset_game()
@@ -650,6 +650,7 @@ end
 --  lurek.process — game logic each frame
 -- ══════════════════════════════════════════════════════════════════════════
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     if lurek.input.wasActionPressed("quit") then lurek.event.quit() end
 
     -- ── Title ─────────────────────────────────────────────────────────
@@ -700,10 +701,10 @@ function lurek.process(dt)
         if player.dash_timer <= 0 then player.dashing = false end
     else
         local mx, my = 0, 0
-        if lurek.input.keyboard.isDown("left")  then mx = mx - 1 end
-        if lurek.input.keyboard.isDown("right") then mx = mx + 1 end
-        if lurek.input.keyboard.isDown("up")    then my = my - 1 end
-        if lurek.input.keyboard.isDown("down")  then my = my + 1 end
+        if lurek.input.isActionDown("left")  then mx = mx - 1 end
+        if lurek.input.isActionDown("right") then mx = mx + 1 end
+        if lurek.input.isActionDown("up")    then my = my - 1 end
+        if lurek.input.isActionDown("down")  then my = my + 1 end
         if mx ~= 0 or my ~= 0 then
             local nx, ny = normalize(mx, my)
             player.facing_x = nx

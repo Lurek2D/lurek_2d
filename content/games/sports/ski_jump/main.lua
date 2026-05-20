@@ -219,6 +219,7 @@ end
 
 -- ─── Process ─────────────────────────────────────────────────────────
 function lurek.process(delta)
+    if lurek.automation then lurek.automation.update(delta) end
     dt = delta
 
     if lurek.input.isActionDown("quit") then

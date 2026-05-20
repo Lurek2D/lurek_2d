@@ -308,6 +308,7 @@ end
 
 -- ── Process ───────────────────────────────────────────────
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     if match_sparks then match_sparks:update(dt) end
     if bomb_burst   then bomb_burst:update(dt)   end
     if drop_dust    then drop_dust:update(dt)    end

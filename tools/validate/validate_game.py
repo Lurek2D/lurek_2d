@@ -55,7 +55,8 @@ def _build_api_manifest() -> Dict[str, Set[str]]:
 # Known callbacks that are set, not called
 KNOWN_CALLBACKS = {
     # Modern lifecycle callbacks (engine calls these on the game script)
-    "lurek.init", "lurek.process", "lurek.draw", "lurek.draw_ui",
+    "lurek.init", "lurek.process", "lurek.process_physics", "lurek.process_late",
+    "lurek.draw", "lurek.draw_ui",
     # Legacy lifecycle aliases still accepted by the engine
     "lurek.load", "lurek.update",
     # Input callbacks

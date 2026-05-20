@@ -10,11 +10,12 @@ distribution archives, and installing the engine locally.
 | `release.ps1` | Windows | **Full release pipeline**: debug + release + dist builds, portable ZIP, NSIS installer, VS Code extension → `dist/github-release/` |
 | `dist.ps1` | Windows | Dist build → `dist/lurek2d-windows-x86_64/` + `.zip` |
 | `dist.sh` | Linux / macOS | Release build → `dist/lurek2d-<os>-<arch>/` + `.tar.gz` |
-| `install.ps1` | Windows | Install `lurek.exe` to user PATH |
+| `install.ps1` | Windows | Install `lurek2d.exe` to user PATH and register `.lurek` for the current user |
 | `install.sh` | Linux / macOS | Install `lurek2d` to `/usr/local/bin` |
 | `installer.nsi` | Windows | NSIS installer script → `dist/lurek2d-*-setup.exe` |
 | `pack.ps1` | Windows | Pack a game folder into a `.lurek` archive (PowerShell) |
 | `pack.py` | Cross-platform | Pack a game folder into a `.lurek` archive (Python) |
+| `register_lurek_filetype.ps1` | Windows | Register `.lurek` double-click launch for an installed `lurek2d.exe` |
 | `package_games.py` | Cross-platform | Package game and demo content for distribution workflows |
 
 ## Quick start — full release
@@ -49,6 +50,9 @@ powershell -ExecutionPolicy Bypass -File tools/dist/dist.ps1 -SkipBuild
 # Install locally (Windows)
 powershell -ExecutionPolicy Bypass -File tools/dist/install.ps1
 
+# Repair or add .lurek association manually
+powershell -ExecutionPolicy Bypass -File tools/dist/register_lurek_filetype.ps1 -UsePathLookup
+
 # Linux / macOS release package
 bash tools/dist/dist.sh
 
@@ -76,6 +80,8 @@ artifacts and a SHA256 checksum file attached.
 | UPX 3.x+ | `scoop install upx` | Binary compression in `dist.ps1` |
 | NSIS 3.x | `scoop install nsis` | `installer.nsi` |
 | Node.js 18+ / npm | `scoop install nodejs` | VS Code extension |
+
+Portable ZIP and the NSIS installer both include `tools/dist/pack.ps1`, `tools/dist/pack.py`, `tools/dist/package_games.py`, and `tools/dist/register_lurek_filetype.ps1` so Windows users can pack `.lurek` archives and repair file association without cloning the repository.
 
 ```
 

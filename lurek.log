@@ -1,54 +1,32 @@
-[2026-05-20T13:04:23.934Z] INFO  [L081] L081: C:\Users\tombl\Documents\lurek2D\lurek.log
-[2026-05-20T13:04:23.935Z] INFO  [L001] Lurek2D Engine starting: v1.0.0 (wgpu GPU backend)
-[2026-05-20T13:04:23.935Z] INFO  [L080] Game directory: C:\Users\tombl\AppData\Local\Temp\lurek-example-render-e3jp4fkw
-[2026-05-20T13:04:24.046Z] WARN  InstanceFlags::VALIDATION requested, but unable to find layer: VK_LAYER_KHRONOS_validation
-[2026-05-20T13:04:24.047Z] WARN  GENERAL [Loader Message (0x0)]
+[2026-05-20T21:44:17.495Z] INFO  [L081] L081: C:\Users\tombl\Documents\lurek2D\lurek.log
+[2026-05-20T21:44:17.496Z] INFO  [L001] Lurek2D Engine starting: v1.0.0 (wgpu GPU backend)
+[2026-05-20T21:44:17.496Z] INFO  [L080] Game directory: content/games/apps/household_finance_lab
+[2026-05-20T21:44:17.609Z] WARN  InstanceFlags::VALIDATION requested, but unable to find layer: VK_LAYER_KHRONOS_validation
+[2026-05-20T21:44:17.610Z] WARN  GENERAL [Loader Message (0x0)]
 	windows_read_data_files_in_registry: Registry lookup failed to get layer manifest files.
-[2026-05-20T13:04:24.047Z] WARN  	objects: (type: INSTANCE, hndl: 0x1d5ba6ee110, name: ?)
-[2026-05-20T13:04:24.116Z] WARN  Unable to enable D3D12 debug interface: 0x887A002D
-[2026-05-20T13:04:24.116Z] WARN  Unable to enable DXGI debug interface: 0x887A002D
-[2026-05-20T13:04:24.125Z] WARN  Unrecognized present mode 1000361000
-[2026-05-20T13:04:24.369Z] INFO  [L033] GPU adapter selected: NVIDIA GeForce RTX 4060 Laptop GPU (Vulkan, DiscreteGpu) [backend=auto, power=high]
-[2026-05-20T13:04:24.405Z] WARN  Unrecognized present mode 1000361000
-[2026-05-20T13:04:24.405Z] INFO  [L034] GPU texture dimension limit: 32768
-[2026-05-20T13:04:24.405Z] WARN  Unrecognized present mode 1000361000
-[2026-05-20T13:04:24.683Z] INFO  [L035] GPU initialised: 731ms (format=Bgra8UnormSrgb, present=Fifo, 800x600)
-[2026-05-20T13:04:24.683Z] DEBUG Loaded 846 mappings.
-[2026-05-20T13:04:24.708Z] WARN  Unrecognized present mode 1000361000
-[2026-05-20T13:04:24.714Z] WARN  Unrecognized present mode 1000361000
-[2026-05-20T13:04:24.717Z] DEBUG [FS01] GameFS initialised
-[2026-05-20T13:04:25.122Z] DEBUG [AT01] Simulator created
-[2026-05-20T13:04:25.123Z] DEBUG [SC01] SC01
-[2026-05-20T13:04:25.123Z] DEBUG [GU01] GuiContext created
-[2026-05-20T13:04:25.123Z] INFO  [L003] Game loaded: C:\Users\tombl\AppData\Local\Temp\lurek-example-render-e3jp4fkw\main.lua
-[2026-05-20T13:04:25.140Z] DEBUG [TX01] texture decoded: 64x64
-[2026-05-20T13:04:25.141Z] DEBUG [TX01] texture decoded: 64x64
-[2026-05-20T13:04:25.141Z] DEBUG [TX01] texture decoded: 64x64
-[2026-05-20T13:04:25.141Z] DEBUG [TX01] texture decoded: 64x64
-[2026-05-20T13:04:25.142Z] DEBUG [TX01] texture decoded: 64x64
-[2026-05-20T13:04:25.142Z] DEBUG [CV01] canvas created: 128x128
-[2026-05-20T13:04:25.142Z] DEBUG [CV01] canvas created: 64x64
-[2026-05-20T13:04:25.142Z] DEBUG [CV01] canvas created: 64x64
-[2026-05-20T13:04:25.142Z] DEBUG [CV01] canvas created: 64x64
-[2026-05-20T13:04:25.142Z] DEBUG [CV01] canvas created: 200x100
-[2026-05-20T13:04:25.142Z] DEBUG [TX01] texture decoded: 64x64
-[2026-05-20T13:04:25.143Z] DEBUG [TX01] texture decoded: 64x64
-[2026-05-20T13:04:25.143Z] DEBUG [TX01] texture decoded: 64x64
-[2026-05-20T13:04:25.144Z] DEBUG [TX01] texture decoded: 64x64
-[2026-05-20T13:04:25.144Z] DEBUG [TX01] texture decoded: 64x64
-[2026-05-20T13:04:25.145Z] DEBUG [TX01] texture decoded: 64x64
-[2026-05-20T13:04:25.149Z] DEBUG [CV01] canvas created: 256x256
-[2026-05-20T13:04:25.149Z] DEBUG [CV01] canvas created: 256x256
-[2026-05-20T13:04:25.149Z] DEBUG [CV01] canvas created: 128x64
-[2026-05-20T13:04:25.149Z] DEBUG [CV01] canvas created: 128x64
-[2026-05-20T13:04:25.149Z] DEBUG [CV01] canvas created: 128x64
-[2026-05-20T13:04:25.150Z] DEBUG [TX01] texture decoded: 64x64
-[2026-05-20T13:04:25.150Z] DEBUG [TX01] texture decoded: 64x64
-[2026-05-20T13:04:25.150Z] DEBUG [TX01] texture decoded: 64x64
-[2026-05-20T13:04:25.150Z] DEBUG [TX01] texture decoded: 64x64
-[2026-05-20T13:04:25.151Z] DEBUG [TX01] texture decoded: 64x64
-[2026-05-20T13:04:25.151Z] ERROR [L011] Lua error: main.lua: runtime error: lurek.graphic.setFont: font handle is not valid or was released
-stack traceback:
-	[C]: in ?
-	[string "main.lua"]:1084: in main chunk
-
+[2026-05-20T21:44:17.610Z] WARN  	objects: (type: INSTANCE, hndl: 0x1b10232cd50, name: ?)
+[2026-05-20T21:44:17.682Z] WARN  Unable to enable D3D12 debug interface: 0x887A002D
+[2026-05-20T21:44:17.683Z] WARN  Unable to enable DXGI debug interface: 0x887A002D
+[2026-05-20T21:44:17.691Z] WARN  Unrecognized present mode 1000361000
+[2026-05-20T21:44:17.950Z] INFO  [L033] GPU adapter selected: NVIDIA GeForce RTX 4060 Laptop GPU (Vulkan, DiscreteGpu) [backend=auto, power=high]
+[2026-05-20T21:44:17.985Z] WARN  Unrecognized present mode 1000361000
+[2026-05-20T21:44:17.985Z] INFO  [L034] GPU texture dimension limit: 32768
+[2026-05-20T21:44:17.986Z] WARN  Unrecognized present mode 1000361000
+[2026-05-20T21:44:18.269Z] INFO  [L035] GPU initialised: 756ms (format=Bgra8UnormSrgb, present=Fifo, 1280x720)
+[2026-05-20T21:44:18.270Z] DEBUG Loaded 846 mappings.
+[2026-05-20T21:44:18.291Z] WARN  Unrecognized present mode 1000361000
+[2026-05-20T21:44:18.296Z] WARN  Unrecognized present mode 1000361000
+[2026-05-20T21:44:18.301Z] DEBUG [FS01] GameFS initialised
+[2026-05-20T21:44:18.665Z] DEBUG [AT01] Simulator created
+[2026-05-20T21:44:18.666Z] DEBUG [SC01] SC01
+[2026-05-20T21:44:18.666Z] DEBUG [GU01] GuiContext created
+[2026-05-20T21:44:18.667Z] INFO  [L003] Game loaded: content/games/apps/household_finance_lab\main.lua
+[2026-05-20T21:44:19.916Z] INFO  [L001] Lurek2D Engine starting: auto-screenshot saved to: content/games/apps/household_finance_lab/screen.png
+[2026-05-20T21:44:19.917Z] INFO  content hot-reload triggered (scripts_changed=false, assets_changed=true)
+[2026-05-20T21:44:19.939Z] DEBUG [FS01] GameFS initialised
+[2026-05-20T21:44:20.015Z] DEBUG [AT01] Simulator created
+[2026-05-20T21:44:20.016Z] DEBUG [SC01] SC01
+[2026-05-20T21:44:20.016Z] DEBUG [GU01] GuiContext created
+[2026-05-20T21:44:20.017Z] INFO  [L003] Game loaded: content/games/apps/household_finance_lab\main.lua
+[2026-05-20T21:44:41.937Z] WARN  Unrecognized present mode 1000361000
+[2026-05-20T21:44:43.092Z] WARN  Unrecognized present mode 1000361000

@@ -244,6 +244,7 @@ end
 
 -- ── update ────────────────────────────────────────────────────
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     title_blink = title_blink + dt
 
     -- tween update
@@ -639,7 +640,7 @@ function lurek.draw_ui()
 end
 
 -- ── keypressed ────────────────────────────────────────────────
-function lurek._keypressed(key)
+function lurek.keypressed(key)
     if key == "escape" then lurek.event.quit() end
 
     if state == STATE.TITLE then

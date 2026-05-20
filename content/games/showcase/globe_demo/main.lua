@@ -316,6 +316,7 @@ end
 -- Update callback
 -- ---------------------------------------------------------------------------
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     local mx, my = lurek.input.mouse.getPosition()
     local lmb    = lurek.input.isActionDown("drag")
     local _, wdy = lurek.input.mouse.getWheelDelta()

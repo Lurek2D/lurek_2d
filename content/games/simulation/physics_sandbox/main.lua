@@ -643,6 +643,7 @@ end
 -- Process dispatch
 -- ---------------------------------------------------------------------------
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     if current_state == STATE.TITLE then
         process_title(dt)
     elseif current_state == STATE.SANDBOX then

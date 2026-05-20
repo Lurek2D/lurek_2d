@@ -25,7 +25,7 @@
         },
         {
             "label": "Build: Dist",
-            "detail": "🔨 [profile.dist] opt-level=z, fat LTO, stripped — maximum size reduction. Run 'Dist: Package Windows' afterward to apply UPX and produce the distributable ZIP.",
+            "detail": "🔨 [profile.dist] inherits [profile.release] and is the shipping binary used by Windows packaging. Run 'Dist: Package Windows' afterward to apply UPX and produce the distributable ZIP.",
             "type": "shell",
             "command": "python tools/dev/parallel_cargo.py build dist",
             "group": "build",

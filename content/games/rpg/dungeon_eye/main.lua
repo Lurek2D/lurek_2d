@@ -267,6 +267,7 @@ function lurek.update(dt)
 end
 
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     lurek.update(dt)
 end
 
@@ -468,7 +469,7 @@ function lurek.draw()
 end
 
 -- ── Keypressed ────────────────────────────────────────────────────────────
-function lurek._keypressed(key)
+function lurek.keypressed(key)
     if key == "escape" then
         if show_inv then
             show_inv = false

@@ -1,0 +1,4 @@
+{
+  "version": "household_finance_lab_cache_v2",
+  "tables": ["transactions", "anomalies", "filtered_transactions", "summary_totals", "monthly_cashflow", "category_totals", "member_totals", "payment_mix", "recurring_merchants", "anomaly_duplicates", "anomaly_missing_fields", "anomaly_outliers", "recent_transactions", "widget_summary"]
+}

@@ -1,4 +1,4 @@
-﻿-- ============================================================================
+-- ============================================================================
 --  Horde Survivor — Vampire Survivors-style top-down horde survival
 -- ----------------------------------------------------------------------------
 --  Category : action
@@ -280,14 +280,14 @@ function lurek.init()
     lurek.window.setTitle("Horde Survivor — Lurek2D")
     lurek.render.setBackgroundColor(0.1, 0.12, 0.08)
 
-    lurek.input.bind("up",    "w")
-    lurek.input.bind("down",  "s")
-    lurek.input.bind("left",  "a")
-    lurek.input.bind("right", "d")
-    lurek.input.bind("pick1", "1")
-    lurek.input.bind("pick2", "2")
-    lurek.input.bind("pick3", "3")
-    lurek.input.bind("quit",  "escape")
+    lurek.input.bind("up",    { "w", "up", "gamepad:0:10" })
+    lurek.input.bind("down",  { "s", "down", "gamepad:0:11" })
+    lurek.input.bind("left",  { "a", "left", "gamepad:0:12" })
+    lurek.input.bind("right", { "d", "right", "gamepad:0:13" })
+    lurek.input.bind("pick1", { "1", "gamepad:0:0" })
+    lurek.input.bind("pick2", { "2", "gamepad:0:2" })
+    lurek.input.bind("pick3", { "3", "gamepad:0:3" })
+    lurek.input.bind("quit",  { "escape", "gamepad:0:8" })
 
     cam = lurek.camera.new(SCREEN_W, SCREEN_H)
 
@@ -343,14 +343,15 @@ end
 
 -- ── Process ───────────────────────────────────────────────────────────────
 function lurek.process(dt)
-    if lurek.input.keyboard.isDown("quit") then
+    if lurek.automation then lurek.automation.update(dt) end
+    if lurek.input.wasActionPressed("quit") then
         lurek.event.quit()
         return
     end
 
     -- ── TITLE ─────────────────────────────────────────────────────────
     if current_state == STATE.TITLE then
-        if lurek.input.keyboard.isDown("pick1") or lurek.input.keyboard.isDown("pick2") or lurek.input.keyboard.isDown("pick3") then
+        if lurek.input.wasActionPressed("pick1") or lurek.input.wasActionPressed("pick2") or lurek.input.wasActionPressed("pick3") then
             reset_game()
             current_state = STATE.PLAYING
         end
@@ -359,7 +360,7 @@ function lurek.process(dt)
 
     -- ── GAME OVER ─────────────────────────────────────────────────────
     if current_state == STATE.GAME_OVER then
-        if lurek.input.keyboard.isDown("pick1") then
+        if lurek.input.wasActionPressed("pick1") then
             reset_game()
             current_state = STATE.PLAYING
         end
@@ -369,7 +370,7 @@ function lurek.process(dt)
     -- ── LEVEL UP ──────────────────────────────────────────────────────
     if current_state == STATE.LEVEL_UP then
         for i = 1, 3 do
-            if lurek.input.keyboard.isDown("pick" .. i) and upgrade_choices[i] then
+            if lurek.input.wasActionPressed("pick" .. i) and upgrade_choices[i] then
                 upgrade_choices[i].apply()
                 current_state = STATE.PLAYING
                 break

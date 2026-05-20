@@ -1,0 +1,1 @@
+SELECT * FROM transactions WHERE anomaly_issue = NULL

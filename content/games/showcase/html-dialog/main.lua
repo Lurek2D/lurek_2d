@@ -1,4 +1,4 @@
-﻿-- content/games/showcase/html-dialog/main.lua
+-- content/games/showcase/html-dialog/main.lua
 -- HTML Dialog Demo â€” lurek.html showcase.
 --
 -- An NPC stands in the world.  Click it to open an RPG-style dialog box built
@@ -125,6 +125,7 @@ function lurek.init()
 end
 
 function lurek.process(dt)
+  if lurek.automation then lurek.automation.update(dt) end
   if dialog_open and dialog_doc then dialog_doc:update(dt) end
   if lurek.input.keyboard.isDown("escape") then
     if dialog_open and dialog_doc then

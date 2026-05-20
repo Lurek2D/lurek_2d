@@ -674,7 +674,7 @@ end
 --@api-stub: LWorld:newBodies
 do
     local world = lurek.physics.newWorld(0, 400)
-    local specs = { { 15, 50, "dynamic" }, { 30, 50, "dynamic" }, { 45, 50, "static" }, }
+    local specs = { { x = 15, y = 50, body_type = "dynamic", shape = "circle", radius = 5 }, { x = 30, y = 50, body_type = "dynamic", shape = "circle", radius = 5 }, { x = 45, y = 50, body_type = "static", shape = "rectangle", width = 10, height = 10 }, }
     local ids = world:newBodies(specs)
     print("batch created = " .. #ids)
 end
@@ -786,7 +786,11 @@ end
 
 --@api-stub: LWorld:addMotorJoint
 do
-    print("motor joint available")
+    local world = lurek.physics.newWorld(0, 0); local platform = world:newBody(200, 200, "static")
+    local mover = world:newBody(200, 200, "dynamic"); local jointId = world:addMotorJoint(platform:getId(), mover:getId(), 0.5)
+    print("motor joint id = " .. jointId)
+    world:step(1 / 60)
+    print("mover pos = " .. mover:getX() .. ", " .. mover:getY())
 end
 
 --@api-stub: LWorld:addFrictionJoint

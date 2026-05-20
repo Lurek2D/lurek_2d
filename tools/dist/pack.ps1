@@ -74,4 +74,4 @@ $size = (Get-Item $Output).Length
 $sizeKB = [math]::Round($size / 1KB, 1)
 
 Write-Host "Packed: $Output ($sizeKB KB)"
-Write-Host "Run with: luna `"$Output`""
+Write-Host "Run with: lurek2d.exe `"$Output`""

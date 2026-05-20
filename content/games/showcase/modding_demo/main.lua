@@ -377,6 +377,7 @@ local function _ready_setup()
 end
 
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     -- Title auto-advance
     if current_state == STATE_TITLE then
         title_timer = title_timer + dt

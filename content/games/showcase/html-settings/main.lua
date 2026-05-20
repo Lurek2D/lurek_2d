@@ -1,4 +1,4 @@
-﻿-- content/games/showcase/html-settings/main.lua
+-- content/games/showcase/html-settings/main.lua
 -- HTML Settings Demo â€” lurek.html showcase.
 --
 -- A full settings screen built in HTML with form-style widgets: toggles,
@@ -160,6 +160,7 @@ function lurek.init()
 end
 
 function lurek.process(dt)
+  if lurek.automation then lurek.automation.update(dt) end
   if settings_doc then
     settings_doc:update(dt)
   end

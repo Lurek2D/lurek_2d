@@ -154,6 +154,9 @@ end
 function lurek.init()
     lurek.window.setTitle("Star Voyage — Lurek2D")
     lurek.render.setBackgroundColor(0.02, 0.02, 0.08)
+    lurek.input.bind("left", { "a", "left" })
+    lurek.input.bind("right", { "d", "right" })
+    lurek.input.bind("up", { "w", "up" })
 
     local rng = lurek.math.newRandomGenerator(99)
     for i = 1, STAR_COUNT do
@@ -223,6 +226,11 @@ function lurek.update(dt)
             active_planet = p
         end
     end
+end
+
+function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
+    lurek.update(dt)
 end
 
 -- ── Draw ──────────────────────────────────────────────────────────────────
@@ -311,7 +319,7 @@ function lurek.draw()
 end
 
 -- ── Keypressed ────────────────────────────────────────────────────────────
-function lurek._keypressed(key)
+function lurek.keypressed(key)
     if key == "escape" then lurek.event.quit() end
     if state == STATE.SPACE then
         if key == "space" and active_planet then

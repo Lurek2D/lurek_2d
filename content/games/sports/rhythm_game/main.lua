@@ -308,14 +308,14 @@ function lurek.init()
     camera:setPosition(0, 0)
 
     -- Input bindings
-    lurek.input.bind("lane1", "d")
-    lurek.input.bind("lane2", "f")
-    lurek.input.bind("lane3", "j")
-    lurek.input.bind("lane4", "k")
-    lurek.input.bind("quit", "escape")
-    lurek.input.bind("confirm", "return")
-    lurek.input.bind("nav_up", "up")
-    lurek.input.bind("nav_down", "down")
+    lurek.input.bind("lane1", { "d", "gamepad:0:2" })
+    lurek.input.bind("lane2", { "f", "gamepad:0:3" })
+    lurek.input.bind("lane3", { "j", "gamepad:0:0" })
+    lurek.input.bind("lane4", { "k", "gamepad:0:1" })
+    lurek.input.bind("quit", { "escape", "gamepad:0:8" })
+    lurek.input.bind("confirm", { "return", "gamepad:0:9" })
+    lurek.input.bind("nav_up", { "up", "gamepad:0:10" })
+    lurek.input.bind("nav_down", { "down", "gamepad:0:11" })
 
     -- Particles: hit burst
     if lurek.particle then
@@ -342,6 +342,7 @@ local function _ready_setup()
 end
 
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     local fps = lurek.timer.getFPS()
     title_timer = title_timer + dt
 
@@ -406,7 +407,7 @@ function lurek.process(dt)
     -- Update lane input state
     for i = 1, LANE_COUNT do
         local was_held = lane_held[i]
-        lane_held[i] = lurek.input.keyboard.isDown(LANE_KEYS[i])
+        lane_held[i] = lurek.input.isActionDown("lane" .. i)
         lane_just_pressed[i] = lane_held[i] and not was_held
     end
 

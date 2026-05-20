@@ -228,6 +228,7 @@ end
 
 -- ── Process ───────────────────────────────────────────────
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     if death_sparks then death_sparks:update(dt) end
     if select_ring  then select_ring:update(dt)  end
 

@@ -341,6 +341,7 @@ end
 
 -- ── Process ───────────────────────────────────────────────
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     if attack_sparks then attack_sparks:update(dt) end
     if death_burst   then death_burst:update(dt)   end
     if move_dust     then move_dust:update(dt)     end

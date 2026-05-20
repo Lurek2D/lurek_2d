@@ -1,4 +1,4 @@
-﻿-- content/games/showcase/html-hud/main.lua
+-- content/games/showcase/html-hud/main.lua
 -- HTML HUD Demo â€” lurek.html showcase.
 --
 -- A player dot moves to the mouse cursor.  The HUD overlaid in pure HTML/CSS
@@ -54,6 +54,7 @@ function lurek.init()
 end
 
 function lurek.process(dt)
+  if lurek.automation then lurek.automation.update(dt) end
   timer  = timer  + dt
   score  = score  + math.floor(dt * 150)
   health = math.max(0, health - dt * 4)

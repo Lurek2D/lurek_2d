@@ -96,9 +96,7 @@ do
     mgr:register("counter", function() return { value = 1 } end, function(_) end)
     mgr:enableAutoSave(5.0, "autosave")
     mgr:markDirty()
-    local triggered = mgr:update(6.0)
-    print("auto-save triggered = " .. tostring(triggered))
-    if mgr:exists("autosave") then mgr:delete("autosave") end
+    print("auto-save triggered = " .. tostring(mgr:update(6.0))); mgr:delete("autosave")
 end
 
 --@api-stub: LSaveManager:disableAutoSave
@@ -115,9 +113,7 @@ do
     mgr:register("counter", function() return { value = 1 } end, function(_) end)
     mgr:enableAutoSave(5.0, "autosave")
     mgr:markDirty()
-    local triggered = mgr:update(6.0)
-    print("auto-save triggered = " .. tostring(triggered))
-    if mgr:exists("autosave") then mgr:delete("autosave") end
+    print("auto-save triggered = " .. tostring(mgr:update(6.0))); mgr:delete("autosave")
 end
 
 --@api-stub: LSaveManager:markDirty

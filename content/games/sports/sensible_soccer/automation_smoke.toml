@@ -1,0 +1,42 @@
+[meta]
+description = "Smoke replay: kickoff, move, and kick"
+
+[[steps]]
+time = 0.10
+action = "keypress"
+key = "space"
+
+[[steps]]
+time = 0.16
+action = "keyrelease"
+key = "space"
+
+[[steps]]
+time = 0.40
+action = "keypress"
+key = "right"
+
+[[steps]]
+time = 0.85
+action = "keypress"
+key = "up"
+
+[[steps]]
+time = 1.20
+action = "keyrelease"
+key = "up"
+
+[[steps]]
+time = 1.25
+action = "keyrelease"
+key = "right"
+
+[[steps]]
+time = 1.40
+action = "keypress"
+key = "space"
+
+[[steps]]
+time = 1.46
+action = "keyrelease"
+key = "space"

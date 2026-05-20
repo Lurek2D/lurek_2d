@@ -459,6 +459,7 @@ end
 
 -- ───────────────────────── process ───────────────────────────
 function lurek.process(dt)
+  if lurek.automation then lurek.automation.update(dt) end
   if state == "TITLE" then
     title_timer = title_timer + dt
     return

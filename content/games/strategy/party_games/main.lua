@@ -198,6 +198,7 @@ end
 
 -- ── Process ───────────────────────────────────────────────
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     if celebration_sys then celebration_sys:update(dt) end
     if flash_t > 0 then flash_t = flash_t - dt end
 

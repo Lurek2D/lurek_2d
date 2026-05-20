@@ -1,0 +1,46 @@
+[meta]
+description = "Smoke replay: click-to-move and fire order"
+
+[[steps]]
+time = 0.10
+action = "mousemove"
+x = 220.0
+y = 260.0
+dx = 220.0
+dy = 260.0
+
+[[steps]]
+time = 0.12
+action = "mousepress"
+x = 220.0
+y = 260.0
+button = 1
+
+[[steps]]
+time = 0.18
+action = "mouserelease"
+x = 220.0
+y = 260.0
+button = 1
+
+[[steps]]
+time = 0.70
+action = "mousemove"
+x = 520.0
+y = 240.0
+dx = 300.0
+dy = -20.0
+
+[[steps]]
+time = 0.72
+action = "mousepress"
+x = 520.0
+y = 240.0
+button = 2
+
+[[steps]]
+time = 0.78
+action = "mouserelease"
+x = 520.0
+y = 240.0
+button = 2

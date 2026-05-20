@@ -408,6 +408,7 @@ end
 -- Process
 ------------------------------------------------------------------------
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     title_blink = title_blink + dt
 
     -- Quit

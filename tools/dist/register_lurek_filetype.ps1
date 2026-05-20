@@ -1,5 +1,5 @@
 param(
-    [string]$EnginePath = "$env:USERPROFILE\bin\lurek.exe",
+    [string]$EnginePath = "$env:USERPROFILE\bin\lurek2d.exe",
     [switch]$UsePathLookup,
     [switch]$MachineWide
 )
@@ -9,15 +9,17 @@ $ErrorActionPreference = "Stop"
 function Resolve-EnginePath {
     param([string]$Explicit, [switch]$Lookup)
     if ($Lookup) {
-        $cmd = Get-Command lurek -ErrorAction SilentlyContinue
-        if ($cmd -and $cmd.Source) { return $cmd.Source }
+        foreach ($commandName in @('lurek2d', 'lurek')) {
+            $cmd = Get-Command $commandName -ErrorAction SilentlyContinue
+            if ($cmd -and $cmd.Source) { return $cmd.Source }
+        }
     }
     return $Explicit
 }
 
 $resolved = Resolve-EnginePath -Explicit $EnginePath -Lookup:$UsePathLookup
 if (-not (Test-Path $resolved)) {
-    throw "lurek.exe not found at: $resolved. Install the engine first (tools/dist/install.ps1) or pass -EnginePath."
+    throw "lurek2d.exe not found at: $resolved. Install the engine first (tools/dist/install.ps1) or pass -EnginePath."
 }
 
 if ($MachineWide) {

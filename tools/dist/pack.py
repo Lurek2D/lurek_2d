@@ -52,7 +52,7 @@ def pack(game_dir: str, output: str | None = None) -> int:
 
     size_kb = round(out_path.stat().st_size / 1024, 1)
     print(f"Packed: {out_path} ({size_kb} KB)")
-    print(f"Run with: lurek \"{out_path}\"")
+    print(f"Run with: lurek2d.exe \"{out_path}\"")
     return 0
 
 

@@ -1,4 +1,4 @@
-﻿-- content/games/showcase/html-scoreboard/main.lua
+-- content/games/showcase/html-scoreboard/main.lua
 -- HTML Scoreboard Demo â€” lurek.html showcase.
 --
 -- A live leaderboard rendered as an HTML <table>.  Every two seconds a new
@@ -108,6 +108,7 @@ function lurek.init()
 end
 
 function lurek.process(dt)
+  if lurek.automation then lurek.automation.update(dt) end
   tick = tick + dt
   if tick >= UPDATE_EVERY then
     tick = tick - UPDATE_EVERY

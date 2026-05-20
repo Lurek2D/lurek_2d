@@ -68,7 +68,7 @@ end
 
 --@api-stub: lurek.filesystem.getInfo
 do
-    local path = "content/examples/assets/data/sample_config.toml"
+    local path = "save/options.json"
     local info = lurek.filesystem.getInfo(path)
     if info then
         print("type=" .. info.type .. " size=" .. info.size)
@@ -77,7 +77,7 @@ end
 
 --@api-stub: lurek.filesystem.stat
 do
-    local path = "content/examples/assets/data/sample_config.toml"
+    local path = "save/options.json"
     local st = lurek.filesystem.stat(path)
     if st then
         print("stat size=" .. st.size .. " isFile=" .. tostring(st.isFile))
@@ -86,7 +86,7 @@ end
 
 --@api-stub: lurek.filesystem.read
 do
-    local path = "content/examples/assets/data/sample_config.toml"
+    local path = "save/options.json"
     local contents = lurek.filesystem.read(path)
     print("read " .. #contents .. " bytes")
 end
@@ -176,8 +176,7 @@ end
 
 --@api-stub: lurek.filesystem.readJson
 do
-    local path = "save/test_json.json"
-    lurek.filesystem.writeJson(path, '{"name":"test","value":42}')
+    local path = "save/options.json"
     local data = lurek.filesystem.readJson(path)
     print("readJson type = " .. type(data))
 end
@@ -381,7 +380,7 @@ end
 
 --@api-stub: lurek.filesystem.mount
 do
-    local ok = lurek.filesystem.mount("content/examples/assets", "game_assets")
+    local ok = lurek.filesystem.mount("assets", "game_assets")
     print("mount ok = " .. tostring(ok))
 end
 
@@ -400,14 +399,14 @@ end
 --@api-stub: LZipMount:readFile
 do
     local zip = lurek.filesystem.mountZip("content/examples/assets/data/sample_data.zip", "data")
-    local txt = zip:readFile("data/hello.txt")
+    local txt = zip:readFile("data/sample_hello.txt")
     print("zip read bytes: " .. #txt)
 end
 
 --@api-stub: LZipMount:contains
 do
     local zip = lurek.filesystem.mountZip("content/examples/assets/data/sample_data.zip", "data")
-    print("has hello = " .. tostring(zip:contains("data/hello.txt")))
+    print("has hello = " .. tostring(zip:contains("data/sample_hello.txt")))
 end
 
 --@api-stub: LZipMount:listFiles

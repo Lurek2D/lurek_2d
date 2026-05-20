@@ -359,6 +359,7 @@ local function _ready_setup()
 end
 
 function lurek.process(delta)
+    if lurek.automation then lurek.automation.update(delta) end
     dt = delta
     frame_count = frame_count + 1
     update_tweens(dt)

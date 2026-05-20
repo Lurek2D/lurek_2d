@@ -551,6 +551,7 @@ end
 -- Update
 -- ---------------------------------------------------------------------------
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     if lurek.input.wasActionPressed("quit") then lurek.event.quit() end
 
     ps_download:update(dt)
@@ -628,7 +629,7 @@ function lurek.textinput(text)
     end
 end
 
-function lurek._keypressed(key)
+function lurek.keypressed(key)
     -- Title screen: any key starts boot
     if current_state == STATE.TITLE then
         if key ~= "escape" then

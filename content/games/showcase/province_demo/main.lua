@@ -504,6 +504,7 @@ function lurek.init()
 end
 
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     tweens_update(dt)
     particles_update(dt)
 

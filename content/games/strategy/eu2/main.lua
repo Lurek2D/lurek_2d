@@ -1,4 +1,4 @@
-﻿
+
 local R = lurek.render
 
 local MAP_W = 1000
@@ -130,6 +130,7 @@ function lurek.update(dt)
 end
 
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     lurek.update(dt)
 end
 
@@ -302,9 +303,5 @@ local function render_frame()
 end
 
 function lurek.draw()
-    render_frame()
-end
-
-function lurek.render()
     render_frame()
 end

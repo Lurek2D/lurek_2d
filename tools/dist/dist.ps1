@@ -149,6 +149,17 @@ if (Test-Path $ExamplesSource) {
     Write-OK "Copied content/examples/"
 }
 
+# Copy Windows packaging helpers for .lurek archives and file association setup
+$DistToolsDest = Join-Path $PackageDir 'tools\dist'
+New-Item -ItemType Directory -Path $DistToolsDest -Force | Out-Null
+foreach ($toolFile in @('pack.ps1', 'pack.py', 'package_games.py', 'register_lurek_filetype.ps1')) {
+    $src = Join-Path $WorkspaceRoot "tools\dist\$toolFile"
+    if (Test-Path $src) {
+        Copy-Item $src -Destination (Join-Path $DistToolsDest $toolFile) -Force
+        Write-OK "Copied tools/dist/$toolFile"
+    }
+}
+
 # Copy demos (playable game demos)
 $DemosSource = Join-Path $WorkspaceRoot 'content\games'
 if (Test-Path $DemosSource) {
@@ -170,7 +181,7 @@ if (Test-Path $LibrarySource) {
 # Copy API docs  (lurek.md, lurek.lua LuaCATS stubs)
 $ApiDocsDest = Join-Path $PackageDir 'docs'
 New-Item -ItemType Directory -Path $ApiDocsDest -Force | Out-Null
-foreach ($apiFile in @('lurek.md', 'lurek.lua')) {
+foreach ($apiFile in @('lurek.md', 'lurek.lua', 'lureksome.md', 'lureksome.lua')) {
     $src = Join-Path $WorkspaceRoot "docs\api\$apiFile"
     if (Test-Path $src) {
         Copy-Item $src -Destination (Join-Path $ApiDocsDest $apiFile) -Force
@@ -224,6 +235,15 @@ API Reference (docs\)
   docs\lurek.md     -- lurek.* Lua API reference (Markdown)
   docs\lurek.lua     -- LuaCATS type stubs for IDE autocompletion
                       (copy to your project root or configure in .luarc.json)
+    docs\lureksome.md -- Lureksome library reference (Markdown)
+    docs\lureksome.lua -- LuaCATS stubs for bundled library modules
+
+Packaging helpers (tools\dist\)
+--------------------------------
+    tools\dist\pack.ps1   -- pack a game folder into a .lurek archive
+    tools\dist\pack.py    -- cross-platform .lurek packer
+    tools\dist\package_games.py -- batch-pack content\games into .lurek files
+    tools\dist\register_lurek_filetype.ps1 -- register .lurek double-click handling
 
 Writing your own game
 ---------------------
@@ -231,6 +251,13 @@ Writing your own game
   2. Add a main.lua with lurek.load() / lurek.update(dt) / lurek.draw()
   3. Optionally add a conf.lua for window title, width, height
   4. Run:  lurekc.bat my_game   (or drag the folder onto lurekc.lnk)
+
+Opening .lurek game archives
+----------------------------
+    1. Pack your game folder so main.lua is at the ZIP root
+    2. Rename or output the archive with a .lurek extension
+    3. Run tools\dist\register_lurek_filetype.ps1 once to enable double-click launch
+    4. Double-click the .lurek archive or run: lurek2d.exe my_game.lurek
 
 Full docs & source:  https://github.com/RandomBladeDude/lurek2d
 "@

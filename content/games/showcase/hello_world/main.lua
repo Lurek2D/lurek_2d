@@ -273,6 +273,7 @@ end
 -- Update
 -- ---------------------------------------------------------------------------
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     local sdt = dt * speed_mult
 
     -- Global quit

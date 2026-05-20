@@ -510,6 +510,7 @@ end
 
 -- Process
 function lurek.process(delta)
+  if lurek.automation then lurek.automation.update(delta) end
   dt = delta
   title_blink = title_blink + delta
 

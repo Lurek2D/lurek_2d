@@ -170,6 +170,10 @@ end
 function lurek.init()
     lurek.window.setTitle("Worms Artillery — Lurek2D")
     lurek.render.setBackgroundColor(0.35, 0.6, 0.85)
+    lurek.input.bind("left", { "a", "left" })
+    lurek.input.bind("right", { "d", "right" })
+    lurek.input.bind("up", { "w", "up" })
+    lurek.input.bind("down", { "s", "down" })
 
     -- Generate terrain with fractal noise
     for c = 1, TERRAIN_COLS do
@@ -259,6 +263,11 @@ function lurek.update(dt)
         expl.t = expl.t + dt
         if expl.t > 1.2 then next_turn() end
     end
+end
+
+function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
+    lurek.update(dt)
 end
 
 -- ── Draw ──────────────────────────────────────────────────────────────────
@@ -361,7 +370,7 @@ function lurek.draw()
 end
 
 -- ── Keypressed ────────────────────────────────────────────────────────────
-function lurek._keypressed(key)
+function lurek.keypressed(key)
     if key == "escape" then lurek.event.quit() end
     if key == "r" and state == STATE.OVER then
         -- restart

@@ -500,6 +500,7 @@ function lurek.init()
 end
 
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     if state == TITLE then
         if lurek.input.wasActionPressed("raise") then
             state = PLAYING

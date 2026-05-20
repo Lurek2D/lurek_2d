@@ -381,6 +381,7 @@ local function _ready_setup()
 end
 
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     -- Title screen
     if current_state == STATE.TITLE then
         if lurek.input.wasActionPressed("confirm") then

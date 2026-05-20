@@ -407,6 +407,7 @@ end
 
 -- ── Process ───────────────────────────────────────────────────────────────
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     -- Quit
     if lurek.input.wasActionPressed("quit") then
         lurek.event.quit()

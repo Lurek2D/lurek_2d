@@ -598,6 +598,7 @@ function lurek.keypressed(key, _sc, is_repeat)
 end
 
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     if lurek.input.wasActionPressed("quit") then lurek.event.quit(); return end
     -- Crouch (hold Ctrl)
     crouching = lurek.input.isActionDown("crouch")

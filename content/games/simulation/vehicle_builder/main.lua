@@ -313,6 +313,7 @@ end
 -- Process
 -- ---------------------------------------------------------------------------
 function lurek.process(dt)
+    if lurek.automation then lurek.automation.update(dt) end
     title_timer = title_timer + dt
 
     update_particles(dt)

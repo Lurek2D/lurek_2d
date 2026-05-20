@@ -81,13 +81,13 @@ Lurek does not force one workflow. You can mix engine work, Lua game work, VS Co
 
 ## AI Ecosystem Overview
 
-The diagram below shows how Local AI, VS Code, the Lurek CLI, engine builds, apps, and use cases connect in the full agentic workflow.
+The diagram below shows how Local AI, VS Code, the Lurek CLI, engine builds, apps, and use cases connect in the full agentic workflow. Each block is modular, turning Lurek into a platform where AI agents, App packages, and runtime execution strictly separate concerns and scale rapidly.
 
 <p align="center">
   <img src="assets/lurek-ai-ecosystem.svg" alt="Lurek AI Ecosystem diagram" width="1200"/>
 </p>
 
-> Full detail: [AI Ecosystem wiki page](https://github.com/LurekDude/lurek_2d/wiki/AI-Ecosystem).
+> **Full detail:** Read the highly detailed [AI Ecosystem Deep Dive](https://github.com/LurekDude/lurek_2d/wiki/AI-Ecosystem) on our Wiki. It contains workflow explanations, component breakdowns, and real-world execution examples (like applying Mod Templates for Digital Twins or utilizing the CLI for headless agent testing).
 | Lua game scripts + VS Code IntelliSense | Lua authoring with hover docs, completions, commands, and debug flow | [extensions/vscode/README.md](extensions/vscode/README.md) |
 | Lua game scripts + local AI | Game-dev CAG layer for agents, prompts, templates, and task workflows | [extensions/vscode/cag/game-dev/README.md](extensions/vscode/cag/game-dev/README.md) |
 | Built-in editors and tools | Tilemap, particle, audio, UI, preview, and other extension webviews | [extensions/vscode/README.md](extensions/vscode/README.md) |
