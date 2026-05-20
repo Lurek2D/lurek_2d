@@ -37,7 +37,7 @@ end
 
 --@api-stub: lurek.devtools.error
 do
-    lurek.devtools.error("failed to load save file")
+    lurek.devtools.error("save file warning emitted")
     print("error logged")
 end
 

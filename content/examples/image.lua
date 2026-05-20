@@ -19,7 +19,10 @@ end
 
 --@api-stub: lurek.image.loadImage
 do
-    local img = lurek.image.loadImage("assets/textures/province_map.png")
+    local src = lurek.image.newImageData(8, 8)
+    src:fill(1, 0, 0, 1)
+    lurek.image.saveImage(src, "save/sample_image.limg")
+    local img = lurek.image.loadImage("save/sample_image.limg")
     print("loaded image " .. img:getWidth() .. "x" .. img:getHeight())
 end
 
@@ -80,7 +83,7 @@ end
 
 --@api-stub: lurek.image.newProvinceGrid
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/images/sample_province_map.png")
     print("grid " .. grid:getWidth() .. "x" .. grid:getHeight())
     print("provinces = " .. grid:provinceCount())
 end
@@ -658,62 +661,62 @@ end
 
 --@api-stub: LProvinceGrid:getAt
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/images/sample_province_map.png")
     local id = grid:getAt(10, 10)
     print("province at (10,10) = " .. id)
 end
 
 --@api-stub: LProvinceGrid:provinceCount
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/images/sample_province_map.png")
     print("provinces = " .. grid:provinceCount())
 end
 
 --@api-stub: LProvinceGrid:provinceSpans
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/images/sample_province_map.png")
     local spans = grid:provinceSpans()
     print("total spans = " .. #spans)
 end
 
 --@api-stub: LProvinceGrid:adjacencies
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/images/sample_province_map.png")
     local adj = grid:adjacencies()
     print("adjacency records = " .. #adj)
 end
 
 --@api-stub: LProvinceGrid:borderSegments
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/images/sample_province_map.png")
     local segs = grid:borderSegments()
     print("border segments = " .. #segs)
 end
 
 --@api-stub: LProvinceGrid:getPolygons
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/images/sample_province_map.png")
     local polys = grid:getPolygons()
     print("polygon records = " .. #polys)
 end
 
 --@api-stub: LProvinceGrid:getPolygonsSimplified
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/images/sample_province_map.png")
     local polys = grid:getPolygonsSimplified()
     print("simplified records = " .. #polys)
 end
 
 --@api-stub: LProvinceGrid:drawShapes
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/images/sample_province_map.png")
     local count = grid:drawShapes(0, 0, 800, 600)
     print("drew " .. count .. " polygons")
 end
 
 --@api-stub: LProvinceGrid:serializeShapeData
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/images/sample_province_map.png")
     local data = grid:serializeShapeData()
     print("serialized " .. #data .. " bytes")
     grid:deserializeShapeData(data)
@@ -722,7 +725,7 @@ end
 
 --@api-stub: LProvinceGrid:deserializeShapeData
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/images/sample_province_map.png")
     local data = grid:serializeShapeData()
     print("serialized " .. #data .. " bytes")
     grid:deserializeShapeData(data)
@@ -731,26 +734,26 @@ end
 
 --@api-stub: LProvinceGrid:getWidth
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/images/sample_province_map.png")
     print("grid = " .. grid:getWidth() .. "x" .. grid:getHeight())
 end
 
 --@api-stub: LProvinceGrid:getHeight
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/images/sample_province_map.png")
     print("grid = " .. grid:getWidth() .. "x" .. grid:getHeight())
 end
 
 --@api-stub: LProvinceGrid:type
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/images/sample_province_map.png")
     print("type = " .. grid:type())
     print("is ProvinceGrid = " .. tostring(grid:typeOf("ProvinceGrid")))
 end
 
 --@api-stub: LProvinceGrid:typeOf
 do
-    local grid = lurek.image.newProvinceGrid("assets/textures/province_map.png")
+    local grid = lurek.image.newProvinceGrid("content/examples/assets/images/sample_province_map.png")
     print("type = " .. grid:type())
     print("is ProvinceGrid = " .. tostring(grid:typeOf("ProvinceGrid")))
 end

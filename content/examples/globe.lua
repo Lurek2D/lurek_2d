@@ -70,14 +70,14 @@ do
     local points = lurek.globe.greatCirclePath(0, 0, 45, 90, 5)
     print("path has " .. #points .. " points")
     for _, p in ipairs(points) do
-        print("  lat=" .. p.lat .. " lng=" .. p.lng)
+        print("  lat=" .. tostring(p[1]) .. " lng=" .. tostring(p[2]))
     end
 end
 
 --@api-stub: lurek.globe.latLonToUnit
 do
     local v = lurek.globe.latLonToUnit(0, 0)
-    print("unit vec = " .. v.x .. "," .. v.y .. "," .. v.z)
+    print("unit vec = " .. tostring(v[1]) .. "," .. tostring(v[2]) .. "," .. tostring(v[3]))
 end
 
 --- Globe Module Part 2: LGlobe methods (camera, provinces, markers, layers, fog)
